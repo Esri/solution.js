@@ -36,9 +36,6 @@ export function createItemFromHubTemplate(
 ): Promise<ICreateItemFromTemplateResponse> {
   const interpolatedTemplate = replaceInTemplate(template, templateDictionary);
   const { survey123Url } = templateDictionary;
-  // TODO: Post processing/adding feature service template to deployed solution
-  // TODO: update any item details we couldn't pass to Survey123 API (extent, culture, title, etc)
-  // TODO: investigate CORS error for /rest/info request...
 
   return buildCreateParams(
     interpolatedTemplate,
@@ -46,7 +43,7 @@ export function createItemFromHubTemplate(
     destinationAuthentication
   )
     .then((params: ISurvey123CreateParams) => {
-      return createSurvey(params, destinationAuthentication, survey123Url);
+      return createSurvey(params, survey123Url);
     })
     .then((createSurveyResponse: ISurvey123CreateResult) => {
       const { formId, folderId, featureServiceId } = createSurveyResponse;
@@ -82,7 +79,7 @@ export function createItemFromHubTemplate(
           return {
             id: formId,
             type: "Form",
-            postProcess: false
+            postProcess: true
           };
         });
     })

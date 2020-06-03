@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import * as fetchMock from "fetch-mock";
 import {
   ISurvey123CreateSuccess,
   ISurvey123CreateParams,
@@ -42,6 +43,10 @@ describe("createSurvey", () => {
       thumbnailFile: utils.getSampleImage()
     } as ISurvey123CreateParams;
 
+    afterEach(() => {
+      fetchMock.restore();
+    });
+
     it("should resolve a ISurvey123CreateResult when successful", done => {
       const response = {
         success: true,
@@ -55,26 +60,33 @@ describe("createSurvey", () => {
           ownerFolder: "4c36d3679e7f4934ac599051df22daf6"
         }
       } as ISurvey123CreateSuccess;
+      const encodedForm = new FormData();
       const expected = {
         formId: "2c36d3679e7f4934ac599051df22daf6",
         featureServiceId: "3c36d3679e7f4934ac599051df22daf6",
         folderId: "4c36d3679e7f4934ac599051df22daf6"
       };
-      const requestSpy = spyOn(restRequest, "request").and.resolveTo(response);
-      return createSurvey(params, MOCK_USER_SESSION)
+      const createUrl = "https://survey123.arcgis.com/api/survey/create";
+      const encodeFormDataSpy = spyOn(
+        restRequest,
+        "encodeFormData"
+      ).and.returnValue(encodedForm);
+      fetchMock.post(createUrl, response);
+      return createSurvey(params)
         .then(result => {
-          expect(requestSpy.calls.count()).toEqual(1);
-          expect(requestSpy.calls.first().args).toEqual([
-            "https://survey123.arcgis.com/api/survey/create",
-            {
-              httpMethod: "POST",
-              authentication: MOCK_USER_SESSION,
-              params: {
-                f: "json",
-                ...params
-              }
-            }
+          expect(encodeFormDataSpy.calls.count()).toEqual(1);
+          expect(encodeFormDataSpy.calls.first().args).toEqual([
+            { ...params, f: "json" },
+            true
           ]);
+          const calls = fetchMock.calls(createUrl);
+          expect(calls.length).toEqual(1);
+          expect(calls[0][0]).toEqual(createUrl);
+          expect(calls[0][1]).toEqual({
+            credentials: "same-origin",
+            method: "POST",
+            body: encodedForm
+          });
           expect(result).toEqual(expected);
           done();
         })
@@ -94,29 +106,32 @@ describe("createSurvey", () => {
           ownerFolder: "4c36d3679e7f4934ac599051df22daf6"
         }
       } as ISurvey123CreateSuccess;
+      const encodedForm = new FormData();
       const expected = {
         formId: "2c36d3679e7f4934ac599051df22daf6",
         featureServiceId: "3c36d3679e7f4934ac599051df22daf6",
         folderId: "4c36d3679e7f4934ac599051df22daf6"
       };
-      const requestSpy = spyOn(restRequest, "request").and.resolveTo(response);
-      return createSurvey(
-        params,
-        MOCK_USER_SESSION,
-        "https://survey123qa.arcgis.com"
-      )
+      const createUrl = "https://survey123qa.arcgis.com/api/survey/create";
+      const encodeFormDataSpy = spyOn(
+        restRequest,
+        "encodeFormData"
+      ).and.returnValue(encodedForm);
+      fetchMock.post(createUrl, response);
+      return createSurvey(params, "https://survey123qa.arcgis.com")
         .then(result => {
-          expect(requestSpy.calls.first().args).toEqual([
-            "https://survey123qa.arcgis.com/api/survey/create",
-            {
-              httpMethod: "POST",
-              authentication: MOCK_USER_SESSION,
-              params: {
-                f: "json",
-                ...params
-              }
-            }
+          expect(encodeFormDataSpy.calls.count()).toEqual(1);
+          expect(encodeFormDataSpy.calls.first().args).toEqual([
+            { ...params, f: "json" },
+            true
           ]);
+          const calls = fetchMock.calls(createUrl);
+          expect(calls[0][0]).toEqual(createUrl);
+          expect(calls[0][1]).toEqual({
+            credentials: "same-origin",
+            method: "POST",
+            body: encodedForm
+          });
           expect(result).toEqual(expected);
           done();
         })
@@ -128,8 +143,9 @@ describe("createSurvey", () => {
         success: false,
         error: { message: "Something went awry" }
       } as ISurvey123CreateError;
-      const requestSpy = spyOn(restRequest, "request").and.resolveTo(response);
-      return createSurvey(params, MOCK_USER_SESSION).then(
+      const createUrl = "https://survey123.arcgis.com/api/survey/create";
+      fetchMock.post(createUrl, response);
+      return createSurvey(params).then(
         _ => {
           done.fail("should have rejected");
         },

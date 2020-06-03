@@ -20,4 +20,6 @@
  * @module solution-form
  */
 
-export * from "./form";
+export * from "./convert-item-to-template";
+export * from "./create-item-from-template";
+export * from "./post-process";

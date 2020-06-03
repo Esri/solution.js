@@ -15,35 +15,20 @@
  */
 
 /**
- * Manages the creation and deployment of form item types.
+ * Manages the deployment items from Form templates.
  *
- * @module solution-form
+ * @module create-item-from-template
  */
 
-import * as common from "@esri/solution-common";
+import {
+  UserSession,
+  IItemTemplate,
+  IItemProgressCallback,
+  ICreateItemFromTemplateResponse
+} from "@esri/solution-common";
 import { simpleTypes } from "@esri/solution-simple-types";
 import { isHubFormTemplate } from "./helpers/is-hub-form-template";
 import { createItemFromHubTemplate } from "./helpers/create-item-from-hub-template";
-
-/**
- * Creates a template from a Form item
- * @param {string} solutionItemId The solution item ID
- * @param {any} itemInfo: The base item info
- * @param {UserSession} authentication The source user session information
- * @returns {Promise<IItemTemplate>}
- */
-export function convertItemToTemplate(
-  solutionItemId: string,
-  itemInfo: any,
-  authentication: common.UserSession
-): Promise<common.IItemTemplate> {
-  // Delegate to simple types
-  return simpleTypes.convertItemToTemplate(
-    solutionItemId,
-    itemInfo,
-    authentication
-  );
-}
 
 /**
  * Creates a Form item from a template
@@ -54,11 +39,11 @@ export function convertItemToTemplate(
  * @returns {Promise<ICreateItemFromTemplateResponse>}
  */
 export function createItemFromTemplate(
-  template: common.IItemTemplate,
+  template: IItemTemplate,
   templateDictionary: any,
-  destinationAuthentication: common.UserSession,
-  itemProgressCallback: common.IItemProgressCallback
-): Promise<common.ICreateItemFromTemplateResponse> {
+  destinationAuthentication: UserSession,
+  itemProgressCallback: IItemProgressCallback
+): Promise<ICreateItemFromTemplateResponse> {
   // Hub Form template custom processing
   if (isHubFormTemplate(template)) {
     return createItemFromHubTemplate(

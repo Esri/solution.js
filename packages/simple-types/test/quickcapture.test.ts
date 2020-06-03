@@ -302,6 +302,7 @@ describe("Module `quick capture`: manages the creation and deployment of quick c
           "QuickCapture Project",
           [],
           qcTemplate,
+          [qcTemplate],
           templateDictionary,
           MOCK_USER_SESSION
         )

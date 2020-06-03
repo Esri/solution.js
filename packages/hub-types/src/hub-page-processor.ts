@@ -176,7 +176,15 @@ export function createItemFromTemplate(
 }
 
 /* istanbul ignore next */
-export function postProcess(model: any, items: any[]): Promise<boolean> {
+export function postProcess(
+  id: string,
+  type: string,
+  itemInfos: any[],
+  template: IItemTemplate,
+  templates: IItemTemplate[],
+  templateDictionary: any,
+  authentication: UserSession
+): Promise<boolean> {
   // Hub Page does not need to do anything in the post-processing
   return Promise.resolve(true);
 }
