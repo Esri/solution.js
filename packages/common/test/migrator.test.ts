@@ -17,9 +17,11 @@
 import { migrateSchema, CURRENT_SCHEMA_VERSION } from "../src/migrator";
 import { cloneObject, IItemTemplate } from "@esri/hub-common";
 import { ISolutionItem } from "../src/interfaces";
-import * as firstUpgrade from "../src/migrations/upgrade-two-dot-two";
-import * as secondUpgrade from "../src/migrations/upgrade-two-dot-three";
-import * as thirdUpgrade from "../src/migrations/upgrade-three-dot-zero";
+import * as twoDotTwo from "../src/migrations/upgrade-two-dot-two";
+import * as twoDotThree from "../src/migrations/upgrade-two-dot-three";
+import * as twoDotFour from "../src/migrations/upgrade-two-dot-four";
+import * as twoDotFive from "../src/migrations/upgrade-two-dot-five";
+import * as threeDotZero from "../src/migrations/upgrade-three-dot-zero";
 
 describe("Schema Migrator", () => {
   const defaultModel = {
@@ -56,15 +58,21 @@ describe("Schema Migrator", () => {
     // kill the schema version
     m.item.properties.schemaVersion = 2.1;
     m.item.typeKeywords = ["hubSolutionTemplate", "solutionTemplate"];
-    const sp1 = spyOn(firstUpgrade, "_upgradeTwoDotTwo").and.callFake(model => {
+    const sp1 = spyOn(twoDotTwo, "_upgradeTwoDotTwo").and.callFake(model => {
       return cloneObject(model);
     });
-    const sp2 = spyOn(secondUpgrade, "_upgradeTwoDotThree").and.callFake(
+    const sp2 = spyOn(twoDotThree, "_upgradeTwoDotThree").and.callFake(
       model => {
         return cloneObject(model);
       }
     );
-    const sp3 = spyOn(thirdUpgrade, "_upgradeThreeDotZero").and.callFake(
+    const sp3 = spyOn(twoDotFour, "_upgradeTwoDotFour").and.callFake(model => {
+      return cloneObject(model);
+    });
+    const sp4 = spyOn(twoDotFive, "_upgradeTwoDotFive").and.callFake(model => {
+      return cloneObject(model);
+    });
+    const sp5 = spyOn(threeDotZero, "_upgradeThreeDotZero").and.callFake(
       model => {
         return cloneObject(model);
       }
@@ -72,7 +80,9 @@ describe("Schema Migrator", () => {
     const chk = migrateSchema(m);
     expect(sp1.calls.count()).toBe(1, "should call first upgrade");
     expect(sp2.calls.count()).toBe(1, "should call second upgrade");
-    expect(sp3.calls.count()).toBe(1, "should call second upgrade");
+    expect(sp3.calls.count()).toBe(1, "should call third upgrade");
+    expect(sp4.calls.count()).toBe(1, "should call fourth upgrade");
+    expect(sp5.calls.count()).toBe(1, "should call fifth upgrade");
     expect(chk).not.toBe(m, "should not return the exact same object");
     // since the upgrades are all spies, we don't make assertions on the schemaVersion
   });

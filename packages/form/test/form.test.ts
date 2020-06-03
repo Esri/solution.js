@@ -20,7 +20,8 @@ import * as formProcessor from "../src/form";
 import * as utils from "../../common/test/mocks/utils";
 import * as mockItems from "../../common/test/mocks/agolItems";
 import * as templates from "../../common/test/mocks/templates";
-import * as hubFormHelpers from "../src/helpers/is-hub-form-template";
+import * as hubFormTemplateHelpers from "../src/helpers/is-hub-form-template";
+import * as hubFormCreateHelpers from "../src/helpers/create-item-from-hub-template";
 
 describe("Module `form`: Manages the creation and deployment of form item types", () => {
   let MOCK_USER_SESSION: common.UserSession;
@@ -69,10 +70,18 @@ describe("Module `form`: Manages the creation and deployment of form item types"
       templateDictionary = { key: "value" };
     });
 
-    it("should reject with an error response for Hub Survey templates", done => {
-      const failSpy = spyOn(common, "fail").and.callThrough();
+    it("should delegate to custom template processing for Hub Survey templates", done => {
+      const expectedResults = {
+        id: "2c36d3679e7f4934ac599051df22daf6",
+        type: "Form",
+        postProcess: false
+      };
+      const createItemFromHubTemplateSpy = spyOn(
+        hubFormCreateHelpers,
+        "createItemFromHubTemplate"
+      ).and.resolveTo(expectedResults);
       const isHubFormTemplateSpy = spyOn(
-        hubFormHelpers,
+        hubFormTemplateHelpers,
         "isHubFormTemplate"
       ).and.returnValue(true);
       const progressCallback = jasmine.createSpy();
@@ -84,19 +93,21 @@ describe("Module `form`: Manages the creation and deployment of form item types"
           progressCallback
         )
         .then(
-          () => {
-            done.fail("createItemFromTemplate should have rejected");
-          },
-          e => {
-            const error =
-              "createItemFromTemplate not yet implemented for Hub templates in solution-form package";
-            const expected = { success: false, error };
+          results => {
             expect(isHubFormTemplateSpy.calls.count()).toBe(1);
             expect(isHubFormTemplateSpy.calls.first().args).toEqual([template]);
-            expect(failSpy.calls.count()).toBe(1);
-            expect(failSpy.calls.first().args).toEqual([error]);
-            expect(e).toEqual(expected);
+            expect(createItemFromHubTemplateSpy.calls.count()).toBe(1);
+            expect(createItemFromHubTemplateSpy.calls.first().args).toEqual([
+              template,
+              templateDictionary,
+              MOCK_USER_SESSION,
+              progressCallback
+            ]);
+            expect(results).toEqual(expectedResults);
             done();
+          },
+          e => {
+            done.fail(e);
           }
         );
     });
@@ -112,7 +123,7 @@ describe("Module `form`: Manages the creation and deployment of form item types"
         "createItemFromTemplate"
       ).and.resolveTo(expectedResults);
       const isHubFormTemplateSpy = spyOn(
-        hubFormHelpers,
+        hubFormTemplateHelpers,
         "isHubFormTemplate"
       ).and.returnValue(false);
       const progressCallback = jasmine.createSpy();
