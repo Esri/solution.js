@@ -94,7 +94,15 @@ describe("Module `notebook`: manages the creation and deployment of notebook pro
         "updateNotebookData"
       ).and.resolveTo();
       return notebookProcessor
-        .postProcess("3ef", "Notebook", [], template, td, MOCK_USER_SESSION)
+        .postProcess(
+          "3ef",
+          "Notebook",
+          [],
+          template,
+          [template],
+          td,
+          MOCK_USER_SESSION
+        )
         .then(() => {
           expect(dataSpy.calls.count()).toBe(1, "should fetch data");
           expect(dataSpy.calls.argsFor(0)[0]).toBe(
@@ -117,7 +125,15 @@ describe("Module `notebook`: manages the creation and deployment of notebook pro
         "updateNotebookData"
       ).and.resolveTo();
       return notebookProcessor
-        .postProcess("3ef", "Notebook", [], template, {}, MOCK_USER_SESSION)
+        .postProcess(
+          "3ef",
+          "Notebook",
+          [],
+          template,
+          [template],
+          {},
+          MOCK_USER_SESSION
+        )
         .then(() => {
           expect(dataSpy.calls.count()).toBe(1, "should fetch data");
           expect(dataSpy.calls.argsFor(0)[0]).toBe(
