@@ -59,6 +59,7 @@ export function postProcess(
           entry.type,
           clonedSolutions,
           getTemplateById(templates, entry.id),
+          templates,
           templateDictionary,
           authentication
         )

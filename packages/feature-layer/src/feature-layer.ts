@@ -332,8 +332,9 @@ export function createItemFromTemplate(
 export function postProcess(
   itemId: string,
   type: string,
-  templates: common.IItemTemplate[],
+  itemInfos: any[],
   template: common.IItemTemplate,
+  templates: common.IItemTemplate[],
   templateDictionary: any,
   authentication: common.UserSession
 ): Promise<any> {

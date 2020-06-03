@@ -2555,12 +2555,14 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
       });
       const td = { owner: "Luke Skywalker" };
       const updateSpy = spyOn(common, "updateItemExtended").and.resolveTo();
+      const template = templates.getItemTemplateSkeleton();
       return simpleTypes
         .postProcess(
           "3ef",
           "Web Map",
           [],
-          templates.getItemTemplateSkeleton(),
+          template,
+          [template],
           td,
           MOCK_USER_SESSION
         )
@@ -2582,12 +2584,14 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
         value: "Larry"
       });
       const updateSpy = spyOn(common, "updateItemExtended").and.resolveTo();
+      const template = templates.getItemTemplateSkeleton();
       return simpleTypes
         .postProcess(
           "3ef",
           "Web Map",
           [],
-          templates.getItemTemplateSkeleton(),
+          template,
+          [template],
           {},
           MOCK_USER_SESSION
         )

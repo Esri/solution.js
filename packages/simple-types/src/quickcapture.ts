@@ -205,6 +205,7 @@ export function postProcess(
   type: string,
   itemInfos: any[],
   template: common.IItemTemplate,
+  templates: common.IItemTemplate[],
   templateDictionary: any,
   authentication: common.UserSession
 ): Promise<any> {
