@@ -22,7 +22,7 @@
 
 import * as common from "@esri/solution-common";
 import { moduleMap } from "./module-map";
-import { maybePush, getProp } from "@esri/hub-common";
+import { getProp } from "@esri/hub-common";
 
 const UNSUPPORTED: common.moduleHandler = null;
 
@@ -423,9 +423,6 @@ export function _createItemFromTemplateWhenReady(
       common.ICreateItemFromTemplateResponse
     >(resolve => {
       // Wait until all of the item's dependencies are deployed
-      // maybePush will only add the entry if it exists, allowing
-      // templates to have entries in the depenedency array that are
-      // invalid or don't refer to a template
       const awaitDependencies = template.dependencies.reduce(
         (acc: any[], id: string) => {
           const def = getProp(templateDictionary, `${id}.def`);
