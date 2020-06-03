@@ -123,6 +123,7 @@ export function postProcess(
   type: string,
   itemInfos: any[],
   template: IItemTemplate,
+  templates: IItemTemplate[],
   templateDictionary: any,
   authentication: UserSession
 ): Promise<any> {

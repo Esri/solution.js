@@ -153,7 +153,6 @@ if (typeof window !== "undefined") {
           expect(createSurveySpy.calls.count()).toEqual(1);
           expect(createSurveySpy.calls.first().args).toEqual([
             paramResults,
-            MOCK_USER_SESSION,
             undefined
           ]);
           expect(moveItemSpy.calls.count()).toEqual(2);
@@ -190,7 +189,7 @@ if (typeof window !== "undefined") {
           expect(results).toEqual({
             id: createResult.formId,
             type: "Form",
-            postProcess: false
+            postProcess: true
           });
           done();
         })
@@ -236,7 +235,6 @@ if (typeof window !== "undefined") {
           expect(createSurveySpy.calls.count()).toEqual(1);
           expect(createSurveySpy.calls.first().args).toEqual([
             paramResults,
-            MOCK_USER_SESSION,
             undefined
           ]);
           expect(moveItemSpy.calls.count()).toEqual(2);
@@ -273,7 +271,7 @@ if (typeof window !== "undefined") {
           expect(results).toEqual({
             id: createResult.formId,
             type: "Form",
-            postProcess: false
+            postProcess: true
           });
           done();
         })
@@ -320,7 +318,6 @@ if (typeof window !== "undefined") {
           expect(createSurveySpy.calls.count()).toEqual(1);
           expect(createSurveySpy.calls.first().args).toEqual([
             paramResults,
-            MOCK_USER_SESSION,
             "https://survey123qa.arcgis.com"
           ]);
           expect(moveItemSpy.calls.count()).toEqual(2);
@@ -357,7 +354,7 @@ if (typeof window !== "undefined") {
           expect(results).toEqual({
             id: createResult.formId,
             type: "Form",
-            postProcess: false
+            postProcess: true
           });
           done();
         })
