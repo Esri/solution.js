@@ -21,7 +21,9 @@ import * as twoDotTwo from "../src/migrations/upgrade-two-dot-two";
 import * as twoDotThree from "../src/migrations/upgrade-two-dot-three";
 import * as twoDotFour from "../src/migrations/upgrade-two-dot-four";
 import * as twoDotFive from "../src/migrations/upgrade-two-dot-five";
+import * as twoDotSix from "../src/migrations/upgrade-two-dot-six";
 import * as threeDotZero from "../src/migrations/upgrade-three-dot-zero";
+import * as utils from "../../common/test/mocks/utils";
 
 describe("Schema Migrator", () => {
   const defaultModel = {
@@ -37,23 +39,32 @@ describe("Schema Migrator", () => {
       templates: [] as IItemTemplate[]
     }
   } as ISolutionItem;
-  it("returns model if current schema", () => {
+  const MOCK_USER_SESSION = utils.createRuntimeMockUserSession();
+  it("returns model if current schema", done => {
     const m = cloneObject(defaultModel);
-    const chk = migrateSchema(m);
-    expect(chk).toBe(m, "should return the exact same object");
+    return migrateSchema(m, MOCK_USER_SESSION)
+      .then(chk => {
+        expect(chk).toBe(m, "should return the exact same object");
+        done();
+      })
+      .catch(done.fail);
   });
-  it("stomps on current schema if not legacy", () => {
+  it("stomps on current schema if not legacy", done => {
     const m = cloneObject(defaultModel);
     // kill the schema version
     delete m.item.properties.schemaVersion;
-    const chk = migrateSchema(m);
-    expect(chk).toBe(m, "should return the exact same object");
-    expect(chk.item.properties.schemaVersion).toBe(
-      3,
-      "should upgrade to 3 if no schema"
-    );
+    return migrateSchema(m, MOCK_USER_SESSION)
+      .then(chk => {
+        expect(chk).toBe(m, "should return the exact same object");
+        expect(chk.item.properties.schemaVersion).toBe(
+          3,
+          "should upgrade to 3 if no schema"
+        );
+        done();
+      })
+      .catch(done.fail);
   });
-  it("upgrades legacy Solutions", () => {
+  it("upgrades legacy Solutions", done => {
     const m = cloneObject(defaultModel);
     // kill the schema version
     m.item.properties.schemaVersion = 2.1;
@@ -72,29 +83,41 @@ describe("Schema Migrator", () => {
     const sp4 = spyOn(twoDotFive, "_upgradeTwoDotFive").and.callFake(model => {
       return cloneObject(model);
     });
-    const sp5 = spyOn(threeDotZero, "_upgradeThreeDotZero").and.callFake(
+    const sp5 = spyOn(twoDotSix, "_upgradeTwoDotSix").and.callFake(model => {
+      return Promise.resolve(cloneObject(model));
+    });
+    const sp6 = spyOn(threeDotZero, "_upgradeThreeDotZero").and.callFake(
       model => {
         return cloneObject(model);
       }
     );
-    const chk = migrateSchema(m);
-    expect(sp1.calls.count()).toBe(1, "should call first upgrade");
-    expect(sp2.calls.count()).toBe(1, "should call second upgrade");
-    expect(sp3.calls.count()).toBe(1, "should call third upgrade");
-    expect(sp4.calls.count()).toBe(1, "should call fourth upgrade");
-    expect(sp5.calls.count()).toBe(1, "should call fifth upgrade");
-    expect(chk).not.toBe(m, "should not return the exact same object");
-    // since the upgrades are all spies, we don't make assertions on the schemaVersion
+    return migrateSchema(m, MOCK_USER_SESSION)
+      .then(chk => {
+        expect(sp1.calls.count()).toBe(1, "should call first upgrade");
+        expect(sp2.calls.count()).toBe(1, "should call second upgrade");
+        expect(sp3.calls.count()).toBe(1, "should call third upgrade");
+        expect(sp4.calls.count()).toBe(1, "should call fourth upgrade");
+        expect(sp5.calls.count()).toBe(1, "should call fifth upgrade");
+        expect(sp6.calls.count()).toBe(1, "should call sixth upgrade");
+        expect(chk).not.toBe(m, "should not return the exact same object");
+        // since the upgrades are all spies, we don't make assertions on the schemaVersion
+        done();
+      })
+      .catch(done.fail);
   });
-  it("does nothing if v3.1", () => {
+  it("does nothing if v3.1", done => {
     // this test will go away once we have a 3.0 -> 3.1 migration but it covers an `else` case
     const m = cloneObject(defaultModel);
     m.item.properties.schemaVersion = 3.1;
-    const chk = migrateSchema(m);
-    expect(chk).toBe(m, "should return the exact same object");
-    expect(chk.item.properties.schemaVersion).toBe(
-      3.1,
-      "should not change version"
-    );
+    return migrateSchema(m, MOCK_USER_SESSION)
+      .then(chk => {
+        expect(chk).toBe(m, "should return the exact same object");
+        expect(chk.item.properties.schemaVersion).toBe(
+          3.1,
+          "should not change version"
+        );
+        done();
+      })
+      .catch(done.fail);
   });
 });

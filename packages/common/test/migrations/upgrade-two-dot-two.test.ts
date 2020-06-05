@@ -17,6 +17,7 @@
 import { _upgradeTwoDotTwo } from "../../src/migrations/upgrade-two-dot-two";
 import { cloneObject, IItemTemplate } from "@esri/hub-common";
 import { ISolutionItem } from "../../src/interfaces";
+import * as utils from "../../../common/test/mocks/utils";
 
 describe("Upgrade 2.2 ::", () => {
   const defaultModel = {
@@ -33,10 +34,12 @@ describe("Upgrade 2.2 ::", () => {
     }
   } as ISolutionItem;
 
+  const MOCK_USER_SESSION = utils.createRuntimeMockUserSession();
+
   it("returns same model if on or above 2.2", () => {
     const m = cloneObject(defaultModel);
     m.item.properties.schemaVersion = 2.3;
-    const chk = _upgradeTwoDotTwo(m);
+    const chk = _upgradeTwoDotTwo(m, MOCK_USER_SESSION);
     expect(chk).toBe(m, "should return the exact same object");
   });
 
@@ -46,7 +49,7 @@ describe("Upgrade 2.2 ::", () => {
     m.data.metadata.chk = {
       solName: "{{solution.name}}"
     };
-    const chk = _upgradeTwoDotTwo(m);
+    const chk = _upgradeTwoDotTwo(m, MOCK_USER_SESSION);
     expect(chk).not.toBe(m, "should not return the exact same object");
     expect(chk.data.metadata.chk.solName).toBe(
       "{{solution.title}}",

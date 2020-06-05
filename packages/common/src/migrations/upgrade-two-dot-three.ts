@@ -14,11 +14,14 @@
  * limitations under the License.
  */
 
-import { ISolutionItem } from "../interfaces";
+import { ISolutionItem, UserSession } from "../interfaces";
 import { getProp } from "../generalHelpers";
 import { cloneObject } from "@esri/hub-common";
 
-export function _upgradeTwoDotThree(model: ISolutionItem) {
+export function _upgradeTwoDotThree(
+  model: ISolutionItem,
+  authentication: UserSession
+) {
   if (getProp(model, "item.properties.schemaVersion") >= 2.3) {
     return model;
   }
