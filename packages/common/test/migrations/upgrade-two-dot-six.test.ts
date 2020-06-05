@@ -227,7 +227,6 @@ describe("Upgrade 2.6 ::", () => {
             "05dba3d96cd94b358dff421661300286"
           )
         ).toBeTrue();
-        // expect(results.data.templates[0].properties.form.questions[0].maps[0].itemId).toEqual("{{05dba3d96cd94b358dff421661300286.itemId}}");
         expect(results.item.properties.schemaVersion).toEqual(2.6);
         done();
       })
