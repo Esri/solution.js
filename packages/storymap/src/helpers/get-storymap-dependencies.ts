@@ -25,7 +25,7 @@ export function getStoryMapDependencies(model: IModel): any[] {
   const resources = getProp(model, "data.resources") || {};
   return Object.keys(resources).reduce((acc, key) => {
     if (getProp(resources, `${key}.type`) === "webmap") {
-      acc.push(getProp(model, `${key}.data.itemId`));
+      acc.push(getProp(resources, `${key}.data.itemId`));
     }
     return acc;
   }, []);

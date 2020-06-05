@@ -35,6 +35,7 @@ import { getWebExperienceDependencies } from "./get-web-experience-dependencies"
  * @param model
  * @param authentication
  */
+/* istanbul ignore next */
 export function convertWebExperienceToTemplate(
   model: IModel,
   authentication: UserSession // not currently used

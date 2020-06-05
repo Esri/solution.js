@@ -16,16 +16,11 @@
 import {
   IModel,
   cloneObject,
-  createId,
   failSafe,
   failSafeUpdate,
   serializeModel,
-  interpolate,
   interpolateItemId,
-  uploadResourcesFromUrl,
-  stringToBlob,
-  propifyString,
-  normalizeSolutionTemplateItem
+  stringToBlob
 } from "@esri/hub-common";
 
 import { UserSession } from "@esri/arcgis-rest-auth";
@@ -36,6 +31,7 @@ import {
   ICreateItemResponse
 } from "@esri/arcgis-rest-portal";
 
+/* istanbul ignore next */
 export function createWebExperience(
   model: IModel,
   options: any,

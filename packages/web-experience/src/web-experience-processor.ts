@@ -22,6 +22,7 @@
 
 import {
   UserSession,
+  EItemProgressStatus,
   IItemProgressCallback,
   IItemTemplate,
   ICreateItemFromTemplateResponse
@@ -39,29 +40,29 @@ import { convertWebExperienceToTemplate } from "./helpers/convert-web-experience
  * @param authentication
  * @param isGroup
  */
+/* istanbul ignore next */
 export function convertItemToTemplate(
   solutionItemId: string,
   itemInfo: any,
   authentication: UserSession,
   isGroup?: boolean
 ): Promise<IItemTemplate> {
-  debugger;
   // use the itemInfo to setup a model
   const model = {
     item: itemInfo,
     data: {}
   } as IModel;
   // fetch the data.json
-  return getItemData(itemInfo.id, { authentication }).then(data => {
-    // append into the model
-    model.data = data;
-    // and use that to create a template
-    return convertWebExperienceToTemplate(model, authentication);
-  })
-  .catch((ex) => {
-    debugger;
-    throw ex;
-  })
+  return getItemData(itemInfo.id, { authentication })
+    .then(data => {
+      // append into the model
+      model.data = data;
+      // and use that to create a template
+      return convertWebExperienceToTemplate(model, authentication);
+    })
+    .catch(ex => {
+      throw ex;
+    });
 }
 
 /**
@@ -71,6 +72,7 @@ export function convertItemToTemplate(
  * @param destinationAuthentication
  * @param itemProgressCallback
  */
+/* istanbul ignore next */
 export function createItemFromTemplate(
   template: IItemTemplate,
   templateDictionary: any,
@@ -91,8 +93,20 @@ export function createItemFromTemplate(
       exbModel = model;
       return createWebExperience(model, {}, destinationAuthentication);
     })
-    .then(result => {
-      exbModel.item.id = result.id;
+    .then(createdModel => {
+      // Update the template dictionary
+      // TODO: This should be done in whatever recieves
+      // the outcome of this promise chain
+      templateDictionary[template.itemId] = {
+        itemId: createdModel.item.id
+      };
+      const finalStatus = itemProgressCallback(
+        template.itemId,
+        EItemProgressStatus.Finished,
+        template.estimatedDeploymentCostFactor || 2,
+        createdModel.item.id
+      );
+      exbModel.item.id = createdModel.item.id;
       return {
         id: exbModel.item.id,
         type: template.type,

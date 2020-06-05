@@ -27,11 +27,13 @@ export function remapWebmapKeys(resources: any = {}): any[] {
   let webmapCounter = 0;
   return Object.keys(resources).reduce((acc, key) => {
     if (getProp(resources, `${key}.type`) === "webmap") {
-      acc.push({
-        original: key,
-        updated: `webmap${webmapCounter}`
-      });
-      webmapCounter++;
+      if (key !== `webmap${webmapCounter}`) {
+        acc.push({
+          original: key,
+          updated: `webmap${webmapCounter}`
+        });
+        webmapCounter++;
+      }
     }
     return acc;
   }, []);

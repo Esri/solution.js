@@ -23,6 +23,7 @@ import { UserSession } from "@esri/arcgis-rest-auth";
  * @param transforms Hash of transform functions to use in the interpolation
  * @param authentication UserSession
  */
+/* istanbul ignore next */
 export function createWebExperienceModelFromTemplate(
   templateModel: IModelTemplate,
   settings: any,

@@ -53,7 +53,9 @@ export function convertStoryMapToTemplate(
   const webmapRemaps = remapWebmapKeys(tmpl.data.resources);
   // and then replace in the rest of the structure
   webmapRemaps.forEach(remap => {
-    tmpl.data.resources[remap.updated] = tmpl.data.resources[remap.original];
+    tmpl.data.resources[remap.updated] = cloneObject(
+      tmpl.data.resources[remap.original]
+    );
     delete tmpl.data.resources[remap.original];
     tmpl.data.nodes = deepStringReplace(
       tmpl.data.nodes,

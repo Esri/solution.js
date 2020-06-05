@@ -53,4 +53,18 @@ describe("remapWebmapKeys", () => {
     expect(chk[0].original).toBe("r-3ef-2837172", "should have the original");
     expect(chk[0].updated).toBe("webmap0", "should have the updated");
   });
+
+  it("only handles webmap resources with janky keys", () => {
+    const res = {
+      foo: { type: "something" },
+      bar: { type: "otherthing" },
+      webmap0: { type: "webmap" },
+      "r-3ef-2837172": { type: "webmap" }
+    };
+    const chk = remapWebmapKeys(res);
+    expect(Array.isArray(chk)).toBe(true, "should return an array");
+    expect(chk.length).toBe(1, "should only have one entry");
+    expect(chk[0].original).toBe("r-3ef-2837172", "should have the original");
+    expect(chk[0].updated).toBe("webmap0", "should have the updated");
+  });
 });

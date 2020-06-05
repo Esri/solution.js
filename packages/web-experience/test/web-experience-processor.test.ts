@@ -30,7 +30,7 @@ beforeEach(() => {
 
 // ------------------------------------------------------------------------------------------------------------------ //
 
-describe("Module `web-experience`: ", () => {
+xdescribe("Module `web-experience`: ", () => {
   describe("convertItemToTemplate :: ", () => {
     it("should reject with an error response", done => {
       const failSpy = spyOn(common, "fail").and.callThrough();

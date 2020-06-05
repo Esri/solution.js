@@ -11,6 +11,8 @@ import {
 
 const UNSUPPORTED: common.moduleHandler = null;
 import { HubSiteProcessor, HubPageProcessor } from "@esri/solution-hub-types";
+import { StoryMapProcessor } from "@esri/solution-storymap";
+import { WebExperienceProcessor } from "@esri/solution-web-experience";
 
 /**
  * Mapping from item type to module with type-specific template-handling code.
@@ -77,10 +79,10 @@ export const moduleMap: common.IItemTypeModuleMap = {
   "Site Initiative": UNSUPPORTED,
   "Site Page": HubPageProcessor,
   Solution: UNSUPPORTED,
-  StoryMap: undefined,
+  StoryMap: StoryMapProcessor,
   "Urban Model": undefined,
   "Web Experience Template": undefined,
-  "Web Experience": undefined,
+  "Web Experience": WebExperienceProcessor,
   "Web Mapping Application": simpleTypes,
   "Workforce Project": simpleTypes,
 

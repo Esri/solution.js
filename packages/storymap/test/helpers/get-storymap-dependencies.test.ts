@@ -41,4 +41,17 @@ describe("get-storymap-dependencies", () => {
     );
     expect(chk[0]).toBe("bc7", "should return the id of the");
   });
+  it("handles undefined resource hash", () => {
+    const m = {
+      item: {
+        id: "3ef",
+        owner: "steve"
+      } as IItem,
+      data: {}
+    } as IModel;
+
+    const chk = getStoryMapDependencies(m);
+    expect(Array.isArray(chk)).toBe(true, "should return an array");
+    expect(chk.length).toBe(0, "should return tno resources");
+  });
 });

@@ -20,45 +20,140 @@
  * @module storymap
  */
 
-import * as common from "@esri/solution-common";
-import { cloneObject, IModel } from "@esri/hub-common";
-import { getItemData } from "@esri/arcgis-rest-portal";
 import {
-  convertStoryMapToTemplate
-} from './helpers/convert-storymap-to-template';
-// ------------------------------------------------------------------------------------------------------------------ //
+  IItemTemplate,
+  IItemProgressCallback,
+  ICreateItemFromTemplateResponse,
+  EItemProgressStatus,
+  UserSession,
+  fail
+} from "@esri/solution-common";
+import { cloneObject, IModel, failSafe } from "@esri/hub-common";
+import { getItemData, removeItem } from "@esri/arcgis-rest-portal";
+import { convertStoryMapToTemplate } from "./helpers/convert-storymap-to-template";
+import { createStoryMapModelFromTemplate } from "./helpers/create-storymap-model-from-template";
+import { createStoryMap } from "./helpers/create-storymap";
 
 export function convertItemToTemplate(
   solutionItemId: string,
   itemInfo: any,
-  authentication: common.UserSession
-): Promise<common.IItemTemplate> {
-
+  authentication: UserSession
+): Promise<IItemTemplate> {
   const model = {
     item: itemInfo,
     data: {}
   } as IModel;
   // fetch the data.json
-  return getItemData(itemInfo.id, authentication).then(data => {
-    // append into the model
-    model.data = data;
-    // and use that to create a template
-    return convertStoryMapToTemplate(model, authentication);
-  })
-  .then((tmpl) => {
-    debugger;
-    return tmpl;
-  })
-
+  return getItemData(itemInfo.id, { authentication })
+    .then(data => {
+      // append into the model
+      model.data = data;
+      // and use that to create a template
+      return convertStoryMapToTemplate(model, authentication);
+    })
+    .then(tmpl => {
+      return tmpl;
+    });
 }
 
+/**
+ * Create a StoryMap from the passed in template
+ * @param template
+ * @param templateDictionary
+ * @param destinationAuthentication
+ * @param itemProgressCallback
+ */
 export function createItemFromTemplate(
-  template: common.IItemTemplate,
+  template: IItemTemplate,
   templateDictionary: any,
-  destinationAuthentication: common.UserSession,
-  itemProgressCallback: common.IItemProgressCallback
-): Promise<common.ICreateItemFromTemplateResponse> {
-  return Promise.reject(common.fail("StoryMap is not yet implemented"));
+  destinationAuthentication: UserSession,
+  itemProgressCallback: IItemProgressCallback
+): Promise<ICreateItemFromTemplateResponse> {
+  // let the progress system know we've started...
+  const startStatus = itemProgressCallback(
+    template.itemId,
+    EItemProgressStatus.Started,
+    0
+  );
+
+  // and if it returned false, just resolve out
+  if (!startStatus) {
+    return Promise.resolve({ id: "", type: template.type, postProcess: false });
+  }
+
+  // convert the templateDictionary to a settings hash
+  const settings = cloneObject(templateDictionary);
+
+  // ensure we have a solution object in the settings hash
+  if (!settings.solution) {
+    settings.solution = {};
+  }
+  // .title should always be set on the templateDictionary
+  settings.solution.title = templateDictionary.title;
+
+  // TODO: Determine if we need any transforms in this new env
+  const transforms = {};
+
+  // create an object to hold the created site through
+  // subsequent promise calls
+  let model: IModel;
+
+  // Create the "siteModel" from the template. Does not save the site item yet
+  // Note: depending on licensing and user privs, will also create the team groups
+  // and initiative item.
+  return createStoryMapModelFromTemplate(
+    template,
+    settings,
+    transforms,
+    destinationAuthentication
+  )
+    .then(interpolated => {
+      const options = {
+        assets: interpolated.assets || []
+      };
+      return createStoryMap(interpolated, options, destinationAuthentication);
+    })
+    .then(createdModel => {
+      model = createdModel;
+      // Update the template dictionary
+      // TODO: This should be done in whatever recieves
+      // the outcome of this promise chain
+      templateDictionary[template.itemId] = {
+        itemId: model.item.id
+      };
+      // call the progress callback, which also mutates templateDictionary
+      const finalStatus = itemProgressCallback(
+        template.itemId,
+        EItemProgressStatus.Finished,
+        template.estimatedDeploymentCostFactor || 2,
+        model.item.id
+      );
+      if (!finalStatus) {
+        // clean up the site we just created
+        const failSafeRemove = failSafe(removeItem, { success: true });
+        return failSafeRemove({
+          id: model.item.id,
+          authentication: destinationAuthentication
+        }).then(() => {
+          return Promise.resolve({
+            id: "",
+            type: template.type,
+            postProcess: false
+          });
+        });
+      } else {
+        // finally, return ICreateItemFromTemplateResponse
+        return {
+          id: model.item.id,
+          type: template.type,
+          postProcess: false
+        };
+      }
+    })
+    .catch(ex => {
+      itemProgressCallback(template.itemId, EItemProgressStatus.Failed, 0);
+      throw ex;
+    });
 }
 
 export function isAStoryMap(itemType: string): boolean {
