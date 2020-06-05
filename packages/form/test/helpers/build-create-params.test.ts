@@ -20,6 +20,7 @@ import * as surveyEncodingUtils from "../../src/helpers/encode-survey-form";
 import * as templates from "../../../common/test/mocks/templates";
 import * as utils from "../../../common/test/mocks/utils";
 import * as items from "../../../common/test/mocks/agolItems";
+import { ICredential } from "@esri/arcgis-rest-auth";
 
 // ------------------------------------------------------------------------------------------------------------------ //
 
@@ -27,19 +28,34 @@ const MOCK_USER_SESSION = utils.createRuntimeMockUserSession();
 
 describe("buildCreateParams", () => {
   if (typeof window !== "undefined") {
-    it("should resolve a ISurvey123CreateParams", done => {
-      const templateDictionary = {
+    let templateDictionary: any;
+    let credential: ICredential;
+    let unencodedForm: any;
+    let encodedForm: any;
+    let template: common.IItemTemplate;
+    let thumbnailBlob: Blob;
+    let thumbnailFile: File;
+
+    beforeEach(() => {
+      templateDictionary = {
         portalBaseUrl: utils.PORTAL_SUBSET.portalUrl,
-        user: items.getAGOLUser("myUser")
+        user: items.getAGOLUser("myUser"),
+        organization: {
+          defaultBasemap: {
+            id: "cac1d78bd0674d8e967bf389c0070a02"
+          }
+        }
       };
-      const credential = {
+
+      credential = {
         expires: 1591039350661,
         server: "https://some.arcgis.com/sharing/rest",
         ssl: true,
         token: "my-token",
         userId: "myUser"
       };
-      const unencodedForm = {
+
+      unencodedForm = {
         header: {
           content: "<p title='Whos the best cat'>Whos the best cat</p>"
         },
@@ -51,14 +67,22 @@ describe("buildCreateParams", () => {
         },
         questions: [
           {
-            description: "This is encoded"
+            description: "This is encoded",
+            maps: [
+              {
+                type: "webmap",
+                itemId: "ffc1d78bd0674d8e967bf389c0070a02",
+                isDefault: true
+              }
+            ]
           }
         ],
         settings: {
           thankYouScreenContent: "This is encoded"
         }
       };
-      const encodedForm = {
+
+      encodedForm = {
         header: {
           content:
             "%3Cp%20title%3D'Whos%20the%20best%20cat'%3EWhos%20the%20best%20cat%3C%2Fp%3E"
@@ -71,7 +95,14 @@ describe("buildCreateParams", () => {
         },
         questions: [
           {
-            description: "This%20is%20encoded"
+            description: "This%20is%20encoded",
+            maps: [
+              {
+                type: "webmap",
+                itemId: "cac1d78bd0674d8e967bf389c0070a02",
+                isDefault: true
+              }
+            ]
           }
         ],
         settings: {
@@ -79,7 +110,7 @@ describe("buildCreateParams", () => {
         }
       };
       const baseTemplate = templates.getItemTemplate("Form");
-      const template = {
+      template = {
         ...baseTemplate,
         item: {
           ...baseTemplate.item,
@@ -90,8 +121,11 @@ describe("buildCreateParams", () => {
           form: unencodedForm
         }
       };
-      const thumbnailBlob = utils.getSampleImage();
-      const thumbnailFile = new File([thumbnailBlob], "thumbnail.png");
+      thumbnailBlob = utils.getSampleImage();
+      thumbnailFile = new File([thumbnailBlob], "thumbnail.png");
+    });
+
+    it("should resolve a ISurvey123CreateParams", done => {
       const toCredentialSpy = spyOn(
         MOCK_USER_SESSION,
         "toCredential"
@@ -112,6 +146,9 @@ describe("buildCreateParams", () => {
       ).and.returnValue(encodedForm);
       return buildCreateParams(template, templateDictionary, MOCK_USER_SESSION)
         .then(results => {
+          const expectedUnencodedForm = common.cloneObject(unencodedForm);
+          expectedUnencodedForm.questions[0].maps[0].itemId =
+            templateDictionary.organization.defaultBasemap.id;
           expect(toCredentialSpy.calls.count()).toEqual(1);
           expect(getItemThumbnailSpy.calls.count()).toEqual(1);
           expect(getItemThumbnailSpy.calls.first().args).toEqual([
@@ -133,7 +170,202 @@ describe("buildCreateParams", () => {
           ]);
           expect(encodeSurveyFormSpy.calls.count()).toEqual(1);
           expect(encodeSurveyFormSpy.calls.first().args).toEqual([
-            unencodedForm
+            expectedUnencodedForm
+          ]);
+          expect(results).toEqual({
+            description: "Description of an AGOL item",
+            form: encodedForm,
+            portalUrl: "https://myorg.maps.arcgis.com",
+            tags: ["test"],
+            thumbnailFile,
+            title: "",
+            token: "my-token",
+            typeKeywords: ["JavaScript"],
+            username: "myUser"
+          });
+          done();
+        })
+        .catch(e => {
+          done.fail(e);
+        });
+    });
+
+    it("should resolve a ISurvey123CreateParams", done => {
+      const toCredentialSpy = spyOn(
+        MOCK_USER_SESSION,
+        "toCredential"
+      ).and.returnValue(credential);
+      const getItemThumbnailSpy = spyOn(
+        common,
+        "getItemThumbnail"
+      ).and.resolveTo(thumbnailBlob);
+      const getUniqueTitleSpy = spyOn(common, "getUniqueTitle").and.returnValue(
+        ""
+      );
+      const blobToFileSpy = spyOn(common, "blobToFile").and.returnValue(
+        thumbnailFile
+      );
+      const encodeSurveyFormSpy = spyOn(
+        surveyEncodingUtils,
+        "encodeSurveyForm"
+      ).and.returnValue(encodedForm);
+      return buildCreateParams(template, templateDictionary, MOCK_USER_SESSION)
+        .then(results => {
+          const expectedUnencodedForm = common.cloneObject(unencodedForm);
+          expectedUnencodedForm.questions[0].maps[0].itemId =
+            templateDictionary.organization.defaultBasemap.id;
+          expect(toCredentialSpy.calls.count()).toEqual(1);
+          expect(getItemThumbnailSpy.calls.count()).toEqual(1);
+          expect(getItemThumbnailSpy.calls.first().args).toEqual([
+            "frm1234567890",
+            "thumbnail/ago_downloaded.png",
+            false,
+            MOCK_USER_SESSION
+          ]);
+          expect(getUniqueTitleSpy.calls.count()).toEqual(1);
+          expect(getUniqueTitleSpy.calls.first().args).toEqual([
+            "Survey-An AGOL item",
+            templateDictionary,
+            "user.folders"
+          ]);
+          expect(blobToFileSpy.calls.count()).toEqual(1);
+          expect(blobToFileSpy.calls.first().args).toEqual([
+            thumbnailBlob,
+            "thumbnail/ago_downloaded.png"
+          ]);
+          expect(encodeSurveyFormSpy.calls.count()).toEqual(1);
+          expect(encodeSurveyFormSpy.calls.first().args).toEqual([
+            expectedUnencodedForm
+          ]);
+          expect(results).toEqual({
+            description: "Description of an AGOL item",
+            form: encodedForm,
+            portalUrl: "https://myorg.maps.arcgis.com",
+            tags: ["test"],
+            thumbnailFile,
+            title: "",
+            token: "my-token",
+            typeKeywords: ["JavaScript"],
+            username: "myUser"
+          });
+          done();
+        })
+        .catch(e => {
+          done.fail(e);
+        });
+    });
+
+    it("should support questions being absent", done => {
+      delete unencodedForm.questions;
+      const toCredentialSpy = spyOn(
+        MOCK_USER_SESSION,
+        "toCredential"
+      ).and.returnValue(credential);
+      const getItemThumbnailSpy = spyOn(
+        common,
+        "getItemThumbnail"
+      ).and.resolveTo(thumbnailBlob);
+      const getUniqueTitleSpy = spyOn(common, "getUniqueTitle").and.returnValue(
+        ""
+      );
+      const blobToFileSpy = spyOn(common, "blobToFile").and.returnValue(
+        thumbnailFile
+      );
+      const encodeSurveyFormSpy = spyOn(
+        surveyEncodingUtils,
+        "encodeSurveyForm"
+      ).and.returnValue(encodedForm);
+      return buildCreateParams(template, templateDictionary, MOCK_USER_SESSION)
+        .then(results => {
+          const expectedUnencodedForm = common.cloneObject(unencodedForm);
+          delete expectedUnencodedForm.questions;
+          expect(toCredentialSpy.calls.count()).toEqual(1);
+          expect(getItemThumbnailSpy.calls.count()).toEqual(1);
+          expect(getItemThumbnailSpy.calls.first().args).toEqual([
+            "frm1234567890",
+            "thumbnail/ago_downloaded.png",
+            false,
+            MOCK_USER_SESSION
+          ]);
+          expect(getUniqueTitleSpy.calls.count()).toEqual(1);
+          expect(getUniqueTitleSpy.calls.first().args).toEqual([
+            "Survey-An AGOL item",
+            templateDictionary,
+            "user.folders"
+          ]);
+          expect(blobToFileSpy.calls.count()).toEqual(1);
+          expect(blobToFileSpy.calls.first().args).toEqual([
+            thumbnailBlob,
+            "thumbnail/ago_downloaded.png"
+          ]);
+          expect(encodeSurveyFormSpy.calls.count()).toEqual(1);
+          expect(encodeSurveyFormSpy.calls.first().args).toEqual([
+            expectedUnencodedForm
+          ]);
+          expect(results).toEqual({
+            description: "Description of an AGOL item",
+            form: encodedForm,
+            portalUrl: "https://myorg.maps.arcgis.com",
+            tags: ["test"],
+            thumbnailFile,
+            title: "",
+            token: "my-token",
+            typeKeywords: ["JavaScript"],
+            username: "myUser"
+          });
+          done();
+        })
+        .catch(e => {
+          done.fail(e);
+        });
+    });
+
+    it("should support questions without maps", done => {
+      delete unencodedForm.questions[0].maps;
+      const toCredentialSpy = spyOn(
+        MOCK_USER_SESSION,
+        "toCredential"
+      ).and.returnValue(credential);
+      const getItemThumbnailSpy = spyOn(
+        common,
+        "getItemThumbnail"
+      ).and.resolveTo(thumbnailBlob);
+      const getUniqueTitleSpy = spyOn(common, "getUniqueTitle").and.returnValue(
+        ""
+      );
+      const blobToFileSpy = spyOn(common, "blobToFile").and.returnValue(
+        thumbnailFile
+      );
+      const encodeSurveyFormSpy = spyOn(
+        surveyEncodingUtils,
+        "encodeSurveyForm"
+      ).and.returnValue(encodedForm);
+      return buildCreateParams(template, templateDictionary, MOCK_USER_SESSION)
+        .then(results => {
+          const expectedUnencodedForm = common.cloneObject(unencodedForm);
+          delete expectedUnencodedForm.questions[0].maps;
+          expect(toCredentialSpy.calls.count()).toEqual(1);
+          expect(getItemThumbnailSpy.calls.count()).toEqual(1);
+          expect(getItemThumbnailSpy.calls.first().args).toEqual([
+            "frm1234567890",
+            "thumbnail/ago_downloaded.png",
+            false,
+            MOCK_USER_SESSION
+          ]);
+          expect(getUniqueTitleSpy.calls.count()).toEqual(1);
+          expect(getUniqueTitleSpy.calls.first().args).toEqual([
+            "Survey-An AGOL item",
+            templateDictionary,
+            "user.folders"
+          ]);
+          expect(blobToFileSpy.calls.count()).toEqual(1);
+          expect(blobToFileSpy.calls.first().args).toEqual([
+            thumbnailBlob,
+            "thumbnail/ago_downloaded.png"
+          ]);
+          expect(encodeSurveyFormSpy.calls.count()).toEqual(1);
+          expect(encodeSurveyFormSpy.calls.first().args).toEqual([
+            expectedUnencodedForm
           ]);
           expect(results).toEqual({
             description: "Description of an AGOL item",

@@ -52,6 +52,18 @@ export function buildCreateParams(
       "user.folders"
     ).replace(folderPrefix, "");
     const thumbnailFile = blobToFile(blob, template.item.thumbnail);
+    // set any map question's basemaps to default org basemap
+    if (unencodedForm.questions) {
+      unencodedForm.questions = unencodedForm.questions.map((question: any) => {
+        if (question.maps) {
+          question.maps = question.maps.map((map: any) => ({
+            ...map,
+            itemId: templateDictionary.organization.defaultBasemap.id
+          }));
+        }
+        return question;
+      });
+    }
     const form = encodeSurveyForm(unencodedForm);
     return {
       description,

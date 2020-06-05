@@ -21,6 +21,7 @@
 import * as generalHelpers from "../src/generalHelpers";
 import * as portal from "@esri/arcgis-rest-portal";
 import * as restHelpersGet from "../src/restHelpersGet";
+import * as restHelpers from "../src/restHelpers";
 import * as interfaces from "../src/interfaces";
 
 import * as utils from "./mocks/utils";
@@ -69,6 +70,71 @@ afterEach(() => {
 // ------------------------------------------------------------------------------------------------------------------ //
 
 describe("Module `restHelpersGet`: common REST fetch functions shared across packages", () => {
+  describe("getPortal", () => {
+    it("fetches the portal details with default basemap id", done => {
+      const portalResponse = {
+        id: "fac1d78bd0674d8e967bf389c0070a02",
+        isPortal: false,
+        name: "My Portal",
+        basemapGalleryGroupQuery: `title:"United States Basemaps" AND owner:Esri_cy_US`,
+        defaultBasemap: {
+          title: "Topographic"
+        }
+      };
+      const searchGroupsResponse = utils.getGroupResponse(
+        `title:"United States Basemaps" AND owner:Esri_cy_US`,
+        true
+      ) as interfaces.ISearchResult<interfaces.IGroup>;
+      const searchGroupContentsResponse = {
+        results: [
+          {
+            id: "14dba3d96cd94b358dff421661300286"
+          }
+        ]
+      } as interfaces.ISearchResult<interfaces.IItem>;
+      const getPortalSpy = spyOn(portal, "getPortal").and.resolveTo(
+        portalResponse
+      );
+      const searchGroupsSpy = spyOn(restHelpers, "searchGroups").and.resolveTo(
+        searchGroupsResponse
+      );
+      const searchGroupContentsSpy = spyOn(
+        restHelpers,
+        "searchGroupContents"
+      ).and.resolveTo(searchGroupContentsResponse);
+      return restHelpersGet
+        .getPortal(portalResponse.id, MOCK_USER_SESSION)
+        .then(result => {
+          expect(getPortalSpy.calls.count()).toEqual(1);
+          expect(getPortalSpy.calls.first().args).toEqual([
+            portalResponse.id,
+            { authentication: MOCK_USER_SESSION }
+          ]);
+          expect(searchGroupsSpy.calls.count()).toEqual(1);
+          expect(searchGroupsSpy.calls.first().args).toEqual([
+            portalResponse.basemapGalleryGroupQuery,
+            MOCK_USER_SESSION
+          ]);
+          expect(searchGroupContentsSpy.calls.count()).toEqual(1);
+          expect(searchGroupContentsSpy.calls.first().args).toEqual([
+            searchGroupsResponse.results[0].id,
+            `title:${portalResponse.defaultBasemap.title}`,
+            MOCK_USER_SESSION
+          ]);
+          const expected = {
+            ...portalResponse,
+            defaultBasemap: {
+              ...portalResponse.defaultBasemap,
+              id: searchGroupContentsResponse.results[0].id
+            }
+          };
+          expect(result).toEqual(expected);
+          done();
+        })
+        .catch(done.fail);
+    });
+  });
+
   describe("getUsername", () => {
     it("can get the username from the authentication", done => {
       const communitySelfResponse: any = utils.getUserResponse();

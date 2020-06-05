@@ -53,6 +53,7 @@ import {
 } from "@esri/arcgis-rest-portal";
 import { IRequestOptions, request } from "@esri/arcgis-rest-request";
 import { getBlob } from "./resources/get-blob";
+import { searchGroups, searchGroupContents } from "./restHelpers";
 
 // ------------------------------------------------------------------------------------------------------------------ //
 
@@ -65,7 +66,29 @@ export function getPortal(
   const requestOptions = {
     authentication: authentication
   };
-  return portalGetPortal(id, requestOptions);
+  return portalGetPortal(id, requestOptions).then(portalResponse => {
+    const {
+      basemapGalleryGroupQuery,
+      defaultBasemap: { title: basemapTitle }
+    } = portalResponse;
+    return searchGroups(basemapGalleryGroupQuery, authentication).then(
+      ({ results: [{ id: basemapGroupId }] }) => {
+        return searchGroupContents(
+          basemapGroupId,
+          `title:${basemapTitle}`,
+          authentication
+        ).then(({ results: [{ id: basemapId }] }) => {
+          return {
+            ...portalResponse,
+            defaultBasemap: {
+              ...portalResponse.defaultBasemap,
+              id: basemapId
+            }
+          };
+        });
+      }
+    );
+  });
 }
 
 export function getUser(authentication: UserSession): Promise<IUser> {

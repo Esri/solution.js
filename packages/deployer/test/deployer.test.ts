@@ -283,6 +283,17 @@ describe("Module `deployer`", () => {
 
         const communitySelfResponse: any = testUtils.getUserResponse();
         const portalsSelfResponse: any = testUtils.getPortalsSelfResponse();
+        const basemapGroupSearchResponse = testUtils.getGroupResponse(
+          portalsSelfResponse.basemapGalleryGroupQuery,
+          true
+        );
+        const basemapSearchResponse = testUtils.getGroupResponse(
+          portalsSelfResponse.defaultBasemap.title,
+          true
+        );
+        basemapSearchResponse.results[0].id =
+          "3146ddb18dbe4fe1bb11dc9594164549";
+
         const geometryServer: string =
           portalsSelfResponse.helperServices.geometry.url;
 
@@ -331,6 +342,16 @@ describe("Module `deployer`", () => {
             testUtils.PORTAL_SUBSET.restUrl +
               "/portals/abCDefG123456?f=json&token=fake-token",
             portalsSelfResponse
+          )
+          .get(
+            testUtils.PORTAL_SUBSET.restUrl +
+              "/community/groups?f=json&q=title%3A%22United%20States%20Basemaps%22%20AND%20owner%3AEsri_cy_US&token=fake-token",
+            basemapGroupSearchResponse
+          )
+          .get(
+            testUtils.PORTAL_SUBSET.restUrl +
+              "/content/groups/2146ddb18dbe4fe1bb11dc9594164549/search?f=json&q=title%3ATopographic&token=fake-token",
+            basemapSearchResponse
           )
           .get(
             testUtils.PORTAL_SUBSET.restUrl +
@@ -459,7 +480,13 @@ describe("Module `deployer`", () => {
           title: "title",
           thumbnailurl:
             "https://myorg.maps.arcgis.com/sharing/rest/content/items/sln1234567890/info/thumbnail/ago_downloaded.png",
-          organization: portalsSelfResponse,
+          organization: {
+            ...portalsSelfResponse,
+            defaultBasemap: {
+              ...portalsSelfResponse.defaultBasemap,
+              id: basemapSearchResponse.results[0].id
+            }
+          },
           portalBaseUrl: "https://myorg.maps.arcgis.com",
           user: Object.assign({ folders: [] }, testUtils.getUserResponse()),
           solutionItemExtent: "-88.226,41.708,-88.009,41.844", // [[xmin, ymin], [xmax, ymax]]
@@ -972,6 +999,16 @@ describe("Module `deployer`", () => {
 
         const communitySelfResponse: any = testUtils.getUserResponse();
         const portalsSelfResponse: any = testUtils.getPortalsSelfResponse();
+        const basemapGroupSearchResponse = testUtils.getGroupResponse(
+          portalsSelfResponse.basemapGalleryGroupQuery,
+          true
+        );
+        const basemapSearchResponse = testUtils.getGroupResponse(
+          portalsSelfResponse.defaultBasemap.title,
+          true
+        );
+        basemapSearchResponse.results[0].id =
+          "3146ddb18dbe4fe1bb11dc9594164549";
         const geometryServer: string =
           portalsSelfResponse.helperServices.geometry.url;
 
@@ -1006,6 +1043,16 @@ describe("Module `deployer`", () => {
             testUtils.PORTAL_SUBSET.restUrl +
               "/portals/self?f=json&token=fake-token",
             portalsSelfResponse
+          )
+          .get(
+            testUtils.PORTAL_SUBSET.restUrl +
+              "/community/groups?f=json&q=title%3A%22United%20States%20Basemaps%22%20AND%20owner%3AEsri_cy_US&token=fake-token",
+            basemapGroupSearchResponse
+          )
+          .get(
+            testUtils.PORTAL_SUBSET.restUrl +
+              "/content/groups/2146ddb18dbe4fe1bb11dc9594164549/search?f=json&q=title%3ATopographic&token=fake-token",
+            basemapSearchResponse
           )
           .get(
             testUtils.PORTAL_SUBSET.restUrl +
@@ -1150,6 +1197,16 @@ describe("Module `deployer`", () => {
 
         const communitySelfResponse: any = testUtils.getUserResponse();
         const portalsSelfResponse: any = testUtils.getPortalsSelfResponse();
+        const basemapGroupSearchResponse = testUtils.getGroupResponse(
+          portalsSelfResponse.basemapGalleryGroupQuery,
+          true
+        );
+        const basemapSearchResponse = testUtils.getGroupResponse(
+          portalsSelfResponse.defaultBasemap.title,
+          true
+        );
+        basemapSearchResponse.results[0].id =
+          "3146ddb18dbe4fe1bb11dc9594164549";
         const geometryServer: string =
           portalsSelfResponse.helperServices.geometry.url;
 
@@ -1177,6 +1234,16 @@ describe("Module `deployer`", () => {
             testUtils.PORTAL_SUBSET.restUrl +
               "/portals/self?f=json&token=fake-token",
             portalsSelfResponse
+          )
+          .get(
+            testUtils.PORTAL_SUBSET.restUrl +
+              "/community/groups?f=json&q=title%3A%22United%20States%20Basemaps%22%20AND%20owner%3AEsri_cy_US&token=fake-token",
+            basemapGroupSearchResponse
+          )
+          .get(
+            testUtils.PORTAL_SUBSET.restUrl +
+              "/content/groups/2146ddb18dbe4fe1bb11dc9594164549/search?f=json&q=title%3ATopographic&token=fake-token",
+            basemapSearchResponse
           )
           .get(
             testUtils.PORTAL_SUBSET.restUrl +
@@ -1289,6 +1356,16 @@ describe("Module `deployer`", () => {
         const communitySelfResponse: any = testUtils.getUserResponse();
         const portalsSelfResponse: any = testUtils.getPortalsSelfResponse();
         portalsSelfResponse.urlKey = null;
+        const basemapGroupSearchResponse = testUtils.getGroupResponse(
+          portalsSelfResponse.basemapGalleryGroupQuery,
+          true
+        );
+        const basemapSearchResponse = testUtils.getGroupResponse(
+          portalsSelfResponse.defaultBasemap.title,
+          true
+        );
+        basemapSearchResponse.results[0].id =
+          "3146ddb18dbe4fe1bb11dc9594164549";
         const geometryServer: string =
           portalsSelfResponse.helperServices.geometry.url;
 
@@ -1323,6 +1400,16 @@ describe("Module `deployer`", () => {
             testUtils.PORTAL_SUBSET.restUrl +
               "/portals/self?f=json&token=fake-token",
             portalsSelfResponse
+          )
+          .get(
+            testUtils.PORTAL_SUBSET.restUrl +
+              "/community/groups?f=json&q=title%3A%22United%20States%20Basemaps%22%20AND%20owner%3AEsri_cy_US&token=fake-token",
+            basemapGroupSearchResponse
+          )
+          .get(
+            testUtils.PORTAL_SUBSET.restUrl +
+              "/content/groups/2146ddb18dbe4fe1bb11dc9594164549/search?f=json&q=title%3ATopographic&token=fake-token",
+            basemapSearchResponse
           )
           .get(
             testUtils.PORTAL_SUBSET.restUrl +
@@ -1498,6 +1585,16 @@ describe("Module `deployer`", () => {
 
         const communitySelfResponse: any = testUtils.getUserResponse();
         const portalsSelfResponse: any = testUtils.getPortalsSelfResponse();
+        const basemapGroupSearchResponse = testUtils.getGroupResponse(
+          portalsSelfResponse.basemapGalleryGroupQuery,
+          true
+        );
+        const basemapSearchResponse = testUtils.getGroupResponse(
+          portalsSelfResponse.defaultBasemap.title,
+          true
+        );
+        basemapSearchResponse.results[0].id =
+          "3146ddb18dbe4fe1bb11dc9594164549";
         const geometryServer: string =
           portalsSelfResponse.helperServices.geometry.url;
 
@@ -1532,6 +1629,16 @@ describe("Module `deployer`", () => {
             testUtils.PORTAL_SUBSET.restUrl +
               "/portals/self?f=json&token=fake-token",
             portalsSelfResponse
+          )
+          .get(
+            testUtils.PORTAL_SUBSET.restUrl +
+              "/community/groups?f=json&q=title%3A%22United%20States%20Basemaps%22%20AND%20owner%3AEsri_cy_US&token=fake-token",
+            basemapGroupSearchResponse
+          )
+          .get(
+            testUtils.PORTAL_SUBSET.restUrl +
+              "/content/groups/2146ddb18dbe4fe1bb11dc9594164549/search?f=json&q=title%3ATopographic&token=fake-token",
+            basemapSearchResponse
           )
           .get(
             testUtils.PORTAL_SUBSET.restUrl +
@@ -1659,6 +1766,16 @@ describe("Module `deployer`", () => {
 
         const communitySelfResponse: any = testUtils.getUserResponse();
         const portalsSelfResponse: any = testUtils.getPortalsSelfResponse();
+        const basemapGroupSearchResponse = testUtils.getGroupResponse(
+          portalsSelfResponse.basemapGalleryGroupQuery,
+          true
+        );
+        const basemapSearchResponse = testUtils.getGroupResponse(
+          portalsSelfResponse.defaultBasemap.title,
+          true
+        );
+        basemapSearchResponse.results[0].id =
+          "3146ddb18dbe4fe1bb11dc9594164549";
         const geometryServer: string =
           portalsSelfResponse.helperServices.geometry.url;
 
@@ -1694,6 +1811,16 @@ describe("Module `deployer`", () => {
             testUtils.PORTAL_SUBSET.restUrl +
               "/portals/self?f=json&token=fake-token",
             portalsSelfResponse
+          )
+          .get(
+            testUtils.PORTAL_SUBSET.restUrl +
+              "/community/groups?f=json&q=title%3A%22United%20States%20Basemaps%22%20AND%20owner%3AEsri_cy_US&token=fake-token",
+            basemapGroupSearchResponse
+          )
+          .get(
+            testUtils.PORTAL_SUBSET.restUrl +
+              "/content/groups/2146ddb18dbe4fe1bb11dc9594164549/search?f=json&q=title%3ATopographic&token=fake-token",
+            basemapSearchResponse
           )
           .get(
             testUtils.PORTAL_SUBSET.restUrl +

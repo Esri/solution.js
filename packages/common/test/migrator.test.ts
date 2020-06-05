@@ -84,7 +84,7 @@ describe("Schema Migrator", () => {
       return cloneObject(model);
     });
     const sp5 = spyOn(twoDotSix, "_upgradeTwoDotSix").and.callFake(model => {
-      return Promise.resolve(cloneObject(model));
+      return cloneObject(model);
     });
     const sp6 = spyOn(threeDotZero, "_upgradeThreeDotZero").and.callFake(
       model => {
