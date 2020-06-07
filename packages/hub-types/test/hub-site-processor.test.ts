@@ -273,15 +273,17 @@ describe("HubSiteProcessor: ", () => {
           id: "new-bc4"
         }
       };
-      const tmpls = [
-        { itemId: "bc3" },
-        { itemId: "bc4" }
+      const itemInfos = [{ itemId: "bc3" }, { itemId: "bc4" }] as any[];
+      const templates = [
+        { itemId: "bc3", data: {} },
+        { itemId: "bc4", data: {} }
       ] as common.IItemTemplate[];
       return HubSiteProcessor.postProcess(
         "bc3",
         "Hub Site Application",
-        tmpls,
+        itemInfos,
         {},
+        templates,
         td,
         MOCK_USER_SESSION
       ).then(result => {

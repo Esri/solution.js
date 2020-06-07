@@ -1882,6 +1882,13 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
         someProp: "{{a369baed619441cfb5e862694d33d44c.itemId}}"
       };
       const templates = [itemTemplate];
+      const itemInfos = [
+        {
+          id: itemTemplate.id,
+          type: itemTemplate.type,
+          postProcess: true
+        }
+      ];
       const templateDictionary = {
         a369baed619441cfb5e862694d33d44c: {
           itemId: "b369baed619441cfb5e862694d33d44c"
@@ -1914,8 +1921,9 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
         .postProcess(
           item.id,
           item.type,
-          templates,
+          itemInfos,
           itemTemplate,
+          templates,
           templateDictionary,
           MOCK_USER_SESSION
         )

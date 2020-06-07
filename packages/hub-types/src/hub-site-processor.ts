@@ -202,6 +202,7 @@ export function postProcess(
   type: string,
   itemInfos: any[],
   template: any,
+  templates: IItemTemplate[],
   templateDictionary: any,
   authentication: UserSession
 ): Promise<boolean> {
