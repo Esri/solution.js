@@ -246,8 +246,8 @@ export function getSampleZipFile(name: string): File {
   });
 }
 
-export function _imageDataToBlob(imageAsDataUri: Uint8Array): Blob {
-  return new Blob([imageAsDataUri], { type: "image/png" });
+function _imageDataToBlob(data: Uint8Array): Blob {
+  return new Blob([data], { type: "image/png" });
 }
 
 export function getTokenResponse(token: string = "fake-token") {
