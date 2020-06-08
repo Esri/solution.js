@@ -33,16 +33,34 @@
   </style>
 </head>
 <body>
-  <div id="input" style="display:none">
-    <label for="id">ID of the group or item to be put into a solution:&nbsp;</label><input type="text" id="id" style="width:256px">
-    <br /><br />
-    <i>Credentials in destination organization:</i><br />
-    <label for="username">username:&nbsp;</label><input type="text" id="username">
-    <label for="password">password:&nbsp;</label><input type="password" id="password">
-    <br /><br />
-    <button onclick="goFcn()">Go</button>
+  <div class="container">
+    <div class="row">
+      <div class="col-sm-6 col-sm-offset-3">
+        <h1>Convert to Solution</h1>
+        <p>Create a solution item from the content of a group, or from a single item and it's dependencies.</p>
+        <div id="input" class="form-group" style="display:none">
+          <label for="itemOrGroupId">Enter an Item or Group ID:</label>
+          <input class="form-control" type="text" id="itemOrGroupId">
+          <label for="id">Or pick from the list below:</label> 
+          <select name="Solution Item" id="id" class="form-control">
+            <option value="b6413231e0a543b2953df70f68a4b578">StoryMap  ( b6413231e0a543b2953df70f68a4b578) </option>
+            <option value="5cef7eab57874d26bca907ac611e4520">ExB  ( 5cef7eab57874d26bca907ac611e4520) </option>
+          </select>
+          <br />
+          <i>Credentials in destination organization:</i><br />
+          <label for="username">username:&nbsp;</label><input type="text" class="form-control" id="username" value="">
+          <label for="password">password:&nbsp;</label><input type="password" class="form-control" id="password" value="">
+          <label for="password">Portal:</label>
+          <input type="text" id="portal" class="form-control" value="https://www.arcgis.com/sharing/rest">
+          <br>
+          <button class="btn btn-default" onclick="goFcn()">Create Solution</button>
+        </div>
+      </div>
+      <div class="col-sm-12">
+        <div id="output" style="display:none">Creating...</div>
+      </div>
+    </div>
   </div>
-  <div id="output" style="display:none">Creating...</div>
 
   <script src="https://requirejs.org/docs/release/2.3.6/minified/require.js"></script>
   <script>
@@ -69,7 +87,9 @@
         "@esri/solution-group": "node_modules/@esri/solution-group/dist/umd/group.umd",
         "@esri/solution-simple-types": "node_modules/@esri/solution-simple-types/dist/umd/simple-types.umd",
         "@esri/solution-hub-types": "node_modules/@esri/solution-hub-types/dist/umd/hub-types.umd",
-        "@esri/solution-storymap": "node_modules/@esri/solution-storymap/dist/umd/storymap.umd"
+        "@esri/solution-storymap": "node_modules/@esri/solution-storymap/dist/umd/storymap.umd",
+        "@esri/solution-form": "node_modules/@esri/solution-form/dist/umd/form.umd",
+        "@esri/solution-web-experience": "node_modules/@esri/solution-web-experience/dist/umd/web-experience.umd"
       }
     });
 
@@ -84,11 +104,15 @@
           document.getElementById("output").style.display = "block";
           var startTime = Date.now();
 
+          // use the manually entered value, but fall back to the select list
+          var id = document.getElementById("itemOrGroupId").value || document.getElementById('id').value;
+
           main.createSolution(
-            document.getElementById("id").value,
+            id,
             new auth.UserSession({
               username: document.getElementById("username").value,
-              password: document.getElementById("password").value
+              password: document.getElementById("password").value,
+              portal: document.getElementById("portal").value
             }),
             percentDone => {
               document.getElementById("output").innerHTML = "Creating..." + percentDone.toFixed().toString() + "%";

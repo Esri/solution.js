@@ -131,6 +131,7 @@ export function jsonToBlob(json: any): Blob {
  * @param blob Blob to save
  * @return Promise resolving when operation is complete
  */
+// Function is only used for live testing, so excluding it from coverage for now
 /* istanbul ignore next */
 export function saveBlobAsFile(
   filename: string,

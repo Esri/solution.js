@@ -19,13 +19,10 @@
     "@esri/arcgis-rest-request": "^2.13.1",
     "@esri/arcgis-rest-service-admin": "^2.13.1",
     "@esri/hub-common": "^4.2.0",
-    "@esri/hub-initiatives": "^4.2.0",
-    "@esri/hub-sites": "^4.2.0",
-    "@esri/solution-common": "^0.16.3",
-    "@esri/solution-feature-layer": "^0.16.3",
-    "@esri/solution-file": "^0.16.3",
-    "@esri/solution-group": "^0.16.3",
-    "@esri/solution-storymap": "^0.16.3",
+    "@esri/solution-common": "^0.16.2",
+    "@esri/solution-feature-layer": "^0.16.2",
+    "@esri/solution-file": "^0.16.2",
+    "@esri/solution-group": "^0.16.2",
     "rollup": "^1.22.0",
     "typescript": "^3.9.3"
   },
@@ -36,13 +33,10 @@
     "@esri/arcgis-rest-request": "^2.13.1",
     "@esri/arcgis-rest-service-admin": "^2.13.1",
     "@esri/hub-common": "^4.2.0",
-    "@esri/hub-initiatives": "^4.2.0",
-    "@esri/hub-sites": "^4.2.0",
     "@esri/solution-common": "^0.16.2",
     "@esri/solution-feature-layer": "^0.16.2",
     "@esri/solution-file": "^0.16.2",
-    "@esri/solution-group": "^0.16.2",
-    "@esri/solution-storymap": "^0.16.2"
+    "@esri/solution-group": "^0.16.2"
   },
   "dependencies": {
     "tslib": "^1.10.0"

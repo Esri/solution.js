@@ -1,7 +1,12 @@
 {
   "packages": [
-    "demos/*",
-    "packages/*"
+    "packages/*",
+    "demos/*"
   ],
+  "command": {
+    "bootstrap": {
+      "ignore": "demos/*"
+    }
+  },
   "version": "0.16.3"
 }

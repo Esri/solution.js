@@ -73,6 +73,8 @@ import {
   addItemResource
 } from "@esri/arcgis-rest-portal";
 import { addResourceFromBlob } from "./resources/add-resource-from-blob";
+import { convertItemResourceToStorageResource } from "./resources/convert-item-resource-to-storage-resource";
+
 import { copyResource } from "./resources/copy-resource";
 import { getBlob } from "./resources/get-blob";
 
@@ -107,39 +109,6 @@ export function addMetadataFromBlob(
   };
   return updateItem(updateOptions);
 }
-
-// export function addResourceFromBlob(
-//   blob: any,
-//   itemId: string,
-//   folder: string,
-//   filename: string,
-//   authentication: UserSession
-// ): Promise<any> {
-//   // Check that the filename has an extension because it is required by the addResources call
-//   if (filename && filename.indexOf(".") < 0) {
-//     return new Promise((resolve, reject) => {
-//       reject(
-//         new ArcGISAuthError(
-//           "Filename must have an extension indicating its type"
-//         )
-//       );
-//     });
-//   }
-
-//   const addRsrcOptions = {
-//     id: itemId,
-//     resource: blob,
-//     name: filename,
-//     authentication: authentication,
-//     params: {}
-//   };
-//   if (folder) {
-//     addRsrcOptions.params = {
-//       resourcesPrefix: folder
-//     };
-//   }
-//   return addItemResource(addRsrcOptions);
-// }
 
 export function addThumbnailFromBlob(
   blob: any,
@@ -551,7 +520,7 @@ export function generateMetadataStorageFilename(
  * @param storageResourceFilename Filename used to store the resource, metadata, or thumbnail of an item
  * @return Folder and filename for storing information in an item, as well as the type (resource, metadata,
  * or thumbnail) of the information; the folder property is only meaningful for the resource type
- * @see generateResourceStorageFilename
+ * @see convertItemResourceToStorageResource
  * @see generateMetadataStorageFilename
  * @see generateThumbnailStorageFilename
  */
@@ -594,35 +563,6 @@ export function generateResourceFilenameFromStorage(
 }
 
 /**
- * Generates a folder and filename for storing a copy of an item's resource in a storage item.
- *
- * @param itemId Id of item
- * @param sourceResourceFilename Either filename or folder/filename to resource
- * @param storageFolder An additional folder level inserted between the itemId and the sourceResourceFilename
- * @return Folder and filename for storage; folder is the itemID plus ("_" + storageFolder) if storageFolder
- * exists plus ("_" + part of sourceResourceFilename before "/" if that separator exists);
- * file is sourceResourceFilename
- * @see generateResourceFilenameFromStorage
- */
-export function generateResourceStorageFilename(
-  itemId: string,
-  sourceResourceFilename: string,
-  storageFolder = ""
-): {
-  folder: string;
-  filename: string;
-} {
-  let folder = itemId + (storageFolder ? "_" + storageFolder : "");
-  let filename = sourceResourceFilename;
-  const sourceResourceFilenameParts = sourceResourceFilename.split("/");
-  if (sourceResourceFilenameParts.length > 1) {
-    folder += "_" + sourceResourceFilenameParts[0];
-    filename = sourceResourceFilenameParts[1];
-  }
-  return { folder, filename };
-}
-
-/**
  * Generates a list of full URLs and storage folder/filename combinations for storing the resources, metadata,
  * and thumbnail of an item.
  *
@@ -647,7 +587,7 @@ export function generateSourceFilePaths(
         itemId,
         resourceFilename
       ),
-      ...generateResourceStorageFilename(itemId, resourceFilename)
+      ...convertItemResourceToStorageResource(itemId, resourceFilename)
     };
   });
 
@@ -857,7 +797,7 @@ export function storeFormItemFiles(
       const filename =
         itemTemplate.item.name || (itemData as File).name || "formData.zip";
       itemTemplate.item.name = filename;
-      const storageName = generateResourceStorageFilename(
+      const storageName = convertItemResourceToStorageResource(
         itemTemplate.itemId,
         filename,
         "info_data"
@@ -907,53 +847,6 @@ export function storeFormItemFiles(
       });
       resolve(savedResourceFilenames);
     }, reject);
-  });
-}
-
-/**
- * Updates the solution item with resources from the itemTemplate
- *
- * @param itemTemplate Template for AGOL item
- * @param solutionItemId item id for the solution
- * @param authentication Credentials for the request to the storage
- * @return A promise which resolves with an array of resources that have been added to the item
- */
-export function storeItemResources(
-  itemTemplate: IItemTemplate,
-  solutionItemId: string,
-  authentication: UserSession
-): Promise<string[]> {
-  return new Promise<string[]>((resolve, reject) => {
-    // Request item resources
-    // tslint:disable-next-line: no-floating-promises
-    getItemResources(itemTemplate.itemId, authentication).then(
-      resourcesResponse => {
-        // Save resources to solution item
-        const itemResources = (resourcesResponse.resources as any[]).map(
-          (resourceDetail: any) => resourceDetail.resource
-        );
-        const resourceItemFilePaths: ISourceFileCopyPath[] = generateSourceFilePaths(
-          authentication.portal,
-          itemTemplate.itemId,
-          itemTemplate.item.thumbnail,
-          itemResources,
-          itemTemplate.type === "Group"
-        );
-
-        // tslint:disable-next-line: no-floating-promises
-        copyFilesToStorageItem(
-          authentication,
-          resourceItemFilePaths,
-          solutionItemId,
-          authentication
-        ).then(savedResourceFilenames => {
-          const resources = (savedResourceFilenames as any[]).filter(
-            item => !!item
-          );
-          resolve(resources);
-        });
-      }
-    );
   });
 }
 
