@@ -18,9 +18,15 @@
  * Provides tests for third-party helper functions.
  */
 
-//#region uuidv4 ---------------------------------------------------------------------------------------------------- //
+import * as arcgisSanitizer from "@esri/arcgis-html-sanitizer"; // arcgis-html-sanitizer
+import * as libs from "../src/libs"; // JSZip, arcgis-html-sanitizer
+import * as uuidv4 from "../src/libs/uuidv4"; // uuidv4
+import * as xssFilterEvasionTestCases from "./XssFilterEvasionTestCases"; // arcgis-html-sanitizer
+import { getSampleMetadataAsBlob } from "../../common/test/mocks/utils";
+import { IFile } from "../src/interfaces";
+import JSZip from "../jslibs/jszip.min";
 
-import * as uuidv4 from "../src/libs/uuidv4";
+//#region uuidv4 ---------------------------------------------------------------------------------------------------- //
 
 describe("Module `uuidv4`: pseudo-GUID generator", () => {
   if (typeof window !== "undefined") {
@@ -66,13 +72,77 @@ describe("Module `uuidv4`: pseudo-GUID generator", () => {
 
 //#endregion ------------------------------------------------------------------------------------------------------------//
 
+//#region JSZip ----------------------------------------------------------------------------------------------------- //
+
+describe("Module `JSZip`: JavaScript-based zip utility", () => {
+  if (typeof window !== "undefined") {
+    describe("createZip", () => {
+      it("handles empty file list", done => {
+        libs.createZip("zipfile", []).then(
+          zipfile => {
+            expect(zipfile.name).toEqual("zipfile");
+            done();
+          },
+          done.fail
+        );
+      });
+
+      it("handles one file", done => {
+        libs.createZip("zipfile", [{
+          folder: null,
+          filename: "metadata.xml",
+          blob: getSampleMetadataAsBlob()
+        }] as IFile[]).then(
+          zipfile => {
+            expect(zipfile.name).toEqual("zipfile");
+
+            const zip = new JSZip();
+            zip.loadAsync(zipfile)
+            .then(
+              () => {
+                expect(zip.folder(/info/).length).toEqual(0);
+                expect(zip.file(/metadata/).length).toEqual(1);
+                done();
+              },
+              done.fail
+            );
+          },
+          done.fail
+        );
+      });
+
+      it("handles one file in a folder", done => {
+        libs.createZip("zipfile", [{
+          folder: "info",
+          filename: "metadata.xml",
+          blob: getSampleMetadataAsBlob()
+        }] as IFile[]).then(
+          zipfile => {
+            expect(zipfile.name).toEqual("zipfile");
+
+            const zip = new JSZip();
+            zip.loadAsync(zipfile)
+            .then(
+              () => {
+                expect(zip.folder(/info/).length).toEqual(1);
+                expect(zip.file(/metadata/).length).toEqual(1);
+                done();
+              },
+              done.fail
+            );
+          },
+          done.fail
+        );
+      });
+    });
+  }
+});
+
+//#endregion ------------------------------------------------------------------------------------------------------------//
+
 //#region arcgis-html-sanitizer ------------------------------------------------------------------------------------- //
 
-import * as arcgisSanitizer from "@esri/arcgis-html-sanitizer";
-import * as libs from "../src/libs";
-import * as xssFilterEvasionTestCases from "./XssFilterEvasionTestCases";
-
-describe("Module `arcgis-html-sanitizer`: ", () => {
+describe("Module `arcgis-html-sanitizer`: HTML sanitizing", () => {
   describe("Sanitizer", () => {
     it("sanitizes a string", () => {
       // from https://github.com/esri/arcgis-html-sanitizer
