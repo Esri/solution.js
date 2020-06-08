@@ -1,9 +1,9 @@
 {
-  "name": "@esri/solution-storymap",
+  "name": "@esri/solution-web-experience",
   "version": "0.16.3",
-  "description": "Manages the creation and deployment of Story Map item types for @esri/solution.js.",
+  "description": "Manages the creation and deployment of Web Experience item types for @esri/solution.js.",
   "main": "dist/node/index.js",
-  "unpkg": "dist/umd/storymap.umd.min.js",
+  "unpkg": "dist/umd/web-experience.umd.min.js",
   "module": "dist/esm/index.js",
   "js:next": "dist/esm/index.js",
   "types": "dist/esm/index.d.ts",
@@ -13,23 +13,25 @@
     "dist/**"
   ],
   "devDependencies": {
+    "@esri/solution-common": "^0.16.3",
+    "@esri/solution-simple-types": "^0.16.3",
     "@esri/arcgis-rest-auth": "^2.13.1",
     "@esri/arcgis-rest-portal": "^2.13.1",
     "@esri/arcgis-rest-request": "^2.13.1",
     "@esri/hub-common": "^4.2.0",
-    "@esri/solution-common": "^0.16.2",
     "rollup": "^1.22.0",
-    "typescript": "^3.9.3"
-  },
-  "peerDependencies": {
-    "@esri/arcgis-rest-auth": "^2.13.1",
-    "@esri/arcgis-rest-portal": "^2.13.1",
-    "@esri/arcgis-rest-request": "^2.13.1",
-    "@esri/hub-common": "^4.2.0",
-    "@esri/solution-common": "^0.16.2"
+    "typescript": "^3.9.2"
   },
   "dependencies": {
     "tslib": "^1.10.0"
+  },
+  "peerDependencies": {
+    "@esri/solution-common": "^0.16.3",
+    "@esri/solution-simple-types": "^0.16.3",
+    "@esri/arcgis-rest-auth": "^2.13.1",
+    "@esri/arcgis-rest-portal": "^2.13.1",
+    "@esri/arcgis-rest-request": "^2.13.1",
+    "@esri/hub-common": "^4.2.0"
   },
   "scripts": {
     "prepare": "npm run build",
@@ -50,23 +52,8 @@
   },
   "contributors": [
     {
-      "name": "Mike Tschudi",
-      "email": "mtschudi@esri.com"
-    },
-    {
-      "name": "Chris Fox",
-      "email": "cfox@esri.com"
-    },
-    {
-      "name": "John Hauck",
-      "email": "jhauck@esri.com"
-    },
-    {
       "name": "Dave Bouwman",
       "email": "dbouwman@esri.com"
-    },
-    {
-      "name": "John Gravois"
     }
   ],
   "bugs": {
@@ -81,5 +68,5 @@
     "esri",
     "ES6"
   ],
-  "gitHead": "2862c957d85fddf3eb7680a9f2b4d97884403a54"
+  "gitHead": "562d2d76710eebac4280b05c176088a639f6b377"
 }
