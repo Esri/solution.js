@@ -1,5 +1,5 @@
 /** @license
- * Copyright 2018 Esri
+ * Copyright 2020 Esri
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,13 +14,17 @@
  * limitations under the License.
  */
 
+import { IModel, getProp, maybePush } from "@esri/hub-common";
+
 /**
- * Manages the creation and deployment of Story Map item types.
- *
- * @module storymap
+ * Given an Web Experience model, extract out all the
+ * items it depends on from the `dataSources` hash
+ * @param model IModel
  */
-
-import * as StoryMapProcessor from "./storymap-processor";
-import * as ClassicStoryMapProcessor from "./classic-storymap-processor";
-
-export { StoryMapProcessor, ClassicStoryMapProcessor };
+/* istanbul ignore next */
+export function getWebExperienceDependencies(model: IModel): any[] {
+  const dataSources = getProp(model, "data.dataSources") || {};
+  return Object.keys(dataSources).reduce((acc, key) => {
+    return maybePush(getProp(dataSources, `${key}.itemId`), acc);
+  }, []);
+}

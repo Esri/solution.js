@@ -14,13 +14,6 @@
  * limitations under the License.
  */
 
-/**
- * Manages the creation and deployment of Story Map item types.
- *
- * @module storymap
- */
+import * as WebExperienceProcessor from "./web-experience-processor";
 
-import * as StoryMapProcessor from "./storymap-processor";
-import * as ClassicStoryMapProcessor from "./classic-storymap-processor";
-
-export { StoryMapProcessor, ClassicStoryMapProcessor };
+export { WebExperienceProcessor };
