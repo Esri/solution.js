@@ -57,6 +57,9 @@ import {
   UserSession
 } from "./interfaces";
 import {
+  createZip
+} from "./libs";
+import {
   addItemData as portalAddItemData,
   addItemRelationship,
   addItemResource,
@@ -69,6 +72,7 @@ import {
   IFolderIdOptions,
   IGroupSharingOptions,
   IItemResourceOptions,
+  IItemResourceResponse,
   IManageItemRelationshipOptions,
   ISearchGroupContentOptions,
   ISearchOptions,
@@ -533,30 +537,30 @@ export function createFullItem(
                     );
                   }
 
-                  // Add the resources
+                  // Add the resources via a zip because AGO sometimes loses resources if many are added at the
+                  // same time to the same item
                   if (
                     Array.isArray(resourcesFiles) &&
                     resourcesFiles.length > 0
                   ) {
-                    resourcesFiles.forEach(file => {
-                      const addResourceOptions: IItemResourceOptions = {
-                        id: createResponse.id,
-                        resource: file,
-                        name: file.name,
-                        authentication: destinationAuthentication,
-                        params: {}
-                      };
-
-                      // Check for folder in resource filename
-                      const filenameParts = file.name.split("/");
-                      if (filenameParts.length > 1) {
-                        addResourceOptions.name = filenameParts[1];
-                        addResourceOptions.params = {
-                          resourcesPrefix: filenameParts[0]
-                        };
+                    updateDefs.push(new Promise<IItemResourceResponse>(
+                      (rsrcResolve, rsrcReject) => {
+                        createZip("resources.zip", resourcesFiles).then(
+                          (zipfile: File) => {
+                            const addResourceOptions: IItemResourceOptions = {
+                              id: createResponse.id,
+                              resource: zipfile,
+                              authentication: destinationAuthentication,
+                              params: {
+                                archive: true
+                              }
+                            };
+                            addItemResource(addResourceOptions).then(rsrcResolve, rsrcReject);
+                          },
+                          rsrcReject
+                        );
                       }
-                      updateDefs.push(addItemResource(addResourceOptions));
-                    });
+                    ));
                   }
 
                   // Add the metadata section
