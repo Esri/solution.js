@@ -3,5 +3,8 @@
     "packages/*",
     "demos/*"
   ],
+  "bootstrap": {
+    "ignore": "demos/*"
+  },
   "version": "0.16.3"
 }
