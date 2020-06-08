@@ -17,7 +17,7 @@
  * Provides connectors to third-party helper functions.
  */
 
-import JSZip from "../jslibs/jszip.min";
+import * as JSZip from "jszip";
 import { IFile } from "./interfaces";
 import { blobToFile } from "./generalHelpers";
 import { Sanitizer } from "@esri/arcgis-html-sanitizer";
@@ -32,29 +32,25 @@ export { Sanitizer } from "@esri/arcgis-html-sanitizer";
  * @param files List of files to add to zip File
  * @return Promise resolving to a zip File
  */
-export function createZip(
-  zipFilename: string,
-  files: IFile[]
-): Promise<File> {
+export function createZip(zipFilename: string, files: IFile[]): Promise<File> {
   return new Promise<File>((resolve, reject) => {
     const zip = new JSZip();
-
     // Add the files
-    files.forEach(
-      file => {
-        let filename = file.filename;
-        /* istanbul ignore else */
-        if (file.folder) {
-          filename = file.folder + "/" + filename;
-        }
-        zip.file(filename, file.blob, { binary: true });
+    files.forEach(file => {
+      let filename = file.filename;
+      /* istanbul ignore else */
+      if (file.folder) {
+        filename = file.folder + "/" + filename;
       }
-    );
+      zip.file(filename, file.blob, { binary: true });
+    });
 
     // Create the ZIP
-    zip.generateAsync({ type: "blob" })
+    zip
+      .generateAsync({ type: "blob" })
       .then(
-        (content: Blob) => resolve(blobToFile(content, zipFilename, "application/zip")),
+        (content: Blob) =>
+          resolve(blobToFile(content, zipFilename, "application/zip")),
         reject
       );
   });

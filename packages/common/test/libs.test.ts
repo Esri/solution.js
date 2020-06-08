@@ -24,7 +24,7 @@ import * as uuidv4 from "../src/libs/uuidv4"; // uuidv4
 import * as xssFilterEvasionTestCases from "./XssFilterEvasionTestCases"; // arcgis-html-sanitizer
 import { getSampleMetadataAsBlob } from "../../common/test/mocks/utils";
 import { IFile } from "../src/interfaces";
-import JSZip from "../jslibs/jszip.min";
+import * as JSZip from "jszip";
 
 //#region uuidv4 ---------------------------------------------------------------------------------------------------- //
 
@@ -78,61 +78,52 @@ describe("Module `JSZip`: JavaScript-based zip utility", () => {
   if (typeof window !== "undefined") {
     describe("createZip", () => {
       it("handles empty file list", done => {
-        libs.createZip("zipfile", []).then(
-          zipfile => {
-            expect(zipfile.name).toEqual("zipfile");
-            done();
-          },
-          done.fail
-        );
+        libs.createZip("zipfile", []).then(zipfile => {
+          expect(zipfile.name).toEqual("zipfile");
+          done();
+        }, done.fail);
       });
 
       it("handles one file", done => {
-        libs.createZip("zipfile", [{
-          folder: null,
-          filename: "metadata.xml",
-          blob: getSampleMetadataAsBlob()
-        }] as IFile[]).then(
-          zipfile => {
+        libs
+          .createZip("zipfile", [
+            {
+              folder: null,
+              filename: "metadata.xml",
+              blob: getSampleMetadataAsBlob()
+            }
+          ] as IFile[])
+          .then(zipfile => {
             expect(zipfile.name).toEqual("zipfile");
 
             const zip = new JSZip();
-            zip.loadAsync(zipfile)
-            .then(
-              () => {
-                expect(zip.folder(/info/).length).toEqual(0);
-                expect(zip.file(/metadata/).length).toEqual(1);
-                done();
-              },
-              done.fail
-            );
-          },
-          done.fail
-        );
+            zip.loadAsync(zipfile).then(() => {
+              expect(zip.folder(/info/).length).toEqual(0);
+              expect(zip.file(/metadata/).length).toEqual(1);
+              done();
+            }, done.fail);
+          }, done.fail);
       });
 
       it("handles one file in a folder", done => {
-        libs.createZip("zipfile", [{
-          folder: "info",
-          filename: "metadata.xml",
-          blob: getSampleMetadataAsBlob()
-        }] as IFile[]).then(
-          zipfile => {
+        libs
+          .createZip("zipfile", [
+            {
+              folder: "info",
+              filename: "metadata.xml",
+              blob: getSampleMetadataAsBlob()
+            }
+          ] as IFile[])
+          .then(zipfile => {
             expect(zipfile.name).toEqual("zipfile");
 
             const zip = new JSZip();
-            zip.loadAsync(zipfile)
-            .then(
-              () => {
-                expect(zip.folder(/info/).length).toEqual(1);
-                expect(zip.file(/metadata/).length).toEqual(1);
-                done();
-              },
-              done.fail
-            );
-          },
-          done.fail
-        );
+            zip.loadAsync(zipfile).then(() => {
+              expect(zip.folder(/info/).length).toEqual(1);
+              expect(zip.file(/metadata/).length).toEqual(1);
+              done();
+            }, done.fail);
+          }, done.fail);
       });
     });
   }

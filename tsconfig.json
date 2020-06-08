@@ -66,5 +66,8 @@
     "./node_modules/@types",
     "packages",
     "support"
-  ]
+  ],
+  "paths": {
+    "jszip": ["node_modules/jszip/dist/jszip.min.js"]
+  }
 }
