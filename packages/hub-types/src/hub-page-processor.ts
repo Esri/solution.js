@@ -32,13 +32,17 @@ import {
   IModel,
   cloneObject,
   IModelTemplate,
-  failSafe
+  failSafe,
+  getModel
 } from "@esri/hub-common";
 import {
   createPageModelFromTemplate,
   createPage,
   removePage
 } from "@esri/hub-sites";
+
+import { _postProcessPage } from "./helpers/_post-process-page";
+
 import { moveModelToFolder } from "./helpers/move-model-to-folder";
 /* istanbul ignore next */
 export function convertItemToTemplate(
@@ -165,7 +169,7 @@ export function createItemFromTemplate(
         return {
           id: pageModel.item.id,
           type: template.type,
-          postProcess: false
+          postProcess: true
         };
       }
     })
@@ -175,18 +179,33 @@ export function createItemFromTemplate(
     });
 }
 
-/* istanbul ignore next */
+/**
+ * Post-Process a Page
+ * Re-interpolate the page item + data w/ the full template dictionary hash
+ * @param id
+ * @param type
+ * @param itemInfos
+ * @param template
+ * @param templates
+ * @param templateDictionary
+ * @param authentication
+ */
 export function postProcess(
   id: string,
   type: string,
   itemInfos: any[],
-  template: IItemTemplate,
+  template: any,
   templates: IItemTemplate[],
   templateDictionary: any,
   authentication: UserSession
 ): Promise<boolean> {
-  // Hub Page does not need to do anything in the post-processing
-  return Promise.resolve(true);
+  // create the requestOptions
+  const hubRo = createHubRequestOptions(authentication, templateDictionary);
+  // get the item data then delegate
+  // get the site model
+  return getModel(id, hubRo).then(pageModel => {
+    return _postProcessPage(pageModel, itemInfos, templateDictionary, hubRo);
+  });
 }
 
 /**
@@ -195,7 +214,6 @@ export function postProcess(
  * Site Page is for ArcGIS Enterprise
  * @param itemType
  */
-/* istanbul ignore next */
 export function isAPage(itemType: string): boolean {
   let result = false;
 
