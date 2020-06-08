@@ -4,7 +4,8 @@ import {
   getUniqueTitle,
   getItemThumbnail,
   blobToFile,
-  ISurvey123CreateParams
+  ISurvey123CreateParams,
+  getPortalDefaultBasemap
 } from "@esri/solution-common";
 import { encodeSurveyForm } from "./encode-survey-form";
 
@@ -32,15 +33,26 @@ export function buildCreateParams(
   } = template;
   const {
     user: { username },
-    portalBaseUrl: portalUrl
+    portalBaseUrl: portalUrl,
+    organization: {
+      basemapGalleryGroupQuery,
+      defaultBasemap: { title: basemapTitle }
+    }
   } = templateDictionary;
   const { token } = destinationAuthentication.toCredential();
-  return getItemThumbnail(
-    template.itemId,
-    template.item.thumbnail,
-    false,
-    destinationAuthentication
-  ).then(blob => {
+  return Promise.all([
+    getItemThumbnail(
+      template.itemId,
+      template.item.thumbnail,
+      false,
+      destinationAuthentication
+    ),
+    getPortalDefaultBasemap(
+      basemapGalleryGroupQuery,
+      basemapTitle,
+      destinationAuthentication
+    )
+  ]).then(([blob, defaultBasemap]) => {
     // The S123 API appends "Survey-" to the survey title when computing
     // the folder name. We need to use the same prefix to successfully
     // calculate a unique folder name. Afterwards, we can safely remove the
@@ -58,7 +70,7 @@ export function buildCreateParams(
         if (question.maps) {
           question.maps = question.maps.map((map: any) => ({
             ...map,
-            itemId: templateDictionary.organization.defaultBasemap.id
+            itemId: defaultBasemap.id
           }));
         }
         return question;

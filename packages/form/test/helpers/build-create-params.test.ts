@@ -35,15 +35,15 @@ describe("buildCreateParams", () => {
     let template: common.IItemTemplate;
     let thumbnailBlob: Blob;
     let thumbnailFile: File;
+    let defaultBasemap: common.IItem;
 
     beforeEach(() => {
       templateDictionary = {
         portalBaseUrl: utils.PORTAL_SUBSET.portalUrl,
         user: items.getAGOLUser("myUser"),
         organization: {
-          defaultBasemap: {
-            id: "cac1d78bd0674d8e967bf389c0070a02"
-          }
+          basemapGalleryGroupQuery: `title:"United States Basemaps" AND owner:Esri_cy_US`,
+          defaultBasemap: { title: "Topographic" }
         }
       };
 
@@ -123,6 +123,9 @@ describe("buildCreateParams", () => {
       };
       thumbnailBlob = utils.getSampleImage();
       thumbnailFile = new File([thumbnailBlob], "thumbnail.png");
+      defaultBasemap = {
+        id: "cac1d78bd0674d8e967bf389c0070a02"
+      } as common.IItem;
     });
 
     it("should resolve a ISurvey123CreateParams", done => {
@@ -135,7 +138,7 @@ describe("buildCreateParams", () => {
         "getItemThumbnail"
       ).and.resolveTo(thumbnailBlob);
       const getUniqueTitleSpy = spyOn(common, "getUniqueTitle").and.returnValue(
-        ""
+        "Survey-" + template.item.title
       );
       const blobToFileSpy = spyOn(common, "blobToFile").and.returnValue(
         thumbnailFile
@@ -144,17 +147,26 @@ describe("buildCreateParams", () => {
         surveyEncodingUtils,
         "encodeSurveyForm"
       ).and.returnValue(encodedForm);
+      const getPortalDefaultBasemapSpy = spyOn(
+        common,
+        "getPortalDefaultBasemap"
+      ).and.resolveTo(defaultBasemap);
       return buildCreateParams(template, templateDictionary, MOCK_USER_SESSION)
         .then(results => {
           const expectedUnencodedForm = common.cloneObject(unencodedForm);
-          expectedUnencodedForm.questions[0].maps[0].itemId =
-            templateDictionary.organization.defaultBasemap.id;
+          expectedUnencodedForm.questions[0].maps[0].itemId = defaultBasemap.id;
           expect(toCredentialSpy.calls.count()).toEqual(1);
           expect(getItemThumbnailSpy.calls.count()).toEqual(1);
           expect(getItemThumbnailSpy.calls.first().args).toEqual([
             "frm1234567890",
             "thumbnail/ago_downloaded.png",
             false,
+            MOCK_USER_SESSION
+          ]);
+          expect(getPortalDefaultBasemapSpy.calls.count()).toEqual(1);
+          expect(getPortalDefaultBasemapSpy.calls.first().args).toEqual([
+            templateDictionary.organization.basemapGalleryGroupQuery,
+            templateDictionary.organization.defaultBasemap.title,
             MOCK_USER_SESSION
           ]);
           expect(getUniqueTitleSpy.calls.count()).toEqual(1);
@@ -178,72 +190,7 @@ describe("buildCreateParams", () => {
             portalUrl: "https://myorg.maps.arcgis.com",
             tags: ["test"],
             thumbnailFile,
-            title: "",
-            token: "my-token",
-            typeKeywords: ["JavaScript"],
-            username: "myUser"
-          });
-          done();
-        })
-        .catch(e => {
-          done.fail(e);
-        });
-    });
-
-    it("should resolve a ISurvey123CreateParams", done => {
-      const toCredentialSpy = spyOn(
-        MOCK_USER_SESSION,
-        "toCredential"
-      ).and.returnValue(credential);
-      const getItemThumbnailSpy = spyOn(
-        common,
-        "getItemThumbnail"
-      ).and.resolveTo(thumbnailBlob);
-      const getUniqueTitleSpy = spyOn(common, "getUniqueTitle").and.returnValue(
-        ""
-      );
-      const blobToFileSpy = spyOn(common, "blobToFile").and.returnValue(
-        thumbnailFile
-      );
-      const encodeSurveyFormSpy = spyOn(
-        surveyEncodingUtils,
-        "encodeSurveyForm"
-      ).and.returnValue(encodedForm);
-      return buildCreateParams(template, templateDictionary, MOCK_USER_SESSION)
-        .then(results => {
-          const expectedUnencodedForm = common.cloneObject(unencodedForm);
-          expectedUnencodedForm.questions[0].maps[0].itemId =
-            templateDictionary.organization.defaultBasemap.id;
-          expect(toCredentialSpy.calls.count()).toEqual(1);
-          expect(getItemThumbnailSpy.calls.count()).toEqual(1);
-          expect(getItemThumbnailSpy.calls.first().args).toEqual([
-            "frm1234567890",
-            "thumbnail/ago_downloaded.png",
-            false,
-            MOCK_USER_SESSION
-          ]);
-          expect(getUniqueTitleSpy.calls.count()).toEqual(1);
-          expect(getUniqueTitleSpy.calls.first().args).toEqual([
-            "Survey-An AGOL item",
-            templateDictionary,
-            "user.folders"
-          ]);
-          expect(blobToFileSpy.calls.count()).toEqual(1);
-          expect(blobToFileSpy.calls.first().args).toEqual([
-            thumbnailBlob,
-            "thumbnail/ago_downloaded.png"
-          ]);
-          expect(encodeSurveyFormSpy.calls.count()).toEqual(1);
-          expect(encodeSurveyFormSpy.calls.first().args).toEqual([
-            expectedUnencodedForm
-          ]);
-          expect(results).toEqual({
-            description: "Description of an AGOL item",
-            form: encodedForm,
-            portalUrl: "https://myorg.maps.arcgis.com",
-            tags: ["test"],
-            thumbnailFile,
-            title: "",
+            title: "An AGOL item",
             token: "my-token",
             typeKeywords: ["JavaScript"],
             username: "myUser"
@@ -266,7 +213,7 @@ describe("buildCreateParams", () => {
         "getItemThumbnail"
       ).and.resolveTo(thumbnailBlob);
       const getUniqueTitleSpy = spyOn(common, "getUniqueTitle").and.returnValue(
-        ""
+        "Survey-" + template.item.title
       );
       const blobToFileSpy = spyOn(common, "blobToFile").and.returnValue(
         thumbnailFile
@@ -275,6 +222,10 @@ describe("buildCreateParams", () => {
         surveyEncodingUtils,
         "encodeSurveyForm"
       ).and.returnValue(encodedForm);
+      const getPortalDefaultBasemapSpy = spyOn(
+        common,
+        "getPortalDefaultBasemap"
+      ).and.resolveTo(defaultBasemap);
       return buildCreateParams(template, templateDictionary, MOCK_USER_SESSION)
         .then(results => {
           const expectedUnencodedForm = common.cloneObject(unencodedForm);
@@ -285,6 +236,12 @@ describe("buildCreateParams", () => {
             "frm1234567890",
             "thumbnail/ago_downloaded.png",
             false,
+            MOCK_USER_SESSION
+          ]);
+          expect(getPortalDefaultBasemapSpy.calls.count()).toEqual(1);
+          expect(getPortalDefaultBasemapSpy.calls.first().args).toEqual([
+            templateDictionary.organization.basemapGalleryGroupQuery,
+            templateDictionary.organization.defaultBasemap.title,
             MOCK_USER_SESSION
           ]);
           expect(getUniqueTitleSpy.calls.count()).toEqual(1);
@@ -308,7 +265,7 @@ describe("buildCreateParams", () => {
             portalUrl: "https://myorg.maps.arcgis.com",
             tags: ["test"],
             thumbnailFile,
-            title: "",
+            title: "An AGOL item",
             token: "my-token",
             typeKeywords: ["JavaScript"],
             username: "myUser"
@@ -331,7 +288,7 @@ describe("buildCreateParams", () => {
         "getItemThumbnail"
       ).and.resolveTo(thumbnailBlob);
       const getUniqueTitleSpy = spyOn(common, "getUniqueTitle").and.returnValue(
-        ""
+        "Survey-" + template.item.title
       );
       const blobToFileSpy = spyOn(common, "blobToFile").and.returnValue(
         thumbnailFile
@@ -340,6 +297,10 @@ describe("buildCreateParams", () => {
         surveyEncodingUtils,
         "encodeSurveyForm"
       ).and.returnValue(encodedForm);
+      const getPortalDefaultBasemapSpy = spyOn(
+        common,
+        "getPortalDefaultBasemap"
+      ).and.resolveTo(defaultBasemap);
       return buildCreateParams(template, templateDictionary, MOCK_USER_SESSION)
         .then(results => {
           const expectedUnencodedForm = common.cloneObject(unencodedForm);
@@ -350,6 +311,12 @@ describe("buildCreateParams", () => {
             "frm1234567890",
             "thumbnail/ago_downloaded.png",
             false,
+            MOCK_USER_SESSION
+          ]);
+          expect(getPortalDefaultBasemapSpy.calls.count()).toEqual(1);
+          expect(getPortalDefaultBasemapSpy.calls.first().args).toEqual([
+            templateDictionary.organization.basemapGalleryGroupQuery,
+            templateDictionary.organization.defaultBasemap.title,
             MOCK_USER_SESSION
           ]);
           expect(getUniqueTitleSpy.calls.count()).toEqual(1);
@@ -373,7 +340,7 @@ describe("buildCreateParams", () => {
             portalUrl: "https://myorg.maps.arcgis.com",
             tags: ["test"],
             thumbnailFile,
-            title: "",
+            title: "An AGOL item",
             token: "my-token",
             typeKeywords: ["JavaScript"],
             username: "myUser"

@@ -66,29 +66,7 @@ export function getPortal(
   const requestOptions = {
     authentication: authentication
   };
-  return portalGetPortal(id, requestOptions).then(portalResponse => {
-    const {
-      basemapGalleryGroupQuery,
-      defaultBasemap: { title: basemapTitle }
-    } = portalResponse;
-    return searchGroups(basemapGalleryGroupQuery, authentication).then(
-      ({ results: [{ id: basemapGroupId }] }) => {
-        return searchGroupContents(
-          basemapGroupId,
-          `title:${basemapTitle}`,
-          authentication
-        ).then(({ results: [{ id: basemapId }] }) => {
-          return {
-            ...portalResponse,
-            defaultBasemap: {
-              ...portalResponse.defaultBasemap,
-              id: basemapId
-            }
-          };
-        });
-      }
-    );
-  });
+  return portalGetPortal(id, requestOptions);
 }
 
 export function getUser(authentication: UserSession): Promise<IUser> {
@@ -892,4 +870,36 @@ export function _getItemResourcesTranche(
       }
     }, reject);
   });
+}
+
+/**
+ * Retrieves the default basemap for the given & basemapGalleryGroupQuery, basemapTitle
+ * @param {string} basemapGalleryGroupQuery The default basemap group query
+ * @param {string} basemapTitle The default basemap title
+ * @param {UserSession} authentication The session info
+ * @returns {IItem}
+ */
+export function getPortalDefaultBasemap(
+  basemapGalleryGroupQuery: string,
+  basemapTitle: string,
+  authentication: UserSession
+) {
+  return searchGroups(basemapGalleryGroupQuery, authentication, { num: 1 })
+    .then(({ results: [basemapGroup] }) => {
+      if (!basemapGroup) {
+        throw new Error("No basemap group found");
+      }
+      return searchGroupContents(
+        basemapGroup.id,
+        `title:${basemapTitle}`,
+        authentication,
+        { num: 1 }
+      );
+    })
+    .then(({ results: [defaultBasemap] }) => {
+      if (!defaultBasemap) {
+        throw new Error("No basemap found");
+      }
+      return defaultBasemap;
+    });
 }
