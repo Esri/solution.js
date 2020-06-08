@@ -110,39 +110,6 @@ export function addMetadataFromBlob(
   return updateItem(updateOptions);
 }
 
-// export function addResourceFromBlob(
-//   blob: any,
-//   itemId: string,
-//   folder: string,
-//   filename: string,
-//   authentication: UserSession
-// ): Promise<any> {
-//   // Check that the filename has an extension because it is required by the addResources call
-//   if (filename && filename.indexOf(".") < 0) {
-//     return new Promise((resolve, reject) => {
-//       reject(
-//         new ArcGISAuthError(
-//           "Filename must have an extension indicating its type"
-//         )
-//       );
-//     });
-//   }
-
-//   const addRsrcOptions = {
-//     id: itemId,
-//     resource: blob,
-//     name: filename,
-//     authentication: authentication,
-//     params: {}
-//   };
-//   if (folder) {
-//     addRsrcOptions.params = {
-//       resourcesPrefix: folder
-//     };
-//   }
-//   return addItemResource(addRsrcOptions);
-// }
-
 export function addThumbnailFromBlob(
   blob: any,
   itemId: string,
@@ -594,35 +561,6 @@ export function generateResourceFilenameFromStorage(
 
   return { type, folder, filename };
 }
-
-// /**
-//  * Generates a folder and filename for storing a copy of an item's resource in a storage item.
-//  *
-//  * @param itemId Id of item
-//  * @param sourceResourceFilename Either filename or folder/filename to resource
-//  * @param storageFolder An additional folder level inserted between the itemId and the sourceResourceFilename
-//  * @return Folder and filename for storage; folder is the itemID plus ("_" + storageFolder) if storageFolder
-//  * exists plus ("_" + part of sourceResourceFilename before "/" if that separator exists);
-//  * file is sourceResourceFilename
-//  * @see generateResourceFilenameFromStorage
-//  */
-// export function convertItemResourceToStorageResource(
-//   itemId: string,
-//   sourceResourceFilename: string,
-//   storageFolder = ""
-// ): {
-//   folder: string;
-//   filename: string;
-// } {
-//   let folder = itemId + (storageFolder ? "_" + storageFolder : "");
-//   let filename = sourceResourceFilename;
-//   const sourceResourceFilenameParts = sourceResourceFilename.split("/");
-//   if (sourceResourceFilenameParts.length > 1) {
-//     folder += "_" + sourceResourceFilenameParts[0];
-//     filename = sourceResourceFilenameParts[1];
-//   }
-//   return { folder, filename };
-// }
 
 /**
  * Generates a list of full URLs and storage folder/filename combinations for storing the resources, metadata,
