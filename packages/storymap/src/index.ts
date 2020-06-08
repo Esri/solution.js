@@ -20,4 +20,7 @@
  * @module storymap
  */
 
-export * from "./storymap";
+import * as StoryMapProcessor from "./storymap-processor";
+import * as ClassicStoryMapProcessor from "./classic-storymap-processor";
+
+export { StoryMapProcessor, ClassicStoryMapProcessor };

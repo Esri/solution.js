@@ -1,14 +1,14 @@
 {
-  "version": "0.16.2",
+  "version": "0.16.4",
   "packages": {
-    "@esri/solution-common": "sha384-r3BavIQib/8/ef5Z2juk2mvQfsdFUXFFHjXT10AU+0SjuXFKsIn5PyTCBAnJ0DVR",
-    "@esri/solution-creator": "sha384-O1khj/x9cmhksX+vrfHBRJTpBm6ISbB0OULv6NGFZIkAag9EeF2N+i8/jtL1ho/2",
-    "@esri/solution-deployer": "sha384-HC11EkN2jr2zNNCye/GnAD1vsX0lgS/8vCxuOtwn7/EZg9vkbJWF33PyZI/yca56",
-    "@esri/solution-feature-layer": "sha384-Og4RBmBhRcfkl+nUHc5a+hb8BRBq+HNt7wbZKzRTy8QE0pI68fpU41IJkQjGp3Dl",
-    "@esri/solution-file": "sha384-6UTgvporw2UmbRzJ5V7sD3iRd1kQIYkb5hRC8Qnk8fzheZRk7ROhRhGrVOKxxMtq",
-    "@esri/solution-group": "sha384-zA8m/kwKPjrZCQberqL7Z071SGcTFuSWbxwE+EQEVNrFZpBt+PsYQScefCM+CMlj",
-    "@esri/solution-simple-types": "sha384-8zLsPqjVWs4lnFPBlPJGupHiVIQ59W6kMRaKAZdYGHcgg+jZeHtHCUD454+TkeF6",
-    "@esri/solution-storymap": "sha384-vm4xUDpmlzoeP4EMPQPWNwUWB5ypxDXF3jrGoqAjhiOHQWuhp0CDbR9m491MvuDN",
-    "@esri/solution-viewer": "sha384-MyWAwbDrgtX5/kybnDFAbyni093I2YqipgGnB5FwPhYTrOyF5xgSKyHBnuIDDEFn"
+    "@esri/solution-common": "sha384-oxCIVL7ohT8nEBS8/3e2djlTWpkhUiaLtie9ZfBrTjMJOcCrBEUSUWgWGwX529PU",
+    "@esri/solution-creator": "sha384-gTZFCMZGm7iRZckHAEbJy1FTcnG0OlNP6FUKOGAiyuy65EmM9RX0L/PWCpG2PjOi",
+    "@esri/solution-deployer": "sha384-0yuH2qyOoIMFJPNeYuKqe2yLfolla5UaNeQuOdDjBWERFacciVPpua+LjUJNZPdk",
+    "@esri/solution-feature-layer": "sha384-sklJHlj4jAAgDQA3669y/3rLeZFxvUep1syIxktkDvxakF/SleuuKKzdaYMgGkfJ",
+    "@esri/solution-file": "sha384-NrV1DyxrUxfhjkXGDqGALaSzy8suB3HlDHIiMA8f9WYAIzVQabb8k4K6x7gPKK1i",
+    "@esri/solution-group": "sha384-YoHFKuYWbVWDpNqfuLH1ifVOeTkvDiEmt26Tp6IbZFQBqkJP05rg2xw+5457/0yo",
+    "@esri/solution-simple-types": "sha384-bikVu4KbAjYqsxqzJwXjC5/cQPsYNvBOmzvERL/LDBiKxW48b6DQpF33NUknsSVb",
+    "@esri/solution-storymap": "sha384-FoSJXBUOM5EUg/0jLrmSuh8g1rpcJsfUxkwEz3A4eYV72E1v+wDZ0tgqWHDZsd1Y",
+    "@esri/solution-viewer": "sha384-4vW57VsaSz1bDVXfW162uLf1Me4eeQe2i+A21mpcIljIPCK0FdeYoUCdbqzIlfRM"
   }
 }

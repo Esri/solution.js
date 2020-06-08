@@ -1213,37 +1213,37 @@ describe("Module `resourceHelpers`: common functions involving the management of
     });
   });
 
-  describe("generateResourceStorageFilename", () => {
-    it("top-level", () => {
-      const itemId = "8f7ec78195d0479784036387d522e29f";
-      const sourceResourceFilename = "gtnp2.jpg";
-      const expected = {
-        folder: "8f7ec78195d0479784036387d522e29f",
-        filename: "gtnp2.jpg"
-      };
+  // describe("generateResourceStorageFilename", () => {
+  //   it("top-level", () => {
+  //     const itemId = "8f7ec78195d0479784036387d522e29f";
+  //     const sourceResourceFilename = "gtnp2.jpg";
+  //     const expected = {
+  //       folder: "8f7ec78195d0479784036387d522e29f",
+  //       filename: "gtnp2.jpg"
+  //     };
 
-      const actual = resourceHelpers.generateResourceStorageFilename(
-        itemId,
-        sourceResourceFilename
-      );
-      expect(actual).toEqual(expected);
-    });
+  //     const actual = resourceHelpers.generateResourceStorageFilename(
+  //       itemId,
+  //       sourceResourceFilename
+  //     );
+  //     expect(actual).toEqual(expected);
+  //   });
 
-    it("in folder", () => {
-      const itemId = "8f7ec78195d0479784036387d522e29f";
-      const sourceResourceFilename = "aFolder/git_merge.png";
-      const expected = {
-        folder: "8f7ec78195d0479784036387d522e29f_aFolder",
-        filename: "git_merge.png"
-      };
+  //   it("in folder", () => {
+  //     const itemId = "8f7ec78195d0479784036387d522e29f";
+  //     const sourceResourceFilename = "aFolder/git_merge.png";
+  //     const expected = {
+  //       folder: "8f7ec78195d0479784036387d522e29f_aFolder",
+  //       filename: "git_merge.png"
+  //     };
 
-      const actual = resourceHelpers.generateResourceStorageFilename(
-        itemId,
-        sourceResourceFilename
-      );
-      expect(actual).toEqual(expected);
-    });
-  });
+  //     const actual = resourceHelpers.generateResourceStorageFilename(
+  //       itemId,
+  //       sourceResourceFilename
+  //     );
+  //     expect(actual).toEqual(expected);
+  //   });
+  // });
 
   describe("generateSourceFilePaths", () => {
     it("without resources", () => {
@@ -1714,345 +1714,345 @@ describe("Module `resourceHelpers`: common functions involving the management of
     });
   });
 
-  if (typeof window !== "undefined") {
-    describe("storeItemResources", () => {
-      it("can update item resources for quick capture project", done => {
-        const itemTemplate: interfaces.IItemTemplate = templates.getItemTemplateSkeleton();
-        itemTemplate.item = mockItems.getAGOLItem("QuickCapture Project", null);
-        itemTemplate.itemId = itemTemplate.item.id;
-        const solutionItemId = "ee67658b2a98450cba051fd001463df0";
+  // if (typeof window !== "undefined") {
+  //   describe("storeItemResources", () => {
+  //     it("can update item resources for quick capture project", done => {
+  //       const itemTemplate: interfaces.IItemTemplate = templates.getItemTemplateSkeleton();
+  //       itemTemplate.item = mockItems.getAGOLItem("QuickCapture Project", null);
+  //       itemTemplate.itemId = itemTemplate.item.id;
+  //       const solutionItemId = "ee67658b2a98450cba051fd001463df0";
 
-        const resources: any = {
-          total: 1,
-          start: 1,
-          num: 1,
-          nextStart: -1,
-          resources: [
-            {
-              resource: "qc.project.json",
-              created: 1579127879000,
-              size: 29882,
-              access: "inherit",
-              type: "application/json"
-            }
-          ]
-        };
+  //       const resources: any = {
+  //         total: 1,
+  //         start: 1,
+  //         num: 1,
+  //         nextStart: -1,
+  //         resources: [
+  //           {
+  //             resource: "qc.project.json",
+  //             created: 1579127879000,
+  //             size: 29882,
+  //             access: "inherit",
+  //             type: "application/json"
+  //           }
+  //         ]
+  //       };
 
-        fetchMock
-          .post(
-            utils.PORTAL_SUBSET.restUrl +
-              "/content/items/qck1234567890/resources",
-            resources
-          )
-          .post(
-            utils.PORTAL_SUBSET.restUrl +
-              "/content/items/qck1234567890/info/metadata/metadata.xml",
-            mockItems.get500Failure()
-          )
-          .post(
-            utils.PORTAL_SUBSET.restUrl +
-              "/content/items/qck1234567890/info/thumbnail/ago_downloaded.png?w=400",
-            utils.getSampleImage(),
-            { sendAsJson: false }
-          )
-          .post(
-            utils.PORTAL_SUBSET.restUrl +
-              "/content/items/qck1234567890/resources/qc.project.json",
-            {}
-          )
-          .post(
-            utils.PORTAL_SUBSET.restUrl +
-              "/content/users/casey/items/ee67658b2a98450cba051fd001463df0/addResources",
-            utils.getSuccessResponse()
-          );
+  //       fetchMock
+  //         .post(
+  //           utils.PORTAL_SUBSET.restUrl +
+  //             "/content/items/qck1234567890/resources",
+  //           resources
+  //         )
+  //         .post(
+  //           utils.PORTAL_SUBSET.restUrl +
+  //             "/content/items/qck1234567890/info/metadata/metadata.xml",
+  //           mockItems.get500Failure()
+  //         )
+  //         .post(
+  //           utils.PORTAL_SUBSET.restUrl +
+  //             "/content/items/qck1234567890/info/thumbnail/ago_downloaded.png?w=400",
+  //           utils.getSampleImage(),
+  //           { sendAsJson: false }
+  //         )
+  //         .post(
+  //           utils.PORTAL_SUBSET.restUrl +
+  //             "/content/items/qck1234567890/resources/qc.project.json",
+  //           {}
+  //         )
+  //         .post(
+  //           utils.PORTAL_SUBSET.restUrl +
+  //             "/content/users/casey/items/ee67658b2a98450cba051fd001463df0/addResources",
+  //           utils.getSuccessResponse()
+  //         );
 
-        const expected: string[] = [
-          "qck1234567890/qc.project.json",
-          "qck1234567890_info_thumbnail/ago_downloaded.png"
-        ];
+  //       const expected: string[] = [
+  //         "qck1234567890/qc.project.json",
+  //         "qck1234567890_info_thumbnail/ago_downloaded.png"
+  //       ];
 
-        resourceHelpers
-          .storeItemResources(itemTemplate, solutionItemId, MOCK_USER_SESSION)
-          .then(actual => {
-            expect(actual).toEqual(expected);
-            done();
-          }, done.fail);
-      });
+  //       resourceHelpers
+  //         .storeItemResources(itemTemplate, solutionItemId, MOCK_USER_SESSION)
+  //         .then(actual => {
+  //           expect(actual).toEqual(expected);
+  //           done();
+  //         }, done.fail);
+  //     });
 
-      it("can update item resources for web map", done => {
-        const itemTemplate: interfaces.IItemTemplate = templates.getItemTemplateSkeleton();
-        itemTemplate.item = mockItems.getAGOLItem("Web Map", null);
-        itemTemplate.itemId = itemTemplate.item.id;
-        itemTemplate.item.thumbnail = "thumbnail/banner.png";
-        const solutionItemId = "ee67658b2a98450cba051fd001463df0";
+  //     it("can update item resources for web map", done => {
+  //       const itemTemplate: interfaces.IItemTemplate = templates.getItemTemplateSkeleton();
+  //       itemTemplate.item = mockItems.getAGOLItem("Web Map", null);
+  //       itemTemplate.itemId = itemTemplate.item.id;
+  //       itemTemplate.item.thumbnail = "thumbnail/banner.png";
+  //       const solutionItemId = "ee67658b2a98450cba051fd001463df0";
 
-        const expectedFetch = mockItems.getAnImageResponse();
+  //       const expectedFetch = mockItems.getAnImageResponse();
 
-        const resources: any = {
-          total: 1,
-          start: 1,
-          num: 1,
-          nextStart: -1,
-          resources: [
-            {
-              resource: "image/banner.png",
-              created: 1522711362000,
-              size: 56945
-            }
-          ]
-        };
+  //       const resources: any = {
+  //         total: 1,
+  //         start: 1,
+  //         num: 1,
+  //         nextStart: -1,
+  //         resources: [
+  //           {
+  //             resource: "image/banner.png",
+  //             created: 1522711362000,
+  //             size: 56945
+  //           }
+  //         ]
+  //       };
 
-        fetchMock
-          .post(
-            utils.PORTAL_SUBSET.restUrl +
-              "/content/items/" +
-              itemTemplate.itemId +
-              "/resources",
-            resources
-          )
-          .post(
-            utils.PORTAL_SUBSET.restUrl +
-              "/content/items/" +
-              itemTemplate.itemId +
-              "/resources/image/banner.png",
-            expectedFetch,
-            { sendAsJson: false }
-          )
-          .post(
-            utils.PORTAL_SUBSET.restUrl +
-              "/content/users/" +
-              MOCK_USER_SESSION.username +
-              "/items/" +
-              solutionItemId +
-              "/addResources",
-            {
-              success: true,
-              itemId: solutionItemId,
-              owner: MOCK_USER_SESSION.username,
-              folder: null
-            }
-          )
-          .post(
-            utils.PORTAL_SUBSET.restUrl +
-              "/content/items/" +
-              itemTemplate.itemId +
-              "/info/thumbnail/banner.png?w=400",
-            expectedFetch,
-            { sendAsJson: false }
-          )
-          .post(
-            utils.PORTAL_SUBSET.restUrl +
-              "/content/items/" +
-              itemTemplate.itemId +
-              "/data",
-            mockItems.get500Failure()
-          )
-          .post(
-            utils.PORTAL_SUBSET.restUrl +
-              "/content/items/" +
-              itemTemplate.itemId +
-              "/info/metadata/metadata.xml",
-            mockItems.get400Failure()
-          );
-        staticRelatedItemsMocks.fetchMockRelatedItems("map1234567890", {
-          total: 0,
-          relatedItems: []
-        });
+  //       fetchMock
+  //         .post(
+  //           utils.PORTAL_SUBSET.restUrl +
+  //             "/content/items/" +
+  //             itemTemplate.itemId +
+  //             "/resources",
+  //           resources
+  //         )
+  //         .post(
+  //           utils.PORTAL_SUBSET.restUrl +
+  //             "/content/items/" +
+  //             itemTemplate.itemId +
+  //             "/resources/image/banner.png",
+  //           expectedFetch,
+  //           { sendAsJson: false }
+  //         )
+  //         .post(
+  //           utils.PORTAL_SUBSET.restUrl +
+  //             "/content/users/" +
+  //             MOCK_USER_SESSION.username +
+  //             "/items/" +
+  //             solutionItemId +
+  //             "/addResources",
+  //           {
+  //             success: true,
+  //             itemId: solutionItemId,
+  //             owner: MOCK_USER_SESSION.username,
+  //             folder: null
+  //           }
+  //         )
+  //         .post(
+  //           utils.PORTAL_SUBSET.restUrl +
+  //             "/content/items/" +
+  //             itemTemplate.itemId +
+  //             "/info/thumbnail/banner.png?w=400",
+  //           expectedFetch,
+  //           { sendAsJson: false }
+  //         )
+  //         .post(
+  //           utils.PORTAL_SUBSET.restUrl +
+  //             "/content/items/" +
+  //             itemTemplate.itemId +
+  //             "/data",
+  //           mockItems.get500Failure()
+  //         )
+  //         .post(
+  //           utils.PORTAL_SUBSET.restUrl +
+  //             "/content/items/" +
+  //             itemTemplate.itemId +
+  //             "/info/metadata/metadata.xml",
+  //           mockItems.get400Failure()
+  //         );
+  //       staticRelatedItemsMocks.fetchMockRelatedItems("map1234567890", {
+  //         total: 0,
+  //         relatedItems: []
+  //       });
 
-        const expected: string[] = [
-          "map1234567890_image/banner.png",
-          "map1234567890_info_thumbnail/banner.png"
-        ];
+  //       const expected: string[] = [
+  //         "map1234567890_image/banner.png",
+  //         "map1234567890_info_thumbnail/banner.png"
+  //       ];
 
-        resourceHelpers
-          .storeItemResources(itemTemplate, solutionItemId, MOCK_USER_SESSION)
-          .then(actual => {
-            expect(actual).toEqual(expected);
-            done();
-          }, done.fail);
-      });
+  //       resourceHelpers
+  //         .storeItemResources(itemTemplate, solutionItemId, MOCK_USER_SESSION)
+  //         .then(actual => {
+  //           expect(actual).toEqual(expected);
+  //           done();
+  //         }, done.fail);
+  //     });
 
-      it("can store item resources for a form", done => {
-        const itemTemplate: interfaces.IItemTemplate = templates.getItemTemplate(
-          "Form"
-        );
-        itemTemplate.item.thumbnail = "thumbnail/banner.png";
-        const solutionItemId = "ee67658b2a98450cba051fd001463df0";
+  //     it("can store item resources for a form", done => {
+  //       const itemTemplate: interfaces.IItemTemplate = templates.getItemTemplate(
+  //         "Form"
+  //       );
+  //       itemTemplate.item.thumbnail = "thumbnail/banner.png";
+  //       const solutionItemId = "ee67658b2a98450cba051fd001463df0";
 
-        const resources: any = {
-          total: 0,
-          start: 1,
-          num: 0,
-          nextStart: -1,
-          resources: []
-        };
+  //       const resources: any = {
+  //         total: 0,
+  //         start: 1,
+  //         num: 0,
+  //         nextStart: -1,
+  //         resources: []
+  //       };
 
-        fetchMock
-          .post(
-            utils.PORTAL_SUBSET.restUrl +
-              "/content/items/" +
-              itemTemplate.itemId +
-              "/resources",
-            resources
-          )
-          .post(
-            utils.PORTAL_SUBSET.restUrl +
-              "/content/users/" +
-              MOCK_USER_SESSION.username +
-              "/items/" +
-              solutionItemId +
-              "/addResources",
-            {
-              success: true,
-              itemId: solutionItemId,
-              owner: MOCK_USER_SESSION.username,
-              folder: null
-            }
-          )
-          .post(
-            utils.PORTAL_SUBSET.restUrl +
-              "/content/items/" +
-              itemTemplate.itemId +
-              "/data",
-            mockItems.get500Failure()
-          )
-          .post(
-            utils.PORTAL_SUBSET.restUrl +
-              "/content/items/" +
-              itemTemplate.itemId +
-              "/info/thumbnail/banner.png?w=400",
-            utils.getSampleImage(),
-            { sendAsJson: false }
-          )
-          .post(
-            utils.PORTAL_SUBSET.restUrl +
-              "/content/items/" +
-              itemTemplate.itemId +
-              "/info/metadata/metadata.xml",
-            mockItems.get400Failure()
-          )
-          .post(
-            utils.PORTAL_SUBSET.restUrl +
-              "/content/items/" +
-              itemTemplate.itemId +
-              "/info/form.json",
-            utils.getSampleJsonAsFile("form.json")
-          )
-          .post(
-            utils.PORTAL_SUBSET.restUrl +
-              "/content/items/" +
-              itemTemplate.itemId +
-              "/info/forminfo.json",
-            utils.getSampleJsonAsFile("forminfo.json")
-          )
-          .post(
-            utils.PORTAL_SUBSET.restUrl +
-              "/content/items/" +
-              itemTemplate.itemId +
-              "/info/form.webform",
-            utils.getSampleJsonAsFile("form.webform")
-          );
+  //       fetchMock
+  //         .post(
+  //           utils.PORTAL_SUBSET.restUrl +
+  //             "/content/items/" +
+  //             itemTemplate.itemId +
+  //             "/resources",
+  //           resources
+  //         )
+  //         .post(
+  //           utils.PORTAL_SUBSET.restUrl +
+  //             "/content/users/" +
+  //             MOCK_USER_SESSION.username +
+  //             "/items/" +
+  //             solutionItemId +
+  //             "/addResources",
+  //           {
+  //             success: true,
+  //             itemId: solutionItemId,
+  //             owner: MOCK_USER_SESSION.username,
+  //             folder: null
+  //           }
+  //         )
+  //         .post(
+  //           utils.PORTAL_SUBSET.restUrl +
+  //             "/content/items/" +
+  //             itemTemplate.itemId +
+  //             "/data",
+  //           mockItems.get500Failure()
+  //         )
+  //         .post(
+  //           utils.PORTAL_SUBSET.restUrl +
+  //             "/content/items/" +
+  //             itemTemplate.itemId +
+  //             "/info/thumbnail/banner.png?w=400",
+  //           utils.getSampleImage(),
+  //           { sendAsJson: false }
+  //         )
+  //         .post(
+  //           utils.PORTAL_SUBSET.restUrl +
+  //             "/content/items/" +
+  //             itemTemplate.itemId +
+  //             "/info/metadata/metadata.xml",
+  //           mockItems.get400Failure()
+  //         )
+  //         .post(
+  //           utils.PORTAL_SUBSET.restUrl +
+  //             "/content/items/" +
+  //             itemTemplate.itemId +
+  //             "/info/form.json",
+  //           utils.getSampleJsonAsFile("form.json")
+  //         )
+  //         .post(
+  //           utils.PORTAL_SUBSET.restUrl +
+  //             "/content/items/" +
+  //             itemTemplate.itemId +
+  //             "/info/forminfo.json",
+  //           utils.getSampleJsonAsFile("forminfo.json")
+  //         )
+  //         .post(
+  //           utils.PORTAL_SUBSET.restUrl +
+  //             "/content/items/" +
+  //             itemTemplate.itemId +
+  //             "/info/form.webform",
+  //           utils.getSampleJsonAsFile("form.webform")
+  //         );
 
-        staticRelatedItemsMocks.fetchMockRelatedItems(itemTemplate.itemId, {
-          total: 0,
-          relatedItems: []
-        });
+  //       staticRelatedItemsMocks.fetchMockRelatedItems(itemTemplate.itemId, {
+  //         total: 0,
+  //         relatedItems: []
+  //       });
 
-        const expected: string[] = ["frm1234567890_info_thumbnail/banner.png"];
+  //       const expected: string[] = ["frm1234567890_info_thumbnail/banner.png"];
 
-        resourceHelpers
-          .storeItemResources(itemTemplate, solutionItemId, MOCK_USER_SESSION)
-          .then(actual => {
-            expect(actual).toEqual(expected);
-            done();
-          }, done.fail);
-      });
+  //       resourceHelpers
+  //         .storeItemResources(itemTemplate, solutionItemId, MOCK_USER_SESSION)
+  //         .then(actual => {
+  //           expect(actual).toEqual(expected);
+  //           done();
+  //         }, done.fail);
+  //     });
 
-      it("can handle error on add resources", done => {
-        const itemTemplate: interfaces.IItemTemplate = templates.getItemTemplateSkeleton();
-        itemTemplate.item = mockItems.getAGOLItem("Web Map", null);
-        itemTemplate.itemId = itemTemplate.item.id;
-        itemTemplate.item.thumbnail = null;
-        const solutionItemId = "ee67658b2a98450cba051fd001463df0";
+  //     it("can handle error on add resources", done => {
+  //       const itemTemplate: interfaces.IItemTemplate = templates.getItemTemplateSkeleton();
+  //       itemTemplate.item = mockItems.getAGOLItem("Web Map", null);
+  //       itemTemplate.itemId = itemTemplate.item.id;
+  //       itemTemplate.item.thumbnail = null;
+  //       const solutionItemId = "ee67658b2a98450cba051fd001463df0";
 
-        const expectedFetch = mockItems.getAnImageResponse();
+  //       const expectedFetch = mockItems.getAnImageResponse();
 
-        const resources: any = {
-          total: 1,
-          start: 1,
-          num: 1,
-          nextStart: -1,
-          resources: [
-            {
-              resource: "image/banner.png",
-              created: 1522711362000,
-              size: 56945
-            }
-          ]
-        };
+  //       const resources: any = {
+  //         total: 1,
+  //         start: 1,
+  //         num: 1,
+  //         nextStart: -1,
+  //         resources: [
+  //           {
+  //             resource: "image/banner.png",
+  //             created: 1522711362000,
+  //             size: 56945
+  //           }
+  //         ]
+  //       };
 
-        fetchMock
-          .post(
-            utils.PORTAL_SUBSET.restUrl +
-              "/content/items/" +
-              itemTemplate.itemId +
-              "/resources",
-            resources
-          )
-          .post(
-            utils.PORTAL_SUBSET.restUrl +
-              "/content/items/" +
-              itemTemplate.itemId +
-              "/resources/image/banner.png",
-            expectedFetch,
-            { sendAsJson: false }
-          )
-          .post(
-            utils.PORTAL_SUBSET.restUrl +
-              "/content/users/" +
-              MOCK_USER_SESSION.username +
-              "/items/" +
-              solutionItemId +
-              "/addResources",
-            mockItems.get500Failure()
-          )
-          .post(
-            utils.PORTAL_SUBSET.restUrl +
-              "/content/items/" +
-              itemTemplate.itemId +
-              "/info/thumbnail/banner.png?w=400",
-            expectedFetch,
-            { sendAsJson: false }
-          )
-          .post(
-            utils.PORTAL_SUBSET.restUrl +
-              "/content/items/" +
-              itemTemplate.itemId +
-              "/data",
-            mockItems.get500Failure()
-          )
-          .post(
-            utils.PORTAL_SUBSET.restUrl +
-              "/content/items/" +
-              itemTemplate.itemId +
-              "/info/metadata/metadata.xml",
-            mockItems.get400Failure()
-          );
+  //       fetchMock
+  //         .post(
+  //           utils.PORTAL_SUBSET.restUrl +
+  //             "/content/items/" +
+  //             itemTemplate.itemId +
+  //             "/resources",
+  //           resources
+  //         )
+  //         .post(
+  //           utils.PORTAL_SUBSET.restUrl +
+  //             "/content/items/" +
+  //             itemTemplate.itemId +
+  //             "/resources/image/banner.png",
+  //           expectedFetch,
+  //           { sendAsJson: false }
+  //         )
+  //         .post(
+  //           utils.PORTAL_SUBSET.restUrl +
+  //             "/content/users/" +
+  //             MOCK_USER_SESSION.username +
+  //             "/items/" +
+  //             solutionItemId +
+  //             "/addResources",
+  //           mockItems.get500Failure()
+  //         )
+  //         .post(
+  //           utils.PORTAL_SUBSET.restUrl +
+  //             "/content/items/" +
+  //             itemTemplate.itemId +
+  //             "/info/thumbnail/banner.png?w=400",
+  //           expectedFetch,
+  //           { sendAsJson: false }
+  //         )
+  //         .post(
+  //           utils.PORTAL_SUBSET.restUrl +
+  //             "/content/items/" +
+  //             itemTemplate.itemId +
+  //             "/data",
+  //           mockItems.get500Failure()
+  //         )
+  //         .post(
+  //           utils.PORTAL_SUBSET.restUrl +
+  //             "/content/items/" +
+  //             itemTemplate.itemId +
+  //             "/info/metadata/metadata.xml",
+  //           mockItems.get400Failure()
+  //         );
 
-        return resourceHelpers
-          .storeItemResources(itemTemplate, solutionItemId, MOCK_USER_SESSION)
-          .then(actual => {
-            expect(actual).toEqual([]);
-            // expect(fetchMock.done()).toBe(
-            //   true,
-            //   "should use all the fetch mocks"
-            // );
-            done();
-          })
-          .catch(ex => {
-            done.fail(ex);
-          });
-      });
-    });
-  }
+  //       return resourceHelpers
+  //         .storeItemResources(itemTemplate, solutionItemId, MOCK_USER_SESSION)
+  //         .then(actual => {
+  //           expect(actual).toEqual([]);
+  //           // expect(fetchMock.done()).toBe(
+  //           //   true,
+  //           //   "should use all the fetch mocks"
+  //           // );
+  //           done();
+  //         })
+  //         .catch(ex => {
+  //           done.fail(ex);
+  //         });
+  //     });
+  //   });
+  // }
 });

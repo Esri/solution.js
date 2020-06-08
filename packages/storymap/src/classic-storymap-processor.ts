@@ -30,10 +30,8 @@ export function convertItemToTemplate(
   authentication: common.UserSession
 ): Promise<common.IItemTemplate> {
   return new Promise<common.IItemTemplate>((resolve, reject) => {
-    if (itemInfo.type === "StoryMap") {
-      reject(common.fail("Next-gen StoryMap is not yet implemented"));
-    } else if (isAStoryMap(itemInfo.type, itemInfo.url)) {
-      reject(common.fail("First-gen StoryMap is not yet implemented"));
+    if (isAStoryMap(itemInfo.type, itemInfo.url)) {
+      reject(common.fail("Classic StoryMap is not yet implemented"));
     } else {
       reject(common.fail(itemInfo.id + " is not a StoryMap"));
     }
@@ -47,7 +45,7 @@ export function createItemFromTemplate(
   itemProgressCallback: common.IItemProgressCallback
 ): Promise<common.ICreateItemFromTemplateResponse> {
   return new Promise<common.ICreateItemFromTemplateResponse>(resolve => {
-    if (template.type === "StoryMap") {
+    if (isAStoryMap(template.type, template.item.url)) {
       // Not yet implemented
       itemProgressCallback(
         template.itemId,
@@ -55,19 +53,7 @@ export function createItemFromTemplate(
         0
       );
       resolve({
-        id: "Next-gen StoryMap is not yet implemented", // temporary
-        type: template.type,
-        postProcess: false
-      });
-    } else if (isAStoryMap(template.type, template.item.url)) {
-      // Not yet implemented
-      itemProgressCallback(
-        template.itemId,
-        common.EItemProgressStatus.Failed,
-        0
-      );
-      resolve({
-        id: "First-gen StoryMap is not yet implemented", // temporary
+        id: "Classic StoryMap is not yet implemented", // temporary
         type: template.type,
         postProcess: false
       });
@@ -88,9 +74,7 @@ export function createItemFromTemplate(
 }
 
 export function isAStoryMap(itemType: string, itemUrl?: string): boolean {
-  if (itemType === "StoryMap") {
-    return true;
-  } else if (itemUrl) {
+  if (itemUrl) {
     return [
       /\/apps\/Cascade\//i,
       /\/apps\/MapJournal\//i,

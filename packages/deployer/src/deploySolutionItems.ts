@@ -22,7 +22,7 @@
 
 import * as common from "@esri/solution-common";
 import { moduleMap } from "./module-map";
-import { maybePush, getProp } from "@esri/hub-common";
+import { getProp } from "@esri/hub-common";
 
 const UNSUPPORTED: common.moduleHandler = null;
 
@@ -133,7 +133,6 @@ export function deploySolutionItems(
         cloneOrderChecklist.forEach(id => {
           // Get the item's template out of the list of templates
           const template = common.findTemplateInList(templates, id);
-
           awaitAllItems.push(
             _createItemFromTemplateWhenReady(
               template!,
@@ -414,32 +413,28 @@ export function _createItemFromTemplateWhenReady(
   destinationAuthentication: common.UserSession,
   itemProgressCallback: common.IItemProgressCallback
 ): Promise<common.ICreateItemFromTemplateResponse> {
-  let itemDef;
   // ensure this is present
   template.dependencies = template.dependencies || [];
-
+  // if there is no entry in the templateDictionary, add it
   if (!templateDictionary.hasOwnProperty(template.itemId)) {
     templateDictionary[template.itemId] = {};
-    itemDef = new Promise<common.ICreateItemFromTemplateResponse>(resolve => {
+    // Save the deferred for the use of items that depend on this item being created first
+    templateDictionary[template.itemId].def = new Promise<
+      common.ICreateItemFromTemplateResponse
+    >(resolve => {
       // Wait until all of the item's dependencies are deployed
-      // maybePush will only add the entry if it exists, allowing
-      // templates to have entries in the depenedency array that are
-      // invalid or don't refer to a template
       const awaitDependencies = template.dependencies.reduce(
         (acc: any[], id: string) => {
-          return maybePush(getProp(templateDictionary, `${id}.def`), acc);
+          const def = getProp(templateDictionary, `${id}.def`);
+          // can't use maybePush as that clones the object, which does not work for Promises
+          /* istanbul ignore else */
+          if (def) {
+            acc.push(def);
+          }
+          return acc;
         },
         []
       );
-
-      // const awaitDependencies = [] as Array<Promise<common.ICreateItemFromTemplateResponse>>;
-      // (template.dependencies || []).forEach(dependencyId => {
-      //   // ensure we actually have an entry before a trying to push into the array
-      //   if(templateDictionary[dependencyId].def) {
-      //     awaitDependencies.push(templateDictionary[dependencyId].def);
-      //   }
-
-      // });
 
       Promise.all(awaitDependencies).then(
         () => {
@@ -467,18 +462,6 @@ export function _createItemFromTemplateWhenReady(
               postProcess: false
             });
           } else {
-            // Handle original Story Maps with next-gen Story Maps
-            /* Not yet supported
-            if (
-              storyMap.isAStoryMap(
-                templateType,
-                common.getProp(template, "item.url")
-              )
-            ) {
-              itemHandler = storyMap;
-            }
-            */
-
             // Glean item content that can be added via the create call rather than as an update, e.g.,
             // metadata, thumbnail; this content is moved from the resourceFilePaths into the template
             // tslint:disable-next-line: no-floating-promises
@@ -531,14 +514,8 @@ export function _createItemFromTemplateWhenReady(
         () => resolve(_generateEmptyCreationResponse(template.type)) // fails to get item dependencies
       );
     });
-
-    // Save the deferred for the use of items that depend on this item being created first
-    templateDictionary[template.itemId].def = itemDef;
-  } else {
-    itemDef = templateDictionary[template.itemId].def;
   }
-
-  return itemDef;
+  return templateDictionary[template.itemId].def;
 }
 
 /**
