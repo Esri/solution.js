@@ -9,7 +9,7 @@
 * \[ \] Run `npm run release:prepare` and pick new version number
 * \[ \] Run `npm run release:review`
 * \[ \] Fix CHANGELOG.md and solution.js package references
-* \[ \] Commit changes as a release prep
+* \[ \] Commit changes without using version number
 * \[ \] Switch to `master` branch
 * \[ \] Merge `release` branch into `master` branch but don't commit
 * \[ \] Run `npm run release:publish`
@@ -50,6 +50,7 @@
   ..\solution.js\packages\simple-types\node_modules
   ..\solution.js\packages\storymap\node_modules
   ..\solution.js\packages\viewer\node_modules
+  ..\solution.js\packages\web-experience\node_modules
  ```
 
 4. Launch a git-bash window (e.g., C:\Program Files\Git\git-bash.exe on a Windows computer or using the "Git bash" icon in the Git Extensions program)
@@ -102,7 +103,7 @@ git tag -d tagName
 
 10. Update the solution.js package references in the *peerDependencies* sections of the package package.json files; don't change the package.version or the references in the devDependencies section. Update all solution.js package references in the demo package.json files to the new release.
 
-11. Commit the changed files in the repo: CHANGELOG.md, lerna.json, package.json files, package-lock.json files. (While the publishing step will do the commit for you, lerna doesn't notice the package.json changes and doesn't publish correctly.) This is just an intermediate publishing step and should not be labeled or tagged for the release. It is not necessary to push the commit to GitHub.
+11. Commit the changed files in the repo: CHANGELOG.md, lerna.json, package.json files, package-lock.json files. (While the publishing step will do the commit for you, lerna doesn't notice the package.json changes and doesn't publish correctly.) This is just an intermediate publishing step and should not be labeled or tagged for the release. It is not necessary to push the commit to GitHub, unless...
 
 12. If you wish to test the release before it is created, you can push `release-candidate` to GitHub for sharing.
 
@@ -206,6 +207,7 @@ npm deprecate @esri/solution-group@"<$newVersion" "obsolete" --otp=$twoFactorCod
 npm deprecate @esri/solution-simple-types@"<$newVersion" "obsolete" --otp=$twoFactorCode
 npm deprecate @esri/solution-storymap@"<$newVersion" "obsolete" --otp=$twoFactorCode
 npm deprecate @esri/solution-viewer@"<$newVersion" "obsolete" --otp=$twoFactorCode
+call npm deprecate @esri/solution-web-experience@"<%newVersion%" "obsolete" --otp=%twoFactorCode%
 echo done
 ```
 
@@ -238,5 +240,6 @@ npm unpublish @esri/solution-group@$newVersion --otp=$twoFactorCode
 npm unpublish @esri/solution-simple-types@$newVersion --otp=$twoFactorCode
 npm unpublish @esri/solution-storymap@$newVersion --otp=$twoFactorCode
 npm unpublish @esri/solution-viewer@$newVersion --otp=$twoFactorCode
+npm unpublish @esri/solution-web-experience@$newVersion --otp=$twoFactorCode
 ```
 
