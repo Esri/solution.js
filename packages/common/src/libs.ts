@@ -32,25 +32,22 @@ export { Sanitizer } from "@esri/arcgis-html-sanitizer";
  * @param files List of files to add to zip File
  * @return Promise resolving to a zip File
  */
-export function createZip(zipFilename: string, files: IFile[]): Promise<File> {
+export function createZip(
+  zipFilename: string,
+  files: File[]
+): Promise<File> {
   return new Promise<File>((resolve, reject) => {
     const zip = new JSZip();
+
     // Add the files
-    files.forEach(file => {
-      let filename = file.filename;
-      /* istanbul ignore else */
-      if (file.folder) {
-        filename = file.folder + "/" + filename;
-      }
-      zip.file(filename, file.blob, { binary: true });
-    });
+    files.forEach(
+      file => zip.file(file.name, file, { binary: true })
+    );
 
     // Create the ZIP
-    zip
-      .generateAsync({ type: "blob" })
+    zip.generateAsync({ type: "blob" })
       .then(
-        (content: Blob) =>
-          resolve(blobToFile(content, zipFilename, "application/zip")),
+        (content: Blob) => resolve(blobToFile(content, zipFilename, "application/zip")),
         reject
       );
   });
