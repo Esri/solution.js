@@ -158,7 +158,7 @@ export function getSampleMetadataAsBlob(mimeType = "text/xml"): Blob {
 }
 
 export function getSampleMetadataAsFile(
-  filename = "meatadata.xml",
+  filename = "metadata.xml",
   mimeType = "text/xml"
 ): File {
   return polyfills.new_File([getSampleMetadataAsBlob(mimeType)], filename, {
