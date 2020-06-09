@@ -104,15 +104,6 @@ export function getItemInfo(
         console.log("itemFwdRelatedItems", JSON.stringify(itemFwdRelatedItems));
         console.log("itemRevRelatedItems", JSON.stringify(itemRevRelatedItems));
 
-
-
-        common.createZip("filename", [common.blobToFile(itemDataBlob, "data.json", "application/json")]).then(
-          (file: File) => common.saveBlobAsFile("filename", file),
-          error => console.log(JSON.stringify(error, null, 2))
-        );
-
-
-
         const portalUrl = common.getPortalUrlFromAuth(authentication);
 
         // Show item and data sections
