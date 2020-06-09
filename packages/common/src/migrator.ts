@@ -14,13 +14,14 @@
  * limitations under the License.
  */
 
-import { ISolutionItem } from "./interfaces";
+import { ISolutionItem, UserSession } from "./interfaces";
 import { _isLegacySolution } from "./migrations/is-legacy-solution";
 import { _upgradeThreeDotZero } from "./migrations/upgrade-three-dot-zero";
 import { _upgradeTwoDotTwo } from "./migrations/upgrade-two-dot-two";
 import { _upgradeTwoDotThree } from "./migrations/upgrade-two-dot-three";
 import { _upgradeTwoDotFour } from "./migrations/upgrade-two-dot-four";
 import { _upgradeTwoDotFive } from "./migrations/upgrade-two-dot-five";
+import { _upgradeTwoDotSix } from "./migrations/upgrade-two-dot-six";
 import { getProp } from "@esri/hub-common";
 
 // Starting at 3.0 because Hub has been versioning Solution items up to 2.x
@@ -32,7 +33,10 @@ export const CURRENT_SCHEMA_VERSION = 3.0;
  * while abstracting those changes into a single set of functional transforms
  * @param model ISolutionItem
  */
-export function migrateSchema(model: ISolutionItem): ISolutionItem {
+export function migrateSchema(
+  model: ISolutionItem,
+  authentication: UserSession
+): Promise<ISolutionItem> {
   // ensure properties
   if (!getProp(model, "item.properties")) {
     model.item.properties = {};
@@ -41,10 +45,11 @@ export function migrateSchema(model: ISolutionItem): ISolutionItem {
   const modelVersion = getProp(model, "item.properties.schemaVersion");
   // if it's already on the current version, return it
   if (modelVersion === CURRENT_SCHEMA_VERSION) {
-    return model;
+    return Promise.resolve(model);
   } else {
     // check if this is a legacy solution created by Hub
     const isLegacy = _isLegacySolution(model);
+    const schemaUpgrades = [];
     // if this is a Solution.js "native" item, it is already at 3.0
     if (!modelVersion && !isLegacy) {
       // bump it up to 3.0
@@ -55,14 +60,26 @@ export function migrateSchema(model: ISolutionItem): ISolutionItem {
       // The schemaVersion of these items is 2.1 - prior to that we used
       // Web Mapping Application items, which are deprecated
       if (modelVersion >= 2.1 && modelVersion < 3) {
-        model = _upgradeTwoDotTwo(model);
-        model = _upgradeTwoDotThree(model);
-        model = _upgradeThreeDotZero(model);
-        model = _upgradeTwoDotFour(model);
-        model = _upgradeTwoDotFive(model);
+        schemaUpgrades.push(
+          _upgradeTwoDotTwo,
+          _upgradeTwoDotThree,
+          _upgradeThreeDotZero,
+          _upgradeTwoDotFour,
+          _upgradeTwoDotFive,
+          _upgradeTwoDotSix
+        );
       }
       // When we need to apply schema upgrades 3.0+ we add those here...
     }
-    return model;
+    // Run any migrations serially. Since we start with a promise,
+    // individual migrations are free to return either ISolutionItem
+    // or Promise<ISolutionItem>
+    return schemaUpgrades.reduce(
+      (promise, upgradeFn) =>
+        promise.then((updatedModel: ISolutionItem) =>
+          upgradeFn(updatedModel, authentication)
+        ),
+      Promise.resolve(model)
+    );
   }
 }

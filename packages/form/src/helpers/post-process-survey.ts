@@ -73,6 +73,7 @@ export function postProcessHubSurvey(
         featureServiceResultBase
       );
       templates.push(featureServiceTemplate);
+      template.dependencies.push(featureServiceResultBase.id);
       return true;
     });
   });

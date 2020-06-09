@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { ISolutionItem } from "../interfaces";
+import { ISolutionItem, UserSession } from "../interfaces";
 import { getProp, cloneObject } from "../generalHelpers";
 
 /**
@@ -23,8 +23,12 @@ import { getProp, cloneObject } from "../generalHelpers";
  * with the initial Solution.js schama version number (3)
  * If it is a legacy hub solution, it will apply the transforms
  * @param model ISolutionItem
+ * @param authentication UserSession
  */
-export function _upgradeThreeDotZero(model: ISolutionItem): ISolutionItem {
+export function _upgradeThreeDotZero(
+  model: ISolutionItem,
+  authentication: UserSession
+): ISolutionItem {
   if (getProp(model, "item.properties.schemaVersion") >= 3) {
     return model;
   } else {

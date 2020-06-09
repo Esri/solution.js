@@ -17,6 +17,7 @@
 import { _upgradeTwoDotFour } from "../../src/migrations/upgrade-two-dot-four";
 import { cloneObject, IItemTemplate } from "@esri/hub-common";
 import { ISolutionItem } from "../../src/interfaces";
+import * as utils from "../../../common/test/mocks/utils";
 
 describe("Upgrade 2.4 ::", () => {
   const defaultModel = {
@@ -45,10 +46,12 @@ describe("Upgrade 2.4 ::", () => {
     }
   } as ISolutionItem;
 
+  const MOCK_USER_SESSION = utils.createRuntimeMockUserSession();
+
   it("returns same model if on or above 2.4", () => {
     const m = cloneObject(defaultModel);
     m.item.properties.schemaVersion = 2.4;
-    const chk = _upgradeTwoDotFour(m);
+    const chk = _upgradeTwoDotFour(m, MOCK_USER_SESSION);
     expect(chk).toBe(m, "should return the exact same object");
   });
 
@@ -58,7 +61,7 @@ describe("Upgrade 2.4 ::", () => {
     m.data.metadata.chk = {
       solName: "{{solution.name}}"
     };
-    const chk = _upgradeTwoDotFour(m);
+    const chk = _upgradeTwoDotFour(m, MOCK_USER_SESSION);
     expect(chk).not.toBe(m, "should not return the exact same object");
     expect(chk.data.metadata.chk1).toBe(
       "behold {{fakeId.itemId}} it changed",
@@ -72,7 +75,7 @@ describe("Upgrade 2.4 ::", () => {
   it("reworks hub asset names", () => {
     const m = cloneObject(defaultModel);
     m.data.templates[0].assets = [{ name: "somefile.png" }];
-    const chk = _upgradeTwoDotFour(m);
+    const chk = _upgradeTwoDotFour(m, MOCK_USER_SESSION);
     const tmpl = chk.data.templates[0];
     expect(Array.isArray(tmpl.resources)).toBe(true, "should add resources");
     expect(Array.isArray(tmpl.assets)).toBe(true, "should leave assets");
@@ -84,7 +87,7 @@ describe("Upgrade 2.4 ::", () => {
   it("adds estimatedDeploymentCostFactor", () => {
     const m = cloneObject(defaultModel);
     m.data.templates[0].estimatedDeploymentCostFactor = 2;
-    const chk = _upgradeTwoDotFour(m);
+    const chk = _upgradeTwoDotFour(m, MOCK_USER_SESSION);
     expect(chk.data.templates[1].estimatedDeploymentCostFactor).toBe(
       1,
       "should add cost factor of 1 if missing"

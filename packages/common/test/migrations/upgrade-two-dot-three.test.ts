@@ -17,6 +17,7 @@
 import { _upgradeTwoDotThree } from "../../src/migrations/upgrade-two-dot-three";
 import { cloneObject, IItemTemplate } from "@esri/hub-common";
 import { ISolutionItem } from "../../src/interfaces";
+import * as utils from "../../../common/test/mocks/utils";
 
 describe("Upgrade 2.3 ::", () => {
   const defaultModel = {
@@ -41,16 +42,18 @@ describe("Upgrade 2.3 ::", () => {
     }
   } as ISolutionItem;
 
+  const MOCK_USER_SESSION = utils.createRuntimeMockUserSession();
+
   it("returns same model if on or above 2.3", () => {
     const m = cloneObject(defaultModel);
     m.item.properties.schemaVersion = 2.3;
-    const chk = _upgradeTwoDotThree(m);
+    const chk = _upgradeTwoDotThree(m, MOCK_USER_SESSION);
     expect(chk).toBe(m, "should return the exact same object");
   });
 
   it("swaps resources to assets", () => {
     const m = cloneObject(defaultModel);
-    const chk = _upgradeTwoDotThree(m);
+    const chk = _upgradeTwoDotThree(m, MOCK_USER_SESSION);
     expect(chk).not.toBe(m, "should not return the exact same object");
     const tmpl = chk.data.templates[0];
     expect(tmpl.assets.length).toBe(1, "should add assets array");

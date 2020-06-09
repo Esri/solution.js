@@ -14,19 +14,23 @@
  * limitations under the License.
  */
 
-import { ISolutionItem } from "../interfaces";
-import { getProp, cloneObject, deleteProp } from "@esri/hub-common";
+import { ISolutionItem, UserSession } from "../interfaces";
+import { getProp, cloneObject } from "../generalHelpers";
 
 /**
  * Applies Survey123 Form Config Schema migrations.
  * @param {ISolutionItem} model A Solution model
+ * @param {UserSession} authentication User session info
  * @returns {ISolutionItem}
  */
-export function _upgradeTwoDotFive(model: ISolutionItem): ISolutionItem {
+export function _upgradeTwoDotFive(
+  model: ISolutionItem,
+  authentication: UserSession
+): ISolutionItem {
   if (getProp(model, "item.properties.schemaVersion") >= 2.5) {
     return model;
   } else {
-    const clone = cloneObject(model);
+    const clone: ISolutionItem = cloneObject(model);
 
     clone.data.templates.forEach(template => {
       if (template.type === "Form") {
