@@ -30,6 +30,9 @@ group: 1-get-started
         "@esri/arcgis-rest-portal": "https://unpkg.com/@esri/arcgis-rest-portal/dist/umd/portal.umd.min",
         "@esri/arcgis-rest-request": "https://unpkg.com/@esri/arcgis-rest-request/dist/umd/request.umd.min",
         "@esri/arcgis-rest-service-admin": "https://unpkg.com/@esri/arcgis-rest-service-admin/dist/umd/service-admin.umd.min",
+        "@esri/hub-common": "https://unpkg.com/@esri/hub-common/dist/umd/common.umd",
+        "@esri/hub-sites": "https://unpkg.com/@esri/hub-sites/dist/umd/sites.umd",
+        "@esri/hub-initiatives": "https://unpkg.com/@esri/hub-initiatives/dist/umd/initiatives.umd",
         "@esri/solution-common": "https://unpkg.com/@esri/solution-common/dist/umd/common.umd.min"
       }
     };
