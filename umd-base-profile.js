@@ -2,6 +2,8 @@ import typescript from "rollup-plugin-typescript2";
 import resolve from "rollup-plugin-node-resolve";
 import commonjs from "rollup-plugin-commonjs";
 import json from "rollup-plugin-json";
+import globalsPlugin from 'rollup-plugin-node-globals';
+import builtins from 'rollup-plugin-node-builtins';
 
 const path = require("path");
 const fs = require("fs");
@@ -115,8 +117,10 @@ export default {
   external: packageNames.concat(arcgisRestJsPackageNames, hubJsPackageNames),
   plugins: [
     typescript(),
+    resolve({ preferBuiltins: true, browser: true }),
+    commonjs(),
     json(),
-    resolve(),
-    commonjs()
+    globalsPlugin(),
+    builtins()
   ]
 };

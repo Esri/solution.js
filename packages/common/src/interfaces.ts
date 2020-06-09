@@ -281,6 +281,15 @@ export interface IFeatureServiceProperties {
   tables: any[];
 }
 
+/**
+ * File folder, filename, and data.
+ */
+export interface IFile {
+  folder: string;
+  filename: string;
+  blob: Blob;
+}
+
 export interface IFileMimeType {
   blob: Blob;
   filename: string;
