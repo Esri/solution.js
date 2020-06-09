@@ -419,6 +419,10 @@
             </li>
             
             <li class="tsd-kind-function padding-right-1 visually-hidden api-list-item">
+              <a href="/solution.js/api/common/saveBlobAsFile/" class="tsd-kind-icon padding-right-1">saveBlobAsFile</a>
+            </li>
+            
+            <li class="tsd-kind-function padding-right-1 visually-hidden api-list-item">
               <a href="/solution.js/api/common/setCreateProp/" class="tsd-kind-icon padding-right-1">setCreateProp</a>
             </li>
             
@@ -480,6 +484,10 @@
             
             <li class="tsd-kind-interface padding-right-1 visually-hidden api-list-item">
               <a href="/solution.js/api/common/IFeatureServiceProperties/" class="tsd-kind-icon padding-right-1">IFeatureServiceProperties</a>
+            </li>
+            
+            <li class="tsd-kind-interface padding-right-1 visually-hidden api-list-item">
+              <a href="/solution.js/api/common/IFile/" class="tsd-kind-icon padding-right-1">IFile</a>
             </li>
             
             <li class="tsd-kind-interface padding-right-1 visually-hidden api-list-item">
@@ -620,6 +628,10 @@
             
             <li class="tsd-kind-interface padding-right-1 visually-hidden api-list-item">
               <a href="/solution.js/api/common/IValidationResult/" class="tsd-kind-icon padding-right-1">IValidationResult</a>
+            </li>
+            
+            <li class="tsd-kind-function padding-right-1 visually-hidden api-list-item">
+              <a href="/solution.js/api/common/createZip/" class="tsd-kind-icon padding-right-1">createZip</a>
             </li>
             
             <li class="tsd-kind-function padding-right-1 visually-hidden api-list-item">
@@ -1522,6 +1534,10 @@
           <ul id="list8" class="api-package-content-list">
             
             <li class="tsd-kind-function padding-right-1 visually-hidden api-list-item">
+              <a href="/solution.js/api/hub-types/_postProcessPage/" class="tsd-kind-icon padding-right-1">_postProcessPage</a>
+            </li>
+            
+            <li class="tsd-kind-function padding-right-1 visually-hidden api-list-item">
               <a href="/solution.js/api/hub-types/_postProcessSite/" class="tsd-kind-icon padding-right-1">_postProcessSite</a>
             </li>
             
@@ -1962,7 +1978,7 @@
             </li>
             
             <li class="tsd-kind-function padding-right-1 visually-hidden api-list-item">
-              <a href="/solution.js/api/web-experience/getExperieceSubdomain/" class="tsd-kind-icon padding-right-1">getExperieceSubdomain</a>
+              <a href="/solution.js/api/web-experience/getExperienceSubdomain/" class="tsd-kind-icon padding-right-1">getExperienceSubdomain</a>
             </li>
             
             <li class="tsd-kind-function padding-right-1 visually-hidden api-list-item">
@@ -1986,13 +2002,13 @@
 
   <div class="column-18">
     <div class="panel panel-white padding-left-1 padding-right-1 padding-trailer-1 padding-leader-half">
-      <small class="label right">Version 0.16.4</small>
+      <small class="label right">Version 0.16.5</small>
 <h1 class="tsd-kind-module font-size-3 trailer-half code-face">
   <a href="/solution.js/api/common/" class="is-active">@esri/solution-common</a>
 </h1>
 <p class="font-size--1 trailer-1 avenir-regular">Provides general helper functions for @esri/solution.js.</p>
 <h2 class="font-size-0 trailer-quarter">npm install:</h2>
-<pre><code>npm install @esri/solution-common @esri/arcgis-rest-auth@^2.11.0  @esri/arcgis-rest-feature-layer@^2.11.0  @esri/arcgis-rest-portal@^2.11.0  @esri/arcgis-rest-request@^2.11.0  @esri/arcgis-rest-service-admin@^2.11.0  @esri/hub-common@^4.2.0  @esri/hub-initiatives@^4.2.0  @esri/hub-sites@^4.2.0 </code></pre>
+<pre><code>npm install @esri/solution-common @esri/arcgis-rest-auth@^2.13.1  @esri/arcgis-rest-feature-layer@^2.13.1  @esri/arcgis-rest-portal@^2.13.1  @esri/arcgis-rest-request@^2.13.1  @esri/arcgis-rest-service-admin@^2.13.1  @esri/hub-common@^4.2.0  @esri/hub-initiatives@^4.2.0  @esri/hub-sites@^4.2.0 </code></pre>
 <h2 class="font-size-0 trailer-quarter">Module Import:</h2>
 
 <pre><code class="js"><span class="hljs-keyword">import</span> {
@@ -2080,8 +2096,10 @@
   hasTypeKeyword,
   jsonToBlob,
   sanitizeJSONAndReportChanges,
+  saveBlobAsFile,
   setCreateProp,
   setProp,
+  createZip,
   sanitizeHTML,
   sanitizeJSON,
   sanitizeURLProtocol,
@@ -2219,10 +2237,10 @@
 } <span class="hljs-keyword">from</span> <span class="hljs-string">"@esri/solution-common"</span>;</code></pre>
 
 <h2 class="font-size-0 trailer-quarter">CDN:</h2>
-<pre><code class="html"><span class="hljs-tag">&lt;<span class="hljs-name">script</span> <span class="hljs-attr">src</span>=<span class="hljs-string">"https://unpkg.com/@esri/solution-common@0.16.4/dist/umd/common.umd.min.js"</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span></code></pre>
+<pre><code class="html"><span class="hljs-tag">&lt;<span class="hljs-name">script</span> <span class="hljs-attr">src</span>=<span class="hljs-string">"https://unpkg.com/@esri/solution-common@0.16.5/dist/umd/common.umd.min.js"</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span></code></pre>
 <h2 class="font-size-0 trailer-quarter">CDN with SRI:</h2>
 
-        <pre><code class="html"><span class="hljs-tag">&lt;<span class="hljs-name">script</span> <span class="hljs-attr">src</span>=<span class="hljs-string">"https://unpkg.com/@esri/solution-common@0.16.4/dist/umd/common.umd.min.js"</span> <span class="hljs-attr">integrity</span>=<span class="hljs-string">"sha384-oxCIVL7ohT8nEBS8/3e2djlTWpkhUiaLtie9ZfBrTjMJOcCrBEUSUWgWGwX529PU"</span> <span class="hljs-attr">crossorigin</span>=<span class="hljs-string">"anonymous"</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span></code></pre>
+        <pre><code class="html"><span class="hljs-tag">&lt;<span class="hljs-name">script</span> <span class="hljs-attr">src</span>=<span class="hljs-string">"https://unpkg.com/@esri/solution-common@0.16.5/dist/umd/common.umd.min.js"</span> <span class="hljs-attr">integrity</span>=<span class="hljs-string">"sha384-iWCSkK6ogYx94VCpOWT2DRebmJR9BWDjoEyI7Vtk3nsi93hC84pzwQxmF6l1Jy8E"</span> <span class="hljs-attr">crossorigin</span>=<span class="hljs-string">"anonymous"</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span></code></pre>
 <hr class="leader-half trailer-quarter" />
 <ul class="list-plain package-contents">
   
@@ -2567,6 +2585,10 @@
   </li>
   
   <li class="tsd-kind-function">
+    <a href="/solution.js/api/common/saveBlobAsFile/" class="tsd-kind-icon">saveBlobAsFile</a>
+  </li>
+  
+  <li class="tsd-kind-function">
     <a href="/solution.js/api/common/setCreateProp/" class="tsd-kind-icon">setCreateProp</a>
   </li>
   
@@ -2628,6 +2650,10 @@
   
   <li class="tsd-kind-interface">
     <a href="/solution.js/api/common/IFeatureServiceProperties/" class="tsd-kind-icon">IFeatureServiceProperties</a>
+  </li>
+  
+  <li class="tsd-kind-interface">
+    <a href="/solution.js/api/common/IFile/" class="tsd-kind-icon">IFile</a>
   </li>
   
   <li class="tsd-kind-interface">
@@ -2768,6 +2794,10 @@
   
   <li class="tsd-kind-interface">
     <a href="/solution.js/api/common/IValidationResult/" class="tsd-kind-icon">IValidationResult</a>
+  </li>
+  
+  <li class="tsd-kind-function">
+    <a href="/solution.js/api/common/createZip/" class="tsd-kind-icon">createZip</a>
   </li>
   
   <li class="tsd-kind-function">
