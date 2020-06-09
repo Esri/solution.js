@@ -17,8 +17,7 @@
  * Provides connectors to third-party helper functions.
  */
 
-import * as JSZip from "jszip";
-import { IFile } from "./interfaces";
+import JSZip from "jszip";
 import { blobToFile } from "./generalHelpers";
 import { Sanitizer } from "@esri/arcgis-html-sanitizer";
 export { Sanitizer } from "@esri/arcgis-html-sanitizer";

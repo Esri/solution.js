@@ -18,13 +18,11 @@
  * Provides tests for third-party helper functions.
  */
 
-import * as arcgisSanitizer from "@esri/arcgis-html-sanitizer"; // arcgis-html-sanitizer
 import * as libs from "../src/libs"; // JSZip, arcgis-html-sanitizer
 import * as uuidv4 from "../src/libs/uuidv4"; // uuidv4
 import * as xssFilterEvasionTestCases from "./XssFilterEvasionTestCases"; // arcgis-html-sanitizer
 import { getSampleMetadataAsFile } from "../../common/test/mocks/utils";
-import { IFile } from "../src/interfaces";
-import * as JSZip from "jszip";
+import JSZip from "jszip";
 
 //#region uuidv4 ---------------------------------------------------------------------------------------------------- //
 
