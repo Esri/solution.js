@@ -80,7 +80,7 @@ export function getItemInfo(
       async responses => {
         const [
           itemBase,
-          itemDataFile,
+          itemDataBlob,
           itemThumbnail,
           itemMetadataBlob,
           itemResourceFiles,
@@ -90,14 +90,14 @@ export function getItemInfo(
         // Summarize what we have
         // ----------------------
         // (itemBase: common.IItem)  text/plain JSON
-        // (itemData: File)  */*
+        // (itemDataBlob: Blob)  */*
         // (itemThumbnail: Blob)  image/*
         // (itemMetadata: Blob)  application/xml
         // (itemResources: File[])  list of */*
         // (itemFwdRelatedItems: common.IRelatedItems[])  list of forward relationshipType/relatedItems[] pairs
         // (itemRevRelatedItems: common.IRelatedItems[])  list of reverse relationshipType/relatedItems[] pairs
         console.log("itemBase", itemBase);
-        console.log("itemData", itemDataFile);
+        console.log("itemData", itemDataBlob);
         console.log("itemThumbnail", itemThumbnail);
         console.log("itemMetadata", itemMetadataBlob);
         console.log("itemResources", JSON.stringify(itemResourceFiles));
@@ -128,7 +128,7 @@ export function getItemInfo(
           textAreaHtml(JSON.stringify(itemBase, null, 2)) +
           '</div><div style="width:2%;display:inline-block;"></div>' +
           '<div style="width:48%;display:inline-block;vertical-align:top;">';
-        html += await showBlob(itemDataFile);
+        html += await showBlob(itemDataBlob);
         html += "</div>";
 
         // Show thumbnail section
@@ -344,20 +344,20 @@ function showBlob(blob: Blob): Promise<string> {
       if (filename) {
         resolve(
           '<a href="' +
-            window.URL.createObjectURL(file) +
-            '" download="' +
-            filename +
-            '">' +
-            filename +
-            "</a>"
+          window.URL.createObjectURL(file) +
+          '" download="' +
+          filename +
+          '">' +
+          filename +
+          "</a>"
         );
       } else {
         resolve(
           '<a href="' +
-            window.URL.createObjectURL(blob) +
-            '">' +
-            blob.type +
-            "</a>"
+          window.URL.createObjectURL(blob) +
+          '">' +
+          blob.type +
+          "</a>"
         );
       }
     }
