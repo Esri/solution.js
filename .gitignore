@@ -96,9 +96,12 @@ __*
 demos/**/*.js
 demos/**/*.map
 demos/**/*.d.ts
-packages/**/*.js
-packages/**/*.map
-packages/**/*.d.ts
+packages/**/src/**/*.d.ts
+packages/**/src/**/*.js
+packages/**/src/**/*.map
+packages/**/test/**/*.d.ts
+packages/**/test/**/*.js
+packages/**/test/**/*.map
 
 TODO.md
 demos/deploy-harness

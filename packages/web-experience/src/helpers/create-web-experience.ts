@@ -17,7 +17,6 @@ import {
   IModel,
   cloneObject,
   failSafe,
-  failSafeUpdate,
   serializeModel,
   interpolateItemId,
   stringToBlob
@@ -27,11 +26,17 @@ import { UserSession } from "@esri/arcgis-rest-auth";
 
 import {
   createItem,
+  updateItem,
   addItemResource,
   ICreateItemResponse
 } from "@esri/arcgis-rest-portal";
 
-/* istanbul ignore next */
+/**
+ * Given a Model for a Web Experience, create the item in the Portal API
+ * @param model
+ * @param options
+ * @param authentication
+ */
 export function createWebExperience(
   model: IModel,
   options: any,
@@ -69,7 +74,10 @@ export function createWebExperience(
         delete model.properties;
         // update the experience with the newly interpolated model
         return Promise.all([
-          failSafeUpdate(model, { authentication }),
+          updateItem({
+            item: serializeModel(model),
+            authentication
+          }),
           authentication.getUsername()
         ]);
       })

@@ -21,7 +21,6 @@ import { IModel, getProp, maybePush } from "@esri/hub-common";
  * items it depends on from the `dataSources` hash
  * @param model IModel
  */
-/* istanbul ignore next */
 export function getWebExperienceDependencies(model: IModel): any[] {
   const dataSources = getProp(model, "data.dataSources") || {};
   return Object.keys(dataSources).reduce((acc, key) => {

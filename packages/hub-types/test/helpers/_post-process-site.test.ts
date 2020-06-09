@@ -17,10 +17,7 @@ import * as hubCommon from "@esri/hub-common";
 import * as hubSites from "@esri/hub-sites";
 import * as postProcessSiteModule from "../../src/helpers/_post-process-site";
 import * as updateSitePagesModule from "../../src/helpers/_update-site-pages";
-import {
-  IItemUpdate,
-  IUpdateItemResponse
-} from "../../../common/node_modules/@esri/arcgis-rest-portal/dist/esm";
+import { IUpdateItemResponse } from "@esri/arcgis-rest-portal";
 
 describe("_postProcessSite :: ", () => {
   let model: hubCommon.IModel;
@@ -31,7 +28,8 @@ describe("_postProcessSite :: ", () => {
         id: "3ef",
         properties: {
           collaborationGroupId: "bc1-collab",
-          contentGroupId: "bc1-collab"
+          contentGroupId: "bc1-collab",
+          chk: "{{bc66.itemId}}"
         }
       },
       data: {}
@@ -61,7 +59,7 @@ describe("_postProcessSite :: ", () => {
       {} as IUpdateItemResponse
     );
     return postProcessSiteModule
-      ._postProcessSite(model, infos, fakeRo)
+      ._postProcessSite(model, infos, { bc66: { itemId: "ef66" } }, fakeRo)
       .then(result => {
         expect(result).toBe(true, "should return true");
         expect(shareSpy.calls.count()).toBe(1, "should call share fn once");
@@ -74,6 +72,11 @@ describe("_postProcessSite :: ", () => {
           "should call _updateSitePages"
         );
         expect(updateSiteSpy.calls.count()).toBe(1, "should update the site");
+        const updateModel = updateSiteSpy.calls.argsFor(0)[0];
+        expect(updateModel.item.properties.chk).toBe(
+          "ef66",
+          "it should do a second pass interpolation before updating"
+        );
       });
   });
 });
