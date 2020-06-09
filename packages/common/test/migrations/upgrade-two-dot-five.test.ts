@@ -55,17 +55,19 @@ describe("Upgrade 2.5 ::", () => {
     }
   } as ISolutionItem;
 
+  const MOCK_USER_SESSION = utils.createRuntimeMockUserSession();
+
   it("returns same model if on or above 2.5", () => {
     const model = cloneObject(defaultModel);
     model.item.properties.schemaVersion = 2.5;
-    const results = _upgradeTwoDotFive(model);
+    const results = _upgradeTwoDotFive(model, MOCK_USER_SESSION);
     expect(results).toBe(model, "should return the exact same object");
   });
 
   it("only upgrades the schema version for non-Form templates", () => {
     const model = cloneObject(defaultModel);
     model.data.templates[0].type = "Feature Service";
-    const results = _upgradeTwoDotFive(model);
+    const results = _upgradeTwoDotFive(model, MOCK_USER_SESSION);
     const expected = cloneObject(model);
     expected.item.properties.schemaVersion = 2.5;
     expect(results).toEqual(expected);
@@ -74,7 +76,7 @@ describe("Upgrade 2.5 ::", () => {
   it("it always tokenizes portalUrl when the key/value exists for Form templates", () => {
     const model = cloneObject(defaultModel);
     model.data.templates[0].properties.form.version = 3.8;
-    const results = _upgradeTwoDotFive(model);
+    const results = _upgradeTwoDotFive(model, MOCK_USER_SESSION);
     const expected = cloneObject(model);
     expected.item.properties.schemaVersion = 2.5;
     expected.data.templates[0].properties.form.portalUrl = "{{portalBaseUrl}}";
@@ -85,7 +87,7 @@ describe("Upgrade 2.5 ::", () => {
     const model = cloneObject(defaultModel);
     model.data.templates[0].properties.form.version = 3.8;
     delete model.data.templates[0].properties.form.portalUrl;
-    const results = _upgradeTwoDotFive(model);
+    const results = _upgradeTwoDotFive(model, MOCK_USER_SESSION);
     const expected = cloneObject(model);
     expected.item.properties.schemaVersion = 2.5;
     expect(results).toEqual(expected);
@@ -94,7 +96,7 @@ describe("Upgrade 2.5 ::", () => {
   it("it doesn't migrate the Form template's form config schema when the version is >= 3.8", () => {
     const model = cloneObject(defaultModel);
     model.data.templates[0].properties.form.version = 3.8;
-    const results = _upgradeTwoDotFive(model);
+    const results = _upgradeTwoDotFive(model, MOCK_USER_SESSION);
     const expected = cloneObject(model);
     expected.data.templates[0].properties.form.portalUrl = "{{portalBaseUrl}}";
     expected.item.properties.schemaVersion = 2.5;
@@ -104,7 +106,7 @@ describe("Upgrade 2.5 ::", () => {
   it("it doesn't migrate the Form template's form config schema when that schema is missing", () => {
     const model = cloneObject(defaultModel);
     delete model.data.templates[0].properties.form;
-    const results = _upgradeTwoDotFive(model);
+    const results = _upgradeTwoDotFive(model, MOCK_USER_SESSION);
     const expected = cloneObject(model);
     expected.item.properties.schemaVersion = 2.5;
     expect(results).toEqual(expected);
@@ -113,7 +115,7 @@ describe("Upgrade 2.5 ::", () => {
   it("it defaults the Form template's form config schema to 2.5 if not set then upgrades the form config schema", () => {
     const model = cloneObject(defaultModel);
     delete model.data.templates[0].properties.form.version;
-    const results = _upgradeTwoDotFive(model);
+    const results = _upgradeTwoDotFive(model, MOCK_USER_SESSION);
     const expected = cloneObject(model);
     expected.data.templates[0].properties.form.portalUrl = "{{portalBaseUrl}}";
     expected.data.templates[0].properties.form.layerName = "survey";
@@ -128,7 +130,7 @@ describe("Upgrade 2.5 ::", () => {
 
   it("it upgrades the Form template's form config schema when it's < 3.8", () => {
     const model = cloneObject(defaultModel);
-    const results = _upgradeTwoDotFive(model);
+    const results = _upgradeTwoDotFive(model, MOCK_USER_SESSION);
     const expected = cloneObject(model);
     expected.data.templates[0].properties.form.portalUrl = "{{portalBaseUrl}}";
     expected.data.templates[0].properties.form.layerName = "survey";
@@ -144,7 +146,7 @@ describe("Upgrade 2.5 ::", () => {
   it("it doesn't wrap the theme in an array when it's missing", () => {
     const model = cloneObject(defaultModel);
     delete model.data.templates[0].properties.form.theme;
-    const results = _upgradeTwoDotFive(model);
+    const results = _upgradeTwoDotFive(model, MOCK_USER_SESSION);
     const expected = cloneObject(model);
     expected.data.templates[0].properties.form.portalUrl = "{{portalBaseUrl}}";
     expected.data.templates[0].properties.form.layerName = "survey";
@@ -159,7 +161,7 @@ describe("Upgrade 2.5 ::", () => {
   it("it doesn't migrate appearance.layout when appearance is missing", () => {
     const model = cloneObject(defaultModel);
     delete model.data.templates[0].properties.form.questions[0].appearance;
-    const results = _upgradeTwoDotFive(model);
+    const results = _upgradeTwoDotFive(model, MOCK_USER_SESSION);
     const expected = cloneObject(model);
     delete expected.data.templates[0].properties.form.questions[0].appearance;
     expected.data.templates[0].properties.form.portalUrl = "{{portalBaseUrl}}";
@@ -175,7 +177,7 @@ describe("Upgrade 2.5 ::", () => {
     const model = cloneObject(defaultModel);
     delete model.data.templates[0].properties.form.questions[0].appearance
       .layout;
-    const results = _upgradeTwoDotFive(model);
+    const results = _upgradeTwoDotFive(model, MOCK_USER_SESSION);
     const expected = cloneObject(model);
     delete expected.data.templates[0].properties.form.questions[0].appearance
       .layout;

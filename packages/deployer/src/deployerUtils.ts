@@ -33,10 +33,13 @@ export function _getSolutionTemplateItem(
       common.getItemDataAsJson(idOrObject, authentication)
     ]).then(([item, data]) => {
       // format into a model and migrate the schema
-      return common.migrateSchema({
-        item,
-        data
-      });
+      return common.migrateSchema(
+        {
+          item,
+          data
+        },
+        authentication
+      );
     });
   } else {
     // check if it is a "Model"

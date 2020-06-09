@@ -17,6 +17,7 @@
 import { _upgradeThreeDotZero } from "../../src/migrations/upgrade-three-dot-zero";
 import { cloneObject, IItemTemplate } from "@esri/hub-common";
 import { ISolutionItem } from "../../src/interfaces";
+import * as utils from "../../../common/test/mocks/utils";
 
 describe("Upgrade 3.0 ::", () => {
   const defaultModel = {
@@ -33,16 +34,18 @@ describe("Upgrade 3.0 ::", () => {
     }
   } as ISolutionItem;
 
+  const MOCK_USER_SESSION = utils.createRuntimeMockUserSession();
+
   it("returns same model if on or above 3", () => {
     const m = cloneObject(defaultModel);
-    const chk = _upgradeThreeDotZero(m);
+    const chk = _upgradeThreeDotZero(m, MOCK_USER_SESSION);
     expect(chk).toBe(m, "should return the exact same object");
   });
 
   it("replaces old tokens with new ones", () => {
     const m = cloneObject(defaultModel);
     m.item.properties.schemaVersion = 2.3;
-    const chk = _upgradeThreeDotZero(m);
+    const chk = _upgradeThreeDotZero(m, MOCK_USER_SESSION);
     expect(chk).not.toBe(m, "should not return the exact same object");
   });
 });

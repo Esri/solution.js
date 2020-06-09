@@ -21,11 +21,13 @@
 import * as generalHelpers from "../src/generalHelpers";
 import * as portal from "@esri/arcgis-rest-portal";
 import * as restHelpersGet from "../src/restHelpersGet";
+import * as restHelpers from "../src/restHelpers";
 import * as interfaces from "../src/interfaces";
 
 import * as utils from "./mocks/utils";
 import * as fetchMock from "fetch-mock";
 import * as mockItems from "../test/mocks/agolItems";
+import { assert } from "console";
 
 // ------------------------------------------------------------------------------------------------------------------ //
 
@@ -1706,6 +1708,125 @@ describe("Module `restHelpersGet`: common REST fetch functions shared across pac
           }, done.fail);
       });
     }
+  });
+
+  describe("getPortalDefaultBasemap", function() {
+    const basemapGalleryGroupQuery = `title:"United States Basemaps" AND owner:Esri_cy_US`;
+    const basemapTitle = "Topographic";
+    let searchGroupsResponse: interfaces.ISearchResult<interfaces.IGroup>;
+    let searchGroupContentsResponse: interfaces.ISearchResult<interfaces.IItem>;
+
+    beforeEach(() => {
+      searchGroupsResponse = utils.getGroupResponse(
+        `title:"United States Basemaps" AND owner:Esri_cy_US`,
+        true
+      ) as interfaces.ISearchResult<interfaces.IGroup>;
+      searchGroupContentsResponse = {
+        results: [
+          {
+            id: "14dba3d96cd94b358dff421661300286"
+          }
+        ]
+      } as interfaces.ISearchResult<interfaces.IItem>;
+    });
+
+    it("should query for the default basemap group and default basemap", done => {
+      const searchGroupsSpy = spyOn(restHelpers, "searchGroups").and.resolveTo(
+        searchGroupsResponse
+      );
+      const searchGroupContentsSpy = spyOn(
+        restHelpers,
+        "searchGroupContents"
+      ).and.resolveTo(searchGroupContentsResponse);
+      return restHelpersGet
+        .getPortalDefaultBasemap(
+          basemapGalleryGroupQuery,
+          basemapTitle,
+          MOCK_USER_SESSION
+        )
+        .then(results => {
+          expect(searchGroupsSpy.calls.count()).toEqual(1);
+          expect(searchGroupsSpy.calls.first().args).toEqual([
+            basemapGalleryGroupQuery,
+            MOCK_USER_SESSION,
+            { num: 1 }
+          ]);
+          expect(searchGroupContentsSpy.calls.count()).toEqual(1);
+          expect(searchGroupContentsSpy.calls.first().args).toEqual([
+            searchGroupsResponse.results[0].id,
+            `title:${basemapTitle}`,
+            MOCK_USER_SESSION,
+            { num: 1 }
+          ]);
+          const expected = searchGroupContentsResponse.results[0];
+          expect(results).toEqual(expected);
+          done();
+        })
+        .catch(done.fail);
+    });
+
+    it("should reject when no group is found", done => {
+      searchGroupsResponse.results = [];
+      const searchGroupsSpy = spyOn(restHelpers, "searchGroups").and.resolveTo(
+        searchGroupsResponse
+      );
+      return restHelpersGet
+        .getPortalDefaultBasemap(
+          basemapGalleryGroupQuery,
+          basemapTitle,
+          MOCK_USER_SESSION
+        )
+        .then(results => {
+          done.fail("Should have rejected");
+        })
+        .catch(e => {
+          expect(searchGroupsSpy.calls.count()).toEqual(1);
+          expect(searchGroupsSpy.calls.first().args).toEqual([
+            basemapGalleryGroupQuery,
+            MOCK_USER_SESSION,
+            { num: 1 }
+          ]);
+          expect(e.message).toEqual("No basemap group found");
+          done();
+        });
+    });
+
+    it("should reject when no basemap is found", done => {
+      searchGroupContentsResponse.results = [];
+      const searchGroupsSpy = spyOn(restHelpers, "searchGroups").and.resolveTo(
+        searchGroupsResponse
+      );
+      const searchGroupContentsSpy = spyOn(
+        restHelpers,
+        "searchGroupContents"
+      ).and.resolveTo(searchGroupContentsResponse);
+      return restHelpersGet
+        .getPortalDefaultBasemap(
+          basemapGalleryGroupQuery,
+          basemapTitle,
+          MOCK_USER_SESSION
+        )
+        .then(results => {
+          done.fail("Should have rejected");
+        })
+        .catch(e => {
+          expect(searchGroupsSpy.calls.count()).toEqual(1);
+          expect(searchGroupsSpy.calls.first().args).toEqual([
+            basemapGalleryGroupQuery,
+            MOCK_USER_SESSION,
+            { num: 1 }
+          ]);
+          expect(searchGroupContentsSpy.calls.count()).toEqual(1);
+          expect(searchGroupContentsSpy.calls.first().args).toEqual([
+            searchGroupsResponse.results[0].id,
+            `title:${basemapTitle}`,
+            MOCK_USER_SESSION,
+            { num: 1 }
+          ]);
+          expect(e.message).toEqual("No basemap found");
+          done();
+        });
+    });
   });
 });
 

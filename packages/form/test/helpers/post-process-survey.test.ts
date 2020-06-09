@@ -151,6 +151,9 @@ describe("postProcessHubSurvey", () => {
         ]);
         expect(templates).toEqual([formTemplate, featureServiceTemplate]);
         expect(results).toBeTrue();
+        expect(
+          formTemplate.dependencies.includes(featureServiceResultBase.id)
+        ).toBeTrue();
         done();
       })
       .catch(e => {

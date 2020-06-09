@@ -29,7 +29,6 @@ import * as sinon from "sinon";
 import * as deploySolutionFromTemplate from "../src/deploySolutionFromTemplate";
 import { cloneObject } from "@esri/hub-common";
 import * as postProcessModule from "../src/helpers/post-process";
-import M from "minimatch";
 
 // ------------------------------------------------------------------------------------------------------------------ //
 
