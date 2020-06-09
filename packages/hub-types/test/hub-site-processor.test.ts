@@ -296,4 +296,17 @@ describe("HubSiteProcessor: ", () => {
       });
     });
   });
+  describe("isASite :: ", () => {
+    it("recognizes both types", () => {
+      expect(HubSiteProcessor.isASite("Hub Site Application")).toBe(
+        true,
+        "Ago Type"
+      );
+      expect(HubSiteProcessor.isASite("Site Application")).toBe(
+        true,
+        "Portal type"
+      );
+      expect(HubSiteProcessor.isASite("Web Map")).toBe(false, "other type");
+    });
+  });
 });

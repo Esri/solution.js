@@ -13,17 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { IModel, IHubRequestOptions, interpolate } from "@esri/hub-common";
+import { updatePage } from "@esri/hub-sites";
 
-import { IModel, getProp, maybePush } from "@esri/hub-common";
-
-/**
- * Given an Web Experience model, extract out all the
- * items it depends on from the `dataSources` hash
- * @param model IModel
- */
-export function getWebExperienceDependencies(model: IModel): any[] {
-  const dataSources = getProp(model, "data.dataSources") || {};
-  return Object.keys(dataSources).reduce((acc, key) => {
-    return maybePush(getProp(dataSources, `${key}.itemId`), acc);
-  }, []);
+export function _postProcessPage(
+  pageModel: IModel,
+  itemInfos: any[],
+  templateDictionary: any,
+  hubRequestOptions: IHubRequestOptions
+): Promise<boolean> {
+  // re-interpolate the siteModel using the itemInfos
+  pageModel = interpolate(pageModel, templateDictionary, {});
+  return updatePage(pageModel, hubRequestOptions).then(() => {
+    return true;
+  });
 }

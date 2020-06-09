@@ -31,11 +31,14 @@ import { UserSession } from "@esri/arcgis-rest-auth";
 import { getWebExperienceDependencies } from "./get-web-experience-dependencies";
 
 /**
+ * Convert an Experience item into a template
+ *
+ * Pretty simpler conversion - remove extra item props, extract out
+ * items from the data.dataSources hash.
  *
  * @param model
  * @param authentication
  */
-/* istanbul ignore next */
 export function convertWebExperienceToTemplate(
   model: IModel,
   authentication: UserSession // not currently used

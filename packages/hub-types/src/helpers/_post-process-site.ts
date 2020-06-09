@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { IModel, IHubRequestOptions } from "@esri/hub-common";
+import { IModel, IHubRequestOptions, interpolate } from "@esri/hub-common";
 
 import {
   _getSecondPassSharingOptions,
@@ -24,10 +24,21 @@ import {
 
 import { _updateSitePages } from "./_update-site-pages";
 
-// TODO Implement in Hub.js
+/**
+ * Post Process a Site
+ * - share all items to the Hub teams created as part of the site
+ * - link any created page to the site item
+ * - re-interpolate any remaining item ids that were not direct deps of the site
+ *
+ * @param siteModel
+ * @param itemInfos
+ * @param templateDictionary
+ * @param hubRequestOptions
+ */
 export function _postProcessSite(
   siteModel: IModel,
   itemInfos: any[],
+  templateDictionary: any,
   hubRequestOptions: IHubRequestOptions
 ): Promise<boolean> {
   // convert the itemInfo's into things that look enough like a model
@@ -60,6 +71,10 @@ export function _postProcessSite(
   // need to get all the child items and add into site.item.properties.children
   const childItemIds = itemInfos.map(i => i.id);
   siteModel.item.properties.children = childItemIds;
+
+  // re-interpolate the siteModel using the itemInfos
+  siteModel = interpolate(siteModel, templateDictionary, {});
+  // and update the model
   secondPassPromises.push(updateSite(siteModel, null, hubRequestOptions));
 
   return Promise.all(secondPassPromises).then(() => {
