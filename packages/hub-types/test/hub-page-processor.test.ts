@@ -19,6 +19,7 @@ import * as moveHelper from "../src/helpers/move-model-to-folder";
 const MOCK_USER_SESSION = utils.createRuntimeMockUserSession();
 
 import * as HubPageProcessor from "../src/hub-page-processor";
+import * as postProcessModule from "../src/helpers/_post-process-page";
 import * as common from "@esri/solution-common";
 import * as hubCommon from "@esri/hub-common";
 
@@ -82,7 +83,7 @@ describe("HubPageProcessor: ", () => {
       ).then(result => {
         expect(result.id).toBe("FAKE3ef", "should return the created item id");
         expect(result.type).toBe("Hub Page", "should return the type");
-        expect(result.postProcess).toBe(false, "should not flag postProcess");
+        expect(result.postProcess).toBe(true, "should flag postProcess");
         expect(createFromTmplSpy.calls.count()).toBe(
           1,
           "should call createFromTemplate"
@@ -191,6 +192,55 @@ describe("HubPageProcessor: ", () => {
         expect(movePageSpy.calls.count()).toBe(1, "should call move");
         expect(removePageSpy.calls.count()).toBe(1, "should call removePage");
       });
+    });
+  });
+  describe("postProcess", () => {
+    it("fetches page model and delegates to _postProcessPage", () => {
+      const model = {} as hubCommon.IModel;
+      const getModelSpy = spyOn(hubCommon, "getModel").and.resolveTo(model);
+      const postProcessSpy = spyOn(
+        postProcessModule,
+        "_postProcessPage"
+      ).and.resolveTo(true);
+      const templates = [
+        { itemId: "bc3", data: {} },
+        { itemId: "bc4", data: {} }
+      ] as common.IItemTemplate[];
+      const td = {
+        organization: {
+          id: "somePortalId",
+          portalHostname: "www.arcgis.com"
+        },
+        user: {
+          username: "vader"
+        },
+        bc3: {
+          id: "new-bc3"
+        },
+        bc4: {
+          id: "new-bc4"
+        }
+      };
+      return HubPageProcessor.postProcess(
+        "ef3",
+        "Hub Page",
+        [],
+        templates,
+        [],
+        td,
+        MOCK_USER_SESSION
+      ).then(result => {
+        expect(result).toBe(true, "should return true");
+        expect(getModelSpy.calls.count()).toBe(1, "should get the page model");
+        expect(postProcessSpy.calls.count()).toBe(1, "should delegate");
+      });
+    });
+  });
+  describe("isAPage :: ", () => {
+    it("recognizes both types", () => {
+      expect(HubPageProcessor.isAPage("Hub Page")).toBe(true, "Ago Type");
+      expect(HubPageProcessor.isAPage("Site Page")).toBe(true, "Portal type");
+      expect(HubPageProcessor.isAPage("Web Map")).toBe(false, "other type");
     });
   });
 });
