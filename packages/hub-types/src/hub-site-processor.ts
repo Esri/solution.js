@@ -213,7 +213,7 @@ export function postProcess(
   return getSiteById(id, hubRo)
     .then(siteModel => {
       // Hub.js does not expect the same structures, so we delegat to a local fn
-      return _postProcessSite(siteModel, itemInfos, hubRo);
+      return _postProcessSite(siteModel, itemInfos, templateDictionary, hubRo);
     })
     .then(() => {
       // resolve w/ a boolean
@@ -227,7 +227,6 @@ export function postProcess(
  * Site Application is for ArcGIS Enterprise
  * @param itemType
  */
-/* istanbul ignore next */
 export function isASite(itemType: string, itemUrl?: string): boolean {
   let result = false;
   if (itemType === "Hub Site Application" || itemType === "Site Application") {
