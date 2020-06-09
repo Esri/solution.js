@@ -56,6 +56,7 @@ The API is divided into packages to make it easier to use just the parts that yo
 * `simple-types`, which contains functions for the simpler item types Dashboard, Form, Web Map, Web Mapping Application, and Workforce Project
 * `storymap`, which contains functions for Storymap items
 * `viewer`, which contains functions to support displaying Solution items
+* `web-experience`, which contains functions for Experience Builder items
 
 #### Additional information
 
