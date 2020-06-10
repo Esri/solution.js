@@ -21,7 +21,6 @@
     "@esri/hub-sites": "^4.2.0",
     "@esri/solution-common": "^0.16.5",
     "@esri/solution-creator": "^0.16.5",
-    "@esri/solution-deployer": "^0.16.5",
     "@esri/solution-feature-layer": "^0.16.5",
     "@esri/solution-file": "^0.16.5",
     "@esri/solution-form": "^0.16.5",
@@ -32,9 +31,9 @@
     "@esri/solution-web-experience": "^0.16.5",
     "http-server": "0.12.3",
     "rollup": "^1.22.0",
-    "typescript": "^3.9.3"
+    "typescript": "^3.9.5"
   },
   "dependencies": {
-    "tslib": "^1.10.0"
+    "tslib": "^1.13.0"
   }
 }
