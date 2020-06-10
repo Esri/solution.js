@@ -12,7 +12,7 @@
  },
  "devDependencies": {
   "http-server": "0.12.3",
-  "typescript": "^3.9.2"
+  "typescript": "^3.9.5"
  },
  "dependencies": {
   "@esri/arcgis-rest-auth": "^2.13.1",
@@ -24,6 +24,7 @@
   "@esri/hub-common": "^4.0.0",
   "@esri/hub-initiatives": "^4.0.0",
   "@esri/hub-sites": "^4.0.0",
-  "@esri/solution-common": "^0.16.5"
+  "@esri/solution-common": "^0.16.5",
+  "tslib": "^1.13.0"
  }
 }
