@@ -59,6 +59,7 @@
     "rollup-plugin-commonjs": "^10.1.0",
     "rollup-plugin-filesize": "^6.1.1",
     "rollup-plugin-json": "^4.0.0",
+    "rollup-plugin-node-polyfills": "^0.2.1",
     "rollup-plugin-node-resolve": "^5.2.0",
     "rollup-plugin-terser": "^4.0.4",
     "rollup-plugin-typescript2": "^0.25.3",
@@ -176,9 +177,5 @@
     "commitizen": {
       "path": "./node_modules/cz-lerna-changelog"
     }
-  },
-  "dependencies": {
-    "rollup-plugin-node-builtins": "^2.1.2",
-    "rollup-plugin-node-globals": "^1.4.0"
   }
 }
