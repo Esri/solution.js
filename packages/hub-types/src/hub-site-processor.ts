@@ -25,7 +25,8 @@ import {
   IItemProgressCallback,
   ICreateItemFromTemplateResponse,
   EItemProgressStatus,
-  UserSession
+  UserSession,
+  getProp
 } from "@esri/solution-common";
 import {
   createSiteModelFromTemplate,
@@ -34,15 +35,23 @@ import {
   _getSecondPassSharingOptions,
   _shareItemsToSiteGroups,
   _updatePages,
-  removeSite
+  removeSite,
+  convertSiteToTemplate
 } from "@esri/hub-sites";
 
-import { IModel, cloneObject, failSafe } from "@esri/hub-common";
+import {
+  IModel,
+  cloneObject,
+  failSafe,
+  IHubRequestOptions,
+  without
+} from "@esri/hub-common";
 
 import { moveModelToFolder } from "./helpers/move-model-to-folder";
 import { createHubRequestOptions } from "./helpers/create-hub-request-options";
 import { _postProcessSite } from "./helpers/_post-process-site";
 import { _updateSitePages } from "./helpers/_update-site-pages";
+import { replaceItemIds } from "./helpers/replace-item-ids";
 /**
  * Handle deployment of Site item templates
  *
@@ -65,16 +74,16 @@ export function createItemFromTemplate(
     EItemProgressStatus.Started,
     0
   );
-
-  // and if it returned false, just resolve out
+  // if it returned false, just resolve out
   if (!startStatus) {
     return Promise.resolve({ id: "", type: template.type, postProcess: false });
   }
 
-  const hubRo = createHubRequestOptions(
-    destinationAuthentication,
-    templateDictionary
-  );
+  // TODO: Reassess with resource unification
+  if (template.assets && template.resources) {
+    delete template.assets;
+  }
+
   // convert the templateDictionary to a settings hash
   const settings = cloneObject(templateDictionary);
 
@@ -95,7 +104,12 @@ export function createItemFromTemplate(
   // Create the "siteModel" from the template. Does not save the site item yet
   // Note: depending on licensing and user privs, will also create the team groups
   // and initiative item.
-  return createSiteModelFromTemplate(template, settings, transforms, hubRo)
+  let hubRo: IHubRequestOptions;
+  return createHubRequestOptions(destinationAuthentication, templateDictionary)
+    .then(ro => {
+      hubRo = ro;
+      return createSiteModelFromTemplate(template, settings, transforms, hubRo);
+    })
     .then(interpolated => {
       const options = {
         assets: interpolated.assets || []
@@ -154,34 +168,42 @@ export function createItemFromTemplate(
     });
 }
 
-/***
- *    ##    ##  #######  ########    #### ##     ## ########
- *    ###   ## ##     ##    ##        ##  ###   ### ##     ##
- *    ####  ## ##     ##    ##        ##  #### #### ##     ##
- *    ## ## ## ##     ##    ##        ##  ## ### ## ########
- *    ##  #### ##     ##    ##        ##  ##     ## ##
- *    ##   ### ##     ##    ##        ##  ##     ## ##        ###
- *    ##    ##  #######     ##       #### ##     ## ##        ###
+/**
+ * Convert a Site to a Template
+ * @param solutionItemId
+ * @param itemInfo
+ * @param authentication
  */
-/* istanbul ignore next */
 export function convertItemToTemplate(
   solutionItemId: string,
   itemInfo: any,
   authentication: UserSession
 ): Promise<IItemTemplate> {
-  // TODO: add implementation
-  return Promise.resolve({
-    item: {},
-    data: {},
-    itemId: itemInfo.id,
-    resources: [],
-    type: "Hub Page",
-    key: "page-bz3",
-    dependencies: [],
-    properties: {},
-    groups: [],
-    estimatedDeploymentCostFactor: 1
-  } as IItemTemplate);
+  let hubRo: IHubRequestOptions;
+  // get hubRequestOptions
+  return createHubRequestOptions(authentication)
+    .then(ro => {
+      hubRo = ro;
+      return getSiteById(itemInfo.id, hubRo);
+    })
+    .then(siteModel => {
+      return convertSiteToTemplate(siteModel, hubRo);
+    })
+    .then(tmpl => {
+      // add in some stuff Hub.js does not yet add
+      tmpl.item.typeKeywords = without(tmpl.item.typeKeywords, "doNotDelete");
+      tmpl.groups = [];
+      tmpl.estimatedDeploymentCostFactor = 2;
+      tmpl.resources = [];
+      if (!getProp(tmpl, "properties")) {
+        tmpl.properties = {};
+      }
+      // swap out dependency id's to {{<depid>.itemId}}
+      // so it will be re-interpolated
+      tmpl = replaceItemIds(tmpl);
+      // and return it
+      return tmpl as IItemTemplate;
+    });
 }
 
 /**
@@ -206,11 +228,13 @@ export function postProcess(
   templateDictionary: any,
   authentication: UserSession
 ): Promise<boolean> {
-  // create the requestOptions
-  const hubRo = createHubRequestOptions(authentication, templateDictionary);
-
-  // get the site model
-  return getSiteById(id, hubRo)
+  let hubRo: IHubRequestOptions;
+  return createHubRequestOptions(authentication, templateDictionary)
+    .then(ro => {
+      hubRo = ro;
+      // get the site model
+      return getSiteById(id, hubRo);
+    })
     .then(siteModel => {
       // Hub.js does not expect the same structures, so we delegat to a local fn
       return _postProcessSite(siteModel, itemInfos, templateDictionary, hubRo);
