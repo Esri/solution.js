@@ -56,9 +56,7 @@ import {
   IUpdateItemResponse,
   UserSession
 } from "./interfaces";
-import {
-  createZip
-} from "./libs";
+import { createZip } from "./libs";
 import {
   addItemData as portalAddItemData,
   addItemRelationship,
@@ -268,9 +266,10 @@ export function _validateExtent(extent: IExtent): IExtent {
 /**
  * If the request to convert the extent fails it has commonly been due to an invalid extent.
  * This function will first attempt to use the provided extent. If it fails it will default to
- * a global extent.
+ * the source items extent and if that fails it will then use a default global extent.
  *
  * @param extent the extent to convert
+ * @param fallbackExtent the extent to convert if the main extent does not project to the outSR
  * @param outSR the spatial reference to project to
  * @param geometryServiceUrl the service url for the geometry service to use
  * @param authentication the credentials for the requests
@@ -280,6 +279,7 @@ export function _validateExtent(extent: IExtent): IExtent {
  */
 export function convertExtentWithFallback(
   extent: IExtent,
+  fallbackExtent: any,
   outSR: ISpatialReference,
   geometryServiceUrl: string,
   authentication: UserSession
@@ -307,7 +307,7 @@ export function convertExtentWithFallback(
           resolve(extentResponse);
         } else {
           convertExtent(
-            defaultExtent,
+            fallbackExtent || defaultExtent,
             outSR,
             geometryServiceUrl,
             authentication
@@ -543,24 +543,29 @@ export function createFullItem(
                     Array.isArray(resourcesFiles) &&
                     resourcesFiles.length > 0
                   ) {
-                    updateDefs.push(new Promise<IItemResourceResponse>(
-                      (rsrcResolve, rsrcReject) => {
-                        createZip("resources.zip", resourcesFiles).then(
-                          (zipfile: File) => {
-                            const addResourceOptions: IItemResourceOptions = {
-                              id: createResponse.id,
-                              resource: zipfile,
-                              authentication: destinationAuthentication,
-                              params: {
-                                archive: true
-                              }
-                            };
-                            addItemResource(addResourceOptions).then(rsrcResolve, rsrcReject);
-                          },
-                          rsrcReject
-                        );
-                      }
-                    ));
+                    updateDefs.push(
+                      new Promise<IItemResourceResponse>(
+                        (rsrcResolve, rsrcReject) => {
+                          createZip("resources.zip", resourcesFiles).then(
+                            (zipfile: File) => {
+                              const addResourceOptions: IItemResourceOptions = {
+                                id: createResponse.id,
+                                resource: zipfile,
+                                authentication: destinationAuthentication,
+                                params: {
+                                  archive: true
+                                }
+                              };
+                              addItemResource(addResourceOptions).then(
+                                rsrcResolve,
+                                rsrcReject
+                              );
+                            },
+                            rsrcReject
+                          );
+                        }
+                      )
+                    );
                   }
 
                   // Add the metadata section
@@ -1442,6 +1447,7 @@ export function _getCreateServiceOptions(
     // project the portals extent to match that of the service
     convertExtentWithFallback(
       templateDictionary.organization.defaultExtent,
+      serviceInfo.defaultExtent,
       serviceInfo.service.spatialReference,
       templateDictionary.organization.helperServices.geometry.url,
       authentication
