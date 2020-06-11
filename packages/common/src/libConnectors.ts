@@ -17,42 +17,8 @@
  * Provides connectors to third-party helper functions.
  */
 
-import JSZip from "jszip";
-import { blobToFile } from "./generalHelpers";
 import { Sanitizer } from "@esri/arcgis-html-sanitizer";
 export { Sanitizer } from "@esri/arcgis-html-sanitizer";
-
-//#region JSZip ----------------------------------------------------------------------------------------------------- //
-
-/**
- * Creates a zip File from a collection of Files.
- *
- * @param zipFilename Name to use for zip File
- * @param files List of files to add to zip File
- * @return Promise resolving to a zip File
- */
-export function createZip(
-  zipFilename: string,
-  files: File[]
-): Promise<File> {
-  return new Promise<File>((resolve, reject) => {
-    const zip = new JSZip();
-
-    // Add the files
-    files.forEach(
-      file => zip.file(file.name, file, { binary: true })
-    );
-
-    // Create the ZIP
-    zip.generateAsync({ type: "blob" })
-      .then(
-        (content: Blob) => resolve(blobToFile(content, zipFilename, "application/zip")),
-        reject
-      );
-  });
-}
-
-//#endregion ---------------------------------------------------------------------------------------------------------//
 
 //#region arcgis-html-sanitizer ------------------------------------------------------------------------------------- //
 

@@ -366,6 +366,67 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
     });
   });
 
+  describe("addTokenToUrl", () => {
+    it("can handle missing URL", done => {
+      const url = "";
+      restHelpers.addTokenToUrl(url, null).then(
+        result => {
+          expect(result).toEqual(url);
+          done();
+        },
+        done.fail
+      );
+    });
+
+    it("can handle missing authentication", done => {
+      const url = "https://www.esri.com";
+      restHelpers.addTokenToUrl(url, null).then(
+        result => {
+          expect(result).toEqual(url);
+          done();
+        },
+        done.fail
+      );
+    });
+
+    it("adds returned token", done => {
+      const url = "https://www.esri.com";
+      const token = "abcdefgh";
+      spyOn(MOCK_USER_SESSION, "getToken").and.callFake(() => Promise.resolve(token));
+      restHelpers.addTokenToUrl(url, MOCK_USER_SESSION).then(
+        result => {
+          expect(result).toEqual(url + "?token=" + token);
+          done();
+        },
+        done.fail
+      );
+    });
+
+    it("can handle absence of token", done => {
+      const url = "https://www.esri.com";
+      spyOn(MOCK_USER_SESSION, "getToken").and.callFake(() => Promise.resolve(null));
+      restHelpers.addTokenToUrl(url, MOCK_USER_SESSION).then(
+        result => {
+          expect(result).toEqual(url);
+          done();
+        },
+        done.fail
+      );
+    });
+
+    it("can handle failure to get token", done => {
+      const url = "https://www.esri.com";
+      spyOn(MOCK_USER_SESSION, "getToken").and.callFake(() => Promise.reject());
+      restHelpers.addTokenToUrl(url, MOCK_USER_SESSION).then(
+        result => {
+          expect(result).toEqual(url);
+          done();
+        },
+        done.fail
+      );
+    });
+  });
+
   describe("addToServiceDefinition", () => {
     it("can handle failure", done => {
       const url =
@@ -535,359 +596,6 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
             done.fail();
           }
         );
-    });
-  });
-
-  describe("createFullItem", () => {
-    it("can create a minimal item", done => {
-      const itemInfo: any = {};
-      const folderId: string = null as string; // default is top level
-      const itemThumbnailUrl: string = null as string;
-      const dataFile: File = null as File;
-      const metadataFile: File = null as File;
-      const resourcesFiles: File[] = null as File[];
-      const access = undefined as string; // default is "private"
-
-      fetchMock.post(
-        utils.PORTAL_SUBSET.restUrl +
-          "/content/users/casey/" +
-          (folderId ? folderId + "/addItem" : "addItem"),
-        {
-          success: true,
-          id: "itm1234567980",
-          folder: folderId
-        }
-      );
-
-      restHelpers
-        .createFullItem(
-          itemInfo,
-          folderId,
-          MOCK_USER_SESSION,
-          itemThumbnailUrl,
-          MOCK_USER_SESSION,
-          dataFile,
-          metadataFile,
-          resourcesFiles,
-          access
-        )
-        .then(response => (response.success ? done() : done.fail()), done.fail);
-    });
-
-    it("can create a minimal public item", done => {
-      const itemInfo: any = {};
-      const folderId: string = null as string; // default is top level
-      const itemThumbnailUrl: string = null as string;
-      const dataFile: File = null as File;
-      const metadataFile: File = null as File;
-      const resourcesFiles: File[] = null as File[];
-      const access = "public";
-
-      fetchMock
-        .post(
-          utils.PORTAL_SUBSET.restUrl +
-            "/content/users/casey/" +
-            (folderId ? folderId + "/addItem" : "addItem"),
-          {
-            success: true,
-            id: "itm1234567980",
-            folder: folderId
-          }
-        )
-        .post(
-          utils.PORTAL_SUBSET.restUrl +
-            "/content/users/casey/items/itm1234567980/share",
-          {
-            notSharedWith: [] as string[],
-            itemId: "itm1234567980"
-          }
-        );
-
-      restHelpers
-        .createFullItem(
-          itemInfo,
-          folderId,
-          MOCK_USER_SESSION,
-          itemThumbnailUrl,
-          MOCK_USER_SESSION,
-          dataFile,
-          metadataFile,
-          resourcesFiles,
-          access
-        )
-        .then(response => (response.success ? done() : done.fail()), done.fail);
-    });
-
-    // Files are only available in the browser
-    if (typeof window !== "undefined") {
-      it("can create an org item with goodies", done => {
-        const itemInfo: any = {};
-        const folderId: string = null as string; // default is top level
-        const itemThumbnailUrl: string =
-          "https://myserver/thumbnail/thumbnail.png";
-        const dataFile: File = polyfills.new_File(
-          [utils.getSampleJsonAsBlob()],
-          "data.json"
-        );
-        const metadataFile: File = utils.getSampleMetadataAsFile();
-        const resourcesFiles: File[] = [
-          polyfills.new_File([utils.getSampleImage()], "image.png")
-        ];
-        const access = "org";
-
-        fetchMock
-          .post(itemThumbnailUrl + "/rest/info", "{}")
-          .post(
-            utils.PORTAL_SUBSET.restUrl +
-              "/content/users/casey/" +
-              (folderId ? folderId + "/addItem" : "addItem"),
-            {
-              success: true,
-              id: "itm1234567980",
-              folder: folderId
-            }
-          )
-          .post(
-            utils.PORTAL_SUBSET.restUrl +
-              "/content/users/casey/items/itm1234567980/share",
-            {
-              notSharedWith: [] as string[],
-              itemId: "itm1234567980"
-            }
-          )
-          .post(
-            utils.PORTAL_SUBSET.restUrl +
-              "/content/users/casey/items/itm1234567980/update",
-            utils.getSuccessResponse({ id: "itm1234567980" })
-          )
-          .post(
-            utils.PORTAL_SUBSET.restUrl +
-              "/content/users/casey/items/itm1234567980/addResources",
-            utils.getSuccessResponse({
-              itemId: "itm1234567980",
-              owner: MOCK_USER_SESSION.username,
-              folder: null
-            })
-          );
-
-        restHelpers
-          .createFullItem(
-            itemInfo,
-            folderId,
-            MOCK_USER_SESSION,
-            itemThumbnailUrl,
-            MOCK_USER_SESSION,
-            dataFile,
-            metadataFile,
-            resourcesFiles,
-            access
-          )
-          .then(
-            response => (response.success ? done() : done.fail()),
-            done.fail
-          );
-      });
-
-      it("can create an item with a resource in a subfolder", done => {
-        const itemInfo: any = {};
-        const folderId: string = null as string; // default is top level
-        const itemThumbnailUrl: string = null as string;
-        const dataFile: File = null as File;
-        const metadataFile: File = null as File;
-        const resourcesFiles: File[] = [
-          polyfills.new_File(
-            [utils.getSampleImage()],
-            "resourceFolder/image.png"
-          )
-        ];
-        const access = undefined as string; // default is "private"
-
-        fetchMock
-          .post(
-            utils.PORTAL_SUBSET.restUrl +
-              "/content/users/casey/" +
-              (folderId ? folderId + "/addItem" : "addItem"),
-            {
-              success: true,
-              id: "itm1234567980",
-              folder: folderId
-            }
-          )
-          .post(
-            utils.PORTAL_SUBSET.restUrl +
-              "/content/users/casey/items/itm1234567980/addResources",
-            utils.getSuccessResponse({
-              itemId: "itm1234567980",
-              owner: MOCK_USER_SESSION.username,
-              folder: "resourceFolder"
-            })
-          );
-
-        restHelpers
-          .createFullItem(
-            itemInfo,
-            folderId,
-            MOCK_USER_SESSION,
-            itemThumbnailUrl,
-            MOCK_USER_SESSION,
-            dataFile,
-            metadataFile,
-            resourcesFiles,
-            access
-          )
-          .then(
-            response => (response.success ? done() : done.fail()),
-            done.fail
-          );
-      });
-
-      it("can handle failure to add metadata to item, hard error", done => {
-        const itemInfo: any = {};
-        const folderId: string = null as string; // default is top level
-        const itemThumbnailUrl: string = null as string;
-        const dataFile: File = null as File;
-        const metadataFile: File = utils.getSampleMetadataAsFile();
-        const resourcesFiles: File[] = null as File[];
-        const access = undefined as string; // default is "private"
-
-        fetchMock
-          .post(
-            utils.PORTAL_SUBSET.restUrl +
-              "/content/users/casey/" +
-              (folderId ? folderId + "/addItem" : "addItem"),
-            {
-              success: true,
-              id: "itm1234567980",
-              folder: folderId
-            }
-          )
-          .post(
-            utils.PORTAL_SUBSET.restUrl +
-              "/content/users/casey/items/itm1234567980/update",
-            500
-          );
-
-        restHelpers
-          .createFullItem(
-            itemInfo,
-            folderId,
-            MOCK_USER_SESSION,
-            itemThumbnailUrl,
-            MOCK_USER_SESSION,
-            dataFile,
-            metadataFile,
-            resourcesFiles,
-            access
-          )
-          .then(() => done.fail(), done);
-      });
-    }
-
-    it("can handle failure to create an item", done => {
-      const itemInfo: any = {};
-      const folderId: string = null as string; // default is top level
-      const itemThumbnailUrl: string = null as string;
-      const dataFile: File = null as File;
-      const metadataFile: File = null as File;
-      const resourcesFiles: File[] = null as File[];
-      const access = undefined as string; // default is "private"
-
-      fetchMock.post(
-        utils.PORTAL_SUBSET.restUrl +
-          "/content/users/casey/" +
-          (folderId ? folderId + "/addItem" : "addItem"),
-        {
-          success: false,
-          id: "itm1234567980",
-          folder: folderId
-        }
-      );
-
-      restHelpers
-        .createFullItem(
-          itemInfo,
-          folderId,
-          MOCK_USER_SESSION,
-          itemThumbnailUrl,
-          MOCK_USER_SESSION,
-          dataFile,
-          metadataFile,
-          resourcesFiles,
-          access
-        )
-        .then(() => done.fail(), done);
-    });
-
-    it("can handle failure to create an item, hard error", done => {
-      const itemInfo: any = {};
-      const folderId: string = null as string; // default is top level
-      const itemThumbnailUrl: string = null as string;
-      const dataFile: File = null as File;
-      const metadataFile: File = null as File;
-      const resourcesFiles: File[] = null as File[];
-      const access = undefined as string; // default is "private"
-
-      fetchMock.post(
-        utils.PORTAL_SUBSET.restUrl +
-          "/content/users/casey/" +
-          (folderId ? folderId + "/addItem" : "addItem"),
-        500
-      );
-
-      restHelpers
-        .createFullItem(
-          itemInfo,
-          folderId,
-          MOCK_USER_SESSION,
-          itemThumbnailUrl,
-          MOCK_USER_SESSION,
-          dataFile,
-          metadataFile,
-          resourcesFiles,
-          access
-        )
-        .then(() => done.fail(), done);
-    });
-
-    it("can handle failure to create a public item, hard error", done => {
-      const itemInfo: any = {};
-      const folderId: string = null as string; // default is top level
-      const itemThumbnailUrl: string = null as string;
-      const dataFile: File = null as File;
-      const metadataFile: File = null as File;
-      const resourcesFiles: File[] = null as File[];
-      const access = "public";
-
-      fetchMock
-        .post(
-          utils.PORTAL_SUBSET.restUrl +
-            "/content/users/casey/" +
-            (folderId ? folderId + "/addItem" : "addItem"),
-          {
-            success: true,
-            id: "itm1234567980",
-            folder: folderId
-          }
-        )
-        .post(
-          utils.PORTAL_SUBSET.restUrl +
-            "/content/users/casey/items/itm1234567980/share",
-          500
-        );
-
-      restHelpers
-        .createFullItem(
-          itemInfo,
-          folderId,
-          MOCK_USER_SESSION,
-          itemThumbnailUrl,
-          MOCK_USER_SESSION,
-          dataFile,
-          metadataFile,
-          resourcesFiles,
-          access
-        )
-        .then(() => done.fail(), done);
     });
   });
 
@@ -2841,7 +2549,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
           "/update";
         fetchMock.post(url, '{"success":true}');
         restHelpers
-          ._addItemDataFile(
+          .addItemDataFile(
             itemId,
             utils.getSampleTextAsBlob() as File,
             MOCK_USER_SESSION
@@ -2866,7 +2574,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
           "/update";
         fetchMock.post(url, '{"success":true}');
         restHelpers
-          ._addItemDataFile(
+          .addItemDataFile(
             itemId,
             utils.getSampleJsonAsBlob() as File,
             MOCK_USER_SESSION
@@ -2896,7 +2604,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
           "/update";
         fetchMock.post(url, '{"success":true}');
         restHelpers
-          ._addItemDataFile(
+          .addItemDataFile(
             itemId,
             utils.getSampleMetadataAsFile(),
             MOCK_USER_SESSION
@@ -2953,7 +2661,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
           '{"success":true}'
         );
         restHelpers
-          ._addItemMetadataFile(
+          .addItemMetadataFile(
             itemId,
             utils.getSampleMetadataAsFile(),
             MOCK_USER_SESSION
@@ -2974,7 +2682,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
           '{"success":false}'
         );
         restHelpers
-          ._addItemMetadataFile(
+          .addItemMetadataFile(
             itemId,
             utils.getSampleMetadataAsFile(),
             MOCK_USER_SESSION

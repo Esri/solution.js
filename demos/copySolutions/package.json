@@ -25,6 +25,7 @@
     "@esri/hub-initiatives": "^4.0.0",
     "@esri/hub-sites": "^4.0.0",
     "@esri/solution-common": "^0.16.5",
+    "jszip": "^3.4.0",
     "tslib": "^1.13.0"
   }
 }

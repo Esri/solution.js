@@ -57,9 +57,6 @@ import {
   UserSession
 } from "./interfaces";
 import {
-  createZip
-} from "./libConnectors";
-import {
   addItemData as portalAddItemData,
   addItemRelationship,
   addItemResource,
@@ -191,6 +188,71 @@ export function addForwardItemRelationships(
     Promise.all(relationshipPromises).then((responses: IStatusResponse[]) =>
       resolve(responses)
     );
+  });
+}
+
+/**
+ * Adds a data section to an item.
+ *
+ * @param itemId Id of item to receive data file
+ * @param dataFile Data to be added
+ * @param authentication Credentials for the request
+ * @return Promise reporting success or failure
+ * @protected
+ */
+export function addItemDataFile(
+  itemId: string,
+  dataFile: File,
+  authentication: UserSession
+): Promise<IUpdateItemResponse> {
+  return new Promise<IUpdateItemResponse>((resolve, reject) => {
+    const addItemData: (data: any) => void = (data: any) => {
+      const addDataOptions: IAddItemDataOptions = {
+        id: itemId,
+        data: data,
+        authentication: authentication
+      };
+      portalAddItemData(addDataOptions).then(resolve, reject);
+    };
+
+    // Item data has to be submitted as text or JSON for those file types
+    if (dataFile.type.startsWith("text/plain")) {
+      blobToText(dataFile).then(addItemData, reject);
+    } else if (dataFile.type === "application/json") {
+      blobToJson(dataFile).then(addItemData, reject);
+    } else {
+      addItemData(dataFile);
+    }
+  });
+}
+
+/**
+ * Adds a metadata file to an item.
+ *
+ * @param itemId Id of item to receive data file
+ * @param metadataFile Metadata to be added
+ * @param authentication Credentials for the request
+ * @return Promise reporting success or failure
+ * @protected
+ */
+export function addItemMetadataFile(
+  itemId: string,
+  metadataFile: File,
+  authentication: UserSession
+): Promise<IUpdateItemResponse> {
+  return new Promise<IUpdateItemResponse>((resolve, reject) => {
+    const addMetadataOptions: IUpdateItemOptions = {
+      item: {
+        id: itemId
+      },
+      params: {
+        // Pass metadata in via params because item property is serialized, which discards a blob
+        metadata: metadataFile
+      },
+      authentication: authentication
+    };
+
+    portalUpdateItem(addMetadataOptions).then(resolve, reject);
   });
 }
 
@@ -449,146 +511,6 @@ export function createFeatureService(
         );
       },
       e => reject(fail(e))
-    );
-  });
-}
-
-/**
- * Publishes an item and its data, metadata, and resources as an AGOL item.
- *
- * @param itemInfo Item's `item` section
- * @param folderId Id of folder to receive item; null indicates that the item goes into the root
- *                 folder; ignored for Group item type
- * @param destinationAuthentication Credentials for for requests to where the item is to be created
- * @param itemThumbnailUrl URL to image to use for item thumbnail
- * @param itemThumbnailAuthentication Credentials for requests to the thumbnail source
- * @param dataFile Item's `data` section
- * @param metadataFile Item's metadata file
- * @param resourcesFiles Item's resources
- * @param access Access to set for item: "public", "org", "private"
- * @return A promise that will resolve with an object reporting success or failure and the Solution id
- */
-export function createFullItem(
-  itemInfo: any,
-  folderId: string | undefined,
-  destinationAuthentication: UserSession,
-  itemThumbnailUrl?: string,
-  itemThumbnailAuthentication?: UserSession,
-  dataFile?: File,
-  metadataFile?: File,
-  resourcesFiles?: File[],
-  access = "private"
-): Promise<ICreateItemResponse> {
-  return new Promise((resolve, reject) => {
-    // Create item
-    const createOptions: ICreateItemOptions = {
-      item: {
-        ...itemInfo
-      },
-      folderId,
-      authentication: destinationAuthentication
-    };
-
-    // tslint:disable-next-line: no-floating-promises
-    addTokenToUrl(itemThumbnailUrl, itemThumbnailAuthentication).then(
-      updatedThumbnailUrl => {
-        /* istanbul ignore else */
-        if (updatedThumbnailUrl) {
-          createOptions.item.thumbnailurl = appendQueryParam(
-            updatedThumbnailUrl,
-            "w=400"
-          );
-        }
-
-        createItemInFolder(createOptions).then(
-          createResponse => {
-            if (createResponse.success) {
-              let accessDef: Promise<ISharingResponse>;
-
-              // Set access if it is not AGOL default
-              // Set the access manually since the access value in createItem appears to be ignored
-              // Need to run serially; will not work reliably if done in parallel with adding the data section
-              if (access !== "private") {
-                const accessOptions: ISetAccessOptions = {
-                  id: createResponse.id,
-                  access: access === "public" ? "public" : "org", // need to use constants rather than string
-                  authentication: destinationAuthentication
-                };
-                accessDef = setItemAccess(accessOptions);
-              } else {
-                accessDef = Promise.resolve({
-                  itemId: createResponse.id
-                } as ISharingResponse);
-              }
-
-              // Now add attached items
-              accessDef.then(
-                () => {
-                  const updateDefs: Array<Promise<any>> = [];
-
-                  // Add the data section
-                  if (dataFile) {
-                    updateDefs.push(
-                      _addItemDataFile(
-                        createResponse.id,
-                        dataFile,
-                        destinationAuthentication
-                      )
-                    );
-                  }
-
-                  // Add the resources via a zip because AGO sometimes loses resources if many are added at the
-                  // same time to the same item
-                  if (
-                    Array.isArray(resourcesFiles) &&
-                    resourcesFiles.length > 0
-                  ) {
-                    updateDefs.push(new Promise<IItemResourceResponse>(
-                      (rsrcResolve, rsrcReject) => {
-                        createZip("resources.zip", resourcesFiles).then(
-                          (zipfile: File) => {
-                            const addResourceOptions: IItemResourceOptions = {
-                              id: createResponse.id,
-                              resource: zipfile,
-                              authentication: destinationAuthentication,
-                              params: {
-                                archive: true
-                              }
-                            };
-                            addItemResource(addResourceOptions).then(rsrcResolve, rsrcReject);
-                          },
-                          rsrcReject
-                        );
-                      }
-                    ));
-                  }
-
-                  // Add the metadata section
-                  if (metadataFile) {
-                    updateDefs.push(
-                      _addItemMetadataFile(
-                        createResponse.id,
-                        metadataFile,
-                        destinationAuthentication
-                      )
-                    );
-                  }
-
-                  // Wait until all adds are done
-                  Promise.all(updateDefs).then(
-                    () => resolve(createResponse),
-                    e => reject(fail(e))
-                  );
-                },
-                e => reject(fail(e))
-              );
-            } else {
-              reject(fail());
-            }
-          },
-          e => reject(fail(e))
-        );
-      }
     );
   });
 }
@@ -1302,71 +1224,6 @@ export function updateItemURL(
 }
 
 // ------------------------------------------------------------------------------------------------------------------ //
-
-/**
- * Adds a data section to an item.
- *
- * @param itemId Id of item to receive data file
- * @param dataFile Data to be added
- * @param authentication Credentials for the request
- * @return Promise reporting success or failure
- * @protected
- */
-export function _addItemDataFile(
-  itemId: string,
-  dataFile: File,
-  authentication: UserSession
-): Promise<IUpdateItemResponse> {
-  return new Promise<IUpdateItemResponse>((resolve, reject) => {
-    const addItemData: (data: any) => void = (data: any) => {
-      const addDataOptions: IAddItemDataOptions = {
-        id: itemId,
-        data: data,
-        authentication: authentication
-      };
-      portalAddItemData(addDataOptions).then(resolve, reject);
-    };
-
-    // Item data has to be submitted as text or JSON for those file types
-    if (dataFile.type.startsWith("text/plain")) {
-      blobToText(dataFile).then(addItemData, reject);
-    } else if (dataFile.type === "application/json") {
-      blobToJson(dataFile).then(addItemData, reject);
-    } else {
-      addItemData(dataFile);
-    }
-  });
-}
-
-/**
- * Adds a metadata file to an item.
- *
- * @param itemId Id of item to receive data file
- * @param metadataFile Metadata to be added
- * @param authentication Credentials for the request
- * @return Promise reporting success or failure
- * @protected
- */
-export function _addItemMetadataFile(
-  itemId: string,
-  metadataFile: File,
-  authentication: UserSession
-): Promise<IUpdateItemResponse> {
-  return new Promise<IUpdateItemResponse>((resolve, reject) => {
-    const addMetadataOptions: IUpdateItemOptions = {
-      item: {
-        id: itemId
-      },
-      params: {
-        // Pass metadata in via params because item property is serialized, which discards a blob
-        metadata: metadataFile
-      },
-      authentication: authentication
-    };
-
-    portalUpdateItem(addMetadataOptions).then(resolve, reject);
-  });
-}
 
 /**
  * Accumulates the number of relationships in a collection of layers.

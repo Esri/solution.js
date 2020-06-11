@@ -39,7 +39,6 @@
     "@esri/arcgis-html-sanitizer": "^2.2.0",
     "@types/lodash.isplainobject": "^4.0.6",
     "adlib": "^3.0.4",
-    "jszip": "3.4.0",
     "lodash.isplainobject": "^4.0.6",
     "tslib": "^1.10.0",
     "xss": "^1.0.6"
