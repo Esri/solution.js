@@ -65,7 +65,7 @@ export function createHubRequestOptions(
 
     return {
       authentication,
-      pSelf,
+      portalSelf: pSelf,
       isPortal: pSelf.isPortal,
       hubApiUrl
     } as IHubRequestOptions;
