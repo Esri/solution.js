@@ -97,7 +97,12 @@ export function createItemFromTemplate(
   )
     .then(model => {
       exbModel = model;
-      return createWebExperience(model, {}, destinationAuthentication);
+      return createWebExperience(
+        model,
+        templateDictionary.folderId,
+        {},
+        destinationAuthentication
+      );
     })
     .then(createdModel => {
       exbModel.item.id = createdModel.item.id;

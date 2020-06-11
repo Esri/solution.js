@@ -12,6 +12,7 @@ import { IItemTemplate } from "@esri/solution-common";
 
 import {
   createItem,
+  moveItem,
   addItemResource,
   updateItem,
   ICreateItemResponse
@@ -25,6 +26,7 @@ import {
  */
 export function createStoryMap(
   model: IModel,
+  folderId: string,
   options: any,
   authentication: UserSession
 ): Promise<IModel> {
@@ -33,6 +35,8 @@ export function createStoryMap(
   const resources: any[] = [];
 
   // Create the item
+  // For unkown reasons we can not seem to spy on createItemInFolder
+  // so we will create-then-move for now
   return createItem({
     item: serializeModel(model),
     authentication
@@ -84,6 +88,14 @@ export function createStoryMap(
       });
       // Fire and forget as these are not critical-path
       return Promise.all(resourcePromises);
+    })
+    .then(() => {
+      // Move it
+      return moveItem({
+        itemId: model.item.id,
+        folderId,
+        authentication
+      });
     })
     .then(() => {
       return model;

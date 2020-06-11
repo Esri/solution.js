@@ -21,6 +21,8 @@ import * as HubSiteProcessor from "../src/hub-site-processor";
 import * as common from "@esri/solution-common";
 import * as hubCommon from "@esri/hub-common";
 import * as postProcessSiteModule from "../src/helpers/_post-process-site";
+import * as hubRoModule from "../src/helpers/create-hub-request-options";
+import * as replacerModule from "../src/helpers/replace-item-ids";
 
 describe("HubSiteProcessor: ", () => {
   describe("convertItemToTemplate: ", () => {
@@ -28,6 +30,105 @@ describe("HubSiteProcessor: ", () => {
       expect(HubSiteProcessor.convertItemToTemplate).toBeDefined(
         "Should have convertItemToTemplate method"
       );
+    });
+    it("should fetch the model, convert it, and swap ids", () => {
+      // we are not testing the conversion, so the model can be empty
+      const model = {} as hubCommon.IModel;
+      // we are testing some post-templating logic, so the rawTmpl needs to have some props
+      const rawTmpl = {
+        item: {
+          typeKeywords: ["doNotDelete"]
+        },
+        itemId: "ef4",
+        key: "not-used",
+        type: "Hub Site Application",
+        data: {},
+        properties: {}
+      } as hubCommon.IModelTemplate;
+      const getModelSpy = spyOn(sitesPackage, "getSiteById").and.resolveTo(
+        model
+      );
+      const hubRoSpy = spyOn(
+        hubRoModule,
+        "createHubRequestOptions"
+      ).and.resolveTo({} as hubCommon.IHubRequestOptions);
+      const convertSpy = spyOn(
+        sitesPackage,
+        "convertSiteToTemplate"
+      ).and.resolveTo(rawTmpl);
+      const replaceSpy = spyOn(
+        replacerModule,
+        "replaceItemIds"
+      ).and.callThrough();
+      return HubSiteProcessor.convertItemToTemplate(
+        "bc3",
+        { id: "ef4" },
+        MOCK_USER_SESSION
+      ).then(tmpl => {
+        expect(tmpl.item.typeKeywords.length).toBe(
+          0,
+          "should remove doNotDelete kwd"
+        );
+        expect(tmpl.groups).toBeDefined("should have groups");
+        expect(tmpl.resources).toBeDefined("should have resources");
+        expect(tmpl.properties).toBeDefined("should have properties");
+        expect(tmpl.estimatedDeploymentCostFactor).toBeDefined(
+          "should have estimatedDeploymentCostFactor"
+        );
+        expect(convertSpy.calls.count()).toBe(1, "should convert model");
+        expect(hubRoSpy.calls.count()).toBe(1, "should create requestOptions");
+        expect(getModelSpy.calls.count()).toBe(1, "should get the page model");
+        expect(replaceSpy.calls.count()).toBe(1, "should replace ids");
+      });
+    });
+    it("appends properties to template if missing", () => {
+      // we are not testing the conversion, so the model can be empty
+      const model = {} as hubCommon.IModel;
+      // we are testing some post-templating logic, so the rawTmpl needs to have some props
+      const rawTmpl = {
+        item: {
+          typeKeywords: ["doNotDelete"]
+        },
+        itemId: "ef4",
+        key: "not-used",
+        type: "Hub Site Application",
+        data: {}
+      } as hubCommon.IModelTemplate;
+      const getModelSpy = spyOn(sitesPackage, "getSiteById").and.resolveTo(
+        model
+      );
+      const hubRoSpy = spyOn(
+        hubRoModule,
+        "createHubRequestOptions"
+      ).and.resolveTo({} as hubCommon.IHubRequestOptions);
+      const convertSpy = spyOn(
+        sitesPackage,
+        "convertSiteToTemplate"
+      ).and.resolveTo(rawTmpl);
+      const replaceSpy = spyOn(
+        replacerModule,
+        "replaceItemIds"
+      ).and.callThrough();
+      return HubSiteProcessor.convertItemToTemplate(
+        "bc3",
+        { id: "ef4" },
+        MOCK_USER_SESSION
+      ).then(tmpl => {
+        expect(tmpl.item.typeKeywords.length).toBe(
+          0,
+          "should remove doNotDelete kwd"
+        );
+        expect(tmpl.groups).toBeDefined("should have groups");
+        expect(tmpl.resources).toBeDefined("should have resources");
+        expect(tmpl.properties).toBeDefined("should have properties");
+        expect(tmpl.estimatedDeploymentCostFactor).toBeDefined(
+          "should have estimatedDeploymentCostFactor"
+        );
+        expect(convertSpy.calls.count()).toBe(1, "should convert model");
+        expect(hubRoSpy.calls.count()).toBe(1, "should create requestOptions");
+        expect(getModelSpy.calls.count()).toBe(1, "should get the page model");
+        expect(replaceSpy.calls.count()).toBe(1, "should replace ids");
+      });
     });
   });
   describe("createItemFromTemplate: ", () => {
@@ -120,6 +221,52 @@ describe("HubSiteProcessor: ", () => {
       const cb = () => true;
       return HubSiteProcessor.createItemFromTemplate(
         tmpl,
+        td,
+        MOCK_USER_SESSION,
+        cb
+      ).then(result => {
+        expect(result.id).toBe("FAKE3ef", "should return the created item id");
+        expect(result.type).toBe(
+          "Hub Site Application",
+          "should return the type"
+        );
+        expect(result.postProcess).toBe(true, "should flag postProcess");
+        expect(createFromTmplSpy.calls.count()).toBe(
+          1,
+          "should call createFromTemplate"
+        );
+        expect(createSiteSpy.calls.count()).toBe(1, "should call createSite");
+        expect(moveSiteSpy.calls.count()).toBe(1, "should call moveSite");
+      });
+    });
+    it("asset and resource juggling", () => {
+      const createFromTmplSpy = spyOn(
+        sitesPackage,
+        "createSiteModelFromTemplate"
+      ).and.resolveTo({});
+      const createSiteSpy = spyOn(sitesPackage, "createSite").and.resolveTo(
+        fakeSite
+      );
+      const moveSiteSpy = spyOn(
+        moveHelper,
+        "moveModelToFolder"
+      ).and.resolveTo();
+
+      const td = {
+        organization: {
+          id: "somePortalId",
+          portalHostname: "www.arcgis.com"
+        },
+        user: {
+          username: "vader"
+        }
+      };
+      const tmplWithAssetsAndResources = hubCommon.cloneObject(tmpl);
+      tmplWithAssetsAndResources.assets = [];
+      tmplWithAssetsAndResources.resources = [];
+      const cb = () => true;
+      return HubSiteProcessor.createItemFromTemplate(
+        tmplWithAssetsAndResources,
         td,
         MOCK_USER_SESSION,
         cb

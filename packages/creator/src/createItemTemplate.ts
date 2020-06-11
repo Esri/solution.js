@@ -32,6 +32,7 @@ import {
 } from "@esri/solution-simple-types";
 import { StoryMapProcessor } from "@esri/solution-storymap";
 import { WebExperienceProcessor } from "@esri/solution-web-experience";
+import { HubPageProcessor, HubSiteProcessor } from "@esri/solution-hub-types";
 
 const UNSUPPORTED: common.moduleHandler = null;
 /**
@@ -85,8 +86,8 @@ export const moduleMap: common.IItemTypeModuleMap = {
   "Excalibur Imagery Project": undefined,
   Form: formProcessor,
   "Hub Initiative": simpleTypes,
-  "Hub Page": simpleTypes,
-  "Hub Site Application": simpleTypes,
+  "Hub Page": HubPageProcessor,
+  "Hub Site Application": HubSiteProcessor,
   "Insights Model": undefined,
   "Insights Page": undefined,
   "Insights Theme": undefined,
@@ -96,9 +97,9 @@ export const moduleMap: common.IItemTypeModuleMap = {
   Notebook: notebookProcessor,
   "Ortho Mapping Project": undefined,
   "QuickCapture Project": quickcaptureProcessor,
-  "Site Application": undefined,
+  "Site Application": HubSiteProcessor,
   "Site Initiative": undefined,
-  "Site Page": undefined,
+  "Site Page": HubPageProcessor,
   Solution: UNSUPPORTED,
   StoryMap: StoryMapProcessor,
   "Urban Model": undefined,

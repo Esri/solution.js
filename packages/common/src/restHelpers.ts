@@ -56,7 +56,7 @@ import {
   IUpdateItemResponse,
   UserSession
 } from "./interfaces";
-import { createZip } from "./libs";
+import { createZip } from "./libConnectors";
 import {
   addItemData as portalAddItemData,
   addItemRelationship,

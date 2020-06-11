@@ -28,7 +28,8 @@ import {
   createItem,
   updateItem,
   addItemResource,
-  ICreateItemResponse
+  ICreateItemResponse,
+  moveItem
 } from "@esri/arcgis-rest-portal";
 
 /**
@@ -39,12 +40,15 @@ import {
  */
 export function createWebExperience(
   model: IModel,
+  folderId: string,
   options: any,
   authentication: UserSession
 ): Promise<IModel> {
   const resources: any[] = [];
   // need to serialize
   return (
+    // For unkown reasons we can not seem to spy on createItemInFolder
+    // so we will create-then-move for now
     createItem({
       item: serializeModel(model),
       authentication
@@ -104,6 +108,14 @@ export function createWebExperience(
       //   // TODO: Can we leave this to the main process?
       //   return uploadResourcesFromUrl(model, options.assets || [], authentication);
       // })
+      .then(() => {
+        // Move it
+        return moveItem({
+          itemId: model.item.id,
+          folderId,
+          authentication
+        });
+      })
       .then(() => {
         return model;
       })
