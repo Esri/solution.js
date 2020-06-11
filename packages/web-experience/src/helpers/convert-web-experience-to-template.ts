@@ -49,6 +49,8 @@ export function convertWebExperienceToTemplate(
   const clone = cloneObject(model);
   tmpl.data = clone.data;
   tmpl.item = normalizeSolutionTemplateItem(clone.item) as IItem;
+  // templatize the url
+  tmpl.item.url = "{{experienceTemplateUrl}}";
 
   // use typeKeyword to mark item as published (we decided to discard unpublished drafts)
   const typeKeywords = tmpl.item.typeKeywords;

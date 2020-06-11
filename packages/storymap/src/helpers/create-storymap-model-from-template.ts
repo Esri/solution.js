@@ -5,8 +5,8 @@
 
 import { interpolate, IModelTemplate } from "@esri/hub-common";
 import { UserSession } from "@esri/arcgis-rest-auth";
-import { getStoryMapSubdomain } from "./get-storymap-subdomain";
 import { getPortalEnv } from "./get-portal-env";
+import { getStoryMapBaseUrl } from './get-storymap-base-url';
 
 export function createStoryMapModelFromTemplate(
   templateModel: IModelTemplate,
@@ -14,11 +14,18 @@ export function createStoryMapModelFromTemplate(
   transforms: any,
   authentication: UserSession
 ): Promise<any> {
-  settings.agoenv = getPortalEnv(authentication);
-  settings.smBase = getStoryMapSubdomain(authentication);
-  settings.timestamp = new Date().getTime();
+
+  const timestamp = new Date().getTime();
+  // These are used in the oembed resource, as well as the item url
+  // they have `{{appid}}` in them so that the id of the created item
+  // will be interpolated into it after the item is created
+  settings.storyMapBaseUrl = getStoryMapBaseUrl(authentication);
+  settings.storyMapTemplateUrl = `${settings.storyMapBaseUrl}/stories/{{appid}}`;
+  settings.storyMapThumnailUrl = `${authentication.portal}/content/items/{{appid}}/info/thumbnail/thumbnail.jpg/?w=400&d=${timestamp}`;
 
   const model = interpolate(templateModel, settings, transforms);
+  
+  
 
   return Promise.resolve(model);
 }

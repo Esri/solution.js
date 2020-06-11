@@ -16,6 +16,7 @@
 
 import { interpolate, IModelTemplate } from "@esri/hub-common";
 import { UserSession } from "@esri/arcgis-rest-auth";
+import { getWebExperiencepBaseUrl} from './get-web-experience-base-url';
 /**
  * Convert a Web Experience template into a Model that can be persisted to the Portal API
  * @param templateModel Template
@@ -29,6 +30,10 @@ export function createWebExperienceModelFromTemplate(
   transforms: any,
   authentication: UserSession
 ): Promise<any> {
+  // get the experience base url
+  settings.experienceTemplateUrl = `${getWebExperiencepBaseUrl(authentication)}/experience/?id={{appid}}`;
+
   const model = interpolate(templateModel, settings, transforms);
+  model.item.url = settings.experienceTemplateUrl;
   return Promise.resolve(model);
 }
