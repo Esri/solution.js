@@ -21,7 +21,7 @@
  */
 
 import { IDatasourceInfo, IItemTemplate } from "./interfaces";
-import { Sanitizer, sanitizeJSON } from "./libs";
+import { Sanitizer, sanitizeJSON } from "./libConnectors";
 import { new_File } from "./polyfills";
 
 // ------------------------------------------------------------------------------------------------------------------ //
