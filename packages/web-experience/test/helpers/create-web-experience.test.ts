@@ -25,10 +25,11 @@ describe("createWebExperience :: ", () => {
   let interpolateIdSpy: jasmine.Spy;
   let updateItemSpy: jasmine.Spy;
   let addResSpy: jasmine.Spy;
+  let moveItemSpy: jasmine.Spy;
   beforeEach(() => {
     createItemSpy = spyOn(portalModule, "createItem").and.resolveTo({
       id: "bc3",
-      folder: "some-folder",
+      folder: "fakefolderid",
       success: true
     });
     interpolateIdSpy = spyOn(
@@ -44,6 +45,12 @@ describe("createWebExperience :: ", () => {
       owner: "casey",
       folder: "",
       success: true
+    });
+    moveItemSpy = spyOn(portalModule, "moveItem").and.resolveTo({
+      success: true,
+      folder: "3ef",
+      owner: "casey",
+      itemId: "bc3"
     });
   });
 
@@ -62,7 +69,12 @@ describe("createWebExperience :: ", () => {
         }
       } as hubCommonModule.IModel;
 
-      return createWebExperience(model, {}, MOCK_USER_SESSION).then(result => {
+      return createWebExperience(
+        model,
+        "fakefolderid",
+        {},
+        MOCK_USER_SESSION
+      ).then(result => {
         expect(createItemSpy.calls.count()).toBe(1, "should create the item");
         expect(interpolateIdSpy.calls.count()).toBe(
           1,
@@ -70,6 +82,12 @@ describe("createWebExperience :: ", () => {
         );
         expect(updateItemSpy.calls.count()).toBe(1, "should call updateItem");
         expect(addResSpy.calls.count()).toBe(2, "should add three resources");
+        expect(moveItemSpy.calls.count()).toBe(1, "should move the item");
+        const moveOpts = moveItemSpy.calls.argsFor(0)[0];
+        expect(moveOpts.folderId).toBe(
+          "fakefolderid",
+          "should pass the folderid into create item"
+        );
       });
     });
 
@@ -82,7 +100,12 @@ describe("createWebExperience :: ", () => {
         properties: {}
       } as hubCommonModule.IModel;
 
-      return createWebExperience(model, {}, MOCK_USER_SESSION).then(result => {
+      return createWebExperience(
+        model,
+        "fakefolderid",
+        {},
+        MOCK_USER_SESSION
+      ).then(result => {
         expect(createItemSpy.calls.count()).toBe(1, "should create the item");
         expect(interpolateIdSpy.calls.count()).toBe(
           1,
@@ -90,6 +113,7 @@ describe("createWebExperience :: ", () => {
         );
         expect(updateItemSpy.calls.count()).toBe(1, "should call updateItem");
         expect(addResSpy.calls.count()).toBe(1, "should add one resources");
+        expect(moveItemSpy.calls.count()).toBe(1, "should move the item");
       });
     });
   }

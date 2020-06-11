@@ -14,18 +14,22 @@
  * limitations under the License.
  */
 
-import { UserSession } from "@esri/solution-common";
+import { UserSession } from "@esri/arcgis-rest-auth";
 
 import {
   IHubRequestOptions,
   getHubUrlFromPortal,
-  cloneObject
+  cloneObject,
+  getProp
 } from "@esri/hub-common";
+
+import { getSelf } from "@esri/arcgis-rest-portal";
 
 /**
  * Create a IHubRequestOptions object from
- * the UserSession and templateDictionary
- * provided by Solution.js
+ * the UserSession
+ * If passed, it will use `templateDictionary`
+ * values instead of making additional requests
  *
  * @export
  * @param {UserSession} authentication
@@ -34,17 +38,36 @@ import {
  */
 export function createHubRequestOptions(
   authentication: UserSession,
-  templateDictionary: any
-): IHubRequestOptions {
-  const portalSelf = cloneObject(templateDictionary.organization);
-  portalSelf.user = cloneObject(templateDictionary.user);
+  templateDictionary: any = {}
+): Promise<IHubRequestOptions> {
+  let orgUserPrms;
+  // try to get info from templateDict
+  const portalSelf = getProp(templateDictionary, "organization");
+  const currentUser = getProp(templateDictionary, "user");
 
-  const hubApiUrl = getHubUrlFromPortal(portalSelf);
-  // TODO: Why is IUserRequestOptions not discoverable?
-  return {
-    authentication,
-    portalSelf,
-    isPortal: templateDictionary.isPortal,
-    hubApiUrl
-  } as IHubRequestOptions;
+  // if we've been passed the templateDictionary, use it
+  if (portalSelf && currentUser) {
+    orgUserPrms = Promise.all([
+      Promise.resolve(cloneObject(portalSelf)),
+      Promise.resolve(cloneObject(currentUser))
+    ]);
+  } else {
+    // need to use the auth to get the user and the org
+    orgUserPrms = Promise.all([
+      getSelf({ authentication }),
+      authentication.getUser()
+    ]);
+  }
+
+  return orgUserPrms.then(([pSelf, user]) => {
+    pSelf.user = user;
+    const hubApiUrl = getHubUrlFromPortal(pSelf);
+
+    return {
+      authentication,
+      portalSelf,
+      isPortal: pSelf.isPortal,
+      hubApiUrl
+    } as IHubRequestOptions;
+  });
 }

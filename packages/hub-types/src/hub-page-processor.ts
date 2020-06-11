@@ -33,37 +33,57 @@ import {
   cloneObject,
   IModelTemplate,
   failSafe,
-  getModel
+  getModel,
+  IHubRequestOptions,
+  getProp,
+  without
 } from "@esri/hub-common";
 import {
   createPageModelFromTemplate,
   createPage,
-  removePage
+  removePage,
+  convertPageToTemplate
 } from "@esri/hub-sites";
 
 import { _postProcessPage } from "./helpers/_post-process-page";
-
+import { replaceItemIds } from "./helpers/replace-item-ids";
 import { moveModelToFolder } from "./helpers/move-model-to-folder";
-/* istanbul ignore next */
+
+/**
+ * Convert a Page to a Template
+ *
+ * @param solutionItemId
+ * @param itemInfo Item object
+ * @param authentication
+ */
 export function convertItemToTemplate(
   solutionItemId: string,
   itemInfo: any,
   authentication: UserSession
 ): Promise<IItemTemplate> {
-  // TODO: add implementation
-  console.info(`Hub Page is not supported yet`);
-  return Promise.resolve({
-    item: {},
-    data: {},
-    itemId: itemInfo.id,
-    resources: [],
-    type: "Hub Site Application",
-    key: "site-bz3",
-    dependencies: [],
-    properties: {},
-    groups: [],
-    estimatedDeploymentCostFactor: 1
-  } as IItemTemplate);
+  // get the page model and hubRequestOptions
+  return Promise.all([
+    getModel(itemInfo.id, { authentication }),
+    createHubRequestOptions(authentication)
+  ])
+    .then(([pageModel, ro]) => {
+      return convertPageToTemplate(pageModel, ro);
+    })
+    .then(tmpl => {
+      // add in some stuff Hub.js does not yet add
+      tmpl.item.typeKeywords = without(tmpl.item.typeKeywords, "doNotDelete");
+      tmpl.groups = [];
+      tmpl.estimatedDeploymentCostFactor = 2;
+      tmpl.resources = [];
+      if (!getProp(tmpl, "properties")) {
+        tmpl.properties = {};
+      }
+      // swap out dependency id's to {{<depid>.itemId}}
+      // so it will be re-interpolated
+      tmpl = replaceItemIds(tmpl);
+      // and return it
+      return tmpl as IItemTemplate;
+    });
 }
 /**
  * Handle deployment of Page item templates
@@ -93,10 +113,10 @@ export function createItemFromTemplate(
     return Promise.resolve({ id: "", type: template.type, postProcess: false });
   }
 
-  const hubRo = createHubRequestOptions(
-    destinationAuthentication,
-    templateDictionary
-  );
+  // TODO: Reassess with resource unification
+  if (template.assets && template.resources) {
+    delete template.assets;
+  }
 
   // convert the templateDictionary to a settings hash
   const settings = cloneObject(templateDictionary);
@@ -117,7 +137,13 @@ export function createItemFromTemplate(
   // create an object to hold the created site through
   // subsequent promise calls
   let pageModel: IModel;
-  return createPageModelFromTemplate(template, settings, transforms, hubRo)
+
+  let hubRo: IHubRequestOptions;
+  return createHubRequestOptions(destinationAuthentication, templateDictionary)
+    .then(ro => {
+      hubRo = ro;
+      return createPageModelFromTemplate(template, settings, transforms, hubRo);
+    })
     .then((interpolated: unknown) => {
       // --------------------------------------------
       // TODO: Update hub.js to take an IModel in createPage
@@ -200,12 +226,18 @@ export function postProcess(
   authentication: UserSession
 ): Promise<boolean> {
   // create the requestOptions
-  const hubRo = createHubRequestOptions(authentication, templateDictionary);
-  // get the item data then delegate
-  // get the site model
-  return getModel(id, hubRo).then(pageModel => {
-    return _postProcessPage(pageModel, itemInfos, templateDictionary, hubRo);
-  });
+  let hubRo: IHubRequestOptions;
+  // get hubRequestOptions
+  return createHubRequestOptions(authentication)
+    .then(ro => {
+      hubRo = ro;
+      // get the site model
+      return getModel(id, { authentication });
+    })
+    .then(pageModel => {
+      // post process the page
+      return _postProcessPage(pageModel, itemInfos, templateDictionary, hubRo);
+    });
 }
 
 /**

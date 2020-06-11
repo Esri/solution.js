@@ -9,7 +9,7 @@ const MOCK_USER_SESSION = utils.createRuntimeMockUserSession();
 describe("createStoryMap ::", () => {
   // Blobs are only available in the browser
   if (typeof window !== "undefined") {
-    it("happy-path", () => {
+    it("happy-path", done => {
       // model
       const model = {
         item: {
@@ -29,7 +29,7 @@ describe("createStoryMap ::", () => {
       // setup spies
       const createItemSpy = spyOn(portalModule, "createItem").and.resolveTo({
         id: "bc3",
-        folder: "some-folder",
+        folder: "fakefolderid",
         success: true
       });
       const interpolateIdSpy = spyOn(
@@ -46,16 +46,32 @@ describe("createStoryMap ::", () => {
         folder: "",
         success: true
       });
-
-      return createStoryMap(model, {}, MOCK_USER_SESSION).then(result => {
-        expect(createItemSpy.calls.count()).toBe(1, "should create the item");
-        expect(interpolateIdSpy.calls.count()).toBe(
-          1,
-          "should call interpolateId"
-        );
-        expect(updateItemSpy.calls.count()).toBe(1, "should call updateItem");
-        expect(addResSpy.calls.count()).toBe(3, "should add three resources");
+      const moveItemSpy = spyOn(portalModule, "moveItem").and.resolveTo({
+        success: true,
+        folder: "3ef",
+        owner: "casey",
+        itemId: "bc3"
       });
+
+      return createStoryMap(model, "fakefolderid", {}, MOCK_USER_SESSION).then(
+        result => {
+          expect(createItemSpy.calls.count()).toBe(1, "should create the item");
+
+          expect(interpolateIdSpy.calls.count()).toBe(
+            1,
+            "should call interpolateId"
+          );
+          expect(updateItemSpy.calls.count()).toBe(1, "should call updateItem");
+          expect(addResSpy.calls.count()).toBe(3, "should add three resources");
+          expect(moveItemSpy.calls.count()).toBe(1, "should move the item");
+          const moveOpts = moveItemSpy.calls.argsFor(0)[0];
+          expect(moveOpts.folderId).toBe(
+            "fakefolderid",
+            "should pass the folderid into create item"
+          );
+          done();
+        }
+      );
     });
   }
 });

@@ -34,6 +34,12 @@ import { convertStoryMapToTemplate } from "./helpers/convert-storymap-to-templat
 import { createStoryMapModelFromTemplate } from "./helpers/create-storymap-model-from-template";
 import { createStoryMap } from "./helpers/create-storymap";
 
+/**
+ * Convert a StoryMap to a template
+ * @param solutionItemId
+ * @param itemInfo
+ * @param authentication
+ */
 export function convertItemToTemplate(
   solutionItemId: string,
   itemInfo: any,
@@ -111,7 +117,12 @@ export function createItemFromTemplate(
       const options = {
         assets: interpolated.assets || []
       };
-      return createStoryMap(interpolated, options, destinationAuthentication);
+      return createStoryMap(
+        interpolated,
+        templateDictionary.folderId,
+        options,
+        destinationAuthentication
+      );
     })
     .then(createdModel => {
       model = createdModel;
