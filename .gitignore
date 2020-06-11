@@ -105,3 +105,6 @@ packages/**/test/**/*.map
 
 TODO.md
 demos/deploy-harness
+
+
+demos/**/index-local.html
