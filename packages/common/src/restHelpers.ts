@@ -58,7 +58,7 @@ import {
 } from "./interfaces";
 import {
   createZip
-} from "./libs";
+} from "./libConnectors";
 import {
   addItemData as portalAddItemData,
   addItemRelationship,
