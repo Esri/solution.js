@@ -4,6 +4,8 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased][HEAD]
 
+## [0.16.6] - June 11th 2020
+
 ## [0.16.5] - June 9th 2020
 
 ## [0.16.4] - June 8th 2020
@@ -17,4 +19,5 @@ All notable changes to this project will be documented in this file.
 [0.16.3]: https://github.com/Esri/solution.js/compare/v0.16.2...v0.16.3 "v0.16.3"
 [0.16.4]: https://github.com/Esri/solution.js/compare/v0.16.3...v0.16.4 "v0.16.4"
 [0.16.5]: https://github.com/Esri/solution.js/compare/v0.16.4...v0.16.5 "v0.16.5"
-[HEAD]: https://github.com/Esri/solution.js/compare/v0.16.5...HEAD "Unreleased Changes"
+[0.16.6]: https://github.com/Esri/solution.js/compare/v0.16.5...v0.16.6 "v0.16.6"
+[HEAD]: https://github.com/Esri/solution.js/compare/v0.16.6...HEAD "Unreleased Changes"
