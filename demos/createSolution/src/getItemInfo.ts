@@ -107,18 +107,10 @@ export function getItemInfo(
         const portalUrl = common.getPortalUrlFromAuth(authentication);
 
         // Show item and data sections
-        let html =
-          "<h3>" +
-          itemBase.type +
-          ' "' +
-          itemBase.title +
-          '" (<a href="' +
-          portalUrl +
-          "/home/item.html?id=" +
-          itemBase.id +
-          '" target="_blank">' +
-          itemBase.id +
-          "</a>)</h3>";
+        let html =`
+          <h3>${itemBase.type} "${itemBase.title}" ( <a href="${portalUrl}/home/item.html?id=${itemBase.id}" target="_blank">${itemBase.id}</a> )</h3>
+          
+          `;
 
         html +=
           '<div style="width:48%;display:inline-block;">Item</div>' +

@@ -14,18 +14,24 @@
  * limitations under the License.
  */
 import { UserSession } from "@esri/arcgis-rest-auth";
+import { getStoryMapSubdomain } from "./get-storymap-subdomain";
+/**
+ * For a given environment Prod/qa/dev/portal
+ * return the correct storymaps base url
+ * @param authentication
+ */
+export function getStoryMapBaseUrl(authentication: UserSession): string {
+  let baseUrl = "";
 
-export function getStoryMapSubdomain(authentication: UserSession): string {
-  const portalUrl =
-    authentication.portal || "https://www.arcgis.com/sharing/rest";
-  // TODO: Sort out how we locate storymaps on portal?
-  let result;
-  if (portalUrl.match(/(qaext|\.mapsqa)\.arcgis.com/)) {
-    result = "storymapsqa";
-  } else if (portalUrl.match(/(devext|\.mapsdevext)\.arcgis.com/)) {
-    result = "storymapsdev";
-  } else if (portalUrl.match(/(www|\.maps)\.arcgis.com/)) {
-    result = "storymaps";
+  const subdomain = getStoryMapSubdomain(authentication);
+  if (subdomain) {
+    baseUrl = `https://${subdomain}.arcgis.com`;
+  } else {
+    // we're on portal
+    // chop off the /sharing/rest to get the baseUrl
+    const portalBaseUrl = authentication.portal.replace("/sharing/rest", "");
+    baseUrl = `${portalBaseUrl}/apps/storymaps`;
   }
-  return result;
+
+  return baseUrl;
 }
