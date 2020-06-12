@@ -118,7 +118,13 @@ beforeEach(() => {
     properties: {
       service: {
         fullExtent: {},
-        initialExtent: {}
+        initialExtent: {
+          xmin: -1,
+          xmax: 1,
+          ymin: -1,
+          ymax: 1,
+          spatialReference: { wkid: 123456 }
+        }
       },
       layers: [
         {
@@ -169,7 +175,14 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
               fields: []
             }
           ],
-          tables: []
+          tables: [],
+          defaultExtent: {
+            xmin: -1,
+            xmax: 1,
+            ymin: -1,
+            ymax: 1,
+            spatialReference: { wkid: 123456 }
+          }
         },
         type: "",
         item: {
@@ -238,7 +251,8 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
                 }
               ]
             }
-          ]
+          ],
+          defaultExtent: {}
         },
         type: "",
         item: {
@@ -320,7 +334,8 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
                 }
               ]
             }
-          ]
+          ],
+          defaultExtent: {}
         },
         type: "",
         item: {
@@ -375,7 +390,8 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
             serviceItemId: "ab766cba0dd44ec080420acc10990282",
             fullExtent: {},
             initialExtent: {}
-          }
+          },
+          defaultExtent: {}
         },
         type: "",
         item: {
@@ -398,6 +414,71 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
             serviceItemId: "{{ab766cba0dd44ec080420acc10990282.itemId}}",
             fullExtent: "{{ab766cba0dd44ec080420acc10990282.solutionExtent}}",
             initialExtent: "{{ab766cba0dd44ec080420acc10990282.solutionExtent}}"
+          },
+          defaultExtent: {}
+        },
+        type: "",
+        item: {
+          extent: "", // only set through createItemTemplate
+          id: "{{ab766cba0dd44ec080420acc10990282.itemId}}",
+          type: "",
+          url: "{{ab766cba0dd44ec080420acc10990282.url}}",
+          typeKeywords: ["{{ab766cba0dd44ec080420acc10990282.itemId}}", "two"]
+        },
+        data: {},
+        resources: [],
+        dependencies: [],
+        groups: [],
+        estimatedDeploymentCostFactor: 0
+      };
+      templatize(itemTemplate, dependencies, true);
+      expect(itemTemplate).toEqual(expected);
+    });
+
+    it("should use fullExtent for defaultExtent if initialExtent is undefined", () => {
+      const dependencies: interfaces.IDependency[] = [];
+      itemTemplate = {
+        itemId: "ab766cba0dd44ec080420acc10990282",
+        key: "ABC123",
+        properties: {
+          service: {
+            serviceItemId: "ab766cba0dd44ec080420acc10990282",
+            fullExtent: {
+              xmin: -10,
+              xmax: 10,
+              ymin: -10,
+              ymax: 10,
+              spatialReference: { wkid: 123456 }
+            }
+          }
+        },
+        type: "",
+        item: {
+          extent: "",
+          id: "ab766cba0dd44ec080420acc10990282",
+          type: "",
+          typeKeywords: ["ab766cba0dd44ec080420acc10990282", "two"]
+        },
+        data: {},
+        resources: [],
+        dependencies: [],
+        groups: [],
+        estimatedDeploymentCostFactor: 0
+      };
+      const expected: any = {
+        itemId: "ab766cba0dd44ec080420acc10990282",
+        key: "ABC123",
+        properties: {
+          service: {
+            serviceItemId: "{{ab766cba0dd44ec080420acc10990282.itemId}}",
+            fullExtent: "{{ab766cba0dd44ec080420acc10990282.solutionExtent}}"
+          },
+          defaultExtent: {
+            xmin: -10,
+            xmax: 10,
+            ymin: -10,
+            ymax: 10,
+            spatialReference: { wkid: 123456 }
           }
         },
         type: "",
@@ -660,7 +741,15 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
         properties: {
           service: {
             fullExtent: {},
-            initialExtent: {}
+            initialExtent: {
+              xmin: -1,
+              ymin: -1,
+              xmax: 1,
+              ymax: 1,
+              spatialReference: {
+                wkid: 123456
+              }
+            }
           },
           layers: [
             {
