@@ -15,12 +15,12 @@
   "typescript": "^3.9.5"
  },
  "dependencies": {
-  "@esri/arcgis-rest-auth": "^2.13.1",
-  "@esri/arcgis-rest-feature-layer": "^2.13.1",
-  "@esri/arcgis-rest-portal": "^2.13.1",
-  "@esri/arcgis-rest-request": "^2.13.1",
-  "@esri/arcgis-rest-service-admin": "^2.13.1",
-  "@esri/arcgis-rest-types": "^2.13.1",
+  "@esri/arcgis-rest-auth": "^2.13.2",
+  "@esri/arcgis-rest-feature-layer": "^2.13.2",
+  "@esri/arcgis-rest-portal": "^2.13.2",
+  "@esri/arcgis-rest-request": "^2.13.2",
+  "@esri/arcgis-rest-service-admin": "^2.13.2",
+  "@esri/arcgis-rest-types": "^2.13.2",
   "@esri/hub-common": "^4.0.0",
   "@esri/hub-initiatives": "^4.0.0",
   "@esri/hub-sites": "^4.0.0",

@@ -13,18 +13,18 @@
     "dist/**"
   ],
   "devDependencies": {
-    "@esri/arcgis-rest-auth": "^2.13.1",
-    "@esri/arcgis-rest-portal": "^2.13.1",
-    "@esri/arcgis-rest-request": "^2.13.1",
+    "@esri/arcgis-rest-auth": "^2.13.2",
+    "@esri/arcgis-rest-portal": "^2.13.2",
+    "@esri/arcgis-rest-request": "^2.13.2",
     "@esri/hub-common": "^4.2.0",
     "@esri/solution-common": "^0.16.5",
     "rollup": "^1.22.0",
     "typescript": "^3.9.3"
   },
   "peerDependencies": {
-    "@esri/arcgis-rest-auth": "^2.13.1",
-    "@esri/arcgis-rest-portal": "^2.13.1",
-    "@esri/arcgis-rest-request": "^2.13.1",
+    "@esri/arcgis-rest-auth": "^2.13.2",
+    "@esri/arcgis-rest-portal": "^2.13.2",
+    "@esri/arcgis-rest-request": "^2.13.2",
     "@esri/hub-common": "^4.2.0",
     "@esri/solution-common": "^0.16.4"
   },
