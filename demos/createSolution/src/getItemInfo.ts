@@ -107,18 +107,10 @@ export function getItemInfo(
         const portalUrl = common.getPortalUrlFromAuth(authentication);
 
         // Show item and data sections
-        let html =
-          "<h3>" +
-          itemBase.type +
-          ' "' +
-          itemBase.title +
-          '" (<a href="' +
-          portalUrl +
-          "/home/item.html?id=" +
-          itemBase.id +
-          '" target="_blank">' +
-          itemBase.id +
-          "</a>)</h3>";
+        let html =`
+          <h3>${itemBase.type} "${itemBase.title}" ( <a href="${portalUrl}/home/item.html?id=${itemBase.id}" target="_blank">${itemBase.id}</a> )</h3>
+          <h4><a href="https://eapsqaext.surge.sh/items/${itemBase.id}/edit" target="_blank">Open in EAPS</a></h4>
+          `;
 
         html +=
           '<div style="width:48%;display:inline-block;">Item</div>' +
