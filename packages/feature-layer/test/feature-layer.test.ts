@@ -789,30 +789,36 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
       };
 
       // verify the state up front
-      expect(itemTemplate.item.id).toEqual(id);
-      expect(itemTemplate.item.url).toEqual(expectedUrl);
-      expect(itemTemplate.dependencies.length).toEqual(0);
-      expect(itemTemplate.properties.service.serviceItemId).toEqual(id);
+      expect(itemTemplate.item.id).withContext("up-front id check").toEqual(id);
+      expect(itemTemplate.item.url).withContext("up-front url check").toEqual(expectedUrl);
+      expect(itemTemplate.dependencies.length).withContext("up-front dependencies check").toEqual(0);
+      expect(itemTemplate.properties.service.serviceItemId).withContext("up-front service item id check").toEqual(id);
 
-      expect(itemTemplate.properties.layers[0].serviceItemId).toEqual(id);
+      expect(itemTemplate.properties.layers[0].serviceItemId)
+        .withContext("up-front layer 0 service item id check").toEqual(id);
       expect(
         itemTemplate.properties.layers[0].relationships[0].keyField
-      ).toEqual(layerKeyField);
-      expect(itemTemplate.properties.layers[0].viewDefinitionQuery).toEqual(
+      ).withContext("up-front layer 0 keyField check").toEqual(layerKeyField);
+      expect(itemTemplate.properties.layers[0].viewDefinitionQuery)
+        .withContext("up-front layer 0 view defn query check").toEqual(
         layerDefQuery
       );
-      expect(itemTemplate.properties.layers[0].definitionQuery).toEqual(
+      expect(itemTemplate.properties.layers[0].definitionQuery)
+        .withContext("up-front layer 0 defn query check").toEqual(
         layerDefQuery
       );
 
-      expect(itemTemplate.properties.tables[0].serviceItemId).toEqual(id);
+      expect(itemTemplate.properties.tables[0].serviceItemId)
+        .withContext("up-front table 0 service item id check").toEqual(id);
       expect(
         itemTemplate.properties.tables[0].relationships[0].keyField
-      ).toEqual(tableKeyField);
-      expect(itemTemplate.properties.tables[0].viewDefinitionQuery).toEqual(
+      ).withContext("up-front table 0 keyField check").toEqual(tableKeyField);
+      expect(itemTemplate.properties.tables[0].viewDefinitionQuery)
+        .withContext("up-front table 0 view defn query check").toEqual(
         tableDefQuery
       );
-      expect(itemTemplate.properties.tables[0].definitionQuery).toEqual(
+      expect(itemTemplate.properties.tables[0].definitionQuery)
+        .withContext("up-front table 0 defn query check").toEqual(
         tableDefQuery
       );
 
@@ -839,7 +845,7 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
         .post(adminUrl + "/1?f=json", itemTemplate.properties.tables[0])
         .post(url + "/sources?f=json", mockItems.getAGOLServiceSources())
         .post(
-          utils.PORTAL_SUBSET.restUrl + "/content/users/casey/createService",
+          utils.PORTAL_SUBSET.restUrl + "/content/users/casey/fld1234567890/createService",
           createResponse
         )
         .post(
@@ -862,11 +868,6 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
           utils.PORTAL_SUBSET.restUrl +
             "/content/users/casey/items/svc1234567890/update",
           '{"success":true}'
-        )
-        .post(
-          utils.PORTAL_SUBSET.restUrl +
-            "/content/users/casey/items/undefined/move",
-          '{"success": true, "folderId": 1245}'
         );
       // tslint:disable-next-line: no-floating-promises
       featureLayer
@@ -877,7 +878,7 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
           utils.ITEM_PROGRESS_CALLBACK
         )
         .then(r => {
-          expect(r).toEqual({
+          expect(r).withContext("result").toEqual({
             id: "svc1234567890",
             type: itemTemplate.type,
             postProcess: false
