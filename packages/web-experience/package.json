@@ -1,6 +1,6 @@
 {
   "name": "@esri/solution-web-experience",
-  "version": "0.16.5",
+  "version": "0.16.6",
   "description": "Manages the creation and deployment of Web Experience item types for @esri/solution.js.",
   "main": "dist/node/index.js",
   "unpkg": "dist/umd/web-experience.umd.min.js",
@@ -13,12 +13,12 @@
     "dist/**"
   ],
   "devDependencies": {
-    "@esri/arcgis-rest-auth": "^2.13.1",
-    "@esri/arcgis-rest-portal": "^2.13.1",
-    "@esri/arcgis-rest-request": "^2.13.1",
+    "@esri/arcgis-rest-auth": "^2.13.2",
+    "@esri/arcgis-rest-portal": "^2.13.2",
+    "@esri/arcgis-rest-request": "^2.13.2",
     "@esri/hub-common": "^4.2.0",
-    "@esri/solution-common": "^0.16.5",
-    "@esri/solution-simple-types": "^0.16.5",
+    "@esri/solution-common": "^0.16.6",
+    "@esri/solution-simple-types": "^0.16.6",
     "rollup": "^1.22.0",
     "typescript": "^3.9.2"
   },
@@ -26,12 +26,12 @@
     "tslib": "^1.10.0"
   },
   "peerDependencies": {
-    "@esri/arcgis-rest-auth": "^2.13.1",
-    "@esri/arcgis-rest-portal": "^2.13.1",
-    "@esri/arcgis-rest-request": "^2.13.1",
+    "@esri/arcgis-rest-auth": "^2.13.2",
+    "@esri/arcgis-rest-portal": "^2.13.2",
+    "@esri/arcgis-rest-request": "^2.13.2",
     "@esri/hub-common": "^4.2.0",
-    "@esri/solution-common": "^0.16.3",
-    "@esri/solution-simple-types": "^0.16.3"
+    "@esri/solution-common": "^0.16.6",
+    "@esri/solution-simple-types": "^0.16.6"
   },
   "scripts": {
     "prepare": "npm run build",

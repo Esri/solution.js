@@ -463,7 +463,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
   describe("createFeatureService", () => {
     it("can handle failure", done => {
       fetchMock.post(
-        utils.PORTAL_SUBSET.restUrl + "/content/users/casey/createService",
+        utils.PORTAL_SUBSET.restUrl + "/content/users/casey/aabb123456/createService",
         mockItems.get400Failure()
       );
 
@@ -527,7 +527,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
 
       fetchMock
         .post(
-          utils.PORTAL_SUBSET.restUrl + "/content/users/casey/createService",
+          utils.PORTAL_SUBSET.restUrl + "/content/users/casey/aabb123456/createService",
           '{"encodedServiceURL":"https://services123.arcgis.com/org1234567890/arcgis/rest/services/' +
             "ROWPermits_publiccomment_" +
             now +
