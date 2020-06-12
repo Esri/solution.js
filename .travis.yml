@@ -6,11 +6,11 @@ node_js:
   - 12
   - 10
   - 8
-# travis will run  `npm ci` which does the install
-# before_script:
-#   - npm install
+cache: npm
 script:
   - npm run test:ci
+before_deploy:
+  - npm run docs:build
 deploy:
   provider: pages
   skip_cleanup: true
@@ -18,7 +18,10 @@ deploy:
   github_token: "$GITHUB_TOKEN"
   on:
     branch: master
+    tags: true
   local-dir: docs/build/solution.js
+after_deploy:
+  - npm run docs:deploy
 env:
   - MOZ_HEADLESS=1
 addons:

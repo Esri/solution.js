@@ -47,7 +47,7 @@ export function convertStoryMapToTemplate(
   tmpl.data = clone.data;
   tmpl.item = normalizeSolutionTemplateItem(clone.item) as IItem;
   // templatize the url
-  tmpl.item.url = "https://{{smBase}}.arcgis.com/stories/{{appid}}";
+  tmpl.item.url = "{{storyMapTemplateUrl}}";
 
   // Storymap Webmap Resources have complex keys that we need to remap
   const webmapRemaps = remapWebmapKeys(tmpl.data.resources);
@@ -109,19 +109,19 @@ const oEmbedTemplates = {
     version: "1.0",
     type: "rich",
     title: "Example StoryMap",
-    url: "https://{{smBase}}.arcgis.com/stories/{{appid}}",
+    url: "{{storyMapTemplateUrl}}",
     provider_name: "ArcGIS StoryMaps",
-    provider_url: "https://{{smBase}}.arcgis.com",
+    provider_url: "{{storyMapBaseUrl}}",
     width: 800,
     height: 600,
     thumbnail_url:
-      "https://{{agoenv}}.arcgis.com/sharing/rest/content/items/{{appid}}/info/thumbnail/thumbnail.jpg/?w=400&d={{timestamp}}",
+      "{{storyMapThumbnailUrl}}",
     thumbnail_height: "100.5",
     thumbnail_width: "400",
     html:
-      '<iframe src="https://{{smBase}}.arcgis.com/stories/{{appid}}" width="800" height="600" scrolling="yes" frameborder="0" allowfullscreen></iframe>',
+      '<iframe src="{{storyMapTemplateUrl}}" width="800" height="600" scrolling="yes" frameborder="0" allowfullscreen></iframe>',
     cache_age: 86400
   },
   oembedXML:
-    '<?xml version="1.0" encoding="utf-8" standalone="yes"?>\n <oembed>\n <version>1.0</version>\n <type>rich</type>\n <title>Example StoryMap</title>\n <url>https://{{smBase}}.arcgis.com/stories/{{appid}}</url>\n <author_name>undefined</author_name>\n <provider_name>ArcGIS StoryMaps</provider_name>\n <provider_url>https://{{smBase}}.arcgis.com</provider_url>\n <width>800</width>\n <height>600</height>\n <thumbnail_url>https://{{agoenv}}.arcgis.com/sharing/rest/content/items/{{appid}}/info/thumbnail/ago_downloaded.jpg/?w=400&d={{timestamp}}</thumbnail_url>\n <thumbnail_height>100.5</thumbnail_height>\n <thumbnail_width>400</thumbnail_width>\n <html><iframe src="https://{{smBase}}.arcgis.com/stories/{{appid}}" width="800" height="600" scrolling="yes" frameborder="0" allowfullscreen="true"></iframe></html>\n <cache_age>86400</cache_age>\n </oembed>'
+    '<?xml version="1.0" encoding="utf-8" standalone="yes"?>\n <oembed>\n <version>1.0</version>\n <type>rich</type>\n <title>Example StoryMap</title>\n <url>{{storyMapTemplateUrl}}</url>\n <author_name>undefined</author_name>\n <provider_name>ArcGIS StoryMaps</provider_name>\n <provider_url>{{storyMapBaseUrl}}</provider_url>\n <width>800</width>\n <height>600</height>\n <thumbnail_url>{{storyMapThumbnailUrl}}</thumbnail_url>\n <thumbnail_height>100.5</thumbnail_height>\n <thumbnail_width>400</thumbnail_width>\n <html><iframe src="{{storyMapTemplateUrl}}" width="800" height="600" scrolling="yes" frameborder="0" allowfullscreen="true"></iframe></html>\n <cache_age>86400</cache_age>\n </oembed>'
 };

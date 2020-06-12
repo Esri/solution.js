@@ -1,6 +1,6 @@
 {
   "name": "@esri/solution.js",
-  "version": "0.16.6",
+  "version": "0.16.7",
   "description": "A library running in Node.js and modern browsers for transferring ArcGIS Online items from one organization to another.",
   "devDependencies": {
     "@rollup/plugin-commonjs": "^11.1.0",
