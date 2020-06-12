@@ -109,7 +109,7 @@ export function getItemInfo(
         // Show item and data sections
         let html =`
           <h3>${itemBase.type} "${itemBase.title}" ( <a href="${portalUrl}/home/item.html?id=${itemBase.id}" target="_blank">${itemBase.id}</a> )</h3>
-          <h4><a href="https://eapsqaext.surge.sh/items/${itemBase.id}/edit" target="_blank">Open in EAPS</a></h4>
+          
           `;
 
         html +=
