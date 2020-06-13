@@ -629,6 +629,10 @@
             </li>
             
             <li class="tsd-kind-function padding-right-1 visually-hidden api-list-item">
+              <a href="/solution.js/api/common/createZip/" class="tsd-kind-icon padding-right-1">createZip</a>
+            </li>
+            
+            <li class="tsd-kind-function padding-right-1 visually-hidden api-list-item">
               <a href="/solution.js/api/common/sanitizeHTML/" class="tsd-kind-icon padding-right-1">sanitizeHTML</a>
             </li>
             
@@ -813,6 +817,14 @@
             </li>
             
             <li class="tsd-kind-function padding-right-1 visually-hidden api-list-item">
+              <a href="/solution.js/api/common/_addItemDataFile/" class="tsd-kind-icon padding-right-1">_addItemDataFile</a>
+            </li>
+            
+            <li class="tsd-kind-function padding-right-1 visually-hidden api-list-item">
+              <a href="/solution.js/api/common/_addItemMetadataFile/" class="tsd-kind-icon padding-right-1">_addItemMetadataFile</a>
+            </li>
+            
+            <li class="tsd-kind-function padding-right-1 visually-hidden api-list-item">
               <a href="/solution.js/api/common/_countRelationships/" class="tsd-kind-icon padding-right-1">_countRelationships</a>
             </li>
             
@@ -853,14 +865,6 @@
             </li>
             
             <li class="tsd-kind-function padding-right-1 visually-hidden api-list-item">
-              <a href="/solution.js/api/common/addItemDataFile/" class="tsd-kind-icon padding-right-1">addItemDataFile</a>
-            </li>
-            
-            <li class="tsd-kind-function padding-right-1 visually-hidden api-list-item">
-              <a href="/solution.js/api/common/addItemMetadataFile/" class="tsd-kind-icon padding-right-1">addItemMetadataFile</a>
-            </li>
-            
-            <li class="tsd-kind-function padding-right-1 visually-hidden api-list-item">
               <a href="/solution.js/api/common/addToServiceDefinition/" class="tsd-kind-icon padding-right-1">addToServiceDefinition</a>
             </li>
             
@@ -878,6 +882,10 @@
             
             <li class="tsd-kind-function padding-right-1 visually-hidden api-list-item">
               <a href="/solution.js/api/common/createFeatureService/" class="tsd-kind-icon padding-right-1">createFeatureService</a>
+            </li>
+            
+            <li class="tsd-kind-function padding-right-1 visually-hidden api-list-item">
+              <a href="/solution.js/api/common/createFullItem/" class="tsd-kind-icon padding-right-1">createFullItem</a>
             </li>
             
             <li class="tsd-kind-function padding-right-1 visually-hidden api-list-item">
@@ -1914,6 +1922,10 @@
             </li>
             
             <li class="tsd-kind-function padding-right-1 visually-hidden api-list-item">
+              <a href="/solution.js/api/storymap/getStoryMapBaseUrl/" class="tsd-kind-icon padding-right-1">getStoryMapBaseUrl</a>
+            </li>
+            
+            <li class="tsd-kind-function padding-right-1 visually-hidden api-list-item">
               <a href="/solution.js/api/storymap/getStoryMapDependencies/" class="tsd-kind-icon padding-right-1">getStoryMapDependencies</a>
             </li>
             
@@ -1988,6 +2000,10 @@
             </li>
             
             <li class="tsd-kind-function padding-right-1 visually-hidden api-list-item">
+              <a href="/solution.js/api/web-experience/getWebExperiencepUrlTemplate/" class="tsd-kind-icon padding-right-1">getWebExperiencepUrlTemplate</a>
+            </li>
+            
+            <li class="tsd-kind-function padding-right-1 visually-hidden api-list-item">
               <a href="/solution.js/api/web-experience/convertItemToTemplate/" class="tsd-kind-icon padding-right-1">convertItemToTemplate</a>
             </li>
             
@@ -2010,7 +2026,7 @@
   
   
   
-  <small class="label right">Version 0.16.6</small>
+  <small class="label right">Version 0.16.7</small>
 <h1 class=" font-size-3 trailer-half code-face">
   <a href="/solution.js/api/common/">@esri/solution-common</a>
 </h1>
@@ -2107,6 +2123,7 @@
   saveBlobAsFile,
   setCreateProp,
   setProp,
+  createZip,
   sanitizeHTML,
   sanitizeJSON,
   sanitizeURLProtocol,
@@ -2152,6 +2169,8 @@
   copyResource,
   getBlob,
   storeItemResources,
+  _addItemDataFile,
+  _addItemMetadataFile,
   _countRelationships,
   _getCreateServiceOptions,
   _getRelationshipUpdates,
@@ -2162,13 +2181,12 @@
   _validateExtent,
   addForwardItemRelationship,
   addForwardItemRelationships,
-  addItemDataFile,
-  addItemMetadataFile,
   addToServiceDefinition,
   addTokenToUrl,
   convertExtent,
   convertExtentWithFallback,
   createFeatureService,
+  createFullItem,
   createItemWithData,
   createUniqueFolder,
   createUniqueGroup,
@@ -2245,10 +2263,10 @@
 } <span class="hljs-keyword">from</span> <span class="hljs-string">"@esri/solution-common"</span>;</code></pre>
 
 <h2 class="font-size-0 trailer-quarter">CDN:</h2>
-<pre><code class="html"><span class="hljs-tag">&lt;<span class="hljs-name">script</span> <span class="hljs-attr">src</span>=<span class="hljs-string">"https://unpkg.com/@esri/solution-common@0.16.6/dist/umd/common.umd.min.js"</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span></code></pre>
+<pre><code class="html"><span class="hljs-tag">&lt;<span class="hljs-name">script</span> <span class="hljs-attr">src</span>=<span class="hljs-string">"https://unpkg.com/@esri/solution-common@0.16.7/dist/umd/common.umd.min.js"</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span></code></pre>
 <h2 class="font-size-0 trailer-quarter">CDN with SRI:</h2>
 
-        <pre><code class="html"><span class="hljs-tag">&lt;<span class="hljs-name">script</span> <span class="hljs-attr">src</span>=<span class="hljs-string">"https://unpkg.com/@esri/solution-common@0.16.6/dist/umd/common.umd.min.js"</span> <span class="hljs-attr">integrity</span>=<span class="hljs-string">"sha384-ExKIk8RlwS1mGj4RSEEAgxBGpJAn3VpvLmBfgfHaF8cnPa543NxppONhskdF1tT+"</span> <span class="hljs-attr">crossorigin</span>=<span class="hljs-string">"anonymous"</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span></code></pre>
+        <pre><code class="html"><span class="hljs-tag">&lt;<span class="hljs-name">script</span> <span class="hljs-attr">src</span>=<span class="hljs-string">"https://unpkg.com/@esri/solution-common@0.16.7/dist/umd/common.umd.min.js"</span> <span class="hljs-attr">integrity</span>=<span class="hljs-string">"sha384-bsZF61xfz9e/SmZy76wD7n7apA7iUZKI9Clt3gu8gwN0IsNpbQKmun4v8qggvtCX"</span> <span class="hljs-attr">crossorigin</span>=<span class="hljs-string">"anonymous"</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span></code></pre>
 <hr class="leader-half trailer-quarter" />
 <ul class="list-plain package-contents">
   
@@ -2805,6 +2823,10 @@
   </li>
   
   <li class="tsd-kind-function">
+    <a href="/solution.js/api/common/createZip/" class="tsd-kind-icon">createZip</a>
+  </li>
+  
+  <li class="tsd-kind-function">
     <a href="/solution.js/api/common/sanitizeHTML/" class="tsd-kind-icon">sanitizeHTML</a>
   </li>
   
@@ -2989,6 +3011,14 @@
   </li>
   
   <li class="tsd-kind-function">
+    <a href="/solution.js/api/common/_addItemDataFile/" class="tsd-kind-icon">_addItemDataFile</a>
+  </li>
+  
+  <li class="tsd-kind-function">
+    <a href="/solution.js/api/common/_addItemMetadataFile/" class="tsd-kind-icon">_addItemMetadataFile</a>
+  </li>
+  
+  <li class="tsd-kind-function">
     <a href="/solution.js/api/common/_countRelationships/" class="tsd-kind-icon">_countRelationships</a>
   </li>
   
@@ -3029,14 +3059,6 @@
   </li>
   
   <li class="tsd-kind-function">
-    <a href="/solution.js/api/common/addItemDataFile/" class="tsd-kind-icon">addItemDataFile</a>
-  </li>
-  
-  <li class="tsd-kind-function">
-    <a href="/solution.js/api/common/addItemMetadataFile/" class="tsd-kind-icon">addItemMetadataFile</a>
-  </li>
-  
-  <li class="tsd-kind-function">
     <a href="/solution.js/api/common/addToServiceDefinition/" class="tsd-kind-icon">addToServiceDefinition</a>
   </li>
   
@@ -3054,6 +3076,10 @@
   
   <li class="tsd-kind-function">
     <a href="/solution.js/api/common/createFeatureService/" class="tsd-kind-icon">createFeatureService</a>
+  </li>
+  
+  <li class="tsd-kind-function">
+    <a href="/solution.js/api/common/createFullItem/" class="tsd-kind-icon">createFullItem</a>
   </li>
   
   <li class="tsd-kind-function">
@@ -3381,7 +3407,7 @@
   
   
   
-  <small class="label right">Version 0.16.6</small>
+  <small class="label right">Version 0.16.7</small>
 <h1 class=" font-size-3 trailer-half code-face">
   <a href="/solution.js/api/creator/">@esri/solution-creator</a>
 </h1>
@@ -3410,10 +3436,10 @@
 } <span class="hljs-keyword">from</span> <span class="hljs-string">"@esri/solution-creator"</span>;</code></pre>
 
 <h2 class="font-size-0 trailer-quarter">CDN:</h2>
-<pre><code class="html"><span class="hljs-tag">&lt;<span class="hljs-name">script</span> <span class="hljs-attr">src</span>=<span class="hljs-string">"https://unpkg.com/@esri/solution-creator@0.16.6/dist/umd/creator.umd.min.js"</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span></code></pre>
+<pre><code class="html"><span class="hljs-tag">&lt;<span class="hljs-name">script</span> <span class="hljs-attr">src</span>=<span class="hljs-string">"https://unpkg.com/@esri/solution-creator@0.16.7/dist/umd/creator.umd.min.js"</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span></code></pre>
 <h2 class="font-size-0 trailer-quarter">CDN with SRI:</h2>
 
-        <pre><code class="html"><span class="hljs-tag">&lt;<span class="hljs-name">script</span> <span class="hljs-attr">src</span>=<span class="hljs-string">"https://unpkg.com/@esri/solution-creator@0.16.6/dist/umd/creator.umd.min.js"</span> <span class="hljs-attr">integrity</span>=<span class="hljs-string">"sha384-pfqyATrGLGPaDu2XNZmylVRFOvThR87VUraX6+Q8WVYDGrj0qjwlWYy6bu4o/okp"</span> <span class="hljs-attr">crossorigin</span>=<span class="hljs-string">"anonymous"</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span></code></pre>
+        <pre><code class="html"><span class="hljs-tag">&lt;<span class="hljs-name">script</span> <span class="hljs-attr">src</span>=<span class="hljs-string">"https://unpkg.com/@esri/solution-creator@0.16.7/dist/umd/creator.umd.min.js"</span> <span class="hljs-attr">integrity</span>=<span class="hljs-string">"sha384-peiit93arSP8jaqasvM0PoruU8MSlzbvevXY58C0sOjBHffLYoTyY1QzsFuVd2Xp"</span> <span class="hljs-attr">crossorigin</span>=<span class="hljs-string">"anonymous"</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span></code></pre>
 <hr class="leader-half trailer-quarter" />
 <ul class="list-plain package-contents">
   
@@ -3494,7 +3520,7 @@
   
   
   
-  <small class="label right">Version 0.16.6</small>
+  <small class="label right">Version 0.16.7</small>
 <h1 class=" font-size-3 trailer-half code-face">
   <a href="/solution.js/api/deployer/">@esri/solution-deployer</a>
 </h1>
@@ -3531,10 +3557,10 @@
 } <span class="hljs-keyword">from</span> <span class="hljs-string">"@esri/solution-deployer"</span>;</code></pre>
 
 <h2 class="font-size-0 trailer-quarter">CDN:</h2>
-<pre><code class="html"><span class="hljs-tag">&lt;<span class="hljs-name">script</span> <span class="hljs-attr">src</span>=<span class="hljs-string">"https://unpkg.com/@esri/solution-deployer@0.16.6/dist/umd/deployer.umd.min.js"</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span></code></pre>
+<pre><code class="html"><span class="hljs-tag">&lt;<span class="hljs-name">script</span> <span class="hljs-attr">src</span>=<span class="hljs-string">"https://unpkg.com/@esri/solution-deployer@0.16.7/dist/umd/deployer.umd.min.js"</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span></code></pre>
 <h2 class="font-size-0 trailer-quarter">CDN with SRI:</h2>
 
-        <pre><code class="html"><span class="hljs-tag">&lt;<span class="hljs-name">script</span> <span class="hljs-attr">src</span>=<span class="hljs-string">"https://unpkg.com/@esri/solution-deployer@0.16.6/dist/umd/deployer.umd.min.js"</span> <span class="hljs-attr">integrity</span>=<span class="hljs-string">"sha384-G6zQnoT9igTyFqnNHo7AqO0DdMyVnH2EnigJyvukKGmHVha0kqFSFW2vJFuK8kC8"</span> <span class="hljs-attr">crossorigin</span>=<span class="hljs-string">"anonymous"</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span></code></pre>
+        <pre><code class="html"><span class="hljs-tag">&lt;<span class="hljs-name">script</span> <span class="hljs-attr">src</span>=<span class="hljs-string">"https://unpkg.com/@esri/solution-deployer@0.16.7/dist/umd/deployer.umd.min.js"</span> <span class="hljs-attr">integrity</span>=<span class="hljs-string">"sha384-QtUVm/fHAmdVYG2GsIG8w2jMGQLYA9+ewdmDepYVA0cphUw7nzpf7PCjbUyL1Kb/"</span> <span class="hljs-attr">crossorigin</span>=<span class="hljs-string">"anonymous"</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span></code></pre>
 <hr class="leader-half trailer-quarter" />
 <ul class="list-plain package-contents">
   
@@ -3647,7 +3673,7 @@
   
   
   
-  <small class="label right">Version 0.16.6</small>
+  <small class="label right">Version 0.16.7</small>
 <h1 class=" font-size-3 trailer-half code-face">
   <a href="/solution.js/api/feature-layer/">@esri/solution-feature-layer</a>
 </h1>
@@ -3664,10 +3690,10 @@
 } <span class="hljs-keyword">from</span> <span class="hljs-string">"@esri/solution-feature-layer"</span>;</code></pre>
 
 <h2 class="font-size-0 trailer-quarter">CDN:</h2>
-<pre><code class="html"><span class="hljs-tag">&lt;<span class="hljs-name">script</span> <span class="hljs-attr">src</span>=<span class="hljs-string">"https://unpkg.com/@esri/solution-feature-layer@0.16.6/dist/umd/feature-layer.umd.min.js"</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span></code></pre>
+<pre><code class="html"><span class="hljs-tag">&lt;<span class="hljs-name">script</span> <span class="hljs-attr">src</span>=<span class="hljs-string">"https://unpkg.com/@esri/solution-feature-layer@0.16.7/dist/umd/feature-layer.umd.min.js"</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span></code></pre>
 <h2 class="font-size-0 trailer-quarter">CDN with SRI:</h2>
 
-        <pre><code class="html"><span class="hljs-tag">&lt;<span class="hljs-name">script</span> <span class="hljs-attr">src</span>=<span class="hljs-string">"https://unpkg.com/@esri/solution-feature-layer@0.16.6/dist/umd/feature-layer.umd.min.js"</span> <span class="hljs-attr">integrity</span>=<span class="hljs-string">"sha384-+X7AWPEvRibYBXw+2atHIf7708W5D/Ir+cdHoSwEYhQDqSg0UWeAuUqhp+pcPdwe"</span> <span class="hljs-attr">crossorigin</span>=<span class="hljs-string">"anonymous"</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span></code></pre>
+        <pre><code class="html"><span class="hljs-tag">&lt;<span class="hljs-name">script</span> <span class="hljs-attr">src</span>=<span class="hljs-string">"https://unpkg.com/@esri/solution-feature-layer@0.16.7/dist/umd/feature-layer.umd.min.js"</span> <span class="hljs-attr">integrity</span>=<span class="hljs-string">"sha384-wUVW0KrIQxnXxn0j9n/wKiD8SOwVe/KuzurNl4s0g0WEbYvwMe/VKkaeXKmIr3Th"</span> <span class="hljs-attr">crossorigin</span>=<span class="hljs-string">"anonymous"</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span></code></pre>
 <hr class="leader-half trailer-quarter" />
 <ul class="list-plain package-contents">
   
@@ -3696,7 +3722,7 @@
   
   
   
-  <small class="label right">Version 0.16.6</small>
+  <small class="label right">Version 0.16.7</small>
 <h1 class=" font-size-3 trailer-half code-face">
   <a href="/solution.js/api/file/">@esri/solution-file</a>
 </h1>
@@ -3712,10 +3738,10 @@
 } <span class="hljs-keyword">from</span> <span class="hljs-string">"@esri/solution-file"</span>;</code></pre>
 
 <h2 class="font-size-0 trailer-quarter">CDN:</h2>
-<pre><code class="html"><span class="hljs-tag">&lt;<span class="hljs-name">script</span> <span class="hljs-attr">src</span>=<span class="hljs-string">"https://unpkg.com/@esri/solution-file@0.16.6/dist/umd/file.umd.min.js"</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span></code></pre>
+<pre><code class="html"><span class="hljs-tag">&lt;<span class="hljs-name">script</span> <span class="hljs-attr">src</span>=<span class="hljs-string">"https://unpkg.com/@esri/solution-file@0.16.7/dist/umd/file.umd.min.js"</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span></code></pre>
 <h2 class="font-size-0 trailer-quarter">CDN with SRI:</h2>
 
-        <pre><code class="html"><span class="hljs-tag">&lt;<span class="hljs-name">script</span> <span class="hljs-attr">src</span>=<span class="hljs-string">"https://unpkg.com/@esri/solution-file@0.16.6/dist/umd/file.umd.min.js"</span> <span class="hljs-attr">integrity</span>=<span class="hljs-string">"sha384-4eatWBrUSZeRST0IMcSSk5JKZsOUSEqbdSbsbVg7fKEAbmV+881OL27QxH07vTk0"</span> <span class="hljs-attr">crossorigin</span>=<span class="hljs-string">"anonymous"</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span></code></pre>
+        <pre><code class="html"><span class="hljs-tag">&lt;<span class="hljs-name">script</span> <span class="hljs-attr">src</span>=<span class="hljs-string">"https://unpkg.com/@esri/solution-file@0.16.7/dist/umd/file.umd.min.js"</span> <span class="hljs-attr">integrity</span>=<span class="hljs-string">"sha384-VRysTiv5Rx3iZh4UUx5OJ2ZdSeHcSOhmMg2IbfrmOV7K85VxlzNvgYcoV6FD6hnH"</span> <span class="hljs-attr">crossorigin</span>=<span class="hljs-string">"anonymous"</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span></code></pre>
 <hr class="leader-half trailer-quarter" />
 <ul class="list-plain package-contents">
   
@@ -3740,7 +3766,7 @@
   
   
   
-  <small class="label right">Version 0.16.6</small>
+  <small class="label right">Version 0.16.7</small>
 <h1 class=" font-size-3 trailer-half code-face">
   <a href="/solution.js/api/form/">@esri/solution-form</a>
 </h1>
@@ -3762,7 +3788,7 @@
 } <span class="hljs-keyword">from</span> <span class="hljs-string">"@esri/solution-form"</span>;</code></pre>
 
 <h2 class="font-size-0 trailer-quarter">CDN:</h2>
-<pre><code class="html"><span class="hljs-tag">&lt;<span class="hljs-name">script</span> <span class="hljs-attr">src</span>=<span class="hljs-string">"https://unpkg.com/@esri/solution-form@0.16.6/dist/umd/form.umd.min.js"</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span></code></pre>
+<pre><code class="html"><span class="hljs-tag">&lt;<span class="hljs-name">script</span> <span class="hljs-attr">src</span>=<span class="hljs-string">"https://unpkg.com/@esri/solution-form@0.16.7/dist/umd/form.umd.min.js"</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span></code></pre>
 <h2 class="font-size-0 trailer-quarter">CDN with SRI:</h2>
 
 <hr class="leader-half trailer-quarter" />
@@ -3813,7 +3839,7 @@
   
   
   
-  <small class="label right">Version 0.16.6</small>
+  <small class="label right">Version 0.16.7</small>
 <h1 class=" font-size-3 trailer-half code-face">
   <a href="/solution.js/api/group/">@esri/solution-group</a>
 </h1>
@@ -3829,10 +3855,10 @@
 } <span class="hljs-keyword">from</span> <span class="hljs-string">"@esri/solution-group"</span>;</code></pre>
 
 <h2 class="font-size-0 trailer-quarter">CDN:</h2>
-<pre><code class="html"><span class="hljs-tag">&lt;<span class="hljs-name">script</span> <span class="hljs-attr">src</span>=<span class="hljs-string">"https://unpkg.com/@esri/solution-group@0.16.6/dist/umd/group.umd.min.js"</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span></code></pre>
+<pre><code class="html"><span class="hljs-tag">&lt;<span class="hljs-name">script</span> <span class="hljs-attr">src</span>=<span class="hljs-string">"https://unpkg.com/@esri/solution-group@0.16.7/dist/umd/group.umd.min.js"</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span></code></pre>
 <h2 class="font-size-0 trailer-quarter">CDN with SRI:</h2>
 
-        <pre><code class="html"><span class="hljs-tag">&lt;<span class="hljs-name">script</span> <span class="hljs-attr">src</span>=<span class="hljs-string">"https://unpkg.com/@esri/solution-group@0.16.6/dist/umd/group.umd.min.js"</span> <span class="hljs-attr">integrity</span>=<span class="hljs-string">"sha384-6CCETWzK3Dm1sNIYFvPOrbWp4SqJ51Q0HKT1IH2JBe8y20p1fTvYnt0MIr2E8yr5"</span> <span class="hljs-attr">crossorigin</span>=<span class="hljs-string">"anonymous"</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span></code></pre>
+        <pre><code class="html"><span class="hljs-tag">&lt;<span class="hljs-name">script</span> <span class="hljs-attr">src</span>=<span class="hljs-string">"https://unpkg.com/@esri/solution-group@0.16.7/dist/umd/group.umd.min.js"</span> <span class="hljs-attr">integrity</span>=<span class="hljs-string">"sha384-gkCz2xUkKlb0gB+FitmotMUDDd/JKQA45EI3Qd9hSg+moUhZDK1ssl7tum7j9zfw"</span> <span class="hljs-attr">crossorigin</span>=<span class="hljs-string">"anonymous"</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span></code></pre>
 <hr class="leader-half trailer-quarter" />
 <ul class="list-plain package-contents">
   
@@ -3857,7 +3883,7 @@
   
   
   
-  <small class="label right">Version 0.16.6</small>
+  <small class="label right">Version 0.16.7</small>
 <h1 class=" font-size-3 trailer-half code-face">
   <a href="/solution.js/api/hub-types/">@esri/solution-hub-types</a>
 </h1>
@@ -3884,7 +3910,7 @@
 } <span class="hljs-keyword">from</span> <span class="hljs-string">"@esri/solution-hub-types"</span>;</code></pre>
 
 <h2 class="font-size-0 trailer-quarter">CDN:</h2>
-<pre><code class="html"><span class="hljs-tag">&lt;<span class="hljs-name">script</span> <span class="hljs-attr">src</span>=<span class="hljs-string">"https://unpkg.com/@esri/solution-hub-types@0.16.6/dist/umd/hub-types.umd.min.js"</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span></code></pre>
+<pre><code class="html"><span class="hljs-tag">&lt;<span class="hljs-name">script</span> <span class="hljs-attr">src</span>=<span class="hljs-string">"https://unpkg.com/@esri/solution-hub-types@0.16.7/dist/umd/hub-types.umd.min.js"</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span></code></pre>
 <h2 class="font-size-0 trailer-quarter">CDN with SRI:</h2>
 
 <hr class="leader-half trailer-quarter" />
@@ -3955,7 +3981,7 @@
   
   
   
-  <small class="label right">Version 0.16.6</small>
+  <small class="label right">Version 0.16.7</small>
 <h1 class=" font-size-3 trailer-half code-face">
   <a href="/solution.js/api/simple-types/">@esri/solution-simple-types</a>
 </h1>
@@ -4036,10 +4062,10 @@
 } <span class="hljs-keyword">from</span> <span class="hljs-string">"@esri/solution-simple-types"</span>;</code></pre>
 
 <h2 class="font-size-0 trailer-quarter">CDN:</h2>
-<pre><code class="html"><span class="hljs-tag">&lt;<span class="hljs-name">script</span> <span class="hljs-attr">src</span>=<span class="hljs-string">"https://unpkg.com/@esri/solution-simple-types@0.16.6/dist/umd/simple-types.umd.min.js"</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span></code></pre>
+<pre><code class="html"><span class="hljs-tag">&lt;<span class="hljs-name">script</span> <span class="hljs-attr">src</span>=<span class="hljs-string">"https://unpkg.com/@esri/solution-simple-types@0.16.7/dist/umd/simple-types.umd.min.js"</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span></code></pre>
 <h2 class="font-size-0 trailer-quarter">CDN with SRI:</h2>
 
-        <pre><code class="html"><span class="hljs-tag">&lt;<span class="hljs-name">script</span> <span class="hljs-attr">src</span>=<span class="hljs-string">"https://unpkg.com/@esri/solution-simple-types@0.16.6/dist/umd/simple-types.umd.min.js"</span> <span class="hljs-attr">integrity</span>=<span class="hljs-string">"sha384-z0glagGh2bqEqBjTRNKyOBBomSu2Td7j3hOR64da9rAJ3SS9wml0STnxI3E+xL0q"</span> <span class="hljs-attr">crossorigin</span>=<span class="hljs-string">"anonymous"</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span></code></pre>
+        <pre><code class="html"><span class="hljs-tag">&lt;<span class="hljs-name">script</span> <span class="hljs-attr">src</span>=<span class="hljs-string">"https://unpkg.com/@esri/solution-simple-types@0.16.7/dist/umd/simple-types.umd.min.js"</span> <span class="hljs-attr">integrity</span>=<span class="hljs-string">"sha384-fEHntEk8mvMiQ+PPpQp+OwDDH+dm6FomNO1IUh7pb5N3ypwifOidC0tqf69vssT/"</span> <span class="hljs-attr">crossorigin</span>=<span class="hljs-string">"anonymous"</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span></code></pre>
 <hr class="leader-half trailer-quarter" />
 <ul class="list-plain package-contents">
   
@@ -4324,7 +4350,7 @@
   
   
   
-  <small class="label right">Version 0.16.6</small>
+  <small class="label right">Version 0.16.7</small>
 <h1 class=" font-size-3 trailer-half code-face">
   <a href="/solution.js/api/storymap/">@esri/solution-storymap</a>
 </h1>
@@ -4341,6 +4367,7 @@
   createStoryMap,
   createStoryMapModelFromTemplate,
   getPortalEnv,
+  getStoryMapBaseUrl,
   getStoryMapDependencies,
   getStoryMapSubdomain,
   remapWebmapKeys,
@@ -4350,10 +4377,10 @@
 } <span class="hljs-keyword">from</span> <span class="hljs-string">"@esri/solution-storymap"</span>;</code></pre>
 
 <h2 class="font-size-0 trailer-quarter">CDN:</h2>
-<pre><code class="html"><span class="hljs-tag">&lt;<span class="hljs-name">script</span> <span class="hljs-attr">src</span>=<span class="hljs-string">"https://unpkg.com/@esri/solution-storymap@0.16.6/dist/umd/storymap.umd.min.js"</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span></code></pre>
+<pre><code class="html"><span class="hljs-tag">&lt;<span class="hljs-name">script</span> <span class="hljs-attr">src</span>=<span class="hljs-string">"https://unpkg.com/@esri/solution-storymap@0.16.7/dist/umd/storymap.umd.min.js"</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span></code></pre>
 <h2 class="font-size-0 trailer-quarter">CDN with SRI:</h2>
 
-        <pre><code class="html"><span class="hljs-tag">&lt;<span class="hljs-name">script</span> <span class="hljs-attr">src</span>=<span class="hljs-string">"https://unpkg.com/@esri/solution-storymap@0.16.6/dist/umd/storymap.umd.min.js"</span> <span class="hljs-attr">integrity</span>=<span class="hljs-string">"sha384-RnVFdCvLj3Oi3pyZTmL6OD8OLhILbkq1D8iu3cNUErXqRG5Akx5OiejN8q7oeTIW"</span> <span class="hljs-attr">crossorigin</span>=<span class="hljs-string">"anonymous"</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span></code></pre>
+        <pre><code class="html"><span class="hljs-tag">&lt;<span class="hljs-name">script</span> <span class="hljs-attr">src</span>=<span class="hljs-string">"https://unpkg.com/@esri/solution-storymap@0.16.7/dist/umd/storymap.umd.min.js"</span> <span class="hljs-attr">integrity</span>=<span class="hljs-string">"sha384-1Oj38o9dg8ivFsuj4Htrssqrudb0KL6vI5EtF0QjS5Z8usgRPC8pCDhzQDxXhvn4"</span> <span class="hljs-attr">crossorigin</span>=<span class="hljs-string">"anonymous"</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span></code></pre>
 <hr class="leader-half trailer-quarter" />
 <ul class="list-plain package-contents">
   
@@ -4383,6 +4410,10 @@
   
   <li class="tsd-kind-function">
     <a href="/solution.js/api/storymap/getPortalEnv/" class="tsd-kind-icon">getPortalEnv</a>
+  </li>
+  
+  <li class="tsd-kind-function">
+    <a href="/solution.js/api/storymap/getStoryMapBaseUrl/" class="tsd-kind-icon">getStoryMapBaseUrl</a>
   </li>
   
   <li class="tsd-kind-function">
@@ -4418,7 +4449,7 @@
   
   
   
-  <small class="label right">Version 0.16.6</small>
+  <small class="label right">Version 0.16.7</small>
 <h1 class=" font-size-3 trailer-half code-face">
   <a href="/solution.js/api/viewer/">@esri/solution-viewer</a>
 </h1>
@@ -4432,10 +4463,10 @@
 } <span class="hljs-keyword">from</span> <span class="hljs-string">"@esri/solution-viewer"</span>;</code></pre>
 
 <h2 class="font-size-0 trailer-quarter">CDN:</h2>
-<pre><code class="html"><span class="hljs-tag">&lt;<span class="hljs-name">script</span> <span class="hljs-attr">src</span>=<span class="hljs-string">"https://unpkg.com/@esri/solution-viewer@0.16.6/dist/umd/viewer.umd.min.js"</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span></code></pre>
+<pre><code class="html"><span class="hljs-tag">&lt;<span class="hljs-name">script</span> <span class="hljs-attr">src</span>=<span class="hljs-string">"https://unpkg.com/@esri/solution-viewer@0.16.7/dist/umd/viewer.umd.min.js"</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span></code></pre>
 <h2 class="font-size-0 trailer-quarter">CDN with SRI:</h2>
 
-        <pre><code class="html"><span class="hljs-tag">&lt;<span class="hljs-name">script</span> <span class="hljs-attr">src</span>=<span class="hljs-string">"https://unpkg.com/@esri/solution-viewer@0.16.6/dist/umd/viewer.umd.min.js"</span> <span class="hljs-attr">integrity</span>=<span class="hljs-string">"sha384-GZr2P9H23FWpNOoF8vbRuWU4jM9phn7cxiMostMenrYCORFaM/HAv7ccF1q2wq+u"</span> <span class="hljs-attr">crossorigin</span>=<span class="hljs-string">"anonymous"</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span></code></pre>
+        <pre><code class="html"><span class="hljs-tag">&lt;<span class="hljs-name">script</span> <span class="hljs-attr">src</span>=<span class="hljs-string">"https://unpkg.com/@esri/solution-viewer@0.16.7/dist/umd/viewer.umd.min.js"</span> <span class="hljs-attr">integrity</span>=<span class="hljs-string">"sha384-/f6aYsEY/p8xbPrhAn+dWsmKBSMfGiRj2ftr8I9O8ncmkFGyloc6+jfmgLjn9B6A"</span> <span class="hljs-attr">crossorigin</span>=<span class="hljs-string">"anonymous"</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span></code></pre>
 <hr class="leader-half trailer-quarter" />
 <ul class="list-plain package-contents">
   
@@ -4452,7 +4483,7 @@
   
   
   
-  <small class="label right">Version 0.16.6</small>
+  <small class="label right">Version 0.16.7</small>
 <h1 class=" font-size-3 trailer-half code-face">
   <a href="/solution.js/api/web-experience/">@esri/solution-web-experience</a>
 </h1>
@@ -4467,12 +4498,13 @@
   createWebExperienceModelFromTemplate,
   getExperienceSubdomain,
   getWebExperienceDependencies,
+  getWebExperiencepUrlTemplate,
   convertItemToTemplate,
   createItemFromTemplate
 } <span class="hljs-keyword">from</span> <span class="hljs-string">"@esri/solution-web-experience"</span>;</code></pre>
 
 <h2 class="font-size-0 trailer-quarter">CDN:</h2>
-<pre><code class="html"><span class="hljs-tag">&lt;<span class="hljs-name">script</span> <span class="hljs-attr">src</span>=<span class="hljs-string">"https://unpkg.com/@esri/solution-web-experience@0.16.6/dist/umd/web-experience.umd.min.js"</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span></code></pre>
+<pre><code class="html"><span class="hljs-tag">&lt;<span class="hljs-name">script</span> <span class="hljs-attr">src</span>=<span class="hljs-string">"https://unpkg.com/@esri/solution-web-experience@0.16.7/dist/umd/web-experience.umd.min.js"</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span></code></pre>
 <h2 class="font-size-0 trailer-quarter">CDN with SRI:</h2>
 
 <hr class="leader-half trailer-quarter" />
@@ -4496,6 +4528,10 @@
   
   <li class="tsd-kind-function">
     <a href="/solution.js/api/web-experience/getWebExperienceDependencies/" class="tsd-kind-icon">getWebExperienceDependencies</a>
+  </li>
+  
+  <li class="tsd-kind-function">
+    <a href="/solution.js/api/web-experience/getWebExperiencepUrlTemplate/" class="tsd-kind-icon">getWebExperiencepUrlTemplate</a>
   </li>
   
   <li class="tsd-kind-function">

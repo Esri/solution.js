@@ -631,6 +631,10 @@
             </li>
             
             <li class="tsd-kind-function padding-right-1 visually-hidden api-list-item">
+              <a href="/solution.js/api/common/createZip/" class="tsd-kind-icon padding-right-1">createZip</a>
+            </li>
+            
+            <li class="tsd-kind-function padding-right-1 visually-hidden api-list-item">
               <a href="/solution.js/api/common/sanitizeHTML/" class="tsd-kind-icon padding-right-1">sanitizeHTML</a>
             </li>
             
@@ -815,6 +819,14 @@
             </li>
             
             <li class="tsd-kind-function padding-right-1 visually-hidden api-list-item">
+              <a href="/solution.js/api/common/_addItemDataFile/" class="tsd-kind-icon padding-right-1">_addItemDataFile</a>
+            </li>
+            
+            <li class="tsd-kind-function padding-right-1 visually-hidden api-list-item">
+              <a href="/solution.js/api/common/_addItemMetadataFile/" class="tsd-kind-icon padding-right-1">_addItemMetadataFile</a>
+            </li>
+            
+            <li class="tsd-kind-function padding-right-1 visually-hidden api-list-item">
               <a href="/solution.js/api/common/_countRelationships/" class="tsd-kind-icon padding-right-1">_countRelationships</a>
             </li>
             
@@ -855,14 +867,6 @@
             </li>
             
             <li class="tsd-kind-function padding-right-1 visually-hidden api-list-item">
-              <a href="/solution.js/api/common/addItemDataFile/" class="tsd-kind-icon padding-right-1">addItemDataFile</a>
-            </li>
-            
-            <li class="tsd-kind-function padding-right-1 visually-hidden api-list-item">
-              <a href="/solution.js/api/common/addItemMetadataFile/" class="tsd-kind-icon padding-right-1">addItemMetadataFile</a>
-            </li>
-            
-            <li class="tsd-kind-function padding-right-1 visually-hidden api-list-item">
               <a href="/solution.js/api/common/addToServiceDefinition/" class="tsd-kind-icon padding-right-1">addToServiceDefinition</a>
             </li>
             
@@ -880,6 +884,10 @@
             
             <li class="tsd-kind-function padding-right-1 visually-hidden api-list-item">
               <a href="/solution.js/api/common/createFeatureService/" class="tsd-kind-icon padding-right-1">createFeatureService</a>
+            </li>
+            
+            <li class="tsd-kind-function padding-right-1 visually-hidden api-list-item">
+              <a href="/solution.js/api/common/createFullItem/" class="tsd-kind-icon padding-right-1">createFullItem</a>
             </li>
             
             <li class="tsd-kind-function padding-right-1 visually-hidden api-list-item">
@@ -1916,6 +1924,10 @@
             </li>
             
             <li class="tsd-kind-function padding-right-1 visually-hidden api-list-item">
+              <a href="/solution.js/api/storymap/getStoryMapBaseUrl/" class="tsd-kind-icon padding-right-1">getStoryMapBaseUrl</a>
+            </li>
+            
+            <li class="tsd-kind-function padding-right-1 visually-hidden api-list-item">
               <a href="/solution.js/api/storymap/getStoryMapDependencies/" class="tsd-kind-icon padding-right-1">getStoryMapDependencies</a>
             </li>
             
@@ -1990,6 +2002,10 @@
             </li>
             
             <li class="tsd-kind-function padding-right-1 visually-hidden api-list-item">
+              <a href="/solution.js/api/web-experience/getWebExperiencepUrlTemplate/" class="tsd-kind-icon padding-right-1">getWebExperiencepUrlTemplate</a>
+            </li>
+            
+            <li class="tsd-kind-function padding-right-1 visually-hidden api-list-item">
               <a href="/solution.js/api/web-experience/convertItemToTemplate/" class="tsd-kind-icon padding-right-1">convertItemToTemplate</a>
             </li>
             
@@ -2006,7 +2022,7 @@
 
   <div class="column-18">
     <div class="panel panel-white padding-left-1 padding-right-1 padding-trailer-1 padding-leader-half">
-      <small class="label right">Version 0.16.6</small>
+      <small class="label right">Version 0.16.7</small>
 <h1 class="tsd-kind-module font-size-3 trailer-half code-face">
   <a href="/solution.js/api/common/" class="is-active">@esri/solution-common</a>
 </h1>
@@ -2103,6 +2119,7 @@
   saveBlobAsFile,
   setCreateProp,
   setProp,
+  createZip,
   sanitizeHTML,
   sanitizeJSON,
   sanitizeURLProtocol,
@@ -2148,6 +2165,8 @@
   copyResource,
   getBlob,
   storeItemResources,
+  _addItemDataFile,
+  _addItemMetadataFile,
   _countRelationships,
   _getCreateServiceOptions,
   _getRelationshipUpdates,
@@ -2158,13 +2177,12 @@
   _validateExtent,
   addForwardItemRelationship,
   addForwardItemRelationships,
-  addItemDataFile,
-  addItemMetadataFile,
   addToServiceDefinition,
   addTokenToUrl,
   convertExtent,
   convertExtentWithFallback,
   createFeatureService,
+  createFullItem,
   createItemWithData,
   createUniqueFolder,
   createUniqueGroup,
@@ -2241,10 +2259,10 @@
 } <span class="hljs-keyword">from</span> <span class="hljs-string">"@esri/solution-common"</span>;</code></pre>
 
 <h2 class="font-size-0 trailer-quarter">CDN:</h2>
-<pre><code class="html"><span class="hljs-tag">&lt;<span class="hljs-name">script</span> <span class="hljs-attr">src</span>=<span class="hljs-string">"https://unpkg.com/@esri/solution-common@0.16.6/dist/umd/common.umd.min.js"</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span></code></pre>
+<pre><code class="html"><span class="hljs-tag">&lt;<span class="hljs-name">script</span> <span class="hljs-attr">src</span>=<span class="hljs-string">"https://unpkg.com/@esri/solution-common@0.16.7/dist/umd/common.umd.min.js"</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span></code></pre>
 <h2 class="font-size-0 trailer-quarter">CDN with SRI:</h2>
 
-        <pre><code class="html"><span class="hljs-tag">&lt;<span class="hljs-name">script</span> <span class="hljs-attr">src</span>=<span class="hljs-string">"https://unpkg.com/@esri/solution-common@0.16.6/dist/umd/common.umd.min.js"</span> <span class="hljs-attr">integrity</span>=<span class="hljs-string">"sha384-ExKIk8RlwS1mGj4RSEEAgxBGpJAn3VpvLmBfgfHaF8cnPa543NxppONhskdF1tT+"</span> <span class="hljs-attr">crossorigin</span>=<span class="hljs-string">"anonymous"</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span></code></pre>
+        <pre><code class="html"><span class="hljs-tag">&lt;<span class="hljs-name">script</span> <span class="hljs-attr">src</span>=<span class="hljs-string">"https://unpkg.com/@esri/solution-common@0.16.7/dist/umd/common.umd.min.js"</span> <span class="hljs-attr">integrity</span>=<span class="hljs-string">"sha384-bsZF61xfz9e/SmZy76wD7n7apA7iUZKI9Clt3gu8gwN0IsNpbQKmun4v8qggvtCX"</span> <span class="hljs-attr">crossorigin</span>=<span class="hljs-string">"anonymous"</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span></code></pre>
 <hr class="leader-half trailer-quarter" />
 <ul class="list-plain package-contents">
   
@@ -2801,6 +2819,10 @@
   </li>
   
   <li class="tsd-kind-function">
+    <a href="/solution.js/api/common/createZip/" class="tsd-kind-icon">createZip</a>
+  </li>
+  
+  <li class="tsd-kind-function">
     <a href="/solution.js/api/common/sanitizeHTML/" class="tsd-kind-icon">sanitizeHTML</a>
   </li>
   
@@ -2985,6 +3007,14 @@
   </li>
   
   <li class="tsd-kind-function">
+    <a href="/solution.js/api/common/_addItemDataFile/" class="tsd-kind-icon">_addItemDataFile</a>
+  </li>
+  
+  <li class="tsd-kind-function">
+    <a href="/solution.js/api/common/_addItemMetadataFile/" class="tsd-kind-icon">_addItemMetadataFile</a>
+  </li>
+  
+  <li class="tsd-kind-function">
     <a href="/solution.js/api/common/_countRelationships/" class="tsd-kind-icon">_countRelationships</a>
   </li>
   
@@ -3025,14 +3055,6 @@
   </li>
   
   <li class="tsd-kind-function">
-    <a href="/solution.js/api/common/addItemDataFile/" class="tsd-kind-icon">addItemDataFile</a>
-  </li>
-  
-  <li class="tsd-kind-function">
-    <a href="/solution.js/api/common/addItemMetadataFile/" class="tsd-kind-icon">addItemMetadataFile</a>
-  </li>
-  
-  <li class="tsd-kind-function">
     <a href="/solution.js/api/common/addToServiceDefinition/" class="tsd-kind-icon">addToServiceDefinition</a>
   </li>
   
@@ -3050,6 +3072,10 @@
   
   <li class="tsd-kind-function">
     <a href="/solution.js/api/common/createFeatureService/" class="tsd-kind-icon">createFeatureService</a>
+  </li>
+  
+  <li class="tsd-kind-function">
+    <a href="/solution.js/api/common/createFullItem/" class="tsd-kind-icon">createFullItem</a>
   </li>
   
   <li class="tsd-kind-function">
