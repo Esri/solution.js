@@ -56,9 +56,7 @@ import {
   IUpdateItemResponse,
   UserSession
 } from "./interfaces";
-import {
-  createZip
-} from "./libConnectors";
+import { createZip } from "./libConnectors";
 import {
   addItemData as portalAddItemData,
   addItemRelationship,
@@ -543,24 +541,29 @@ export function createFullItem(
                     Array.isArray(resourcesFiles) &&
                     resourcesFiles.length > 0
                   ) {
-                    updateDefs.push(new Promise<IItemResourceResponse>(
-                      (rsrcResolve, rsrcReject) => {
-                        createZip("resources.zip", resourcesFiles).then(
-                          (zipfile: File) => {
-                            const addResourceOptions: IItemResourceOptions = {
-                              id: createResponse.id,
-                              resource: zipfile,
-                              authentication: destinationAuthentication,
-                              params: {
-                                archive: true
-                              }
-                            };
-                            addItemResource(addResourceOptions).then(rsrcResolve, rsrcReject);
-                          },
-                          rsrcReject
-                        );
-                      }
-                    ));
+                    updateDefs.push(
+                      new Promise<IItemResourceResponse>(
+                        (rsrcResolve, rsrcReject) => {
+                          createZip("resources.zip", resourcesFiles).then(
+                            (zipfile: File) => {
+                              const addResourceOptions: IItemResourceOptions = {
+                                id: createResponse.id,
+                                resource: zipfile,
+                                authentication: destinationAuthentication,
+                                params: {
+                                  archive: true
+                                }
+                              };
+                              addItemResource(addResourceOptions).then(
+                                rsrcResolve,
+                                rsrcReject
+                              );
+                            },
+                            rsrcReject
+                          );
+                        }
+                      )
+                    );
                   }
 
                   // Add the metadata section
@@ -1398,7 +1401,6 @@ export function _getCreateServiceOptions(
   templateDictionary: any
 ): Promise<any> {
   return new Promise((resolve, reject) => {
-    const itemInfo: any = {};
     const serviceInfo: any = newItemTemplate.properties;
     const folderId: any = templateDictionary.folderId;
     const isPortal: boolean = templateDictionary.isPortal;
@@ -1407,18 +1409,10 @@ export function _getCreateServiceOptions(
 
     const params: IParams = {};
 
-    // Retain the existing title but swap with name if it's missing
-    itemInfo.title = newItemTemplate.item.title || newItemTemplate.item.name;
-
-    // Need to set the service name: name + "_" + newItemId
-    const baseName: string =
-      newItemTemplate.item.name || newItemTemplate.item.title;
-
-    // If the name already contains a GUID replace it with the newItemID
-    const regEx: any = new RegExp("[0-9A-F]{32}", "gmi");
-    itemInfo.name = regEx.exec(baseName)
-      ? baseName.replace(regEx, solutionItemId)
-      : baseName + "_" + solutionItemId;
+    const itemInfo: any = {
+      title: newItemTemplate.item.title,
+      name: newItemTemplate.item.name
+    };
 
     const _item: ICreateServiceParams = {
       ...itemInfo,
