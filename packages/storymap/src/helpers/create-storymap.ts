@@ -46,6 +46,8 @@ export function createStoryMap(
       model.item.id = createResponse.id;
       // and re-interpolate the item id
       model = interpolateItemId(model);
+      // Compute the item url based on current environment
+
       // Storymaps store draft data in a timestamped resource attached to the item
       // We'll just use the published data for the first "draft"
       resources.push({
