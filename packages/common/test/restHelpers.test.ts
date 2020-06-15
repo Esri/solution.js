@@ -402,7 +402,8 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
   describe("createFeatureService", () => {
     it("can handle failure", done => {
       fetchMock.post(
-        utils.PORTAL_SUBSET.restUrl + "/content/users/casey/aabb123456/createService",
+        utils.PORTAL_SUBSET.restUrl +
+          "/content/users/casey/aabb123456/createService",
         mockItems.get400Failure()
       );
 
@@ -466,7 +467,8 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
 
       fetchMock
         .post(
-          utils.PORTAL_SUBSET.restUrl + "/content/users/casey/aabb123456/createService",
+          utils.PORTAL_SUBSET.restUrl +
+            "/content/users/casey/aabb123456/createService",
           '{"encodedServiceURL":"https://services123.arcgis.com/org1234567890/arcgis/rest/services/' +
             "ROWPermits_publiccomment_" +
             now +
@@ -3041,6 +3043,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
       };
 
       itemTemplate.item.name = "A";
+      itemTemplate.item.title = "A";
       itemTemplate.properties.service.spatialReference = {
         wkid: 102100
       };
@@ -3051,7 +3054,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
         .then(options => {
           expect(options).toEqual({
             item: {
-              name: "A_sol1234567890",
+              name: "A",
               title: "A",
               capabilities: [],
               spatialReference: {
@@ -3095,12 +3098,12 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
         .then(options => {
           expect(options).toEqual({
             item: {
-              name: "undefined_sol1234567890",
-              title: undefined,
               capabilities: "",
               spatialReference: {
                 wkid: 102100
               },
+              title: undefined,
+              name: undefined,
               preserveLayerIds: true
             },
             folderId: "aabb123456",
@@ -3167,8 +3170,8 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
         .then(options => {
           expect(options).toEqual({
             item: {
-              name: "A_sol1234567890",
-              title: "A",
+              name: "A",
+              title: undefined,
               somePropNotInItem: true,
               capabilities: ["Query"],
               spatialReference: {
@@ -3317,7 +3320,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
         .then(options => {
           expect(options).toEqual({
             item: {
-              name: "A_sol1234567890",
+              name: "A_0a25612a2fc54f6e8828c679e2300a49",
               title: "A",
               somePropNotInItem: true,
               capabilities: ["Query"],
