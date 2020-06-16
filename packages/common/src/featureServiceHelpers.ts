@@ -29,10 +29,32 @@ export {
 
 //#region Imports -------------------------------------------------------------------------------------------------------//
 
-import { IDependency, IItemTemplate, INumberValuePair, IPostProcessArgs, IStringValuePair, IUpdate, UserSession } from "./interfaces";
-import { checkUrlPathTermination, deleteProp, fail, getProp } from "./generalHelpers";
-import { replaceInTemplate, templatizeTerm, templatizeIds } from "./templatization";
-import { addToServiceDefinition, getLayerUpdates, getRequest, rest_request } from "./restHelpers";
+import {
+  IDependency,
+  IItemTemplate,
+  INumberValuePair,
+  IPostProcessArgs,
+  IStringValuePair,
+  IUpdate,
+  UserSession
+} from "./interfaces";
+import {
+  checkUrlPathTermination,
+  deleteProp,
+  fail,
+  getProp
+} from "./generalHelpers";
+import {
+  replaceInTemplate,
+  templatizeTerm,
+  templatizeIds
+} from "./templatization";
+import {
+  addToServiceDefinition,
+  getLayerUpdates,
+  getRequest,
+  rest_request
+} from "./restHelpers";
 
 //#endregion ------------------------------------------------------------------------------------------------------------//
 
@@ -86,15 +108,17 @@ export function templatize(
     );
   }
   /* istanbul ignore else */
-  if (
-    getProp(itemTemplate, "properties.service.initialExtent")
-  ) {
+  if (getProp(itemTemplate, "properties.service.initialExtent")) {
     itemTemplate.properties.service.initialExtent = templatizeTerm(
       id,
       id,
       ".solutionExtent"
     );
   }
+
+  // if any layer hasZ enabled then we need to set
+  // enableZDefaults and zDefault to deploy to enterprise
+  let hasZ: boolean = false;
 
   jsonItems.forEach((jsonItem: any) => {
     // get the source service json for the given data item
@@ -112,7 +136,14 @@ export function templatize(
       dependencies,
       templatizeFieldReferences
     );
+
+    hasZ = jsonItem.hasZ || _item.hasZ ? true : hasZ;
   });
+
+  if (hasZ) {
+    itemTemplate.properties.service.enableZDefaults = true;
+    itemTemplate.properties.service.zDefault = 0;
+  }
 
   return itemTemplate;
 }
@@ -407,10 +438,7 @@ export function deTemplatizeFieldInfos(
   fieldInfoKeys.forEach(id => {
     if (fieldInfos[id].hasOwnProperty("templates")) {
       fieldInfos[id].templates = JSON.parse(
-        replaceInTemplate(
-          JSON.stringify(fieldInfos[id].templates),
-          settings
-        )
+        replaceInTemplate(JSON.stringify(fieldInfos[id].templates), settings)
       );
     }
 
@@ -422,10 +450,7 @@ export function deTemplatizeFieldInfos(
 
     if (fieldInfos[id].hasOwnProperty("types")) {
       fieldInfos[id].types = JSON.parse(
-        replaceInTemplate(
-          JSON.stringify(fieldInfos[id].types),
-          settings
-        )
+        replaceInTemplate(JSON.stringify(fieldInfos[id].types), settings)
       );
     }
   });
@@ -446,18 +471,16 @@ export function deTemplatizeFieldInfos(
  * @param itemTemplate The current itemTemplate being processed.
  * @return array of layers and tables
  */
-export function getLayersAndTables(
-  itemTemplate: IItemTemplate
-): any[] {
+export function getLayersAndTables(itemTemplate: IItemTemplate): any[] {
   const properties: any = itemTemplate.properties;
   const layersAndTables: any[] = [];
-  (properties.layers || []).forEach(function (layer: any) {
+  (properties.layers || []).forEach(function(layer: any) {
     layersAndTables.push({
       item: layer,
       type: "layer"
     });
   });
-  (properties.tables || []).forEach(function (table: any) {
+  (properties.tables || []).forEach(function(table: any) {
     layersAndTables.push({
       item: table,
       type: "table"
@@ -725,9 +748,7 @@ export function postProcessFields(
   return new Promise((resolveFn, rejectFn) => {
     if (!itemTemplate.item.url) {
       rejectFn(
-        fail(
-          "Feature layer " + itemTemplate.itemId + " does not have a URL"
-        )
+        fail("Feature layer " + itemTemplate.itemId + " does not have a URL")
       );
     } else {
       const id = itemTemplate.itemId;
@@ -917,8 +938,7 @@ export function updatePopupInfo(
     /* istanbul ignore else */
     if (_items && Array.isArray(_items)) {
       _items.forEach((item: any) => {
-        item.popupInfo =
-          getProp(popupInfos, type + "." + item.id) || {};
+        item.popupInfo = getProp(popupInfos, type + "." + item.id) || {};
       });
     }
   });
@@ -1182,10 +1202,7 @@ export function _templatizeAdminLayerInfoFields(
   dependencies: IDependency[]
 ): void {
   // templatize the source layer fields
-  const table = getProp(
-    layer,
-    "adminLayerInfo.viewLayerDefinition.table"
-  );
+  const table = getProp(layer, "adminLayerInfo.viewLayerDefinition.table");
 
   if (table) {
     let id: string = _getDependantItemId(table.sourceServiceName, dependencies);
@@ -1430,10 +1447,7 @@ export function _templatizeFieldName(
       const relatedTable: any = relatedTables[relationshipId];
       // the layers relationships stores the property as relatedTableId
       // the layers adminLayerInfo relatedTables stores the property as sourceLayerId
-      const prop: string = getProp(
-        relatedTable,
-        "relatedTableId"
-      )
+      const prop: string = getProp(relatedTable, "relatedTableId")
         ? "relatedTableId"
         : "sourceLayerId";
       const _basePath: string =
