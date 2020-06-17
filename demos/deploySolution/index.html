@@ -119,21 +119,20 @@
               password: document.getElementById("password").value,
               portal: document.getElementById("portal").value
             }),
-            (percentDone, jobId, progressEvent) => {
+            function (percentDone, jobId, progressEvent) {
               if (progressEvent) {
                 createdItems.push(progressEvent.data)
               }
               var html = "Deploying..." + percentDone.toFixed().toString() + "%" + "<br><br>Finished items:<ol>";
-              createdItems.forEach(item => html += "<li>" + item + "</li>");
+              createdItems.forEach(function (item) { return html += "<li>" + item + "</li>" });
               html += "</ol>";
               document.getElementById("output").innerHTML = html;
             }
-          ).then(
-            html => {
+          ).then(function (html){
               reportElapsedTime(startTime);
               document.getElementById("output").innerHTML = html;
             },
-            error => {
+            function (error) {
               var message = error.error || JSON.stringify(error);
               reportElapsedTime(startTime);
               document.getElementById("output").innerHTML = "<span style=\"color:red\">" + message + "</span>";
