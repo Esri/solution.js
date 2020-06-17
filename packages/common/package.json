@@ -1,6 +1,6 @@
 {
   "name": "@esri/solution-common",
-  "version": "0.16.7",
+  "version": "0.16.8",
   "description": "Provides general helper functions for @esri/solution.js.",
   "main": "dist/node/index.js",
   "unpkg": "dist/umd/common.umd.min.js",
@@ -36,7 +36,7 @@
     "@esri/hub-sites": "^4.2.0"
   },
   "dependencies": {
-    "@esri/arcgis-html-sanitizer": "^2.2.0",
+    "@esri/arcgis-html-sanitizer": "~2.1.0",
     "@types/lodash.isplainobject": "^4.0.6",
     "adlib": "^3.0.4",
     "jszip": "3.4.0",
