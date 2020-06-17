@@ -9,8 +9,6 @@ node_js:
 cache: npm
 script:
   - npm run test:ci
-before_deploy:
-  - npm run docs:build
 deploy:
   provider: pages
   skip_cleanup: true
@@ -30,4 +28,3 @@ addons:
 branches:
   only:
     - master
-    - develop
