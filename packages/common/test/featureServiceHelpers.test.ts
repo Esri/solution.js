@@ -77,6 +77,7 @@ import {
   _validateIndexes,
   _validateTemplatesFields,
   _validateTypesTemplates,
+  _validateEditFieldsInfo,
   IPopupInfos
 } from "../src/featureServiceHelpers";
 
@@ -5724,6 +5725,28 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
       };
       const fieldNames: string[] = ["a"];
       _validateTypesTemplates(actual, fieldNames);
+
+      expect(actual).toEqual(expected);
+    });
+  });
+
+  describe("_validateEditFieldsInfo", () => {
+    it("should swap edit field if field with same name but different case exists", () => {
+      const actual: any = {
+        editFieldsInfo: {
+          editField: "A",
+          otherEditField: "b"
+        }
+      };
+
+      const expected: any = {
+        editFieldsInfo: {
+          editField: "a",
+          otherEditField: "b"
+        }
+      };
+      const fieldNames: string[] = ["a", "b"];
+      _validateEditFieldsInfo(actual, fieldNames);
 
       expect(actual).toEqual(expected);
     });
