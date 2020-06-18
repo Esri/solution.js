@@ -1077,6 +1077,9 @@ export function _validateFields(adminItem: any): void {
   // Remove field references in templates when field doesn't exist in the layer.
   _validateTemplatesFields(adminItem, fieldNames);
   _validateTypesTemplates(adminItem, fieldNames);
+
+  // Repair editFieldsInfo if field referenced doesn't exist in the layer
+  _validateEditFieldsInfo(adminItem, fieldNames);
 }
 
 /**
@@ -1208,6 +1211,36 @@ export function _validateTypesTemplates(
     adminItem.types = types.map(t => {
       _validateTemplatesFields(t, fieldNames);
       return t;
+    });
+  }
+}
+
+/**
+ *  Check if edit feilds exist but with lower case
+ *
+ * @param adminItem layer or table from the service
+ * @param fieldNames string list of fields names
+ */
+export function _validateEditFieldsInfo(
+  adminItem: any,
+  fieldNames: string[]
+): void {
+  const editFieldsInfo: any = adminItem.editFieldsInfo;
+  /* istanbul ignore else */
+  if (editFieldsInfo) {
+    const editFieldsInfoKeys: string[] = Object.keys(editFieldsInfo);
+    editFieldsInfoKeys.forEach(k => {
+      const editFieldName: string = editFieldsInfo[k];
+      fieldNames.some(name => {
+        if (name === editFieldName) {
+          return true;
+        } else if (name === editFieldName.toLowerCase()) {
+          editFieldsInfo[k] = name;
+          return true;
+        } else {
+          return false;
+        }
+      });
     });
   }
 }
