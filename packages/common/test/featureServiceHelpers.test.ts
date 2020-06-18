@@ -75,6 +75,8 @@ import {
   _validateFields,
   _validateDisplayField,
   _validateIndexes,
+  _validateTemplatesFields,
+  _validateTypesTemplates,
   IPopupInfos
 } from "../src/featureServiceHelpers";
 
@@ -5649,6 +5651,79 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
         ]
       };
       _validateIndexes(actual, fieldNames);
+
+      expect(actual).toEqual(expected);
+    });
+  });
+
+  describe("_validateTemplatesFields", () => {
+    it("should nremove field references from when the field does not exist", () => {
+      const actual: any = {
+        templates: [
+          {
+            prototype: {
+              attributes: {
+                a: null,
+                b: null
+              }
+            }
+          }
+        ]
+      };
+      const expected: any = {
+        templates: [
+          {
+            prototype: {
+              attributes: {
+                a: null
+              }
+            }
+          }
+        ]
+      };
+      const fieldNames: string[] = ["a"];
+      _validateTemplatesFields(actual, fieldNames);
+
+      expect(actual).toEqual(expected);
+    });
+  });
+
+  describe("_validateTypesTemplates", () => {
+    it("should nremove field references from when the field does not exist", () => {
+      const actual: any = {
+        types: [
+          {
+            templates: [
+              {
+                prototype: {
+                  attributes: {
+                    a: null,
+                    b: null
+                  }
+                }
+              }
+            ]
+          }
+        ]
+      };
+
+      const expected: any = {
+        types: [
+          {
+            templates: [
+              {
+                prototype: {
+                  attributes: {
+                    a: null
+                  }
+                }
+              }
+            ]
+          }
+        ]
+      };
+      const fieldNames: string[] = ["a"];
+      _validateTypesTemplates(actual, fieldNames);
 
       expect(actual).toEqual(expected);
     });
