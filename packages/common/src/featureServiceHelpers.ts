@@ -1073,6 +1073,10 @@ export function _validateFields(adminItem: any): void {
   // Remove indexes on fields that don't exist in the layer.
   // Remove duplicate indexes on the same field.
   _validateIndexes(adminItem, fieldNames);
+
+  // Remove field references in templates when field doesn't exist in the layer.
+  _validateTemplatesFields(adminItem, fieldNames);
+  _validateTypesTemplates(adminItem, fieldNames);
 }
 
 /**
@@ -1155,6 +1159,56 @@ export function _validateIndexes(adminItem: any, fieldNames: string[]): void {
       }
       return filtered;
     }, []);
+  }
+}
+
+/**
+ * Remove field references from templates that no longer exist.
+ *
+ * @param adminItem layer or table from the service
+ * @param fieldNames string list of fields names
+ */
+export function _validateTemplatesFields(
+  adminItem: any,
+  fieldNames: string[]
+): void {
+  const templates: any[] = adminItem.templates;
+  /* istanbul ignore else */
+  if (templates) {
+    adminItem.templates = templates.map(template => {
+      const attributes: any = getProp(template, "prototype.attributes");
+      /* istanbul ignore else */
+      if (attributes) {
+        Object.keys(attributes).forEach(k => {
+          /* istanbul ignore else */
+          if (fieldNames.indexOf(k) === -1) {
+            delete attributes[k];
+          }
+        });
+        setProp(template, "prototype.attributes", attributes);
+      }
+      return template;
+    });
+  }
+}
+
+/**
+ * Remove field references from templates that no longer exist.
+ *
+ * @param adminItem layer or table from the service
+ * @param fieldNames string list of fields names
+ */
+export function _validateTypesTemplates(
+  adminItem: any,
+  fieldNames: string[]
+): void {
+  const types: any[] = adminItem.types;
+  /* istanbul ignore else */
+  if (types) {
+    adminItem.types = types.map(t => {
+      _validateTemplatesFields(t, fieldNames);
+      return t;
+    });
   }
 }
 
