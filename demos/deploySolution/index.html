@@ -66,6 +66,7 @@
     </div>
   </div>
 
+  <script crossorigin="anonymous" src="https://polyfill.io/v3/polyfill.min.js?features=fetch%2Ces2015"></script>
   <script src="https://requirejs.org/docs/release/2.3.6/minified/require.js"></script>
   <script>
     var goFcn;
@@ -119,21 +120,20 @@
               password: document.getElementById("password").value,
               portal: document.getElementById("portal").value
             }),
-            (percentDone, jobId, progressEvent) => {
+            function (percentDone, jobId, progressEvent) {
               if (progressEvent) {
                 createdItems.push(progressEvent.data)
               }
               var html = "Deploying..." + percentDone.toFixed().toString() + "%" + "<br><br>Finished items:<ol>";
-              createdItems.forEach(item => html += "<li>" + item + "</li>");
+              createdItems.forEach(function (item) { return html += "<li>" + item + "</li>" });
               html += "</ol>";
               document.getElementById("output").innerHTML = html;
             }
-          ).then(
-            html => {
+          ).then(function (html){
               reportElapsedTime(startTime);
               document.getElementById("output").innerHTML = html;
             },
-            error => {
+            function (error) {
               var message = error.error || JSON.stringify(error);
               reportElapsedTime(startTime);
               document.getElementById("output").innerHTML = "<span style=\"color:red\">" + message + "</span>";
