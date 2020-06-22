@@ -1,18 +1,18 @@
 /** @license
-  * Copyright 2018 Esri
-  *
-  * Licensed under the Apache License, Version 2.0 (the "License");
-  * you may not use this file except in compliance with the License.
-  * You may obtain a copy of the License at
-  *
-  *    http://www.apache.org/licenses/LICENSE-2.0
-  *
-  * Unless required by applicable law or agreed to in writing, software
-  * distributed under the License is distributed on an "AS IS" BASIS,
-  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-  * See the License for the specific language governing permissions and
-  * limitations under the License.
-  */
+ * Copyright 2018 Esri
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 
 import * as common from "@esri/solution-common";
 
@@ -64,17 +64,37 @@ export function _extractDependencies(
   keyProperties: string[]
 ): string[] {
   const deps: string[] = [];
+  const regexTest = (v: any) => {
+    if (v) {
+      if (/[0-9A-F]{32}/i.test(v)) {
+        const id: string = /[0-9A-F]{32}/i.exec(v)[0];
+        if (deps.indexOf(id) === -1) {
+          deps.push(id);
+        }
+      }
+    }
+  };
   // get the ids for the service dependencies
   // "workerWebMapId" and "dispatcherWebMapId" are already IDs and don't have a serviceItemId
   keyProperties.forEach(p => {
-    if (common.getProp(data, p + ".serviceItemId")) {
-      if (deps.indexOf(data[p].serviceItemId) === -1) {
-        deps.push(data[p].serviceItemId);
+    const serviceItemId: string = common.getProp(data, p + ".serviceItemId");
+    const v: string = common.getProp(data, p);
+    if (serviceItemId) {
+      if (deps.indexOf(serviceItemId) === -1) {
+        deps.push(serviceItemId);
       }
-    } else if (/^[0-9A-F]{32}$/i.test(data[p])) {
-      if (deps.indexOf(data[p]) === -1) {
-        deps.push(data[p]);
-      }
+    } else {
+      regexTest(v);
+    }
+  });
+  const assignmentIntegrations: any =
+    common.getProp(data, "assignmentIntegrations") || [];
+  assignmentIntegrations.forEach((ai: any) => {
+    if (ai.assignmentTypes) {
+      const assignmentKeys: string[] = Object.keys(ai.assignmentTypes);
+      assignmentKeys.forEach(k => {
+        regexTest(ai.assignmentTypes[k].urlTemplate);
+      });
     }
   });
   return deps;
@@ -142,10 +162,10 @@ export function _templatize(data: any, keyProperties: string[]): any {
   integrations.forEach(i => {
     templatizeUrlTemplate(i);
     /* istanbul ignore else */
-    if (i.assignmentTypes && Array.isArray(i.assignmentTypes)) {
-      const assignmentTypes: string[] = i.assignmentTypes;
-      assignmentTypes.forEach((assignType: any) => {
-        templatizeUrlTemplate(assignType);
+    if (i.assignmentTypes) {
+      const assignmentKeys: string[] = Object.keys(i.assignmentTypes);
+      assignmentKeys.forEach(k => {
+        templatizeUrlTemplate(i.assignmentTypes[k]);
       });
     }
   });
