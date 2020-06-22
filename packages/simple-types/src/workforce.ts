@@ -65,12 +65,17 @@ export function _extractDependencies(
 ): string[] {
   const deps: string[] = [];
   const regexTest = (v: any) => {
+    /* istanbul ignore else */
     if (v) {
+      /* istanbul ignore else */
       if (/[0-9A-F]{32}/i.test(v)) {
-        const id: string = /[0-9A-F]{32}/i.exec(v)[0];
-        if (deps.indexOf(id) === -1) {
-          deps.push(id);
-        }
+        const ids: string[] = v.match(/[0-9A-F]{32}/gi);
+        ids.forEach(id => {
+          /* istanbul ignore else */
+          if (deps.indexOf(id) === -1) {
+            deps.push(id);
+          }
+        });
       }
     }
   };
@@ -90,6 +95,7 @@ export function _extractDependencies(
   const assignmentIntegrations: any =
     common.getProp(data, "assignmentIntegrations") || [];
   assignmentIntegrations.forEach((ai: any) => {
+    /* istanbul ignore else */
     if (ai.assignmentTypes) {
       const assignmentKeys: string[] = Object.keys(ai.assignmentTypes);
       assignmentKeys.forEach(k => {

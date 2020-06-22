@@ -54,7 +54,9 @@ describe("Module `workforce`: manages the creation and deployment of workforce p
         "abc4494043c3459faabcfd0e1ab557fc",
         "abc5dd4bdd18437f8d5ff1aa2d25fd7c",
         "abc64329e69144c59f69f3f3e0d45269",
-        "abc715c2df2b466da05577776e82d044"
+        "abc715c2df2b466da05577776e82d044",
+        "cad3483e025c47338d43df308c117308",
+        "bad3483e025c47338d43df308c117308"
       ];
 
       const newItemTemplate = workforce.convertItemToTemplate(itemTemplate);
@@ -136,7 +138,9 @@ describe("Module `workforce`: manages the creation and deployment of workforce p
         "abc4494043c3459faabcfd0e1ab557fc",
         "abc5dd4bdd18437f8d5ff1aa2d25fd7c",
         "abc64329e69144c59f69f3f3e0d45269",
-        "abc715c2df2b466da05577776e82d044"
+        "abc715c2df2b466da05577776e82d044",
+        "cad3483e025c47338d43df308c117308",
+        "bad3483e025c47338d43df308c117308"
       ];
 
       const newItemTemplate = workforce.convertItemToTemplate(itemTemplate);
