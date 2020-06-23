@@ -66,6 +66,7 @@ export function convertItemToTemplate(
  *
  * @param data itemTemplate data
  * @param keyProperties workforce project properties that contain references to dependencies
+ * @param authentication credentials for any requests
  * @return List of dependencies ids
  */
 export function _extractDependencies(
@@ -111,7 +112,6 @@ export function _extractDependencies(
         });
 
         if (requests.length > 0) {
-          // TODO need to keep hash of url and serviceItemId
           Promise.all(requests).then(
             results => {
               const urlHash: any = {};
@@ -145,10 +145,24 @@ export function _extractDependencies(
   });
 }
 
+/**
+ * Evaluates a value with a regular expression
+ *
+ * @param v a string value to test with the expression
+ * @param ex the regular expresion to test with
+ * @return an array of matches
+ */
 export function regExTest(v: any, ex: RegExp): any[] {
   return v && ex.test(v) ? v.match(ex) : [];
 }
 
+/**
+ * Updates a list of the items dependencies if more are found in the
+ * provided value.
+ *
+ * @param v a string value to check for ids
+ * @param deps a list of the items dependencies
+ */
 export function idTest(v: any, deps: string[]): void {
   const ids: any[] = _getIDs(v);
   ids.forEach(id => {
@@ -159,6 +173,13 @@ export function idTest(v: any, deps: string[]): void {
   });
 }
 
+/**
+ * Test the provided value for any urls and submit a request to obtain the service item id for the url
+ *
+ * @param v a string value to test for urls
+ * @param authentication credentials for the requests
+ * @returns an object with any pending requests and the urls that requests were made to
+ */
 export function urlTest(v: any, authentication: common.UserSession): any {
   const urls: any[] = _getURLs(v);
   const requests: Array<Promise<any>> = [];
@@ -180,6 +201,7 @@ export function urlTest(v: any, authentication: common.UserSession): any {
  *
  * @param data itemTemplate data
  * @param keyProperties workforce project properties that should be templatized
+ * @param urlHash a key value pair of url and itemId
  * @return an updated data object to be stored in the template
  */
 export function _templatize(
@@ -234,7 +256,13 @@ export function _templatize(
   return data;
 }
 
-export function _templatizeUrlTemplate(item: any, urlHash: any) {
+/**
+ * Templatizes values from a urlTemplate
+ *
+ * @param item the object that may contain a urlTemplate
+ * @param urlHash a key value pair of url and itemId
+ */
+export function _templatizeUrlTemplate(item: any, urlHash: any): void {
   /* istanbul ignore else */
   if (common.getProp(item, "urlTemplate")) {
     const ids: string[] = _getIDs(item.urlTemplate);
