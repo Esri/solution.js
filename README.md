@@ -161,6 +161,7 @@ Some useful commands include:
 ### Frequently Asked Questions
 
 * [Is this a supported Esri product?](docs/FAQ.md#is-this-a-supported-esri-product)
+* [What browsers are supported?](docs/FAQ.md#what-browsers-are-supported)
 * [What is the development workflow?](docs/FAQ.md#what-is-the-development-workflow)
 
 ### Issues
