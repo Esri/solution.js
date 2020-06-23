@@ -231,7 +231,7 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
       it("handle error on updateTemplateForInvalidDesignations", done => {
         const id: string = "svc1234567890";
         const url: string =
-          "https://services123.arcgis.com/org1234567890/arcgis/rest/admin/services/ROWPermits_publiccomment/FeatureServer";
+          "https://services123.arcgis.com/org1234567890/arcgis/rest/services/ROWPermits_publiccomment/FeatureServer";
 
         itemTemplate.itemId = id;
         itemTemplate.item.id = id;
