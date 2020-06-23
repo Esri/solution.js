@@ -22,34 +22,43 @@ import * as common from "@esri/solution-common";
  * Converts an workforce item to a template.
  *
  * @param itemTemplate template for the workforce project item
+ * @param authentication credentials for any requests
  * @return templatized itemTemplate
  */
 export function convertItemToTemplate(
-  itemTemplate: common.IItemTemplate
-): common.IItemTemplate {
-  // Key properties that contain item IDs for the workforce project type
-  const keyProperties: string[] = [
-    "groupId",
-    "workerWebMapId",
-    "dispatcherWebMapId",
-    "dispatchers",
-    "assignments",
-    "workers",
-    "tracks"
-  ];
+  itemTemplate: common.IItemTemplate,
+  authentication: common.UserSession
+): Promise<common.IItemTemplate> {
+  return new Promise<common.IItemTemplate>((resolve, reject) => {
+    // Key properties that contain item IDs for the workforce project type
+    const keyProperties: string[] = [
+      "groupId",
+      "workerWebMapId",
+      "dispatcherWebMapId",
+      "dispatchers",
+      "assignments",
+      "workers",
+      "tracks"
+    ];
 
-  // The templates data to process
-  const data: any = itemTemplate.data;
+    // The templates data to process
+    const data: any = itemTemplate.data;
 
-  if (data) {
-    // Extract dependencies
-    itemTemplate.dependencies = _extractDependencies(data, keyProperties);
-
-    // templatize key properties
-    itemTemplate.data = _templatize(data, keyProperties);
-  }
-
-  return itemTemplate;
+    if (data) {
+      // Extract dependencies
+      _extractDependencies(data, keyProperties, authentication).then(
+        results => {
+          itemTemplate.dependencies = results.dependencies;
+          // templatize key properties
+          itemTemplate.data = _templatize(data, keyProperties, results.urlHash);
+          resolve(itemTemplate);
+        },
+        e => reject(common.fail(e))
+      );
+    } else {
+      resolve(itemTemplate);
+    }
+  });
 }
 
 /**
@@ -61,49 +70,109 @@ export function convertItemToTemplate(
  */
 export function _extractDependencies(
   data: any,
-  keyProperties: string[]
-): string[] {
-  const deps: string[] = [];
-  const regexTest = (v: any) => {
-    /* istanbul ignore else */
-    if (v) {
+  keyProperties: string[],
+  authentication: common.UserSession
+): Promise<any> {
+  return new Promise<any>((resolve, reject) => {
+    const deps: string[] = [];
+
+    // get the ids for the service dependencies
+    // "workerWebMapId" and "dispatcherWebMapId" are already IDs and don't have a serviceItemId
+    keyProperties.forEach(p => {
+      const serviceItemId: string = common.getProp(data, p + ".serviceItemId");
+      const v: string = common.getProp(data, p);
+      if (serviceItemId) {
+        if (deps.indexOf(serviceItemId) === -1) {
+          deps.push(serviceItemId);
+        }
+      } else {
+        idTest(v, deps);
+      }
+    });
+    const assignmentIntegrations: any =
+      common.getProp(data, "assignmentIntegrations") || [];
+    assignmentIntegrations.forEach((ai: any) => {
       /* istanbul ignore else */
-      if (/[0-9A-F]{32}/i.test(v)) {
-        const ids: string[] = v.match(/[0-9A-F]{32}/gi);
-        ids.forEach(id => {
-          /* istanbul ignore else */
-          if (deps.indexOf(id) === -1) {
-            deps.push(id);
+      if (ai.assignmentTypes) {
+        const assignmentKeys: string[] = Object.keys(ai.assignmentTypes);
+        let requests: Array<Promise<any>> = [];
+        let urls: string[] = [];
+        assignmentKeys.forEach(k => {
+          const urlTemplate: any = ai.assignmentTypes[k].urlTemplate;
+          idTest(urlTemplate, deps);
+          const serviceRequests: any = urlTest(urlTemplate, authentication);
+          if (
+            Array.isArray(serviceRequests.requests) &&
+            serviceRequests.requests.length > 0
+          ) {
+            requests = requests.concat(serviceRequests.requests);
+            urls = urls.concat(serviceRequests.urls);
           }
         });
+
+        if (requests.length > 0) {
+          // TODO need to keep hash of url and serviceItemId
+          Promise.all(requests).then(
+            results => {
+              const urlHash: any = {};
+              // Get the serviceItemId for the url
+              if (Array.isArray(results)) {
+                results.forEach((result, i) => {
+                  /* istanbul ignore else */
+                  if (result.serviceItemId) {
+                    urlHash[urls[i]] = result.serviceItemId;
+                    if (deps.indexOf(result.serviceItemId) === -1) {
+                      deps.push(result.serviceItemId);
+                    }
+                  }
+                });
+              }
+              resolve({
+                dependencies: deps,
+                urlHash: urlHash
+              });
+            },
+            e => reject(common.fail(e))
+          );
+        } else {
+          resolve({
+            dependencies: deps,
+            urlHash: {}
+          });
+        }
       }
-    }
-  };
-  // get the ids for the service dependencies
-  // "workerWebMapId" and "dispatcherWebMapId" are already IDs and don't have a serviceItemId
-  keyProperties.forEach(p => {
-    const serviceItemId: string = common.getProp(data, p + ".serviceItemId");
-    const v: string = common.getProp(data, p);
-    if (serviceItemId) {
-      if (deps.indexOf(serviceItemId) === -1) {
-        deps.push(serviceItemId);
-      }
-    } else {
-      regexTest(v);
-    }
+    });
   });
-  const assignmentIntegrations: any =
-    common.getProp(data, "assignmentIntegrations") || [];
-  assignmentIntegrations.forEach((ai: any) => {
+}
+
+export function regExTest(v: any, ex: RegExp): any[] {
+  return v && ex.test(v) ? v.match(ex) : [];
+}
+
+export function idTest(v: any, deps: string[]): void {
+  const ids: any[] = _getIDs(v);
+  ids.forEach(id => {
     /* istanbul ignore else */
-    if (ai.assignmentTypes) {
-      const assignmentKeys: string[] = Object.keys(ai.assignmentTypes);
-      assignmentKeys.forEach(k => {
-        regexTest(ai.assignmentTypes[k].urlTemplate);
-      });
+    if (deps.indexOf(id) === -1) {
+      deps.push(id);
     }
   });
-  return deps;
+}
+
+export function urlTest(v: any, authentication: common.UserSession): any {
+  const urls: any[] = _getURLs(v);
+  const requests: Array<Promise<any>> = [];
+  urls.forEach(url => {
+    const options: any = {
+      f: "json",
+      authentication: authentication
+    };
+    requests.push(common.rest_request(url, options));
+  });
+  return {
+    requests: requests,
+    urls: urls
+  };
 }
 
 /**
@@ -113,7 +182,11 @@ export function _extractDependencies(
  * @param keyProperties workforce project properties that should be templatized
  * @return an updated data object to be stored in the template
  */
-export function _templatize(data: any, keyProperties: string[]): any {
+export function _templatize(
+  data: any,
+  keyProperties: string[],
+  urlHash: any
+): any {
   keyProperties.forEach(p => {
     /* istanbul ignore else */
     if (common.getProp(data, p)) {
@@ -124,15 +197,13 @@ export function _templatize(data: any, keyProperties: string[]): any {
 
         /* istanbul ignore else */
         if (common.getProp(data[p], "url")) {
-          const layerId = data[p].url.substr(
-            (data[p].url as string).lastIndexOf("/") + 1
-          );
+          const layerId = _getLayerId(data[p].url);
           data[p].url = common.templatizeTerm(
             id,
             id,
-            ".layer" + layerId + ".url"
+            _getReplaceValue(layerId, "url")
           );
-          serviceItemIdSuffix = ".layer" + layerId + serviceItemIdSuffix;
+          serviceItemIdSuffix = _getReplaceValue(layerId, serviceItemIdSuffix);
         }
         data[p].serviceItemId = common.templatizeTerm(
           id,
@@ -149,33 +220,60 @@ export function _templatize(data: any, keyProperties: string[]): any {
   data["folderId"] = "{{folderId}}";
 
   // templatize app integrations
-  const templatizeUrlTemplate = function(item: any) {
-    let ids: string[];
-    /* istanbul ignore else */
-    if (common.getProp(item, "urlTemplate")) {
-      ids = item.urlTemplate.match(/itemID=[0-9A-F]{32}/gim) || [];
-      ids.forEach(id => {
-        id = id.replace("itemID=", "");
-        item.urlTemplate = item.urlTemplate.replace(
-          id,
-          common.templatizeTerm(id, id, ".itemId")
-        );
-      });
-    }
-  };
-
   const integrations: any[] = data.assignmentIntegrations || [];
   integrations.forEach(i => {
-    templatizeUrlTemplate(i);
+    _templatizeUrlTemplate(i, urlHash);
     /* istanbul ignore else */
     if (i.assignmentTypes) {
       const assignmentKeys: string[] = Object.keys(i.assignmentTypes);
       assignmentKeys.forEach(k => {
-        templatizeUrlTemplate(i.assignmentTypes[k]);
+        _templatizeUrlTemplate(i.assignmentTypes[k], urlHash);
       });
     }
   });
   return data;
+}
+
+export function _templatizeUrlTemplate(item: any, urlHash: any) {
+  /* istanbul ignore else */
+  if (common.getProp(item, "urlTemplate")) {
+    const ids: string[] = _getIDs(item.urlTemplate);
+    ids.forEach(id => {
+      item.urlTemplate = item.urlTemplate.replace(
+        id,
+        common.templatizeTerm(id, id, ".itemId")
+      );
+    });
+    const urls: string[] = _getURLs(item.urlTemplate);
+    urls.forEach(url => {
+      const layerId = _getLayerId(url);
+      const replaceValue: string = _getReplaceValue(layerId, "url");
+      item.urlTemplate = item.urlTemplate.replace(
+        url,
+        common.templatizeTerm(urlHash[url], urlHash[url], replaceValue)
+      );
+    });
+  }
+}
+
+export function _getURLs(v: string): string[] {
+  return regExTest(v, /(?<=featureSourceURL=).*?(?=&|$)/gi);
+}
+
+export function _getIDs(v: string): string[] {
+  return regExTest(v, /[0-9A-F]{32}/gi);
+}
+
+export function _getLayerId(url: string): any {
+  return url.indexOf("FeatureServer/") > -1
+    ? url.substr(url.lastIndexOf("/") + 1)
+    : undefined;
+}
+
+export function _getReplaceValue(layerId: any, suffix: string): string {
+  return isNaN(Number.parseInt(layerId, 10))
+    ? `.${suffix}`
+    : `.layer${layerId}.${suffix}`;
 }
 
 //#endregion

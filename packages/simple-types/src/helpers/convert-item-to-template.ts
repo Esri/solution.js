@@ -153,7 +153,10 @@ export function convertItemToTemplate(
             }
             break;
           case "Workforce Project":
-            workforce.convertItemToTemplate(itemTemplate);
+            webappPromise = workforce.convertItemToTemplate(
+              itemTemplate,
+              authentication
+            );
             break;
           case "QuickCapture Project":
             webappPromise = quickcapture.convertQuickCaptureToTemplate(
