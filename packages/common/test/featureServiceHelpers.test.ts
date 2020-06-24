@@ -73,6 +73,12 @@ import {
   _templatizeDefinitionQuery,
   _getNameMapping,
   _updateTemplateDictionaryFields,
+  _validateFields,
+  _validateDisplayField,
+  _validateIndexes,
+  _validateTemplatesFields,
+  _validateTypesTemplates,
+  _validateEditFieldsInfo,
   IPopupInfos
 } from "../src/featureServiceHelpers";
 
@@ -239,7 +245,8 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
                 {
                   name: "A"
                 }
-              ]
+              ],
+              hasZ: true
             }
           ],
           tables: [
@@ -310,7 +317,9 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
                 id: 1,
                 prop: "B"
               }
-            ]
+            ],
+            enableZDefaults: true,
+            zDefault: 0
           },
           layers: [
             {
@@ -322,13 +331,15 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
                 {
                   name: "A"
                 }
-              ]
+              ],
+              hasZ: true
             }
           ],
           tables: [
             {
               id: "1",
               serviceItemId: "{{ab766cba0dd44ec080420acc10990282.itemId}}",
+              displayField: "B",
               fields: [
                 {
                   name: "B"
@@ -5677,6 +5688,210 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
       };
 
       expect(templateDictionary).toEqual(expected);
+    });
+  });
+
+  describe("_validateFields", () => {
+    it("should not add props if no fields exist on item", () => {
+      const actual: any = {};
+      const expected: any = {};
+      _validateFields(actual);
+
+      expect(actual).toEqual(expected);
+    });
+  });
+
+  describe("_validateDisplayField", () => {
+    it("should update primary display field if casing doesn't match", () => {
+      const actual: any = {
+        displayField: "A"
+      };
+      const fieldNames: string[] = ["a"];
+
+      const expected: any = {
+        displayField: "a"
+      };
+      _validateDisplayField(actual, fieldNames);
+
+      expect(actual).toEqual(expected);
+    });
+
+    it("should update primary display field to the first non OID or GlobalId if the field isn't in the layer", () => {
+      const actual: any = {
+        displayField: "doesnotexist",
+        uniqueIdField: {
+          name: "OID"
+        },
+        globalIdField: "GLOBALID"
+      };
+      const fieldNames: string[] = ["OID", "GLOBALID", "A", "B"];
+
+      const expected: any = {
+        displayField: "A",
+        uniqueIdField: {
+          name: "OID"
+        },
+        globalIdField: "GLOBALID"
+      };
+      _validateDisplayField(actual, fieldNames);
+
+      expect(actual).toEqual(expected);
+    });
+  });
+
+  describe("_validateIndexes", () => {
+    it("should remove indexes on fields that don't exist in the layer", () => {
+      const actual: any = {
+        indexes: [
+          {
+            fields: "a"
+          },
+          {
+            fields: "b"
+          }
+        ]
+      };
+      const fieldNames: string[] = ["a"];
+
+      const expected: any = {
+        indexes: [
+          {
+            fields: "a"
+          }
+        ]
+      };
+      _validateIndexes(actual, fieldNames);
+
+      expect(actual).toEqual(expected);
+    });
+
+    it("should remove duplicate indexes on the same field", () => {
+      const actual: any = {
+        indexes: [
+          {
+            fields: "a",
+            name: "a"
+          },
+          {
+            fields: "a",
+            name: "a1"
+          },
+          {
+            fields: "b"
+          }
+        ]
+      };
+      const fieldNames: string[] = ["a", "b"];
+
+      const expected: any = {
+        indexes: [
+          {
+            fields: "a",
+            name: "a"
+          },
+          {
+            fields: "b"
+          }
+        ]
+      };
+      _validateIndexes(actual, fieldNames);
+
+      expect(actual).toEqual(expected);
+    });
+  });
+
+  describe("_validateTemplatesFields", () => {
+    it("should nremove field references from when the field does not exist", () => {
+      const actual: any = {
+        templates: [
+          {
+            prototype: {
+              attributes: {
+                a: null,
+                b: null
+              }
+            }
+          }
+        ]
+      };
+      const expected: any = {
+        templates: [
+          {
+            prototype: {
+              attributes: {
+                a: null
+              }
+            }
+          }
+        ]
+      };
+      const fieldNames: string[] = ["a"];
+      _validateTemplatesFields(actual, fieldNames);
+
+      expect(actual).toEqual(expected);
+    });
+  });
+
+  describe("_validateTypesTemplates", () => {
+    it("should nremove field references from when the field does not exist", () => {
+      const actual: any = {
+        types: [
+          {
+            templates: [
+              {
+                prototype: {
+                  attributes: {
+                    a: null,
+                    b: null
+                  }
+                }
+              }
+            ]
+          }
+        ]
+      };
+
+      const expected: any = {
+        types: [
+          {
+            templates: [
+              {
+                prototype: {
+                  attributes: {
+                    a: null
+                  }
+                }
+              }
+            ]
+          }
+        ]
+      };
+      const fieldNames: string[] = ["a"];
+      _validateTypesTemplates(actual, fieldNames);
+
+      expect(actual).toEqual(expected);
+    });
+  });
+
+  describe("_validateEditFieldsInfo", () => {
+    it("should swap edit field if field with same name but different case exists", () => {
+      const actual: any = {
+        editFieldsInfo: {
+          editField: "A",
+          otherEditField: "b"
+        }
+      };
+
+      const expected: any = {
+        editFieldsInfo: {
+          editField: "a",
+          otherEditField: "b"
+        }
+      };
+      const fieldNames: string[] = ["a", "b"];
+      _validateEditFieldsInfo(actual, fieldNames);
+
+      expect(actual).toEqual(expected);
     });
   });
 

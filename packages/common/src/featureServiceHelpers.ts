@@ -42,7 +42,8 @@ import {
   checkUrlPathTermination,
   deleteProp,
   fail,
-  getProp
+  getProp,
+  setProp
 } from "./generalHelpers";
 import {
   replaceInTemplate,
@@ -128,6 +129,9 @@ export function templatize(
   // this default extent will be used in cases where it does not make sense to apply the orgs
   // extent to a service with a local spatial reference
   itemTemplate.properties.defaultExtent = initialExtent || fullExtent;
+  // if any layer hasZ enabled then we need to set
+  // enableZDefaults and zDefault to deploy to enterprise
+  let hasZ: boolean = false;
 
   jsonItems.forEach((jsonItem: any) => {
     // get the source service json for the given data item
@@ -145,7 +149,14 @@ export function templatize(
       dependencies,
       templatizeFieldReferences
     );
+
+    hasZ = jsonItem.hasZ || (_item && _item.hasZ) ? true : hasZ;
   });
+
+  if (hasZ) {
+    itemTemplate.properties.service.enableZDefaults = true;
+    itemTemplate.properties.service.zDefault = 0;
+  }
 
   return itemTemplate;
 }
@@ -1045,6 +1056,9 @@ export function _templatizeLayer(
   dependencies: IDependency[],
   templatizeFieldReferences: boolean
 ): void {
+  // check for and repair common field issues
+  _validateFields(adminItem);
+
   // Templatize all properties that contain field references
   /* istanbul ignore else */
   if (templatizeFieldReferences) {
@@ -1090,6 +1104,193 @@ export function _templatizeLayer(
       update.adminLayerInfo = _templatizeAdminLayerInfo(update, dependencies);
     }
   });
+}
+
+/**
+ * Repair common issues that can occur with feature service field references.
+ * This function will mutate the input item if any of the common issues have occured.
+ *
+ * @param adminItem layer or table from the service
+ */
+export function _validateFields(adminItem: any): void {
+  const fieldNames: string[] = (adminItem.fields || []).map((f: any) => f.name);
+
+  // Update primary display field if field isn't in the layer.
+  _validateDisplayField(adminItem, fieldNames);
+
+  // Remove indexes on fields that don't exist in the layer.
+  // Remove duplicate indexes on the same field.
+  _validateIndexes(adminItem, fieldNames);
+
+  // Remove field references in templates when field doesn't exist in the layer.
+  _validateTemplatesFields(adminItem, fieldNames);
+  _validateTypesTemplates(adminItem, fieldNames);
+
+  // Repair editFieldsInfo if field referenced doesn't exist in the layer
+  _validateEditFieldsInfo(adminItem, fieldNames);
+}
+
+/**
+ * Update primary display field if casing doesn't match.
+ * Update primary display field to the first non OID or GlobalId if the field isn't in the layer.
+ *
+ * @param adminItem layer or table from the service
+ * @param fieldNames string list of fields names
+ */
+export function _validateDisplayField(
+  adminItem: any,
+  fieldNames: string[]
+): void {
+  const displayField: string = adminItem.displayField || "";
+  let i: number = -1;
+  if (
+    fieldNames.some(name => {
+      i += 1;
+      return name === displayField || name === displayField.toLowerCase();
+    })
+  ) {
+    adminItem.displayField = fieldNames[i];
+  } else {
+    // use the first non-OID non-globalId field we find
+    const skipFields: string[] = [];
+    const oidField: any = getProp(adminItem, "uniqueIdField.name");
+    /* istanbul ignore else */
+    if (oidField) {
+      skipFields.push(oidField);
+    }
+
+    const globalIdField: any = getProp(adminItem, "globalIdField");
+    /* istanbul ignore else */
+    if (globalIdField) {
+      skipFields.push(globalIdField);
+    }
+
+    fieldNames.some(name => {
+      if (skipFields.indexOf(name) === -1) {
+        adminItem.displayField = name;
+        return true;
+      } else {
+        return false;
+      }
+    });
+  }
+}
+
+/**
+ * Remove indexes on fields that don't exist in the layer.
+ * Remove duplicate indexes on the same field.
+ *
+ * @param adminItem layer or table from the service
+ * @param fieldNames string list of fields names
+ */
+export function _validateIndexes(adminItem: any, fieldNames: string[]): void {
+  const indexes: any[] = adminItem.indexes;
+  /* istanbul ignore else */
+  if (indexes) {
+    const indexedFields: any[] = [];
+    adminItem.indexes = indexes.reduce((filtered, index) => {
+      const indexFields: any[] = index.fields.split(",");
+      const verifiedFields: string[] = [];
+      indexFields.forEach(indexField => {
+        /* istanbul ignore else */
+        if (indexedFields.indexOf(indexField) === -1) {
+          indexedFields.push(indexField);
+          // this is the first index with this field and it should be added if the field exists
+          /* istanbul ignore else */
+          if (fieldNames.indexOf(indexField) > -1) {
+            verifiedFields.push(indexField);
+          }
+        }
+        // else the field has more than one index associated and should not be returned
+      });
+      /* istanbul ignore else */
+      if (verifiedFields.length > 0) {
+        index.fields = verifiedFields.join(",");
+        filtered.push(index);
+      }
+      return filtered;
+    }, []);
+  }
+}
+
+/**
+ * Remove field references from templates that no longer exist.
+ *
+ * @param adminItem layer or table from the service
+ * @param fieldNames string list of fields names
+ */
+export function _validateTemplatesFields(
+  adminItem: any,
+  fieldNames: string[]
+): void {
+  const templates: any[] = adminItem.templates;
+  /* istanbul ignore else */
+  if (templates) {
+    adminItem.templates = templates.map(template => {
+      const attributes: any = getProp(template, "prototype.attributes");
+      /* istanbul ignore else */
+      if (attributes) {
+        Object.keys(attributes).forEach(k => {
+          /* istanbul ignore else */
+          if (fieldNames.indexOf(k) === -1) {
+            delete attributes[k];
+          }
+        });
+        setProp(template, "prototype.attributes", attributes);
+      }
+      return template;
+    });
+  }
+}
+
+/**
+ * Remove field references from templates that no longer exist.
+ *
+ * @param adminItem layer or table from the service
+ * @param fieldNames string list of fields names
+ */
+export function _validateTypesTemplates(
+  adminItem: any,
+  fieldNames: string[]
+): void {
+  const types: any[] = adminItem.types;
+  /* istanbul ignore else */
+  if (types) {
+    adminItem.types = types.map(t => {
+      _validateTemplatesFields(t, fieldNames);
+      return t;
+    });
+  }
+}
+
+/**
+ *  Check if edit feilds exist but with lower case
+ *
+ * @param adminItem layer or table from the service
+ * @param fieldNames string list of fields names
+ */
+export function _validateEditFieldsInfo(
+  adminItem: any,
+  fieldNames: string[]
+): void {
+  const editFieldsInfo: any = adminItem.editFieldsInfo;
+  /* istanbul ignore else */
+  if (editFieldsInfo) {
+    const editFieldsInfoKeys: string[] = Object.keys(editFieldsInfo);
+    editFieldsInfoKeys.forEach(k => {
+      const editFieldName: string = editFieldsInfo[k];
+      fieldNames.some(name => {
+        if (name === editFieldName) {
+          return true;
+        } else if (name === editFieldName.toLowerCase()) {
+          editFieldsInfo[k] = name;
+          return true;
+        } else {
+          return false;
+        }
+      });
+    });
+  }
 }
 
 /**
