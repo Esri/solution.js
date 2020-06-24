@@ -179,8 +179,6 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
         const id: string = "svc1234567890";
         const url: string =
           "https://services123.arcgis.com/org1234567890/arcgis/rest/services/ROWPermits_publiccomment/FeatureServer";
-        const adminUrl: string =
-          "https://services123.arcgis.com/org1234567890/arcgis/rest/admin/services/ROWPermits_publiccomment/FeatureServer";
 
         const serviceResponse = mockItems.getAGOLService(
           [mockItems.getAGOLLayerOrTable(0, "A", "Feature Layer")],
@@ -191,7 +189,7 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
         itemTemplate.item.id = id;
         itemTemplate.item.groupDesignations = "livingatlas";
 
-        fetchMock.post(adminUrl + "?f=json", serviceResponse);
+        fetchMock.post(url + "?f=json", serviceResponse);
 
         const expected: any = {};
         expected[id] = {
@@ -233,7 +231,7 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
       it("handle error on updateTemplateForInvalidDesignations", done => {
         const id: string = "svc1234567890";
         const url: string =
-          "https://services123.arcgis.com/org1234567890/arcgis/rest/admin/services/ROWPermits_publiccomment/FeatureServer";
+          "https://services123.arcgis.com/org1234567890/arcgis/rest/services/ROWPermits_publiccomment/FeatureServer";
 
         itemTemplate.itemId = id;
         itemTemplate.item.id = id;
@@ -281,8 +279,6 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
         const id: string = "svc1234567890";
         const url: string =
           "https://services123.arcgis.com/org1234567890/arcgis/rest/services/ROWPermits_publiccomment/FeatureServer";
-        const adminUrl =
-          "https://services123.arcgis.com/org1234567890/arcgis/rest/admin/services/ROWPermits_publiccomment/FeatureServer";
 
         const serviceResponse = mockItems.getAGOLService();
 
@@ -290,7 +286,7 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
         itemTemplate.item.id = id;
         itemTemplate.item.groupDesignations = "livingatlas";
 
-        fetchMock.post(adminUrl + "?f=json", serviceResponse);
+        fetchMock.post(url + "?f=json", serviceResponse);
 
         featureLayer
           .convertItemToTemplate(
@@ -789,38 +785,44 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
       };
 
       // verify the state up front
-      expect(itemTemplate.item.id).withContext("up-front id check").toEqual(id);
-      expect(itemTemplate.item.url).withContext("up-front url check").toEqual(expectedUrl);
-      expect(itemTemplate.dependencies.length).withContext("up-front dependencies check").toEqual(0);
-      expect(itemTemplate.properties.service.serviceItemId).withContext("up-front service item id check").toEqual(id);
+      expect(itemTemplate.item.id)
+        .withContext("up-front id check")
+        .toEqual(id);
+      expect(itemTemplate.item.url)
+        .withContext("up-front url check")
+        .toEqual(expectedUrl);
+      expect(itemTemplate.dependencies.length)
+        .withContext("up-front dependencies check")
+        .toEqual(0);
+      expect(itemTemplate.properties.service.serviceItemId)
+        .withContext("up-front service item id check")
+        .toEqual(id);
 
       expect(itemTemplate.properties.layers[0].serviceItemId)
-        .withContext("up-front layer 0 service item id check").toEqual(id);
-      expect(
-        itemTemplate.properties.layers[0].relationships[0].keyField
-      ).withContext("up-front layer 0 keyField check").toEqual(layerKeyField);
+        .withContext("up-front layer 0 service item id check")
+        .toEqual(id);
+      expect(itemTemplate.properties.layers[0].relationships[0].keyField)
+        .withContext("up-front layer 0 keyField check")
+        .toEqual(layerKeyField);
       expect(itemTemplate.properties.layers[0].viewDefinitionQuery)
-        .withContext("up-front layer 0 view defn query check").toEqual(
-        layerDefQuery
-      );
+        .withContext("up-front layer 0 view defn query check")
+        .toEqual(layerDefQuery);
       expect(itemTemplate.properties.layers[0].definitionQuery)
-        .withContext("up-front layer 0 defn query check").toEqual(
-        layerDefQuery
-      );
+        .withContext("up-front layer 0 defn query check")
+        .toEqual(layerDefQuery);
 
       expect(itemTemplate.properties.tables[0].serviceItemId)
-        .withContext("up-front table 0 service item id check").toEqual(id);
-      expect(
-        itemTemplate.properties.tables[0].relationships[0].keyField
-      ).withContext("up-front table 0 keyField check").toEqual(tableKeyField);
+        .withContext("up-front table 0 service item id check")
+        .toEqual(id);
+      expect(itemTemplate.properties.tables[0].relationships[0].keyField)
+        .withContext("up-front table 0 keyField check")
+        .toEqual(tableKeyField);
       expect(itemTemplate.properties.tables[0].viewDefinitionQuery)
-        .withContext("up-front table 0 view defn query check").toEqual(
-        tableDefQuery
-      );
+        .withContext("up-front table 0 view defn query check")
+        .toEqual(tableDefQuery);
       expect(itemTemplate.properties.tables[0].definitionQuery)
-        .withContext("up-front table 0 defn query check").toEqual(
-        tableDefQuery
-      );
+        .withContext("up-front table 0 defn query check")
+        .toEqual(tableDefQuery);
 
       const settings = utils.createMockSettings();
       settings.folderId = "fld1234567890";
@@ -845,7 +847,8 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
         .post(adminUrl + "/1?f=json", itemTemplate.properties.tables[0])
         .post(url + "/sources?f=json", mockItems.getAGOLServiceSources())
         .post(
-          utils.PORTAL_SUBSET.restUrl + "/content/users/casey/fld1234567890/createService",
+          utils.PORTAL_SUBSET.restUrl +
+            "/content/users/casey/fld1234567890/createService",
           createResponse
         )
         .post(
@@ -878,11 +881,13 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
           utils.ITEM_PROGRESS_CALLBACK
         )
         .then(r => {
-          expect(r).withContext("result").toEqual({
-            id: "svc1234567890",
-            type: itemTemplate.type,
-            postProcess: false
-          });
+          expect(r)
+            .withContext("result")
+            .toEqual({
+              id: "svc1234567890",
+              type: itemTemplate.type,
+              postProcess: false
+            });
           done();
         });
     });
