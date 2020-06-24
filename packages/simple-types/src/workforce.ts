@@ -90,58 +90,65 @@ export function _extractDependencies(
         idTest(v, deps);
       }
     });
-    const assignmentIntegrations: any =
-      common.getProp(data, "assignmentIntegrations") || [];
-    assignmentIntegrations.forEach((ai: any) => {
-      /* istanbul ignore else */
-      if (ai.assignmentTypes) {
-        const assignmentKeys: string[] = Object.keys(ai.assignmentTypes);
-        let requests: Array<Promise<any>> = [];
-        let urls: string[] = [];
-        assignmentKeys.forEach(k => {
-          const urlTemplate: any = ai.assignmentTypes[k].urlTemplate;
-          idTest(urlTemplate, deps);
-          const serviceRequests: any = urlTest(urlTemplate, authentication);
-          if (
-            Array.isArray(serviceRequests.requests) &&
-            serviceRequests.requests.length > 0
-          ) {
-            requests = requests.concat(serviceRequests.requests);
-            urls = urls.concat(serviceRequests.urls);
-          }
-        });
 
-        if (requests.length > 0) {
-          Promise.all(requests).then(
-            results => {
-              const urlHash: any = {};
-              // Get the serviceItemId for the url
-              if (Array.isArray(results)) {
-                results.forEach((result, i) => {
-                  /* istanbul ignore else */
-                  if (result.serviceItemId) {
-                    urlHash[urls[i]] = result.serviceItemId;
-                    if (deps.indexOf(result.serviceItemId) === -1) {
-                      deps.push(result.serviceItemId);
-                    }
-                  }
-                });
-              }
-              resolve({
-                dependencies: deps,
-                urlHash: urlHash
-              });
-            },
-            e => reject(common.fail(e))
-          );
-        } else {
-          resolve({
-            dependencies: deps,
-            urlHash: {}
+    if (common.getProp(data, "assignmentIntegrations")) {
+      let requests: Array<Promise<any>> = [];
+      let urls: string[] = [];
+      data.assignmentIntegrations.forEach((ai: any) => {
+        if (ai.assignmentTypes) {
+          const assignmentKeys: string[] = Object.keys(ai.assignmentTypes);
+          assignmentKeys.forEach(k => {
+            const urlTemplate: any = ai.assignmentTypes[k].urlTemplate;
+            idTest(urlTemplate, deps);
+            const serviceRequests: any = urlTest(urlTemplate, authentication);
+            if (
+              Array.isArray(serviceRequests.requests) &&
+              serviceRequests.requests.length > 0
+            ) {
+              requests = requests.concat(serviceRequests.requests);
+              urls = urls.concat(serviceRequests.urls);
+            }
           });
         }
+      });
+
+      if (requests.length > 0) {
+        Promise.all(requests).then(
+          results => {
+            const urlHash: any = {};
+            // Get the serviceItemId for the url
+            /* istanbul ignore else */
+            if (Array.isArray(results)) {
+              results.forEach((result, i) => {
+                /* istanbul ignore else */
+                if (result.serviceItemId) {
+                  urlHash[urls[i]] = result.serviceItemId;
+                  /* istanbul ignore else */
+                  if (deps.indexOf(result.serviceItemId) === -1) {
+                    deps.push(result.serviceItemId);
+                  }
+                }
+              });
+            }
+            resolve({
+              dependencies: deps,
+              urlHash: urlHash
+            });
+          },
+          e => reject(common.fail(e))
+        );
+      } else {
+        resolve({
+          dependencies: deps,
+          urlHash: {}
+        });
       }
-    });
+    } else {
+      resolve({
+        dependencies: deps,
+        urlHash: {}
+      });
+    }
   });
 }
 
@@ -223,7 +230,7 @@ export function _templatize(
           data[p].url = common.templatizeTerm(
             id,
             id,
-            _getReplaceValue(layerId, "url")
+            _getReplaceValue(layerId, ".url")
           );
           serviceItemIdSuffix = _getReplaceValue(layerId, serviceItemIdSuffix);
         }
@@ -275,7 +282,7 @@ export function _templatizeUrlTemplate(item: any, urlHash: any): void {
     const urls: string[] = _getURLs(item.urlTemplate);
     urls.forEach(url => {
       const layerId = _getLayerId(url);
-      const replaceValue: string = _getReplaceValue(layerId, "url");
+      const replaceValue: string = _getReplaceValue(layerId, ".url");
       item.urlTemplate = item.urlTemplate.replace(
         url,
         common.templatizeTerm(urlHash[url], urlHash[url], replaceValue)
@@ -300,8 +307,8 @@ export function _getLayerId(url: string): any {
 
 export function _getReplaceValue(layerId: any, suffix: string): string {
   return isNaN(Number.parseInt(layerId, 10))
-    ? `.${suffix}`
-    : `.layer${layerId}.${suffix}`;
+    ? `${suffix}`
+    : `.layer${layerId}${suffix}`;
 }
 
 //#endregion

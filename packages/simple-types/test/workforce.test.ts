@@ -40,7 +40,7 @@ afterEach(() => {
 
 describe("Module `workforce`: manages the creation and deployment of workforce project item types", () => {
   describe("convertItemToTemplate", () => {
-    it("should extract dependencies", () => {
+    it("should extract dependencies", done => {
       const itemTemplate: common.IItemTemplate = mockItems.getAGOLItem(
         "Workforce Project",
         null
@@ -59,21 +59,47 @@ describe("Module `workforce`: manages the creation and deployment of workforce p
         "bad3483e025c47338d43df308c117308"
       ];
 
-      const newItemTemplate = workforce.convertItemToTemplate(itemTemplate);
-      const newDependencies: string[] = newItemTemplate.dependencies;
-      expect(newDependencies.length).toEqual(expectedDependencies.length);
+      workforce
+        .convertItemToTemplate(itemTemplate, MOCK_USER_SESSION)
+        .then(newItemTemplate => {
+          const newDependencies: string[] = newItemTemplate.dependencies;
+          expect(newDependencies.length).toEqual(expectedDependencies.length);
 
-      expectedDependencies.forEach(d => {
-        expect(newDependencies.indexOf(d)).toBeGreaterThan(-1);
-      });
+          expectedDependencies.forEach(d => {
+            expect(newDependencies.indexOf(d)).toBeGreaterThan(-1);
+            done();
+          });
+        }, done.fail);
     });
 
-    it("should templatize key properties in the template", () => {
+    it("should templatize key properties in the template", done => {
       const itemTemplate: common.IItemTemplate = mockItems.getAGOLItem(
         "Workforce Project",
         null
       );
       itemTemplate.data = mockItems.getAGOLItemData("Workforce Project");
+      itemTemplate.data.assignmentIntegrations = [
+        {
+          id: "default-navigator",
+          prompt: "Navigate to Assignment",
+          urlTemplate:
+            "arcgis-navigator://?stop=${assignment.latitude},${assignment.longitude}&stopname=${assignment.location}&callback=arcgis-workforce://&callbackprompt=Workforce"
+        },
+        {
+          id: "default-collector",
+          prompt: "Collect at Assignment",
+          assignmentTypes: {
+            "1": {
+              urlTemplate:
+                "arcgis-collector://?itemID=b5142b618da74f92af9e84f7459b64a8&center=${assignment.latitude},${assignment.longitude}"
+            },
+            "2": {
+              urlTemplate:
+                "arcgis-collector://?itemID=b5142b618da74f92af9e84f7459b64a8&center=${assignment.latitude},${assignment.longitude}&featureSourceURL=https://services123.arcgis.com/org1234567890/arcgis/rest/services/ProposedSiteAddress_field/FeatureServer/0&featureAttributes=%7B%22placename%22:%22${assignment.location}%22%7D"
+            }
+          }
+        }
+      ];
 
       itemTemplate.item = {
         id: "abc0cab401af4828a25cc6eaeb59fb69",
@@ -109,22 +135,41 @@ describe("Module `workforce`: manages the creation and deployment of workforce p
             id: "default-navigator",
             prompt: "Navigate to Assignment",
             urlTemplate:
-              "arcgis-navigator://?stop=${assignment.latitude},{itemID={{cad3483e025c47338d43df308c117308.itemId}}},${assignment.longitude}&stopname=${assignment.location}&callback=arcgis-workforce://&callbackprompt={itemID={{bad3483e025c47338d43df308c117308.itemId}}}://Workforce",
-            assignmentTypes: [
-              {
+              "arcgis-navigator://?stop=${assignment.latitude},${assignment.longitude}&stopname=${assignment.location}&callback=arcgis-workforce://&callbackprompt=Workforce"
+          },
+          {
+            id: "default-collector",
+            prompt: "Collect at Assignment",
+            assignmentTypes: {
+              "1": {
                 urlTemplate:
-                  "arcgis-navigator://?stop=${assignment.latitude},{itemID={{cad3483e025c47338d43df308c117308.itemId}}},${assignment.longitude}&stopname=${assignment.location}&callback=arcgis-workforce://&callbackprompt={itemID={{bad3483e025c47338d43df308c117308.itemId}}}://Workforce"
+                  "arcgis-collector://?itemID={{b5142b618da74f92af9e84f7459b64a8.itemId}}&center=${assignment.latitude},${assignment.longitude}"
+              },
+              "2": {
+                urlTemplate:
+                  "arcgis-collector://?itemID={{b5142b618da74f92af9e84f7459b64a8.itemId}}&center=${assignment.latitude},${assignment.longitude}&featureSourceURL={{bb142b618da74f92af9e84f7459b64a8.layer0.url}}&featureAttributes=%7B%22placename%22:%22${assignment.location}%22%7D"
               }
-            ]
+            }
           }
         ]
       };
 
-      const newItemTemplate = workforce.convertItemToTemplate(itemTemplate);
-      expect(newItemTemplate.data).toEqual(expectedTemplateData);
+      fetchMock.post(
+        "https://services123.arcgis.com/org1234567890/arcgis/rest/services/ProposedSiteAddress_field/FeatureServer/0",
+        {
+          serviceItemId: "bb142b618da74f92af9e84f7459b64a8"
+        }
+      );
+
+      workforce
+        .convertItemToTemplate(itemTemplate, MOCK_USER_SESSION)
+        .then(newItemTemplate => {
+          expect(newItemTemplate.data).toEqual(expectedTemplateData);
+          done();
+        }, done.fail);
     });
 
-    it("should extract dependencies", () => {
+    it("should extract dependencies", done => {
       const itemTemplate: common.IItemTemplate = mockItems.getAGOLItem(
         "Workforce Project",
         null
@@ -143,27 +188,148 @@ describe("Module `workforce`: manages the creation and deployment of workforce p
         "bad3483e025c47338d43df308c117308"
       ];
 
-      const newItemTemplate = workforce.convertItemToTemplate(itemTemplate);
-      const newDependencies: string[] = newItemTemplate.dependencies;
-      expect(newDependencies.length).toEqual(expectedDependencies.length);
+      workforce
+        .convertItemToTemplate(itemTemplate, MOCK_USER_SESSION)
+        .then(newItemTemplate => {
+          const newDependencies: string[] = newItemTemplate.dependencies;
+          expect(newDependencies.length).toEqual(expectedDependencies.length);
 
-      expectedDependencies.forEach(d => {
-        expect(newDependencies.indexOf(d)).toBeGreaterThan(-1);
-      });
+          expectedDependencies.forEach(d => {
+            expect(newDependencies.indexOf(d)).toBeGreaterThan(-1);
+            done();
+          });
+        }, done.fail);
     });
 
-    it("should handle workforce projects without data", () => {
+    it("should handle workforce projects without data", done => {
       const itemTemplate: common.IItemTemplate = mockItems.getAGOLItem(
         "Workforce Project"
       );
 
-      const newItemTemplate = workforce.convertItemToTemplate(itemTemplate);
-      expect(newItemTemplate.data).not.toBeDefined();
+      workforce
+        .convertItemToTemplate(itemTemplate, MOCK_USER_SESSION)
+        .then(newItemTemplate => {
+          expect(newItemTemplate.data).not.toBeDefined();
+          done();
+        }, done.fail);
+    });
+
+    it("should handle error on extract dependencies", done => {
+      const itemTemplate: common.IItemTemplate = mockItems.getAGOLItem(
+        "Workforce Project",
+        null
+      );
+      itemTemplate.data = mockItems.getAGOLItemData("Workforce Project");
+      itemTemplate.data.assignmentIntegrations = [
+        {
+          id: "default-collector",
+          prompt: "Collect at Assignment",
+          assignmentTypes: {
+            "1": {
+              urlTemplate:
+                "arcgis-collector://?itemID=b5142b618da74f92af9e84f7459b64a8&center=${assignment.latitude},${assignment.longitude}&featureSourceURL=https://services123.arcgis.com/org1234567890/arcgis/rest/services/ProposedSiteAddress_field/FeatureServer&featureAttributes=%7B%22placename%22:%22${assignment.location}%22%7D"
+            }
+          }
+        }
+      ];
+
+      itemTemplate.item = {
+        id: "abc0cab401af4828a25cc6eaeb59fb69",
+        type: "Workforce Project"
+      };
+
+      fetchMock.post(
+        "https://services123.arcgis.com/org1234567890/arcgis/rest/services/ProposedSiteAddress_field/FeatureServer",
+        mockItems.get400Failure()
+      );
+
+      workforce
+        .convertItemToTemplate(itemTemplate, MOCK_USER_SESSION)
+        .then(() => {
+          done.fail();
+        }, done);
+    });
+
+    it("should handle url without layer id", done => {
+      const itemTemplate: common.IItemTemplate = mockItems.getAGOLItem(
+        "Workforce Project",
+        null
+      );
+      itemTemplate.data = mockItems.getAGOLItemData("Workforce Project");
+      itemTemplate.data.assignmentIntegrations = [
+        {
+          id: "default-collector",
+          prompt: "Collect at Assignment",
+          assignmentTypes: {
+            "1": {
+              urlTemplate:
+                "arcgis-collector://?itemID=b5142b618da74f92af9e84f7459b64a8&center=${assignment.latitude},${assignment.longitude}&featureSourceURL=https://services123.arcgis.com/org1234567890/arcgis/rest/services/ProposedSiteAddress_field/FeatureServer&featureAttributes=%7B%22placename%22:%22${assignment.location}%22%7D"
+            }
+          }
+        }
+      ];
+
+      itemTemplate.item = {
+        id: "abc0cab401af4828a25cc6eaeb59fb69",
+        type: "Workforce Project"
+      };
+
+      const expectedTemplateData: any = {
+        workerWebMapId: "{{abc116555b16437f8435e079033128d0.itemId}}",
+        dispatcherWebMapId: "{{abc26a244163430590151395821fb845.itemId}}",
+        dispatchers: {
+          serviceItemId: "{{abc302ec12b74d2f9f2b3cc549420086.layer0.itemId}}",
+          url: "{{abc302ec12b74d2f9f2b3cc549420086.layer0.url}}"
+        },
+        assignments: {
+          serviceItemId: "{{abc4494043c3459faabcfd0e1ab557fc.layer0.itemId}}",
+          url: "{{abc4494043c3459faabcfd0e1ab557fc.layer0.url}}"
+        },
+        workers: {
+          serviceItemId: "{{abc5dd4bdd18437f8d5ff1aa2d25fd7c.layer0.itemId}}",
+          url: "{{abc5dd4bdd18437f8d5ff1aa2d25fd7c.layer0.url}}"
+        },
+        tracks: {
+          serviceItemId: "{{abc64329e69144c59f69f3f3e0d45269.layer0.itemId}}",
+          url: "{{abc64329e69144c59f69f3f3e0d45269.layer0.url}}",
+          enabled: true,
+          updateInterval: 300
+        },
+        version: "1.2.0",
+        groupId: "{{abc715c2df2b466da05577776e82d044.itemId}}",
+        folderId: "{{folderId}}",
+        assignmentIntegrations: [
+          {
+            id: "default-collector",
+            prompt: "Collect at Assignment",
+            assignmentTypes: {
+              "1": {
+                urlTemplate:
+                  "arcgis-collector://?itemID={{b5142b618da74f92af9e84f7459b64a8.itemId}}&center=${assignment.latitude},${assignment.longitude}&featureSourceURL={{bb142b618da74f92af9e84f7459b64a8.url}}&featureAttributes=%7B%22placename%22:%22${assignment.location}%22%7D"
+              }
+            }
+          }
+        ]
+      };
+
+      fetchMock.post(
+        "https://services123.arcgis.com/org1234567890/arcgis/rest/services/ProposedSiteAddress_field/FeatureServer",
+        {
+          serviceItemId: "bb142b618da74f92af9e84f7459b64a8"
+        }
+      );
+
+      workforce
+        .convertItemToTemplate(itemTemplate, MOCK_USER_SESSION)
+        .then(newItemTemplate => {
+          expect(newItemTemplate.data).toEqual(expectedTemplateData);
+          done();
+        }, done.fail);
     });
   });
 
   describe("_extractDependencies", () => {
-    it("handles serviceItemId variants", () => {
+    it("handles serviceItemId variants", done => {
       const data: any = {
         dispatchers: {
           serviceItemId: "1234567890abcdef1234567890abcdef"
@@ -179,14 +345,20 @@ describe("Module `workforce`: manages the creation and deployment of workforce p
         "tracks"
       ];
 
-      const dependencies: string[] = workforce._extractDependencies(
-        data,
-        keyProperties
-      );
-      expect(dependencies).toEqual(["1234567890abcdef1234567890abcdef"]);
+      const expected: any = {
+        dependencies: ["1234567890abcdef1234567890abcdef"],
+        urlHash: {}
+      };
+
+      workforce
+        ._extractDependencies(data, keyProperties, MOCK_USER_SESSION)
+        .then(actual => {
+          expect(actual).toEqual(expected);
+          done();
+        }, done.fail);
     });
 
-    it("handles direct ids", () => {
+    it("handles direct ids", done => {
       const data: any = {
         workerWebMapId: "1234567890abcdef1234567890abcdef"
       };
@@ -200,14 +372,20 @@ describe("Module `workforce`: manages the creation and deployment of workforce p
         "tracks"
       ];
 
-      const dependencies: string[] = workforce._extractDependencies(
-        data,
-        keyProperties
-      );
-      expect(dependencies).toEqual(["1234567890abcdef1234567890abcdef"]);
+      const expected: any = {
+        dependencies: ["1234567890abcdef1234567890abcdef"],
+        urlHash: {}
+      };
+
+      workforce
+        ._extractDependencies(data, keyProperties, MOCK_USER_SESSION)
+        .then(actual => {
+          expect(actual).toEqual(expected);
+          done();
+        }, done.fail);
     });
 
-    it("skips uninteresting id", () => {
+    it("skips uninteresting id", done => {
       const data: any = {
         folderId: "1234567890abcdef1234567890abcdef"
       };
@@ -221,14 +399,20 @@ describe("Module `workforce`: manages the creation and deployment of workforce p
         "tracks"
       ];
 
-      const dependencies: string[] = workforce._extractDependencies(
-        data,
-        keyProperties
-      );
-      expect(dependencies).toEqual([]);
+      const expected: any = {
+        dependencies: [],
+        urlHash: {}
+      };
+
+      workforce
+        ._extractDependencies(data, keyProperties, MOCK_USER_SESSION)
+        .then(actual => {
+          expect(actual).toEqual(expected);
+          done();
+        }, done.fail);
     });
 
-    it("handles multiple types of id", () => {
+    it("handles multiple types of id", done => {
       const data: any = {
         workerWebMapId: "abc116555b16437f8435e079033128d0",
         dispatcherWebMapId: "abc26a244163430590151395821fb845",
@@ -264,22 +448,28 @@ describe("Module `workforce`: manages the creation and deployment of workforce p
         "tracks"
       ];
 
-      const dependencies: string[] = workforce._extractDependencies(
-        data,
-        keyProperties
-      );
-      expect(dependencies).toEqual([
-        "abc715c2df2b466da05577776e82d044",
-        "abc116555b16437f8435e079033128d0",
-        "abc26a244163430590151395821fb845",
-        "abc302ec12b74d2f9f2b3cc549420086",
-        "abc4494043c3459faabcfd0e1ab557fc",
-        "abc5dd4bdd18437f8d5ff1aa2d25fd7c",
-        "abc64329e69144c59f69f3f3e0d45269"
-      ]);
+      const expected: any = {
+        dependencies: [
+          "abc715c2df2b466da05577776e82d044",
+          "abc116555b16437f8435e079033128d0",
+          "abc26a244163430590151395821fb845",
+          "abc302ec12b74d2f9f2b3cc549420086",
+          "abc4494043c3459faabcfd0e1ab557fc",
+          "abc5dd4bdd18437f8d5ff1aa2d25fd7c",
+          "abc64329e69144c59f69f3f3e0d45269"
+        ],
+        urlHash: {}
+      };
+
+      workforce
+        ._extractDependencies(data, keyProperties, MOCK_USER_SESSION)
+        .then(actual => {
+          expect(actual).toEqual(expected);
+          done();
+        }, done.fail);
     });
 
-    it("handles id repeats", () => {
+    it("handles id repeats", done => {
       const data: any = {
         workerWebMapId: "abc116555b16437f8435e079033128d0",
         dispatcherWebMapId: "abc116555b16437f8435e079033128d0",
@@ -315,17 +505,23 @@ describe("Module `workforce`: manages the creation and deployment of workforce p
         "tracks"
       ];
 
-      const dependencies: string[] = workforce._extractDependencies(
-        data,
-        keyProperties
-      );
-      expect(dependencies).toEqual([
-        "abc715c2df2b466da05577776e82d044",
-        "abc116555b16437f8435e079033128d0",
-        "abc302ec12b74d2f9f2b3cc549420086",
-        "abc4494043c3459faabcfd0e1ab557fc",
-        "abc64329e69144c59f69f3f3e0d45269"
-      ]);
+      const expected: any = {
+        dependencies: [
+          "abc715c2df2b466da05577776e82d044",
+          "abc116555b16437f8435e079033128d0",
+          "abc302ec12b74d2f9f2b3cc549420086",
+          "abc4494043c3459faabcfd0e1ab557fc",
+          "abc64329e69144c59f69f3f3e0d45269"
+        ],
+        urlHash: {}
+      };
+
+      workforce
+        ._extractDependencies(data, keyProperties, MOCK_USER_SESSION)
+        .then(actual => {
+          expect(actual).toEqual(expected);
+          done();
+        }, done.fail);
     });
   });
 
@@ -338,7 +534,7 @@ describe("Module `workforce`: manages the creation and deployment of workforce p
       delete expected.assignmentIntegrations;
       expected["folderId"] = "{{folderId}}";
 
-      const actual = workforce._templatize(data, []);
+      const actual = workforce._templatize(data, [], {});
       expect(actual).toEqual(expected);
     });
 
@@ -350,7 +546,7 @@ describe("Module `workforce`: manages the creation and deployment of workforce p
       delete expected.assignmentIntegrations;
       expected["folderId"] = "{{folderId}}";
 
-      const actual = workforce._templatize(data, ["fake"]);
+      const actual = workforce._templatize(data, ["fake"], {});
       expect(actual).toEqual(expected);
     });
 
@@ -369,10 +565,11 @@ describe("Module `workforce`: manages the creation and deployment of workforce p
       expected["assignments"].url =
         "{{abc4494043c3459faabcfd0e1ab557fc.layer0.url}}";
 
-      const actual = workforce._templatize(data, [
-        "dispatchers",
-        "assignments"
-      ]);
+      const actual = workforce._templatize(
+        data,
+        ["dispatchers", "assignments"],
+        {}
+      );
       expect(actual).toEqual(expected);
     });
 
@@ -386,7 +583,7 @@ describe("Module `workforce`: manages the creation and deployment of workforce p
       delete expected["assignmentIntegrations"][0].urlTemplate;
       delete expected["assignmentIntegrations"][0].assignmentTypes;
 
-      const actual = workforce._templatize(data, []);
+      const actual = workforce._templatize(data, [], {});
       expect(actual).toEqual(expected);
     });
 
@@ -401,7 +598,7 @@ describe("Module `workforce`: manages the creation and deployment of workforce p
         "ABC123";
       expected["folderId"] = "{{folderId}}";
 
-      const actual = workforce._templatize(data, []);
+      const actual = workforce._templatize(data, [], {});
       expect(actual).toEqual(expected);
     });
   });
