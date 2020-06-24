@@ -1,6 +1,6 @@
 {
   "name": "polyfillExplorer",
-  "version": "0.16.8",
+  "version": "0.16.9",
   "private": true,
   "description": "Example App for solutions.js common: Runs polyfill examples for testing in Microsoft browsers.",
   "main": "main.js",
@@ -24,7 +24,7 @@
     "@esri/hub-common": "^4.0.0",
     "@esri/hub-initiatives": "^4.0.0",
     "@esri/hub-sites": "^4.0.0",
-    "@esri/solution-common": "^0.16.8",
+    "@esri/solution-common": "^0.16.9",
     "tslib": "^1.13.0"
   }
 }

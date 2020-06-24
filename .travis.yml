@@ -27,4 +27,5 @@ addons:
   firefox: latest
 branches:
   only:
-    - master
+    - gh-pages
+    - /.*/
