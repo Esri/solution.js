@@ -413,12 +413,7 @@ export function updateTemplateForInvalidDesignations(
     if (template.item.url) {
       // get the admin URL
       const url: string = template.item.url;
-      const adminUrl: string = url.replace(
-        "/rest/services",
-        "/rest/admin/services"
-      );
-
-      rest_request(adminUrl + "?f=json", {
+      rest_request(url + "?f=json", {
         authentication: authentication
       }).then(
         serviceData => {
