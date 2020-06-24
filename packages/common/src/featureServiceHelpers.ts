@@ -329,6 +329,47 @@ export function getLayerSettings(
 }
 
 /**
+ * Set the names and titles for all feature services.
+ *
+ * This function will ensure that we have unique feature service names.
+ * The feature service name will have the solution item id appended.
+ *
+ * @param templates A collection of AGO item templates.
+ * @param solutionItemId The item id for the deployed solution item.
+ * @return An updated collection of AGO templates with unique feature service names.
+ */
+export function setNamesAndTitles(
+  templates: IItemTemplate[],
+  solutionItemId: string
+): IItemTemplate[] {
+  const names: string[] = [];
+  return templates.map(t => {
+    if (t.item.type === "Feature Service") {
+      // Retain the existing title but swap with name if it's missing
+      t.item.title = t.item.title || t.item.name;
+
+      // Need to set the service name: name + "_" + newItemId
+      const baseName: string = t.item.name || t.item.title;
+
+      // If the name already contains a GUID replace it with the newItemID
+      const regEx: any = new RegExp("[0-9A-F]{32}", "gmi");
+      const name: string = regEx.exec(baseName)
+        ? baseName.replace(regEx, solutionItemId)
+        : baseName + "_" + solutionItemId;
+
+      // If the name + GUID already exists then append "_occurrenceCount"
+      t.item.name =
+        names.indexOf(name) === -1
+          ? name
+          : `${name}_${names.filter(n => n === name).length}`;
+
+      names.push(name);
+    }
+    return t;
+  });
+}
+
+/**
  * This is used when deploying views.
  * We need to update fields referenced in adminLayerInfo for relationships prior to deploying the view.
  * This moves the fieldInfos for the views source layers from the item settings for the source layer

@@ -27,6 +27,7 @@ import {
   _cachePopupInfo,
   updateTemplate,
   getLayerSettings,
+  setNamesAndTitles,
   updateSettingsFieldInfos,
   deTemplatizeFieldInfos,
   getLayersAndTables,
@@ -1362,6 +1363,59 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
       );
       expect(fieldInfos).toEqual(expectedFieldInfos);
       expect(settings).toEqual(expectedSettings);
+    });
+  });
+
+  describe("setNamesAndTitles", () => {
+    it("should use title as name if name is undefined", () => {
+      const t: interfaces.IItemTemplate = templates.getItemTemplateSkeleton();
+      t.item.type = "Feature Service";
+      t.item.name = undefined;
+      t.item.title = "TheName";
+      const _templates: interfaces.IItemTemplate[] = [t];
+
+      const expectedTemplate: interfaces.IItemTemplate = templates.getItemTemplateSkeleton();
+      expectedTemplate.item.type = "Feature Service";
+      expectedTemplate.item.name = `TheName_${itemId}`;
+      expectedTemplate.item.title = "TheName";
+      const expected: interfaces.IItemTemplate[] = [expectedTemplate];
+
+      const actual: interfaces.IItemTemplate[] = setNamesAndTitles(
+        _templates,
+        itemId
+      );
+      expect(actual).toEqual(expected);
+    });
+
+    it("should not allow duplicate names", () => {
+      const t: interfaces.IItemTemplate = templates.getItemTemplateSkeleton();
+      t.item.type = "Feature Service";
+      t.item.name = "TheName_99ac87b220fd45038fc92ba10843886d";
+      t.item.title = undefined;
+      const t2: interfaces.IItemTemplate = templates.getItemTemplateSkeleton();
+      t2.item.type = "Feature Service";
+      t2.item.name = "TheName_88ac87b220fd45038fc92ba10843886d";
+      t2.item.title = undefined;
+      const _templates: interfaces.IItemTemplate[] = [t, t2];
+
+      const expectedTemplate: interfaces.IItemTemplate = templates.getItemTemplateSkeleton();
+      expectedTemplate.item.type = "Feature Service";
+      expectedTemplate.item.name = `TheName_${itemId}`;
+      expectedTemplate.item.title = "TheName_99ac87b220fd45038fc92ba10843886d";
+      const expectedTemplate2: interfaces.IItemTemplate = templates.getItemTemplateSkeleton();
+      expectedTemplate2.item.type = "Feature Service";
+      expectedTemplate2.item.name = `TheName_${itemId}_1`;
+      expectedTemplate2.item.title = "TheName_88ac87b220fd45038fc92ba10843886d";
+      const expected: interfaces.IItemTemplate[] = [
+        expectedTemplate,
+        expectedTemplate2
+      ];
+
+      const actual: interfaces.IItemTemplate[] = setNamesAndTitles(
+        _templates,
+        itemId
+      );
+      expect(actual).toEqual(expected);
     });
   });
 
