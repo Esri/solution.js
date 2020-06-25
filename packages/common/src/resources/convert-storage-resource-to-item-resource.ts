@@ -14,11 +14,7 @@
  * limitations under the License.
  */
 
-
-import {
-  IDeployFilename,
-  EFileType
-} from '../interfaces'
+import { IDeployFilename, EFileType } from "../interfaces";
 
 /**
  * Extracts an item's resource folder and filename from the filename used to store a copy in a storage item.

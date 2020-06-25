@@ -27,6 +27,7 @@ import {
   _cachePopupInfo,
   updateTemplate,
   getLayerSettings,
+  setNamesAndTitles,
   updateSettingsFieldInfos,
   deTemplatizeFieldInfos,
   getLayersAndTables,
@@ -72,6 +73,12 @@ import {
   _templatizeDefinitionQuery,
   _getNameMapping,
   _updateTemplateDictionaryFields,
+  _validateFields,
+  _validateDisplayField,
+  _validateIndexes,
+  _validateTemplatesFields,
+  _validateTypesTemplates,
+  _validateEditFieldsInfo,
   IPopupInfos
 } from "../src/featureServiceHelpers";
 
@@ -118,7 +125,13 @@ beforeEach(() => {
     properties: {
       service: {
         fullExtent: {},
-        initialExtent: {}
+        initialExtent: {
+          xmin: -1,
+          xmax: 1,
+          ymin: -1,
+          ymax: 1,
+          spatialReference: { wkid: 123456 }
+        }
       },
       layers: [
         {
@@ -169,7 +182,14 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
               fields: []
             }
           ],
-          tables: []
+          tables: [],
+          defaultExtent: {
+            xmin: -1,
+            xmax: 1,
+            ymin: -1,
+            ymax: 1,
+            spatialReference: { wkid: 123456 }
+          }
         },
         type: "",
         item: {
@@ -225,7 +245,8 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
                 {
                   name: "A"
                 }
-              ]
+              ],
+              hasZ: true
             }
           ],
           tables: [
@@ -238,7 +259,8 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
                 }
               ]
             }
-          ]
+          ],
+          defaultExtent: {}
         },
         type: "",
         item: {
@@ -295,7 +317,9 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
                 id: 1,
                 prop: "B"
               }
-            ]
+            ],
+            enableZDefaults: true,
+            zDefault: 0
           },
           layers: [
             {
@@ -307,20 +331,23 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
                 {
                   name: "A"
                 }
-              ]
+              ],
+              hasZ: true
             }
           ],
           tables: [
             {
               id: "1",
               serviceItemId: "{{ab766cba0dd44ec080420acc10990282.itemId}}",
+              displayField: "B",
               fields: [
                 {
                   name: "B"
                 }
               ]
             }
-          ]
+          ],
+          defaultExtent: {}
         },
         type: "",
         item: {
@@ -375,7 +402,8 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
             serviceItemId: "ab766cba0dd44ec080420acc10990282",
             fullExtent: {},
             initialExtent: {}
-          }
+          },
+          defaultExtent: {}
         },
         type: "",
         item: {
@@ -398,6 +426,71 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
             serviceItemId: "{{ab766cba0dd44ec080420acc10990282.itemId}}",
             fullExtent: "{{ab766cba0dd44ec080420acc10990282.solutionExtent}}",
             initialExtent: "{{ab766cba0dd44ec080420acc10990282.solutionExtent}}"
+          },
+          defaultExtent: {}
+        },
+        type: "",
+        item: {
+          extent: "", // only set through createItemTemplate
+          id: "{{ab766cba0dd44ec080420acc10990282.itemId}}",
+          type: "",
+          url: "{{ab766cba0dd44ec080420acc10990282.url}}",
+          typeKeywords: ["{{ab766cba0dd44ec080420acc10990282.itemId}}", "two"]
+        },
+        data: {},
+        resources: [],
+        dependencies: [],
+        groups: [],
+        estimatedDeploymentCostFactor: 0
+      };
+      templatize(itemTemplate, dependencies, true);
+      expect(itemTemplate).toEqual(expected);
+    });
+
+    it("should use fullExtent for defaultExtent if initialExtent is undefined", () => {
+      const dependencies: interfaces.IDependency[] = [];
+      itemTemplate = {
+        itemId: "ab766cba0dd44ec080420acc10990282",
+        key: "ABC123",
+        properties: {
+          service: {
+            serviceItemId: "ab766cba0dd44ec080420acc10990282",
+            fullExtent: {
+              xmin: -10,
+              xmax: 10,
+              ymin: -10,
+              ymax: 10,
+              spatialReference: { wkid: 123456 }
+            }
+          }
+        },
+        type: "",
+        item: {
+          extent: "",
+          id: "ab766cba0dd44ec080420acc10990282",
+          type: "",
+          typeKeywords: ["ab766cba0dd44ec080420acc10990282", "two"]
+        },
+        data: {},
+        resources: [],
+        dependencies: [],
+        groups: [],
+        estimatedDeploymentCostFactor: 0
+      };
+      const expected: any = {
+        itemId: "ab766cba0dd44ec080420acc10990282",
+        key: "ABC123",
+        properties: {
+          service: {
+            serviceItemId: "{{ab766cba0dd44ec080420acc10990282.itemId}}",
+            fullExtent: "{{ab766cba0dd44ec080420acc10990282.solutionExtent}}"
+          },
+          defaultExtent: {
+            xmin: -10,
+            xmax: 10,
+            ymin: -10,
+            ymax: 10,
+            spatialReference: { wkid: 123456 }
           }
         },
         type: "",
@@ -660,7 +753,15 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
         properties: {
           service: {
             fullExtent: {},
-            initialExtent: {}
+            initialExtent: {
+              xmin: -1,
+              ymin: -1,
+              xmax: 1,
+              ymax: 1,
+              spatialReference: {
+                wkid: 123456
+              }
+            }
           },
           layers: [
             {
@@ -1273,6 +1374,59 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
       );
       expect(fieldInfos).toEqual(expectedFieldInfos);
       expect(settings).toEqual(expectedSettings);
+    });
+  });
+
+  describe("setNamesAndTitles", () => {
+    it("should use title as name if name is undefined", () => {
+      const t: interfaces.IItemTemplate = templates.getItemTemplateSkeleton();
+      t.item.type = "Feature Service";
+      t.item.name = undefined;
+      t.item.title = "TheName";
+      const _templates: interfaces.IItemTemplate[] = [t];
+
+      const expectedTemplate: interfaces.IItemTemplate = templates.getItemTemplateSkeleton();
+      expectedTemplate.item.type = "Feature Service";
+      expectedTemplate.item.name = `TheName_${itemId}`;
+      expectedTemplate.item.title = "TheName";
+      const expected: interfaces.IItemTemplate[] = [expectedTemplate];
+
+      const actual: interfaces.IItemTemplate[] = setNamesAndTitles(
+        _templates,
+        itemId
+      );
+      expect(actual).toEqual(expected);
+    });
+
+    it("should not allow duplicate names", () => {
+      const t: interfaces.IItemTemplate = templates.getItemTemplateSkeleton();
+      t.item.type = "Feature Service";
+      t.item.name = "TheName_99ac87b220fd45038fc92ba10843886d";
+      t.item.title = undefined;
+      const t2: interfaces.IItemTemplate = templates.getItemTemplateSkeleton();
+      t2.item.type = "Feature Service";
+      t2.item.name = "TheName_88ac87b220fd45038fc92ba10843886d";
+      t2.item.title = undefined;
+      const _templates: interfaces.IItemTemplate[] = [t, t2];
+
+      const expectedTemplate: interfaces.IItemTemplate = templates.getItemTemplateSkeleton();
+      expectedTemplate.item.type = "Feature Service";
+      expectedTemplate.item.name = `TheName_${itemId}`;
+      expectedTemplate.item.title = "TheName_99ac87b220fd45038fc92ba10843886d";
+      const expectedTemplate2: interfaces.IItemTemplate = templates.getItemTemplateSkeleton();
+      expectedTemplate2.item.type = "Feature Service";
+      expectedTemplate2.item.name = `TheName_${itemId}_1`;
+      expectedTemplate2.item.title = "TheName_88ac87b220fd45038fc92ba10843886d";
+      const expected: interfaces.IItemTemplate[] = [
+        expectedTemplate,
+        expectedTemplate2
+      ];
+
+      const actual: interfaces.IItemTemplate[] = setNamesAndTitles(
+        _templates,
+        itemId
+      );
+      expect(actual).toEqual(expected);
     });
   });
 
@@ -5534,6 +5688,210 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
       };
 
       expect(templateDictionary).toEqual(expected);
+    });
+  });
+
+  describe("_validateFields", () => {
+    it("should not add props if no fields exist on item", () => {
+      const actual: any = {};
+      const expected: any = {};
+      _validateFields(actual);
+
+      expect(actual).toEqual(expected);
+    });
+  });
+
+  describe("_validateDisplayField", () => {
+    it("should update primary display field if casing doesn't match", () => {
+      const actual: any = {
+        displayField: "A"
+      };
+      const fieldNames: string[] = ["a"];
+
+      const expected: any = {
+        displayField: "a"
+      };
+      _validateDisplayField(actual, fieldNames);
+
+      expect(actual).toEqual(expected);
+    });
+
+    it("should update primary display field to the first non OID or GlobalId if the field isn't in the layer", () => {
+      const actual: any = {
+        displayField: "doesnotexist",
+        uniqueIdField: {
+          name: "OID"
+        },
+        globalIdField: "GLOBALID"
+      };
+      const fieldNames: string[] = ["OID", "GLOBALID", "A", "B"];
+
+      const expected: any = {
+        displayField: "A",
+        uniqueIdField: {
+          name: "OID"
+        },
+        globalIdField: "GLOBALID"
+      };
+      _validateDisplayField(actual, fieldNames);
+
+      expect(actual).toEqual(expected);
+    });
+  });
+
+  describe("_validateIndexes", () => {
+    it("should remove indexes on fields that don't exist in the layer", () => {
+      const actual: any = {
+        indexes: [
+          {
+            fields: "a"
+          },
+          {
+            fields: "b"
+          }
+        ]
+      };
+      const fieldNames: string[] = ["a"];
+
+      const expected: any = {
+        indexes: [
+          {
+            fields: "a"
+          }
+        ]
+      };
+      _validateIndexes(actual, fieldNames);
+
+      expect(actual).toEqual(expected);
+    });
+
+    it("should remove duplicate indexes on the same field", () => {
+      const actual: any = {
+        indexes: [
+          {
+            fields: "a",
+            name: "a"
+          },
+          {
+            fields: "a",
+            name: "a1"
+          },
+          {
+            fields: "b"
+          }
+        ]
+      };
+      const fieldNames: string[] = ["a", "b"];
+
+      const expected: any = {
+        indexes: [
+          {
+            fields: "a",
+            name: "a"
+          },
+          {
+            fields: "b"
+          }
+        ]
+      };
+      _validateIndexes(actual, fieldNames);
+
+      expect(actual).toEqual(expected);
+    });
+  });
+
+  describe("_validateTemplatesFields", () => {
+    it("should nremove field references from when the field does not exist", () => {
+      const actual: any = {
+        templates: [
+          {
+            prototype: {
+              attributes: {
+                a: null,
+                b: null
+              }
+            }
+          }
+        ]
+      };
+      const expected: any = {
+        templates: [
+          {
+            prototype: {
+              attributes: {
+                a: null
+              }
+            }
+          }
+        ]
+      };
+      const fieldNames: string[] = ["a"];
+      _validateTemplatesFields(actual, fieldNames);
+
+      expect(actual).toEqual(expected);
+    });
+  });
+
+  describe("_validateTypesTemplates", () => {
+    it("should nremove field references from when the field does not exist", () => {
+      const actual: any = {
+        types: [
+          {
+            templates: [
+              {
+                prototype: {
+                  attributes: {
+                    a: null,
+                    b: null
+                  }
+                }
+              }
+            ]
+          }
+        ]
+      };
+
+      const expected: any = {
+        types: [
+          {
+            templates: [
+              {
+                prototype: {
+                  attributes: {
+                    a: null
+                  }
+                }
+              }
+            ]
+          }
+        ]
+      };
+      const fieldNames: string[] = ["a"];
+      _validateTypesTemplates(actual, fieldNames);
+
+      expect(actual).toEqual(expected);
+    });
+  });
+
+  describe("_validateEditFieldsInfo", () => {
+    it("should swap edit field if field with same name but different case exists", () => {
+      const actual: any = {
+        editFieldsInfo: {
+          editField: "A",
+          otherEditField: "b"
+        }
+      };
+
+      const expected: any = {
+        editFieldsInfo: {
+          editField: "a",
+          otherEditField: "b"
+        }
+      };
+      const fieldNames: string[] = ["a", "b"];
+      _validateEditFieldsInfo(actual, fieldNames);
+
+      expect(actual).toEqual(expected);
     });
   });
 

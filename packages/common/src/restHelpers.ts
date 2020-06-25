@@ -56,9 +56,7 @@ import {
   IUpdateItemResponse,
   UserSession
 } from "./interfaces";
-import {
-  createZip
-} from "./libConnectors";
+import { createZip } from "./libConnectors";
 import {
   addItemData as portalAddItemData,
   addItemRelationship,
@@ -268,9 +266,10 @@ export function _validateExtent(extent: IExtent): IExtent {
 /**
  * If the request to convert the extent fails it has commonly been due to an invalid extent.
  * This function will first attempt to use the provided extent. If it fails it will default to
- * a global extent.
+ * the source items extent and if that fails it will then use a default global extent.
  *
  * @param extent the extent to convert
+ * @param fallbackExtent the extent to convert if the main extent does not project to the outSR
  * @param outSR the spatial reference to project to
  * @param geometryServiceUrl the service url for the geometry service to use
  * @param authentication the credentials for the requests
@@ -280,6 +279,7 @@ export function _validateExtent(extent: IExtent): IExtent {
  */
 export function convertExtentWithFallback(
   extent: IExtent,
+  fallbackExtent: any,
   outSR: ISpatialReference,
   geometryServiceUrl: string,
   authentication: UserSession
@@ -307,7 +307,7 @@ export function convertExtentWithFallback(
           resolve(extentResponse);
         } else {
           convertExtent(
-            defaultExtent,
+            fallbackExtent || defaultExtent,
             outSR,
             geometryServiceUrl,
             authentication
@@ -543,24 +543,29 @@ export function createFullItem(
                     Array.isArray(resourcesFiles) &&
                     resourcesFiles.length > 0
                   ) {
-                    updateDefs.push(new Promise<IItemResourceResponse>(
-                      (rsrcResolve, rsrcReject) => {
-                        createZip("resources.zip", resourcesFiles).then(
-                          (zipfile: File) => {
-                            const addResourceOptions: IItemResourceOptions = {
-                              id: createResponse.id,
-                              resource: zipfile,
-                              authentication: destinationAuthentication,
-                              params: {
-                                archive: true
-                              }
-                            };
-                            addItemResource(addResourceOptions).then(rsrcResolve, rsrcReject);
-                          },
-                          rsrcReject
-                        );
-                      }
-                    ));
+                    updateDefs.push(
+                      new Promise<IItemResourceResponse>(
+                        (rsrcResolve, rsrcReject) => {
+                          createZip("resources.zip", resourcesFiles).then(
+                            (zipfile: File) => {
+                              const addResourceOptions: IItemResourceOptions = {
+                                id: createResponse.id,
+                                resource: zipfile,
+                                authentication: destinationAuthentication,
+                                params: {
+                                  archive: true
+                                }
+                              };
+                              addItemResource(addResourceOptions).then(
+                                rsrcResolve,
+                                rsrcReject
+                              );
+                            },
+                            rsrcReject
+                          );
+                        }
+                      )
+                    );
                   }
 
                   // Add the metadata section
@@ -1398,7 +1403,6 @@ export function _getCreateServiceOptions(
   templateDictionary: any
 ): Promise<any> {
   return new Promise((resolve, reject) => {
-    const itemInfo: any = {};
     const serviceInfo: any = newItemTemplate.properties;
     const folderId: any = templateDictionary.folderId;
     const isPortal: boolean = templateDictionary.isPortal;
@@ -1407,18 +1411,10 @@ export function _getCreateServiceOptions(
 
     const params: IParams = {};
 
-    // Retain the existing title but swap with name if it's missing
-    itemInfo.title = newItemTemplate.item.title || newItemTemplate.item.name;
-
-    // Need to set the service name: name + "_" + newItemId
-    const baseName: string =
-      newItemTemplate.item.name || newItemTemplate.item.title;
-
-    // If the name already contains a GUID replace it with the newItemID
-    const regEx: any = new RegExp("[0-9A-F]{32}", "gmi");
-    itemInfo.name = regEx.exec(baseName)
-      ? baseName.replace(regEx, solutionItemId)
-      : baseName + "_" + solutionItemId;
+    const itemInfo: any = {
+      title: newItemTemplate.item.title,
+      name: newItemTemplate.item.name
+    };
 
     const _item: ICreateServiceParams = {
       ...itemInfo,
@@ -1442,6 +1438,7 @@ export function _getCreateServiceOptions(
     // project the portals extent to match that of the service
     convertExtentWithFallback(
       templateDictionary.organization.defaultExtent,
+      serviceInfo.defaultExtent,
       serviceInfo.service.spatialReference,
       templateDictionary.organization.helperServices.geometry.url,
       authentication

@@ -33,15 +33,17 @@ export function convertItemResourceToStorageResource(
   folder: string;
   filename: string;
 } {
-  let folder = itemId + (storageFolder ? `_${storageFolder}` : '');
+  let folder = itemId + (storageFolder ? `_${storageFolder}` : "");
   // let filename = sourceResourceFilename;
   const parts = sourceResourceFilename.split("/");
   const filename = parts[parts.length - 1];
   // remove the filename, and for any part of the path, swap any _'s to -'s
-  const pathParts = parts.filter(p => p !== filename).map(e => e.replace('_', '-'));
+  const pathParts = parts
+    .filter(p => p !== filename)
+    .map(e => e.replace("_", "-"));
   // if we have any pathParts, join'em all into the folder with _'s as separators
   if (pathParts.length) {
-    folder = `${folder}_${pathParts.join('_')}`;
+    folder = `${folder}_${pathParts.join("_")}`;
   }
 
   return { folder, filename };

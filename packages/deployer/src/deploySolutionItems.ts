@@ -128,6 +128,10 @@ export function deploySolutionItems(
 
     existingItemsDef.then(
       () => {
+        templates = common.setNamesAndTitles(
+          templates,
+          templateDictionary.solutionItemId
+        );
         // why is the return not used?
 
         cloneOrderChecklist.forEach(id => {

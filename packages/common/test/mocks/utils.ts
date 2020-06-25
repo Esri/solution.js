@@ -176,12 +176,16 @@ export function xmlToBlob(xml: any, mimeType = "text/xml"): Blob {
 
 export function getSampleImage(): Blob {
   // Decode base-64 to binary, then binary to character codes as Uint8
-  return _imageDataToBlob(_binaryToUint8CharCodes(atob(_imageAsDataUri(false))));
+  return _imageDataToBlob(
+    _binaryToUint8CharCodes(atob(_imageAsDataUri(false)))
+  );
 }
 
 function _binaryToUint8CharCodes(binaryData: string): Uint8Array {
   const array16: number[] = [];
-  for(let i = 0; i < binaryData.length; i++) array16.push(binaryData.charCodeAt(i));
+  for (let i = 0; i < binaryData.length; i++) {
+    array16.push(binaryData.charCodeAt(i));
+  }
   return new Uint8Array(array16);
 }
 
@@ -1229,7 +1233,8 @@ function _imageAsDataUri(withUri: boolean) {
   if (withUri) {
     uri = "data:image/png;charset=utf-8;base64,";
   }
-  uri += "\
+  uri +=
+    "\
 iVBORw0KGgoAAAANSUhEUgAAABEAAAARCAYAAAA7bUf6AAADKklEQVQ4T6XUf1DMeRzH8edu\
 53ZVZ6vLxmo2Q0Y7rtJZJT8abQmdysjETVEWMxgGOzF2/IhkCqNT8qPyo8PE6fzIj/y4qYlU\
 E6MfIottFcLmRyIq1Ne4neGa+ufG57/354/H+/3H6/0WCYIg8J1P1BNSkJ/PpXO5tLa187q5\

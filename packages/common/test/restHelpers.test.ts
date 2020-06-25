@@ -402,7 +402,8 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
   describe("createFeatureService", () => {
     it("can handle failure", done => {
       fetchMock.post(
-        utils.PORTAL_SUBSET.restUrl + "/content/users/casey/aabb123456/createService",
+        utils.PORTAL_SUBSET.restUrl +
+          "/content/users/casey/aabb123456/createService",
         mockItems.get400Failure()
       );
 
@@ -466,7 +467,8 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
 
       fetchMock
         .post(
-          utils.PORTAL_SUBSET.restUrl + "/content/users/casey/aabb123456/createService",
+          utils.PORTAL_SUBSET.restUrl +
+            "/content/users/casey/aabb123456/createService",
           '{"encodedServiceURL":"https://services123.arcgis.com/org1234567890/arcgis/rest/services/' +
             "ROWPermits_publiccomment_" +
             now +
@@ -1596,39 +1598,6 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
   describe("convertExtentWithFallback", () => {
     if (typeof window !== "undefined") {
       it("can handle NaN", done => {
-        const expected: interfaces.IExtent = {
-          xmin: -19926188.85199597,
-          ymin: -30240971.958386146,
-          xmax: 19926188.85199597,
-          ymax: 30240971.95838615,
-          spatialReference: { wkid: 102100 }
-        };
-
-        // "NaN" extent values are returned when you try to project this to 102100
-        const ext: interfaces.IExtent = {
-          xmax: 180,
-          xmin: -180,
-          ymax: 90,
-          ymin: -90,
-          spatialReference: {
-            wkid: 4326
-          }
-        };
-
-        restHelpers
-          .convertExtentWithFallback(
-            ext,
-            expected.spatialReference,
-            geometryServiceUrl,
-            MOCK_USER_SESSION
-          )
-          .then(actual => {
-            expect(actual).toEqual(expected);
-            done();
-          }, done.fail);
-      });
-
-      it("can handle mocked NaN", done => {
         // "NaN" extent values are returned when you try to project this to 102100
         const ext: interfaces.IExtent = {
           xmax: 180,
@@ -1671,6 +1640,54 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
         restHelpers
           .convertExtentWithFallback(
             ext,
+            undefined,
+            serviceSR,
+            geometryServiceUrl,
+            MOCK_USER_SESSION
+          )
+          .then(actual => {
+            expect(actual).toEqual(expectedExtent);
+            done();
+          }, done.fail);
+      });
+
+      it("can handle NaN with defaultExtent", done => {
+        // "NaN" extent values are returned when you try to project this to 102100
+        const ext: interfaces.IExtent = {
+          xmax: 180,
+          xmin: -180,
+          ymax: 90,
+          ymin: -90,
+          spatialReference: {
+            wkid: 4326
+          }
+        };
+
+        const NaNGeoms = [
+          {
+            x: "NaN",
+            y: "NaN"
+          },
+          {
+            x: "NaN",
+            y: "NaN"
+          }
+        ];
+
+        fetchMock
+          .post(geometryServiceUrl + "/findTransformations", {})
+          .postOnce(
+            geometryServiceUrl + "/project",
+            {
+              geometries: NaNGeoms
+            },
+            { overwriteRoutes: false }
+          );
+
+        restHelpers
+          .convertExtentWithFallback(
+            ext,
+            expectedExtent,
             serviceSR,
             geometryServiceUrl,
             MOCK_USER_SESSION
@@ -1721,6 +1738,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
         restHelpers
           .convertExtentWithFallback(
             ext,
+            undefined,
             serviceSR,
             geometryServiceUrl,
             MOCK_USER_SESSION
@@ -3041,6 +3059,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
       };
 
       itemTemplate.item.name = "A";
+      itemTemplate.item.title = "A";
       itemTemplate.properties.service.spatialReference = {
         wkid: 102100
       };
@@ -3051,7 +3070,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
         .then(options => {
           expect(options).toEqual({
             item: {
-              name: "A_sol1234567890",
+              name: "A",
               title: "A",
               capabilities: [],
               spatialReference: {
@@ -3095,12 +3114,12 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
         .then(options => {
           expect(options).toEqual({
             item: {
-              name: "undefined_sol1234567890",
-              title: undefined,
               capabilities: "",
               spatialReference: {
                 wkid: 102100
               },
+              title: undefined,
+              name: undefined,
               preserveLayerIds: true
             },
             folderId: "aabb123456",
@@ -3167,8 +3186,8 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
         .then(options => {
           expect(options).toEqual({
             item: {
-              name: "A_sol1234567890",
-              title: "A",
+              name: "A",
+              title: undefined,
               somePropNotInItem: true,
               capabilities: ["Query"],
               spatialReference: {
@@ -3317,7 +3336,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
         .then(options => {
           expect(options).toEqual({
             item: {
-              name: "A_sol1234567890",
+              name: "A_0a25612a2fc54f6e8828c679e2300a49",
               title: "A",
               somePropNotInItem: true,
               capabilities: ["Query"],

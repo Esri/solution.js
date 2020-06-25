@@ -77,7 +77,9 @@ describe("Module `JSZip`: JavaScript-based zip utility", () => {
     describe("createZip", () => {
       it("handles empty file list", done => {
         libConnectors.createZip("zipfile", []).then(zipfile => {
-          expect(zipfile.name).withContext("zip created").toEqual("zipfile");
+          expect(zipfile.name)
+            .withContext("zip created")
+            .toEqual("zipfile");
           done();
         }, done.fail);
       });
@@ -86,12 +88,18 @@ describe("Module `JSZip`: JavaScript-based zip utility", () => {
         libConnectors
           .createZip("zipfile", [getSampleMetadataAsFile()])
           .then(zipfile => {
-            expect(zipfile.name).withContext("zip created").toEqual("zipfile");
+            expect(zipfile.name)
+              .withContext("zip created")
+              .toEqual("zipfile");
 
             const zip = new JSZip();
             zip.loadAsync(zipfile).then(() => {
-              expect(zip.folder(/info/).length).withContext("zip does not have folder").toEqual(0);
-              expect(zip.file(/metadata/).length).withContext("zip has file").toEqual(1);
+              expect(zip.folder(/info/).length)
+                .withContext("zip does not have folder")
+                .toEqual(0);
+              expect(zip.file(/metadata/).length)
+                .withContext("zip has file")
+                .toEqual(1);
               done();
             }, done.fail);
           }, done.fail);
@@ -101,12 +109,18 @@ describe("Module `JSZip`: JavaScript-based zip utility", () => {
         libConnectors
           .createZip("zipfile", [getSampleMetadataAsFile("info/metadata")])
           .then(zipfile => {
-            expect(zipfile.name).withContext("zip created").toEqual("zipfile");
+            expect(zipfile.name)
+              .withContext("zip created")
+              .toEqual("zipfile");
 
             const zip = new JSZip();
             zip.loadAsync(zipfile).then(() => {
-              expect(zip.folder(/info/).length).withContext("zip has a folder").toEqual(1);
-              expect(zip.file(/metadata/).length).withContext("zip has file").toEqual(1);
+              expect(zip.folder(/info/).length)
+                .withContext("zip has a folder")
+                .toEqual(1);
+              expect(zip.file(/metadata/).length)
+                .withContext("zip has file")
+                .toEqual(1);
               done();
             }, done.fail);
           }, done.fail);
