@@ -4,6 +4,7 @@
   "description": "A library running in Node.js and modern browsers for transferring ArcGIS Online items from one organization to another.",
   "devDependencies": {
     "@khanacademy/tota11y": "^0.2.0",
+    "@octokit/rest": "^18.0.0",
     "@rollup/plugin-commonjs": "^11.1.0",
     "@rollup/plugin-json": "^4.0.3",
     "@rollup/plugin-node-resolve": "^7.1.3",
@@ -45,7 +46,7 @@
     "karma-jasmine-diff-reporter": "^2.0.0",
     "karma-safari-launcher": "^1.0.0",
     "karma-spec-reporter": "0.0.32",
-    "karma-typescript": "^4.1.1",
+    "karma-typescript": "^5.0.3",
     "karma-typescript-es6-transform": "^4.0.0",
     "lerna": "^3.20.2",
     "lint-staged": "^4.3.0",
