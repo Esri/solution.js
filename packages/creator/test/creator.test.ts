@@ -890,7 +890,9 @@ describe("Module `creator`", () => {
           expect(fetchBody).toEqual(
             "f=json&type=Solution&title=xfakeidx&snippet=&description=" +
               "&properties=" +
-              encodeURIComponent(JSON.stringify({ schemaVersion: 3.1 })) +
+              encodeURIComponent(
+                JSON.stringify({ schemaVersion: common.CURRENT_SCHEMA_VERSION })
+              ) +
               "&thumbnailurl=&tags=&typeKeywords=Solution%2CTemplate%2Csolutionid-guid%2Csolutionversion-1.0" +
               "&text=%7B%22metadata%22%3A%7B%7D%2C%22templates%22%3A%5B%5D%7D&token=fake-token"
           );
@@ -949,7 +951,11 @@ describe("Module `creator`", () => {
                 "&description=" +
                 encodeURIComponent(options.description) +
                 "&properties=" +
-                encodeURIComponent(JSON.stringify({ schemaVersion: 3.1 })) +
+                encodeURIComponent(
+                  JSON.stringify({
+                    schemaVersion: common.CURRENT_SCHEMA_VERSION
+                  })
+                ) +
                 "&thumbnailurl=" +
                 encodeURIComponent(options.thumbnailurl) +
                 "&tags=" +
@@ -1121,7 +1127,9 @@ describe("Module `creator`", () => {
           expect(fetchBody).toEqual(
             "f=json&type=Solution&title=xfakeidx&snippet=&description=" +
               "&properties=" +
-              encodeURIComponent(JSON.stringify({ schemaVersion: 3.1 })) +
+              encodeURIComponent(
+                JSON.stringify({ schemaVersion: common.CURRENT_SCHEMA_VERSION })
+              ) +
               "&thumbnailurl=&tags=&typeKeywords=Solution%2CTemplate%2Csolutionid-guid%2Csolutionversion-1.0" +
               "&text=%7B%22metadata%22%3A%7B%7D%2C%22templates%22%3A%5B%5D%7D&token=fake-token"
           );
