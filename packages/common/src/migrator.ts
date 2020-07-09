@@ -16,6 +16,7 @@
 
 import { ISolutionItem, UserSession } from "./interfaces";
 import { _isLegacySolution } from "./migrations/is-legacy-solution";
+import { _upgradeThreeDotOne } from "./migrations/upgrade-three-dot-one";
 import { _upgradeThreeDotZero } from "./migrations/upgrade-three-dot-zero";
 import { _upgradeTwoDotTwo } from "./migrations/upgrade-two-dot-two";
 import { _upgradeTwoDotThree } from "./migrations/upgrade-two-dot-three";
@@ -25,7 +26,7 @@ import { _upgradeTwoDotSix } from "./migrations/upgrade-two-dot-six";
 import { getProp } from "@esri/hub-common";
 
 // Starting at 3.0 because Hub has been versioning Solution items up to 2.x
-export const CURRENT_SCHEMA_VERSION = 3.0;
+export const CURRENT_SCHEMA_VERSION = 3.1;
 
 /**
  * Apply schema migrations to a Solution item
@@ -50,10 +51,11 @@ export function migrateSchema(
     // check if this is a legacy solution created by Hub
     const isLegacy = _isLegacySolution(model);
     const schemaUpgrades = [];
+
     // if this is a Solution.js "native" item, it is already at 3.0
     if (!modelVersion && !isLegacy) {
-      // bump it up to 3.0
-      model.item.properties.schemaVersion = CURRENT_SCHEMA_VERSION;
+      // apply the 3.0+ transforms
+      schemaUpgrades.push(_upgradeThreeDotZero, _upgradeThreeDotOne);
     } else {
       // Hub created a set of Solution items that are not 100% compatible
       // with the Solution.js deployer.
@@ -63,13 +65,13 @@ export function migrateSchema(
         schemaUpgrades.push(
           _upgradeTwoDotTwo,
           _upgradeTwoDotThree,
-          _upgradeThreeDotZero,
           _upgradeTwoDotFour,
           _upgradeTwoDotFive,
           _upgradeTwoDotSix
         );
       }
-      // When we need to apply schema upgrades 3.0+ we add those here...
+      // Apply the 3.x upgrades
+      schemaUpgrades.push(_upgradeThreeDotZero, _upgradeThreeDotOne);
     }
     // Run any migrations serially. Since we start with a promise,
     // individual migrations are free to return either ISolutionItem

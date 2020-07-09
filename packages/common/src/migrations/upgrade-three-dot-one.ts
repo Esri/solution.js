@@ -16,6 +16,7 @@
 
 import { ISolutionItem, UserSession } from "../interfaces";
 import { getProp, cloneObject } from "../generalHelpers";
+import { transformResourcePathsToSolutionResources } from "../resources/transform-resource-paths-to-solution-resources";
 
 /**
  * Apply the initial schema
@@ -25,17 +26,23 @@ import { getProp, cloneObject } from "../generalHelpers";
  * @param model ISolutionItem
  * @param authentication UserSession
  */
-export function _upgradeThreeDotZero(
+export function _upgradeThreeDotOne(
   model: ISolutionItem,
   authentication: UserSession
 ): ISolutionItem {
-  if (getProp(model, "item.properties.schemaVersion") >= 3) {
+  if (getProp(model, "item.properties.schemaVersion") >= 3.1) {
     return model;
   } else {
-    // There exist 3.0 schema solutions which simply lack the schemaVersion property
-    // so we just stamp in the version and do the actual work in the follow-on upgrades
     const clone = cloneObject(model);
-    clone.item.properties.schemaVersion = 3;
+    // transform resource paths to ISolutionResource objects
+    clone.data.templates = clone.data.templates.map((tmpl: any) => {
+      const resources = tmpl.resources || [];
+      tmpl.resources = transformResourcePathsToSolutionResources(resources);
+      return tmpl;
+    });
+
+    // update the schema version
+    clone.item.properties.schemaVersion = 3.1;
     return clone;
   }
 }
