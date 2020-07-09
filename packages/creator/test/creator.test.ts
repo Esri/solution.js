@@ -26,6 +26,7 @@ import * as mockItems from "../../common/test/mocks/agolItems";
 import * as staticRelatedItemsMocks from "../../common/test/mocks/staticRelatedItemsMocks";
 
 import * as utils from "../../common/test/mocks/utils";
+import { IModel } from "@esri/hub-common";
 
 // Set up a UserSession to use in all these tests
 const MOCK_USER_SESSION = utils.createRuntimeMockUserSession();
@@ -95,7 +96,6 @@ describe("Module `creator`", () => {
               "/content/users/casey/items/sln1234567890/delete",
             utils.getSuccessResponse({ itemId: "sln1234567890" })
           );
-
         // tslint:disable-next-line: no-empty
         spyOn(console, "error").and.callFake(() => {});
 
@@ -811,119 +811,6 @@ describe("Module `creator`", () => {
     });
   }
 
-  // describe("_addContentToSolution", () => {
-  //   it("_addContentToSolution item progress callback with new item", done => {
-  //     const solutionId = "sln1234567890";
-  //     const itemIds = ["map1234567890"];
-
-  //     let numSpyCalls = 0;
-  //     spyOn(createItemTemplate, "createItemTemplate").and.callFake(
-  //       (
-  //         solutionItemId: string,
-  //         itemId: string,
-  //         templateDictionary: any,
-  //         authentication: common.UserSession,
-  //         existingTemplates: common.IItemTemplate[],
-  //         itemProgressCallback: common.IItemProgressCallback
-  //       ) => {
-  //         if (++numSpyCalls === 1) {
-  //           itemProgressCallback(
-  //             "wma1234567890",
-  //             common.EItemProgressStatus.Started,
-  //             0
-  //           );
-  //         }
-  //         return Promise.resolve();
-  //       }
-  //     );
-
-  //     // tslint:disable-next-line: no-floating-promises
-  //     creator
-  //       ._addContentToSolution(solutionId, itemIds, MOCK_USER_SESSION, {})
-  //       .then(() => {
-  //         expect(itemIds).toEqual(["map1234567890", "wma1234567890"]);
-  //         done();
-  //       });
-  //   });
-
-  //   it("_addContentToSolution item progress callback with ignored item", done => {
-  //     const solutionId = "sln1234567890";
-  //     const itemIds = ["map1234567890", "wma1234567890"];
-
-  //     let numSpyCalls = 0;
-  //     spyOn(createItemTemplate, "createItemTemplate").and.callFake(
-  //       (
-  //         solutionItemId: string,
-  //         itemId: string,
-  //         templateDictionary: any,
-  //         authentication: common.UserSession,
-  //         existingTemplates: common.IItemTemplate[],
-  //         itemProgressCallback: common.IItemProgressCallback
-  //       ) => {
-  //         if (++numSpyCalls === 1) {
-  //           itemProgressCallback(
-  //             "wma1234567890",
-  //             common.EItemProgressStatus.Ignored,
-  //             0
-  //           );
-  //         }
-  //         return Promise.resolve();
-  //       }
-  //     );
-
-  //     // tslint:disable-next-line: no-empty
-  //     spyOn(console, "error").and.callFake(() => {});
-
-  //     // tslint:disable-next-line: no-floating-promises
-  //     creator
-  //       ._addContentToSolution(solutionId, itemIds, MOCK_USER_SESSION, {})
-  //       .then(() => done());
-  //   });
-
-  //   if (typeof window !== "undefined") {
-  //     it("_addContentToSolution item progress callback with failed item", done => {
-  //       const solutionId = "sln1234567890";
-  //       const itemIds = ["map1234567890"];
-
-  //       staticRelatedItemsMocks.fetchMockRelatedItems("map1234567890", {
-  //         total: 0,
-  //         relatedItems: []
-  //       });
-
-  //       fetchMock
-  //         .get(
-  //           "https://myorg.maps.arcgis.com/sharing/rest/content/items/map1234567890?f=json&token=fake-token",
-  //           mockItems.getAGOLItem("Web Map")
-  //         )
-  //         .post(
-  //           "https://myorg.maps.arcgis.com/sharing/rest/content/items/map1234567890/data",
-  //           mockItems.getAGOLItemData("Web Map")
-  //         )
-  //         .post(
-  //           "https://services123.arcgis.com/org1234567890/arcgis/rest/services/ROWPermits_publiccomment/FeatureServer/0",
-  //           mockItems.get400FailureResponse()
-  //         );
-
-  //       // tslint:disable-next-line: no-empty
-  //       spyOn(console, "error").and.callFake(() => {});
-
-  //       // tslint:disable-next-line: no-floating-promises
-  //       creator
-  //         ._addContentToSolution(solutionId, itemIds, MOCK_USER_SESSION, {})
-  //         .then(
-  //           () => done.fail(),
-  //           e => {
-  //             expect(e.success).toBeFalse();
-  //             expect(e.error).toEqual(
-  //               "One or more items cannot be converted into templates"
-  //             );
-  //             done();
-  //           }
-  //         );
-  //     });
-  //   }
-  // });
-
   describe("_createSolutionFromItemIds", () => {
     if (typeof window !== "undefined") {
       it("handles failure to create the solution", done => {
@@ -1178,7 +1065,7 @@ describe("Module `creator`", () => {
             utils.getFailureResponse()
           );
         spyOn(common, "createShortId").and.callFake(() => solutionId);
-        creator._createSolutionItem(authentication, options).then(
+        return creator._createSolutionItem(authentication, options).then(
           () => done.fail(),
           () => done()
         );
@@ -1241,6 +1128,190 @@ describe("Module `creator`", () => {
           done();
         }
       );
+    });
+  });
+
+  describe("_createSolutionItemModel", () => {
+    it("returns a model, with options applied", () => {
+      const opts = {
+        title: "The Title",
+        snippet: "The Snippet",
+        description: "The Desc",
+        thumbnailurl: "https://some.com/thumbnail.jpg",
+        additionalTypeKeywords: ["foo"],
+        tags: ["deploy.id.3ef"]
+      };
+      const chk = creator._createSolutionItemModel(opts);
+      expect(chk).toEqual({
+        item: {
+          type: "Solution",
+          title: opts.title,
+          snippet: opts.snippet,
+          description: opts.description,
+          properties: {
+            schemaVersion: common.CURRENT_SCHEMA_VERSION
+          },
+          thumbnailurl: opts.thumbnailurl,
+          tags: [],
+          typeKeywords: [
+            "Solution",
+            "Template",
+            "solutionid-3ef",
+            "solutionversion-1.0",
+            "foo"
+          ]
+        } as any,
+        data: {
+          metadata: {},
+          templates: []
+        }
+      } as IModel);
+    });
+    it("returns defaults if options is empty", () => {
+      const opts = {};
+      const chk = creator._createSolutionItemModel(opts);
+      expect(chk.item.title).toBeDefined();
+      expect(chk.item.typeKeywords.length).toBe(4);
+      // remove things that are random
+      delete chk.item.title;
+      delete chk.item.typeKeywords;
+
+      expect(chk).toEqual({
+        item: {
+          type: "Solution",
+          snippet: "",
+          description: "",
+          properties: {
+            schemaVersion: common.CURRENT_SCHEMA_VERSION
+          },
+          thumbnailurl: "",
+          tags: []
+        } as any,
+        data: {
+          metadata: {},
+          templates: []
+        }
+      } as IModel);
+    });
+
+    it("sanitizes the item", () => {
+      // tslint:disable-next-line: no-empty
+      spyOn(console, "warn").and.callFake(() => {});
+      const opts = {
+        title: "The Title",
+        snippet: "The Snippet",
+        description: "Desc <script>alert('Nefarious');</script>",
+        thumbnailurl: "https://some.com/thumbnail.jpg",
+        additionalTypeKeywords: ["bar"],
+        tags: ["deploy.id.3ef"]
+      };
+      const chk = creator._createSolutionItemModel(opts);
+      expect(chk).toEqual({
+        item: {
+          type: "Solution",
+          title: opts.title,
+          snippet: opts.snippet,
+          description: "Desc &lt;script&gt;alert('Nefarious');&lt;/script&gt;",
+          properties: {
+            schemaVersion: common.CURRENT_SCHEMA_VERSION
+          },
+          thumbnailurl: opts.thumbnailurl,
+          tags: [],
+          typeKeywords: [
+            "Solution",
+            "Template",
+            "solutionid-3ef",
+            "solutionversion-1.0",
+            "bar"
+          ]
+        } as any,
+        data: {
+          metadata: {},
+          templates: []
+        }
+      } as IModel);
+    });
+  });
+
+  describe("_applyGroupToCreateOptions", () => {
+    it("copies properties and thumbnail", () => {
+      const opts = {};
+
+      const grp = {
+        id: "3ef",
+        title: "the group title",
+        snippet: "the group snippet",
+        description: "the group desc",
+        tags: ["the group tags"],
+        thumbnail: "smile.png"
+      } as common.IGroup;
+
+      const chk = creator._applyGroupToCreateOptions(
+        opts,
+        grp,
+        MOCK_USER_SESSION
+      );
+      expect(chk).toEqual({
+        title: "the group title",
+        snippet: "the group snippet",
+        description: "the group desc",
+        tags: ["the group tags"],
+        thumbnailurl:
+          "https://myorg.maps.arcgis.com/sharing/rest/community/groups/3ef/info/smile.png"
+      });
+    });
+
+    it("uses passed title and thumbnailurl", () => {
+      const opts = {
+        title: "Opts Title",
+        thumbnailurl: "https://hub.com/th.png"
+      };
+
+      const grp = {
+        id: "3ef",
+        snippet: "the group snippet",
+        description: "the group desc",
+        tags: ["the group tags"],
+        thumbnail: "smile.png"
+      } as common.IGroup;
+
+      const chk = creator._applyGroupToCreateOptions(
+        opts,
+        grp,
+        MOCK_USER_SESSION
+      );
+      expect(chk).toEqual({
+        title: "Opts Title",
+        snippet: "the group snippet",
+        description: "the group desc",
+        tags: ["the group tags"],
+        thumbnailurl: "https://hub.com/th.png"
+      });
+    });
+
+    it("skips thumbnail if group does not have one", () => {
+      const opts = {};
+
+      const grp = {
+        id: "3ef",
+        title: "the group title",
+        snippet: "the group snippet",
+        description: "the group desc",
+        tags: ["the group tags"],
+        thumbnail: ""
+      } as common.IGroup;
+
+      const chk = creator._applyGroupToCreateOptions(
+        opts,
+        grp,
+        MOCK_USER_SESSION
+      );
+      expect(chk).toEqual({
+        title: "the group title",
+        snippet: "the group snippet",
+        description: "the group desc",
+        tags: ["the group tags"]
+      });
     });
   });
 
