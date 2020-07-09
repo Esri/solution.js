@@ -103,7 +103,7 @@ describe("Module `createItemTemplate`", () => {
         });
 
         // tslint:disable-next-line: no-floating-promises
-        createItemTemplate
+        return createItemTemplate
           .createItemTemplate(
             solutionItemId,
             itemId,
@@ -161,8 +161,7 @@ describe("Module `createItemTemplate`", () => {
           relatedItems: []
         });
 
-        // tslint:disable-next-line: no-floating-promises
-        createItemTemplate
+        return createItemTemplate
           .createItemTemplate(
             solutionItemId,
             itemId,
@@ -171,7 +170,7 @@ describe("Module `createItemTemplate`", () => {
             existingTemplates,
             utils.createFailingItemProgressCallbackOnNthCall(2)
           )
-          .then(() => {
+          .then(res => {
             expect(existingTemplates.length).toEqual(1);
             expect(existingTemplates[0].itemId).toEqual(itemId);
             done();
