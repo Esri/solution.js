@@ -242,7 +242,7 @@ export function addToServiceDefinition(
  *
  * @param extent the extent to validate
  * @return the provided extent or a default global extent if some coordinates are not numbers
- * @protected
+ * @private
  */
 export function _validateExtent(extent: IExtent): IExtent {
   // in some cases orgs can have invalid extents defined
@@ -275,7 +275,7 @@ export function _validateExtent(extent: IExtent): IExtent {
  * @param authentication the credentials for the requests
  * @return the extent projected to the provided spatial reference
  * or the world extent projected to the provided spatial reference
- * @protected
+ * @private
  */
 export function convertExtentWithFallback(
   extent: IExtent,
@@ -854,7 +854,7 @@ export function getLayers(
  *
  * @param args The IPostProcessArgs for the request(s)
  * @return An array of update instructions
- * @protected
+ * @private
  */
 export function getLayerUpdates(args: IPostProcessArgs): IUpdate[] {
   const adminUrl: string = args.itemTemplate.item.url.replace(
@@ -901,7 +901,7 @@ export function getLayerUpdates(args: IPostProcessArgs): IUpdate[] {
  *
  * @param Update will contain either add, update, or delete from service definition call
  * @return A promise that will resolve when service definition call has completed
- * @protected
+ * @private
  */
 export function getRequest(update: IUpdate): Promise<void> {
   return new Promise((resolveFn, rejectFn) => {
@@ -922,7 +922,7 @@ export function getRequest(update: IUpdate): Promise<void> {
  * @param itemTemplate Feature service item, data, dependencies definition to be modified
  * @param authentication Credentials for the request to AGOL
  * @return A promise that will resolve when fullItem has been updated
- * @protected
+ * @private
  */
 export function getServiceLayersAndTables(
   itemTemplate: IItemTemplate,
@@ -1315,7 +1315,7 @@ export function updateItemURL(
  * @param dataFile Data to be added
  * @param authentication Credentials for the request
  * @return Promise reporting success or failure
- * @protected
+ * @private
  */
 export function _addItemDataFile(
   itemId: string,
@@ -1350,7 +1350,7 @@ export function _addItemDataFile(
  * @param metadataFile Metadata to be added
  * @param authentication Credentials for the request
  * @return Promise reporting success or failure
- * @protected
+ * @private
  */
 export function _addItemMetadataFile(
   itemId: string,
@@ -1378,7 +1378,7 @@ export function _addItemMetadataFile(
  *
  * @param List of layers to examine
  * @return The number of relationships
- * @protected
+ * @private
  */
 export function _countRelationships(layers: any[]): number {
   const reducer = (accumulator: number, currentLayer: any) =>
@@ -1395,7 +1395,7 @@ export function _countRelationships(layers: any[]): number {
  * @param layerList List of layers at that service...must contain id
  * @param authentication Credentials for the request
  * @return A promise that will resolve with a list of the layers from the admin api
- * @protected
+ * @private
  */
 export function _getCreateServiceOptions(
   newItemTemplate: IItemTemplate,
@@ -1465,7 +1465,7 @@ export function _getCreateServiceOptions(
  *
  * @param args The IPostProcessArgs for the request(s)
  * @return Any relationships that should be updated for the service
- * @protected
+ * @private
  */
 export function _getRelationshipUpdates(args: IPostProcessArgs): any {
   const rels: any = {
@@ -1494,7 +1494,7 @@ export function _getRelationshipUpdates(args: IPostProcessArgs): any {
  * @param args various arguments to help support the request
  * @param type type of update the request will handle
  * @return IUpdate that has the request url and arguments
- * @protected
+ * @private
  */
 export function _getUpdate(
   url: string,

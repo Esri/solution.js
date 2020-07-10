@@ -22,6 +22,7 @@ import { getProp, cloneObject } from "../generalHelpers";
  * @param {ISolutionItem} model A Solution model
  * @param {UserSession} authentication User session info
  * @returns {ISolutionItem}
+ * @private
  */
 export function _upgradeTwoDotFive(
   model: ISolutionItem,
