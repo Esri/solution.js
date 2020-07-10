@@ -95,12 +95,13 @@ export function _addContentToSolution(
       }
 
       if (status === EItemProgressStatus.Failed) {
+        let error = "";
         solutionTemplates.some(t => {
           /* istanbul ignore else */
           if (t.itemId === itemId) {
             /* istanbul ignore else */
             if (getProp(t, "properties.error")) {
-              let error = t.properties.error;
+              error = t.properties.error;
               try {
                 // parse for better console logging if we can
                 error = JSON.parse(error);
@@ -108,7 +109,6 @@ export function _addContentToSolution(
                 /* istanbul ignore next */
                 // do nothing and show the error as is
               }
-              console.error(error);
             }
             return true;
           }
@@ -117,6 +117,7 @@ export function _addContentToSolution(
         if (failedItemIds.indexOf(itemId) < 0) {
           failedItemIds.push(itemId);
         }
+        console.error("Item " + itemId + " has failed " + error);
         statusOK = false;
       } else if (status === EItemProgressStatus.Ignored) {
         removeTemplate(solutionTemplates, itemId);

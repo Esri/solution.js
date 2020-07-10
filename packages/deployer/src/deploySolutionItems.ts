@@ -98,6 +98,7 @@ export function deploySolutionItems(
         deployedItemIds.push(createdItemId);
       } else if (status === common.EItemProgressStatus.Failed) {
         failedTemplateItemIds.push(itemId);
+        console.error("Item " + itemId + " has failed");
         statusOK = false;
       }
 

@@ -1663,6 +1663,7 @@ describe("Module `deployer`", () => {
             "/content/users/casey/items/map1234567890/delete",
             testUtils.getSuccessResponse({ itemId: "map1234567890" })
           );
+        spyOn(console, "error").and.callFake(() => {});
 
         const options: common.IDeploySolutionOptions = {
           progressCallback: testUtils.SOLUTION_PROGRESS_CALLBACK
