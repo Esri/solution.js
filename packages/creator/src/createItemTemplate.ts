@@ -20,191 +20,28 @@
  * @module createItemTemplate
  */
 
-import * as common from "@esri/solution-common";
-import * as featureLayer from "@esri/solution-feature-layer";
-import * as fileProcessor from "@esri/solution-file";
-import * as formProcessor from "@esri/solution-form";
-import * as group from "@esri/solution-group";
 import {
-  simpleTypes,
-  notebookProcessor,
-  quickcaptureProcessor
-} from "@esri/solution-simple-types";
-import { StoryMapProcessor } from "@esri/solution-storymap";
-import { WebExperienceProcessor } from "@esri/solution-web-experience";
-import { HubPageProcessor, HubSiteProcessor } from "@esri/solution-hub-types";
-
-const UNSUPPORTED: common.moduleHandler = null;
-/**
- * Mapping from item type to module with type-specific template-handling code.
- * AGO types come from a blend of arcgis-portal-app\src\js\arcgisonline\pages\item\_Info.js and
- * arcgis-portal-app\src\js\arcgis-components\src\_utils\metadata\item\displayName.ts
- */
-export const moduleMap: common.IItemTypeModuleMap = {
-  ////////////////////////////////////////////////////////
-  // Group type
-  Group: group,
-
-  ////////////////////////////////////////////////////////
-  // Layer types
-  "Big Data Analytic": undefined,
-  "Feature Collection": undefined,
-  "Feature Service": featureLayer,
-  Feed: undefined,
-  "Geocoding Service": undefined,
-  "Geodata Service": undefined,
-  "Geometry Service": undefined,
-  "Geoprocessing Service": undefined,
-  "Globe Service": undefined,
-  "Image Service": undefined,
-  KML: undefined,
-  "Map Service": featureLayer,
-  "Network Analysis Service": undefined,
-  "Real Time Analytic": undefined,
-  "Relational Database Connection": undefined,
-  "Scene Service": undefined,
-  "Stream Service": undefined,
-  Tool: undefined,
-  "Vector Tile Service": undefined,
-  WFS: undefined,
-  WMS: undefined,
-  WMTS: undefined,
-  "Workflow Manager Service": undefined,
-
-  ////////////////////////////////////////////////////////
-  // Map types
-  "3D Web Scene": undefined,
-  "Web Map": simpleTypes,
-  "Web Scene": undefined,
-
-  ////////////////////////////////////////////////////////
-  // App types
-  Application: undefined,
-  Dashboard: simpleTypes,
-  "Data Store": undefined,
-  "Desktop Application": undefined,
-  "Excalibur Imagery Project": undefined,
-  Form: formProcessor,
-  "Hub Initiative": simpleTypes,
-  "Hub Page": HubPageProcessor,
-  "Hub Site Application": HubSiteProcessor,
-  "Insights Model": undefined,
-  "Insights Page": undefined,
-  "Insights Theme": undefined,
-  "Insights Workbook": undefined,
-  Mission: undefined,
-  "Mobile Application": undefined,
-  Notebook: notebookProcessor,
-  "Ortho Mapping Project": undefined,
-  "QuickCapture Project": quickcaptureProcessor,
-  "Site Application": HubSiteProcessor,
-  "Site Initiative": undefined,
-  "Site Page": HubPageProcessor,
-  Solution: UNSUPPORTED,
-  StoryMap: StoryMapProcessor,
-  "Urban Model": undefined,
-  "Web Experience Template": undefined,
-  "Web Experience": WebExperienceProcessor,
-  "Web Mapping Application": simpleTypes,
-  "Workforce Project": simpleTypes,
-
-  ////////////////////////////////////////////////////////
-  // File types
-  "360 VR Experience": fileProcessor,
-  "AppBuilder Extension": fileProcessor,
-  "AppBuilder Widget Package": fileProcessor,
-  "Application Configuration": fileProcessor,
-  "ArcGIS Pro Add In": fileProcessor,
-  "ArcGIS Pro Configuration": fileProcessor,
-  "ArcPad Package": fileProcessor,
-  "Basemap Package": fileProcessor,
-  "CAD Drawing": fileProcessor,
-  "CityEngine Web Scene": fileProcessor,
-  "Code Attachment": UNSUPPORTED,
-  "Code Sample": fileProcessor,
-  "Color Set": fileProcessor,
-  "Compact Tile Package": fileProcessor,
-  "CSV Collection": fileProcessor,
-  CSV: fileProcessor,
-  "Deep Learning Package": fileProcessor,
-  "Desktop Add In": fileProcessor,
-  "Desktop Application Template": fileProcessor,
-  "Desktop Style": fileProcessor,
-  "Document Link": fileProcessor,
-  "Explorer Add In": fileProcessor,
-  "Explorer Layer": fileProcessor,
-  "Explorer Map": fileProcessor,
-  "Feature Collection Template": fileProcessor,
-  "File Geodatabase": fileProcessor,
-  GeoJson: fileProcessor,
-  GeoPackage: fileProcessor,
-  "Geoprocessing Package": fileProcessor,
-  "Geoprocessing Sample": fileProcessor,
-  "Globe Document": fileProcessor,
-  "Image Collection": fileProcessor,
-  Image: fileProcessor,
-  "iWork Keynote": fileProcessor,
-  "iWork Numbers": fileProcessor,
-  "iWork Pages": fileProcessor,
-  "KML Collection": fileProcessor,
-  "Layer Package": fileProcessor,
-  "Layer Template": fileProcessor,
-  Layer: fileProcessor,
-  Layout: fileProcessor,
-  "Locator Package": fileProcessor,
-  "Map Document": fileProcessor,
-  "Map Package": fileProcessor,
-  "Map Template": fileProcessor,
-  "Microsoft Excel": fileProcessor,
-  "Microsoft Powerpoint": fileProcessor,
-  "Microsoft Word": fileProcessor,
-  "Mobile Basemap Package": fileProcessor,
-  "Mobile Map Package": fileProcessor,
-  "Mobile Scene Package": fileProcessor,
-  "Native Application": fileProcessor,
-  "Native Application Installer": fileProcessor,
-  "Native Application Template": fileProcessor,
-  netCDF: fileProcessor,
-  "Operation View": fileProcessor,
-  "Operations Dashboard Add In": fileProcessor,
-  "Operations Dashboard Extension": fileProcessor,
-  PDF: fileProcessor,
-  "Pro Layer Package": fileProcessor,
-  "Pro Layer": fileProcessor,
-  "Pro Map Package": fileProcessor,
-  "Pro Map": fileProcessor,
-  "Pro Report": fileProcessor,
-  "Project Package": fileProcessor,
-  "Project Template": fileProcessor,
-  "Published Map": fileProcessor,
-  "Raster function template": fileProcessor,
-  "Report Template": fileProcessor,
-  "Rule Package": fileProcessor,
-  "Scene Document": fileProcessor,
-  "Scene Package": fileProcessor,
-  "Service Definition": fileProcessor,
-  Shapefile: fileProcessor,
-  "Statistical Data Collection": fileProcessor,
-  Style: fileProcessor,
-  "Survey123 Add In": fileProcessor,
-  "Symbol Set": fileProcessor,
-  "Task File": fileProcessor,
-  "Tile Package": fileProcessor,
-  "Toolbox Package": fileProcessor,
-  "Vector Tile Package": fileProcessor,
-  "Viewer Configuration": fileProcessor,
-  "Visio Document": fileProcessor,
-  "Window Mobile Package": fileProcessor,
-  "Windows Mobile Package": fileProcessor,
-  "Windows Viewer Add In": fileProcessor,
-  "Windows Viewer Configuration": fileProcessor,
-  "Workflow Manager Package": fileProcessor,
-
-  ////////////////////////////////////////////////////////
-  // Testing "types"
-  Undefined: undefined,
-  Unsupported: UNSUPPORTED
-};
+  addThumbnailFromBlob,
+  cleanLayerBasedItemId,
+  createPlaceholderTemplate,
+  EItemProgressStatus,
+  findTemplateInList,
+  getGroupBase,
+  getItemBase,
+  getItemDataBlob,
+  hasDatasource,
+  IDatasourceInfo,
+  IItemGeneralized,
+  IItemProgressCallback,
+  IItemTemplate,
+  replaceTemplate,
+  sanitizeJSONAndReportChanges,
+  storeItemResources,
+  fail
+} from "@esri/solution-common";
+import { UserSession } from "@esri/arcgis-rest-auth";
+import { getProp } from "@esri/hub-common";
+import { moduleMap, UNSUPPORTED } from "./module-map";
 
 // ------------------------------------------------------------------------------------------------------------------ //
 
@@ -222,37 +59,36 @@ export function createItemTemplate(
   solutionItemId: string,
   itemId: string,
   templateDictionary: any,
-  authentication: common.UserSession,
-  existingTemplates: common.IItemTemplate[],
-  itemProgressCallback: common.IItemProgressCallback
+  authentication: UserSession,
+  existingTemplates: IItemTemplate[],
+  itemProgressCallback: IItemProgressCallback
 ): Promise<void> {
   return new Promise(resolve => {
     // Check if item and its dependents are already in list or are queued
-    if (common.findTemplateInList(existingTemplates, itemId)) {
+    if (findTemplateInList(existingTemplates, itemId)) {
       resolve();
     } else {
       // Add the id as a placeholder to show that it is being fetched
-      existingTemplates.push(common.createPlaceholderTemplate(itemId));
+      existingTemplates.push(createPlaceholderTemplate(itemId));
 
-      itemProgressCallback(itemId, common.EItemProgressStatus.Started, 0);
+      itemProgressCallback(itemId, EItemProgressStatus.Started, 0);
 
       // Fetch the item
-      common
-        .getItemBase(itemId, authentication)
+      getItemBase(itemId, authentication)
         .catch(() => {
           // If item query fails, try fetching item as a group
           // Change its placeholder from an empty type to the Group type so that we can later distinguish
           // between items and groups (the base info for a group doesn't include a type property)
-          common.replaceTemplate(
+          replaceTemplate(
             existingTemplates,
             itemId,
-            common.createPlaceholderTemplate(itemId, "Group")
+            createPlaceholderTemplate(itemId, "Group")
           );
-          return common.getGroupBase(itemId, authentication);
+          return getGroupBase(itemId, authentication);
         })
         .then(
           itemInfo => {
-            itemInfo = common.sanitizeJSONAndReportChanges(itemInfo);
+            itemInfo = sanitizeJSONAndReportChanges(itemInfo);
 
             const idTest: RegExp = /^source-[0-9A-F]{32}/i;
             // Remove any source-itemId type keywords
@@ -269,10 +105,7 @@ export function createItemTemplate(
               );
             }
 
-            const placeholder = common.findTemplateInList(
-              existingTemplates,
-              itemId
-            );
+            const placeholder = findTemplateInList(existingTemplates, itemId);
             let itemType = placeholder!.type;
             if (!itemType) {
               // Groups have this defined when their placeholder is created
@@ -284,22 +117,12 @@ export function createItemTemplate(
             }
             placeholder!.item = {
               ...itemInfo
-            } as common.IItemGeneralized;
+            } as IItemGeneralized;
 
             // Interrupt process if progress callback returns `false`
-            if (
-              !itemProgressCallback(
-                itemId,
-                common.EItemProgressStatus.Created,
-                1
-              )
-            ) {
-              itemProgressCallback(
-                itemId,
-                common.EItemProgressStatus.Cancelled,
-                1
-              );
-              resolve(common.fail("Cancelled"));
+            if (!itemProgressCallback(itemId, EItemProgressStatus.Created, 1)) {
+              itemProgressCallback(itemId, EItemProgressStatus.Cancelled, 1);
+              resolve(fail("Cancelled"));
               return;
             }
 
@@ -309,34 +132,32 @@ export function createItemTemplate(
               itemInfo.tags.find(tag => tag === "deploy.thumbnail")
             ) {
               // Resolve the thumbnail setting whether or not there's an error
-              common.getItemDataBlob(itemId, authentication).then(
+              getItemDataBlob(itemId, authentication).then(
                 blob =>
-                  common
-                    .addThumbnailFromBlob(blob, solutionItemId, authentication)
-                    .then(
-                      () => {
-                        itemProgressCallback(
-                          itemId,
-                          common.EItemProgressStatus.Ignored,
-                          1
-                        );
-                        resolve();
-                      }, // solution thumbnail set
-                      () => {
-                        itemProgressCallback(
-                          itemId,
-                          common.EItemProgressStatus.Ignored,
-                          1
-                        );
-                        resolve();
-                      } // unable to add thumbnail to solution
-                    ),
+                  addThumbnailFromBlob(
+                    blob,
+                    solutionItemId,
+                    authentication
+                  ).then(
+                    () => {
+                      itemProgressCallback(
+                        itemId,
+                        EItemProgressStatus.Ignored,
+                        1
+                      );
+                      resolve();
+                    }, // solution thumbnail set
+                    () => {
+                      itemProgressCallback(
+                        itemId,
+                        EItemProgressStatus.Ignored,
+                        1
+                      );
+                      resolve();
+                    } // unable to add thumbnail to solution
+                  ),
                 () => {
-                  itemProgressCallback(
-                    itemId,
-                    common.EItemProgressStatus.Ignored,
-                    1
-                  );
+                  itemProgressCallback(itemId, EItemProgressStatus.Ignored, 1);
                   resolve();
                 } // unable to fetch thumbnail
               );
@@ -344,26 +165,14 @@ export function createItemTemplate(
               const itemHandler = moduleMap[itemType];
               if (!itemHandler || itemHandler === UNSUPPORTED) {
                 if (itemHandler === UNSUPPORTED) {
-                  itemProgressCallback(
-                    itemId,
-                    common.EItemProgressStatus.Ignored,
-                    1
-                  );
+                  itemProgressCallback(itemId, EItemProgressStatus.Ignored, 1);
                   resolve();
                 } else {
-                  itemProgressCallback(
-                    itemId,
-                    common.EItemProgressStatus.Failed,
-                    1
-                  );
+                  itemProgressCallback(itemId, EItemProgressStatus.Failed, 1);
                   placeholder!.properties["failed"] = true;
-                  common.replaceTemplate(
-                    existingTemplates,
-                    itemId,
-                    placeholder!
-                  );
+                  replaceTemplate(existingTemplates, itemId, placeholder!);
                   resolve(
-                    common.fail(
+                    fail(
                       "The type of AGO item " +
                         itemId +
                         " ('" +
@@ -389,80 +198,74 @@ export function createItemTemplate(
                   )
                   .then(
                     itemTemplate => {
-                      common
-                        .storeItemResources(
-                          itemTemplate,
-                          solutionItemId,
-                          authentication
-                        )
-                        .then(resources => {
-                          // update the templates resources
-                          itemTemplate.item.thumbnail = null; // no longer needed; use resources
-                          itemTemplate.resources = itemTemplate.resources.concat(
-                            resources
-                          );
+                      storeItemResources(
+                        itemTemplate,
+                        solutionItemId,
+                        authentication
+                      ).then(resources => {
+                        // update the templates resources
+                        itemTemplate.item.thumbnail = null; // no longer needed; use resources
+                        itemTemplate.resources = itemTemplate.resources.concat(
+                          resources
+                        );
 
-                          // Set the value keyed by the id to the created template, replacing the placeholder template
-                          common.replaceTemplate(
-                            existingTemplates,
-                            itemTemplate.itemId,
-                            itemTemplate
-                          );
+                        // Set the value keyed by the id to the created template, replacing the placeholder template
+                        replaceTemplate(
+                          existingTemplates,
+                          itemTemplate.itemId,
+                          itemTemplate
+                        );
 
-                          // Trace item dependencies
-                          if (itemTemplate.dependencies.length === 0) {
+                        // Trace item dependencies
+                        if (itemTemplate.dependencies.length === 0) {
+                          itemProgressCallback(
+                            itemId,
+                            EItemProgressStatus.Finished,
+                            1
+                          );
+                          resolve();
+                        } else {
+                          // Get its dependencies, asking each to get its dependents via
+                          // recursive calls to this function
+                          const dependentDfds: Array<Promise<void>> = [];
+                          itemTemplate.dependencies.forEach(dependentId => {
+                            if (
+                              !findTemplateInList(
+                                existingTemplates,
+                                dependentId
+                              )
+                            ) {
+                              dependentDfds.push(
+                                createItemTemplate(
+                                  solutionItemId,
+                                  dependentId,
+                                  templateDictionary,
+                                  authentication,
+                                  existingTemplates,
+                                  itemProgressCallback
+                                )
+                              );
+                            }
+                          });
+                          // tslint:disable-next-line: no-floating-promises
+                          Promise.all(dependentDfds).then(() => {
+                            // Templatization of item and its dependencies done
                             itemProgressCallback(
                               itemId,
-                              common.EItemProgressStatus.Finished,
+                              EItemProgressStatus.Finished,
                               1
                             );
                             resolve();
-                          } else {
-                            // Get its dependencies, asking each to get its dependents via
-                            // recursive calls to this function
-                            const dependentDfds: Array<Promise<void>> = [];
-                            itemTemplate.dependencies.forEach(dependentId => {
-                              if (
-                                !common.findTemplateInList(
-                                  existingTemplates,
-                                  dependentId
-                                )
-                              ) {
-                                dependentDfds.push(
-                                  createItemTemplate(
-                                    solutionItemId,
-                                    dependentId,
-                                    templateDictionary,
-                                    authentication,
-                                    existingTemplates,
-                                    itemProgressCallback
-                                  )
-                                );
-                              }
-                            });
-                            // tslint:disable-next-line: no-floating-promises
-                            Promise.all(dependentDfds).then(() => {
-                              // Templatization of item and its dependencies done
-                              itemProgressCallback(
-                                itemId,
-                                common.EItemProgressStatus.Finished,
-                                1
-                              );
-                              resolve();
-                            });
-                          }
-                        });
+                          });
+                        }
+                      });
                     },
                     error => {
                       placeholder!.properties["error"] = JSON.stringify(error);
-                      common.replaceTemplate(
-                        existingTemplates,
-                        itemId,
-                        placeholder!
-                      );
+                      replaceTemplate(existingTemplates, itemId, placeholder!);
                       itemProgressCallback(
                         itemId,
-                        common.EItemProgressStatus.Failed,
+                        EItemProgressStatus.Failed,
                         1
                       );
                       resolve();
@@ -473,8 +276,8 @@ export function createItemTemplate(
           },
           // Id not found or item is not accessible
           () => {
-            itemProgressCallback(itemId, common.EItemProgressStatus.Failed, 1);
-            itemProgressCallback(itemId, common.EItemProgressStatus.Failed, 1);
+            itemProgressCallback(itemId, EItemProgressStatus.Failed, 1);
+            itemProgressCallback(itemId, EItemProgressStatus.Failed, 1);
             resolve();
           }
         );
@@ -490,11 +293,9 @@ export function createItemTemplate(
  * @return A list of templates that have templatized field references
  */
 export function postProcessFieldReferences(
-  templates: common.IItemTemplate[]
-): common.IItemTemplate[] {
-  const datasourceInfos: common.IDatasourceInfo[] = _getDatasourceInfos(
-    templates
-  );
+  templates: IItemTemplate[]
+): IItemTemplate[] {
+  const datasourceInfos: IDatasourceInfo[] = _getDatasourceInfos(templates);
   const templateTypeHash: any = _getTemplateTypeHash(templates);
 
   return templates.map(template => {
@@ -514,7 +315,7 @@ export function postProcessFieldReferences(
         const dependencies: string[] = webMapFSDependencies.concat(
           template.dependencies
         );
-        let dependantDatasources: common.IDatasourceInfo[] = datasourceInfos.filter(
+        let dependantDatasources: IDatasourceInfo[] = datasourceInfos.filter(
           ds => {
             if (dependencies.indexOf(ds.itemId) > -1) {
               return ds;
@@ -547,23 +348,23 @@ export function postProcessFieldReferences(
  * @return A list of IDataSourceInfo objects with key properties
  */
 export function _getDatasourceInfos(
-  templates: common.IItemTemplate[]
-): common.IDatasourceInfo[] {
-  const datasourceInfos: common.IDatasourceInfo[] = [];
+  templates: IItemTemplate[]
+): IDatasourceInfo[] {
+  const datasourceInfos: IDatasourceInfo[] = [];
   templates.forEach(t => {
     if (t.type === "Feature Service") {
-      const layers: any[] = common.getProp(t, "properties.layers") || [];
-      const tables: any[] = common.getProp(t, "properties.tables") || [];
+      const layers: any[] = getProp(t, "properties.layers") || [];
+      const tables: any[] = getProp(t, "properties.tables") || [];
       const layersAndTables: any[] = layers.concat(tables);
       layersAndTables.forEach(obj => {
         /* istanbul ignore else */
-        if (!common.hasDatasource(datasourceInfos, t.itemId, obj.id)) {
+        if (!hasDatasource(datasourceInfos, t.itemId, obj.id)) {
           datasourceInfos.push({
             itemId: t.itemId,
             layerId: obj.id,
             fields: obj.fields,
             basePath: t.itemId + ".layer" + obj.id + ".fields",
-            url: common.getProp(t, "item.url"),
+            url: getProp(t, "item.url"),
             ids: [],
             relationships: obj.relationships || [],
             adminLayerInfo: obj.adminLayerInfo || {}
@@ -582,7 +383,7 @@ export function _getDatasourceInfos(
  * @param templates List of solution templates
  * @return The lookup object with type, dependencies, and webmap layer info
  */
-export function _getTemplateTypeHash(templates: common.IItemTemplate[]): any {
+export function _getTemplateTypeHash(templates: IItemTemplate[]): any {
   const templateTypeHash: any = {};
   templates.forEach(template => {
     templateTypeHash[template.itemId] = {
@@ -603,14 +404,11 @@ export function _getTemplateTypeHash(templates: common.IItemTemplate[]): any {
  * @param template A webmap solution template
  * @return The lookup object with webmap layer info added
  */
-export function _updateWebMapHashInfo(
-  template: common.IItemTemplate,
-  hashItem: any
-) {
+export function _updateWebMapHashInfo(template: IItemTemplate, hashItem: any) {
   const operationalLayers: any[] =
-    common.getProp(template, "data.operationalLayers") || [];
+    getProp(template, "data.operationalLayers") || [];
 
-  const tables: any[] = common.getProp(template, "data.tables") || [];
+  const tables: any[] = getProp(template, "data.tables") || [];
   const layersAndTables: any[] = operationalLayers.concat(tables);
   if (layersAndTables && layersAndTables.length > 0) {
     hashItem.layersAndTables = [];
@@ -623,7 +421,7 @@ export function _updateWebMapHashInfo(
       }
       /* istanbul ignore else */
       if (itemId) {
-        obj[common.cleanLayerBasedItemId(itemId)] = {
+        obj[cleanLayerBasedItemId(itemId)] = {
           id: layer.id,
           url: layer.url
         };
@@ -658,9 +456,9 @@ export function _addLayerIdToDatasourceUrl(
  * @return The updated datasource infos
  */
 export function _addMapLayerIds(
-  datasourceInfos: common.IDatasourceInfo[],
+  datasourceInfos: IDatasourceInfo[],
   templateTypeHash: any
-): common.IDatasourceInfo[] {
+): IDatasourceInfo[] {
   const webMapIds: any[] = Object.keys(templateTypeHash).filter(k => {
     if (templateTypeHash[k].type === "Web Map") {
       return templateTypeHash[k];
@@ -694,7 +492,7 @@ export function _addMapLayerIds(
  * @return A lsit of feature service item IDs
  */
 export function _getWebMapFSDependencies(
-  template: common.IItemTemplate,
+  template: IItemTemplate,
   templateTypeHash: any
 ): string[] {
   const webMapFSDependencies: string[] = [];

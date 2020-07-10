@@ -14,12 +14,16 @@
  * limitations under the License.
  */
 
-import { _upgradeThreeDotZero } from "../../src/migrations/upgrade-three-dot-zero";
+import { _upgradeThreeDotOne } from "../../src/migrations/upgrade-three-dot-one";
 import { cloneObject, IItemTemplate } from "@esri/hub-common";
 import { ISolutionItem } from "../../src/interfaces";
-import * as utils from "../../../common/test/mocks/utils";
+import * as utils from "../mocks/utils";
+import {
+  ISolutionResource,
+  SolutionResourceType
+} from "../../src/resources/solution-resource";
 
-describe("Upgrade 3.0 ::", () => {
+describe("Upgrade 3.1 ::", () => {
   const defaultModel = {
     item: {
       type: "Solution",
@@ -47,18 +51,36 @@ describe("Upgrade 3.0 ::", () => {
   it("returns same model if above 3", () => {
     const m = cloneObject(defaultModel);
     m.item.properties.schemaVersion = 3.1;
-    const chk = _upgradeThreeDotZero(m, MOCK_USER_SESSION);
+    const chk = _upgradeThreeDotOne(m, MOCK_USER_SESSION);
     expect(chk).toEqual(m, "should return the exact same object");
   });
 
-  it("adds schema version if missing", () => {
+  it("handles missing resource array", () => {
     const m = cloneObject(defaultModel);
-    delete m.item.properties.schemaVersion;
-    const chk = _upgradeThreeDotZero(m, MOCK_USER_SESSION);
+    delete m.data.templates[0].resources;
+    const chk = _upgradeThreeDotOne(m, MOCK_USER_SESSION);
     expect(chk).not.toBe(m, "should not return the exact same object");
     expect(chk.item.properties.schemaVersion).toBe(
-      3,
-      "should add schema version"
+      3.1,
+      "should update schema version"
+    );
+    expect(chk.data.templates[0].resources.length).toBe(0);
+  });
+
+  it("updates resource structure", () => {
+    const m = cloneObject(defaultModel);
+    const chk = _upgradeThreeDotOne(m, MOCK_USER_SESSION);
+    expect(chk).not.toBe(m, "should not return the exact same object");
+    expect(chk.item.properties.schemaVersion).toBe(
+      3.1,
+      "should update schema version"
+    );
+    const tmplRes = chk.data.templates[0].resources[0] as ISolutionResource;
+    expect(tmplRes.filename).toBe("ViewJob_1590513214593.json");
+    expect(tmplRes.path).toBe("jobs");
+    expect(tmplRes.type).toBe(SolutionResourceType.resource);
+    expect(tmplRes.sourceUrl).toBe(
+      "84095a0a06a04d1e9f9b40edb84e277f_jobs/ViewJob_1590513214593.json"
     );
   });
 });

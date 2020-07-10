@@ -20,10 +20,27 @@
  * @module creator
  */
 
-import * as common from "@esri/solution-common";
-import * as createItemTemplate from "./createItemTemplate";
+import {
+  addThumbnailFromUrl,
+  createItemWithData,
+  createShortId,
+  CURRENT_SCHEMA_VERSION,
+  generateSourceThumbnailUrl,
+  getGroupBase,
+  getGroupContents,
+  ICreateSolutionOptions,
+  ISolutionItemData,
+  IGroup,
+  removeItem,
+  sanitizeJSONAndReportChanges
+} from "@esri/solution-common";
+import { UserSession } from "@esri/arcgis-rest-auth";
+import { failSafe, IModel, createId } from "@esri/hub-common";
+import { _addContentToSolution } from "./helpers/add-content-to-solution";
 
-//#region Entry point ----------------------------------------------------------------------------------------------- //
+// Simple no-op to clean up progressCallback management
+// tslint:disable-next-line: no-empty
+const noOp = () => {};
 
 /**
  * Creates a solution item.
@@ -35,228 +52,90 @@ import * as createItemTemplate from "./createItemTemplate";
  */
 export function createSolution(
   sourceId: string,
-  authentication: common.UserSession,
-  options?: common.ICreateSolutionOptions
+  authentication: UserSession,
+  options?: ICreateSolutionOptions
 ): Promise<string> {
-  return new Promise((resolve, reject) => {
-    const createOptions: common.ICreateSolutionOptions = options || {};
-    if (createOptions.progressCallback) {
-      createOptions.progressCallback(1); // let the caller know that we've started
-    }
+  let createOptions: ICreateSolutionOptions = options || {};
+  const progressCb = createOptions.progressCallback || noOp;
 
-    // Get group information
-    // tslint:disable-next-line: no-floating-promises
-    Promise.all([
-      common.getGroupBase(sourceId, authentication),
-      common.getGroupContents(sourceId, authentication)
-    ])
-      .then(
-        responses => {
-          const [groupInfo, groupItems] = responses;
-          if (createOptions.progressCallback) {
-            createOptions.progressCallback(15);
-          }
+  progressCb(1); // let the caller know that we've started
 
-          // Create a solution from the group's contents, using the group's information as defaults for the solution item
-          createOptions.title = createOptions.title ?? groupInfo.title;
-          createOptions.snippet = createOptions.snippet ?? groupInfo.snippet;
-          createOptions.description =
-            createOptions.description ?? groupInfo.description;
-          createOptions.tags = createOptions.tags ?? groupInfo.tags;
-
-          /* istanbul ignore else*/ if (
-            !createOptions.thumbnailurl &&
-            groupInfo.thumbnail
-          ) {
-            // Copy the group's thumbnail to the new item
-            // createOptions.thumbnail needs to be a full URL
-            createOptions.thumbnailurl = common.generateSourceThumbnailUrl(
-              authentication.portal,
-              sourceId,
-              groupInfo.thumbnail,
-              true
-            );
-          }
-
-          // Create a solution with the group contents
-          return groupItems;
-        },
-
-        // Try sourceId as an item if group fetch fails
-        () => {
-          return [sourceId];
-        }
-      )
-      // Now create solution using either group items or the supplied solo item
-      .then(itemIds => {
-        _createSolutionFromItemIds(itemIds, authentication, createOptions).then(
-          createdSolutionId => {
-            if (createOptions.progressCallback) {
-              createOptions.progressCallback(100); // we're done
-            }
-            resolve(createdSolutionId);
-          },
-          error => {
-            // Error fetching group, group contents, or item, or error creating solution from ids
-            if (createOptions.progressCallback) {
-              createOptions.progressCallback(1);
-            }
-            console.error(error);
-            reject(error);
-          }
+  // Get group information
+  return Promise.all([
+    getGroupBase(sourceId, authentication),
+    getGroupContents(sourceId, authentication)
+  ])
+    .then(
+      responses => {
+        const [groupInfo, groupItems] = responses;
+        progressCb(15);
+        // update the createOptions with values from the group
+        createOptions = _applyGroupToCreateOptions(
+          createOptions,
+          groupInfo,
+          authentication
         );
-      });
-  });
+        // Create a solution with the group contents
+        return _createSolutionFromItemIds(
+          groupItems,
+          authentication,
+          createOptions
+        );
+      },
+
+      // Try sourceId as an item if group fetch fails
+      () => {
+        return _createSolutionFromItemIds(
+          [sourceId],
+          authentication,
+          createOptions
+        );
+      }
+    )
+    .then(
+      createdSolutionId => {
+        progressCb(100); // finished
+        return createdSolutionId;
+      },
+      error => {
+        // Error fetching group, group contents, or item, or error creating solution from ids
+        progressCb(1);
+        console.error(error);
+        throw error;
+      }
+    );
 }
 
-//#endregion ---------------------------------------------------------------------------------------------------------//
-
-//#region Supporting routines --------------------------------------------------------------------------------------- //
-
 /**
- * Adds a list of AGO item ids to a solution item.
+ * Update the createOptions with the group properties
  *
- * @param solutionItemId AGO id of solution to receive items
- * @param itemIds AGO ids of items that are to be added to solution
- * @param authentication Credentials for the request
- * @param options Customizations for creating the solution
- * @return A promise that resolves with the AGO id of the updated solution
+ * @param createOptions
+ * @param groupInfo
+ * @param authentication
+ * @internal
  */
-export function _addContentToSolution(
-  solutionItemId: string,
-  itemIds: string[],
-  authentication: common.UserSession,
-  options: common.ICreateSolutionOptions
-): Promise<string> {
-  return new Promise((resolve, reject) => {
-    // Prepare feedback mechanism
-    let totalEstimatedCost = 2 * itemIds.length + 1; // solution items, plus avoid divide by 0
-    let percentDone: number = 16; // allow for previous creation work
-    let progressPercentStep = (99 - percentDone) / totalEstimatedCost; // leave some % for caller for wrapup
-
-    const failedItemIds: string[] = [];
-    let totalExpended = 0;
-    let statusOK = true;
-    const itemProgressCallback: common.IItemProgressCallback = (
-      itemId: string,
-      status: common.EItemProgressStatus,
-      costUsed: number
-    ) => {
-      // ---------------------------------------------------------------------------------------------------------------
-      if (itemIds.indexOf(itemId) < 0) {
-        // New item--a dependency that wasn't in the supplied list of itemIds; add it to the list
-        // and recalculate the progress percent step based on how much progress remains to be done
-        itemIds.push(itemId);
-
-        totalEstimatedCost += 2;
-        progressPercentStep =
-          (99 - percentDone) / (totalEstimatedCost - totalExpended);
-      }
-
-      totalExpended += costUsed;
-      percentDone += progressPercentStep * costUsed;
-      if (options.progressCallback) {
-        options.progressCallback(percentDone, options.jobId);
-      }
-
-      /* istanbul ignore if */
-      if (options.consoleProgress) {
-        console.log(
-          Date.now(),
-          itemId,
-          options.jobId ?? "",
-          common.SItemProgressStatus[status],
-          percentDone.toFixed(0) + "%",
-          costUsed
-        );
-      }
-
-      if (status === common.EItemProgressStatus.Failed) {
-        solutionTemplates.some(t => {
-          /* istanbul ignore else */
-          if (t.itemId === itemId) {
-            /* istanbul ignore else */
-            if (common.getProp(t, "properties.error")) {
-              let error = t.properties.error;
-              try {
-                // parse for better console logging if we can
-                error = JSON.parse(error);
-              } catch (e) {
-                /* istanbul ignore next */
-                // do nothing and show the error as is
-              }
-              console.error(error);
-            }
-            return true;
-          }
-        });
-        common.removeTemplate(solutionTemplates, itemId);
-        if (failedItemIds.indexOf(itemId) < 0) {
-          failedItemIds.push(itemId);
-        }
-        statusOK = false;
-      } else if (status === common.EItemProgressStatus.Ignored) {
-        common.removeTemplate(solutionTemplates, itemId);
-      }
-
-      return statusOK;
-      // ---------------------------------------------------------------------------------------------------------------
-    };
-
-    // Replacement dictionary and created templates
-    const templateDictionary = options.templateDictionary ?? {};
-    let solutionTemplates: common.IItemTemplate[] = [];
-
-    // Handle a list of one or more AGO ids by stepping through the list
-    // and calling this function recursively
-    const getItemsPromise: Array<Promise<void>> = [];
-    itemIds.forEach(itemId => {
-      const createDef = createItemTemplate.createItemTemplate(
-        solutionItemId,
-        itemId,
-        templateDictionary,
-        authentication,
-        solutionTemplates,
-        itemProgressCallback
-      );
-      getItemsPromise.push(createDef);
-    });
-
-    // tslint:disable-next-line: no-floating-promises
-    Promise.all(getItemsPromise).then((results: any[]) => {
-      if (failedItemIds.length > 0) {
-        reject(
-          common.failWithIds(
-            failedItemIds,
-            "One or more items cannot be converted into templates"
-          )
-        );
-      } else {
-        if (solutionTemplates.length > 0) {
-          // test for and update group dependencies
-          solutionTemplates = _postProcessGroupDependencies(solutionTemplates);
-          solutionTemplates = _postProcessIgnoredItems(solutionTemplates);
-
-          // Update solution item with its data JSON
-          const solutionData: common.ISolutionItemData = {
-            metadata: {},
-            templates: options.templatizeFields
-              ? createItemTemplate.postProcessFieldReferences(solutionTemplates)
-              : solutionTemplates
-          };
-          const itemInfo: common.IItemUpdate = {
-            id: solutionItemId,
-            text: solutionData
-          };
-          common.updateItem(itemInfo, authentication).then(() => {
-            resolve(solutionItemId);
-          }, reject);
-        } else {
-          resolve(solutionItemId);
-        }
-      }
-    });
+export function _applyGroupToCreateOptions(
+  createOptions: ICreateSolutionOptions,
+  groupInfo: IGroup,
+  authentication: UserSession
+): ICreateSolutionOptions {
+  // Create a solution from the group's contents,
+  // using the group's information as defaults for the solution item
+  ["title", "snippet", "description", "tags"].forEach(prop => {
+    createOptions[prop] = createOptions[prop] ?? groupInfo[prop];
   });
+
+  if (!createOptions.thumbnailurl && groupInfo.thumbnail) {
+    // Copy the group's thumbnail to the new item
+    // createOptions.thumbnail needs to be a full URL
+    createOptions.thumbnailurl = generateSourceThumbnailUrl(
+      authentication.portal,
+      groupInfo.id,
+      groupInfo.thumbnail,
+      true
+    );
+  }
+  return createOptions;
 }
 
 /**
@@ -267,36 +146,37 @@ export function _addContentToSolution(
  * @param options Customizations for creating the solution
  * @return A promise that resolves with the AGO id of the new solution; solution item is deleted if its
  * there is a problem updating it
+ * @internal
  */
 export function _createSolutionFromItemIds(
   itemIds: string[],
-  authentication: common.UserSession,
-  options: common.ICreateSolutionOptions
+  authentication: UserSession,
+  options: ICreateSolutionOptions
 ): Promise<string> {
-  return new Promise((resolve, reject) => {
-    // Create a solution from the list of items
-    _createSolutionItem(authentication, options).then(
-      createdSolutionId => {
-        // Add list of items to the new solution
-        _addContentToSolution(
-          createdSolutionId,
-          itemIds,
-          authentication,
-          options
-        ).then(
-          () => resolve(createdSolutionId),
-          addError => {
-            // Created solution item, but couldn't add to it; delete solution item
-            common.removeItem(createdSolutionId, authentication).then(
-              () => reject(addError),
-              () => reject(addError)
-            );
-          }
-        );
-      },
-      reject // Couldn't create solution item
-    );
-  });
+  let solutionId = "";
+  // Create a solution from the list of items
+  return _createSolutionItem(authentication, options)
+    .then(id => {
+      solutionId = id;
+      // Add list of items to the new solution
+      return _addContentToSolution(
+        solutionId,
+        itemIds,
+        authentication,
+        options
+      );
+    })
+    .catch(addError => {
+      // If the solution item got created, delete it
+      if (solutionId) {
+        const failSafeRemove = failSafe(removeItem, { success: true });
+        return failSafeRemove(solutionId, authentication).then(() => {
+          throw addError;
+        });
+      } else {
+        throw addError;
+      }
+    });
 }
 
 /**
@@ -306,81 +186,96 @@ export function _createSolutionFromItemIds(
  * @param options Customizations for creating the solution
  * @return A promise that resolves with the AGO id of the new solution; solution item is deleted if its
  * there is a problem updating its thumbnail
+ * @internal
  */
 export function _createSolutionItem(
-  authentication: common.UserSession,
-  options?: common.ICreateSolutionOptions
+  authentication: UserSession,
+  options?: ICreateSolutionOptions
 ): Promise<string> {
-  return new Promise((resolve, reject) => {
-    // Solution uses all supplied tags but for deploy.* tags; that information goes into properties
-    const creationTags = options?.tags ?? [];
-    const solutionItem: any = {
-      type: "Solution",
-      title: options?.title ?? common.createShortId(),
-      snippet: options?.snippet ?? "",
-      description: options?.description ?? "",
-      properties: {
-        schemaVersion: common.CURRENT_SCHEMA_VERSION
-      },
-      thumbnailurl: options?.thumbnailurl ?? "",
-      tags: creationTags.filter(tag => !tag.startsWith("deploy.")),
-      typeKeywords: ["Solution", "Template"].concat(
-        _getDeploymentProperties(creationTags)
-      )
-    };
-    if (Array.isArray(options?.additionalTypeKeywords)) {
-      solutionItem.typeKeywords = solutionItem.typeKeywords.concat(
-        options!.additionalTypeKeywords
-      );
-    }
+  const model = _createSolutionItemModel(options);
 
-    const solutionData: common.ISolutionItemData = {
-      metadata: {},
-      templates: []
-    };
+  let solutionItemId = "";
+  // Create new solution item
+  return createItemWithData(
+    model.item,
+    model.data,
+    authentication,
+    options?.folderId
+  )
+    .then(createResponse => {
+      solutionItemId = createResponse.id;
+      // Thumbnail must be added manually
+      if (model.item.thumbnailurl) {
+        return addThumbnailFromUrl(
+          model.item.thumbnailurl,
+          solutionItemId,
+          authentication
+        );
+      } else {
+        return Promise.resolve({ success: true });
+      }
+    })
+    .then(result => {
+      // this seems convoluted - maybe addThumbnailFromUrl should
+      // reject if it gets success: false?
+      if (result.success) {
+        return solutionItemId;
+      } else {
+        throw result;
+      }
+    })
+    .catch(err => {
+      if (solutionItemId) {
+        const failSafeRemove = failSafe(removeItem, { success: true });
+        return failSafeRemove(solutionItemId, authentication).then(() => {
+          throw err;
+        });
+      } else {
+        throw err;
+      }
+    });
+}
 
-    // Create new solution item
-    common
-      .createItemWithData(
-        common.sanitizeJSONAndReportChanges(solutionItem),
-        solutionData,
-        authentication,
-        options?.folderId
-      )
-      .then(createResponse => {
-        // Thumbnail must be added manually
-        if (solutionItem.thumbnailurl) {
-          common
-            .addThumbnailFromUrl(
-              solutionItem.thumbnailurl,
-              createResponse.id,
-              authentication
-            )
-            .then(
-              response => {
-                if (response.success) {
-                  resolve(createResponse.id);
-                } else {
-                  // Created solution item, but couldn't add to it
-                  common.removeItem(createResponse.id, authentication).then(
-                    () => reject(response),
-                    () => reject(response)
-                  );
-                }
-              },
-              updateError => {
-                // Created solution item, but couldn't add to it
-                common.removeItem(createResponse.id, authentication).then(
-                  () => reject(updateError),
-                  () => reject(updateError)
-                );
-              }
-            );
-        } else {
-          resolve(createResponse.id);
-        }
-      }, reject);
-  });
+/**
+ * Create the Solution Item model to be used to create
+ * the Solution Item itself
+ *
+ * @param options
+ * @internal
+ */
+export function _createSolutionItemModel(options: any): IModel {
+  // Solution uses all supplied tags but for deploy.* tags; that information goes into properties
+  const creationTags = options?.tags ?? [];
+
+  const solutionItem: any = {
+    type: "Solution",
+    title: options?.title ?? createShortId(),
+    snippet: options?.snippet ?? "",
+    description: options?.description ?? "",
+    properties: {
+      schemaVersion: CURRENT_SCHEMA_VERSION
+    },
+    thumbnailurl: options?.thumbnailurl ?? "",
+    tags: creationTags.filter((tag: any) => !tag.startsWith("deploy.")),
+    typeKeywords: ["Solution", "Template"].concat(
+      _getDeploymentProperties(creationTags)
+    )
+  };
+
+  // ensure that snippet and description are not nefarious
+  const sanitizedItem = sanitizeJSONAndReportChanges(solutionItem);
+
+  const addlKeywords = options?.additionalTypeKeywords || [];
+  sanitizedItem.typeKeywords = [...solutionItem.typeKeywords, ...addlKeywords];
+
+  const solutionData: ISolutionItemData = {
+    metadata: {},
+    templates: []
+  };
+  return {
+    item: sanitizedItem,
+    data: solutionData
+  };
 }
 
 /**
@@ -389,11 +284,12 @@ export function _createSolutionItem(
  * @param tags A list of item tags
  * @return A list ocntaining the two values found in the tags, or defaulting to a new GUID and "1.0", respectively,
  * as needed
+ * @internal
  */
 export function _getDeploymentProperties(tags: string[]): string[] {
   return [
     "solutionid-" +
-      (_getDeploymentProperty("deploy.id.", tags) ?? common.createPseudoGUID()),
+      (_getDeploymentProperty("deploy.id.", tags) ?? createId("")),
     "solutionversion-" +
       (_getDeploymentProperty("deploy.version.", tags) ?? "1.0")
   ];
@@ -405,6 +301,7 @@ export function _getDeploymentProperties(tags: string[]): string[] {
  * @param desiredTagPrefix Tag prefix to look for
  * @param tags A list of item tags
  * @return The extracted value of the first matching tag or null if a tag with the specified prefix is not found
+ * @internal
  */
 export function _getDeploymentProperty(
   desiredTagPrefix: string,
@@ -417,71 +314,3 @@ export function _getDeploymentProperty(
     return null;
   }
 }
-
-/**
- * Update the items dependencies and groups arrays
- *
- * @param templates The array of templates to evaluate
- */
-export function _postProcessGroupDependencies(
-  templates: common.IItemTemplate[]
-): common.IItemTemplate[] {
-  return templates.map((template: common.IItemTemplate) => {
-    if (template.type === "Group") {
-      const id: string = template.itemId;
-      // remove group dependencies if we find a circular dependency with one of its items
-      let removeDependencies: boolean = false;
-      // before we remove update each dependants groups array
-      template.dependencies.forEach(dependencyId => {
-        const dependantTemplate: common.IItemTemplate = common.getTemplateById(
-          templates,
-          dependencyId
-        );
-        const gIndex = dependantTemplate.dependencies.indexOf(id);
-        /* istanbul ignore else */
-        if (gIndex > -1) {
-          removeDependencies = true;
-        }
-        /* istanbul ignore else */
-        if (dependantTemplate.groups.indexOf(id) < 0) {
-          dependantTemplate.groups.push(id);
-        }
-      });
-      if (removeDependencies) {
-        template.dependencies = [];
-      }
-    }
-    return template;
-  });
-}
-
-/**
- * Check for feature service items that have been flagged for invalid designations.
- * Reomve templates that have invalid designations from the solution item and other item dependencies.
- * Clean up any references to items with invalid designations in the other templates.
- *
- * @param templates The array of templates to evaluate
- * @return Updated version of the templates
- * @protected
- */
-export function _postProcessIgnoredItems(
-  templates: common.IItemTemplate[]
-): common.IItemTemplate[] {
-  // replace in template
-  const updateDictionary: any = templates.reduce((result, template) => {
-    return template.properties.hasInvalidDesignations
-      ? Object.assign(result, template.data)
-      : result;
-  }, {});
-  Object.keys(updateDictionary).forEach(k => {
-    common.removeTemplate(templates, k);
-    templates = templates.map(t => {
-      t.dependencies = t.dependencies.filter(id => id !== k);
-      return common.replaceInTemplate(t, updateDictionary);
-    });
-  });
-
-  return templates;
-}
-
-//#endregion ---------------------------------------------------------------------------------------------------------//
