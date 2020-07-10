@@ -153,7 +153,7 @@ export function runQuery(): void {
       err => {
         document.getElementById("queryResults").innerHTML = colorize(
           "red",
-          textAreaHtml(JSON.stringify(err, null, 2))
+          textAreaHtmlFromJSON(err)
         );
       }
     );
@@ -272,14 +272,29 @@ function colorize(color: string, text: string): string {
 }
 
 /**
+ * Creates the HTML for a textarea using the supplied JSON.
+ *
+ * @param json JSON to insert into textarea
+ * @return textarea HTML
+ */
+function textAreaHtmlFromJSON(json: any): string {
+  return textAreaHtmlFromText(
+    JSON.stringify(
+      common.sanitizeJSON(json), 
+      null, 2
+    )
+  );
+}
+
+/**
  * Creates the HTML for a textarea using the supplied text.
  *
  * @param text Text to insert into textarea
  * @return textarea HTML
  */
-function textAreaHtml(text: string): string {
+function textAreaHtmlFromText(text: string): string {
   return (
-    '<textarea rows="30" style="width:99%;font-size:x-small">' +
+    '<textarea rows="10" style="width:99%;font-size:x-small">' +
     text +
     "</textarea>"
   );
