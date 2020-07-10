@@ -19,14 +19,13 @@
  */
 
 import * as common from "@esri/solution-common";
-
+import * as hubCommon from "@esri/hub-common";
 import * as creator from "../src/creator";
 import * as fetchMock from "fetch-mock";
 import * as mockItems from "../../common/test/mocks/agolItems";
 import * as staticRelatedItemsMocks from "../../common/test/mocks/staticRelatedItemsMocks";
 
 import * as utils from "../../common/test/mocks/utils";
-import { IModel } from "@esri/hub-common";
 
 // Set up a UserSession to use in all these tests
 const MOCK_USER_SESSION = utils.createRuntimeMockUserSession();
@@ -881,7 +880,7 @@ describe("Module `creator`", () => {
         utils.getSuccessResponse({ id: expectedSolutionId, folder: null })
       );
       spyOn(common, "createShortId").and.callFake(() => "xfakeidx");
-      spyOn(common, "createPseudoGUID").and.callFake(() => "guid");
+      spyOn(hubCommon, "createId").and.callFake(() => "guid");
       creator._createSolutionItem(authentication).then(
         solutionId => {
           expect(solutionId).toEqual(expectedSolutionId);
@@ -934,7 +933,7 @@ describe("Module `creator`", () => {
             utils.getSuccessResponse({ id: expectedSolutionId })
           );
         spyOn(common, "createShortId").and.callFake(() => "xfakeidx");
-        spyOn(common, "createPseudoGUID").and.callFake(() => "guid");
+        spyOn(hubCommon, "createId").and.callFake(() => "guid");
         creator._createSolutionItem(authentication, options).then(
           solutionId => {
             expect(solutionId).toEqual(expectedSolutionId);
@@ -1117,7 +1116,7 @@ describe("Module `creator`", () => {
 
       fetchMock.post(url, utils.getFailureResponse());
       spyOn(common, "createShortId").and.callFake(() => "xfakeidx");
-      spyOn(common, "createPseudoGUID").and.callFake(() => "guid");
+      spyOn(hubCommon, "createId").and.callFake(() => "guid");
       creator._createSolutionItem(authentication).then(
         () => done.fail(),
         error => {
@@ -1173,7 +1172,7 @@ describe("Module `creator`", () => {
           metadata: {},
           templates: []
         }
-      } as IModel);
+      } as hubCommon.IModel);
     });
     it("returns defaults if options is empty", () => {
       const opts = {};
@@ -1199,7 +1198,7 @@ describe("Module `creator`", () => {
           metadata: {},
           templates: []
         }
-      } as IModel);
+      } as hubCommon.IModel);
     });
 
     it("sanitizes the item", () => {
@@ -1237,7 +1236,7 @@ describe("Module `creator`", () => {
           metadata: {},
           templates: []
         }
-      } as IModel);
+      } as hubCommon.IModel);
     });
   });
 
@@ -1337,7 +1336,7 @@ describe("Module `creator`", () => {
 
     it("finds only version deployment property", () => {
       const tags = ["a_tag", "another_tag", "deploy.version.12.3"];
-      spyOn(common, "createPseudoGUID").and.callFake(() => "guid");
+      spyOn(hubCommon, "createId").and.callFake(() => "guid");
       const typeKeywords: string[] = creator._getDeploymentProperties(tags);
       expect(typeKeywords).toEqual(["solutionid-guid", "solutionversion-12.3"]);
     });
@@ -1350,7 +1349,7 @@ describe("Module `creator`", () => {
 
     it("doesn't find either deployment property", () => {
       const tags = ["a_tag", "another_tag"];
-      spyOn(common, "createPseudoGUID").and.callFake(() => "guid");
+      spyOn(hubCommon, "createId").and.callFake(() => "guid");
       const typeKeywords: string[] = creator._getDeploymentProperties(tags);
       expect(typeKeywords).toEqual(["solutionid-guid", "solutionversion-1.0"]);
     });

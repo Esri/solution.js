@@ -25,7 +25,6 @@ export * from "./featureServiceHelpers";
 export * from "./generalHelpers";
 export * from "./interfaces";
 export * from "./libConnectors";
-export * from "./libs/uuidv4";
 export * from "./polyfills";
 export * from "./resourceHelpers";
 export * from "./restHelpers";

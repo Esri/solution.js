@@ -19,56 +19,9 @@
  */
 
 import * as libConnectors from "../src/libConnectors"; // JSZip, arcgis-html-sanitizer
-import * as uuidv4 from "../src/libs/uuidv4"; // uuidv4
 import * as xssFilterEvasionTestCases from "./XssFilterEvasionTestCases"; // arcgis-html-sanitizer
 import { getSampleMetadataAsFile } from "../../common/test/mocks/utils";
 import JSZip from "jszip";
-
-//#region uuidv4 ---------------------------------------------------------------------------------------------------- //
-
-describe("Module `uuidv4`: pseudo-GUID generator", () => {
-  if (typeof window !== "undefined") {
-    describe("createPseudoGUID", () => {
-      it("creates GUID without dashes", () => {
-        const guid = uuidv4.createPseudoGUID();
-        expect(guid.length)
-          .withContext("length check")
-          .toEqual(32);
-        expect(/[^0-9a-f]/.test(guid))
-          .withContext("character check")
-          .toBeFalsy();
-      });
-
-      it("creates GUID with dashes", () => {
-        const guid = uuidv4.createPseudoGUID(true);
-        expect(guid.length)
-          .withContext("length check")
-          .toEqual(36);
-        expect(/[^0-9a-f\-]/.test(guid))
-          .withContext("character check")
-          .toBeFalsy();
-        const guidParts = guid.split("-");
-        expect(guidParts[0].length)
-          .withContext("part 1 length check")
-          .toEqual(8);
-        expect(guidParts[1].length)
-          .withContext("part 2 length check")
-          .toEqual(4);
-        expect(guidParts[2].length)
-          .withContext("part 3 length check")
-          .toEqual(4);
-        expect(guidParts[3].length)
-          .withContext("part 4 length check")
-          .toEqual(4);
-        expect(guidParts[4].length)
-          .withContext("part 5 length check")
-          .toEqual(12);
-      });
-    });
-  }
-});
-
-//#endregion ------------------------------------------------------------------------------------------------------------//
 
 //#region JSZip ----------------------------------------------------------------------------------------------------- //
 
