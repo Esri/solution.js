@@ -23,7 +23,6 @@
 import * as common from "@esri/solution-common";
 import { moduleMap } from "./module-map";
 import { getProp } from "@esri/hub-common";
-export { moduleMap } from "./module-map";
 
 const UNSUPPORTED: common.moduleHandler = null;
 

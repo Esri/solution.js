@@ -93,7 +93,6 @@ export const moduleMap: IItemTypeModuleMap = {
   "Ortho Mapping Project": undefined,
   "QuickCapture Project": quickcaptureProcessor,
   "Site Application": HubSiteProcessor,
-  "Site Initiative": UNSUPPORTED,
   "Site Page": HubPageProcessor,
   Solution: UNSUPPORTED,
   StoryMap: StoryMapProcessor,

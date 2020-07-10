@@ -22,3 +22,4 @@
 
 export * from "./creator";
 export * from "./createItemTemplate";
+export * from "./module-map";
