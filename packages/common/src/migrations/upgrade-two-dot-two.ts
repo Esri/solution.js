@@ -18,6 +18,12 @@ import { ISolutionItem, ISolutionItemData, UserSession } from "../interfaces";
 import { getProp } from "../generalHelpers";
 import { deepStringReplace, cloneObject } from "@esri/hub-common";
 
+/**
+ * Swap tokens from Hub Solutions
+ * @param model
+ * @param authentication
+ * @private
+ */
 export function _upgradeTwoDotTwo(
   model: ISolutionItem,
   authentication: UserSession

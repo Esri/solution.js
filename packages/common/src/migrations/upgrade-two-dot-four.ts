@@ -22,6 +22,7 @@ import { deepStringReplace, getProp, cloneObject } from "@esri/hub-common";
  * but the Solution.js ones use the
  * @param model ISolutionItem
  * @param authentication UserSession
+ * @private
  */
 export function _upgradeTwoDotFour(
   model: ISolutionItem,

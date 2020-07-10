@@ -18,6 +18,12 @@ import { ISolutionItem, UserSession } from "../interfaces";
 import { getProp } from "../generalHelpers";
 import { cloneObject } from "@esri/hub-common";
 
+/**
+ * Migrate Hub assets structure to resource paths
+ * @param model
+ * @param authentication
+ * @private
+ */
 export function _upgradeTwoDotThree(
   model: ISolutionItem,
   authentication: UserSession
