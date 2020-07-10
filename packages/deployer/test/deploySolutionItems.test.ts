@@ -51,6 +51,7 @@ describe("Module `deploySolutionItems`", () => {
     it("can handle unimplemented item type gracefully", done => {
       // tslint:disable-next-line: no-empty
       spyOn(console, "log").and.callFake(() => {});
+      // tslint:disable-next-line: no-empty
       spyOn(console, "error").and.callFake(() => {});
       deploySolution
         .deploySolutionItems(
@@ -807,6 +808,7 @@ describe("Module `deploySolutionItems`", () => {
             groupId: "aa4a6047326243b290f625e80ebe6531"
           })
         );
+      // tslint:disable-next-line: no-empty
       spyOn(console, "error").and.callFake(() => {});
 
       const expected: any[] = [

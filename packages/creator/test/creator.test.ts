@@ -859,6 +859,7 @@ describe("Module `creator`", () => {
             "/content/users/casey/items/sln1234567890/delete",
           utils.getFailureResponse({ itemId: solutionId })
         );
+      // tslint:disable-next-line: no-empty
       spyOn(console, "error").and.callFake(() => {});
 
       creator._createSolutionFromItemIds(itemIds, MOCK_USER_SESSION, {}).then(
