@@ -107,25 +107,16 @@ export function getItemInfo(
         const portalUrl = common.getPortalUrlFromAuth(authentication);
 
         // Show item and data sections
-        let html =
-          "<h3>" +
-          itemBase.type +
-          ' "' +
-          itemBase.title +
-          '" (<a href="' +
-          portalUrl +
-          "/home/item.html?id=" +
-          itemBase.id +
-          '" target="_blank">' +
-          itemBase.id +
-          "</a>)</h3>";
+        let html =`
+          <h3>${itemBase.type} "${itemBase.title}" ( <a href="${portalUrl}/home/item.html?id=${itemBase.id}" target="_blank">${itemBase.id}</a> )</h3>
+          `;
 
         html +=
           '<div style="width:48%;display:inline-block;">Item</div>' +
           '<div style="width:2%;display:inline-block;"></div>' +
           '<div style="width:48%;display:inline-block;">Data</div>' +
           '<div style="width:48%;display:inline-block;">' +
-          textAreaHtml(JSON.stringify(itemBase, null, 2)) +
+          textAreaHtmlFromJSON(itemBase) +
           '</div><div style="width:2%;display:inline-block;"></div>' +
           '<div style="width:48%;display:inline-block;vertical-align:top;">';
         html += await showBlob(itemDataBlob);
@@ -200,20 +191,20 @@ export function getItemInfo(
 
                   html +=
                     "<p><i>Service description</i><br/>" +
-                    textAreaHtml(JSON.stringify(properties.service, null, 2)) +
+                    textAreaHtmlFromJSON(properties.service) +
                     "</p>";
 
                   html += "<p><i>Layers</i>";
                   properties.layers.forEach(
                     layer =>
-                      (html += textAreaHtml(JSON.stringify(layer, null, 2)))
+                      (html += textAreaHtmlFromJSON(layer))
                   );
                   html += "</p>";
 
                   html += "<p><i>Tables</i>";
                   properties.tables.forEach(
                     layer =>
-                      (html += textAreaHtml(JSON.stringify(layer, null, 2)))
+                      (html += textAreaHtmlFromJSON(layer))
                   );
                   html += "</p>";
 
@@ -268,12 +259,27 @@ export function getItemInfo(
 }
 
 /**
+ * Creates the HTML for a textarea using the supplied JSON.
+ *
+ * @param json JSON to insert into textarea
+ * @return textarea HTML
+ */
+function textAreaHtmlFromJSON(json: any): string {
+  return textAreaHtmlFromText(
+    JSON.stringify(
+      common.sanitizeJSON(json), 
+      null, 2
+    )
+  );
+}
+
+/**
  * Creates the HTML for a textarea using the supplied text.
  *
  * @param text Text to insert into textarea
  * @return textarea HTML
  */
-function textAreaHtml(text: any): string {
+function textAreaHtmlFromText(text: string): string {
   return (
     '<textarea rows="10" style="width:99%;font-size:x-small">' +
     text +
@@ -310,7 +316,7 @@ function showBlob(blob: Blob): Promise<string> {
       common.blobToJson(blob).then(
         text =>
           resolve(
-            textAreaHtml(JSON.stringify(text, null, 2)) + addFilename(filename)
+            textAreaHtmlFromJSON(text) + addFilename(filename)
           ),
         error => resolve("<i>problem extracting JSON: " + error + "</i>")
       );
@@ -320,7 +326,7 @@ function showBlob(blob: Blob): Promise<string> {
       blob.type === "application/xml"
     ) {
       common.blobToText(blob).then(
-        text => resolve(textAreaHtml(text) + addFilename(filename)),
+        text => resolve(textAreaHtmlFromText(text) + addFilename(filename)),
         error => resolve("<i>problem extracting text: " + error + "</i>")
       );
     } else if (blob.type.startsWith("image/")) {
@@ -344,20 +350,20 @@ function showBlob(blob: Blob): Promise<string> {
       if (filename) {
         resolve(
           '<a href="' +
-          window.URL.createObjectURL(file) +
-          '" download="' +
-          filename +
-          '">' +
-          filename +
-          "</a>"
+            window.URL.createObjectURL(file) +
+            '" download="' +
+            filename +
+            '">' +
+            filename +
+            "</a>"
         );
       } else {
         resolve(
           '<a href="' +
-          window.URL.createObjectURL(blob) +
-          '">' +
-          blob.type +
-          "</a>"
+            window.URL.createObjectURL(blob) +
+            '">' +
+            blob.type +
+            "</a>"
         );
       }
     }
