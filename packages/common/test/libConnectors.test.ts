@@ -19,56 +19,9 @@
  */
 
 import * as libConnectors from "../src/libConnectors"; // JSZip, arcgis-html-sanitizer
-import * as uuidv4 from "../src/libs/uuidv4"; // uuidv4
 import * as xssFilterEvasionTestCases from "./XssFilterEvasionTestCases"; // arcgis-html-sanitizer
 import { getSampleMetadataAsFile } from "../../common/test/mocks/utils";
 import JSZip from "jszip";
-
-//#region uuidv4 ---------------------------------------------------------------------------------------------------- //
-
-describe("Module `uuidv4`: pseudo-GUID generator", () => {
-  if (typeof window !== "undefined") {
-    describe("createPseudoGUID", () => {
-      it("creates GUID without dashes", () => {
-        const guid = uuidv4.createPseudoGUID();
-        expect(guid.length)
-          .withContext("length check")
-          .toEqual(32);
-        expect(/[^0-9a-f]/.test(guid))
-          .withContext("character check")
-          .toBeFalsy();
-      });
-
-      it("creates GUID with dashes", () => {
-        const guid = uuidv4.createPseudoGUID(true);
-        expect(guid.length)
-          .withContext("length check")
-          .toEqual(36);
-        expect(/[^0-9a-f\-]/.test(guid))
-          .withContext("character check")
-          .toBeFalsy();
-        const guidParts = guid.split("-");
-        expect(guidParts[0].length)
-          .withContext("part 1 length check")
-          .toEqual(8);
-        expect(guidParts[1].length)
-          .withContext("part 2 length check")
-          .toEqual(4);
-        expect(guidParts[2].length)
-          .withContext("part 3 length check")
-          .toEqual(4);
-        expect(guidParts[3].length)
-          .withContext("part 4 length check")
-          .toEqual(4);
-        expect(guidParts[4].length)
-          .withContext("part 5 length check")
-          .toEqual(12);
-      });
-    });
-  }
-});
-
-//#endregion ------------------------------------------------------------------------------------------------------------//
 
 //#region JSZip ----------------------------------------------------------------------------------------------------- //
 
@@ -77,7 +30,9 @@ describe("Module `JSZip`: JavaScript-based zip utility", () => {
     describe("createZip", () => {
       it("handles empty file list", done => {
         libConnectors.createZip("zipfile", []).then(zipfile => {
-          expect(zipfile.name).withContext("zip created").toEqual("zipfile");
+          expect(zipfile.name)
+            .withContext("zip created")
+            .toEqual("zipfile");
           done();
         }, done.fail);
       });
@@ -86,12 +41,18 @@ describe("Module `JSZip`: JavaScript-based zip utility", () => {
         libConnectors
           .createZip("zipfile", [getSampleMetadataAsFile()])
           .then(zipfile => {
-            expect(zipfile.name).withContext("zip created").toEqual("zipfile");
+            expect(zipfile.name)
+              .withContext("zip created")
+              .toEqual("zipfile");
 
             const zip = new JSZip();
             zip.loadAsync(zipfile).then(() => {
-              expect(zip.folder(/info/).length).withContext("zip does not have folder").toEqual(0);
-              expect(zip.file(/metadata/).length).withContext("zip has file").toEqual(1);
+              expect(zip.folder(/info/).length)
+                .withContext("zip does not have folder")
+                .toEqual(0);
+              expect(zip.file(/metadata/).length)
+                .withContext("zip has file")
+                .toEqual(1);
               done();
             }, done.fail);
           }, done.fail);
@@ -101,12 +62,18 @@ describe("Module `JSZip`: JavaScript-based zip utility", () => {
         libConnectors
           .createZip("zipfile", [getSampleMetadataAsFile("info/metadata")])
           .then(zipfile => {
-            expect(zipfile.name).withContext("zip created").toEqual("zipfile");
+            expect(zipfile.name)
+              .withContext("zip created")
+              .toEqual("zipfile");
 
             const zip = new JSZip();
             zip.loadAsync(zipfile).then(() => {
-              expect(zip.folder(/info/).length).withContext("zip has a folder").toEqual(1);
-              expect(zip.file(/metadata/).length).withContext("zip has file").toEqual(1);
+              expect(zip.folder(/info/).length)
+                .withContext("zip has a folder")
+                .toEqual(1);
+              expect(zip.file(/metadata/).length)
+                .withContext("zip has file")
+                .toEqual(1);
               done();
             }, done.fail);
           }, done.fail);

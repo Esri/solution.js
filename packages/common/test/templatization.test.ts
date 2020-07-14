@@ -185,6 +185,33 @@ describe("Module `templatization`: common functions involving the adlib library"
       );
       expect(actual).toEqual(expected);
     });
+
+    it("should retain template variables when they are not in the templateDictionary", () => {
+      const template: any = {
+        item: {
+          printProp: "{{organization.helperServices.printTask.url}}",
+          routeProp: "{{organization.helperServices.route.url}}",
+          geomProp: "{{organization.helperServices.geometry.url}}",
+          geocodeProp:
+            "{{organization.helperServices.geocode:getDefaultLocatorURL}}"
+        }
+      };
+      const templateDictionary: any = {};
+      const expected: any = {
+        item: {
+          printProp: "{{organization.helperServices.printTask.url}}",
+          routeProp: "{{organization.helperServices.route.url}}",
+          geomProp: "{{organization.helperServices.geometry.url}}",
+          geocodeProp:
+            "{{organization.helperServices.geocode:getDefaultLocatorURL}}"
+        }
+      };
+      const actual: any = templatization.replaceInTemplate(
+        template,
+        templateDictionary
+      );
+      expect(actual).toEqual(expected);
+    });
   });
 
   describe("replaceTemplate", () => {

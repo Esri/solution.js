@@ -24,6 +24,7 @@ import { getProp, cloneObject } from "../generalHelpers";
  * If it is a legacy hub solution, it will apply the transforms
  * @param model ISolutionItem
  * @param authentication UserSession
+ * @private
  */
 export function _upgradeThreeDotZero(
   model: ISolutionItem,
@@ -32,10 +33,10 @@ export function _upgradeThreeDotZero(
   if (getProp(model, "item.properties.schemaVersion") >= 3) {
     return model;
   } else {
-    // TODO: Implement the logic to upgrade 2.3+ to 3.0
-    // At this point we know that the resources array on the templates will need to
-    // be modified, but we expect other things as well. Once Hub team starts integrating
-    // more deeply we can write this set of transforms
-    return cloneObject(model);
+    // There exist 3.0 schema solutions which simply lack the schemaVersion property
+    // so we just stamp in the version and do the actual work in the follow-on upgrades
+    const clone = cloneObject(model);
+    clone.item.properties.schemaVersion = 3;
+    return clone;
   }
 }

@@ -63,7 +63,9 @@ export const PRINT_SERVER_NAME: string =
 
 export const TRANSFORMS: any = {
   getDefaultLocatorURL(key: string, val: any, settings: any) {
-    return val[0].url;
+    // get the url from the template dictionary or return the default template variable when it's not present
+    // this fallback is needed when we detemplatize living atlas layers as a part of the create process
+    return val ? val[0].url : `{{${GEOCODE_SERVER_NAME}}}`;
   }
 };
 
@@ -94,9 +96,7 @@ export function createShortId(): string {
   );
 }
 
-export function createInitializedGroupTemplate(
-  itemInfo: any
-): IItemTemplate {
+export function createInitializedGroupTemplate(itemInfo: any): IItemTemplate {
   const itemTemplate = createPlaceholderTemplate(itemInfo.id, itemInfo.type);
   itemTemplate.item = {
     ...itemTemplate.item,
@@ -109,9 +109,7 @@ export function createInitializedGroupTemplate(
   return itemTemplate;
 }
 
-export function createInitializedItemTemplate(
-  itemInfo: any
-): IItemTemplate {
+export function createInitializedItemTemplate(itemInfo: any): IItemTemplate {
   const itemTemplate = createPlaceholderTemplate(itemInfo.id, itemInfo.type);
   itemTemplate.item = {
     ...itemTemplate.item,
@@ -203,9 +201,7 @@ export function hasUnresolvedVariables(data: any): boolean {
   return getUnresolved(data).length > 0;
 }
 
-export function getIdsInTemplatesList(
-  templates: IItemTemplate[]
-): string[] {
+export function getIdsInTemplatesList(templates: IItemTemplate[]): string[] {
   return templates.map(template => template.itemId);
 }
 
@@ -216,10 +212,7 @@ export function getIdsInTemplatesList(
  * @param id Id of item in templates list to find; if not found, no replacement is done
  * @protected
  */
-export function removeTemplate(
-  templates: IItemTemplate[],
-  id: string
-): void {
+export function removeTemplate(templates: IItemTemplate[], id: string): void {
   const i = findTemplateIndexInList(templates, id);
   if (i >= 0) {
     templates.splice(i, 1);

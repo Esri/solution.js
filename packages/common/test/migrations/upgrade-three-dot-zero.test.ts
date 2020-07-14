@@ -30,22 +30,35 @@ describe("Upgrade 3.0 ::", () => {
     },
     data: {
       metadata: {},
-      templates: [] as IItemTemplate[]
+      templates: [
+        {
+          item: {},
+          data: {},
+          resources: [
+            "84095a0a06a04d1e9f9b40edb84e277f_jobs/ViewJob_1590513214593.json"
+          ]
+        }
+      ] as IItemTemplate[]
     }
   } as ISolutionItem;
 
   const MOCK_USER_SESSION = utils.createRuntimeMockUserSession();
 
-  it("returns same model if on or above 3", () => {
+  it("returns same model if above 3", () => {
     const m = cloneObject(defaultModel);
+    m.item.properties.schemaVersion = 3.1;
     const chk = _upgradeThreeDotZero(m, MOCK_USER_SESSION);
-    expect(chk).toBe(m, "should return the exact same object");
+    expect(chk).toEqual(m, "should return the exact same object");
   });
 
-  it("replaces old tokens with new ones", () => {
+  it("adds schema version if missing", () => {
     const m = cloneObject(defaultModel);
-    m.item.properties.schemaVersion = 2.3;
+    delete m.item.properties.schemaVersion;
     const chk = _upgradeThreeDotZero(m, MOCK_USER_SESSION);
     expect(chk).not.toBe(m, "should not return the exact same object");
+    expect(chk.item.properties.schemaVersion).toBe(
+      3,
+      "should add schema version"
+    );
   });
 });

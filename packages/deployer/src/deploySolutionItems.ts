@@ -98,6 +98,7 @@ export function deploySolutionItems(
         deployedItemIds.push(createdItemId);
       } else if (status === common.EItemProgressStatus.Failed) {
         failedTemplateItemIds.push(itemId);
+        console.error("Item " + itemId + " has failed");
         statusOK = false;
       }
 
@@ -128,6 +129,10 @@ export function deploySolutionItems(
 
     existingItemsDef.then(
       () => {
+        templates = common.setNamesAndTitles(
+          templates,
+          templateDictionary.solutionItemId
+        );
         // why is the return not used?
 
         cloneOrderChecklist.forEach(id => {

@@ -56,9 +56,7 @@ import {
   IUpdateItemResponse,
   UserSession
 } from "./interfaces";
-import {
-  createZip
-} from "./libConnectors";
+import { createZip } from "./libConnectors";
 import {
   addItemData as portalAddItemData,
   addItemRelationship,
@@ -244,7 +242,7 @@ export function addToServiceDefinition(
  *
  * @param extent the extent to validate
  * @return the provided extent or a default global extent if some coordinates are not numbers
- * @protected
+ * @private
  */
 export function _validateExtent(extent: IExtent): IExtent {
   // in some cases orgs can have invalid extents defined
@@ -268,18 +266,20 @@ export function _validateExtent(extent: IExtent): IExtent {
 /**
  * If the request to convert the extent fails it has commonly been due to an invalid extent.
  * This function will first attempt to use the provided extent. If it fails it will default to
- * a global extent.
+ * the source items extent and if that fails it will then use a default global extent.
  *
  * @param extent the extent to convert
+ * @param fallbackExtent the extent to convert if the main extent does not project to the outSR
  * @param outSR the spatial reference to project to
  * @param geometryServiceUrl the service url for the geometry service to use
  * @param authentication the credentials for the requests
  * @return the extent projected to the provided spatial reference
  * or the world extent projected to the provided spatial reference
- * @protected
+ * @private
  */
 export function convertExtentWithFallback(
   extent: IExtent,
+  fallbackExtent: any,
   outSR: ISpatialReference,
   geometryServiceUrl: string,
   authentication: UserSession
@@ -307,7 +307,7 @@ export function convertExtentWithFallback(
           resolve(extentResponse);
         } else {
           convertExtent(
-            defaultExtent,
+            fallbackExtent || defaultExtent,
             outSR,
             geometryServiceUrl,
             authentication
@@ -543,24 +543,29 @@ export function createFullItem(
                     Array.isArray(resourcesFiles) &&
                     resourcesFiles.length > 0
                   ) {
-                    updateDefs.push(new Promise<IItemResourceResponse>(
-                      (rsrcResolve, rsrcReject) => {
-                        createZip("resources.zip", resourcesFiles).then(
-                          (zipfile: File) => {
-                            const addResourceOptions: IItemResourceOptions = {
-                              id: createResponse.id,
-                              resource: zipfile,
-                              authentication: destinationAuthentication,
-                              params: {
-                                archive: true
-                              }
-                            };
-                            addItemResource(addResourceOptions).then(rsrcResolve, rsrcReject);
-                          },
-                          rsrcReject
-                        );
-                      }
-                    ));
+                    updateDefs.push(
+                      new Promise<IItemResourceResponse>(
+                        (rsrcResolve, rsrcReject) => {
+                          createZip("resources.zip", resourcesFiles).then(
+                            (zipfile: File) => {
+                              const addResourceOptions: IItemResourceOptions = {
+                                id: createResponse.id,
+                                resource: zipfile,
+                                authentication: destinationAuthentication,
+                                params: {
+                                  archive: true
+                                }
+                              };
+                              addItemResource(addResourceOptions).then(
+                                rsrcResolve,
+                                rsrcReject
+                              );
+                            },
+                            rsrcReject
+                          );
+                        }
+                      )
+                    );
                   }
 
                   // Add the metadata section
@@ -849,7 +854,7 @@ export function getLayers(
  *
  * @param args The IPostProcessArgs for the request(s)
  * @return An array of update instructions
- * @protected
+ * @private
  */
 export function getLayerUpdates(args: IPostProcessArgs): IUpdate[] {
   const adminUrl: string = args.itemTemplate.item.url.replace(
@@ -896,7 +901,7 @@ export function getLayerUpdates(args: IPostProcessArgs): IUpdate[] {
  *
  * @param Update will contain either add, update, or delete from service definition call
  * @return A promise that will resolve when service definition call has completed
- * @protected
+ * @private
  */
 export function getRequest(update: IUpdate): Promise<void> {
   return new Promise((resolveFn, rejectFn) => {
@@ -917,7 +922,7 @@ export function getRequest(update: IUpdate): Promise<void> {
  * @param itemTemplate Feature service item, data, dependencies definition to be modified
  * @param authentication Credentials for the request to AGOL
  * @return A promise that will resolve when fullItem has been updated
- * @protected
+ * @private
  */
 export function getServiceLayersAndTables(
   itemTemplate: IItemTemplate,
@@ -1310,7 +1315,7 @@ export function updateItemURL(
  * @param dataFile Data to be added
  * @param authentication Credentials for the request
  * @return Promise reporting success or failure
- * @protected
+ * @private
  */
 export function _addItemDataFile(
   itemId: string,
@@ -1345,7 +1350,7 @@ export function _addItemDataFile(
  * @param metadataFile Metadata to be added
  * @param authentication Credentials for the request
  * @return Promise reporting success or failure
- * @protected
+ * @private
  */
 export function _addItemMetadataFile(
   itemId: string,
@@ -1373,7 +1378,7 @@ export function _addItemMetadataFile(
  *
  * @param List of layers to examine
  * @return The number of relationships
- * @protected
+ * @private
  */
 export function _countRelationships(layers: any[]): number {
   const reducer = (accumulator: number, currentLayer: any) =>
@@ -1390,7 +1395,7 @@ export function _countRelationships(layers: any[]): number {
  * @param layerList List of layers at that service...must contain id
  * @param authentication Credentials for the request
  * @return A promise that will resolve with a list of the layers from the admin api
- * @protected
+ * @private
  */
 export function _getCreateServiceOptions(
   newItemTemplate: IItemTemplate,
@@ -1398,7 +1403,6 @@ export function _getCreateServiceOptions(
   templateDictionary: any
 ): Promise<any> {
   return new Promise((resolve, reject) => {
-    const itemInfo: any = {};
     const serviceInfo: any = newItemTemplate.properties;
     const folderId: any = templateDictionary.folderId;
     const isPortal: boolean = templateDictionary.isPortal;
@@ -1407,18 +1411,10 @@ export function _getCreateServiceOptions(
 
     const params: IParams = {};
 
-    // Retain the existing title but swap with name if it's missing
-    itemInfo.title = newItemTemplate.item.title || newItemTemplate.item.name;
-
-    // Need to set the service name: name + "_" + newItemId
-    const baseName: string =
-      newItemTemplate.item.name || newItemTemplate.item.title;
-
-    // If the name already contains a GUID replace it with the newItemID
-    const regEx: any = new RegExp("[0-9A-F]{32}", "gmi");
-    itemInfo.name = regEx.exec(baseName)
-      ? baseName.replace(regEx, solutionItemId)
-      : baseName + "_" + solutionItemId;
+    const itemInfo: any = {
+      title: newItemTemplate.item.title,
+      name: newItemTemplate.item.name
+    };
 
     const _item: ICreateServiceParams = {
       ...itemInfo,
@@ -1442,6 +1438,7 @@ export function _getCreateServiceOptions(
     // project the portals extent to match that of the service
     convertExtentWithFallback(
       templateDictionary.organization.defaultExtent,
+      serviceInfo.defaultExtent,
       serviceInfo.service.spatialReference,
       templateDictionary.organization.helperServices.geometry.url,
       authentication
@@ -1468,7 +1465,7 @@ export function _getCreateServiceOptions(
  *
  * @param args The IPostProcessArgs for the request(s)
  * @return Any relationships that should be updated for the service
- * @protected
+ * @private
  */
 export function _getRelationshipUpdates(args: IPostProcessArgs): any {
   const rels: any = {
@@ -1497,7 +1494,7 @@ export function _getRelationshipUpdates(args: IPostProcessArgs): any {
  * @param args various arguments to help support the request
  * @param type type of update the request will handle
  * @return IUpdate that has the request url and arguments
- * @protected
+ * @private
  */
 export function _getUpdate(
   url: string,

@@ -129,6 +129,19 @@ const md = new MarkdownIt();
     })
     .then(declarations => {
       /**
+       * Next we remove all marked @private.
+       */
+      return declarations.filter(declaration => {
+        // verbose b/c we want to filter things where isPrivate is true
+        let result = true;
+        if (declaration.flags && declaration.flags.isPrivate) {
+          result = false;
+        }
+        return result;
+      });
+    })
+    .then(declarations => {
+      /**
        * Now that we have a list of all declarations across the entire project
        * we can begin to generate additional information about each declaration.
        * For example we can now determine the `src` of the page that will
@@ -220,7 +233,39 @@ const md = new MarkdownIt();
               description: pkg.description,
               titleSegments: ["API Reference"],
               name: package,
-              declarations: declarations.filter(d => d.package === package),
+              declarations: declarations
+                .filter(d => d.package === package)
+                .sort((da, db) => {
+                  if (da.name.toLowerCase() < db.name.toLowerCase()) {
+                    return -1;
+                  }
+                  if (da.name.toLowerCase() > db.name.toLowerCase()) {
+                    return 1;
+                  }
+                  return 0;
+                })
+                .sort((da, db) => {
+                  const types = [
+                    "Function",
+                    "Class",
+                    "Object literal",
+                    "Variable",
+                    "Enumeration",
+                    "Type alias",
+                    "Interface"
+                  ];
+
+                  const aIndex = types.findIndex(t => da.kindString === t);
+                  const bIndex = types.findIndex(t => db.kindString === t);
+
+                  if (aIndex > bIndex) {
+                    return 1;
+                  } else if (aIndex < bIndex) {
+                    return -1;
+                  } else {
+                    return 0;
+                  }
+                }),
               icon: "tsd-kind-module",
               src,
               pageUrl: prettyifyUrl(src)
