@@ -21,16 +21,23 @@
  */
 import * as simpleTypeHelpers from "./helpers/simple-type-helpers";
 import * as notebookHelpers from "./helpers/notebook-helpers";
-import * as quickcaptureHelpers from "./helpers/quickcapture-helpers";
+
 import * as simpleTypes from "./simple-types";
-import * as notebookProcessor from "./notebook";
-import * as quickcaptureProcessor from "./quickcapture";
+import * as notebookProcessor from "./notebook/notebook-processor";
+import * as quickcaptureProcessor from "./quickcapture/quickcapture-processor";
+import * as webmapProcessor from "./webmap/webmap-processor";
+import * as webappProcessor from "./webapp/webapp-processor";
+import * as dashboardProcessor from "./dashboard/dashboard-processor";
+import * as workforceProcessor from "./workforce/workforce-processor";
 
 export {
-  simpleTypes,
-  notebookProcessor,
+  dashboardProcessor,
   notebookHelpers,
+  notebookProcessor,
+  quickcaptureProcessor,
   simpleTypeHelpers,
-  quickcaptureHelpers,
-  quickcaptureProcessor
+  simpleTypes,
+  webappProcessor,
+  webmapProcessor,
+  workforceProcessor
 };

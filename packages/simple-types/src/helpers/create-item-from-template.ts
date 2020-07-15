@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 import * as common from "@esri/solution-common";
-import * as notebook from "../notebook";
-import * as webmappingapplication from "../webmappingapplication";
-import * as workforce from "../workforce";
+import * as notebook from "../notebook/notebook-processor";
+import * as webmappingapplication from "../webapp/webapp-processor";
+import * as workforce from "../workforce/workforce-processor";
 import { generateEmptyCreationResponse } from "./generate-empty-creation-response";
 
 export function createItemFromTemplate(

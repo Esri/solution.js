@@ -16,8 +16,8 @@
 
 import * as common from "@esri/solution-common";
 
-// ------------------------------------------------------------------------------------------------------------------ //
-
+// TODO: Remove this file. All FORM items are routed through the
+// FormProcessor in the solution-form package
 export function convertItemToTemplate(
   itemTemplate: common.IItemTemplate
 ): common.IItemTemplate {

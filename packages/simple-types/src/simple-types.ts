@@ -20,10 +20,11 @@
  * @module simple-types
  */
 
-import * as dashboard from "./dashboard";
-import * as webmap from "./webmap";
-import * as webmappingapplication from "./webmappingapplication";
-import * as quickcapture from "./quickcapture";
+import * as dashboard from "./dashboard/dashboard-processor";
+// import * as postProcessFieldReferences from "./helpers/post-process-dashboard-field-references";
+import * as webmap from "./webmap/webmap-processor";
+import * as webmappingapplication from "./webapp/webapp-processor";
+import * as quickcapture from "./quickcapture/quickcapture-processor";
 
 import {
   getItemDataAsJson,
@@ -52,10 +53,8 @@ export function convertItemToTemplate(
   itemInfo: any,
   authentication: UserSession
 ): Promise<IItemTemplate> {
-  return simpleTypeHelpers.convertItemToTemplate(
-    solutionItemId,
-    itemInfo,
-    authentication
+  throw new Error(
+    "No type should delegate to SimpleType for conversion to template"
   );
 }
 
@@ -82,7 +81,6 @@ export function createItemFromTemplate(
 
 /**
  * Templatizes field references within specific template types.
- * Currently only handles web mapping applications
  *
  * @param template A solution template
  * @param datasourceInfos A list of objects that store key datasource info used to templatizing field references
@@ -94,20 +92,20 @@ export function postProcessFieldReferences(
   datasourceInfos: IDatasourceInfo[],
   type: string
 ): IItemTemplate {
-  switch (type) {
-    case "Web Mapping Application":
-      webmappingapplication.postProcessFieldReferences(
-        solutionTemplate,
-        datasourceInfos
-      );
-      break;
-    case "Dashboard":
-      dashboard.postProcessFieldReferences(solutionTemplate, datasourceInfos);
-      break;
-    case "Web Map":
-      webmap.postProcessFieldReferences(solutionTemplate, datasourceInfos);
-      break;
-  }
+  // switch (type) {
+  //   case "Web Mapping Application":
+  //     webmappingapplication.postProcessFieldReferences(
+  //       solutionTemplate,
+  //       datasourceInfos
+  //     );
+  //     break;
+  //   // case "Dashboard":
+  //   //   postProcessFieldReferences_1.postProcessFieldReferences(solutionTemplate, datasourceInfos);
+  //   //   break;
+  //   // case "Web Map":
+  //   //   webmap.postProcessFieldReferences(solutionTemplate, datasourceInfos);
+  //   //   break;
+  // }
   return solutionTemplate;
 }
 /**

@@ -162,6 +162,7 @@ export function createItemTemplate(
                 } // unable to fetch thumbnail
               );
             } else {
+              // TODO: make the UNSUPPORTED processor a REAL processor that does this logic, so we and simply delegate here
               const itemHandler = moduleMap[itemType];
               if (!itemHandler || itemHandler === UNSUPPORTED) {
                 if (itemHandler === UNSUPPORTED) {
@@ -291,6 +292,8 @@ export function createItemTemplate(
  *
  * @param templates List of solution templates
  * @return A list of templates that have templatized field references
+ *
+ * TODO: Move to webapp processor
  */
 export function postProcessFieldReferences(
   templates: IItemTemplate[]
@@ -403,6 +406,8 @@ export function _getTemplateTypeHash(templates: IItemTemplate[]): any {
  *
  * @param template A webmap solution template
  * @return The lookup object with webmap layer info added
+ *
+ * TODO: Move to webmap processor
  */
 export function _updateWebMapHashInfo(template: IItemTemplate, hashItem: any) {
   const operationalLayers: any[] =
@@ -437,6 +442,8 @@ export function _updateWebMapHashInfo(template: IItemTemplate, hashItem: any) {
  * @param dataSourceUrl Templatized datasource URL
  * @param layerId Layer id
  * @return string Amended datasource URL
+ *
+ * TODO: Move to webmap processor
  */
 export function _addLayerIdToDatasourceUrl(
   datasourceUrl?: string,
@@ -454,6 +461,8 @@ export function _addLayerIdToDatasourceUrl(
  * @param datasourceInfos A webmap solution template
  * @param templateTypeHash A simple lookup object populated with key item info
  * @return The updated datasource infos
+ *
+ * TODO: Move to webmap processor
  */
 export function _addMapLayerIds(
   datasourceInfos: IDatasourceInfo[],
@@ -490,6 +499,8 @@ export function _addMapLayerIds(
  * @param template A webmap solution template
  * @param templateTypeHash A simple lookup object populated with key item info
  * @return A lsit of feature service item IDs
+ *
+ * TODO: Move to webmap processor
  */
 export function _getWebMapFSDependencies(
   template: IItemTemplate,

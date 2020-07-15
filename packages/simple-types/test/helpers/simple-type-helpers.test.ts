@@ -20,9 +20,6 @@ describe("simpleTypeHelpers:: ", () => {
   it("should have createItemFromTemplate", () => {
     expect(simpleTypeHelpers.createItemFromTemplate).toBeDefined();
   });
-  it("should have convertItemToTemplate", () => {
-    expect(simpleTypeHelpers.convertItemToTemplate).toBeDefined();
-  });
   it("should have generateEmptyCreationResponse", () => {
     expect(simpleTypeHelpers.generateEmptyCreationResponse).toBeDefined();
   });

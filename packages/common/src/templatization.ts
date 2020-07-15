@@ -130,6 +130,7 @@ export function createInitializedItemTemplate(itemInfo: any): IItemTemplate {
     typeKeywords: itemInfo.typeKeywords,
     url: itemInfo.url
   };
+
   return itemTemplate;
 }
 

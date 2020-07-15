@@ -15,14 +15,17 @@
  */
 
 import { moduleHandler, IItemTypeModuleMap } from "@esri/solution-common";
-import * as featureLayer from "@esri/solution-feature-layer";
+import * as featureLayerProcessor from "@esri/solution-feature-layer";
 import * as fileProcessor from "@esri/solution-file";
 import * as formProcessor from "@esri/solution-form";
 import * as group from "@esri/solution-group";
 import {
-  simpleTypes,
+  dashboardProcessor,
   notebookProcessor,
-  quickcaptureProcessor
+  quickcaptureProcessor,
+  webappProcessor,
+  webmapProcessor,
+  workforceProcessor
 } from "@esri/solution-simple-types";
 import { StoryMapProcessor } from "@esri/solution-storymap";
 import { WebExperienceProcessor } from "@esri/solution-web-experience";
@@ -44,7 +47,7 @@ export const moduleMap: IItemTypeModuleMap = {
   // Layer types
   "Big Data Analytic": undefined,
   "Feature Collection": undefined,
-  "Feature Service": featureLayer,
+  "Feature Service": featureLayerProcessor,
   Feed: undefined,
   "Geocoding Service": undefined,
   "Geodata Service": undefined,
@@ -53,7 +56,7 @@ export const moduleMap: IItemTypeModuleMap = {
   "Globe Service": undefined,
   "Image Service": undefined,
   KML: undefined,
-  "Map Service": featureLayer,
+  "Map Service": featureLayerProcessor,
   "Network Analysis Service": undefined,
   "Real Time Analytic": undefined,
   "Relational Database Connection": undefined,
@@ -69,13 +72,13 @@ export const moduleMap: IItemTypeModuleMap = {
   ////////////////////////////////////////////////////////
   // Map types
   "3D Web Scene": undefined,
-  "Web Map": simpleTypes,
+  "Web Map": webmapProcessor,
   "Web Scene": undefined,
 
   ////////////////////////////////////////////////////////
   // App types
   Application: undefined,
-  Dashboard: simpleTypes,
+  Dashboard: dashboardProcessor,
   "Data Store": undefined,
   "Desktop Application": undefined,
   "Excalibur Imagery Project": undefined,
@@ -99,8 +102,8 @@ export const moduleMap: IItemTypeModuleMap = {
   "Urban Model": undefined,
   "Web Experience Template": undefined,
   "Web Experience": WebExperienceProcessor,
-  "Web Mapping Application": simpleTypes,
-  "Workforce Project": simpleTypes,
+  "Web Mapping Application": webappProcessor,
+  "Workforce Project": workforceProcessor,
 
   ////////////////////////////////////////////////////////
   // File types

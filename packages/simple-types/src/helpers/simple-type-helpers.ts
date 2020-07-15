@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 import { generateEmptyCreationResponse } from "./generate-empty-creation-response";
-import { convertItemToTemplate } from "./convert-item-to-template";
+import { convertGenericItemToTemplate } from "./convert-generic-item-to-template";
 import { createItemFromTemplate } from "./create-item-from-template";
 
 // Export the simpleTypesHelper module
 export {
   createItemFromTemplate,
-  convertItemToTemplate,
+  convertGenericItemToTemplate,
   generateEmptyCreationResponse
 };

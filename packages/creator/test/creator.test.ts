@@ -53,10 +53,10 @@ afterEach(() => {
 
 // ------------------------------------------------------------------------------------------------------------------ //
 
-describe("Module `creator`", () => {
+describe("creator :: ", () => {
   // Blobs are only available in the browser
   if (typeof window !== "undefined") {
-    describe("createSolution", () => {
+    describe("createSolution :: ", () => {
       it("createSolution fails to get group or item", done => {
         const solutionGroupId: string = "grp1234567890";
         const authentication: common.UserSession = MOCK_USER_SESSION;

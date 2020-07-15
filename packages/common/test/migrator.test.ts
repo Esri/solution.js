@@ -26,7 +26,7 @@ import * as threeDotZero from "../src/migrations/upgrade-three-dot-zero";
 import * as threeDotOne from "../src/migrations/upgrade-three-dot-one";
 import * as utils from "../../common/test/mocks/utils";
 
-describe("Schema Migrator", () => {
+describe("Schema Migrator :: ", () => {
   const defaultModel = {
     item: {
       type: "Solution",
@@ -110,10 +110,10 @@ describe("Schema Migrator", () => {
           1,
           "should call 3.0 upgrade"
         );
-        // expect(threeOneUpgradeSpy.calls.count()).toBe(
-        //   1,
-        //   "should call 3.1 upgrade"
-        // );
+        expect(threeOneUpgradeSpy.calls.count()).toBe(
+          1,
+          "should call 3.1 upgrade"
+        );
         expect(chk).not.toBe(m, "should not return the exact same object");
         // since the upgrades are all spies, we don't make assertions on the schemaVersion
         done();
@@ -152,15 +152,15 @@ describe("Schema Migrator", () => {
     });
   });
 
-  it("does nothing if v3.1", done => {
+  it("does nothing if on current version", done => {
     // this test will go away once we have a 3.0 -> 3.1 migration but it covers an `else` case
     const m = cloneObject(defaultModel);
-    m.item.properties.schemaVersion = 3.1;
+    m.item.properties.schemaVersion = CURRENT_SCHEMA_VERSION;
     return migrateSchema(m, MOCK_USER_SESSION)
       .then(chk => {
         expect(chk).toBe(m, "should return the exact same object");
         expect(chk.item.properties.schemaVersion).toBe(
-          3.1,
+          CURRENT_SCHEMA_VERSION,
           "should not change version"
         );
         done();
