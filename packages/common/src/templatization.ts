@@ -22,6 +22,7 @@
 
 import { unique } from "@esri/hub-common";
 import { adlib } from "adlib";
+import { createShortId } from "./generalHelpers";
 import { IItemTemplate } from "./interfaces";
 
 // ------------------------------------------------------------------------------------------------------------------ //
@@ -77,23 +78,6 @@ export const TRANSFORMS: any = {
  */
 export function placeholder(term: string): string {
   return "{{" + term + "}}";
-}
-
-/**
- * Creates a random 8-character alphanumeric string that begins with an alphabetic character.
- *
- * @return An alphanumeric string in the range [a0000000..zzzzzzzz]
- */
-export function createShortId(): string {
-  // Return a random number, but beginning with an alphabetic character so that it can be used as a valid
-  // dotable property name. Used for unique identifiers that do not require the rigor of a full UUID -
-  // i.e. node ids, process ids, etc.
-  const min = 0.2777777777777778; // 0.a in base 36
-  const max = 0.9999999999996456; // 0.zzzzzzzz in base 36
-  return (_getRandomNumberInRange(min, max).toString(36) + "0000000").substr(
-    2,
-    8
-  );
 }
 
 export function createInitializedGroupTemplate(itemInfo: any): IItemTemplate {
@@ -321,20 +305,4 @@ export function templatizeIds(obj: any): any {
     obj = JSON.parse(objString);
   }
   return obj;
-}
-
-// ------------------------------------------------------------------------------------------------------------------ //
-
-/**
- * Creates a random number between two values.
- *
- * @param min Inclusive minimum desired value
- * @param max Non-inclusive maximum desired value
- * @return Random number in the range [min, max)
- */
-export function _getRandomNumberInRange(min: number, max: number): number {
-  // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Math/random#Getting_a_random_number_between_two_values
-  // © 2006 IvanWills
-  // MIT license https://opensource.org/licenses/mit-license.php
-  return Math.random() * (max - min) + min;
 }
