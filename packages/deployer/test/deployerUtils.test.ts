@@ -66,6 +66,27 @@ describe("Module: `_deployerUtils`", () => {
       } as common.IItem;
       expect(isSolutionTemplateItem(i)).toBe(true);
     });
+    it("returns true for hub solution stored in web mapping applications", () => {
+      const i = {
+        type: "Web Mapping Application",
+        typeKeywords: ["hubSolutionTemplate", "hubSolutionType|something"]
+      } as common.IItem;
+      expect(isSolutionTemplateItem(i)).toBe(true);
+    });
+    it("returns false for web mapping applications w/o hub keywords", () => {
+      const i = {
+        type: "Web Mapping Application",
+        typeKeywords: ["bargle", "garble"]
+      } as common.IItem;
+      expect(isSolutionTemplateItem(i)).toBe(false);
+    });
+    it("returns false for other types", () => {
+      const i = {
+        type: "Web Map",
+        typeKeywords: ["bargle", "garble"]
+      } as common.IItem;
+      expect(isSolutionTemplateItem(i)).toBe(false);
+    });
     it("returns false if missing item type or keywords", () => {
       const i = {
         type: "Solution",
