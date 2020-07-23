@@ -17,6 +17,9 @@
 import { migrateSchema, CURRENT_SCHEMA_VERSION } from "../src/migrator";
 import { cloneObject, IItemTemplate } from "@esri/hub-common";
 import { ISolutionItem } from "../src/interfaces";
+import * as applyOne from "../src/migrations/apply-schema";
+import * as twoDotZero from "../src/migrations/upgrade-two-dot-zero";
+import * as twoDotOne from "../src/migrations/upgrade-two-dot-one";
 import * as twoDotTwo from "../src/migrations/upgrade-two-dot-two";
 import * as twoDotThree from "../src/migrations/upgrade-two-dot-three";
 import * as twoDotFour from "../src/migrations/upgrade-two-dot-four";
@@ -52,8 +55,8 @@ describe("Schema Migrator", () => {
   });
   it("upgrades schemaless to current", done => {
     const m = cloneObject(defaultModel);
-    // kill the schema version
-    delete m.item.properties.schemaVersion;
+    // kill the item properties
+    delete m.item.properties;
     return migrateSchema(m, MOCK_USER_SESSION)
       .then(chk => {
         expect(chk).not.toBe(m, "should return the exact same object");
@@ -68,8 +71,20 @@ describe("Schema Migrator", () => {
   it("upgrades legacy Solutions", done => {
     const m = cloneObject(defaultModel);
     // kill the schema version
-    m.item.properties.schemaVersion = 2.1;
+    delete m.item.properties.schemaVersion;
+    // change to web mapping application
+    m.item.type = "Web Mapping Application";
     m.item.typeKeywords = ["hubSolutionTemplate", "solutionTemplate"];
+
+    const as = spyOn(applyOne, "_applySchema").and.callFake(model => {
+      return cloneObject(model);
+    });
+    const sp20 = spyOn(twoDotZero, "_upgradeTwoDotZero").and.callFake(model => {
+      return cloneObject(model);
+    });
+    const sp21 = spyOn(twoDotOne, "_upgradeTwoDotOne").and.callFake(model => {
+      return cloneObject(model);
+    });
     const sp1 = spyOn(twoDotTwo, "_upgradeTwoDotTwo").and.callFake(model => {
       return cloneObject(model);
     });
@@ -101,6 +116,9 @@ describe("Schema Migrator", () => {
     });
     return migrateSchema(m, MOCK_USER_SESSION)
       .then(chk => {
+        expect(as.calls.count()).toBe(1, "should apply schema");
+        expect(sp20.calls.count()).toBe(1, "should apply 2.0");
+        expect(sp21.calls.count()).toBe(1, "should apply 2.1");
         expect(sp1.calls.count()).toBe(1, "should call first upgrade");
         expect(sp2.calls.count()).toBe(1, "should call second upgrade");
         expect(sp3.calls.count()).toBe(1, "should call third upgrade");
