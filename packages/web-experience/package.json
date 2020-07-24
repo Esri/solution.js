@@ -1,6 +1,6 @@
 {
   "name": "@esri/solution-web-experience",
-  "version": "0.17.0",
+  "version": "0.17.1",
   "description": "Manages the creation and deployment of Web Experience item types for @esri/solution.js.",
   "main": "dist/node/index.js",
   "unpkg": "dist/umd/web-experience.umd.min.js",
@@ -17,8 +17,8 @@
     "@esri/arcgis-rest-portal": "^2.13.2",
     "@esri/arcgis-rest-request": "^2.13.2",
     "@esri/hub-common": "^4.2.0",
-    "@esri/solution-common": "^0.17.0",
-    "@esri/solution-simple-types": "^0.17.0",
+    "@esri/solution-common": "^0.17.1",
+    "@esri/solution-simple-types": "^0.17.1",
     "rollup": "^1.22.0",
     "typescript": "^3.9.2"
   },
@@ -30,8 +30,8 @@
     "@esri/arcgis-rest-portal": "^2.13.2",
     "@esri/arcgis-rest-request": "^2.13.2",
     "@esri/hub-common": "^4.2.0",
-    "@esri/solution-common": "^0.17.0",
-    "@esri/solution-simple-types": "^0.17.0"
+    "@esri/solution-common": "^0.17.1",
+    "@esri/solution-simple-types": "^0.17.1"
   },
   "scripts": {
     "prepare": "npm run build",
