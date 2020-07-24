@@ -44,7 +44,8 @@ export function _getSolutionTemplateItem(
   } else {
     // check if it is a "Model"
     if (_isModel(idOrObject)) {
-      return Promise.resolve(idOrObject);
+      // run migrations
+      return common.migrateSchema(idOrObject, authentication);
     } else {
       return Promise.reject(
         common.fail(
