@@ -23,6 +23,7 @@
 import {
   addThumbnailFromUrl,
   createItemWithData,
+  createLongId,
   createShortId,
   CURRENT_SCHEMA_VERSION,
   generateSourceThumbnailUrl,
@@ -35,7 +36,7 @@ import {
   sanitizeJSONAndReportChanges
 } from "@esri/solution-common";
 import { UserSession } from "@esri/arcgis-rest-auth";
-import { failSafe, IModel, createId } from "@esri/hub-common";
+import { failSafe, IModel } from "@esri/hub-common";
 import { _addContentToSolution } from "./helpers/add-content-to-solution";
 
 // Simple no-op to clean up progressCallback management
@@ -289,7 +290,7 @@ export function _createSolutionItemModel(options: any): IModel {
 export function _getDeploymentProperties(tags: string[]): string[] {
   return [
     "solutionid-" +
-      (_getDeploymentProperty("deploy.id.", tags) ?? createId("")),
+      (_getDeploymentProperty("deploy.id.", tags) ?? createLongId()),
     "solutionversion-" +
       (_getDeploymentProperty("deploy.version.", tags) ?? "1.0")
   ];

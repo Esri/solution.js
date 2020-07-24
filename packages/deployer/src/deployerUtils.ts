@@ -44,7 +44,8 @@ export function _getSolutionTemplateItem(
   } else {
     // check if it is a "Model"
     if (_isModel(idOrObject)) {
-      return Promise.resolve(idOrObject);
+      // run migrations
+      return common.migrateSchema(idOrObject, authentication);
     } else {
       return Promise.reject(
         common.fail(
@@ -113,10 +114,22 @@ export function _isModel(obj: any): boolean {
  * @param item IItem
  */
 export function isSolutionTemplateItem(item: common.IItem): boolean {
-  return (
-    item.type === "Solution" &&
-    item.typeKeywords.indexOf("Solution") > -1 &&
-    (item.typeKeywords.indexOf("Template") > -1 ||
-      item.typeKeywords.indexOf("solutionTemplate") > -1)
-  );
+  const kwds = item.typeKeywords;
+  // Solution items
+  let result = false;
+  if (item.type === "Solution") {
+    if (
+      kwds.indexOf("Solution") > -1 &&
+      (kwds.indexOf("Template") > -1 || kwds.indexOf("solutionTemplate") > -1)
+    ) {
+      result = true;
+    }
+  }
+  // Older Hub Solutions used Web Mapping Application items
+  if (item.type === "Web Mapping Application") {
+    if (kwds.indexOf("hubSolutionTemplate") > -1) {
+      result = true;
+    }
+  }
+  return result;
 }

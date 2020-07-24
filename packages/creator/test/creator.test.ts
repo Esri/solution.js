@@ -882,7 +882,7 @@ describe("Module `creator`", () => {
         utils.getSuccessResponse({ id: expectedSolutionId, folder: null })
       );
       spyOn(common, "createShortId").and.callFake(() => "xfakeidx");
-      spyOn(hubCommon, "createId").and.callFake(() => "guid");
+      spyOn(common, "createLongId").and.callFake(() => "guid");
       creator._createSolutionItem(authentication).then(
         solutionId => {
           expect(solutionId).toEqual(expectedSolutionId);
@@ -935,7 +935,7 @@ describe("Module `creator`", () => {
             utils.getSuccessResponse({ id: expectedSolutionId })
           );
         spyOn(common, "createShortId").and.callFake(() => "xfakeidx");
-        spyOn(hubCommon, "createId").and.callFake(() => "guid");
+        spyOn(common, "createLongId").and.callFake(() => "guid");
         creator._createSolutionItem(authentication, options).then(
           solutionId => {
             expect(solutionId).toEqual(expectedSolutionId);
@@ -1118,7 +1118,7 @@ describe("Module `creator`", () => {
 
       fetchMock.post(url, utils.getFailureResponse());
       spyOn(common, "createShortId").and.callFake(() => "xfakeidx");
-      spyOn(hubCommon, "createId").and.callFake(() => "guid");
+      spyOn(common, "createLongId").and.callFake(() => "guid");
       creator._createSolutionItem(authentication).then(
         () => done.fail(),
         error => {
@@ -1338,7 +1338,7 @@ describe("Module `creator`", () => {
 
     it("finds only version deployment property", () => {
       const tags = ["a_tag", "another_tag", "deploy.version.12.3"];
-      spyOn(hubCommon, "createId").and.callFake(() => "guid");
+      spyOn(common, "createLongId").and.callFake(() => "guid");
       const typeKeywords: string[] = creator._getDeploymentProperties(tags);
       expect(typeKeywords).toEqual(["solutionid-guid", "solutionversion-12.3"]);
     });
@@ -1351,7 +1351,7 @@ describe("Module `creator`", () => {
 
     it("doesn't find either deployment property", () => {
       const tags = ["a_tag", "another_tag"];
-      spyOn(hubCommon, "createId").and.callFake(() => "guid");
+      spyOn(common, "createLongId").and.callFake(() => "guid");
       const typeKeywords: string[] = creator._getDeploymentProperties(tags);
       expect(typeKeywords).toEqual(["solutionid-guid", "solutionversion-1.0"]);
     });

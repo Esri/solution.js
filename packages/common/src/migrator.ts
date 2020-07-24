@@ -16,13 +16,17 @@
 
 import { ISolutionItem, UserSession } from "./interfaces";
 import { _isLegacySolution } from "./migrations/is-legacy-solution";
-import { _upgradeThreeDotOne } from "./migrations/upgrade-three-dot-one";
-import { _upgradeThreeDotZero } from "./migrations/upgrade-three-dot-zero";
+import { _applySchema } from "./migrations/apply-schema";
+import { _upgradeTwoDotZero } from "./migrations/upgrade-two-dot-zero";
+import { _upgradeTwoDotOne } from "./migrations/upgrade-two-dot-one";
 import { _upgradeTwoDotTwo } from "./migrations/upgrade-two-dot-two";
 import { _upgradeTwoDotThree } from "./migrations/upgrade-two-dot-three";
 import { _upgradeTwoDotFour } from "./migrations/upgrade-two-dot-four";
 import { _upgradeTwoDotFive } from "./migrations/upgrade-two-dot-five";
 import { _upgradeTwoDotSix } from "./migrations/upgrade-two-dot-six";
+import { _upgradeThreeDotZero } from "./migrations/upgrade-three-dot-zero";
+import { _upgradeThreeDotOne } from "./migrations/upgrade-three-dot-one";
+
 import { getProp } from "@esri/hub-common";
 
 // Starting at 3.0 because Hub has been versioning Solution items up to 2.x
@@ -61,21 +65,21 @@ export function migrateSchema(
     } else {
       // Hub created a set of Solution items that are not 100% compatible
       // with the Solution.js deployer.
-      // The schemaVersion of these items is 2.1 - prior to that we used
-      // Web Mapping Application items, which are deprecated
-      if (modelVersion >= 2.1 && modelVersion < 3) {
-        schemaUpgrades.push(
-          _upgradeTwoDotTwo,
-          _upgradeTwoDotThree,
-          _upgradeTwoDotFour,
-          _upgradeTwoDotFive,
-          _upgradeTwoDotSix
-        );
-      }
+      schemaUpgrades.push(
+        _applySchema,
+        _upgradeTwoDotZero,
+        _upgradeTwoDotOne,
+        _upgradeTwoDotTwo,
+        _upgradeTwoDotThree,
+        _upgradeTwoDotFour,
+        _upgradeTwoDotFive,
+        _upgradeTwoDotSix
+      );
       // Apply the 3.x upgrades
-      // TEMP to allow merge to develop w/o breaking things
-      schemaUpgrades.push(_upgradeThreeDotZero);
-      // schemaUpgrades.push(_upgradeThreeDotZero, _upgradeThreeDotOne);
+      schemaUpgrades.push(
+        _upgradeThreeDotZero
+        // _upgradeThreeDotOne // Not ready for prod yet
+      );
     }
     // Run any migrations serially. Since we start with a promise,
     // individual migrations are free to return either ISolutionItem
