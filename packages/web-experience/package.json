@@ -25,14 +25,6 @@
   "dependencies": {
     "tslib": "^1.10.0"
   },
-  "peerDependencies": {
-    "@esri/arcgis-rest-auth": "^2.13.2",
-    "@esri/arcgis-rest-portal": "^2.13.2",
-    "@esri/arcgis-rest-request": "^2.13.2",
-    "@esri/hub-common": "^4.2.0",
-    "@esri/solution-common": "^0.17.1",
-    "@esri/solution-simple-types": "^0.17.1"
-  },
   "scripts": {
     "prepare": "npm run build",
     "build": "npm run build:node && npm run build:umd && npm run build:esm",
