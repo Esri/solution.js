@@ -60,7 +60,7 @@ describe("Module `JSZip`: JavaScript-based zip utility", () => {
 
       it("handles one file in a folder", done => {
         libConnectors
-          .createZip("zipfile", [getSampleMetadataAsFile("info/metadata")])
+          .createZip("zipfile", [getSampleMetadataAsFile("metadata")], "info")
           .then(zipfile => {
             expect(zipfile.name)
               .withContext("zip created")
