@@ -11,13 +11,13 @@
 * \[ \] Fix CHANGELOG.md and solution.js package references
 * \[ \] Commit changes without using version number
 * \[ \] Switch to `master` branch
-* \[ \] Merge `release` branch into `master` branch but don't commit
+* \[ \] Merge `release-candidate` branch into `master` branch but don't commit
 * \[ \] Run `npm run release:publish`
 * \[ \] Check that publishing worked using `check_npm_package_versions.html`
 * \[ \] Run `npm run release:publish-retry` as needed until all packages are published
 * \[ \] Push `master` branch to GitHub
 * \[ \] Run `npm run docs:deploy`
-* \[ \] Delete `release` branch
+* \[ \] Delete `release-candidate` branch
 * \[ \] Switch to `develop` branch
 * \[ \] Merge `master` branch into `develop` branch
 * \[ \] Push `develop` branch to GitHub
@@ -36,7 +36,7 @@
 
 1. Stop any code-change watchers that automatically recompile TypeScript, e.g., the watch task in Visual Studio Code
 
-2. Create a branch off of `develop` called `release`.
+2. Create a branch off of `develop` called `release-candidate`.
 
 3. Remove the node_modules directories.
 ```
@@ -107,9 +107,9 @@ git tag -d tagName
 
 12. If you wish to test the release before it is created, you can push `release-candidate` to GitHub for sharing.
 
-13. Switch to the `master` branch and merge in the `release` branch, but without committing it.
+13. Switch to the `master` branch and merge in the `release-candidate` branch, but without committing it.
 ```
-git merge --no-ff --no-commit release
+git merge --no-ff --no-commit release-candidate
 ```
 
 14. Publish the release, supplying a two-factor code (e.g., from Okta Verify) when prompted. (While `release:publish` accepts a two-factor command-line parameter, the code expires by the time that publishing get around to using it and the release will not be uploaded to npmjs.) Use the freshest possible code: pick it right after it updates in the two-factor app.
@@ -138,7 +138,7 @@ git merge --no-ff --no-commit release
 
 18. Update the repository's API doc by running `npm run docs:deploy`.
 
-19. Delete the `release` branch locally and in GitHub.
+19. Delete the `release-candidate` branch locally and in GitHub.
 
 20. Merge `master` into `develop` and push `develop` to GitHub.
 
