@@ -68,15 +68,15 @@ export function createStoryMap(
       // We'll just use the published data for the first "draft"
       resources.push({
         name: model.properties.draftFileName,
-        resource: stringToBlob(JSON.stringify(model.data))
+        file: stringToBlob(JSON.stringify(model.data))
       });
       resources.push({
         name: "oembed.json",
-        resource: stringToBlob(JSON.stringify(model.properties.oembed))
+        file: stringToBlob(JSON.stringify(model.properties.oembed))
       });
       resources.push({
         name: "oembed.xml",
-        resource: stringToBlob(model.properties.oembedXML)
+        file: stringToBlob(model.properties.oembedXML)
       });
       // remove the properties hash now that we've gotten what we need
       delete model.properties;

@@ -78,6 +78,13 @@ describe("createStoryMap ::", () => {
           );
           expect(updateItemSpy.calls.count()).toBe(1, "should call updateItem");
           expect(addResSpy.calls.count()).toBe(3, "should add three resources");
+          if (typeof Blob !== "undefined") {
+            const draftArgs = addResSpy.calls.argsFor(0)[0];
+            expect(draftArgs.resource instanceof Blob).toBe(
+              true,
+              "should send a blob"
+            );
+          }
           expect(moveItemSpy.calls.count()).toBe(1, "should move the item");
           const moveOpts = moveItemSpy.calls.argsFor(0)[0];
           expect(moveOpts.folderId).toBe(
