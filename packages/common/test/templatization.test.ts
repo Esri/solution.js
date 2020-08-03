@@ -267,6 +267,35 @@ describe("Module `templatization`: common functions involving the adlib library"
     });
   });
 
+  describe("getDefaultExtent", () => {
+    it("should not templatize null extent", () => {
+      const itemInfo: any = {
+        extent: null
+      };
+      const expected: any = null;
+      const actual: any = templatization.getDefaultExtent(itemInfo);
+      expect(actual).toEqual(expected);
+    });
+
+    it("should not templatize empty array extent", () => {
+      const itemInfo: any = {
+        extent: []
+      };
+      const expected: any = [];
+      const actual: any = templatization.getDefaultExtent(itemInfo);
+      expect(actual).toEqual(expected);
+    });
+
+    it("should templatize extent with a value", () => {
+      const itemInfo: any = {
+        extent: {}
+      };
+      const expected: any = "{{solutionItemExtent}}";
+      const actual: any = templatization.getDefaultExtent(itemInfo);
+      expect(actual).toEqual(expected);
+    });
+  });
+
   describe("templatizeTerm", () => {
     it("should handle undefined context", () => {
       const context: string = undefined;
