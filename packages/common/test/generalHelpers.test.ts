@@ -279,6 +279,14 @@ describe("Module `generalHelpers`: common utility functions shared across packag
     });
   });
 
+  describe("createLongId", () => {
+    it("has exactly 32 alphanumeric characters", () => {
+      const id = generalHelpers.createLongId();
+      expect(id.length).toEqual(32);
+      expect(id.match(/[^a-z0-9]/)).toBeNull();
+    });
+  });
+
   describe("sanitizeJSONAndReportChanges", () => {
     it("should not report if no property changed", () => {
       const json = {
