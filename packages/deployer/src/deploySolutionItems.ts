@@ -75,9 +75,9 @@ export function deploySolutionItems(
             event: common.SItemProgressStatus[status],
             data: itemId
           } as common.ISolutionProgressEvent;
-          options.progressCallback(percentDone, options.jobId, event);
+          options.progressCallback(Math.round(percentDone), options.jobId, event);
         } else {
-          options.progressCallback(percentDone, options.jobId);
+          options.progressCallback(Math.round(percentDone), options.jobId);
         }
       }
 
