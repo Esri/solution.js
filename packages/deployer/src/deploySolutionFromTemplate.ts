@@ -18,10 +18,11 @@ import * as common from "@esri/solution-common";
 import * as deployItems from "./deploySolutionItems";
 import { getProp, getWithDefault } from "@esri/hub-common";
 import { postProcess } from "./helpers/post-process";
+import { UserSession } from "@esri/arcgis-rest-auth";
 
 // NOTE: Moved to separate file to allow stubbing in main deploySolution tests
 
-export function _deploySolutionFromTemplate(
+export function deploySolutionFromTemplate(
   templateSolutionId: string,
   solutionTemplateBase: any,
   solutionTemplateData: any,
@@ -217,12 +218,16 @@ export function _deploySolutionFromTemplate(
           deployedSolutionId
         );
 
+        // It is possible to provide a separate authentication for the source
+        const storageAuthentication: UserSession = options.storageAuthentication ?
+          options.storageAuthentication : authentication;
+
         // Handle the contained item templates
         return deployItems.deploySolutionItems(
-          authentication.portal,
+          storageAuthentication.portal,
           templateSolutionId,
           solutionTemplateData.templates,
-          authentication,
+          storageAuthentication,
           templateDictionary,
           authentication,
           options

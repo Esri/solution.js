@@ -265,7 +265,8 @@ export interface IDeploySolutionOptions {
   enableItemReuse?: boolean; // when true items with source-itemId type keyword will be reused
   progressCallback?: ISolutionProgressCallback;
   consoleProgress?: boolean; // default: false
-}
+  storageAuthentication?: UserSession;  // credentials for the organization with the source items; default:
+  }
 
 /**
  * Result of deploying a solution item.

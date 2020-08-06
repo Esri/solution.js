@@ -372,7 +372,7 @@ export function createMockSettings(
   return settings;
 }
 
-export function createRuntimeMockUserSession(now?: number): UserSession {
+export function createRuntimeMockUserSession(now?: number, portalUrl?: string): UserSession {
   if (now === undefined) {
     now = Date.now();
   }
@@ -387,7 +387,7 @@ export function createRuntimeMockUserSession(now?: number): UserSession {
     refreshTokenTTL: 1440,
     username: "casey",
     password: "123456",
-    portal: PORTAL_URL + "/sharing/rest"
+    portal: (portalUrl || PORTAL_URL) + "/sharing/rest"
   });
 }
 

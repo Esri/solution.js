@@ -22,7 +22,7 @@
 
 import * as common from "@esri/solution-common";
 
-import { _deploySolutionFromTemplate } from "./deploySolutionFromTemplate";
+import { deploySolutionFromTemplate } from "./deploySolutionFromTemplate";
 import {
   _getSolutionTemplateItem,
   isSolutionTemplateItem,
@@ -32,11 +32,13 @@ import { IModel } from "@esri/hub-common";
 
 /**
  * Deploy a Solution
+ *
  * Pass in either the item id or an IModel (`{item:{}, model:{}}`)
  * of a Solution Template, and this will generate the Solution
+ *
  * @param maybeModel Item Id or IModel
- * @param authentication UserSession
- * @param options object
+ * @param authentication Credentials for the destination organization
+ * @param options Options to override deployed information and to provide additional credentials
  */
 export function deploySolution(
   maybeModel: string | IModel,
@@ -83,7 +85,7 @@ export function deploySolution(
       // Clone before mutating? This was messing me up in some testing...
       common.deleteItemProps(item);
 
-      return _deploySolutionFromTemplate(
+      return deploySolutionFromTemplate(
         itemId,
         item,
         data,
