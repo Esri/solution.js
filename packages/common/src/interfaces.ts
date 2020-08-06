@@ -266,7 +266,7 @@ export interface IDeploySolutionOptions {
   progressCallback?: ISolutionProgressCallback;
   consoleProgress?: boolean; // default: false
   storageAuthentication?: UserSession;  // credentials for the organization with the source items; default:
-  }
+}
 
 /**
  * Result of deploying a solution item.

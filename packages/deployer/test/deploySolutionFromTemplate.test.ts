@@ -136,7 +136,7 @@ describe("Module `deploySolutionFromTemplate`", () => {
         .post(testUtils.PORTAL_SUBSET.restUrl + "/content/users/casey/items/dpl1234567890/update",
           testUtils.getSuccessResponse({ id: deployedSolutionId })
         )
-      ;
+        ;
 
       deploySolutionFromTemplate(
         templateSolutionId,
@@ -196,7 +196,7 @@ describe("Module `deploySolutionFromTemplate`", () => {
         .post(testUtils.PORTAL_SUBSET.restUrl + "/content/users/casey/items/dpl1234567890/update",
           testUtils.getSuccessResponse({ id: deployedSolutionId })
         )
-      ;
+        ;
 
       deploySolutionFromTemplate(
         templateSolutionId,

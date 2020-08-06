@@ -1664,7 +1664,7 @@ describe("Module `deployer`", () => {
             testUtils.getSuccessResponse({ itemId: "map1234567890" })
           );
         // tslint:disable-next-line: no-empty
-        spyOn(console, "error").and.callFake(() => {});
+        spyOn(console, "error").and.callFake(() => { });
 
         const options: common.IDeploySolutionOptions = {
           progressCallback: testUtils.SOLUTION_PROGRESS_CALLBACK
