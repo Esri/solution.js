@@ -99,7 +99,7 @@ describe("Module `deployer`", () => {
             .resolves(xmlFile);
 
           deployFnStub = sinon
-            .stub(deploySolutionFromTemplate, "_deploySolutionFromTemplate")
+            .stub(deploySolutionFromTemplate, "deploySolutionFromTemplate")
             .resolves("3ef");
         });
 
@@ -119,7 +119,7 @@ describe("Module `deployer`", () => {
               );
               expect(deployFnStub.calledOnce).toBe(
                 true,
-                "_deploySolutionFromTemplate should be called once"
+                "deploySolutionFromTemplate should be called once"
               );
               // TODO: verify inputs to deployFn
               done();
@@ -152,11 +152,11 @@ describe("Module `deployer`", () => {
               );
               expect(deployFnStub.calledOnce).toBe(
                 true,
-                "_deploySolutionFromTemplate should be called once"
+                "deploySolutionFromTemplate should be called once"
               );
               expect(deployFnStub.args[0][0]).toBe(
                 _itemInfo.item.id,
-                "_deploySolutionFromTemplate should be called with an item id"
+                "deploySolutionFromTemplate should be called with an item id"
               );
               // TODO: verify inputs to deployFn
               expect(pgStub.calledTwice).toBe(
@@ -1664,7 +1664,7 @@ describe("Module `deployer`", () => {
             testUtils.getSuccessResponse({ itemId: "map1234567890" })
           );
         // tslint:disable-next-line: no-empty
-        spyOn(console, "error").and.callFake(() => {});
+        spyOn(console, "error").and.callFake(() => { });
 
         const options: common.IDeploySolutionOptions = {
           progressCallback: testUtils.SOLUTION_PROGRESS_CALLBACK
