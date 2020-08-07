@@ -36,6 +36,7 @@ export function deploySolution(
       reject("Solution's ID is not defined");
       return;
     }
+    const anonUS = new common.UserSession({portal:"https://www.arcgis.com/sharing/rest"});
 
     // Deploy a solution described by the supplied id
     const options: common.IDeploySolutionOptions = {
@@ -46,7 +47,8 @@ export function deploySolution(
       tags: ["test"],
       additionalTypeKeywords: ["TypeKeyword"],
       progressCallback: progressCallback,
-      consoleProgress: true
+      consoleProgress: true,
+      storageAuthentication: anonUS
     };
     deployer.deploySolution(templateSolutionId, authentication, options).then(
       (deployedSolution: any) => {
