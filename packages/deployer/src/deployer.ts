@@ -54,8 +54,14 @@ export function deploySolution(
   if (deployOptions.progressCallback) {
     deployOptions.progressCallback(1); // let the caller know that we've started
   }
+
+  // It is possible to provide a separate authentication for the source
+  const storageAuthentication: common.UserSession = deployOptions.storageAuthentication
+    ? deployOptions.storageAuthentication
+    : authentication;
+
   // deal with maybe getting an item or an id
-  return _getSolutionTemplateItem(maybeModel, authentication)
+  return _getSolutionTemplateItem(maybeModel, storageAuthentication)
     .then(model => {
       if (!isSolutionTemplateItem(model.item)) {
         return Promise.reject(
