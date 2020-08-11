@@ -335,7 +335,7 @@
       html += ' class="checklist">';
       searchResults.forEach(
         result => {
-          html += '<li><input type="checkbox" value="' + result.id + '">' +
+          html += '<li><input type="checkbox" value="' + result.id + '"> ' +
             result.type + ' "' + result.title + '" (';
           if (portal) {
             html += '<a href="' + portal + '/home/item.html?id=' + result.id + '" target="_blank">' +
