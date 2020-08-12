@@ -173,6 +173,8 @@ export function getRequestAuthentication(
  * Gets items with "Solution,Template" type keywords.
  *
  * @param authentication Authentication for server to query
+ * @param getAllOrgSolutions If true, gets all Solution templates in organization regardless of owner
+ * @return Solution templates
  */
 export function getTemplates(
   authentication: common.UserSession,
@@ -195,7 +197,7 @@ export function getTemplates(
         }
         const pagingParam = {
           start: 1,
-          num: 100,
+          num: 100, // maximum page size permitted by REST API
           sortField: "title",
           sortOrder: "asc"
         };
@@ -207,12 +209,42 @@ export function getTemplates(
           ...requestOptions,
           ...pagingParam
         };
-        common.searchItems(searchOptions).then(
-          searchResponse => resolve(searchResponse),
-          error => reject(error)
-        );
-      },
+        return common.searchItems(searchOptions)
+      }
+    )
+    .then(
+      searchTrancheResponse => resolve(accumulateSearchResults(searchTrancheResponse))
+    )
+    .catch(
       error => reject(error)
     );
   });
 }
+
+/**
+ * Uses the response from arcgis-rest-js' searchItems to accumulate results from paged queries
+ *
+ * @param searchTrancheResponse Response from a call to arcgis-rest-js' searchItems
+ * @return Solution templates from searchTrancheResponse with subsequent pages appended
+ */
+function accumulateSearchResults (
+  searchTrancheResponse: common.ISearchResult<common.IItem>
+): Promise<common.ISearchResult<common.IItem>> {
+  // No more items to fetch
+  if (!searchTrancheResponse.nextPage) {
+    return Promise.resolve(searchTrancheResponse);
+  }
+
+  return new Promise((resolve, reject) => {
+    searchTrancheResponse.nextPage().then(
+      searchTrancheResponse2 => {
+        searchTrancheResponse2.results = searchTrancheResponse.results.concat(searchTrancheResponse2.results);
+        searchTrancheResponse2.start = 1;
+        searchTrancheResponse2.num = searchTrancheResponse2.results.length;
+        resolve(accumulateSearchResults(searchTrancheResponse2));
+      },
+      reject
+    );
+  });
+}
+

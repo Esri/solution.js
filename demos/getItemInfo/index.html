@@ -49,7 +49,7 @@
   <script src="https://requirejs.org/docs/release/2.3.6/minified/require.js"></script>
   <script>
     var goFcn;
-    document.getElementById("srcPortal").value = "https://www.arcgis.com/sharing/rest";
+    document.getElementById("srcPortal").value = "https://www.arcgis.com";
     require.config({
       paths: {
         "tslib": "node_modules/tslib/tslib",
@@ -84,7 +84,7 @@
             new auth.UserSession({
               username: document.getElementById("username").value,
               password: document.getElementById("password").value,
-              portal: document.getElementById("srcPortal").value
+              portal: document.getElementById("srcPortal").value + "/sharing/rest"
             })
           ).then(
             html => {
