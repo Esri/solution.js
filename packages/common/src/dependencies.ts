@@ -98,7 +98,7 @@ export function topologicallySortItems(
         visit(dependencyId);
       } else if (verticesToVisit[dependencyId] === SortVisitColor.Gray) {
         // visited, in progress
-        throw Error("Cyclical dependency graph detected");
+        throw Error("Cyclical dependency detected involving items " + vertexId + " and " + dependencyId);
       } else {
         // finished
       }
