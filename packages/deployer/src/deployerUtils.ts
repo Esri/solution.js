@@ -22,7 +22,7 @@ import * as common from "@esri/solution-common";
  * @param idOrObject string || object like `{item:{...}, data: {...}}`
  * @param authentication UserSession
  */
-export function _getSolutionTemplateItem(
+export function getSolutionTemplateItem(
   idOrObject: any,
   authentication: common.UserSession
 ): Promise<any> {
@@ -49,7 +49,7 @@ export function _getSolutionTemplateItem(
     } else {
       return Promise.reject(
         common.fail(
-          `_getSolutionTemplateItem must be passed an item id or a model object`
+          `getSolutionTemplateItem must be passed an item id or a model object`
         )
       );
     }
@@ -63,7 +63,7 @@ export function _getSolutionTemplateItem(
  * @param item
  * @param authentication
  */
-export function _updateDeployOptions(
+export function updateDeployOptions(
   deployOptions: any,
   item: common.IItem,
   authentication: common.UserSession
