@@ -83,7 +83,7 @@ describe("Module `deployer`", () => {
         beforeEach(() => {
           itemInfo = cloneObject(templates.getSolutionTemplateItem([]));
           solTmplStub = sinon
-            .stub(deployUtils, "_getSolutionTemplateItem")
+            .stub(deployUtils, "getSolutionTemplateItem")
             .callsFake((idOrObj, auth) => {
               return Promise.resolve({
                 item: itemInfo.item,
@@ -111,7 +111,7 @@ describe("Module `deployer`", () => {
             .then(() => {
               expect(solTmplStub.calledOnce).toBe(
                 true,
-                "_getSolutionTemplateItem should be called"
+                "getSolutionTemplateItem should be called"
               );
               expect(metaStub.calledOnce).toBe(
                 true,
@@ -122,6 +122,37 @@ describe("Module `deployer`", () => {
                 "deploySolutionFromTemplate should be called once"
               );
               // TODO: verify inputs to deployFn
+              done();
+            })
+            .catch(err => {
+              fail(err.error);
+            });
+        });
+        it("should default to using supplied authentication for solution source", done => {
+          return deployer
+            .deploySolution(itemInfo.item.id, MOCK_USER_SESSION)
+            .then(() => {
+              expect(solTmplStub.args[0][1]).toBe(
+                MOCK_USER_SESSION,
+                "destination authentication should be used"
+              );
+              done();
+            })
+            .catch(err => {
+              fail(err.error);
+            });
+        });
+        it("should use solution-source authentication if supplied", done => {
+          const opts = {
+            storageAuthentication: testUtils.createRuntimeMockUserSession(undefined, "https://myotherorg.maps.arcgis.com")
+          };
+          return deployer
+            .deploySolution(itemInfo.item.id, MOCK_USER_SESSION, opts)
+            .then(() => {
+              expect(solTmplStub.args[0][1]).toBe(
+                opts.storageAuthentication,
+                "source authentication should be used"
+              );
               done();
             })
             .catch(err => {
@@ -144,7 +175,7 @@ describe("Module `deployer`", () => {
             .then(() => {
               expect(solTmplStub.calledOnce).toBe(
                 true,
-                "_getSolutionTemplateItem should be called"
+                "getSolutionTemplateItem should be called"
               );
               expect(metaStub.calledOnce).toBe(
                 true,
