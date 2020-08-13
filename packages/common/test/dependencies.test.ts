@@ -91,7 +91,7 @@ describe("Module `dependencies`: functions for determining deployment order", ()
         dependencies.topologicallySortItems(templatesList);
         fail();
       } catch (err) {
-        expect(err.message).toEqual("Cyclical dependency graph detected");
+        expect(err.message).toEqual("Cyclical dependency detected involving items dsh1234567890 and wma1234567890");
       }
     });
   });
