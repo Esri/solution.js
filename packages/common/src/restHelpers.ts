@@ -1589,6 +1589,10 @@ export function _setItemProperties(
     "isMultiServicesView"
   ];
   const deleteKeys: string[] = ["layers", "tables"];
+  if (isPortal) {
+    // removed for issue #423 causing FS to fail to create
+    deleteKeys.push("adminServiceInfo");
+  }
   const itemKeys: string[] = Object.keys(item);
   const serviceKeys: string[] = Object.keys(serviceInfo.service);
   serviceKeys.forEach(k => {
