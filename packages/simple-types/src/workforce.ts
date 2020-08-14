@@ -292,7 +292,7 @@ export function _templatizeUrlTemplate(item: any, urlHash: any): void {
 }
 
 export function _getURLs(v: string): string[] {
-  return regExTest(v, /(?<=featureSourceURL=).*?(?=&|$)/gi);
+  return regExTest(v, /http.*?FeatureServer.*?(?=&|$)/gi);
 }
 
 export function _getIDs(v: string): string[] {
