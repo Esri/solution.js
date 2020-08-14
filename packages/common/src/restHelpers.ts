@@ -868,7 +868,7 @@ export function getLayerUpdates(args: IPostProcessArgs): IUpdate[] {
   Object.keys(args.objects).forEach(id => {
     const obj: any = Object.assign({}, args.objects[id]);
     // These properties cannot be set in the update definition when working with portal
-    deleteProps(obj, ["type", "id", "relationships"]);
+    deleteProps(obj, ["type", "id", "relationships", "sourceServiceFields"]);
     // handle definition deletes
     // removes previous editFieldsInfo fields if their names were changed
     if (obj.hasOwnProperty("deleteFields")) {
