@@ -24,9 +24,9 @@ import * as common from "@esri/solution-common";
 
 import { deploySolutionFromTemplate } from "./deploySolutionFromTemplate";
 import {
-  _getSolutionTemplateItem,
+  getSolutionTemplateItem,
   isSolutionTemplateItem,
-  _updateDeployOptions
+  updateDeployOptions
 } from "./deployerUtils";
 import { IModel } from "@esri/hub-common";
 
@@ -61,7 +61,7 @@ export function deploySolution(
     : authentication;
 
   // deal with maybe getting an item or an id
-  return _getSolutionTemplateItem(maybeModel, storageAuthentication)
+  return getSolutionTemplateItem(maybeModel, storageAuthentication)
     .then(model => {
       if (!isSolutionTemplateItem(model.item)) {
         return Promise.reject(
@@ -87,7 +87,7 @@ export function deploySolution(
       // get the item id before it is deleted
       const itemId = item.id;
       // apply item props to deployOptions
-      deployOptions = _updateDeployOptions(deployOptions, item, authentication);
+      deployOptions = updateDeployOptions(deployOptions, item, authentication);
       // Clone before mutating? This was messing me up in some testing...
       common.deleteItemProps(item);
 
