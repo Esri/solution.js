@@ -587,6 +587,10 @@
             </li>
             
             <li class="tsd-kind-function padding-right-1 visually-hidden api-list-item">
+              <a href="/solution.js/api/common/getDefaultExtent/" class="tsd-kind-icon padding-right-1">getDefaultExtent</a>
+            </li>
+            
+            <li class="tsd-kind-function padding-right-1 visually-hidden api-list-item">
               <a href="/solution.js/api/common/getFeatureServiceProperties/" class="tsd-kind-icon padding-right-1">getFeatureServiceProperties</a>
             </li>
             
@@ -1301,10 +1305,6 @@
             </li>
             
             <li class="tsd-kind-function padding-right-1 visually-hidden api-list-item">
-              <a href="/solution.js/api/deployer/_deploySolutionFromTemplate/" class="tsd-kind-icon padding-right-1">_deploySolutionFromTemplate</a>
-            </li>
-            
-            <li class="tsd-kind-function padding-right-1 visually-hidden api-list-item">
               <a href="/solution.js/api/deployer/_estimateDeploymentCost/" class="tsd-kind-icon padding-right-1">_estimateDeploymentCost</a>
             </li>
             
@@ -1333,10 +1333,6 @@
             </li>
             
             <li class="tsd-kind-function padding-right-1 visually-hidden api-list-item">
-              <a href="/solution.js/api/deployer/_getSolutionTemplateItem/" class="tsd-kind-icon padding-right-1">_getSolutionTemplateItem</a>
-            </li>
-            
-            <li class="tsd-kind-function padding-right-1 visually-hidden api-list-item">
               <a href="/solution.js/api/deployer/_handleExistingItems/" class="tsd-kind-icon padding-right-1">_handleExistingItems</a>
             </li>
             
@@ -1357,10 +1353,6 @@
             </li>
             
             <li class="tsd-kind-function padding-right-1 visually-hidden api-list-item">
-              <a href="/solution.js/api/deployer/_updateDeployOptions/" class="tsd-kind-icon padding-right-1">_updateDeployOptions</a>
-            </li>
-            
-            <li class="tsd-kind-function padding-right-1 visually-hidden api-list-item">
               <a href="/solution.js/api/deployer/_updateGroupReferences/" class="tsd-kind-icon padding-right-1">_updateGroupReferences</a>
             </li>
             
@@ -1373,7 +1365,15 @@
             </li>
             
             <li class="tsd-kind-function padding-right-1 visually-hidden api-list-item">
+              <a href="/solution.js/api/deployer/deploySolutionFromTemplate/" class="tsd-kind-icon padding-right-1">deploySolutionFromTemplate</a>
+            </li>
+            
+            <li class="tsd-kind-function padding-right-1 visually-hidden api-list-item">
               <a href="/solution.js/api/deployer/deploySolutionItems/" class="tsd-kind-icon padding-right-1">deploySolutionItems</a>
+            </li>
+            
+            <li class="tsd-kind-function padding-right-1 visually-hidden api-list-item">
+              <a href="/solution.js/api/deployer/getSolutionTemplateItem/" class="tsd-kind-icon padding-right-1">getSolutionTemplateItem</a>
             </li>
             
             <li class="tsd-kind-function padding-right-1 visually-hidden api-list-item">
@@ -1386,6 +1386,10 @@
             
             <li class="tsd-kind-function padding-right-1 visually-hidden api-list-item">
               <a href="/solution.js/api/deployer/shareTemplatesToGroups/" class="tsd-kind-icon padding-right-1">shareTemplatesToGroups</a>
+            </li>
+            
+            <li class="tsd-kind-function padding-right-1 visually-hidden api-list-item">
+              <a href="/solution.js/api/deployer/updateDeployOptions/" class="tsd-kind-icon padding-right-1">updateDeployOptions</a>
             </li>
             
             <li class="tsd-kind-object-literal padding-right-1 visually-hidden api-list-item">
@@ -2185,7 +2189,7 @@ are built before items that require those dependencies</p>
   
 
 
-<small class="font-size--2">Function defined in <a href="https://github.com/Esri/solution.js/blob/master/packages/common/src/dependencies.ts#L37">packages/common/src/dependencies.ts:37</a></small>
+<small class="font-size--2">Function defined in <a href="https://github.com/Esri/solution.js/blob/master/packages/common/src/dependencies.ts#L38">packages/common/src/dependencies.ts:38</a></small>
 
 
   <details class="leader-1">
@@ -2193,7 +2197,8 @@ are built before items that require those dependencies</p>
     <pre><code>[
   {
     tag: 'throws',
-    text: 'Error("Cyclical dependency graph detected")'
+    text: 'Error("Cyclical dependency detected involving items # and #")\n' +
+      'Note that items thrown in error may be dependent on each other either directly or via other items.'
   }
 ]</code></pre>
   </details>

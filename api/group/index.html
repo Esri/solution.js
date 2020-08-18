@@ -587,6 +587,10 @@
             </li>
             
             <li class="tsd-kind-function padding-right-1 visually-hidden api-list-item">
+              <a href="/solution.js/api/common/getDefaultExtent/" class="tsd-kind-icon padding-right-1">getDefaultExtent</a>
+            </li>
+            
+            <li class="tsd-kind-function padding-right-1 visually-hidden api-list-item">
               <a href="/solution.js/api/common/getFeatureServiceProperties/" class="tsd-kind-icon padding-right-1">getFeatureServiceProperties</a>
             </li>
             
@@ -1301,10 +1305,6 @@
             </li>
             
             <li class="tsd-kind-function padding-right-1 visually-hidden api-list-item">
-              <a href="/solution.js/api/deployer/_deploySolutionFromTemplate/" class="tsd-kind-icon padding-right-1">_deploySolutionFromTemplate</a>
-            </li>
-            
-            <li class="tsd-kind-function padding-right-1 visually-hidden api-list-item">
               <a href="/solution.js/api/deployer/_estimateDeploymentCost/" class="tsd-kind-icon padding-right-1">_estimateDeploymentCost</a>
             </li>
             
@@ -1333,10 +1333,6 @@
             </li>
             
             <li class="tsd-kind-function padding-right-1 visually-hidden api-list-item">
-              <a href="/solution.js/api/deployer/_getSolutionTemplateItem/" class="tsd-kind-icon padding-right-1">_getSolutionTemplateItem</a>
-            </li>
-            
-            <li class="tsd-kind-function padding-right-1 visually-hidden api-list-item">
               <a href="/solution.js/api/deployer/_handleExistingItems/" class="tsd-kind-icon padding-right-1">_handleExistingItems</a>
             </li>
             
@@ -1357,10 +1353,6 @@
             </li>
             
             <li class="tsd-kind-function padding-right-1 visually-hidden api-list-item">
-              <a href="/solution.js/api/deployer/_updateDeployOptions/" class="tsd-kind-icon padding-right-1">_updateDeployOptions</a>
-            </li>
-            
-            <li class="tsd-kind-function padding-right-1 visually-hidden api-list-item">
               <a href="/solution.js/api/deployer/_updateGroupReferences/" class="tsd-kind-icon padding-right-1">_updateGroupReferences</a>
             </li>
             
@@ -1373,7 +1365,15 @@
             </li>
             
             <li class="tsd-kind-function padding-right-1 visually-hidden api-list-item">
+              <a href="/solution.js/api/deployer/deploySolutionFromTemplate/" class="tsd-kind-icon padding-right-1">deploySolutionFromTemplate</a>
+            </li>
+            
+            <li class="tsd-kind-function padding-right-1 visually-hidden api-list-item">
               <a href="/solution.js/api/deployer/deploySolutionItems/" class="tsd-kind-icon padding-right-1">deploySolutionItems</a>
+            </li>
+            
+            <li class="tsd-kind-function padding-right-1 visually-hidden api-list-item">
+              <a href="/solution.js/api/deployer/getSolutionTemplateItem/" class="tsd-kind-icon padding-right-1">getSolutionTemplateItem</a>
             </li>
             
             <li class="tsd-kind-function padding-right-1 visually-hidden api-list-item">
@@ -1386,6 +1386,10 @@
             
             <li class="tsd-kind-function padding-right-1 visually-hidden api-list-item">
               <a href="/solution.js/api/deployer/shareTemplatesToGroups/" class="tsd-kind-icon padding-right-1">shareTemplatesToGroups</a>
+            </li>
+            
+            <li class="tsd-kind-function padding-right-1 visually-hidden api-list-item">
+              <a href="/solution.js/api/deployer/updateDeployOptions/" class="tsd-kind-icon padding-right-1">updateDeployOptions</a>
             </li>
             
             <li class="tsd-kind-object-literal padding-right-1 visually-hidden api-list-item">
@@ -2050,13 +2054,13 @@
 
   <div class="column-18">
     <div class="panel panel-white padding-left-1 padding-right-1 padding-trailer-1 padding-leader-half">
-      <small class="label right">Version 0.17.2</small>
+      <small class="label right">Version 0.17.3</small>
 <h1 class="tsd-kind-module font-size-3 trailer-half code-face">
   <a href="/solution.js/api/group/" class="is-active">@esri/solution-group</a>
 </h1>
 <p class="font-size--1 trailer-1 avenir-regular">Manages the creation and deployment of group item types for @esri/solution.js.</p>
 <h2 class="font-size-0 trailer-quarter">npm install:</h2>
-<pre><code>npm install @esri/solution-group @esri/arcgis-rest-auth@^2.13.2  @esri/arcgis-rest-feature-layer@^2.13.2  @esri/arcgis-rest-portal@^2.13.2  @esri/arcgis-rest-request@^2.13.2  @esri/arcgis-rest-service-admin@^2.13.2  @esri/hub-common@^4.2.0  @esri/hub-initiatives@^4.2.0  @esri/hub-sites@^4.2.0  @esri/solution-common@^0.17.2 </code></pre>
+<pre><code>npm install @esri/solution-group @esri/arcgis-rest-auth@^2.13.2  @esri/arcgis-rest-feature-layer@^2.13.2  @esri/arcgis-rest-portal@^2.13.2  @esri/arcgis-rest-request@^2.13.2  @esri/arcgis-rest-service-admin@^2.13.2  @esri/hub-common@^4.2.0  @esri/hub-initiatives@^4.2.0  @esri/hub-sites@^4.2.0  @esri/solution-common@^0.17.3 </code></pre>
 <h2 class="font-size-0 trailer-quarter">Module Import:</h2>
 
 <pre><code class="js"><span class="hljs-keyword">import</span> {
@@ -2066,10 +2070,10 @@
 } <span class="hljs-keyword">from</span> <span class="hljs-string">"@esri/solution-group"</span>;</code></pre>
 
 <h2 class="font-size-0 trailer-quarter">CDN:</h2>
-<pre><code class="html"><span class="hljs-tag">&lt;<span class="hljs-name">script</span> <span class="hljs-attr">src</span>=<span class="hljs-string">"https://unpkg.com/@esri/solution-group@0.17.2/dist/umd/group.umd.min.js"</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span></code></pre>
+<pre><code class="html"><span class="hljs-tag">&lt;<span class="hljs-name">script</span> <span class="hljs-attr">src</span>=<span class="hljs-string">"https://unpkg.com/@esri/solution-group@0.17.3/dist/umd/group.umd.min.js"</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span></code></pre>
 <h2 class="font-size-0 trailer-quarter">CDN with SRI:</h2>
 
-        <pre><code class="html"><span class="hljs-tag">&lt;<span class="hljs-name">script</span> <span class="hljs-attr">src</span>=<span class="hljs-string">"https://unpkg.com/@esri/solution-group@0.17.2/dist/umd/group.umd.min.js"</span> <span class="hljs-attr">integrity</span>=<span class="hljs-string">"sha384-Eg59PXz1V4O94MWc4buoYZ4DncIXRuhHbJ8Tv4wl4xmSPo37fNdWlPKu7/5PIOoF"</span> <span class="hljs-attr">crossorigin</span>=<span class="hljs-string">"anonymous"</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span></code></pre>
+        <pre><code class="html"><span class="hljs-tag">&lt;<span class="hljs-name">script</span> <span class="hljs-attr">src</span>=<span class="hljs-string">"https://unpkg.com/@esri/solution-group@0.17.3/dist/umd/group.umd.min.js"</span> <span class="hljs-attr">integrity</span>=<span class="hljs-string">"sha384-JG7jZivzEd86CJ7qITYTbjUtNqBkmhdDSd/rxX3tig1cdXOBcXAkePn9wpdajCd0"</span> <span class="hljs-attr">crossorigin</span>=<span class="hljs-string">"anonymous"</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span></code></pre>
 <hr class="leader-half trailer-quarter" />
 <ul class="list-plain package-contents">
   
