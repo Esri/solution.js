@@ -73,6 +73,7 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
             "bad3483e025c47338d43df308c117308"
           ]
         );
+        expectedTemplate.item.extent = [];
         expectedTemplate.item.thumbnail = item.thumbnail;
         expectedTemplate.item.title = item.title;
         expectedTemplate.estimatedDeploymentCostFactor = 2;
@@ -328,7 +329,7 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
             contentStatus: null,
             culture: "en-us",
             description: "Description of an AGOL item",
-            extent: "{{solutionItemExtent}}",
+            extent: [],
             spatialReference: undefined,
             licenseInfo: null,
             name: "Name of an AGOL item",
@@ -419,7 +420,7 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
             contentStatus: null,
             culture: "en-us",
             description: "Description of an AGOL item",
-            extent: "{{solutionItemExtent}}",
+            extent: [],
             properties: null,
             spatialReference: undefined,
             licenseInfo: null,
@@ -541,7 +542,7 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
             contentStatus: null,
             culture: "en-us",
             description: "Description of an AGOL item",
-            extent: "{{solutionItemExtent}}",
+            extent: [],
             spatialReference: undefined,
             licenseInfo: null,
             name: "Name of an AGOL item",
@@ -626,7 +627,7 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
             contentStatus: null,
             culture: "en-us",
             description: "Description of an AGOL item",
-            extent: "{{solutionItemExtent}}",
+            extent: [],
             spatialReference: undefined,
             licenseInfo: null,
             name: "formData.zip",
@@ -792,7 +793,7 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
             contentStatus: null,
             culture: "en-us",
             description: "Description of an AGOL item",
-            extent: "{{solutionItemExtent}}",
+            extent: [],
             properties: null,
             spatialReference: undefined,
             licenseInfo: null,

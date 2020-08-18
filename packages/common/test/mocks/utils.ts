@@ -25,13 +25,13 @@ import * as polyfills from "../../src/polyfills";
 export const ORG_URL = "https://myorg.maps.arcgis.com";
 export const PORTAL_URL = "https://myorg.maps.arcgis.com";
 
-export const TOMORROW = (function() {
+export const TOMORROW = (function () {
   const now = new Date();
   now.setDate(now.getDate() + 1);
   return now;
 })();
 
-export const YESTERDAY = (function() {
+export const YESTERDAY = (function () {
   const now = new Date();
   now.setDate(now.getDate() - 1);
   return now;
@@ -77,7 +77,7 @@ export const PORTAL_SUBSET = {
   urlKey: "deploymentTest"
 };
 
-export const ITEM_PROGRESS_CALLBACK: interfaces.IItemProgressCallback = function(
+export const ITEM_PROGRESS_CALLBACK: interfaces.IItemProgressCallback = function (
   itemId: string,
   status: interfaces.EItemProgressStatus,
   costUsed: number,
@@ -86,7 +86,7 @@ export const ITEM_PROGRESS_CALLBACK: interfaces.IItemProgressCallback = function
   return true;
 };
 
-export const SOLUTION_PROGRESS_CALLBACK: interfaces.ISolutionProgressCallback = function(
+export const SOLUTION_PROGRESS_CALLBACK: interfaces.ISolutionProgressCallback = function (
   percentDone: number,
   jobId: string,
   progressEvent: interfaces.ISolutionProgressEvent
@@ -104,7 +104,7 @@ export function createFailingItemProgressCallbackOnNthCall(
   callToFailOn: number
 ): interfaces.IItemProgressCallback {
   let numCalls = 0;
-  return function(itemId, status, costUsed) {
+  return function (itemId, status, costUsed) {
     return callToFailOn !== ++numCalls;
   };
 }
@@ -372,7 +372,7 @@ export function createMockSettings(
   return settings;
 }
 
-export function createRuntimeMockUserSession(now?: number): UserSession {
+export function createRuntimeMockUserSession(now?: number, portalUrl?: string): UserSession {
   if (now === undefined) {
     now = Date.now();
   }
@@ -387,7 +387,7 @@ export function createRuntimeMockUserSession(now?: number): UserSession {
     refreshTokenTTL: 1440,
     username: "casey",
     password: "123456",
-    portal: PORTAL_URL + "/sharing/rest"
+    portal: (portalUrl || PORTAL_URL) + "/sharing/rest"
   });
 }
 
@@ -1167,24 +1167,24 @@ export function getGroupResponse(query: string, hasResult: boolean) {
     results: !hasResult
       ? []
       : [
-          {
-            id: "2146ddb18dbe4fe1bb11dc9594164549",
-            title: query,
-            isInvitationOnly: false,
-            owner: "casey",
-            description: "",
-            snippet: "",
-            tags: ["test"],
-            phone: "123-456-7890",
-            sortField: "title",
-            sortOrder: "asc",
-            isViewOnly: false,
-            isFav: false,
-            thumbnail: "test.jpg",
-            created: 1258061693000,
-            access: "public"
-          }
-        ]
+        {
+          id: "2146ddb18dbe4fe1bb11dc9594164549",
+          title: query,
+          isInvitationOnly: false,
+          owner: "casey",
+          description: "",
+          snippet: "",
+          tags: ["test"],
+          phone: "123-456-7890",
+          sortField: "title",
+          sortOrder: "asc",
+          isViewOnly: false,
+          isFav: false,
+          thumbnail: "test.jpg",
+          created: 1258061693000,
+          access: "public"
+        }
+      ]
   };
 }
 
@@ -1223,7 +1223,7 @@ export function returnOnNthCall(
   itemBeforeNthCall: any
 ): interfaces.INoArgFunction {
   let numCalls = 0;
-  return function() {
+  return function () {
     return ++numCalls < trigger ? itemBeforeNthCall : itemForNthCall;
   };
 }

@@ -43,11 +43,7 @@
           <label for="solutionId">Enter a Solution ID:</label>
           <input class="form-control" type="text" id="solutionId">
           <label for="id">Or pick from the list below:</label>
-          <select name="Solution Item" id="id" class="form-control">
-            <option value="140242ff369a4da2aab7860a709d3e13">Corona Response ( 140242ff369a4da2aab7860a709d3e13 ) </option>
-            <option value="5fb1779bf3424e6592d45132b472b480">Open Data Dave ( 5fb1779bf3424e6592d45132b472b480 )</option>
-            <option value="a9920828b2d3419584f65bbdb5278105">Open Data Site ( a9920828b2d3419584f65bbdb5278105 )</option>
-          </select>
+          <select name="Solution Item" id="id" class="form-control"></select>
           <br /><br />
           <i>Credentials in destination organization:</i><br />
           <label for="username">username:</label>
@@ -55,7 +51,7 @@
           <label for="password">password:</label>
           <input type="password" id="password" class="form-control" value="">
           <label for="password">Portal:</label>
-          <input type="text" id="portal" class="form-control" value="https://www.arcgis.com/sharing/rest">
+          <input type="text" id="portal" class="form-control" value="https://www.arcgis.com">
           <br /><br />
           <button class="btn btn-default" onclick="goFcn()">Deploy Solution</button>
         </div>
@@ -68,6 +64,7 @@
 
   <script crossorigin="anonymous" src="https://polyfill.io/v3/polyfill.min.js?features=fetch%2Ces2015"></script>
   <script src="https://requirejs.org/docs/release/2.3.6/minified/require.js"></script>
+  <script src="data/appConfig.js"></script>
   <script>
     var goFcn;
     require.config({
@@ -101,8 +98,22 @@
     require(["@esri/arcgis-rest-auth", "dist/main"],
       function (auth, main) {
         "use strict";
+        
         goFcn = go;
         document.getElementById("input").style.display = "block";
+
+        const groupId = appConfig.solutionsGroupId;
+        const solutionsSelect = document.getElementById("id");
+        
+        // Populate solution picklist
+        main.getTemplates(groupId).then((solutions) => {
+          solutions.forEach((solution) => {
+            var option = document.createElement("option");
+            option.value = solution.id
+            option.text = solution.title + " ( " + solution.id + " )";
+            solutionsSelect.add(option);
+          });
+        });
 
         function go () {
           document.getElementById("input").style.display = "none";
@@ -118,7 +129,7 @@
             new auth.UserSession({
               username: document.getElementById("username").value,
               password: document.getElementById("password").value,
-              portal: document.getElementById("portal").value
+              portal: document.getElementById("portal").value + "/sharing/rest"
             }),
             function (percentDone, jobId, progressEvent) {
               if (progressEvent) {

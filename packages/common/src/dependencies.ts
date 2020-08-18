@@ -31,7 +31,8 @@ import { findTemplateIndexInList } from "./templatization";
  * @param templates A collection of AGO item templates
  * @return List of ids of items in the order in which they need to be built so that dependencies
  * are built before items that require those dependencies
- * @throws Error("Cyclical dependency graph detected")
+ * @throws Error("Cyclical dependency detected involving items # and #")
+ * Note that items thrown in error may be dependent on each other either directly or via other items.
  * @protected
  */
 export function topologicallySortItems(
@@ -98,7 +99,7 @@ export function topologicallySortItems(
         visit(dependencyId);
       } else if (verticesToVisit[dependencyId] === SortVisitColor.Gray) {
         // visited, in progress
-        throw Error("Cyclical dependency graph detected");
+        throw Error("Cyclical dependency detected involving items " + vertexId + " and " + dependencyId);
       } else {
         // finished
       }

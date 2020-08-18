@@ -79,7 +79,7 @@ export function _addContentToSolution(
       totalExpended += costUsed;
       percentDone += progressPercentStep * costUsed;
       if (options.progressCallback) {
-        options.progressCallback(percentDone, options.jobId);
+        options.progressCallback(Math.round(percentDone), options.jobId);
       }
 
       /* istanbul ignore if */

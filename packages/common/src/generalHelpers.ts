@@ -108,13 +108,13 @@ export function checkUrlPathTermination(url: string): string {
 
 /**
  * Creates a random 32-character alphanumeric string.
- * 
+ *
  * @return A lowercase 32-char alphanumeric string
  * @internal
  */
 export function createLongId(): string {
   // createId gets a random number, converts it to base 36 representation, then grabs chars 2-8
-  return createId() + createId() + createId() + createId();
+  return createId("") + createId("") + createId("") + createId("");
 }
 
 /**

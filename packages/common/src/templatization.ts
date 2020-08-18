@@ -102,7 +102,7 @@ export function createInitializedItemTemplate(itemInfo: any): IItemTemplate {
     contentStatus: itemInfo.contentStatus,
     culture: itemInfo.culture,
     description: itemInfo.description,
-    extent: "{{solutionItemExtent}}",
+    extent: getDefaultExtent(itemInfo),
     licenseInfo: itemInfo.licenseInfo,
     name: itemInfo.name,
     properties: itemInfo.properties,
@@ -187,6 +187,13 @@ export function hasUnresolvedVariables(data: any): boolean {
 
 export function getIdsInTemplatesList(templates: IItemTemplate[]): string[] {
   return templates.map(template => template.itemId);
+}
+
+export function getDefaultExtent(itemInfo: any): any {
+  const ext: any = itemInfo.extent;
+  return ext === null || (Array.isArray(ext) && ext.length === 0)
+    ? ext
+    : "{{solutionItemExtent}}";
 }
 
 /**

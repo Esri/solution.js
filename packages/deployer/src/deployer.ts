@@ -22,21 +22,23 @@
 
 import * as common from "@esri/solution-common";
 
-import { _deploySolutionFromTemplate } from "./deploySolutionFromTemplate";
+import { deploySolutionFromTemplate } from "./deploySolutionFromTemplate";
 import {
-  _getSolutionTemplateItem,
+  getSolutionTemplateItem,
   isSolutionTemplateItem,
-  _updateDeployOptions
+  updateDeployOptions
 } from "./deployerUtils";
 import { IModel } from "@esri/hub-common";
 
 /**
  * Deploy a Solution
+ *
  * Pass in either the item id or an IModel (`{item:{}, model:{}}`)
  * of a Solution Template, and this will generate the Solution
+ *
  * @param maybeModel Item Id or IModel
- * @param authentication UserSession
- * @param options object
+ * @param authentication Credentials for the destination organization
+ * @param options Options to override deployed information and to provide additional credentials
  */
 export function deploySolution(
   maybeModel: string | IModel,
@@ -52,8 +54,14 @@ export function deploySolution(
   if (deployOptions.progressCallback) {
     deployOptions.progressCallback(1); // let the caller know that we've started
   }
+
+  // It is possible to provide a separate authentication for the source
+  const storageAuthentication: common.UserSession = deployOptions.storageAuthentication
+    ? deployOptions.storageAuthentication
+    : authentication;
+
   // deal with maybe getting an item or an id
-  return _getSolutionTemplateItem(maybeModel, authentication)
+  return getSolutionTemplateItem(maybeModel, storageAuthentication)
     .then(model => {
       if (!isSolutionTemplateItem(model.item)) {
         return Promise.reject(
@@ -79,11 +87,11 @@ export function deploySolution(
       // get the item id before it is deleted
       const itemId = item.id;
       // apply item props to deployOptions
-      deployOptions = _updateDeployOptions(deployOptions, item, authentication);
+      deployOptions = updateDeployOptions(deployOptions, item, authentication);
       // Clone before mutating? This was messing me up in some testing...
       common.deleteItemProps(item);
 
-      return _deploySolutionFromTemplate(
+      return deploySolutionFromTemplate(
         itemId,
         item,
         data,

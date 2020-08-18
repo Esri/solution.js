@@ -21,6 +21,9 @@
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
   <link rel="stylesheet" href="http://esri.github.io/calcite-bootstrap/styles/calcite-bootstrap.min.css">
   <style>
+  body {
+    padding: 16px;
+  }
   button {
     cursor: pointer;
   }
@@ -49,12 +52,14 @@
   <script src="https://requirejs.org/docs/release/2.3.6/minified/require.js"></script>
   <script>
     var goFcn;
-    document.getElementById("srcPortal").value = "https://www.arcgis.com/sharing/rest";
+    document.getElementById("srcPortal").value = "https://www.arcgis.com";
+    var package_path = window.location.href.substring(0, window.location.href.lastIndexOf('/'));
     require.config({
       paths: {
         "tslib": "node_modules/tslib/tslib",
+        "dist": package_path + "/dist",
+        "src": package_path + "/src",
 
-        // load the local versions
         "@esri/arcgis-rest-auth": "node_modules/@esri/arcgis-rest-auth/dist/umd/auth.umd.min",
         "@esri/arcgis-rest-feature-layer": "node_modules/@esri/arcgis-rest-feature-layer/dist/umd/feature-layer.umd.min",
         "@esri/arcgis-rest-portal": "node_modules/@esri/arcgis-rest-portal/dist/umd/portal.umd.min",
@@ -63,8 +68,6 @@
         "@esri/hub-common": "node_modules/@esri/hub-common/dist/umd/common.umd",
         "@esri/hub-sites": "node_modules/@esri/hub-sites/dist/umd/sites.umd",
         "@esri/hub-initiatives": "node_modules/@esri/hub-initiatives/dist/umd/initiatives.umd",
-
-        // load the unminified so we can debug things
         "@esri/solution-common": "node_modules/@esri/solution-common/dist/umd/common.umd"
       }
     });
@@ -84,12 +87,29 @@
             new auth.UserSession({
               username: document.getElementById("username").value,
               password: document.getElementById("password").value,
-              portal: document.getElementById("srcPortal").value
+              portal: document.getElementById("srcPortal").value + "/sharing/rest"
             })
           ).then(
             html => {
               document.getElementById("output").innerHTML = html;
-            },
+
+              // If the document contains #topologicalSortGraphic, add the dependency graph to it
+              const topologicalSortGraphicDiv = document.getElementById("topologicalSortGraphic");
+              if (topologicalSortGraphicDiv) {
+                require(["src/raphael_2.2.1.min"], function (Raphael) {
+                  window.Raphael = Raphael;
+                  require(["src/dracula_1.2.1.min"], function (Dracula) {
+                    main.showDependencyGraph(topologicalSortGraphicDiv, 1400, 1600, Raphael, Dracula)
+                    .then(
+                      () => {},
+                      error => {
+                        topologicalSortGraphicDiv.innerHTML = error;
+                      }
+                    );
+                  });
+                });
+              }
+          },
             error => {
               document.getElementById("output").innerHTML = "<span style=\"color:red\">" + error + "</span>";
             }

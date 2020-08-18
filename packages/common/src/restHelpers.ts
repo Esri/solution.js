@@ -868,7 +868,7 @@ export function getLayerUpdates(args: IPostProcessArgs): IUpdate[] {
   Object.keys(args.objects).forEach(id => {
     const obj: any = Object.assign({}, args.objects[id]);
     // These properties cannot be set in the update definition when working with portal
-    deleteProps(obj, ["type", "id", "relationships"]);
+    deleteProps(obj, ["type", "id", "relationships", "sourceServiceFields"]);
     // handle definition deletes
     // removes previous editFieldsInfo fields if their names were changed
     if (obj.hasOwnProperty("deleteFields")) {
@@ -1589,6 +1589,10 @@ export function _setItemProperties(
     "isMultiServicesView"
   ];
   const deleteKeys: string[] = ["layers", "tables"];
+  if (isPortal) {
+    // removed for issue #423 causing FS to fail to create
+    deleteKeys.push("adminServiceInfo");
+  }
   const itemKeys: string[] = Object.keys(item);
   const serviceKeys: string[] = Object.keys(serviceInfo.service);
   serviceKeys.forEach(k => {

@@ -17,8 +17,14 @@
 
 import * as common from "@esri/solution-common";
 import * as deployer from "@esri/solution-deployer";
+import * as portal from "@esri/arcgis-rest-portal";
 
 import * as getItemInfo from "./getItemInfo";
+
+export interface ISolutionInfoCard {
+  id: string;
+  title: string;
+}
 
 export function deploySolution(
   templateSolutionId: string,
@@ -30,6 +36,7 @@ export function deploySolution(
       reject("Solution's ID is not defined");
       return;
     }
+    const anonUS = new common.UserSession({portal:"https://www.arcgis.com/sharing/rest"});
 
     // Deploy a solution described by the supplied id
     const options: common.IDeploySolutionOptions = {
@@ -40,7 +47,8 @@ export function deploySolution(
       tags: ["test"],
       additionalTypeKeywords: ["TypeKeyword"],
       progressCallback: progressCallback,
-      consoleProgress: true
+      consoleProgress: true,
+      storageAuthentication: anonUS
     };
     deployer.deploySolution(templateSolutionId, authentication, options).then(
       (deployedSolution: any) => {
@@ -52,4 +60,49 @@ export function deploySolution(
       (error: any) => reject(error)
     );
   });
+}
+
+export function getTemplates(
+  groupId: string,
+  currentCards? : ISolutionInfoCard[],
+  inPagingParams? : portal.IPagingParams
+) : Promise<ISolutionInfoCard[]>{
+  const query = "type: Solution typekeywords:Solution,Template"
+  const pagingParams: portal.IPagingParams = inPagingParams ? inPagingParams : {
+    start: 0,
+    num: 24
+  };
+  const cardList = currentCards ? currentCards : [];
+  const additionalSearchOptions = {
+    sortField: "title",
+    sortOrder: "asc",
+    ...pagingParams
+  }
+  
+  return new Promise<ISolutionInfoCard[]>((resolve,reject) => {
+    const anonUS = new common.UserSession({portal:"https://www.arcgis.com/sharing/rest"});
+    common.searchGroupContents(groupId, query, anonUS, additionalSearchOptions)
+    .then((response: portal.ISearchResult<portal.IItem>) => {
+      const cleanResults = common.sanitizeJSON(response.results);
+      cleanResults.forEach((result:any) => {
+        const card: ISolutionInfoCard = {
+          id: result.id,
+          title: result.title
+        }
+        cardList.push(card)
+      });
+      if (response.nextStart > 0){
+        pagingParams.start = response.nextStart;
+        resolve(getTemplates(groupId,cardList,pagingParams));
+      }
+      else{
+        resolve(cardList);
+      }
+    },(error:any) => {
+      reject(error)
+      console.log(error);
+    }
+    );
+  });
+
 }

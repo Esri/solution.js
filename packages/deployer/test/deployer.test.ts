@@ -83,7 +83,7 @@ describe("Module `deployer`", () => {
         beforeEach(() => {
           itemInfo = cloneObject(templates.getSolutionTemplateItem([]));
           solTmplStub = sinon
-            .stub(deployUtils, "_getSolutionTemplateItem")
+            .stub(deployUtils, "getSolutionTemplateItem")
             .callsFake((idOrObj, auth) => {
               return Promise.resolve({
                 item: itemInfo.item,
@@ -99,7 +99,7 @@ describe("Module `deployer`", () => {
             .resolves(xmlFile);
 
           deployFnStub = sinon
-            .stub(deploySolutionFromTemplate, "_deploySolutionFromTemplate")
+            .stub(deploySolutionFromTemplate, "deploySolutionFromTemplate")
             .resolves("3ef");
         });
 
@@ -111,7 +111,7 @@ describe("Module `deployer`", () => {
             .then(() => {
               expect(solTmplStub.calledOnce).toBe(
                 true,
-                "_getSolutionTemplateItem should be called"
+                "getSolutionTemplateItem should be called"
               );
               expect(metaStub.calledOnce).toBe(
                 true,
@@ -119,9 +119,40 @@ describe("Module `deployer`", () => {
               );
               expect(deployFnStub.calledOnce).toBe(
                 true,
-                "_deploySolutionFromTemplate should be called once"
+                "deploySolutionFromTemplate should be called once"
               );
               // TODO: verify inputs to deployFn
+              done();
+            })
+            .catch(err => {
+              fail(err.error);
+            });
+        });
+        it("should default to using supplied authentication for solution source", done => {
+          return deployer
+            .deploySolution(itemInfo.item.id, MOCK_USER_SESSION)
+            .then(() => {
+              expect(solTmplStub.args[0][1]).toBe(
+                MOCK_USER_SESSION,
+                "destination authentication should be used"
+              );
+              done();
+            })
+            .catch(err => {
+              fail(err.error);
+            });
+        });
+        it("should use solution-source authentication if supplied", done => {
+          const opts = {
+            storageAuthentication: testUtils.createRuntimeMockUserSession(undefined, "https://myotherorg.maps.arcgis.com")
+          };
+          return deployer
+            .deploySolution(itemInfo.item.id, MOCK_USER_SESSION, opts)
+            .then(() => {
+              expect(solTmplStub.args[0][1]).toBe(
+                opts.storageAuthentication,
+                "source authentication should be used"
+              );
               done();
             })
             .catch(err => {
@@ -144,7 +175,7 @@ describe("Module `deployer`", () => {
             .then(() => {
               expect(solTmplStub.calledOnce).toBe(
                 true,
-                "_getSolutionTemplateItem should be called"
+                "getSolutionTemplateItem should be called"
               );
               expect(metaStub.calledOnce).toBe(
                 true,
@@ -152,11 +183,11 @@ describe("Module `deployer`", () => {
               );
               expect(deployFnStub.calledOnce).toBe(
                 true,
-                "_deploySolutionFromTemplate should be called once"
+                "deploySolutionFromTemplate should be called once"
               );
               expect(deployFnStub.args[0][0]).toBe(
                 _itemInfo.item.id,
-                "_deploySolutionFromTemplate should be called with an item id"
+                "deploySolutionFromTemplate should be called with an item id"
               );
               // TODO: verify inputs to deployFn
               expect(pgStub.calledTwice).toBe(
@@ -1664,7 +1695,7 @@ describe("Module `deployer`", () => {
             testUtils.getSuccessResponse({ itemId: "map1234567890" })
           );
         // tslint:disable-next-line: no-empty
-        spyOn(console, "error").and.callFake(() => {});
+        spyOn(console, "error").and.callFake(() => { });
 
         const options: common.IDeploySolutionOptions = {
           progressCallback: testUtils.SOLUTION_PROGRESS_CALLBACK
