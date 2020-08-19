@@ -17,6 +17,7 @@
 import {
   deploySolutionFromTemplate,
   _checkedReplaceAll,
+  _getPortalBaseUrl,
   _getNewItemId,
   _updateGroupReferences
 } from "../src/deploySolutionFromTemplate";
@@ -87,6 +88,42 @@ describe("Module `deploySolutionFromTemplate`", () => {
 
       const actualResult = _checkedReplaceAll(template, oldValue, newValue);
       expect(actualResult).toEqual(expectedResult);
+    });
+  });
+
+  describe("_getPortalBaseUrl", () => {
+    let MOCK_USER_SESSION: UserSession;
+
+    beforeEach(() => {
+      MOCK_USER_SESSION = testUtils.createRuntimeMockUserSession();
+    });
+
+    it("handles AGO portal", () => {
+      const portalResponse: common.IPortal = {
+        id: "",
+        isPortal: false,
+        name: "",
+        customBaseUrl: "maps.arcgis.com",
+        urlKey: "localgov"
+      };
+      expect(_getPortalBaseUrl(portalResponse, MOCK_USER_SESSION)).toEqual("https://localgov.maps.arcgis.com");
+    });
+    it("handles Enterprise portal", () => {
+      const portalResponse: common.IPortal = {
+        id: "",
+        isPortal: true,
+        name: "",
+        portalHostname: "rpubs16029.ags.esri.com/portal"
+      };
+      expect(_getPortalBaseUrl(portalResponse, MOCK_USER_SESSION)).toEqual("https://rpubs16029.ags.esri.com/portal");
+    });
+    it("provides default portal base URL from authentication", () => {
+      const portalResponse: common.IPortal = {
+        id: "",
+        isPortal: false,
+        name: ""
+      };
+      expect(_getPortalBaseUrl(portalResponse, MOCK_USER_SESSION)).toEqual("https://myorg.maps.arcgis.com");
     });
   });
 

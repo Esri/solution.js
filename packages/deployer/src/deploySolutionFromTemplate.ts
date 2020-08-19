@@ -111,22 +111,7 @@ export function deploySolutionFromTemplate(
         // orgextent as bbox for assignment onto items
         // more info in #266 https://github.com/Esri/solution.js/issues/266
 
-        // As of Spring 2020, only HTTPS (see
-        // https://www.esri.com/arcgis-blog/products/product/administration/2019-arcgis-transport-security-improvements/)
-        const scheme: string = "https"; // portalResponse.allSSL ? "https" : "http";
-        const urlKey: string = common.getProp(portalResponse, "urlKey");
-        const customBaseUrl: string = common.getProp(
-          portalResponse,
-          "customBaseUrl"
-        );
-        const enterpriseBaseUrl = common.getProp(portalResponse, "portalHostname");
-
-        templateDictionary.portalBaseUrl =
-          urlKey && customBaseUrl
-            ? `${scheme}://${urlKey}.${customBaseUrl}`
-            : enterpriseBaseUrl
-              ? `${scheme}://${enterpriseBaseUrl}`
-              : authentication.portal.replace("/sharing/rest", "");
+        templateDictionary.portalBaseUrl = _getPortalBaseUrl(portalResponse, authentication);
 
         templateDictionary.user = userResponse;
         templateDictionary.user.folders = foldersAndGroupsResponse.folders;
@@ -345,6 +330,29 @@ export function _checkedReplaceAll(
     newTemplate = template;
   }
   return newTemplate;
+}
+
+export function _getPortalBaseUrl(
+  portalResponse: common.IPortal,
+  authentication: common.UserSession
+): string {
+  // As of Spring 2020, only HTTPS (see
+  // https://www.esri.com/arcgis-blog/products/product/administration/2019-arcgis-transport-security-improvements/)
+  const scheme: string = "https"; // portalResponse.allSSL ? "https" : "http";
+  const urlKey: string = common.getProp(portalResponse, "urlKey");
+  const customBaseUrl: string = common.getProp(
+    portalResponse,
+    "customBaseUrl"
+  );
+  const enterpriseBaseUrl = common.getProp(portalResponse, "portalHostname");
+
+  return (
+    urlKey && customBaseUrl
+      ? `${scheme}://${urlKey}.${customBaseUrl}`
+      : enterpriseBaseUrl
+        ? `${scheme}://${enterpriseBaseUrl}`
+        : authentication.portal.replace("/sharing/rest", "")
+  );
 }
 
 export function _updateGroupReferences(
