@@ -119,10 +119,14 @@ export function deploySolutionFromTemplate(
           portalResponse,
           "customBaseUrl"
         );
+        const enterpriseBaseUrl = common.getProp(portalResponse, "portalHostname");
+
         templateDictionary.portalBaseUrl =
           urlKey && customBaseUrl
             ? `${scheme}://${urlKey}.${customBaseUrl}`
-            : authentication.portal;
+            : enterpriseBaseUrl
+              ? `${scheme}://${enterpriseBaseUrl}`
+              : authentication.portal.replace("/sharing/rest", "");
 
         templateDictionary.user = userResponse;
         templateDictionary.user.folders = foldersAndGroupsResponse.folders;
