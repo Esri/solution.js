@@ -421,11 +421,9 @@ export function convertExtent(
 /**
  * Publishes a feature service as an AGOL item; it does not include its layers and tables
  *
- * @param itemInfo Item's `item` section
+ * @param newItemTemplate Template of item to be created
  * @param authentication Credentials for the request
- * @param folderId Id of folder to receive item; null indicates that the item goes into the root
- *                 folder
- * @param access Access to set for item: "public", "org", "private"
+ * @param templateDictionary Hash of facts: org URL, adlib replacements, user; .user.folders property contains a list
  * @return A promise that will resolve with an object reporting success and the Solution id
  */
 export function createFeatureService(
