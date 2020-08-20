@@ -251,10 +251,10 @@ export function copyFilesFromStorageItem(
         case EFileType.Data:
           return new Promise<IUpdateItemResponse>((resolveData, rejectData) => {
             setTimeout(() => {
-              // Add the folder of the destination item because for some item types, AGO
-              // temporarily uses a folder for the data being transferred. Without the folder
-              // information, AGO uses the root folder, which causes a conflict if an item
-              // with the same data already is in that root folder.
+              // We are updating an item with a zip file, which is written to AGO. If the updated
+              // item is in a folder, the zip file is moved to the item's folder after being written.
+              // Without the folder information in the URL, AGO writes the zip to the root folder,
+              // which causes a conflict if an item with the same data is already in that root folder.
               copyData(
                 {
                   url: filePath.url,
