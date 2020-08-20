@@ -153,6 +153,7 @@ export function copyData(
   },
   destination: {
     itemId: string;
+    folder: string;
     filename: string;
     mimeType: string;
     authentication: UserSession;
@@ -170,7 +171,7 @@ export function copyData(
           })
         };
 
-        helpersUpdateItem(update, destination.authentication).then(
+        helpersUpdateItem(update, destination.authentication, destination.folder).then(
           resolve,
           e => reject(fail(e)) // unable to add resource
         );
@@ -217,6 +218,7 @@ export function convertResourceToFile(resource: IFileMimeType): File {
 export function copyFilesFromStorageItem(
   storageAuthentication: UserSession,
   filePaths: IDeployFileCopyPath[],
+  destinationFolderId: string,
   destinationItemId: string,
   destinationAuthentication: UserSession,
   isGroup: boolean = false,
@@ -249,6 +251,10 @@ export function copyFilesFromStorageItem(
         case EFileType.Data:
           return new Promise<IUpdateItemResponse>((resolveData, rejectData) => {
             setTimeout(() => {
+              // Add the folder of the destination item because for some item types, AGO
+              // temporarily uses a folder for the data being transferred. Without the folder
+              // information, AGO uses the root folder, which causes a conflict if an item
+              // with the same data already is in that root folder.
               copyData(
                 {
                   url: filePath.url,
@@ -256,6 +262,7 @@ export function copyFilesFromStorageItem(
                 },
                 {
                   itemId: destinationItemId,
+                  folder: destinationFolderId,
                   filename: filePath.filename,
                   mimeType: mimeTypes ? mimeTypes[filePath.filename] : "",
                   authentication: destinationAuthentication
