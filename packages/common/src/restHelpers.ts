@@ -91,7 +91,7 @@ import {
   shareItemWithGroup,
 // ================================================================================================================== //
 // === patch to updateItem in C:\Users\mike6491\ag\arcgis-rest-js\packages\arcgis-rest-portal\src\items\update.ts === //
-  //updateItem as portalUpdateItem
+  // updateItem as portalUpdateItem
   determineOwner,
   serializeItem,
   getPortalUrl
