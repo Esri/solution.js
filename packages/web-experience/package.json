@@ -20,10 +20,10 @@
     "@esri/solution-common": "^0.17.3",
     "@esri/solution-simple-types": "^0.17.3",
     "rollup": "^1.22.0",
-    "typescript": "^3.9.2"
+    "typescript": "^3.9.7"
   },
   "dependencies": {
-    "tslib": "^1.10.0"
+    "tslib": "^1.13.0"
   },
   "peerDependencies": {
     "@esri/arcgis-rest-auth": "^2.15.0",
