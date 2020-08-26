@@ -21,7 +21,6 @@
     "@esri/hub-common": "^6.3.0",
     "@esri/hub-initiatives": "^6.3.0",
     "@esri/hub-sites": "^6.3.0",
-    "@esri/solution-common": "^0.17.3",
     "rollup": "^1.22.0",
     "typescript": "^3.9.7"
   },
@@ -33,10 +32,10 @@
     "@esri/arcgis-rest-service-admin": "^2.15.0",
     "@esri/hub-common": "^6.3.0",
     "@esri/hub-initiatives": "^6.3.0",
-    "@esri/hub-sites": "^6.3.0",
-    "@esri/solution-common": "^0.17.3"
+    "@esri/hub-sites": "^6.3.0"
   },
   "dependencies": {
+    "@esri/solution-common": "^0.17.3",
     "tslib": "^1.13.0"
   },
   "scripts": {
