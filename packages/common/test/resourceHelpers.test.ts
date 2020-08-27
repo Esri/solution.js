@@ -399,6 +399,7 @@ describe("Module `resourceHelpers`: common functions involving the management of
         .copyFilesFromStorageItem(
           storageAuthentication,
           filePaths,
+          null,
           destinationItemId,
           destinationAuthentication
         )
@@ -428,6 +429,7 @@ describe("Module `resourceHelpers`: common functions involving the management of
         .copyFilesFromStorageItem(
           storageAuthentication,
           filePaths,
+          null,
           "3ef",
           storageAuthentication,
           false,
@@ -484,6 +486,7 @@ describe("Module `resourceHelpers`: common functions involving the management of
           .copyFilesFromStorageItem(
             storageAuthentication,
             filePaths,
+            null,
             destinationItemId,
             destinationAuthentication
           )
@@ -526,6 +529,7 @@ describe("Module `resourceHelpers`: common functions involving the management of
           .copyFilesFromStorageItem(
             storageAuthentication,
             filePaths,
+            null,
             destinationItemId,
             destinationAuthentication,
             false,
@@ -567,6 +571,7 @@ describe("Module `resourceHelpers`: common functions involving the management of
           .copyFilesFromStorageItem(
             storageAuthentication,
             filePaths,
+            null,
             destinationItemId,
             destinationAuthentication
           )
@@ -609,6 +614,7 @@ describe("Module `resourceHelpers`: common functions involving the management of
           .copyFilesFromStorageItem(
             storageAuthentication,
             filePaths,
+            null,
             destinationItemId,
             destinationAuthentication
           )
@@ -648,6 +654,7 @@ describe("Module `resourceHelpers`: common functions involving the management of
           .copyFilesFromStorageItem(
             storageAuthentication,
             filePaths,
+            null,
             destinationItemId,
             destinationAuthentication
           )
@@ -686,6 +693,7 @@ describe("Module `resourceHelpers`: common functions involving the management of
           .copyFilesFromStorageItem(
             storageAuthentication,
             filePaths,
+            null,
             destinationItemId,
             destinationAuthentication
           )

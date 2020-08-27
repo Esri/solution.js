@@ -493,6 +493,7 @@ export function _createItemFromTemplateWhenReady(
                       .copyFilesFromStorageItem(
                         storageAuthentication,
                         updatedResourceFilePaths,
+                        templateDictionary.folderId,
                         createResponse.id,
                         destinationAuthentication,
                         templateType === "Group",

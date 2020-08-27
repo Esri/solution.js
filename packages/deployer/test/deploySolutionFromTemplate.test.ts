@@ -170,7 +170,7 @@ describe("Module `deploySolutionFromTemplate`", () => {
         .post(testUtils.PORTAL_SUBSET.restUrl + "/content/users/casey/" + folderId + "/addItem",
           testUtils.getSuccessResponse({ id: deployedSolutionId, folder: folderId })
         )
-        .post(testUtils.PORTAL_SUBSET.restUrl + "/content/users/casey/items/dpl1234567890/update",
+        .post(testUtils.PORTAL_SUBSET.restUrl + "/content/users/casey/fld1234567890/items/dpl1234567890/update",
           testUtils.getSuccessResponse({ id: deployedSolutionId })
         )
         ;
@@ -230,7 +230,7 @@ describe("Module `deploySolutionFromTemplate`", () => {
         .post(testUtils.PORTAL_SUBSET.restUrl + "/content/users/casey/" + folderId + "/addItem",
           testUtils.getSuccessResponse({ id: deployedSolutionId, folder: folderId })
         )
-        .post(testUtils.PORTAL_SUBSET.restUrl + "/content/users/casey/items/dpl1234567890/update",
+        .post(testUtils.PORTAL_SUBSET.restUrl + "/content/users/casey/fld1234567890/items/dpl1234567890/update",
           testUtils.getSuccessResponse({ id: deployedSolutionId })
         )
         ;

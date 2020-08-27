@@ -28,6 +28,7 @@ import * as portal from "@esri/arcgis-rest-portal";
 import * as restHelpers from "../src/restHelpers";
 import * as templates from "../test/mocks/templates";
 import * as utils from "./mocks/utils";
+import { encodeParam } from "@esri/arcgis-rest-request";
 
 // ------------------------------------------------------------------------------------------------------------------ //
 
@@ -3546,6 +3547,187 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
       expect(actual).toEqual(expected);
     });
   });
+
+  // ================================================================================================================== //
+  // === patch to updateItem in C:\Users\mike6491\ag\arcgis-rest-js\packages\arcgis-rest-portal\src\items\update.ts === //
+
+  describe("Authenticated methods", () => {
+    // setup a UserSession to use in all these tests
+    const MOCK_USER_REQOPTS = {
+      authentication: MOCK_USER_SESSION
+    };
+
+    it("should update an item, including data", done => {
+      fetchMock.once("*", utils.getSuccessResponse({id: "3efakeitemid0000"}));
+      const fakeItem = {
+        id: "5bc",
+        owner: "dbouwman",
+        title: "my fake item",
+        description: "yep its fake",
+        snipped: "so very fake",
+        type: "Web Mapping Application",
+        typeKeywords: ["fake", "kwds"],
+        tags: ["fakey", "mcfakepants"],
+        properties: {
+          key: "somevalue"
+        },
+        data: {
+          values: {
+            key: "value"
+          }
+        }
+      };
+      restHelpers.portalUpdateItem({ item: fakeItem, ...MOCK_USER_REQOPTS })
+        .then(() => {
+          expect(fetchMock.called()).toEqual(true);
+          const lastCall: fetchMock.MockCall = fetchMock.lastCall("*");
+          expect(fetchMock.lastUrl()).toEqual(
+            "https://www.arcgis.com/sharing/rest/content/users/dbouwman/items/5bc/update"
+          );
+          expect(fetchMock.lastOptions().method).toBe("POST");
+          expect(fetchMock.lastOptions().body).toContain(encodeParam("f", "json"));
+          expect(fetchMock.lastOptions().body).toContain(encodeParam("owner", "dbouwman"));
+          // ensure the array props are serialized into strings
+          expect(fetchMock.lastOptions().body).toContain(
+            encodeParam("typeKeywords", "fake,kwds")
+          );
+          expect(fetchMock.lastOptions().body).toContain(
+            encodeParam("tags", "fakey,mcfakepants")
+          );
+          expect(fetchMock.lastOptions().body).toContain(
+            encodeParam("text", JSON.stringify(fakeItem.data))
+          );
+          done();
+        })
+        .catch(e => {
+          fail(e);
+        });
+    });
+
+    it("should update an item with custom params", done => {
+      fetchMock.once("*", utils.getSuccessResponse({id: "3efakeitemid0000"}));
+      const fakeItem = {
+        id: "5bc",
+        owner: "dbouwman",
+        title: "my fake item",
+        description: "yep its fake",
+        snipped: "so very fake",
+        type: "Web Mapping Application",
+        typeKeywords: ["fake", "kwds"],
+        tags: ["fakey", "mcfakepants"],
+        properties: {
+          key: "somevalue"
+        },
+        data: {
+          values: {
+            key: "value"
+          }
+        }
+      };
+      restHelpers.portalUpdateItem({
+        item: fakeItem,
+        authentication: MOCK_USER_SESSION,
+        params: {
+          clearEmptyFields: true
+        }
+      })
+        .then(response => {
+          expect(fetchMock.called()).toEqual(true);
+          const lastCall: fetchMock.MockCall = fetchMock.lastCall("*");
+          expect(fetchMock.lastUrl()).toEqual(
+            "https://myorg.maps.arcgis.com/sharing/rest/content/users/dbouwman/items/5bc/update"
+          );
+          expect(fetchMock.lastOptions().method).toBe("POST");
+          expect(fetchMock.lastOptions().body).toContain(encodeParam("f", "json"));
+          expect(fetchMock.lastOptions().body).toContain(encodeParam("token", "fake-token"));
+          expect(fetchMock.lastOptions().body).toContain(encodeParam("owner", "dbouwman"));
+          // ensure the array props are serialized into strings
+          expect(fetchMock.lastOptions().body).toContain(
+            encodeParam("typeKeywords", "fake,kwds")
+          );
+          expect(fetchMock.lastOptions().body).toContain(
+            encodeParam("tags", "fakey,mcfakepants")
+          );
+          expect(fetchMock.lastOptions().body).toContain(
+            encodeParam("text", JSON.stringify(fakeItem.data))
+          );
+          expect(fetchMock.lastOptions().body).toContain(encodeParam("clearEmptyFields", true));
+          done();
+        })
+        .catch(e => {
+          fail(e);
+        });
+    });
+
+    it("should update an item, including data and service proxy params", done => {
+      fetchMock.once("*", utils.getSuccessResponse({id: "3efakeitemid0000"}));
+      const fakeItem = {
+        id: "5bc",
+        owner: "dbouwman",
+        title: "my fake item",
+        description: "yep its fake",
+        snipped: "so very fake",
+        type: "Web Mapping Application",
+        typeKeywords: ["fake", "kwds"],
+        tags: ["fakey", "mcfakepants"],
+        properties: {
+          key: "somevalue"
+        },
+        serviceProxyParams: {
+          hitsPerInterval: 2,
+          intervalSeconds: 60,
+          referrers: ["http://<servername>"]
+        },
+        data: {
+          values: {
+            key: "value"
+          }
+        }
+      };
+
+      restHelpers.portalUpdateItem({
+        item: fakeItem,
+        folderId: "aFolder",
+        params: { foo: "bar" },
+        ...MOCK_USER_REQOPTS
+      })
+        .then(response => {
+          expect(fetchMock.called()).toEqual(true);
+          const lastCall: fetchMock.MockCall = fetchMock.lastCall("*");
+          expect(fetchMock.lastUrl()).toEqual(
+            "https://www.arcgis.com/sharing/rest/content/users/dbouwman/aFolder/items/5bc/update"
+          );
+          expect(fetchMock.lastOptions().method).toBe("POST");
+          expect(fetchMock.lastOptions().body).toContain(encodeParam("f", "json"));
+          expect(fetchMock.lastOptions().body).toContain(encodeParam("owner", "dbouwman"));
+          expect(fetchMock.lastOptions().body).toContain(encodeParam("foo", "bar"));
+          expect(fetchMock.lastOptions().body).toContain(
+            encodeParam(
+              "serviceProxyParams",
+              '{"hitsPerInterval":2,"intervalSeconds":60,"referrers":["http://<servername>"]}'
+            )
+          );
+          // ensure the array props are serialized into strings
+          expect(fetchMock.lastOptions().body).toContain(
+            encodeParam("typeKeywords", "fake,kwds")
+          );
+          expect(fetchMock.lastOptions().body).toContain(
+            encodeParam("tags", "fakey,mcfakepants")
+          );
+          expect(fetchMock.lastOptions().body).toContain(
+            encodeParam("text", JSON.stringify(fakeItem.data))
+          );
+          done();
+        })
+        .catch(e => {
+          fail(e);
+        });
+    });
+  }); // auth requests
+
+  // ================================================================================================================== //
+
+
 });
 
 // ------------------------------------------------------------------------------------------------------------------ //

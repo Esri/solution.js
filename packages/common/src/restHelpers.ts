@@ -89,7 +89,13 @@ import {
   SearchQueryBuilder,
   setItemAccess,
   shareItemWithGroup,
-  updateItem as portalUpdateItem
+// ================================================================================================================== //
+// === patch to updateItem in C:\Users\mike6491\ag\arcgis-rest-js\packages\arcgis-rest-portal\src\items\update.ts === //
+  // updateItem as portalUpdateItem
+  determineOwner,
+  serializeItem,
+  getPortalUrl
+// ================================================================================================================== //
 } from "@esri/arcgis-rest-portal";
 import { IParams, IRequestOptions, request } from "@esri/arcgis-rest-request";
 import {
@@ -421,11 +427,9 @@ export function convertExtent(
 /**
  * Publishes a feature service as an AGOL item; it does not include its layers and tables
  *
- * @param itemInfo Item's `item` section
+ * @param newItemTemplate Template of item to be created
  * @param authentication Credentials for the request
- * @param folderId Id of folder to receive item; null indicates that the item goes into the root
- *                 folder
- * @param access Access to set for item: "public", "org", "private"
+ * @param templateDictionary Hash of facts: org URL, adlib replacements, user; .user.folders property contains a list
  * @return A promise that will resolve with an object reporting success and the Solution id
  */
 export function createFeatureService(
@@ -1690,5 +1694,44 @@ export function _updateItemURL(
       },
       e => reject(fail(e))
     );
+  });
+}
+
+// ================================================================================================================== //
+// === patch to updateItem in C:\Users\mike6491\ag\arcgis-rest-js\packages\arcgis-rest-portal\src\items\update.ts === //
+
+/**
+ * ```js
+ * import { updateItem } from "@esri/arcgis-rest-portal";
+ * //
+ * updateItem({
+ *   item: {
+ *     id: "3ef",
+ *     description: "A three hour tour"
+ *   },
+ *   authentication
+ * })
+ *   .then(response)
+ * ```
+ * Update an Item. See the [REST Documentation](https://developers.arcgis.com/rest/users-groups-and-items/update-item.htm) for more information.
+ *
+ * @param requestOptions - Options for the request.
+ * @returns A Promise that updates an item.
+ */
+export function portalUpdateItem(
+  requestOptions: IUpdateItemOptions
+): Promise<IUpdateItemResponse> {
+  return determineOwner(requestOptions).then(owner => {
+    const url = requestOptions.folderId
+      ? `${getPortalUrl(requestOptions)}/content/users/${owner}/${requestOptions.folderId}/items/${requestOptions.item.id}/update`
+      : `${getPortalUrl(requestOptions)}/content/users/${owner}/items/${requestOptions.item.id}/update`;
+
+    // serialize the item into something Portal will accept
+    requestOptions.params = {
+      ...requestOptions.params,
+      ...serializeItem(requestOptions.item)
+    };
+
+    return request(url, requestOptions);
   });
 }
