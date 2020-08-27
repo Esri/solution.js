@@ -449,6 +449,11 @@ describe("Module `deployer`", () => {
           )
           .post(
             testUtils.PORTAL_SUBSET.restUrl +
+            "/content/users/casey/a4468da125a64526b359b70d8ba4a9dd/items/map1234567890/update",
+            testUtils.getSuccessResponse({ id: "map1234567890" })
+          )
+          .post(
+            testUtils.PORTAL_SUBSET.restUrl +
             "/content/items/svc1234567890/data",
             {}
           )
@@ -1257,7 +1262,7 @@ describe("Module `deployer`", () => {
             testUtils.getFailureResponse()
           )
           .post(
-            "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/items/map1234567890/update",
+            "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/a4468da125a64526b359b70d8ba4a9dd/items/map1234567890/update",
             testUtils.getFailureResponse()
           )
           .post(
@@ -1476,7 +1481,7 @@ describe("Module `deployer`", () => {
           )
           .post(
             testUtils.PORTAL_SUBSET.restUrl +
-            "/content/users/casey/items/map1234567890/update",
+            "/content/users/casey/a4468da125a64526b359b70d8ba4a9dd/items/map1234567890/update",
             mockItems.get400Failure()
           )
           .post(
