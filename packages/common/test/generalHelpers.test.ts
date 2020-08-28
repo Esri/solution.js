@@ -1163,35 +1163,38 @@ describe("Module `generalHelpers`: common utility functions shared across packag
     });
   });
 
-  describe("jsonToBlob", () => {
-    it("creates a blob with expected mime type", done => {
-      const json: any = { a: "abc", b: 123 };
-      const blob = generalHelpers.jsonToBlob(json);
-      expect(blob.type).toBe("application/octet-stream");
-      blob.text().then(
-        text => {
-          expect(text).toEqual('{"a":"abc","b":123}');
-          done();
-        },
-        done.fail
-      );
+  // Blobs are only available in the browser
+  if (typeof window !== "undefined") {
+    describe("jsonToBlob", () => {
+      it("creates a blob with expected mime type", done => {
+        const json: any = { a: "abc", b: 123 };
+        const blob = generalHelpers.jsonToBlob(json);
+        expect(blob.type).toBe("application/octet-stream");
+        blob.text().then(
+          text => {
+            expect(text).toEqual('{"a":"abc","b":123}');
+            done();
+          },
+          done.fail
+        );
+      });
     });
-  });
 
-  describe("jsonToFile", () => {
-    it("creates a file with expected mime type", done => {
-      const json: any = { a: "abc", b: 123 };
-      const file = generalHelpers.jsonToFile(json, "myFile.abc", "application/octet-stream");
-      expect(file.type).toBe("application/octet-stream");
-      file.text().then(
-        text => {
-          expect(text).toEqual('{"a":"abc","b":123}');
-          done();
-        },
-        done.fail
-      );
+    describe("jsonToFile", () => {
+      it("creates a file with expected mime type", done => {
+        const json: any = { a: "abc", b: 123 };
+        const file = generalHelpers.jsonToFile(json, "myFile.abc", "application/octet-stream");
+        expect(file.type).toBe("application/octet-stream");
+        file.text().then(
+          text => {
+            expect(text).toEqual('{"a":"abc","b":123}');
+            done();
+          },
+          done.fail
+        );
+      });
     });
-  });
+  }
 
   describe("sanitizeJSONAndReportChanges", () => {
     it("should not report if no property changed", () => {
