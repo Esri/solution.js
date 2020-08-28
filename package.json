@@ -103,7 +103,7 @@
     "lint:fix": "tslint --project tsconfig.json --exclude '**/*.d.ts' --fix",
     "prettify": "prettier --write --parser typescript --tab-width 2 --use-tabs false \"packages/**/+(src|test)/**/*.ts\"",
     "dev": "support/dev.sh",
-    "test": "npm run lint && npm run test:node && npm run test:chrome",
+    "test": "npm run lint && npm run test:node && npm run test:chrome && npm run test:firefox && npm run test:edge",
     "test:browsers": "karma start --single-run --browsers Chrome,Firefox,Edge",
     "test:chrome": "karma start --single-run --browsers=Chrome",
     "test:chrome:ci": "karma start --single-run --browsers ChromeHeadlessCI karma.conf.js",
