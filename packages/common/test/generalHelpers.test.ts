@@ -63,6 +63,16 @@ describe("Module `generalHelpers`: common utility functions shared across packag
     });
   }
 
+  interface ITestCompareJSONProperties {
+    isInvitationOnly: boolean;
+    views: number;
+    id: string;
+    tags: string[];
+    phone: string;
+    extent: number[][];
+    spatialReference: serviceAdmin.ISpatialReference;
+  }
+
   describe("checkUrlPathTermination", () => {
     it("doesn't change terminated URL", () => {
       const url = "https://myOrg.arcgis.com/a/path/";
@@ -72,6 +82,45 @@ describe("Module `generalHelpers`: common utility functions shared across packag
     it("changes unterminated URL", () => {
       const url = "https://myOrg.arcgis.com/a/path";
       expect(generalHelpers.checkUrlPathTermination(url)).toEqual(url + "/");
+    });
+  });
+
+  describe("cleanItemId", () => {
+    it("should handle empty id", () => {
+      expect(generalHelpers.cleanItemId(null)).toBeNull();
+      expect(generalHelpers.cleanItemId(undefined)).toBeUndefined();
+      expect(generalHelpers.cleanItemId("")).toEqual("");
+    });
+
+    it("should remove template braces and itemId property", () => {
+      expect(generalHelpers.cleanItemId("{{itm1234567890.itemId}}")).toEqual(
+        "itm1234567890"
+      );
+    });
+  });
+
+  describe("cleanLayerId", () => {
+    it("handles a null or empty string", () => {
+      expect(generalHelpers.cleanLayerId(null)).toEqual(null);
+      expect(generalHelpers.cleanLayerId("")).toEqual("");
+    });
+
+    it("handles a templatized layer id", () => {
+      expect(
+        generalHelpers.cleanLayerId(
+          "{{934a9ef8efa7448fa8ddf7b13cef0240.layer0.layerId}}"
+        )
+      ).toEqual(0);
+      expect(
+        generalHelpers.cleanLayerId(
+          "{{934a9ef8efa7448fa8ddf7b13cef0240.layer5.layerId}}"
+        )
+      ).toEqual(5);
+      expect(
+        generalHelpers.cleanLayerId(
+          "{{934a9ef8efa7448fa8ddf7b13cef0240.layer12.layerId}}"
+        )
+      ).toEqual(12);
     });
   });
 
@@ -187,15 +236,103 @@ describe("Module `generalHelpers`: common utility functions shared across packag
     });
   });
 
-  interface ITestCompareJSONProperties {
-    isInvitationOnly: boolean;
-    views: number;
-    id: string;
-    tags: string[];
-    phone: string;
-    extent: number[][];
-    spatialReference: serviceAdmin.ISpatialReference;
-  }
+  describe("compareJSON", () => {
+    let sampleItemTemplate: any;
+    beforeEach(() => {
+      sampleItemTemplate = {
+        item: {
+          name: null,
+          title: "z2g9f4nv",
+          type: "Solution",
+          typeKeywords: ["Solution", "Deployed"],
+          description: null,
+          tags: [],
+          snippet: null,
+          thumbnail: null,
+          documentation: null,
+          extent: "{{solutionItemExtent}}",
+          categories: [],
+          spatialReference: null,
+          accessInformation: null,
+          licenseInfo: null,
+          culture: "english (united states)",
+          properties: null,
+          url: null,
+          proxyFilter: null,
+          access: "private",
+          appCategories: [],
+          industries: [],
+          languages: [],
+          largeThumbnail: null,
+          banner: null,
+          screenshots: [],
+          listed: false,
+          groupDesignations: null,
+          id: "itm1234567890"
+        },
+        data: {
+          metadata: {},
+          templates: [
+            {
+              itemId: "geo1234567890",
+              type: "GeoJson",
+              dependencies: []
+            }
+          ]
+        }
+      };
+    });
+
+    it("empty objects", () => {
+      expect(generalHelpers.compareJSON({}, {})).toBeTruthy();
+    });
+
+    it("one empty object", () => {
+      expect(generalHelpers.compareJSON({ a: 1 }, {})).toBeFalsy();
+      expect(generalHelpers.compareJSON({}, { a: 1 })).toBeFalsy();
+    });
+
+    it("two single-level objects", () => {
+      expect(
+        generalHelpers.compareJSON(
+          { a: 1, b: 2, c: "3" },
+          { a: 1, b: 2, c: "3" }
+        )
+      ).toBeTruthy();
+      expect(
+        generalHelpers.compareJSON({ a: 1, b: 2, c: "3" }, { a: 1 })
+      ).toBeFalsy();
+    });
+
+    it("multiple-level objects", () => {
+      expect(generalHelpers.compareJSON(sampleItemTemplate, sampleItemTemplate))
+        .withContext("compare sampleItemTemplate, sampleItemTemplate")
+        .toBeTruthy();
+
+      let clone = generalHelpers.cloneObject(sampleItemTemplate);
+      expect(generalHelpers.compareJSON(sampleItemTemplate, clone))
+        .withContext("compare sampleItemTemplate, clone")
+        .toBeTruthy();
+
+      generalHelpers.deleteItemProps(clone);
+      expect(generalHelpers.compareJSON({}, clone))
+        .withContext("compare {}, clone")
+        .toBeTruthy();
+      expect(generalHelpers.compareJSON(sampleItemTemplate, clone))
+        .withContext("compare sampleItemTemplate, clone")
+        .toBeFalsy();
+
+      clone = generalHelpers.deleteItemProps(
+        generalHelpers.cloneObject(sampleItemTemplate.item)
+      );
+      const sampleItemBase = generalHelpers.deleteItemProps(
+        generalHelpers.cloneObject(sampleItemTemplate.item)
+      );
+      expect(generalHelpers.compareJSON(sampleItemBase, clone))
+        .withContext("compare sampleItemBase, clone")
+        .toBeTruthy();
+    });
+  });
 
   describe("compareJSONProperties", () => {
     it("should not report if no property changed", () => {
@@ -284,84 +421,6 @@ describe("Module `generalHelpers`: common utility functions shared across packag
       const id = generalHelpers.createLongId();
       expect(id.length).toEqual(32);
       expect(id.match(/[^a-z0-9]/)).toBeNull();
-    });
-  });
-
-  describe("sanitizeJSONAndReportChanges", () => {
-    it("should not report if no property changed", () => {
-      const json = {
-        a: "an innocuous string"
-      };
-      const expectedSanitizedJSON = {
-        a: "an innocuous string"
-      };
-
-      const messages = [] as string[];
-      spyOn(console, "warn").and.callFake((message: string) => {
-        messages.push(message);
-      });
-      const sanitizedJSON = generalHelpers.sanitizeJSONAndReportChanges(json);
-      expect(sanitizedJSON).toEqual(expectedSanitizedJSON);
-      expect(messages.length).toEqual(0);
-    });
-
-    it("should report changed property", () => {
-      const json = {
-        a:
-          '<img src="https://example.com/fake-image.jpg" onerror="alert(1);" />'
-      };
-      const expectedSanitizedJSON = {
-        a: '<img src="https://example.com/fake-image.jpg" />'
-      };
-
-      const messages = [] as string[];
-      spyOn(console, "warn").and.callFake((message: string) => {
-        messages.push(message);
-      });
-      const sanitizedJSON = generalHelpers.sanitizeJSONAndReportChanges(json);
-      expect(sanitizedJSON).toEqual(expectedSanitizedJSON);
-      expect(messages.length).toEqual(2);
-      expect(messages).toEqual([
-        "Changed 1 property",
-        '    String difference: "' +
-          '<img src="https://example.com/fake-image.jpg" onerror="alert(1);" />' +
-          '" vs. "' +
-          '<img src="https://example.com/fake-image.jpg" />' +
-          '"'
-      ]);
-    });
-
-    it("should report changed properties", () => {
-      const json = {
-        a:
-          '<img src="https://example.com/fake-image.jpg" onerror="alert(1);" />',
-        b: "<IMG SRC=JaVaScRiPt:alert('XSS')>"
-      };
-      const expectedSanitizedJSON = {
-        a: '<img src="https://example.com/fake-image.jpg" />',
-        b: "<img src>"
-      };
-
-      const messages = [] as string[];
-      spyOn(console, "warn").and.callFake((message: string) => {
-        messages.push(message);
-      });
-      const sanitizedJSON = generalHelpers.sanitizeJSONAndReportChanges(json);
-      expect(sanitizedJSON).toEqual(expectedSanitizedJSON);
-      expect(messages.length).toEqual(3);
-      expect(messages).toEqual([
-        "Changed 2 properties",
-        '    String difference: "' +
-          '<img src="https://example.com/fake-image.jpg" onerror="alert(1);" />' +
-          '" vs. "' +
-          '<img src="https://example.com/fake-image.jpg" />' +
-          '"',
-        '    String difference: "' +
-          "<IMG SRC=JaVaScRiPt:alert('XSS')>" +
-          '" vs. "' +
-          "<img src>" +
-          '"'
-      ]);
     });
   });
 
@@ -714,104 +773,6 @@ describe("Module `generalHelpers`: common utility functions shared across packag
     });
   });
 
-  describe("compareJSON", () => {
-    let sampleItemTemplate: any;
-    beforeEach(() => {
-      sampleItemTemplate = {
-        item: {
-          name: null,
-          title: "z2g9f4nv",
-          type: "Solution",
-          typeKeywords: ["Solution", "Deployed"],
-          description: null,
-          tags: [],
-          snippet: null,
-          thumbnail: null,
-          documentation: null,
-          extent: "{{solutionItemExtent}}",
-          categories: [],
-          spatialReference: null,
-          accessInformation: null,
-          licenseInfo: null,
-          culture: "english (united states)",
-          properties: null,
-          url: null,
-          proxyFilter: null,
-          access: "private",
-          appCategories: [],
-          industries: [],
-          languages: [],
-          largeThumbnail: null,
-          banner: null,
-          screenshots: [],
-          listed: false,
-          groupDesignations: null,
-          id: "itm1234567890"
-        },
-        data: {
-          metadata: {},
-          templates: [
-            {
-              itemId: "geo1234567890",
-              type: "GeoJson",
-              dependencies: []
-            }
-          ]
-        }
-      };
-    });
-
-    it("empty objects", () => {
-      expect(generalHelpers.compareJSON({}, {})).toBeTruthy();
-    });
-
-    it("one empty object", () => {
-      expect(generalHelpers.compareJSON({ a: 1 }, {})).toBeFalsy();
-      expect(generalHelpers.compareJSON({}, { a: 1 })).toBeFalsy();
-    });
-
-    it("two single-level objects", () => {
-      expect(
-        generalHelpers.compareJSON(
-          { a: 1, b: 2, c: "3" },
-          { a: 1, b: 2, c: "3" }
-        )
-      ).toBeTruthy();
-      expect(
-        generalHelpers.compareJSON({ a: 1, b: 2, c: "3" }, { a: 1 })
-      ).toBeFalsy();
-    });
-
-    it("multiple-level objects", () => {
-      expect(generalHelpers.compareJSON(sampleItemTemplate, sampleItemTemplate))
-        .withContext("compare sampleItemTemplate, sampleItemTemplate")
-        .toBeTruthy();
-
-      let clone = generalHelpers.cloneObject(sampleItemTemplate);
-      expect(generalHelpers.compareJSON(sampleItemTemplate, clone))
-        .withContext("compare sampleItemTemplate, clone")
-        .toBeTruthy();
-
-      generalHelpers.deleteItemProps(clone);
-      expect(generalHelpers.compareJSON({}, clone))
-        .withContext("compare {}, clone")
-        .toBeTruthy();
-      expect(generalHelpers.compareJSON(sampleItemTemplate, clone))
-        .withContext("compare sampleItemTemplate, clone")
-        .toBeFalsy();
-
-      clone = generalHelpers.deleteItemProps(
-        generalHelpers.cloneObject(sampleItemTemplate.item)
-      );
-      const sampleItemBase = generalHelpers.deleteItemProps(
-        generalHelpers.cloneObject(sampleItemTemplate.item)
-      );
-      expect(generalHelpers.compareJSON(sampleItemBase, clone))
-        .withContext("compare sampleItemBase, clone")
-        .toBeTruthy();
-    });
-  });
-
   describe("deleteProps", () => {
     it("should handle missing props", () => {
       const testObject: any = {};
@@ -948,99 +909,32 @@ describe("Module `generalHelpers`: common utility functions shared across packag
     });
   });
 
-  describe("getUTCTimestamp", () => {
-    it("can get a well formed timestamp", () => {
-      const timestamp: string = generalHelpers.getUTCTimestamp();
-      const exp: string = "^\\d{8}_\\d{4}_\\d{5}$";
-      const regEx = new RegExp(exp, "gm");
-      expect(regEx.test(timestamp)).toBe(true);
-    });
-  });
+  describe("getTemplateById", () => {
+    it("return template that matches id", () => {
+      const item0 = mockItems.getAGOLItemWithId("Feature Service", 0);
+      item0.itemId = "ABC123";
+      const item1 = mockItems.getAGOLItemWithId("Feature Service", 1);
+      item1.itemId = "ABC124";
+      const item2 = mockItems.getAGOLItemWithId("Feature Service", 2);
+      item2.itemId = "ABC125";
 
-  describe("hasAnyKeyword", () => {
-    it("can handle a model with no typeKeywords", () => {
-      const model: any = {};
-      const keywords: string[] = [];
-      const expected: boolean = false;
-      expect(generalHelpers.hasAnyKeyword(model, keywords)).toBe(expected);
-    });
+      const templates: interfaces.IItemTemplate[] = [item0, item1, item2];
 
-    it("can handle empty keywords argument", () => {
-      const model: any = {
-        item: {
-          typeKeywords: ["A", "B", "C"]
-        }
-      };
-      const keywords: string[] = [];
-      const expected: boolean = false;
-      expect(generalHelpers.hasAnyKeyword(model, keywords)).toBe(expected);
+      const id: string = "ABC124";
+      const expected: any = item1;
+
+      const actual: any = generalHelpers.getTemplateById(templates, id);
+
+      expect(actual).toEqual(expected);
     });
 
-    it("can test for a set of keywords from model.item.typeKeywords", () => {
-      const model: any = {
-        item: {
-          typeKeywords: ["A", "B", "C"]
-        }
-      };
-      const keywords: string[] = ["A"];
-      const expected: boolean = true;
-      expect(generalHelpers.hasAnyKeyword(model, keywords)).toBe(expected);
-    });
+    it("returns supplied template if omitted", () => {
+      const id: string = "ABC124";
+      const expected: any = undefined;
 
-    it("can test for a set of keywords from model.typeKeywords", () => {
-      const model: any = {
-        typeKeywords: ["A", "B", "C"]
-      };
-      const keywords: string[] = ["C"];
-      const expected: boolean = true;
-      expect(generalHelpers.hasAnyKeyword(model, keywords)).toBe(expected);
-    });
+      const actual: any = generalHelpers.getTemplateById(null, id);
 
-    it("can handle an actual set of keywords from model.item.typeKeywords", () => {
-      const model: any = {
-        item: {
-          typeKeywords: [
-            "Map",
-            "Mapping Site",
-            "Online Map",
-            "source-ed27522a057b466587ddd2ffabd33661",
-            "WAB2D",
-            "Web AppBuilder"
-          ]
-        }
-      };
-      const keywords: string[] = ["WAB2D", "WAB3D", "Web AppBuilder"];
-      const expected: boolean = true;
-      expect(generalHelpers.hasAnyKeyword(model, keywords)).toBe(expected);
-    });
-  });
-
-  describe("hasTypeKeyword", () => {
-    it("can handle an object with no typeKeywords", () => {
-      const model: any = {};
-      const keyword: string = "";
-      const expected: boolean = false;
-      expect(generalHelpers.hasTypeKeyword(model, keyword)).toBe(expected);
-    });
-
-    it("can handle an object with item.typeKeywords", () => {
-      const model: any = {
-        item: {
-          typeKeywords: ["A", "B", "C"]
-        }
-      };
-      const keyword: string = "A";
-      const expected: boolean = true;
-      expect(generalHelpers.hasTypeKeyword(model, keyword)).toBe(expected);
-    });
-
-    it("can handle an object with typeKeywords", () => {
-      const model: any = {
-        typeKeywords: ["A", "B", "C"]
-      };
-      const keyword: string = "B";
-      const expected: boolean = true;
-      expect(generalHelpers.hasTypeKeyword(model, keyword)).toBe(expected);
+      expect(actual).toEqual(expected);
     });
   });
 
@@ -1111,6 +1005,73 @@ describe("Module `generalHelpers`: common utility functions shared across packag
     });
   });
 
+  describe("getUTCTimestamp", () => {
+    it("can get a well formed timestamp", () => {
+      const timestamp: string = generalHelpers.getUTCTimestamp();
+      const exp: string = "^\\d{8}_\\d{4}_\\d{5}$";
+      const regEx = new RegExp(exp, "gm");
+      expect(regEx.test(timestamp)).toBe(true);
+    });
+  });
+
+  describe("hasAnyKeyword", () => {
+    it("can handle a model with no typeKeywords", () => {
+      const model: any = {};
+      const keywords: string[] = [];
+      const expected: boolean = false;
+      expect(generalHelpers.hasAnyKeyword(model, keywords)).toBe(expected);
+    });
+
+    it("can handle empty keywords argument", () => {
+      const model: any = {
+        item: {
+          typeKeywords: ["A", "B", "C"]
+        }
+      };
+      const keywords: string[] = [];
+      const expected: boolean = false;
+      expect(generalHelpers.hasAnyKeyword(model, keywords)).toBe(expected);
+    });
+
+    it("can test for a set of keywords from model.item.typeKeywords", () => {
+      const model: any = {
+        item: {
+          typeKeywords: ["A", "B", "C"]
+        }
+      };
+      const keywords: string[] = ["A"];
+      const expected: boolean = true;
+      expect(generalHelpers.hasAnyKeyword(model, keywords)).toBe(expected);
+    });
+
+    it("can test for a set of keywords from model.typeKeywords", () => {
+      const model: any = {
+        typeKeywords: ["A", "B", "C"]
+      };
+      const keywords: string[] = ["C"];
+      const expected: boolean = true;
+      expect(generalHelpers.hasAnyKeyword(model, keywords)).toBe(expected);
+    });
+
+    it("can handle an actual set of keywords from model.item.typeKeywords", () => {
+      const model: any = {
+        item: {
+          typeKeywords: [
+            "Map",
+            "Mapping Site",
+            "Online Map",
+            "source-ed27522a057b466587ddd2ffabd33661",
+            "WAB2D",
+            "Web AppBuilder"
+          ]
+        }
+      };
+      const keywords: string[] = ["WAB2D", "WAB3D", "Web AppBuilder"];
+      const expected: boolean = true;
+      expect(generalHelpers.hasAnyKeyword(model, keywords)).toBe(expected);
+    });
+  });
+
   describe("hasDatasource", () => {
     it("will return true when datasource is found", () => {
       const itemId: string = "solutionItem0123456";
@@ -1170,6 +1131,143 @@ describe("Module `generalHelpers`: common utility functions shared across packag
         1
       );
       expect(actual).toBe(false);
+    });
+  });
+
+  describe("hasTypeKeyword", () => {
+    it("can handle an object with no typeKeywords", () => {
+      const model: any = {};
+      const keyword: string = "";
+      const expected: boolean = false;
+      expect(generalHelpers.hasTypeKeyword(model, keyword)).toBe(expected);
+    });
+
+    it("can handle an object with item.typeKeywords", () => {
+      const model: any = {
+        item: {
+          typeKeywords: ["A", "B", "C"]
+        }
+      };
+      const keyword: string = "A";
+      const expected: boolean = true;
+      expect(generalHelpers.hasTypeKeyword(model, keyword)).toBe(expected);
+    });
+
+    it("can handle an object with typeKeywords", () => {
+      const model: any = {
+        typeKeywords: ["A", "B", "C"]
+      };
+      const keyword: string = "B";
+      const expected: boolean = true;
+      expect(generalHelpers.hasTypeKeyword(model, keyword)).toBe(expected);
+    });
+  });
+
+  describe("jsonToBlob", () => {
+    it("creates a blob with expected mime type", done => {
+      const json: any = { a: "abc", b: 123 };
+      const blob = generalHelpers.jsonToBlob(json);
+      expect(blob.type).toBe("application/octet-stream");
+      blob.text().then(
+        text => {
+          expect(text).toEqual('{"a":"abc","b":123}');
+          done();
+        },
+        done.fail
+      );
+    });
+  });
+
+  describe("jsonToFile", () => {
+    it("creates a file with expected mime type", done => {
+      const json: any = { a: "abc", b: 123 };
+      const file = generalHelpers.jsonToFile(json, "myFile.abc", "application/octet-stream");
+      expect(file.type).toBe("application/octet-stream");
+      file.text().then(
+        text => {
+          expect(text).toEqual('{"a":"abc","b":123}');
+          done();
+        },
+        done.fail
+      );
+    });
+  });
+
+  describe("sanitizeJSONAndReportChanges", () => {
+    it("should not report if no property changed", () => {
+      const json = {
+        a: "an innocuous string"
+      };
+      const expectedSanitizedJSON = {
+        a: "an innocuous string"
+      };
+
+      const messages = [] as string[];
+      spyOn(console, "warn").and.callFake((message: string) => {
+        messages.push(message);
+      });
+      const sanitizedJSON = generalHelpers.sanitizeJSONAndReportChanges(json);
+      expect(sanitizedJSON).toEqual(expectedSanitizedJSON);
+      expect(messages.length).toEqual(0);
+    });
+
+    it("should report changed property", () => {
+      const json = {
+        a:
+          '<img src="https://example.com/fake-image.jpg" onerror="alert(1);" />'
+      };
+      const expectedSanitizedJSON = {
+        a: '<img src="https://example.com/fake-image.jpg" />'
+      };
+
+      const messages = [] as string[];
+      spyOn(console, "warn").and.callFake((message: string) => {
+        messages.push(message);
+      });
+      const sanitizedJSON = generalHelpers.sanitizeJSONAndReportChanges(json);
+      expect(sanitizedJSON).toEqual(expectedSanitizedJSON);
+      expect(messages.length).toEqual(2);
+      expect(messages).toEqual([
+        "Changed 1 property",
+        '    String difference: "' +
+          '<img src="https://example.com/fake-image.jpg" onerror="alert(1);" />' +
+          '" vs. "' +
+          '<img src="https://example.com/fake-image.jpg" />' +
+          '"'
+      ]);
+    });
+
+    it("should report changed properties", () => {
+      const json = {
+        a:
+          '<img src="https://example.com/fake-image.jpg" onerror="alert(1);" />',
+        b: "<IMG SRC=JaVaScRiPt:alert('XSS')>"
+      };
+      const expectedSanitizedJSON = {
+        a: '<img src="https://example.com/fake-image.jpg" />',
+        b: "<img src>"
+      };
+
+      const messages = [] as string[];
+      spyOn(console, "warn").and.callFake((message: string) => {
+        messages.push(message);
+      });
+      const sanitizedJSON = generalHelpers.sanitizeJSONAndReportChanges(json);
+      expect(sanitizedJSON).toEqual(expectedSanitizedJSON);
+      expect(messages.length).toEqual(3);
+      expect(messages).toEqual([
+        "Changed 2 properties",
+        '    String difference: "' +
+          '<img src="https://example.com/fake-image.jpg" onerror="alert(1);" />' +
+          '" vs. "' +
+          '<img src="https://example.com/fake-image.jpg" />' +
+          '"',
+        '    String difference: "' +
+          "<IMG SRC=JaVaScRiPt:alert('XSS')>" +
+          '" vs. "' +
+          "<img src>" +
+          '"'
+      ]);
     });
   });
 
@@ -1264,74 +1362,6 @@ describe("Module `generalHelpers`: common utility functions shared across packag
       expect(obj.level1.level2).not.toBeUndefined();
       expect(obj.level1.level2.level3).not.toBeUndefined();
       expect(obj).toEqual(expectedObj);
-    });
-  });
-
-  describe("cleanItemId", () => {
-    it("should handle empty id", () => {
-      expect(generalHelpers.cleanItemId(null)).toBeNull();
-      expect(generalHelpers.cleanItemId(undefined)).toBeUndefined();
-      expect(generalHelpers.cleanItemId("")).toEqual("");
-    });
-
-    it("should remove template braces and itemId property", () => {
-      expect(generalHelpers.cleanItemId("{{itm1234567890.itemId}}")).toEqual(
-        "itm1234567890"
-      );
-    });
-  });
-
-  describe("cleanLayerId", () => {
-    it("handles a null or empty string", () => {
-      expect(generalHelpers.cleanLayerId(null)).toEqual(null);
-      expect(generalHelpers.cleanLayerId("")).toEqual("");
-    });
-
-    it("handles a templatized layer id", () => {
-      expect(
-        generalHelpers.cleanLayerId(
-          "{{934a9ef8efa7448fa8ddf7b13cef0240.layer0.layerId}}"
-        )
-      ).toEqual(0);
-      expect(
-        generalHelpers.cleanLayerId(
-          "{{934a9ef8efa7448fa8ddf7b13cef0240.layer5.layerId}}"
-        )
-      ).toEqual(5);
-      expect(
-        generalHelpers.cleanLayerId(
-          "{{934a9ef8efa7448fa8ddf7b13cef0240.layer12.layerId}}"
-        )
-      ).toEqual(12);
-    });
-  });
-
-  describe("getTemplateById", () => {
-    it("return template that matches id", () => {
-      const item0 = mockItems.getAGOLItemWithId("Feature Service", 0);
-      item0.itemId = "ABC123";
-      const item1 = mockItems.getAGOLItemWithId("Feature Service", 1);
-      item1.itemId = "ABC124";
-      const item2 = mockItems.getAGOLItemWithId("Feature Service", 2);
-      item2.itemId = "ABC125";
-
-      const templates: interfaces.IItemTemplate[] = [item0, item1, item2];
-
-      const id: string = "ABC124";
-      const expected: any = item1;
-
-      const actual: any = generalHelpers.getTemplateById(templates, id);
-
-      expect(actual).toEqual(expected);
-    });
-
-    it("returns supplied template if omitted", () => {
-      const id: string = "ABC124";
-      const expected: any = undefined;
-
-      const actual: any = generalHelpers.getTemplateById(null, id);
-
-      expect(actual).toEqual(expected);
     });
   });
 
