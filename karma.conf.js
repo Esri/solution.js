@@ -98,12 +98,21 @@ module.exports = function(config) {
     // start these browsers
     // available browser launchers: https://npmjs.org/browse/keyword/karma-launcher
     browsers: [
-      // 'Chrome',
-      // 'ChromeCanary',
-      // 'ChromeHeadlessCI',
-      // 'Edge',
-      // 'Firefox',
-      // 'Safari'
+      'Chrome',
+      'Edge',
+      'Firefox'
+    ],
+    plugins: [
+      require('@chiragrupani/karma-chromium-edge-launcher'),
+      require('karma-chrome-launcher'),
+      require('karma-coverage'),
+      require('karma-firefox-launcher'),
+      require('karma-jasmine'),
+      require('karma-jasmine-diff-reporter'),
+      require('karma-safari-launcher'),
+      require('karma-spec-reporter'),
+      require('karma-typescript'),
+      require('karma-typescript-es6-transform')
     ],
 
     // Continuous Integration mode
