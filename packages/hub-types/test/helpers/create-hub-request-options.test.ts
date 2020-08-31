@@ -67,4 +67,35 @@ describe("createHubRequestOptions", () => {
       done();
     });
   });
+
+  it("does not sent hubApiUrl if portal", () => {
+    const td = {
+      organization: {
+        id: "somePortalId",
+        portalHostname: "www.arcgis.com",
+        isPortal: true
+      },
+      user: {
+        username: "vader"
+      }
+    };
+
+    return createHubRequestOptions(MOCK_USER_SESSION, td).then(hubRo => {
+      expect(hubRo.hubApiUrl).not.toBeDefined(
+        "should not return hubApiUrl for portal"
+      );
+      expect(hubRo.portalSelf.id).toBe(
+        "somePortalId",
+        "should copy organization to portalSelf"
+      );
+      expect(hubRo.portalSelf.user.username).toBe(
+        "vader",
+        "should copy user to portalSelf.user"
+      );
+      expect(hubRo.authentication).toBe(
+        MOCK_USER_SESSION,
+        "should pass thru the auth"
+      );
+    });
+  });
 });
