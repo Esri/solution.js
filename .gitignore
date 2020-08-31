@@ -107,3 +107,5 @@ TODO.md
 demos/deploy-harness
 demos/**/index-local.html
 !demos/deploySolution/data/appConfig.js
+
+demos/ember-build-harness 

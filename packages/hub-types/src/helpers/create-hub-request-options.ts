@@ -61,13 +61,17 @@ export function createHubRequestOptions(
 
   return orgUserPrms.then(([pSelf, user]) => {
     pSelf.user = user;
-    const hubApiUrl = getHubUrlFromPortal(pSelf);
 
-    return {
+    const ro = {
       authentication,
       portalSelf: pSelf,
-      isPortal: pSelf.isPortal,
-      hubApiUrl
+      isPortal: pSelf.isPortal
     } as IHubRequestOptions;
+
+    if (!pSelf.isPortal) {
+      ro.hubApiUrl = getHubUrlFromPortal(pSelf);
+    }
+
+    return ro;
   });
 }
