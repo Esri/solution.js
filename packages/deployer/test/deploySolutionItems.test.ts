@@ -53,11 +53,15 @@ describe("Module `deploySolutionItems`", () => {
       spyOn(console, "log").and.callFake(() => {});
       // tslint:disable-next-line: no-empty
       spyOn(console, "error").and.callFake(() => {});
+      const unimplementedType = templates.getItemTemplateSkeleton();
+      unimplementedType.itemId = "unk1234567890"
+      unimplementedType.type = "Unimplemented"
+
       deploySolution
         .deploySolutionItems(
           "",
           "",
-          [templates.getItemTemplateSkeleton()],
+          [unimplementedType],
           MOCK_USER_SESSION,
           {},
           MOCK_USER_SESSION,
@@ -70,7 +74,7 @@ describe("Module `deploySolutionItems`", () => {
         .then(
           () => done.fail(),
           error => {
-            expect(error).toEqual(common.failWithIds([""]));
+            expect(error).toEqual(common.failWithIds(["unk1234567890"]));
             done();
           }
         );
