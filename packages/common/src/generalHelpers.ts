@@ -142,15 +142,30 @@ export function createShortId(): string {
  */
 export function jsonToBlob(json: any): Blob {
   const _json = JSON.stringify(json);
+  const blobOptions = { type: "application/octet-stream" };
 
   const charArray = [];
   for (let i = 0; i < _json.length; i++) {
     charArray[i] = _json.charCodeAt(i);
   }
 
-  return new Blob([new Uint8Array(charArray)], {
-    type: "application/octet-stream"
-  });
+  return new Blob([new Uint8Array(charArray)], blobOptions);
+}
+
+/**
+ * Converts JSON to a File.
+ *
+ * @param json JSON to use as source
+ * @param filename Name to use for file
+ * @param mimeType MIME type to override blob's MIME type
+ * @return File created out of JSON and filename
+ */
+export function jsonToFile(
+  json: any,
+  filename: string,
+  mimeType = "application/json"
+): File {
+  return blobToFile(jsonToBlob(json), filename, mimeType);
 }
 
 /**

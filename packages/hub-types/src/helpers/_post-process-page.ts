@@ -22,9 +22,9 @@ export function _postProcessPage(
   templateDictionary: any,
   hubRequestOptions: IHubRequestOptions
 ): Promise<boolean> {
-  // re-interpolate the siteModel using the itemInfos
+  // re-interpolate the siteModel using the itemInfos; no patches supplied
   pageModel = interpolate(pageModel, templateDictionary, {});
-  return updatePage(pageModel, hubRequestOptions).then(() => {
+  return updatePage(pageModel, [], hubRequestOptions).then(() => {
     return true;
   });
 }
