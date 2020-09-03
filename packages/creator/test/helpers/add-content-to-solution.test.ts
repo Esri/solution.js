@@ -26,6 +26,7 @@ import * as mockItems from "../../../common/test/mocks/agolItems";
 import * as utils from "../../../common/test/mocks/utils";
 import * as templates from "../../../common/test/mocks/templates";
 import * as staticRelatedItemsMocks from "../../../common/test/mocks/staticRelatedItemsMocks";
+import { findBy } from "@esri/hub-common";
 // Set up a UserSession to use in all these tests
 const MOCK_USER_SESSION = utils.createRuntimeMockUserSession();
 
@@ -190,6 +191,47 @@ describe("_postProcessGroupDependencies", () => {
     const actual = _postProcessGroupDependencies(_templates);
     expect(actual).toEqual(expected);
     done();
+  });
+
+  it("allows for items without dependencies", () => {
+    // Make the most minimal object graph to verify
+    // the specific functionality of this test
+    const tmpls = [
+      {
+        type: "Group",
+        itemId: "bc3-group",
+        dependencies: ["3ef-webmap", "cb7-initiative"],
+        groups: []
+      } as common.IItemTemplate,
+      {
+        type: "Web App",
+        itemId: "3ef-webapp",
+        dependencies: ["bc3-group"],
+        groups: []
+      } as common.IItemTemplate,
+      {
+        type: "Hub Site Application",
+        itemId: "3ef-site",
+        dependencies: ["3ef-webapp"],
+        groups: []
+      } as common.IItemTemplate,
+      {
+        type: "Web Map",
+        itemId: "3ef-webmap",
+        groups: []
+      } as common.IItemTemplate
+    ];
+    const result = _postProcessGroupDependencies(tmpls);
+    expect(result.length).toBe(4, "should have 4 templates");
+    const webappEntry = findBy(result, "itemId", "3ef-webapp");
+    expect(webappEntry.groups.length).toBe(
+      0,
+      "should not add group to web app"
+    );
+    const siteEntry = findBy(result, "itemId", "3ef-site");
+    expect(siteEntry.groups.length).toBe(0, "should not add groups site");
+    const mapEntry = findBy(result, "itemId", "3ef-webmap");
+    expect(mapEntry.groups.length).toBe(1, "should add groups map");
   });
 
   it("add group dependencies to groups array", done => {
