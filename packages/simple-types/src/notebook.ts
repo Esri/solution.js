@@ -118,11 +118,12 @@ export function fineTuneCreatedItem(
 
 /**
  * Notebook specific post-processing actions
- * @param itemId
- * @param type
- * @param itemInfos Array of {id: 'ef3', type: 'Web Map'} objects
- * @param templateDictionary
- * @param authentication
+ * @param {string} itemId The item ID
+ * @param {string} type The template type
+ * @param {any[]} itemInfos Array of {id: 'ef3', type: 'Web Map'} objects
+ * @param {any} templateDictionary The template dictionary
+ * @param {UserSession} authentication The destination session info
+ * @returns {Promise<any>}
  */
 export function postProcess(
   itemId: string,
@@ -137,10 +138,10 @@ export function postProcess(
     if (common.hasUnresolvedVariables(data)) {
       const updatedData = common.replaceInTemplate(data, templateDictionary);
       return notebookHelpers.updateNotebookData(
-        itemId,
+    itemId,
         updatedData,
-        authentication
-      );
+    authentication
+  );
     } else {
       return Promise.resolve({ success: true });
     }

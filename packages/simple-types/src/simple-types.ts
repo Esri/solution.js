@@ -110,13 +110,15 @@ export function postProcessFieldReferences(
   }
   return solutionTemplate;
 }
+
 /**
  * Simple Type post-processing actions
- * @param itemId
- * @param type
- * @param itemInfos Array of {id: 'ef3', type: 'Web Map'} objects
- * @param templateDictionary
- * @param authentication
+ * @param {string} itemId The item ID
+ * @param {string} type The template type
+ * @param {any[]} itemInfos Array of {id: 'ef3', type: 'Web Map'} objects
+ * @param {any} templateDictionary The template dictionary
+ * @param {UserSession} authentication The destination session info
+ * @returns Promise resolving to successfulness of update
  */
 export function postProcess(
   itemId: string,
@@ -132,10 +134,10 @@ export function postProcess(
       const updatedData = replaceInTemplate(data, templateDictionary);
       // TODO: update return type on updateItemExtended
       return updateItemExtended(
-        itemId,
+    itemId,
         { id: itemId },
         updatedData,
-        authentication
+    authentication
       ) as Promise<any>;
     } else {
       return Promise.resolve({ success: true });

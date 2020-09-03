@@ -194,11 +194,12 @@ export function createItemFromTemplate(
 
 /**
  * QuickCapture post-processing actions
- * @param itemId
- * @param type
- * @param itemInfos
- * @param templateDictionary
- * @param authentication
+ * @param {string} itemId The item ID
+ * @param {string} type The template type
+ * @param {any[]} itemInfos Array of {id: 'ef3', type: 'Web Map'} objects
+ * @param {any} templateDictionary The template dictionary
+ * @param {UserSession} authentication The destination session info
+ * @returns Promise resolving to successfulness of update
  */
 export function postProcess(
   itemId: string,

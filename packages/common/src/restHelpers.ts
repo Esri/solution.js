@@ -1232,6 +1232,16 @@ export function shareItem(
   });
 }
 
+/**
+ * Updates an item.
+ *
+ * @param itemInfo The base info of an item; note that this content will be serialized, which doesn't work
+ * for binary content
+ * @param authentication Credentials for request
+ * @param folderId Item's folder
+ * @param additionalParams Updates that are put under the `params` property, which is not serialized
+ * @return
+ */
 export function updateItem(
   itemInfo: IItemUpdate,
   authentication: UserSession,
