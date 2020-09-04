@@ -19,8 +19,7 @@ import {
   _checkedReplaceAll,
   _getPortalBaseUrl,
   _getNewItemId,
-  _updateGroupReferences,
-  _updateTemplateDictionary
+  _updateGroupReferences
 } from "../src/deploySolutionFromTemplate";
 import * as common from "@esri/solution-common";
 import * as deployItems from "../src/deploySolutionItems";
@@ -390,22 +389,6 @@ describe("Module `deploySolutionFromTemplate`", () => {
           groups: ["xyz", "ghi"]
         }
       ]);
-    });
-  });
-
-  describe("_updateTemplateDictionary", () => {
-    it("handles no params in Template Dictionary", () => {
-      const a = { wkid: 4326 };
-      const expected = { wkid: 4326 };
-      const actual = _updateTemplateDictionary(a, undefined);
-      expect(actual).toEqual(expected);
-    });
-    it("handles params in Template Dictionary", () => {
-      const a = { wkid: 4326 };
-      const b = { wkid: 102100 };
-      const expected = { wkid: 102100 };
-      const actual = _updateTemplateDictionary(a, b);
-      expect(actual).toEqual(expected);
     });
   });
 });

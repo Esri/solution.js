@@ -70,11 +70,7 @@ export function deploySolutionFromTemplate(
 
         // Initialize replacement dictionary
         // swap user defined params before we start...no need to wait
-        if (solutionTemplateData.params) {
-          templateDictionary.params = _updateTemplateDictionary(
-            solutionTemplateData.params,
-            templateDictionary.params
-          );
+        if (templateDictionary.params) {
           solutionTemplateData.templates = solutionTemplateData.templates.map(
             (template: any) => {
               return common.replaceInTemplate(template, templateDictionary);
@@ -380,13 +376,6 @@ export function _updateGroupReferences(
     }
   });
   return itemTemplates;
-}
-
-export function _updateTemplateDictionary(
-  solutionParams: any,
-  existingParams: any
-): any {
-  return Object.assign(solutionParams, existingParams || {});
 }
 
 export function _purgeTemplateProperties(itemTemplate: any): any {
