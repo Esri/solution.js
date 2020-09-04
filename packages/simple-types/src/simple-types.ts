@@ -20,6 +20,7 @@
  * @module simple-types
  */
 
+import * as common from "@esri/solution-common";
 import * as dashboard from "./dashboard";
 import * as webmap from "./webmap";
 import * as webmappingapplication from "./webmappingapplication";
@@ -128,19 +129,10 @@ export function postProcess(
   templates: IItemTemplate[],
   templateDictionary: any,
   authentication: UserSession
-): Promise<any> {
-  return getItemDataAsJson(itemId, authentication).then(data => {
-    if (hasUnresolvedVariables(data)) {
-      const updatedData = replaceInTemplate(data, templateDictionary);
-      // TODO: update return type on updateItemExtended
-      return updateItemExtended(
+): Promise<common.IUpdateItemResponse> {
+  return common.updateItemTemplateFromDictionary(
     itemId,
-        { id: itemId },
-        updatedData,
+    templateDictionary,
     authentication
-      ) as Promise<any>;
-    } else {
-      return Promise.resolve({ success: true });
-    }
-  });
+  );
 }

@@ -18,6 +18,7 @@ import { simpleTypes } from "@esri/solution-simple-types";
 import * as common from "@esri/solution-common";
 import * as postProcessor from "../src/post-process";
 import * as utils from "../../common/test/mocks/utils";
+import * as fetchMock from "fetch-mock";
 import * as templates from "../../common/test/mocks/templates";
 import * as hubFormTemplateHelpers from "../src/helpers/is-hub-form-template";
 import * as hubFormProcessingHelpers from "../src/helpers/post-process-survey";
@@ -33,6 +34,10 @@ describe("postProcess", () => {
     template = templates.getItemTemplate("Form");
     itemInfos = [{ itemId: template.itemId }];
     templateDictionary = { key: "value" };
+  });
+
+  afterEach(() => {
+    fetchMock.restore();
   });
 
   it("should delegate to custom template post processing for Hub Survey templates", done => {
@@ -79,19 +84,32 @@ describe("postProcess", () => {
       );
   });
 
-  it("should delegate to simple types post processing for non-Hub Survey templates", done => {
-    const expectedResults = { success: true };
-    const simpleTypesSpy = spyOn(simpleTypes, "postProcess").and.resolveTo(
-      expectedResults
-    );
+  it("should delegate to common post processing for non-Hub Survey templates", () => {
+    const expectedResults = utils.getSuccessResponse({ "id": "itm1234567890" });;
     const isHubFormTemplateSpy = spyOn(
       hubFormTemplateHelpers,
       "isHubFormTemplate"
     ).and.returnValue(false);
-    const progressCallback = jasmine.createSpy();
-    postProcessor
+
+    template.item.id = template.itemId;
+    const updateUrl = utils.PORTAL_SUBSET.restUrl + "/content/users/casey/items/frm1234567890/update";
+    fetchMock
+      .get(
+        utils.PORTAL_SUBSET.restUrl + "/content/items/frm1234567890?f=json&token=fake-token",
+        template.item
+      )
+      .post(
+        utils.PORTAL_SUBSET.restUrl + "/content/items/frm1234567890/data",
+        {}
+      )
+      .post(
+        updateUrl,
+        utils.getSuccessResponse({ "id": template.item.id })
+      );
+
+    return postProcessor
       .postProcess(
-        template.id,
+        template.itemId,
         template.type,
         itemInfos,
         template,
@@ -99,26 +117,18 @@ describe("postProcess", () => {
         templateDictionary,
         MOCK_USER_SESSION
       )
-      .then(
-        results => {
-          expect(isHubFormTemplateSpy.calls.count()).toBe(1);
-          expect(isHubFormTemplateSpy.calls.first().args).toEqual([template]);
-          expect(simpleTypesSpy.calls.count()).toBe(1);
-          expect(simpleTypesSpy.calls.first().args).toEqual([
-            template.id,
-            template.type,
-            itemInfos,
-            template,
-            [template],
-            templateDictionary,
-            MOCK_USER_SESSION
-          ]);
-          expect(results).toEqual(expectedResults);
-          done();
-        },
-        e => {
-          done.fail(e);
-        }
-      );
+      .then(result => {
+        expect(result).toEqual(utils.getSuccessResponse({ "id": template.item.id }));
+
+        const callBody = fetchMock.calls(updateUrl)[0][1].body as string;
+        expect(callBody).toEqual(
+          'f=json&text=%7B%7D&id=frm1234567890&name=Name%20of%20an%20AGOL%20item&title=An%20AGOL%20item&' +
+          'type=Form&typeKeywords=JavaScript&description=Description%20of%20an%20AGOL%20item&tags=test&' +
+          'snippet=Snippet%20of%20an%20AGOL%20item&thumbnail=https%3A%2F%2Fmyorg.maps.arcgis.com%2F' +
+          'sharing%2Frest%2Fcontent%2Fitems%2Ffrm1234567890%2Finfo%2Fthumbnail%2Fago_downloaded.png&' +
+          'extent=%7B%7BsolutionItemExtent%7D%7D&categories=&accessInformation=Esri%2C%20Inc.&' +
+          'culture=en-us&url=&token=fake-token'
+        );
+      });
   });
 });

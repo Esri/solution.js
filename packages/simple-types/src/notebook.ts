@@ -134,16 +134,9 @@ export function postProcess(
   templateDictionary: any,
   authentication: common.UserSession
 ): Promise<any> {
-  return common.getItemDataAsJson(itemId, authentication).then(data => {
-    if (common.hasUnresolvedVariables(data)) {
-      const updatedData = common.replaceInTemplate(data, templateDictionary);
-      return notebookHelpers.updateNotebookData(
+  return common.updateItemTemplateFromDictionary(
     itemId,
-        updatedData,
+    templateDictionary,
     authentication
   );
-    } else {
-      return Promise.resolve({ success: true });
-    }
-  });
 }

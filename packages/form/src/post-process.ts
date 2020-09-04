@@ -20,8 +20,7 @@
  * @module post-process
  */
 
-import { UserSession, IItemTemplate } from "@esri/solution-common";
-import { simpleTypes } from "@esri/solution-simple-types";
+import { UserSession, IItemTemplate, updateItemTemplateFromDictionary } from "@esri/solution-common";
 import { isHubFormTemplate } from "./helpers/is-hub-form-template";
 import { postProcessHubSurvey } from "./helpers/post-process-survey";
 
@@ -32,7 +31,7 @@ import { postProcessHubSurvey } from "./helpers/post-process-survey";
  * @param {any[]} itemInfos Array of {id: 'ef3', type: 'Web Map'} objects
  * @param {any} templateDictionary The template dictionary
  * @param {UserSession} authentication The destination session info
- * @returns {Promise<any>}
+ * @returns Promise resolving to successfulness of update
  */
 export function postProcess(
   itemId: string,
@@ -55,12 +54,8 @@ export function postProcess(
     );
   }
 
-  return simpleTypes.postProcess(
+  return updateItemTemplateFromDictionary(
     itemId,
-    type,
-    itemInfos,
-    template,
-    templates,
     templateDictionary,
     authentication
   );

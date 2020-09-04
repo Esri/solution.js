@@ -201,7 +201,6 @@ export function createItemFromTemplate(
                       // Update the item with snippet, description, popupInfo, ect.
                       common
                         .updateItemExtended(
-                          createResponse.serviceItemId,
                           {
                             ...newItemTemplate.item,
                             url: undefined // can't update the URL of a feature service
@@ -346,22 +345,12 @@ export function postProcess(
   templates: common.IItemTemplate[],
   templateDictionary: any,
   authentication: common.UserSession
-): Promise<any> {
-  return Promise.all([
-    common.getItemBase(itemId, authentication),
-    common.getItemDataAsJson(itemId, authentication)
-  ]).then(([item, data]) => {
-    const { item: updatedItem, data: updatedData } = common.replaceInTemplate(
-      { item, data },
-      templateDictionary
-    );
-    return common.updateItemExtended(
+): Promise<common.IUpdateItemResponse> {
+  return common.updateItemTemplateFromDictionary(
     itemId,
-      updatedItem,
-      updatedData,
+    templateDictionary,
     authentication
   );
-  });
 }
 
 // ------------------------------------------------------------------------------------------------------------------ //
