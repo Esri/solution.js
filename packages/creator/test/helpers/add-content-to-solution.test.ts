@@ -200,7 +200,7 @@ describe("_postProcessGroupDependencies", () => {
       {
         type: "Group",
         itemId: "bc3-group",
-        dependencies: ["3ef-webmap", "cb7-initiative"],
+        dependencies: ["3ef-webmap", "cb7-initiative", "3ef-webmap2"],
         groups: []
       } as common.IItemTemplate,
       {
@@ -217,12 +217,16 @@ describe("_postProcessGroupDependencies", () => {
       } as common.IItemTemplate,
       {
         type: "Web Map",
-        itemId: "3ef-webmap",
-        groups: []
+        itemId: "3ef-webmap"
+      } as common.IItemTemplate,
+      {
+        type: "Web Map",
+        itemId: "3ef-webmap2",
+        groups: ["bc3-group"]
       } as common.IItemTemplate
     ];
     const result = _postProcessGroupDependencies(tmpls);
-    expect(result.length).toBe(4, "should have 4 templates");
+    expect(result.length).toBe(5, "should have 5 templates");
     const webappEntry = findBy(result, "itemId", "3ef-webapp");
     expect(webappEntry.groups.length).toBe(
       0,
