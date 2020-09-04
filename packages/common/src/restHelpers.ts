@@ -58,6 +58,10 @@ import {
 } from "./interfaces";
 import { createZip } from "./libConnectors";
 import {
+  getItemBase,
+  getItemDataAsJson
+} from "./restHelpersGet";
+import {
   addItemData as portalAddItemData,
   addItemRelationship,
   addItemResource,
@@ -1265,13 +1269,12 @@ export function updateItem(
 }
 
 export function updateItemExtended(
-  serviceItemId: string,
   itemInfo: IItemUpdate,
   data: any,
   authentication: UserSession,
   access?: string | undefined
-): Promise<void> {
-  return new Promise((resolve, reject) => {
+): Promise<IUpdateItemResponse> {
+  return new Promise<IUpdateItemResponse>((resolve, reject) => {
     const updateOptions: IUpdateItemOptions = {
       item: itemInfo,
       params: {
@@ -1280,24 +1283,61 @@ export function updateItemExtended(
       authentication: authentication
     };
     portalUpdateItem(updateOptions).then(
-      () => {
+      result => {
         if (access && access !== "private") {
           // Set access if it is not AGOL default
           // Set the access manually since the access value in createItem appears to be ignored
           const accessOptions: ISetAccessOptions = {
-            id: serviceItemId,
+            id: itemInfo.id,
             access: access === "public" ? "public" : "org", // need to use constants rather than string
             authentication: authentication
           };
           setItemAccess(accessOptions).then(
-            () => resolve(),
+            () => resolve(result),
             e => reject(fail(e))
           );
         } else {
-          resolve();
+          resolve(result);
         }
       },
       e => reject(fail(e))
+    );
+  });
+}
+
+/**
+ * Update an item's base and data using a dictionary.
+ * @param {string} itemId The item ID
+ * @param {any} templateDictionary The template dictionary
+ * @param {UserSession} authentication The destination session info
+ * @returns Promise resolving to successfulness of update
+ */
+export function updateItemTemplateFromDictionary(
+  itemId: string,
+  templateDictionary: any,
+  authentication: UserSession
+): Promise<IUpdateItemResponse> {
+  return new Promise<IUpdateItemResponse>((resolve, reject) => {
+    Promise.all([
+      getItemBase(itemId, authentication),
+      getItemDataAsJson(itemId, authentication)
+    ])
+    .then(([item, data]) => {
+      const { item: updatedItem, data: updatedData } = replaceInTemplate(
+        { item, data },
+        templateDictionary
+      );
+      return updateItemExtended(
+        updatedItem,
+        updatedData,
+        authentication
+      );
+    })
+    .then(
+      result => resolve(result)
+    )
+    .catch(
+      error => reject(error)
     );
   });
 }
