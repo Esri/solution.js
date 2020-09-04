@@ -107,7 +107,10 @@ import {
   addToServiceDefinition as svcAdminAddToServiceDefinition,
   createFeatureService as svcAdminCreateFeatureService
 } from "@esri/arcgis-rest-service-admin";
-import { replaceInTemplate } from "./templatization";
+import {
+  hasUnresolvedVariables,
+  replaceInTemplate
+} from "./templatization";
 
 // ------------------------------------------------------------------------------------------------------------------ //
 
@@ -1318,20 +1321,31 @@ export function updateItemTemplateFromDictionary(
   authentication: UserSession
 ): Promise<IUpdateItemResponse> {
   return new Promise<IUpdateItemResponse>((resolve, reject) => {
+    // Fetch the items as stored in AGO
     Promise.all([
       getItemBase(itemId, authentication),
       getItemDataAsJson(itemId, authentication)
     ])
     .then(([item, data]) => {
-      const { item: updatedItem, data: updatedData } = replaceInTemplate(
-        { item, data },
-        templateDictionary
-      );
-      return updateItemExtended(
-        updatedItem,
-        updatedData,
-        authentication
-      );
+      // Do they have any variables?
+      if (hasUnresolvedVariables(item) || hasUnresolvedVariables(data)) {
+        // Update if so
+        const { item: updatedItem, data: updatedData } = replaceInTemplate(
+          { item, data },
+          templateDictionary
+        );
+        return updateItemExtended(
+          updatedItem,
+          updatedData,
+          authentication
+        );
+      } else {
+        // Shortcut out if not
+        return Promise.resolve({
+          success: true,
+          id: itemId
+        } as IUpdateItemResponse);
+      }
     })
     .then(
       result => resolve(result)

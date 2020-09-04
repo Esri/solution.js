@@ -2598,11 +2598,11 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
         });
     });
     it("should update only if interpolation needed", () => {
-      const template = templates.getItemTemplate("Web Map");
+      const template = templates.getItemTemplate("Web Map", [], "http://www.esri.com");
       template.item.id = template.itemId = "3ef";
+      template.item.extent = null;
       const td = { owner: "Luke Skywalker" };
 
-      const updateUrl = utils.PORTAL_SUBSET.restUrl + "/content/users/casey/items/3ef/update";
       fetchMock
         .get(
           utils.PORTAL_SUBSET.restUrl + "/content/items/3ef?f=json&token=fake-token",
@@ -2611,10 +2611,6 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
         .post(
           utils.PORTAL_SUBSET.restUrl + "/content/items/3ef/data",
           { value: "Larry" }
-        )
-        .post(
-          updateUrl,
-          utils.getSuccessResponse({ "id": template.item.id })
         );
 
       return simpleTypes
@@ -2629,17 +2625,6 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
         )
         .then(result => {
           expect(result).toEqual(utils.getSuccessResponse({ "id": template.item.id }));
-
-          const callBody = fetchMock.calls(updateUrl)[0][1].body as string;
-          expect(callBody).toEqual(
-            'f=json&text=%7B%22value%22%3A%22Larry%22%7D&id=3ef&name=Name%20of%20an%20AGOL%20item&' +
-            'title=An%20AGOL%20item&type=Web%20Map&typeKeywords=JavaScript&description=Description%20of%20an%20' +
-            'AGOL%20item&tags=test&snippet=Snippet%20of%20an%20AGOL%20item&thumbnail=https%3A%2F%2F' +
-            'myorg.maps.arcgis.com%2Fsharing%2Frest%2Fcontent%2Fitems%2Fmap1234567890%2Finfo%2Fthumbnail%2F' +
-            'ago_downloaded.png&extent=%7B%7BsolutionItemExtent%7D%7D&categories=&accessInformation=Esri%2C%20' +
-            'Inc.&culture=en-us&url=%7B%7BportalBaseUrl%7D%7D%2Fhome%2Fwebmap%2Fviewer.html%3Fwebmap%3D%7B%7B' +
-            'map1234567890.itemId%7D%7D&token=fake-token'
-          );
         });
     });
   });
