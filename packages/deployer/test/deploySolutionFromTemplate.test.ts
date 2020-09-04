@@ -19,7 +19,8 @@ import {
   _checkedReplaceAll,
   _getPortalBaseUrl,
   _getNewItemId,
-  _updateGroupReferences
+  _updateGroupReferences,
+  _updateTemplateDictionary
 } from "../src/deploySolutionFromTemplate";
 import * as common from "@esri/solution-common";
 import * as deployItems from "../src/deploySolutionItems";
@@ -106,7 +107,9 @@ describe("Module `deploySolutionFromTemplate`", () => {
         customBaseUrl: "maps.arcgis.com",
         urlKey: "localgov"
       };
-      expect(_getPortalBaseUrl(portalResponse, MOCK_USER_SESSION)).toEqual("https://localgov.maps.arcgis.com");
+      expect(_getPortalBaseUrl(portalResponse, MOCK_USER_SESSION)).toEqual(
+        "https://localgov.maps.arcgis.com"
+      );
     });
     it("handles Enterprise portal", () => {
       const portalResponse: common.IPortal = {
@@ -115,7 +118,9 @@ describe("Module `deploySolutionFromTemplate`", () => {
         name: "",
         portalHostname: "rpubs16029.ags.esri.com/portal"
       };
-      expect(_getPortalBaseUrl(portalResponse, MOCK_USER_SESSION)).toEqual("https://rpubs16029.ags.esri.com/portal");
+      expect(_getPortalBaseUrl(portalResponse, MOCK_USER_SESSION)).toEqual(
+        "https://rpubs16029.ags.esri.com/portal"
+      );
     });
     it("provides default portal base URL from authentication", () => {
       const portalResponse: common.IPortal = {
@@ -123,7 +128,9 @@ describe("Module `deploySolutionFromTemplate`", () => {
         isPortal: false,
         name: ""
       };
-      expect(_getPortalBaseUrl(portalResponse, MOCK_USER_SESSION)).toEqual("https://myorg.maps.arcgis.com");
+      expect(_getPortalBaseUrl(portalResponse, MOCK_USER_SESSION)).toEqual(
+        "https://myorg.maps.arcgis.com"
+      );
     });
   });
 
@@ -132,11 +139,15 @@ describe("Module `deploySolutionFromTemplate`", () => {
     let MOCK_USER_SESSION_ALT: UserSession;
     const communitySelfResponse: any = testUtils.getUserResponse();
     const portalsSelfResponse: any = testUtils.getPortalsSelfResponse();
-    const alternatePortalRestUrl = "https://myOtherPortal.esri.com/portal//sharing/rest";
+    const alternatePortalRestUrl =
+      "https://myOtherPortal.esri.com/portal//sharing/rest";
 
     beforeEach(() => {
       MOCK_USER_SESSION = testUtils.createRuntimeMockUserSession();
-      MOCK_USER_SESSION_ALT = testUtils.createRuntimeMockUserSession(Date.now(), alternatePortalRestUrl);
+      MOCK_USER_SESSION_ALT = testUtils.createRuntimeMockUserSession(
+        Date.now(),
+        alternatePortalRestUrl
+      );
     });
 
     afterEach(() => {
@@ -144,8 +155,12 @@ describe("Module `deploySolutionFromTemplate`", () => {
     });
 
     it("defaults storageAuthentication to authentication", done => {
-      const templates: common.IItemTemplate[] = [mockTemplates.getItemTemplate("Web Map")];
-      const solution: common.ISolutionItem = mockTemplates.getSolutionTemplateItem(templates);
+      const templates: common.IItemTemplate[] = [
+        mockTemplates.getItemTemplate("Web Map")
+      ];
+      const solution: common.ISolutionItem = mockTemplates.getSolutionTemplateItem(
+        templates
+      );
       const folderId = "fld1234567890";
       const templateSolutionId: string = "sln1234567890";
       const solutionTemplateBase: any = solution.item;
@@ -156,24 +171,61 @@ describe("Module `deploySolutionFromTemplate`", () => {
       const deployedSolutionId = "dpl1234567890";
       const templateDictionary = {} as any;
 
-      const deployFnStub = sinon.stub(deployItems, "deploySolutionItems").resolves(deployedSolutionId);
-      const postProcessFnStub = sinon.stub(postProcess, "postProcess").resolves();
+      const deployFnStub = sinon
+        .stub(deployItems, "deploySolutionItems")
+        .resolves(deployedSolutionId);
+      const postProcessFnStub = sinon
+        .stub(postProcess, "postProcess")
+        .resolves();
 
       fetchMock
-        .get(testUtils.PORTAL_SUBSET.restUrl + "/portals/self?f=json&token=fake-token", portalsSelfResponse)
-        .get(testUtils.PORTAL_SUBSET.restUrl + "/community/self?f=json&token=fake-token", communitySelfResponse)
-        .get(testUtils.PORTAL_SUBSET.restUrl + "/content/users/casey?f=json&token=fake-token", testUtils.getSuccessResponse())
-        .get(testUtils.PORTAL_SUBSET.restUrl + "/community/users/casey?f=json&token=fake-token", testUtils.getSuccessResponse())
-        .post("https://utility.arcgisonline.com/arcgis/rest/services/Geometry/GeometryServer/findTransformations", testUtils.getTransformationsResponse())
-        .post(testUtils.PORTAL_SUBSET.restUrl + "/content/users/casey/createFolder", testUtils.getCreateFolderResponse(folderId))
-        .post("https://utility.arcgisonline.com/arcgis/rest/services/Geometry/GeometryServer/project", testUtils.getProjectResponse())
-        .post(testUtils.PORTAL_SUBSET.restUrl + "/content/users/casey/" + folderId + "/addItem",
-          testUtils.getSuccessResponse({ id: deployedSolutionId, folder: folderId })
+        .get(
+          testUtils.PORTAL_SUBSET.restUrl +
+            "/portals/self?f=json&token=fake-token",
+          portalsSelfResponse
         )
-        .post(testUtils.PORTAL_SUBSET.restUrl + "/content/users/casey/fld1234567890/items/dpl1234567890/update",
+        .get(
+          testUtils.PORTAL_SUBSET.restUrl +
+            "/community/self?f=json&token=fake-token",
+          communitySelfResponse
+        )
+        .get(
+          testUtils.PORTAL_SUBSET.restUrl +
+            "/content/users/casey?f=json&token=fake-token",
+          testUtils.getSuccessResponse()
+        )
+        .get(
+          testUtils.PORTAL_SUBSET.restUrl +
+            "/community/users/casey?f=json&token=fake-token",
+          testUtils.getSuccessResponse()
+        )
+        .post(
+          "https://utility.arcgisonline.com/arcgis/rest/services/Geometry/GeometryServer/findTransformations",
+          testUtils.getTransformationsResponse()
+        )
+        .post(
+          testUtils.PORTAL_SUBSET.restUrl + "/content/users/casey/createFolder",
+          testUtils.getCreateFolderResponse(folderId)
+        )
+        .post(
+          "https://utility.arcgisonline.com/arcgis/rest/services/Geometry/GeometryServer/project",
+          testUtils.getProjectResponse()
+        )
+        .post(
+          testUtils.PORTAL_SUBSET.restUrl +
+            "/content/users/casey/" +
+            folderId +
+            "/addItem",
+          testUtils.getSuccessResponse({
+            id: deployedSolutionId,
+            folder: folderId
+          })
+        )
+        .post(
+          testUtils.PORTAL_SUBSET.restUrl +
+            "/content/users/casey/fld1234567890/items/dpl1234567890/update",
           testUtils.getSuccessResponse({ id: deployedSolutionId })
-        )
-        ;
+        );
 
       deploySolutionFromTemplate(
         templateSolutionId,
@@ -185,9 +237,9 @@ describe("Module `deploySolutionFromTemplate`", () => {
       ).then(
         () => {
           const deployFnCall = deployFnStub.getCall(0);
-          expect(deployFnCall.args[0]).toEqual(MOCK_USER_SESSION.portal);         // portalSharingUrl
-          expect(deployFnCall.args[3].portal).toEqual(MOCK_USER_SESSION.portal);  // storageAuthentication
-          expect(deployFnCall.args[5].portal).toEqual(MOCK_USER_SESSION.portal);  // destinationAuthentication
+          expect(deployFnCall.args[0]).toEqual(MOCK_USER_SESSION.portal); // portalSharingUrl
+          expect(deployFnCall.args[3].portal).toEqual(MOCK_USER_SESSION.portal); // storageAuthentication
+          expect(deployFnCall.args[5].portal).toEqual(MOCK_USER_SESSION.portal); // destinationAuthentication
 
           deployFnStub.restore();
           postProcessFnStub.restore();
@@ -202,8 +254,12 @@ describe("Module `deploySolutionFromTemplate`", () => {
     });
 
     it("allows distinct authentication to the solution template", done => {
-      const templates: common.IItemTemplate[] = [mockTemplates.getItemTemplate("Web Map")];
-      const solution: common.ISolutionItem = mockTemplates.getSolutionTemplateItem(templates);
+      const templates: common.IItemTemplate[] = [
+        mockTemplates.getItemTemplate("Web Map")
+      ];
+      const solution: common.ISolutionItem = mockTemplates.getSolutionTemplateItem(
+        templates
+      );
       const folderId = "fld1234567890";
       const templateSolutionId: string = "sln1234567890";
       const solutionTemplateBase: any = solution.item;
@@ -216,24 +272,61 @@ describe("Module `deploySolutionFromTemplate`", () => {
       const deployedSolutionId = "dpl1234567890";
       const templateDictionary = {} as any;
 
-      const deployFnStub = sinon.stub(deployItems, "deploySolutionItems").resolves(deployedSolutionId);
-      const postProcessFnStub = sinon.stub(postProcess, "postProcess").resolves();
+      const deployFnStub = sinon
+        .stub(deployItems, "deploySolutionItems")
+        .resolves(deployedSolutionId);
+      const postProcessFnStub = sinon
+        .stub(postProcess, "postProcess")
+        .resolves();
 
       fetchMock
-        .get(testUtils.PORTAL_SUBSET.restUrl + "/portals/self?f=json&token=fake-token", portalsSelfResponse)
-        .get(testUtils.PORTAL_SUBSET.restUrl + "/community/self?f=json&token=fake-token", communitySelfResponse)
-        .get(testUtils.PORTAL_SUBSET.restUrl + "/content/users/casey?f=json&token=fake-token", testUtils.getSuccessResponse())
-        .get(testUtils.PORTAL_SUBSET.restUrl + "/community/users/casey?f=json&token=fake-token", testUtils.getSuccessResponse())
-        .post("https://utility.arcgisonline.com/arcgis/rest/services/Geometry/GeometryServer/findTransformations", testUtils.getTransformationsResponse())
-        .post(testUtils.PORTAL_SUBSET.restUrl + "/content/users/casey/createFolder", testUtils.getCreateFolderResponse(folderId))
-        .post("https://utility.arcgisonline.com/arcgis/rest/services/Geometry/GeometryServer/project", testUtils.getProjectResponse())
-        .post(testUtils.PORTAL_SUBSET.restUrl + "/content/users/casey/" + folderId + "/addItem",
-          testUtils.getSuccessResponse({ id: deployedSolutionId, folder: folderId })
+        .get(
+          testUtils.PORTAL_SUBSET.restUrl +
+            "/portals/self?f=json&token=fake-token",
+          portalsSelfResponse
         )
-        .post(testUtils.PORTAL_SUBSET.restUrl + "/content/users/casey/fld1234567890/items/dpl1234567890/update",
+        .get(
+          testUtils.PORTAL_SUBSET.restUrl +
+            "/community/self?f=json&token=fake-token",
+          communitySelfResponse
+        )
+        .get(
+          testUtils.PORTAL_SUBSET.restUrl +
+            "/content/users/casey?f=json&token=fake-token",
+          testUtils.getSuccessResponse()
+        )
+        .get(
+          testUtils.PORTAL_SUBSET.restUrl +
+            "/community/users/casey?f=json&token=fake-token",
+          testUtils.getSuccessResponse()
+        )
+        .post(
+          "https://utility.arcgisonline.com/arcgis/rest/services/Geometry/GeometryServer/findTransformations",
+          testUtils.getTransformationsResponse()
+        )
+        .post(
+          testUtils.PORTAL_SUBSET.restUrl + "/content/users/casey/createFolder",
+          testUtils.getCreateFolderResponse(folderId)
+        )
+        .post(
+          "https://utility.arcgisonline.com/arcgis/rest/services/Geometry/GeometryServer/project",
+          testUtils.getProjectResponse()
+        )
+        .post(
+          testUtils.PORTAL_SUBSET.restUrl +
+            "/content/users/casey/" +
+            folderId +
+            "/addItem",
+          testUtils.getSuccessResponse({
+            id: deployedSolutionId,
+            folder: folderId
+          })
+        )
+        .post(
+          testUtils.PORTAL_SUBSET.restUrl +
+            "/content/users/casey/fld1234567890/items/dpl1234567890/update",
           testUtils.getSuccessResponse({ id: deployedSolutionId })
-        )
-        ;
+        );
 
       deploySolutionFromTemplate(
         templateSolutionId,
@@ -245,9 +338,11 @@ describe("Module `deploySolutionFromTemplate`", () => {
       ).then(
         () => {
           const deployFnCall = deployFnStub.getCall(0);
-          expect(deployFnCall.args[0]).toEqual(MOCK_USER_SESSION_ALT.portal);         // portalSharingUrl
-          expect(deployFnCall.args[3].portal).toEqual(MOCK_USER_SESSION_ALT.portal);  // storageAuthentication
-          expect(deployFnCall.args[5].portal).toEqual(MOCK_USER_SESSION.portal);      // destinationAuthentication
+          expect(deployFnCall.args[0]).toEqual(MOCK_USER_SESSION_ALT.portal); // portalSharingUrl
+          expect(deployFnCall.args[3].portal).toEqual(
+            MOCK_USER_SESSION_ALT.portal
+          ); // storageAuthentication
+          expect(deployFnCall.args[5].portal).toEqual(MOCK_USER_SESSION.portal); // destinationAuthentication
 
           deployFnStub.restore();
           postProcessFnStub.restore();
@@ -295,6 +390,22 @@ describe("Module `deploySolutionFromTemplate`", () => {
           groups: ["xyz", "ghi"]
         }
       ]);
+    });
+  });
+
+  describe("_updateTemplateDictionary", () => {
+    it("handles no params in Template Dictionary", () => {
+      const a = { wkid: 4326 };
+      const expected = { wkid: 4326 };
+      const actual = _updateTemplateDictionary(a, undefined);
+      expect(actual).toEqual(expected);
+    });
+    it("handles params in Template Dictionary", () => {
+      const a = { wkid: 4326 };
+      const b = { wkid: 102100 };
+      const expected = { wkid: 102100 };
+      const actual = _updateTemplateDictionary(a, b);
+      expect(actual).toEqual(expected);
     });
   });
 });
