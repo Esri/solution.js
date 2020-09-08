@@ -20,7 +20,6 @@
  * @module simple-types
  */
 
-import * as common from "@esri/solution-common";
 import * as dashboard from "./dashboard";
 import * as webmap from "./webmap";
 import * as webmappingapplication from "./webmappingapplication";
@@ -34,8 +33,10 @@ import {
   IDatasourceInfo,
   IItemProgressCallback,
   IItemTemplate,
+  IUpdateItemResponse,
   replaceInTemplate,
   updateItemExtended,
+  updateItemTemplateFromDictionary,
   UserSession
 } from "@esri/solution-common";
 
@@ -129,8 +130,8 @@ export function postProcess(
   templates: IItemTemplate[],
   templateDictionary: any,
   authentication: UserSession
-): Promise<common.IUpdateItemResponse> {
-  return common.updateItemTemplateFromDictionary(
+): Promise<IUpdateItemResponse> {
+  return updateItemTemplateFromDictionary(
     itemId,
     templateDictionary,
     authentication
