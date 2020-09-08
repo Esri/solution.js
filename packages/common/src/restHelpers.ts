@@ -1412,27 +1412,10 @@ export function _getCreateServiceOptions(
     const isPortal: boolean = templateDictionary.isPortal;
     const solutionItemId: string = templateDictionary.solutionItemId;
     const itemId: string = newItemTemplate.itemId;
-    const serviceSR: any = serviceInfo.service.spatialReference;
-    const serviceInfoWkid = getProp(
+    const fallbackExtent: any = _getFallbackExtent(
       serviceInfo,
-      "defaultExtent.spatialReference.wkid"
+      templateDictionary
     );
-    const customDefaultExtent = getProp(
-      templateDictionary,
-      "params.defaultExtent"
-    );
-
-    // when the services spatial reference does not match that of it's default extent
-    // use the out SRs default extent if it exists in the templateDictionary
-    // this should be set when adding a custom out wkid to the params before calling deploy
-    // this will help avoid situations where the orgs default extent and default world extent
-    // will not project successfully to the out SR
-    const fallbackExtent =
-      serviceInfoWkid && serviceInfoWkid === serviceSR.wkid
-        ? serviceInfo.defaultExtent
-        : customDefaultExtent
-        ? customDefaultExtent
-        : serviceInfo.defaultExtent;
 
     const params: IParams = {};
 
@@ -1464,7 +1447,7 @@ export function _getCreateServiceOptions(
     convertExtentWithFallback(
       templateDictionary.organization.defaultExtent,
       fallbackExtent,
-      serviceSR,
+      serviceInfo.service.spatialReference,
       templateDictionary.organization.helperServices.geometry.url,
       authentication
     ).then(
@@ -1483,6 +1466,32 @@ export function _getCreateServiceOptions(
       e => reject(fail(e))
     );
   });
+}
+
+export function _getFallbackExtent(
+  serviceInfo: any,
+  templateDictionary: any
+): any {
+  const serviceSR: any = serviceInfo.service.spatialReference;
+  const serviceInfoWkid = getProp(
+    serviceInfo,
+    "defaultExtent.spatialReference.wkid"
+  );
+  const customDefaultExtent = getProp(
+    templateDictionary,
+    "params.defaultExtent"
+  );
+
+  // when the services spatial reference does not match that of it's default extent
+  // use the out SRs default extent if it exists in the templateDictionary
+  // this should be set when adding a custom out wkid to the params before calling deploy
+  // this will help avoid situations where the orgs default extent and default world extent
+  // will not project successfully to the out SR
+  return serviceInfoWkid && serviceInfoWkid === serviceSR.wkid
+    ? serviceInfo.defaultExtent
+    : customDefaultExtent
+    ? customDefaultExtent
+    : serviceInfo.defaultExtent;
 }
 
 /**
