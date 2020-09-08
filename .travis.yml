@@ -3,9 +3,9 @@ sudo: false
 notifications:
   email: false
 node_js:
-  - "node"
-  - "lts/*"
+  - 12
   - 10
+  - 8
 cache: npm
 script:
   - npm run test:ci
@@ -27,4 +27,5 @@ addons:
   firefox: latest
 branches:
   only:
-    - master
+    - gh-pages
+    - /.*/
