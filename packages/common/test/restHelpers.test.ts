@@ -3417,6 +3417,104 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
     });
   });
 
+  describe("_getFallbackExtent", () => {
+    it("will handle missing defaultExtent", () => {
+      const serviceInfo: any = {
+        service: {
+          spatialReference: {
+            wkid: 1234
+          }
+        }
+      };
+      const templateDictionary: any = {};
+      const expected: any = undefined;
+
+      const actual: any = restHelpers._getFallbackExtent(
+        serviceInfo,
+        templateDictionary
+      );
+      expect(actual).toEqual(expected);
+    });
+
+    it("will handle customDefaultExtent", () => {
+      const serviceInfo: any = {
+        service: {
+          spatialReference: {
+            wkid: 1234
+          }
+        }
+      };
+      const templateDictionary: any = {
+        params: {
+          defaultExtent: {
+            xmax: 1
+          }
+        }
+      };
+      const expected: any = {
+        xmax: 1
+      };
+
+      const actual: any = restHelpers._getFallbackExtent(
+        serviceInfo,
+        templateDictionary
+      );
+      expect(actual).toEqual(expected);
+    });
+
+    it("will handle missing customDefaultExtent", () => {
+      const serviceInfo: any = {
+        defaultExtent: {
+          xmax: 1
+        },
+        service: {
+          spatialReference: {
+            wkid: 1234
+          }
+        }
+      };
+      const templateDictionary: any = {};
+      const expected: any = {
+        xmax: 1
+      };
+
+      const actual: any = restHelpers._getFallbackExtent(
+        serviceInfo,
+        templateDictionary
+      );
+      expect(actual).toEqual(expected);
+    });
+
+    it("will handle matching wkid", () => {
+      const serviceInfo: any = {
+        defaultExtent: {
+          xmax: 1,
+          spatialReference: {
+            wkid: 1234
+          }
+        },
+        service: {
+          spatialReference: {
+            wkid: 1234
+          }
+        }
+      };
+      const templateDictionary: any = {};
+      const expected: any = {
+        xmax: 1,
+        spatialReference: {
+          wkid: 1234
+        }
+      };
+
+      const actual: any = restHelpers._getFallbackExtent(
+        serviceInfo,
+        templateDictionary
+      );
+      expect(actual).toEqual(expected);
+    });
+  });
+
   describe("_parseAdminServiceData", () => {
     it("will add tables from layers array as tables", () => {
       const adminData: any = {
@@ -3558,7 +3656,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
     };
 
     it("should update an item, including data", done => {
-      fetchMock.once("*", utils.getSuccessResponse({id: "3efakeitemid0000"}));
+      fetchMock.once("*", utils.getSuccessResponse({ id: "3efakeitemid0000" }));
       const fakeItem = {
         id: "5bc",
         owner: "dbouwman",
@@ -3577,7 +3675,8 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
           }
         }
       };
-      restHelpers.portalUpdateItem({ item: fakeItem, ...MOCK_USER_REQOPTS })
+      restHelpers
+        .portalUpdateItem({ item: fakeItem, ...MOCK_USER_REQOPTS })
         .then(() => {
           expect(fetchMock.called()).toEqual(true);
           const lastCall: fetchMock.MockCall = fetchMock.lastCall("*");
@@ -3585,8 +3684,12 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
             "https://www.arcgis.com/sharing/rest/content/users/dbouwman/items/5bc/update"
           );
           expect(fetchMock.lastOptions().method).toBe("POST");
-          expect(fetchMock.lastOptions().body).toContain(encodeParam("f", "json"));
-          expect(fetchMock.lastOptions().body).toContain(encodeParam("owner", "dbouwman"));
+          expect(fetchMock.lastOptions().body).toContain(
+            encodeParam("f", "json")
+          );
+          expect(fetchMock.lastOptions().body).toContain(
+            encodeParam("owner", "dbouwman")
+          );
           // ensure the array props are serialized into strings
           expect(fetchMock.lastOptions().body).toContain(
             encodeParam("typeKeywords", "fake,kwds")
@@ -3605,7 +3708,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
     });
 
     it("should update an item with custom params", done => {
-      fetchMock.once("*", utils.getSuccessResponse({id: "3efakeitemid0000"}));
+      fetchMock.once("*", utils.getSuccessResponse({ id: "3efakeitemid0000" }));
       const fakeItem = {
         id: "5bc",
         owner: "dbouwman",
@@ -3624,13 +3727,14 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
           }
         }
       };
-      restHelpers.portalUpdateItem({
-        item: fakeItem,
-        authentication: MOCK_USER_SESSION,
-        params: {
-          clearEmptyFields: true
-        }
-      })
+      restHelpers
+        .portalUpdateItem({
+          item: fakeItem,
+          authentication: MOCK_USER_SESSION,
+          params: {
+            clearEmptyFields: true
+          }
+        })
         .then(response => {
           expect(fetchMock.called()).toEqual(true);
           const lastCall: fetchMock.MockCall = fetchMock.lastCall("*");
@@ -3638,9 +3742,15 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
             "https://myorg.maps.arcgis.com/sharing/rest/content/users/dbouwman/items/5bc/update"
           );
           expect(fetchMock.lastOptions().method).toBe("POST");
-          expect(fetchMock.lastOptions().body).toContain(encodeParam("f", "json"));
-          expect(fetchMock.lastOptions().body).toContain(encodeParam("token", "fake-token"));
-          expect(fetchMock.lastOptions().body).toContain(encodeParam("owner", "dbouwman"));
+          expect(fetchMock.lastOptions().body).toContain(
+            encodeParam("f", "json")
+          );
+          expect(fetchMock.lastOptions().body).toContain(
+            encodeParam("token", "fake-token")
+          );
+          expect(fetchMock.lastOptions().body).toContain(
+            encodeParam("owner", "dbouwman")
+          );
           // ensure the array props are serialized into strings
           expect(fetchMock.lastOptions().body).toContain(
             encodeParam("typeKeywords", "fake,kwds")
@@ -3651,7 +3761,9 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
           expect(fetchMock.lastOptions().body).toContain(
             encodeParam("text", JSON.stringify(fakeItem.data))
           );
-          expect(fetchMock.lastOptions().body).toContain(encodeParam("clearEmptyFields", true));
+          expect(fetchMock.lastOptions().body).toContain(
+            encodeParam("clearEmptyFields", true)
+          );
           done();
         })
         .catch(e => {
@@ -3660,7 +3772,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
     });
 
     it("should update an item, including data and service proxy params", done => {
-      fetchMock.once("*", utils.getSuccessResponse({id: "3efakeitemid0000"}));
+      fetchMock.once("*", utils.getSuccessResponse({ id: "3efakeitemid0000" }));
       const fakeItem = {
         id: "5bc",
         owner: "dbouwman",
@@ -3685,12 +3797,13 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
         }
       };
 
-      restHelpers.portalUpdateItem({
-        item: fakeItem,
-        folderId: "aFolder",
-        params: { foo: "bar" },
-        ...MOCK_USER_REQOPTS
-      })
+      restHelpers
+        .portalUpdateItem({
+          item: fakeItem,
+          folderId: "aFolder",
+          params: { foo: "bar" },
+          ...MOCK_USER_REQOPTS
+        })
         .then(response => {
           expect(fetchMock.called()).toEqual(true);
           const lastCall: fetchMock.MockCall = fetchMock.lastCall("*");
@@ -3698,9 +3811,15 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
             "https://www.arcgis.com/sharing/rest/content/users/dbouwman/aFolder/items/5bc/update"
           );
           expect(fetchMock.lastOptions().method).toBe("POST");
-          expect(fetchMock.lastOptions().body).toContain(encodeParam("f", "json"));
-          expect(fetchMock.lastOptions().body).toContain(encodeParam("owner", "dbouwman"));
-          expect(fetchMock.lastOptions().body).toContain(encodeParam("foo", "bar"));
+          expect(fetchMock.lastOptions().body).toContain(
+            encodeParam("f", "json")
+          );
+          expect(fetchMock.lastOptions().body).toContain(
+            encodeParam("owner", "dbouwman")
+          );
+          expect(fetchMock.lastOptions().body).toContain(
+            encodeParam("foo", "bar")
+          );
           expect(fetchMock.lastOptions().body).toContain(
             encodeParam(
               "serviceProxyParams",
@@ -3726,8 +3845,6 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
   }); // auth requests
 
   // ================================================================================================================== //
-
-
 });
 
 // ------------------------------------------------------------------------------------------------------------------ //
