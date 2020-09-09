@@ -1871,95 +1871,99 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
   });
 
   describe("postProcess", () => {
-    it("fetch and update the item and data", done => {
-      const item: common.IItem = {
-        id: "a369baed619441cfb5e862694d33d44c",
-        owner: "brubble",
-        tags: ["tag1"],
-        created: 1590520700158,
-        modified: 1590520700158,
-        numViews: 10,
-        size: 50,
-        title: "My Form",
-        type: "Form",
-        typeKeywords: ["{{a369baed619441cfb5e862694d33d44c.itemId}}"]
-      };
-      const data = {
-        someProp: "{{a369baed619441cfb5e862694d33d44c.itemId}}"
-      };
-      const templates = [itemTemplate];
-      const itemInfos = [
-        {
-          id: itemTemplate.id,
-          type: itemTemplate.type,
-          postProcess: true
-        }
-      ];
-      const templateDictionary = {
-        a369baed619441cfb5e862694d33d44c: {
-          itemId: "b369baed619441cfb5e862694d33d44c"
-        }
-      };
-      const expected = {
-        item: {
-          ...item,
-          typeKeywords: ["b369baed619441cfb5e862694d33d44c"]
-        },
-        data: {
-          ...data,
-          someProp: "b369baed619441cfb5e862694d33d44c"
-        }
-      };
-
-      const updateUrl = utils.PORTAL_SUBSET.restUrl + "/content/users/brubble/items/a369baed619441cfb5e862694d33d44c/update";
-      fetchMock
-        .get(
-          utils.PORTAL_SUBSET.restUrl + "/content/items/a369baed619441cfb5e862694d33d44c?f=json&token=fake-token",
-          item
-        )
-        .post(
-          utils.PORTAL_SUBSET.restUrl + "/content/items/a369baed619441cfb5e862694d33d44c/data",
-          data
-        )
-        .post(
-          updateUrl,
-          utils.getSuccessResponse({ "id": item.id })
-        );
-
-      const replaceInTemplateSpy = spyOn(
-        common,
-        "replaceInTemplate"
-      ).and.returnValue(expected);
-      const updateItemExtendedSpy = spyOn(
-        common,
-        "updateItemExtended"
-      ).and.returnValue(utils.getSuccessResponse({ "id": item.id }));
-      return featureLayer
-        .postProcess(
-          item.id,
-          item.type,
-          itemInfos,
-          itemTemplate,
-          templates,
-          templateDictionary,
-          MOCK_USER_SESSION
-        )
-        .then(
-          result => {
-            expect(result).toEqual(utils.getSuccessResponse({ "id": item.id }));
-
-            const callBody = fetchMock.calls(updateUrl)[0][1].body as string;
-            expect(callBody).toEqual(
-              'f=json&text=%7B%22someProp%22%3A%22b369baed619441cfb5e862694d33d44c%22%7D&id=a369baed619441cfb5e862' +
-              '694d33d44c&owner=brubble&tags=tag1&created=1590520700158&modified=1590520700158&numViews=10&size=50' +
-              '&title=My%20Form&type=Form&typeKeywords=b369baed619441cfb5e862694d33d44c&token=fake-token'
-            );
-            done();
-          },
-          e => {
-            done.fail(e);
+    // Postprocessing uses common.updateItemTemplateFromDictionary, which uses common.getItemDataAsJson, which
+    // requires browser features
+    if (typeof window !== "undefined") {
+      it("fetch and update the item and data", done => {
+        const item: common.IItem = {
+          id: "a369baed619441cfb5e862694d33d44c",
+          owner: "brubble",
+          tags: ["tag1"],
+          created: 1590520700158,
+          modified: 1590520700158,
+          numViews: 10,
+          size: 50,
+          title: "My Form",
+          type: "Form",
+          typeKeywords: ["{{a369baed619441cfb5e862694d33d44c.itemId}}"]
+        };
+        const data = {
+          someProp: "{{a369baed619441cfb5e862694d33d44c.itemId}}"
+        };
+        const templates = [itemTemplate];
+        const itemInfos = [
+          {
+            id: itemTemplate.id,
+            type: itemTemplate.type,
+            postProcess: true
           }
-        );
-    });
+        ];
+        const templateDictionary = {
+          a369baed619441cfb5e862694d33d44c: {
+            itemId: "b369baed619441cfb5e862694d33d44c"
+          }
+        };
+        const expected = {
+          item: {
+            ...item,
+            typeKeywords: ["b369baed619441cfb5e862694d33d44c"]
+          },
+          data: {
+            ...data,
+            someProp: "b369baed619441cfb5e862694d33d44c"
+          }
+        };
+
+        const updateUrl = utils.PORTAL_SUBSET.restUrl + "/content/users/brubble/items/a369baed619441cfb5e862694d33d44c/update";
+        fetchMock
+          .get(
+            utils.PORTAL_SUBSET.restUrl + "/content/items/a369baed619441cfb5e862694d33d44c?f=json&token=fake-token",
+            item
+          )
+          .post(
+            utils.PORTAL_SUBSET.restUrl + "/content/items/a369baed619441cfb5e862694d33d44c/data",
+            data
+          )
+          .post(
+            updateUrl,
+            utils.getSuccessResponse({ "id": item.id })
+          );
+
+        const replaceInTemplateSpy = spyOn(
+          common,
+          "replaceInTemplate"
+        ).and.returnValue(expected);
+        const updateItemExtendedSpy = spyOn(
+          common,
+          "updateItemExtended"
+        ).and.returnValue(utils.getSuccessResponse({ "id": item.id }));
+        return featureLayer
+          .postProcess(
+            item.id,
+            item.type,
+            itemInfos,
+            itemTemplate,
+            templates,
+            templateDictionary,
+            MOCK_USER_SESSION
+          )
+          .then(
+            result => {
+              expect(result).toEqual(utils.getSuccessResponse({ "id": item.id }));
+
+              const callBody = fetchMock.calls(updateUrl)[0][1].body as string;
+              expect(callBody).toEqual(
+                'f=json&text=%7B%22someProp%22%3A%22b369baed619441cfb5e862694d33d44c%22%7D&id=a369baed619441cfb5e862' +
+                '694d33d44c&owner=brubble&tags=tag1&created=1590520700158&modified=1590520700158&numViews=10&size=50' +
+                '&title=My%20Form&type=Form&typeKeywords=b369baed619441cfb5e862694d33d44c&token=fake-token'
+              );
+              done();
+            },
+            e => {
+              done.fail(e);
+            }
+          );
+      });
+    }
   });
 });
