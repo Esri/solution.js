@@ -93,13 +93,13 @@ import {
   SearchQueryBuilder,
   setItemAccess,
   shareItemWithGroup,
-// ================================================================================================================== //
-// === patch to updateItem in C:\Users\mike6491\ag\arcgis-rest-js\packages\arcgis-rest-portal\src\items\update.ts === //
+  // ================================================================================================================== //
+  // === patch to updateItem in C:\Users\mike6491\ag\arcgis-rest-js\packages\arcgis-rest-portal\src\items\update.ts === //
   // updateItem as portalUpdateItem
   determineOwner,
   serializeItem,
   getPortalUrl
-// ================================================================================================================== //
+  // ================================================================================================================== //
 } from "@esri/arcgis-rest-portal";
 import { IParams, IRequestOptions, request } from "@esri/arcgis-rest-request";
 import {
@@ -1476,6 +1476,10 @@ export function _getCreateServiceOptions(
     const isPortal: boolean = templateDictionary.isPortal;
     const solutionItemId: string = templateDictionary.solutionItemId;
     const itemId: string = newItemTemplate.itemId;
+    const fallbackExtent: any = _getFallbackExtent(
+      serviceInfo,
+      templateDictionary
+    );
 
     const params: IParams = {};
 
@@ -1506,7 +1510,7 @@ export function _getCreateServiceOptions(
     // project the portals extent to match that of the service
     convertExtentWithFallback(
       templateDictionary.organization.defaultExtent,
-      serviceInfo.defaultExtent,
+      fallbackExtent,
       serviceInfo.service.spatialReference,
       templateDictionary.organization.helperServices.geometry.url,
       authentication
@@ -1526,6 +1530,32 @@ export function _getCreateServiceOptions(
       e => reject(fail(e))
     );
   });
+}
+
+export function _getFallbackExtent(
+  serviceInfo: any,
+  templateDictionary: any
+): any {
+  const serviceSR: any = serviceInfo.service.spatialReference;
+  const serviceInfoWkid = getProp(
+    serviceInfo,
+    "defaultExtent.spatialReference.wkid"
+  );
+  const customDefaultExtent = getProp(
+    templateDictionary,
+    "params.defaultExtent"
+  );
+
+  // when the services spatial reference does not match that of it's default extent
+  // use the out SRs default extent if it exists in the templateDictionary
+  // this should be set when adding a custom out wkid to the params before calling deploy
+  // this will help avoid situations where the orgs default extent and default world extent
+  // will not project successfully to the out SR
+  return serviceInfoWkid && serviceInfoWkid === serviceSR.wkid
+    ? serviceInfo.defaultExtent
+    : customDefaultExtent
+    ? customDefaultExtent
+    : serviceInfo.defaultExtent;
 }
 
 /**
@@ -1787,8 +1817,12 @@ export function portalUpdateItem(
 ): Promise<IUpdateItemResponse> {
   return determineOwner(requestOptions).then(owner => {
     const url = requestOptions.folderId
-      ? `${getPortalUrl(requestOptions)}/content/users/${owner}/${requestOptions.folderId}/items/${requestOptions.item.id}/update`
-      : `${getPortalUrl(requestOptions)}/content/users/${owner}/items/${requestOptions.item.id}/update`;
+      ? `${getPortalUrl(requestOptions)}/content/users/${owner}/${
+          requestOptions.folderId
+        }/items/${requestOptions.item.id}/update`
+      : `${getPortalUrl(requestOptions)}/content/users/${owner}/items/${
+          requestOptions.item.id
+        }/update`;
 
     // serialize the item into something Portal will accept
     requestOptions.params = {
