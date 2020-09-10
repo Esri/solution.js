@@ -105,15 +105,10 @@ export function fineTuneCreatedItem(
   authentication: common.UserSession
 ): Promise<void> {
   return new Promise<void>((resolve, reject) => {
-    const data: any = common.replaceInTemplate(
-      originalTemplate.data,
-      templateDictionary
-    );
-
     const updateOptions: common.IItemUpdate = {
       id: newlyCreatedItem.itemId,
       url: newlyCreatedItem.item.url,
-      data: common.jsonToBlob(data)
+      data: common.jsonToFile(originalTemplate.data, newlyCreatedItem.itemId + ".ipynb")
     };
     common
       .updateItem(updateOptions, authentication)

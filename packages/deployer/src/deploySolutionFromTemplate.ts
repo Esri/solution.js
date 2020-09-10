@@ -70,8 +70,7 @@ export function deploySolutionFromTemplate(
 
         // Initialize replacement dictionary
         // swap user defined params before we start...no need to wait
-        if (solutionTemplateData.params) {
-          templateDictionary.params = solutionTemplateData.params;
+        if (templateDictionary.params) {
           solutionTemplateData.templates = solutionTemplateData.templates.map(
             (template: any) => {
               return common.replaceInTemplate(template, templateDictionary);
@@ -111,18 +110,10 @@ export function deploySolutionFromTemplate(
         // orgextent as bbox for assignment onto items
         // more info in #266 https://github.com/Esri/solution.js/issues/266
 
-        // As of Spring 2020, only HTTPS (see
-        // https://www.esri.com/arcgis-blog/products/product/administration/2019-arcgis-transport-security-improvements/)
-        const scheme: string = "https"; // portalResponse.allSSL ? "https" : "http";
-        const urlKey: string = common.getProp(portalResponse, "urlKey");
-        const customBaseUrl: string = common.getProp(
+        templateDictionary.portalBaseUrl = _getPortalBaseUrl(
           portalResponse,
-          "customBaseUrl"
+          authentication
         );
-        templateDictionary.portalBaseUrl =
-          urlKey && customBaseUrl
-            ? `${scheme}://${urlKey}.${customBaseUrl}`
-            : authentication.portal;
 
         templateDictionary.user = userResponse;
         templateDictionary.user.folders = foldersAndGroupsResponse.folders;
@@ -219,8 +210,9 @@ export function deploySolutionFromTemplate(
         );
 
         // It is possible to provide a separate authentication for the source
-        const storageAuthentication: UserSession = options.storageAuthentication ?
-          options.storageAuthentication : authentication;
+        const storageAuthentication: UserSession = options.storageAuthentication
+          ? options.storageAuthentication
+          : authentication;
 
         // Handle the contained item templates
         return deployItems.deploySolutionItems(
@@ -341,6 +333,24 @@ export function _checkedReplaceAll(
     newTemplate = template;
   }
   return newTemplate;
+}
+
+export function _getPortalBaseUrl(
+  portalResponse: common.IPortal,
+  authentication: common.UserSession
+): string {
+  // As of Spring 2020, only HTTPS (see
+  // https://www.esri.com/arcgis-blog/products/product/administration/2019-arcgis-transport-security-improvements/)
+  const scheme: string = "https"; // portalResponse.allSSL ? "https" : "http";
+  const urlKey: string = common.getProp(portalResponse, "urlKey");
+  const customBaseUrl: string = common.getProp(portalResponse, "customBaseUrl");
+  const enterpriseBaseUrl = common.getProp(portalResponse, "portalHostname");
+
+  return urlKey && customBaseUrl
+    ? `${scheme}://${urlKey}.${customBaseUrl}`
+    : enterpriseBaseUrl
+    ? `${scheme}://${enterpriseBaseUrl}`
+    : authentication.portal.replace("/sharing/rest", "");
 }
 
 export function _updateGroupReferences(

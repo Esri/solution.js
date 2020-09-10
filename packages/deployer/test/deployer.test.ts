@@ -144,7 +144,10 @@ describe("Module `deployer`", () => {
         });
         it("should use solution-source authentication if supplied", done => {
           const opts = {
-            storageAuthentication: testUtils.createRuntimeMockUserSession(undefined, "https://myotherorg.maps.arcgis.com")
+            storageAuthentication: testUtils.createRuntimeMockUserSession(
+              undefined,
+              "https://myotherorg.maps.arcgis.com"
+            )
           };
           return deployer
             .deploySolution(itemInfo.item.id, MOCK_USER_SESSION, opts)
@@ -234,7 +237,7 @@ describe("Module `deployer`", () => {
           "Feature Service"
         );
         featureServiceTemplate.properties.layers[0].someProperty =
-          "{{ params.testProperty.value }}";
+          "{{ params.testProperty }}";
         const webmapTemplate: any = templates.getItemTemplate(
           "Web Map",
           [featureServiceTemplate.itemId],
@@ -248,14 +251,11 @@ describe("Module `deployer`", () => {
         ]);
         itemInfo.item.thumbnail = "thumbnail/ago_downloaded.png";
 
-        itemInfo.data.params = {
-          testProperty: {
-            value: "ABC",
-            type: "Text"
+        const templateDictionary: any = {
+          params: {
+            testProperty: "ABC"
           }
         };
-
-        const templateDictionary: any = {};
         const featureServerAdminUrl: string =
           "https://services123.arcgis.com/org1234567890/arcgis/rest/admin/services/ROWPermits_publiccomment/FeatureServer";
         const featureServerUrl: string =
@@ -303,7 +303,7 @@ describe("Module `deployer`", () => {
           mockItems.getAGOLItem(
             "Web Map",
             testUtils.PORTAL_SUBSET.portalUrl +
-            "/home/webmap/viewer.html?webmap=map1234567890"
+              "/home/webmap/viewer.html?webmap=map1234567890"
           )
         );
         expectedMap.extent = "-88.226,41.708,-88.009,41.844";
@@ -319,69 +319,69 @@ describe("Module `deployer`", () => {
         fetchMock
           .get(
             testUtils.PORTAL_SUBSET.restUrl +
-            "/content/items/" +
-            itemInfo.item.id +
-            "?f=json&token=fake-token",
+              "/content/items/" +
+              itemInfo.item.id +
+              "?f=json&token=fake-token",
             itemInfo.item
           )
           .post(
             testUtils.PORTAL_SUBSET.restUrl +
-            "/content/items/" +
-            itemInfo.item.id +
-            "/data",
+              "/content/items/" +
+              itemInfo.item.id +
+              "/data",
             itemInfo.data
           )
           .post(
             testUtils.PORTAL_SUBSET.restUrl +
-            "/content/items/" +
-            itemInfo.item.id +
-            "/info/metadata/metadata.xml",
+              "/content/items/" +
+              itemInfo.item.id +
+              "/info/metadata/metadata.xml",
             mockItems.get400Failure()
           )
           .get(
             testUtils.PORTAL_SUBSET.restUrl +
-            "/content/items/map1234567890?f=json&token=fake-token",
+              "/content/items/map1234567890?f=json&token=fake-token",
             mockItems.getAGOLItem(
               "Web Map",
               testUtils.PORTAL_SUBSET.portalUrl +
-              "/home/webmap/viewer.html?webmap=map1234567890"
+                "/home/webmap/viewer.html?webmap=map1234567890"
             )
           )
           .get(
             testUtils.PORTAL_SUBSET.restUrl +
-            "/community/self?f=json&token=fake-token",
+              "/community/self?f=json&token=fake-token",
             communitySelfResponse
           )
           .get(
             testUtils.PORTAL_SUBSET.restUrl +
-            "/portals/self?f=json&token=fake-token",
+              "/portals/self?f=json&token=fake-token",
             portalsSelfResponse
           )
           .get(
             testUtils.PORTAL_SUBSET.restUrl +
-            "/portals/abCDefG123456?f=json&token=fake-token",
+              "/portals/abCDefG123456?f=json&token=fake-token",
             portalsSelfResponse
           )
           .get(
             testUtils.PORTAL_SUBSET.restUrl +
-            "/community/users/casey?f=json&token=fake-token",
+              "/community/users/casey?f=json&token=fake-token",
             testUtils.getUserResponse()
           )
           .get(
             testUtils.PORTAL_SUBSET.restUrl +
-            "/content/users/casey?f=json&token=fake-token",
+              "/content/users/casey?f=json&token=fake-token",
             user
           )
           .get(
             testUtils.PORTAL_SUBSET.restUrl +
-            "/community/groups/" +
-            newGroupId +
-            "?f=json&token=fake-token",
+              "/community/groups/" +
+              newGroupId +
+              "?f=json&token=fake-token",
             mockItems.getAGOLGroup(newGroupId)
           )
           .post(
             testUtils.PORTAL_SUBSET.restUrl +
-            "/content/users/casey/createFolder",
+              "/content/users/casey/createFolder",
             testUtils.getCreateFolderResponse()
           )
           .post(
@@ -395,7 +395,7 @@ describe("Module `deployer`", () => {
           .post(geometryServer + "/project", testUtils.getProjectResponse())
           .post(
             testUtils.PORTAL_SUBSET.restUrl +
-            "/content/users/casey/a4468da125a64526b359b70d8ba4a9dd/addItem",
+              "/content/users/casey/a4468da125a64526b359b70d8ba4a9dd/addItem",
             testUtils.getSuccessResponse({
               id: "map1234567890",
               folder: "44468da125a64526b359b70d8ba4a9dd"
@@ -408,12 +408,12 @@ describe("Module `deployer`", () => {
           .post(testUtils.PORTAL_SUBSET.restUrl + "/search", { results: [] })
           .post(
             testUtils.PORTAL_SUBSET.restUrl +
-            "/content/users/casey/items/map1234567890/share",
+              "/content/users/casey/items/map1234567890/share",
             testUtils.getShareResponse("map1234567890")
           )
           .post(
             testUtils.PORTAL_SUBSET.restUrl +
-            "/content/users/casey/a4468da125a64526b359b70d8ba4a9dd/createService",
+              "/content/users/casey/a4468da125a64526b359b70d8ba4a9dd/createService",
             testUtils.getCreateServiceResponse()
           )
           .post(
@@ -439,31 +439,36 @@ describe("Module `deployer`", () => {
           )
           .post(
             testUtils.PORTAL_SUBSET.restUrl +
-            "/content/users/casey/items/svc1234567890/update",
+              "/content/users/casey/items/svc1234567890/update",
             testUtils.getSuccessResponse({ id: "svc1234567890" })
           )
           .post(
             testUtils.PORTAL_SUBSET.restUrl +
-            "/content/users/casey/items/map1234567890/update",
+              "/content/users/casey/items/map1234567890/update",
             testUtils.getSuccessResponse({ id: "map1234567890" })
           )
           .post(
             testUtils.PORTAL_SUBSET.restUrl +
-            "/content/items/svc1234567890/data",
+              "/content/users/casey/a4468da125a64526b359b70d8ba4a9dd/items/map1234567890/update",
+            testUtils.getSuccessResponse({ id: "map1234567890" })
+          )
+          .post(
+            testUtils.PORTAL_SUBSET.restUrl +
+              "/content/items/svc1234567890/data",
             {}
           )
           .post(
             testUtils.PORTAL_SUBSET.restUrl +
-            "/content/items/map1234567890/data",
+              "/content/items/map1234567890/data",
             {}
           )
           .post(
             testUtils.PORTAL_SUBSET.restUrl +
-            "/content/users/casey/items/sln1234567890/addResources",
+              "/content/users/casey/items/sln1234567890/addResources",
             testUtils.getSuccessResponse({ id: "sln1234567890" })
           );
         // tslint:disable-next-line: no-empty
-        spyOn(console, "log").and.callFake(() => { });
+        spyOn(console, "log").and.callFake(() => {});
 
         const expected: string = "map1234567890";
 
@@ -599,10 +604,7 @@ describe("Module `deployer`", () => {
             itemId: "map1234567890"
           },
           params: {
-            testProperty: {
-              value: "ABC",
-              type: "Text"
-            }
+            testProperty: "ABC"
           }
         };
         expectedTemplate[groupId] = {
@@ -620,7 +622,7 @@ describe("Module `deployer`", () => {
         deployer
           .deploySolution(itemInfo.item.id, MOCK_USER_SESSION, options)
           .then(
-            function (actual) {
+            function(actual) {
               // not concerned with the def here
               templateDictionary["svc1234567890"].def = {};
 
@@ -641,7 +643,7 @@ describe("Module `deployer`", () => {
 
               const updateCalls: any[] = fetchMock.calls(
                 testUtils.PORTAL_SUBSET.restUrl +
-                "/content/users/casey/items/map1234567890/update"
+                  "/content/users/casey/items/map1234567890/update"
               );
 
               const actualUpdateBody = updateCalls[0][1].body;
@@ -852,48 +854,48 @@ describe("Module `deployer`", () => {
         fetchMock
           .post(
             testUtils.PORTAL_SUBSET.restUrl +
-            "/content/items/c38e59126368495694ca23b7ccacefba/data",
+              "/content/items/c38e59126368495694ca23b7ccacefba/data",
             solutionResponse
           )
           .post(
             testUtils.PORTAL_SUBSET.restUrl +
-            "/content/items/c38e59126368495694ca23b7ccacefba/info/metadata/metadata.xml",
+              "/content/items/c38e59126368495694ca23b7ccacefba/info/metadata/metadata.xml",
             testUtils.getSampleMetadataAsFile(),
             { sendAsJson: false }
           )
           .get(
             testUtils.PORTAL_SUBSET.restUrl +
-            "/content/items/c38e59126368495694ca23b7ccacefba?f=json&token=fake-token",
+              "/content/items/c38e59126368495694ca23b7ccacefba?f=json&token=fake-token",
             itemInfoCard
           )
           .get(
             testUtils.PORTAL_SUBSET.restUrl +
-            "/portals/org1234567890?f=json&token=fake-token",
+              "/portals/org1234567890?f=json&token=fake-token",
             testUtils.getPortalsSelfResponse()
           )
           .get(
             testUtils.PORTAL_SUBSET.restUrl +
-            "/community/self?f=json&token=fake-token",
+              "/community/self?f=json&token=fake-token",
             communitySelfResponse
           )
           .get(
             testUtils.PORTAL_SUBSET.restUrl +
-            "/portals/self?f=json&token=fake-token",
+              "/portals/self?f=json&token=fake-token",
             testUtils.getPortalsSelfResponse()
           )
           .get(
             testUtils.PORTAL_SUBSET.restUrl +
-            "/community/users/casey?f=json&token=fake-token",
+              "/community/users/casey?f=json&token=fake-token",
             testUtils.getUserResponse()
           )
           .get(
             testUtils.PORTAL_SUBSET.restUrl +
-            "/content/users/casey?f=json&token=fake-token",
+              "/content/users/casey?f=json&token=fake-token",
             []
           )
           .post(
             testUtils.PORTAL_SUBSET.restUrl +
-            "/content/users/casey/createFolder",
+              "/content/users/casey/createFolder",
             testUtils.getCreateFolderResponse(folderId)
           )
           .post(imageUrl, expectedImage)
@@ -908,9 +910,9 @@ describe("Module `deployer`", () => {
           )
           .post(
             testUtils.PORTAL_SUBSET.restUrl +
-            "/content/users/casey/" +
-            folderId +
-            "/addItem",
+              "/content/users/casey/" +
+              folderId +
+              "/addItem",
             testUtils.getSuccessResponse({
               id: "57a059ec717c4b1282705132fd4720a0",
               folder: folderId
@@ -919,9 +921,9 @@ describe("Module `deployer`", () => {
           )
           .post(
             testUtils.PORTAL_SUBSET.restUrl +
-            "/content/users/casey/" +
-            folderId +
-            "/addItem",
+              "/content/users/casey/" +
+              folderId +
+              "/addItem",
             testUtils.getSuccessResponse({
               id: "82601685fd3c444397d252116d7a3dc0",
               folder: folderId
@@ -936,35 +938,35 @@ describe("Module `deployer`", () => {
           )
           .post(
             testUtils.PORTAL_SUBSET.restUrl +
-            "/community/groups/987eaa6a496546a58f04796266589ec5/update",
+              "/community/groups/987eaa6a496546a58f04796266589ec5/update",
             testUtils.getSuccessResponse({
               groupId: "987eaa6a496546a58f04796266589ec5"
             })
           )
           .post(
             testUtils.PORTAL_SUBSET.restUrl +
-            "/content/users/casey/items/57a059ec717c4b1282705132fd4720a0/update",
+              "/content/users/casey/items/57a059ec717c4b1282705132fd4720a0/update",
             testUtils.getSuccessResponse({
               id: "57a059ec717c4b1282705132fd4720a0"
             })
           )
           .post(
             testUtils.PORTAL_SUBSET.restUrl +
-            "/content/users/casey/items/82601685fd3c444397d252116d7a3dc0/update",
+              "/content/users/casey/items/82601685fd3c444397d252116d7a3dc0/update",
             testUtils.getSuccessResponse({
               id: "82601685fd3c444397d252116d7a3dc0"
             })
           )
           .post(
             testUtils.PORTAL_SUBSET.restUrl +
-            "/content/users/casey/bd610311e0e84e41b96f54df2da54f82/delete",
+              "/content/users/casey/bd610311e0e84e41b96f54df2da54f82/delete",
             testUtils.getSuccessResponse({
               folder: { username: "casey", id: folderId }
             })
           )
           .post(
             testUtils.PORTAL_SUBSET.restUrl +
-            "/content/users/casey/items/57a059ec717c4b1282705132fd4720a0/delete",
+              "/content/users/casey/items/57a059ec717c4b1282705132fd4720a0/delete",
             testUtils.getSuccessResponse({
               itemId: "57a059ec717c4b1282705132fd4720a0"
             })
@@ -999,53 +1001,53 @@ describe("Module `deployer`", () => {
         fetchMock
           .get(
             testUtils.PORTAL_SUBSET.restUrl +
-            "/content/items/" +
-            itemInfo.item.id +
-            "?f=json&token=fake-token",
+              "/content/items/" +
+              itemInfo.item.id +
+              "?f=json&token=fake-token",
             itemInfo.item
           )
           .post(
             testUtils.PORTAL_SUBSET.restUrl +
-            "/content/items/" +
-            itemInfo.item.id +
-            "/data",
+              "/content/items/" +
+              itemInfo.item.id +
+              "/data",
             itemInfo.data
           )
           .post(
             testUtils.PORTAL_SUBSET.restUrl +
-            "/content/items/" +
-            itemInfo.item.id +
-            "/info/metadata/metadata.xml",
+              "/content/items/" +
+              itemInfo.item.id +
+              "/info/metadata/metadata.xml",
             mockItems.get400Failure()
           )
           .get(
             testUtils.PORTAL_SUBSET.restUrl +
-            "/community/self?f=json&token=fake-token",
+              "/community/self?f=json&token=fake-token",
             communitySelfResponse
           )
           .get(
             testUtils.PORTAL_SUBSET.restUrl +
-            "/portals/self?f=json&token=fake-token",
+              "/portals/self?f=json&token=fake-token",
             portalsSelfResponse
           )
           .get(
             testUtils.PORTAL_SUBSET.restUrl +
-            "/portals/abCDefG123456?f=json&token=fake-token",
+              "/portals/abCDefG123456?f=json&token=fake-token",
             portalsSelfResponse
           )
           .get(
             testUtils.PORTAL_SUBSET.restUrl +
-            "/community/users/casey?f=json&token=fake-token",
+              "/community/users/casey?f=json&token=fake-token",
             testUtils.getUserResponse()
           )
           .get(
             testUtils.PORTAL_SUBSET.restUrl +
-            "/content/users/casey?f=json&token=fake-token",
+              "/content/users/casey?f=json&token=fake-token",
             testUtils.getContentUser()
           )
           .post(
             testUtils.PORTAL_SUBSET.restUrl +
-            "/content/users/casey/createFolder",
+              "/content/users/casey/createFolder",
             testUtils.getCreateFolderResponse()
           )
           .post(
@@ -1059,12 +1061,12 @@ describe("Module `deployer`", () => {
           .post(geometryServer + "/project", testUtils.getProjectResponse())
           .post(
             testUtils.PORTAL_SUBSET.restUrl +
-            "/content/users/casey/a4468da125a64526b359b70d8ba4a9dd/addItem",
+              "/content/users/casey/a4468da125a64526b359b70d8ba4a9dd/addItem",
             mockItems.get200Failure()
           )
           .post(
             testUtils.PORTAL_SUBSET.restUrl +
-            "/content/users/casey/a4468da125a64526b359b70d8ba4a9dd/delete",
+              "/content/users/casey/a4468da125a64526b359b70d8ba4a9dd/delete",
             testUtils.getSuccessResponse({
               folder: {
                 username: "casey",
@@ -1095,53 +1097,53 @@ describe("Module `deployer`", () => {
         fetchMock
           .get(
             testUtils.PORTAL_SUBSET.restUrl +
-            "/community/self?f=json&token=fake-token",
+              "/community/self?f=json&token=fake-token",
             communitySelfResponse
           )
           .get(
             testUtils.PORTAL_SUBSET.restUrl +
-            "/portals/self?f=json&token=fake-token",
+              "/portals/self?f=json&token=fake-token",
             portalsSelfResponse
           )
           .get(
             testUtils.PORTAL_SUBSET.restUrl +
-            "/portals/abCDefG123456?f=json&token=fake-token",
+              "/portals/abCDefG123456?f=json&token=fake-token",
             portalsSelfResponse
           )
           .get(
             testUtils.PORTAL_SUBSET.restUrl +
-            "/community/users/casey?f=json&token=fake-token",
+              "/community/users/casey?f=json&token=fake-token",
             testUtils.getUserResponse()
           )
           .get(
             testUtils.PORTAL_SUBSET.restUrl +
-            "/content/users/casey?f=json&token=fake-token",
+              "/content/users/casey?f=json&token=fake-token",
             testUtils.getContentUser()
           )
           .post(
             testUtils.PORTAL_SUBSET.restUrl +
-            "/content/users/casey/createFolder",
+              "/content/users/casey/createFolder",
             testUtils.getCreateFolderResponse()
           )
           .get(
             testUtils.PORTAL_SUBSET.restUrl +
-            "/content/items/" +
-            itemInfo.item.id +
-            "?f=json&token=fake-token",
+              "/content/items/" +
+              itemInfo.item.id +
+              "?f=json&token=fake-token",
             itemInfo.item
           )
           .post(
             testUtils.PORTAL_SUBSET.restUrl +
-            "/content/items/" +
-            itemInfo.item.id +
-            "/info/metadata/metadata.xml",
+              "/content/items/" +
+              itemInfo.item.id +
+              "/info/metadata/metadata.xml",
             mockItems.get400Failure()
           )
           .post(
             testUtils.PORTAL_SUBSET.restUrl +
-            "/content/items/" +
-            itemInfo.item.id +
-            "/data",
+              "/content/items/" +
+              itemInfo.item.id +
+              "/data",
             mockItems.get400Failure()
           );
 
@@ -1177,46 +1179,46 @@ describe("Module `deployer`", () => {
         fetchMock
           .get(
             testUtils.PORTAL_SUBSET.restUrl +
-            "/content/items/" +
-            itemInfo.item.id +
-            "?f=json&token=fake-token",
+              "/content/items/" +
+              itemInfo.item.id +
+              "?f=json&token=fake-token",
             itemInfo.item
           )
           .post(
             testUtils.PORTAL_SUBSET.restUrl +
-            "/content/items/" +
-            itemInfo.item.id +
-            "/data",
+              "/content/items/" +
+              itemInfo.item.id +
+              "/data",
             itemInfo.data
           )
           .get(
             testUtils.PORTAL_SUBSET.restUrl +
-            "/community/self?f=json&token=fake-token",
+              "/community/self?f=json&token=fake-token",
             communitySelfResponse
           )
           .get(
             testUtils.PORTAL_SUBSET.restUrl +
-            "/portals/self?f=json&token=fake-token",
+              "/portals/self?f=json&token=fake-token",
             portalsSelfResponse
           )
           .get(
             testUtils.PORTAL_SUBSET.restUrl +
-            "/portals/abCDefG123456?f=json&token=fake-token",
+              "/portals/abCDefG123456?f=json&token=fake-token",
             portalsSelfResponse
           )
           .get(
             testUtils.PORTAL_SUBSET.restUrl +
-            "/community/users/casey?f=json&token=fake-token",
+              "/community/users/casey?f=json&token=fake-token",
             testUtils.getUserResponse()
           )
           .get(
             testUtils.PORTAL_SUBSET.restUrl +
-            "/content/users/casey?f=json&token=fake-token",
+              "/content/users/casey?f=json&token=fake-token",
             testUtils.getContentUser()
           )
           .post(
             testUtils.PORTAL_SUBSET.restUrl +
-            "/content/users/casey/createFolder",
+              "/content/users/casey/createFolder",
             testUtils.getCreateFolderResponse()
           )
           .post(
@@ -1225,9 +1227,9 @@ describe("Module `deployer`", () => {
           )
           .post(
             testUtils.PORTAL_SUBSET.restUrl +
-            "/content/items/" +
-            itemInfo.item.id +
-            "/info/metadata/metadata.xml",
+              "/content/items/" +
+              itemInfo.item.id +
+              "/info/metadata/metadata.xml",
             mockItems.get400Failure()
           )
           .post(
@@ -1236,7 +1238,7 @@ describe("Module `deployer`", () => {
           )
           .post(
             testUtils.PORTAL_SUBSET.restUrl +
-            "/content/users/casey/a4468da125a64526b359b70d8ba4a9dd/addItem",
+              "/content/users/casey/a4468da125a64526b359b70d8ba4a9dd/addItem",
             testUtils.getSuccessResponse({
               id: "map1234567890",
               folder: "44468da125a64526b359b70d8ba4a9dd"
@@ -1244,12 +1246,12 @@ describe("Module `deployer`", () => {
           )
           .post(
             testUtils.PORTAL_SUBSET.restUrl +
-            "/content/users/casey/a4468da125a64526b359b70d8ba4a9dd/createService",
+              "/content/users/casey/a4468da125a64526b359b70d8ba4a9dd/createService",
             testUtils.getCreateServiceResponse()
           )
           .post(
             testUtils.PORTAL_SUBSET.restUrl +
-            "/content/users/casey/a4468da125a64526b359b70d8ba4a9dd/delete",
+              "/content/users/casey/a4468da125a64526b359b70d8ba4a9dd/delete",
             testUtils.getSuccessResponse()
           )
           .post(
@@ -1257,7 +1259,7 @@ describe("Module `deployer`", () => {
             testUtils.getFailureResponse()
           )
           .post(
-            "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/items/map1234567890/update",
+            "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/a4468da125a64526b359b70d8ba4a9dd/items/map1234567890/update",
             testUtils.getFailureResponse()
           )
           .post(
@@ -1273,24 +1275,25 @@ describe("Module `deployer`", () => {
             testUtils.getSuccessResponse()
           )
           .post(
-            testUtils.PORTAL_SUBSET.restUrl + "/content/users/casey/items/svc1234567890/delete",
+            testUtils.PORTAL_SUBSET.restUrl +
+              "/content/users/casey/items/svc1234567890/delete",
             testUtils.getSuccessResponse()
           )
           .post(
-            testUtils.PORTAL_SUBSET.restUrl + "/community/groups/svc1234567890/delete",
+            testUtils.PORTAL_SUBSET.restUrl +
+              "/community/groups/svc1234567890/delete",
             testUtils.getSuccessResponse()
           )
           .post(
-            testUtils.PORTAL_SUBSET.restUrl + "/content/users/casey/items/map1234567890/delete",
+            testUtils.PORTAL_SUBSET.restUrl +
+              "/content/users/casey/items/map1234567890/delete",
             testUtils.getSuccessResponse()
           )
           .post(
             "https://services123.arcgis.com/org1234567890/arcgis/rest/admin/services/ROWPermits_publiccomment/FeatureServer/refresh",
             testUtils.getSuccessResponse()
           )
-          .post(
-            geometryServer + "/project", mockItems.get400Failure()
-          );
+          .post(geometryServer + "/project", mockItems.get400Failure());
 
         const options: common.IDeploySolutionOptions = {
           progressCallback: testUtils.SOLUTION_PROGRESS_CALLBACK
@@ -1363,53 +1366,53 @@ describe("Module `deployer`", () => {
         fetchMock
           .get(
             testUtils.PORTAL_SUBSET.restUrl +
-            "/content/items/" +
-            itemInfo.item.id +
-            "?f=json&token=fake-token",
+              "/content/items/" +
+              itemInfo.item.id +
+              "?f=json&token=fake-token",
             itemInfo.item
           )
           .post(
             testUtils.PORTAL_SUBSET.restUrl +
-            "/content/items/" +
-            itemInfo.item.id +
-            "/data",
+              "/content/items/" +
+              itemInfo.item.id +
+              "/data",
             itemInfo.data
           )
           .post(
             testUtils.PORTAL_SUBSET.restUrl +
-            "/content/items/" +
-            itemInfo.item.id +
-            "/info/metadata/metadata.xml",
+              "/content/items/" +
+              itemInfo.item.id +
+              "/info/metadata/metadata.xml",
             mockItems.get400Failure()
           )
           .get(
             testUtils.PORTAL_SUBSET.restUrl +
-            "/community/self?f=json&token=fake-token",
+              "/community/self?f=json&token=fake-token",
             communitySelfResponse
           )
           .get(
             testUtils.PORTAL_SUBSET.restUrl +
-            "/portals/self?f=json&token=fake-token",
+              "/portals/self?f=json&token=fake-token",
             portalsSelfResponse
           )
           .get(
             testUtils.PORTAL_SUBSET.restUrl +
-            "/portals/abCDefG123456?f=json&token=fake-token",
+              "/portals/abCDefG123456?f=json&token=fake-token",
             portalsSelfResponse
           )
           .get(
             testUtils.PORTAL_SUBSET.restUrl +
-            "/community/users/casey?f=json&token=fake-token",
+              "/community/users/casey?f=json&token=fake-token",
             testUtils.getUserResponse()
           )
           .get(
             testUtils.PORTAL_SUBSET.restUrl +
-            "/content/users/casey?f=json&token=fake-token",
+              "/content/users/casey?f=json&token=fake-token",
             testUtils.getContentUser()
           )
           .post(
             testUtils.PORTAL_SUBSET.restUrl +
-            "/content/users/casey/createFolder",
+              "/content/users/casey/createFolder",
             testUtils.getCreateFolderResponse()
           )
           .post(
@@ -1423,7 +1426,7 @@ describe("Module `deployer`", () => {
           .post(geometryServer + "/project", testUtils.getProjectResponse())
           .post(
             testUtils.PORTAL_SUBSET.restUrl +
-            "/content/users/casey/a4468da125a64526b359b70d8ba4a9dd/addItem",
+              "/content/users/casey/a4468da125a64526b359b70d8ba4a9dd/addItem",
             testUtils.getSuccessResponse({
               id: "map1234567890",
               folder: "44468da125a64526b359b70d8ba4a9dd"
@@ -1431,12 +1434,12 @@ describe("Module `deployer`", () => {
           )
           .post(
             testUtils.PORTAL_SUBSET.restUrl +
-            "/content/users/casey/a4468da125a64526b359b70d8ba4a9dd/createService",
+              "/content/users/casey/a4468da125a64526b359b70d8ba4a9dd/createService",
             testUtils.getCreateServiceResponse()
           )
           .post(
             testUtils.PORTAL_SUBSET.restUrl +
-            "/content/users/casey/items/svc1234567890/move",
+              "/content/users/casey/items/svc1234567890/move",
             testUtils.getSuccessResponse({
               itemId: "svc1234567890",
               owner: "casey",
@@ -1466,22 +1469,22 @@ describe("Module `deployer`", () => {
           )
           .post(
             testUtils.PORTAL_SUBSET.restUrl +
-            "/content/users/casey/items/svc1234567890/update",
+              "/content/users/casey/items/svc1234567890/update",
             testUtils.getSuccessResponse({ id: "svc1234567890" })
           )
           .post(
             testUtils.PORTAL_SUBSET.restUrl +
-            "/content/items/svc1234567890/data",
+              "/content/items/svc1234567890/data",
             {}
           )
           .post(
             testUtils.PORTAL_SUBSET.restUrl +
-            "/content/users/casey/items/map1234567890/update",
+              "/content/users/casey/a4468da125a64526b359b70d8ba4a9dd/items/map1234567890/update",
             mockItems.get400Failure()
           )
           .post(
             testUtils.PORTAL_SUBSET.restUrl +
-            "/content/users/casey/a4468da125a64526b359b70d8ba4a9dd/delete",
+              "/content/users/casey/a4468da125a64526b359b70d8ba4a9dd/delete",
             testUtils.getSuccessResponse({
               folder: {
                 username: "casey",
@@ -1491,7 +1494,7 @@ describe("Module `deployer`", () => {
           )
           .post(
             testUtils.PORTAL_SUBSET.restUrl +
-            "/content/users/casey/items/map1234567890/delete",
+              "/content/users/casey/items/map1234567890/delete",
             testUtils.getSuccessResponse({ itemId: "map1234567890" })
           );
 
@@ -1572,53 +1575,53 @@ describe("Module `deployer`", () => {
         fetchMock
           .get(
             testUtils.PORTAL_SUBSET.restUrl +
-            "/content/items/" +
-            itemInfo.item.id +
-            "?f=json&token=fake-token",
+              "/content/items/" +
+              itemInfo.item.id +
+              "?f=json&token=fake-token",
             itemInfo.item
           )
           .post(
             testUtils.PORTAL_SUBSET.restUrl +
-            "/content/items/" +
-            itemInfo.item.id +
-            "/data",
+              "/content/items/" +
+              itemInfo.item.id +
+              "/data",
             itemInfo.data
           )
           .post(
             testUtils.PORTAL_SUBSET.restUrl +
-            "/content/items/" +
-            itemInfo.item.id +
-            "/info/metadata/metadata.xml",
+              "/content/items/" +
+              itemInfo.item.id +
+              "/info/metadata/metadata.xml",
             mockItems.get400Failure()
           )
           .get(
             testUtils.PORTAL_SUBSET.restUrl +
-            "/community/self?f=json&token=fake-token",
+              "/community/self?f=json&token=fake-token",
             communitySelfResponse
           )
           .get(
             testUtils.PORTAL_SUBSET.restUrl +
-            "/portals/self?f=json&token=fake-token",
+              "/portals/self?f=json&token=fake-token",
             portalsSelfResponse
           )
           .get(
             testUtils.PORTAL_SUBSET.restUrl +
-            "/portals/abCDefG123456?f=json&token=fake-token",
+              "/portals/abCDefG123456?f=json&token=fake-token",
             portalsSelfResponse
           )
           .get(
             testUtils.PORTAL_SUBSET.restUrl +
-            "/community/users/casey?f=json&token=fake-token",
+              "/community/users/casey?f=json&token=fake-token",
             testUtils.getUserResponse()
           )
           .get(
             testUtils.PORTAL_SUBSET.restUrl +
-            "/content/users/casey?f=json&token=fake-token",
+              "/content/users/casey?f=json&token=fake-token",
             testUtils.getContentUser()
           )
           .post(
             testUtils.PORTAL_SUBSET.restUrl +
-            "/content/users/casey/createFolder",
+              "/content/users/casey/createFolder",
             testUtils.getCreateFolderResponse()
           )
           .post(
@@ -1632,7 +1635,7 @@ describe("Module `deployer`", () => {
           .post(geometryServer + "/project", testUtils.getProjectResponse())
           .post(
             testUtils.PORTAL_SUBSET.restUrl +
-            "/content/users/casey/a4468da125a64526b359b70d8ba4a9dd/addItem",
+              "/content/users/casey/a4468da125a64526b359b70d8ba4a9dd/addItem",
             testUtils.getSuccessResponse({
               id: "map1234567890",
               folder: "44468da125a64526b359b70d8ba4a9dd"
@@ -1640,7 +1643,7 @@ describe("Module `deployer`", () => {
           )
           .post(
             testUtils.PORTAL_SUBSET.restUrl +
-            "/content/users/casey/a4468da125a64526b359b70d8ba4a9dd/createService",
+              "/content/users/casey/a4468da125a64526b359b70d8ba4a9dd/createService",
             testUtils.getCreateServiceResponse()
           )
           .post(
@@ -1666,22 +1669,22 @@ describe("Module `deployer`", () => {
           )
           .post(
             testUtils.PORTAL_SUBSET.restUrl +
-            "/content/users/casey/items/svc1234567890/update",
+              "/content/users/casey/items/svc1234567890/update",
             mockItems.get400Failure()
           )
           .post(
             testUtils.PORTAL_SUBSET.restUrl +
-            "/content/users/casey/items/svc1234567890/delete",
+              "/content/users/casey/items/svc1234567890/delete",
             testUtils.getSuccessResponse({ itemId: "svc1234567890" })
           )
           .post(
             testUtils.PORTAL_SUBSET.restUrl +
-            "/community/groups/svc1234567890/delete",
+              "/community/groups/svc1234567890/delete",
             testUtils.getSuccessResponse({ groupId: "svc1234567890" })
           )
           .post(
             testUtils.PORTAL_SUBSET.restUrl +
-            "/content/users/casey/a4468da125a64526b359b70d8ba4a9dd/delete",
+              "/content/users/casey/a4468da125a64526b359b70d8ba4a9dd/delete",
             testUtils.getFailureResponse({
               folder: {
                 username: "casey",
@@ -1691,11 +1694,11 @@ describe("Module `deployer`", () => {
           )
           .post(
             testUtils.PORTAL_SUBSET.restUrl +
-            "/content/users/casey/items/map1234567890/delete",
+              "/content/users/casey/items/map1234567890/delete",
             testUtils.getSuccessResponse({ itemId: "map1234567890" })
           );
         // tslint:disable-next-line: no-empty
-        spyOn(console, "error").and.callFake(() => { });
+        spyOn(console, "error").and.callFake(() => {});
 
         const options: common.IDeploySolutionOptions = {
           progressCallback: testUtils.SOLUTION_PROGRESS_CALLBACK
@@ -1726,16 +1729,16 @@ describe("Module `deployer`", () => {
         fetchMock
           .get(
             testUtils.PORTAL_SUBSET.restUrl +
-            "/content/items/" +
-            itemInfo.item.id +
-            "?f=json&token=fake-token",
+              "/content/items/" +
+              itemInfo.item.id +
+              "?f=json&token=fake-token",
             itemInfo.item
           )
           .post(
             testUtils.PORTAL_SUBSET.restUrl +
-            "/content/items/" +
-            itemInfo.item.id +
-            "/data",
+              "/content/items/" +
+              itemInfo.item.id +
+              "/data",
             itemInfo.data
           )
           .post(geometryServer + "/findTransformations/rest/info", "{}")
@@ -1748,39 +1751,39 @@ describe("Module `deployer`", () => {
           })
           .get(
             testUtils.PORTAL_SUBSET.restUrl +
-            "/community/self?f=json&token=fake-token",
+              "/community/self?f=json&token=fake-token",
             communitySelfResponse
           )
           .get(
             testUtils.PORTAL_SUBSET.restUrl +
-            "/portals/self?f=json&token=fake-token",
+              "/portals/self?f=json&token=fake-token",
             portalsSelfResponse
           )
           .get(
             testUtils.PORTAL_SUBSET.restUrl +
-            "/portals/abCDefG123456?f=json&token=fake-token",
+              "/portals/abCDefG123456?f=json&token=fake-token",
             portalsSelfResponse
           )
           .get(
             testUtils.PORTAL_SUBSET.restUrl +
-            "/community/users/casey?f=json&token=fake-token",
+              "/community/users/casey?f=json&token=fake-token",
             testUtils.getUserResponse()
           )
           .get(
             testUtils.PORTAL_SUBSET.restUrl +
-            "/content/users/casey?f=json&token=fake-token",
+              "/content/users/casey?f=json&token=fake-token",
             testUtils.getContentUser()
           )
           .post(
             testUtils.PORTAL_SUBSET.restUrl +
-            "/content/items/" +
-            itemInfo.item.id +
-            "/info/metadata/metadata.xml",
+              "/content/items/" +
+              itemInfo.item.id +
+              "/info/metadata/metadata.xml",
             mockItems.get400Failure()
           )
           .post(
             testUtils.PORTAL_SUBSET.restUrl +
-            "/content/users/casey/createFolder",
+              "/content/users/casey/createFolder",
             mockItems.get400Failure()
           )
           .post(

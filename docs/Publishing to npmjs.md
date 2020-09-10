@@ -16,7 +16,6 @@
 * \[ \] Check that publishing worked using `check_npm_package_versions.html`
 * \[ \] Run `npm run release:publish-retry` as needed until all packages are published
 * \[ \] Push `master` branch to GitHub
-* \[ \] Run `npm run docs:deploy`
 * \[ \] Delete `release-candidate` branch
 * \[ \] Switch to `develop` branch
 * \[ \] Merge `master` branch into `develop` branch
@@ -136,13 +135,11 @@ git merge --no-ff --no-commit release-candidate
 
 17. Push your `master` branch to GitHub.
 
-18. Update the repository's API doc by running `npm run docs:deploy`.
+18. Delete the `release-candidate` branch locally and in GitHub.
 
-19. Delete the `release-candidate` branch locally and in GitHub.
+19. Merge `master` into `develop` and push `develop` to GitHub.
 
-20. Merge `master` into `develop` and push `develop` to GitHub.
-
-21. Update documentation (see "Publishing API documentation to GitHub" section below).
+20. Update the repository's API documentation (see "Publishing API documentation to GitHub" section below).
 
 ---
 
