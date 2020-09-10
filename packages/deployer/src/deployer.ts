@@ -72,7 +72,7 @@ export function deploySolution(
         return Promise.all([
           Promise.resolve(model.item),
           Promise.resolve(model.data),
-          common.getItemMetadataAsFile(model.item.id, authentication)
+          common.getItemMetadataAsFile(model.item.id, storageAuthentication)
         ]);
       }
     })
