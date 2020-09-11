@@ -1,6 +1,6 @@
 {
   "name": "sanitizeGroupItems",
-  "version": "0.17.3",
+  "version": "0.17.4",
   "private": true,
   "description": "Example App for solutions.js common: Fetches the contents of a group and sanitizes the results, which includes the base portion of each item.",
   "main": "main.js",
@@ -25,7 +25,7 @@
     "@esri/hub-common": "^6.9.1",
     "@esri/hub-initiatives": "^6.9.1",
     "@esri/hub-sites": "^6.9.1",
-    "@esri/solution-common": "^0.17.3",
+    "@esri/solution-common": "^0.17.4",
     "tslib": "^1.13.0"
   }
 }
