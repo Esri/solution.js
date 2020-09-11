@@ -210,6 +210,13 @@ export function removeTemplate(templates: IItemTemplate[], id: string): void {
   }
 }
 
+/**
+ * Replaces symbols in a template.
+ *
+ * @param template Template to check for replacements; template is modified by this function
+ * @param replacements Hash of facts: org URL, adlib replacements, deferreds for dependencies
+ * @return template is returned after updating it
+ */
 export function replaceInTemplate(template: any, replacements: any): any {
   return adlib(template, replacements, TRANSFORMS);
 }

@@ -90,6 +90,7 @@ export const moduleMap: IItemTypeModuleMap = {
   Mission: undefined,
   "Mobile Application": undefined,
   Notebook: notebookProcessor,
+  "Oriented Imagery Catalog": simpleTypes,
   "Ortho Mapping Project": undefined,
   "QuickCapture Project": quickcaptureProcessor,
   "Site Application": HubSiteProcessor,
