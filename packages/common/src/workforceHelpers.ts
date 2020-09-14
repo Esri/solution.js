@@ -21,7 +21,7 @@
  */
 
 import { templatizeTerm } from "./templatization";
-import { rest_queryFeatures } from "./featureServiceHelpers";
+import { rest_queryFeatures, rest_addFeatures } from "./featureServiceHelpers";
 import {
   IItemTemplate,
   IFeatureServiceProperties,
@@ -29,6 +29,222 @@ import {
 } from "./interfaces";
 import { getProp, fail } from "./generalHelpers";
 import { rest_request } from "./restHelpers";
+
+///////////////////////////////////////////////////////////////////////
+// Workforce V1 specific logic
+
+/**
+ * Converts an workforce item to a template.
+ *
+ * @param itemTemplate template for the workforce project item
+ * @param authentication credentials for any requests
+ * @return templatized itemTemplate
+ */
+export function convertWorkforceItemToTemplate(
+  itemTemplate: IItemTemplate,
+  authentication: UserSession
+): Promise<IItemTemplate> {
+  return new Promise<IItemTemplate>((resolve, reject) => {
+    // Key properties that contain item IDs for the workforce project type
+    const keyProperties: string[] = [
+      "groupId",
+      "workerWebMapId",
+      "dispatcherWebMapId",
+      "dispatchers",
+      "assignments",
+      "workers",
+      "tracks"
+    ];
+
+    // The templates data to process
+    const data: any = itemTemplate.data;
+
+    if (data) {
+      // Extract dependencies
+      extractWorkforceDependencies(data, keyProperties, authentication).then(
+        results => {
+          itemTemplate.dependencies = results.dependencies;
+          // templatize key properties
+          itemTemplate.data = templatizeWorkforce(
+            data,
+            keyProperties,
+            results.urlHash
+          );
+          resolve(itemTemplate);
+        },
+        e => reject(fail(e))
+      );
+    } else {
+      resolve(itemTemplate);
+    }
+  });
+}
+
+/**
+ * Gets the ids of the dependencies of the workforce project.
+ *
+ * @param data itemTemplate data
+ * @param keyProperties workforce project properties that contain references to dependencies
+ * @param authentication credentials for any requests
+ * @return List of dependencies ids
+ */
+export function extractWorkforceDependencies(
+  data: any,
+  keyProperties: string[],
+  authentication: UserSession
+): Promise<any> {
+  return new Promise<any>((resolve, reject) => {
+    const deps: string[] = [];
+
+    // get the ids for the service dependencies
+    // "workerWebMapId" and "dispatcherWebMapId" are already IDs and don't have a serviceItemId
+    keyProperties.forEach(p => {
+      const serviceItemId: string = getProp(data, p + ".serviceItemId");
+      const v: string = getProp(data, p);
+      if (serviceItemId) {
+        if (deps.indexOf(serviceItemId) === -1) {
+          deps.push(serviceItemId);
+        }
+      } else {
+        idTest(v, deps);
+      }
+    });
+
+    if (getProp(data, "assignmentIntegrations")) {
+      let requests: Array<Promise<any>> = [];
+      let urls: string[] = [];
+      data.assignmentIntegrations.forEach((ai: any) => {
+        if (ai.assignmentTypes) {
+          const assignmentKeys: string[] = Object.keys(ai.assignmentTypes);
+          assignmentKeys.forEach(k => {
+            const urlTemplate: any = ai.assignmentTypes[k].urlTemplate;
+            idTest(urlTemplate, deps);
+            const serviceRequests: any = urlTest(urlTemplate, authentication);
+            if (
+              Array.isArray(serviceRequests.requests) &&
+              serviceRequests.requests.length > 0
+            ) {
+              requests = requests.concat(serviceRequests.requests);
+              urls = urls.concat(serviceRequests.urls);
+            }
+          });
+        }
+      });
+
+      if (requests.length > 0) {
+        Promise.all(requests).then(
+          results => {
+            const urlHash: any = {};
+            // Get the serviceItemId for the url
+            /* istanbul ignore else */
+            if (Array.isArray(results)) {
+              results.forEach((result, i) => {
+                /* istanbul ignore else */
+                if (result.serviceItemId) {
+                  urlHash[urls[i]] = result.serviceItemId;
+                  /* istanbul ignore else */
+                  if (deps.indexOf(result.serviceItemId) === -1) {
+                    deps.push(result.serviceItemId);
+                  }
+                }
+              });
+            }
+            resolve({
+              dependencies: deps,
+              urlHash: urlHash
+            });
+          },
+          e => reject(fail(e))
+        );
+      } else {
+        resolve({
+          dependencies: deps,
+          urlHash: {}
+        });
+      }
+    } else {
+      resolve({
+        dependencies: deps,
+        urlHash: {}
+      });
+    }
+  });
+}
+
+/**
+ * Updates a list of the items dependencies if more are found in the
+ * provided value.
+ *
+ * @param v a string value to check for ids
+ * @param deps a list of the items dependencies
+ */
+export function idTest(v: any, deps: string[]): void {
+  const ids: any[] = _getIDs(v);
+  ids.forEach(id => {
+    /* istanbul ignore else */
+    if (deps.indexOf(id) === -1) {
+      deps.push(id);
+    }
+  });
+}
+
+/**
+ * Templatizes key item properties.
+ *
+ * @param data itemTemplate data
+ * @param keyProperties workforce project properties that should be templatized
+ * @param urlHash a key value pair of url and itemId
+ * @return an updated data object to be stored in the template
+ */
+export function templatizeWorkforce(
+  data: any,
+  keyProperties: string[],
+  urlHash: any
+): any {
+  keyProperties.forEach(p => {
+    /* istanbul ignore else */
+    if (getProp(data, p)) {
+      if (getProp(data[p], "serviceItemId")) {
+        // templatize properties with id and url
+        const id: string = data[p].serviceItemId;
+        let serviceItemIdSuffix: string = ".itemId";
+
+        /* istanbul ignore else */
+        if (getProp(data[p], "url")) {
+          const layerId = getLayerId(data[p].url);
+          data[p].url = templatizeTerm(
+            id,
+            id,
+            getReplaceValue(layerId, ".url")
+          );
+          serviceItemIdSuffix = getReplaceValue(layerId, serviceItemIdSuffix);
+        }
+        data[p].serviceItemId = templatizeTerm(id, id, serviceItemIdSuffix);
+      } else {
+        // templatize simple id properties
+        data[p] = templatizeTerm(data[p], data[p], ".itemId");
+      }
+    }
+  });
+
+  data["folderId"] = "{{folderId}}";
+
+  // templatize app integrations
+  const integrations: any[] = data.assignmentIntegrations || [];
+  integrations.forEach(i => {
+    _templatizeUrlTemplate(i, urlHash);
+    /* istanbul ignore else */
+    if (i.assignmentTypes) {
+      const assignmentKeys: string[] = Object.keys(i.assignmentTypes);
+      assignmentKeys.forEach(k => {
+        _templatizeUrlTemplate(i.assignmentTypes[k], urlHash);
+      });
+    }
+  });
+  return data;
+}
+
+///////////////////////////////////////////////////////////////////////
 
 export function getWorkforceDependencies(
   itemTemplate: IItemTemplate,
@@ -179,8 +395,7 @@ export function _getAssignmentIntegrationInfos(
     );
   });
 }
-//////////////////////////////////////////////////
-// from workforce
+
 export function getUrlDependencies(
   requests: Array<Promise<any>>,
   urls: string[]
@@ -221,6 +436,12 @@ export function getUrlDependencies(
   });
 }
 
+/**
+ * Templatizes values from a urlTemplate
+ *
+ * @param item the object that may contain a urlTemplate
+ * @param urlHash a key value pair of url and itemId
+ */
 export function _templatizeUrlTemplate(item: any, urlHash: any): void {
   /* istanbul ignore else */
   if (getProp(item, "urltemplate")) {
@@ -233,8 +454,8 @@ export function _templatizeUrlTemplate(item: any, urlHash: any): void {
     });
     const urls: string[] = _getURLs(item.urltemplate);
     urls.forEach(url => {
-      const layerId = _getLayerId(url);
-      const replaceValue: string = _getReplaceValue(layerId, ".url");
+      const layerId = getLayerId(url);
+      const replaceValue: string = getReplaceValue(layerId, ".url");
       item.urltemplate = item.urltemplate.replace(
         url,
         templatizeTerm(urlHash[url], urlHash[url], replaceValue)
@@ -243,18 +464,17 @@ export function _templatizeUrlTemplate(item: any, urlHash: any): void {
   }
 }
 
-export function _getLayerId(url: string): any {
+export function getLayerId(url: string): any {
   return url.indexOf("FeatureServer/") > -1
     ? url.substr(url.lastIndexOf("/") + 1)
     : undefined;
 }
 
-export function _getReplaceValue(layerId: any, suffix: string): string {
+export function getReplaceValue(layerId: any, suffix: string): string {
   return isNaN(Number.parseInt(layerId, 10))
     ? `${suffix}`
     : `.layer${layerId}${suffix}`;
 }
-//////////////////////////////////////////////////
 
 export function postProcessWorkforceTemplates(
   templates: IItemTemplate[]
@@ -355,7 +575,6 @@ export function _templatizeWorkforceDispatcherOrWorker(
   return t;
 }
 
-////////////////////////////////////////////////////////////////////////////////
 // Helpers
 export function isWorkforceProject(itemTemplate: IItemTemplate): boolean {
   return (
@@ -371,14 +590,19 @@ export function getKeyWorkforceProperties(): string[] {
   ];
 }
 
-//////////////////////////////////////////////////////
-// Duplicated from workforce...TODO think about the structure
 export function _getIDs(v: string): string[] {
   // avoid IDs that are in a FS url as part of service name
   // Only get IDs that are proceeded by '=' but do not return the '='
   return regExTest(v, /=[0-9A-F]{32}/gi).map(_v => _v.replace("=", ""));
 }
 
+/**
+ * Evaluates a value with a regular expression
+ *
+ * @param v a string value to test with the expression
+ * @param ex the regular expresion to test with
+ * @return an array of matches
+ */
 export function regExTest(v: any, ex: RegExp): any[] {
   return v && ex.test(v) ? v.match(ex) : [];
 }
@@ -391,8 +615,7 @@ export function regExTest(v: any, ex: RegExp): any[] {
  * @returns an object with any pending requests and the urls that requests were made to
  */
 export function urlTest(v: any, authentication: UserSession): any {
-  const _urls: any[] = _getURLs(v);
-  const urls = _urls.map(url => url.replace("=", ""));
+  const urls: any[] = _getURLs(v);
   const requests: Array<Promise<any>> = [];
   urls.forEach(url => {
     const options: any = {
@@ -412,4 +635,118 @@ export function _getURLs(v: string): string[] {
     _v.replace("=", "")
   );
 }
-///////////////////////////////////////////////////////
+
+//#region Deploy Process ---------------------------------------------------------------------------------------//
+
+/**
+ * Gets the current user and updates the dispatchers service
+ *
+ * @param newlyCreatedItem Item to be created; n.b.: this item is modified
+ * @param destinationAuthentication The session used to create the new item(s)
+ * @return A promise that will resolve with { "success" === true || false }
+ */
+export function fineTuneCreatedWorkforceItem(
+  newlyCreatedItem: IItemTemplate,
+  destinationAuthentication: UserSession,
+  workforceVersion: number
+): Promise<any> {
+  return new Promise<any>((resolve, reject) => {
+    destinationAuthentication.getUser().then(
+      user => {
+        if (workforceVersion === 1) {
+          _updateDispatchers(
+            getProp(newlyCreatedItem, "data.dispatchers"),
+            user.username || "",
+            user.fullName || "",
+            destinationAuthentication
+          ).then(
+            results => {
+              resolve({ success: results });
+            },
+            e => reject(fail(e))
+          );
+        } else {
+          // TODO V2 updates go here
+          resolve({ success: false });
+        }
+      },
+      e => reject(fail(e))
+    );
+  });
+}
+
+/**
+ * Updates the dispatchers service to include the current user as a dispatcher
+ *
+ * @param dispatchers The dispatchers object from the workforce items data
+ * @param name Current users name
+ * @param fullName Current users full name
+ * @param destinationAuthentication The session used to create the new item(s)
+ * @return A promise that will resolve with true || false
+ * @protected
+ */
+export function _updateDispatchers(
+  dispatchers: any,
+  name: string,
+  fullName: string,
+  destinationAuthentication: UserSession
+): Promise<boolean> {
+  return new Promise<boolean>((resolve, reject) => {
+    if (dispatchers && dispatchers.url) {
+      rest_queryFeatures({
+        url: dispatchers.url,
+        where: "userId = '" + name + "'",
+        authentication: destinationAuthentication
+      }).then(
+        (results: any) => {
+          if (results && results.features) {
+            if (results.features.length === 0) {
+              rest_addFeatures({
+                url: dispatchers.url,
+                features: [
+                  {
+                    attributes: {
+                      name: fullName,
+                      userId: name
+                    }
+                  }
+                ],
+                authentication: destinationAuthentication
+              }).then(
+                addResults => {
+                  if (addResults && addResults.addResults) {
+                    resolve(true);
+                  } else {
+                    reject(
+                      fail({
+                        success: false,
+                        message: "Failed to add dispatch record."
+                      })
+                    );
+                  }
+                },
+                e =>
+                  reject(
+                    fail({
+                      success: false,
+                      message: "Failed to add dispatch record.",
+                      error: e
+                    })
+                  )
+              );
+            } else {
+              resolve(true);
+            }
+          } else {
+            resolve(false);
+          }
+        },
+        e => reject(fail(e))
+      );
+    } else {
+      resolve(false);
+    }
+  });
+}
+
+//#endregion
