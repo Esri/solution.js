@@ -33,8 +33,10 @@ import {
   IDatasourceInfo,
   IItemProgressCallback,
   IItemTemplate,
+  IUpdateItemResponse,
   replaceInTemplate,
   updateItemExtended,
+  updateItemTemplateFromDictionary,
   UserSession
 } from "@esri/solution-common";
 
@@ -110,13 +112,15 @@ export function postProcessFieldReferences(
   }
   return solutionTemplate;
 }
+
 /**
  * Simple Type post-processing actions
- * @param itemId
- * @param type
- * @param itemInfos Array of {id: 'ef3', type: 'Web Map'} objects
- * @param templateDictionary
- * @param authentication
+ * @param {string} itemId The item ID
+ * @param {string} type The template type
+ * @param {any[]} itemInfos Array of {id: 'ef3', type: 'Web Map'} objects
+ * @param {any} templateDictionary The template dictionary
+ * @param {UserSession} authentication The destination session info
+ * @returns Promise resolving to successfulness of update
  */
 export function postProcess(
   itemId: string,
@@ -126,19 +130,10 @@ export function postProcess(
   templates: IItemTemplate[],
   templateDictionary: any,
   authentication: UserSession
-): Promise<any> {
-  return getItemDataAsJson(itemId, authentication).then(data => {
-    if (hasUnresolvedVariables(data)) {
-      const updatedData = replaceInTemplate(data, templateDictionary);
-      // TODO: update return type on updateItemExtended
-      return updateItemExtended(
-        itemId,
-        { id: itemId },
-        updatedData,
-        authentication
-      ) as Promise<any>;
-    } else {
-      return Promise.resolve({ success: true });
-    }
-  });
+): Promise<IUpdateItemResponse> {
+  return updateItemTemplateFromDictionary(
+    itemId,
+    templateDictionary,
+    authentication
+  );
 }

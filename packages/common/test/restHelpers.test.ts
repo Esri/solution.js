@@ -26,6 +26,7 @@ import * as mockItems from "../test/mocks/agolItems";
 import * as polyfills from "../src/polyfills";
 import * as portal from "@esri/arcgis-rest-portal";
 import * as restHelpers from "../src/restHelpers";
+import * as restHelpersGet from "../src/restHelpersGet";
 import * as templates from "../test/mocks/templates";
 import * as utils from "./mocks/utils";
 import { encodeParam } from "@esri/arcgis-rest-request";
@@ -404,7 +405,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
     it("can handle failure", done => {
       fetchMock.post(
         utils.PORTAL_SUBSET.restUrl +
-          "/content/users/casey/aabb123456/createService",
+        "/content/users/casey/aabb123456/createService",
         mockItems.get400Failure()
       );
 
@@ -469,21 +470,21 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
       fetchMock
         .post(
           utils.PORTAL_SUBSET.restUrl +
-            "/content/users/casey/aabb123456/createService",
+          "/content/users/casey/aabb123456/createService",
           '{"encodedServiceURL":"https://services123.arcgis.com/org1234567890/arcgis/rest/services/' +
-            "ROWPermits_publiccomment_" +
-            now +
-            '/FeatureServer","itemId":"svc1234567890",' +
-            '"name":"ROWPermits_publiccomment_' +
-            now +
-            '","serviceItemId":"svc1234567890",' +
-            '"serviceurl":"https://services123.arcgis.com/org1234567890/arcgis/rest/services/ROWPermits_publiccomment_' +
-            now +
-            '/FeatureServer","size":-1,"success":true,"type":"Feature Service","isView":false}'
+          "ROWPermits_publiccomment_" +
+          now +
+          '/FeatureServer","itemId":"svc1234567890",' +
+          '"name":"ROWPermits_publiccomment_' +
+          now +
+          '","serviceItemId":"svc1234567890",' +
+          '"serviceurl":"https://services123.arcgis.com/org1234567890/arcgis/rest/services/ROWPermits_publiccomment_' +
+          now +
+          '/FeatureServer","size":-1,"success":true,"type":"Feature Service","isView":false}'
         )
         .post(
           utils.PORTAL_SUBSET.restUrl +
-            "/content/users/casey/items/svc1234567890/move",
+          "/content/users/casey/items/svc1234567890/move",
           '{"success":true,"itemId":"svc1234567890","owner":"casey","folder":"fld1234567890"}'
         );
 
@@ -553,8 +554,8 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
 
       fetchMock.post(
         utils.PORTAL_SUBSET.restUrl +
-          "/content/users/casey/" +
-          (folderId ? folderId + "/addItem" : "addItem"),
+        "/content/users/casey/" +
+        (folderId ? folderId + "/addItem" : "addItem"),
         {
           success: true,
           id: "itm1234567980",
@@ -589,8 +590,8 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
       fetchMock
         .post(
           utils.PORTAL_SUBSET.restUrl +
-            "/content/users/casey/" +
-            (folderId ? folderId + "/addItem" : "addItem"),
+          "/content/users/casey/" +
+          (folderId ? folderId + "/addItem" : "addItem"),
           {
             success: true,
             id: "itm1234567980",
@@ -599,7 +600,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
         )
         .post(
           utils.PORTAL_SUBSET.restUrl +
-            "/content/users/casey/items/itm1234567980/share",
+          "/content/users/casey/items/itm1234567980/share",
           {
             notSharedWith: [] as string[],
             itemId: "itm1234567980"
@@ -642,8 +643,8 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
           .post(itemThumbnailUrl + "/rest/info", "{}")
           .post(
             utils.PORTAL_SUBSET.restUrl +
-              "/content/users/casey/" +
-              (folderId ? folderId + "/addItem" : "addItem"),
+            "/content/users/casey/" +
+            (folderId ? folderId + "/addItem" : "addItem"),
             {
               success: true,
               id: "itm1234567980",
@@ -652,7 +653,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
           )
           .post(
             utils.PORTAL_SUBSET.restUrl +
-              "/content/users/casey/items/itm1234567980/share",
+            "/content/users/casey/items/itm1234567980/share",
             {
               notSharedWith: [] as string[],
               itemId: "itm1234567980"
@@ -660,12 +661,12 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
           )
           .post(
             utils.PORTAL_SUBSET.restUrl +
-              "/content/users/casey/items/itm1234567980/update",
+            "/content/users/casey/items/itm1234567980/update",
             utils.getSuccessResponse({ id: "itm1234567980" })
           )
           .post(
             utils.PORTAL_SUBSET.restUrl +
-              "/content/users/casey/items/itm1234567980/addResources",
+            "/content/users/casey/items/itm1234567980/addResources",
             utils.getSuccessResponse({
               itemId: "itm1234567980",
               owner: MOCK_USER_SESSION.username,
@@ -708,8 +709,8 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
         fetchMock
           .post(
             utils.PORTAL_SUBSET.restUrl +
-              "/content/users/casey/" +
-              (folderId ? folderId + "/addItem" : "addItem"),
+            "/content/users/casey/" +
+            (folderId ? folderId + "/addItem" : "addItem"),
             {
               success: true,
               id: "itm1234567980",
@@ -718,7 +719,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
           )
           .post(
             utils.PORTAL_SUBSET.restUrl +
-              "/content/users/casey/items/itm1234567980/addResources",
+            "/content/users/casey/items/itm1234567980/addResources",
             utils.getSuccessResponse({
               itemId: "itm1234567980",
               owner: MOCK_USER_SESSION.username,
@@ -756,8 +757,8 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
         fetchMock
           .post(
             utils.PORTAL_SUBSET.restUrl +
-              "/content/users/casey/" +
-              (folderId ? folderId + "/addItem" : "addItem"),
+            "/content/users/casey/" +
+            (folderId ? folderId + "/addItem" : "addItem"),
             {
               success: true,
               id: "itm1234567980",
@@ -766,7 +767,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
           )
           .post(
             utils.PORTAL_SUBSET.restUrl +
-              "/content/users/casey/items/itm1234567980/update",
+            "/content/users/casey/items/itm1234567980/update",
             500
           );
 
@@ -797,8 +798,8 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
 
       fetchMock.post(
         utils.PORTAL_SUBSET.restUrl +
-          "/content/users/casey/" +
-          (folderId ? folderId + "/addItem" : "addItem"),
+        "/content/users/casey/" +
+        (folderId ? folderId + "/addItem" : "addItem"),
         {
           success: false,
           id: "itm1234567980",
@@ -832,8 +833,8 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
 
       fetchMock.post(
         utils.PORTAL_SUBSET.restUrl +
-          "/content/users/casey/" +
-          (folderId ? folderId + "/addItem" : "addItem"),
+        "/content/users/casey/" +
+        (folderId ? folderId + "/addItem" : "addItem"),
         500
       );
 
@@ -864,8 +865,8 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
       fetchMock
         .post(
           utils.PORTAL_SUBSET.restUrl +
-            "/content/users/casey/" +
-            (folderId ? folderId + "/addItem" : "addItem"),
+          "/content/users/casey/" +
+          (folderId ? folderId + "/addItem" : "addItem"),
           {
             success: true,
             id: "itm1234567980",
@@ -874,7 +875,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
         )
         .post(
           utils.PORTAL_SUBSET.restUrl +
-            "/content/users/casey/items/itm1234567980/share",
+          "/content/users/casey/items/itm1234567980/share",
           500
         );
 
@@ -2188,9 +2189,9 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
       const folderId: string = "ABC123";
       fetchMock.post(
         utils.PORTAL_SUBSET.restUrl +
-          "/content/users/casey/" +
-          folderId +
-          "/delete",
+        "/content/users/casey/" +
+        folderId +
+        "/delete",
         utils.getSuccessResponse({
           folder: { username: "casey", id: folderId }
         })
@@ -2205,9 +2206,9 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
       const folderId: string = "ABC123";
       fetchMock.post(
         utils.PORTAL_SUBSET.restUrl +
-          "/content/users/casey/" +
-          folderId +
-          "/delete",
+        "/content/users/casey/" +
+        folderId +
+        "/delete",
         utils.getFailureResponse({
           folder: { username: "casey", id: folderId }
         })
@@ -2227,9 +2228,9 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
       const groupId: string = "ABC123";
       fetchMock.post(
         utils.PORTAL_SUBSET.restUrl +
-          "/community/groups/" +
-          groupId +
-          "/delete",
+        "/community/groups/" +
+        groupId +
+        "/delete",
         utils.getSuccessResponse({ groupId })
       );
       restHelpers.removeGroup(groupId, MOCK_USER_SESSION).then(actual => {
@@ -2242,9 +2243,9 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
       const groupId: string = "ABC123";
       fetchMock.post(
         utils.PORTAL_SUBSET.restUrl +
-          "/community/groups/" +
-          groupId +
-          "/delete",
+        "/community/groups/" +
+        groupId +
+        "/delete",
         utils.getFailureResponse({ groupId })
       );
       restHelpers.removeGroup(groupId, MOCK_USER_SESSION).then(
@@ -2262,9 +2263,9 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
       const itemId: string = "ABC123";
       fetchMock.post(
         utils.PORTAL_SUBSET.restUrl +
-          "/content/users/casey/items/" +
-          itemId +
-          "/delete",
+        "/content/users/casey/items/" +
+        itemId +
+        "/delete",
         utils.getSuccessResponse({ itemId })
       );
       restHelpers.removeItem(itemId, MOCK_USER_SESSION).then(actual => {
@@ -2277,9 +2278,9 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
       const itemId: string = "ABC123";
       fetchMock.post(
         utils.PORTAL_SUBSET.restUrl +
-          "/content/users/casey/items/" +
-          itemId +
-          "/delete",
+        "/content/users/casey/items/" +
+        itemId +
+        "/delete",
         utils.getFailureResponse({ itemId })
       );
       restHelpers.removeItem(itemId, MOCK_USER_SESSION).then(
@@ -2297,9 +2298,9 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
       const itemId: string = "ABC123";
       fetchMock.post(
         utils.PORTAL_SUBSET.restUrl +
-          "/content/users/casey/items/" +
-          itemId +
-          "/delete",
+        "/content/users/casey/items/" +
+        itemId +
+        "/delete",
         utils.getSuccessResponse({ itemId })
       );
       restHelpers.removeItemOrGroup(itemId, MOCK_USER_SESSION).then(actual => {
@@ -2313,16 +2314,16 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
       fetchMock
         .post(
           utils.PORTAL_SUBSET.restUrl +
-            "/content/users/casey/items/" +
-            itemId +
-            "/delete",
+          "/content/users/casey/items/" +
+          itemId +
+          "/delete",
           utils.getFailureResponse()
         )
         .post(
           utils.PORTAL_SUBSET.restUrl +
-            "/community/groups/" +
-            itemId +
-            "/delete",
+          "/community/groups/" +
+          itemId +
+          "/delete",
           utils.getSuccessResponse({ itemId })
         );
       restHelpers.removeItemOrGroup(itemId, MOCK_USER_SESSION).then(actual => {
@@ -2336,16 +2337,16 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
       fetchMock
         .post(
           utils.PORTAL_SUBSET.restUrl +
-            "/content/users/casey/items/" +
-            itemId +
-            "/delete",
+          "/content/users/casey/items/" +
+          itemId +
+          "/delete",
           utils.getFailureResponse()
         )
         .post(
           utils.PORTAL_SUBSET.restUrl +
-            "/community/groups/" +
-            itemId +
-            "/delete",
+          "/community/groups/" +
+          itemId +
+          "/delete",
           utils.getFailureResponse()
         );
       restHelpers.removeItemOrGroup(itemId, MOCK_USER_SESSION).then(
@@ -2365,16 +2366,16 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
       fetchMock
         .post(
           utils.PORTAL_SUBSET.restUrl +
-            "/content/users/casey/items/" +
-            itemIds[0] +
-            "/delete",
+          "/content/users/casey/items/" +
+          itemIds[0] +
+          "/delete",
           utils.getFailureResponse()
         )
         .post(
           utils.PORTAL_SUBSET.restUrl +
-            "/community/groups/" +
-            itemIds[0] +
-            "/delete",
+          "/community/groups/" +
+          itemIds[0] +
+          "/delete",
           utils.getFailureResponse()
         );
 
@@ -2391,7 +2392,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
 
       fetchMock.get(
         utils.PORTAL_SUBSET.restUrl +
-          "/community/groups?f=json&q=My%20Group&token=fake-token",
+        "/community/groups?f=json&q=My%20Group&token=fake-token",
         utils.getGroupResponse(query, false)
       );
 
@@ -2409,7 +2410,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
 
       fetchMock.get(
         utils.PORTAL_SUBSET.restUrl +
-          "/community/groups?f=json&q=My%20Group&token=fake-token",
+        "/community/groups?f=json&q=My%20Group&token=fake-token",
         utils.getGroupResponse(query, true)
       );
 
@@ -2430,7 +2431,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
 
       fetchMock.get(
         utils.PORTAL_SUBSET.restUrl +
-          `/content/groups/${groupId}/search?f=json&q=My%20Group&token=fake-token`,
+        `/content/groups/${groupId}/search?f=json&q=My%20Group&token=fake-token`,
         utils.getGroupResponse(query, false)
       );
 
@@ -2449,7 +2450,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
 
       fetchMock.get(
         utils.PORTAL_SUBSET.restUrl +
-          `/content/groups/${groupId}/search?f=json&q=My%20Group&token=fake-token`,
+        `/content/groups/${groupId}/search?f=json&q=My%20Group&token=fake-token`,
         utils.getGroupResponse(query, true)
       );
 
@@ -2482,17 +2483,17 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
         })
         .get(
           utils.PORTAL_SUBSET.restUrl +
-            "/community/groups/grp1234567890?f=json&token=fake-token",
+          "/community/groups/grp1234567890?f=json&token=fake-token",
           mockItems.getAGOLItem("Group")
         )
         .get(
           utils.PORTAL_SUBSET.restUrl +
-            "/community/users/casey?f=json&token=fake-token",
+          "/community/users/casey?f=json&token=fake-token",
           mockItems.getAGOLUser(MOCK_USER_SESSION.username)
         )
         .post(
           utils.PORTAL_SUBSET.restUrl +
-            "/content/users/casey/items/itm1234567890/share",
+          "/content/users/casey/items/itm1234567890/share",
           {
             itemId: "itm1234567980",
             notSharedWith: []
@@ -2523,17 +2524,17 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
         })
         .get(
           utils.PORTAL_SUBSET.restUrl +
-            "/community/groups/grp1234567890?f=json&token=fake-token",
+          "/community/groups/grp1234567890?f=json&token=fake-token",
           mockItems.getAGOLItem("Group")
         )
         .get(
           utils.PORTAL_SUBSET.restUrl +
-            "/community/users/casey?f=json&token=fake-token",
+          "/community/users/casey?f=json&token=fake-token",
           mockItems.getAGOLUser(MOCK_USER_SESSION.username)
         )
         .post(
           utils.PORTAL_SUBSET.restUrl +
-            "/content/users/casey/items/itm1234567890/share",
+          "/content/users/casey/items/itm1234567890/share",
           {
             notSharedWith: [groupId] as string[],
             itemId: "itm1234567980"
@@ -2546,17 +2547,16 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
     });
   });
 
-  describe("updateItem", () => {
+  describe("updateItemExtended", () => {
     it("can handle failure", done => {
       itemTemplate.item.id = "itm1234567890";
       fetchMock.post(
         utils.PORTAL_SUBSET.restUrl +
-          "/content/users/casey/items/itm1234567890/update",
+        "/content/users/casey/items/itm1234567890/update",
         mockItems.get400Failure()
       );
       restHelpers
         .updateItemExtended(
-          "svc1234567890",
           itemTemplate.item,
           itemTemplate.data,
           MOCK_USER_SESSION,
@@ -2577,12 +2577,11 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
       itemTemplate.item.id = "itm1234567890";
       fetchMock.post(
         utils.PORTAL_SUBSET.restUrl +
-          "/content/users/casey/items/itm1234567890/update",
+        "/content/users/casey/items/itm1234567890/update",
         '{"success":true}'
       );
       restHelpers
         .updateItemExtended(
-          "svc1234567890",
           itemTemplate.item,
           itemTemplate.data,
           MOCK_USER_SESSION,
@@ -2600,17 +2599,16 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
       itemTemplate.item.id = "itm1234567890";
       fetchMock.post(
         utils.PORTAL_SUBSET.restUrl +
-          "/content/users/casey/items/itm1234567890/update",
+        "/content/users/casey/items/itm1234567890/update",
         '{"success":true}'
       );
       fetchMock.post(
         utils.PORTAL_SUBSET.restUrl +
-          "/content/users/casey/items/svc1234567890/share",
+        "/content/users/casey/items/itm1234567890/share",
         '{"success":true}'
       );
       restHelpers
         .updateItemExtended(
-          "svc1234567890",
           itemTemplate.item,
           itemTemplate.data,
           MOCK_USER_SESSION,
@@ -2628,17 +2626,16 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
       itemTemplate.item.id = "itm1234567890";
       fetchMock.post(
         utils.PORTAL_SUBSET.restUrl +
-          "/content/users/casey/items/itm1234567890/update",
+        "/content/users/casey/items/itm1234567890/update",
         '{"success":true}'
       );
       fetchMock.post(
         utils.PORTAL_SUBSET.restUrl +
-          "/content/users/casey/items/svc1234567890/share",
+        "/content/users/casey/items/itm1234567890/share",
         '{"success":true}'
       );
       restHelpers
         .updateItemExtended(
-          "svc1234567890",
           itemTemplate.item,
           itemTemplate.data,
           MOCK_USER_SESSION,
@@ -2656,17 +2653,16 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
       itemTemplate.item.id = "itm1234567890";
       fetchMock.post(
         utils.PORTAL_SUBSET.restUrl +
-          "/content/users/casey/items/itm1234567890/update",
+        "/content/users/casey/items/itm1234567890/update",
         '{"success":true}'
       );
       fetchMock.post(
         utils.PORTAL_SUBSET.restUrl +
-          "/content/users/casey/items/svc1234567890/share",
+        "/content/users/casey/items/itm1234567890/share",
         mockItems.get400Failure()
       );
       restHelpers
         .updateItemExtended(
-          "svc1234567890",
           itemTemplate.item,
           itemTemplate.data,
           MOCK_USER_SESSION,
@@ -2677,6 +2673,116 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
           error => {
             expect(utils.checkForArcgisRestSuccessRequestError(error)).toBe(
               true
+            );
+            done();
+          }
+        );
+    });
+  });
+
+  describe("updateItemTemplateFromDictionary", () => {
+    it("should update template", done => {
+      const templateDictionary = {
+        "folderId": "fld0",
+        "itmA": {
+          "itemId": "itm1"
+        },
+        "itmB": {
+          "itemId": "itm2"
+        }
+      };
+
+      const fetchedItemBase: interfaces.IItem = {
+        ...templates.getEmptyItem(),
+        id: "itm1234567890",
+        type: "Web Map",
+        key1: "{{itmA.itemId}}",
+        key2: "{{folderId}}"
+      }
+      const expectedItemBaseUpdate = {
+        ...templates.getEmptyItem(),
+        id: "itm1234567890",
+        type: "Web Map",
+        key1: "itm1",
+        key2: "fld0"
+      };
+
+      const fetchedItemData = {
+        "map": "{{itmB.itemId}}"
+      };
+      const expectedItemDataUpdate = {
+        "map": "itm2"
+      };
+
+      spyOn(restHelpersGet, "getItemBase").and.callFake(() => Promise.resolve(fetchedItemBase));
+      spyOn(restHelpersGet, "getItemDataAsJson").and.callFake(() => Promise.resolve(fetchedItemData));
+
+      const updateUrl = utils.PORTAL_SUBSET.restUrl + "/content/users/casey/items/itm1234567890/update";
+      const updateResponse = utils.getSuccessResponse({ "id": "itm1234567890" });
+      fetchMock.post(updateUrl, updateResponse);
+      restHelpers.updateItemTemplateFromDictionary("itm1234567890", templateDictionary, MOCK_USER_SESSION)
+        .then(
+          result => {
+            expect(result).toEqual(updateResponse);
+
+            const callBody = fetchMock.calls(updateUrl)[0][1].body as string;
+            expect(callBody).toEqual(
+              "f=json&text=%7B%22map%22%3A%22itm2%22%7D&created=0&id=itm1234567890&modified=0&numViews=0&owner=&size=0&tags=&title=&type=Web%20Map&key1=itm1&key2=fld0&token=fake-token"
+            );
+            done();
+          },
+          done.fail
+        );
+    });
+
+    it("should handle failure", done => {
+      const templateDictionary = {
+        "folderId": "fld0",
+        "itmA": {
+          "itemId": "itm1"
+        },
+        "itmB": {
+          "itemId": "itm2"
+        }
+      };
+
+      const fetchedItemBase: interfaces.IItem = {
+        ...templates.getEmptyItem(),
+        id: "itm1234567890",
+        type: "Web Map",
+        key1: "{{itmA.itemId}}",
+        key2: "{{folderId}}"
+      }
+      const expectedItemBaseUpdate = {
+        ...templates.getEmptyItem(),
+        id: "itm1234567890",
+        type: "Web Map",
+        key1: "itm1",
+        key2: "fld0"
+      };
+
+      const fetchedItemData = {
+        "map": "{{itmB.itemId}}"
+      };
+      const expectedItemDataUpdate = {
+        "map": "itm2"
+      };
+
+      spyOn(restHelpersGet, "getItemBase").and.callFake(() => Promise.resolve(fetchedItemBase));
+      spyOn(restHelpersGet, "getItemDataAsJson").and.callFake(() => Promise.resolve(fetchedItemData));
+
+      const updateUrl = utils.PORTAL_SUBSET.restUrl + "/content/users/casey/items/itm1234567890/update";
+      const updateResponse = mockItems.get400SuccessFailure();
+      fetchMock.post(updateUrl, updateResponse);
+      restHelpers.updateItemTemplateFromDictionary("itm1234567890", templateDictionary, MOCK_USER_SESSION)
+        .then(
+          () => done.fail(),
+          result => {
+            expect(result).toEqual(updateResponse);
+
+            const callBody = fetchMock.calls(updateUrl)[0][1].body as string;
+            expect(callBody).toEqual(
+              "f=json&text=%7B%22map%22%3A%22itm2%22%7D&created=0&id=itm1234567890&modified=0&numViews=0&owner=&size=0&tags=&title=&type=Web%20Map&key1=itm1&key2=fld0&token=fake-token"
             );
             done();
           }
@@ -2697,7 +2803,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
         )
         .post(
           utils.PORTAL_SUBSET.restUrl +
-            "/content/items/0?f=json&token=fake-token",
+          "/content/items/0?f=json&token=fake-token",
           templates.getItemTemplate("Web Mapping Application", [], url)
         );
 
@@ -2724,7 +2830,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
         )
         .get(
           utils.PORTAL_SUBSET.restUrl +
-            "/content/items/0?f=json&token=fake-token",
+          "/content/items/0?f=json&token=fake-token",
           updatedItem
         );
 
@@ -2776,11 +2882,11 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
         )
         .get(
           utils.PORTAL_SUBSET.restUrl +
-            "/content/items/0?f=json&token=fake-token",
+          "/content/items/0?f=json&token=fake-token",
           utils.returnOnNthCall(2, updatedItem, originalItem)
         );
       // tslint:disable-next-line: no-empty
-      spyOn(console, "warn").and.callFake(() => {});
+      spyOn(console, "warn").and.callFake(() => { });
 
       restHelpers._updateItemURL("0", url, MOCK_USER_SESSION, 2).then(
         id => {
@@ -2808,7 +2914,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
         )
         .get(
           utils.PORTAL_SUBSET.restUrl +
-            "/content/items/0?f=json&token=fake-token",
+          "/content/items/0?f=json&token=fake-token",
           500
         );
 
@@ -2835,11 +2941,11 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
         )
         .get(
           utils.PORTAL_SUBSET.restUrl +
-            "/content/items/0?f=json&token=fake-token",
+          "/content/items/0?f=json&token=fake-token",
           originalItem
         );
       // tslint:disable-next-line: no-empty
-      spyOn(console, "error").and.callFake(() => {});
+      spyOn(console, "error").and.callFake(() => { });
 
       restHelpers._updateItemURL("0", url, MOCK_USER_SESSION, 2).then(
         () => done.fail(),
@@ -2966,9 +3072,9 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
         const itemId = "itm1234567890";
         fetchMock.post(
           utils.PORTAL_SUBSET.restUrl +
-            "/content/users/casey/items/" +
-            itemId +
-            "/update",
+          "/content/users/casey/items/" +
+          itemId +
+          "/update",
           '{"success":true}'
         );
         restHelpers
@@ -2987,9 +3093,9 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
         const itemId = "itm1234567890";
         fetchMock.post(
           utils.PORTAL_SUBSET.restUrl +
-            "/content/users/casey/items/" +
-            itemId +
-            "/update",
+          "/content/users/casey/items/" +
+          itemId +
+          "/update",
           '{"success":false}'
         );
         restHelpers
@@ -3924,8 +4030,8 @@ function failedGroupCreation(groupTitleRoot: string, suffix: number): any {
       message: "Unable to create group.",
       details: [
         "You already have a group named '" +
-          groupName +
-          "'. Try a different name."
+        groupName +
+        "'. Try a different name."
       ]
     }
   };

@@ -43,7 +43,10 @@ export function get400SuccessFailure(): any {
   return {
     success: false,
     error: {
-      success: false
+      code: 400,
+      messageCode: "CONT_0001",
+      message: "Item does not exist or is inaccessible.",
+      details: []
     }
   };
 }
@@ -1202,7 +1205,8 @@ export function getItemTypeAbbrev(type: string): string {
       Mission: "xxx",
       "Mobile Application": "xxx",
       "Native Application": "xxx",
-      Notebook: "xxx",
+      Notebook: "nbk",
+      "Oriented Imagery Catalog": "oic",
       "Ortho Mapping Project": "xxx",
       "QuickCapture Project": "qck",
       "Site Application": "xxx",
