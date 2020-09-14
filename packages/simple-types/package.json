@@ -1,6 +1,6 @@
 {
   "name": "@esri/solution-simple-types",
-  "version": "0.17.4",
+  "version": "0.18.0",
   "description": "Manages the creation and deployment of simple item types for @esri/solution.js.",
   "main": "dist/node/index.js",
   "unpkg": "dist/umd/simple-types.umd.min.js",
@@ -31,10 +31,10 @@
     "@esri/hub-common": "^6.9.1"
   },
   "dependencies": {
-    "@esri/solution-common": "^0.17.4",
-    "@esri/solution-feature-layer": "^0.17.4",
-    "@esri/solution-file": "^0.17.4",
-    "@esri/solution-group": "^0.17.4",
+    "@esri/solution-common": "^0.18.0",
+    "@esri/solution-feature-layer": "^0.18.0",
+    "@esri/solution-file": "^0.18.0",
+    "@esri/solution-group": "^0.18.0",
     "tslib": "^1.13.0"
   },
   "scripts": {
