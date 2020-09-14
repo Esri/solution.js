@@ -104,6 +104,11 @@ import {
   createFeatureService as svcAdminCreateFeatureService
 } from "@esri/arcgis-rest-service-admin";
 import { replaceInTemplate } from "./templatization";
+import {
+  getWorkforceDependencies,
+  isWorkforceProject,
+  getWorkforceServiceInfo
+} from "./workforceHelpers";
 
 // ------------------------------------------------------------------------------------------------------------------ //
 
@@ -813,6 +818,8 @@ export function extractDependencies(
         },
         e => reject(fail(e))
       );
+    } else if (isWorkforceProject(itemTemplate)) {
+      resolve(getWorkforceDependencies(itemTemplate, dependencies));
     } else {
       resolve(dependencies);
     }
@@ -937,9 +944,16 @@ export function getServiceLayersAndTables(
     // the item and data sections with sections for the service, full layers, and
     // full tables
 
+    // Extra steps must be taken for workforce version 2
+    const isWorkforceService = isWorkforceProject(itemTemplate);
+
     // Get the service description
     if (itemTemplate.item.url) {
-      getFeatureServiceProperties(itemTemplate.item.url, authentication).then(
+      getFeatureServiceProperties(
+        itemTemplate.item.url,
+        authentication,
+        isWorkforceService
+      ).then(
         properties => {
           itemTemplate.properties = properties;
           resolve(itemTemplate);
@@ -954,7 +968,8 @@ export function getServiceLayersAndTables(
 
 export function getFeatureServiceProperties(
   serviceUrl: string,
-  authentication: UserSession
+  authentication: UserSession,
+  workforceService: boolean = false
 ): Promise<IFeatureServiceProperties> {
   return new Promise<IFeatureServiceProperties>((resolve, reject) => {
     const properties: IFeatureServiceProperties = {
@@ -1006,7 +1021,13 @@ export function getFeatureServiceProperties(
         }
         delete serviceData.tables;
 
-        resolve(properties);
+        if (workforceService) {
+          resolve(
+            getWorkforceServiceInfo(properties, serviceUrl, authentication)
+          );
+        } else {
+          resolve(properties);
+        }
       },
       (e: any) => reject(fail(e))
     );

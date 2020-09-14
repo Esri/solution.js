@@ -26,7 +26,8 @@ import {
   removeTemplate,
   replaceInTemplate,
   SItemProgressStatus,
-  updateItem
+  updateItem,
+  postProcessWorkforceTemplates
 } from "@esri/solution-common";
 import { getProp } from "@esri/hub-common";
 import { UserSession } from "@esri/arcgis-rest-auth";
@@ -160,6 +161,7 @@ export function _addContentToSolution(
           // test for and update group dependencies
           solutionTemplates = _postProcessGroupDependencies(solutionTemplates);
           solutionTemplates = _postProcessIgnoredItems(solutionTemplates);
+          solutionTemplates = postProcessWorkforceTemplates(solutionTemplates);
 
           // Update solution item with its data JSON
           const solutionData: ISolutionItemData = {
