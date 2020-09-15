@@ -34,24 +34,19 @@
     var dojoConfig = {
       "paths": {
         "tslib": package_path + "/node_modules/tslib/tslib",
+        "dist": package_path + "/dist",
 
-        // load the local versions
         "@esri/arcgis-rest-auth": package_path + "/node_modules/@esri/arcgis-rest-auth/dist/umd/auth.umd.min",
         "@esri/arcgis-rest-feature-layer": package_path + "/node_modules/@esri/arcgis-rest-feature-layer/dist/umd/feature-layer.umd.min",
         "@esri/arcgis-rest-portal": package_path + "/node_modules/@esri/arcgis-rest-portal/dist/umd/portal.umd.min",
         "@esri/arcgis-rest-request": package_path + "/node_modules/@esri/arcgis-rest-request/dist/umd/request.umd.min",
         "@esri/arcgis-rest-service-admin": package_path + "/node_modules/@esri/arcgis-rest-service-admin/dist/umd/service-admin.umd.min",
-        "@esri/hub-common": package_path + "/node_modules/@esri/hub-common/dist/umd/common.umd",
-        "@esri/hub-initiatives": "node_modules/@esri/hub-initiatives/dist/umd/initiatives.umd",
-        "@esri/hub-sites": "node_modules/@esri/hub-sites/dist/umd/sites.umd",
-        "@esri/hub-teams": "node_modules/@esri/hub-teams/dist/umd/teams.umd",
-        "@esri/hub-types": "node_modules/@esri/hub-types/dist/umd/types.umd",
-
-        // load the unminified so we can debug things
-        "@esri/solution-common": package_path + "/node_modules/@esri/solution-common/dist/umd/common.umd",
-
-        "dist": package_path + "/dist",
-        "node_modules": package_path + "/node_modules"
+        "@esri/hub-common": package_path + "/node_modules/@esri/hub-common/dist/umd/common.umd.min",
+        "@esri/hub-initiatives": package_path + "/node_modules/@esri/hub-initiatives/dist/umd/initiatives.umd.min",
+        "@esri/hub-sites": package_path + "/node_modules/@esri/hub-sites/dist/umd/sites.umd.min",
+        "@esri/hub-teams": package_path + "/node_modules/@esri/hub-teams/dist/umd/teams.umd.min",
+        "@esri/hub-types": package_path + "/node_modules/@esri/hub-types/dist/umd/types.umd.min",
+        "@esri/solution-common": package_path + "/node_modules/@esri/solution-common/dist/umd/common.umd"
       }
     };
   </script>
