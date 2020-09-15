@@ -1,6 +1,6 @@
 {
   "name": "createFolder",
-  "version": "0.17.4",
+  "version": "0.18.1",
   "private": true,
   "description": "Example App for solutions.js common: Creates a folder using a numeric suffix to ensure uniqueness if necessary.",
   "main": "main.js",
@@ -24,7 +24,7 @@
     "@esri/hub-common": "^6.9.1",
     "@esri/hub-initiatives": "^6.9.1",
     "@esri/hub-sites": "^6.9.1",
-    "@esri/solution-common": "^0.17.4",
+    "@esri/solution-common": "^0.18.1",
     "tslib": "^1.13.0"
   }
 }
