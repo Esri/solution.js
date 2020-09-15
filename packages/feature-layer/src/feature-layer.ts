@@ -248,10 +248,12 @@ export function createItemFromTemplate(
                               resolve({
                                 id: createResponse.serviceItemId,
                                 type: newItemTemplate.type,
-                                postProcess: common.hasUnresolvedVariables({
-                                  item: newItemTemplate.item,
-                                  data: newItemTemplate.data
-                                })
+                                postProcess:
+                                  common.hasUnresolvedVariables({
+                                    item: newItemTemplate.item,
+                                    data: newItemTemplate.data
+                                  }) ||
+                                  common.isWorkforceProject(newItemTemplate)
                               });
                             }
                           },
@@ -346,12 +348,29 @@ export function postProcess(
       { item, data },
       templateDictionary
     );
-    return common.updateItemExtended(
-      itemId,
-      updatedItem,
-      updatedData,
-      authentication
+    const promises: any[] = [];
+    promises.push(
+      common.updateItemExtended(
+        itemId,
+        updatedItem,
+        updatedData,
+        authentication
+      )
     );
+
+    // extended for workforce services
+    if (common.isWorkforceProject(template)) {
+      promises.push(
+        common.fineTuneCreatedWorkforceItem(
+          template,
+          authentication,
+          item.url,
+          templateDictionary
+        )
+      );
+    }
+
+    return Promise.all(promises);
   });
 }
 

@@ -16,8 +16,6 @@
 
 import * as common from "@esri/solution-common";
 
-//#region Publish Process ---------------------------------------------------------------------------------------//
-
 /**
  * Converts an workforce item to a template.
  *
@@ -32,10 +30,6 @@ export function convertItemToTemplate(
   return common.convertWorkforceItemToTemplate(itemTemplate, authentication);
 }
 
-//#endregion
-
-//#region Deploy Process ---------------------------------------------------------------------------------------//
-
 /**
  * Gets the current user and updates the dispatchers service
  *
@@ -49,9 +43,6 @@ export function fineTuneCreatedItem(
 ): Promise<any> {
   return common.fineTuneCreatedWorkforceItem(
     newlyCreatedItem,
-    destinationAuthentication,
-    1
+    destinationAuthentication
   );
 }
-
-//#endregion

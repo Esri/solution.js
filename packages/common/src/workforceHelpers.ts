@@ -20,8 +20,7 @@
  * @module featureServiceHelpers
  */
 
-import { templatizeTerm } from "./templatization";
-import { rest_queryFeatures, rest_addFeatures } from "./featureServiceHelpers";
+import { templatizeTerm, replaceInTemplate } from "./templatization";
 import {
   IItemTemplate,
   IFeatureServiceProperties,
@@ -29,6 +28,7 @@ import {
 } from "./interfaces";
 import { getProp, fail } from "./generalHelpers";
 import { rest_request } from "./restHelpers";
+import { applyEdits, queryFeatures } from "@esri/arcgis-rest-feature-layer";
 
 ///////////////////////////////////////////////////////////////////////
 // Workforce V1 specific logic
@@ -291,12 +291,12 @@ export function getWorkforceServiceInfo(
   return new Promise<IFeatureServiceProperties>((resolve, reject) => {
     url = url.replace("/rest/admin/services", "/rest/services");
     const requests: any[] = [
-      rest_queryFeatures({
+      queryFeatures({
         url: `${url}/3`,
         where: "1=1",
         authentication
       }),
-      rest_queryFeatures({
+      queryFeatures({
         url: `${url}/4`,
         where: "1=1",
         authentication
@@ -367,8 +367,6 @@ export function _getAssignmentIntegrationInfos(
           const urlTemplate = f.attributes[p];
           const ids: string[] = _getIDs(urlTemplate);
           info["dependencies"] = ids;
-          ////////////////////////////////////////////////////
-          // from workforce
           const serviceRequests: any = urlTest(urlTemplate, authentication);
           if (
             Array.isArray(serviceRequests.requests) &&
@@ -377,7 +375,6 @@ export function _getAssignmentIntegrationInfos(
             requests = requests.concat(serviceRequests.requests);
             urls = urls.concat(serviceRequests.urls);
           }
-          ////////////////////////////////////////////////////
         }
       });
       assignmentIntegrationInfos.push(info);
@@ -505,7 +502,7 @@ export function _templatizeWorkforceProject(
   t: IItemTemplate,
   groupUpdates: any
 ): any {
-  if ((t.item.typeKeywords || []).indexOf("Workforce Project") > -1) {
+  if (isWorkforceProject(t)) {
     const properties: any = t.item.properties || {};
     const keyProperties: string[] = getKeyWorkforceProperties();
 
@@ -648,31 +645,131 @@ export function _getURLs(v: string): string[] {
 export function fineTuneCreatedWorkforceItem(
   newlyCreatedItem: IItemTemplate,
   destinationAuthentication: UserSession,
-  workforceVersion: number
+  url: string = "",
+  templateDicionary: any
 ): Promise<any> {
   return new Promise<any>((resolve, reject) => {
     destinationAuthentication.getUser().then(
       user => {
-        if (workforceVersion === 1) {
-          _updateDispatchers(
-            getProp(newlyCreatedItem, "data.dispatchers"),
-            user.username || "",
-            user.fullName || "",
-            destinationAuthentication
-          ).then(
-            results => {
+        // Dispatchers...index 2 for workforce v2
+        // for v1 we need tp fetch from dispatchers for v2 we use the items url
+        const dispatchers = getProp(newlyCreatedItem, "data.dispatchers");
+        // add current user as dispatcher
+        _updateDispatchers(
+          dispatchers && dispatchers.url ? dispatchers.url : `${url}/2`,
+          user.username || "",
+          user.fullName || "",
+          destinationAuthentication
+        ).then(
+          results => {
+            // for workforce v2 we storce the key details from the workforce service as workforceInfos
+            // now we need to detemplatize it and update the workforce service
+            let workforceInfos: any = getProp(
+              newlyCreatedItem,
+              "properties.workforceInfos"
+            );
+            if (workforceInfos && url) {
+              workforceInfos = replaceInTemplate(
+                workforceInfos,
+                templateDicionary
+              );
+
+              _getFields(url, [2, 3, 4], destinationAuthentication).then(
+                fields => {
+                  // Assignment Types...index 3
+                  const assignmentTypeUrl = `${url}/3`;
+                  const assignmentTypeInfos =
+                    workforceInfos.assignmentTypeInfos;
+                  const assignmentTypeFeatures = _getAddFeatures(
+                    assignmentTypeInfos,
+                    fields[assignmentTypeUrl]
+                  );
+
+                  const assignmentTypePromise = _applyEdits(
+                    assignmentTypeUrl,
+                    assignmentTypeFeatures,
+                    destinationAuthentication,
+                    true
+                  );
+
+                  // Assignment Integrations...index 4
+                  const assignmentIntegrationUrl = `${url}/4`;
+                  const assignmentIntegrationInfos =
+                    workforceInfos.assignmentIntegrationInfos;
+                  const assignmentIntegrationFeatures = _getAddFeatures(
+                    assignmentIntegrationInfos,
+                    fields[assignmentIntegrationUrl]
+                  );
+                  const assignmentIntegrationPromise = _applyEdits(
+                    assignmentIntegrationUrl,
+                    assignmentIntegrationFeatures,
+                    destinationAuthentication,
+                    true
+                  );
+
+                  Promise.all([
+                    assignmentTypePromise,
+                    assignmentIntegrationPromise
+                  ]).then(resolve, reject);
+                },
+                e => reject(fail(e))
+              );
+            } else {
               resolve({ success: results });
-            },
-            e => reject(fail(e))
-          );
-        } else {
-          // TODO V2 updates go here
-          resolve({ success: false });
-        }
+            }
+          },
+          e => reject(fail(e))
+        );
       },
       e => reject(fail(e))
     );
   });
+}
+
+export function _getFields(
+  url: string,
+  ids: number[],
+  authentication: UserSession
+): Promise<any> {
+  return new Promise<any>(resolve => {
+    const options: any = {
+      f: "json",
+      fields: "*",
+      authentication: authentication
+    };
+
+    const promises: any[] = [];
+    ids.forEach(id => {
+      promises.push(rest_request(`${url}/${id}`, options));
+    });
+    Promise.all(promises).then(
+      results => {
+        const finalResult: any = {};
+        results.forEach(r => {
+          finalResult[`${url}/${r.id}`] = r.fields.map((f: any) => f.name);
+        });
+        resolve(finalResult);
+      },
+      e => resolve(false)
+    );
+  });
+}
+
+export function _getAddFeatures(updateInfos: any, fields: any[]): any {
+  const features: any[] = [];
+  updateInfos.forEach((update: any) => {
+    const f = {};
+    Object.keys(update).forEach(k => {
+      const fieldName = _getField(k, fields);
+      f[fieldName] = update[k];
+    });
+    features.push({ attributes: f });
+  });
+  return features;
+}
+
+export function _getField(name: string, fields: string[]): string {
+  return fields.filter(f => f.toLowerCase() === name.toLowerCase())[0];
 }
 
 /**
@@ -686,53 +783,32 @@ export function fineTuneCreatedWorkforceItem(
  * @protected
  */
 export function _updateDispatchers(
-  dispatchers: any,
+  url: any,
   name: string,
   fullName: string,
   destinationAuthentication: UserSession
 ): Promise<boolean> {
   return new Promise<boolean>((resolve, reject) => {
-    if (dispatchers && dispatchers.url) {
-      rest_queryFeatures({
-        url: dispatchers.url,
+    if (url) {
+      queryFeatures({
+        url,
         where: "userId = '" + name + "'",
         authentication: destinationAuthentication
       }).then(
         (results: any) => {
           if (results && results.features) {
             if (results.features.length === 0) {
-              rest_addFeatures({
-                url: dispatchers.url,
-                features: [
-                  {
-                    attributes: {
-                      name: fullName,
-                      userId: name
-                    }
+              const features = [
+                {
+                  attributes: {
+                    name: fullName,
+                    userId: name
                   }
-                ],
-                authentication: destinationAuthentication
-              }).then(
-                addResults => {
-                  if (addResults && addResults.addResults) {
-                    resolve(true);
-                  } else {
-                    reject(
-                      fail({
-                        success: false,
-                        message: "Failed to add dispatch record."
-                      })
-                    );
-                  }
-                },
-                e =>
-                  reject(
-                    fail({
-                      success: false,
-                      message: "Failed to add dispatch record.",
-                      error: e
-                    })
-                  )
+                }
+              ];
+              _applyEdits(url, features, destinationAuthentication).then(
+                resolve,
+                reject
               );
             } else {
               resolve(true);
@@ -746,6 +822,43 @@ export function _updateDispatchers(
     } else {
       resolve(false);
     }
+  });
+}
+
+export function _applyEdits(
+  url: string,
+  adds: any[],
+  authentication: UserSession,
+  useGlobalIds: boolean = false // only set when contains a globalid
+): any {
+  return new Promise<boolean>((resolve, reject) => {
+    applyEdits({
+      url,
+      adds,
+      useGlobalIds,
+      authentication
+    }).then(
+      addResults => {
+        if (addResults && addResults.addResults) {
+          resolve(true);
+        } else {
+          reject(
+            fail({
+              success: false,
+              message: "Failed to add dispatch record."
+            })
+          );
+        }
+      },
+      e =>
+        reject(
+          fail({
+            success: false,
+            message: "Failed to add dispatch record.",
+            error: e
+          })
+        )
+    );
   });
 }
 
