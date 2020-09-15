@@ -1,6 +1,6 @@
 {
   "name": "@esri/solution-simple-types",
-  "version": "0.18.1",
+  "version": "0.18.2",
   "description": "Manages the creation and deployment of simple item types for @esri/solution.js.",
   "main": "dist/node/index.js",
   "unpkg": "dist/umd/simple-types.umd.min.js",
@@ -13,28 +13,28 @@
     "dist/**"
   ],
   "devDependencies": {
-    "@esri/arcgis-rest-auth": "^2.17.0",
-    "@esri/arcgis-rest-feature-layer": "^2.17.0",
-    "@esri/arcgis-rest-portal": "^2.17.0",
-    "@esri/arcgis-rest-request": "^2.17.0",
-    "@esri/arcgis-rest-service-admin": "^2.17.0",
+    "@esri/arcgis-rest-auth": "^2.18.0",
+    "@esri/arcgis-rest-feature-layer": "^2.18.0",
+    "@esri/arcgis-rest-portal": "^2.18.0",
+    "@esri/arcgis-rest-request": "^2.18.0",
+    "@esri/arcgis-rest-service-admin": "^2.18.0",
     "@esri/hub-common": "^6.9.1",
     "rollup": "^1.22.0",
     "typescript": "^3.9.7"
   },
   "peerDependencies": {
-    "@esri/arcgis-rest-auth": "^2.17.0",
-    "@esri/arcgis-rest-feature-layer": "^2.17.0",
-    "@esri/arcgis-rest-portal": "^2.17.0",
-    "@esri/arcgis-rest-request": "^2.17.0",
-    "@esri/arcgis-rest-service-admin": "^2.17.0",
+    "@esri/arcgis-rest-auth": "^2.18.0",
+    "@esri/arcgis-rest-feature-layer": "^2.18.0",
+    "@esri/arcgis-rest-portal": "^2.18.0",
+    "@esri/arcgis-rest-request": "^2.18.0",
+    "@esri/arcgis-rest-service-admin": "^2.18.0",
     "@esri/hub-common": "^6.9.1"
   },
   "dependencies": {
-    "@esri/solution-common": "^0.18.1",
-    "@esri/solution-feature-layer": "^0.18.1",
-    "@esri/solution-file": "^0.18.1",
-    "@esri/solution-group": "^0.18.1",
+    "@esri/solution-common": "^0.18.2",
+    "@esri/solution-feature-layer": "^0.18.2",
+    "@esri/solution-file": "^0.18.2",
+    "@esri/solution-group": "^0.18.2",
     "tslib": "^1.13.0"
   },
   "scripts": {
