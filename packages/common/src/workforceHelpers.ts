@@ -17,21 +17,20 @@
 /**
  * Provides general helper functions.
  *
- * @module featureServiceHelpers
+ * @module workforceHelpers
  */
 
-import { templatizeTerm, replaceInTemplate } from "./templatization";
+import { applyEdits, queryFeatures } from "@esri/arcgis-rest-feature-layer";
+import { getProp, fail, setProp } from "./generalHelpers";
 import {
   IItemTemplate,
   IFeatureServiceProperties,
   UserSession
 } from "./interfaces";
-import { getProp, fail } from "./generalHelpers";
 import { rest_request } from "./restHelpers";
-import { applyEdits, queryFeatures } from "@esri/arcgis-rest-feature-layer";
+import { templatizeTerm, replaceInTemplate } from "./templatization";
 
-///////////////////////////////////////////////////////////////////////
-// Workforce V1 specific logic
+//#region workforce v1
 
 /**
  * Converts an workforce item to a template.
@@ -45,16 +44,9 @@ export function convertWorkforceItemToTemplate(
   authentication: UserSession
 ): Promise<IItemTemplate> {
   return new Promise<IItemTemplate>((resolve, reject) => {
+    // This function is specific to workforce v1 project structure
     // Key properties that contain item IDs for the workforce project type
-    const keyProperties: string[] = [
-      "groupId",
-      "workerWebMapId",
-      "dispatcherWebMapId",
-      "dispatchers",
-      "assignments",
-      "workers",
-      "tracks"
-    ];
+    const keyProperties: string[] = getKeyWorkforceProperties(1);
 
     // The templates data to process
     const data: any = itemTemplate.data;
@@ -244,15 +236,21 @@ export function templatizeWorkforce(
   return data;
 }
 
-///////////////////////////////////////////////////////////////////////
+//#endregion
 
+/**
+ * Evaluate key properties in the workforce service of additional items that are needed
+ *
+ * @param itemTemplate template for the workforce project item
+ * @param dependencies list of the items dependencies
+ * @returns an array of objects with dependency ids
+ */
 export function getWorkforceDependencies(
   itemTemplate: IItemTemplate,
   dependencies: any[]
 ): any {
-  // if workforce v2 then we need to do some stuff
   const properties: any = itemTemplate.item.properties || {};
-  const keyProperties: string[] = getKeyWorkforceProperties();
+  const keyProperties: string[] = getKeyWorkforceProperties(2);
   dependencies = keyProperties.reduce(function(acc, v) {
     if (properties[v]) {
       acc.push(properties[v]);
@@ -265,11 +263,14 @@ export function getWorkforceDependencies(
     itemTemplate,
     "properties.workforceInfos.assignmentIntegrationInfos"
   );
+  /* istanbul ignore else */
   if (infos && infos.length > 0) {
     infos.forEach((info: any) => {
       const infoKeys = Object.keys(info);
+      /* istanbul ignore else */
       if (infoKeys.indexOf("dependencies") > -1) {
         info["dependencies"].forEach((d: string) => {
+          /* istanbul ignore else */
           if (dependencies.indexOf(d) < 0) {
             dependencies.push(d);
           }
@@ -363,11 +364,13 @@ export function _getAssignmentIntegrationInfos(
       const info = {};
       keyAssignmentIntegrationsProps.forEach(p => {
         info[p] = f.attributes[p];
+        /* istanbul ignore else */
         if (p === "urltemplate") {
           const urlTemplate = f.attributes[p];
           const ids: string[] = _getIDs(urlTemplate);
           info["dependencies"] = ids;
           const serviceRequests: any = urlTest(urlTemplate, authentication);
+          /* istanbul ignore else */
           if (
             Array.isArray(serviceRequests.requests) &&
             serviceRequests.requests.length > 0
@@ -440,24 +443,31 @@ export function getUrlDependencies(
  * @param urlHash a key value pair of url and itemId
  */
 export function _templatizeUrlTemplate(item: any, urlHash: any): void {
+  // v1 uses urlTemplate
+  // v2 uses urltemplate
+  const urlTemplateVar = getProp(item, "urlTemplate")
+    ? "urlTemplate"
+    : "urltemplate";
+  let urlTemplate = getProp(item, urlTemplateVar);
+
   /* istanbul ignore else */
-  if (getProp(item, "urltemplate")) {
-    const ids: string[] = _getIDs(item.urltemplate);
+  if (urlTemplate) {
+    const ids: string[] = _getIDs(urlTemplate);
     ids.forEach(id => {
-      item.urltemplate = item.urltemplate.replace(
-        id,
-        templatizeTerm(id, id, ".itemId")
-      );
+      urlTemplate = urlTemplate.replace(id, templatizeTerm(id, id, ".itemId"));
     });
-    const urls: string[] = _getURLs(item.urltemplate);
+
+    const urls: string[] = _getURLs(urlTemplate);
     urls.forEach(url => {
       const layerId = getLayerId(url);
       const replaceValue: string = getReplaceValue(layerId, ".url");
-      item.urltemplate = item.urltemplate.replace(
+      urlTemplate = urlTemplate.replace(
         url,
         templatizeTerm(urlHash[url], urlHash[url], replaceValue)
       );
     });
+
+    setProp(item, urlTemplateVar, urlTemplate);
   }
 }
 
@@ -502,15 +512,18 @@ export function _templatizeWorkforceProject(
   t: IItemTemplate,
   groupUpdates: any
 ): any {
+  /* istanbul ignore else */
   if (isWorkforceProject(t)) {
     const properties: any = t.item.properties || {};
-    const keyProperties: string[] = getKeyWorkforceProperties();
+    const keyProperties: string[] = getKeyWorkforceProperties(2);
 
     const groupId: string = properties["workforceProjectGroupId"];
     const shuffleIds: string[] = [];
     Object.keys(properties).forEach((p: any) => {
+      /* istanbul ignore else */
       if (keyProperties.indexOf(p) > -1) {
         const id: string = properties[p];
+        /* istanbul ignore else */
         if (id !== groupId) {
           shuffleIds.push(id);
         }
@@ -529,15 +542,19 @@ export function _templatizeWorkforceProject(
 
     // shuffle and cleanup
     const workforceInfos = getProp(t, "properties.workforceInfos");
+    /* istanbul ignore else */
     if (workforceInfos) {
       Object.keys(workforceInfos).forEach(k => {
         workforceInfos[k].forEach((wInfo: any) => {
+          /* istanbul ignore else */
           if (wInfo.dependencies) {
             wInfo.dependencies.forEach((id: string) => {
+              /* istanbul ignore else */
               if (shuffleIds.indexOf(id) < 0) {
                 shuffleIds.push(id);
               }
               const depIndex = t.dependencies.indexOf(id);
+              /* istanbul ignore else */
               if (depIndex > -1) {
                 t.dependencies.splice(depIndex, 1);
               }
@@ -558,9 +575,11 @@ export function _templatizeWorkforceDispatcherOrWorker(
   t: IItemTemplate,
   type: string
 ): IItemTemplate {
+  /* istanbul ignore else */
   if ((t.item.typeKeywords || []).indexOf(type) > -1) {
     const properties: any = t.item.properties || {};
     const fsId = properties["workforceFeatureServiceId"];
+    /* istanbul ignore else */
     if (fsId) {
       t.item.properties["workforceFeatureServiceId"] = templatizeTerm(
         fsId,
@@ -579,18 +598,33 @@ export function isWorkforceProject(itemTemplate: IItemTemplate): boolean {
   );
 }
 
-export function getKeyWorkforceProperties(): string[] {
-  return [
-    "workforceDispatcherMapId",
-    "workforceProjectGroupId",
-    "workforceWorkerMapId"
-  ];
+export function getKeyWorkforceProperties(version: number): string[] {
+  return version === 1
+    ? [
+        "groupId",
+        "workerWebMapId",
+        "dispatcherWebMapId",
+        "dispatchers",
+        "assignments",
+        "workers",
+        "tracks"
+      ]
+    : [
+        "workforceDispatcherMapId",
+        "workforceProjectGroupId",
+        "workforceWorkerMapId"
+      ];
 }
 
 export function _getIDs(v: string): string[] {
-  // avoid IDs that are in a FS url as part of service name
-  // Only get IDs that are proceeded by '=' but do not return the '='
-  return regExTest(v, /=[0-9A-F]{32}/gi).map(_v => _v.replace("=", ""));
+  // get id from
+  // bad3483e025c47338d43df308c117308
+  // {bad3483e025c47338d43df308c117308
+  // =bad3483e025c47338d43df308c117308
+  // do not get id from
+  // http://something/name_bad3483e025c47338d43df308c117308
+  // {{bad3483e025c47338d43df308c117308.itemId}}
+  return regExTest(v, /(?<!_)(?<!{{)\b[0-9A-F]{32}/gi);
 }
 
 /**

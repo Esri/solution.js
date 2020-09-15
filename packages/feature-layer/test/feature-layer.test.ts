@@ -1963,7 +1963,7 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
             [item.id, expected.item, expected.data, MOCK_USER_SESSION],
             "Calls updateItemExtendedSpy with the expected args"
           );
-          expect(result).toBeUndefined("resolves void");
+          expect(result).toEqual([undefined]);
         });
     });
   });
