@@ -20,6 +20,7 @@
 
 import * as common from "@esri/solution-common";
 import * as utils from "../../common/test/mocks/utils";
+import * as fetchMock from "fetch-mock";
 import * as templates from "../../common/test/mocks/templates";
 import * as updateHelper from "../src/helpers/update-notebook-data";
 import * as createHelper from "../src/helpers/create-item-from-template";
@@ -84,64 +85,85 @@ describe("Module `notebook`: manages the creation and deployment of notebook pro
     }
   });
   describe("postProcess hook ::", () => {
-    it("fetch, interpolate and share", () => {
-      const dataSpy = spyOn(common, "getItemDataAsJson").and.resolveTo({
-        value: "{{owner}}"
-      });
-      const td = { owner: "Luke Skywalker" };
-      const updateSpy = spyOn(
-        updateHelper,
-        "updateNotebookData"
-      ).and.resolveTo();
-      return notebookProcessor
-        .postProcess(
-          "3ef",
-          "Notebook",
-          [],
-          template,
-          [template],
-          td,
-          MOCK_USER_SESSION
-        )
-        .then(() => {
-          expect(dataSpy.calls.count()).toBe(1, "should fetch data");
-          expect(dataSpy.calls.argsFor(0)[0]).toBe(
+    // Postprocessing uses common.updateItemTemplateFromDictionary, which uses common.getItemDataAsJson, which
+    // requires browser features
+    if (typeof window !== "undefined") {
+      it("fetch, interpolate and share", () => {
+        template = templates.getItemTemplate("Notebook");
+        template.item.id = template.itemId = "3ef";
+        const td = { owner: "Luke Skywalker" };
+
+        const updateUrl =
+          utils.PORTAL_SUBSET.restUrl + "/content/users/casey/items/3ef/update";
+        fetchMock
+          .get(
+            utils.PORTAL_SUBSET.restUrl +
+              "/content/items/3ef?f=json&token=fake-token",
+            template.item
+          )
+          .post(utils.PORTAL_SUBSET.restUrl + "/content/items/3ef/data", {
+            value: "{{owner}}"
+          })
+          .post(updateUrl, utils.getSuccessResponse({ id: template.item.id }));
+
+        return notebookProcessor
+          .postProcess(
             "3ef",
-            "should fetch data for specified item"
-          );
-          expect(updateSpy.calls.count()).toBe(1, "should update the item");
-          expect(updateSpy.calls.argsFor(0)[1].value).toBe(
-            "Luke Skywalker",
-            "should interpolate value"
-          );
-        });
-    });
-    it("should update only if interpolation needed", () => {
-      const dataSpy = spyOn(common, "getItemDataAsJson").and.resolveTo({
-        value: "Larry"
+            "Notebook",
+            [],
+            template,
+            [template],
+            td,
+            MOCK_USER_SESSION
+          )
+          .then(result => {
+            expect(result).toEqual(
+              utils.getSuccessResponse({ id: template.item.id })
+            );
+
+            const callBody = fetchMock.calls(updateUrl)[0][1].body as string;
+            expect(callBody).toEqual(
+              "f=json&text=%7B%22value%22%3A%22Luke%20Skywalker%22%7D&id=3ef&name=Name%20of%20an%20AGOL%20item&" +
+                "title=An%20AGOL%20item&type=Notebook&typeKeywords=JavaScript&description=Description%20of%20an%20AGOL" +
+                "%20item&tags=test&snippet=Snippet%20of%20an%20AGOL%20item&thumbnail=https%3A%2F%2F" +
+                "myorg.maps.arcgis.com%2Fsharing%2Frest%2Fcontent%2Fitems%2Fnbk1234567890%2Finfo%2Fthumbnail" +
+                "%2Fago_downloaded.png&extent=%7B%7BsolutionItemExtent%7D%7D&categories=&accessInformation=" +
+                "Esri%2C%20Inc.&culture=en-us&url=&token=fake-token"
+            );
+          });
       });
-      const updateSpy = spyOn(
-        updateHelper,
-        "updateNotebookData"
-      ).and.resolveTo();
-      return notebookProcessor
-        .postProcess(
-          "3ef",
-          "Notebook",
-          [],
-          template,
-          [template],
-          {},
-          MOCK_USER_SESSION
-        )
-        .then(() => {
-          expect(dataSpy.calls.count()).toBe(1, "should fetch data");
-          expect(dataSpy.calls.argsFor(0)[0]).toBe(
+      it("should update only if interpolation needed", () => {
+        template = templates.getItemTemplate("Notebook");
+        template.item.id = template.itemId = "3ef";
+        template.item.extent = null;
+        const td = { owner: "Luke Skywalker" };
+
+        fetchMock
+          .get(
+            utils.PORTAL_SUBSET.restUrl +
+              "/content/items/3ef?f=json&token=fake-token",
+            template.item
+          )
+          .post(utils.PORTAL_SUBSET.restUrl + "/content/items/3ef/data", {
+            value: "Larry"
+          });
+
+        return notebookProcessor
+          .postProcess(
             "3ef",
-            "should fetch data for specified item"
-          );
-          expect(updateSpy.calls.count()).toBe(0, "should not update the item");
-        });
-    });
+            "Notebook",
+            [],
+            template,
+            [template],
+            td,
+            MOCK_USER_SESSION
+          )
+          .then(result => {
+            expect(result).toEqual(
+              utils.getSuccessResponse({ id: template.item.id })
+            );
+          });
+      });
+    }
   });
 });

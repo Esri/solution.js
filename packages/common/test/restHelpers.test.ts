@@ -26,6 +26,7 @@ import * as mockItems from "../test/mocks/agolItems";
 import * as polyfills from "../src/polyfills";
 import * as portal from "@esri/arcgis-rest-portal";
 import * as restHelpers from "../src/restHelpers";
+import * as restHelpersGet from "../src/restHelpersGet";
 import * as templates from "../test/mocks/templates";
 import * as utils from "./mocks/utils";
 import { encodeParam } from "@esri/arcgis-rest-request";
@@ -2546,7 +2547,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
     });
   });
 
-  describe("updateItem", () => {
+  describe("updateItemExtended", () => {
     it("can handle failure", done => {
       itemTemplate.item.id = "itm1234567890";
       fetchMock.post(
@@ -2556,7 +2557,6 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
       );
       restHelpers
         .updateItemExtended(
-          "svc1234567890",
           itemTemplate.item,
           itemTemplate.data,
           MOCK_USER_SESSION,
@@ -2582,7 +2582,6 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
       );
       restHelpers
         .updateItemExtended(
-          "svc1234567890",
           itemTemplate.item,
           itemTemplate.data,
           MOCK_USER_SESSION,
@@ -2605,12 +2604,11 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
       );
       fetchMock.post(
         utils.PORTAL_SUBSET.restUrl +
-          "/content/users/casey/items/svc1234567890/share",
+          "/content/users/casey/items/itm1234567890/share",
         '{"success":true}'
       );
       restHelpers
         .updateItemExtended(
-          "svc1234567890",
           itemTemplate.item,
           itemTemplate.data,
           MOCK_USER_SESSION,
@@ -2633,12 +2631,11 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
       );
       fetchMock.post(
         utils.PORTAL_SUBSET.restUrl +
-          "/content/users/casey/items/svc1234567890/share",
+          "/content/users/casey/items/itm1234567890/share",
         '{"success":true}'
       );
       restHelpers
         .updateItemExtended(
-          "svc1234567890",
           itemTemplate.item,
           itemTemplate.data,
           MOCK_USER_SESSION,
@@ -2661,12 +2658,11 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
       );
       fetchMock.post(
         utils.PORTAL_SUBSET.restUrl +
-          "/content/users/casey/items/svc1234567890/share",
+          "/content/users/casey/items/itm1234567890/share",
         mockItems.get400Failure()
       );
       restHelpers
         .updateItemExtended(
-          "svc1234567890",
           itemTemplate.item,
           itemTemplate.data,
           MOCK_USER_SESSION,
@@ -2677,6 +2673,135 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
           error => {
             expect(utils.checkForArcgisRestSuccessRequestError(error)).toBe(
               true
+            );
+            done();
+          }
+        );
+    });
+  });
+
+  describe("updateItemTemplateFromDictionary", () => {
+    it("should update template", done => {
+      const templateDictionary = {
+        folderId: "fld0",
+        itmA: {
+          itemId: "itm1"
+        },
+        itmB: {
+          itemId: "itm2"
+        }
+      };
+
+      const fetchedItemBase: interfaces.IItem = {
+        ...templates.getEmptyItem(),
+        id: "itm1234567890",
+        type: "Web Map",
+        key1: "{{itmA.itemId}}",
+        key2: "{{folderId}}"
+      };
+      const expectedItemBaseUpdate = {
+        ...templates.getEmptyItem(),
+        id: "itm1234567890",
+        type: "Web Map",
+        key1: "itm1",
+        key2: "fld0"
+      };
+
+      const fetchedItemData = {
+        map: "{{itmB.itemId}}"
+      };
+      const expectedItemDataUpdate = {
+        map: "itm2"
+      };
+
+      spyOn(restHelpersGet, "getItemBase").and.callFake(() =>
+        Promise.resolve(fetchedItemBase)
+      );
+      spyOn(restHelpersGet, "getItemDataAsJson").and.callFake(() =>
+        Promise.resolve(fetchedItemData)
+      );
+
+      const updateUrl =
+        utils.PORTAL_SUBSET.restUrl +
+        "/content/users/casey/items/itm1234567890/update";
+      const updateResponse = utils.getSuccessResponse({ id: "itm1234567890" });
+      fetchMock.post(updateUrl, updateResponse);
+      restHelpers
+        .updateItemTemplateFromDictionary(
+          "itm1234567890",
+          templateDictionary,
+          MOCK_USER_SESSION
+        )
+        .then(result => {
+          expect(result).toEqual(updateResponse);
+
+          const callBody = fetchMock.calls(updateUrl)[0][1].body as string;
+          expect(callBody).toEqual(
+            "f=json&text=%7B%22map%22%3A%22itm2%22%7D&created=0&id=itm1234567890&modified=0&numViews=0&owner=&size=0&tags=&title=&type=Web%20Map&key1=itm1&key2=fld0&token=fake-token"
+          );
+          done();
+        }, done.fail);
+    });
+
+    it("should handle failure", done => {
+      const templateDictionary = {
+        folderId: "fld0",
+        itmA: {
+          itemId: "itm1"
+        },
+        itmB: {
+          itemId: "itm2"
+        }
+      };
+
+      const fetchedItemBase: interfaces.IItem = {
+        ...templates.getEmptyItem(),
+        id: "itm1234567890",
+        type: "Web Map",
+        key1: "{{itmA.itemId}}",
+        key2: "{{folderId}}"
+      };
+      const expectedItemBaseUpdate = {
+        ...templates.getEmptyItem(),
+        id: "itm1234567890",
+        type: "Web Map",
+        key1: "itm1",
+        key2: "fld0"
+      };
+
+      const fetchedItemData = {
+        map: "{{itmB.itemId}}"
+      };
+      const expectedItemDataUpdate = {
+        map: "itm2"
+      };
+
+      spyOn(restHelpersGet, "getItemBase").and.callFake(() =>
+        Promise.resolve(fetchedItemBase)
+      );
+      spyOn(restHelpersGet, "getItemDataAsJson").and.callFake(() =>
+        Promise.resolve(fetchedItemData)
+      );
+
+      const updateUrl =
+        utils.PORTAL_SUBSET.restUrl +
+        "/content/users/casey/items/itm1234567890/update";
+      const updateResponse = mockItems.get400SuccessFailure();
+      fetchMock.post(updateUrl, updateResponse);
+      restHelpers
+        .updateItemTemplateFromDictionary(
+          "itm1234567890",
+          templateDictionary,
+          MOCK_USER_SESSION
+        )
+        .then(
+          () => done.fail(),
+          result => {
+            expect(result).toEqual(updateResponse);
+
+            const callBody = fetchMock.calls(updateUrl)[0][1].body as string;
+            expect(callBody).toEqual(
+              "f=json&text=%7B%22map%22%3A%22itm2%22%7D&created=0&id=itm1234567890&modified=0&numViews=0&owner=&size=0&tags=&title=&type=Web%20Map&key1=itm1&key2=fld0&token=fake-token"
             );
             done();
           }

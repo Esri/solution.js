@@ -57,6 +57,7 @@ import {
   UserSession
 } from "./interfaces";
 import { createZip } from "./libConnectors";
+import { getItemBase, getItemDataAsJson } from "./restHelpersGet";
 import {
   addItemData as portalAddItemData,
   addItemRelationship,
@@ -103,12 +104,12 @@ import {
   addToServiceDefinition as svcAdminAddToServiceDefinition,
   createFeatureService as svcAdminCreateFeatureService
 } from "@esri/arcgis-rest-service-admin";
-import { replaceInTemplate } from "./templatization";
 import {
   getWorkforceDependencies,
   isWorkforceProject,
   getWorkforceServiceInfo
 } from "./workforceHelpers";
+import { hasUnresolvedVariables, replaceInTemplate } from "./templatization";
 
 // ------------------------------------------------------------------------------------------------------------------ //
 
@@ -1253,6 +1254,16 @@ export function shareItem(
   });
 }
 
+/**
+ * Updates an item.
+ *
+ * @param itemInfo The base info of an item; note that this content will be serialized, which doesn't work
+ * for binary content
+ * @param authentication Credentials for request
+ * @param folderId Item's folder
+ * @param additionalParams Updates that are put under the `params` property, which is not serialized
+ * @return
+ */
 export function updateItem(
   itemInfo: IItemUpdate,
   authentication: UserSession,
@@ -1276,13 +1287,12 @@ export function updateItem(
 }
 
 export function updateItemExtended(
-  serviceItemId: string,
   itemInfo: IItemUpdate,
   data: any,
   authentication: UserSession,
   access?: string | undefined
-): Promise<void> {
-  return new Promise((resolve, reject) => {
+): Promise<IUpdateItemResponse> {
+  return new Promise<IUpdateItemResponse>((resolve, reject) => {
     const updateOptions: IUpdateItemOptions = {
       item: itemInfo,
       params: {
@@ -1291,25 +1301,65 @@ export function updateItemExtended(
       authentication: authentication
     };
     portalUpdateItem(updateOptions).then(
-      () => {
+      result => {
         if (access && access !== "private") {
           // Set access if it is not AGOL default
           // Set the access manually since the access value in createItem appears to be ignored
           const accessOptions: ISetAccessOptions = {
-            id: serviceItemId,
+            id: itemInfo.id,
             access: access === "public" ? "public" : "org", // need to use constants rather than string
             authentication: authentication
           };
           setItemAccess(accessOptions).then(
-            () => resolve(),
+            () => resolve(result),
             e => reject(fail(e))
           );
         } else {
-          resolve();
+          resolve(result);
         }
       },
       e => reject(fail(e))
     );
+  });
+}
+
+/**
+ * Update an item's base and data using a dictionary.
+ * @param {string} itemId The item ID
+ * @param {any} templateDictionary The template dictionary
+ * @param {UserSession} authentication The destination session info
+ * @returns Promise resolving to successfulness of update
+ */
+export function updateItemTemplateFromDictionary(
+  itemId: string,
+  templateDictionary: any,
+  authentication: UserSession
+): Promise<IUpdateItemResponse> {
+  return new Promise<IUpdateItemResponse>((resolve, reject) => {
+    // Fetch the items as stored in AGO
+    Promise.all([
+      getItemBase(itemId, authentication),
+      getItemDataAsJson(itemId, authentication)
+    ])
+      .then(([item, data]) => {
+        // Do they have any variables?
+        if (hasUnresolvedVariables(item) || hasUnresolvedVariables(data)) {
+          // Update if so
+          const { item: updatedItem, data: updatedData } = replaceInTemplate(
+            { item, data },
+            templateDictionary
+          );
+          return updateItemExtended(updatedItem, updatedData, authentication);
+        } else {
+          // Shortcut out if not
+          return Promise.resolve({
+            success: true,
+            id: itemId
+          } as IUpdateItemResponse);
+        }
+      })
+      .then(result => resolve(result))
+      .catch(error => reject(error));
   });
 }
 

@@ -66,6 +66,7 @@ import {
 } from "./interfaces";
 import { new_File } from "./polyfills";
 import {
+  IItemResourceResponse,
   updateGroup,
   updateItem,
   updateItemInfo,
@@ -171,7 +172,11 @@ export function copyData(
           })
         };
 
-        helpersUpdateItem(update, destination.authentication, destination.folder).then(
+        helpersUpdateItem(
+          update,
+          destination.authentication,
+          destination.folder
+        ).then(
           resolve,
           e => reject(fail(e)) // unable to add resource
         );
@@ -871,7 +876,7 @@ export function updateItemResourceText(
   filename: string,
   content: string,
   authentication: UserSession
-): Promise<any> {
+): Promise<IItemResourceResponse> {
   return updateItemResource({
     id: itemId,
     name: filename,

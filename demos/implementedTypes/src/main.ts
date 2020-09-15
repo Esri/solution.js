@@ -76,6 +76,7 @@ export function implementedTypes(): string {
     "Mobile Application",
     "Native Application",
     "Notebook",
+    "Oriented Imagery Catalog",
     "Ortho Mapping Project",
     "QuickCapture Project",
     "Site Application",

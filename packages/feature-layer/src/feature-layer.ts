@@ -201,7 +201,6 @@ export function createItemFromTemplate(
                       // Update the item with snippet, description, popupInfo, ect.
                       common
                         .updateItemExtended(
-                          createResponse.serviceItemId,
                           {
                             ...newItemTemplate.item,
                             url: undefined // can't update the URL of a feature service
@@ -331,6 +330,15 @@ export function createItemFromTemplate(
   });
 }
 
+/**
+ * Feature Layer post-processing actions
+ * @param {string} itemId The item ID
+ * @param {string} type The template type
+ * @param {any[]} itemInfos Array of {id: 'ef3', type: 'Web Map'} objects
+ * @param {any} templateDictionary The template dictionary
+ * @param {UserSession} authentication The destination session info
+ * @returns Promise resolving to successfulness of update
+ */
 export function postProcess(
   itemId: string,
   type: string,
@@ -339,38 +347,27 @@ export function postProcess(
   templates: common.IItemTemplate[],
   templateDictionary: any,
   authentication: common.UserSession
-): Promise<any> {
-  return Promise.all([
-    common.getItemBase(itemId, authentication),
-    common.getItemDataAsJson(itemId, authentication)
-  ]).then(([item, data]) => {
-    const { item: updatedItem, data: updatedData } = common.replaceInTemplate(
-      { item, data },
-      templateDictionary
-    );
-    const promises: any[] = [];
-    promises.push(
-      common.updateItemExtended(
-        itemId,
-        updatedItem,
-        updatedData,
-        authentication
-      )
-    );
-
+): Promise<common.IUpdateItemResponse> {
+  return new Promise<common.IUpdateItemResponse>((resolve, reject) => {
+    let p = Promise.resolve();
     // extended for workforce services
     if (common.isWorkforceProject(template)) {
-      promises.push(
-        common.fineTuneCreatedWorkforceItem(
-          template,
-          authentication,
-          item.url,
-          templateDictionary
-        )
+      p = common.fineTuneCreatedWorkforceItem(
+        template,
+        authentication,
+        template.item.url,
+        templateDictionary
       );
     }
-
-    return Promise.all(promises);
+    p.then(() => {
+      common
+        .updateItemTemplateFromDictionary(
+          itemId,
+          templateDictionary,
+          authentication
+        )
+        .then(resolve, reject);
+    }, reject);
   });
 }
 

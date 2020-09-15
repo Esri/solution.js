@@ -22,6 +22,27 @@ import * as utils from "./utils";
 
 // -- Exports -------------------------------------------------------------------------------------------------------//
 
+export function getEmptyGeneralizedItem(): interfaces.IItemGeneralized {
+  return {
+    id: "",
+    type: ""
+  };
+}
+
+export function getEmptyItem(): interfaces.IItem {
+  return {
+    created: 0,
+    id: "",
+    modified: 0,
+    numViews: 0,
+    owner: "",
+    size: 0,
+    tags: [] as string[],
+    title: "",
+    type: ""
+  };
+}
+
 export function getFailedDeployment(failedItemIds: string[] = []): any {
   return {
     success: false,

@@ -1871,100 +1871,100 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
   });
 
   describe("postProcess", () => {
-    it("fetch and update the item and data", () => {
-      const item: common.IItem = {
-        id: "a369baed619441cfb5e862694d33d44c",
-        owner: "brubble",
-        tags: ["tag1"],
-        created: 1590520700158,
-        modified: 1590520700158,
-        numViews: 10,
-        size: 50,
-        title: "My Form",
-        type: "Form",
-        typeKeywords: ["{{a369baed619441cfb5e862694d33d44c.itemId}}"]
-      };
-      const data = {
-        someProp: "{{a369baed619441cfb5e862694d33d44c.itemId}}"
-      };
-      const templates = [itemTemplate];
-      const itemInfos = [
-        {
-          id: itemTemplate.id,
-          type: itemTemplate.type,
-          postProcess: true
-        }
-      ];
-      const templateDictionary = {
-        a369baed619441cfb5e862694d33d44c: {
-          itemId: "b369baed619441cfb5e862694d33d44c"
-        }
-      };
-      const expected = {
-        item: {
-          ...item,
-          typeKeywords: ["b369baed619441cfb5e862694d33d44c"]
-        },
-        data: {
-          ...data,
-          someProp: "b369baed619441cfb5e862694d33d44c"
-        }
-      };
-      const getItemBaseSpy = spyOn(common, "getItemBase").and.resolveTo(item);
-      const getItemDataAsJsonSpy = spyOn(
-        common,
-        "getItemDataAsJson"
-      ).and.resolveTo(data);
-      const replaceInTemplateSpy = spyOn(
-        common,
-        "replaceInTemplate"
-      ).and.returnValue(expected);
-      const updateItemExtendedSpy = spyOn(
-        common,
-        "updateItemExtended"
-      ).and.resolveTo();
-      return featureLayer
-        .postProcess(
-          item.id,
-          item.type,
-          itemInfos,
-          itemTemplate,
-          templates,
-          templateDictionary,
-          MOCK_USER_SESSION
-        )
-        .then(result => {
-          expect(getItemBaseSpy.calls.count()).toBe(1, "fetches item base");
-          expect(getItemBaseSpy.calls.argsFor(0)).toEqual(
-            ["a369baed619441cfb5e862694d33d44c", MOCK_USER_SESSION],
-            "calls getItemBase with expected args"
+    // Postprocessing uses common.updateItemTemplateFromDictionary, which uses common.getItemDataAsJson, which
+    // requires browser features
+    if (typeof window !== "undefined") {
+      it("fetch and update the item and data", done => {
+        const item: common.IItem = {
+          id: "a369baed619441cfb5e862694d33d44c",
+          owner: "brubble",
+          tags: ["tag1"],
+          created: 1590520700158,
+          modified: 1590520700158,
+          numViews: 10,
+          size: 50,
+          title: "My Form",
+          type: "Form",
+          typeKeywords: ["{{a369baed619441cfb5e862694d33d44c.itemId}}"]
+        };
+        const data = {
+          someProp: "{{a369baed619441cfb5e862694d33d44c.itemId}}"
+        };
+        const templates = [itemTemplate];
+        const itemInfos = [
+          {
+            id: itemTemplate.id,
+            type: itemTemplate.type,
+            postProcess: true
+          }
+        ];
+        const templateDictionary = {
+          a369baed619441cfb5e862694d33d44c: {
+            itemId: "b369baed619441cfb5e862694d33d44c"
+          }
+        };
+        const expected = {
+          item: {
+            ...item,
+            typeKeywords: ["b369baed619441cfb5e862694d33d44c"]
+          },
+          data: {
+            ...data,
+            someProp: "b369baed619441cfb5e862694d33d44c"
+          }
+        };
+
+        const updateUrl =
+          utils.PORTAL_SUBSET.restUrl +
+          "/content/users/brubble/items/a369baed619441cfb5e862694d33d44c/update";
+        fetchMock
+          .get(
+            utils.PORTAL_SUBSET.restUrl +
+              "/content/items/a369baed619441cfb5e862694d33d44c?f=json&token=fake-token",
+            item
+          )
+          .post(
+            utils.PORTAL_SUBSET.restUrl +
+              "/content/items/a369baed619441cfb5e862694d33d44c/data",
+            data
+          )
+          .post(updateUrl, utils.getSuccessResponse({ id: item.id }));
+
+        const replaceInTemplateSpy = spyOn(
+          common,
+          "replaceInTemplate"
+        ).and.returnValue(expected);
+        const updateItemExtendedSpy = spyOn(
+          common,
+          "updateItemExtended"
+        ).and.returnValue(utils.getSuccessResponse({ id: item.id }));
+        return featureLayer
+          .postProcess(
+            item.id,
+            item.type,
+            itemInfos,
+            itemTemplate,
+            templates,
+            templateDictionary,
+            MOCK_USER_SESSION
+          )
+          .then(
+            result => {
+              expect(result).toEqual(utils.getSuccessResponse({ id: item.id }));
+
+              const callBody = fetchMock.calls(updateUrl)[0][1].body as string;
+              expect(callBody).toEqual(
+                "f=json&text=%7B%22someProp%22%3A%22b369baed619441cfb5e862694d33d44c%22%7D&id=a369baed619441cfb5e862" +
+                  "694d33d44c&owner=brubble&tags=tag1&created=1590520700158&modified=1590520700158&numViews=10&size=50" +
+                  "&title=My%20Form&type=Form&typeKeywords=b369baed619441cfb5e862694d33d44c&token=fake-token"
+              );
+              done();
+            },
+            e => {
+              done.fail(e);
+            }
           );
-          expect(getItemDataAsJsonSpy.calls.count()).toBe(
-            1,
-            "fetches item data"
-          );
-          expect(getItemDataAsJsonSpy.calls.argsFor(0)).toEqual(
-            ["a369baed619441cfb5e862694d33d44c", MOCK_USER_SESSION],
-            "calls getItemDataAsJson with expected args"
-          );
-          expect(replaceInTemplateSpy.calls.count()).toBe(
-            1,
-            "updates the template"
-          );
-          expect(replaceInTemplateSpy.calls.argsFor(0)).toEqual(
-            [{ item, data }, templateDictionary],
-            "calls replaceInTemplate with the expected args"
-          );
-          expect(updateItemExtendedSpy.calls.count()).toBe(
-            1,
-            "updates the item and data"
-          );
-          expect(updateItemExtendedSpy.calls.argsFor(0)).toEqual(
-            [item.id, expected.item, expected.data, MOCK_USER_SESSION],
-            "Calls updateItemExtendedSpy with the expected args"
-          );
-          expect(result).toEqual([undefined]);
-        });
-    });
+      });
+    }
   });
 });

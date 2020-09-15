@@ -29,7 +29,7 @@ import {
   updateItem,
   postProcessWorkforceTemplates
 } from "@esri/solution-common";
-import { getProp } from "@esri/hub-common";
+import { getProp, getWithDefault } from "@esri/hub-common";
 import { UserSession } from "@esri/arcgis-rest-auth";
 import {
   createItemTemplate,
@@ -205,14 +205,27 @@ export function _postProcessGroupDependencies(
           templates,
           dependencyId
         );
-        const gIndex = dependantTemplate.dependencies.indexOf(id);
-        /* istanbul ignore else */
-        if (gIndex > -1) {
-          removeDependencies = true;
-        }
-        /* istanbul ignore else */
-        if (dependantTemplate.groups.indexOf(id) < 0) {
-          dependantTemplate.groups.push(id);
+        // Not all items shared to the group will exist in the templates array
+        // i.e. Hub Initiative items or any other unsupported types
+        if (dependantTemplate) {
+          // check if the group is in the dependantTemplate's list of dependencies
+          const gIndex = getWithDefault(
+            dependantTemplate,
+            "dependencies",
+            []
+          ).indexOf(id);
+
+          /* istanbul ignore else */
+          if (gIndex > -1) {
+            removeDependencies = true;
+          }
+          // if the dependant template does not have the group id
+          // in it's groups array, add it
+          const groups = getWithDefault(dependantTemplate, "groups", []);
+          if (groups.indexOf(id) === -1) {
+            groups.push(id);
+            dependantTemplate.groups = groups;
+          }
         }
       });
       if (removeDependencies) {
