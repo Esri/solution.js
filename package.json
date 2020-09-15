@@ -1,6 +1,6 @@
 {
   "name": "@esri/solution.js",
-  "version": "0.18.0",
+  "version": "0.18.1",
   "description": "A library running in Node.js and modern browsers for transferring ArcGIS Online items from one organization to another.",
   "devDependencies": {
     "@chiragrupani/karma-chromium-edge-launcher": "^2.0.0",
@@ -103,7 +103,7 @@
     "lint:fix": "tslint --project tsconfig.json --exclude '**/*.d.ts' --fix",
     "prettify": "prettier --write --parser typescript --tab-width 2 --use-tabs false \"packages/**/+(src|test)/**/*.ts\"",
     "dev": "support/dev.sh",
-    "test": "npm run lint && npm run test:node && npm run test:chrome && npm run test:firefox && npm run test:edge",
+    "test": "npm run lint && npm run test:node && npm run test:chrome",
     "test:browsers": "karma start --single-run --browsers Chrome,Firefox,Edge",
     "test:chrome": "karma start --single-run --browsers=Chrome",
     "test:chrome:ci": "karma start --single-run --browsers ChromeHeadlessCI karma.conf.js",
@@ -112,8 +112,8 @@
     "test:firefox": "karma start --single-run --browsers=Firefox",
     "test:node": "jasmine --config=jasmine.json",
     "test:node:debug": "inspect jasmine --config=jasmine.json",
-    "test:ci": "npm run lint && npm run test:node && npm run test:chrome:ci && npm run coveralls",
-    "test:ci:win": "npm run lint && npm run test:node && npm run test:chrome:ci && npm run coveralls:win",
+    "test:ci": "npm run test && npm run coveralls",
+    "test:ci:win": "npm run test && npm run coveralls:win",
     "test:all": "npm run test:node && npm run test:chrome",
     "test:coverage": "npm run test:chrome:ci && npm run coveralls",
     "test:coverage:win": "npm run test:chrome:ci && npm run coveralls:win",
