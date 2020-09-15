@@ -59,7 +59,7 @@ cp -r packages/storymap/dist/umd/* $TEMP_FOLDER/storymap/
 mkdir $TEMP_FOLDER/viewer
 cp -r packages/viewer/dist/umd/* $TEMP_FOLDER/viewer/
 mkdir $TEMP_FOLDER/web-experience
-cp -r packages/viewer/dist/umd/* $TEMP_FOLDER/web-experience/
+cp -r packages/web-experience/dist/umd/* $TEMP_FOLDER/web-experience/
 
 zip -r $TEMP_FOLDER.zip $TEMP_FOLDER
 rm -rf $TEMP_FOLDER
