@@ -78,8 +78,10 @@
         "@esri/arcgis-rest-request": "node_modules/@esri/arcgis-rest-request/dist/umd/request.umd.min",
         "@esri/arcgis-rest-service-admin": "node_modules/@esri/arcgis-rest-service-admin/dist/umd/service-admin.umd.min",
         "@esri/hub-common": "node_modules/@esri/hub-common/dist/umd/common.umd",
-        "@esri/hub-sites": "node_modules/@esri/hub-sites/dist/umd/sites.umd",
         "@esri/hub-initiatives": "node_modules/@esri/hub-initiatives/dist/umd/initiatives.umd",
+        "@esri/hub-sites": "node_modules/@esri/hub-sites/dist/umd/sites.umd",
+        "@esri/hub-teams": "node_modules/@esri/hub-teams/dist/umd/teams.umd",
+        "@esri/hub-types": "node_modules/@esri/hub-types/dist/umd/types.umd",
 
         // load the unminified so we can debug things
         "@esri/solution-common": "node_modules/@esri/solution-common/dist/umd/common.umd",
@@ -98,13 +100,13 @@
     require(["@esri/arcgis-rest-auth", "dist/main"],
       function (auth, main) {
         "use strict";
-        
+
         goFcn = go;
         document.getElementById("input").style.display = "block";
 
         const groupId = appConfig.solutionsGroupId;
         const solutionsSelect = document.getElementById("id");
-        
+
         // Populate solution picklist
         main.getTemplates(groupId).then((solutions) => {
           solutions.forEach((solution) => {
