@@ -461,9 +461,17 @@ export function _templatizeUrlTemplate(item: any, urlHash: any): void {
     urls.forEach(url => {
       const layerId = getLayerId(url);
       const replaceValue: string = getReplaceValue(layerId, ".url");
+      const id = urlHash[url];
+      /* istanbul ignore else */
+      if (
+        Array.isArray(item.dependencies) &&
+        item.dependencies.indexOf(id) < 0
+      ) {
+        item.dependencies.push(id);
+      }
       urlTemplate = urlTemplate.replace(
         url,
-        templatizeTerm(urlHash[url], urlHash[url], replaceValue)
+        templatizeTerm(id, id, replaceValue)
       );
     });
 
@@ -680,7 +688,7 @@ export function fineTuneCreatedWorkforceItem(
   newlyCreatedItem: IItemTemplate,
   destinationAuthentication: UserSession,
   url: string = "",
-  templateDicionary: any
+  templateDicionary?: any
 ): Promise<any> {
   return new Promise<any>((resolve, reject) => {
     destinationAuthentication.getUser().then(
