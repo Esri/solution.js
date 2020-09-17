@@ -252,11 +252,12 @@ export function getWorkforceDependencies(
   const properties: any = itemTemplate.item.properties || {};
   const keyProperties: string[] = getKeyWorkforceProperties(2);
   dependencies = keyProperties.reduce(function(acc, v) {
-    if (properties[v]) {
+    /* istanbul ignore else */
+    if (properties[v] && dependencies.indexOf(properties[v]) < 0) {
       acc.push(properties[v]);
     }
     return acc;
-  }, []);
+  }, dependencies);
 
   // We also need the dependencies listed in the Assignment Integrations table
   const infos: any = getProp(
@@ -773,7 +774,7 @@ export function _getFields(
   ids: number[],
   authentication: UserSession
 ): Promise<any> {
-  return new Promise<any>(resolve => {
+  return new Promise<any>((resolve, reject) => {
     const options: any = {
       f: "json",
       fields: "*",
@@ -792,7 +793,7 @@ export function _getFields(
         });
         resolve(finalResult);
       },
-      e => resolve(false)
+      e => reject(fail(e))
     );
   });
 }

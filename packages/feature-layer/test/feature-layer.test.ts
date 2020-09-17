@@ -1965,6 +1965,26 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
             }
           );
       });
+
+      it("will fine tune workforce service project", done => {
+        // the fineTuneCreatedWorkforceItem function is tested in workforce helpers
+        const template: common.IItemTemplate = mockSolutions.getItemTemplateSkeleton();
+        template.item.typeKeywords = ["Workforce Project"];
+
+        const fineTuneCreatedWorkforceItemSpy = spyOn(
+          common,
+          "fineTuneCreatedWorkforceItem"
+        ).and.resolveTo(undefined);
+
+        const updateItemTemplateFromDictionarySpy = spyOn(
+          common,
+          "updateItemTemplateFromDictionary"
+        ).and.resolveTo(undefined);
+
+        featureLayer
+          .postProcess("", "", [], template, [], {}, MOCK_USER_SESSION)
+          .then(done, done.fail);
+      });
     }
   });
 });

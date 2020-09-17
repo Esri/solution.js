@@ -1441,6 +1441,75 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
         e => fail(e)
       );
     });
+
+    it("should handle workforce service", done => {
+      const template = templates.getItemTemplateSkeleton();
+      template.properties.service = {};
+      template.item.properties = {
+        workforceProjectGroupId: "733f169eddb3451a9901abc8bd3d4ad4",
+        workforceProjectVersion: "2.0.0",
+        workforceDispatcherMapId: "af20c97da8864abaaa35a6fcfebcfaa4",
+        workforceWorkerMapId: "686c1f6b308e4fa7939257811c604be1"
+      };
+      template.item.typeKeywords = ["Workforce Project"];
+
+      template.properties.workforceInfos = {};
+      template.properties.workforceInfos["assignmentIntegrationInfos"] = [
+        {
+          appid: "arcgis-navigator",
+          GlobalID: "5dc678db-9115-49de-b7e2-6efb80d032c1",
+          prompt: "Navigate to Assignment",
+          urltemplate:
+            "https://navigator.arcgis.app?stop=${assignment.latitude},${assignment.longitude}&stopname=${assignment.location}&callback=arcgis-workforce://&callbackprompt=Workforce",
+          dependencies: [],
+          assignmenttype: null
+        },
+        {
+          appid: "arcgis-collector",
+          GlobalID: "b2eabaf6-9c4d-4cd2-88f2-84eb2e1e94d7",
+          prompt: "Collect at Assignment",
+          urltemplate:
+            "https://collector.arcgis.app?itemID={{79625fd36f30420a8b961df47dae8bbf.itemId}}&center=${assignment.latitude},${assignment.longitude}",
+          dependencies: ["79625fd36f30420a8b961df47dae8bbf"],
+          assignmenttype: "72832e11-2f1c-42c2-809b-b1108b5c625d"
+        },
+        {
+          appid: "arcgis-collector",
+          GlobalID: "c7889194-b3a7-47d3-899b-a3f72017f845",
+          prompt: "Collect at Assignment",
+          urltemplate:
+            "https://collector.arcgis.app?itemID={{79625fd36f30420a8b961df47dae8bbf.itemId}}&center=${assignment.latitude},${assignment.longitude}&featureSourceURL={{8e1397c8f8ec45f69ff13b2fbf6b58a7.layer0.url}}&featureAttributes=%7B%22placename%22:%22${assignment.location}%22%7D",
+          dependencies: ["79625fd36f30420a8b961df47dae8bbf"],
+          assignmenttype: "0db1c114-7221-4cf1-9df9-a37801fb2896"
+        }
+      ];
+
+      const expected = [
+        {
+          id: "af20c97da8864abaaa35a6fcfebcfaa4",
+          name: ""
+        },
+        {
+          id: "733f169eddb3451a9901abc8bd3d4ad4",
+          name: ""
+        },
+        {
+          id: "686c1f6b308e4fa7939257811c604be1",
+          name: ""
+        },
+        {
+          id: "79625fd36f30420a8b961df47dae8bbf",
+          name: ""
+        }
+      ];
+
+      restHelpers
+        .extractDependencies(template, MOCK_USER_SESSION)
+        .then(actual => {
+          expect(actual).toEqual(expected);
+          done();
+        }, done.fail);
+    });
   });
 
   describe("convertExtent", () => {
@@ -2179,6 +2248,238 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
         .getFeatureServiceProperties(url, MOCK_USER_SESSION)
         .then(response => {
           expect(response.service.cacheMaxAge).toEqual(90);
+          done();
+        }, done.fail);
+    });
+
+    it("handles workforce project service", done => {
+      const props: interfaces.IFeatureServiceProperties = {
+        service: {},
+        layers: [],
+        tables: []
+      };
+
+      const assignmentIntegrations = {
+        objectIdFieldName: "OBJECTID",
+        uniqueIdField: { name: "OBJECTID", isSystemMaintained: true },
+        globalIdFieldName: "GlobalID",
+        fields: [
+          {
+            name: "OBJECTID",
+            type: "esriFieldTypeOID",
+            alias: "OBJECTID",
+            sqlType: "sqlTypeInteger"
+          },
+          {
+            name: "GlobalID",
+            type: "esriFieldTypeGlobalID",
+            alias: "GlobalID",
+            sqlType: "sqlTypeOther",
+            length: 38
+          },
+          {
+            name: "appid",
+            type: "esriFieldTypeString",
+            alias: "App ID",
+            sqlType: "sqlTypeVarchar",
+            length: 255
+          },
+          {
+            name: "prompt",
+            type: "esriFieldTypeString",
+            alias: "Prompt",
+            sqlType: "sqlTypeVarchar",
+            length: 255
+          },
+          {
+            name: "urltemplate",
+            type: "esriFieldTypeString",
+            alias: "URL Template",
+            sqlType: "sqlTypeVarchar",
+            length: 4000
+          },
+          {
+            name: "assignmenttype",
+            type: "esriFieldTypeGUID",
+            alias: "Assignment Type",
+            sqlType: "sqlTypeOther",
+            length: 38
+          },
+          {
+            name: "CreationDate",
+            type: "esriFieldTypeDate",
+            alias: "CreationDate",
+            sqlType: "sqlTypeOther",
+            length: 8
+          }
+        ],
+        features: [
+          {
+            attributes: {
+              OBJECTID: 2,
+              GlobalID: "5dc678db-9115-49de-b7e2-6efb80d032c1",
+              appid: "arcgis-navigator",
+              prompt: "Navigate to Assignment",
+              urltemplate:
+                "https://navigator.arcgis.app?stop=${assignment.latitude},${assignment.longitude}&stopname=${assignment.location}&callback=arcgis-workforce://&callbackprompt=Workforce",
+              assignmenttype: null,
+              CreationDate: 1598295988457
+            }
+          },
+          {
+            attributes: {
+              OBJECTID: 3,
+              GlobalID: "b2eabaf6-9c4d-4cd2-88f2-84eb2e1e94d7",
+              appid: "arcgis-collector",
+              prompt: "Collect at Assignment",
+              urltemplate:
+                "https://collector.arcgis.app?itemID=79625fd36f30420a8b961df47dae8bbf&center=${assignment.latitude},${assignment.longitude}",
+              assignmenttype: "72832e11-2f1c-42c2-809b-b1108b5c625d",
+              CreationDate: 1598295988457
+            }
+          },
+          {
+            attributes: {
+              OBJECTID: 4,
+              GlobalID: "c7889194-b3a7-47d3-899b-a3f72017f845",
+              appid: "arcgis-collector",
+              prompt: "Collect at Assignment",
+              urltemplate:
+                "https://collector.arcgis.app?itemID=79625fd36f30420a8b961df47dae8bbf&center=${assignment.latitude},${assignment.longitude}&featureSourceURL=https://services6.arcgis.com/Pu6Fai10JE2L2xUd/arcgis/rest/services/ProposedSiteAddress_field_483ff5d0f06d42fba56b479147b4422d/FeatureServer/0&featureAttributes=%7B%22placename%22:%22${assignment.location}%22%7D",
+              assignmenttype: "0db1c114-7221-4cf1-9df9-a37801fb2896",
+              CreationDate: 1598295988457
+            }
+          }
+        ]
+      };
+      const assignmentTypes = {
+        objectIdFieldName: "OBJECTID",
+        uniqueIdField: { name: "OBJECTID", isSystemMaintained: true },
+        globalIdFieldName: "GlobalID",
+        fields: [
+          {
+            name: "OBJECTID",
+            type: "esriFieldTypeOID",
+            alias: "OBJECTID",
+            sqlType: "sqlTypeInteger"
+          },
+          {
+            name: "description",
+            type: "esriFieldTypeString",
+            alias: "Description",
+            sqlType: "sqlTypeVarchar",
+            length: 255
+          },
+          {
+            name: "GlobalID",
+            type: "esriFieldTypeGlobalID",
+            alias: "GlobalID",
+            sqlType: "sqlTypeOther",
+            length: 38
+          },
+          {
+            name: "CreationDate",
+            type: "esriFieldTypeDate",
+            alias: "CreationDate",
+            sqlType: "sqlTypeOther",
+            length: 8
+          }
+        ],
+        features: [
+          {
+            attributes: {
+              OBJECTID: 1,
+              description: "Verify Address",
+              GlobalID: "72832e11-2f1c-42c2-809b-b1108b5c625d",
+              CreationDate: 1598295988210
+            }
+          },
+          {
+            attributes: {
+              OBJECTID: 2,
+              description: "Collect New Address",
+              GlobalID: "0db1c114-7221-4cf1-9df9-a37801fb2896",
+              CreationDate: 1598295988210
+            }
+          }
+        ]
+      };
+
+      const urlNonAdmin =
+        "https://services6.arcgis.com/Pu6Fai10JE2L2xUd/arcgis/rest/services/workforce_733f169eddb3451a9901abc8bd3d4ad4/FeatureServer";
+      const url =
+        "https://services6.arcgis.com/Pu6Fai10JE2L2xUd/arcgis/rest/admin/services/workforce_733f169eddb3451a9901abc8bd3d4ad4/FeatureServer";
+      const fetchUrl =
+        "https://services6.arcgis.com/Pu6Fai10JE2L2xUd/arcgis/rest/services/ProposedSiteAddress_field_483ff5d0f06d42fba56b479147b4422d/FeatureServer/0";
+
+      fetchMock
+        .post(url + "?f=json", {})
+        .get(
+          urlNonAdmin +
+            "/3/query?f=json&where=1%3D1&outFields=*&token=fake-token",
+          assignmentTypes
+        )
+        .get(
+          urlNonAdmin +
+            "/4/query?f=json&where=1%3D1&outFields=*&token=fake-token",
+          assignmentIntegrations
+        )
+        .post(fetchUrl, { serviceItemId: "8e1397c8f8ec45f69ff13b2fbf6b58a7" });
+
+      const expected: interfaces.IFeatureServiceProperties = {
+        service: {},
+        layers: [],
+        tables: [],
+        workforceInfos: {
+          assignmentTypeInfos: [
+            {
+              description: "Verify Address",
+              GlobalID: "72832e11-2f1c-42c2-809b-b1108b5c625d"
+            },
+            {
+              description: "Collect New Address",
+              GlobalID: "0db1c114-7221-4cf1-9df9-a37801fb2896"
+            }
+          ],
+          assignmentIntegrationInfos: [
+            {
+              appid: "arcgis-navigator",
+              GlobalID: "5dc678db-9115-49de-b7e2-6efb80d032c1",
+              prompt: "Navigate to Assignment",
+              urltemplate:
+                "https://navigator.arcgis.app?stop=${assignment.latitude},${assignment.longitude}&stopname=${assignment.location}&callback=arcgis-workforce://&callbackprompt=Workforce",
+              dependencies: [],
+              assignmenttype: null
+            },
+            {
+              appid: "arcgis-collector",
+              GlobalID: "b2eabaf6-9c4d-4cd2-88f2-84eb2e1e94d7",
+              prompt: "Collect at Assignment",
+              urltemplate:
+                "https://collector.arcgis.app?itemID={{79625fd36f30420a8b961df47dae8bbf.itemId}}&center=${assignment.latitude},${assignment.longitude}",
+              dependencies: ["79625fd36f30420a8b961df47dae8bbf"],
+              assignmenttype: "72832e11-2f1c-42c2-809b-b1108b5c625d"
+            },
+            {
+              appid: "arcgis-collector",
+              GlobalID: "c7889194-b3a7-47d3-899b-a3f72017f845",
+              prompt: "Collect at Assignment",
+              urltemplate:
+                "https://collector.arcgis.app?itemID={{79625fd36f30420a8b961df47dae8bbf.itemId}}&center=${assignment.latitude},${assignment.longitude}&featureSourceURL={{8e1397c8f8ec45f69ff13b2fbf6b58a7.layer0.url}}&featureAttributes=%7B%22placename%22:%22${assignment.location}%22%7D",
+              dependencies: [
+                "79625fd36f30420a8b961df47dae8bbf",
+                "8e1397c8f8ec45f69ff13b2fbf6b58a7"
+              ],
+              assignmenttype: "0db1c114-7221-4cf1-9df9-a37801fb2896"
+            }
+          ]
+        }
+      };
+
+      restHelpers
+        .getFeatureServiceProperties(url, MOCK_USER_SESSION, true)
+        .then(actual => {
+          expect(actual).toEqual(expected);
           done();
         }, done.fail);
     });

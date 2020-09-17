@@ -349,17 +349,17 @@ export function postProcess(
   authentication: common.UserSession
 ): Promise<common.IUpdateItemResponse> {
   return new Promise<common.IUpdateItemResponse>((resolve, reject) => {
-    let p = Promise.resolve();
+    let def = Promise.resolve();
     // extended for workforce services
     if (common.isWorkforceProject(template)) {
-      p = common.fineTuneCreatedWorkforceItem(
+      def = common.fineTuneCreatedWorkforceItem(
         template,
         authentication,
         template.item.url,
         templateDictionary
       );
     }
-    p.then(() => {
+    def.then(() => {
       common
         .updateItemTemplateFromDictionary(
           itemId,

@@ -1023,8 +1023,9 @@ export function getFeatureServiceProperties(
         delete serviceData.tables;
 
         if (workforceService) {
-          resolve(
-            getWorkforceServiceInfo(properties, serviceUrl, authentication)
+          getWorkforceServiceInfo(properties, serviceUrl, authentication).then(
+            resolve,
+            reject
           );
         } else {
           resolve(properties);
