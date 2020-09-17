@@ -57,10 +57,7 @@ import {
   UserSession
 } from "./interfaces";
 import { createZip } from "./libConnectors";
-import {
-  getItemBase,
-  getItemDataAsJson
-} from "./restHelpersGet";
+import { getItemBase, getItemDataAsJson } from "./restHelpersGet";
 import {
   addItemData as portalAddItemData,
   addItemRelationship,
@@ -108,9 +105,11 @@ import {
   createFeatureService as svcAdminCreateFeatureService
 } from "@esri/arcgis-rest-service-admin";
 import {
-  hasUnresolvedVariables,
-  replaceInTemplate
-} from "./templatization";
+  getWorkforceDependencies,
+  isWorkforceProject,
+  getWorkforceServiceInfo
+} from "./workforceHelpers";
+import { hasUnresolvedVariables, replaceInTemplate } from "./templatization";
 
 // ------------------------------------------------------------------------------------------------------------------ //
 
@@ -820,6 +819,8 @@ export function extractDependencies(
         },
         e => reject(fail(e))
       );
+    } else if (isWorkforceProject(itemTemplate)) {
+      resolve(getWorkforceDependencies(itemTemplate, dependencies));
     } else {
       resolve(dependencies);
     }
@@ -944,9 +945,16 @@ export function getServiceLayersAndTables(
     // the item and data sections with sections for the service, full layers, and
     // full tables
 
+    // Extra steps must be taken for workforce version 2
+    const isWorkforceService = isWorkforceProject(itemTemplate);
+
     // Get the service description
     if (itemTemplate.item.url) {
-      getFeatureServiceProperties(itemTemplate.item.url, authentication).then(
+      getFeatureServiceProperties(
+        itemTemplate.item.url,
+        authentication,
+        isWorkforceService
+      ).then(
         properties => {
           itemTemplate.properties = properties;
           resolve(itemTemplate);
@@ -961,7 +969,8 @@ export function getServiceLayersAndTables(
 
 export function getFeatureServiceProperties(
   serviceUrl: string,
-  authentication: UserSession
+  authentication: UserSession,
+  workforceService: boolean = false
 ): Promise<IFeatureServiceProperties> {
   return new Promise<IFeatureServiceProperties>((resolve, reject) => {
     const properties: IFeatureServiceProperties = {
@@ -1013,7 +1022,14 @@ export function getFeatureServiceProperties(
         }
         delete serviceData.tables;
 
-        resolve(properties);
+        if (workforceService) {
+          getWorkforceServiceInfo(properties, serviceUrl, authentication).then(
+            resolve,
+            reject
+          );
+        } else {
+          resolve(properties);
+        }
       },
       (e: any) => reject(fail(e))
     );
@@ -1326,33 +1342,25 @@ export function updateItemTemplateFromDictionary(
       getItemBase(itemId, authentication),
       getItemDataAsJson(itemId, authentication)
     ])
-    .then(([item, data]) => {
-      // Do they have any variables?
-      if (hasUnresolvedVariables(item) || hasUnresolvedVariables(data)) {
-        // Update if so
-        const { item: updatedItem, data: updatedData } = replaceInTemplate(
-          { item, data },
-          templateDictionary
-        );
-        return updateItemExtended(
-          updatedItem,
-          updatedData,
-          authentication
-        );
-      } else {
-        // Shortcut out if not
-        return Promise.resolve({
-          success: true,
-          id: itemId
-        } as IUpdateItemResponse);
-      }
-    })
-    .then(
-      result => resolve(result)
-    )
-    .catch(
-      error => reject(error)
-    );
+      .then(([item, data]) => {
+        // Do they have any variables?
+        if (hasUnresolvedVariables(item) || hasUnresolvedVariables(data)) {
+          // Update if so
+          const { item: updatedItem, data: updatedData } = replaceInTemplate(
+            { item, data },
+            templateDictionary
+          );
+          return updateItemExtended(updatedItem, updatedData, authentication);
+        } else {
+          // Shortcut out if not
+          return Promise.resolve({
+            success: true,
+            id: itemId
+          } as IUpdateItemResponse);
+        }
+      })
+      .then(result => resolve(result))
+      .catch(error => reject(error));
   });
 }
 

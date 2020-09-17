@@ -108,7 +108,10 @@ export function fineTuneCreatedItem(
     const updateOptions: common.IItemUpdate = {
       id: newlyCreatedItem.itemId,
       url: newlyCreatedItem.item.url,
-      data: common.jsonToFile(originalTemplate.data, newlyCreatedItem.itemId + ".ipynb")
+      data: common.jsonToFile(
+        originalTemplate.data,
+        newlyCreatedItem.itemId + ".ipynb"
+      )
     };
     common
       .updateItem(updateOptions, authentication)

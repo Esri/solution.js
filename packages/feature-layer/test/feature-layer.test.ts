@@ -1914,20 +1914,21 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
           }
         };
 
-        const updateUrl = utils.PORTAL_SUBSET.restUrl + "/content/users/brubble/items/a369baed619441cfb5e862694d33d44c/update";
+        const updateUrl =
+          utils.PORTAL_SUBSET.restUrl +
+          "/content/users/brubble/items/a369baed619441cfb5e862694d33d44c/update";
         fetchMock
           .get(
-            utils.PORTAL_SUBSET.restUrl + "/content/items/a369baed619441cfb5e862694d33d44c?f=json&token=fake-token",
+            utils.PORTAL_SUBSET.restUrl +
+              "/content/items/a369baed619441cfb5e862694d33d44c?f=json&token=fake-token",
             item
           )
           .post(
-            utils.PORTAL_SUBSET.restUrl + "/content/items/a369baed619441cfb5e862694d33d44c/data",
+            utils.PORTAL_SUBSET.restUrl +
+              "/content/items/a369baed619441cfb5e862694d33d44c/data",
             data
           )
-          .post(
-            updateUrl,
-            utils.getSuccessResponse({ "id": item.id })
-          );
+          .post(updateUrl, utils.getSuccessResponse({ id: item.id }));
 
         const replaceInTemplateSpy = spyOn(
           common,
@@ -1936,7 +1937,7 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
         const updateItemExtendedSpy = spyOn(
           common,
           "updateItemExtended"
-        ).and.returnValue(utils.getSuccessResponse({ "id": item.id }));
+        ).and.returnValue(utils.getSuccessResponse({ id: item.id }));
         return featureLayer
           .postProcess(
             item.id,
@@ -1949,13 +1950,13 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
           )
           .then(
             result => {
-              expect(result).toEqual(utils.getSuccessResponse({ "id": item.id }));
+              expect(result).toEqual(utils.getSuccessResponse({ id: item.id }));
 
               const callBody = fetchMock.calls(updateUrl)[0][1].body as string;
               expect(callBody).toEqual(
-                'f=json&text=%7B%22someProp%22%3A%22b369baed619441cfb5e862694d33d44c%22%7D&id=a369baed619441cfb5e862' +
-                '694d33d44c&owner=brubble&tags=tag1&created=1590520700158&modified=1590520700158&numViews=10&size=50' +
-                '&title=My%20Form&type=Form&typeKeywords=b369baed619441cfb5e862694d33d44c&token=fake-token'
+                "f=json&text=%7B%22someProp%22%3A%22b369baed619441cfb5e862694d33d44c%22%7D&id=a369baed619441cfb5e862" +
+                  "694d33d44c&owner=brubble&tags=tag1&created=1590520700158&modified=1590520700158&numViews=10&size=50" +
+                  "&title=My%20Form&type=Form&typeKeywords=b369baed619441cfb5e862694d33d44c&token=fake-token"
               );
               done();
             },
@@ -1963,6 +1964,26 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
               done.fail(e);
             }
           );
+      });
+
+      it("will fine tune workforce service project", done => {
+        // the fineTuneCreatedWorkforceItem function is tested in workforce helpers
+        const template: common.IItemTemplate = mockSolutions.getItemTemplateSkeleton();
+        template.item.typeKeywords = ["Workforce Project"];
+
+        const fineTuneCreatedWorkforceItemSpy = spyOn(
+          common,
+          "fineTuneCreatedWorkforceItem"
+        ).and.resolveTo(undefined);
+
+        const updateItemTemplateFromDictionarySpy = spyOn(
+          common,
+          "updateItemTemplateFromDictionary"
+        ).and.resolveTo(undefined);
+
+        featureLayer
+          .postProcess("", "", [], template, [], {}, MOCK_USER_SESSION)
+          .then(done, done.fail);
       });
     }
   });
