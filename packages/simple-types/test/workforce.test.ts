@@ -328,281 +328,6 @@ describe("Module `workforce`: manages the creation and deployment of workforce p
     });
   });
 
-  describe("_extractDependencies", () => {
-    it("handles serviceItemId variants", done => {
-      const data: any = {
-        dispatchers: {
-          serviceItemId: "1234567890abcdef1234567890abcdef"
-        }
-      };
-      const keyProperties: string[] = [
-        "groupId",
-        "workerWebMapId",
-        "dispatcherWebMapId",
-        "dispatchers",
-        "assignments",
-        "workers",
-        "tracks"
-      ];
-
-      const expected: any = {
-        dependencies: ["1234567890abcdef1234567890abcdef"],
-        urlHash: {}
-      };
-
-      workforce
-        ._extractDependencies(data, keyProperties, MOCK_USER_SESSION)
-        .then(actual => {
-          expect(actual).toEqual(expected);
-          done();
-        }, done.fail);
-    });
-
-    it("handles direct ids", done => {
-      const data: any = {
-        workerWebMapId: "1234567890abcdef1234567890abcdef"
-      };
-      const keyProperties: string[] = [
-        "groupId",
-        "workerWebMapId",
-        "dispatcherWebMapId",
-        "dispatchers",
-        "assignments",
-        "workers",
-        "tracks"
-      ];
-
-      const expected: any = {
-        dependencies: ["1234567890abcdef1234567890abcdef"],
-        urlHash: {}
-      };
-
-      workforce
-        ._extractDependencies(data, keyProperties, MOCK_USER_SESSION)
-        .then(actual => {
-          expect(actual).toEqual(expected);
-          done();
-        }, done.fail);
-    });
-
-    it("skips uninteresting id", done => {
-      const data: any = {
-        folderId: "1234567890abcdef1234567890abcdef"
-      };
-      const keyProperties: string[] = [
-        "groupId",
-        "workerWebMapId",
-        "dispatcherWebMapId",
-        "dispatchers",
-        "assignments",
-        "workers",
-        "tracks"
-      ];
-
-      const expected: any = {
-        dependencies: [],
-        urlHash: {}
-      };
-
-      workforce
-        ._extractDependencies(data, keyProperties, MOCK_USER_SESSION)
-        .then(actual => {
-          expect(actual).toEqual(expected);
-          done();
-        }, done.fail);
-    });
-
-    it("handles multiple types of id", done => {
-      const data: any = {
-        workerWebMapId: "abc116555b16437f8435e079033128d0",
-        dispatcherWebMapId: "abc26a244163430590151395821fb845",
-        dispatchers: {
-          serviceItemId: "abc302ec12b74d2f9f2b3cc549420086",
-          url: "abc302ec12b74d2f9f2b3cc549420086"
-        },
-        assignments: {
-          serviceItemId: "abc4494043c3459faabcfd0e1ab557fc",
-          url: "abc4494043c3459faabcfd0e1ab557fc"
-        },
-        workers: {
-          serviceItemId: "abc5dd4bdd18437f8d5ff1aa2d25fd7c",
-          url: "abc5dd4bdd18437f8d5ff1aa2d25fd7c"
-        },
-        tracks: {
-          serviceItemId: "abc64329e69144c59f69f3f3e0d45269",
-          url: "abc64329e69144c59f69f3f3e0d45269",
-          enabled: true,
-          updateInterval: 300
-        },
-        version: "1.2.0",
-        groupId: "abc715c2df2b466da05577776e82d044",
-        folderId: "d61c63538d8c45c68de809e4fe01e243"
-      };
-      const keyProperties: string[] = [
-        "groupId",
-        "workerWebMapId",
-        "dispatcherWebMapId",
-        "dispatchers",
-        "assignments",
-        "workers",
-        "tracks"
-      ];
-
-      const expected: any = {
-        dependencies: [
-          "abc715c2df2b466da05577776e82d044",
-          "abc116555b16437f8435e079033128d0",
-          "abc26a244163430590151395821fb845",
-          "abc302ec12b74d2f9f2b3cc549420086",
-          "abc4494043c3459faabcfd0e1ab557fc",
-          "abc5dd4bdd18437f8d5ff1aa2d25fd7c",
-          "abc64329e69144c59f69f3f3e0d45269"
-        ],
-        urlHash: {}
-      };
-
-      workforce
-        ._extractDependencies(data, keyProperties, MOCK_USER_SESSION)
-        .then(actual => {
-          expect(actual).toEqual(expected);
-          done();
-        }, done.fail);
-    });
-
-    it("handles id repeats", done => {
-      const data: any = {
-        workerWebMapId: "abc116555b16437f8435e079033128d0",
-        dispatcherWebMapId: "abc116555b16437f8435e079033128d0",
-        dispatchers: {
-          serviceItemId: "abc302ec12b74d2f9f2b3cc549420086",
-          url: "abc302ec12b74d2f9f2b3cc549420086"
-        },
-        assignments: {
-          serviceItemId: "abc4494043c3459faabcfd0e1ab557fc",
-          url: "abc4494043c3459faabcfd0e1ab557fc"
-        },
-        workers: {
-          serviceItemId: "abc302ec12b74d2f9f2b3cc549420086",
-          url: "abc5dd4bdd18437f8d5ff1aa2d25fd7c"
-        },
-        tracks: {
-          serviceItemId: "abc64329e69144c59f69f3f3e0d45269",
-          url: "abc64329e69144c59f69f3f3e0d45269",
-          enabled: true,
-          updateInterval: 300
-        },
-        version: "1.2.0",
-        groupId: "abc715c2df2b466da05577776e82d044",
-        folderId: "d61c63538d8c45c68de809e4fe01e243"
-      };
-      const keyProperties: string[] = [
-        "groupId",
-        "workerWebMapId",
-        "dispatcherWebMapId",
-        "dispatchers",
-        "assignments",
-        "workers",
-        "tracks"
-      ];
-
-      const expected: any = {
-        dependencies: [
-          "abc715c2df2b466da05577776e82d044",
-          "abc116555b16437f8435e079033128d0",
-          "abc302ec12b74d2f9f2b3cc549420086",
-          "abc4494043c3459faabcfd0e1ab557fc",
-          "abc64329e69144c59f69f3f3e0d45269"
-        ],
-        urlHash: {}
-      };
-
-      workforce
-        ._extractDependencies(data, keyProperties, MOCK_USER_SESSION)
-        .then(actual => {
-          expect(actual).toEqual(expected);
-          done();
-        }, done.fail);
-    });
-  });
-
-  describe("_templatize", () => {
-    it("should handle missing assignment integrations", () => {
-      const data = mockItems.getAGOLItemData("Workforce Project");
-      delete data.assignmentIntegrations;
-
-      const expected: any = mockItems.getAGOLItemData("Workforce Project");
-      delete expected.assignmentIntegrations;
-      expected["folderId"] = "{{folderId}}";
-
-      const actual = workforce._templatize(data, [], {});
-      expect(actual).toEqual(expected);
-    });
-
-    it("should bypass invalid props", () => {
-      const data = mockItems.getAGOLItemData("Workforce Project");
-      delete data.assignmentIntegrations;
-
-      const expected: any = mockItems.getAGOLItemData("Workforce Project");
-      delete expected.assignmentIntegrations;
-      expected["folderId"] = "{{folderId}}";
-
-      const actual = workforce._templatize(data, ["fake"], {});
-      expect(actual).toEqual(expected);
-    });
-
-    it("should bypass missing urls", () => {
-      const data = mockItems.getAGOLItemData("Workforce Project");
-      delete data.assignmentIntegrations;
-      delete data["dispatchers"].url;
-      const expected: any = mockItems.getAGOLItemData("Workforce Project");
-      delete expected.assignmentIntegrations;
-      delete expected["dispatchers"].url;
-      expected["dispatchers"].serviceItemId =
-        "{{abc302ec12b74d2f9f2b3cc549420086.itemId}}";
-      expected["folderId"] = "{{folderId}}";
-      expected["assignments"].serviceItemId =
-        "{{abc4494043c3459faabcfd0e1ab557fc.layer0.itemId}}";
-      expected["assignments"].url =
-        "{{abc4494043c3459faabcfd0e1ab557fc.layer0.url}}";
-
-      const actual = workforce._templatize(
-        data,
-        ["dispatchers", "assignments"],
-        {}
-      );
-      expect(actual).toEqual(expected);
-    });
-
-    it("should bypass missing urlTemplate and missing assignment types", () => {
-      const data = mockItems.getAGOLItemData("Workforce Project");
-      delete data["assignmentIntegrations"][0].urlTemplate;
-      delete data["assignmentIntegrations"][0].assignmentTypes;
-
-      const expected: any = mockItems.getAGOLItemData("Workforce Project");
-      expected["folderId"] = "{{folderId}}";
-      delete expected["assignmentIntegrations"][0].urlTemplate;
-      delete expected["assignmentIntegrations"][0].assignmentTypes;
-
-      const actual = workforce._templatize(data, [], {});
-      expect(actual).toEqual(expected);
-    });
-
-    it("should handle urlTemplate without itemId", () => {
-      const data = mockItems.getAGOLItemData("Workforce Project");
-      data.assignmentIntegrations[0].urlTemplate = "ABC123";
-      data.assignmentIntegrations[0].assignmentTypes[0].urlTemplate = "ABC123";
-
-      const expected: any = mockItems.getAGOLItemData("Workforce Project");
-      expected.assignmentIntegrations[0].urlTemplate = "ABC123";
-      expected.assignmentIntegrations[0].assignmentTypes[0].urlTemplate =
-        "ABC123";
-      expected["folderId"] = "{{folderId}}";
-
-      const actual = workforce._templatize(data, [], {});
-      expect(actual).toEqual(expected);
-    });
-  });
-
   describe("fineTuneCreatedItem", () => {
     it("should update dispatchers service", done => {
       const communitySelfResponse: any = utils.getUserResponse();
@@ -618,7 +343,7 @@ describe("Module `workforce`: manages the creation and deployment of workforce p
       const queryUrl: string =
         "https://services123.arcgis.com/org1234567890/arcgis/rest/services/dispatchers_47bb15c2df2b466da05577776e82d044/FeatureServer/0/query?f=json&where=userId%20%3D%20%27LocalGovDeployCasey%27&outFields=*&token=fake-token";
       const addUrl: string =
-        "https://services123.arcgis.com/org1234567890/arcgis/rest/services/dispatchers_47bb15c2df2b466da05577776e82d044/FeatureServer/0/addFeatures";
+        "https://services123.arcgis.com/org1234567890/arcgis/rest/services/dispatchers_47bb15c2df2b466da05577776e82d044/FeatureServer/0/applyEdits";
 
       fetchMock
         .get(
@@ -652,7 +377,7 @@ describe("Module `workforce`: manages the creation and deployment of workforce p
       const queryUrl: string =
         "https://services123.arcgis.com/org1234567890/arcgis/rest/services/dispatchers_47bb15c2df2b466da05577776e82d044/FeatureServer/0/query?f=json&where=userId%20%3D%20%27%27&outFields=*&token=fake-token";
       const addUrl: string =
-        "https://services123.arcgis.com/org1234567890/arcgis/rest/services/dispatchers_47bb15c2df2b466da05577776e82d044/FeatureServer/0/addFeatures";
+        "https://services123.arcgis.com/org1234567890/arcgis/rest/services/dispatchers_47bb15c2df2b466da05577776e82d044/FeatureServer/0/applyEdits";
 
       fetchMock
         .get(
@@ -767,7 +492,7 @@ describe("Module `workforce`: manages the creation and deployment of workforce p
       const queryUrl: string =
         "https://services123.arcgis.com/org1234567890/arcgis/rest/services/dispatchers_47bb15c2df2b466da05577776e82d044/FeatureServer/0/query?f=json&where=userId%20%3D%20%27LocalGovDeployCasey%27&outFields=*&token=fake-token";
       const addUrl: string =
-        "https://services123.arcgis.com/org1234567890/arcgis/rest/services/dispatchers_47bb15c2df2b466da05577776e82d044/FeatureServer/0/addFeatures";
+        "https://services123.arcgis.com/org1234567890/arcgis/rest/services/dispatchers_47bb15c2df2b466da05577776e82d044/FeatureServer/0/applyEdits";
 
       fetchMock
         .get(
@@ -805,7 +530,7 @@ describe("Module `workforce`: manages the creation and deployment of workforce p
       const queryUrl: string =
         "https://services123.arcgis.com/org1234567890/arcgis/rest/services/dispatchers_47bb15c2df2b466da05577776e82d044/FeatureServer/0/query?f=json&where=userId%20%3D%20%27LocalGovDeployCasey%27&outFields=*&token=fake-token";
       const addUrl: string =
-        "https://services123.arcgis.com/org1234567890/arcgis/rest/services/dispatchers_47bb15c2df2b466da05577776e82d044/FeatureServer/0/addFeatures";
+        "https://services123.arcgis.com/org1234567890/arcgis/rest/services/dispatchers_47bb15c2df2b466da05577776e82d044/FeatureServer/0/applyEdits";
 
       fetchMock
         .get(
@@ -858,40 +583,40 @@ describe("Module `workforce`: manages the creation and deployment of workforce p
       }, done.fail);
     });
 
-    it("should have success === false when dispatchers does not have url", done => {
-      const communitySelfResponse: any = utils.getUserResponse();
-      const itemTemplate: common.IItemTemplate = mockItems.getAGOLItem(
-        "Workforce Project",
-        null
-      );
-      itemTemplate.data = mockItems.getAGOLItemData("Workforce Project");
+    // it("should have success === false when dispatchers does not have url", done => {
+    //   const communitySelfResponse: any = utils.getUserResponse();
+    //   const itemTemplate: common.IItemTemplate = mockItems.getAGOLItem(
+    //     "Workforce Project",
+    //     null
+    //   );
+    //   itemTemplate.data = mockItems.getAGOLItemData("Workforce Project");
 
-      const userUrl: string =
-        utils.PORTAL_SUBSET.restUrl +
-        "/community/users/casey?f=json&token=fake-token";
-      const queryUrl: string =
-        "https://services123.arcgis.com/org1234567890/arcgis/rest/services/dispatchers_47bb15c2df2b466da05577776e82d044/FeatureServer/0/query?f=json&where=userId%20%3D%20%27MrClaypool%27&outFields=*&token=fake-token";
+    //   const userUrl: string =
+    //     utils.PORTAL_SUBSET.restUrl +
+    //     "/community/users/casey?f=json&token=fake-token";
+    //   const queryUrl: string =
+    //     "https://services123.arcgis.com/org1234567890/arcgis/rest/services/dispatchers_47bb15c2df2b466da05577776e82d044/FeatureServer/0/query?f=json&where=userId%20%3D%20%27MrClaypool%27&outFields=*&token=fake-token";
 
-      fetchMock
-        .get(
-          utils.PORTAL_SUBSET.restUrl +
-            "/community/self?f=json&token=fake-token",
-          communitySelfResponse
-        )
-        .get(userUrl, {
-          username: "MrClaypool",
-          fullName: "Mr Claypool"
-        })
-        .get(queryUrl, {});
+    //   fetchMock
+    //     .get(
+    //       utils.PORTAL_SUBSET.restUrl +
+    //         "/community/self?f=json&token=fake-token",
+    //       communitySelfResponse
+    //     )
+    //     .get(userUrl, {
+    //       username: "MrClaypool",
+    //       fullName: "Mr Claypool"
+    //     })
+    //     .get(queryUrl, {});
 
-      delete itemTemplate.data.dispatchers.url;
+    //   delete itemTemplate.data.dispatchers.url;
 
-      workforce.fineTuneCreatedItem(itemTemplate, MOCK_USER_SESSION).then(r => {
-        expect(r).toEqual({
-          success: false
-        });
-        done();
-      }, done.fail);
-    });
+    //   workforce.fineTuneCreatedItem(itemTemplate, MOCK_USER_SESSION).then(r => {
+    //     expect(r).toEqual({
+    //       success: false
+    //     });
+    //     done();
+    //   }, done.fail);
+    // });
   });
 });

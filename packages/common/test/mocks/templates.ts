@@ -26,7 +26,7 @@ export function getEmptyGeneralizedItem(): interfaces.IItemGeneralized {
   return {
     id: "",
     type: ""
-  }
+  };
 }
 
 export function getEmptyItem(): interfaces.IItem {
@@ -40,7 +40,7 @@ export function getEmptyItem(): interfaces.IItem {
     tags: [] as string[],
     title: "",
     type: ""
-  }
+  };
 }
 
 export function getFailedDeployment(failedItemIds: string[] = []): any {

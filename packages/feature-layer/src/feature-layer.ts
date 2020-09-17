@@ -247,10 +247,12 @@ export function createItemFromTemplate(
                               resolve({
                                 id: createResponse.serviceItemId,
                                 type: newItemTemplate.type,
-                                postProcess: common.hasUnresolvedVariables({
-                                  item: newItemTemplate.item,
-                                  data: newItemTemplate.data
-                                })
+                                postProcess:
+                                  common.hasUnresolvedVariables({
+                                    item: newItemTemplate.item,
+                                    data: newItemTemplate.data
+                                  }) ||
+                                  common.isWorkforceProject(newItemTemplate)
                               });
                             }
                           },
@@ -346,11 +348,28 @@ export function postProcess(
   templateDictionary: any,
   authentication: common.UserSession
 ): Promise<common.IUpdateItemResponse> {
-  return common.updateItemTemplateFromDictionary(
-    itemId,
-    templateDictionary,
-    authentication
-  );
+  return new Promise<common.IUpdateItemResponse>((resolve, reject) => {
+    let def = Promise.resolve();
+    // extended for workforce services
+    /* istanbul ignore else */
+    if (common.isWorkforceProject(template)) {
+      def = common.fineTuneCreatedWorkforceItem(
+        template,
+        authentication,
+        template.item.url,
+        templateDictionary
+      );
+    }
+    def.then(() => {
+      common
+        .updateItemTemplateFromDictionary(
+          itemId,
+          templateDictionary,
+          authentication
+        )
+        .then(resolve, reject);
+    }, reject);
+  });
 }
 
 // ------------------------------------------------------------------------------------------------------------------ //

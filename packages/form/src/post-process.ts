@@ -20,7 +20,11 @@
  * @module post-process
  */
 
-import { UserSession, IItemTemplate, updateItemTemplateFromDictionary } from "@esri/solution-common";
+import {
+  UserSession,
+  IItemTemplate,
+  updateItemTemplateFromDictionary
+} from "@esri/solution-common";
 import { isHubFormTemplate } from "./helpers/is-hub-form-template";
 import { postProcessHubSurvey } from "./helpers/post-process-survey";
 
