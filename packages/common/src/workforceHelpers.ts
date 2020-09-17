@@ -633,7 +633,18 @@ export function _getIDs(v: string): string[] {
   // do not get id from
   // http://something/name_bad3483e025c47338d43df308c117308
   // {{bad3483e025c47338d43df308c117308.itemId}}
-  return regExTest(v, /(?<!_)(?<!{{)\b[0-9A-F]{32}/gi);
+
+  // lookbehind is not supported in safari
+  // cannot use /(?<!_)(?<!{{)\b[0-9A-F]{32}/gi
+
+  // use groups and filter out the ids that start with {{
+  return regExTest(v, /({*)(\b[0-9A-F]{32})/gi).reduce(function(acc, _v) {
+    /* istanbul ignore else */
+    if (_v.indexOf("{{") < 0) {
+      acc.push(_v.replace("{", ""));
+    }
+    return acc;
+  }, []);
 }
 
 /**
