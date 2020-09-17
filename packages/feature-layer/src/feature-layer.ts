@@ -351,6 +351,7 @@ export function postProcess(
   return new Promise<common.IUpdateItemResponse>((resolve, reject) => {
     let def = Promise.resolve();
     // extended for workforce services
+    /* istanbul ignore else */
     if (common.isWorkforceProject(template)) {
       def = common.fineTuneCreatedWorkforceItem(
         template,
