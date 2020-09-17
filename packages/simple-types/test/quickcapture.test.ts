@@ -436,9 +436,7 @@ describe("Module `quick capture`: manages the creation and deployment of quick c
           expect(args[1]).toBe(qcTemplate.data.name);
           expect(args[2]).toBe(expectedData);
           done();
-        //}, done.fail);
-        }, err => { console.log(JSON.stringify(err,null,2)); done.fail(); }
-      );
+        }, done.fail);
     });
 
   });
