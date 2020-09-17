@@ -16,6 +16,8 @@
     "@types/sinon": "^9.0.0",
     "acetate": "^2.0.8",
     "acetate-cli": "^1.0.1",
+    "acorn": "^8.0.1",
+    "acorn-walk": "^8.0.0",
     "changelog-parser": "^2.7.0",
     "cheerio": "^1.0.0-rc.3",
     "codecov": "^3.6.5",
