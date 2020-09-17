@@ -209,11 +209,125 @@ describe("Module `quick capture`: manages the creation and deployment of quick c
       expect(common.getProp(obj, urlPath)).toEqual(expectedUpdatedUrl);
     });
 
-    it("postProcess QuickCapture projects", done => {
-      const newItemId: string = "xxx79c91fc7642ebb4c0bbacfbacd510";
+    it("postProcess QuickCapture projects--no changes needed", done => {
+      const qcTemplate: common.IItemTemplate = templates.getItemTemplate("QuickCapture Project");
+      const newItemId = qcTemplate.itemId;
+      qcTemplate.item.id = newItemId;
+      qcTemplate.item.extent = null;
+      qcTemplate.item.licenseInfo = "https://abc12/apps/opsdashboard/index.html#/" + newItemId + "?areaname=";
+      qcTemplate.data = {
+        application: {
+          basemap: {},
+          dataSources: [
+            {
+              featureServiceItemId:
+                "xxxe5f693de34620934787ead6693f10",
+              dataSourceId: "1d4de1e4-ef58-4e02-9159-7a6e6701cada",
+              url: "https://abc123/name/FeatureServer/0"
+            },
+            {
+              featureServiceItemId:
+                "xxxe5f693de34620934787ead6693f10",
+              dataSourceId: "1687a71b-cf77-48ed-b948-c66e228a0f74",
+              url: "https://abc123/name/FeatureServer/1"
+            }
+          ],
+          itemId: newItemId,
+          preferences: {
+            adminEmail: "casey@esri.com"
+          },
+          templateGroups: [],
+          userInputs: [],
+          version: 0.1
+        },
+        name: "qc.project.json"
+      };
 
-      const qcTemplate: common.IItemTemplate = templates.getItemTemplateSkeleton();
-      qcTemplate.itemId = newItemId;
+      const templateDictionary: any = {
+        user: {
+          email: "casey@esri.com"
+        },
+        "4efe5f693de34620934787ead6693f10": {
+          itemId: "xxxe5f693de34620934787ead6693f10",
+          layer0: {
+            url: "https://abc123/name/FeatureServer/0"
+          },
+          layer1: {
+            url: "https://abc123/name/FeatureServer/1"
+          }
+        },
+        "9da79c91fc7642ebb4c0bbacfbacd510": {
+          itemId: newItemId
+        }
+      };
+
+      const expectedData: any = JSON.stringify({
+        basemap: {},
+        dataSources: [
+          {
+            featureServiceItemId: "xxxe5f693de34620934787ead6693f10",
+            dataSourceId: "1d4de1e4-ef58-4e02-9159-7a6e6701cada",
+            url: "https://abc123/name/FeatureServer/0"
+          },
+          {
+            featureServiceItemId: "xxxe5f693de34620934787ead6693f10",
+            dataSourceId: "1687a71b-cf77-48ed-b948-c66e228a0f74",
+            url: "https://abc123/name/FeatureServer/1"
+          }
+        ],
+        itemId: newItemId,
+        preferences: {
+          adminEmail: "casey@esri.com"
+        },
+        templateGroups: [],
+        userInputs: [],
+        version: 0.1
+      });
+
+      const updateSpy = spyOn(
+        common,
+        "updateItemResourceText"
+      ).and.callThrough();
+
+      fetchMock
+      .get(
+        utils.PORTAL_SUBSET.restUrl + "/content/items/" + newItemId + "?f=json&token=fake-token",
+        qcTemplate.item
+      )
+      .post(
+        utils.PORTAL_SUBSET.restUrl + "/content/items/" + newItemId + "/data",
+        qcTemplate.data
+      )
+      .post(
+        utils.PORTAL_SUBSET.restUrl + "/content/users/casey/items/" + newItemId + "/updateResources",
+        { success: true }
+      );
+
+      quickcapture
+        .postProcess(
+          newItemId,
+          "QuickCapture Project",
+          [],
+          qcTemplate,
+          [qcTemplate],
+          templateDictionary,
+          MOCK_USER_SESSION
+        )
+        .then(() => {
+          const args = updateSpy.calls.argsFor(0) as any[];
+          expect(args[0]).toBe(newItemId);
+          expect(args[1]).toBe(qcTemplate.data.name);
+          expect(args[2]).toBe(expectedData);
+          done();
+        }, done.fail);
+    });
+
+    it("postProcess QuickCapture projects--changes needed", done => {
+      const qcTemplate: common.IItemTemplate = templates.getItemTemplate("QuickCapture Project");
+      const newItemId = qcTemplate.itemId;
+      qcTemplate.item.id = newItemId;
+      qcTemplate.item.extent = null;
+      qcTemplate.item.licenseInfo = "{{portalBaseUrl}}/apps/opsdashboard/index.html#/{{9da79c91fc7642ebb4c0bbacfbacd510.itemId}}?areaname=";
       qcTemplate.data = {
         application: {
           basemap: {},
@@ -256,7 +370,7 @@ describe("Module `quick capture`: manages the creation and deployment of quick c
           }
         },
         "9da79c91fc7642ebb4c0bbacfbacd510": {
-          itemId: "xxx79c91fc7642ebb4c0bbacfbacd510"
+          itemId: newItemId
         }
       };
 
@@ -274,7 +388,7 @@ describe("Module `quick capture`: manages the creation and deployment of quick c
             url: "https://abc123/name/FeatureServer/1"
           }
         ],
-        itemId: "xxx79c91fc7642ebb4c0bbacfbacd510",
+        itemId: newItemId,
         preferences: {
           adminEmail: "casey@esri.com"
         },
@@ -288,11 +402,21 @@ describe("Module `quick capture`: manages the creation and deployment of quick c
         "updateItemResourceText"
       ).and.callThrough();
 
-      fetchMock.post(
-        utils.PORTAL_SUBSET.restUrl +
-          "/content/users/casey/items/" +
-          newItemId +
-          "/updateResources",
+      fetchMock
+      .get(
+        utils.PORTAL_SUBSET.restUrl + "/content/items/" + newItemId + "?f=json&token=fake-token",
+        qcTemplate.item
+      )
+      .post(
+        utils.PORTAL_SUBSET.restUrl + "/content/items/" + newItemId + "/data",
+        qcTemplate.data
+      )
+      .post(
+        utils.PORTAL_SUBSET.restUrl + "/content/users/casey/items/" + newItemId + "/update",
+        { success: true }
+      )
+      .post(
+        utils.PORTAL_SUBSET.restUrl + "/content/users/casey/items/" + newItemId + "/updateResources",
         { success: true }
       );
 
@@ -312,7 +436,10 @@ describe("Module `quick capture`: manages the creation and deployment of quick c
           expect(args[1]).toBe(qcTemplate.data.name);
           expect(args[2]).toBe(expectedData);
           done();
-        }, done.fail);
+        //}, done.fail);
+        }, err => { console.log(JSON.stringify(err,null,2)); done.fail(); }
+      );
     });
+
   });
 });

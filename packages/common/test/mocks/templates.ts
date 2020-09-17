@@ -239,6 +239,15 @@ export function getItemTemplate(
     case "Project Template":
       break;
 
+    case "QuickCapture Project":
+      templatePart = getItemTemplateFundamentals(
+        type,
+        mockItems.getItemTypeAbbrev(type),
+        dependencies,
+        url
+      );
+      break;
+
     case "StoryMap":
       templatePart = getItemTemplateFundamentals(
         type,
