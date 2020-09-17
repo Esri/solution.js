@@ -210,13 +210,24 @@ export function postProcess(
   templateDictionary: any,
   authentication: common.UserSession
 ): Promise<any> {
-  template.data = common.replaceInTemplate(template.data, templateDictionary);
-  return common.updateItemResourceText(
-    itemId,
-    template.data.name,
-    JSON.stringify(template.data.application),
-    authentication
-  );
+  return new Promise<any>((resolve, reject) => {
+    template.data = common.replaceInTemplate(template.data, templateDictionary);
+    common.updateItemTemplateFromDictionary(
+      itemId,
+      templateDictionary,
+      authentication
+    ).then(
+      () => {
+        common.updateItemResourceText(
+          itemId,
+          template.data.name,
+          JSON.stringify(template.data.application),
+          authentication
+        ).then(resolve, reject);
+      },
+      reject
+    );
+  });
 }
 
 //#endregion
