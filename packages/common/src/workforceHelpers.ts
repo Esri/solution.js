@@ -292,14 +292,15 @@ export function getWorkforceServiceInfo(
 ): Promise<IFeatureServiceProperties> {
   return new Promise<IFeatureServiceProperties>((resolve, reject) => {
     url = url.replace("/rest/admin/services", "/rest/services");
+    url = _updateUrl(url);
     const requests: any[] = [
       queryFeatures({
-        url: `${url}/3`,
+        url: `${url}3`,
         where: "1=1",
         authentication
       }),
       queryFeatures({
-        url: `${url}/4`,
+        url: `${url}4`,
         where: "1=1",
         authentication
       })
@@ -705,12 +706,14 @@ export function fineTuneCreatedWorkforceItem(
   return new Promise<any>((resolve, reject) => {
     destinationAuthentication.getUser().then(
       user => {
+        // update url with slash if necessary
+        url = _updateUrl(url);
         // Dispatchers...index 2 for workforce v2
         // for v1 we need tp fetch from dispatchers for v2 we use the items url
         const dispatchers = getProp(newlyCreatedItem, "data.dispatchers");
         // add current user as dispatcher
         _updateDispatchers(
-          dispatchers && dispatchers.url ? dispatchers.url : `${url}/2`,
+          dispatchers && dispatchers.url ? dispatchers.url : `${url}2`,
           user.username || "",
           user.fullName || "",
           destinationAuthentication
@@ -731,7 +734,7 @@ export function fineTuneCreatedWorkforceItem(
               _getFields(url, [2, 3, 4], destinationAuthentication).then(
                 fields => {
                   // Assignment Types...index 3
-                  const assignmentTypeUrl = `${url}/3`;
+                  const assignmentTypeUrl = `${url}3`;
                   const assignmentTypeInfos =
                     workforceInfos.assignmentTypeInfos;
                   const assignmentTypeFeatures = _getAddFeatures(
@@ -747,7 +750,7 @@ export function fineTuneCreatedWorkforceItem(
                   );
 
                   // Assignment Integrations...index 4
-                  const assignmentIntegrationUrl = `${url}/4`;
+                  const assignmentIntegrationUrl = `${url}4`;
                   const assignmentIntegrationInfos =
                     workforceInfos.assignmentIntegrationInfos;
                   const assignmentIntegrationFeatures = _getAddFeatures(
@@ -791,22 +794,27 @@ export function _getFields(
       fields: "*",
       authentication: authentication
     };
-
+    url = _updateUrl(url);
     const promises: any[] = [];
     ids.forEach(id => {
-      promises.push(rest_request(`${url}/${id}`, options));
+      promises.push(rest_request(`${url}${id}`, options));
     });
     Promise.all(promises).then(
       results => {
         const finalResult: any = {};
         results.forEach(r => {
-          finalResult[`${url}/${r.id}`] = r.fields.map((f: any) => f.name);
+          finalResult[`${url}${r.id}`] = r.fields.map((f: any) => f.name);
         });
         resolve(finalResult);
       },
       e => reject(fail(e))
     );
   });
+}
+
+export function _updateUrl(url: string): string {
+  url += url.endsWith("/") ? "" : "/";
+  return url;
 }
 
 export function _getAddFeatures(updateInfos: any, fields: any[]): any {

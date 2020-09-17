@@ -349,26 +349,27 @@ export function postProcess(
   authentication: common.UserSession
 ): Promise<common.IUpdateItemResponse> {
   return new Promise<common.IUpdateItemResponse>((resolve, reject) => {
-    let def = Promise.resolve();
-    // extended for workforce services
-    /* istanbul ignore else */
-    if (common.isWorkforceProject(template)) {
-      def = common.fineTuneCreatedWorkforceItem(
-        template,
-        authentication,
-        template.item.url,
-        templateDictionary
-      );
-    }
-    def.then(() => {
-      common
-        .updateItemTemplateFromDictionary(
-          itemId,
-          templateDictionary,
-          authentication
-        )
-        .then(resolve, reject);
-    }, reject);
+    common
+      .updateItemTemplateFromDictionary(
+        itemId,
+        templateDictionary,
+        authentication
+      )
+      .then(results => {
+        if (common.isWorkforceProject(template)) {
+          template = common.replaceInTemplate(template, templateDictionary);
+          common
+            .fineTuneCreatedWorkforceItem(
+              template,
+              authentication,
+              template.item.url,
+              templateDictionary
+            )
+            .then(resolve, reject);
+        } else {
+          resolve(results);
+        }
+      }, reject);
   });
 }
 
