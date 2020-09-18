@@ -93,20 +93,18 @@ describe("Module `notebook`: manages the creation and deployment of notebook pro
         template.item.id = template.itemId = "3ef";
         const td = { owner: "Luke Skywalker" };
 
-        const updateUrl = utils.PORTAL_SUBSET.restUrl + "/content/users/casey/items/3ef/update";
+        const updateUrl =
+          utils.PORTAL_SUBSET.restUrl + "/content/users/casey/items/3ef/update";
         fetchMock
           .get(
-            utils.PORTAL_SUBSET.restUrl + "/content/items/3ef?f=json&token=fake-token",
+            utils.PORTAL_SUBSET.restUrl +
+              "/content/items/3ef?f=json&token=fake-token",
             template.item
           )
-          .post(
-            utils.PORTAL_SUBSET.restUrl + "/content/items/3ef/data",
-            { value: "{{owner}}" }
-          )
-          .post(
-            updateUrl,
-            utils.getSuccessResponse({ "id": template.item.id })
-          );
+          .post(utils.PORTAL_SUBSET.restUrl + "/content/items/3ef/data", {
+            value: "{{owner}}"
+          })
+          .post(updateUrl, utils.getSuccessResponse({ id: template.item.id }));
 
         return notebookProcessor
           .postProcess(
@@ -119,16 +117,18 @@ describe("Module `notebook`: manages the creation and deployment of notebook pro
             MOCK_USER_SESSION
           )
           .then(result => {
-            expect(result).toEqual(utils.getSuccessResponse({ "id": template.item.id }));
+            expect(result).toEqual(
+              utils.getSuccessResponse({ id: template.item.id })
+            );
 
             const callBody = fetchMock.calls(updateUrl)[0][1].body as string;
             expect(callBody).toEqual(
-              'f=json&text=%7B%22value%22%3A%22Luke%20Skywalker%22%7D&id=3ef&name=Name%20of%20an%20AGOL%20item&' +
-              'title=An%20AGOL%20item&type=Notebook&typeKeywords=JavaScript&description=Description%20of%20an%20AGOL' +
-              '%20item&tags=test&snippet=Snippet%20of%20an%20AGOL%20item&thumbnail=https%3A%2F%2F' +
-              'myorg.maps.arcgis.com%2Fsharing%2Frest%2Fcontent%2Fitems%2Fnbk1234567890%2Finfo%2Fthumbnail' +
-              '%2Fago_downloaded.png&extent=%7B%7BsolutionItemExtent%7D%7D&categories=&accessInformation=' +
-              'Esri%2C%20Inc.&culture=en-us&url=&token=fake-token'
+              "f=json&text=%7B%22value%22%3A%22Luke%20Skywalker%22%7D&id=3ef&name=Name%20of%20an%20AGOL%20item&" +
+                "title=An%20AGOL%20item&type=Notebook&typeKeywords=JavaScript&description=Description%20of%20an%20AGOL" +
+                "%20item&tags=test&snippet=Snippet%20of%20an%20AGOL%20item&thumbnail=https%3A%2F%2F" +
+                "myorg.maps.arcgis.com%2Fsharing%2Frest%2Fcontent%2Fitems%2Fnbk1234567890%2Finfo%2Fthumbnail" +
+                "%2Fago_downloaded.png&extent=%7B%7BsolutionItemExtent%7D%7D&categories=&accessInformation=" +
+                "Esri%2C%20Inc.&culture=en-us&url=&token=fake-token"
             );
           });
       });
@@ -140,13 +140,13 @@ describe("Module `notebook`: manages the creation and deployment of notebook pro
 
         fetchMock
           .get(
-            utils.PORTAL_SUBSET.restUrl + "/content/items/3ef?f=json&token=fake-token",
+            utils.PORTAL_SUBSET.restUrl +
+              "/content/items/3ef?f=json&token=fake-token",
             template.item
           )
-          .post(
-            utils.PORTAL_SUBSET.restUrl + "/content/items/3ef/data",
-            { value: "Larry" }
-          );
+          .post(utils.PORTAL_SUBSET.restUrl + "/content/items/3ef/data", {
+            value: "Larry"
+          });
 
         return notebookProcessor
           .postProcess(
@@ -159,7 +159,9 @@ describe("Module `notebook`: manages the creation and deployment of notebook pro
             MOCK_USER_SESSION
           )
           .then(result => {
-            expect(result).toEqual(utils.getSuccessResponse({ "id": template.item.id }));
+            expect(result).toEqual(
+              utils.getSuccessResponse({ id: template.item.id })
+            );
           });
       });
     }

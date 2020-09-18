@@ -172,7 +172,11 @@ export function copyData(
           })
         };
 
-        helpersUpdateItem(update, destination.authentication, destination.folder).then(
+        helpersUpdateItem(
+          update,
+          destination.authentication,
+          destination.folder
+        ).then(
           resolve,
           e => reject(fail(e)) // unable to add resource
         );

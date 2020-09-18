@@ -247,10 +247,12 @@ export function createItemFromTemplate(
                               resolve({
                                 id: createResponse.serviceItemId,
                                 type: newItemTemplate.type,
-                                postProcess: common.hasUnresolvedVariables({
-                                  item: newItemTemplate.item,
-                                  data: newItemTemplate.data
-                                })
+                                postProcess:
+                                  common.hasUnresolvedVariables({
+                                    item: newItemTemplate.item,
+                                    data: newItemTemplate.data
+                                  }) ||
+                                  common.isWorkforceProject(newItemTemplate)
                               });
                             }
                           },
@@ -346,11 +348,29 @@ export function postProcess(
   templateDictionary: any,
   authentication: common.UserSession
 ): Promise<common.IUpdateItemResponse> {
-  return common.updateItemTemplateFromDictionary(
-    itemId,
-    templateDictionary,
-    authentication
-  );
+  return new Promise<common.IUpdateItemResponse>((resolve, reject) => {
+    common
+      .updateItemTemplateFromDictionary(
+        itemId,
+        templateDictionary,
+        authentication
+      )
+      .then(results => {
+        if (common.isWorkforceProject(template)) {
+          template = common.replaceInTemplate(template, templateDictionary);
+          common
+            .fineTuneCreatedWorkforceItem(
+              template,
+              authentication,
+              template.item.url,
+              templateDictionary
+            )
+            .then(resolve, reject);
+        } else {
+          resolve(results);
+        }
+      }, reject);
+  });
 }
 
 // ------------------------------------------------------------------------------------------------------------------ //

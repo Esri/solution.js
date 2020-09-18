@@ -265,8 +265,8 @@ export interface IDeploySolutionOptions {
   enableItemReuse?: boolean; // when true items with source-itemId type keyword will be reused
   progressCallback?: ISolutionProgressCallback;
   consoleProgress?: boolean; // default: false
-  storageAuthentication?: UserSession;  // credentials for the organization with the source items; default: use
-                                        // authentication supplied for deployment destination
+  storageAuthentication?: UserSession; // credentials for the organization with the source items; default: use
+  // authentication supplied for deployment destination
 }
 
 /**
@@ -281,6 +281,7 @@ export interface IFeatureServiceProperties {
   service: any;
   layers: any[];
   tables: any[];
+  workforceInfos?: any;
 }
 
 /**
