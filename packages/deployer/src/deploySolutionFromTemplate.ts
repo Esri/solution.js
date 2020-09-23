@@ -68,16 +68,6 @@ export function deploySolutionFromTemplate(
           foldersAndGroupsResponse
         ] = responses;
 
-        // Initialize replacement dictionary
-        // swap user defined params before we start...no need to wait
-        if (templateDictionary.params) {
-          solutionTemplateData.templates = solutionTemplateData.templates.map(
-            (template: any) => {
-              return common.replaceInTemplate(template, templateDictionary);
-            }
-          );
-        }
-
         // update template items with source-itemId type keyword
         solutionTemplateData.templates = solutionTemplateData.templates.map(
           (template: any) => {
