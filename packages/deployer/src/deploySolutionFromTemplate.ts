@@ -55,6 +55,8 @@ export function deploySolutionFromTemplate(
       );
     }
 
+    _replaceParamVaiables(solutionTemplateData, templateDictionary);
+
     // Get information about deployment environment
     Promise.all([
       common.getPortal("", authentication), // determine if we are deploying to portal
@@ -67,16 +69,6 @@ export function deploySolutionFromTemplate(
           userResponse,
           foldersAndGroupsResponse
         ] = responses;
-
-        // Initialize replacement dictionary
-        // swap user defined params before we start...no need to wait
-        if (templateDictionary.params) {
-          solutionTemplateData.templates = solutionTemplateData.templates.map(
-            (template: any) => {
-              return common.replaceInTemplate(template, templateDictionary);
-            }
-          );
-        }
 
         // update template items with source-itemId type keyword
         solutionTemplateData.templates = solutionTemplateData.templates.map(
@@ -324,6 +316,63 @@ export function deploySolutionFromTemplate(
         }
       );
   });
+}
+
+export function _replaceParamVaiables(
+  solutionTemplateData: any,
+  templateDictionary: any
+): void {
+  // a custom params object can be passed in with the options to deploy a solution
+  // in most cases we can defer to the item type handlers to use these values
+  // for variable replacement
+  // for spatial reference specifically we need to replace up front so the default extent
+  // logic can execute as expected
+  solutionTemplateData.templates = solutionTemplateData.templates.map(
+    (template: common.IItemTemplate) => {
+      // can't do this as it causes other values that don't exist in the dict yet to revert to defaults they may have defined
+      // return common.replaceInTemplate(template, templateDictionary);
+      /* istanbul ignore else */
+      if (template.type === "Feature Service") {
+        const paramsLookup: string = "params.";
+
+        const wkidItemPath: string = "item.spatialReference.wkid";
+        template = _updateProp(
+          template,
+          wkidItemPath,
+          paramsLookup,
+          templateDictionary
+        );
+
+        const wkidServicePath: string =
+          "properties.service.spatialReference.wkid";
+        template = _updateProp(
+          template,
+          wkidServicePath,
+          paramsLookup,
+          templateDictionary
+        );
+      }
+      return template;
+    }
+  );
+}
+
+export function _updateProp(
+  template: common.IItemTemplate,
+  path: string,
+  lookup: string,
+  templateDictionary: any
+): common.IItemTemplate {
+  const wkid: any = common.getProp(template, path);
+  /* istanbul ignore else */
+  if (wkid && typeof wkid === "string" && wkid.indexOf(lookup) > -1) {
+    common.setProp(
+      template,
+      path,
+      common.replaceInTemplate(wkid, templateDictionary)
+    );
+  }
+  return template;
 }
 
 export function _checkedReplaceAll(

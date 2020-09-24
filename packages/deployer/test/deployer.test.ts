@@ -1807,4 +1807,41 @@ describe("Module `deployer`", () => {
       });
     }
   });
+  describe("_replaceParamVaiables", () => {
+    it("should update custom sr prop", () => {
+      const featureServiceTemplate: any = templates.getItemTemplate(
+        "Feature Service"
+      );
+      featureServiceTemplate.properties.service.spatialReference.wkid =
+        "{{params.wkid||4326}}";
+
+      const templateDictionary: any = {
+        params: {
+          defaultExtent: {
+            xmin: -20037507.0671618,
+            ymin: -20037507.0671618,
+            xmax: 20037507.0671618,
+            ymax: 20037507.0671618,
+            spatialReference: {
+              wkid: 102100
+            }
+          },
+          wkid: 102100
+        }
+      };
+
+      const solutionData: any = {
+        templates: [featureServiceTemplate]
+      };
+
+      deploySolutionFromTemplate._replaceParamVaiables(
+        solutionData,
+        templateDictionary
+      );
+
+      expect(
+        solutionData.templates[0].properties.service.spatialReference.wkid
+      ).toEqual(102100);
+    });
+  });
 });
