@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased][HEAD]
 
+## [0.18.5] - September 24th 2020
+
+
+
 ## [0.18.4] - September 24th 2020
 
 
@@ -94,4 +98,5 @@ All notable changes to this project will be documented in this file.
 [0.18.2]: https://github.com/Esri/solution.js/compare/v0.18.1...v0.18.2 "v0.18.2"
 [0.18.3]: https://github.com/Esri/solution.js/compare/v0.18.2...v0.18.3 "v0.18.3"
 [0.18.4]: https://github.com/Esri/solution.js/compare/v0.18.3...v0.18.4 "v0.18.4"
-[HEAD]: https://github.com/Esri/solution.js/compare/v0.18.4...HEAD "Unreleased Changes"
+[0.18.5]: https://github.com/Esri/solution.js/compare/v0.18.4...v0.18.5 "v0.18.5"
+[HEAD]: https://github.com/Esri/solution.js/compare/v0.18.5...HEAD "Unreleased Changes"
