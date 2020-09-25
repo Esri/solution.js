@@ -75,7 +75,11 @@ export function deploySolutionItems(
             event: common.SItemProgressStatus[status],
             data: itemId
           } as common.ISolutionProgressEvent;
-          options.progressCallback(Math.round(percentDone), options.jobId, event);
+          options.progressCallback(
+            Math.round(percentDone),
+            options.jobId,
+            event
+          );
         } else {
           options.progressCallback(Math.round(percentDone), options.jobId);
         }
@@ -133,6 +137,12 @@ export function deploySolutionItems(
           templates,
           templateDictionary.solutionItemId
         );
+
+        // portal does not allow views of a single source to be created at the same time
+        if (templateDictionary.organization.isPortal) {
+          templates = _evaluateSharedViewSources(templates);
+        }
+
         // why is the return not used?
 
         cloneOrderChecklist.forEach(id => {
@@ -177,6 +187,139 @@ export function deploySolutionItems(
       }
     );
   });
+}
+
+/**
+ * Portal does not allow views of a single source to be created at the same time.
+ *
+ * Update view templates with an array of other view template ids that it should wait on.
+ *
+ * @param templates a collection of AGO item templates
+ *
+ * @returns An updated array of item templates
+ *
+ */
+export function _evaluateSharedViewSources(
+  templates: common.IItemTemplate[]
+): common.IItemTemplate[] {
+  // update the templates so we can defer the deployment when more than one view shares the same source
+  // these are not classic dependencies but are in some ways similar
+  const views: any[] = _getViews(templates);
+
+  _updateViewTemplates(templates, views);
+
+  const viewHash: any = _getViewHash(views);
+
+  let i: number = 0;
+  const processed: string[] = [];
+
+  Object.keys(viewHash).forEach(k => {
+    const _views: string[] = viewHash[k];
+    _views.forEach(cv => {
+      const template = common.findTemplateInList(templates, cv);
+      const syncViews = common.getProp(template, "properties.syncViews");
+      /* istanbul ignore else */
+      if (syncViews && syncViews.length > 0) {
+        common.setProp(
+          template,
+          "properties.syncViews",
+          i === 0 ? [] : common.cloneObject(processed)
+        );
+      }
+      processed.push(cv);
+      i += 1;
+    });
+    i = 0;
+  });
+
+  return templates;
+}
+
+/**
+ * Add a syncViews array to each template that will hold all other view ids that
+ * have the same FS dependency.
+ * These arrays will be processed later to only contain ids that each view will need to wait on.
+ *
+ * @param templates a collection of AGO item templates
+ * @param views an array of view template details
+ *
+ * @returns An updated array of item templates
+ *
+ */
+export function _updateViewTemplates(
+  templates: common.IItemTemplate[],
+  views: any[]
+): common.IItemTemplate[] {
+  views.forEach(v => {
+    v.dependencies.forEach((id: string) => {
+      templates = templates.map(t => {
+        /* istanbul ignore else */
+        if (
+          common.getProp(t, "properties.service.isView") &&
+          t.dependencies.indexOf(id) > -1 &&
+          t.itemId !== v.id
+        ) {
+          /* istanbul ignore else */
+          if (!Array.isArray(t.properties.syncViews)) {
+            t.properties.syncViews = [];
+          }
+          /* istanbul ignore else */
+          if (t.properties.syncViews.indexOf(v.id) < 0) {
+            t.properties.syncViews.push(v.id);
+          }
+        }
+        return t;
+      });
+    });
+  });
+  return templates;
+}
+
+/**
+ * Get all view templates from the source templates collection
+ *
+ * @param views A collection of view ID and dependencies
+ *
+ * @returns an array of objects with th source FS id as the key and a list of views that are
+ * dependant upon it
+ *
+ * @protected
+ */
+export function _getViewHash(views: any[]): any {
+  const viewHash: any = {};
+  views.forEach(v => {
+    v.dependencies.forEach((d: string) => {
+      /* istanbul ignore else */
+      if (Object.keys(viewHash).indexOf(d) < 0) {
+        viewHash[d] = [v.id];
+      } else if (viewHash[d].indexOf(v.id) < 0) {
+        viewHash[d].push(v.id);
+      }
+    });
+  });
+  return viewHash;
+}
+
+/**
+ * Get all view templates from the source templates collection
+ *
+ * @param templates A collection of AGO item templates
+ *
+ * @returns an array with the view id and its dependencies
+ *
+ * @protected
+ */
+export function _getViews(templates: common.IItemTemplate[]): any[] {
+  return templates.reduce((acc, v) => {
+    /* istanbul ignore else */
+    if (common.getProp(v, "properties.service.isView")) {
+      acc.push({
+        id: v.itemId,
+        dependencies: v.dependencies
+      });
+    }
+    return acc;
+  }, []);
 }
 
 /**
@@ -428,7 +571,7 @@ export function _createItemFromTemplateWhenReady(
       common.ICreateItemFromTemplateResponse
     >(resolve => {
       // Wait until all of the item's dependencies are deployed
-      const awaitDependencies = template.dependencies.reduce(
+      const _awaitDependencies = template.dependencies.reduce(
         (acc: any[], id: string) => {
           const def = getProp(templateDictionary, `${id}.def`);
           // can't use maybePush as that clones the object, which does not work for Promises
@@ -440,6 +583,23 @@ export function _createItemFromTemplateWhenReady(
         },
         []
       );
+
+      const syncViews: string[] = common.getProp(
+        template,
+        "properties.syncViews"
+      );
+
+      const awaitDependencies =
+        syncViews && syncViews.length > 0
+          ? syncViews.reduce((acc: any[], v: any) => {
+              const def = getProp(templateDictionary, `${v}.def`);
+              /* istanbul ignore else */
+              if (def) {
+                acc.push(def);
+              }
+              return acc;
+            }, _awaitDependencies)
+          : _awaitDependencies;
 
       Promise.all(awaitDependencies).then(
         () => {
