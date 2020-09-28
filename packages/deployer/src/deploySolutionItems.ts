@@ -139,7 +139,7 @@ export function deploySolutionItems(
         );
 
         // portal does not allow views of a single source to be created at the same time
-        if (templateDictionary.organization.isPortal) {
+        if (common.getProp(templateDictionary, "organization.isPortal")) {
           templates = _evaluateSharedViewSources(templates);
         }
 
