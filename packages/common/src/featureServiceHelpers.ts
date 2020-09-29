@@ -661,6 +661,22 @@ export function updateFeatureServiceDefinition(
       // when the item is a view we need to grab the supporting fieldInfos
       /* istanbul ignore else */
       if (itemTemplate.properties.service.isView) {
+        // issue #471
+        const tableName: string = getProp(
+          item,
+          "adminLayerInfo.viewLayerDefinition.table.name"
+        );
+        const fieldName: string = getProp(
+          item,
+          "adminLayerInfo.geometryField.name"
+        );
+        if (fieldName && tableName) {
+          const geomName: string = templateDictionary.isPortal
+            ? `${tableName}.shape`
+            : `${tableName}.Shape`;
+          setProp(item, "adminLayerInfo.geometryField.name", geomName);
+        }
+
         adminLayerInfos[originalId] = item.adminLayerInfo;
         // need to update adminLayerInfo before adding to the service def
         // bring over the fieldInfos from the source layer
