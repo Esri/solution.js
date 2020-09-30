@@ -280,6 +280,12 @@ export function deploySolutionFromTemplate(
           templateDictionary
         );
 
+        // Write any user defined params to the solution
+        /* istanbul ignore else */
+        if (templateDictionary.params) {
+          solutionTemplateBase.data.params = templateDictionary.params;
+        }
+
         // Pass metadata in via params because item property is serialized, which discards a File
         return common.updateItem(
           solutionTemplateBase,
