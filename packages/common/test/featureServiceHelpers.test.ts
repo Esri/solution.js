@@ -72,6 +72,7 @@ import {
   _templatizeTimeInfo,
   _templatizeDefinitionQuery,
   _getNameMapping,
+  _updateGeomFieldName,
   _updateTemplateDictionaryFields,
   _validateFields,
   _validateDisplayField,
@@ -5660,6 +5661,77 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
       };
       _templatizeDefinitionQuery(layer, basePath, fieldNames);
       expect(layer).toEqual(expected);
+    });
+  });
+
+  describe("_updateGeomFieldName", () => {
+    it("should use the view layer def table name (Portal)", () => {
+      const item: any = {
+        adminLayerInfo: {
+          geometryField: {
+            name: "Shape"
+          },
+          viewLayerDefinition: {
+            table: {
+              name: "ABC_123"
+            }
+          }
+        }
+      };
+
+      const templateDictionary: any = {
+        isPortal: true
+      };
+      _updateGeomFieldName(item, templateDictionary);
+
+      const expecetd: string = "ABC_123.shape";
+      expect(item.adminLayerInfo.geometryField.name).toEqual(expecetd);
+    });
+
+    it("should use the view layer def table name (AGOL)", () => {
+      const item: any = {
+        adminLayerInfo: {
+          geometryField: {
+            name: "Shape"
+          },
+          viewLayerDefinition: {
+            table: {
+              name: "ABC_123"
+            }
+          }
+        }
+      };
+
+      const templateDictionary: any = {
+        isPortal: false
+      };
+      _updateGeomFieldName(item, templateDictionary);
+
+      const expecetd: string = "ABC_123.Shape";
+      expect(item.adminLayerInfo.geometryField.name).toEqual(expecetd);
+    });
+
+    it("should handle templatized value", () => {
+      const item: any = {
+        adminLayerInfo: {
+          geometryField: {
+            name: "{{MyId.itemId}}.Shape"
+          },
+          viewLayerDefinition: {
+            table: {
+              name: "ABC_123"
+            }
+          }
+        }
+      };
+
+      const templateDictionary: any = {
+        isPortal: false
+      };
+      _updateGeomFieldName(item, templateDictionary);
+
+      const expecetd: string = "ABC_123.Shape";
+      expect(item.adminLayerInfo.geometryField.name).toEqual(expecetd);
     });
   });
 
