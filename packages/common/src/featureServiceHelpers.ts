@@ -661,21 +661,7 @@ export function updateFeatureServiceDefinition(
       // when the item is a view we need to grab the supporting fieldInfos
       /* istanbul ignore else */
       if (itemTemplate.properties.service.isView) {
-        // issue #471
-        const tableName: string = getProp(
-          item,
-          "adminLayerInfo.viewLayerDefinition.table.name"
-        );
-        const fieldName: string = getProp(
-          item,
-          "adminLayerInfo.geometryField.name"
-        );
-        if (fieldName && tableName) {
-          const geomName: string = templateDictionary.isPortal
-            ? `${tableName}.shape`
-            : `${tableName}.Shape`;
-          setProp(item, "adminLayerInfo.geometryField.name", geomName);
-        }
+        _updateGeomFieldName(item, templateDictionary);
 
         adminLayerInfos[originalId] = item.adminLayerInfo;
         // need to update adminLayerInfo before adding to the service def
@@ -711,6 +697,29 @@ export function updateFeatureServiceDefinition(
       e => reject(fail(e))
     );
   });
+}
+
+/**
+ * When the itemm is a view with a geometry field update the value to
+ * use the table name from the view layer def
+ *
+ * @param item the item details from the current template
+ * @param templateDictionary Hash mapping property names to replacement values
+ * @protected
+ */
+export function _updateGeomFieldName(item: any, templateDictionary: any): void {
+  // issue #471
+  const tableName: string = getProp(
+    item,
+    "adminLayerInfo.viewLayerDefinition.table.name"
+  );
+  const fieldName: string = getProp(item, "adminLayerInfo.geometryField.name");
+  if (fieldName && tableName) {
+    const geomName: string = templateDictionary.isPortal
+      ? `${tableName}.shape`
+      : `${tableName}.Shape`;
+    setProp(item, "adminLayerInfo.geometryField.name", geomName);
+  }
 }
 
 /**
