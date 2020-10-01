@@ -31,7 +31,6 @@ export {
 
 import {
   IDependency,
-  IItemGeneralized,
   IItemTemplate,
   INumberValuePair,
   IPostProcessArgs,
