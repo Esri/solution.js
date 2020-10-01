@@ -1721,6 +1721,13 @@ export function _setItemProperties(
     params["editorTrackingInfo"] = item.editorTrackingInfo;
   }
 
+  if (isPortal) {
+    // portal will fail if initialExtent is defined but null
+    if (Object.keys(item).indexOf("initialExtent") && !item.initialExtent) {
+      deleteProp(item, "initialExtent");
+    }
+  }
+
   return item;
 }
 
