@@ -652,7 +652,7 @@ export function updateFeatureServiceDefinition(
     }
 
     listToAdd.forEach(toAdd => {
-      const item = toAdd.item;
+      let item = toAdd.item;
       const originalId = item.id;
       fieldInfos = cacheFieldInfos(item, fieldInfos);
       /* istanbul ignore else */
@@ -675,7 +675,7 @@ export function updateFeatureServiceDefinition(
         );
       }
       if (templateDictionary.isPortal) {
-        _updateForPortal(item);
+        item = _updateForPortal(item);
       }
       if (toAdd.type === "layer") {
         options.layers.push(item);
@@ -694,7 +694,7 @@ export function updateFeatureServiceDefinition(
   });
 }
 
-export function _updateForPortal(item: IItemGeneralized): void {
+export function _updateForPortal(item: any): any {
   // When deploying to portal we need to adjust the uniquie ID field up front
   /* istanbul ignore else */
   if (item.uniqueIdField && item.uniqueIdField.name) {
@@ -707,6 +707,7 @@ export function _updateForPortal(item: IItemGeneralized): void {
   // these are set when you create the service
   deleteProp(item, "sourceSchemaChangesAllowed");
   deleteProp(item, "isView");
+  return item;
 }
 
 /**
