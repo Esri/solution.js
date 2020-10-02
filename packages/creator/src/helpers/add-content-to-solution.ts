@@ -17,6 +17,7 @@
 import {
   EItemProgressStatus,
   failWithIds,
+  getIDs,
   getTemplateById,
   ICreateSolutionOptions,
   IItemProgressCallback,
@@ -162,6 +163,7 @@ export function _addContentToSolution(
           solutionTemplates = _postProcessGroupDependencies(solutionTemplates);
           solutionTemplates = _postProcessIgnoredItems(solutionTemplates);
           solutionTemplates = postProcessWorkforceTemplates(solutionTemplates);
+          _templatizeSolutionIds(solutionTemplates);
 
           // Update solution item with its data JSON
           const solutionData: ISolutionItemData = {
@@ -189,6 +191,7 @@ export function _addContentToSolution(
  * Update the items dependencies and groups arrays
  *
  * @param templates The array of templates to evaluate
+ * @return Updated version of the templates
  * @private
  */
 export function _postProcessGroupDependencies(
@@ -238,7 +241,7 @@ export function _postProcessGroupDependencies(
 
 /**
  * Check for feature service items that have been flagged for invalid designations.
- * Reomve templates that have invalid designations from the solution item and other item dependencies.
+ * Remove templates that have invalid designations from the solution item and other item dependencies.
  * Clean up any references to items with invalid designations in the other templates.
  *
  * @param templates The array of templates to evaluate
@@ -264,3 +267,76 @@ export function _postProcessIgnoredItems(
 
   return templates;
 }
+
+/**
+ * Recursively runs through an object to find and templatize any remaining references to solution's items.
+ *
+ * @param ids Ids to be replaced in strings found in object
+ * @param obj Object to be examined
+ * @private
+ */
+export function _replaceRemainingIdsInObject(
+  ids: string[],
+  obj: any
+): any {
+  if (obj) {
+    Object.keys(obj).forEach(prop => {
+      const propObj = obj[prop];
+      if (propObj) {
+        if (typeof propObj === "object") {
+          _replaceRemainingIdsInObject(ids, propObj);
+        } else if (typeof propObj === "string") {
+          obj[prop] = _replaceRemainingIdsInString(ids, propObj);
+        }
+      }
+    });
+  }
+  return obj;
+}
+
+/**
+ * Templatizes ids from a list in a string if they're not already templatized.
+ *
+ * @param ids Ids to be replaced in source string
+ * @param str Source string to be examined
+ * @return A copy of the source string with any templatization changes
+ * @private
+ */
+export function _replaceRemainingIdsInString(
+  ids: string[],
+  str: string
+): string {
+  let updatedStr = str;
+  const untemplatizedIds = getIDs(str);
+  if (untemplatizedIds.length > 0) {
+    untemplatizedIds.forEach(id => {
+      if (ids.includes(id)) {
+        const re = new RegExp("({*)" + id, "gi");
+        updatedStr = updatedStr.replace(
+          re,
+          match => match.indexOf("{{") < 0 ? "{{" + id.replace("{", "") + ".itemId}}" : match
+        );
+      }
+    });
+  }
+  return updatedStr;
+}
+
+/**
+ * Finds and templatizes any references to solution's items.
+ *
+ * @param templates The array of templates to evaluate
+ * @private
+ */
+export function _templatizeSolutionIds(
+  templates: IItemTemplate[]
+): void {
+  // Get the ids in the solution
+  const solutionIds: string[] = templates.map((template: IItemTemplate) => template.itemId);
+
+  // Cycle through each of the items in the template and scan the `item` and `data` sections of each for ids in our solution
+  templates.forEach((template: IItemTemplate) => {
+    _replaceRemainingIdsInObject(solutionIds, template.data);
+  });
+}
+
