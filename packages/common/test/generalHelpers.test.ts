@@ -837,6 +837,43 @@ describe("Module `generalHelpers`: common utility functions shared across packag
     });
   });
 
+  describe("getIDs", () => {
+    it("will find ids", () => {
+      let actual = generalHelpers.getIDs("bad3483e025c47338d43df308c117308");
+      expect(actual).toEqual(["bad3483e025c47338d43df308c117308"]);
+
+      actual = generalHelpers.getIDs("{bad3483e025c47338d43df308c117308");
+      expect(actual).toEqual(["bad3483e025c47338d43df308c117308"]);
+
+      actual = generalHelpers.getIDs("=bad3483e025c47338d43df308c117308");
+      expect(actual).toEqual(["bad3483e025c47338d43df308c117308"]);
+
+      actual = generalHelpers.getIDs(
+        "http://something/name_bad3483e025c47338d43df308c117308"
+      );
+      expect(actual).toEqual([]);
+
+      actual = generalHelpers.getIDs(
+        "{{bad3483e025c47338d43df308c117308.itemId}}"
+      );
+      expect(actual).toEqual([]);
+
+      actual = generalHelpers.getIDs(
+        "bad3483e025c47338d43df308c117308bad3483e025c47338d43df308c117308"
+      );
+      expect(actual).toEqual([]);
+
+      actual = generalHelpers.getIDs(
+        "bad3483e025c47338d43df308c117308 {bad4483e025c47338d43df308c117308 =bad5483e025c47338d43df308c117308 http://something/name_bad6483e025c47338d43df308c117308 {{bad7483e025c47338d43df308c117308.itemId}}"
+      );
+      expect(actual).toEqual([
+        "bad3483e025c47338d43df308c117308",
+        "bad4483e025c47338d43df308c117308",
+        "bad5483e025c47338d43df308c117308"
+      ]);
+    });
+  });
+
   describe("getProp", () => {
     it("should return a property given a path", () => {
       expect(generalHelpers.getProp({ color: "red" }, "color")).toEqual(
