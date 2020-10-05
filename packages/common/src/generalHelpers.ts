@@ -457,6 +457,35 @@ export function failWithIds(itemIds: string[], e?: any): any {
 }
 
 /**
+ * Extracts the ids from a string
+ *
+ * @param v String to examine
+ * @return List of id strings found
+ * @example
+ * get id from
+ *   bad3483e025c47338d43df308c117308
+ *   {bad3483e025c47338d43df308c117308
+ *   =bad3483e025c47338d43df308c117308
+ * do not get id from
+ *   http: *something/name_bad3483e025c47338d43df308c117308
+ *   {{bad3483e025c47338d43df308c117308.itemId}}
+ *   bad3483e025c47338d43df308c117308bad3483e025c47338d43df308c117308
+ */
+export function getIDs(v: string): string[] {
+  // lookbehind is not supported in safari
+  // cannot use /(?<!_)(?<!{{)\b[0-9A-F]{32}/gi
+
+  // use groups and filter out the ids that start with {{
+  return regExTest(v, /({*)(\b[0-9A-F]{32}\b)/gi).reduce(function(acc, _v) {
+    /* istanbul ignore else */
+    if (_v.indexOf("{{") < 0) {
+      acc.push(_v.replace("{", ""));
+    }
+    return acc;
+  }, []);
+}
+
+/**
  * Gets a property out of a deeply nested object.
  * Does not handle anything but nested object graph
  *
@@ -487,6 +516,23 @@ export function getProps(obj: any, props: string[]): any {
     }
     return a;
   }, [] as any[]);
+}
+
+/**
+ * Updates a list of the items dependencies if more are found in the
+ * provided value.
+ *
+ * @param v a string value to check for ids
+ * @param deps a list of the items dependencies
+ */
+export function idTest(v: any, deps: string[]): void {
+  const ids: any[] = getIDs(v);
+  ids.forEach(id => {
+    /* istanbul ignore else */
+    if (deps.indexOf(id) === -1) {
+      deps.push(id);
+    }
+  });
 }
 
 /**
@@ -691,6 +737,17 @@ export function getTemplateById(templates: IItemTemplate[], id: string): any {
     return false;
   });
   return template;
+}
+
+/**
+ * Evaluates a value with a regular expression
+ *
+ * @param v a string value to test with the expression
+ * @param ex the regular expresion to test with
+ * @return an array of matches
+ */
+export function regExTest(v: any, ex: RegExp): any[] {
+  return v && ex.test(v) ? v.match(ex) : [];
 }
 
 // ------------------------------------------------------------------------------------------------------------------ //
