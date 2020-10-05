@@ -2765,6 +2765,30 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
     });
   });
 
+  describe("_setItemProperties", () => {
+    it("will remove null initialExtent", () => {
+      const serviceInfo = {
+        service: {
+          capabilities: ""
+        }
+      };
+      const item: any = {
+        initialExtent: null
+      };
+      const expected = {
+        capabilities: ""
+      };
+
+      const actual = restHelpers._setItemProperties(
+        item,
+        serviceInfo,
+        {},
+        true
+      );
+      expect(actual).toEqual(expected);
+    });
+  });
+
   describe("shareItem ::", () => {
     it("shared the item", done => {
       const groupId: string = "grp1234567890";

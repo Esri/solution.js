@@ -72,6 +72,7 @@ import {
   _templatizeTimeInfo,
   _templatizeDefinitionQuery,
   _getNameMapping,
+  _updateForPortal,
   _updateGeomFieldName,
   _updateTemplateDictionaryFields,
   _validateFields,
@@ -5661,6 +5662,24 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
       };
       _templatizeDefinitionQuery(layer, basePath, fieldNames);
       expect(layer).toEqual(expected);
+    });
+  });
+
+  describe("_updateForPortal", () => {
+    it("will remove props", () => {
+      const item = {
+        id: "",
+        type: "",
+        isView: true,
+        sourceSchemaChangesAllowed: true
+      };
+      const expected = {
+        id: "",
+        type: ""
+      };
+      const actual = _updateForPortal(item);
+
+      expect(actual).toEqual(expected);
     });
   });
 

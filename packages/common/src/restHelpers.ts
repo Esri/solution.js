@@ -1695,6 +1695,7 @@ export function _setItemProperties(
     "isMultiServicesView"
   ];
   const deleteKeys: string[] = ["layers", "tables"];
+  /* istanbul ignore else */
   if (isPortal) {
     // removed for issue #423 causing FS to fail to create
     deleteKeys.push("adminServiceInfo");
@@ -1702,10 +1703,12 @@ export function _setItemProperties(
   const itemKeys: string[] = Object.keys(item);
   const serviceKeys: string[] = Object.keys(serviceInfo.service);
   serviceKeys.forEach(k => {
+    /* istanbul ignore else */
     if (itemKeys.indexOf(k) === -1 && deleteKeys.indexOf(k) < 0) {
       item[k] = serviceInfo.service[k];
       // These need to be included via params otherwise...
       // addToDef calls fail when adding adminLayerInfo
+      /* istanbul ignore else */
       if (serviceInfo.service.isView && keyProperties.indexOf(k) > -1) {
         params[k] = serviceInfo.service[k];
       }
@@ -1713,12 +1716,26 @@ export function _setItemProperties(
   });
 
   // Enable editor tracking on layer with related tables is not supported.
+  /* istanbul ignore else */
   if (
     item.isMultiServicesView &&
     getProp(item, "editorTrackingInfo.enableEditorTracking")
   ) {
     item.editorTrackingInfo.enableEditorTracking = false;
     params["editorTrackingInfo"] = item.editorTrackingInfo;
+  }
+
+  /* istanbul ignore else */
+  if (isPortal) {
+    // portal will fail when initialExtent is defined but null
+    // removed for issue #449 causing FS to fail to create on portal
+    /* istanbul ignore else */
+    if (
+      Object.keys(item).indexOf("initialExtent") > -1 &&
+      !item.initialExtent
+    ) {
+      deleteProp(item, "initialExtent");
+    }
   }
 
   return item;
