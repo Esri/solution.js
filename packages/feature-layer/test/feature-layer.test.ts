@@ -246,7 +246,7 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
             MOCK_USER_SESSION,
             true
           )
-          .then(() => done.fail, done);
+          .then(() => done.fail(), () => done());
       });
 
       it("handle template item with missing url for invalid group designations", done => {

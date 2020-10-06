@@ -783,7 +783,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
             resourcesFiles,
             access
           )
-          .then(() => done.fail(), done);
+          .then(() => done.fail(), () => done());
       });
     }
 
@@ -819,7 +819,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
           resourcesFiles,
           access
         )
-        .then(() => done.fail(), done);
+        .then(() => done.fail(), () => done());
     });
 
     it("can handle failure to create an item, hard error", done => {
@@ -850,7 +850,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
           resourcesFiles,
           access
         )
-        .then(() => done.fail(), done);
+        .then(() => done.fail(), () => done());
     });
 
     it("can handle failure to create a public item, hard error", done => {
@@ -891,7 +891,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
           resourcesFiles,
           access
         )
-        .then(() => done.fail(), done);
+        .then(() => done.fail(), () => done());
     });
   });
 
