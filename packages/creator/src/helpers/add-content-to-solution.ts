@@ -334,11 +334,10 @@ export function _templatizeSolutionIds(
   // Get the ids in the solution
   const solutionIds: string[] = templates.map((template: IItemTemplate) => template.itemId);
 
-  // Cycle through each of the items in the template and scan the `assets`, `data`, and `item` sections of each for ids in our solution
+  // Cycle through each of the items in the template and scan the `item` and `data` sections of each for ids in our solution
   templates.forEach((template: IItemTemplate) => {
-    _replaceRemainingIdsInObject(solutionIds, template.assets); // for Hub Site Application
-    _replaceRemainingIdsInObject(solutionIds, template.data);
     _replaceRemainingIdsInObject(solutionIds, template.item);
+    _replaceRemainingIdsInObject(solutionIds, template.data);
   });
 }
 
