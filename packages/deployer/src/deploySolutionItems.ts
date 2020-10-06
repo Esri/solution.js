@@ -110,6 +110,11 @@ export function deploySolutionItems(
       // ---------------------------------------------------------------------------------------------------------------
     };
 
+    // portal does not allow views of a single source to be created at the same time
+    if (common.getProp(templateDictionary, "organization.isPortal")) {
+      templates = _evaluateSharedViewSources(templates);
+    }
+
     // Create an ordered graph of the templates so that dependencies are created
     // before the items that need them
     const cloneOrderChecklist: string[] = common.topologicallySortItems(
@@ -137,11 +142,6 @@ export function deploySolutionItems(
           templates,
           templateDictionary.solutionItemId
         );
-
-        // portal does not allow views of a single source to be created at the same time
-        if (common.getProp(templateDictionary, "organization.isPortal")) {
-          templates = _evaluateSharedViewSources(templates);
-        }
 
         // why is the return not used?
 
@@ -210,26 +210,36 @@ export function _evaluateSharedViewSources(
 
   const viewHash: any = _getViewHash(views);
 
-  let i: number = 0;
-  const processed: string[] = [];
+  let processed: string[] = [];
+
+  const visited: string[] = [];
 
   Object.keys(viewHash).forEach(k => {
     const _views: string[] = viewHash[k];
     _views.forEach(cv => {
       const template = common.findTemplateInList(templates, cv);
       const syncViews = common.getProp(template, "properties.syncViews");
+
+      if (visited.indexOf(template.itemId) > -1) {
+        processed = processed.concat(syncViews);
+      }
       /* istanbul ignore else */
       if (syncViews && syncViews.length > 0) {
+        // when a view has multiple dependencies we need to retain the syncViews if they have been set already...
         common.setProp(
           template,
           "properties.syncViews",
-          i === 0 ? [] : common.cloneObject(processed)
+          common.cloneObject(processed)
         );
       }
-      processed.push(cv);
-      i += 1;
+      if (processed.indexOf(cv) < 0) {
+        processed.push(cv);
+      }
+      if (visited.indexOf(template.itemId) < 0) {
+        visited.push(template.itemId);
+      }
     });
-    i = 0;
+    processed = [];
   });
 
   return templates;
@@ -280,7 +290,7 @@ export function _updateViewTemplates(
  *
  * @param views A collection of view ID and dependencies
  *
- * @returns an array of objects with th source FS id as the key and a list of views that are
+ * @returns an array of objects with the source FS id as the key and a list of views that are
  * dependant upon it
  *
  * @protected

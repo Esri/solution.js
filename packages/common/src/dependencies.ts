@@ -20,6 +20,7 @@
  * @module dependencies
  */
 
+import { getProp } from "./generalHelpers";
 import { IItemTemplate } from "./interfaces";
 import { findTemplateIndexInList } from "./templatization";
 
@@ -35,9 +36,7 @@ import { findTemplateIndexInList } from "./templatization";
  * Note that items thrown in error may be dependent on each other either directly or via other items.
  * @protected
  */
-export function topologicallySortItems(
-  templates: IItemTemplate[]
-): string[] {
+export function topologicallySortItems(templates: IItemTemplate[]): string[] {
   // Cormen, Thomas H.; Leiserson, Charles E.; Rivest, Ronald L.; Stein, Clifford (2009)
   // Sections 22.3 (Depth-first search) & 22.4 (Topological sort), pp. 603-615
   // Introduction to Algorithms (3rd ed.), The MIT Press, ISBN 978-0-262-03384-8
@@ -84,26 +83,37 @@ export function topologicallySortItems(
     }
   });
 
+  function visitDependants(dependants: any[], vertexId: string) {
+    dependants.forEach(function(id) {
+      if (verticesToVisit[id] === SortVisitColor.White) {
+        // if not yet visited
+        visit(id);
+      } else if (verticesToVisit[id] === SortVisitColor.Gray) {
+        // visited, in progress
+        throw Error(
+          "Cyclical dependency detected involving items " +
+            vertexId +
+            " and " +
+            id
+        );
+      } else {
+        // finished
+      }
+    });
+  }
+
   // Visit vertex
   function visit(vertexId: string) {
     verticesToVisit[vertexId] = SortVisitColor.Gray; // visited, in progress
 
     // Visit dependents if not already visited; template has to be in templates list because calls to visit()
     // are based on verticiesToVisit[], which is initialized using the templates list
-    const template =
-      templates[findTemplateIndexInList(templates, vertexId)];
+    const template = templates[findTemplateIndexInList(templates, vertexId)];
     const dependencies: string[] = template.dependencies || [];
-    dependencies.forEach(function(dependencyId) {
-      if (verticesToVisit[dependencyId] === SortVisitColor.White) {
-        // if not yet visited
-        visit(dependencyId);
-      } else if (verticesToVisit[dependencyId] === SortVisitColor.Gray) {
-        // visited, in progress
-        throw Error("Cyclical dependency detected involving items " + vertexId + " and " + dependencyId);
-      } else {
-        // finished
-      }
-    });
+    visitDependants(dependencies, vertexId);
+
+    const syncViews: string[] = getProp(template, "properties.syncViews") || [];
+    visitDependants(syncViews, vertexId);
 
     verticesToVisit[vertexId] = SortVisitColor.Black; // finished
     buildList.push(vertexId); // add to end of list of ordered vertices because we want dependents first
