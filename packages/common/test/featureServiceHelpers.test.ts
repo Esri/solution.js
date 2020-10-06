@@ -2906,7 +2906,7 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
           tables: []
         },
         MOCK_USER_SESSION
-      ).then(e => done.fail, done);
+      ).then(() => done.fail(), () => done());
     });
 
     it("should handle error on getLayersAndTables", done => {
@@ -3024,7 +3024,7 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
           tables: []
         },
         MOCK_USER_SESSION
-      ).then(() => done.fail(), done);
+      ).then(() => done.fail(), () => done());
     });
 
     it("should handle absence of item url", done => {
@@ -3092,7 +3092,7 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
           tables: []
         },
         MOCK_USER_SESSION
-      ).then(() => done.fail(), done);
+      ).then(() => done.fail(), () => done());
     });
   });
 
