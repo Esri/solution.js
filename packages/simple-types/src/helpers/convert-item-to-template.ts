@@ -13,14 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import * as common from "@esri/solution-common";
 import * as dashboard from "../dashboard";
 import * as form from "../form";
 import * as notebook from "../notebook";
+import * as oic from "../oic";
+import * as quickcapture from "../quickcapture";
 import * as webmap from "../webmap";
 import * as webmappingapplication from "../webmappingapplication";
 import * as workforce from "../workforce";
-import * as quickcapture from "../quickcapture";
 
 export function convertItemToTemplate(
   solutionItemId: string,
@@ -107,7 +109,7 @@ export function convertItemToTemplate(
         });
 
         let wrapupPromise = Promise.resolve();
-        let webappPromise = Promise.resolve(itemTemplate);
+        let templateModifyingPromise = Promise.resolve(itemTemplate);
         switch (itemInfo.type) {
           case "Dashboard":
             dashboard.convertItemToTemplate(itemTemplate, authentication);
@@ -139,28 +141,34 @@ export function convertItemToTemplate(
           case "Notebook":
             notebook.convertNotebookToTemplate(itemTemplate);
             break;
+          case "Oriented Imagery Catalog":
+            templateModifyingPromise = oic.convertItemToTemplate(
+              itemTemplate,
+              authentication
+            );
+            break;
           case "Web Map":
-            webappPromise = webmap.convertItemToTemplate(
+            templateModifyingPromise = webmap.convertItemToTemplate(
               itemTemplate,
               authentication
             );
             break;
           case "Web Mapping Application":
             if (itemDataResponse) {
-              webappPromise = webmappingapplication.convertItemToTemplate(
+              templateModifyingPromise = webmappingapplication.convertItemToTemplate(
                 itemTemplate,
                 authentication
               );
             }
             break;
           case "Workforce Project":
-            webappPromise = workforce.convertItemToTemplate(
+            templateModifyingPromise = workforce.convertItemToTemplate(
               itemTemplate,
               authentication
             );
             break;
           case "QuickCapture Project":
-            webappPromise = quickcapture.convertQuickCaptureToTemplate(
+            templateModifyingPromise = quickcapture.convertQuickCaptureToTemplate(
               itemTemplate
             );
             break;
@@ -168,7 +176,7 @@ export function convertItemToTemplate(
 
         wrapupPromise.then(
           () => {
-            webappPromise.then(resolve, err => reject(common.fail(err)));
+            templateModifyingPromise.then(resolve, err => reject(common.fail(err)));
           },
           err => reject(common.fail(err))
         );
