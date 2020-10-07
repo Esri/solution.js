@@ -674,15 +674,11 @@ export function updateFeatureServiceDefinition(
         );
       }
       if (templateDictionary.isPortal) {
-        item = _updateForPortal(item);
+        item = _updateForPortal(item, itemTemplate, templateDictionary);
       }
-      if (toAdd.type === "layer") {
+      if (item.type === "Feature Layer") {
         options.layers.push(item);
       } else {
-        // Portal will fail if the geometryField is null
-        if (item.adminLayerInfo) {
-          deleteProp(item.adminLayerInfo, "geometryField");
-        }
         options.tables.push(item);
       }
     });
@@ -693,7 +689,11 @@ export function updateFeatureServiceDefinition(
   });
 }
 
-export function _updateForPortal(item: any): any {
+export function _updateForPortal(
+  item: any,
+  itemTemplate: IItemTemplate,
+  templateDictionary: any
+): any {
   // When deploying to portal we need to adjust the uniquie ID field up front
   /* istanbul ignore else */
   if (item.uniqueIdField && item.uniqueIdField.name) {
@@ -702,11 +702,86 @@ export function _updateForPortal(item: any): any {
     ).toLocaleLowerCase();
   }
 
+  // Portal will fail if the geometryField is null
+  if (item.type === "Table" && item.adminLayerInfo) {
+    deleteProp(item.adminLayerInfo, "geometryField");
+  }
+
+  // Portal will fail if the sourceFields in the viewLayerDef contain fields that are not in the source service
+  if (item.isView) {
+    const viewLayerDefTable: any = getProp(
+      item,
+      "adminLayerInfo.viewLayerDefinition.table"
+    );
+    if (viewLayerDefTable) {
+      _updateItemFields(
+        item,
+        viewLayerDefTable,
+        itemTemplate,
+        templateDictionary
+      );
+
+      // Handle related also
+      if (Array.isArray(viewLayerDefTable.relatedTables)) {
+        viewLayerDefTable.relatedTables.forEach((relatedTable: any) =>
+          _updateItemFields(
+            item,
+            relatedTable,
+            itemTemplate,
+            templateDictionary
+          )
+        );
+      }
+    }
+  }
+
   // not allowed to set sourceSchemaChangesAllowed or isView for portal
   // these are set when you create the service
   deleteProp(item, "sourceSchemaChangesAllowed");
   deleteProp(item, "isView");
   return item;
+}
+
+export function _updateItemFields(
+  item: any,
+  table: any,
+  itemTemplate: IItemTemplate,
+  templateDictionary: any
+): void {
+  const viewSourceLayerFields: any[] = table.sourceLayerFields.map((f: any) =>
+    f.source.toLowerCase()
+  );
+  const viewSourceLayerId: number = table.sourceLayerId;
+
+  if (
+    typeof viewSourceLayerId === "number" &&
+    Array.isArray(viewSourceLayerFields)
+  ) {
+    // need to make sure these actually exist in the source..
+    let sourceLayerFields: any[] = [];
+    itemTemplate.dependencies.forEach(d => {
+      const layerInfo: any = templateDictionary[d][`layer${viewSourceLayerId}`];
+      if (
+        layerInfo &&
+        layerInfo.fields &&
+        templateDictionary[d].name === table.sourceServiceName
+      ) {
+        sourceLayerFields = sourceLayerFields.concat(
+          Object.keys(layerInfo.fields)
+        );
+      }
+    });
+
+    if (sourceLayerFields.length > 0 && viewSourceLayerFields.length > 0) {
+      setProp(
+        item,
+        "adminLayerInfo.viewLayerDefinition.table.sourceLayerFields",
+        table.sourceLayerFields.filter(
+          (f: any) => sourceLayerFields.indexOf(f.name.toLowerCase()) > -1
+        )
+      );
+    }
+  }
 }
 
 /**
