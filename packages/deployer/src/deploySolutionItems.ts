@@ -220,6 +220,7 @@ export function _evaluateSharedViewSources(
       const template = common.findTemplateInList(templates, cv);
       const syncViews = common.getProp(template, "properties.syncViews");
 
+      /* istanbul ignore else */
       if (visited.indexOf(template.itemId) > -1) {
         processed = processed.concat(syncViews);
       }
@@ -232,9 +233,11 @@ export function _evaluateSharedViewSources(
           common.cloneObject(processed)
         );
       }
+      /* istanbul ignore else */
       if (processed.indexOf(cv) < 0) {
         processed.push(cv);
       }
+      /* istanbul ignore else */
       if (visited.indexOf(template.itemId) < 0) {
         visited.push(template.itemId);
       }

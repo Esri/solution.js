@@ -708,11 +708,13 @@ export function _updateForPortal(
   }
 
   // Portal will fail if the sourceFields in the viewLayerDef contain fields that are not in the source service
+  /* istanbul ignore else */
   if (item.isView) {
     const viewLayerDefTable: any = getProp(
       item,
       "adminLayerInfo.viewLayerDefinition.table"
     );
+    /* istanbul ignore else */
     if (viewLayerDefTable) {
       _updateItemFields(
         item,
@@ -722,8 +724,10 @@ export function _updateForPortal(
       );
 
       // Handle related also
+      /* istanbul ignore else */
       if (Array.isArray(viewLayerDefTable.relatedTables)) {
         viewLayerDefTable.relatedTables.forEach((relatedTable: any) =>
+          // NEED to get the itemTemplate for this to work correctly...
           _updateItemFields(
             item,
             relatedTable,
@@ -753,6 +757,7 @@ export function _updateItemFields(
   );
   const viewSourceLayerId: number = table.sourceLayerId;
 
+  /* istanbul ignore else */
   if (
     typeof viewSourceLayerId === "number" &&
     Array.isArray(viewSourceLayerFields)
@@ -761,6 +766,7 @@ export function _updateItemFields(
     let sourceLayerFields: any[] = [];
     itemTemplate.dependencies.forEach(d => {
       const layerInfo: any = templateDictionary[d][`layer${viewSourceLayerId}`];
+      /* istanbul ignore else */
       if (
         layerInfo &&
         layerInfo.fields &&
@@ -772,12 +778,13 @@ export function _updateItemFields(
       }
     });
 
+    /* istanbul ignore else */
     if (sourceLayerFields.length > 0 && viewSourceLayerFields.length > 0) {
       setProp(
         item,
         "adminLayerInfo.viewLayerDefinition.table.sourceLayerFields",
         table.sourceLayerFields.filter(
-          (f: any) => sourceLayerFields.indexOf(f.name.toLowerCase()) > -1
+          (f: any) => sourceLayerFields.indexOf(f.source.toLowerCase()) > -1
         )
       );
     }

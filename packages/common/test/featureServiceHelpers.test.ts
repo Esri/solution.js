@@ -2906,7 +2906,10 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
           tables: []
         },
         MOCK_USER_SESSION
-      ).then(() => done.fail(), () => done());
+      ).then(
+        () => done.fail(),
+        () => done()
+      );
     });
 
     it("should handle error on getLayersAndTables", done => {
@@ -3024,7 +3027,10 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
           tables: []
         },
         MOCK_USER_SESSION
-      ).then(() => done.fail(), () => done());
+      ).then(
+        () => done.fail(),
+        () => done()
+      );
     });
 
     it("should handle absence of item url", done => {
@@ -3092,7 +3098,10 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
           tables: []
         },
         MOCK_USER_SESSION
-      ).then(() => done.fail(), () => done());
+      ).then(
+        () => done.fail(),
+        () => done()
+      );
     });
   });
 
@@ -5677,7 +5686,101 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
         id: "",
         type: ""
       };
-      const actual = _updateForPortal(item);
+      const _itemTemplate: interfaces.IItemTemplate = templates.getItemTemplateSkeleton();
+      const actual = _updateForPortal(item, _itemTemplate, {});
+
+      expect(actual).toEqual(expected);
+    });
+
+    it("will remove view fields that are not in the service", () => {
+      const item = {
+        id: "",
+        type: "",
+        isView: true,
+        sourceSchemaChangesAllowed: true,
+        adminLayerInfo: {
+          viewLayerDefinition: {
+            table: {
+              sourceServiceName: "Snowmass",
+              sourceLayerId: 0,
+              sourceLayerFields: [
+                {
+                  name: "a",
+                  source: "aa"
+                },
+                {
+                  name: "b",
+                  source: "bb"
+                }
+              ],
+              relatedTables: [
+                {
+                  sourceServiceName: "Hagerman",
+                  sourceLayerId: 0,
+                  sourceLayerFields: [
+                    {
+                      name: "a1",
+                      source: "aa1"
+                    },
+                    {
+                      name: "b1",
+                      source: "bb1"
+                    }
+                  ]
+                }
+              ]
+            }
+          }
+        }
+      };
+      const expected = {
+        id: "",
+        type: "",
+        adminLayerInfo: {
+          viewLayerDefinition: {
+            table: {
+              sourceServiceName: "Snowmass",
+              sourceLayerId: 0,
+              sourceLayerFields: [
+                {
+                  name: "a",
+                  source: "aa"
+                }
+              ],
+              relatedTables: [
+                {
+                  sourceServiceName: "Hagerman",
+                  sourceLayerId: 0,
+                  sourceLayerFields: [
+                    {
+                      name: "a1", // TODO this should not be here after the code is fixed to get the correct service
+                      source: "aa1"
+                    },
+                    {
+                      name: "b1",
+                      source: "bb1"
+                    }
+                  ]
+                }
+              ]
+            }
+          }
+        }
+      };
+      const _itemTemplate: interfaces.IItemTemplate = templates.getItemTemplateSkeleton();
+      _itemTemplate.dependencies = ["44507dff46f54656a74032ac12acd977"];
+
+      const templateDictionary: any = {
+        "44507dff46f54656a74032ac12acd977": {
+          name: "Snowmass",
+          layer0: {
+            fields: {
+              aa: { name: "aa" }
+            }
+          }
+        }
+      };
+      const actual = _updateForPortal(item, _itemTemplate, templateDictionary);
 
       expect(actual).toEqual(expected);
     });

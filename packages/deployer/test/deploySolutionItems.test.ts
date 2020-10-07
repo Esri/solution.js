@@ -863,12 +863,22 @@ describe("Module `deploySolutionItems`", () => {
       const type: string = "Feature Service";
 
       const fsId: string = "aa4a6047326243b290f625e80ebe6531";
-
       const itemTemplateFS: common.IItemTemplate = templates.getItemTemplate(
         type
       );
       itemTemplateFS.item.thumbnail = null;
       itemTemplateFS.itemId = fsId;
+      itemTemplateFS.properties.service = {
+        isView: false
+      };
+      itemTemplateFS.dependencies = [];
+
+      const fsId2: string = "aa4a6047326243b290f625e80ebe6532";
+      const itemTemplateFS2: common.IItemTemplate = templates.getItemTemplate(
+        type
+      );
+      itemTemplateFS.item.thumbnail = null;
+      itemTemplateFS.itemId = fsId2;
       itemTemplateFS.properties.service = {
         isView: false
       };
@@ -894,7 +904,7 @@ describe("Module `deploySolutionItems`", () => {
       itemTemplateView2.properties.service = {
         isView: true
       };
-      itemTemplateView2.dependencies = [fsId];
+      itemTemplateView2.dependencies = [fsId, fsId2];
 
       const id3: string = "bb4a6047326243b290f625e80ebe6533";
       const itemTemplateView3: common.IItemTemplate = templates.getItemTemplate(
