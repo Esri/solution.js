@@ -39,9 +39,10 @@ import * as common from "@esri/solution-common";
 export function convertItemToTemplate(
   solutionItemId: string,
   itemInfo: any,
-  authentication: common.UserSession,
-  templatizeFieldReferences: boolean = false
+  authentication: common.UserSession
 ): Promise<common.IItemTemplate> {
+  const templatizeFieldReferences: boolean = false;
+
   return new Promise<common.IItemTemplate>((resolve, reject) => {
     // Init template
     const template: common.IItemTemplate = common.createInitializedItemTemplate(

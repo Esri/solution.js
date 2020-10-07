@@ -428,8 +428,7 @@ export interface IItemTemplateConversions {
   convertItemToTemplate(
     solutionItemId: string,
     itemInfo: any,
-    authentication: UserSession,
-    isGroup?: boolean
+    authentication: UserSession
   ): Promise<IItemTemplate>;
   createItemFromTemplate(
     template: IItemTemplate,
