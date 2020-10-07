@@ -18,7 +18,9 @@ import {
   EItemProgressStatus,
   failWithIds,
   getIDs,
+  getPortal,
   getTemplateById,
+  globalStringReplace,
   ICreateSolutionOptions,
   IItemProgressCallback,
   IItemTemplate,
@@ -32,6 +34,7 @@ import {
 } from "@esri/solution-common";
 import { getProp, getWithDefault } from "@esri/hub-common";
 import { UserSession } from "@esri/arcgis-rest-auth";
+import { request, IRequestOptions } from "@esri/arcgis-rest-request";
 import {
   createItemTemplate,
   postProcessFieldReferences
@@ -159,26 +162,31 @@ export function _addContentToSolution(
         );
       } else {
         if (solutionTemplates.length > 0) {
-          // test for and update group dependencies
+          // test for and update group dependencies and other post-processing
           solutionTemplates = _postProcessGroupDependencies(solutionTemplates);
           solutionTemplates = _postProcessIgnoredItems(solutionTemplates);
           solutionTemplates = postProcessWorkforceTemplates(solutionTemplates);
           _templatizeSolutionIds(solutionTemplates);
-
-          // Update solution item with its data JSON
-          const solutionData: ISolutionItemData = {
-            metadata: {},
-            templates: options.templatizeFields
-              ? postProcessFieldReferences(solutionTemplates)
-              : solutionTemplates
-          };
-          const itemInfo: IItemUpdate = {
-            id: solutionItemId,
-            text: solutionData
-          };
-          updateItem(itemInfo, authentication).then(() => {
-            resolve(solutionItemId);
-          }, reject);
+          _templatizeOrgUrl(solutionTemplates, authentication)
+            .then(
+              solutionTemplates2 => {
+                // Update solution item with its data JSON
+                const solutionData: ISolutionItemData = {
+                  metadata: {},
+                  templates: options.templatizeFields
+                    ? postProcessFieldReferences(solutionTemplates2)
+                    : solutionTemplates2
+                };
+                const itemInfo: IItemUpdate = {
+                  id: solutionItemId,
+                  text: solutionData
+                };
+                updateItem(itemInfo, authentication).then(() => {
+                  resolve(solutionItemId);
+                }, reject);
+              },
+              reject
+            );
         } else {
           resolve(solutionItemId);
         }
@@ -323,6 +331,38 @@ export function _replaceRemainingIdsInString(
 }
 
 /**
+ * Templatizes occurrences of the URL to the user's organization in the `item` and `data` template sections.
+ *
+ * @param templates The array of templates to evaluate; templates is modified in place
+ * @param authentication Credentials for request organization info
+ * @return Promise resolving with `templates`
+ * @private
+ */
+export function _templatizeOrgUrl(
+  templates: IItemTemplate[],
+  authentication: UserSession
+): Promise<IItemTemplate[]> {
+  return new Promise((resolve, reject) => {
+    // Get the org's URL
+    getPortal(null, authentication)
+      .then(
+        org => {
+          const orgUrl = "https://" + org.urlKey + "." + org.customBaseUrl;
+          const templatizedOrgUrl = "{{portalBaseUrl}}";
+
+          // Cycle through each of the items in the template and scan the `item` and `data` sections of each for replacements
+          templates.forEach((template: IItemTemplate) => {
+            globalStringReplace(template.item, new RegExp(orgUrl, "gi"), templatizedOrgUrl);
+            globalStringReplace(template.data, new RegExp(orgUrl, "gi"), templatizedOrgUrl);
+          });
+          resolve(templates);
+        },
+        reject
+      );
+  });
+}
+
+/**
  * Finds and templatizes any references to solution's items.
  *
  * @param templates The array of templates to evaluate
@@ -334,11 +374,10 @@ export function _templatizeSolutionIds(
   // Get the ids in the solution
   const solutionIds: string[] = templates.map((template: IItemTemplate) => template.itemId);
 
-  // Cycle through each of the items in the template and scan the `assets`, `data`, and `item` sections of each for ids in our solution
+  // Cycle through each of the items in the template and scan the `item` and `data` sections of each for ids in our solution
   templates.forEach((template: IItemTemplate) => {
-    _replaceRemainingIdsInObject(solutionIds, template.assets); // for Hub Site Application
-    _replaceRemainingIdsInObject(solutionIds, template.data);
     _replaceRemainingIdsInObject(solutionIds, template.item);
+    _replaceRemainingIdsInObject(solutionIds, template.data);
   });
 }
 
