@@ -716,25 +716,22 @@ export function _updateForPortal(
     );
     /* istanbul ignore else */
     if (viewLayerDefTable) {
-      _updateItemFields(
+      setProp(
         item,
-        viewLayerDefTable,
-        itemTemplate,
-        templateDictionary
+        "adminLayerInfo.viewLayerDefinition.table",
+        _updateItemFields(viewLayerDefTable, itemTemplate, templateDictionary)
       );
 
       // Handle related also
       /* istanbul ignore else */
       if (Array.isArray(viewLayerDefTable.relatedTables)) {
-        viewLayerDefTable.relatedTables.forEach((relatedTable: any) =>
-          // NEED to get the itemTemplate for this to work correctly...
-          _updateItemFields(
-            item,
+        viewLayerDefTable.relatedTables.map((relatedTable: any) => {
+          return _updateItemFields(
             relatedTable,
             itemTemplate,
             templateDictionary
-          )
-        );
+          );
+        });
       }
     }
   }
@@ -747,11 +744,10 @@ export function _updateForPortal(
 }
 
 export function _updateItemFields(
-  item: any,
   table: any,
   itemTemplate: IItemTemplate,
   templateDictionary: any
-): void {
+): any {
   const viewSourceLayerFields: any[] = table.sourceLayerFields.map((f: any) =>
     f.source.toLowerCase()
   );
@@ -781,14 +777,15 @@ export function _updateItemFields(
     /* istanbul ignore else */
     if (sourceLayerFields.length > 0 && viewSourceLayerFields.length > 0) {
       setProp(
-        item,
-        "adminLayerInfo.viewLayerDefinition.table.sourceLayerFields",
+        table,
+        "sourceLayerFields",
         table.sourceLayerFields.filter(
           (f: any) => sourceLayerFields.indexOf(f.source.toLowerCase()) > -1
         )
       );
     }
   }
+  return table;
 }
 
 /**

@@ -5716,7 +5716,7 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
               relatedTables: [
                 {
                   sourceServiceName: "Hagerman",
-                  sourceLayerId: 0,
+                  sourceLayerId: 4,
                   sourceLayerFields: [
                     {
                       name: "a1",
@@ -5750,12 +5750,8 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
               relatedTables: [
                 {
                   sourceServiceName: "Hagerman",
-                  sourceLayerId: 0,
+                  sourceLayerId: 4,
                   sourceLayerFields: [
-                    {
-                      name: "a1", // TODO this should not be here after the code is fixed to get the correct service
-                      source: "aa1"
-                    },
                     {
                       name: "b1",
                       source: "bb1"
@@ -5768,7 +5764,10 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
         }
       };
       const _itemTemplate: interfaces.IItemTemplate = templates.getItemTemplateSkeleton();
-      _itemTemplate.dependencies = ["44507dff46f54656a74032ac12acd977"];
+      _itemTemplate.dependencies = [
+        "44507dff46f54656a74032ac12acd977",
+        "54507dff46f54656a74032ac12acd977"
+      ];
 
       const templateDictionary: any = {
         "44507dff46f54656a74032ac12acd977": {
@@ -5776,6 +5775,14 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
           layer0: {
             fields: {
               aa: { name: "aa" }
+            }
+          }
+        },
+        "54507dff46f54656a74032ac12acd977": {
+          name: "Hagerman",
+          layer4: {
+            fields: {
+              bb1: { name: "bb1" }
             }
           }
         }
