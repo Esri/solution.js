@@ -26,7 +26,8 @@ import {
   ICreateItemFromTemplateResponse,
   EItemProgressStatus,
   UserSession,
-  getProp
+  getProp,
+  replaceInTemplate
 } from "@esri/solution-common";
 import {
   createSiteModelFromTemplate,
@@ -170,14 +171,18 @@ export function createItemFromTemplate(
 
 /**
  * Convert a Site to a Template
+ *
  * @param solutionItemId
- * @param itemInfo
- * @param authentication
+ * @param itemInfo Hub Site Application item
+ * @param userSession The session used to interact with the service the template is based on
+ * @param templateDictionary Hash mapping property names to replacement values
+ * @return A promise that will resolve when fullItem has been updated
  */
 export function convertItemToTemplate(
   solutionItemId: string,
   itemInfo: any,
-  authentication: UserSession
+  authentication: UserSession,
+  templateDictionary: any
 ): Promise<IItemTemplate> {
   let hubRo: IHubRequestOptions;
   // get hubRequestOptions
@@ -201,6 +206,10 @@ export function convertItemToTemplate(
       // swap out dependency id's to {{<depid>.itemId}}
       // so it will be re-interpolated
       tmpl = replaceItemIds(tmpl);
+
+      // catch any replacements
+      replaceInTemplate(tmpl.data, templateDictionary);
+
       // and return it
       return tmpl as IItemTemplate;
     });

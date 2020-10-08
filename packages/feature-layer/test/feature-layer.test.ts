@@ -345,8 +345,9 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
           .post(adminUrl + "?f=json", serviceResponse)
           .post(url + "/sources?f=json", mockItems.get400Failure());
 
+        const templateDictionary = {};
         featureLayer
-          .convertItemToTemplate("A", itemTemplate.item, MOCK_USER_SESSION)
+          .convertItemToTemplate("A", itemTemplate.item, MOCK_USER_SESSION, templateDictionary)
           .then(r => {
             done.fail();
           }, done);
@@ -366,8 +367,9 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
           .post(url + "?f=json", mockItems.get400Failure())
           .post(itemDataUrl, mockItems.get400Failure());
 
+        const templateDictionary = {};
         featureLayer
-          .convertItemToTemplate("A", itemTemplate.item, MOCK_USER_SESSION)
+          .convertItemToTemplate("A", itemTemplate.item, MOCK_USER_SESSION, templateDictionary)
           .then(r => {
             done.fail();
           }, done);
@@ -403,8 +405,9 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
           .post(adminUrl + "?f=json", mockItems.get400Failure())
           .post(url + "/sources?f=json", mockItems.get400Failure());
 
+        const templateDictionary = {};
         featureLayer
-          .convertItemToTemplate("A", itemTemplate.item, MOCK_USER_SESSION)
+          .convertItemToTemplate("A", itemTemplate.item, MOCK_USER_SESSION, templateDictionary)
           .then(r => {
             done.fail();
           }, done);
@@ -499,7 +502,7 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
         )
         .post(
           utils.PORTAL_SUBSET.restUrl +
-            "/content/users/casey/items/svc1234567890/update",
+          "/content/users/casey/items/svc1234567890/update",
           '{"success":true}'
         );
 
@@ -613,7 +616,7 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
         )
         .post(
           utils.PORTAL_SUBSET.restUrl +
-            "/content/users/casey/items/svc1234567890/update",
+          "/content/users/casey/items/svc1234567890/update",
           '{"success":true}'
         );
 
@@ -727,7 +730,7 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
         )
         .post(
           utils.PORTAL_SUBSET.restUrl +
-            "/content/users/casey/items/svc1234567890/update",
+          "/content/users/casey/items/svc1234567890/update",
           '{"success":true}'
         );
 
@@ -848,7 +851,7 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
         .post(url + "/sources?f=json", mockItems.getAGOLServiceSources())
         .post(
           utils.PORTAL_SUBSET.restUrl +
-            "/content/users/casey/fld1234567890/createService",
+          "/content/users/casey/fld1234567890/createService",
           createResponse
         )
         .post(
@@ -869,7 +872,7 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
         )
         .post(
           utils.PORTAL_SUBSET.restUrl +
-            "/content/users/casey/items/svc1234567890/update",
+          "/content/users/casey/items/svc1234567890/update",
           '{"success":true}'
         );
       // tslint:disable-next-line: no-floating-promises
@@ -960,12 +963,12 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
         )
         .post(
           utils.PORTAL_SUBSET.restUrl +
-            "/content/users/casey/items/svc1234567890/update",
+          "/content/users/casey/items/svc1234567890/update",
           mockItems.get400Failure()
         )
         .post(
           utils.PORTAL_SUBSET.restUrl +
-            "/content/users/casey/items/svc1234567890/delete",
+          "/content/users/casey/items/svc1234567890/delete",
           utils.getFailureResponse({ itemId: itemTemplate.itemId })
         );
 
@@ -1042,7 +1045,7 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
         )
         .post(
           utils.PORTAL_SUBSET.restUrl +
-            "/content/users/casey/items/svc1234567890/delete",
+          "/content/users/casey/items/svc1234567890/delete",
           utils.getSuccessResponse({ itemId: itemTemplate.itemId })
         );
 
@@ -1119,7 +1122,7 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
         )
         .post(
           utils.PORTAL_SUBSET.restUrl +
-            "/content/users/casey/items/svc1234567890/delete",
+          "/content/users/casey/items/svc1234567890/delete",
           utils.getFailureResponse({ itemId: itemTemplate.itemId })
         );
 
@@ -1330,12 +1333,12 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
         )
         .post(
           utils.PORTAL_SUBSET.restUrl +
-            "/content/users/casey/items/svc1234567890/update",
+          "/content/users/casey/items/svc1234567890/update",
           mockItems.get400Failure()
         )
         .post(
           utils.PORTAL_SUBSET.restUrl +
-            "/content/users/casey/items/svc1234567890/delete",
+          "/content/users/casey/items/svc1234567890/delete",
           utils.getFailureResponse({ itemId: itemTemplate.itemId })
         );
 
@@ -1425,7 +1428,7 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
         )
         .post(
           utils.PORTAL_SUBSET.restUrl +
-            "/content/users/casey/items/svc1234567890/update",
+          "/content/users/casey/items/svc1234567890/update",
           mockItems.get400Failure()
         );
 
@@ -1498,7 +1501,7 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
         )
         .post(
           utils.PORTAL_SUBSET.restUrl +
-            "/content/users/casey/items/svc1234567890/update",
+          "/content/users/casey/items/svc1234567890/update",
           mockItems.get400Failure()
         );
 
@@ -1591,12 +1594,12 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
         )
         .post(
           utils.PORTAL_SUBSET.restUrl +
-            "/content/users/casey/items/svc1234567890/update",
+          "/content/users/casey/items/svc1234567890/update",
           '{"success":true}'
         )
         .post(
           utils.PORTAL_SUBSET.restUrl +
-            "/content/users/casey/items/svc1234567890/delete",
+          "/content/users/casey/items/svc1234567890/delete",
           utils.getSuccessResponse({ itemId: itemTemplate.itemId })
         );
 
@@ -1674,12 +1677,12 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
         )
         .post(
           utils.PORTAL_SUBSET.restUrl +
-            "/content/users/casey/items/svc1234567890/update",
+          "/content/users/casey/items/svc1234567890/update",
           '{"success":true}'
         )
         .post(
           utils.PORTAL_SUBSET.restUrl +
-            "/content/users/casey/items/svc1234567890/delete",
+          "/content/users/casey/items/svc1234567890/delete",
           utils.getFailureResponse({ itemId: itemTemplate.itemId })
         );
 
@@ -1757,12 +1760,12 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
         )
         .post(
           utils.PORTAL_SUBSET.restUrl +
-            "/content/users/casey/items/svc1234567890/update",
+          "/content/users/casey/items/svc1234567890/update",
           '{"success":true}'
         )
         .post(
           utils.PORTAL_SUBSET.restUrl +
-            "/content/users/casey/items/svc1234567890/delete",
+          "/content/users/casey/items/svc1234567890/delete",
           utils.getSuccessResponse({ itemId: itemTemplate.itemId })
         );
 
@@ -1840,12 +1843,12 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
         )
         .post(
           utils.PORTAL_SUBSET.restUrl +
-            "/content/users/casey/items/svc1234567890/update",
+          "/content/users/casey/items/svc1234567890/update",
           '{"success":true}'
         )
         .post(
           utils.PORTAL_SUBSET.restUrl +
-            "/content/users/casey/items/svc1234567890/delete",
+          "/content/users/casey/items/svc1234567890/delete",
           utils.getFailureResponse({ itemId: itemTemplate.itemId })
         );
 
@@ -1920,12 +1923,12 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
         fetchMock
           .get(
             utils.PORTAL_SUBSET.restUrl +
-              "/content/items/a369baed619441cfb5e862694d33d44c?f=json&token=fake-token",
+            "/content/items/a369baed619441cfb5e862694d33d44c?f=json&token=fake-token",
             item
           )
           .post(
             utils.PORTAL_SUBSET.restUrl +
-              "/content/items/a369baed619441cfb5e862694d33d44c/data",
+            "/content/items/a369baed619441cfb5e862694d33d44c/data",
             data
           )
           .post(updateUrl, utils.getSuccessResponse({ id: item.id }));
@@ -1955,8 +1958,8 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
               const callBody = fetchMock.calls(updateUrl)[0][1].body as string;
               expect(callBody).toEqual(
                 "f=json&text=%7B%22someProp%22%3A%22b369baed619441cfb5e862694d33d44c%22%7D&id=a369baed619441cfb5e862" +
-                  "694d33d44c&owner=brubble&tags=tag1&created=1590520700158&modified=1590520700158&numViews=10&size=50" +
-                  "&title=My%20Form&type=Form&typeKeywords=b369baed619441cfb5e862694d33d44c&token=fake-token"
+                "694d33d44c&owner=brubble&tags=tag1&created=1590520700158&modified=1590520700158&numViews=10&size=50" +
+                "&title=My%20Form&type=Form&typeKeywords=b369baed619441cfb5e862694d33d44c&token=fake-token"
               );
               done();
             },

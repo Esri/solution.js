@@ -31,15 +31,17 @@ import * as common from "@esri/solution-common";
 /**
  * Fills in missing data, including full layer and table definitions, in a feature services' definition.
  *
+ * @param solutionItemId
  * @param itemInfo Feature service item
  * @param userSession The session used to interact with the service the template is based on
+ * @param templateDictionary Hash mapping property names to replacement values
  * @return A promise that will resolve when fullItem has been updated
- * @protected
  */
 export function convertItemToTemplate(
   solutionItemId: string,
   itemInfo: any,
-  authentication: common.UserSession
+  authentication: common.UserSession,
+  templateDictionary?: any
 ): Promise<common.IItemTemplate> {
   const templatizeFieldReferences: boolean = false;
 
@@ -83,7 +85,8 @@ export function convertItemToTemplate(
                     common.templatize(
                       itemTemplate,
                       dependencies,
-                      templatizeFieldReferences
+                      templatizeFieldReferences,
+                      templateDictionary
                     )
                   );
                 },

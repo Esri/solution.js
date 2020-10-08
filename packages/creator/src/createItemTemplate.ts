@@ -194,7 +194,8 @@ export function createItemTemplate(
                   .convertItemToTemplate(
                     solutionItemId,
                     itemInfo,
-                    authentication
+                    authentication,
+                    templateDictionary
                   )
                   .then(
                     itemTemplate => {
