@@ -208,9 +208,6 @@ export function convertItemToTemplate(
       tmpl.dependencies = [...new Set(tmpl.dependencies || [])]; // dedupe
       tmpl = replaceItemIds(tmpl);
 
-      // catch any replacements
-      replaceInTemplate(tmpl.data, templateDictionary);
-
       // and return it
       return tmpl as IItemTemplate;
     });

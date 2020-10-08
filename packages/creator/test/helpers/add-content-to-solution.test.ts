@@ -16,9 +16,10 @@
 
 import {
   _addContentToSolution,
-  _postProcessIgnoredItems,
   _postProcessGroupDependencies,
+  _postProcessIgnoredItems,
   _templatizeSolutionIds,
+  _replaceDictionaryItemsInObject,
   _replaceRemainingIdsInObject,
   _replaceRemainingIdsInString
 } from "../../src/helpers/add-content-to-solution";
@@ -385,6 +386,92 @@ describe("_postProcessIgnoredItems", () => {
     expect(actualTemplates).toEqual(expectedTemplates);
     expect(actualWebMapTemplate.data).toEqual(expectedMapData);
     expect(actualWebMapTemplate.dependencies).toEqual(expectedMapDependencies);
+  });
+});
+
+describe("_replaceDictionaryItemsInObject", () => {
+  it("handles url keys", () => {
+    const obj = {
+      "url": "https://services7.arcgis.com/db6e5e2ed53d4/arcgis/rest/services/myService/FeatureServer/0"
+    };
+    const hash = {
+      "https://services7.arcgis.com/db6e5e2ed53d4/arcgis/rest/services/myService/FeatureServer/0": "{{svc1234567890.layer0.url}}"
+    };
+    const expectedObj = {
+      "url": "{{svc1234567890.layer0.url}}"
+    };
+    expect(_replaceDictionaryItemsInObject(hash, obj)).toEqual(expectedObj);
+  });
+
+  it("handles hub site application example", () => {
+    const obj = {
+      "values": {
+        "url": "https://services7.arcgis.com/db6e5e2ed53d4/arcgis/rest/services/myService/FeatureServer/0",
+        "layout": {
+          "url": "https://services7.arcgis.com/db6e5e2ed53d4/arcgis/rest/services/myService/FeatureServer/3",
+          "sections": [{
+            "rows": [{
+              "cards": [{
+                "component": {
+                  "settings": {
+                    "url": "https://services7.arcgis.com/db6e5e2ed53d4/arcgis/rest/services/myService/FeatureServer/0"
+                  }
+                }
+              }, {
+                "component": {
+                  "settings": {
+                    "url": "https://services7.arcgis.com/db6e5e2ed53d4/arcgis/rest/services/myService/FeatureServer"
+                  }
+                }
+              }, {
+                "component": {
+                  "settings": {
+                    "url": "https://services7.arcgis.com/db6e5e2ed53d4/arcgis/rest/services/myService/FeatureServer/1"
+                  }
+                }
+              }]
+            }]
+          }]
+        }
+      }
+    };
+    const hash = {
+      "https://services7.arcgis.com/db6e5e2ed53d4/arcgis/rest/services/myService/FeatureServer": "{{svc1234567890.url}}",
+      "https://services7.arcgis.com/db6e5e2ed53d4/arcgis/rest/services/myService/FeatureServer/0": "{{svc1234567890.layer0.url}}",
+      "https://services7.arcgis.com/db6e5e2ed53d4/arcgis/rest/services/myService/FeatureServer/1": "{{svc1234567890.layer1.url}}"
+    };
+    const expectedObj = {
+      "values": {
+        "url": "{{svc1234567890.layer0.url}}",
+        "layout": {
+          "url": "https://services7.arcgis.com/db6e5e2ed53d4/arcgis/rest/services/myService/FeatureServer/3",
+          "sections": [{
+            "rows": [{
+              "cards": [{
+                "component": {
+                  "settings": {
+                    "url": "{{svc1234567890.layer0.url}}"
+                  }
+                }
+              }, {
+                "component": {
+                  "settings": {
+                    "url": "{{svc1234567890.url}}"
+                  }
+                }
+              }, {
+                "component": {
+                  "settings": {
+                    "url": "{{svc1234567890.layer1.url}}"
+                  }
+                }
+              }]
+            }]
+          }]
+        }
+      }
+    };
+    expect(_replaceDictionaryItemsInObject(hash, obj)).toEqual(expectedObj);
   });
 });
 

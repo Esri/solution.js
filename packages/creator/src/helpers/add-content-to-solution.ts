@@ -167,6 +167,7 @@ export function _addContentToSolution(
           solutionTemplates = _postProcessIgnoredItems(solutionTemplates);
           solutionTemplates = postProcessWorkforceTemplates(solutionTemplates);
           _templatizeSolutionIds(solutionTemplates);
+          _replaceDictionaryItemsInObject(templateDictionary, solutionTemplates);
           _templatizeOrgUrl(solutionTemplates, authentication)
             .then(
               solutionTemplates2 => {
@@ -274,6 +275,32 @@ export function _postProcessIgnoredItems(
   });
 
   return templates;
+}
+
+/**
+ * Recursively runs through an object to find and replace any strings found in a dictionary.
+ *
+ * @param templateDictionary Hash of things to be replaced
+ * @param obj Object to be examined
+ * @private
+ */
+export function _replaceDictionaryItemsInObject(
+  hash: any,
+  obj: any
+): any {
+  if (obj) {
+    Object.keys(obj).forEach(prop => {
+      const propObj = obj[prop];
+      if (propObj) {
+        if (typeof propObj === "object") {
+          _replaceDictionaryItemsInObject(hash, propObj);
+        } else if (typeof propObj === "string") {
+          obj[prop] = hash[propObj] || propObj;
+        }
+      }
+    });
+  }
+  return obj;
 }
 
 /**
