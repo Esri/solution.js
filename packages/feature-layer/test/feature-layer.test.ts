@@ -139,8 +139,7 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
           .convertItemToTemplate(
             "A",
             itemTemplate.item,
-            MOCK_USER_SESSION,
-            true
+            MOCK_USER_SESSION
           )
           .then(r => {
             // verify the state up front
@@ -212,8 +211,7 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
           .convertItemToTemplate(
             "A",
             itemTemplate.item,
-            MOCK_USER_SESSION,
-            true
+            MOCK_USER_SESSION
           )
           .then(r => {
             // verify the state after
@@ -261,8 +259,7 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
           .convertItemToTemplate(
             "A",
             itemTemplate.item,
-            MOCK_USER_SESSION,
-            true
+            MOCK_USER_SESSION
           )
           .then(r => {
             // verify the state after
@@ -292,8 +289,7 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
           .convertItemToTemplate(
             "A",
             itemTemplate.item,
-            MOCK_USER_SESSION,
-            true
+            MOCK_USER_SESSION
           )
           .then(r => {
             // verify the state after

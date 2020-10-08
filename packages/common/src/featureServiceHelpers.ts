@@ -75,8 +75,10 @@ export function templatize(
   itemTemplate: IItemTemplate,
   dependencies: IDependency[],
   templatizeFieldReferences: boolean,
-  templateDictionary: any
+  templateDictionary?: any
 ): IItemTemplate {
+  templateDictionary = templateDictionary || {};
+
   // Common templatizations
   const id: string = itemTemplate.item.id;
   const fsUrl = itemTemplate.item.url;
@@ -102,7 +104,6 @@ export function templatize(
   _items.forEach(layer => {
     templateDictionary[fsUrl + "/" + layer.id] = _templatize(id, "layer" + layer.id + ".url")
   });
-  replaceInTemplate(itemTemplate.data, templateDictionary);
 
   // templatize the service references serviceItemId
   itemTemplate.properties.service.serviceItemId = templatizeTerm(
