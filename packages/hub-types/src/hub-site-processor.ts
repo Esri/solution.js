@@ -205,6 +205,7 @@ export function convertItemToTemplate(
       }
       // swap out dependency id's to {{<depid>.itemId}}
       // so it will be re-interpolated
+      tmpl.dependencies = [...new Set(tmpl.dependencies || [])]; // dedupe
       tmpl = replaceItemIds(tmpl);
 
       // catch any replacements
