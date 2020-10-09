@@ -288,6 +288,7 @@ export function _replaceDictionaryItemsInObject(
   hash: any,
   obj: any
 ): any {
+  /* istanbul ignore else */
   if (obj) {
     Object.keys(obj).forEach(prop => {
       const propObj = obj[prop];
@@ -314,6 +315,7 @@ export function _replaceRemainingIdsInObject(
   ids: string[],
   obj: any
 ): any {
+  /* istanbul ignore else */
   if (obj) {
     Object.keys(obj).forEach(prop => {
       const propObj = obj[prop];

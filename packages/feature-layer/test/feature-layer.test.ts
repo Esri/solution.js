@@ -148,8 +148,12 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
             expect(r.dependencies.length).toEqual(1);
             expect(r.data).toBeUndefined();
             expect(r.properties.service.serviceItemId).toEqual(expectedId);
-
             expect(r.properties.layers[0].serviceItemId).toEqual(expectedId);
+            expect(r.properties.tables[0].serviceItemId).toEqual(expectedId);
+
+            // Templatize layer & table fields
+            common.templatize(r, [{ "id": "svc1234567890", "name": "OtherSourceServiceName" }], true);
+
             expect(r.properties.layers[0].relationships[0].keyField).toEqual(
               expectedLayerKeyField
             );
@@ -160,7 +164,6 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
               expectedLayerDefQuery
             );
 
-            expect(r.properties.tables[0].serviceItemId).toEqual(expectedId);
             expect(r.properties.tables[0].relationships[0].keyField).toEqual(
               expectedTableKeyField
             );

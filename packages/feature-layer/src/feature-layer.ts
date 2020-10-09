@@ -43,8 +43,6 @@ export function convertItemToTemplate(
   authentication: common.UserSession,
   templateDictionary?: any
 ): Promise<common.IItemTemplate> {
-  const templatizeFieldReferences: boolean = false;
-
   return new Promise<common.IItemTemplate>((resolve, reject) => {
     // Init template
     const template: common.IItemTemplate = common.createInitializedItemTemplate(
@@ -85,7 +83,7 @@ export function convertItemToTemplate(
                     common.templatize(
                       itemTemplate,
                       dependencies,
-                      templatizeFieldReferences,
+                      false,
                       templateDictionary
                     )
                   );
