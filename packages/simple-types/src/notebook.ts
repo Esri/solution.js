@@ -109,7 +109,7 @@ export function fineTuneCreatedItem(
       id: newlyCreatedItem.itemId,
       url: newlyCreatedItem.item.url,
       data: common.jsonToFile(
-        originalTemplate.data,
+        newlyCreatedItem.data,
         newlyCreatedItem.itemId + ".ipynb"
       )
     };

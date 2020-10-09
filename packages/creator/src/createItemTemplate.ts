@@ -50,6 +50,7 @@ import { moduleMap, UNSUPPORTED } from "./module-map";
  *
  * @param solutionItemId The solution to contain the item
  * @param itemId AGO id string
+ * @param templateDictionary Hash of facts
  * @param authentication Authentication for requesting information from AGO about items to be included in solution item
  * @param existingTemplates A collection of AGO item templates that can be referenced by newly-created templates
  * @return A promise that will resolve when creation is done
@@ -194,7 +195,8 @@ export function createItemTemplate(
                   .convertItemToTemplate(
                     solutionItemId,
                     itemInfo,
-                    authentication
+                    authentication,
+                    templateDictionary
                   )
                   .then(
                     itemTemplate => {
