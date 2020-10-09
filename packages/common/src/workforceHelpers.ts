@@ -21,7 +21,14 @@
  */
 
 import { applyEdits, queryFeatures } from "@esri/arcgis-rest-feature-layer";
-import { getIDs, getProp, fail, idTest, regExTest, setProp } from "./generalHelpers";
+import {
+  getIDs,
+  getProp,
+  fail,
+  idTest,
+  regExTest,
+  setProp
+} from "./generalHelpers";
 import {
   IItemTemplate,
   IFeatureServiceProperties,
@@ -650,8 +657,8 @@ export function _getURLs(v: string): string[] {
 export function fineTuneCreatedWorkforceItem(
   newlyCreatedItem: IItemTemplate,
   destinationAuthentication: UserSession,
-  url: string = "",
-  templateDicionary?: any
+  url: string,
+  templateDictionary: any
 ): Promise<any> {
   return new Promise<any>((resolve, reject) => {
     destinationAuthentication.getUser().then(
@@ -666,7 +673,8 @@ export function fineTuneCreatedWorkforceItem(
           dispatchers && dispatchers.url ? dispatchers.url : `${url}2`,
           user.username || "",
           user.fullName || "",
-          destinationAuthentication
+          destinationAuthentication,
+          templateDictionary.isPortal
         ).then(
           results => {
             // for workforce v2 we storce the key details from the workforce service as workforceInfos
@@ -678,7 +686,7 @@ export function fineTuneCreatedWorkforceItem(
             if (workforceInfos && url) {
               workforceInfos = replaceInTemplate(
                 workforceInfos,
-                templateDicionary
+                templateDictionary
               );
 
               _getFields(url, [2, 3, 4], destinationAuthentication).then(
@@ -798,14 +806,16 @@ export function _updateDispatchers(
   url: any,
   name: string,
   fullName: string,
-  destinationAuthentication: UserSession
+  authentication: UserSession,
+  isPortal: boolean
 ): Promise<boolean> {
   return new Promise<boolean>((resolve, reject) => {
     if (url) {
+      const fieldName: string = isPortal ? "userid" : "userId";
       queryFeatures({
         url,
-        where: "userId = '" + name + "'",
-        authentication: destinationAuthentication
+        where: `${fieldName} = '${name}'`,
+        authentication
       }).then(
         (results: any) => {
           if (results && results.features) {
@@ -813,15 +823,12 @@ export function _updateDispatchers(
               const features = [
                 {
                   attributes: {
-                    name: fullName,
-                    userId: name
+                    name: fullName
                   }
                 }
               ];
-              _applyEdits(url, features, destinationAuthentication).then(
-                resolve,
-                reject
-              );
+              features[0].attributes[fieldName] = name;
+              _applyEdits(url, features, authentication).then(resolve, reject);
             } else {
               resolve(true);
             }
