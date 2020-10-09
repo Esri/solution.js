@@ -658,7 +658,7 @@ export function fineTuneCreatedWorkforceItem(
   newlyCreatedItem: IItemTemplate,
   destinationAuthentication: UserSession,
   url: string,
-  templateDicionary: any
+  templateDictionary: any
 ): Promise<any> {
   return new Promise<any>((resolve, reject) => {
     destinationAuthentication.getUser().then(
@@ -674,7 +674,7 @@ export function fineTuneCreatedWorkforceItem(
           user.username || "",
           user.fullName || "",
           destinationAuthentication,
-          templateDicionary.isPortal
+          templateDictionary.isPortal
         ).then(
           results => {
             // for workforce v2 we storce the key details from the workforce service as workforceInfos
@@ -686,7 +686,7 @@ export function fineTuneCreatedWorkforceItem(
             if (workforceInfos && url) {
               workforceInfos = replaceInTemplate(
                 workforceInfos,
-                templateDicionary
+                templateDictionary
               );
 
               _getFields(url, [2, 3, 4], destinationAuthentication).then(
