@@ -657,7 +657,7 @@ export function _getURLs(v: string): string[] {
 export function fineTuneCreatedWorkforceItem(
   newlyCreatedItem: IItemTemplate,
   destinationAuthentication: UserSession,
-  url: string = "",
+  url: string,
   templateDicionary: any
 ): Promise<any> {
   return new Promise<any>((resolve, reject) => {

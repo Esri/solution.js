@@ -532,7 +532,10 @@ describe("Module `workforceHelpers`: manages the creation and deployment of work
 
       workforceHelpers
         .getWorkforceServiceInfo(props, url, MOCK_USER_SESSION)
-        .then(() => done.fail(), () => done());
+        .then(
+          () => done.fail(),
+          () => done()
+        );
     });
   });
 
@@ -1903,7 +1906,10 @@ describe("Module `workforceHelpers`: manages the creation and deployment of work
           url,
           templateDictionary
         )
-        .then(() => done.fail(), () => done());
+        .then(
+          () => done.fail(),
+          () => done()
+        );
     });
   });
 
@@ -1973,7 +1979,7 @@ describe("Module `workforceHelpers`: manages the creation and deployment of work
   describe("_updateDispatchers", () => {
     it("will not fail with missing url", done => {
       workforceHelpers
-        ._updateDispatchers(undefined, "A", "AA", MOCK_USER_SESSION)
+        ._updateDispatchers(undefined, "A", "AA", MOCK_USER_SESSION, true)
         .then(actual => {
           expect(actual).toEqual(false);
           done();
