@@ -206,7 +206,8 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
         groups: [],
         estimatedDeploymentCostFactor: 0
       };
-      templatize(itemTemplate, dependencies, true);
+      const templateDictionary = {};
+      templatize(itemTemplate, dependencies, true, templateDictionary);
       expect(itemTemplate).toEqual(expected);
       expect(dependencies).toEqual([]);
     });
@@ -390,7 +391,8 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
         groups: [],
         estimatedDeploymentCostFactor: 0
       };
-      templatize(itemTemplate, dependencies, true);
+      const templateDictionary = {};
+      templatize(itemTemplate, dependencies, true, templateDictionary);
       expect(itemTemplate).toEqual(expected);
     });
 
@@ -445,7 +447,8 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
         groups: [],
         estimatedDeploymentCostFactor: 0
       };
-      templatize(itemTemplate, dependencies, true);
+      const templateDictionary = {};
+      templatize(itemTemplate, dependencies, true, templateDictionary);
       expect(itemTemplate).toEqual(expected);
     });
 
@@ -509,7 +512,8 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
         groups: [],
         estimatedDeploymentCostFactor: 0
       };
-      templatize(itemTemplate, dependencies, true);
+      const templateDictionary = {};
+      templatize(itemTemplate, dependencies, true, templateDictionary);
       expect(itemTemplate).toEqual(expected);
     });
   });

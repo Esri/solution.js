@@ -43,8 +43,7 @@ import { convertWebExperienceToTemplate } from "./helpers/convert-web-experience
 export function convertItemToTemplate(
   solutionItemId: string,
   itemInfo: any,
-  authentication: UserSession,
-  isGroup?: boolean
+  authentication: UserSession
 ): Promise<IItemTemplate> {
   // use the itemInfo to setup a model
   const model = {
