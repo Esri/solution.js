@@ -66,16 +66,22 @@ import {
  *
  * @param itemTemplate Template for feature service item
  * @param dependencies Array of IDependency for name mapping
+ * @param templatizeFieldReferences Templatize all field references within a layer
+ * @param templateDictionary Hash mapping property names to replacement values
  * @return A promise that will resolve when template has been updated
  * @protected
  */
 export function templatize(
   itemTemplate: IItemTemplate,
   dependencies: IDependency[],
-  templatizeFieldReferences: boolean
+  templatizeFieldReferences: boolean,
+  templateDictionary?: any
 ): IItemTemplate {
+  templateDictionary = templateDictionary || {};
+
   // Common templatizations
   const id: string = itemTemplate.item.id;
+  const fsUrl = itemTemplate.item.url;
 
   itemTemplate.item = {
     ...itemTemplate.item,
@@ -92,6 +98,12 @@ export function templatize(
   const layers: any[] = data.layers || [];
   const tables: any[] = data.tables || [];
   const _items: any[] = layers.concat(tables);
+
+  // Set up symbols for the URL of the feature service and its layers and tables
+  templateDictionary[fsUrl] = itemTemplate.item.url;  // map FS URL to its templatized form
+  _items.forEach(layer => {
+    templateDictionary[fsUrl + "/" + layer.id] = _templatize(id, "layer" + layer.id + ".url")
+  });
 
   // templatize the service references serviceItemId
   itemTemplate.properties.service.serviceItemId = templatizeTerm(
@@ -1160,6 +1172,7 @@ export function _templatizeProperty(
  * @param adminItem from the services admin api
  * @param itemTemplate Template for feature service item
  * @param dependencies Array of IDependency for name mapping
+ * @param templatizeFieldReferences Templatize all field references within a layer
  * @return A promise that will resolve when template has been updated
  * @protected
  */

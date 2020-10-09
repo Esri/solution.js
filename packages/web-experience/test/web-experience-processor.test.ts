@@ -54,8 +54,7 @@ describe("Module `web-experience`: ", () => {
       return WebExperienceProcessor.convertItemToTemplate(
         "2c36d3679e7f4934ac599051df22daf6",
         { id: "bc3" },
-        MOCK_USER_SESSION,
-        false
+        MOCK_USER_SESSION
       ).then(result => {
         expect(getItemDataSpy.calls.count()).toBe(1, "should get the data");
         expect(convertSpy.calls.count()).toBe(
