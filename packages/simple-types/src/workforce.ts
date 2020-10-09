@@ -39,10 +39,13 @@ export function convertItemToTemplate(
  */
 export function fineTuneCreatedItem(
   newlyCreatedItem: common.IItemTemplate,
-  destinationAuthentication: common.UserSession
+  destinationAuthentication: common.UserSession,
+  templateDicionary: any
 ): Promise<any> {
   return common.fineTuneCreatedWorkforceItem(
     newlyCreatedItem,
-    destinationAuthentication
+    destinationAuthentication,
+    "",
+    templateDicionary
   );
 }
