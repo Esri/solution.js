@@ -43,6 +43,7 @@ import {
   deleteProp,
   fail,
   getProp,
+  setCreateProp,
   setProp
 } from "./generalHelpers";
 import {
@@ -100,9 +101,12 @@ export function templatize(
   const _items: any[] = layers.concat(tables);
 
   // Set up symbols for the URL of the feature service and its layers and tables
-  templateDictionary[fsUrl] = itemTemplate.item.url;  // map FS URL to its templatized form
+  templateDictionary[fsUrl] = itemTemplate.item.url; // map FS URL to its templatized form
   _items.forEach(layer => {
-    templateDictionary[fsUrl + "/" + layer.id] = _templatize(id, "layer" + layer.id + ".url")
+    templateDictionary[fsUrl + "/" + layer.id] = _templatize(
+      id,
+      "layer" + layer.id + ".url"
+    );
   });
 
   // templatize the service references serviceItemId
@@ -853,6 +857,49 @@ export function _updateTemplateDictionaryFields(
       return false;
     }
   });
+}
+
+export function setDefaultSpatialReference(
+  templateDictionary: any,
+  itemId: string,
+  spatialReference: any
+): void {
+  /* istanbul ignore else */
+  if (spatialReference) {
+    setCreateProp(
+      templateDictionary,
+      `${itemId}.defaultSpatialReference`,
+      spatialReference
+    );
+  }
+}
+
+export function validateSpatialReference(
+  serviceInfo: any,
+  itemTemplate: IItemTemplate,
+  templateDictionary: any
+): void {
+  if (getProp(serviceInfo, "service.isView")) {
+    // compare the wkid with the source...the view sr cannot differ from source sr
+    const viewWkid: number = getProp(
+      serviceInfo,
+      "service.spatialReference.wkid"
+    );
+
+    let sourceSR: any = 0;
+    itemTemplate.dependencies.some(id => {
+      const source: any = templateDictionary[id];
+      if (getProp(source, "defaultSpatialReference")) {
+        sourceSR = source.defaultSpatialReference;
+        return true;
+      }
+    });
+    const sourceWkid: number = getProp(sourceSR, "wkid");
+
+    if (sourceWkid && viewWkid && sourceWkid !== viewWkid) {
+      setProp(serviceInfo, "service.spatialReference", sourceSR);
+    }
+  }
 }
 
 /**
