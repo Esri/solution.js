@@ -495,6 +495,9 @@ describe("Module `deployer`", () => {
           solutionItemId: "map1234567890",
           svc1234567890: {
             def: {},
+            defaultSpatialReference: {
+              wkid: 102100
+            },
             solutionExtent: {
               xmin: -9821384.714217981,
               ymin: 5117339.123090005,

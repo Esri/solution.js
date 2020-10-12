@@ -511,6 +511,7 @@ describe("Module `deploySolutionItems`", () => {
       };
       expectedTemplateDictionary[id] = {
         itemId: foundItemID2,
+        defaultSpatialReference: { wkid: 102100, latestWkid: 3857 },
         name: "name2",
         title: "title2",
         url: url2,

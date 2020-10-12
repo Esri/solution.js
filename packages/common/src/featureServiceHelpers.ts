@@ -879,6 +879,7 @@ export function validateSpatialReference(
   itemTemplate: IItemTemplate,
   templateDictionary: any
 ): void {
+  /* istanbul ignore else */
   if (getProp(serviceInfo, "service.isView")) {
     // compare the wkid with the source...the view sr cannot differ from source sr
     const viewWkid: number = getProp(
@@ -889,6 +890,7 @@ export function validateSpatialReference(
     let sourceSR: any = 0;
     itemTemplate.dependencies.some(id => {
       const source: any = templateDictionary[id];
+      /* istanbul ignore else */
       if (getProp(source, "defaultSpatialReference")) {
         sourceSR = source.defaultSpatialReference;
         return true;
@@ -896,6 +898,7 @@ export function validateSpatialReference(
     });
     const sourceWkid: number = getProp(sourceSR, "wkid");
 
+    /* istanbul ignore else */
     if (sourceWkid && viewWkid && sourceWkid !== viewWkid) {
       setProp(serviceInfo, "service.spatialReference", sourceSR);
     }
