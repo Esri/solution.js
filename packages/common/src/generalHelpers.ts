@@ -86,7 +86,7 @@ export function blobToFile(
 export function blobToText(blob: Blob): Promise<string> {
   return new Promise<string>(resolve => {
     const reader = new FileReader();
-    reader.onload = function(evt) {
+    reader.onload = function (evt) {
       // Disable needed because Node requires cast
       // tslint:disable-next-line: no-unnecessary-type-assertion
       const blobContents = (evt.target as FileReader).result;
@@ -297,17 +297,17 @@ export function compareJSONProperties(json1: any, json2: any): string[] {
             if (Array.isArray(json1) && Array.isArray(json2)) {
               mismatches.push(
                 "Array length difference: [" +
-                  keys1.length +
-                  "] vs. [" +
-                  keys2.length +
-                  "]"
+                keys1.length +
+                "] vs. [" +
+                keys2.length +
+                "]"
               );
             } else {
               mismatches.push(
                 "Props difference: " +
-                  JSON.stringify(keys1) +
-                  " vs. " +
-                  JSON.stringify(keys2)
+                JSON.stringify(keys1) +
+                " vs. " +
+                JSON.stringify(keys2)
               );
             }
           } else {
@@ -347,8 +347,8 @@ export function sanitizeJSONAndReportChanges(
   if (mismatches.length > 0) {
     console.warn(
       "Changed " +
-        mismatches.length +
-        (mismatches.length === 1 ? " property" : " properties")
+      mismatches.length +
+      (mismatches.length === 1 ? " property" : " properties")
     );
     mismatches.forEach(mismatch => console.warn("    " + mismatch));
   }
@@ -457,6 +457,35 @@ export function failWithIds(itemIds: string[], e?: any): any {
 }
 
 /**
+ * Extracts the ids from a string
+ *
+ * @param v String to examine
+ * @return List of id strings found
+ * @example
+ * get id from
+ *   bad3483e025c47338d43df308c117308
+ *   {bad3483e025c47338d43df308c117308
+ *   =bad3483e025c47338d43df308c117308
+ * do not get id from
+ *   http: *something/name_bad3483e025c47338d43df308c117308
+ *   {{bad3483e025c47338d43df308c117308.itemId}}
+ *   bad3483e025c47338d43df308c117308bad3483e025c47338d43df308c117308
+ */
+export function getIDs(v: string): string[] {
+  // lookbehind is not supported in safari
+  // cannot use /(?<!_)(?<!{{)\b[0-9A-F]{32}/gi
+
+  // use groups and filter out the ids that start with {{
+  return regExTest(v, /({*)(\b[0-9A-F]{32}\b)/gi).reduce(function (acc, _v) {
+    /* istanbul ignore else */
+    if (_v.indexOf("{{") < 0) {
+      acc.push(_v.replace("{", ""));
+    }
+    return acc;
+  }, []);
+}
+
+/**
  * Gets a property out of a deeply nested object.
  * Does not handle anything but nested object graph
  *
@@ -466,7 +495,7 @@ export function failWithIds(itemIds: string[], e?: any): any {
  * @return Value at end of path
  */
 export function getProp(obj: { [index: string]: any }, path: string): any {
-  return path.split(".").reduce(function(prev, curr) {
+  return path.split(".").reduce(function (prev, curr) {
     /* istanbul ignore next no need to test undefined scenario */
     return prev ? prev[curr] : undefined;
   }, obj);
@@ -487,6 +516,23 @@ export function getProps(obj: any, props: string[]): any {
     }
     return a;
   }, [] as any[]);
+}
+
+/**
+ * Updates a list of the items dependencies if more are found in the
+ * provided value.
+ *
+ * @param v a string value to check for ids
+ * @param deps a list of the items dependencies
+ */
+export function idTest(v: any, deps: string[]): void {
+  const ids: any[] = getIDs(v);
+  ids.forEach(id => {
+    /* istanbul ignore else */
+    if (deps.indexOf(id) === -1) {
+      deps.push(id);
+    }
+  });
 }
 
 /**
@@ -616,6 +662,35 @@ export function getUniqueTitle(
 }
 
 /**
+ * Performs string replacement on every string in an object.
+ *
+ * @param obj Object to scan and to modify
+ * @param pattern Search pattern in each string
+ * @param replacement Replacement for matches to search pattern
+ * @return Modified obj is returned
+ */
+export function globalStringReplace(
+  obj: any,
+  pattern: RegExp,
+  replacement: string
+): any {
+  if (obj) {
+    Object.keys(obj).forEach(prop => {
+      const propObj = obj[prop];
+      if (propObj) {
+        /* istanbul ignore else */
+        if (typeof propObj === "object") {
+          globalStringReplace(propObj, pattern, replacement);
+        } else if (typeof propObj === "string") {
+          obj[prop] = obj[prop].replace(pattern, replacement);
+        }
+      }
+    });
+  }
+  return obj;
+}
+
+/**
  * Tests if an array of DatasourceInfos has a given item and layer id already.
  *
  * @param datasourceInfos Array of DatasourceInfos to evaluate
@@ -651,8 +726,8 @@ export function cleanItemId(id: any): any {
 export function cleanLayerBasedItemId(id: any): any {
   return id
     ? id
-        .replace("{{", "")
-        .replace(/([.]layer([0-9]|[1-9][0-9])[.](item|layer)Id)[}]{2}/, "")
+      .replace("{{", "")
+      .replace(/([.]layer([0-9]|[1-9][0-9])[.](item|layer)Id)[}]{2}/, "")
     : id;
 }
 
@@ -664,12 +739,12 @@ export function cleanLayerBasedItemId(id: any): any {
 export function cleanLayerId(id: any) {
   return id?.toString()
     ? parseInt(
-        id
-          .toString()
-          .replace(/[{]{2}.{32}[.]layer/, "")
-          .replace(/[.]layerId[}]{2}/, ""),
-        10
-      )
+      id
+        .toString()
+        .replace(/[{]{2}.{32}[.]layer/, "")
+        .replace(/[.]layerId[}]{2}/, ""),
+      10
+    )
     : id;
 }
 
@@ -691,6 +766,17 @@ export function getTemplateById(templates: IItemTemplate[], id: string): any {
     return false;
   });
   return template;
+}
+
+/**
+ * Evaluates a value with a regular expression
+ *
+ * @param v a string value to test with the expression
+ * @param ex the regular expresion to test with
+ * @return an array of matches
+ */
+export function regExTest(v: any, ex: RegExp): any[] {
+  return v && ex.test(v) ? v.match(ex) : [];
 }
 
 // ------------------------------------------------------------------------------------------------------------------ //

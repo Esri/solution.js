@@ -1,31 +1,11 @@
 language: node_js
-sudo: false
-notifications:
-  email: false
 node_js:
   - 12
-  - 10
-  - 8
 cache: npm
 script:
   - npm run test:ci
-deploy:
-  provider: pages
-  skip_cleanup: true
-  keep-history: true
-  github_token: "$GITHUB_TOKEN"
-  on:
-    branch: master
-    tags: true
-  local-dir: docs/build/solution.js
-after_deploy:
-  - npm run docs:deploy
 env:
   - MOZ_HEADLESS=1
 addons:
   chrome: stable
   firefox: latest
-branches:
-  only:
-    - gh-pages
-    - /.*/

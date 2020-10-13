@@ -5,7 +5,6 @@
 * \[ \] Stop automatic recompilation software
 * \[ \] Create `release-candidate` branch
 * \[ \] Remove node_modules and run `npm install`
-* \[ \] Run `npm run prerelease:prepare`
 * \[ \] Run `npm run release:prepare` and pick new version number
 * \[ \] Run `npm run release:review`
 * \[ \] Fix CHANGELOG.md and solution.js package references
@@ -87,9 +86,8 @@ Copyright (c) 1990-2008 Info-ZIP...
  ```
 
 8. Prepare the release.
-The second command, `release:prepare`, gives you the opportunity to select the new version number. The default choice increments the patch version (i.e., the third number in the [*major.minor.patch* version numbering scheme](https://semver.org/)). If a different version is desired, use the keyboard arrow keys to select the line ***above*** the desired version. There doesn't seem to be a way to type in a custom version.
+`release:prepare` gives you the opportunity to select the new version number. The default choice increments the patch version (i.e., the third number in the [*major.minor.patch* version numbering scheme](https://semver.org/)). If a different version is desired, use the keyboard arrow keys to select the desired version. There doesn't seem to be a way to type in a custom version.
 ```
-npm run prerelease:prepare
 npm run release:prepare
 npm run release:review
 ```

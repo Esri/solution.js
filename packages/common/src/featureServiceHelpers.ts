@@ -43,6 +43,7 @@ import {
   deleteProp,
   fail,
   getProp,
+  setCreateProp,
   setProp
 } from "./generalHelpers";
 import {
@@ -66,16 +67,22 @@ import {
  *
  * @param itemTemplate Template for feature service item
  * @param dependencies Array of IDependency for name mapping
+ * @param templatizeFieldReferences Templatize all field references within a layer
+ * @param templateDictionary Hash mapping property names to replacement values
  * @return A promise that will resolve when template has been updated
  * @protected
  */
 export function templatize(
   itemTemplate: IItemTemplate,
   dependencies: IDependency[],
-  templatizeFieldReferences: boolean
+  templatizeFieldReferences: boolean,
+  templateDictionary?: any
 ): IItemTemplate {
+  templateDictionary = templateDictionary || {};
+
   // Common templatizations
   const id: string = itemTemplate.item.id;
+  const fsUrl = itemTemplate.item.url;
 
   itemTemplate.item = {
     ...itemTemplate.item,
@@ -92,6 +99,15 @@ export function templatize(
   const layers: any[] = data.layers || [];
   const tables: any[] = data.tables || [];
   const _items: any[] = layers.concat(tables);
+
+  // Set up symbols for the URL of the feature service and its layers and tables
+  templateDictionary[fsUrl] = itemTemplate.item.url; // map FS URL to its templatized form
+  _items.forEach(layer => {
+    templateDictionary[fsUrl + "/" + layer.id] = _templatize(
+      id,
+      "layer" + layer.id + ".url"
+    );
+  });
 
   // templatize the service references serviceItemId
   itemTemplate.properties.service.serviceItemId = templatizeTerm(
@@ -651,7 +667,7 @@ export function updateFeatureServiceDefinition(
     }
 
     listToAdd.forEach(toAdd => {
-      const item = toAdd.item;
+      let item = toAdd.item;
       const originalId = item.id;
       fieldInfos = cacheFieldInfos(item, fieldInfos);
       /* istanbul ignore else */
@@ -661,6 +677,8 @@ export function updateFeatureServiceDefinition(
       // when the item is a view we need to grab the supporting fieldInfos
       /* istanbul ignore else */
       if (itemTemplate.properties.service.isView) {
+        _updateGeomFieldName(item, templateDictionary);
+
         adminLayerInfos[originalId] = item.adminLayerInfo;
         // need to update adminLayerInfo before adding to the service def
         // bring over the fieldInfos from the source layer
@@ -672,21 +690,11 @@ export function updateFeatureServiceDefinition(
         );
       }
       if (templateDictionary.isPortal) {
-        // When deploying to portal we need to adjust the uniquie ID field up front
-        /* istanbul ignore else */
-        if (item.uniqueIdField && item.uniqueIdField.name) {
-          item.uniqueIdField.name = String(
-            item.uniqueIdField.name
-          ).toLocaleLowerCase();
-        }
+        item = _updateForPortal(item, itemTemplate, templateDictionary);
       }
-      if (toAdd.type === "layer") {
+      if (item.type === "Feature Layer") {
         options.layers.push(item);
       } else {
-        // Portal will fail if the geometryField is null
-        if (item.adminLayerInfo) {
-          deleteProp(item.adminLayerInfo, "geometryField");
-        }
         options.tables.push(item);
       }
     });
@@ -695,6 +703,128 @@ export function updateFeatureServiceDefinition(
       e => reject(fail(e))
     );
   });
+}
+
+export function _updateForPortal(
+  item: any,
+  itemTemplate: IItemTemplate,
+  templateDictionary: any
+): any {
+  // When deploying to portal we need to adjust the uniquie ID field up front
+  /* istanbul ignore else */
+  if (item.uniqueIdField && item.uniqueIdField.name) {
+    item.uniqueIdField.name = String(
+      item.uniqueIdField.name
+    ).toLocaleLowerCase();
+  }
+
+  // Portal will fail if the geometryField is null
+  if (item.type === "Table" && item.adminLayerInfo) {
+    deleteProp(item.adminLayerInfo, "geometryField");
+  }
+
+  // Portal will fail if the sourceFields in the viewLayerDef contain fields that are not in the source service
+  /* istanbul ignore else */
+  if (item.isView) {
+    const viewLayerDefTable: any = getProp(
+      item,
+      "adminLayerInfo.viewLayerDefinition.table"
+    );
+    /* istanbul ignore else */
+    if (viewLayerDefTable) {
+      setProp(
+        item,
+        "adminLayerInfo.viewLayerDefinition.table",
+        _updateItemFields(viewLayerDefTable, itemTemplate, templateDictionary)
+      );
+
+      // Handle related also
+      /* istanbul ignore else */
+      if (Array.isArray(viewLayerDefTable.relatedTables)) {
+        viewLayerDefTable.relatedTables.map((relatedTable: any) => {
+          return _updateItemFields(
+            relatedTable,
+            itemTemplate,
+            templateDictionary
+          );
+        });
+      }
+    }
+  }
+
+  // not allowed to set sourceSchemaChangesAllowed or isView for portal
+  // these are set when you create the service
+  deleteProp(item, "sourceSchemaChangesAllowed");
+  deleteProp(item, "isView");
+  return item;
+}
+
+export function _updateItemFields(
+  table: any,
+  itemTemplate: IItemTemplate,
+  templateDictionary: any
+): any {
+  const viewSourceLayerFields: any[] = table.sourceLayerFields.map((f: any) =>
+    f.source.toLowerCase()
+  );
+  const viewSourceLayerId: number = table.sourceLayerId;
+
+  /* istanbul ignore else */
+  if (
+    typeof viewSourceLayerId === "number" &&
+    Array.isArray(viewSourceLayerFields)
+  ) {
+    // need to make sure these actually exist in the source..
+    let sourceLayerFields: any[] = [];
+    itemTemplate.dependencies.forEach(d => {
+      const layerInfo: any = templateDictionary[d][`layer${viewSourceLayerId}`];
+      /* istanbul ignore else */
+      if (
+        layerInfo &&
+        layerInfo.fields &&
+        templateDictionary[d].name === table.sourceServiceName
+      ) {
+        sourceLayerFields = sourceLayerFields.concat(
+          Object.keys(layerInfo.fields)
+        );
+      }
+    });
+
+    /* istanbul ignore else */
+    if (sourceLayerFields.length > 0 && viewSourceLayerFields.length > 0) {
+      setProp(
+        table,
+        "sourceLayerFields",
+        table.sourceLayerFields.filter(
+          (f: any) => sourceLayerFields.indexOf(f.source.toLowerCase()) > -1
+        )
+      );
+    }
+  }
+  return table;
+}
+
+/**
+ * When the itemm is a view with a geometry field update the value to
+ * use the table name from the view layer def
+ *
+ * @param item the item details from the current template
+ * @param templateDictionary Hash mapping property names to replacement values
+ * @protected
+ */
+export function _updateGeomFieldName(item: any, templateDictionary: any): void {
+  // issue #471
+  const tableName: string = getProp(
+    item,
+    "adminLayerInfo.viewLayerDefinition.table.name"
+  );
+  const fieldName: string = getProp(item, "adminLayerInfo.geometryField.name");
+  if (fieldName && tableName) {
+    const geomName: string = templateDictionary.isPortal
+      ? `${tableName}.shape`
+      : `${tableName}.Shape`;
+    setProp(item, "adminLayerInfo.geometryField.name", geomName);
+  }
 }
 
 /**
@@ -727,6 +857,72 @@ export function _updateTemplateDictionaryFields(
       return false;
     }
   });
+}
+
+/**
+ * Set the defaultSpatialReference variable with the services spatial reference.
+ * If this item is a Feature Service that has child views then we will use this value
+ * if one or more of the child views spatial reference differs from that of its parent.
+ *
+ * @param templateDictionary Hash mapping Solution source id to id of its clone (and name & URL for feature service)
+ * @param itemId The source id for the item
+ * @param spatialReference { wkid: 102100 } for example
+ * @protected
+ */
+export function setDefaultSpatialReference(
+  templateDictionary: any,
+  itemId: string,
+  spatialReference: any
+): void {
+  /* istanbul ignore else */
+  if (spatialReference) {
+    setCreateProp(
+      templateDictionary,
+      `${itemId}.defaultSpatialReference`,
+      spatialReference
+    );
+  }
+}
+
+/**
+ * Compare the spatial reference of the current item against its dependencies.
+ * The spatial reference of a view cannot differ from its source service.
+ * If the view has a different spatial reference from its source use the source spatial reference.
+ *
+ * @param serviceInfo Basic service information
+ * @param itemTemplate The current template to process
+ * @param templateDictionary Hash mapping Solution source id to id of its clone (and name & URL for feature service)
+ * @protected
+ */
+export function validateSpatialReference(
+  serviceInfo: any,
+  itemTemplate: IItemTemplate,
+  templateDictionary: any
+): void {
+  /* istanbul ignore else */
+  if (getProp(serviceInfo, "service.isView")) {
+    // compare the wkid with the source...the view sr cannot differ from source sr
+    const viewWkid: number = getProp(
+      serviceInfo,
+      "service.spatialReference.wkid"
+    );
+
+    let sourceSR: any = 0;
+    itemTemplate.dependencies.some(id => {
+      const source: any = templateDictionary[id];
+      /* istanbul ignore else */
+      if (getProp(source, "defaultSpatialReference")) {
+        sourceSR = source.defaultSpatialReference;
+        return true;
+      }
+    });
+    const sourceWkid: number = getProp(sourceSR, "wkid");
+
+    /* istanbul ignore else */
+    if (sourceWkid && viewWkid && sourceWkid !== viewWkid) {
+      setProp(serviceInfo, "service.spatialReference", sourceSR);
+    }
+  }
 }
 
 /**
@@ -1046,6 +1242,7 @@ export function _templatizeProperty(
  * @param adminItem from the services admin api
  * @param itemTemplate Template for feature service item
  * @param dependencies Array of IDependency for name mapping
+ * @param templatizeFieldReferences Templatize all field references within a layer
  * @return A promise that will resolve when template has been updated
  * @protected
  */

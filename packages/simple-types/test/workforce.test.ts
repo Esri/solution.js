@@ -358,10 +358,12 @@ describe("Module `workforce`: manages the creation and deployment of workforce p
           addResults: [{}]
         });
 
-      workforce.fineTuneCreatedItem(itemTemplate, MOCK_USER_SESSION).then(r => {
-        expect(r).toEqual({ success: true });
-        done();
-      }, done.fail);
+      workforce
+        .fineTuneCreatedItem(itemTemplate, MOCK_USER_SESSION, false)
+        .then(r => {
+          expect(r).toEqual({ success: true });
+          done();
+        }, done.fail);
     });
 
     it("should update dispatchers service even with default names", done => {
@@ -392,10 +394,12 @@ describe("Module `workforce`: manages the creation and deployment of workforce p
           addResults: [{}]
         });
 
-      workforce.fineTuneCreatedItem(itemTemplate, MOCK_USER_SESSION).then(r => {
-        expect(r).toEqual({ success: true });
-        done();
-      }, done.fail);
+      workforce
+        .fineTuneCreatedItem(itemTemplate, MOCK_USER_SESSION, false)
+        .then(r => {
+          expect(r).toEqual({ success: true });
+          done();
+        }, done.fail);
     });
 
     it("should handle error on update dispatchers", done => {
@@ -421,7 +425,7 @@ describe("Module `workforce`: manages the creation and deployment of workforce p
         .get(queryUrl, mockItems.get400Failure());
 
       workforce
-        .fineTuneCreatedItem(itemTemplate, MOCK_USER_SESSION)
+        .fineTuneCreatedItem(itemTemplate, MOCK_USER_SESSION, {})
         .then(done.fail, done);
     });
 
@@ -442,7 +446,7 @@ describe("Module `workforce`: manages the creation and deployment of workforce p
       );
 
       workforce
-        .fineTuneCreatedItem(itemTemplate, MOCK_USER_SESSION)
+        .fineTuneCreatedItem(itemTemplate, MOCK_USER_SESSION, {})
         .then(done.fail, done);
     });
 
@@ -458,7 +462,7 @@ describe("Module `workforce`: manages the creation and deployment of workforce p
         utils.PORTAL_SUBSET.restUrl +
         "/community/users/casey?f=json&token=fake-token";
       const queryUrl: string =
-        "https://services123.arcgis.com/org1234567890/arcgis/rest/services/dispatchers_47bb15c2df2b466da05577776e82d044/FeatureServer/0/query?f=json&where=userId%20%3D%20%27LocalGovDeployCasey%27&outFields=*&token=fake-token";
+        "https://services123.arcgis.com/org1234567890/arcgis/rest/services/dispatchers_47bb15c2df2b466da05577776e82d044/FeatureServer/0/query?f=json&where=userid%20%3D%20%27LocalGovDeployCasey%27&outFields=*&token=fake-token";
 
       fetchMock
         .get(
@@ -470,12 +474,16 @@ describe("Module `workforce`: manages the creation and deployment of workforce p
           features: [{}]
         });
 
-      workforce.fineTuneCreatedItem(itemTemplate, MOCK_USER_SESSION).then(r => {
-        expect(r).toEqual({
-          success: true
-        });
-        done();
-      }, done.fail);
+      workforce
+        .fineTuneCreatedItem(itemTemplate, MOCK_USER_SESSION, {
+          isPortal: true
+        })
+        .then(r => {
+          expect(r).toEqual({
+            success: true
+          });
+          done();
+        }, done.fail);
     });
 
     it("should handle failure to add features", done => {
@@ -490,7 +498,7 @@ describe("Module `workforce`: manages the creation and deployment of workforce p
         utils.PORTAL_SUBSET.restUrl +
         "/community/users/casey?f=json&token=fake-token";
       const queryUrl: string =
-        "https://services123.arcgis.com/org1234567890/arcgis/rest/services/dispatchers_47bb15c2df2b466da05577776e82d044/FeatureServer/0/query?f=json&where=userId%20%3D%20%27LocalGovDeployCasey%27&outFields=*&token=fake-token";
+        "https://services123.arcgis.com/org1234567890/arcgis/rest/services/dispatchers_47bb15c2df2b466da05577776e82d044/FeatureServer/0/query?f=json&where=userid%20%3D%20%27LocalGovDeployCasey%27&outFields=*&token=fake-token";
       const addUrl: string =
         "https://services123.arcgis.com/org1234567890/arcgis/rest/services/dispatchers_47bb15c2df2b466da05577776e82d044/FeatureServer/0/applyEdits";
 
@@ -506,7 +514,9 @@ describe("Module `workforce`: manages the creation and deployment of workforce p
         .post(addUrl, {});
 
       workforce
-        .fineTuneCreatedItem(itemTemplate, MOCK_USER_SESSION)
+        .fineTuneCreatedItem(itemTemplate, MOCK_USER_SESSION, {
+          isPortal: true
+        })
         .then(done.fail, e => {
           expect(e).toEqual({
             success: false,
@@ -543,7 +553,7 @@ describe("Module `workforce`: manages the creation and deployment of workforce p
         })
         .post(addUrl, mockItems.get400Failure());
 
-      workforce.fineTuneCreatedItem(itemTemplate, MOCK_USER_SESSION).then(
+      workforce.fineTuneCreatedItem(itemTemplate, MOCK_USER_SESSION, {}).then(
         r => {
           done.fail();
         },
@@ -575,12 +585,14 @@ describe("Module `workforce`: manages the creation and deployment of workforce p
         )
         .get(queryUrl, {});
 
-      workforce.fineTuneCreatedItem(itemTemplate, MOCK_USER_SESSION).then(r => {
-        expect(r).toEqual({
-          success: false
-        });
-        done();
-      }, done.fail);
+      workforce
+        .fineTuneCreatedItem(itemTemplate, MOCK_USER_SESSION, {})
+        .then(r => {
+          expect(r).toEqual({
+            success: false
+          });
+          done();
+        }, done.fail);
     });
 
     // it("should have success === false when dispatchers does not have url", done => {

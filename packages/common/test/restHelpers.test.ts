@@ -512,7 +512,8 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
           name: "A"
         },
         data: {},
-        properties
+        properties,
+        dependencies: []
       };
       const templateDictionary: any = {
         folderId: "aabb123456",
@@ -783,7 +784,10 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
             resourcesFiles,
             access
           )
-          .then(() => done.fail(), done);
+          .then(
+            () => done.fail(),
+            () => done()
+          );
       });
     }
 
@@ -819,7 +823,10 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
           resourcesFiles,
           access
         )
-        .then(() => done.fail(), done);
+        .then(
+          () => done.fail(),
+          () => done()
+        );
     });
 
     it("can handle failure to create an item, hard error", done => {
@@ -850,7 +857,10 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
           resourcesFiles,
           access
         )
-        .then(() => done.fail(), done);
+        .then(
+          () => done.fail(),
+          () => done()
+        );
     });
 
     it("can handle failure to create a public item, hard error", done => {
@@ -891,7 +901,10 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
           resourcesFiles,
           access
         )
-        .then(() => done.fail(), done);
+        .then(
+          () => done.fail(),
+          () => done()
+        );
     });
   });
 
@@ -2762,6 +2775,30 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
         },
         () => done.fail()
       );
+    });
+  });
+
+  describe("_setItemProperties", () => {
+    it("will remove null initialExtent", () => {
+      const serviceInfo = {
+        service: {
+          capabilities: ""
+        }
+      };
+      const item: any = {
+        initialExtent: null
+      };
+      const expected = {
+        capabilities: ""
+      };
+
+      const actual = restHelpers._setItemProperties(
+        item,
+        serviceInfo,
+        {},
+        true
+      );
+      expect(actual).toEqual(expected);
     });
   });
 

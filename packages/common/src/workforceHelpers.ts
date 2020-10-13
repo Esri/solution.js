@@ -21,7 +21,14 @@
  */
 
 import { applyEdits, queryFeatures } from "@esri/arcgis-rest-feature-layer";
-import { getProp, fail, setProp } from "./generalHelpers";
+import {
+  getIDs,
+  getProp,
+  fail,
+  idTest,
+  regExTest,
+  setProp
+} from "./generalHelpers";
 import {
   IItemTemplate,
   IFeatureServiceProperties,
@@ -159,23 +166,6 @@ export function extractWorkforceDependencies(
         dependencies: deps,
         urlHash: {}
       });
-    }
-  });
-}
-
-/**
- * Updates a list of the items dependencies if more are found in the
- * provided value.
- *
- * @param v a string value to check for ids
- * @param deps a list of the items dependencies
- */
-export function idTest(v: any, deps: string[]): void {
-  const ids: any[] = _getIDs(v);
-  ids.forEach(id => {
-    /* istanbul ignore else */
-    if (deps.indexOf(id) === -1) {
-      deps.push(id);
     }
   });
 }
@@ -369,7 +359,7 @@ export function _getAssignmentIntegrationInfos(
         /* istanbul ignore else */
         if (p === "urltemplate") {
           const urlTemplate = f.attributes[p];
-          const ids: string[] = _getIDs(urlTemplate);
+          const ids: string[] = getIDs(urlTemplate);
           info["dependencies"] = ids;
           const serviceRequests: any = urlTest(urlTemplate, authentication);
           /* istanbul ignore else */
@@ -454,7 +444,7 @@ export function _templatizeUrlTemplate(item: any, urlHash: any): void {
 
   /* istanbul ignore else */
   if (urlTemplate) {
-    const ids: string[] = _getIDs(urlTemplate);
+    const ids: string[] = getIDs(urlTemplate);
     ids.forEach(id => {
       urlTemplate = urlTemplate.replace(id, templatizeTerm(id, id, ".itemId"));
     });
@@ -626,39 +616,6 @@ export function getKeyWorkforceProperties(version: number): string[] {
       ];
 }
 
-export function _getIDs(v: string): string[] {
-  // get id from
-  // bad3483e025c47338d43df308c117308
-  // {bad3483e025c47338d43df308c117308
-  // =bad3483e025c47338d43df308c117308
-  // do not get id from
-  // http://something/name_bad3483e025c47338d43df308c117308
-  // {{bad3483e025c47338d43df308c117308.itemId}}
-
-  // lookbehind is not supported in safari
-  // cannot use /(?<!_)(?<!{{)\b[0-9A-F]{32}/gi
-
-  // use groups and filter out the ids that start with {{
-  return regExTest(v, /({*)(\b[0-9A-F]{32})/gi).reduce(function(acc, _v) {
-    /* istanbul ignore else */
-    if (_v.indexOf("{{") < 0) {
-      acc.push(_v.replace("{", ""));
-    }
-    return acc;
-  }, []);
-}
-
-/**
- * Evaluates a value with a regular expression
- *
- * @param v a string value to test with the expression
- * @param ex the regular expresion to test with
- * @return an array of matches
- */
-export function regExTest(v: any, ex: RegExp): any[] {
-  return v && ex.test(v) ? v.match(ex) : [];
-}
-
 /**
  * Test the provided value for any urls and submit a request to obtain the service item id for the url
  *
@@ -700,8 +657,8 @@ export function _getURLs(v: string): string[] {
 export function fineTuneCreatedWorkforceItem(
   newlyCreatedItem: IItemTemplate,
   destinationAuthentication: UserSession,
-  url: string = "",
-  templateDicionary?: any
+  url: string,
+  templateDictionary: any
 ): Promise<any> {
   return new Promise<any>((resolve, reject) => {
     destinationAuthentication.getUser().then(
@@ -716,7 +673,8 @@ export function fineTuneCreatedWorkforceItem(
           dispatchers && dispatchers.url ? dispatchers.url : `${url}2`,
           user.username || "",
           user.fullName || "",
-          destinationAuthentication
+          destinationAuthentication,
+          templateDictionary.isPortal
         ).then(
           results => {
             // for workforce v2 we storce the key details from the workforce service as workforceInfos
@@ -728,7 +686,7 @@ export function fineTuneCreatedWorkforceItem(
             if (workforceInfos && url) {
               workforceInfos = replaceInTemplate(
                 workforceInfos,
-                templateDicionary
+                templateDictionary
               );
 
               _getFields(url, [2, 3, 4], destinationAuthentication).then(
@@ -848,14 +806,16 @@ export function _updateDispatchers(
   url: any,
   name: string,
   fullName: string,
-  destinationAuthentication: UserSession
+  authentication: UserSession,
+  isPortal: boolean
 ): Promise<boolean> {
   return new Promise<boolean>((resolve, reject) => {
     if (url) {
+      const fieldName: string = isPortal ? "userid" : "userId";
       queryFeatures({
         url,
-        where: "userId = '" + name + "'",
-        authentication: destinationAuthentication
+        where: `${fieldName} = '${name}'`,
+        authentication
       }).then(
         (results: any) => {
           if (results && results.features) {
@@ -863,15 +823,12 @@ export function _updateDispatchers(
               const features = [
                 {
                   attributes: {
-                    name: fullName,
-                    userId: name
+                    name: fullName
                   }
                 }
               ];
-              _applyEdits(url, features, destinationAuthentication).then(
-                resolve,
-                reject
-              );
+              features[0].attributes[fieldName] = name;
+              _applyEdits(url, features, authentication).then(resolve, reject);
             } else {
               resolve(true);
             }

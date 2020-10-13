@@ -119,7 +119,7 @@ export function getAGOLItem(type?: string, url = ""): any {
       item = getAGOLItemFundamentals(
         type,
         url ||
-          "https://services123.arcgis.com/org1234567890/arcgis/rest/services/ROWPermits_publiccomment/FeatureServer"
+        "https://services123.arcgis.com/org1234567890/arcgis/rest/services/ROWPermits_publiccomment/FeatureServer"
       );
       break;
 
@@ -152,10 +152,14 @@ export function getAGOLItem(type?: string, url = ""): any {
     case "Map Template":
       break;
 
+    case "Notebook":
+      item = getAGOLItemFundamentals(type);
+      break;
+
     case "Operation View":
       break;
 
-    case "Notebook":
+    case "Oriented Imagery Catalog":
       item = getAGOLItemFundamentals(type);
       break;
 
@@ -182,7 +186,7 @@ export function getAGOLItem(type?: string, url = ""): any {
       item = getAGOLItemFundamentals(
         type,
         url ||
-          "http://statelocaltryit.maps.arcgis.com/apps/CrowdsourcePolling/index.html?appid=wma1234567890"
+        "http://statelocaltryit.maps.arcgis.com/apps/CrowdsourcePolling/index.html?appid=wma1234567890"
       );
       break;
 
@@ -412,6 +416,59 @@ export function getAGOLItemData(type?: string): any {
       break;
 
     case "Operation View":
+      break;
+
+    case "Oriented Imagery Catalog":
+      data = {
+        "type": "OIC",
+        "version": "1.0",
+        "properties": {
+          "Name": "OIC_002",
+          "Description": "OIC_002",
+          "Tags": "OIC",
+          "ServiceURL": "https://services.arcgis.com/64491f8c348a51cf/arcgis/rest/services/OIC_FL_002/FeatureServer/0",
+          "OverviewURL": "https://services.arcgis.com/64491f8c348a51cf/arcgis/rest/services/OIC_FL_002/FeatureServer/0",
+          "DefaultAttributes": {
+            "CamHeading": "",
+            "CamPitch": "90",
+            "CamRoll": "0",
+            "HFOV": "60",
+            "VFOV": "40",
+            "AvgHtAG": "1.7",
+            "FarDist": "50",
+            "NearDist": "0.1",
+            "OIType": "I",
+            "SortOrder": "",
+            "CamOffset": "",
+            "Accuracy": "",
+            "ImgPyramids": "",
+            "DepthImg": "",
+            "ExternalViewer": "",
+            "ImgRot": ""
+          },
+          "About": "",
+          "ImageField": "image_",
+          "ImagePrefix": "",
+          "VideoPrefix": "",
+          "DepthImagePrefix": "",
+          "SourceImagePrefix": "",
+          "MaxDistance": "100",
+          "DEMPrefix": "",
+          "Credentials": {
+            "Username": "",
+            "Password": ""
+          },
+          "Variables": {},
+          "Filters": {},
+          "Copyright": {
+            "text": "",
+            "url": ""
+          },
+          "PointsSource": "",
+          "CoverageSource": "",
+          "imageField": "Image_"
+        }
+      };
       break;
 
     case "Pro Map":

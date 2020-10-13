@@ -23,19 +23,13 @@
 import * as dashboard from "./dashboard";
 import * as webmap from "./webmap";
 import * as webmappingapplication from "./webmappingapplication";
-import * as quickcapture from "./quickcapture";
 
 import {
-  getItemDataAsJson,
-  getTemplateById,
-  hasUnresolvedVariables,
   ICreateItemFromTemplateResponse,
   IDatasourceInfo,
   IItemProgressCallback,
   IItemTemplate,
   IUpdateItemResponse,
-  replaceInTemplate,
-  updateItemExtended,
   updateItemTemplateFromDictionary,
   UserSession
 } from "@esri/solution-common";
