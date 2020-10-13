@@ -1,6 +1,6 @@
 {
   "name": "@esri/solution-web-experience",
-  "version": "0.18.5",
+  "version": "0.19.0",
   "description": "Manages the creation and deployment of Web Experience item types for @esri/solution.js.",
   "main": "dist/node/index.js",
   "unpkg": "dist/umd/web-experience.umd.min.js",
@@ -27,8 +27,8 @@
     "@esri/hub-common": "^6.11.3"
   },
   "dependencies": {
-    "@esri/solution-common": "^0.18.5",
-    "@esri/solution-simple-types": "^0.18.5",
+    "@esri/solution-common": "^0.19.0",
+    "@esri/solution-simple-types": "^0.19.0",
     "tslib": "^1.13.0"
   },
   "scripts": {
