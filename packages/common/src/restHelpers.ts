@@ -1698,6 +1698,8 @@ export function _setItemProperties(
     serviceInfo.service.capabilities = item.capabilities;
   }
 
+  _updateRelationships(serviceInfo);
+
   // set create options item properties
   const keyProperties: string[] = [
     "isView",
@@ -1751,6 +1753,44 @@ export function _setItemProperties(
   }
 
   return item;
+}
+
+/**
+ * Set isUnique as true for indexes that reference origin relationship keyFields.
+ *
+ * @param serviceInfo Service information
+ * @protected
+ */
+export function _updateRelationships(serviceInfo: any): void {
+  const layersAndTables: any[] = (serviceInfo.layers || []).concat(
+    serviceInfo.tables || []
+  );
+  layersAndTables.forEach(item => {
+    const relationships: any[] = item.relationships;
+    const indexes: any[] = item.indexes;
+    /* istanbul ignore else */
+    if (
+      relationships &&
+      relationships.length > 0 &&
+      indexes &&
+      indexes.length > 0
+    ) {
+      const keyFields: string[] = relationships.reduce((acc, v) => {
+        /* istanbul ignore else */
+        if (v.role === "esriRelRoleOrigin" && v.keyField) {
+          acc.push(v.keyField);
+        }
+        return acc;
+      }, []);
+      indexes.map(i => {
+        /* istanbul ignore else */
+        if (keyFields.some(k => i.fields.indexOf(k) > -1)) {
+          i.isUnique = true;
+        }
+        return i;
+      });
+    }
+  });
 }
 
 /**

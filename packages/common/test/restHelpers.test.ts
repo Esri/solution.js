@@ -4063,6 +4063,58 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
     });
   });
 
+  describe("_updateRelationships", () => {
+    it("will update indexes", () => {
+      const serviceInfo: any = {
+        layers: [
+          {
+            relationships: [
+              {
+                role: "esriRelRoleOrigin",
+                keyField: "a"
+              },
+              {
+                role: "esriRelRoleNotOrigin",
+                keyField: "b"
+              }
+            ],
+            indexes: [
+              {
+                fields: "a",
+                isUnique: false
+              },
+              {
+                fields: "b",
+                isUnique: false
+              }
+            ]
+          }
+        ],
+        tables: []
+      };
+
+      const expected: any[] = [
+        {
+          fields: "a",
+          isUnique: true
+        },
+        {
+          fields: "b",
+          isUnique: false
+        }
+      ];
+      restHelpers._updateRelationships(serviceInfo);
+      expect(serviceInfo.layers[0].indexes).toEqual(expected);
+    });
+
+    it("will not fail with missing layers and tables", () => {
+      const serviceInfo: any = {};
+      restHelpers._updateRelationships(serviceInfo);
+      const expected: any = {};
+      expect(serviceInfo).toEqual(expected);
+    });
+  });
+
   describe("_validateExtent", () => {
     it("will not change valid SR", () => {
       const expected = {
