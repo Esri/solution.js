@@ -420,6 +420,16 @@ export function _updateTemplateDictionary(
           )
         );
       }
+
+      const spatialReference: any = common.getProp(
+        t,
+        "properties.service.spatialReference"
+      );
+      common.setDefaultSpatialReference(
+        templateDictionary,
+        t.itemId,
+        spatialReference
+      );
     }
   });
 }
@@ -472,17 +482,20 @@ export function _handleExistingItems(
             : existingItem.sourceId;
           /* istanbul ignore else */
           if (sourceId) {
-            templateDictionary[sourceId] = {
-              def: Promise.resolve({
-                id: result.id,
-                type: result.type,
-                postProcess: false
-              }),
-              itemId: result.id,
-              name: result.name,
-              title: result.title,
-              url: result.url
-            };
+            templateDictionary[sourceId] = Object.assign(
+              templateDictionary[sourceId] || {},
+              {
+                def: Promise.resolve({
+                  id: result.id,
+                  type: result.type,
+                  postProcess: false
+                }),
+                itemId: result.id,
+                name: result.name,
+                title: result.title,
+                url: result.url
+              }
+            );
           }
         }
       }
@@ -576,9 +589,14 @@ export function _createItemFromTemplateWhenReady(
 ): Promise<common.ICreateItemFromTemplateResponse> {
   // ensure this is present
   template.dependencies = template.dependencies || [];
-  // if there is no entry in the templateDictionary, add it
-  if (!templateDictionary.hasOwnProperty(template.itemId)) {
-    templateDictionary[template.itemId] = {};
+  // if there is no entry in the templateDictionary
+  // or if we have a basic entry without the deferred request for its creation, add it
+  if (
+    !templateDictionary.hasOwnProperty(template.itemId) ||
+    !getProp(templateDictionary[template.itemId], "def")
+  ) {
+    templateDictionary[template.itemId] =
+      templateDictionary[template.itemId] || {};
     // Save the deferred for the use of items that depend on this item being created first
     templateDictionary[template.itemId].def = new Promise<
       common.ICreateItemFromTemplateResponse

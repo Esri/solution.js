@@ -21,6 +21,10 @@
  */
 
 import {
+  setDefaultSpatialReference,
+  validateSpatialReference
+} from "./featureServiceHelpers";
+import {
   appendQueryParam,
   blobToJson,
   blobToText,
@@ -1484,6 +1488,9 @@ export function _getCreateServiceOptions(
     const isPortal: boolean = templateDictionary.isPortal;
     const solutionItemId: string = templateDictionary.solutionItemId;
     const itemId: string = newItemTemplate.itemId;
+
+    validateSpatialReference(serviceInfo, newItemTemplate, templateDictionary);
+
     const fallbackExtent: any = _getFallbackExtent(
       serviceInfo,
       templateDictionary
@@ -1525,6 +1532,11 @@ export function _getCreateServiceOptions(
     ).then(
       extent => {
         templateDictionary[itemId].solutionExtent = extent;
+        setDefaultSpatialReference(
+          templateDictionary,
+          itemId,
+          extent.spatialReference
+        );
         createOptions.item = replaceInTemplate(
           createOptions.item,
           templateDictionary

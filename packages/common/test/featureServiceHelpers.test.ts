@@ -78,6 +78,7 @@ import {
   _validateFields,
   _validateDisplayField,
   _validateIndexes,
+  validateSpatialReference,
   _validateTemplatesFields,
   _validateTypesTemplates,
   _validateEditFieldsInfo,
@@ -6271,6 +6272,32 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
       const actual: any[] = _validateDomains(fieldInfos, fieldUpdates);
 
       expect(actual).toEqual(expected);
+    });
+  });
+
+  describe("validateSpatialReference", () => {
+    it("can check for dependant source spatial reference", () => {
+      const serviceInfo: any = {
+        service: {
+          isView: true,
+          spatialReference: {
+            wkid: 4326
+          }
+        }
+      };
+
+      itemTemplate.dependencies = ["aaec7d5e113e4252bf1dcdfbcd8400f9"];
+
+      const templateDictionary: any = {
+        aaec7d5e113e4252bf1dcdfbcd8400f9: {
+          defaultSpatialReference: {
+            wkid: 102100
+          }
+        }
+      };
+
+      validateSpatialReference(serviceInfo, itemTemplate, templateDictionary);
+      expect(serviceInfo.service.spatialReference.wkid).toEqual(102100);
     });
   });
 
