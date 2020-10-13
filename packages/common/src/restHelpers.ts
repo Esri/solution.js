@@ -1026,6 +1026,9 @@ export function getFeatureServiceProperties(
         }
         delete serviceData.tables;
 
+        // Ensure solution items have unique indexes on relationship key fields
+        _updateIndexesForRelationshipKeyFields(properties);
+
         if (workforceService) {
           getWorkforceServiceInfo(properties, serviceUrl, authentication).then(
             resolve,
@@ -1698,7 +1701,9 @@ export function _setItemProperties(
     serviceInfo.service.capabilities = item.capabilities;
   }
 
-  _updateRelationships(serviceInfo);
+  // Handle index update for any pre-published solution items that
+  // have non-unique indexes on relationship key fields
+  _updateIndexesForRelationshipKeyFields(serviceInfo);
 
   // set create options item properties
   const keyProperties: string[] = [
@@ -1761,7 +1766,7 @@ export function _setItemProperties(
  * @param serviceInfo Service information
  * @protected
  */
-export function _updateRelationships(serviceInfo: any): void {
+export function _updateIndexesForRelationshipKeyFields(serviceInfo: any): void {
   const layersAndTables: any[] = (serviceInfo.layers || []).concat(
     serviceInfo.tables || []
   );

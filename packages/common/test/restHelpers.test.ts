@@ -4103,13 +4103,13 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
           isUnique: false
         }
       ];
-      restHelpers._updateRelationships(serviceInfo);
+      restHelpers._updateIndexesForRelationshipKeyFields(serviceInfo);
       expect(serviceInfo.layers[0].indexes).toEqual(expected);
     });
 
     it("will not fail with missing layers and tables", () => {
       const serviceInfo: any = {};
-      restHelpers._updateRelationships(serviceInfo);
+      restHelpers._updateIndexesForRelationshipKeyFields(serviceInfo);
       const expected: any = {};
       expect(serviceInfo).toEqual(expected);
     });
