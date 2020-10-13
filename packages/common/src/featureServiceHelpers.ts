@@ -859,6 +859,16 @@ export function _updateTemplateDictionaryFields(
   });
 }
 
+/**
+ * Set the defaultSpatialReference variable with the services spatial reference.
+ * If this item is a Feature Service that has child views then we will use this value
+ * if one or more of the child views spatial reference differs from that of its parent.
+ *
+ * @param templateDictionary Hash mapping Solution source id to id of its clone (and name & URL for feature service)
+ * @param itemId The source id for the item
+ * @param spatialReference { wkid: 102100 } for example
+ * @protected
+ */
 export function setDefaultSpatialReference(
   templateDictionary: any,
   itemId: string,
@@ -874,6 +884,16 @@ export function setDefaultSpatialReference(
   }
 }
 
+/**
+ * Compare the spatial reference of the current item against its dependencies.
+ * The spatial reference of a view cannot differ from its source service.
+ * If the view has a different spatial reference from its source use the source spatial reference.
+ *
+ * @param serviceInfo Basic service information
+ * @param itemTemplate The current template to process
+ * @param templateDictionary Hash mapping Solution source id to id of its clone (and name & URL for feature service)
+ * @protected
+ */
 export function validateSpatialReference(
   serviceInfo: any,
   itemTemplate: IItemTemplate,

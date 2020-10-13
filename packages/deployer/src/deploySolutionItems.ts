@@ -589,7 +589,8 @@ export function _createItemFromTemplateWhenReady(
 ): Promise<common.ICreateItemFromTemplateResponse> {
   // ensure this is present
   template.dependencies = template.dependencies || [];
-  // if there is no entry in the templateDictionary, add it
+  // if there is no entry in the templateDictionary
+  // or if we have a basic entry without the deferred request for its creation, add it
   if (
     !templateDictionary.hasOwnProperty(template.itemId) ||
     !getProp(templateDictionary[template.itemId], "def")
