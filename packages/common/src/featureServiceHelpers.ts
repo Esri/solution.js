@@ -1563,19 +1563,6 @@ export function _templatizeAdminLayerInfo(
     if (viewDef.table) {
       _processAdminObject(viewDef.table, dependencies);
       /* istanbul ignore else */
-      if (
-        viewDef.table.hasOwnProperty("sourceServiceName") &&
-        layer.isMultiServicesView
-      ) {
-        /* istanbul ignore else */
-        if (adminLayerInfo.geometryField && adminLayerInfo.geometryField.name) {
-          adminLayerInfo.geometryField.name =
-            viewDef.table.sourceServiceName +
-            "." +
-            adminLayerInfo.geometryField.name;
-        }
-      }
-      /* istanbul ignore else */
       if (viewDef.table.relatedTables) {
         viewDef.table.relatedTables.forEach((table: any) => {
           _processAdminObject(table, dependencies);
