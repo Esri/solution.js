@@ -102,11 +102,8 @@ export function templatize(
 
   // Set up symbols for the URL of the feature service and its layers and tables
   templateDictionary[fsUrl] = itemTemplate.item.url; // map FS URL to its templatized form
-  _items.forEach(layer => {
-    templateDictionary[fsUrl + "/" + layer.id] = _templatize(
-      id,
-      "layer" + layer.id + ".url"
-    );
+  jsonItems.concat(_items).forEach(layer => {
+    templateDictionary[fsUrl + "/" + layer.id] = _templatize(id, "layer" + layer.id + ".url");
   });
 
   // templatize the service references serviceItemId
