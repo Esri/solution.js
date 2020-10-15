@@ -17,7 +17,10 @@
 import {
   EItemProgressStatus,
   failWithIds,
+  getIDs,
+  getPortal,
   getTemplateById,
+  globalStringReplace,
   ICreateSolutionOptions,
   IItemProgressCallback,
   IItemTemplate,
@@ -26,10 +29,12 @@ import {
   removeTemplate,
   replaceInTemplate,
   SItemProgressStatus,
-  updateItem
+  updateItem,
+  postProcessWorkforceTemplates
 } from "@esri/solution-common";
 import { getProp, getWithDefault } from "@esri/hub-common";
 import { UserSession } from "@esri/arcgis-rest-auth";
+import { request, IRequestOptions } from "@esri/arcgis-rest-request";
 import {
   createItemTemplate,
   postProcessFieldReferences
@@ -157,24 +162,32 @@ export function _addContentToSolution(
         );
       } else {
         if (solutionTemplates.length > 0) {
-          // test for and update group dependencies
+          // test for and update group dependencies and other post-processing
           solutionTemplates = _postProcessGroupDependencies(solutionTemplates);
           solutionTemplates = _postProcessIgnoredItems(solutionTemplates);
-
-          // Update solution item with its data JSON
-          const solutionData: ISolutionItemData = {
-            metadata: {},
-            templates: options.templatizeFields
-              ? postProcessFieldReferences(solutionTemplates)
-              : solutionTemplates
-          };
-          const itemInfo: IItemUpdate = {
-            id: solutionItemId,
-            text: solutionData
-          };
-          updateItem(itemInfo, authentication).then(() => {
-            resolve(solutionItemId);
-          }, reject);
+          solutionTemplates = postProcessWorkforceTemplates(solutionTemplates);
+          _templatizeSolutionIds(solutionTemplates);
+          _replaceDictionaryItemsInObject(templateDictionary, solutionTemplates);
+          _templatizeOrgUrl(solutionTemplates, authentication)
+            .then(
+              solutionTemplates2 => {
+                // Update solution item with its data JSON
+                const solutionData: ISolutionItemData = {
+                  metadata: {},
+                  templates: options.templatizeFields
+                    ? postProcessFieldReferences(solutionTemplates2)
+                    : solutionTemplates2
+                };
+                const itemInfo: IItemUpdate = {
+                  id: solutionItemId,
+                  text: solutionData
+                };
+                updateItem(itemInfo, authentication).then(() => {
+                  resolve(solutionItemId);
+                }, reject);
+              },
+              reject
+            );
         } else {
           resolve(solutionItemId);
         }
@@ -187,6 +200,7 @@ export function _addContentToSolution(
  * Update the items dependencies and groups arrays
  *
  * @param templates The array of templates to evaluate
+ * @return Updated version of the templates
  * @private
  */
 export function _postProcessGroupDependencies(
@@ -236,7 +250,7 @@ export function _postProcessGroupDependencies(
 
 /**
  * Check for feature service items that have been flagged for invalid designations.
- * Reomve templates that have invalid designations from the solution item and other item dependencies.
+ * Remove templates that have invalid designations from the solution item and other item dependencies.
  * Clean up any references to items with invalid designations in the other templates.
  *
  * @param templates The array of templates to evaluate
@@ -262,3 +276,137 @@ export function _postProcessIgnoredItems(
 
   return templates;
 }
+
+/**
+ * Recursively runs through an object to find and replace any strings found in a dictionary.
+ *
+ * @param templateDictionary Hash of things to be replaced
+ * @param obj Object to be examined
+ * @private
+ */
+export function _replaceDictionaryItemsInObject(
+  hash: any,
+  obj: any
+): any {
+  /* istanbul ignore else */
+  if (obj) {
+    Object.keys(obj).forEach(prop => {
+      const propObj = obj[prop];
+      if (propObj) {
+        if (typeof propObj === "object") {
+          _replaceDictionaryItemsInObject(hash, propObj);
+        } else if (typeof propObj === "string") {
+          obj[prop] = hash[propObj] || propObj;
+        }
+      }
+    });
+  }
+  return obj;
+}
+
+/**
+ * Recursively runs through an object to find and templatize any remaining references to solution's items.
+ *
+ * @param ids Ids to be replaced in strings found in object
+ * @param obj Object to be examined
+ * @private
+ */
+export function _replaceRemainingIdsInObject(
+  ids: string[],
+  obj: any
+): any {
+  /* istanbul ignore else */
+  if (obj) {
+    Object.keys(obj).forEach(prop => {
+      const propObj = obj[prop];
+      if (propObj) {
+        if (typeof propObj === "object") {
+          _replaceRemainingIdsInObject(ids, propObj);
+        } else if (typeof propObj === "string") {
+          obj[prop] = _replaceRemainingIdsInString(ids, propObj);
+        }
+      }
+    });
+  }
+  return obj;
+}
+
+/**
+ * Templatizes ids from a list in a string if they're not already templatized.
+ *
+ * @param ids Ids to be replaced in source string
+ * @param str Source string to be examined
+ * @return A copy of the source string with any templatization changes
+ * @private
+ */
+export function _replaceRemainingIdsInString(
+  ids: string[],
+  str: string
+): string {
+  let updatedStr = str;
+  const untemplatizedIds = getIDs(str);
+  if (untemplatizedIds.length > 0) {
+    untemplatizedIds.forEach(id => {
+      if (ids.includes(id)) {
+        const re = new RegExp("({*)" + id, "gi");
+        updatedStr = updatedStr.replace(
+          re,
+          match => match.indexOf("{{") < 0 ? "{{" + id.replace("{", "") + ".itemId}}" : match
+        );
+      }
+    });
+  }
+  return updatedStr;
+}
+
+/**
+ * Templatizes occurrences of the URL to the user's organization in the `item` and `data` template sections.
+ *
+ * @param templates The array of templates to evaluate; templates is modified in place
+ * @param authentication Credentials for request organization info
+ * @return Promise resolving with `templates`
+ * @private
+ */
+export function _templatizeOrgUrl(
+  templates: IItemTemplate[],
+  authentication: UserSession
+): Promise<IItemTemplate[]> {
+  return new Promise((resolve, reject) => {
+    // Get the org's URL
+    getPortal(null, authentication)
+      .then(
+        org => {
+          const orgUrl = "https://" + org.urlKey + "." + org.customBaseUrl;
+          const templatizedOrgUrl = "{{portalBaseUrl}}";
+
+          // Cycle through each of the items in the template and scan the `item` and `data` sections of each for replacements
+          templates.forEach((template: IItemTemplate) => {
+            globalStringReplace(template.item, new RegExp(orgUrl, "gi"), templatizedOrgUrl);
+            globalStringReplace(template.data, new RegExp(orgUrl, "gi"), templatizedOrgUrl);
+          });
+          resolve(templates);
+        },
+        reject
+      );
+  });
+}
+
+/**
+ * Finds and templatizes any references to solution's items.
+ *
+ * @param templates The array of templates to evaluate
+ * @private
+ */
+export function _templatizeSolutionIds(
+  templates: IItemTemplate[]
+): void {
+  // Get the ids in the solution
+  const solutionIds: string[] = templates.map((template: IItemTemplate) => template.itemId);
+
+  // Cycle through each of the items in the template and scan the `item` and `data` sections of each for ids in our solution
+  templates.forEach((template: IItemTemplate) => {
+    _replaceRemainingIdsInObject(solutionIds, template.item);
+    _replaceRemainingIdsInObject(solutionIds, template.data);
+  });
+}
+

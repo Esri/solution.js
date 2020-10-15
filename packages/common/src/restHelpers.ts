@@ -21,6 +21,10 @@
  */
 
 import {
+  setDefaultSpatialReference,
+  validateSpatialReference
+} from "./featureServiceHelpers";
+import {
   appendQueryParam,
   blobToJson,
   blobToText,
@@ -57,10 +61,7 @@ import {
   UserSession
 } from "./interfaces";
 import { createZip } from "./libConnectors";
-import {
-  getItemBase,
-  getItemDataAsJson
-} from "./restHelpersGet";
+import { getItemBase, getItemDataAsJson } from "./restHelpersGet";
 import {
   addItemData as portalAddItemData,
   addItemRelationship,
@@ -108,9 +109,11 @@ import {
   createFeatureService as svcAdminCreateFeatureService
 } from "@esri/arcgis-rest-service-admin";
 import {
-  hasUnresolvedVariables,
-  replaceInTemplate
-} from "./templatization";
+  getWorkforceDependencies,
+  isWorkforceProject,
+  getWorkforceServiceInfo
+} from "./workforceHelpers";
+import { hasUnresolvedVariables, replaceInTemplate } from "./templatization";
 
 // ------------------------------------------------------------------------------------------------------------------ //
 
@@ -820,6 +823,8 @@ export function extractDependencies(
         },
         e => reject(fail(e))
       );
+    } else if (isWorkforceProject(itemTemplate)) {
+      resolve(getWorkforceDependencies(itemTemplate, dependencies));
     } else {
       resolve(dependencies);
     }
@@ -944,9 +949,16 @@ export function getServiceLayersAndTables(
     // the item and data sections with sections for the service, full layers, and
     // full tables
 
+    // Extra steps must be taken for workforce version 2
+    const isWorkforceService = isWorkforceProject(itemTemplate);
+
     // Get the service description
     if (itemTemplate.item.url) {
-      getFeatureServiceProperties(itemTemplate.item.url, authentication).then(
+      getFeatureServiceProperties(
+        itemTemplate.item.url,
+        authentication,
+        isWorkforceService
+      ).then(
         properties => {
           itemTemplate.properties = properties;
           resolve(itemTemplate);
@@ -961,7 +973,8 @@ export function getServiceLayersAndTables(
 
 export function getFeatureServiceProperties(
   serviceUrl: string,
-  authentication: UserSession
+  authentication: UserSession,
+  workforceService: boolean = false
 ): Promise<IFeatureServiceProperties> {
   return new Promise<IFeatureServiceProperties>((resolve, reject) => {
     const properties: IFeatureServiceProperties = {
@@ -1013,7 +1026,17 @@ export function getFeatureServiceProperties(
         }
         delete serviceData.tables;
 
-        resolve(properties);
+        // Ensure solution items have unique indexes on relationship key fields
+        _updateIndexesForRelationshipKeyFields(properties);
+
+        if (workforceService) {
+          getWorkforceServiceInfo(properties, serviceUrl, authentication).then(
+            resolve,
+            reject
+          );
+        } else {
+          resolve(properties);
+        }
       },
       (e: any) => reject(fail(e))
     );
@@ -1326,33 +1349,25 @@ export function updateItemTemplateFromDictionary(
       getItemBase(itemId, authentication),
       getItemDataAsJson(itemId, authentication)
     ])
-    .then(([item, data]) => {
-      // Do they have any variables?
-      if (hasUnresolvedVariables(item) || hasUnresolvedVariables(data)) {
-        // Update if so
-        const { item: updatedItem, data: updatedData } = replaceInTemplate(
-          { item, data },
-          templateDictionary
-        );
-        return updateItemExtended(
-          updatedItem,
-          updatedData,
-          authentication
-        );
-      } else {
-        // Shortcut out if not
-        return Promise.resolve({
-          success: true,
-          id: itemId
-        } as IUpdateItemResponse);
-      }
-    })
-    .then(
-      result => resolve(result)
-    )
-    .catch(
-      error => reject(error)
-    );
+      .then(([item, data]) => {
+        // Do they have any variables?
+        if (hasUnresolvedVariables(item) || hasUnresolvedVariables(data)) {
+          // Update if so
+          const { item: updatedItem, data: updatedData } = replaceInTemplate(
+            { item, data },
+            templateDictionary
+          );
+          return updateItemExtended(updatedItem, updatedData, authentication);
+        } else {
+          // Shortcut out if not
+          return Promise.resolve({
+            success: true,
+            id: itemId
+          } as IUpdateItemResponse);
+        }
+      })
+      .then(result => resolve(result))
+      .catch(error => reject(error));
   });
 }
 
@@ -1476,6 +1491,9 @@ export function _getCreateServiceOptions(
     const isPortal: boolean = templateDictionary.isPortal;
     const solutionItemId: string = templateDictionary.solutionItemId;
     const itemId: string = newItemTemplate.itemId;
+
+    validateSpatialReference(serviceInfo, newItemTemplate, templateDictionary);
+
     const fallbackExtent: any = _getFallbackExtent(
       serviceInfo,
       templateDictionary
@@ -1517,6 +1535,11 @@ export function _getCreateServiceOptions(
     ).then(
       extent => {
         templateDictionary[itemId].solutionExtent = extent;
+        setDefaultSpatialReference(
+          templateDictionary,
+          itemId,
+          extent.spatialReference
+        );
         createOptions.item = replaceInTemplate(
           createOptions.item,
           templateDictionary
@@ -1678,6 +1701,10 @@ export function _setItemProperties(
     serviceInfo.service.capabilities = item.capabilities;
   }
 
+  // Handle index update for any pre-published solution items that
+  // have non-unique indexes on relationship key fields
+  _updateIndexesForRelationshipKeyFields(serviceInfo);
+
   // set create options item properties
   const keyProperties: string[] = [
     "isView",
@@ -1687,6 +1714,7 @@ export function _setItemProperties(
     "isMultiServicesView"
   ];
   const deleteKeys: string[] = ["layers", "tables"];
+  /* istanbul ignore else */
   if (isPortal) {
     // removed for issue #423 causing FS to fail to create
     deleteKeys.push("adminServiceInfo");
@@ -1694,10 +1722,12 @@ export function _setItemProperties(
   const itemKeys: string[] = Object.keys(item);
   const serviceKeys: string[] = Object.keys(serviceInfo.service);
   serviceKeys.forEach(k => {
+    /* istanbul ignore else */
     if (itemKeys.indexOf(k) === -1 && deleteKeys.indexOf(k) < 0) {
       item[k] = serviceInfo.service[k];
       // These need to be included via params otherwise...
       // addToDef calls fail when adding adminLayerInfo
+      /* istanbul ignore else */
       if (serviceInfo.service.isView && keyProperties.indexOf(k) > -1) {
         params[k] = serviceInfo.service[k];
       }
@@ -1705,6 +1735,7 @@ export function _setItemProperties(
   });
 
   // Enable editor tracking on layer with related tables is not supported.
+  /* istanbul ignore else */
   if (
     item.isMultiServicesView &&
     getProp(item, "editorTrackingInfo.enableEditorTracking")
@@ -1713,7 +1744,58 @@ export function _setItemProperties(
     params["editorTrackingInfo"] = item.editorTrackingInfo;
   }
 
+  /* istanbul ignore else */
+  if (isPortal) {
+    // portal will fail when initialExtent is defined but null
+    // removed for issue #449 causing FS to fail to create on portal
+    /* istanbul ignore else */
+    if (
+      Object.keys(item).indexOf("initialExtent") > -1 &&
+      !item.initialExtent
+    ) {
+      deleteProp(item, "initialExtent");
+    }
+  }
+
   return item;
+}
+
+/**
+ * Set isUnique as true for indexes that reference origin relationship keyFields.
+ *
+ * @param serviceInfo Service information
+ * @protected
+ */
+export function _updateIndexesForRelationshipKeyFields(serviceInfo: any): void {
+  const layersAndTables: any[] = (serviceInfo.layers || []).concat(
+    serviceInfo.tables || []
+  );
+  layersAndTables.forEach(item => {
+    const relationships: any[] = item.relationships;
+    const indexes: any[] = item.indexes;
+    /* istanbul ignore else */
+    if (
+      relationships &&
+      relationships.length > 0 &&
+      indexes &&
+      indexes.length > 0
+    ) {
+      const keyFields: string[] = relationships.reduce((acc, v) => {
+        /* istanbul ignore else */
+        if (v.role === "esriRelRoleOrigin" && v.keyField) {
+          acc.push(v.keyField);
+        }
+        return acc;
+      }, []);
+      indexes.map(i => {
+        /* istanbul ignore else */
+        if (keyFields.some(k => i.fields.indexOf(k) > -1)) {
+          i.isUnique = true;
+        }
+        return i;
+      });
+    }
+  });
 }
 
 /**

@@ -161,7 +161,8 @@ export function createItemFromTemplate(
               } else if (template.type === "Workforce Project") {
                 customProcDef = workforce.fineTuneCreatedItem(
                   newItemTemplate,
-                  destinationAuthentication
+                  destinationAuthentication,
+                  templateDictionary
                 );
               } else if (template.type === "Notebook") {
                 customProcDef = notebook.fineTuneCreatedItem(

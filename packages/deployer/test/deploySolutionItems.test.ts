@@ -367,7 +367,10 @@ describe("Module `deploySolutionItems`", () => {
       itemTemplate.itemId = id;
 
       const templateDictionary: any = {
-        user: mockItems.getAGOLUser("casey")
+        user: mockItems.getAGOLUser("casey"),
+        organization: {
+          isPortal: true
+        }
       };
 
       const url1: string =
@@ -413,7 +416,10 @@ describe("Module `deploySolutionItems`", () => {
         }
       ];
       const expectedTemplateDictionary: any = {
-        user: mockItems.getAGOLUser("casey")
+        user: mockItems.getAGOLUser("casey"),
+        organization: {
+          isPortal: true
+        }
       };
       expectedTemplateDictionary[id] = {
         itemId: foundItemID2,
@@ -505,6 +511,7 @@ describe("Module `deploySolutionItems`", () => {
       };
       expectedTemplateDictionary[id] = {
         itemId: foundItemID2,
+        defaultSpatialReference: { wkid: 102100, latestWkid: 3857 },
         name: "name2",
         title: "title2",
         url: url2,
@@ -852,6 +859,82 @@ describe("Module `deploySolutionItems`", () => {
           done();
         });
     });
+
+    it("can delay when multiple views share the same source when deploying portal", () => {
+      const type: string = "Feature Service";
+
+      const fsId: string = "aa4a6047326243b290f625e80ebe6531";
+      const itemTemplateFS: common.IItemTemplate = templates.getItemTemplate(
+        type
+      );
+      itemTemplateFS.item.thumbnail = null;
+      itemTemplateFS.itemId = fsId;
+      itemTemplateFS.properties.service = {
+        isView: false
+      };
+      itemTemplateFS.dependencies = [];
+
+      const fsId2: string = "aa4a6047326243b290f625e80ebe6532";
+      const itemTemplateFS2: common.IItemTemplate = templates.getItemTemplate(
+        type
+      );
+      itemTemplateFS.item.thumbnail = null;
+      itemTemplateFS.itemId = fsId2;
+      itemTemplateFS.properties.service = {
+        isView: false
+      };
+      itemTemplateFS.dependencies = [];
+
+      const id1: string = "bb4a6047326243b290f625e80ebe6531";
+      const itemTemplateView1: common.IItemTemplate = templates.getItemTemplate(
+        type
+      );
+      itemTemplateView1.item.thumbnail = null;
+      itemTemplateView1.itemId = id1;
+      itemTemplateView1.properties.service = {
+        isView: true
+      };
+      itemTemplateView1.dependencies = [fsId];
+
+      const id2: string = "bb4a6047326243b290f625e80ebe6532";
+      const itemTemplateView2: common.IItemTemplate = templates.getItemTemplate(
+        type
+      );
+      itemTemplateView2.item.thumbnail = null;
+      itemTemplateView2.itemId = id2;
+      itemTemplateView2.properties.service = {
+        isView: true
+      };
+      itemTemplateView2.dependencies = [fsId, fsId2];
+
+      const id3: string = "bb4a6047326243b290f625e80ebe6533";
+      const itemTemplateView3: common.IItemTemplate = templates.getItemTemplate(
+        type
+      );
+      itemTemplateView3.item.thumbnail = null;
+      itemTemplateView3.itemId = id3;
+      itemTemplateView3.properties.service = {
+        isView: true
+      };
+      itemTemplateView3.dependencies = [fsId];
+
+      const actual = deploySolution._evaluateSharedViewSources([
+        itemTemplateFS,
+        itemTemplateView1,
+        itemTemplateView2,
+        itemTemplateView3
+      ]);
+
+      expect(actual[0].properties.syncViews).toEqual(undefined);
+      expect(actual[1].properties.syncViews).toEqual([]);
+      expect(actual[2].properties.syncViews).toEqual([
+        "bb4a6047326243b290f625e80ebe6531"
+      ]);
+      expect(actual[3].properties.syncViews).toEqual([
+        "bb4a6047326243b290f625e80ebe6531",
+        "bb4a6047326243b290f625e80ebe6532"
+      ]);
+    });
   });
 
   describe("_createItemFromTemplateWhenReady", () => {
@@ -1021,6 +1104,93 @@ describe("Module `deploySolutionItems`", () => {
         )
         .then((response: common.ICreateItemFromTemplateResponse) => {
           expect(response).toEqual(templates.getFailedItem(itemTemplate.type));
+          done();
+        });
+    });
+
+    it("handles FS", done => {
+      const itemTemplate: common.IItemTemplate = templates.getItemTemplate(
+        "Feature Service",
+        [],
+        "https://services123.arcgis.com/org1234567890/arcgis/rest/services/ROWPermits_publiccomment/FeatureServer"
+      );
+      itemTemplate.itemId = "dd4a6047326243b290f625e80ebe6531";
+      itemTemplate.item.thumbnail = null;
+      itemTemplate.properties.syncViews = ["aa4a6047326243b290f625e80ebe6531"];
+      const resourceFilePaths: common.IDeployFileCopyPath[] = [];
+      const templateDictionary: any = {
+        aa4a6047326243b290f625e80ebe6531: {
+          def: function() {
+            return Promise.resolve();
+          }
+        },
+        organization: utils.getPortalsSelfResponse()
+      };
+
+      itemTemplate.properties.service.spatialReference = {
+        wkid: 102100
+      };
+
+      itemTemplate.properties.defaultExtent = {
+        xmin: -20037507.0671618,
+        ymin: -20037507.0671618,
+        xmax: 20037507.0671618,
+        ymax: 20037507.0671618,
+        spatialReference: {
+          wkid: 102100
+        }
+      };
+
+      itemTemplate.properties.layers = [
+        mockItems.getAGOLLayerOrTable(0, "A", "Feature Layer")
+      ];
+      itemTemplate.properties.tables = [];
+
+      const updatedItem = mockItems.getAGOLItem("Feature Service");
+
+      fetchMock
+        .post(
+          utils.PORTAL_SUBSET.restUrl + "/content/users/casey/createService",
+          utils.getCreateServiceResponse()
+        )
+        .get(
+          utils.PORTAL_SUBSET.restUrl +
+            "/content/items/wma1234567891?f=json&token=fake-token",
+          updatedItem
+        )
+        .post(
+          "https://services123.arcgis.com/org1234567890/arcgis/rest/admin/services/ROWPermits_publiccomment/FeatureServer/addToDefinition",
+          utils.getSuccessResponse()
+        )
+        .post(
+          "https://services123.arcgis.com/org1234567890/arcgis/rest/admin/services/ROWPermits_publiccomment/FeatureServer/refresh",
+          utils.getSuccessResponse()
+        )
+        .post(
+          "https://services123.arcgis.com/org1234567890/arcgis/rest/admin/services/ROWPermits_publiccomment/FeatureServer/0/updateDefinition",
+          utils.getSuccessResponse()
+        )
+        .post(
+          "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/items/svc1234567890/update",
+          utils.getSuccessResponse()
+        );
+
+      // tslint:disable-next-line: no-floating-promises
+      deploySolution
+        ._createItemFromTemplateWhenReady(
+          itemTemplate,
+          resourceFilePaths,
+          MOCK_USER_SESSION,
+          templateDictionary,
+          MOCK_USER_SESSION,
+          utils.ITEM_PROGRESS_CALLBACK
+        )
+        .then((response: common.ICreateItemFromTemplateResponse) => {
+          expect(response).toEqual({
+            id: "svc1234567890",
+            type: itemTemplate.type,
+            postProcess: true
+          });
           done();
         });
     });

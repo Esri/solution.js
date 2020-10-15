@@ -72,10 +72,13 @@ import {
   _templatizeTimeInfo,
   _templatizeDefinitionQuery,
   _getNameMapping,
+  _updateForPortal,
+  _updateGeomFieldName,
   _updateTemplateDictionaryFields,
   _validateFields,
   _validateDisplayField,
   _validateIndexes,
+  validateSpatialReference,
   _validateTemplatesFields,
   _validateTypesTemplates,
   _validateEditFieldsInfo,
@@ -204,7 +207,8 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
         groups: [],
         estimatedDeploymentCostFactor: 0
       };
-      templatize(itemTemplate, dependencies, true);
+      const templateDictionary = {};
+      templatize(itemTemplate, dependencies, true, templateDictionary);
       expect(itemTemplate).toEqual(expected);
       expect(dependencies).toEqual([]);
     });
@@ -388,7 +392,8 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
         groups: [],
         estimatedDeploymentCostFactor: 0
       };
-      templatize(itemTemplate, dependencies, true);
+      const templateDictionary = {};
+      templatize(itemTemplate, dependencies, true, templateDictionary);
       expect(itemTemplate).toEqual(expected);
     });
 
@@ -443,7 +448,8 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
         groups: [],
         estimatedDeploymentCostFactor: 0
       };
-      templatize(itemTemplate, dependencies, true);
+      const templateDictionary = {};
+      templatize(itemTemplate, dependencies, true, templateDictionary);
       expect(itemTemplate).toEqual(expected);
     });
 
@@ -507,7 +513,8 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
         groups: [],
         estimatedDeploymentCostFactor: 0
       };
-      templatize(itemTemplate, dependencies, true);
+      const templateDictionary = {};
+      templatize(itemTemplate, dependencies, true, templateDictionary);
       expect(itemTemplate).toEqual(expected);
     });
   });
@@ -2904,7 +2911,10 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
           tables: []
         },
         MOCK_USER_SESSION
-      ).then(e => done.fail, done);
+      ).then(
+        () => done.fail(),
+        () => done()
+      );
     });
 
     it("should handle error on getLayersAndTables", done => {
@@ -3022,7 +3032,10 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
           tables: []
         },
         MOCK_USER_SESSION
-      ).then(() => done.fail(), done);
+      ).then(
+        () => done.fail(),
+        () => done()
+      );
     });
 
     it("should handle absence of item url", done => {
@@ -3090,7 +3103,10 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
           tables: []
         },
         MOCK_USER_SESSION
-      ).then(() => done.fail(), done);
+      ).then(
+        () => done.fail(),
+        () => done()
+      );
     });
   });
 
@@ -3585,7 +3601,7 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
       ];
       const expected: any = {
         geometryField: {
-          name: "{{ab766cba0dd44ec080420acc10990282.name}}.Shape"
+          name: "Shape"
         },
         viewLayerDefinition: {
           sourceServiceName: "{{ab766cba0dd44ec080420acc10990282.name}}",
@@ -5663,6 +5679,196 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
     });
   });
 
+  describe("_updateForPortal", () => {
+    it("will remove props", () => {
+      const item = {
+        id: "",
+        type: "",
+        isView: true,
+        sourceSchemaChangesAllowed: true
+      };
+      const expected = {
+        id: "",
+        type: ""
+      };
+      const _itemTemplate: interfaces.IItemTemplate = templates.getItemTemplateSkeleton();
+      const actual = _updateForPortal(item, _itemTemplate, {});
+
+      expect(actual).toEqual(expected);
+    });
+
+    it("will remove view fields that are not in the service", () => {
+      const item = {
+        id: "",
+        type: "",
+        isView: true,
+        sourceSchemaChangesAllowed: true,
+        adminLayerInfo: {
+          viewLayerDefinition: {
+            table: {
+              sourceServiceName: "Snowmass",
+              sourceLayerId: 0,
+              sourceLayerFields: [
+                {
+                  name: "a",
+                  source: "aa"
+                },
+                {
+                  name: "b",
+                  source: "bb"
+                }
+              ],
+              relatedTables: [
+                {
+                  sourceServiceName: "Hagerman",
+                  sourceLayerId: 4,
+                  sourceLayerFields: [
+                    {
+                      name: "a1",
+                      source: "aa1"
+                    },
+                    {
+                      name: "b1",
+                      source: "bb1"
+                    }
+                  ]
+                }
+              ]
+            }
+          }
+        }
+      };
+      const expected = {
+        id: "",
+        type: "",
+        adminLayerInfo: {
+          viewLayerDefinition: {
+            table: {
+              sourceServiceName: "Snowmass",
+              sourceLayerId: 0,
+              sourceLayerFields: [
+                {
+                  name: "a",
+                  source: "aa"
+                }
+              ],
+              relatedTables: [
+                {
+                  sourceServiceName: "Hagerman",
+                  sourceLayerId: 4,
+                  sourceLayerFields: [
+                    {
+                      name: "b1",
+                      source: "bb1"
+                    }
+                  ]
+                }
+              ]
+            }
+          }
+        }
+      };
+      const _itemTemplate: interfaces.IItemTemplate = templates.getItemTemplateSkeleton();
+      _itemTemplate.dependencies = [
+        "44507dff46f54656a74032ac12acd977",
+        "54507dff46f54656a74032ac12acd977"
+      ];
+
+      const templateDictionary: any = {
+        "44507dff46f54656a74032ac12acd977": {
+          name: "Snowmass",
+          layer0: {
+            fields: {
+              aa: { name: "aa" }
+            }
+          }
+        },
+        "54507dff46f54656a74032ac12acd977": {
+          name: "Hagerman",
+          layer4: {
+            fields: {
+              bb1: { name: "bb1" }
+            }
+          }
+        }
+      };
+      const actual = _updateForPortal(item, _itemTemplate, templateDictionary);
+
+      expect(actual).toEqual(expected);
+    });
+  });
+
+  describe("_updateGeomFieldName", () => {
+    it("should use the view layer def table name (Portal)", () => {
+      const item: any = {
+        adminLayerInfo: {
+          geometryField: {
+            name: "Shape"
+          },
+          viewLayerDefinition: {
+            table: {
+              name: "ABC_123"
+            }
+          }
+        }
+      };
+
+      const templateDictionary: any = {
+        isPortal: true
+      };
+      _updateGeomFieldName(item, templateDictionary);
+
+      const expecetd: string = "ABC_123.shape";
+      expect(item.adminLayerInfo.geometryField.name).toEqual(expecetd);
+    });
+
+    it("should use the view layer def table name (AGOL)", () => {
+      const item: any = {
+        adminLayerInfo: {
+          geometryField: {
+            name: "Shape"
+          },
+          viewLayerDefinition: {
+            table: {
+              name: "ABC_123"
+            }
+          }
+        }
+      };
+
+      const templateDictionary: any = {
+        isPortal: false
+      };
+      _updateGeomFieldName(item, templateDictionary);
+
+      const expecetd: string = "ABC_123.Shape";
+      expect(item.adminLayerInfo.geometryField.name).toEqual(expecetd);
+    });
+
+    it("should handle templatized value", () => {
+      const item: any = {
+        adminLayerInfo: {
+          geometryField: {
+            name: "{{MyId.itemId}}.Shape"
+          },
+          viewLayerDefinition: {
+            table: {
+              name: "ABC_123"
+            }
+          }
+        }
+      };
+
+      const templateDictionary: any = {
+        isPortal: false
+      };
+      _updateGeomFieldName(item, templateDictionary);
+
+      const expecetd: string = "ABC_123.Shape";
+      expect(item.adminLayerInfo.geometryField.name).toEqual(expecetd);
+    });
+  });
+
   describe("_updateTemplateDictionaryFields", () => {
     it("should update the template dictionary with field info", () => {
       const template: interfaces.IItemTemplate = templates.getItemTemplateSkeleton();
@@ -6066,6 +6272,32 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
       const actual: any[] = _validateDomains(fieldInfos, fieldUpdates);
 
       expect(actual).toEqual(expected);
+    });
+  });
+
+  describe("validateSpatialReference", () => {
+    it("can check for dependant source spatial reference", () => {
+      const serviceInfo: any = {
+        service: {
+          isView: true,
+          spatialReference: {
+            wkid: 4326
+          }
+        }
+      };
+
+      itemTemplate.dependencies = ["aaec7d5e113e4252bf1dcdfbcd8400f9"];
+
+      const templateDictionary: any = {
+        aaec7d5e113e4252bf1dcdfbcd8400f9: {
+          defaultSpatialReference: {
+            wkid: 102100
+          }
+        }
+      };
+
+      validateSpatialReference(serviceInfo, itemTemplate, templateDictionary);
+      expect(serviceInfo.service.spatialReference.wkid).toEqual(102100);
     });
   });
 

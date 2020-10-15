@@ -31,16 +31,17 @@ import * as common from "@esri/solution-common";
 /**
  * Fills in missing data, including full layer and table definitions, in a feature services' definition.
  *
+ * @param solutionItemId
  * @param itemInfo Feature service item
  * @param userSession The session used to interact with the service the template is based on
+ * @param templateDictionary Hash mapping property names to replacement values
  * @return A promise that will resolve when fullItem has been updated
- * @protected
  */
 export function convertItemToTemplate(
   solutionItemId: string,
   itemInfo: any,
   authentication: common.UserSession,
-  templatizeFieldReferences: boolean = false
+  templateDictionary?: any
 ): Promise<common.IItemTemplate> {
   return new Promise<common.IItemTemplate>((resolve, reject) => {
     // Init template
@@ -82,7 +83,8 @@ export function convertItemToTemplate(
                     common.templatize(
                       itemTemplate,
                       dependencies,
-                      templatizeFieldReferences
+                      false,
+                      templateDictionary
                     )
                   );
                 },
@@ -247,10 +249,12 @@ export function createItemFromTemplate(
                               resolve({
                                 id: createResponse.serviceItemId,
                                 type: newItemTemplate.type,
-                                postProcess: common.hasUnresolvedVariables({
-                                  item: newItemTemplate.item,
-                                  data: newItemTemplate.data
-                                })
+                                postProcess:
+                                  common.hasUnresolvedVariables({
+                                    item: newItemTemplate.item,
+                                    data: newItemTemplate.data
+                                  }) ||
+                                  common.isWorkforceProject(newItemTemplate)
                               });
                             }
                           },
@@ -346,11 +350,29 @@ export function postProcess(
   templateDictionary: any,
   authentication: common.UserSession
 ): Promise<common.IUpdateItemResponse> {
-  return common.updateItemTemplateFromDictionary(
-    itemId,
-    templateDictionary,
-    authentication
-  );
+  return new Promise<common.IUpdateItemResponse>((resolve, reject) => {
+    common
+      .updateItemTemplateFromDictionary(
+        itemId,
+        templateDictionary,
+        authentication
+      )
+      .then(results => {
+        if (common.isWorkforceProject(template)) {
+          template = common.replaceInTemplate(template, templateDictionary);
+          common
+            .fineTuneCreatedWorkforceItem(
+              template,
+              authentication,
+              template.item.url,
+              templateDictionary
+            )
+            .then(resolve, reject);
+        } else {
+          resolve(results);
+        }
+      }, reject);
+  });
 }
 
 // ------------------------------------------------------------------------------------------------------------------ //

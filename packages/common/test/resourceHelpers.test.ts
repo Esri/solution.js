@@ -276,7 +276,7 @@ describe("Module `resourceHelpers`: common functions involving the management of
 
         return resourceHelpers
           .copyData(source, destination)
-          .then(() => done.fail, done);
+          .then(() => done.fail(), () => done());
       });
 
       it("should handle error updating item with data", done => {
@@ -309,7 +309,7 @@ describe("Module `resourceHelpers`: common functions involving the management of
 
         resourceHelpers
           .copyData(source, destination)
-          .then(() => done.fail, done);
+          .then(() => done.fail(), () => done());
       });
     });
 

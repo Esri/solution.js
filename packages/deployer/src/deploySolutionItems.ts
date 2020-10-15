@@ -75,7 +75,11 @@ export function deploySolutionItems(
             event: common.SItemProgressStatus[status],
             data: itemId
           } as common.ISolutionProgressEvent;
-          options.progressCallback(Math.round(percentDone), options.jobId, event);
+          options.progressCallback(
+            Math.round(percentDone),
+            options.jobId,
+            event
+          );
         } else {
           options.progressCallback(Math.round(percentDone), options.jobId);
         }
@@ -106,6 +110,11 @@ export function deploySolutionItems(
       // ---------------------------------------------------------------------------------------------------------------
     };
 
+    // portal does not allow views of a single source to be created at the same time
+    if (common.getProp(templateDictionary, "organization.isPortal")) {
+      templates = _evaluateSharedViewSources(templates);
+    }
+
     // Create an ordered graph of the templates so that dependencies are created
     // before the items that need them
     const cloneOrderChecklist: string[] = common.topologicallySortItems(
@@ -133,6 +142,7 @@ export function deploySolutionItems(
           templates,
           templateDictionary.solutionItemId
         );
+
         // why is the return not used?
 
         cloneOrderChecklist.forEach(id => {
@@ -177,6 +187,152 @@ export function deploySolutionItems(
       }
     );
   });
+}
+
+/**
+ * Portal does not allow views of a single source to be created at the same time.
+ *
+ * Update view templates with an array of other view template ids that it should wait on.
+ *
+ * @param templates a collection of AGO item templates
+ *
+ * @returns An updated array of item templates
+ *
+ */
+export function _evaluateSharedViewSources(
+  templates: common.IItemTemplate[]
+): common.IItemTemplate[] {
+  // update the templates so we can defer the deployment when more than one view shares the same source
+  // these are not classic dependencies but are in some ways similar
+  const views: any[] = _getViews(templates);
+
+  _updateViewTemplates(templates, views);
+
+  const viewHash: any = _getViewHash(views);
+
+  let processed: string[] = [];
+
+  const visited: string[] = [];
+
+  Object.keys(viewHash).forEach(k => {
+    const _views: string[] = viewHash[k];
+    _views.forEach(cv => {
+      const template = common.findTemplateInList(templates, cv);
+      const syncViews = common.getProp(template, "properties.syncViews");
+
+      /* istanbul ignore else */
+      if (visited.indexOf(template.itemId) > -1) {
+        processed = processed.concat(syncViews);
+      }
+      /* istanbul ignore else */
+      if (syncViews && syncViews.length > 0) {
+        // when a view has multiple dependencies we need to retain the syncViews if they have been set already...
+        common.setProp(
+          template,
+          "properties.syncViews",
+          common.cloneObject(processed)
+        );
+      }
+      /* istanbul ignore else */
+      if (processed.indexOf(cv) < 0) {
+        processed.push(cv);
+      }
+      /* istanbul ignore else */
+      if (visited.indexOf(template.itemId) < 0) {
+        visited.push(template.itemId);
+      }
+    });
+    processed = [];
+  });
+
+  return templates;
+}
+
+/**
+ * Add a syncViews array to each template that will hold all other view ids that
+ * have the same FS dependency.
+ * These arrays will be processed later to only contain ids that each view will need to wait on.
+ *
+ * @param templates a collection of AGO item templates
+ * @param views an array of view template details
+ *
+ * @returns An updated array of item templates
+ *
+ */
+export function _updateViewTemplates(
+  templates: common.IItemTemplate[],
+  views: any[]
+): common.IItemTemplate[] {
+  views.forEach(v => {
+    v.dependencies.forEach((id: string) => {
+      templates = templates.map(t => {
+        /* istanbul ignore else */
+        if (
+          common.getProp(t, "properties.service.isView") &&
+          t.dependencies.indexOf(id) > -1 &&
+          t.itemId !== v.id
+        ) {
+          /* istanbul ignore else */
+          if (!Array.isArray(t.properties.syncViews)) {
+            t.properties.syncViews = [];
+          }
+          /* istanbul ignore else */
+          if (t.properties.syncViews.indexOf(v.id) < 0) {
+            t.properties.syncViews.push(v.id);
+          }
+        }
+        return t;
+      });
+    });
+  });
+  return templates;
+}
+
+/**
+ * Get all view templates from the source templates collection
+ *
+ * @param views A collection of view ID and dependencies
+ *
+ * @returns an array of objects with the source FS id as the key and a list of views that are
+ * dependant upon it
+ *
+ * @protected
+ */
+export function _getViewHash(views: any[]): any {
+  const viewHash: any = {};
+  views.forEach(v => {
+    v.dependencies.forEach((d: string) => {
+      /* istanbul ignore else */
+      if (Object.keys(viewHash).indexOf(d) < 0) {
+        viewHash[d] = [v.id];
+      } else if (viewHash[d].indexOf(v.id) < 0) {
+        viewHash[d].push(v.id);
+      }
+    });
+  });
+  return viewHash;
+}
+
+/**
+ * Get all view templates from the source templates collection
+ *
+ * @param templates A collection of AGO item templates
+ *
+ * @returns an array with the view id and its dependencies
+ *
+ * @protected
+ */
+export function _getViews(templates: common.IItemTemplate[]): any[] {
+  return templates.reduce((acc, v) => {
+    /* istanbul ignore else */
+    if (common.getProp(v, "properties.service.isView")) {
+      acc.push({
+        id: v.itemId,
+        dependencies: v.dependencies
+      });
+    }
+    return acc;
+  }, []);
 }
 
 /**
@@ -264,6 +420,16 @@ export function _updateTemplateDictionary(
           )
         );
       }
+
+      const spatialReference: any = common.getProp(
+        t,
+        "properties.service.spatialReference"
+      );
+      common.setDefaultSpatialReference(
+        templateDictionary,
+        t.itemId,
+        spatialReference
+      );
     }
   });
 }
@@ -316,17 +482,20 @@ export function _handleExistingItems(
             : existingItem.sourceId;
           /* istanbul ignore else */
           if (sourceId) {
-            templateDictionary[sourceId] = {
-              def: Promise.resolve({
-                id: result.id,
-                type: result.type,
-                postProcess: false
-              }),
-              itemId: result.id,
-              name: result.name,
-              title: result.title,
-              url: result.url
-            };
+            templateDictionary[sourceId] = Object.assign(
+              templateDictionary[sourceId] || {},
+              {
+                def: Promise.resolve({
+                  id: result.id,
+                  type: result.type,
+                  postProcess: false
+                }),
+                itemId: result.id,
+                name: result.name,
+                title: result.title,
+                url: result.url
+              }
+            );
           }
         }
       }
@@ -420,15 +589,20 @@ export function _createItemFromTemplateWhenReady(
 ): Promise<common.ICreateItemFromTemplateResponse> {
   // ensure this is present
   template.dependencies = template.dependencies || [];
-  // if there is no entry in the templateDictionary, add it
-  if (!templateDictionary.hasOwnProperty(template.itemId)) {
-    templateDictionary[template.itemId] = {};
+  // if there is no entry in the templateDictionary
+  // or if we have a basic entry without the deferred request for its creation, add it
+  if (
+    !templateDictionary.hasOwnProperty(template.itemId) ||
+    !getProp(templateDictionary[template.itemId], "def")
+  ) {
+    templateDictionary[template.itemId] =
+      templateDictionary[template.itemId] || {};
     // Save the deferred for the use of items that depend on this item being created first
     templateDictionary[template.itemId].def = new Promise<
       common.ICreateItemFromTemplateResponse
     >(resolve => {
       // Wait until all of the item's dependencies are deployed
-      const awaitDependencies = template.dependencies.reduce(
+      const _awaitDependencies = template.dependencies.reduce(
         (acc: any[], id: string) => {
           const def = getProp(templateDictionary, `${id}.def`);
           // can't use maybePush as that clones the object, which does not work for Promises
@@ -440,6 +614,23 @@ export function _createItemFromTemplateWhenReady(
         },
         []
       );
+
+      const syncViews: string[] = common.getProp(
+        template,
+        "properties.syncViews"
+      );
+
+      const awaitDependencies =
+        syncViews && syncViews.length > 0
+          ? syncViews.reduce((acc: any[], v: any) => {
+              const def = getProp(templateDictionary, `${v}.def`);
+              /* istanbul ignore else */
+              if (def) {
+                acc.push(def);
+              }
+              return acc;
+            }, _awaitDependencies)
+          : _awaitDependencies;
 
       Promise.all(awaitDependencies).then(
         () => {

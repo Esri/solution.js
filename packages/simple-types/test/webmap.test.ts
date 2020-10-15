@@ -908,7 +908,7 @@ describe("Module `webmap`: manages the creation and deployment of web map item t
           expect(actual).toEqual(expected);
           done();
         },
-        e => done.fail
+        e => done.fail(e)
       );
     });
   });

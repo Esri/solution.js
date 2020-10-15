@@ -837,6 +837,43 @@ describe("Module `generalHelpers`: common utility functions shared across packag
     });
   });
 
+  describe("getIDs", () => {
+    it("will find ids", () => {
+      let actual = generalHelpers.getIDs("bad3483e025c47338d43df308c117308");
+      expect(actual).toEqual(["bad3483e025c47338d43df308c117308"]);
+
+      actual = generalHelpers.getIDs("{bad3483e025c47338d43df308c117308");
+      expect(actual).toEqual(["bad3483e025c47338d43df308c117308"]);
+
+      actual = generalHelpers.getIDs("=bad3483e025c47338d43df308c117308");
+      expect(actual).toEqual(["bad3483e025c47338d43df308c117308"]);
+
+      actual = generalHelpers.getIDs(
+        "http://something/name_bad3483e025c47338d43df308c117308"
+      );
+      expect(actual).toEqual([]);
+
+      actual = generalHelpers.getIDs(
+        "{{bad3483e025c47338d43df308c117308.itemId}}"
+      );
+      expect(actual).toEqual([]);
+
+      actual = generalHelpers.getIDs(
+        "bad3483e025c47338d43df308c117308bad3483e025c47338d43df308c117308"
+      );
+      expect(actual).toEqual([]);
+
+      actual = generalHelpers.getIDs(
+        "bad3483e025c47338d43df308c117308 {bad4483e025c47338d43df308c117308 =bad5483e025c47338d43df308c117308 http://something/name_bad6483e025c47338d43df308c117308 {{bad7483e025c47338d43df308c117308.itemId}}"
+      );
+      expect(actual).toEqual([
+        "bad3483e025c47338d43df308c117308",
+        "bad4483e025c47338d43df308c117308",
+        "bad5483e025c47338d43df308c117308"
+      ]);
+    });
+  });
+
   describe("getProp", () => {
     it("should return a property given a path", () => {
       expect(generalHelpers.getProp({ color: "red" }, "color")).toEqual(
@@ -1003,6 +1040,27 @@ describe("Module `generalHelpers`: common utility functions shared across packag
       );
       expect(actual).toEqual(expected);
     });
+
+    it("will ignore trailing spaces", () => {
+      const title: string = "The Title     ";
+      const templateDictionary: any = {
+        user: {
+          folders: [
+            {
+              title: "The Title"
+            }
+          ]
+        }
+      };
+      const path: string = "user.folders";
+      const expected: string = "The Title 1";
+      const actual: string = generalHelpers.getUniqueTitle(
+        title,
+        templateDictionary,
+        path
+      );
+      expect(actual).toEqual(expected);
+    });
   });
 
   describe("getUTCTimestamp", () => {
@@ -1011,6 +1069,87 @@ describe("Module `generalHelpers`: common utility functions shared across packag
       const exp: string = "^\\d{8}_\\d{4}_\\d{5}$";
       const regEx = new RegExp(exp, "gm");
       expect(regEx.test(timestamp)).toBe(true);
+    });
+  });
+
+  describe("globalStringReplace", () => {
+    it("handles a null object", () => {
+      const obj: any = null;
+      const pattern: string = "to be replaced";
+      const patternRE: RegExp = new RegExp(pattern, "gi");
+      const replacement: string = "replacement";
+      expect(
+        generalHelpers.globalStringReplace(obj, patternRE, replacement)
+      ).toBeNull();
+    });
+
+    it("handles an array object", () => {
+      const obj = [
+        "first item",
+        "second item containing to be replaced content"
+      ];
+      const pattern: string = "to be replaced";
+      const patternRE: RegExp = new RegExp(pattern, "gi");
+      const replacement: string = "replacement";
+      const expectedObj = [
+        "first item",
+        "second item containing replacement content"
+      ];
+      expect(
+        generalHelpers.globalStringReplace(obj, patternRE, replacement)
+      ).toEqual(expectedObj);
+    });
+
+    it("handles a general object", () => {
+      const obj = {
+        first: "first item",
+        second: "second item containing to be replaced content",
+        third: "third item to be replaced to be replaced"
+      };
+      const pattern: string = "to be replaced";
+      const patternRE: RegExp = new RegExp(pattern, "gi");
+      const replacement: string = "replacement";
+      const expectedObj = {
+        first: "first item",
+        second: "second item containing replacement content",
+        third: "third item replacement replacement"
+      };
+      expect(
+        generalHelpers.globalStringReplace(obj, patternRE, replacement)
+      ).toEqual(expectedObj);
+    });
+
+    it("handles a nested object", () => {
+      const obj = {
+        first: "first item",
+        second: {
+          internal: "second item containing to be replaced content"
+        },
+        third: "third item to be replaced to be replaced",
+        fourth: {
+          a: 1,
+          b: 2
+        },
+        fifth: null as any
+      };
+      const pattern: string = "to be replaced";
+      const patternRE: RegExp = new RegExp(pattern, "gi");
+      const replacement: string = "replacement";
+      const expectedObj = {
+        first: "first item",
+        second: {
+          internal: "second item containing replacement content"
+        },
+        third: "third item replacement replacement",
+        fourth: {
+          a: 1,
+          b: 2
+        },
+        fifth: null as any
+      };
+      expect(
+        generalHelpers.globalStringReplace(obj, patternRE, replacement)
+      ).toEqual(expectedObj);
     });
   });
 
@@ -1170,28 +1309,26 @@ describe("Module `generalHelpers`: common utility functions shared across packag
         const json: any = { a: "abc", b: 123 };
         const blob = generalHelpers.jsonToBlob(json);
         expect(blob.type).toBe("application/octet-stream");
-        blob.text().then(
-          text => {
-            expect(text).toEqual('{"a":"abc","b":123}');
-            done();
-          },
-          done.fail
-        );
+        blob.text().then(text => {
+          expect(text).toEqual('{"a":"abc","b":123}');
+          done();
+        }, done.fail);
       });
     });
 
     describe("jsonToFile", () => {
       it("creates a file with expected mime type", done => {
         const json: any = { a: "abc", b: 123 };
-        const file = generalHelpers.jsonToFile(json, "myFile.abc", "application/octet-stream");
-        expect(file.type).toBe("application/octet-stream");
-        file.text().then(
-          text => {
-            expect(text).toEqual('{"a":"abc","b":123}');
-            done();
-          },
-          done.fail
+        const file = generalHelpers.jsonToFile(
+          json,
+          "myFile.abc",
+          "application/octet-stream"
         );
+        expect(file.type).toBe("application/octet-stream");
+        file.text().then(text => {
+          expect(text).toEqual('{"a":"abc","b":123}');
+          done();
+        }, done.fail);
       });
     });
   }
