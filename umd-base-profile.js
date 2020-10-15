@@ -2,8 +2,7 @@ import typescript from "rollup-plugin-typescript2";
 import resolve from "@rollup/plugin-node-resolve";
 import commonjs from "@rollup/plugin-commonjs";
 import json from "@rollup/plugin-json";
-import globalsPlugin from "rollup-plugin-node-globals";
-import builtins from "rollup-plugin-node-builtins";
+import nodePolyfills from "rollup-plugin-node-polyfills";
 
 const path = require("path");
 const fs = require("fs");
@@ -120,7 +119,6 @@ export default {
     resolve({ preferBuiltins: true, browser: true }),
     commonjs(),
     json(),
-    globalsPlugin(),
-    builtins()
+    nodePolyfills()
   ]
 };
