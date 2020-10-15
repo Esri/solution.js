@@ -1040,6 +1040,27 @@ describe("Module `generalHelpers`: common utility functions shared across packag
       );
       expect(actual).toEqual(expected);
     });
+
+    it("will ignore trailing spaces", () => {
+      const title: string = "The Title     ";
+      const templateDictionary: any = {
+        user: {
+          folders: [
+            {
+              title: "The Title"
+            }
+          ]
+        }
+      };
+      const path: string = "user.folders";
+      const expected: string = "The Title 1";
+      const actual: string = generalHelpers.getUniqueTitle(
+        title,
+        templateDictionary,
+        path
+      );
+      expect(actual).toEqual(expected);
+    });
   });
 
   describe("getUTCTimestamp", () => {
@@ -1057,7 +1078,9 @@ describe("Module `generalHelpers`: common utility functions shared across packag
       const pattern: string = "to be replaced";
       const patternRE: RegExp = new RegExp(pattern, "gi");
       const replacement: string = "replacement";
-      expect(generalHelpers.globalStringReplace(obj, patternRE, replacement)).toBeNull();
+      expect(
+        generalHelpers.globalStringReplace(obj, patternRE, replacement)
+      ).toBeNull();
     });
 
     it("handles an array object", () => {
@@ -1072,55 +1095,61 @@ describe("Module `generalHelpers`: common utility functions shared across packag
         "first item",
         "second item containing replacement content"
       ];
-      expect(generalHelpers.globalStringReplace(obj, patternRE, replacement)).toEqual(expectedObj);
+      expect(
+        generalHelpers.globalStringReplace(obj, patternRE, replacement)
+      ).toEqual(expectedObj);
     });
 
     it("handles a general object", () => {
       const obj = {
-        "first": "first item",
-        "second": "second item containing to be replaced content",
-        "third": "third item to be replaced to be replaced"
+        first: "first item",
+        second: "second item containing to be replaced content",
+        third: "third item to be replaced to be replaced"
       };
       const pattern: string = "to be replaced";
       const patternRE: RegExp = new RegExp(pattern, "gi");
       const replacement: string = "replacement";
       const expectedObj = {
-        "first": "first item",
-        "second": "second item containing replacement content",
-        "third": "third item replacement replacement"
+        first: "first item",
+        second: "second item containing replacement content",
+        third: "third item replacement replacement"
       };
-      expect(generalHelpers.globalStringReplace(obj, patternRE, replacement)).toEqual(expectedObj);
+      expect(
+        generalHelpers.globalStringReplace(obj, patternRE, replacement)
+      ).toEqual(expectedObj);
     });
 
     it("handles a nested object", () => {
       const obj = {
-        "first": "first item",
-        "second": {
-          "internal": "second item containing to be replaced content"
+        first: "first item",
+        second: {
+          internal: "second item containing to be replaced content"
         },
-        "third": "third item to be replaced to be replaced",
-        "fourth": {
-          "a": 1,
-          "b": 2
+        third: "third item to be replaced to be replaced",
+        fourth: {
+          a: 1,
+          b: 2
         },
-        "fifth": null as any
+        fifth: null as any
       };
       const pattern: string = "to be replaced";
       const patternRE: RegExp = new RegExp(pattern, "gi");
       const replacement: string = "replacement";
       const expectedObj = {
-        "first": "first item",
-        "second": {
-          "internal": "second item containing replacement content"
+        first: "first item",
+        second: {
+          internal: "second item containing replacement content"
         },
-        "third": "third item replacement replacement",
-        "fourth": {
-          "a": 1,
-          "b": 2
+        third: "third item replacement replacement",
+        fourth: {
+          a: 1,
+          b: 2
         },
-        "fifth": null as any
+        fifth: null as any
       };
-      expect(generalHelpers.globalStringReplace(obj, patternRE, replacement)).toEqual(expectedObj);
+      expect(
+        generalHelpers.globalStringReplace(obj, patternRE, replacement)
+      ).toEqual(expectedObj);
     });
   });
 
@@ -1280,28 +1309,26 @@ describe("Module `generalHelpers`: common utility functions shared across packag
         const json: any = { a: "abc", b: 123 };
         const blob = generalHelpers.jsonToBlob(json);
         expect(blob.type).toBe("application/octet-stream");
-        blob.text().then(
-          text => {
-            expect(text).toEqual('{"a":"abc","b":123}');
-            done();
-          },
-          done.fail
-        );
+        blob.text().then(text => {
+          expect(text).toEqual('{"a":"abc","b":123}');
+          done();
+        }, done.fail);
       });
     });
 
     describe("jsonToFile", () => {
       it("creates a file with expected mime type", done => {
         const json: any = { a: "abc", b: 123 };
-        const file = generalHelpers.jsonToFile(json, "myFile.abc", "application/octet-stream");
-        expect(file.type).toBe("application/octet-stream");
-        file.text().then(
-          text => {
-            expect(text).toEqual('{"a":"abc","b":123}');
-            done();
-          },
-          done.fail
+        const file = generalHelpers.jsonToFile(
+          json,
+          "myFile.abc",
+          "application/octet-stream"
         );
+        expect(file.type).toBe("application/octet-stream");
+        file.text().then(text => {
+          expect(text).toEqual('{"a":"abc","b":123}');
+          done();
+        }, done.fail);
       });
     });
   }
@@ -1343,10 +1370,10 @@ describe("Module `generalHelpers`: common utility functions shared across packag
       expect(messages).toEqual([
         "Changed 1 property",
         '    String difference: "' +
-        '<img src="https://example.com/fake-image.jpg" onerror="alert(1);" />' +
-        '" vs. "' +
-        '<img src="https://example.com/fake-image.jpg" />' +
-        '"'
+          '<img src="https://example.com/fake-image.jpg" onerror="alert(1);" />' +
+          '" vs. "' +
+          '<img src="https://example.com/fake-image.jpg" />' +
+          '"'
       ]);
     });
 
@@ -1371,15 +1398,15 @@ describe("Module `generalHelpers`: common utility functions shared across packag
       expect(messages).toEqual([
         "Changed 2 properties",
         '    String difference: "' +
-        '<img src="https://example.com/fake-image.jpg" onerror="alert(1);" />' +
-        '" vs. "' +
-        '<img src="https://example.com/fake-image.jpg" />' +
-        '"',
+          '<img src="https://example.com/fake-image.jpg" onerror="alert(1);" />' +
+          '" vs. "' +
+          '<img src="https://example.com/fake-image.jpg" />' +
+          '"',
         '    String difference: "' +
-        "<IMG SRC=JaVaScRiPt:alert('XSS')>" +
-        '" vs. "' +
-        "<img src>" +
-        '"'
+          "<IMG SRC=JaVaScRiPt:alert('XSS')>" +
+          '" vs. "' +
+          "<img src>" +
+          '"'
       ]);
     });
   });

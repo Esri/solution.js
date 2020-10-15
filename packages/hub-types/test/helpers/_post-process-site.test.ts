@@ -35,9 +35,10 @@ describe("_postProcessSite :: ", () => {
       data: {}
     } as hubCommon.IModel;
     infos = [
-      { itemId: "ef1", type: "Web Map" },
-      { itemId: "ef2", type: "Web Mapping Application" },
-      { itemId: "ef3", type: "Hub Page" }
+      { id: "ef1", type: "Web Map" },
+      { id: "ef2", type: "Web Mapping Application" },
+      { id: "ef3", type: "Hub Page" },
+      { id: "3ef", type: "Hub Site" }
     ];
   });
   it("shared items to site teams", () => {
@@ -76,6 +77,31 @@ describe("_postProcessSite :: ", () => {
         expect(updateModel.item.properties.chk).toBe(
           "ef66",
           "it should do a second pass interpolation before updating"
+        );
+      });
+  });
+
+  it("excludes site id from children array", () => {
+    const fakeRo = {} as hubCommon.IHubRequestOptions;
+    spyOn(hubSites, "_shareItemsToSiteGroups").and.callFake((m, nfos, ro) => {
+      return Promise.all(
+        nfos.map(i => {
+          return Promise.resolve({ itemId: i.itemId });
+        })
+      );
+    });
+    spyOn(updateSitePagesModule, "_updateSitePages").and.resolveTo([]);
+    const updateSiteSpy = spyOn(hubSites, "updateSite").and.resolveTo(
+      {} as IUpdateItemResponse
+    );
+    return postProcessSiteModule
+      ._postProcessSite(model, infos, { bc66: { itemId: "ef66" } }, fakeRo)
+      .then(_ => {
+        expect(updateSiteSpy.calls.count()).toBe(1, "should update the site");
+        const updateModel = updateSiteSpy.calls.argsFor(0)[0];
+        expect(updateModel.item.properties.children).toEqual(
+          ["ef1", "ef2", "ef3"],
+          "it should populate children array and exclude site"
         );
       });
   });

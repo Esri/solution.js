@@ -102,11 +102,8 @@ export function templatize(
 
   // Set up symbols for the URL of the feature service and its layers and tables
   templateDictionary[fsUrl] = itemTemplate.item.url; // map FS URL to its templatized form
-  _items.forEach(layer => {
-    templateDictionary[fsUrl + "/" + layer.id] = _templatize(
-      id,
-      "layer" + layer.id + ".url"
-    );
+  jsonItems.concat(_items).forEach(layer => {
+    templateDictionary[fsUrl + "/" + layer.id] = _templatize(id, "layer" + layer.id + ".url");
   });
 
   // templatize the service references serviceItemId
@@ -1562,19 +1559,6 @@ export function _templatizeAdminLayerInfo(
     /* istanbul ignore else */
     if (viewDef.table) {
       _processAdminObject(viewDef.table, dependencies);
-      /* istanbul ignore else */
-      if (
-        viewDef.table.hasOwnProperty("sourceServiceName") &&
-        layer.isMultiServicesView
-      ) {
-        /* istanbul ignore else */
-        if (adminLayerInfo.geometryField && adminLayerInfo.geometryField.name) {
-          adminLayerInfo.geometryField.name =
-            viewDef.table.sourceServiceName +
-            "." +
-            adminLayerInfo.geometryField.name;
-        }
-      }
       /* istanbul ignore else */
       if (viewDef.table.relatedTables) {
         viewDef.table.relatedTables.forEach((table: any) => {

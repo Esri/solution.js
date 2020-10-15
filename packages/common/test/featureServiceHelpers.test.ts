@@ -3601,7 +3601,7 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
       ];
       const expected: any = {
         geometryField: {
-          name: "{{ab766cba0dd44ec080420acc10990282.name}}.Shape"
+          name: "Shape"
         },
         viewLayerDefinition: {
           sourceServiceName: "{{ab766cba0dd44ec080420acc10990282.name}}",
