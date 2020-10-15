@@ -41,9 +41,13 @@ export function _postProcessSite(
   templateDictionary: any,
   hubRequestOptions: IHubRequestOptions
 ): Promise<boolean> {
+  const infosWithoutSite = itemInfos.filter(
+    info => info.id !== siteModel.item.id
+  );
+
   // convert the itemInfo's into things that look enough like a model
   // that we can call _shareItemsToSiteGroups
-  const pseudoModels = itemInfos.map(e => {
+  const pseudoModels = infosWithoutSite.map(e => {
     return {
       item: {
         id: e.id,
@@ -66,10 +70,11 @@ export function _postProcessSite(
   // because we really need the models themselves
   // so we delegate to a local function
   secondPassPromises = secondPassPromises.concat(
-    _updateSitePages(siteModel, itemInfos, hubRequestOptions)
+    _updateSitePages(siteModel, infosWithoutSite, hubRequestOptions)
   );
   // need to get all the child items and add into site.item.properties.children
-  const childItemIds = itemInfos.map(i => i.id);
+  const childItemIds = infosWithoutSite.map(i => i.id);
+
   siteModel.item.properties.children = childItemIds;
 
   // re-interpolate the siteModel using the itemInfos
