@@ -73,7 +73,7 @@ export function _postProcessSite(
     _updateSitePages(siteModel, infosWithoutSite, hubRequestOptions)
   );
   // need to get all the child items and add into site.item.properties.children
-  const childItemIds = infosWithoutSite.map(i => i.itemId);
+  const childItemIds = infosWithoutSite.map(i => i.id);
 
   siteModel.item.properties.children = childItemIds;
 
