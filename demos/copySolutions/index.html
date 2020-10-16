@@ -65,6 +65,7 @@
         "tslib": package_path + "/../node_modules/tslib/tslib",
 
         // load the local versions
+        "@esri/arcgis-html-sanitizer": package_path + "/../node_modules/@esri/arcgis-html-sanitizer/dist/umd/arcgis-html-sanitizer.min",
         "@esri/arcgis-rest-auth": package_path + "/../node_modules/@esri/arcgis-rest-auth/dist/umd/auth.umd.min",
         "@esri/arcgis-rest-feature-layer": package_path + "/../node_modules/@esri/arcgis-rest-feature-layer/dist/umd/feature-layer.umd.min",
         "@esri/arcgis-rest-portal": package_path + "/../node_modules/@esri/arcgis-rest-portal/dist/umd/portal.umd.min",
@@ -150,8 +151,8 @@
   <script>
     var connectToSourceFcn, connectToDestinationFcn;
 
-    require(["@esri/arcgis-rest-auth", "@esri/arcgis-rest-portal", "../dist/copy-solutions-main.js"],
-      function (auth, portal, main) {
+    require(["@esri/arcgis-rest-auth", "@esri/arcgis-rest-portal", "@esri/arcgis-html-sanitizer", "../dist/copy-solutions-main.js"],
+      function (auth, portal, htmlSanitizer, main) {
         "use strict";
         removeItem("page_busySymbol");
         connectToSourceFcn = getSourceTemplates;
@@ -165,6 +166,8 @@
         var sourcePortal = null;
         var destinationAuthentication = null;
         var destinationPortal = null;
+
+        var sanitizer = new htmlSanitizer();
 
         //------------------------------------------------------------------------------------------------------------//
 
@@ -194,7 +197,10 @@
                 listDiv.innerHTML = "<i>No Solution templates found</i>";
               } else {
                 listDiv.innerHTML = createChecklist(
-                  searchResponse.results, document.getElementById("srcPortal").value, "sourceSolutionsList");
+                  searchResponse.results,
+                  sanitizer.sanitize(document.getElementById("srcPortal").value),
+                  "sourceSolutionsList"
+                );
                 var copyBtn = addItem("sourceSolutionsListDiv", "BUTTON", "copyBtn", "copyBtn");
                 copyBtn.innerHTML = "Copy Solution(s)";
                 copyBtn.addEventListener("click", copyTemplates);
@@ -235,8 +241,10 @@
               if (searchResponse.total === 0) {
                 listDiv.innerHTML = "<i>No Solution templates found</i>";
               } else {
-                listDiv.innerHTML =
-                  createSimpleList(searchResponse.results, document.getElementById("destPortal").value);
+                listDiv.innerHTML = createSimpleList(
+                  searchResponse.results,
+                  sanitizer.sanitize(document.getElementById("destPortal").value)
+                );
               }
               haveDestinationAccess = true;
               updateCopyBtn();
