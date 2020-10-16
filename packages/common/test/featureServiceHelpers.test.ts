@@ -78,7 +78,7 @@ import {
   _validateFields,
   _validateDisplayField,
   _validateIndexes,
-  validateSpatialReference,
+  validateSpatialReferenceAndExtent,
   _validateTemplatesFields,
   _validateTypesTemplates,
   _validateEditFieldsInfo,
@@ -6275,7 +6275,7 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
     });
   });
 
-  describe("validateSpatialReference", () => {
+  describe("validateSpatialReferenceAndExtent", () => {
     it("can check for dependant source spatial reference", () => {
       const serviceInfo: any = {
         service: {
@@ -6296,7 +6296,11 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
         }
       };
 
-      validateSpatialReference(serviceInfo, itemTemplate, templateDictionary);
+      validateSpatialReferenceAndExtent(
+        serviceInfo,
+        itemTemplate,
+        templateDictionary
+      );
       expect(serviceInfo.service.spatialReference.wkid).toEqual(102100);
     });
   });
