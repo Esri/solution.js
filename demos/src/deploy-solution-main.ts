@@ -40,11 +40,6 @@ export function deploySolution(
     // Deploy a solution described by the supplied id
     const options: common.IDeploySolutionOptions = {
       jobId: common.createShortId(),
-      title: "Deployment of Solution item " + templateSolutionId,
-      snippet: "Deployed by the deploySolution example",
-      description: "This is a longer description",
-      tags: ["test"],
-      additionalTypeKeywords: ["TypeKeyword"],
       progressCallback: progressCallback,
       consoleProgress: true,
       storageAuthentication: authentication
