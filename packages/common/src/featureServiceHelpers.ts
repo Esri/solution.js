@@ -907,10 +907,16 @@ export function validateSpatialReferenceAndExtent(
       const source: any = templateDictionary[id];
 
       const sr: any = getProp(source, "defaultSpatialReference");
-      sourceSR = !sourceSR && sr ? sr : sourceSR;
+      /* istanbul ignore else */
+      if (!sourceSR && sr) {
+        sourceSR = sr;
+      }
 
       const ext: any = getProp(source, "defaultExtent");
-      sourceExt = !sourceExt && ext ? ext : sourceExt;
+      /* istanbul ignore else */
+      if (!sourceExt && ext) {
+        sourceExt = ext;
+      }
 
       return sourceSR && sourceExt;
     });

@@ -374,17 +374,23 @@ export function _evaluateExistingItems(
 
           Promise.all(existingItemsByTag).then(
             existingItemsByTagResponse => {
-              _handleExistingItems(
-                existingItemsByTagResponse,
-                templateDictionary,
-                authentication,
-                false
+              Promise.all(
+                _handleExistingItems(
+                  existingItemsByTagResponse,
+                  templateDictionary,
+                  authentication,
+                  false
+                )
+              ).then(
+                () => {
+                  _updateTemplateDictionary(
+                    templates,
+                    templateDictionary,
+                    authentication
+                  ).then(resolve, e => reject(common.fail(e)));
+                },
+                e => reject(common.fail(e))
               );
-              _updateTemplateDictionary(
-                templates,
-                templateDictionary,
-                authentication
-              ).then(resolve, e => reject(common.fail(e)));
             },
             e => reject(common.fail(e))
           );
@@ -448,7 +454,11 @@ export function _updateTemplateDictionary(
               Object.keys(templateDictionary).forEach(k => {
                 const v: any = templateDictionary[k];
                 /* istanbul ignore else */
-                if (v.itemId === r.serviceItemId) {
+                if (
+                  v.itemId &&
+                  r.serviceItemId &&
+                  v.itemId === r.serviceItemId
+                ) {
                   common.setDefaultSpatialReference(
                     templateDictionary,
                     k,
