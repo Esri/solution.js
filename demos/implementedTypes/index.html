@@ -20,6 +20,11 @@
   -->
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
   <link rel="stylesheet" href="http://esri.github.io/calcite-bootstrap/styles/calcite-bootstrap.min.css">
+  <style>
+  body {
+    padding: 8px;
+  }
+  </style>
 </head>
 <body>
   <div id="output">Fetching...</div>
@@ -29,36 +34,33 @@
   <script>
     require.config({
       paths: {
-        "tslib": "node_modules/tslib/tslib",
+        "tslib": "../node_modules/tslib/tslib",
 
         // load the local versions
-        "@esri/arcgis-rest-auth": "node_modules/@esri/arcgis-rest-auth/dist/umd/auth.umd.min",
-        "@esri/arcgis-rest-feature-layer": "node_modules/@esri/arcgis-rest-feature-layer/dist/umd/feature-layer.umd.min",
-        "@esri/arcgis-rest-portal": "node_modules/@esri/arcgis-rest-portal/dist/umd/portal.umd.min",
-        "@esri/arcgis-rest-request": "node_modules/@esri/arcgis-rest-request/dist/umd/request.umd.min",
-        "@esri/arcgis-rest-service-admin": "node_modules/@esri/arcgis-rest-service-admin/dist/umd/service-admin.umd.min",
-        "@esri/hub-common": "node_modules/@esri/hub-common/dist/umd/common.umd",
-        "@esri/hub-initiatives": "node_modules/@esri/hub-initiatives/dist/umd/initiatives.umd",
-        "@esri/hub-sites": "node_modules/@esri/hub-sites/dist/umd/sites.umd",
-        "@esri/hub-teams": "node_modules/@esri/hub-teams/dist/umd/teams.umd",
-        "@esri/hub-types": "node_modules/@esri/hub-types/dist/umd/types.umd",
-
-        // load the unminified so we can debug things
-        "@esri/solution-common": "node_modules/@esri/solution-common/dist/umd/common.umd",
-        "@esri/solution-creator": "node_modules/@esri/solution-creator/dist/umd/creator.umd",
-        "@esri/solution-deployer": "node_modules/@esri/solution-deployer/dist/umd/deployer.umd",
-        "@esri/solution-feature-layer": "node_modules/@esri/solution-feature-layer/dist/umd/feature-layer.umd",
-        "@esri/solution-file": "node_modules/@esri/solution-file/dist/umd/file.umd",
-        "@esri/solution-form": "node_modules/@esri/solution-form/dist/umd/form.umd",
-        "@esri/solution-group": "node_modules/@esri/solution-group/dist/umd/group.umd",
-        "@esri/solution-simple-types": "node_modules/@esri/solution-simple-types/dist/umd/simple-types.umd",
-        "@esri/solution-hub-types": "node_modules/@esri/solution-hub-types/dist/umd/hub-types.umd",
-        "@esri/solution-storymap": "node_modules/@esri/solution-storymap/dist/umd/storymap.umd",
-        "@esri/solution-web-experience": "node_modules/@esri/solution-web-experience/dist/umd/web-experience.umd"
+        "@esri/arcgis-rest-auth": "../node_modules/@esri/arcgis-rest-auth/dist/umd/auth.umd.min",
+        "@esri/arcgis-rest-feature-layer": "../node_modules/@esri/arcgis-rest-feature-layer/dist/umd/feature-layer.umd.min",
+        "@esri/arcgis-rest-portal": "../node_modules/@esri/arcgis-rest-portal/dist/umd/portal.umd.min",
+        "@esri/arcgis-rest-request": "../node_modules/@esri/arcgis-rest-request/dist/umd/request.umd.min",
+        "@esri/arcgis-rest-service-admin": "../node_modules/@esri/arcgis-rest-service-admin/dist/umd/service-admin.umd.min",
+        "@esri/hub-common": "../node_modules/@esri/hub-common/dist/umd/common.umd",
+        "@esri/hub-initiatives": "../node_modules/@esri/hub-initiatives/dist/umd/initiatives.umd",
+        "@esri/hub-sites": "../node_modules/@esri/hub-sites/dist/umd/sites.umd",
+        "@esri/hub-teams": "../node_modules/@esri/hub-teams/dist/umd/teams.umd",
+        "@esri/solution-common": "../node_modules/@esri/solution-common/dist/umd/common.umd",
+        "@esri/solution-creator": "../node_modules/@esri/solution-creator/dist/umd/creator.umd",
+        "@esri/solution-deployer": "../node_modules/@esri/solution-deployer/dist/umd/deployer.umd",
+        "@esri/solution-feature-layer": "../node_modules/@esri/solution-feature-layer/dist/umd/feature-layer.umd",
+        "@esri/solution-file": "../node_modules/@esri/solution-file/dist/umd/file.umd",
+        "@esri/solution-form": "../node_modules/@esri/solution-form/dist/umd/form.umd",
+        "@esri/solution-group": "../node_modules/@esri/solution-group/dist/umd/group.umd",
+        "@esri/solution-simple-types": "../node_modules/@esri/solution-simple-types/dist/umd/simple-types.umd",
+        "@esri/solution-hub-types": "../node_modules/@esri/solution-hub-types/dist/umd/hub-types.umd",
+        "@esri/solution-storymap": "../node_modules/@esri/solution-storymap/dist/umd/storymap.umd",
+        "@esri/solution-web-experience": "../node_modules/@esri/solution-web-experience/dist/umd/web-experience.umd"
       }
     });
 
-    require(["dist/main"],
+    require(["../dist/implemented-types-main"],
       function (main) {
         "use strict";
         document.getElementById("output").innerHTML = main.implementedTypes();

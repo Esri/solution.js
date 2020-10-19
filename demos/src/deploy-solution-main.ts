@@ -36,7 +36,6 @@ export function deploySolution(
       reject("Solution's ID is not defined");
       return;
     }
-    const anonUS = new common.UserSession({portal:"https://www.arcgis.com/sharing/rest"});
 
     // Deploy a solution described by the supplied id
     const options: common.IDeploySolutionOptions = {
@@ -48,7 +47,7 @@ export function deploySolution(
       additionalTypeKeywords: ["TypeKeyword"],
       progressCallback: progressCallback,
       consoleProgress: true,
-      storageAuthentication: anonUS
+      storageAuthentication: authentication
     };
     deployer.deploySolution(templateSolutionId, authentication, options).then(
       (deployedSolution: any) => {
@@ -78,7 +77,7 @@ export function getTemplates(
     sortOrder: "asc",
     ...pagingParams
   }
-  
+
   return new Promise<ISolutionInfoCard[]>((resolve,reject) => {
     const anonUS = new common.UserSession({portal:"https://www.arcgis.com/sharing/rest"});
     common.searchGroupContents(groupId, query, anonUS, additionalSearchOptions)

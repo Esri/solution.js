@@ -19,18 +19,15 @@ import * as common from "@esri/solution-common";
 
 export function runLegacies(): Promise<string> {
   return new Promise<string>(resolve => {
-    let html =
+    let html = test_new_File(["foo"], "filename.txt", { type: "text/plain" });
+
+    html += "<br><br><br>Browser information:<br><br>" +
       "appVersion: " +
       navigator.appVersion +
       "<br><br>" +
       "userAgent: " +
       navigator.userAgent +
-      "<br><br>" +
-      "msSaveBlob: " +
-      typeof navigator.msSaveBlob +
       "<br><br>";
-
-    html += test_new_File(["foo"], "filename.txt", { type: "text/plain" });
 
     resolve(html);
   });
@@ -43,9 +40,9 @@ function test_new_File(
 ): string {
   const file = common.new_File(fileBits, fileName, options);
   if (file) {
-    return "Created file";
+    return "<span style=\"color:green\">&#x2714; Able to create a File object in the browser</span>";
   } else {
-    return "<span style=\"color:red\">Failed to create file</span><br>";
+    return "<span style=\"color:red\">&#x2716; Failed to create a File object in the browser</span>";
   }
 }
 
