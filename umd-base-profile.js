@@ -110,6 +110,7 @@ export default {
     format: "umd",
     name: moduleName,
     globals,
+    intro: 'var global = typeof self !== undefined ? self : this;',
     extend: true // causes this module to extend the global specified by `moduleName`
   },
   context: "window",
