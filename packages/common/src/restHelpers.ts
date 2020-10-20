@@ -94,13 +94,7 @@ import {
   SearchQueryBuilder,
   setItemAccess,
   shareItemWithGroup,
-  // ================================================================================================================== //
-  // === patch to updateItem in C:\Users\mike6491\ag\arcgis-rest-js\packages\arcgis-rest-portal\src\items\update.ts === //
-  // updateItem as portalUpdateItem
-  determineOwner,
-  serializeItem,
-  getPortalUrl
-  // ================================================================================================================== //
+  updateItem as portalUpdateItem
 } from "@esri/arcgis-rest-portal";
 import { IParams, IRequestOptions, request } from "@esri/arcgis-rest-request";
 import {
@@ -1874,48 +1868,5 @@ export function _updateItemURL(
       },
       e => reject(fail(e))
     );
-  });
-}
-
-// ================================================================================================================== //
-// === patch to updateItem in C:\Users\mike6491\ag\arcgis-rest-js\packages\arcgis-rest-portal\src\items\update.ts === //
-
-/**
- * ```js
- * import { updateItem } from "@esri/arcgis-rest-portal";
- * //
- * updateItem({
- *   item: {
- *     id: "3ef",
- *     description: "A three hour tour"
- *   },
- *   authentication
- * })
- *   .then(response)
- * ```
- * Update an Item. See the [REST Documentation](https://developers.arcgis.com/rest/users-groups-and-items/update-item.htm) for more information.
- *
- * @param requestOptions - Options for the request.
- * @returns A Promise that updates an item.
- */
-export function portalUpdateItem(
-  requestOptions: IUpdateItemOptions
-): Promise<IUpdateItemResponse> {
-  return determineOwner(requestOptions).then(owner => {
-    const url = requestOptions.folderId
-      ? `${getPortalUrl(requestOptions)}/content/users/${owner}/${
-          requestOptions.folderId
-        }/items/${requestOptions.item.id}/update`
-      : `${getPortalUrl(requestOptions)}/content/users/${owner}/items/${
-          requestOptions.item.id
-        }/update`;
-
-    // serialize the item into something Portal will accept
-    requestOptions.params = {
-      ...requestOptions.params,
-      ...serializeItem(requestOptions.item)
-    };
-
-    return request(url, requestOptions);
   });
 }

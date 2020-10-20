@@ -56,26 +56,25 @@
     var package_path = window.location.href.substring(0, window.location.href.lastIndexOf('/'));
     require.config({
       paths: {
-        "tslib": "node_modules/tslib/tslib",
+        "tslib": "../node_modules/tslib/tslib",
         "dist": package_path + "/dist",
         "src": package_path + "/src",
 
-        "@esri/arcgis-rest-auth": "node_modules/@esri/arcgis-rest-auth/dist/umd/auth.umd.min",
-        "@esri/arcgis-rest-feature-layer": "node_modules/@esri/arcgis-rest-feature-layer/dist/umd/feature-layer.umd.min",
-        "@esri/arcgis-rest-portal": "node_modules/@esri/arcgis-rest-portal/dist/umd/portal.umd.min",
-        "@esri/arcgis-rest-request": "node_modules/@esri/arcgis-rest-request/dist/umd/request.umd.min",
-        "@esri/arcgis-rest-service-admin": "node_modules/@esri/arcgis-rest-service-admin/dist/umd/service-admin.umd.min",
-        "@esri/hub-common": "node_modules/@esri/hub-common/dist/umd/common.umd.min",
-        "@esri/hub-sites": "node_modules/@esri/hub-sites/dist/umd/sites.umd.min",
-        "@esri/hub-initiatives": "node_modules/@esri/hub-initiatives/dist/umd/initiatives.umd.min",
-        "@esri/hub-sites": "node_modules/@esri/hub-sites/dist/umd/sites.umd.min",
-        "@esri/hub-teams": "node_modules/@esri/hub-teams/dist/umd/teams.umd.min",
-        "@esri/hub-types": "node_modules/@esri/hub-types/dist/umd/types.umd.min",
-        "@esri/solution-common": "node_modules/@esri/solution-common/dist/umd/common.umd"
+        "@esri/arcgis-rest-auth": "../node_modules/@esri/arcgis-rest-auth/dist/umd/auth.umd.min",
+        "@esri/arcgis-rest-feature-layer": "../node_modules/@esri/arcgis-rest-feature-layer/dist/umd/feature-layer.umd.min",
+        "@esri/arcgis-rest-portal": "../node_modules/@esri/arcgis-rest-portal/dist/umd/portal.umd.min",
+        "@esri/arcgis-rest-request": "../node_modules/@esri/arcgis-rest-request/dist/umd/request.umd.min",
+        "@esri/arcgis-rest-service-admin": "../node_modules/@esri/arcgis-rest-service-admin/dist/umd/service-admin.umd.min",
+        "@esri/hub-common": "../node_modules/@esri/hub-common/dist/umd/common.umd.min",
+        "@esri/hub-sites": "../node_modules/@esri/hub-sites/dist/umd/sites.umd.min",
+        "@esri/hub-initiatives": "../node_modules/@esri/hub-initiatives/dist/umd/initiatives.umd.min",
+        "@esri/hub-sites": "../node_modules/@esri/hub-sites/dist/umd/sites.umd.min",
+        "@esri/hub-teams": "../node_modules/@esri/hub-teams/dist/umd/teams.umd.min",
+        "@esri/solution-common": "../node_modules/@esri/solution-common/dist/umd/common.umd"
       }
     });
 
-    require(["@esri/arcgis-rest-auth", "dist/main"],
+    require(["@esri/arcgis-rest-auth", "../dist/get-item-info-main"],
       function (auth, main) {
         "use strict";
         goFcn = go;
@@ -99,9 +98,9 @@
               // If the document contains #topologicalSortGraphic, add the dependency graph to it
               const topologicalSortGraphicDiv = document.getElementById("topologicalSortGraphic");
               if (topologicalSortGraphicDiv) {
-                require(["src/raphael_2.2.1.min"], function (Raphael) {
+                require(["../src/raphael_2.2.1.min"], function (Raphael) {
                   window.Raphael = Raphael;
-                  require(["src/dracula_1.2.1.min"], function (Dracula) {
+                  require(["../src/dracula_1.2.1.min"], function (Dracula) {
                     main.showDependencyGraph(topologicalSortGraphicDiv, 1400, 1600, Raphael, Dracula)
                     .then(
                       () => {},

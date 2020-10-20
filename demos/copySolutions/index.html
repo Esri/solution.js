@@ -62,22 +62,22 @@
     var package_path = window.location.href.substring(0, window.location.href.lastIndexOf('/'));
     var dojoConfig = {
       "paths": {
-        "tslib": package_path + "/node_modules/tslib/tslib",
+        "tslib": package_path + "/../node_modules/tslib/tslib",
 
         // load the local versions
-        "@esri/arcgis-rest-auth": package_path + "/node_modules/@esri/arcgis-rest-auth/dist/umd/auth.umd.min",
-        "@esri/arcgis-rest-feature-layer": package_path + "/node_modules/@esri/arcgis-rest-feature-layer/dist/umd/feature-layer.umd.min",
-        "@esri/arcgis-rest-portal": package_path + "/node_modules/@esri/arcgis-rest-portal/dist/umd/portal.umd.min",
-        "@esri/arcgis-rest-request": package_path + "/node_modules/@esri/arcgis-rest-request/dist/umd/request.umd.min",
-        "@esri/arcgis-rest-service-admin": package_path + "/node_modules/@esri/arcgis-rest-service-admin/dist/umd/service-admin.umd.min",
-        "@esri/hub-common": package_path + "/node_modules/@esri/hub-common/dist/umd/common.umd.min",
-        "@esri/hub-initiatives": package_path + "/node_modules/@esri/hub-initiatives/dist/umd/initiatives.umd.min",
-        "@esri/hub-sites": package_path + "/node_modules/@esri/hub-sites/dist/umd/sites.umd.min",
-        "@esri/hub-teams": package_path + "/node_modules/@esri/hub-teams/dist/umd/teams.umd.min",
-        "@esri/hub-types": package_path + "/node_modules/@esri/hub-types/dist/umd/types.umd.min",
-        "@esri/solution-common": package_path + "/node_modules/@esri/solution-common/dist/umd/common.umd",
+        "@esri/arcgis-html-sanitizer": package_path + "/../node_modules/@esri/arcgis-html-sanitizer/dist/umd/arcgis-html-sanitizer.min",
+        "@esri/arcgis-rest-auth": package_path + "/../node_modules/@esri/arcgis-rest-auth/dist/umd/auth.umd.min",
+        "@esri/arcgis-rest-feature-layer": package_path + "/../node_modules/@esri/arcgis-rest-feature-layer/dist/umd/feature-layer.umd.min",
+        "@esri/arcgis-rest-portal": package_path + "/../node_modules/@esri/arcgis-rest-portal/dist/umd/portal.umd.min",
+        "@esri/arcgis-rest-request": package_path + "/../node_modules/@esri/arcgis-rest-request/dist/umd/request.umd.min",
+        "@esri/arcgis-rest-service-admin": package_path + "/../node_modules/@esri/arcgis-rest-service-admin/dist/umd/service-admin.umd.min",
+        "@esri/hub-common": package_path + "/../node_modules/@esri/hub-common/dist/umd/common.umd.min",
+        "@esri/hub-initiatives": package_path + "/../node_modules/@esri/hub-initiatives/dist/umd/initiatives.umd.min",
+        "@esri/hub-sites": package_path + "/../node_modules/@esri/hub-sites/dist/umd/sites.umd.min",
+        "@esri/hub-teams": package_path + "/../node_modules/@esri/hub-teams/dist/umd/teams.umd.min",
+        "@esri/solution-common": package_path + "/../node_modules/@esri/solution-common/dist/umd/common.umd",
 
-        "dist": package_path + "/dist"
+        "dist": package_path + "../dist"
       }
     };
   </script>
@@ -87,7 +87,7 @@
   <h3>Copy solution templates</h3>
 
   <div id="page">
-    <img id="page_busySymbol" src="src/images/loading.gif">
+    <img id="page_busySymbol" src="../images/loading.gif">
 
     <div id="credentialsDiv" class="section fader">
       <div class="section-title">Credentials in source organization</div>
@@ -151,8 +151,8 @@
   <script>
     var connectToSourceFcn, connectToDestinationFcn;
 
-    require(["@esri/arcgis-rest-auth", "@esri/arcgis-rest-portal", "dist/main"],
-      function (auth, portal, main) {
+    require(["@esri/arcgis-rest-auth", "@esri/arcgis-rest-portal", "@esri/arcgis-html-sanitizer", "../dist/copy-solutions-main.js"],
+      function (auth, portal, htmlSanitizer, main) {
         "use strict";
         removeItem("page_busySymbol");
         connectToSourceFcn = getSourceTemplates;
@@ -166,6 +166,8 @@
         var sourcePortal = null;
         var destinationAuthentication = null;
         var destinationPortal = null;
+
+        var sanitizer = new htmlSanitizer();
 
         //------------------------------------------------------------------------------------------------------------//
 
@@ -195,7 +197,10 @@
                 listDiv.innerHTML = "<i>No Solution templates found</i>";
               } else {
                 listDiv.innerHTML = createChecklist(
-                  searchResponse.results, document.getElementById("srcPortal").value, "sourceSolutionsList");
+                  searchResponse.results,
+                  sanitizer.sanitize(document.getElementById("srcPortal").value),
+                  "sourceSolutionsList"
+                );
                 var copyBtn = addItem("sourceSolutionsListDiv", "BUTTON", "copyBtn", "copyBtn");
                 copyBtn.innerHTML = "Copy Solution(s)";
                 copyBtn.addEventListener("click", copyTemplates);
@@ -236,8 +241,10 @@
               if (searchResponse.total === 0) {
                 listDiv.innerHTML = "<i>No Solution templates found</i>";
               } else {
-                listDiv.innerHTML =
-                  createSimpleList(searchResponse.results, document.getElementById("destPortal").value);
+                listDiv.innerHTML = createSimpleList(
+                  searchResponse.results,
+                  sanitizer.sanitize(document.getElementById("destPortal").value)
+                );
               }
               haveDestinationAccess = true;
               updateCopyBtn();
@@ -308,7 +315,7 @@
 
     function addBusySymbol (containerItemId) {
       var busySymbol = addItem(containerItemId, "IMG", containerItemId + "_busySymbol");
-      busySymbol.src = "src/images/loading.gif";
+      busySymbol.src = "../images/loading.gif";
       return busySymbol;
     }
 
