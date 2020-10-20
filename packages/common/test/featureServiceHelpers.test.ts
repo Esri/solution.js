@@ -78,7 +78,7 @@ import {
   _validateFields,
   _validateDisplayField,
   _validateIndexes,
-  validateSpatialReference,
+  validateSpatialReferenceAndExtent,
   _validateTemplatesFields,
   _validateTypesTemplates,
   _validateEditFieldsInfo,
@@ -6275,13 +6275,16 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
     });
   });
 
-  describe("validateSpatialReference", () => {
-    it("can check for dependant source spatial reference", () => {
+  describe("validateSpatialReferenceAndExtent", () => {
+    it("can check for dependant source spatial reference and extent", () => {
       const serviceInfo: any = {
         service: {
           isView: true,
           spatialReference: {
             wkid: 4326
+          },
+          fullExtent: {
+            xmin: 1
           }
         }
       };
@@ -6292,12 +6295,20 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
         aaec7d5e113e4252bf1dcdfbcd8400f9: {
           defaultSpatialReference: {
             wkid: 102100
+          },
+          defaultExtent: {
+            xmin: 0
           }
         }
       };
 
-      validateSpatialReference(serviceInfo, itemTemplate, templateDictionary);
+      validateSpatialReferenceAndExtent(
+        serviceInfo,
+        itemTemplate,
+        templateDictionary
+      );
       expect(serviceInfo.service.spatialReference.wkid).toEqual(102100);
+      expect(serviceInfo.defaultExtent.xmin).toEqual(0);
     });
   });
 

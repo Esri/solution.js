@@ -103,7 +103,10 @@ export function templatize(
   // Set up symbols for the URL of the feature service and its layers and tables
   templateDictionary[fsUrl] = itemTemplate.item.url; // map FS URL to its templatized form
   jsonItems.concat(_items).forEach(layer => {
-    templateDictionary[fsUrl + "/" + layer.id] = _templatize(id, "layer" + layer.id + ".url");
+    templateDictionary[fsUrl + "/" + layer.id] = _templatize(
+      id,
+      "layer" + layer.id + ".url"
+    );
   });
 
   // templatize the service references serviceItemId
@@ -891,33 +894,51 @@ export function setDefaultSpatialReference(
  * @param templateDictionary Hash mapping Solution source id to id of its clone (and name & URL for feature service)
  * @protected
  */
-export function validateSpatialReference(
+export function validateSpatialReferenceAndExtent(
   serviceInfo: any,
   itemTemplate: IItemTemplate,
   templateDictionary: any
 ): void {
   /* istanbul ignore else */
   if (getProp(serviceInfo, "service.isView")) {
-    // compare the wkid with the source...the view sr cannot differ from source sr
+    let sourceSR: any;
+    let sourceExt: any;
+    itemTemplate.dependencies.some(id => {
+      const source: any = templateDictionary[id];
+
+      const sr: any = getProp(source, "defaultSpatialReference");
+      /* istanbul ignore else */
+      if (!sourceSR && sr) {
+        sourceSR = sr;
+      }
+
+      const ext: any = getProp(source, "defaultExtent");
+      /* istanbul ignore else */
+      if (!sourceExt && ext) {
+        sourceExt = ext;
+      }
+
+      return sourceSR && sourceExt;
+    });
+    const sourceWkid: number = getProp(sourceSR, "wkid");
+
     const viewWkid: number = getProp(
       serviceInfo,
       "service.spatialReference.wkid"
     );
-
-    let sourceSR: any = 0;
-    itemTemplate.dependencies.some(id => {
-      const source: any = templateDictionary[id];
-      /* istanbul ignore else */
-      if (getProp(source, "defaultSpatialReference")) {
-        sourceSR = source.defaultSpatialReference;
-        return true;
-      }
-    });
-    const sourceWkid: number = getProp(sourceSR, "wkid");
-
     /* istanbul ignore else */
     if (sourceWkid && viewWkid && sourceWkid !== viewWkid) {
-      setProp(serviceInfo, "service.spatialReference", sourceSR);
+      setCreateProp(serviceInfo, "service.spatialReference", sourceSR);
+    }
+
+    const viewExt: number = getProp(serviceInfo, "service.fullExtent");
+    /* istanbul ignore else */
+    if (
+      sourceExt &&
+      viewExt &&
+      JSON.stringify(sourceExt) !== JSON.stringify(viewExt)
+    ) {
+      setCreateProp(serviceInfo, "defaultExtent", sourceExt);
     }
   }
 }

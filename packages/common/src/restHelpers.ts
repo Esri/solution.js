@@ -22,7 +22,7 @@
 
 import {
   setDefaultSpatialReference,
-  validateSpatialReference
+  validateSpatialReferenceAndExtent
 } from "./featureServiceHelpers";
 import {
   appendQueryParam,
@@ -1486,7 +1486,11 @@ export function _getCreateServiceOptions(
     const solutionItemId: string = templateDictionary.solutionItemId;
     const itemId: string = newItemTemplate.itemId;
 
-    validateSpatialReference(serviceInfo, newItemTemplate, templateDictionary);
+    validateSpatialReferenceAndExtent(
+      serviceInfo,
+      newItemTemplate,
+      templateDictionary
+    );
 
     const fallbackExtent: any = _getFallbackExtent(
       serviceInfo,

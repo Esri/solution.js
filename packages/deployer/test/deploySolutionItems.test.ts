@@ -470,33 +470,44 @@ describe("Module `deploySolutionItems`", () => {
         user: mockItems.getAGOLUser("casey")
       };
 
-      fetchMock.get(
-        utils.PORTAL_SUBSET.restUrl +
-          "/search?f=json&q=typekeywords%3Asource-" +
-          id +
-          "%20type%3AFeature%20Service%20owner%3Acasey&token=fake-token",
-        {
-          query: "typekeywords='source-" + id + "'",
-          results: [
-            {
-              id: foundItemID2,
-              type: type,
-              name: "name2",
-              title: "title2",
-              url: url2,
-              created: 1582751989000
-            },
-            {
-              id: foundItemID,
-              type: type,
-              name: "name1",
-              title: "title1",
-              url: url1,
-              created: 1582751986000
-            }
-          ]
-        }
-      );
+      const sourceSR = { wkid: 102100, latestWkid: 3857 };
+
+      fetchMock
+        .get(
+          utils.PORTAL_SUBSET.restUrl +
+            "/search?f=json&q=typekeywords%3Asource-" +
+            id +
+            "%20type%3AFeature%20Service%20owner%3Acasey&token=fake-token",
+          {
+            query: "typekeywords='source-" + id + "'",
+            results: [
+              {
+                id: foundItemID2,
+                type: type,
+                name: "name2",
+                title: "title2",
+                url: url2,
+                created: 1582751989000
+              },
+              {
+                id: foundItemID,
+                type: type,
+                name: "name1",
+                title: "title1",
+                url: url1,
+                created: 1582751986000
+              }
+            ]
+          }
+        )
+        .post(url2, {
+          serviceItemId: foundItemID2,
+          spatialReference: sourceSR,
+          fullExtent: {
+            xmin: 0,
+            spatialReference: sourceSR
+          }
+        });
 
       const expected: any[] = [
         {
@@ -511,7 +522,11 @@ describe("Module `deploySolutionItems`", () => {
       };
       expectedTemplateDictionary[id] = {
         itemId: foundItemID2,
-        defaultSpatialReference: { wkid: 102100, latestWkid: 3857 },
+        defaultSpatialReference: sourceSR,
+        defaultExtent: {
+          xmin: 0,
+          spatialReference: sourceSR
+        },
         name: "name2",
         title: "title2",
         url: url2,
@@ -934,6 +949,76 @@ describe("Module `deploySolutionItems`", () => {
         "bb4a6047326243b290f625e80ebe6531",
         "bb4a6047326243b290f625e80ebe6532"
       ]);
+    });
+
+    it("reuse items will handle error on add to templateDictionary", done => {
+      const id: string = "aa4a6047326243b290f625e80ebe6531";
+      const foundItemID: string = "ba4a6047326243b290f625e80ebe6531";
+      const foundItemID2: string = "ca4a6047326243b290f625e80ebe6531";
+      const type: string = "Feature Service";
+      const url1: string =
+        "https://services.arcgis.com/orgidFmrV9d1DIvN/arcgis/rest/services/dispatchers1/FeatureServer";
+
+      const url2: string =
+        "https://services.arcgis.com/orgidFmrV9d1DIvN/arcgis/rest/services/dispatchers2/FeatureServer";
+
+      const itemTemplate: common.IItemTemplate = templates.getItemTemplate(
+        type,
+        []
+      );
+      itemTemplate.item.thumbnail = null;
+      itemTemplate.itemId = id;
+
+      const templateDictionary: any = {
+        user: mockItems.getAGOLUser("casey")
+      };
+
+      fetchMock
+        .get(
+          utils.PORTAL_SUBSET.restUrl +
+            "/search?f=json&q=typekeywords%3Asource-" +
+            id +
+            "%20type%3AFeature%20Service%20owner%3Acasey&token=fake-token",
+          {
+            query: "typekeywords='source-" + id + "'",
+            results: [
+              {
+                id: foundItemID2,
+                type: type,
+                name: "name2",
+                title: "title2",
+                url: url2,
+                created: 1582751989000
+              },
+              {
+                id: foundItemID,
+                type: type,
+                name: "name1",
+                title: "title1",
+                url: url1,
+                created: 1582751986000
+              }
+            ]
+          }
+        )
+        .post(url2, mockItems.get500Failure());
+
+      // tslint:disable-next-line: no-empty
+      spyOn(console, "error").and.callFake(() => {});
+      deploySolution
+        .deploySolutionItems(
+          utils.PORTAL_URL,
+          "sln1234567890",
+          [itemTemplate],
+          MOCK_USER_SESSION,
+          templateDictionary,
+          MOCK_USER_SESSION,
+          {
+            enableItemReuse: true,
+            progressCallback: utils.SOLUTION_PROGRESS_CALLBACK
+          }
+        )
+        .then(done.fail, done);
     });
   });
 
@@ -1459,6 +1544,99 @@ describe("Module `deploySolutionItems`", () => {
         expect(shareSpy.calls.argsFor(1)[0]).toBe("bc7");
         expect(shareSpy.calls.argsFor(1)[1]).toBe("3ef");
       });
+    });
+  });
+
+  describe("_updateTemplateDictionary", () => {
+    it("will use initialExtent if fullExtent is not defined", done => {
+      const _templates: common.IItemTemplate[] = [];
+      const id: string = "ca4a6047326243b290f625e80ebe6531";
+      const fsUrl: string =
+        "https://services.arcgis.com/orgidFmrV9d1DIvN/arcgis/rest/services/dispatchers2/FeatureServer";
+
+      const fsTemplate: common.IItemTemplate = templates.getItemTemplate(
+        "Feature Service",
+        [],
+        fsUrl
+      );
+
+      _templates.push(fsTemplate);
+
+      const templateDictionary: any = {};
+      templateDictionary[fsTemplate.itemId] = {
+        itemId: id,
+        url: fsUrl
+      };
+
+      fetchMock.post(fsUrl, {
+        serviceItemId: id,
+        spatialReference: {
+          wkid: 4326
+        },
+        initialExtent: {
+          xmin: 0
+        }
+      });
+
+      // tslint:disable-next-line: no-empty
+      spyOn(common, "getLayerSettings").and.callFake(() => {});
+
+      deploySolution
+        ._updateTemplateDictionary(
+          _templates,
+          templateDictionary,
+          MOCK_USER_SESSION
+        )
+        .then(() => {
+          expect(templateDictionary).toEqual({
+            svc1234567890: {
+              itemId: "ca4a6047326243b290f625e80ebe6531",
+              url:
+                "https://services.arcgis.com/orgidFmrV9d1DIvN/arcgis/rest/services/dispatchers2/FeatureServer",
+              defaultSpatialReference: {
+                wkid: 4326
+              },
+              defaultExtent: {
+                xmin: 0
+              }
+            }
+          });
+          done();
+        }, done.fail);
+    });
+
+    it("can handle error to fetch feature service", done => {
+      const _templates: common.IItemTemplate[] = [];
+      const id: string = "ca4a6047326243b290f625e80ebe6531";
+      const fsUrl: string =
+        "https://services.arcgis.com/orgidFmrV9d1DIvN/arcgis/rest/services/dispatchers2/FeatureServer";
+
+      const fsTemplate: common.IItemTemplate = templates.getItemTemplate(
+        "Feature Service",
+        [],
+        fsUrl
+      );
+
+      _templates.push(fsTemplate);
+
+      const templateDictionary: any = {};
+      templateDictionary[fsTemplate.itemId] = {
+        itemId: id,
+        url: fsUrl
+      };
+
+      fetchMock.post(fsUrl, mockItems.get400Failure());
+
+      // tslint:disable-next-line: no-empty
+      spyOn(common, "getLayerSettings").and.callFake(() => {});
+
+      deploySolution
+        ._updateTemplateDictionary(
+          _templates,
+          templateDictionary,
+          MOCK_USER_SESSION
+        )
+        .then(done.fail, done);
     });
   });
 });
