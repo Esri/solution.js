@@ -374,23 +374,17 @@ export function _evaluateExistingItems(
 
           Promise.all(existingItemsByTag).then(
             existingItemsByTagResponse => {
-              Promise.all(
-                _handleExistingItems(
-                  existingItemsByTagResponse,
-                  templateDictionary,
-                  authentication,
-                  false
-                )
-              ).then(
-                () => {
-                  _updateTemplateDictionary(
-                    templates,
-                    templateDictionary,
-                    authentication
-                  ).then(resolve, e => reject(common.fail(e)));
-                },
-                e => reject(common.fail(e))
+              _handleExistingItems(
+                existingItemsByTagResponse,
+                templateDictionary,
+                authentication,
+                false
               );
+              _updateTemplateDictionary(
+                templates,
+                templateDictionary,
+                authentication
+              ).then(resolve, e => reject(common.fail(e)));
             },
             e => reject(common.fail(e))
           );
