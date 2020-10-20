@@ -1,9 +1,8 @@
 import typescript from "rollup-plugin-typescript2";
-import resolve from "rollup-plugin-node-resolve";
-import commonjs from "rollup-plugin-commonjs";
-import json from "rollup-plugin-json";
-import globalsPlugin from "rollup-plugin-node-globals";
-import builtins from "rollup-plugin-node-builtins";
+import resolve from "@rollup/plugin-node-resolve";
+import commonjs from "@rollup/plugin-commonjs";
+import json from "@rollup/plugin-json";
+import nodePolyfills from "rollup-plugin-node-polyfills";
 
 const path = require("path");
 const fs = require("fs");
@@ -111,6 +110,7 @@ export default {
     format: "umd",
     name: moduleName,
     globals,
+    intro: 'var global = typeof self !== undefined ? self : this;',
     extend: true // causes this module to extend the global specified by `moduleName`
   },
   context: "window",
@@ -120,7 +120,6 @@ export default {
     resolve({ preferBuiltins: true, browser: true }),
     commonjs(),
     json(),
-    globalsPlugin(),
-    builtins()
+    nodePolyfills()
   ]
 };
