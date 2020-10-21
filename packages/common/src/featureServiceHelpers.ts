@@ -163,7 +163,8 @@ export function templatize(
       jsonItem,
       itemTemplate,
       dependencies,
-      templatizeFieldReferences
+      templatizeFieldReferences,
+      templateDictionary
     );
 
     hasZ = jsonItem.hasZ || (_item && _item.hasZ) ? true : hasZ;
@@ -677,7 +678,7 @@ export function updateFeatureServiceDefinition(
       // when the item is a view we need to grab the supporting fieldInfos
       /* istanbul ignore else */
       if (itemTemplate.properties.service.isView) {
-        _updateGeomFieldName(item, templateDictionary);
+        _updateGeomFieldName(item.adminLayerInfo, templateDictionary);
 
         adminLayerInfos[originalId] = item.adminLayerInfo;
         // need to update adminLayerInfo before adding to the service def
@@ -812,18 +813,26 @@ export function _updateItemFields(
  * @param templateDictionary Hash mapping property names to replacement values
  * @protected
  */
-export function _updateGeomFieldName(item: any, templateDictionary: any): void {
+export function _updateGeomFieldName(
+  adminLayerInfo: any,
+  templateDictionary: any
+): void {
   // issue #471
   const tableName: string = getProp(
-    item,
-    "adminLayerInfo.viewLayerDefinition.table.name"
+    adminLayerInfo,
+    "viewLayerDefinition.table.name"
   );
-  const fieldName: string = getProp(item, "adminLayerInfo.geometryField.name");
+  const fieldName: string = getProp(adminLayerInfo, "geometryField.name");
+  /* istanbul ignore else */
   if (fieldName && tableName) {
     const geomName: string = templateDictionary.isPortal
       ? `${tableName}.shape`
       : `${tableName}.Shape`;
-    setProp(item, "adminLayerInfo.geometryField.name", geomName);
+    setProp(adminLayerInfo, "geometryField.name", geomName);
+  } else if (!fieldName && getProp(adminLayerInfo, "geometryField")) {
+    // null geom field will cause failure to deploy in portal
+    // this is also checked and removed on deploy for older solutions
+    deleteProp(adminLayerInfo, "geometryField");
   }
 }
 
@@ -1269,7 +1278,8 @@ export function _templatizeLayer(
   adminItem: any,
   itemTemplate: IItemTemplate,
   dependencies: IDependency[],
-  templatizeFieldReferences: boolean
+  templatizeFieldReferences: boolean,
+  templateDictionary: any
 ): void {
   // check for and repair common field issues
   _validateFields(adminItem);
@@ -1316,7 +1326,11 @@ export function _templatizeLayer(
     }
 
     if (update.hasOwnProperty("adminLayerInfo")) {
-      update.adminLayerInfo = _templatizeAdminLayerInfo(update, dependencies);
+      update.adminLayerInfo = _templatizeAdminLayerInfo(
+        update,
+        dependencies,
+        templateDictionary
+      );
     }
   });
 }
@@ -1561,10 +1575,12 @@ export function _templatizeLayerFieldReferences(
  */
 export function _templatizeAdminLayerInfo(
   layer: any,
-  dependencies: IDependency[]
+  dependencies: IDependency[],
+  templateDictionary: any
 ): any {
   // Create new instance of adminLayerInfo to update for clone
   const adminLayerInfo = Object.assign({}, layer.adminLayerInfo);
+  _updateGeomFieldName(adminLayerInfo, templateDictionary);
 
   deleteProp(adminLayerInfo, "xssTrustedFields");
   deleteProp(adminLayerInfo, "tableName");
