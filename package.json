@@ -139,7 +139,7 @@
     "release:review": "git --no-pager diff --word-diff",
     "release:publish": "bash ./support/publish.sh",
     "release:publish-retry": "lerna publish from-package --no-git-tag-version --no-push --yes",
-    "postinstall": "IF EXIST FROMREPO npm install || npm run bootstrap",
+    "postinstall": "IF NOT EXIST node_modules/@lerna/bootstrap/package.json npm install || npm run bootstrap",
     "bootstrap": "lerna bootstrap",
     "precommit": "lint-staged",
     "y:link:hub": "lerna run y:link:hub",
