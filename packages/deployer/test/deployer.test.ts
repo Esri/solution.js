@@ -1810,7 +1810,7 @@ describe("Module `deployer`", () => {
       });
     }
   });
-  describe("_replaceParamVaiables", () => {
+  describe("_replaceParamVariables", () => {
     it("should update custom sr prop", () => {
       const featureServiceTemplate: any = templates.getItemTemplate(
         "Feature Service"
@@ -1837,7 +1837,7 @@ describe("Module `deployer`", () => {
         templates: [featureServiceTemplate]
       };
 
-      deploySolutionFromTemplate._replaceParamVaiables(
+      deploySolutionFromTemplate._replaceParamVariables(
         solutionData,
         templateDictionary
       );

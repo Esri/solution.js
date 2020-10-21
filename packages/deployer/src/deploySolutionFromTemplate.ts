@@ -55,7 +55,7 @@ export function deploySolutionFromTemplate(
       );
     }
 
-    _replaceParamVaiables(solutionTemplateData, templateDictionary);
+    _replaceParamVariables(solutionTemplateData, templateDictionary);
 
     // Get information about deployment environment
     Promise.all([
@@ -320,7 +320,7 @@ export function deploySolutionFromTemplate(
   });
 }
 
-export function _replaceParamVaiables(
+export function _replaceParamVariables(
   solutionTemplateData: any,
   templateDictionary: any
 ): void {
