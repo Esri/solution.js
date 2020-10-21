@@ -1057,7 +1057,7 @@ export function getUserResponse() {
         id: "22547723baa14ba89ea3845f8b7b4e79",
         title: "Homeless Activity Manager_811d0bbc9a4942fe9f1375088c4ed099",
         isInvitationOnly: true,
-        owner: "casey",
+        owner: "LocalGovDeployCasey",
         description:
           "This group is required to configure the Crowdsource Manager application and used to share maps with health and human service personnel to manage reports of homeless individuals and encampments in the community.",
         snippet:

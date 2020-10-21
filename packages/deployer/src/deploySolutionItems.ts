@@ -143,8 +143,6 @@ export function deploySolutionItems(
           templateDictionary.solutionItemId
         );
 
-        // why is the return not used?
-
         cloneOrderChecklist.forEach(id => {
           // Get the item's template out of the list of templates
           const template = common.findTemplateInList(templates, id);
