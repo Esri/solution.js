@@ -829,7 +829,7 @@ export function _updateGeomFieldName(
       ? `${tableName}.shape`
       : `${tableName}.Shape`;
     setProp(adminLayerInfo, "geometryField.name", geomName);
-  } else if (!fieldName) {
+  } else if (!fieldName && getProp(adminLayerInfo, "geometryField")) {
     // null geom field will cause failure to deploy in portal
     // this is also checked and removed on deploy for older solutions
     deleteProp(adminLayerInfo, "geometryField");

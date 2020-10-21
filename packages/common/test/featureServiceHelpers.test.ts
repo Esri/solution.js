@@ -3504,8 +3504,13 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
     it("should not fail without adminLayerInfo", () => {
       const layer: any = {};
       const dependencies: interfaces.IDependency[] = [];
+      const templateDictionary: any = {};
 
-      const adminLayerInfo = _templatizeAdminLayerInfo(layer, dependencies);
+      const adminLayerInfo = _templatizeAdminLayerInfo(
+        layer,
+        dependencies,
+        templateDictionary
+      );
       expect(adminLayerInfo).toEqual({});
     });
 
@@ -3560,7 +3565,12 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
         }
       };
 
-      const adminLayerInfo = _templatizeAdminLayerInfo(layer, dependencies);
+      const templateDictionary: any = {};
+      const adminLayerInfo = _templatizeAdminLayerInfo(
+        layer,
+        dependencies,
+        templateDictionary
+      );
       expect(adminLayerInfo).toEqual(expected);
     });
 
@@ -3616,7 +3626,12 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
         }
       };
 
-      const adminLayerInfo = _templatizeAdminLayerInfo(layer, dependencies);
+      const templateDictionary: any = {};
+      const adminLayerInfo = _templatizeAdminLayerInfo(
+        layer,
+        dependencies,
+        templateDictionary
+      );
       expect(adminLayerInfo).toEqual(expected);
     });
   });
@@ -5816,7 +5831,7 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
       const templateDictionary: any = {
         isPortal: true
       };
-      _updateGeomFieldName(item, templateDictionary);
+      _updateGeomFieldName(item.adminLayerInfo, templateDictionary);
 
       const expecetd: string = "ABC_123.shape";
       expect(item.adminLayerInfo.geometryField.name).toEqual(expecetd);
@@ -5839,7 +5854,7 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
       const templateDictionary: any = {
         isPortal: false
       };
-      _updateGeomFieldName(item, templateDictionary);
+      _updateGeomFieldName(item.adminLayerInfo, templateDictionary);
 
       const expecetd: string = "ABC_123.Shape";
       expect(item.adminLayerInfo.geometryField.name).toEqual(expecetd);
@@ -5849,7 +5864,7 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
       const item: any = {
         adminLayerInfo: {
           geometryField: {
-            name: "{{MyId.itemId}}.Shape"
+            name: "ABC_123.Shape"
           },
           viewLayerDefinition: {
             table: {
@@ -5862,7 +5877,7 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
       const templateDictionary: any = {
         isPortal: false
       };
-      _updateGeomFieldName(item, templateDictionary);
+      _updateGeomFieldName(item.adminLayerInfo, templateDictionary);
 
       const expecetd: string = "ABC_123.Shape";
       expect(item.adminLayerInfo.geometryField.name).toEqual(expecetd);
