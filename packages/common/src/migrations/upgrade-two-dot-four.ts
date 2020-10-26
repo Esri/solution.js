@@ -55,7 +55,7 @@ export function _upgradeTwoDotFour(
     clone.data.templates = clone.data.templates.map(tmpl => {
       if (tmpl.assets) {
         tmpl.resources = tmpl.assets.map((a: any) => {
-          // thumbnail names can be like thumbnail/filename.ext
+          // asset names can be like thumbnail/filename.ext
           // so let's generally remove any folder prefixes
           let name = a.name;
           if (name.indexOf("/") > -1) {
