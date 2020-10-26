@@ -143,8 +143,6 @@ export function deploySolutionItems(
           templateDictionary.solutionItemId
         );
 
-        // why is the return not used?
-
         cloneOrderChecklist.forEach(id => {
           // Get the item's template out of the list of templates
           const template = common.findTemplateInList(templates, id);
@@ -380,8 +378,11 @@ export function _evaluateExistingItems(
                 authentication,
                 false
               );
-              _updateTemplateDictionary(templates, templateDictionary);
-              resolve();
+              _updateTemplateDictionary(
+                templates,
+                templateDictionary,
+                authentication
+              ).then(resolve, e => reject(common.fail(e)));
             },
             e => reject(common.fail(e))
           );
@@ -404,32 +405,74 @@ export function _evaluateExistingItems(
  */
 export function _updateTemplateDictionary(
   templates: common.IItemTemplate[],
-  templateDictionary: any
-): void {
-  templates.forEach(t => {
-    if (t.item.type === "Feature Service") {
-      const templateInfo: any = templateDictionary[t.itemId];
+  templateDictionary: any,
+  authentication: common.UserSession
+): Promise<any> {
+  return new Promise((resolve, reject) => {
+    const defs: Array<Promise<any>> = [];
+    const urls: string[] = [];
+    templates.forEach(t => {
       /* istanbul ignore else */
-      if (templateInfo && templateInfo.url && templateInfo.itemId) {
-        Object.assign(
-          templateDictionary[t.itemId],
-          common.getLayerSettings(
-            common.getLayersAndTables(t),
-            templateInfo.url,
-            templateInfo.itemId
-          )
-        );
+      if (t.item.type === "Feature Service") {
+        const templateInfo: any = templateDictionary[t.itemId];
+        /* istanbul ignore else */
+        if (templateInfo && templateInfo.url && templateInfo.itemId) {
+          Object.assign(
+            templateDictionary[t.itemId],
+            common.getLayerSettings(
+              common.getLayersAndTables(t),
+              templateInfo.url,
+              templateInfo.itemId
+            )
+          );
+          // we need the spatialReference from the service
+          /* istanbul ignore else */
+          if (urls.indexOf(templateInfo.url) < 0) {
+            defs.push(
+              common.rest_request(templateInfo.url, { authentication })
+            );
+            urls.push(templateInfo.url);
+          }
+        }
       }
+    });
 
-      const spatialReference: any = common.getProp(
-        t,
-        "properties.service.spatialReference"
+    if (defs.length > 0) {
+      Promise.all(defs).then(
+        results => {
+          /* istanbul ignore else */
+          if (Array.isArray(results) && results.length > 0) {
+            results.forEach(r => {
+              Object.keys(templateDictionary).forEach(k => {
+                const v: any = templateDictionary[k];
+                /* istanbul ignore else */
+                if (
+                  v.itemId &&
+                  r.serviceItemId &&
+                  v.itemId === r.serviceItemId
+                ) {
+                  common.setDefaultSpatialReference(
+                    templateDictionary,
+                    k,
+                    r.spatialReference
+                  );
+
+                  // keep the extent values from these responses as well
+                  common.setCreateProp(
+                    templateDictionary,
+                    `${k}.defaultExtent`,
+                    r.fullExtent || r.initialExtent
+                  );
+                }
+              });
+            });
+          }
+          resolve();
+        },
+        e => reject(common.fail(e))
       );
-      common.setDefaultSpatialReference(
-        templateDictionary,
-        t.itemId,
-        spatialReference
-      );
+    } else {
+      resolve();
     }
   });
 }

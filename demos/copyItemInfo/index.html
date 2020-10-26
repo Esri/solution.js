@@ -22,6 +22,9 @@
   <link rel="stylesheet" href="http://esri.github.io/calcite-bootstrap/styles/calcite-bootstrap.min.css">
   <link rel="stylesheet" href="https://js.arcgis.com/4.15/esri/themes/light/main.css" />
   <style>
+  body {
+    padding: 8px;
+  }
   button {
     cursor: pointer;
   }
@@ -33,20 +36,19 @@
     var package_path = window.location.href.substring(0, window.location.href.lastIndexOf('/'));
     var dojoConfig = {
       "paths": {
-        "tslib": package_path + "/node_modules/tslib/tslib",
+        "tslib": package_path + "/../node_modules/tslib/tslib",
         "dist": package_path + "/dist",
 
-        "@esri/arcgis-rest-auth": package_path + "/node_modules/@esri/arcgis-rest-auth/dist/umd/auth.umd.min",
-        "@esri/arcgis-rest-feature-layer": package_path + "/node_modules/@esri/arcgis-rest-feature-layer/dist/umd/feature-layer.umd.min",
-        "@esri/arcgis-rest-portal": package_path + "/node_modules/@esri/arcgis-rest-portal/dist/umd/portal.umd.min",
-        "@esri/arcgis-rest-request": package_path + "/node_modules/@esri/arcgis-rest-request/dist/umd/request.umd.min",
-        "@esri/arcgis-rest-service-admin": package_path + "/node_modules/@esri/arcgis-rest-service-admin/dist/umd/service-admin.umd.min",
-        "@esri/hub-common": package_path + "/node_modules/@esri/hub-common/dist/umd/common.umd.min",
-        "@esri/hub-initiatives": package_path + "/node_modules/@esri/hub-initiatives/dist/umd/initiatives.umd.min",
-        "@esri/hub-sites": package_path + "/node_modules/@esri/hub-sites/dist/umd/sites.umd.min",
-        "@esri/hub-teams": package_path + "/node_modules/@esri/hub-teams/dist/umd/teams.umd.min",
-        "@esri/hub-types": package_path + "/node_modules/@esri/hub-types/dist/umd/types.umd.min",
-        "@esri/solution-common": package_path + "/node_modules/@esri/solution-common/dist/umd/common.umd"
+        "@esri/arcgis-rest-auth": package_path + "/../node_modules/@esri/arcgis-rest-auth/dist/umd/auth.umd.min",
+        "@esri/arcgis-rest-feature-layer": package_path + "/../node_modules/@esri/arcgis-rest-feature-layer/dist/umd/feature-layer.umd.min",
+        "@esri/arcgis-rest-portal": package_path + "/../node_modules/@esri/arcgis-rest-portal/dist/umd/portal.umd.min",
+        "@esri/arcgis-rest-request": package_path + "/../node_modules/@esri/arcgis-rest-request/dist/umd/request.umd.min",
+        "@esri/arcgis-rest-service-admin": package_path + "/../node_modules/@esri/arcgis-rest-service-admin/dist/umd/service-admin.umd.min",
+        "@esri/hub-common": package_path + "/../node_modules/@esri/hub-common/dist/umd/common.umd.min",
+        "@esri/hub-initiatives": package_path + "/../node_modules/@esri/hub-initiatives/dist/umd/initiatives.umd.min",
+        "@esri/hub-sites": package_path + "/../node_modules/@esri/hub-sites/dist/umd/sites.umd.min",
+        "@esri/hub-teams": package_path + "/../node_modules/@esri/hub-teams/dist/umd/teams.umd.min",
+        "@esri/solution-common": package_path + "/../node_modules/@esri/solution-common/dist/umd/common.umd"
       }
     };
   </script>
@@ -64,7 +66,7 @@
   <script>
     var goFcn;
 
-    require(["esri/portal/Portal", "@esri/arcgis-rest-auth", "dist/main"],
+    require(["esri/portal/Portal", "@esri/arcgis-rest-auth", "../dist/copy-item-info-main.js"],
       function (Portal, auth, main) {
         "use strict";
         goFcn = go;

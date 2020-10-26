@@ -1,6 +1,6 @@
 {
   "name": "@esri/solution.js",
-  "version": "0.19.1",
+  "version": "0.19.2",
   "description": "A library running in Node.js and modern browsers for transferring ArcGIS Online items from one organization to another.",
   "devDependencies": {
     "@chiragrupani/karma-chromium-edge-launcher": "^2.0.0",
@@ -33,11 +33,11 @@
     "event-stream": "3.3.4",
     "fetch-mock": "^7.7.3",
     "gh-pages": "^1.1.0",
-    "gh-release": "^3.5.0",
+    "gh-release": "^4.0.3",
     "handlebars": "^4.5.1",
     "husky": "^0.14.3",
     "inspect-process": "^0.5.0",
-    "isomorphic-fetch": "^2.2.1",
+    "isomorphic-fetch": "^3.0.0",
     "isomorphic-form-data": "^2.0.0",
     "jasmine": "^3.5.0",
     "jasmine-core": "^3.5.0",
@@ -76,8 +76,8 @@
     "ts-node": "^8.3.0",
     "tslint": "^5.16.0",
     "tslint-config-prettier": "^1.6.0",
-    "tslint-config-standard": "^8.0.1",
-    "typedoc": "^0.15.0",
+    "tslint-config-standard": "^9.0.0",
+    "typedoc": "^0.19.2",
     "typescript": "^4.0.3",
     "uuid": "^8.0.0"
   },

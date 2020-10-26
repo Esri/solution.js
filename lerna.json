@@ -1,13 +1,8 @@
 {
   "lerna": "2.8.0",
   "packages": [
-    "packages/*",
-    "demos/*"
+    "packages/**",
+    "demos/"
   ],
-  "command": {
-    "bootstrap": {
-      "ignore": "demos/*"
-    }
-  },
-  "version": "0.19.1"
+  "version": "0.19.2"
 }

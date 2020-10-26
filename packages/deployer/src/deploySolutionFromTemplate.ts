@@ -109,7 +109,9 @@ export function deploySolutionFromTemplate(
 
         templateDictionary.user = userResponse;
         templateDictionary.user.folders = foldersAndGroupsResponse.folders;
-        templateDictionary.user.groups = foldersAndGroupsResponse.groups;
+        templateDictionary.user.groups = foldersAndGroupsResponse.groups.filter(
+          (group: common.IGroup) => group.owner === templateDictionary.user.username
+        );
 
         // Create a folder to hold the deployed solution. We use the solution name, appending a sequential
         // suffix if the folder exists, e.g.,
