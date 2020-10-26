@@ -84,6 +84,25 @@ describe("Upgrade 2.4 ::", () => {
       "should strip the old id out of the filename"
     );
   });
+  it("reworks hub asset names, dropping leading folders", () => {
+    const m = cloneObject(defaultModel);
+    m.data.templates[0].assets = [
+      { name: "thumbnail/somefile.png" },
+      { name: "other/foo.png" }
+    ];
+    const chk = _upgradeTwoDotFour(m, MOCK_USER_SESSION);
+    const tmpl = chk.data.templates[0];
+    expect(Array.isArray(tmpl.resources)).toBe(true, "should add resources");
+    expect(Array.isArray(tmpl.assets)).toBe(true, "should leave assets");
+    expect(tmpl.resources[0]).toBe(
+      "fakeId-somefile.png",
+      "should strip the old id and thumbnail folder out of the filename"
+    );
+    expect(tmpl.resources[1]).toBe(
+      "fakeId-foo.png",
+      "should strip the old id and folder out of the filename"
+    );
+  });
   it("adds estimatedDeploymentCostFactor", () => {
     const m = cloneObject(defaultModel);
     m.data.templates[0].estimatedDeploymentCostFactor = 2;
