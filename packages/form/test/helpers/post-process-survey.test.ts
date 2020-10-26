@@ -20,7 +20,7 @@ import * as utils from "../../../common/test/mocks/utils";
 import * as agolItems from "../../../common/test/mocks/agolItems";
 import * as mockTemplates from "../../../common/test/mocks/templates";
 
-describe("postProcessHubSurvey", () => {
+fdescribe("postProcessHubSurvey", () => {
   let MOCK_USER_SESSION: common.UserSession;
   let template: common.IItemTemplate;
   let interpolatedTemplate: common.IItemTemplate;
@@ -89,8 +89,7 @@ describe("postProcessHubSurvey", () => {
       common,
       "replaceInTemplate"
     ).and.returnValue(interpolatedTemplate);
-    const getItemBaseSpy = spyOn(common, "getItemBase").and.returnValues(
-      Promise.resolve(featureServiceSourceBase),
+    const getItemBaseSpy = spyOn(common, "getItemBase").and.returnValue(
       Promise.resolve(featureServiceResultBase)
     );
     const updateItemSpy = spyOn(common, "updateItem").and.resolveTo();
@@ -113,12 +112,8 @@ describe("postProcessHubSurvey", () => {
           formTemplate,
           templateDictionary
         ]);
-        expect(getItemBaseSpy.calls.count()).toEqual(2);
+        expect(getItemBaseSpy.calls.count()).toEqual(1);
         expect(getItemBaseSpy.calls.argsFor(0)).toEqual([
-          featureServiceSourceBase.id,
-          MOCK_USER_SESSION
-        ]);
-        expect(getItemBaseSpy.calls.argsFor(1)).toEqual([
           featureServiceResultBase.id,
           MOCK_USER_SESSION
         ]);
@@ -136,10 +131,9 @@ describe("postProcessHubSurvey", () => {
         expect(updateItemSpy.calls.argsFor(1)).toEqual([
           {
             id: featureServiceResultBase.id,
-            title: featureServiceSourceBase.title,
             extent: interpolatedTemplate.item.extent,
             typeKeywords: [
-              ...featureServiceSourceBase.typeKeywords,
+              ...featureServiceResultBase.typeKeywords,
               `source-${featureServiceSourceBase.id}`
             ]
           },
