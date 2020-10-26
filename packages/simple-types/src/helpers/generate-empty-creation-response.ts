@@ -19,6 +19,7 @@ export function generateEmptyCreationResponse(
   templateType: string
 ): ICreateItemFromTemplateResponse {
   return {
+    item: null,
     id: "",
     type: templateType,
     postProcess: false

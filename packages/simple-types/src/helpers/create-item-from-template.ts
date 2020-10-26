@@ -214,6 +214,7 @@ export function createItemFromTemplate(
                       );
                   } else {
                     resolve({
+                      item: newItemTemplate,
                       id: createResponse.id,
                       type: newItemTemplate.type,
                       postProcess: postProcess

@@ -90,10 +90,7 @@ export function createItemFromTemplate(
 
     // Replace the templatized symbols in a copy of the template
     let newItemTemplate: common.IItemTemplate = common.cloneObject(template);
-    newItemTemplate = common.replaceInTemplate(
-      newItemTemplate,
-      templateDictionary
-    );
+    newItemTemplate = common.replaceInTemplate(newItemTemplate, templateDictionary);
 
     // Group uses `thumbnail` instead of `thumbnailurl`, and it has to be an actual file
     let thumbnailBlobDef = Promise.resolve(null);
@@ -156,8 +153,7 @@ export function createItemFromTemplate(
                     destinationAuthentication
                   )
                   .then(
-                    () =>
-                      resolve(_generateEmptyCreationResponse(template.type)),
+                    () => resolve(_generateEmptyCreationResponse(template.type)),
                     () => resolve(_generateEmptyCreationResponse(template.type))
                   );
               } else {
@@ -197,13 +193,12 @@ export function createItemFromTemplate(
                       destinationAuthentication
                     )
                     .then(
-                      () =>
-                        resolve(_generateEmptyCreationResponse(template.type)),
-                      () =>
-                        resolve(_generateEmptyCreationResponse(template.type))
+                      () => resolve(_generateEmptyCreationResponse(template.type)),
+                      () => resolve(_generateEmptyCreationResponse(template.type))
                     );
                 } else {
                   resolve({
+                    item: newItemTemplate,
                     id: createResponse.group.id,
                     type: newItemTemplate.type,
                     postProcess: false
@@ -234,10 +229,15 @@ export function createItemFromTemplate(
 
 // ------------------------------------------------------------------------------------------------------------------ //
 
+/**
+ * Flags a failure to create an item from a template.
+ * @return Empty creation response
+ */
 export function _generateEmptyCreationResponse(
   templateType: string
 ): common.ICreateItemFromTemplateResponse {
   return {
+    item: null,
     id: "",
     type: templateType,
     postProcess: false

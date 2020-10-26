@@ -38,8 +38,7 @@ const UNSUPPORTED: common.moduleHandler = null;
  * @param templateDictionary Hash of facts: org URL, adlib replacements
  * @param destinationAuthentication Credentials for the destination organization
  * @param options Options to tune deployment
- * @return A promise that will resolve with the item's template (which is simply returned if it's
- *         already in the templates list
+ * @return A promise that will resolve with the list of information about the created items
  */
 export function deploySolutionItems(
   portalSharingUrl: string,
@@ -49,7 +48,7 @@ export function deploySolutionItems(
   templateDictionary: any,
   destinationAuthentication: common.UserSession,
   options: common.IDeploySolutionOptions
-): Promise<any> {
+): Promise<common.ICreateItemFromTemplateResponse[]> {
   return new Promise((resolve, reject) => {
     // Prepare feedback mechanism
     const totalEstimatedCost = _estimateDeploymentCost(templates) + 1; // solution items, plus avoid divide by 0
@@ -164,20 +163,22 @@ export function deploySolutionItems(
 
         // Wait until all items have been created
         // tslint:disable-next-line: no-floating-promises
-        Promise.all(awaitAllItems).then(clonedSolutionItemIds => {
-          if (failedTemplateItemIds.length === 0) {
-            resolve(clonedSolutionItemIds);
-          } else {
-            // Delete created items
-            // tslint:disable-next-line: no-floating-promises
-            common
-              .removeListOfItemsOrGroups(
-                deployedItemIds,
-                destinationAuthentication
-              )
-              .then(() => reject(common.failWithIds(failedTemplateItemIds)));
+        Promise.all(awaitAllItems).then(
+          (clonedSolutionItems: common.ICreateItemFromTemplateResponse[]) => {
+            if (failedTemplateItemIds.length === 0) {
+              resolve(clonedSolutionItems);
+            } else {
+              // Delete created items
+              // tslint:disable-next-line: no-floating-promises
+              common
+                .removeListOfItemsOrGroups(
+                  deployedItemIds,
+                  destinationAuthentication
+                )
+                .then(() => reject(common.failWithIds(failedTemplateItemIds)));
+            }
           }
-        });
+        );
       },
       e => {
         console.error(e);
@@ -528,11 +529,7 @@ export function _handleExistingItems(
             templateDictionary[sourceId] = Object.assign(
               templateDictionary[sourceId] || {},
               {
-                def: Promise.resolve({
-                  id: result.id,
-                  type: result.type,
-                  postProcess: false
-                }),
+                def: Promise.resolve(_generateEmptyCreationResponse(result.type, result.id)),
                 itemId: result.id,
                 name: result.name,
                 title: result.title,
@@ -638,34 +635,33 @@ export function _createItemFromTemplateWhenReady(
     !templateDictionary.hasOwnProperty(template.itemId) ||
     !getProp(templateDictionary[template.itemId], "def")
   ) {
-    templateDictionary[template.itemId] =
-      templateDictionary[template.itemId] || {};
+    templateDictionary[template.itemId] = templateDictionary[template.itemId] || {};
+
     // Save the deferred for the use of items that depend on this item being created first
-    templateDictionary[template.itemId].def = new Promise<
-      common.ICreateItemFromTemplateResponse
-    >(resolve => {
-      // Wait until all of the item's dependencies are deployed
-      const _awaitDependencies = template.dependencies.reduce(
-        (acc: any[], id: string) => {
-          const def = getProp(templateDictionary, `${id}.def`);
-          // can't use maybePush as that clones the object, which does not work for Promises
-          /* istanbul ignore else */
-          if (def) {
-            acc.push(def);
-          }
-          return acc;
-        },
-        []
-      );
+    templateDictionary[template.itemId].def = new Promise<common.ICreateItemFromTemplateResponse>(
+      resolve => {
+        // Wait until all of the item's dependencies are deployed
+        const _awaitDependencies = template.dependencies.reduce(
+          (acc: any[], id: string) => {
+            const def = getProp(templateDictionary, `${id}.def`);
+            // can't use maybePush as that clones the object, which does not work for Promises
+            /* istanbul ignore else */
+            if (def) {
+              acc.push(def);
+            }
+            return acc;
+          },
+          []
+        );
 
-      const syncViews: string[] = common.getProp(
-        template,
-        "properties.syncViews"
-      );
+        const syncViews: string[] = common.getProp(
+          template,
+          "properties.syncViews"
+        );
 
-      const awaitDependencies =
-        syncViews && syncViews.length > 0
-          ? syncViews.reduce((acc: any[], v: any) => {
+        const awaitDependencies =
+          syncViews && syncViews.length > 0
+            ? syncViews.reduce((acc: any[], v: any) => {
               const def = getProp(templateDictionary, `${v}.def`);
               /* istanbul ignore else */
               if (def) {
@@ -673,87 +669,87 @@ export function _createItemFromTemplateWhenReady(
               }
               return acc;
             }, _awaitDependencies)
-          : _awaitDependencies;
+            : _awaitDependencies;
 
-      Promise.all(awaitDependencies).then(
-        () => {
-          // Find the conversion handler for this item type
-          const templateType = template.type;
-          const itemHandler = moduleMap[templateType];
-          if (!itemHandler || itemHandler === UNSUPPORTED) {
-            if (itemHandler === UNSUPPORTED) {
-              itemProgressCallback(
-                template.itemId,
-                common.EItemProgressStatus.Ignored,
-                template.estimatedDeploymentCostFactor
-              );
+        Promise.all(awaitDependencies).then(
+          () => {
+            // Find the conversion handler for this item type
+            const templateType = template.type;
+            const itemHandler = moduleMap[templateType];
+            if (!itemHandler || itemHandler === UNSUPPORTED) {
+              if (itemHandler === UNSUPPORTED) {
+                itemProgressCallback(
+                  template.itemId,
+                  common.EItemProgressStatus.Ignored,
+                  template.estimatedDeploymentCostFactor
+                );
+              } else {
+                itemProgressCallback(
+                  template.itemId,
+                  common.EItemProgressStatus.Failed,
+                  0
+                );
+              }
+              resolve(_generateEmptyCreationResponse(template.type));
+
             } else {
-              itemProgressCallback(
-                template.itemId,
-                common.EItemProgressStatus.Failed,
-                0
-              );
-            }
-
-            resolve({
-              id: "",
-              type: templateType,
-              postProcess: false
-            });
-          } else {
-            // Glean item content that can be added via the create call rather than as an update, e.g.,
-            // metadata, thumbnail; this content is moved from the resourceFilePaths into the template
-            // tslint:disable-next-line: no-floating-promises
-            _moveResourcesIntoTemplate(
-              resourceFilePaths,
-              template,
-              storageAuthentication
-            ).then(updatedResourceFilePaths => {
-              // Delegate the creation of the template to the handler
+              // Glean item content that can be added via the create call rather than as an update, e.g.,
+              // metadata, thumbnail; this content is moved from the resourceFilePaths into the template
               // tslint:disable-next-line: no-floating-promises
-              itemHandler
-                .createItemFromTemplate(
-                  template,
-                  templateDictionary,
-                  destinationAuthentication,
-                  itemProgressCallback
-                )
-                .then(createResponse => {
-                  if (_isEmptyCreationResponse(template.type, createResponse)) {
-                    resolve(_generateEmptyCreationResponse(template.type)); // fails to copy resources from storage
-                  } else {
-                    // Copy resources, metadata, thumbnail, form
-                    common
-                      .copyFilesFromStorageItem(
-                        storageAuthentication,
-                        updatedResourceFilePaths,
-                        templateDictionary.folderId,
-                        createResponse.id,
-                        destinationAuthentication,
-                        templateType === "Group",
-                        template
-                      )
-                      .then(
-                        () => resolve(createResponse),
-                        () => {
-                          itemProgressCallback(
-                            template.itemId,
-                            common.EItemProgressStatus.Failed,
-                            0
-                          );
-                          resolve(
-                            _generateEmptyCreationResponse(template.type)
-                          ); // fails to copy resources from storage
-                        }
-                      );
-                  }
-                });
-            });
-          }
-        },
-        () => resolve(_generateEmptyCreationResponse(template.type)) // fails to get item dependencies
-      );
-    });
+              _moveResourcesIntoTemplate(
+                resourceFilePaths,
+                template,
+                storageAuthentication
+              ).then(updatedResourceFilePaths => {
+                // Delegate the creation of the item to the handler
+                // tslint:disable-next-line: no-floating-promises
+                itemHandler
+                  .createItemFromTemplate(
+                    template,
+                    templateDictionary,
+                    destinationAuthentication,
+                    itemProgressCallback
+                  )
+                  .then((createResponse: common.ICreateItemFromTemplateResponse) => {
+                    if (createResponse.id === "") {
+                      resolve(_generateEmptyCreationResponse(template.type)); // fails to create item
+                    } else {
+                      /* istanbul ignore else */
+                      if (createResponse.item.item.url) {
+                        common.setCreateProp(templateDictionary, template.itemId + ".url", createResponse.item.item.url);
+                      }
+
+                      // Copy resources, metadata, thumbnail, form
+                      common
+                        .copyFilesFromStorageItem(
+                          storageAuthentication,
+                          updatedResourceFilePaths,
+                          templateDictionary.folderId,
+                          createResponse.id,
+                          destinationAuthentication,
+                          templateType === "Group",
+                          createResponse.item
+                        )
+                        .then(
+                          () => resolve(createResponse),
+                          () => {
+                            itemProgressCallback(
+                              template.itemId,
+                              common.EItemProgressStatus.Failed,
+                              0
+                            );
+                            resolve(_generateEmptyCreationResponse(template.type)); // fails to copy resources from storage
+                          }
+                        );
+                    }
+                  });
+              });
+            }
+          },
+          () => resolve(_generateEmptyCreationResponse(template.type)) // fails to get item dependencies
+        );
+      }
+    );
   }
   return templateDictionary[template.itemId].def;
 }
@@ -778,11 +774,17 @@ export function _estimateDeploymentCost(
   );
 }
 
+/**
+ * Flags a failure to create an item from a template.
+ * @return Empty creation response
+ */
 export function _generateEmptyCreationResponse(
-  templateType: string
+  templateType: string,
+  id = ""
 ): common.ICreateItemFromTemplateResponse {
   return {
-    id: "",
+    item: null,
+    id,
     type: templateType,
     postProcess: false
   };
@@ -802,13 +804,6 @@ export function _getGroupUpdates(
       authentication
     );
   });
-}
-
-export function _isEmptyCreationResponse(
-  templateType: string,
-  response: common.ICreateItemFromTemplateResponse
-): boolean {
-  return response.id === "";
 }
 
 export function _moveResourcesIntoTemplate(

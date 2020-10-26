@@ -84,7 +84,7 @@ export function createItemFromTemplate(
 
   // and if it returned false, just resolve out
   if (!startStatus) {
-    return Promise.resolve({ id: "", type: template.type, postProcess: false });
+    return Promise.resolve(_generateEmptyCreationResponse(template.type));
   }
 
   // convert the templateDictionary to a settings hash
@@ -127,7 +127,7 @@ export function createItemFromTemplate(
     .then(createdModel => {
       model = createdModel;
       // Update the template dictionary
-      // TODO: This should be done in whatever recieves
+      // TODO: This should be done in whatever receives
       // the outcome of this promise chain
       templateDictionary[template.itemId] = {
         itemId: model.item.id
@@ -146,15 +146,15 @@ export function createItemFromTemplate(
           id: model.item.id,
           authentication: destinationAuthentication
         }).then(() => {
-          return Promise.resolve({
-            id: "",
-            type: template.type,
-            postProcess: false
-          });
+          return Promise.resolve(_generateEmptyCreationResponse(template.type));
         });
       } else {
         // finally, return ICreateItemFromTemplateResponse
         return {
+          item: {
+            ...template,
+            ...model
+          },
           id: model.item.id,
           type: template.type,
           postProcess: false
@@ -173,4 +173,21 @@ export function isAStoryMap(itemType: string): boolean {
     result = true;
   }
   return result;
+}
+
+// ------------------------------------------------------------------------------------------------------------------ //
+
+/**
+ * Flags a failure to create an item from a template.
+ * @return Empty creation response
+ */
+export function _generateEmptyCreationResponse(
+  templateType: string
+): ICreateItemFromTemplateResponse {
+  return {
+    item: null,
+    id: "",
+    type: templateType,
+    postProcess: false
+  };
 }

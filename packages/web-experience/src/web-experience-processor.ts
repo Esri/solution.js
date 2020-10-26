@@ -81,7 +81,7 @@ export function createItemFromTemplate(
 
   // and if it returned false, just resolve out
   if (!startStatus) {
-    return Promise.resolve({ id: "", type: template.type, postProcess: false });
+    return Promise.resolve(_generateEmptyCreationResponse(template.type));
   }
 
   // convert the templateDictionary to a settings hash
@@ -105,6 +105,7 @@ export function createItemFromTemplate(
     })
     .then(createdModel => {
       exbModel.item.id = createdModel.item.id;
+      exbModel.item.url = createdModel.item.url;
       // Update the template dictionary
       // TODO: This should be done in whatever recieves
       // the outcome of this promise chain
@@ -125,19 +126,36 @@ export function createItemFromTemplate(
           id: exbModel.item.id,
           authentication: destinationAuthentication
         }).then(() => {
-          return Promise.resolve({
-            id: "",
-            type: template.type,
-            postProcess: false
-          });
+          return Promise.resolve(_generateEmptyCreationResponse(template.type));
         });
       } else {
         // finally, return ICreateItemFromTemplateResponse
         return {
+          item: {
+            ...template,
+            ...exbModel
+          },
           id: exbModel.item.id,
           type: template.type,
           postProcess: false
         };
       }
     });
+}
+
+// ------------------------------------------------------------------------------------------------------------------ //
+
+/**
+ * Flags a failure to create an item from a template.
+ * @return Empty creation response
+ */
+export function _generateEmptyCreationResponse(
+  templateType: string
+): ICreateItemFromTemplateResponse {
+  return {
+    item: null,
+    id: "",
+    type: templateType,
+    postProcess: false
+  };
 }

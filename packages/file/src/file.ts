@@ -136,84 +136,88 @@ export function createItemFromTemplate(
         0
       );
       resolve(_generateEmptyCreationResponse(template.type));
-    } else {
-      // Replace the templatized symbols in a copy of the template
-      let newItemTemplate: common.IItemTemplate = common.cloneObject(template);
-      newItemTemplate = common.replaceInTemplate(
-        newItemTemplate,
-        templateDictionary
-      );
+      return;
+    }
 
-      // Create the item, then update its URL with its new id
-      common
-        .createItemWithData(
-          newItemTemplate.item,
-          newItemTemplate.data,
-          destinationAuthentication,
-          templateDictionary.folderId
-        )
-        .then(
-          createResponse => {
-            // Interrupt process if progress callback returns `false`
-            if (
-              !itemProgressCallback(
-                template.itemId,
-                common.EItemProgressStatus.Created,
-                template.estimatedDeploymentCostFactor / 2,
-                createResponse.id
-              )
-            ) {
-              itemProgressCallback(
-                template.itemId,
-                common.EItemProgressStatus.Cancelled,
-                0
-              );
-              common
-                .removeItem(createResponse.id, destinationAuthentication)
-                .then(
-                  () => resolve(_generateEmptyCreationResponse(template.type)),
-                  () => resolve(_generateEmptyCreationResponse(template.type))
-                );
-            } else {
-              // Add the new item to the settings
-              newItemTemplate.itemId = createResponse.id;
-              templateDictionary[template.itemId] = {
-                itemId: createResponse.id
-              };
+    // Replace the templatized symbols in a copy of the template
+    let newItemTemplate: common.IItemTemplate = common.cloneObject(template);
+    newItemTemplate = common.replaceInTemplate(newItemTemplate, templateDictionary);
 
-              itemProgressCallback(
-                template.itemId,
-                common.EItemProgressStatus.Finished,
-                template.estimatedDeploymentCostFactor / 2,
-                createResponse.id
-              );
-
-              resolve({
-                id: createResponse.id,
-                type: newItemTemplate.type,
-                postProcess: false
-              });
-            }
-          },
-          () => {
+    // Create the item, then update its URL with its new id
+    common
+      .createItemWithData(
+        newItemTemplate.item,
+        newItemTemplate.data,
+        destinationAuthentication,
+        templateDictionary.folderId
+      )
+      .then(
+        createResponse => {
+          // Interrupt process if progress callback returns `false`
+          if (
+            !itemProgressCallback(
+              template.itemId,
+              common.EItemProgressStatus.Created,
+              template.estimatedDeploymentCostFactor / 2,
+              createResponse.id
+            )
+          ) {
             itemProgressCallback(
               template.itemId,
-              common.EItemProgressStatus.Failed,
+              common.EItemProgressStatus.Cancelled,
               0
             );
-            resolve(_generateEmptyCreationResponse(template.type)); // fails to create item
+            common
+              .removeItem(createResponse.id, destinationAuthentication)
+              .then(
+                () => resolve(_generateEmptyCreationResponse(template.type)),
+                () => resolve(_generateEmptyCreationResponse(template.type))
+              );
+          } else {
+            // Add the new item to the settings
+            newItemTemplate.itemId = createResponse.id;
+            templateDictionary[template.itemId] = {
+              itemId: createResponse.id
+            };
+
+            itemProgressCallback(
+              template.itemId,
+              common.EItemProgressStatus.Finished,
+              template.estimatedDeploymentCostFactor / 2,
+              createResponse.id
+            );
+
+            resolve({
+              item: newItemTemplate,
+              id: createResponse.id,
+              type: newItemTemplate.type,
+              postProcess: false
+            });
           }
-        );
-    }
+        },
+        () => {
+          itemProgressCallback(
+            template.itemId,
+            common.EItemProgressStatus.Failed,
+            0
+          );
+          resolve(_generateEmptyCreationResponse(template.type)); // fails to create item
+        }
+      );
   });
 }
 
 // ------------------------------------------------------------------------------------------------------------------ //
 
+/**
+ * Flags a failure to create an item from a template.
+ * @return Empty creation response
+ */
 export function _generateEmptyCreationResponse(
   templateType: string
 ): common.ICreateItemFromTemplateResponse {
   return {
+    item: null,
     id: "",
     type: templateType,
     postProcess: false
