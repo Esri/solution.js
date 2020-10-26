@@ -604,7 +604,8 @@ describe("Module `deployer`", () => {
             }
           },
           map1234567890: {
-            itemId: "map1234567890"
+            itemId: "map1234567890",
+            url: "https://myorg.maps.arcgis.com/home/webmap/viewer.html?webmap=map1234567890"
           },
           params: {
             testProperty: "ABC"

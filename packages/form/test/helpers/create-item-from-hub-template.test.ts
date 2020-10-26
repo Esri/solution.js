@@ -187,6 +187,7 @@ if (typeof window !== "undefined") {
             createResult.formId
           ]);
           expect(results).toEqual({
+            item: null as common.IItemTemplate,
             id: createResult.formId,
             type: "Form",
             postProcess: true
@@ -269,6 +270,7 @@ if (typeof window !== "undefined") {
             createResult.formId
           ]);
           expect(results).toEqual({
+            item: null as common.IItemTemplate,
             id: createResult.formId,
             type: "Form",
             postProcess: true
@@ -352,6 +354,7 @@ if (typeof window !== "undefined") {
             createResult.formId
           ]);
           expect(results).toEqual({
+            item: null as common.IItemTemplate,
             id: createResult.formId,
             type: "Form",
             postProcess: true

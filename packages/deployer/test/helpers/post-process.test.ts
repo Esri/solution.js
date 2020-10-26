@@ -43,6 +43,7 @@ describe("postProcess Module", () => {
 
     const sols = [
       {
+        item: null as IItemTemplate,
         id: "bc3",
         type: "Hub Site Application",
         postProcess: true
@@ -77,11 +78,13 @@ describe("postProcess Module", () => {
     ).and.resolveTo();
     const sols = [
       {
+        item: null as IItemTemplate,
         id: "bc3",
         type: "Hub Site Application",
         postProcess: true
       },
       {
+        item: null as IItemTemplate,
         id: "bc4",
         type: "Hub Site Application",
         postProcess: true
@@ -108,11 +111,13 @@ describe("postProcess Module", () => {
     ).and.resolveTo();
     const sols = [
       {
+        item: null as IItemTemplate,
         id: "bc3",
         type: "Hub Site Application",
         postProcess: true
       },
       {
+        item: null as IItemTemplate,
         id: "bc4",
         type: "Hub Site Application",
         postProcess: false
@@ -132,6 +137,7 @@ describe("postProcess Module", () => {
   it("it skips undefined itemHandlers", () => {
     const sols = [
       {
+        item: null as IItemTemplate,
         id: "bc3",
         type: "Death Star",
         postProcess: true

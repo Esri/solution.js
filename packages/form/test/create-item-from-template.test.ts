@@ -35,6 +35,7 @@ describe("createItemFromTemplate", () => {
 
   it("should delegate to custom template processing for Hub Survey templates", done => {
     const expectedResults = {
+      item: null as common.IItemTemplate,
       id: "2c36d3679e7f4934ac599051df22daf6",
       type: "Form",
       postProcess: false
@@ -77,6 +78,7 @@ describe("createItemFromTemplate", () => {
 
   it("should delegate to simple types processing for non-Hub Survey templates", done => {
     const expectedResults = {
+      item: null as common.IItemTemplate,
       id: "2c36d3679e7f4934ac599051df22daf6",
       type: "Form",
       postProcess: false
