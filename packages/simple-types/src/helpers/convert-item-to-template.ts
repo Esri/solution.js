@@ -176,7 +176,9 @@ export function convertItemToTemplate(
 
         wrapupPromise.then(
           () => {
-            templateModifyingPromise.then(resolve, err => reject(common.fail(err)));
+            templateModifyingPromise.then(resolve, err =>
+              reject(common.fail(err))
+            );
           },
           err => reject(common.fail(err))
         );

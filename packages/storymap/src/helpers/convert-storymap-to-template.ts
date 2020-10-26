@@ -114,8 +114,7 @@ const oEmbedTemplates = {
     provider_url: "{{storyMapBaseUrl}}",
     width: 800,
     height: 600,
-    thumbnail_url:
-      "{{storyMapThumbnailUrl}}",
+    thumbnail_url: "{{storyMapThumbnailUrl}}",
     thumbnail_height: "100.5",
     thumbnail_width: "400",
     html:

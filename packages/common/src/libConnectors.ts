@@ -32,7 +32,11 @@ export { Sanitizer } from "@esri/arcgis-html-sanitizer";
  * @param folder Folder to contain the files
  * @return Promise resolving to a zip File
  */
-export function createZip(zipFilename: string, files: File[], folder?: string): Promise<File> {
+export function createZip(
+  zipFilename: string,
+  files: File[],
+  folder?: string
+): Promise<File> {
   return new Promise<File>((resolve, reject) => {
     const zip = new JSZip();
     let container = zip;

@@ -46,7 +46,6 @@ afterEach(() => {
 // ------------------------------------------------------------------------------------------------------------------ //
 
 describe("simpleTypeCreateItemFromTemplate", () => {
-
   describe("notebook", () => {
     if (typeof window !== "undefined") {
       it("should create and fine tune python notebook", done => {
@@ -1011,5 +1010,4 @@ describe("simpleTypeCreateItemFromTemplate", () => {
         });
     });
   });
-
 });

@@ -274,9 +274,10 @@ describe("Module `resourceHelpers`: common functions involving the management of
           authentication: MOCK_USER_SESSION
         };
 
-        return resourceHelpers
-          .copyData(source, destination)
-          .then(() => done.fail(), () => done());
+        return resourceHelpers.copyData(source, destination).then(
+          () => done.fail(),
+          () => done()
+        );
       });
 
       it("should handle error updating item with data", done => {
@@ -307,9 +308,10 @@ describe("Module `resourceHelpers`: common functions involving the management of
             mockItems.get400Failure()
           );
 
-        resourceHelpers
-          .copyData(source, destination)
-          .then(() => done.fail(), () => done());
+        resourceHelpers.copyData(source, destination).then(
+          () => done.fail(),
+          () => done()
+        );
       });
     });
 

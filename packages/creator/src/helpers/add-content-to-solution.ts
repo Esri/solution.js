@@ -167,27 +167,29 @@ export function _addContentToSolution(
           solutionTemplates = _postProcessIgnoredItems(solutionTemplates);
           solutionTemplates = postProcessWorkforceTemplates(solutionTemplates);
           _templatizeSolutionIds(solutionTemplates);
-          _replaceDictionaryItemsInObject(templateDictionary, solutionTemplates);
-          _templatizeOrgUrl(solutionTemplates, authentication)
-            .then(
-              solutionTemplates2 => {
-                // Update solution item with its data JSON
-                const solutionData: ISolutionItemData = {
-                  metadata: {},
-                  templates: options.templatizeFields
-                    ? postProcessFieldReferences(solutionTemplates2)
-                    : solutionTemplates2
-                };
-                const itemInfo: IItemUpdate = {
-                  id: solutionItemId,
-                  text: solutionData
-                };
-                updateItem(itemInfo, authentication).then(() => {
-                  resolve(solutionItemId);
-                }, reject);
-              },
-              reject
-            );
+          _replaceDictionaryItemsInObject(
+            templateDictionary,
+            solutionTemplates
+          );
+          _templatizeOrgUrl(solutionTemplates, authentication).then(
+            solutionTemplates2 => {
+              // Update solution item with its data JSON
+              const solutionData: ISolutionItemData = {
+                metadata: {},
+                templates: options.templatizeFields
+                  ? postProcessFieldReferences(solutionTemplates2)
+                  : solutionTemplates2
+              };
+              const itemInfo: IItemUpdate = {
+                id: solutionItemId,
+                text: solutionData
+              };
+              updateItem(itemInfo, authentication).then(() => {
+                resolve(solutionItemId);
+              }, reject);
+            },
+            reject
+          );
         } else {
           resolve(solutionItemId);
         }
@@ -284,10 +286,7 @@ export function _postProcessIgnoredItems(
  * @param obj Object to be examined
  * @private
  */
-export function _replaceDictionaryItemsInObject(
-  hash: any,
-  obj: any
-): any {
+export function _replaceDictionaryItemsInObject(hash: any, obj: any): any {
   /* istanbul ignore else */
   if (obj) {
     Object.keys(obj).forEach(prop => {
@@ -311,10 +310,7 @@ export function _replaceDictionaryItemsInObject(
  * @param obj Object to be examined
  * @private
  */
-export function _replaceRemainingIdsInObject(
-  ids: string[],
-  obj: any
-): any {
+export function _replaceRemainingIdsInObject(ids: string[], obj: any): any {
   /* istanbul ignore else */
   if (obj) {
     Object.keys(obj).forEach(prop => {
@@ -349,9 +345,10 @@ export function _replaceRemainingIdsInString(
     untemplatizedIds.forEach(id => {
       if (ids.includes(id)) {
         const re = new RegExp("({*)" + id, "gi");
-        updatedStr = updatedStr.replace(
-          re,
-          match => match.indexOf("{{") < 0 ? "{{" + id.replace("{", "") + ".itemId}}" : match
+        updatedStr = updatedStr.replace(re, match =>
+          match.indexOf("{{") < 0
+            ? "{{" + id.replace("{", "") + ".itemId}}"
+            : match
         );
       }
     });
@@ -373,21 +370,25 @@ export function _templatizeOrgUrl(
 ): Promise<IItemTemplate[]> {
   return new Promise((resolve, reject) => {
     // Get the org's URL
-    getPortal(null, authentication)
-      .then(
-        org => {
-          const orgUrl = "https://" + org.urlKey + "." + org.customBaseUrl;
-          const templatizedOrgUrl = "{{portalBaseUrl}}";
+    getPortal(null, authentication).then(org => {
+      const orgUrl = "https://" + org.urlKey + "." + org.customBaseUrl;
+      const templatizedOrgUrl = "{{portalBaseUrl}}";
 
-          // Cycle through each of the items in the template and scan the `item` and `data` sections of each for replacements
-          templates.forEach((template: IItemTemplate) => {
-            globalStringReplace(template.item, new RegExp(orgUrl, "gi"), templatizedOrgUrl);
-            globalStringReplace(template.data, new RegExp(orgUrl, "gi"), templatizedOrgUrl);
-          });
-          resolve(templates);
-        },
-        reject
-      );
+      // Cycle through each of the items in the template and scan the `item` and `data` sections of each for replacements
+      templates.forEach((template: IItemTemplate) => {
+        globalStringReplace(
+          template.item,
+          new RegExp(orgUrl, "gi"),
+          templatizedOrgUrl
+        );
+        globalStringReplace(
+          template.data,
+          new RegExp(orgUrl, "gi"),
+          templatizedOrgUrl
+        );
+      });
+      resolve(templates);
+    }, reject);
   });
 }
 
@@ -397,11 +398,11 @@ export function _templatizeOrgUrl(
  * @param templates The array of templates to evaluate
  * @private
  */
-export function _templatizeSolutionIds(
-  templates: IItemTemplate[]
-): void {
+export function _templatizeSolutionIds(templates: IItemTemplate[]): void {
   // Get the ids in the solution
-  const solutionIds: string[] = templates.map((template: IItemTemplate) => template.itemId);
+  const solutionIds: string[] = templates.map(
+    (template: IItemTemplate) => template.itemId
+  );
 
   // Cycle through each of the items in the template and scan the `item` and `data` sections of each for ids in our solution
   templates.forEach((template: IItemTemplate) => {
@@ -409,4 +410,3 @@ export function _templatizeSolutionIds(
     _replaceRemainingIdsInObject(solutionIds, template.data);
   });
 }
-

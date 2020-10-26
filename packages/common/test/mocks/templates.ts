@@ -276,7 +276,7 @@ export function getItemTemplate(
         mockItems.getItemTypeAbbrev(type),
         dependencies,
         url ||
-        "{{portalBaseUrl}}/home/webmap/viewer.html?webmap={{map1234567890.itemId}}"
+          "{{portalBaseUrl}}/home/webmap/viewer.html?webmap={{map1234567890.itemId}}"
       );
       templatePart.data = getItemTemplateData(type);
       templatePart.resources = [];
@@ -288,7 +288,7 @@ export function getItemTemplate(
         mockItems.getItemTypeAbbrev(type),
         dependencies,
         url ||
-        "{{portalBaseUrl}}/apps/CrowdsourcePolling/index.html?appid={{wma1234567890.itemId}}"
+          "{{portalBaseUrl}}/apps/CrowdsourcePolling/index.html?appid={{wma1234567890.itemId}}"
       );
       templatePart.data = getItemTemplateData(type);
       templatePart.resources = [];
@@ -491,7 +491,7 @@ export function getWebMappingApplicationTemplateGroup(): interfaces.IItemTemplat
   //  Give the WMA a resource
   template[0].resources = [
     utils.PORTAL_SUBSET.restUrl +
-    "/content/items/wma1234567890/resources/anImage.png"
+      "/content/items/wma1234567890/resources/anImage.png"
   ];
 
   return template;
@@ -744,53 +744,53 @@ export function getItemTemplateData(type?: string): any {
 
     case "Oriented Imagery Catalog":
       data = {
-        "type": "OIC",
-        "version": "1.0",
-        "properties": {
-          "Name": "OIC_002",
-          "Description": "OIC_002",
-          "Tags": "OIC",
-          "ServiceURL": "{{svc1234567890.layer0.url}}",
-          "OverviewURL": "{{svc1234567890.layer0.url}}",
-          "DefaultAttributes": {
-            "CamHeading": "",
-            "CamPitch": "90",
-            "CamRoll": "0",
-            "HFOV": "60",
-            "VFOV": "40",
-            "AvgHtAG": "1.7",
-            "FarDist": "50",
-            "NearDist": "0.1",
-            "OIType": "I",
-            "SortOrder": "",
-            "CamOffset": "",
-            "Accuracy": "",
-            "ImgPyramids": "",
-            "DepthImg": "",
-            "ExternalViewer": "",
-            "ImgRot": ""
+        type: "OIC",
+        version: "1.0",
+        properties: {
+          Name: "OIC_002",
+          Description: "OIC_002",
+          Tags: "OIC",
+          ServiceURL: "{{svc1234567890.layer0.url}}",
+          OverviewURL: "{{svc1234567890.layer0.url}}",
+          DefaultAttributes: {
+            CamHeading: "",
+            CamPitch: "90",
+            CamRoll: "0",
+            HFOV: "60",
+            VFOV: "40",
+            AvgHtAG: "1.7",
+            FarDist: "50",
+            NearDist: "0.1",
+            OIType: "I",
+            SortOrder: "",
+            CamOffset: "",
+            Accuracy: "",
+            ImgPyramids: "",
+            DepthImg: "",
+            ExternalViewer: "",
+            ImgRot: ""
           },
-          "About": "",
-          "ImageField": "image_",
-          "ImagePrefix": "",
-          "VideoPrefix": "",
-          "DepthImagePrefix": "",
-          "SourceImagePrefix": "",
-          "MaxDistance": "100",
-          "DEMPrefix": "",
-          "Credentials": {
-            "Username": "",
-            "Password": ""
+          About: "",
+          ImageField: "image_",
+          ImagePrefix: "",
+          VideoPrefix: "",
+          DepthImagePrefix: "",
+          SourceImagePrefix: "",
+          MaxDistance: "100",
+          DEMPrefix: "",
+          Credentials: {
+            Username: "",
+            Password: ""
           },
-          "Variables": {},
-          "Filters": {},
-          "Copyright": {
-            "text": "",
-            "url": ""
+          Variables: {},
+          Filters: {},
+          Copyright: {
+            text: "",
+            url: ""
           },
-          "PointsSource": "",
-          "CoverageSource": "",
-          "imageField": "Image_"
+          PointsSource: "",
+          CoverageSource: "",
+          imageField: "Image_"
         }
       };
       break;
