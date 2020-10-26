@@ -18,8 +18,6 @@ import {
   IItemTemplate,
   UserSession,
   getUniqueTitle,
-  getItemThumbnail,
-  blobToFile,
   ISurvey123CreateParams,
   getPortalDefaultBasemap
 } from "@esri/solution-common";
@@ -56,19 +54,11 @@ export function buildCreateParams(
     }
   } = templateDictionary;
   const { token } = destinationAuthentication.toCredential();
-  return Promise.all([
-    getItemThumbnail(
-      template.itemId,
-      template.item.thumbnail,
-      false,
-      destinationAuthentication
-    ),
-    getPortalDefaultBasemap(
-      basemapGalleryGroupQuery,
-      basemapTitle,
-      destinationAuthentication
-    )
-  ]).then(([blob, defaultBasemap]) => {
+  return getPortalDefaultBasemap(
+    basemapGalleryGroupQuery,
+    basemapTitle,
+    destinationAuthentication
+  ).then(defaultBasemap => {
     // The S123 API appends "Survey-" to the survey title when computing
     // the folder name. We need to use the same prefix to successfully
     // calculate a unique folder name. Afterwards, we can safely remove the
@@ -79,7 +69,6 @@ export function buildCreateParams(
       templateDictionary,
       "user.folders"
     ).replace(folderPrefix, "");
-    const thumbnailFile = blobToFile(blob, template.item.thumbnail);
     // set any map question's basemaps to default org basemap
     if (unencodedForm.questions) {
       unencodedForm.questions = unencodedForm.questions.map((question: any) => {
@@ -93,12 +82,12 @@ export function buildCreateParams(
       });
     }
     const form = encodeSurveyForm(unencodedForm);
+    // intentionally undefined, handled downstream by core logic now
     return {
       description,
       form,
       portalUrl,
       tags,
-      thumbnailFile,
       title,
       token,
       typeKeywords,
