@@ -20,7 +20,7 @@ import * as utils from "../../../common/test/mocks/utils";
 import * as agolItems from "../../../common/test/mocks/agolItems";
 import * as mockTemplates from "../../../common/test/mocks/templates";
 
-fdescribe("postProcessHubSurvey", () => {
+describe("postProcessHubSurvey", () => {
   let MOCK_USER_SESSION: common.UserSession;
   let template: common.IItemTemplate;
   let interpolatedTemplate: common.IItemTemplate;
