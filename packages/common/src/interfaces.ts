@@ -696,11 +696,6 @@ export interface ISurvey123CreateParams {
    * The portalUrl for Survey123 to direct API requests to
    */
   portalUrl: string;
-
-  /**
-   * Binary image data represented as a File
-   */
-  thumbnailFile: File;
 }
 
 /**
