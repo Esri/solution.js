@@ -139,7 +139,7 @@ export function addThumbnailFromUrl(
 ): Promise<any> {
   return new Promise<any>((resolve, reject) => {
     getBlob(appendQueryParam(url, "w=400"), authentication).then(async blob => {
-      addThumbnailFromBlob(blob, itemId, authentication, isGroup).then(
+      await addThumbnailFromBlob(blob, itemId, authentication, isGroup).then(
         resolve,
         reject
       );

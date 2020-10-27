@@ -84,7 +84,7 @@ export function topologicallySortItems(templates: IItemTemplate[]): string[] {
   });
 
   function visitDependants(dependants: any[], vertexId: string) {
-    dependants.forEach(function(id) {
+    dependants.forEach(function(id: string) {
       if (verticesToVisit[id] === ESortVisitColor.White) {
         // if not yet visited
         visit(id);

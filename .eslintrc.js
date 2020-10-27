@@ -24,22 +24,17 @@ module.exports = {
     "@typescript-eslint"
   ],
   "rules": {
-    '@typescript-eslint/explicit-module-boundary-types': 'off',
-    '@typescript-eslint/no-inferrable-types': 'off',
-    '@typescript-eslint/no-misused-promises': 'off',
-    '@typescript-eslint/no-non-null-assertion': 'off',
-    '@typescript-eslint/no-unnecessary-type-assertion': 'off',
-    '@typescript-eslint/no-unsafe-assignment': 'off',
-    '@typescript-eslint/no-unsafe-call': 'off',
-    '@typescript-eslint/no-unsafe-member-access': 'off',
-    '@typescript-eslint/no-unsafe-return': 'off',
-    '@typescript-eslint/no-unused-vars': 'off',
-    '@typescript-eslint/prefer-regexp-exec': 'off',
-    '@typescript-eslint/require-await': 'off',
-    '@typescript-eslint/restrict-plus-operands': 'off',
-    '@typescript-eslint/restrict-template-expressions': 'off',
-    'no-case-declarations': 'off',
-    'no-prototype-builtins': 'off',
+    "@typescript-eslint/explicit-module-boundary-types": "off",
+    "@typescript-eslint/no-inferrable-types": "off",
+    "@typescript-eslint/no-misused-promises": "off",
+    "@typescript-eslint/no-non-null-assertion": "off",
+    "@typescript-eslint/no-unnecessary-type-assertion": "off",
+    "@typescript-eslint/no-unsafe-assignment": "off",
+    "@typescript-eslint/no-unsafe-call": "off",
+    "@typescript-eslint/no-unsafe-member-access": "off",
+    "@typescript-eslint/no-unsafe-return": "off",
+    "@typescript-eslint/no-unused-vars": "off",
+
 
     "@typescript-eslint/adjacent-overload-signatures": "error",
     "@typescript-eslint/array-type": [
@@ -120,7 +115,10 @@ module.exports = {
     "@typescript-eslint/prefer-for-of": "error",
     "@typescript-eslint/prefer-function-type": "error",
     "@typescript-eslint/prefer-namespace-keyword": "error",
+    "@typescript-eslint/prefer-regexp-exec": "off",
     "@typescript-eslint/quotes": "off",
+    "@typescript-eslint/restrict-plus-operands": "off",
+    "@typescript-eslint/restrict-template-expressions": "off",
     "@typescript-eslint/semi": [
       "off",
       null
@@ -144,6 +142,7 @@ module.exports = {
       "off",
       "off"
     ],
+    "capitalized-comments": "off",
     "comma-dangle": "off",
     "complexity": "off",
     "constructor-super": "error",
@@ -184,6 +183,7 @@ module.exports = {
     "newline-per-chained-call": "off",
     "no-bitwise": "error",
     "no-caller": "error",
+    "no-case-declarations": "off",
     "no-cond-assign": "error",
     "no-console": "off",
     "no-constant-condition": "error",
@@ -199,6 +199,7 @@ module.exports = {
     "no-irregular-whitespace": "off",
     "no-multiple-empty-lines": "off",
     "no-new-wrappers": "error",
+    "no-prototype-builtins": "off",
     "no-redeclare": "error",
     "no-regex-spaces": "error",
     "no-return-await": "error",
