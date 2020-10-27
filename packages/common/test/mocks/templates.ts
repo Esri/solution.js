@@ -55,6 +55,7 @@ export function getFailedItem(
   itemType: string
 ): interfaces.ICreateItemFromTemplateResponse {
   return {
+    item: null,
     id: "",
     type: itemType,
     postProcess: false

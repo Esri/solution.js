@@ -55,7 +55,7 @@ export function deploySolutionFromTemplate(
       );
     }
 
-    _replaceParamVaiables(solutionTemplateData, templateDictionary);
+    _replaceParamVariables(solutionTemplateData, templateDictionary);
 
     // Get information about deployment environment
     Promise.all([
@@ -220,7 +220,7 @@ export function deploySolutionFromTemplate(
           options
         );
       })
-      .then(clonedSolutionsResponse => {
+      .then((clonedSolutionsResponse: common.ICreateItemFromTemplateResponse[]) => {
         // TODO: if deploySolutionItems returned what was pushed into the templateDictionary
         // we could add that at this point vs mutating
         // why is this a reassignment?
@@ -321,7 +321,7 @@ export function deploySolutionFromTemplate(
   });
 }
 
-export function _replaceParamVaiables(
+export function _replaceParamVariables(
   solutionTemplateData: any,
   templateDictionary: any
 ): void {
@@ -407,8 +407,8 @@ export function _getPortalBaseUrl(
   return urlKey && customBaseUrl
     ? `${scheme}://${urlKey}.${customBaseUrl}`
     : enterpriseBaseUrl
-    ? `${scheme}://${enterpriseBaseUrl}`
-    : authentication.portal.replace("/sharing/rest", "");
+      ? `${scheme}://${enterpriseBaseUrl}`
+      : authentication.portal.replace("/sharing/rest", "");
 }
 
 export function _updateGroupReferences(

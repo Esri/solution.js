@@ -21,7 +21,11 @@
  */
 
 import { createId } from "@esri/hub-common";
-import { IDatasourceInfo, IItemTemplate } from "./interfaces";
+import {
+  ICreateItemFromTemplateResponse,
+  IDatasourceInfo,
+  IItemTemplate
+} from "./interfaces";
 import { Sanitizer, sanitizeJSON } from "./libConnectors";
 import { new_File } from "./polyfills";
 
@@ -132,6 +136,25 @@ export function createShortId(): string {
     2,
     8
   );
+}
+
+/**
+ * Flags a failure to create an item from a template.
+ *
+ * @param itemType The AGO item type
+ * @param id Item id to include in response
+ * @return Empty creation response
+ */
+export function generateEmptyCreationResponse(
+  itemType: string,
+  id = ""
+): ICreateItemFromTemplateResponse {
+  return {
+    item: null,
+    id,
+    type: itemType,
+    postProcess: false
+  };
 }
 
 /**

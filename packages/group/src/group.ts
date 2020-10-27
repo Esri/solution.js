@@ -84,7 +84,7 @@ export function createItemFromTemplate(
         common.EItemProgressStatus.Ignored,
         0
       );
-      resolve(_generateEmptyCreationResponse(template.type));
+      resolve(common.generateEmptyCreationResponse(template.type));
       return;
     }
 
@@ -158,8 +158,13 @@ export function createItemFromTemplate(
                   )
                   .then(
                     () =>
-                      resolve(_generateEmptyCreationResponse(template.type)),
-                    () => resolve(_generateEmptyCreationResponse(template.type))
+                      resolve(
+                        common.generateEmptyCreationResponse(template.type)
+                      ),
+                    () =>
+                      resolve(
+                        common.generateEmptyCreationResponse(template.type)
+                      )
                   );
               } else {
                 newItemTemplate.itemId = createResponse.group.id;
@@ -199,12 +204,17 @@ export function createItemFromTemplate(
                     )
                     .then(
                       () =>
-                        resolve(_generateEmptyCreationResponse(template.type)),
+                        resolve(
+                          common.generateEmptyCreationResponse(template.type)
+                        ),
                       () =>
-                        resolve(_generateEmptyCreationResponse(template.type))
+                        resolve(
+                          common.generateEmptyCreationResponse(template.type)
+                        )
                     );
                 } else {
                   resolve({
+                    item: newItemTemplate,
                     id: createResponse.group.id,
                     type: newItemTemplate.type,
                     postProcess: false
@@ -217,7 +227,7 @@ export function createItemFromTemplate(
                 common.EItemProgressStatus.Failed,
                 0
               );
-              resolve(_generateEmptyCreationResponse(template.type)); // fails to create item
+              resolve(common.generateEmptyCreationResponse(template.type)); // fails to create item
             }
           },
           () => {
@@ -226,21 +236,9 @@ export function createItemFromTemplate(
               common.EItemProgressStatus.Failed,
               0
             );
-            resolve(_generateEmptyCreationResponse(template.type)); // fails to create item
+            resolve(common.generateEmptyCreationResponse(template.type)); // fails to create item
           }
         );
     });
   });
-}
-
-// ------------------------------------------------------------------------------------------------------------------ //
-
-export function _generateEmptyCreationResponse(
-  templateType: string
-): common.ICreateItemFromTemplateResponse {
-  return {
-    id: "",
-    type: templateType,
-    postProcess: false
-  };
 }

@@ -28,7 +28,8 @@ export interface ISolutionInfoCard {
 
 export function deploySolution(
   templateSolutionId: string,
-  authentication: common.UserSession,
+  srcAuthentication: common.UserSession,
+  destAuthentication: common.UserSession,
   progressCallback: common.ISolutionProgressCallback
 ): Promise<string> {
   return new Promise<string>((resolve, reject) => {
@@ -42,11 +43,12 @@ export function deploySolution(
       jobId: common.createShortId(),
       progressCallback: progressCallback,
       consoleProgress: true,
-      storageAuthentication: authentication
+      storageAuthentication: srcAuthentication
     };
-    deployer.deploySolution(templateSolutionId, authentication, options).then(
+
+    deployer.deploySolution(templateSolutionId, destAuthentication, options).then(
       (deployedSolution: any) => {
-        getItemInfo.getItemInfo(deployedSolution, authentication).then(
+        getItemInfo.getItemInfo(deployedSolution, destAuthentication).then(
           itemInfoHtml => resolve(itemInfoHtml),
           error => reject(error.error)
         );

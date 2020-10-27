@@ -79,7 +79,8 @@ describe("Module `ClassicStorymapProcessor`: ", () => {
         utils.ITEM_PROGRESS_CALLBACK
       ).then(response => {
         expect(response).toEqual({
-          id: "Classic StoryMap is not yet implemented", // temporary
+          item: null as common.IItemTemplate,
+          id: "",
           type: templateSTO.type,
           postProcess: false
         });
@@ -98,6 +99,7 @@ describe("Module `ClassicStorymapProcessor`: ", () => {
         utils.ITEM_PROGRESS_CALLBACK
       ).then(response => {
         expect(response).toEqual({
+          item: null as common.IItemTemplate,
           id: "",
           type: templateSTO.type,
           postProcess: false

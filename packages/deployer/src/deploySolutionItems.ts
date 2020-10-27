@@ -38,8 +38,7 @@ const UNSUPPORTED: common.moduleHandler = null;
  * @param templateDictionary Hash of facts: org URL, adlib replacements
  * @param destinationAuthentication Credentials for the destination organization
  * @param options Options to tune deployment
- * @return A promise that will resolve with the item's template (which is simply returned if it's
- *         already in the templates list
+ * @return A promise that will resolve with the list of information about the created items
  */
 export function deploySolutionItems(
   portalSharingUrl: string,
@@ -49,7 +48,7 @@ export function deploySolutionItems(
   templateDictionary: any,
   destinationAuthentication: common.UserSession,
   options: common.IDeploySolutionOptions
-): Promise<any> {
+): Promise<common.ICreateItemFromTemplateResponse[]> {
   return new Promise((resolve, reject) => {
     // Prepare feedback mechanism
     const totalEstimatedCost = _estimateDeploymentCost(templates) + 1; // solution items, plus avoid divide by 0
@@ -164,20 +163,22 @@ export function deploySolutionItems(
 
         // Wait until all items have been created
         // eslint-disable-next-line @typescript-eslint/no-floating-promises
-        Promise.all(awaitAllItems).then(clonedSolutionItemIds => {
-          if (failedTemplateItemIds.length === 0) {
-            resolve(clonedSolutionItemIds);
-          } else {
-            // Delete created items
+        Promise.all(awaitAllItems).then(
+          (clonedSolutionItems: common.ICreateItemFromTemplateResponse[]) => {
+            if (failedTemplateItemIds.length === 0) {
+              resolve(clonedSolutionItems);
+            } else {
+              // Delete created items
             // eslint-disable-next-line @typescript-eslint/no-floating-promises
-            common
-              .removeListOfItemsOrGroups(
-                deployedItemIds,
-                destinationAuthentication
-              )
-              .then(() => reject(common.failWithIds(failedTemplateItemIds)));
+              common
+                .removeListOfItemsOrGroups(
+                  deployedItemIds,
+                  destinationAuthentication
+                )
+                .then(() => reject(common.failWithIds(failedTemplateItemIds)));
+            }
           }
-        });
+        );
       },
       e => {
         console.error(e);
@@ -528,11 +529,9 @@ export function _handleExistingItems(
             templateDictionary[sourceId] = Object.assign(
               templateDictionary[sourceId] || {},
               {
-                def: Promise.resolve({
-                  id: result.id,
-                  type: result.type,
-                  postProcess: false
-                }),
+                def: Promise.resolve(
+                  common.generateEmptyCreationResponse(result.type, result.id)
+                ),
                 itemId: result.id,
                 name: result.name,
                 title: result.title,
@@ -640,6 +639,7 @@ export function _createItemFromTemplateWhenReady(
   ) {
     templateDictionary[template.itemId] =
       templateDictionary[template.itemId] || {};
+
     // Save the deferred for the use of items that depend on this item being created first
     templateDictionary[template.itemId].def = new Promise<
       common.ICreateItemFromTemplateResponse
@@ -694,12 +694,7 @@ export function _createItemFromTemplateWhenReady(
                 0
               );
             }
-
-            resolve({
-              id: "",
-              type: templateType,
-              postProcess: false
-            });
+            resolve(common.generateEmptyCreationResponse(template.type));
           } else {
             // Glean item content that can be added via the create call rather than as an update, e.g.,
             // metadata, thumbnail; this content is moved from the resourceFilePaths into the template
@@ -709,7 +704,7 @@ export function _createItemFromTemplateWhenReady(
               template,
               storageAuthentication
             ).then(updatedResourceFilePaths => {
-              // Delegate the creation of the template to the handler
+              // Delegate the creation of the item to the handler
               // eslint-disable-next-line @typescript-eslint/no-floating-promises
               itemHandler
                 .createItemFromTemplate(
@@ -718,40 +713,55 @@ export function _createItemFromTemplateWhenReady(
                   destinationAuthentication,
                   itemProgressCallback
                 )
-                .then(createResponse => {
-                  if (_isEmptyCreationResponse(template.type, createResponse)) {
-                    resolve(_generateEmptyCreationResponse(template.type)); // fails to copy resources from storage
-                  } else {
-                    // Copy resources, metadata, thumbnail, form
-                    common
-                      .copyFilesFromStorageItem(
-                        storageAuthentication,
-                        updatedResourceFilePaths,
-                        templateDictionary.folderId,
-                        createResponse.id,
-                        destinationAuthentication,
-                        templateType === "Group",
-                        template
-                      )
-                      .then(
-                        () => resolve(createResponse),
-                        () => {
-                          itemProgressCallback(
-                            template.itemId,
-                            common.EItemProgressStatus.Failed,
-                            0
-                          );
-                          resolve(
-                            _generateEmptyCreationResponse(template.type)
-                          ); // fails to copy resources from storage
-                        }
-                      );
+                .then(
+                  (createResponse: common.ICreateItemFromTemplateResponse) => {
+                    if (createResponse.id === "") {
+                      resolve(
+                        common.generateEmptyCreationResponse(template.type)
+                      ); // fails to create item
+                    } else {
+                      /* istanbul ignore else */
+                      if (createResponse.item.item.url) {
+                        common.setCreateProp(
+                          templateDictionary,
+                          template.itemId + ".url",
+                          createResponse.item.item.url
+                        );
+                      }
+
+                      // Copy resources, metadata, thumbnail, form
+                      common
+                        .copyFilesFromStorageItem(
+                          storageAuthentication,
+                          updatedResourceFilePaths,
+                          templateDictionary.folderId,
+                          createResponse.id,
+                          destinationAuthentication,
+                          templateType === "Group",
+                          createResponse.item
+                        )
+                        .then(
+                          () => resolve(createResponse),
+                          () => {
+                            itemProgressCallback(
+                              template.itemId,
+                              common.EItemProgressStatus.Failed,
+                              0
+                            );
+                            resolve(
+                              common.generateEmptyCreationResponse(
+                                template.type
+                              )
+                            ); // fails to copy resources from storage
+                          }
+                        );
+                    }
                   }
-                });
+                );
             });
           }
         },
-        () => resolve(_generateEmptyCreationResponse(template.type)) // fails to get item dependencies
+        () => resolve(common.generateEmptyCreationResponse(template.type)) // fails to get item dependencies
       );
     });
   }
@@ -778,16 +788,6 @@ export function _estimateDeploymentCost(
   );
 }
 
-export function _generateEmptyCreationResponse(
-  templateType: string
-): common.ICreateItemFromTemplateResponse {
-  return {
-    id: "",
-    type: templateType,
-    postProcess: false
-  };
-}
-
 // TODO: Return a Promise vs array of promises
 export function _getGroupUpdates(
   template: common.IItemTemplate,
@@ -802,13 +802,6 @@ export function _getGroupUpdates(
       authentication
     );
   });
-}
-
-export function _isEmptyCreationResponse(
-  templateType: string,
-  response: common.ICreateItemFromTemplateResponse
-): boolean {
-  return response.id === "";
 }
 
 export function _moveResourcesIntoTemplate(

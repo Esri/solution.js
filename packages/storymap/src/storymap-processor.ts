@@ -85,7 +85,7 @@ export function createItemFromTemplate(
 
   // and if it returned false, just resolve out
   if (!startStatus) {
-    return Promise.resolve({ id: "", type: template.type, postProcess: false });
+    return Promise.resolve(generateEmptyCreationResponse(template.type));
   }
 
   // convert the templateDictionary to a settings hash
@@ -128,7 +128,7 @@ export function createItemFromTemplate(
     .then(createdModel => {
       model = createdModel;
       // Update the template dictionary
-      // TODO: This should be done in whatever recieves
+      // TODO: This should be done in whatever receives
       // the outcome of this promise chain
       templateDictionary[template.itemId] = {
         itemId: model.item.id
@@ -147,15 +147,15 @@ export function createItemFromTemplate(
           id: model.item.id,
           authentication: destinationAuthentication
         }).then(() => {
-          return Promise.resolve({
-            id: "",
-            type: template.type,
-            postProcess: false
-          });
+          return Promise.resolve(generateEmptyCreationResponse(template.type));
         });
       } else {
         // finally, return ICreateItemFromTemplateResponse
         return {
+          item: {
+            ...template,
+            ...model
+          },
           id: model.item.id,
           type: template.type,
           postProcess: false

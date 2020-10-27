@@ -17,7 +17,6 @@ import * as common from "@esri/solution-common";
 import * as notebook from "../notebook";
 import * as webmappingapplication from "../webmappingapplication";
 import * as workforce from "../workforce";
-import { generateEmptyCreationResponse } from "./generate-empty-creation-response";
 
 export function createItemFromTemplate(
   template: common.IItemTemplate,
@@ -39,7 +38,7 @@ export function createItemFromTemplate(
         common.EItemProgressStatus.Ignored,
         0
       );
-      resolve(generateEmptyCreationResponse(template.type));
+      resolve(common.generateEmptyCreationResponse(template.type));
     } else {
       // Replace the templatized symbols in a copy of the template
       let newItemTemplate: common.IItemTemplate = common.cloneObject(template);
@@ -88,8 +87,12 @@ export function createItemFromTemplate(
               common
                 .removeItem(createResponse.id, destinationAuthentication)
                 .then(
-                  () => resolve(generateEmptyCreationResponse(template.type)),
-                  () => resolve(generateEmptyCreationResponse(template.type))
+                  () =>
+                    resolve(
+                      common.generateEmptyCreationResponse(template.type)
+                    ),
+                  () =>
+                    resolve(common.generateEmptyCreationResponse(template.type))
                 );
             } else {
               // Add the new item to the settings
@@ -206,12 +209,17 @@ export function createItemFromTemplate(
                       .removeItem(createResponse.id, destinationAuthentication)
                       .then(
                         () =>
-                          resolve(generateEmptyCreationResponse(template.type)),
+                          resolve(
+                            common.generateEmptyCreationResponse(template.type)
+                          ),
                         () =>
-                          resolve(generateEmptyCreationResponse(template.type))
+                          resolve(
+                            common.generateEmptyCreationResponse(template.type)
+                          )
                       );
                   } else {
                     resolve({
+                      item: newItemTemplate,
                       id: createResponse.id,
                       type: newItemTemplate.type,
                       postProcess: postProcess
@@ -224,7 +232,7 @@ export function createItemFromTemplate(
                     common.EItemProgressStatus.Failed,
                     0
                   );
-                  resolve(generateEmptyCreationResponse(template.type)); // fails to deploy all resources to the item
+                  resolve(common.generateEmptyCreationResponse(template.type)); // fails to deploy all resources to the item
                 }
               );
             }
@@ -235,7 +243,7 @@ export function createItemFromTemplate(
               common.EItemProgressStatus.Failed,
               0
             );
-            resolve(generateEmptyCreationResponse(template.type)); // fails to create item
+            resolve(common.generateEmptyCreationResponse(template.type)); // fails to create item
           }
         );
     }

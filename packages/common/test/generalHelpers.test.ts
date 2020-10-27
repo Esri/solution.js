@@ -848,6 +848,25 @@ describe("Module `generalHelpers`: common utility functions shared across packag
     });
   });
 
+  describe("generateEmptyCreationResponse", () => {
+    it("returns an empty response", () => {
+      const chk = generalHelpers.generateEmptyCreationResponse("Some Type");
+      expect(chk.id).toBe("", "id should be empty");
+      expect(chk.type).toBe("Some Type", "type should be set");
+      expect(chk.postProcess).toBe(false, "postProcess set to false");
+    });
+
+    it("returns an empty response with id", () => {
+      const chk = generalHelpers.generateEmptyCreationResponse(
+        "Some Type",
+        "Some Id"
+      );
+      expect(chk.id).toBe("Some Id", "id should be empty");
+      expect(chk.type).toBe("Some Type", "type should be set");
+      expect(chk.postProcess).toBe(false, "postProcess set to false");
+    });
+  });
+
   describe("getIDs", () => {
     it("will find ids", () => {
       let actual = generalHelpers.getIDs("bad3483e025c47338d43df308c117308");

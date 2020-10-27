@@ -94,6 +94,7 @@ export function createItemFromHubTemplate(
             formId
           );
           return {
+            item: null,
             id: formId,
             type: "Form",
             postProcess: true
