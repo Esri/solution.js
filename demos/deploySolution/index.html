@@ -21,6 +21,13 @@
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
   <link rel="stylesheet" href="http://esri.github.io/calcite-bootstrap/styles/calcite-bootstrap.min.css">
   <style>
+  html {
+    font-family: Arial;
+    color: #4c4c4c;
+  }
+  body {
+    padding: 8px;
+  }
   button {
     cursor: pointer;
   }
@@ -30,36 +37,64 @@
   li {
     margin-bottom: 12px;
   }
+  .labeledItem {
+    display: inline-block;
+    margin: 0 8px 8px 0;
+  }
   </style>
 </head>
 <body>
-  <div class="container">
-    <div class="row">
-      <div class="col-sm-6 col-sm-offset-3">
-        <h1>Deploy a Solution</h1>
+  <h3>Deploy a Solution</h3>
+
+  <div id="container" style="display:none">
+    <div id="input">
+      <label for="solutionId">Enter a Solution ID:</label>
+      <input class="form-control" type="text" id="solutionId">
+      <label for="id">Or pick from the list below:</label>
+      <select name="Solution Item" id="id" class="form-control"></select>
+
+      <br /><br />
+
+      <div class="section-title">Credentials in source organization</div>
+
+      <div class="labeledItem">
+        <label for="srcUsername">Username:&nbsp;</label>
+        <input type="text" id="srcUsername" placeholder="anonymous">
       </div>
-      <div class="col-sm-6 col-sm-offset-3">
-        <div id="input" class="form-group" style="display:none">
-          <label for="solutionId">Enter a Solution ID:</label>
-          <input class="form-control" type="text" id="solutionId">
-          <label for="id">Or pick from the list below:</label>
-          <select name="Solution Item" id="id" class="form-control"></select>
-          <br /><br />
-          <i>Credentials in destination organization:</i><br />
-          <label for="username">username:</label>
-          <input type="text" id="username" class="form-control" value="">
-          <label for="password">password:</label>
-          <input type="password" id="password" class="form-control" value="">
-          <label for="password">Portal:</label>
-          <input type="text" id="portal" class="form-control" value="https://www.arcgis.com">
-          <br /><br />
-          <button class="btn btn-default" onclick="goFcn()">Deploy Solution</button>
-        </div>
+      <div class="labeledItem">
+        <label for="srcPassword">Password:&nbsp;</label>
+        <input type="password" id="srcPassword">
       </div>
-      <div class="col-sm-12">
-        <div id="output" style="display:none">Deploying...</div>
+      <div class="labeledItem">
+        <label for="srcPortal">Portal:&nbsp;</label>
+        <input type="text" id="srcPortal" style="width:256px" placeholder="https://www.arcgis.com">
       </div>
+
+      <br/><br/>
+
+      <div class="section-title">Credentials in destination organization</div>
+
+      <div class="labeledItem">
+        <label for="destUsername">Username:&nbsp;</label>
+        <input type="text" id="destUsername">
+      </div>
+      <div class="labeledItem">
+        <label for="destPassword">Password:&nbsp;</label>
+        <input type="password" id="destPassword">
+      </div>
+      <div class="labeledItem">
+        <label for="destPortal">Portal:&nbsp;</label>
+        <input type="text" id="destPortal" style="width:256px" placeholder="https://www.arcgis.com">
+      </div>
+
+      <br /><br />
+
+      <button class="btn btn-default" onclick="goFcn()">Deploy Solution</button>
     </div>
+
+    <br />
+
+    <div id="output" style="display:none">Deploying...</div>
   </div>
 
   <script crossorigin="anonymous" src="https://polyfill.io/v3/polyfill.min.js?features=fetch%2Ces2015"></script>
@@ -99,7 +134,7 @@
         "use strict";
 
         goFcn = go;
-        document.getElementById("input").style.display = "block";
+        document.getElementById("container").style.display = "block";
 
         const groupId = appConfig.solutionsGroupId;
         const solutionsSelect = document.getElementById("id");
@@ -123,13 +158,29 @@
           // use the manually entered value, but fall back to the select list
           var solutionId = document.getElementById("solutionId").value || document.getElementById('id').value;
 
+          // Source credentials
+          //const srcUsername = document.getElementById("srcUsername").value;
+          //const srcPassword = document.getElementById("srcPassword").value;
+          const srcPortal = (document.getElementById("srcPortal").value || "https://www.arcgis.com") + "/sharing/rest";
+          const srcCreds = new auth.UserSession({
+            username: document.getElementById("srcUsername").value,
+            password: document.getElementById("srcPassword").value,
+            portal: srcPortal
+          });
+
+          // Dest credentials
+          const destPortal = (document.getElementById("destPortal").value || "https://www.arcgis.com") + "/sharing/rest";
+          const destCreds = new auth.UserSession({
+            username: document.getElementById("destUsername").value,
+            password: document.getElementById("destPassword").value,
+            portal: destPortal
+          });
+
+          // Deploy!
           main.deploySolution(
             solutionId,
-            new auth.UserSession({
-              username: document.getElementById("username").value,
-              password: document.getElementById("password").value,
-              portal: document.getElementById("portal").value + "/sharing/rest"
-            }),
+            srcCreds,
+            destCreds,
             function (percentDone, jobId, progressEvent) {
               if (progressEvent) {
                 createdItems.push(progressEvent.data)
