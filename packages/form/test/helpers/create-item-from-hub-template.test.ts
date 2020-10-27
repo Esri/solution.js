@@ -30,8 +30,6 @@ if (typeof window !== "undefined") {
     let templateDictionary: any;
     let template: common.IItemTemplate;
     let interpolatedTemplate: common.IItemTemplate;
-    let thumbnailBlob: Blob;
-    let thumbnailFile: File;
     let paramResults: common.ISurvey123CreateParams;
     let createResult: common.ISurvey123CreateResult;
     let MOCK_USER_SESSION: common.UserSession;
@@ -93,16 +91,11 @@ if (typeof window !== "undefined") {
         }
       };
 
-      thumbnailBlob = utils.getSampleImage();
-
-      thumbnailFile = new File([thumbnailBlob], "thumbnail.png");
-
       paramResults = {
         description: "Description of an AGOL item",
         form: template.properties.form,
         portalUrl: "https://myorg.maps.arcgis.com",
         tags: ["test"],
-        thumbnailFile,
         title: "An AGOL item",
         token: "my-token",
         typeKeywords: ["JavaScript"],
