@@ -40,7 +40,6 @@ module.exports = {
     '@typescript-eslint/restrict-template-expressions': 'off',
     'no-case-declarations': 'off',
     'no-prototype-builtins': 'off',
-    'no-useless-escape': 'off',
 
     "@typescript-eslint/adjacent-overload-signatures": "error",
     "@typescript-eslint/array-type": [

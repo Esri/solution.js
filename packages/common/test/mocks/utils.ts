@@ -1197,7 +1197,7 @@ export function getCreateServiceResponse(
   isView: boolean = false
 ) {
   const name: string = url
-    .replace(/.+services[\/]/, "")
+    .replace(/.+services[/]/, "")
     .replace("/FeatureServer", "");
   return getSuccessResponse({
     encodedServiceURL: url,

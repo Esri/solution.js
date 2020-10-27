@@ -246,8 +246,8 @@ export function compareJSON(json1: any, json2: any): boolean {
  * @return True if objects are the same
  */
 export function compareJSONNoEmptyStrings(json1: any, json2: any): boolean {
-  const jsonStr1 = JSON.stringify(json1).replace(/\"\:\"\"/g, '":null');
-  const jsonStr2 = JSON.stringify(json2).replace(/\"\:\"\"/g, '":null');
+  const jsonStr1 = JSON.stringify(json1).replace(/":""/g, '":null');
+  const jsonStr2 = JSON.stringify(json2).replace(/":""/g, '":null');
   return jsonStr1 === jsonStr2;
 }
 
