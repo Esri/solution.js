@@ -529,7 +529,9 @@ export function _handleExistingItems(
             templateDictionary[sourceId] = Object.assign(
               templateDictionary[sourceId] || {},
               {
-                def: Promise.resolve(_generateEmptyCreationResponse(result.type, result.id)),
+                def: Promise.resolve(
+                  common.generateEmptyCreationResponse(result.type, result.id)
+                ),
                 itemId: result.id,
                 name: result.name,
                 title: result.title,
@@ -635,33 +637,35 @@ export function _createItemFromTemplateWhenReady(
     !templateDictionary.hasOwnProperty(template.itemId) ||
     !getProp(templateDictionary[template.itemId], "def")
   ) {
-    templateDictionary[template.itemId] = templateDictionary[template.itemId] || {};
+    templateDictionary[template.itemId] =
+      templateDictionary[template.itemId] || {};
 
     // Save the deferred for the use of items that depend on this item being created first
-    templateDictionary[template.itemId].def = new Promise<common.ICreateItemFromTemplateResponse>(
-      resolve => {
-        // Wait until all of the item's dependencies are deployed
-        const _awaitDependencies = template.dependencies.reduce(
-          (acc: any[], id: string) => {
-            const def = getProp(templateDictionary, `${id}.def`);
-            // can't use maybePush as that clones the object, which does not work for Promises
-            /* istanbul ignore else */
-            if (def) {
-              acc.push(def);
-            }
-            return acc;
-          },
-          []
-        );
+    templateDictionary[template.itemId].def = new Promise<
+      common.ICreateItemFromTemplateResponse
+    >(resolve => {
+      // Wait until all of the item's dependencies are deployed
+      const _awaitDependencies = template.dependencies.reduce(
+        (acc: any[], id: string) => {
+          const def = getProp(templateDictionary, `${id}.def`);
+          // can't use maybePush as that clones the object, which does not work for Promises
+          /* istanbul ignore else */
+          if (def) {
+            acc.push(def);
+          }
+          return acc;
+        },
+        []
+      );
 
-        const syncViews: string[] = common.getProp(
-          template,
-          "properties.syncViews"
-        );
+      const syncViews: string[] = common.getProp(
+        template,
+        "properties.syncViews"
+      );
 
-        const awaitDependencies =
-          syncViews && syncViews.length > 0
-            ? syncViews.reduce((acc: any[], v: any) => {
+      const awaitDependencies =
+        syncViews && syncViews.length > 0
+          ? syncViews.reduce((acc: any[], v: any) => {
               const def = getProp(templateDictionary, `${v}.def`);
               /* istanbul ignore else */
               if (def) {
@@ -669,54 +673,60 @@ export function _createItemFromTemplateWhenReady(
               }
               return acc;
             }, _awaitDependencies)
-            : _awaitDependencies;
+          : _awaitDependencies;
 
-        Promise.all(awaitDependencies).then(
-          () => {
-            // Find the conversion handler for this item type
-            const templateType = template.type;
-            const itemHandler = moduleMap[templateType];
-            if (!itemHandler || itemHandler === UNSUPPORTED) {
-              if (itemHandler === UNSUPPORTED) {
-                itemProgressCallback(
-                  template.itemId,
-                  common.EItemProgressStatus.Ignored,
-                  template.estimatedDeploymentCostFactor
-                );
-              } else {
-                itemProgressCallback(
-                  template.itemId,
-                  common.EItemProgressStatus.Failed,
-                  0
-                );
-              }
-              resolve(_generateEmptyCreationResponse(template.type));
-
+      Promise.all(awaitDependencies).then(
+        () => {
+          // Find the conversion handler for this item type
+          const templateType = template.type;
+          const itemHandler = moduleMap[templateType];
+          if (!itemHandler || itemHandler === UNSUPPORTED) {
+            if (itemHandler === UNSUPPORTED) {
+              itemProgressCallback(
+                template.itemId,
+                common.EItemProgressStatus.Ignored,
+                template.estimatedDeploymentCostFactor
+              );
             } else {
-              // Glean item content that can be added via the create call rather than as an update, e.g.,
-              // metadata, thumbnail; this content is moved from the resourceFilePaths into the template
+              itemProgressCallback(
+                template.itemId,
+                common.EItemProgressStatus.Failed,
+                0
+              );
+            }
+            resolve(common.generateEmptyCreationResponse(template.type));
+          } else {
+            // Glean item content that can be added via the create call rather than as an update, e.g.,
+            // metadata, thumbnail; this content is moved from the resourceFilePaths into the template
+            // tslint:disable-next-line: no-floating-promises
+            _moveResourcesIntoTemplate(
+              resourceFilePaths,
+              template,
+              storageAuthentication
+            ).then(updatedResourceFilePaths => {
+              // Delegate the creation of the item to the handler
               // tslint:disable-next-line: no-floating-promises
-              _moveResourcesIntoTemplate(
-                resourceFilePaths,
-                template,
-                storageAuthentication
-              ).then(updatedResourceFilePaths => {
-                // Delegate the creation of the item to the handler
-                // tslint:disable-next-line: no-floating-promises
-                itemHandler
-                  .createItemFromTemplate(
-                    template,
-                    templateDictionary,
-                    destinationAuthentication,
-                    itemProgressCallback
-                  )
-                  .then((createResponse: common.ICreateItemFromTemplateResponse) => {
+              itemHandler
+                .createItemFromTemplate(
+                  template,
+                  templateDictionary,
+                  destinationAuthentication,
+                  itemProgressCallback
+                )
+                .then(
+                  (createResponse: common.ICreateItemFromTemplateResponse) => {
                     if (createResponse.id === "") {
-                      resolve(_generateEmptyCreationResponse(template.type)); // fails to create item
+                      resolve(
+                        common.generateEmptyCreationResponse(template.type)
+                      ); // fails to create item
                     } else {
                       /* istanbul ignore else */
                       if (createResponse.item.item.url) {
-                        common.setCreateProp(templateDictionary, template.itemId + ".url", createResponse.item.item.url);
+                        common.setCreateProp(
+                          templateDictionary,
+                          template.itemId + ".url",
+                          createResponse.item.item.url
+                        );
                       }
 
                       // Copy resources, metadata, thumbnail, form
@@ -738,18 +748,22 @@ export function _createItemFromTemplateWhenReady(
                               common.EItemProgressStatus.Failed,
                               0
                             );
-                            resolve(_generateEmptyCreationResponse(template.type)); // fails to copy resources from storage
+                            resolve(
+                              common.generateEmptyCreationResponse(
+                                template.type
+                              )
+                            ); // fails to copy resources from storage
                           }
                         );
                     }
-                  });
-              });
-            }
-          },
-          () => resolve(_generateEmptyCreationResponse(template.type)) // fails to get item dependencies
-        );
-      }
-    );
+                  }
+                );
+            });
+          }
+        },
+        () => resolve(common.generateEmptyCreationResponse(template.type)) // fails to get item dependencies
+      );
+    });
   }
   return templateDictionary[template.itemId].def;
 }
@@ -772,22 +786,6 @@ export function _estimateDeploymentCost(
     },
     0
   );
-}
-
-/**
- * Flags a failure to create an item from a template.
- * @return Empty creation response
- */
-export function _generateEmptyCreationResponse(
-  templateType: string,
-  id = ""
-): common.ICreateItemFromTemplateResponse {
-  return {
-    item: null,
-    id,
-    type: templateType,
-    postProcess: false
-  };
 }
 
 // TODO: Return a Promise vs array of promises

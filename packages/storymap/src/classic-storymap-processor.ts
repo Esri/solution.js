@@ -52,7 +52,7 @@ export function createItemFromTemplate(
         common.EItemProgressStatus.Failed,
         0
       );
-      resolve(_generateEmptyCreationResponse(template.type));
+      resolve(common.generateEmptyCreationResponse(template.type));
     } else {
       // Not valid
       itemProgressCallback(
@@ -60,7 +60,7 @@ export function createItemFromTemplate(
         common.EItemProgressStatus.Failed,
         0
       );
-      resolve(_generateEmptyCreationResponse(template.type));
+      resolve(common.generateEmptyCreationResponse(template.type));
     }
   });
 }
@@ -80,21 +80,3 @@ export function isAStoryMap(itemType: string, itemUrl?: string): boolean {
   }
   return false;
 }
-
-// ------------------------------------------------------------------------------------------------------------------ //
-
-/**
- * Flags a failure to create an item from a template.
- * @return Empty creation response
- */
-export function _generateEmptyCreationResponse(
-  templateType: string
-): common.ICreateItemFromTemplateResponse {
-  return {
-    item: null,
-    id: "",
-    type: templateType,
-    postProcess: false
-  };
-}
-

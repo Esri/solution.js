@@ -84,13 +84,16 @@ export function createItemFromTemplate(
         common.EItemProgressStatus.Ignored,
         0
       );
-      resolve(_generateEmptyCreationResponse(template.type));
+      resolve(common.generateEmptyCreationResponse(template.type));
       return;
     }
 
     // Replace the templatized symbols in a copy of the template
     let newItemTemplate: common.IItemTemplate = common.cloneObject(template);
-    newItemTemplate = common.replaceInTemplate(newItemTemplate, templateDictionary);
+    newItemTemplate = common.replaceInTemplate(
+      newItemTemplate,
+      templateDictionary
+    );
 
     // Group uses `thumbnail` instead of `thumbnailurl`, and it has to be an actual file
     let thumbnailBlobDef = Promise.resolve(null);
@@ -153,8 +156,14 @@ export function createItemFromTemplate(
                     destinationAuthentication
                   )
                   .then(
-                    () => resolve(_generateEmptyCreationResponse(template.type)),
-                    () => resolve(_generateEmptyCreationResponse(template.type))
+                    () =>
+                      resolve(
+                        common.generateEmptyCreationResponse(template.type)
+                      ),
+                    () =>
+                      resolve(
+                        common.generateEmptyCreationResponse(template.type)
+                      )
                   );
               } else {
                 newItemTemplate.itemId = createResponse.group.id;
@@ -193,8 +202,14 @@ export function createItemFromTemplate(
                       destinationAuthentication
                     )
                     .then(
-                      () => resolve(_generateEmptyCreationResponse(template.type)),
-                      () => resolve(_generateEmptyCreationResponse(template.type))
+                      () =>
+                        resolve(
+                          common.generateEmptyCreationResponse(template.type)
+                        ),
+                      () =>
+                        resolve(
+                          common.generateEmptyCreationResponse(template.type)
+                        )
                     );
                 } else {
                   resolve({
@@ -211,7 +226,7 @@ export function createItemFromTemplate(
                 common.EItemProgressStatus.Failed,
                 0
               );
-              resolve(_generateEmptyCreationResponse(template.type)); // fails to create item
+              resolve(common.generateEmptyCreationResponse(template.type)); // fails to create item
             }
           },
           () => {
@@ -220,26 +235,9 @@ export function createItemFromTemplate(
               common.EItemProgressStatus.Failed,
               0
             );
-            resolve(_generateEmptyCreationResponse(template.type)); // fails to create item
+            resolve(common.generateEmptyCreationResponse(template.type)); // fails to create item
           }
         );
     });
   });
-}
-
-// ------------------------------------------------------------------------------------------------------------------ //
-
-/**
- * Flags a failure to create an item from a template.
- * @return Empty creation response
- */
-export function _generateEmptyCreationResponse(
-  templateType: string
-): common.ICreateItemFromTemplateResponse {
-  return {
-    item: null,
-    id: "",
-    type: templateType,
-    postProcess: false
-  };
 }

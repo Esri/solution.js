@@ -135,13 +135,16 @@ export function createItemFromTemplate(
         common.EItemProgressStatus.Ignored,
         0
       );
-      resolve(_generateEmptyCreationResponse(template.type));
+      resolve(common.generateEmptyCreationResponse(template.type));
       return;
     }
 
     // Replace the templatized symbols in a copy of the template
     let newItemTemplate: common.IItemTemplate = common.cloneObject(template);
-    newItemTemplate = common.replaceInTemplate(newItemTemplate, templateDictionary);
+    newItemTemplate = common.replaceInTemplate(
+      newItemTemplate,
+      templateDictionary
+    );
 
     // Create the item, then update its URL with its new id
     common
@@ -170,8 +173,10 @@ export function createItemFromTemplate(
             common
               .removeItem(createResponse.id, destinationAuthentication)
               .then(
-                () => resolve(_generateEmptyCreationResponse(template.type)),
-                () => resolve(_generateEmptyCreationResponse(template.type))
+                () =>
+                  resolve(common.generateEmptyCreationResponse(template.type)),
+                () =>
+                  resolve(common.generateEmptyCreationResponse(template.type))
               );
           } else {
             // Add the new item to the settings
@@ -201,25 +206,8 @@ export function createItemFromTemplate(
             common.EItemProgressStatus.Failed,
             0
           );
-          resolve(_generateEmptyCreationResponse(template.type)); // fails to create item
+          resolve(common.generateEmptyCreationResponse(template.type)); // fails to create item
         }
       );
   });
-}
-
-// ------------------------------------------------------------------------------------------------------------------ //
-
-/**
- * Flags a failure to create an item from a template.
- * @return Empty creation response
- */
-export function _generateEmptyCreationResponse(
-  templateType: string
-): common.ICreateItemFromTemplateResponse {
-  return {
-    item: null,
-    id: "",
-    type: templateType,
-    postProcess: false
-  };
 }

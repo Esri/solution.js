@@ -26,6 +26,7 @@ import {
   ICreateItemFromTemplateResponse,
   EItemProgressStatus,
   UserSession,
+  generateEmptyCreationResponse,
   getProp,
   replaceInTemplate
 } from "@esri/solution-common";
@@ -77,7 +78,7 @@ export function createItemFromTemplate(
   );
   // if it returned false, just resolve out
   if (!startStatus) {
-    return Promise.resolve(_generateEmptyCreationResponse(template.type));
+    return Promise.resolve(generateEmptyCreationResponse(template.type));
   }
 
   // TODO: Reassess with resource unification
@@ -148,7 +149,7 @@ export function createItemFromTemplate(
         // clean up the site we just created
         const failSafeRemove = failSafe(removeSite, { success: true });
         return failSafeRemove(siteModel, hubRo).then(() => {
-          return Promise.resolve(_generateEmptyCreationResponse(template.type));
+          return Promise.resolve(generateEmptyCreationResponse(template.type));
         });
       } else {
         // finally, return ICreateItemFromTemplateResponse
@@ -264,21 +265,4 @@ export function isASite(itemType: string, itemUrl?: string): boolean {
     result = true;
   }
   return result;
-}
-
-// ------------------------------------------------------------------------------------------------------------------ //
-
-/**
- * Flags a failure to create an item from a template.
- * @return Empty creation response
- */
-export function _generateEmptyCreationResponse(
-  templateType: string
-): ICreateItemFromTemplateResponse {
-  return {
-    item: null,
-    id: "",
-    type: templateType,
-    postProcess: false
-  };
 }

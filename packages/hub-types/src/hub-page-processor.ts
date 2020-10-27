@@ -25,7 +25,8 @@ import {
   IItemProgressCallback,
   ICreateItemFromTemplateResponse,
   EItemProgressStatus,
-  UserSession
+  UserSession,
+  generateEmptyCreationResponse
 } from "@esri/solution-common";
 import { createHubRequestOptions } from "./helpers/create-hub-request-options";
 import {
@@ -110,7 +111,7 @@ export function createItemFromTemplate(
 
   // and if it returned false, just resolve out
   if (!startStatus) {
-    return Promise.resolve(_generateEmptyCreationResponse(template.type));
+    return Promise.resolve(generateEmptyCreationResponse(template.type));
   }
 
   // TODO: Reassess with resource unification
@@ -184,7 +185,7 @@ export function createItemFromTemplate(
         // clean up the site we just created
         const failSafeRemove = failSafe(removePage, { success: true });
         return failSafeRemove(pageModel, hubRo).then(() => {
-          return Promise.resolve(_generateEmptyCreationResponse(template.type));
+          return Promise.resolve(generateEmptyCreationResponse(template.type));
         });
       } else {
         // finally, return ICreateItemFromTemplateResponse
@@ -253,21 +254,4 @@ export function isAPage(itemType: string): boolean {
     result = true;
   }
   return result;
-}
-
-// ------------------------------------------------------------------------------------------------------------------ //
-
-/**
- * Flags a failure to create an item from a template.
- * @return Empty creation response
- */
-export function _generateEmptyCreationResponse(
-  templateType: string
-): ICreateItemFromTemplateResponse {
-  return {
-    item: null,
-    id: "",
-    type: templateType,
-    postProcess: false
-  };
 }

@@ -133,13 +133,16 @@ export function createItemFromTemplate(
         common.EItemProgressStatus.Ignored,
         0
       );
-      resolve(_generateEmptyCreationResponse(template.type));
+      resolve(common.generateEmptyCreationResponse(template.type));
       return;
     }
 
     // Replace the templatized symbols in a copy of the template
     let newItemTemplate: common.IItemTemplate = common.cloneObject(template);
-    newItemTemplate = common.replaceInTemplate(newItemTemplate, templateDictionary);
+    newItemTemplate = common.replaceInTemplate(
+      newItemTemplate,
+      templateDictionary
+    );
 
     // cache the popup info to be added later
     const popupInfos: common.IPopupInfos = common.cachePopupInfos(
@@ -176,8 +179,12 @@ export function createItemFromTemplate(
                   destinationAuthentication
                 )
                 .then(
-                  () => resolve(_generateEmptyCreationResponse(template.type)),
-                  () => resolve(_generateEmptyCreationResponse(template.type))
+                  () =>
+                    resolve(
+                      common.generateEmptyCreationResponse(template.type)
+                    ),
+                  () =>
+                    resolve(common.generateEmptyCreationResponse(template.type))
                 );
             } else {
               // Detemplatize what we can now that the service has been created
@@ -233,8 +240,18 @@ export function createItemFromTemplate(
                                 destinationAuthentication
                               )
                               .then(
-                                () => resolve(_generateEmptyCreationResponse(template.type)),
-                                () => resolve(_generateEmptyCreationResponse(template.type))
+                                () =>
+                                  resolve(
+                                    common.generateEmptyCreationResponse(
+                                      template.type
+                                    )
+                                  ),
+                                () =>
+                                  resolve(
+                                    common.generateEmptyCreationResponse(
+                                      template.type
+                                    )
+                                  )
                               );
                           } else {
                             resolve({
@@ -245,8 +262,7 @@ export function createItemFromTemplate(
                                 common.hasUnresolvedVariables({
                                   item: newItemTemplate.item,
                                   data: newItemTemplate.data
-                                }) ||
-                                common.isWorkforceProject(newItemTemplate)
+                                }) || common.isWorkforceProject(newItemTemplate)
                             });
                           }
                         },
@@ -262,8 +278,18 @@ export function createItemFromTemplate(
                               destinationAuthentication
                             )
                             .then(
-                              () => resolve(_generateEmptyCreationResponse(template.type)),
-                              () => resolve(_generateEmptyCreationResponse(template.type))
+                              () =>
+                                resolve(
+                                  common.generateEmptyCreationResponse(
+                                    template.type
+                                  )
+                                ),
+                              () =>
+                                resolve(
+                                  common.generateEmptyCreationResponse(
+                                    template.type
+                                  )
+                                )
                             );
                         } // fails to update item
                       );
@@ -280,8 +306,14 @@ export function createItemFromTemplate(
                         destinationAuthentication
                       )
                       .then(
-                        () => resolve(_generateEmptyCreationResponse(template.type)),
-                        () => resolve(_generateEmptyCreationResponse(template.type))
+                        () =>
+                          resolve(
+                            common.generateEmptyCreationResponse(template.type)
+                          ),
+                        () =>
+                          resolve(
+                            common.generateEmptyCreationResponse(template.type)
+                          )
                       );
                   } // fails to add service layers and/or tables
                 );
@@ -292,7 +324,7 @@ export function createItemFromTemplate(
               common.EItemProgressStatus.Failed,
               0
             );
-            resolve(_generateEmptyCreationResponse(template.type)); // fails to create item
+            resolve(common.generateEmptyCreationResponse(template.type)); // fails to create item
           }
         },
         () => {
@@ -301,7 +333,7 @@ export function createItemFromTemplate(
             common.EItemProgressStatus.Failed,
             0
           );
-          resolve(_generateEmptyCreationResponse(template.type)); // fails to create item
+          resolve(common.generateEmptyCreationResponse(template.type)); // fails to create item
         }
       );
   });
@@ -348,23 +380,6 @@ export function postProcess(
         }
       }, reject);
   });
-}
-
-// ------------------------------------------------------------------------------------------------------------------ //
-
-/**
- * Flags a failure to create an item from a template.
- * @return Empty creation response
- */
-export function _generateEmptyCreationResponse(
-  templateType: string
-): common.ICreateItemFromTemplateResponse {
-  return {
-    item: null,
-    id: "",
-    type: templateType,
-    postProcess: false
-  };
 }
 
 //#endregion
