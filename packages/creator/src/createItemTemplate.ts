@@ -254,7 +254,7 @@ export function createItemTemplate(
                               );
                             }
                           });
-                          // tslint:disable-next-line: no-floating-promises
+                          // eslint-disable-next-line @typescript-eslint/no-floating-promises
                           Promise.all(dependentDfds).then(() => {
                             // Templatization of item and its dependencies done
                             itemProgressCallback(

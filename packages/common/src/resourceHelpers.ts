@@ -391,7 +391,7 @@ export function copyFilesToStorageItem(
     });
 
     // Wait until all items have been copied
-    // tslint:disable-next-line: no-floating-promises
+    // eslint-disable-next-line @typescript-eslint/no-floating-promises
     Promise.all(awaitAllItems).then(r => resolve(r));
   });
 }
@@ -839,7 +839,7 @@ export function storeFormItemFiles(
       itemTemplate.itemId
     );
 
-    // tslint:disable-next-line: no-floating-promises
+    // eslint-disable-next-line @typescript-eslint/no-floating-promises
     storagePromises.push(
       copyFilesToStorageItem(
         authentication,

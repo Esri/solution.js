@@ -195,7 +195,7 @@ export function addForwardItemRelationships(
         );
       });
     });
-    // tslint:disable-next-line: no-floating-promises
+    // eslint-disable-next-line @typescript-eslint/no-floating-promises
     Promise.all(relationshipPromises).then((responses: IStatusResponse[]) =>
       resolve(responses)
     );
@@ -497,7 +497,7 @@ export function createFullItem(
       authentication: destinationAuthentication
     };
 
-    // tslint:disable-next-line: no-floating-promises
+    // eslint-disable-next-line @typescript-eslint/no-floating-promises
     addTokenToUrl(itemThumbnailUrl, itemThumbnailAuthentication).then(
       updatedThumbnailUrl => {
         /* istanbul ignore else */

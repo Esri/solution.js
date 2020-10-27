@@ -85,7 +85,7 @@ describe("simpleTypeCreateItemFromTemplate", () => {
         expectedClone.itemId = newItemID;
         expectedClone.item.id = "abc1cab401af4828a25cc6eaeb59fb69";
 
-        // tslint:disable-next-line: no-floating-promises
+        // eslint-disable-next-line @typescript-eslint/no-floating-promises
         simpleTypes
           .createItemFromTemplate(
             itemTemplate,
@@ -142,7 +142,7 @@ describe("simpleTypeCreateItemFromTemplate", () => {
             utils.getSuccessResponse({ itemId: "map1234567890" })
           );
 
-        // tslint:disable-next-line: no-floating-promises
+        // eslint-disable-next-line @typescript-eslint/no-floating-promises
         simpleTypes
           .createItemFromTemplate(
             itemTemplate,
@@ -319,7 +319,7 @@ describe("simpleTypeCreateItemFromTemplate", () => {
       expectedClone.data.application.itemId = "xxx79c91fc7642ebb4c0bbacfbacd510";
       expectedClone.data.application.preferences.adminEmail = "casey@esri.com";
 
-      // tslint:disable-next-line: no-floating-promises
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
       simpleTypes
         .createItemFromTemplate(
           itemTemplate,
@@ -384,7 +384,7 @@ describe("simpleTypeCreateItemFromTemplate", () => {
           mockItems.get400Failure()
         );
 
-      // tslint:disable-next-line: no-floating-promises
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
       simpleTypes
         .createItemFromTemplate(
           itemTemplate,
@@ -492,7 +492,7 @@ describe("simpleTypeCreateItemFromTemplate", () => {
       expectedClone.data.map.itemId = "map0cab401af4828a25cc6eaeb59fb69";
       expectedClone.data.folderId = "folderb401af4828a25cc6eaeb59fb69";
 
-      // tslint:disable-next-line: no-floating-promises
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
       simpleTypes
         .createItemFromTemplate(
           itemTemplate,
@@ -610,7 +610,7 @@ describe("simpleTypeCreateItemFromTemplate", () => {
       expectedClone.data.map.itemId = "map0cab401af4828a25cc6eaeb59fb69";
       expectedClone.data.folderId = "folderb401af4828a25cc6eaeb59fb69";
 
-      // tslint:disable-next-line: no-floating-promises
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
       simpleTypes
         .createItemFromTemplate(
           itemTemplate,
@@ -778,7 +778,7 @@ describe("simpleTypeCreateItemFromTemplate", () => {
         folderId: "folderb401af4828a25cc6eaeb59fb69"
       };
 
-      // tslint:disable-next-line: no-floating-promises
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
       simpleTypes
         .createItemFromTemplate(
           itemTemplate,
@@ -852,7 +852,7 @@ describe("simpleTypeCreateItemFromTemplate", () => {
       expectedClone.item.id = "abc0cab401af4828a25cc6eaeb59fb69";
       expectedClone.item.url = "https://myorg.maps.arcgis.com/home/item.html?id=abc0cab401af4828a25cc6eaeb59fb69";
 
-      // tslint:disable-next-line: no-floating-promises
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
       simpleTypes
         .createItemFromTemplate(
           itemTemplate,
@@ -941,7 +941,7 @@ describe("simpleTypeCreateItemFromTemplate", () => {
           utils.getSuccessResponse({ itemId: "map1234567890" })
         );
 
-      // tslint:disable-next-line: no-floating-promises
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
       simpleTypes
         .createItemFromTemplate(
           itemTemplate,
@@ -1009,7 +1009,7 @@ describe("simpleTypeCreateItemFromTemplate", () => {
       expectedClone.itemId = newItemID;
       expectedClone.item.id = newItemID;
 
-      // tslint:disable-next-line: no-floating-promises
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
       simpleTypes
         .createItemFromTemplate(
           itemTemplate,

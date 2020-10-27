@@ -160,7 +160,7 @@ export function getBlobCheckForError(
       _fixTextBlobType(blob).then(adjustedBlob => {
         if (adjustedBlob.type === "application/json") {
           // Blob may be an error
-          // tslint:disable-next-line: no-floating-promises
+          // eslint-disable-next-line @typescript-eslint/no-floating-promises
           blobToJson(adjustedBlob).then((json: any) => {
             // Check for valid JSON with an error
             if (json && json.error) {
@@ -566,7 +566,7 @@ export function getItemRelatedItemsInSameDirection(
         authentication
       )
     );
-    // tslint:disable-next-line: no-floating-promises
+    // eslint-disable-next-line @typescript-eslint/no-floating-promises
     Promise.all(relatedItemDefs).then(
       (relationshipResponses: IGetRelatedItemsResponse[]) => {
         const relatedItems: IRelatedItems[] = [];

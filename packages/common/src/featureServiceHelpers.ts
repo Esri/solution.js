@@ -591,7 +591,8 @@ export function addFeatureServiceLayersAndTables(
       ).then(
         () => {
           // Detemplatize field references and update the layer properties
-          // tslint:disable-next-line: no-floating-promises only failure path is handled by updateFeatureServiceDefinition
+          // Only failure path is handled by updateFeatureServiceDefinition
+          // eslint-disable-next-line @typescript-eslint/no-floating-promises
           updateLayerFieldReferences(
             itemTemplate,
             fieldInfos,
