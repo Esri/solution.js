@@ -25,6 +25,7 @@ import { _upgradeTwoDotFour } from "./migrations/upgrade-two-dot-four";
 import { _upgradeTwoDotFive } from "./migrations/upgrade-two-dot-five";
 import { _upgradeTwoDotSix } from "./migrations/upgrade-two-dot-six";
 import { _upgradeThreeDotZero } from "./migrations/upgrade-three-dot-zero";
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { _upgradeThreeDotOne } from "./migrations/upgrade-three-dot-one";
 
 import { getProp } from "@esri/hub-common";
@@ -71,9 +72,7 @@ export function migrateSchema(model: ISolutionItem): Promise<ISolutionItem> {
         _upgradeTwoDotThree,
         _upgradeTwoDotFour,
         _upgradeTwoDotFive,
-        _upgradeTwoDotSix,
-        _upgradeThreeDotZero,
-        _upgradeThreeDotOne
+        _upgradeTwoDotSix
       );
       // Apply the 3.x upgrades
       schemaUpgrades.push(
