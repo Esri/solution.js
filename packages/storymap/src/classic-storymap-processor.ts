@@ -52,11 +52,7 @@ export function createItemFromTemplate(
         common.EItemProgressStatus.Failed,
         0
       );
-      resolve({
-        id: "Classic StoryMap is not yet implemented", // temporary
-        type: template.type,
-        postProcess: false
-      });
+      resolve(common.generateEmptyCreationResponse(template.type));
     } else {
       // Not valid
       itemProgressCallback(
@@ -64,11 +60,7 @@ export function createItemFromTemplate(
         common.EItemProgressStatus.Failed,
         0
       );
-      resolve({
-        id: "",
-        type: template.type,
-        postProcess: false
-      });
+      resolve(common.generateEmptyCreationResponse(template.type));
     }
   });
 }

@@ -505,6 +505,21 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
           '{"success":true}'
         );
 
+      const expectedClone: common.IItemTemplate = common.cloneObject(itemTemplate);
+      expectedClone.item.id = "svc1234567890";
+      expectedClone.item.extent = [ [ 0, 0 ], [ 1, 1 ] ];
+      expectedClone.properties.service.serviceItemId = "svc1234567890";
+      expectedClone.properties.layers[0].serviceItemId = "svc1234567890";
+      expectedClone.properties.layers[0].relationships = null;
+      expectedClone.properties.layers[0].viewDefinitionQuery = null;
+      expectedClone.properties.layers[0].adminLayerInfo = undefined;
+      delete expectedClone.properties.layers[0].definitionQuery;
+      expectedClone.properties.tables[0].serviceItemId = "svc1234567890";
+      expectedClone.properties.tables[0].relationships = null;
+      expectedClone.properties.tables[0].viewDefinitionQuery = null;
+      expectedClone.properties.tables[0].adminLayerInfo = undefined;
+      delete expectedClone.properties.tables[0].definitionQuery;
+
       // tslint:disable-next-line: no-floating-promises
       featureLayer
         .createItemFromTemplate(
@@ -519,6 +534,7 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
         )
         .then(r => {
           expect(r).toEqual({
+            item: expectedClone,
             id: "svc1234567890",
             type: itemTemplate.type,
             postProcess: false
@@ -588,6 +604,21 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
       const createResponse: any = mockItems.getAGOLService([], [], true);
       createResponse.success = true;
 
+      const expectedClone: common.IItemTemplate = common.cloneObject(itemTemplate);
+      expectedClone.item.id = "svc1234567890";
+      expectedClone.item.extent = [ [ 0, 0 ], [ 1, 1 ] ];
+      expectedClone.properties.service.serviceItemId = "svc1234567890";
+      expectedClone.properties.layers[0].serviceItemId = "svc1234567890";
+      expectedClone.properties.layers[0].relationships = null;
+      expectedClone.properties.layers[0].viewDefinitionQuery = null;
+      expectedClone.properties.layers[0].adminLayerInfo = undefined;
+      delete expectedClone.properties.layers[0].definitionQuery;
+      expectedClone.properties.tables[0].serviceItemId = "svc1234567890";
+      expectedClone.properties.tables[0].relationships = null;
+      expectedClone.properties.tables[0].viewDefinitionQuery = null;
+      expectedClone.properties.tables[0].adminLayerInfo = undefined;
+      delete expectedClone.properties.tables[0].definitionQuery;
+
       fetchMock
         .post(url + "?f=json", itemTemplate.properties.service)
         .post(adminUrl + "/0?f=json", itemTemplate.properties.layers[0])
@@ -633,6 +664,7 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
         )
         .then(r => {
           expect(r).toEqual({
+            item: expectedClone,
             id: "svc1234567890",
             type: itemTemplate.type,
             postProcess: true
@@ -702,6 +734,21 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
       const createResponse: any = mockItems.getAGOLService([], [], true);
       createResponse.success = true;
 
+      const expectedClone: common.IItemTemplate = common.cloneObject(itemTemplate);
+      expectedClone.item.id = "svc1234567890";
+      expectedClone.item.extent = [ [ 0, 0 ], [ 1, 1 ] ];
+      expectedClone.properties.service.serviceItemId = "svc1234567890";
+      expectedClone.properties.layers[0].serviceItemId = "svc1234567890";
+      expectedClone.properties.layers[0].relationships = null;
+      expectedClone.properties.layers[0].viewDefinitionQuery = null;
+      expectedClone.properties.layers[0].adminLayerInfo = undefined;
+      delete expectedClone.properties.layers[0].definitionQuery;
+      expectedClone.properties.tables[0].serviceItemId = "svc1234567890";
+      expectedClone.properties.tables[0].relationships = null;
+      expectedClone.properties.tables[0].viewDefinitionQuery = null;
+      expectedClone.properties.tables[0].adminLayerInfo = undefined;
+      delete expectedClone.properties.tables[0].definitionQuery;
+
       fetchMock
         .post(url + "?f=json", itemTemplate.properties.service)
         .post(adminUrl + "/0?f=json", itemTemplate.properties.layers[0])
@@ -747,6 +794,7 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
         )
         .then(r => {
           expect(r).toEqual({
+            item: expectedClone,
             id: "svc1234567890",
             type: itemTemplate.type,
             postProcess: true
@@ -874,6 +922,28 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
           "/content/users/casey/items/svc1234567890/update",
           '{"success":true}'
         );
+
+      const expectedClone: common.IItemTemplate = common.cloneObject(itemTemplate);
+      expectedClone.item.id = "svc1234567890";
+      expectedClone.item.extent = [ [ 0, 0 ], [ 1, 1 ] ];
+      expectedClone.properties.service.serviceItemId = "svc1234567890";
+      expectedClone.properties.layers[0].serviceItemId = "svc1234567890";
+      expectedClone.properties.layers[0].relationships = null;
+      expectedClone.properties.layers[0].viewDefinitionQuery = null;
+      expectedClone.properties.layers[0].adminLayerInfo = undefined;
+      expectedClone.properties.layers[0].uniqueIdField.name = "objectid";
+      delete expectedClone.properties.layers[0].definitionQuery;
+      delete expectedClone.properties.layers[0].isView;
+      delete expectedClone.properties.layers[0].sourceSchemaChangesAllowed;
+      expectedClone.properties.tables[0].serviceItemId = "svc1234567890";
+      expectedClone.properties.tables[0].relationships = null;
+      expectedClone.properties.tables[0].viewDefinitionQuery = null;
+      expectedClone.properties.tables[0].adminLayerInfo = {};
+      expectedClone.properties.tables[0].uniqueIdField.name = "objectid";
+      delete expectedClone.properties.tables[0].definitionQuery;
+      delete expectedClone.properties.tables[0].isView;
+      delete expectedClone.properties.tables[0].sourceSchemaChangesAllowed;
+
       // tslint:disable-next-line: no-floating-promises
       featureLayer
         .createItemFromTemplate(
@@ -886,6 +956,7 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
           expect(r)
             .withContext("result")
             .toEqual({
+              item: expectedClone,
               id: "svc1234567890",
               type: itemTemplate.type,
               postProcess: false
@@ -1895,6 +1966,7 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
         const templates = [itemTemplate];
         const itemInfos = [
           {
+            item: itemTemplate,
             id: itemTemplate.id,
             type: itemTemplate.type,
             postProcess: true
