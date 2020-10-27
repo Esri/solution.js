@@ -34,7 +34,6 @@ import {
 } from "@esri/solution-common";
 import { getProp, getWithDefault } from "@esri/hub-common";
 import { UserSession } from "@esri/arcgis-rest-auth";
-import { request, IRequestOptions } from "@esri/arcgis-rest-request";
 import {
   createItemTemplate,
   postProcessFieldReferences
@@ -152,7 +151,7 @@ export function _addContentToSolution(
     });
 
     // eslint-disable-next-line @typescript-eslint/no-floating-promises
-    Promise.all(getItemsPromise).then((results: any[]) => {
+    Promise.all(getItemsPromise).then(() => {
       if (failedItemIds.length > 0) {
         reject(
           failWithIds(

@@ -56,7 +56,7 @@ export function convertItemToTemplate(
     // append into the model
     model.data = data;
     // and use that to create a template
-    return convertWebExperienceToTemplate(model, authentication);
+    return convertWebExperienceToTemplate(model);
   });
 }
 

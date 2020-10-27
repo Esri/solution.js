@@ -29,7 +29,7 @@ export function convertItemToTemplate(
   itemInfo: any,
   authentication: common.UserSession
 ): Promise<common.IItemTemplate> {
-  return new Promise<common.IItemTemplate>((resolve, reject) => {
+  return new Promise<common.IItemTemplate>(resolve => {
     // Init template
     const itemTemplate: common.IItemTemplate = common.createInitializedGroupTemplate(
       itemInfo

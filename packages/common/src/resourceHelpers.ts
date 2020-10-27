@@ -61,8 +61,7 @@ import {
   IItemUpdate,
   ISourceFileCopyPath,
   IUpdateItemResponse,
-  UserSession,
-  IMimeTypes
+  UserSession
 } from "./interfaces";
 import { new_File } from "./polyfills";
 import {
@@ -70,8 +69,7 @@ import {
   updateGroup,
   updateItem,
   updateItemInfo,
-  updateItemResource,
-  addItemResource
+  updateItemResource
 } from "@esri/arcgis-rest-portal";
 import { addResourceFromBlob } from "./resources/add-resource-from-blob";
 import { convertItemResourceToStorageResource } from "./resources/convert-item-resource-to-storage-resource";
@@ -80,8 +78,7 @@ import { copyResource } from "./resources/copy-resource";
 import { getBlob } from "./resources/get-blob";
 
 import { updateItem as helpersUpdateItem } from "./restHelpers";
-import { getBlobAsFile, getItemResources } from "./restHelpersGet";
-import { ArcGISAuthError } from "@esri/arcgis-rest-request";
+import { getBlobAsFile } from "./restHelpersGet";
 
 // ------------------------------------------------------------------------------------------------------------------ //
 
@@ -370,7 +367,7 @@ export function copyFilesToStorageItem(
 ): Promise<string[]> {
   return new Promise<string[]>(resolve => {
     const awaitAllItems: Array<Promise<string>> = filePaths.map(filePath => {
-      return new Promise<string>((resolveThisFile, rejectThisFile) => {
+      return new Promise<string>(resolveThisFile => {
         copyResource(
           {
             url: filePath.url,

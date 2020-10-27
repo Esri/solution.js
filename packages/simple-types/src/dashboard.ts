@@ -81,8 +81,7 @@ interface IDashboardDatasource {
  * @return templatized itemTemplate
  */
 export function convertItemToTemplate(
-  itemTemplate: common.IItemTemplate,
-  authentication: common.UserSession
+  itemTemplate: common.IItemTemplate
 ): common.IItemTemplate {
   return _extractDependencies(itemTemplate);
 }

@@ -74,11 +74,11 @@ export function createItemFromHubTemplate(
         });
       });
       return Promise.all(movePromises)
-        .then(_ => {
+        .then(() => {
           // then remove the folder that Survey123 created
           return removeFolder(folderId, destinationAuthentication);
         })
-        .then(_ => {
+        .then(() => {
           templateDictionary[interpolatedTemplate.itemId] = {
             itemId: formId
           };

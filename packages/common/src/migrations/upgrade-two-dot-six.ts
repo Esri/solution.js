@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { ISolutionItem, IItemTemplate, UserSession } from "../interfaces";
+import { ISolutionItem, IItemTemplate } from "../interfaces";
 import { getProp, cloneObject, cleanItemId } from "../generalHelpers";
 
 /**
@@ -24,14 +24,10 @@ import { getProp, cloneObject, cleanItemId } from "../generalHelpers";
  * and filters out related Web Map templates.
  *
  * @param {ISolutionItem} model A Solution model
- * @param {UserSession} authentication The user session info
  * @returns {ISolutionItem}
  * @private
  */
-export function _upgradeTwoDotSix(
-  model: ISolutionItem,
-  authentication: UserSession
-): ISolutionItem {
+export function _upgradeTwoDotSix(model: ISolutionItem): ISolutionItem {
   if (getProp(model, "item.properties.schemaVersion") >= 2.6) {
     return model;
   } else {

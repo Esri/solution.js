@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { ISolutionItem, UserSession } from "../interfaces";
+import { ISolutionItem } from "../interfaces";
 import { getProp, cloneObject } from "../generalHelpers";
 
 /**
@@ -27,10 +27,7 @@ import { getProp, cloneObject } from "../generalHelpers";
  * @param authentication UserSession
  * @private
  */
-export function _upgradeThreeDotZero(
-  model: ISolutionItem,
-  authentication: UserSession
-): ISolutionItem {
+export function _upgradeThreeDotZero(model: ISolutionItem): ISolutionItem {
   if (getProp(model, "item.properties.schemaVersion") >= 3) {
     return model;
   } else {

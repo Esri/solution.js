@@ -15,7 +15,6 @@
  */
 
 import * as common from "@esri/solution-common";
-import { _updateDependencies } from "./quickcapture";
 // Need to import collectively to enable spying
 import * as notebookHelpers from "./helpers/notebook-helpers";
 

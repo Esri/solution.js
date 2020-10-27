@@ -47,14 +47,14 @@ describe("Upgrade 3.0 ::", () => {
   it("returns same model if above 3", () => {
     const m = cloneObject(defaultModel);
     m.item.properties.schemaVersion = 3.1;
-    const chk = _upgradeThreeDotZero(m, MOCK_USER_SESSION);
+    const chk = _upgradeThreeDotZero(m);
     expect(chk).toEqual(m, "should return the exact same object");
   });
 
   it("adds schema version if missing", () => {
     const m = cloneObject(defaultModel);
     delete m.item.properties.schemaVersion;
-    const chk = _upgradeThreeDotZero(m, MOCK_USER_SESSION);
+    const chk = _upgradeThreeDotZero(m);
     expect(chk).not.toBe(m, "should not return the exact same object");
     expect(chk.item.properties.schemaVersion).toBe(
       3,

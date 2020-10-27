@@ -31,7 +31,7 @@ describe("upgradeTwoDotOne :: ", () => {
         }
       }
     } as ISolutionItem;
-    const chk = _upgradeTwoDotOne(m, MOCK_USER_SESSION);
+    const chk = _upgradeTwoDotOne(m);
     expect(chk).toBe(m, "should pass model through without cloning");
   });
 
@@ -57,7 +57,7 @@ describe("upgradeTwoDotOne :: ", () => {
         ]
       }
     } as unknown) as ISolutionItem;
-    const chk = _upgradeTwoDotOne(m, MOCK_USER_SESSION);
+    const chk = _upgradeTwoDotOne(m);
     expect(chk.item.properties.schemaVersion).toBe(
       2.1,
       "should set schemaVersion to 2.1"

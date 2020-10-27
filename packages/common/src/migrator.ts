@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { ISolutionItem, UserSession } from "./interfaces";
+import { ISolutionItem } from "./interfaces";
 import { _isLegacySolution } from "./migrations/is-legacy-solution";
 import { _applySchema } from "./migrations/apply-schema";
 import { _upgradeTwoDotZero } from "./migrations/upgrade-two-dot-zero";
@@ -39,10 +39,7 @@ export const CURRENT_SCHEMA_VERSION = 3.0;
  *
  * @param model ISolutionItem
  */
-export function migrateSchema(
-  model: ISolutionItem,
-  authentication: UserSession
-): Promise<ISolutionItem> {
+export function migrateSchema(model: ISolutionItem): Promise<ISolutionItem> {
   // ensure properties
   if (!getProp(model, "item.properties")) {
     model.item.properties = {};
@@ -74,7 +71,9 @@ export function migrateSchema(
         _upgradeTwoDotThree,
         _upgradeTwoDotFour,
         _upgradeTwoDotFive,
-        _upgradeTwoDotSix
+        _upgradeTwoDotSix,
+        _upgradeThreeDotZero,
+        _upgradeThreeDotOne
       );
       // Apply the 3.x upgrades
       schemaUpgrades.push(
@@ -87,9 +86,7 @@ export function migrateSchema(
     // or Promise<ISolutionItem>
     return schemaUpgrades.reduce(
       (promise, upgradeFn) =>
-        promise.then((updatedModel: ISolutionItem) =>
-          upgradeFn(updatedModel, authentication)
-        ),
+        promise.then((updatedModel: ISolutionItem) => upgradeFn(updatedModel)),
       Promise.resolve(model)
     );
   }

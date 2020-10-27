@@ -29,7 +29,7 @@ export function convertItemToTemplate(
   itemInfo: any,
   authentication: common.UserSession
 ): Promise<common.IItemTemplate> {
-  return new Promise<common.IItemTemplate>((resolve, reject) => {
+  return new Promise<common.IItemTemplate>(resolve => {
     // Init template
     const itemTemplate: common.IItemTemplate = common.createInitializedItemTemplate(
       itemInfo
@@ -72,7 +72,7 @@ export function convertItemToTemplate(
     // Errors are handled as resolved empty values; this means that there's no `reject` clause to handle, hence:
     // eslint-disable-next-line @typescript-eslint/no-floating-promises
     Promise.all([dataPromise, relatedPromise]).then(responses => {
-      const [itemDataResponse, relatedItemsResponse] = responses;
+      const [itemDataResponse] = responses;
 
       if (itemDataResponse) {
         const resource: common.IFileMimeType = common.convertBlobToSupportableResource(
@@ -97,7 +97,7 @@ export function convertItemToTemplate(
             authentication
           )
           .then(
-            response => {
+            () => {
               itemTemplate.resources.push(
                 storageName.folder + "/" + storageName.filename
               );

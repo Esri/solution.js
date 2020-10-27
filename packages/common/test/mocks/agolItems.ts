@@ -16,7 +16,6 @@
 
 // This file contains examples of items of the type one would expect to get from the AGOL REST API.
 
-import { isBoolean, isNullOrUndefined } from "util";
 import * as interfaces from "../../src/interfaces";
 import * as utils from "./utils";
 
@@ -822,11 +821,7 @@ export function getAGOLUser(username: string): interfaces.IUser {
   };
 }
 
-export function getAGOLItemWithId(
-  type: string,
-  idOffset: number,
-  url = ""
-): any {
+export function getAGOLItemWithId(type: string, idOffset: number): any {
   const item = getAGOLItem(type);
   item.id = item.item =
     getItemTypeAbbrev(type) + 1234567890 + idOffset.toString(16).toLowerCase();

@@ -68,7 +68,7 @@ export const PRINT_SERVER_NAME: string =
   "organization.helperServices.printTask.url";
 
 export const TRANSFORMS: any = {
-  getDefaultLocatorURL(key: string, val: any, settings: any) {
+  getDefaultLocatorURL(key: string, val: any) {
     // get the url from the template dictionary or return the default template variable when it's not present
     // this fallback is needed when we detemplatize living atlas layers as a part of the create process
     return val ? val[0].url : `{{${GEOCODE_SERVER_NAME}}}`;

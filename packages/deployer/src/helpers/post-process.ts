@@ -19,7 +19,6 @@ import {
   ICreateItemFromTemplateResponse,
   getTemplateById
 } from "@esri/solution-common";
-import { _getGroupUpdates } from "../deploySolutionItems";
 import { moduleMap } from "../module-map";
 import { shareTemplatesToGroups } from "./share-templates-to-groups";
 

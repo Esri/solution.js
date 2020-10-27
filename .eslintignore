@@ -4,6 +4,7 @@ node_modules
 dist
 # don't lint nyc coverage output
 coverage
-# don't lint test or demo files
+# don't lint declaration, test, or demo files
+*.d.ts
 *.test.ts
 demos

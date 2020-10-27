@@ -78,21 +78,26 @@ export const PORTAL_SUBSET = {
 };
 
 export const ITEM_PROGRESS_CALLBACK: interfaces.IItemProgressCallback = function(
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   itemId: string,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   status: interfaces.EItemProgressStatus,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   costUsed: number,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   createdItemId: string // supplied when status is EItemProgressStatus.Created or .Finished
 ): boolean {
   return true;
 };
 
 export const SOLUTION_PROGRESS_CALLBACK: interfaces.ISolutionProgressCallback = function(
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   percentDone: number,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   jobId: string,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   progressEvent: interfaces.ISolutionProgressEvent
-): void {
-  const tick = "tok";
-};
+): void {};
 
 /**
  * Provides a successful progress callback until the nth call.
@@ -104,7 +109,7 @@ export function createFailingItemProgressCallbackOnNthCall(
   callToFailOn: number
 ): interfaces.IItemProgressCallback {
   let numCalls = 0;
-  return function(itemId, status, costUsed) {
+  return function() {
     return callToFailOn !== ++numCalls;
   };
 }
@@ -199,7 +204,7 @@ export function getSampleJson(): any {
   };
 }
 
-export function getSampleJsonAsBlob(mimeType = "application/json"): Blob {
+export function getSampleJsonAsBlob(): Blob {
   return jsonToBlob(getSampleJson());
 }
 
@@ -207,7 +212,7 @@ export function getSampleJsonAsFile(
   filename: string,
   mimeType = "application/json"
 ): File {
-  return polyfills.new_File([getSampleJsonAsBlob(mimeType)], filename, {
+  return polyfills.new_File([getSampleJsonAsBlob()], filename, {
     type: mimeType
   });
 }

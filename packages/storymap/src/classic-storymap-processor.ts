@@ -26,8 +26,7 @@ import * as common from "@esri/solution-common";
 
 export function convertItemToTemplate(
   solutionItemId: string,
-  itemInfo: any,
-  authentication: common.UserSession
+  itemInfo: any
 ): Promise<common.IItemTemplate> {
   return new Promise<common.IItemTemplate>((resolve, reject) => {
     if (isAStoryMap(itemInfo.type, itemInfo.url)) {

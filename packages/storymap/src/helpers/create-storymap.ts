@@ -24,7 +24,6 @@ import {
 } from "@esri/hub-common";
 
 import { UserSession } from "@esri/arcgis-rest-auth";
-import { IItemTemplate } from "@esri/solution-common";
 
 import {
   createItem,

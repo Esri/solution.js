@@ -1484,7 +1484,6 @@ export function _getCreateServiceOptions(
     const serviceInfo: any = newItemTemplate.properties;
     const folderId: any = templateDictionary.folderId;
     const isPortal: boolean = templateDictionary.isPortal;
-    const solutionItemId: string = templateDictionary.solutionItemId;
     const itemId: string = newItemTemplate.itemId;
 
     validateSpatialReferenceAndExtent(

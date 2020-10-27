@@ -187,7 +187,7 @@ export function saveBlobAsFile(filename: string, blob: Blob): Promise<void> {
     document.body.appendChild(linkElement);
     linkElement.click();
     document.body.removeChild(linkElement);
-    setTimeout(_ => {
+    setTimeout(() => {
       URL.revokeObjectURL(dataUrl);
       resolve();
     }, 500);

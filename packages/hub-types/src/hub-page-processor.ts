@@ -166,7 +166,7 @@ export function createItemFromTemplate(
         destinationAuthentication
       );
     })
-    .then(_ => {
+    .then(() => {
       // Update the template dictionary
       // TODO: This should be done in whatever recieves
       // the outcome of this promise chain

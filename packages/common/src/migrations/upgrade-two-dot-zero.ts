@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { UserSession } from "../interfaces";
 import { getProp, cloneObject } from "@esri/hub-common";
 
 /**
@@ -21,13 +20,9 @@ import { getProp, cloneObject } from "@esri/hub-common";
  * see https://github.com/ArcGIS/Hub/blob/master/indicators.md
  *
  * @param model
- * @param authentication
  * @private
  */
-export function _upgradeTwoDotZero(
-  model: any,
-  authentication: UserSession
-): any {
+export function _upgradeTwoDotZero(model: any): any {
   if (getProp(model, "item.properties.schemaVersion") >= 2) {
     return model;
   }

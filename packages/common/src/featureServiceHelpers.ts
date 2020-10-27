@@ -598,8 +598,7 @@ export function addFeatureServiceLayersAndTables(
             fieldInfos,
             popupInfos,
             adminLayerInfos,
-            templateDictionary,
-            authentication
+            templateDictionary
           ).then(r => {
             // Update relationships and layer definitions
             const updates: IUpdate[] = getLayerUpdates({
@@ -970,8 +969,7 @@ export function updateLayerFieldReferences(
   fieldInfos: any,
   popupInfos: IPopupInfos,
   adminLayerInfos: any,
-  templateDictionary: any,
-  authentication: UserSession
+  templateDictionary: any
 ): Promise<any> {
   return new Promise((resolveFn, rejectFn) => {
     // Will need to do some post processing for fields
@@ -981,8 +979,7 @@ export function updateLayerFieldReferences(
       fieldInfos,
       popupInfos,
       adminLayerInfos,
-      templateDictionary,
-      authentication
+      templateDictionary
     ).then(
       (layerInfos: any) => {
         // Update the items text with detemplatized popupInfo
@@ -1015,8 +1012,7 @@ export function postProcessFields(
   layerInfos: any,
   popupInfos: any,
   adminLayerInfos: any,
-  templateDictionary: any,
-  authentication: UserSession
+  templateDictionary: any
 ): Promise<any> {
   return new Promise((resolveFn, rejectFn) => {
     if (!itemTemplate.item.url) {

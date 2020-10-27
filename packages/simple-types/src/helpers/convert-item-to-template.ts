@@ -112,7 +112,7 @@ export function convertItemToTemplate(
         let templateModifyingPromise = Promise.resolve(itemTemplate);
         switch (itemInfo.type) {
           case "Dashboard":
-            dashboard.convertItemToTemplate(itemTemplate, authentication);
+            dashboard.convertItemToTemplate(itemTemplate);
             break;
           case "Form":
             // Store the form's data in the solution resources, not in template

@@ -25,8 +25,7 @@ import {
   IItemProgressCallback,
   ICreateItemFromTemplateResponse,
   EItemProgressStatus,
-  UserSession,
-  fail
+  UserSession
 } from "@esri/solution-common";
 import { cloneObject, IModel, failSafe } from "@esri/hub-common";
 import { getItemData, removeItem } from "@esri/arcgis-rest-portal";
@@ -56,7 +55,7 @@ export function convertItemToTemplate(
       // append into the model
       model.data = data;
       // and use that to create a template
-      return convertStoryMapToTemplate(model, authentication);
+      return convertStoryMapToTemplate(model);
     })
     .then(tmpl => {
       return tmpl;
