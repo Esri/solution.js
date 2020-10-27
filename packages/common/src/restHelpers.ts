@@ -1133,7 +1133,7 @@ export function removeItem(
       id: itemId,
       authentication: authentication
     };
-    return portalRemoveItem(requestOptions).then(
+    portalRemoveItem(requestOptions).then(
       result => (result.success ? resolve(result) : reject(result)),
       reject
     );
