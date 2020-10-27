@@ -22,6 +22,7 @@ import { getProp, cloneObject } from "../generalHelpers";
  * If the item was created by Solution.js, this will stamp it
  * with the initial Solution.js schama version number (3)
  * If it is a legacy hub solution, it will apply the transforms
+ *
  * @param model ISolutionItem
  * @param authentication UserSession
  * @private

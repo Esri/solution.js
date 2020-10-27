@@ -19,6 +19,7 @@ import { getProp, cloneObject } from "@esri/hub-common";
 /**
  * Convert indicator "definitions" from the CAS style to the Indicator schema
  * see https://github.com/ArcGIS/Hub/blob/master/indicators.md
+ *
  * @param model
  * @param authentication
  * @private
@@ -49,6 +50,7 @@ export function _upgradeTwoDotZero(
 /**
  * Given the Indicators entry from a CAS configurationSettings array,
  * convert to an indicators object in the new schema
+ *
  * @private
  */
 export function _convertIndicatorsToDefinitions(indicatorsHash: any = {}) {
@@ -63,6 +65,7 @@ export function _convertIndicatorsToDefinitions(indicatorsHash: any = {}) {
 
 /**
  * Convert a CAS formatted indicator to the .definition in the new schama
+ *
  * @private
  */
 export const _convertIndicatorToDefinition = function(ind: any) {
@@ -83,6 +86,7 @@ export const _convertIndicatorToDefinition = function(ind: any) {
 
 /**
  * Convert the CAS formatted "field" into the new schema
+ *
  * @private
  */
 export const _convertIndicatorField = function(field: any) {

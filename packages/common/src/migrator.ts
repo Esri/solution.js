@@ -36,6 +36,7 @@ export const CURRENT_SCHEMA_VERSION = 3.0;
  * Apply schema migrations to a Solution item
  * This system allows the schema of the Solution item to change over time
  * while abstracting those changes into a single set of functional transforms
+ *
  * @param model ISolutionItem
  */
 export function migrateSchema(

@@ -19,6 +19,7 @@ import { getProp, cloneObject } from "../generalHelpers";
 
 /**
  * Applies Survey123 Form Config Schema migrations.
+ *
  * @param {ISolutionItem} model A Solution model
  * @param {UserSession} authentication User session info
  * @returns {ISolutionItem}

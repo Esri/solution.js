@@ -35,6 +35,7 @@ import { convertWebExperienceToTemplate } from "./helpers/convert-web-experience
 
 /**
  * Convert a Web Experience item into a Template
+ *
  * @param solutionItemId
  * @param itemInfo
  * @param authentication
@@ -61,6 +62,7 @@ export function convertItemToTemplate(
 
 /**
  * Create a Web Experience from a Template
+ *
  * @param template
  * @param templateDictionary
  * @param destinationAuthentication

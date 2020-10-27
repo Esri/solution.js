@@ -20,6 +20,7 @@ import { deepStringReplace, cloneObject } from "@esri/hub-common";
 
 /**
  * Swap tokens from Hub Solutions
+ *
  * @param model
  * @param authentication
  * @private

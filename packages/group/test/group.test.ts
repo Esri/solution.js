@@ -660,7 +660,7 @@ describe("Module `group`: manages the creation and deployment of groups", () => 
         success: true,
         group: { id: newItemID }
       });
-      // tslint:disable-next-line: no-floating-promises
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
       group
         .createItemFromTemplate(
           itemTemplate,
@@ -711,7 +711,7 @@ describe("Module `group`: manages the creation and deployment of groups", () => 
             success: true,
             group: { id: newItemID }
           });
-        // tslint:disable-next-line: no-floating-promises
+        // eslint-disable-next-line @typescript-eslint/no-floating-promises
         group
           .createItemFromTemplate(
             itemTemplate,
@@ -748,7 +748,7 @@ describe("Module `group`: manages the creation and deployment of groups", () => 
         success: false
       });
 
-      // tslint:disable-next-line: no-floating-promises
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
       group
         .createItemFromTemplate(
           itemTemplate,
@@ -779,7 +779,7 @@ describe("Module `group`: manages the creation and deployment of groups", () => 
         mockItems.get400Failure()
       );
 
-      // tslint:disable-next-line: no-floating-promises
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
       group
         .createItemFromTemplate(
           itemTemplate,
@@ -797,7 +797,7 @@ describe("Module `group`: manages the creation and deployment of groups", () => 
       const itemTemplate: common.IItemTemplate = templates.getGroupTemplatePart();
       const templateDictionary: any = {};
 
-      // tslint:disable-next-line: no-floating-promises
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
       group
         .createItemFromTemplate(
           itemTemplate,
@@ -826,7 +826,7 @@ describe("Module `group`: manages the creation and deployment of groups", () => 
           utils.getSuccessResponse({ groupId: itemTemplate.itemId })
         );
 
-      // tslint:disable-next-line: no-floating-promises
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
       group
         .createItemFromTemplate(
           itemTemplate,
@@ -855,7 +855,7 @@ describe("Module `group`: manages the creation and deployment of groups", () => 
           utils.getFailureResponse({ groupId: itemTemplate.itemId })
         );
 
-      // tslint:disable-next-line: no-floating-promises
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
       group
         .createItemFromTemplate(
           itemTemplate,
@@ -884,7 +884,7 @@ describe("Module `group`: manages the creation and deployment of groups", () => 
           utils.getSuccessResponse({ groupId: itemTemplate.itemId })
         );
 
-      // tslint:disable-next-line: no-floating-promises
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
       group
         .createItemFromTemplate(
           itemTemplate,
@@ -913,7 +913,7 @@ describe("Module `group`: manages the creation and deployment of groups", () => 
           utils.getFailureResponse({ groupId: itemTemplate.itemId })
         );
 
-      // tslint:disable-next-line: no-floating-promises
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
       group
         .createItemFromTemplate(
           itemTemplate,

@@ -80,7 +80,7 @@ describe("simpleTypeCreateItemFromTemplate", () => {
             fullName: "casey"
           });
 
-        // tslint:disable-next-line: no-floating-promises
+        // eslint-disable-next-line @typescript-eslint/no-floating-promises
         simpleTypes
           .createItemFromTemplate(
             itemTemplate,
@@ -136,7 +136,7 @@ describe("simpleTypeCreateItemFromTemplate", () => {
             utils.getSuccessResponse({ itemId: "map1234567890" })
           );
 
-        // tslint:disable-next-line: no-floating-promises
+        // eslint-disable-next-line @typescript-eslint/no-floating-promises
         simpleTypes
           .createItemFromTemplate(
             itemTemplate,
@@ -304,7 +304,7 @@ describe("simpleTypeCreateItemFromTemplate", () => {
           { success: true }
         );
 
-      // tslint:disable-next-line: no-floating-promises
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
       simpleTypes
         .createItemFromTemplate(
           itemTemplate,
@@ -368,7 +368,7 @@ describe("simpleTypeCreateItemFromTemplate", () => {
           mockItems.get400Failure()
         );
 
-      // tslint:disable-next-line: no-floating-promises
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
       simpleTypes
         .createItemFromTemplate(
           itemTemplate,
@@ -476,7 +476,7 @@ describe("simpleTypeCreateItemFromTemplate", () => {
         { total: 0, relatedItems: [] }
       );
 
-      // tslint:disable-next-line: no-floating-promises
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
       simpleTypes
         .createItemFromTemplate(
           itemTemplate,
@@ -593,7 +593,7 @@ describe("simpleTypeCreateItemFromTemplate", () => {
         { total: 0, relatedItems: [] }
       );
 
-      // tslint:disable-next-line: no-floating-promises
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
       simpleTypes
         .createItemFromTemplate(
           itemTemplate,
@@ -751,7 +751,7 @@ describe("simpleTypeCreateItemFromTemplate", () => {
         }
       );
 
-      // tslint:disable-next-line: no-floating-promises
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
       simpleTypes
         .createItemFromTemplate(
           itemTemplate,
@@ -829,7 +829,7 @@ describe("simpleTypeCreateItemFromTemplate", () => {
           updatedItem
         );
 
-      // tslint:disable-next-line: no-floating-promises
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
       simpleTypes
         .createItemFromTemplate(
           itemTemplate,
@@ -927,7 +927,7 @@ describe("simpleTypeCreateItemFromTemplate", () => {
           utils.getSuccessResponse({ itemId: "map1234567890" })
         );
 
-      // tslint:disable-next-line: no-floating-promises
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
       simpleTypes
         .createItemFromTemplate(
           itemTemplate,
@@ -991,7 +991,7 @@ describe("simpleTypeCreateItemFromTemplate", () => {
           addResults: [{}]
         });
 
-      // tslint:disable-next-line: no-floating-promises
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
       simpleTypes
         .createItemFromTemplate(
           itemTemplate,

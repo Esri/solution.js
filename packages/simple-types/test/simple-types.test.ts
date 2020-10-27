@@ -464,7 +464,7 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
           utils.getSuccessResponse({ itemId: "map1234567890" })
         );
 
-      // tslint:disable-next-line: no-floating-promises
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
       simpleTypes
         .createItemFromTemplate(
           itemTemplate,
@@ -504,7 +504,7 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
           utils.getSuccessResponse({ itemId: "map1234567890" })
         );
 
-      // tslint:disable-next-line: no-floating-promises
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
       simpleTypes
         .createItemFromTemplate(
           itemTemplate,

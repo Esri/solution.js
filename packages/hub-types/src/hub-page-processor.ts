@@ -208,6 +208,7 @@ export function createItemFromTemplate(
 /**
  * Post-Process a Page
  * Re-interpolate the page item + data w/ the full template dictionary hash
+ *
  * @param id
  * @param type
  * @param itemInfos
@@ -244,6 +245,7 @@ export function postProcess(
  * Check of an item type is a Page
  * Hub Page is for ArcGIS Online
  * Site Page is for ArcGIS Enterprise
+ *
  * @param itemType
  */
 export function isAPage(itemType: string): boolean {

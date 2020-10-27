@@ -24,6 +24,7 @@ import { getProp, cloneObject } from "@esri/hub-common";
 
 /**
  * Apply the initial schema for old Hub Solutions
+ *
  * @param model
  * @param authentication
  */

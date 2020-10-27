@@ -151,7 +151,7 @@ export function _addContentToSolution(
       getItemsPromise.push(createDef);
     });
 
-    // tslint:disable-next-line: no-floating-promises
+    // eslint-disable-next-line @typescript-eslint/no-floating-promises
     Promise.all(getItemsPromise).then((results: any[]) => {
       if (failedItemIds.length > 0) {
         reject(

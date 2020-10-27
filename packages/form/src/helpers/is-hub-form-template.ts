@@ -19,6 +19,7 @@ import * as common from "@esri/solution-common";
 /**
  * Determines if the given template is a Hub Survey
  * template vs Solutions.js Survey template.
+ *
  * @param {IITemTemplate} template A template
  * @returns {boolean}
  */

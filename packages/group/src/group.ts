@@ -109,6 +109,7 @@ export function createItemFromTemplate(
       });
     }
 
+    // eslint-disable-next-line @typescript-eslint/no-floating-promises
     thumbnailBlobDef.then(thumbnailBlob => {
       // Set up properties needed to create group
       const newGroup: common.IGroupAdd = {
@@ -149,7 +150,7 @@ export function createItemFromTemplate(
                   common.EItemProgressStatus.Cancelled,
                   0
                 );
-                // tslint:disable-next-line: no-floating-promises
+                // eslint-disable-next-line @typescript-eslint/no-floating-promises
                 common
                   .removeGroup(
                     createResponse.group.id,
@@ -190,7 +191,7 @@ export function createItemFromTemplate(
                     common.EItemProgressStatus.Cancelled,
                     0
                   );
-                  // tslint:disable-next-line: no-floating-promises
+                  // eslint-disable-next-line @typescript-eslint/no-floating-promises
                   common
                     .removeGroup(
                       createResponse.group.id,

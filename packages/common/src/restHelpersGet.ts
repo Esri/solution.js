@@ -160,7 +160,7 @@ export function getBlobCheckForError(
       _fixTextBlobType(blob).then(adjustedBlob => {
         if (adjustedBlob.type === "application/json") {
           // Blob may be an error
-          // tslint:disable-next-line: no-floating-promises
+          // eslint-disable-next-line @typescript-eslint/no-floating-promises
           blobToJson(adjustedBlob).then((json: any) => {
             // Check for valid JSON with an error
             if (json && json.error) {
@@ -566,7 +566,7 @@ export function getItemRelatedItemsInSameDirection(
         authentication
       )
     );
-    // tslint:disable-next-line: no-floating-promises
+    // eslint-disable-next-line @typescript-eslint/no-floating-promises
     Promise.all(relatedItemDefs).then(
       (relationshipResponses: IGetRelatedItemsResponse[]) => {
         const relatedItems: IRelatedItems[] = [];
@@ -726,6 +726,7 @@ export function getPortalUrlFromAuth(authentication: UserSession): string {
 
 /**
  * Fixes the types of Blobs incorrectly typed as text/plain.
+ *
  * @param blob Blob to check
  * @return Promise resolving to original Blob, unless it's originally typed as text/plain but is
  * really JSON, ZIP, or XML
@@ -874,6 +875,7 @@ export function _getItemResourcesTranche(
 
 /**
  * Retrieves the default basemap for the given & basemapGalleryGroupQuery, basemapTitle
+ *
  * @param {string} basemapGalleryGroupQuery The default basemap group query
  * @param {string} basemapTitle The default basemap title
  * @param {UserSession} authentication The session info

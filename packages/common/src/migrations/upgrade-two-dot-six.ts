@@ -22,6 +22,7 @@ import { getProp, cloneObject, cleanItemId } from "../generalHelpers";
  * that contain map questions. This migration updates
  * any form's map questions to use the default basemap
  * and filters out related Web Map templates.
+ *
  * @param {ISolutionItem} model A Solution model
  * @param {UserSession} authentication The user session info
  * @returns {ISolutionItem}

@@ -19,6 +19,7 @@ import * as common from "@esri/solution-common";
 /**
  * Given an itemId or an object, either fetch the item or
  * resolve using the object, if it is structured as expected
+ *
  * @param idOrObject string || object like `{item:{...}, data: {...}}`
  * @param authentication UserSession
  */
@@ -59,6 +60,7 @@ export function getSolutionTemplateItem(
 /**
  * Update the Deploy Options with information from the
  * Solution Template item
+ *
  * @param deployOptions
  * @param item
  * @param authentication
@@ -86,6 +88,7 @@ export function updateDeployOptions(
 
 /**
  * Check if an object is an Model
+ *
  * @param obj any object
  */
 export function _isModel(obj: any): boolean {
@@ -111,6 +114,7 @@ export function _isModel(obj: any): boolean {
 /**
  * Does the item have the correct type and keywords
  * to be a Solution Template item?
+ *
  * @param item IItem
  */
 export function isSolutionTemplateItem(item: common.IItem): boolean {

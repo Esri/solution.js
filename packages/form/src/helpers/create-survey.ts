@@ -28,6 +28,7 @@ import { encodeFormData } from "@esri/arcgis-rest-request";
 
 /**
  * Calls the Survey123 create API with the given parameters
+ *
  * @param {ISurvey123CreateParams} params
  * @param {string} [survey123Url=https://survey123.arcgis.com] An optional, Survey123 base URL override
  * @throws Will throw if the Survey123 API returns an error response

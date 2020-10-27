@@ -85,7 +85,7 @@ export function convertItemToTemplate(
     }
 
     // Errors are handled as resolved empty values; this means that there's no `reject` clause to handle, hence:
-    // tslint:disable-next-line:no-floating-promises
+    // eslint-disable-next-line @typescript-eslint/no-floating-promises
     Promise.all([dataPromise, relatedPromise]).then(
       responses => {
         const [itemDataResponse, relatedItemsResponse] = responses;
@@ -99,7 +99,7 @@ export function convertItemToTemplate(
         relationships.forEach(relationship => {
           /* istanbul ignore else */
           if (relationship.relationshipType !== "WMA2Code") {
-            itemTemplate.relatedItems!.push(relationship);
+            itemTemplate.relatedItems.push(relationship);
             relationship.relatedItemIds.forEach(relatedItemId => {
               if (itemTemplate.dependencies.indexOf(relatedItemId) < 0) {
                 itemTemplate.dependencies.push(relatedItemId);

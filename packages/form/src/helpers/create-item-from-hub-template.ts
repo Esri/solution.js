@@ -38,6 +38,7 @@ import { buildCreateParams } from "./build-create-params";
 
 /**
  * Orchestrates creation of Surveys from Hub templates
+ *
  * @param {IItemTemplate} template The template
  * @param {any} templateDictionary The template dictionary
  * @param {UserSession} destinationAuthentication The destination session info

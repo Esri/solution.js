@@ -70,7 +70,7 @@ export function convertItemToTemplate(
     );
 
     // Errors are handled as resolved empty values; this means that there's no `reject` clause to handle, hence:
-    // tslint:disable-next-line:no-floating-promises
+    // eslint-disable-next-line @typescript-eslint/no-floating-promises
     Promise.all([dataPromise, relatedPromise]).then(responses => {
       const [itemDataResponse, relatedItemsResponse] = responses;
 

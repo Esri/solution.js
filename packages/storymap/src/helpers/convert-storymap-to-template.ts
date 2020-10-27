@@ -33,6 +33,7 @@ import { getStoryMapDependencies } from "./get-storymap-dependencies";
 
 /**
  * Convert a StoryMap IModel to an IItemTemplate
+ *
  * @param model
  * @param authentication
  */

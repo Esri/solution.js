@@ -221,6 +221,7 @@ export function convertItemToTemplate(
  * - share all items to the content team, and (if created)
  *   the core team (depends on user privs)
  * - link all Page items that were created, to the Site
+ *
  * @param model
  * @param items
  * @param authentication
@@ -256,6 +257,7 @@ export function postProcess(
  * Check of an item type is a Site
  * Hub Site Application is for ArcGIS Online
  * Site Application is for ArcGIS Enterprise
+ *
  * @param itemType
  */
 export function isASite(itemType: string, itemUrl?: string): boolean {

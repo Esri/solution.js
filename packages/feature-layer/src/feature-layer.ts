@@ -334,6 +334,7 @@ export function createItemFromTemplate(
 
 /**
  * Feature Layer post-processing actions
+ *
  * @param {string} itemId The item ID
  * @param {string} type The template type
  * @param {any[]} itemInfos Array of {id: 'ef3', type: 'Web Map'} objects

@@ -20,6 +20,7 @@ import { deepStringReplace, getProp, cloneObject } from "@esri/hub-common";
 /**
  * Hub Solutions use the `key` property for follow on replacements
  * but the Solution.js ones use the
+ *
  * @param model ISolutionItem
  * @param authentication UserSession
  * @private

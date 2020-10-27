@@ -72,12 +72,12 @@ export function topologicallySortItems(templates: IItemTemplate[]): string[] {
 
   const verticesToVisit: ISortVertex = {};
   templates.forEach(function(template) {
-    verticesToVisit[template.itemId] = SortVisitColor.White; // not yet visited
+    verticesToVisit[template.itemId] = ESortVisitColor.White; // not yet visited
   });
 
   // Algorithm visits each vertex once. Don't need to record times or "from' nodes ("π" in pseudocode)
   templates.forEach(function(template) {
-    if (verticesToVisit[template.itemId] === SortVisitColor.White) {
+    if (verticesToVisit[template.itemId] === ESortVisitColor.White) {
       // if not yet visited
       visit(template.itemId);
     }
@@ -85,10 +85,10 @@ export function topologicallySortItems(templates: IItemTemplate[]): string[] {
 
   function visitDependants(dependants: any[], vertexId: string) {
     dependants.forEach(function(id) {
-      if (verticesToVisit[id] === SortVisitColor.White) {
+      if (verticesToVisit[id] === ESortVisitColor.White) {
         // if not yet visited
         visit(id);
-      } else if (verticesToVisit[id] === SortVisitColor.Gray) {
+      } else if (verticesToVisit[id] === ESortVisitColor.Gray) {
         // visited, in progress
         throw Error(
           "Cyclical dependency detected involving items " +
@@ -104,7 +104,7 @@ export function topologicallySortItems(templates: IItemTemplate[]): string[] {
 
   // Visit vertex
   function visit(vertexId: string) {
-    verticesToVisit[vertexId] = SortVisitColor.Gray; // visited, in progress
+    verticesToVisit[vertexId] = ESortVisitColor.Gray; // visited, in progress
 
     // Visit dependents if not already visited; template has to be in templates list because calls to visit()
     // are based on verticiesToVisit[], which is initialized using the templates list
@@ -115,7 +115,7 @@ export function topologicallySortItems(templates: IItemTemplate[]): string[] {
     const syncViews: string[] = getProp(template, "properties.syncViews") || [];
     visitDependants(syncViews, vertexId);
 
-    verticesToVisit[vertexId] = SortVisitColor.Black; // finished
+    verticesToVisit[vertexId] = ESortVisitColor.Black; // finished
     buildList.push(vertexId); // add to end of list of ordered vertices because we want dependents first
   }
 
@@ -126,20 +126,22 @@ export function topologicallySortItems(templates: IItemTemplate[]): string[] {
 
 /**
  * A vertex used in the topological sort algorithm.
+ *
  * @protected
  */
 interface ISortVertex {
   /**
-   * Vertex (AGO) id and its visited status, described by the SortVisitColor enum
+   * Vertex (AGO) id and its visited status, described by the ESortVisitColor enum
    */
   [id: string]: number;
 }
 
 /**
  * A visit flag used in the topological sort algorithm.
+ *
  * @protected
  */
-enum SortVisitColor {
+enum ESortVisitColor {
   /** not yet visited */
   White,
   /** visited, in progress */

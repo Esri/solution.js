@@ -20,6 +20,7 @@ import { cloneObject } from "@esri/hub-common";
 
 /**
  * Migrate Hub assets structure to resource paths
+ *
  * @param model
  * @param authentication
  * @private

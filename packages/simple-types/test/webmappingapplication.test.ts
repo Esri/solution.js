@@ -1920,7 +1920,7 @@ describe("Module `webmappingapplication`: manages the creation and deployment of
       fetchMock.post(createUrl, expected);
 
       // Function doesn't reject, so,
-      // tslint:disable-next-line:no-floating-promises
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
       webmappingapplication
         .fineTuneCreatedItem(
           originalTemplate,
@@ -2012,7 +2012,7 @@ describe("Module `webmappingapplication`: manages the creation and deployment of
         .post(updateUrl, utils.getSuccessResponse());
 
       // Function doesn't reject, so,
-      // tslint:disable-next-line:no-floating-promises
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
       webmappingapplication
         .fineTuneCreatedItem(
           originalTemplate,

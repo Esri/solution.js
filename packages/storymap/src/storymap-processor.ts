@@ -36,6 +36,7 @@ import { createStoryMap } from "./helpers/create-storymap";
 
 /**
  * Convert a StoryMap to a template
+ *
  * @param solutionItemId
  * @param itemInfo
  * @param authentication
@@ -64,6 +65,7 @@ export function convertItemToTemplate(
 
 /**
  * Create a StoryMap from the passed in template
+ *
  * @param template
  * @param templateDictionary
  * @param destinationAuthentication
