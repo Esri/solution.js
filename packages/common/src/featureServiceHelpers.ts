@@ -380,7 +380,7 @@ export function setNamesAndTitles(
       let baseName: string = t.item.name || t.item.title;
 
       // If the name already contains a GUID remove it
-      baseName = baseName.replace(/[0-9A-F]{32}/gi, "");
+      baseName = baseName.replace(/_[0-9A-F]{32}/gi, "");
 
       // The name length limit is 98
       // Limit the baseName to 50 characters before the _<guid>
