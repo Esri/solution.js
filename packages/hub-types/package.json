@@ -18,10 +18,10 @@
     "@esri/arcgis-rest-portal": "^2.19.1",
     "@esri/arcgis-rest-request": "^2.19.1",
     "@esri/arcgis-rest-service-admin": "^2.19.1",
-    "@esri/hub-common": "^6.12.1",
-    "@esri/hub-initiatives": "^6.12.1",
-    "@esri/hub-sites": "^6.12.1",
-    "@esri/hub-teams": "^6.12.1",
+    "@esri/hub-common": "^6.14.0",
+    "@esri/hub-initiatives": "^6.14.0",
+    "@esri/hub-sites": "^6.14.0",
+    "@esri/hub-teams": "^6.14.0",
     "rollup": "^1.22.0",
     "typescript": "^3.9.7"
   },
@@ -31,10 +31,10 @@
     "@esri/arcgis-rest-portal": "^2.19.1",
     "@esri/arcgis-rest-request": "^2.19.1",
     "@esri/arcgis-rest-service-admin": "^2.19.1",
-    "@esri/hub-common": "^6.12.1",
-    "@esri/hub-initiatives": "^6.12.1",
-    "@esri/hub-sites": "^6.12.1",
-    "@esri/hub-teams": "^6.12.1"
+    "@esri/hub-common": "^6.14.0",
+    "@esri/hub-initiatives": "^6.14.0",
+    "@esri/hub-sites": "^6.14.0",
+    "@esri/hub-teams": "^6.14.0"
   },
   "dependencies": {
     "@esri/solution-common": "^0.19.1",
