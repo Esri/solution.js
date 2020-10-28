@@ -140,8 +140,16 @@ describe("Module `deploySolutionItems`", () => {
           updatedItem
         );
 
-      const expected: any[] = [
+      const expectedClone: common.IItemTemplate = common.cloneObject(
+        itemTemplate
+      );
+      expectedClone.itemId = "ba4a6047326243b290f625e80ebe6531";
+      expectedClone.dependencies = [];
+      delete expectedClone.item.spatialReference;
+
+      const expected: common.ICreateItemFromTemplateResponse[] = [
         {
+          item: expectedClone,
           id: newItemID,
           type: type,
           postProcess: true
@@ -152,7 +160,9 @@ describe("Module `deploySolutionItems`", () => {
         user: mockItems.getAGOLUser("casey")
       };
       expectedTemplateDictionary[id] = {
-        itemId: newItemID
+        itemId: newItemID,
+        url:
+          "https://apl.maps.arcgis.com/apps/Viewer/index.html?appid=map1234567890"
       };
 
       deploySolution
@@ -222,8 +232,9 @@ describe("Module `deploySolutionItems`", () => {
         }
       );
 
-      const expected: any[] = [
+      const expected: common.ICreateItemFromTemplateResponse[] = [
         {
+          item: null as common.IItemTemplate,
           id: foundItemID,
           type: type,
           postProcess: false
@@ -314,8 +325,9 @@ describe("Module `deploySolutionItems`", () => {
           }
         );
 
-      const expected: any[] = [
+      const expected: common.ICreateItemFromTemplateResponse[] = [
         {
+          item: null as common.IItemTemplate,
           id: foundItemID,
           type: type,
           postProcess: false
@@ -408,8 +420,9 @@ describe("Module `deploySolutionItems`", () => {
         }
       );
 
-      const expected: any[] = [
+      const expected: common.ICreateItemFromTemplateResponse[] = [
         {
+          item: null as common.IItemTemplate,
           id: foundItemID2,
           type: type,
           postProcess: false
@@ -470,36 +483,48 @@ describe("Module `deploySolutionItems`", () => {
         user: mockItems.getAGOLUser("casey")
       };
 
-      fetchMock.get(
-        utils.PORTAL_SUBSET.restUrl +
-          "/search?f=json&q=typekeywords%3Asource-" +
-          id +
-          "%20type%3AFeature%20Service%20owner%3Acasey&token=fake-token",
-        {
-          query: "typekeywords='source-" + id + "'",
-          results: [
-            {
-              id: foundItemID2,
-              type: type,
-              name: "name2",
-              title: "title2",
-              url: url2,
-              created: 1582751989000
-            },
-            {
-              id: foundItemID,
-              type: type,
-              name: "name1",
-              title: "title1",
-              url: url1,
-              created: 1582751986000
-            }
-          ]
-        }
-      );
+      const sourceSR = { wkid: 102100, latestWkid: 3857 };
 
-      const expected: any[] = [
+      fetchMock
+        .get(
+          utils.PORTAL_SUBSET.restUrl +
+            "/search?f=json&q=typekeywords%3Asource-" +
+            id +
+            "%20type%3AFeature%20Service%20owner%3Acasey&token=fake-token",
+          {
+            query: "typekeywords='source-" + id + "'",
+            results: [
+              {
+                id: foundItemID2,
+                type: type,
+                name: "name2",
+                title: "title2",
+                url: url2,
+                created: 1582751989000
+              },
+              {
+                id: foundItemID,
+                type: type,
+                name: "name1",
+                title: "title1",
+                url: url1,
+                created: 1582751986000
+              }
+            ]
+          }
+        )
+        .post(url2, {
+          serviceItemId: foundItemID2,
+          spatialReference: sourceSR,
+          fullExtent: {
+            xmin: 0,
+            spatialReference: sourceSR
+          }
+        });
+
+      const expected: common.ICreateItemFromTemplateResponse[] = [
         {
+          item: null as common.IItemTemplate,
           id: foundItemID2,
           type: type,
           postProcess: false
@@ -511,7 +536,11 @@ describe("Module `deploySolutionItems`", () => {
       };
       expectedTemplateDictionary[id] = {
         itemId: foundItemID2,
-        defaultSpatialReference: { wkid: 102100, latestWkid: 3857 },
+        defaultSpatialReference: sourceSR,
+        defaultExtent: {
+          xmin: 0,
+          spatialReference: sourceSR
+        },
         name: "name2",
         title: "title2",
         url: url2,
@@ -569,8 +598,9 @@ describe("Module `deploySolutionItems`", () => {
         user: user
       };
 
-      const expected: any[] = [
+      const expected: common.ICreateItemFromTemplateResponse[] = [
         {
+          item: null as common.IItemTemplate,
           id: foundItemID,
           type: type,
           postProcess: false
@@ -636,8 +666,9 @@ describe("Module `deploySolutionItems`", () => {
         mockItems.get400Failure()
       );
 
-      const expected: any[] = [
+      const expected: common.ICreateItemFromTemplateResponse[] = [
         {
+          item: null as common.IItemTemplate,
           id: foundItemID,
           type: type,
           postProcess: false
@@ -669,7 +700,7 @@ describe("Module `deploySolutionItems`", () => {
             progressCallback: utils.SOLUTION_PROGRESS_CALLBACK
           }
         )
-        .then(done.fail, done);
+        .then(() => done.fail(), done);
     });
 
     it("can handle error on find items by tag", done => {
@@ -712,8 +743,9 @@ describe("Module `deploySolutionItems`", () => {
           mockItems.get400Failure()
         );
 
-      const expected: any[] = [
+      const expected: common.ICreateItemFromTemplateResponse[] = [
         {
+          item: null as common.IItemTemplate,
           id: foundItemID,
           type: type,
           postProcess: false
@@ -745,7 +777,7 @@ describe("Module `deploySolutionItems`", () => {
             progressCallback: utils.SOLUTION_PROGRESS_CALLBACK
           }
         )
-        .then(done.fail, done);
+        .then(() => done.fail(), done);
     });
 
     it("handles failure to delete all items when unwinding after failure to deploy", done => {
@@ -818,8 +850,9 @@ describe("Module `deploySolutionItems`", () => {
       // tslint:disable-next-line: no-empty
       spyOn(console, "error").and.callFake(() => {});
 
-      const expected: any[] = [
+      const expected: common.ICreateItemFromTemplateResponse[] = [
         {
+          item: null as common.IItemTemplate,
           id: newItemID,
           type: type,
           postProcess: true
@@ -850,14 +883,17 @@ describe("Module `deploySolutionItems`", () => {
             consoleProgress: true
           }
         )
-        .then(done.fail, actual => {
-          expect(actual).toEqual(
-            utils.getFailureResponse({
-              itemIds: ["aa4a6047326243b290f625e80ebe6531"]
-            })
-          );
-          done();
-        });
+        .then(
+          () => done.fail(),
+          actual => {
+            expect(actual).toEqual(
+              utils.getFailureResponse({
+                itemIds: ["aa4a6047326243b290f625e80ebe6531"]
+              })
+            );
+            done();
+          }
+        );
     });
 
     it("can delay when multiple views share the same source when deploying portal", () => {
@@ -934,6 +970,76 @@ describe("Module `deploySolutionItems`", () => {
         "bb4a6047326243b290f625e80ebe6531",
         "bb4a6047326243b290f625e80ebe6532"
       ]);
+    });
+
+    it("reuse items will handle error on add to templateDictionary", done => {
+      const id: string = "aa4a6047326243b290f625e80ebe6531";
+      const foundItemID: string = "ba4a6047326243b290f625e80ebe6531";
+      const foundItemID2: string = "ca4a6047326243b290f625e80ebe6531";
+      const type: string = "Feature Service";
+      const url1: string =
+        "https://services.arcgis.com/orgidFmrV9d1DIvN/arcgis/rest/services/dispatchers1/FeatureServer";
+
+      const url2: string =
+        "https://services.arcgis.com/orgidFmrV9d1DIvN/arcgis/rest/services/dispatchers2/FeatureServer";
+
+      const itemTemplate: common.IItemTemplate = templates.getItemTemplate(
+        type,
+        []
+      );
+      itemTemplate.item.thumbnail = null;
+      itemTemplate.itemId = id;
+
+      const templateDictionary: any = {
+        user: mockItems.getAGOLUser("casey")
+      };
+
+      fetchMock
+        .get(
+          utils.PORTAL_SUBSET.restUrl +
+            "/search?f=json&q=typekeywords%3Asource-" +
+            id +
+            "%20type%3AFeature%20Service%20owner%3Acasey&token=fake-token",
+          {
+            query: "typekeywords='source-" + id + "'",
+            results: [
+              {
+                id: foundItemID2,
+                type: type,
+                name: "name2",
+                title: "title2",
+                url: url2,
+                created: 1582751989000
+              },
+              {
+                id: foundItemID,
+                type: type,
+                name: "name1",
+                title: "title1",
+                url: url1,
+                created: 1582751986000
+              }
+            ]
+          }
+        )
+        .post(url2, mockItems.get500Failure());
+
+      // tslint:disable-next-line: no-empty
+      spyOn(console, "error").and.callFake(() => {});
+      deploySolution
+        .deploySolutionItems(
+          utils.PORTAL_URL,
+          "sln1234567890",
+          [itemTemplate],
+          MOCK_USER_SESSION,
+          templateDictionary,
+          MOCK_USER_SESSION,
+          {
+            enableItemReuse: true,
+            progressCallback: utils.SOLUTION_PROGRESS_CALLBACK
+          }
+        )
+        .then(() => done.fail(), done);
     });
   });
 
@@ -1027,6 +1133,14 @@ describe("Module `deploySolutionItems`", () => {
           updatedItem
         );
 
+      const expectedClone: common.IItemTemplate = common.cloneObject(
+        itemTemplate
+      );
+      expectedClone.itemId = "wma1234567891";
+      expectedClone.item.id = "wma1234567891";
+      delete expectedClone.item.spatialReference;
+      expectedClone.dependencies = [];
+
       // tslint:disable-next-line: no-floating-promises
       deploySolution
         ._createItemFromTemplateWhenReady(
@@ -1039,10 +1153,11 @@ describe("Module `deploySolutionItems`", () => {
         )
         .then((response: common.ICreateItemFromTemplateResponse) => {
           expect(response).toEqual({
+            item: expectedClone,
             id: newItemID,
             type: itemTemplate.type,
             postProcess: true
-          });
+          } as common.ICreateItemFromTemplateResponse);
           done();
         });
     });
@@ -1175,6 +1290,17 @@ describe("Module `deploySolutionItems`", () => {
           utils.getSuccessResponse()
         );
 
+      const expectedClone: common.IItemTemplate = common.cloneObject(
+        itemTemplate
+      );
+      expectedClone.itemId = "svc1234567890";
+      expectedClone.item.id = "svc1234567890";
+      expectedClone.properties.service.serviceItemId = "svc1234567890";
+      delete expectedClone.properties.layers[0].definitionQuery;
+      expectedClone.properties.layers[0].relationships = null;
+      expectedClone.properties.layers[0].viewDefinitionQuery = null;
+      expectedClone.properties.layers[0].adminLayerInfo = undefined;
+
       // tslint:disable-next-line: no-floating-promises
       deploySolution
         ._createItemFromTemplateWhenReady(
@@ -1187,10 +1313,11 @@ describe("Module `deploySolutionItems`", () => {
         )
         .then((response: common.ICreateItemFromTemplateResponse) => {
           expect(response).toEqual({
+            item: expectedClone,
             id: "svc1234567890",
             type: itemTemplate.type,
             postProcess: true
-          });
+          } as common.ICreateItemFromTemplateResponse);
           done();
         });
     });
@@ -1459,6 +1586,99 @@ describe("Module `deploySolutionItems`", () => {
         expect(shareSpy.calls.argsFor(1)[0]).toBe("bc7");
         expect(shareSpy.calls.argsFor(1)[1]).toBe("3ef");
       });
+    });
+  });
+
+  describe("_updateTemplateDictionary", () => {
+    it("will use initialExtent if fullExtent is not defined", done => {
+      const _templates: common.IItemTemplate[] = [];
+      const id: string = "ca4a6047326243b290f625e80ebe6531";
+      const fsUrl: string =
+        "https://services.arcgis.com/orgidFmrV9d1DIvN/arcgis/rest/services/dispatchers2/FeatureServer";
+
+      const fsTemplate: common.IItemTemplate = templates.getItemTemplate(
+        "Feature Service",
+        [],
+        fsUrl
+      );
+
+      _templates.push(fsTemplate);
+
+      const templateDictionary: any = {};
+      templateDictionary[fsTemplate.itemId] = {
+        itemId: id,
+        url: fsUrl
+      };
+
+      fetchMock.post(fsUrl, {
+        serviceItemId: id,
+        spatialReference: {
+          wkid: 4326
+        },
+        initialExtent: {
+          xmin: 0
+        }
+      });
+
+      // tslint:disable-next-line: no-empty
+      spyOn(common, "getLayerSettings").and.callFake(() => {});
+
+      deploySolution
+        ._updateTemplateDictionary(
+          _templates,
+          templateDictionary,
+          MOCK_USER_SESSION
+        )
+        .then(() => {
+          expect(templateDictionary).toEqual({
+            svc1234567890: {
+              itemId: "ca4a6047326243b290f625e80ebe6531",
+              url:
+                "https://services.arcgis.com/orgidFmrV9d1DIvN/arcgis/rest/services/dispatchers2/FeatureServer",
+              defaultSpatialReference: {
+                wkid: 4326
+              },
+              defaultExtent: {
+                xmin: 0
+              }
+            }
+          });
+          done();
+        }, done.fail);
+    });
+
+    it("can handle error to fetch feature service", done => {
+      const _templates: common.IItemTemplate[] = [];
+      const id: string = "ca4a6047326243b290f625e80ebe6531";
+      const fsUrl: string =
+        "https://services.arcgis.com/orgidFmrV9d1DIvN/arcgis/rest/services/dispatchers2/FeatureServer";
+
+      const fsTemplate: common.IItemTemplate = templates.getItemTemplate(
+        "Feature Service",
+        [],
+        fsUrl
+      );
+
+      _templates.push(fsTemplate);
+
+      const templateDictionary: any = {};
+      templateDictionary[fsTemplate.itemId] = {
+        itemId: id,
+        url: fsUrl
+      };
+
+      fetchMock.post(fsUrl, mockItems.get400Failure());
+
+      // tslint:disable-next-line: no-empty
+      spyOn(common, "getLayerSettings").and.callFake(() => {});
+
+      deploySolution
+        ._updateTemplateDictionary(
+          _templates,
+          templateDictionary,
+          MOCK_USER_SESSION
+        )
+        .then(done.fail, done);
     });
   });
 });

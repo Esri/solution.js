@@ -172,7 +172,13 @@ describe("Module `deploySolutionFromTemplate`", () => {
 
       const deployFnStub = sinon
         .stub(deployItems, "deploySolutionItems")
-        .resolves(deployedSolutionId);
+        .resolves([
+          {
+            id: deployedSolutionId,
+            type: "Web Map",
+            postProcess: false
+          }
+        ]);
       const postProcessFnStub = sinon
         .stub(postProcess, "postProcess")
         .resolves();
@@ -273,7 +279,13 @@ describe("Module `deploySolutionFromTemplate`", () => {
 
       const deployFnStub = sinon
         .stub(deployItems, "deploySolutionItems")
-        .resolves(deployedSolutionId);
+        .resolves([
+          {
+            id: deployedSolutionId,
+            type: "Web Map",
+            postProcess: false
+          }
+        ]);
       const postProcessFnStub = sinon
         .stub(postProcess, "postProcess")
         .resolves();

@@ -26,6 +26,7 @@ import {
   ICreateItemFromTemplateResponse,
   EItemProgressStatus,
   UserSession,
+  generateEmptyCreationResponse,
   getProp,
   replaceInTemplate
 } from "@esri/solution-common";
@@ -77,7 +78,7 @@ export function createItemFromTemplate(
   );
   // if it returned false, just resolve out
   if (!startStatus) {
-    return Promise.resolve({ id: "", type: template.type, postProcess: false });
+    return Promise.resolve(generateEmptyCreationResponse(template.type));
   }
 
   // TODO: Reassess with resource unification
@@ -148,15 +149,15 @@ export function createItemFromTemplate(
         // clean up the site we just created
         const failSafeRemove = failSafe(removeSite, { success: true });
         return failSafeRemove(siteModel, hubRo).then(() => {
-          return Promise.resolve({
-            id: "",
-            type: template.type,
-            postProcess: false
-          });
+          return Promise.resolve(generateEmptyCreationResponse(template.type));
         });
       } else {
         // finally, return ICreateItemFromTemplateResponse
         return {
+          item: {
+            ...template,
+            ...siteModel
+          },
           id: siteModel.item.id,
           type: template.type,
           postProcess: true

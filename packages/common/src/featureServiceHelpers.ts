@@ -103,7 +103,10 @@ export function templatize(
   // Set up symbols for the URL of the feature service and its layers and tables
   templateDictionary[fsUrl] = itemTemplate.item.url; // map FS URL to its templatized form
   jsonItems.concat(_items).forEach(layer => {
-    templateDictionary[fsUrl + "/" + layer.id] = _templatize(id, "layer" + layer.id + ".url");
+    templateDictionary[fsUrl + "/" + layer.id] = _templatize(
+      id,
+      "layer" + layer.id + ".url"
+    );
   });
 
   // templatize the service references serviceItemId
@@ -160,7 +163,8 @@ export function templatize(
       jsonItem,
       itemTemplate,
       dependencies,
-      templatizeFieldReferences
+      templatizeFieldReferences,
+      templateDictionary
     );
 
     hasZ = jsonItem.hasZ || (_item && _item.hasZ) ? true : hasZ;
@@ -674,7 +678,7 @@ export function updateFeatureServiceDefinition(
       // when the item is a view we need to grab the supporting fieldInfos
       /* istanbul ignore else */
       if (itemTemplate.properties.service.isView) {
-        _updateGeomFieldName(item, templateDictionary);
+        _updateGeomFieldName(item.adminLayerInfo, templateDictionary);
 
         adminLayerInfos[originalId] = item.adminLayerInfo;
         // need to update adminLayerInfo before adding to the service def
@@ -809,18 +813,26 @@ export function _updateItemFields(
  * @param templateDictionary Hash mapping property names to replacement values
  * @protected
  */
-export function _updateGeomFieldName(item: any, templateDictionary: any): void {
+export function _updateGeomFieldName(
+  adminLayerInfo: any,
+  templateDictionary: any
+): void {
   // issue #471
   const tableName: string = getProp(
-    item,
-    "adminLayerInfo.viewLayerDefinition.table.name"
+    adminLayerInfo,
+    "viewLayerDefinition.table.name"
   );
-  const fieldName: string = getProp(item, "adminLayerInfo.geometryField.name");
+  const fieldName: string = getProp(adminLayerInfo, "geometryField.name");
+  /* istanbul ignore else */
   if (fieldName && tableName) {
     const geomName: string = templateDictionary.isPortal
       ? `${tableName}.shape`
       : `${tableName}.Shape`;
-    setProp(item, "adminLayerInfo.geometryField.name", geomName);
+    setProp(adminLayerInfo, "geometryField.name", geomName);
+  } else if (!fieldName && getProp(adminLayerInfo, "geometryField")) {
+    // null geom field will cause failure to deploy in portal
+    // this is also checked and removed on deploy for older solutions
+    deleteProp(adminLayerInfo, "geometryField");
   }
 }
 
@@ -891,33 +903,51 @@ export function setDefaultSpatialReference(
  * @param templateDictionary Hash mapping Solution source id to id of its clone (and name & URL for feature service)
  * @protected
  */
-export function validateSpatialReference(
+export function validateSpatialReferenceAndExtent(
   serviceInfo: any,
   itemTemplate: IItemTemplate,
   templateDictionary: any
 ): void {
   /* istanbul ignore else */
   if (getProp(serviceInfo, "service.isView")) {
-    // compare the wkid with the source...the view sr cannot differ from source sr
+    let sourceSR: any;
+    let sourceExt: any;
+    itemTemplate.dependencies.some(id => {
+      const source: any = templateDictionary[id];
+
+      const sr: any = getProp(source, "defaultSpatialReference");
+      /* istanbul ignore else */
+      if (!sourceSR && sr) {
+        sourceSR = sr;
+      }
+
+      const ext: any = getProp(source, "defaultExtent");
+      /* istanbul ignore else */
+      if (!sourceExt && ext) {
+        sourceExt = ext;
+      }
+
+      return sourceSR && sourceExt;
+    });
+    const sourceWkid: number = getProp(sourceSR, "wkid");
+
     const viewWkid: number = getProp(
       serviceInfo,
       "service.spatialReference.wkid"
     );
-
-    let sourceSR: any = 0;
-    itemTemplate.dependencies.some(id => {
-      const source: any = templateDictionary[id];
-      /* istanbul ignore else */
-      if (getProp(source, "defaultSpatialReference")) {
-        sourceSR = source.defaultSpatialReference;
-        return true;
-      }
-    });
-    const sourceWkid: number = getProp(sourceSR, "wkid");
-
     /* istanbul ignore else */
     if (sourceWkid && viewWkid && sourceWkid !== viewWkid) {
-      setProp(serviceInfo, "service.spatialReference", sourceSR);
+      setCreateProp(serviceInfo, "service.spatialReference", sourceSR);
+    }
+
+    const viewExt: number = getProp(serviceInfo, "service.fullExtent");
+    /* istanbul ignore else */
+    if (
+      sourceExt &&
+      viewExt &&
+      JSON.stringify(sourceExt) !== JSON.stringify(viewExt)
+    ) {
+      setCreateProp(serviceInfo, "defaultExtent", sourceExt);
     }
   }
 }
@@ -1248,7 +1278,8 @@ export function _templatizeLayer(
   adminItem: any,
   itemTemplate: IItemTemplate,
   dependencies: IDependency[],
-  templatizeFieldReferences: boolean
+  templatizeFieldReferences: boolean,
+  templateDictionary: any
 ): void {
   // check for and repair common field issues
   _validateFields(adminItem);
@@ -1295,7 +1326,11 @@ export function _templatizeLayer(
     }
 
     if (update.hasOwnProperty("adminLayerInfo")) {
-      update.adminLayerInfo = _templatizeAdminLayerInfo(update, dependencies);
+      update.adminLayerInfo = _templatizeAdminLayerInfo(
+        update,
+        dependencies,
+        templateDictionary
+      );
     }
   });
 }
@@ -1540,10 +1575,12 @@ export function _templatizeLayerFieldReferences(
  */
 export function _templatizeAdminLayerInfo(
   layer: any,
-  dependencies: IDependency[]
+  dependencies: IDependency[],
+  templateDictionary: any
 ): any {
   // Create new instance of adminLayerInfo to update for clone
   const adminLayerInfo = Object.assign({}, layer.adminLayerInfo);
+  _updateGeomFieldName(adminLayerInfo, templateDictionary);
 
   deleteProp(adminLayerInfo, "xssTrustedFields");
   deleteProp(adminLayerInfo, "tableName");

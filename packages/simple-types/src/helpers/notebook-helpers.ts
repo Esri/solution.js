@@ -13,15 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { generateEmptyCreationResponse } from "./generate-empty-creation-response";
 import { convertItemToTemplate } from "./convert-item-to-template";
 import { createItemFromTemplate } from "./create-item-from-template";
 import { updateNotebookData } from "./update-notebook-data";
 
 // Export the Notebook Helper module
-export {
-  createItemFromTemplate,
-  convertItemToTemplate,
-  generateEmptyCreationResponse,
-  updateNotebookData
-};
+export { createItemFromTemplate, convertItemToTemplate, updateNotebookData };

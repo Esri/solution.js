@@ -23,7 +23,4 @@ describe("simpleTypeHelpers:: ", () => {
   it("should have convertItemToTemplate", () => {
     expect(simpleTypeHelpers.convertItemToTemplate).toBeDefined();
   });
-  it("should have generateEmptyCreationResponse", () => {
-    expect(simpleTypeHelpers.generateEmptyCreationResponse).toBeDefined();
-  });
 });

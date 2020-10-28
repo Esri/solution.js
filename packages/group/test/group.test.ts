@@ -660,6 +660,12 @@ describe("Module `group`: manages the creation and deployment of groups", () => 
         success: true,
         group: { id: newItemID }
       });
+
+      const expectedClone: common.IItemTemplate = common.cloneObject(
+        itemTemplate
+      );
+      expectedClone.itemId = newItemID;
+
       // tslint:disable-next-line: no-floating-promises
       group
         .createItemFromTemplate(
@@ -670,6 +676,7 @@ describe("Module `group`: manages the creation and deployment of groups", () => 
         )
         .then(response => {
           expect(response).toEqual({
+            item: expectedClone,
             id: newItemID,
             type: itemTemplate.type,
             postProcess: false
@@ -711,6 +718,12 @@ describe("Module `group`: manages the creation and deployment of groups", () => 
             success: true,
             group: { id: newItemID }
           });
+
+        const expectedClone: common.IItemTemplate = common.cloneObject(
+          itemTemplate
+        );
+        expectedClone.itemId = newItemID;
+
         // tslint:disable-next-line: no-floating-promises
         group
           .createItemFromTemplate(
@@ -721,6 +734,7 @@ describe("Module `group`: manages the creation and deployment of groups", () => 
           )
           .then(response => {
             expect(response).toEqual({
+              item: expectedClone,
               id: newItemID,
               type: itemTemplate.type,
               postProcess: false

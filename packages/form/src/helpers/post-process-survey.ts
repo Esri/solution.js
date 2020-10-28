@@ -53,44 +53,42 @@ export function postProcessHubSurvey(
     featureServiceSourceId
   ];
   const interpolated = replaceInTemplate(template, templateDictionary);
-  const itemIds = [featureServiceSourceId, featureServiceResultId];
-  const itemBasePromises = itemIds.map(id => getItemBase(id, authentication));
-  return Promise.all(itemBasePromises).then(results => {
-    const [featureServiceSourceBase, featureServiceResultBase] = results;
-    const updatePromises = [
-      // fix/update form properties we couldn't control via the API
-      updateItem(
-        {
-          id: itemId,
-          title: interpolated.item.title,
-          snippet: interpolated.item.snippet,
-          extent: interpolated.item.extent,
-          culture: interpolated.item.culture
-        },
-        authentication
-      ),
-      // fix/update feature service properties we couldn't control via the API
-      updateItem(
-        {
-          id: featureServiceResultId,
-          title: featureServiceSourceBase.title,
-          extent: interpolated.item.extent,
-          typeKeywords: [
-            ...featureServiceSourceBase.typeKeywords,
-            `source-${featureServiceSourceId}`
-          ]
-        },
-        authentication
-      )
-    ];
-    return Promise.all(updatePromises).then(() => {
-      // Create a template item for the Feature Service that was created by the API
-      const featureServiceTemplate = createInitializedItemTemplate(
-        featureServiceResultBase
-      );
-      templates.push(featureServiceTemplate);
-      template.dependencies.push(featureServiceResultBase.id);
-      return true;
-    });
-  });
+  return getItemBase(featureServiceResultId, authentication).then(
+    featureServiceResultBase => {
+      const updatePromises = [
+        // fix/update form properties we couldn't control via the API
+        updateItem(
+          {
+            id: itemId,
+            title: interpolated.item.title,
+            snippet: interpolated.item.snippet,
+            extent: interpolated.item.extent,
+            culture: interpolated.item.culture
+          },
+          authentication
+        ),
+        // fix/update feature service properties we couldn't control via the API
+        updateItem(
+          {
+            id: featureServiceResultId,
+            extent: interpolated.item.extent,
+            typeKeywords: [
+              ...featureServiceResultBase.typeKeywords,
+              `source-${featureServiceSourceId}`
+            ]
+          },
+          authentication
+        )
+      ];
+      return Promise.all(updatePromises).then(() => {
+        // Create a template item for the Feature Service that was created by the API
+        const featureServiceTemplate = createInitializedItemTemplate(
+          featureServiceResultBase
+        );
+        templates.push(featureServiceTemplate);
+        template.dependencies.push(featureServiceResultBase.id);
+        return true;
+      });
+    }
+  );
 }

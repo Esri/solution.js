@@ -375,7 +375,9 @@ describe("Module `file`: manages the creation and deployment of item types that 
             utils.ITEM_PROGRESS_CALLBACK
           )
           .then(response => {
+            itemTemplate.itemId = "map1234567891";
             expect(response).toEqual({
+              item: itemTemplate,
               id: newItemID,
               type: itemTemplate.type,
               postProcess: false
@@ -423,7 +425,9 @@ describe("Module `file`: manages the creation and deployment of item types that 
             utils.ITEM_PROGRESS_CALLBACK
           )
           .then(response => {
+            itemTemplate.itemId = "map1234567891";
             expect(response).toEqual({
+              item: itemTemplate,
               id: newItemID,
               type: itemTemplate.type,
               postProcess: false
