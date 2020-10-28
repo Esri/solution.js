@@ -21,6 +21,7 @@
  */
 
 import {
+  removeLayerOptimization,
   setDefaultSpatialReference,
   validateSpatialReferenceAndExtent
 } from "./featureServiceHelpers";
@@ -1001,9 +1002,11 @@ export function getFeatureServiceProperties(
           properties.layers = serviceData.layers;
 
           // Fill in properties that the service layer doesn't provide
+          // and remove properties that should not exist in the template
           properties.layers.forEach(layer => {
             layer.serviceItemId = properties.service.serviceItemId;
             layer.extent = null;
+            removeLayerOptimization(layer);
           });
         }
         delete serviceData.layers;
