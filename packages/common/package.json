@@ -34,7 +34,7 @@
   "dependencies": {
     "@esri/arcgis-html-sanitizer": "~2.1.0",
     "@types/lodash.isplainobject": "^4.0.6",
-    "adlib": "^3.0.4",
+    "adlib": "^3.0.6",
     "jszip": "3.4.0",
     "lodash.isplainobject": "^4.0.6",
     "tslib": "^1.13.0",
