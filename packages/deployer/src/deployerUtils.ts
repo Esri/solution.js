@@ -34,19 +34,16 @@ export function getSolutionTemplateItem(
       common.getItemDataAsJson(idOrObject, authentication)
     ]).then(([item, data]) => {
       // format into a model and migrate the schema
-      return common.migrateSchema(
-        {
-          item,
-          data
-        },
-        authentication
-      );
+      return common.migrateSchema({
+        item,
+        data
+      });
     });
   } else {
     // check if it is a "Model"
     if (_isModel(idOrObject)) {
       // run migrations
-      return common.migrateSchema(idOrObject, authentication);
+      return common.migrateSchema(idOrObject);
     } else {
       return Promise.reject(
         common.fail(

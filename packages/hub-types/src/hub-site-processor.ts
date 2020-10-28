@@ -26,6 +26,7 @@ import {
   ICreateItemFromTemplateResponse,
   EItemProgressStatus,
   UserSession,
+  generateEmptyCreationResponse,
   getProp
 } from "@esri/solution-common";
 import {

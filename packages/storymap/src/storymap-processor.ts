@@ -25,7 +25,8 @@ import {
   IItemProgressCallback,
   ICreateItemFromTemplateResponse,
   EItemProgressStatus,
-  UserSession
+  UserSession,
+  generateEmptyCreationResponse
 } from "@esri/solution-common";
 import { cloneObject, IModel, failSafe } from "@esri/hub-common";
 import { getItemData, removeItem } from "@esri/arcgis-rest-portal";
