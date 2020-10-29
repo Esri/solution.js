@@ -62,9 +62,6 @@
     var package_path = window.location.href.substring(0, window.location.href.lastIndexOf('/'));
     var dojoConfig = {
       "paths": {
-        "tslib": package_path + "/../node_modules/tslib/tslib",
-
-        // load the local versions
         "@esri/arcgis-html-sanitizer": package_path + "/../node_modules/@esri/arcgis-html-sanitizer/dist/umd/arcgis-html-sanitizer.min",
         "@esri/arcgis-rest-auth": package_path + "/../node_modules/@esri/arcgis-rest-auth/dist/umd/auth.umd.min",
         "@esri/arcgis-rest-feature-layer": package_path + "/../node_modules/@esri/arcgis-rest-feature-layer/dist/umd/feature-layer.umd.min",
@@ -76,8 +73,8 @@
         "@esri/hub-sites": package_path + "/../node_modules/@esri/hub-sites/dist/umd/sites.umd.min",
         "@esri/hub-teams": package_path + "/../node_modules/@esri/hub-teams/dist/umd/teams.umd.min",
         "@esri/solution-common": package_path + "/../node_modules/@esri/solution-common/dist/umd/common.umd",
-
-        "dist": package_path + "../dist"
+        "adlib": package_path + "/../node_modules/adlib/dist/adlib",
+        "tslib": package_path + "/../node_modules/tslib/tslib"
       }
     };
   </script>

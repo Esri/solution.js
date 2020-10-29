@@ -34,6 +34,7 @@ import {
   addFeatureServiceLayersAndTables,
   updateLayerFieldReferences,
   postProcessFields,
+  removeLayerOptimization,
   _getFieldVisibilityUpdates,
   _validateDomains,
   updatePopupInfo,
@@ -3331,6 +3332,22 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
         });
         done();
       }, done.fail);
+    });
+  });
+
+  describe("removeLayerOptimization", () => {
+    it("will remove multiScaleGeometryInfo", () => {
+      const actual: any = {
+        a: "A",
+        multiScaleGeometryInfo: []
+      };
+
+      const expected: any = {
+        a: "A"
+      };
+
+      removeLayerOptimization(actual);
+      expect(actual).toEqual(expected);
     });
   });
 

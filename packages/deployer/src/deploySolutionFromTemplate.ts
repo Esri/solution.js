@@ -110,7 +110,8 @@ export function deploySolutionFromTemplate(
         templateDictionary.user = userResponse;
         templateDictionary.user.folders = foldersAndGroupsResponse.folders;
         templateDictionary.user.groups = foldersAndGroupsResponse.groups.filter(
-          (group: common.IGroup) => group.owner === templateDictionary.user.username
+          (group: common.IGroup) =>
+            group.owner === templateDictionary.user.username
         );
 
         // Create a folder to hold the deployed solution. We use the solution name, appending a sequential
@@ -219,38 +220,40 @@ export function deploySolutionFromTemplate(
           options
         );
       })
-      .then((clonedSolutionsResponse: common.ICreateItemFromTemplateResponse[]) => {
-        // TODO: if deploySolutionItems returned what was pushed into the templateDictionary
-        // we could add that at this point vs mutating
-        // why is this a reassignment?
-        solutionTemplateData.templates = solutionTemplateData.templates.map(
-          (itemTemplate: common.IItemTemplate) => {
-            // Update ids present in template dictionary
-            const itemId = getProp(
-              templateDictionary,
-              `${itemTemplate.itemId}.itemId`
-            );
-            // why a guard? can this ever be false? what happens if so?
-            // why are we updating this same property vs adding a new one? seems confusing
-            /* istanbul ignore else */
-            if (itemId) {
-              itemTemplate.originalItemId = itemTemplate.itemId;
-              itemTemplate.itemId = itemId;
+      .then(
+        (clonedSolutionsResponse: common.ICreateItemFromTemplateResponse[]) => {
+          // TODO: if deploySolutionItems returned what was pushed into the templateDictionary
+          // we could add that at this point vs mutating
+          // why is this a reassignment?
+          solutionTemplateData.templates = solutionTemplateData.templates.map(
+            (itemTemplate: common.IItemTemplate) => {
+              // Update ids present in template dictionary
+              const itemId = getProp(
+                templateDictionary,
+                `${itemTemplate.itemId}.itemId`
+              );
+              // why a guard? can this ever be false? what happens if so?
+              // why are we updating this same property vs adding a new one? seems confusing
+              /* istanbul ignore else */
+              if (itemId) {
+                itemTemplate.originalItemId = itemTemplate.itemId;
+                itemTemplate.itemId = itemId;
+              }
+              // update the dependencies hash to point to the new item ids
+              itemTemplate.dependencies = itemTemplate.dependencies.map(id =>
+                getWithDefault(templateDictionary, `${id}.itemId`, id)
+              );
+              return itemTemplate;
             }
-            // update the dependencies hash to point to the new item ids
-            itemTemplate.dependencies = itemTemplate.dependencies.map(id =>
-              getWithDefault(templateDictionary, `${id}.itemId`, id)
-            );
-            return itemTemplate;
-          }
-        );
-        return postProcess(
-          solutionTemplateData.templates,
-          clonedSolutionsResponse,
-          authentication,
-          templateDictionary
-        );
-      })
+          );
+          return postProcess(
+            solutionTemplateData.templates,
+            clonedSolutionsResponse,
+            authentication,
+            templateDictionary
+          );
+        }
+      )
       .then(() => {
         // Update solution item using internal representation & and the updated data JSON
         solutionTemplateBase.typeKeywords = [].concat(
@@ -406,8 +409,8 @@ export function _getPortalBaseUrl(
   return urlKey && customBaseUrl
     ? `${scheme}://${urlKey}.${customBaseUrl}`
     : enterpriseBaseUrl
-      ? `${scheme}://${enterpriseBaseUrl}`
-      : authentication.portal.replace("/sharing/rest", "");
+    ? `${scheme}://${enterpriseBaseUrl}`
+    : authentication.portal.replace("/sharing/rest", "");
 }
 
 export function _updateGroupReferences(
