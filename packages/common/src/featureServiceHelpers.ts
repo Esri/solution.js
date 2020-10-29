@@ -377,13 +377,14 @@ export function setNamesAndTitles(
       t.item.title = t.item.title || t.item.name;
 
       // Need to set the service name: name + "_" + newItemId
-      const baseName: string = t.item.name || t.item.title;
+      let baseName: string = t.item.name || t.item.title;
 
-      // If the name already contains a GUID replace it with the newItemID
-      const regEx: any = new RegExp("[0-9A-F]{32}", "gmi");
-      const name: string = regEx.exec(baseName)
-        ? baseName.replace(regEx, solutionItemId)
-        : baseName + "_" + solutionItemId;
+      // If the name already contains a GUID remove it
+      baseName = baseName.replace(/_[0-9A-F]{32}/gi, "");
+
+      // The name length limit is 98
+      // Limit the baseName to 50 characters before the _<guid>
+      const name: string = baseName.substring(0, 50) + "_" + solutionItemId;
 
       // If the name + GUID already exists then append "_occurrenceCount"
       t.item.name =
