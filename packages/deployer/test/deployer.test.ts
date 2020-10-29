@@ -114,8 +114,8 @@ describe("Module `deployer`", () => {
                 "getSolutionTemplateItem should be called"
               );
               expect(metaStub.calledOnce).toBe(
-                true,
-                "getItemMetadataAsFile should be called once"
+                false,
+                "getItemMetadataAsFile should not be called because item id is not a GUID"
               );
               expect(deployFnStub.calledOnce).toBe(
                 true,
@@ -170,6 +170,8 @@ describe("Module `deployer`", () => {
 
           // itemInfo that has not been mutated
           const _itemInfo = cloneObject(templates.getSolutionTemplateItem([]));
+          itemInfo.item.id = _itemInfo.item.id =
+            "11181d776d164656836f2fc3c23512b8";
 
           // create stub...
           const pgStub = sinon.stub(opts, "progressCallback");
@@ -182,7 +184,7 @@ describe("Module `deployer`", () => {
               );
               expect(metaStub.calledOnce).toBe(
                 true,
-                "getItemMetadataAsFile should be called once"
+                "getItemMetadataAsFile should be called once because item id is a GUID"
               );
               expect(deployFnStub.calledOnce).toBe(
                 true,
