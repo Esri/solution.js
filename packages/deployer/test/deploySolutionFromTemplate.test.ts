@@ -172,11 +172,13 @@ describe("Module `deploySolutionFromTemplate`", () => {
 
       const deployFnStub = sinon
         .stub(deployItems, "deploySolutionItems")
-        .resolves([{
-          id: deployedSolutionId,
-          type: "Web Map",
-          postProcess: false
-        }]);
+        .resolves([
+          {
+            id: deployedSolutionId,
+            type: "Web Map",
+            postProcess: false
+          }
+        ]);
       const postProcessFnStub = sinon
         .stub(postProcess, "postProcess")
         .resolves();
@@ -184,22 +186,22 @@ describe("Module `deploySolutionFromTemplate`", () => {
       fetchMock
         .get(
           testUtils.PORTAL_SUBSET.restUrl +
-          "/portals/self?f=json&token=fake-token",
+            "/portals/self?f=json&token=fake-token",
           portalsSelfResponse
         )
         .get(
           testUtils.PORTAL_SUBSET.restUrl +
-          "/community/self?f=json&token=fake-token",
+            "/community/self?f=json&token=fake-token",
           communitySelfResponse
         )
         .get(
           testUtils.PORTAL_SUBSET.restUrl +
-          "/content/users/casey?f=json&token=fake-token",
+            "/content/users/casey?f=json&token=fake-token",
           testUtils.getSuccessResponse()
         )
         .get(
           testUtils.PORTAL_SUBSET.restUrl +
-          "/community/users/casey?f=json&token=fake-token",
+            "/community/users/casey?f=json&token=fake-token",
           testUtils.getSuccessResponse()
         )
         .post(
@@ -216,9 +218,9 @@ describe("Module `deploySolutionFromTemplate`", () => {
         )
         .post(
           testUtils.PORTAL_SUBSET.restUrl +
-          "/content/users/casey/" +
-          folderId +
-          "/addItem",
+            "/content/users/casey/" +
+            folderId +
+            "/addItem",
           testUtils.getSuccessResponse({
             id: deployedSolutionId,
             folder: folderId
@@ -226,7 +228,7 @@ describe("Module `deploySolutionFromTemplate`", () => {
         )
         .post(
           testUtils.PORTAL_SUBSET.restUrl +
-          "/content/users/casey/fld1234567890/items/dpl1234567890/update",
+            "/content/users/casey/fld1234567890/items/dpl1234567890/update",
           testUtils.getSuccessResponse({ id: deployedSolutionId })
         );
 
@@ -277,11 +279,13 @@ describe("Module `deploySolutionFromTemplate`", () => {
 
       const deployFnStub = sinon
         .stub(deployItems, "deploySolutionItems")
-        .resolves([{
-          id: deployedSolutionId,
-          type: "Web Map",
-          postProcess: false
-        }]);
+        .resolves([
+          {
+            id: deployedSolutionId,
+            type: "Web Map",
+            postProcess: false
+          }
+        ]);
       const postProcessFnStub = sinon
         .stub(postProcess, "postProcess")
         .resolves();
@@ -289,22 +293,22 @@ describe("Module `deploySolutionFromTemplate`", () => {
       fetchMock
         .get(
           testUtils.PORTAL_SUBSET.restUrl +
-          "/portals/self?f=json&token=fake-token",
+            "/portals/self?f=json&token=fake-token",
           portalsSelfResponse
         )
         .get(
           testUtils.PORTAL_SUBSET.restUrl +
-          "/community/self?f=json&token=fake-token",
+            "/community/self?f=json&token=fake-token",
           communitySelfResponse
         )
         .get(
           testUtils.PORTAL_SUBSET.restUrl +
-          "/content/users/casey?f=json&token=fake-token",
+            "/content/users/casey?f=json&token=fake-token",
           testUtils.getSuccessResponse()
         )
         .get(
           testUtils.PORTAL_SUBSET.restUrl +
-          "/community/users/casey?f=json&token=fake-token",
+            "/community/users/casey?f=json&token=fake-token",
           testUtils.getSuccessResponse()
         )
         .post(
@@ -321,9 +325,9 @@ describe("Module `deploySolutionFromTemplate`", () => {
         )
         .post(
           testUtils.PORTAL_SUBSET.restUrl +
-          "/content/users/casey/" +
-          folderId +
-          "/addItem",
+            "/content/users/casey/" +
+            folderId +
+            "/addItem",
           testUtils.getSuccessResponse({
             id: deployedSolutionId,
             folder: folderId
@@ -331,7 +335,7 @@ describe("Module `deploySolutionFromTemplate`", () => {
         )
         .post(
           testUtils.PORTAL_SUBSET.restUrl +
-          "/content/users/casey/fld1234567890/items/dpl1234567890/update",
+            "/content/users/casey/fld1234567890/items/dpl1234567890/update",
           testUtils.getSuccessResponse({ id: deployedSolutionId })
         );
 

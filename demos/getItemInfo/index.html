@@ -56,10 +56,6 @@
     var package_path = window.location.href.substring(0, window.location.href.lastIndexOf('/'));
     require.config({
       paths: {
-        "tslib": "../node_modules/tslib/tslib",
-        "dist": package_path + "/dist",
-        "src": package_path + "/src",
-
         "@esri/arcgis-rest-auth": "../node_modules/@esri/arcgis-rest-auth/dist/umd/auth.umd.min",
         "@esri/arcgis-rest-feature-layer": "../node_modules/@esri/arcgis-rest-feature-layer/dist/umd/feature-layer.umd.min",
         "@esri/arcgis-rest-portal": "../node_modules/@esri/arcgis-rest-portal/dist/umd/portal.umd.min",
@@ -70,7 +66,11 @@
         "@esri/hub-initiatives": "../node_modules/@esri/hub-initiatives/dist/umd/initiatives.umd.min",
         "@esri/hub-sites": "../node_modules/@esri/hub-sites/dist/umd/sites.umd.min",
         "@esri/hub-teams": "../node_modules/@esri/hub-teams/dist/umd/teams.umd.min",
-        "@esri/solution-common": "../node_modules/@esri/solution-common/dist/umd/common.umd"
+        "@esri/solution-common": "../node_modules/@esri/solution-common/dist/umd/common.umd",
+        "adlib": "../node_modules/adlib/dist/adlib",
+        "dist": package_path + "/dist",
+        "src": package_path + "/src",
+        "tslib": "../node_modules/tslib/tslib"
       }
     });
 
