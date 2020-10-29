@@ -182,7 +182,9 @@ export function deploySolutionFromTemplate(
         templateDictionary.solutionItemId = deployedSolutionId;
         solutionTemplateBase.id = deployedSolutionId;
 
-        return common.addTokenToUrl(options.thumbnailurl, authentication);
+        return options.thumbnailurl
+          ? common.addTokenToUrl(options.thumbnailurl, authentication)
+          : Promise.resolve(null);
       })
       .then(updatedThumbnailUrl => {
         /* istanbul ignore else */
