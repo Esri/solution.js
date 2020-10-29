@@ -32,6 +32,7 @@ import { createItemFromHubTemplate } from "./helpers/create-item-from-hub-templa
 
 /**
  * Creates a Form item from a template
+ *
  * @param {IItemTemplate} template The template
  * @param {any} templateDictionary The template dictionary
  * @param {UserSession} destinationAuthentication The destination user session info

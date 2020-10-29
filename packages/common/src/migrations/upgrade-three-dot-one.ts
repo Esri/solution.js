@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { ISolutionItem, UserSession } from "../interfaces";
+import { ISolutionItem } from "../interfaces";
 import { getProp, cloneObject } from "../generalHelpers";
 import { transformResourcePathsToSolutionResources } from "../resources/transform-resource-paths-to-solution-resources";
 
@@ -23,13 +23,11 @@ import { transformResourcePathsToSolutionResources } from "../resources/transfor
  * If the item was created by Solution.js, this will stamp it
  * with the initial Solution.js schama version number (3)
  * If it is a legacy hub solution, it will apply the transforms
+ *
  * @param model ISolutionItem
  * @param authentication UserSession
  */
-export function _upgradeThreeDotOne(
-  model: ISolutionItem,
-  authentication: UserSession
-): ISolutionItem {
+export function _upgradeThreeDotOne(model: ISolutionItem): ISolutionItem {
   if (getProp(model, "item.properties.schemaVersion") >= 3.1) {
     return model;
   } else {

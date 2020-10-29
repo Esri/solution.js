@@ -18,6 +18,7 @@ import * as common from "@esri/solution-common";
 
 /**
  * The portion of a Webmap URL between the server and the map id.
+ *
  * @protected
  */
 const WEBMAP_APP_URL_PART: string = "home/webmap/viewer.html?webmap=";

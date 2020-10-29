@@ -366,7 +366,7 @@ describe("Module `file`: manages the creation and deployment of item types that 
           { success: true, id: newItemID }
         );
 
-        // tslint:disable-next-line: no-floating-promises
+        // eslint-disable-next-line @typescript-eslint/no-floating-promises
         file
           .createItemFromTemplate(
             itemTemplate,
@@ -416,7 +416,7 @@ describe("Module `file`: manages the creation and deployment of item types that 
             { success: true }
           );
 
-        // tslint:disable-next-line: no-floating-promises
+        // eslint-disable-next-line @typescript-eslint/no-floating-promises
         file
           .createItemFromTemplate(
             itemTemplate,
@@ -449,7 +449,7 @@ describe("Module `file`: manages the creation and deployment of item types that 
           utils.getFailureResponse()
         );
 
-        // tslint:disable-next-line: no-floating-promises
+        // eslint-disable-next-line @typescript-eslint/no-floating-promises
         file
           .createItemFromTemplate(
             itemTemplate,

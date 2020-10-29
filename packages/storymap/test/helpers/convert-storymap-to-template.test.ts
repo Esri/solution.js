@@ -29,7 +29,7 @@ describe("convert-storymap-to-template :: ", () => {
   });
 
   it("converts new storymap", () => {
-    return convertStoryMapToTemplate(model, MOCK_USER_SESSION).then(tmpl => {
+    return convertStoryMapToTemplate(model).then(tmpl => {
       // ensure top props are right
       expect(tmpl.itemId).toBe(model.item.id, "should hold itemId");
       expect(tmpl.type).toBe("StoryMap", "should hold type");
@@ -68,10 +68,7 @@ describe("convert-storymap-to-template :: ", () => {
     const modelWithUnpublished = cloneObject(model);
     modelWithUnpublished.item.typeKeywords.push("smstatusunpublishedchanges");
 
-    return convertStoryMapToTemplate(
-      modelWithUnpublished,
-      MOCK_USER_SESSION
-    ).then(tmpl => {
+    return convertStoryMapToTemplate(modelWithUnpublished).then(tmpl => {
       expect(tmpl.item.typeKeywords.indexOf("smstatusunpublishedchanges")).toBe(
         -1,
         "should remove unpublished kwd"

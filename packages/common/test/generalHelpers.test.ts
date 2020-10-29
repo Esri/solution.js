@@ -334,6 +334,17 @@ describe("Module `generalHelpers`: common utility functions shared across packag
     });
   });
 
+  describe("compareJSONNoEmptyStrings", () => {
+    it("converts empty strings to null", () => {
+      expect(
+        generalHelpers.compareJSONNoEmptyStrings(
+          { a: 1, b: 2, c: "" },
+          { a: 1, b: 2, c: null }
+        )
+      ).toBeTruthy();
+    });
+  });
+
   describe("compareJSONProperties", () => {
     it("should not report if no property changed", () => {
       const json1: ITestCompareJSONProperties = {

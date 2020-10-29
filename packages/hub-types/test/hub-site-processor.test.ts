@@ -63,8 +63,7 @@ describe("HubSiteProcessor: ", () => {
       return HubSiteProcessor.convertItemToTemplate(
         "bc3",
         { id: "ef4" },
-        MOCK_USER_SESSION,
-        {}
+        MOCK_USER_SESSION
       ).then(tmpl => {
         expect(tmpl.item.typeKeywords.length).toBe(
           0,
@@ -113,8 +112,7 @@ describe("HubSiteProcessor: ", () => {
       return HubSiteProcessor.convertItemToTemplate(
         "bc3",
         { id: "ef4" },
-        MOCK_USER_SESSION,
-        {}
+        MOCK_USER_SESSION
       ).then(tmpl => {
         expect(tmpl.item.typeKeywords.length).toBe(
           0,

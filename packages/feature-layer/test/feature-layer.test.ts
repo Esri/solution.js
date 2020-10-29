@@ -531,7 +531,7 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
       expectedClone.properties.tables[0].adminLayerInfo = undefined;
       delete expectedClone.properties.tables[0].definitionQuery;
 
-      // tslint:disable-next-line: no-floating-promises
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
       featureLayer
         .createItemFromTemplate(
           itemTemplate,
@@ -666,7 +666,7 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
           '{"success":true}'
         );
 
-      // tslint:disable-next-line: no-floating-promises
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
       featureLayer
         .createItemFromTemplate(
           itemTemplate,
@@ -801,7 +801,7 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
           '{"success":true}'
         );
 
-      // tslint:disable-next-line: no-floating-promises
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
       featureLayer
         .createItemFromTemplate(
           itemTemplate,
@@ -970,7 +970,7 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
       delete expectedClone.properties.tables[0].isView;
       delete expectedClone.properties.tables[0].sourceSchemaChangesAllowed;
 
-      // tslint:disable-next-line: no-floating-promises
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
       featureLayer
         .createItemFromTemplate(
           itemTemplate,
@@ -1068,7 +1068,7 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
           utils.getFailureResponse({ itemId: itemTemplate.itemId })
         );
 
-      // tslint:disable-next-line: no-floating-promises
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
       featureLayer
         .createItemFromTemplate(
           itemTemplate,
@@ -1145,7 +1145,7 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
           utils.getSuccessResponse({ itemId: itemTemplate.itemId })
         );
 
-      // tslint:disable-next-line: no-floating-promises
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
       featureLayer
         .createItemFromTemplate(
           itemTemplate,
@@ -1222,7 +1222,7 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
           utils.getFailureResponse({ itemId: itemTemplate.itemId })
         );
 
-      // tslint:disable-next-line: no-floating-promises
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
       featureLayer
         .createItemFromTemplate(
           itemTemplate,
@@ -1290,7 +1290,7 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
           mockItems.get400Failure()
         );
 
-      // tslint:disable-next-line: no-floating-promises
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
       featureLayer
         .createItemFromTemplate(
           itemTemplate,
@@ -1341,7 +1341,7 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
           createResponse
         );
 
-      // tslint:disable-next-line: no-floating-promises
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
       featureLayer
         .createItemFromTemplate(
           itemTemplate,
@@ -1438,7 +1438,7 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
           utils.getFailureResponse({ itemId: itemTemplate.itemId })
         );
 
-      // tslint:disable-next-line: no-floating-promises
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
       featureLayer
         .createItemFromTemplate(
           itemTemplate,
@@ -1528,7 +1528,7 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
           mockItems.get400Failure()
         );
 
-      // tslint:disable-next-line: no-floating-promises
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
       featureLayer
         .createItemFromTemplate(
           itemTemplate,
@@ -1601,7 +1601,7 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
           mockItems.get400Failure()
         );
 
-      // tslint:disable-next-line: no-floating-promises
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
       featureLayer
         .createItemFromTemplate(
           itemTemplate,
@@ -1620,7 +1620,7 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
     it("should handle cancellation before deployment of item starts", done => {
       const templateDictionary: any = {};
 
-      // tslint:disable-next-line: no-floating-promises
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
       featureLayer
         .createItemFromTemplate(
           itemTemplate,
@@ -1699,7 +1699,7 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
           utils.getSuccessResponse({ itemId: itemTemplate.itemId })
         );
 
-      // tslint:disable-next-line: no-floating-promises
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
       featureLayer
         .createItemFromTemplate(
           itemTemplate,
@@ -1782,7 +1782,7 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
           utils.getFailureResponse({ itemId: itemTemplate.itemId })
         );
 
-      // tslint:disable-next-line: no-floating-promises
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
       featureLayer
         .createItemFromTemplate(
           itemTemplate,
@@ -1865,7 +1865,7 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
           utils.getSuccessResponse({ itemId: itemTemplate.itemId })
         );
 
-      // tslint:disable-next-line: no-floating-promises
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
       featureLayer
         .createItemFromTemplate(
           itemTemplate,
@@ -1948,7 +1948,7 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
           utils.getFailureResponse({ itemId: itemTemplate.itemId })
         );
 
-      // tslint:disable-next-line: no-floating-promises
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
       featureLayer
         .createItemFromTemplate(
           itemTemplate,

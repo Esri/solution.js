@@ -23,6 +23,7 @@ import { maybePush } from "@esri/hub-common";
 
 /**
  * Given the created templates
+ *
  * @param templates
  * @param templateDictionary
  * @param authentication

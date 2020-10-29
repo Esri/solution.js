@@ -19,6 +19,7 @@ import { ArcGISAuthError } from "@esri/arcgis-rest-request";
 import { UserSession } from "../interfaces";
 /**
  * Add a resource from a blob
+ *
  * @param blob
  * @param itemId
  * @param folder

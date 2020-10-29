@@ -21,6 +21,7 @@ import { moveItem } from "@esri/arcgis-rest-portal";
 /**
  * Move the created site item, and optionally the Initiative, into
  * the solution folder
+ *
  * @param siteModel
  * @param folderId
  * @param authentication

@@ -79,7 +79,7 @@ describe("Upgrade 2.6 ::", () => {
   it("resolves the same model if on or above 2.6", () => {
     const model = cloneObject(defaultModel);
     model.item.properties.schemaVersion = 2.6;
-    const results = _upgradeTwoDotSix(model, MOCK_USER_SESSION);
+    const results = _upgradeTwoDotSix(model);
     expect(results).toBe(model, "should resolve the same object");
   });
 
@@ -88,13 +88,13 @@ describe("Upgrade 2.6 ::", () => {
     const model = cloneObject(defaultModel);
     const expected = cloneObject(defaultModel);
     expected.item.properties.schemaVersion = 2.6;
-    const results = _upgradeTwoDotSix(model, MOCK_USER_SESSION);
+    const results = _upgradeTwoDotSix(model);
     expect(results).toEqual(expected, "should only update the version");
   });
 
   it("resolves the migrated model if less than 2.6", () => {
     const model = cloneObject(defaultModel);
-    const results = _upgradeTwoDotSix(model, MOCK_USER_SESSION);
+    const results = _upgradeTwoDotSix(model);
     expect(results.data.templates.length).toBe(2);
     expect(results.data.templates[0].type).toEqual("Form");
     expect(
@@ -119,7 +119,7 @@ describe("Upgrade 2.6 ::", () => {
   it("doesn't filter templates or update web map ids when no map question exists", () => {
     const model = cloneObject(defaultModel);
     delete model.data.templates[0].properties.form;
-    const results = _upgradeTwoDotSix(model, MOCK_USER_SESSION);
+    const results = _upgradeTwoDotSix(model);
     expect(results.data.templates.length).toBe(3);
     expect(
       results.data.templates[0].dependencies.includes(

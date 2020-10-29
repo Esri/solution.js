@@ -14,20 +14,17 @@
  * limitations under the License.
  */
 
-import { ISolutionItem, ISolutionItemData, UserSession } from "../interfaces";
+import { ISolutionItem, ISolutionItemData } from "../interfaces";
 import { deepStringReplace, getProp, cloneObject } from "@esri/hub-common";
 
 /**
  * Hub Solutions use the `key` property for follow on replacements
  * but the Solution.js ones use the
+ *
  * @param model ISolutionItem
- * @param authentication UserSession
  * @private
  */
-export function _upgradeTwoDotFour(
-  model: ISolutionItem,
-  authentication: UserSession
-): ISolutionItem {
+export function _upgradeTwoDotFour(model: ISolutionItem): ISolutionItem {
   if (getProp(model, "item.properties.schemaVersion") >= 2.4) {
     return model;
   } else {

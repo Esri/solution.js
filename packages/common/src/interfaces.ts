@@ -592,7 +592,7 @@ export interface ISolutionProgressEvent {
 }
 
 /**
- *  Information for storing a resource in a storage item.
+ * Information for storing a resource in a storage item.
  */
 export interface ISourceFileCopyPath {
   /**

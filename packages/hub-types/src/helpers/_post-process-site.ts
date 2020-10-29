@@ -15,12 +15,7 @@
  */
 import { IModel, IHubRequestOptions, interpolate } from "@esri/hub-common";
 
-import {
-  _getSecondPassSharingOptions,
-  _shareItemsToSiteGroups,
-  _updatePages,
-  updateSite
-} from "@esri/hub-sites";
+import { _shareItemsToSiteGroups, updateSite } from "@esri/hub-sites";
 
 import { _updateSitePages } from "./_update-site-pages";
 

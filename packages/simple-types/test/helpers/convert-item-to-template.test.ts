@@ -48,7 +48,6 @@ afterEach(() => {
 describe("simpleTypeConvertItemToTemplate", () => {
   // Blobs are only available in the browser
   if (typeof window !== "undefined") {
-
     describe("dashboard", () => {
       it("should handle dashboard et al. item types", done => {
         const solutionItemId = "sln1234567890";
@@ -92,28 +91,28 @@ describe("simpleTypeConvertItemToTemplate", () => {
         fetchMock
           .post(
             utils.PORTAL_SUBSET.restUrl +
-            "/content/items/" +
-            itemTemplate.itemId +
-            "/data",
+              "/content/items/" +
+              itemTemplate.itemId +
+              "/data",
             ["abc", "def", "ghi"]
           )
           .post(
             utils.PORTAL_SUBSET.restUrl +
-            "/content/items/" +
-            itemTemplate.itemId +
-            "/resources",
+              "/content/items/" +
+              itemTemplate.itemId +
+              "/resources",
             noResourcesResponse
           )
           .post(
             utils.PORTAL_SUBSET.restUrl +
-            "/content/items/" +
-            itemTemplate.itemId +
-            "/info/metadata/metadata.xml",
+              "/content/items/" +
+              itemTemplate.itemId +
+              "/info/metadata/metadata.xml",
             mockItems.get400Failure()
           )
           .post(
             utils.PORTAL_SUBSET.restUrl +
-            "/content/users/casey/items/sln1234567890/addResources",
+              "/content/users/casey/items/sln1234567890/addResources",
             utils.getSuccessResponse()
           );
         staticRelatedItemsMocks.fetchMockRelatedItems("dsh1234567890", {
@@ -193,53 +192,53 @@ describe("simpleTypeConvertItemToTemplate", () => {
         fetchMock
           .post(
             utils.PORTAL_SUBSET.restUrl +
-            "/content/items/" +
-            itemTemplate.itemId +
-            "/data",
+              "/content/items/" +
+              itemTemplate.itemId +
+              "/data",
             ["abc", "def", "ghi"]
           )
           .post(
             utils.PORTAL_SUBSET.restUrl +
-            "/content/items/" +
-            itemTemplate.itemId +
-            "/resources",
+              "/content/items/" +
+              itemTemplate.itemId +
+              "/resources",
             noResourcesResponse
           )
           .post(
             utils.PORTAL_SUBSET.restUrl +
-            "/content/items/" +
-            itemTemplate.itemId +
-            "/info/metadata/metadata.xml",
+              "/content/items/" +
+              itemTemplate.itemId +
+              "/info/metadata/metadata.xml",
             mockItems.get400Failure()
           )
           .post(
             utils.PORTAL_SUBSET.restUrl +
-            "/content/items/" +
-            itemTemplate.itemId +
-            "/info/form.json",
+              "/content/items/" +
+              itemTemplate.itemId +
+              "/info/form.json",
             utils.getSampleJsonAsFile("form.json")
           )
           .post(
             utils.PORTAL_SUBSET.restUrl +
-            "/content/items/" +
-            itemTemplate.itemId +
-            "/info/forminfo.json",
+              "/content/items/" +
+              itemTemplate.itemId +
+              "/info/forminfo.json",
             utils.getSampleJsonAsFile("forminfo.json")
           )
           .post(
             utils.PORTAL_SUBSET.restUrl +
-            "/content/items/" +
-            itemTemplate.itemId +
-            "/info/form.webform",
+              "/content/items/" +
+              itemTemplate.itemId +
+              "/info/form.webform",
             utils.getSampleJsonAsFile("form.webform")
           )
           .post(
             utils.PORTAL_SUBSET.restUrl +
-            "/content/users/" +
-            MOCK_USER_SESSION.username +
-            "/items/" +
-            solutionItemId +
-            "/addResources",
+              "/content/users/" +
+              MOCK_USER_SESSION.username +
+              "/items/" +
+              solutionItemId +
+              "/addResources",
             {
               success: true,
               itemId: itemTemplate.itemId,
@@ -254,9 +253,9 @@ describe("simpleTypeConvertItemToTemplate", () => {
         );
         fetchMock.get(
           utils.PORTAL_SUBSET.restUrl +
-          "/content/items/" +
-          itemTemplate.itemId +
-          "/relatedItems?f=json&direction=forward&relationshipType=Survey2Data&token=fake-token",
+            "/content/items/" +
+            itemTemplate.itemId +
+            "/relatedItems?f=json&direction=forward&relationshipType=Survey2Data&token=fake-token",
           {
             total: 2,
             relatedItems: [
@@ -271,9 +270,9 @@ describe("simpleTypeConvertItemToTemplate", () => {
         );
         fetchMock.get(
           utils.PORTAL_SUBSET.restUrl +
-          "/content/items/" +
-          itemTemplate.itemId +
-          "/relatedItems?f=json&direction=forward&relationshipType=Survey2Service&token=fake-token",
+            "/content/items/" +
+            itemTemplate.itemId +
+            "/relatedItems?f=json&direction=forward&relationshipType=Survey2Service&token=fake-token",
           {
             total: 1,
             relatedItems: [
@@ -312,22 +311,22 @@ describe("simpleTypeConvertItemToTemplate", () => {
         fetchMock
           .post(
             utils.PORTAL_SUBSET.restUrl +
-            "/content/items/abc0cab401af4828a25cc6eaeb59fb69/resources",
+              "/content/items/abc0cab401af4828a25cc6eaeb59fb69/resources",
             noResourcesResponse
           )
           .post(
             utils.PORTAL_SUBSET.restUrl +
-            "/content/items/abc0cab401af4828a25cc6eaeb59fb69/info/metadata/metadata.xml",
+              "/content/items/abc0cab401af4828a25cc6eaeb59fb69/info/metadata/metadata.xml",
             mockItems.get500Failure()
           )
           .post(
             utils.PORTAL_SUBSET.restUrl +
-            "/content/items/abc0cab401af4828a25cc6eaeb59fb69/data",
+              "/content/items/abc0cab401af4828a25cc6eaeb59fb69/data",
             dataResponse
           )
           .post(
             utils.PORTAL_SUBSET.restUrl +
-            "/content/users/casey/items/sln1234567890/addResources",
+              "/content/users/casey/items/sln1234567890/addResources",
             utils.getSuccessResponse()
           );
         staticRelatedItemsMocks.fetchMockRelatedItems(
@@ -349,7 +348,10 @@ describe("simpleTypeConvertItemToTemplate", () => {
     describe("oic", () => {
       it("should handle OIC (Oriented Imagery Catalog)", done => {
         const solutionItemId = "sln1234567890";
-        const item: any = mockItems.getAGOLItem("Oriented Imagery Catalog", null);
+        const item: any = mockItems.getAGOLItem(
+          "Oriented Imagery Catalog",
+          null
+        );
         const data: any = mockItems.getAGOLItemData("Oriented Imagery Catalog");
         const service: any = mockItems.getAGOLService();
 
@@ -362,15 +364,18 @@ describe("simpleTypeConvertItemToTemplate", () => {
             "https://services.arcgis.com/64491f8c348a51cf/arcgis/rest/services/OIC_FL_002/FeatureServer/0",
             service
           );
-        staticRelatedItemsMocks.fetchMockRelatedItems(
-          "oic1234567890",
-          { total: 0, relatedItems: [] }
-        );
+        staticRelatedItemsMocks.fetchMockRelatedItems("oic1234567890", {
+          total: 0,
+          relatedItems: []
+        });
 
         simpleTypes
           .convertItemToTemplate(solutionItemId, item, MOCK_USER_SESSION)
           .then(newItemTemplate => {
-            const expectedTemplate = templates.getItemTemplate("Oriented Imagery Catalog", ["svc1234567890"]);
+            const expectedTemplate = templates.getItemTemplate(
+              "Oriented Imagery Catalog",
+              ["svc1234567890"]
+            );
             expectedTemplate.item.extent = [];
             expectedTemplate.item.thumbnail = "thumbnail/ago_downloaded.png";
             newItemTemplate.key = expectedTemplate.key;
@@ -403,37 +408,37 @@ describe("simpleTypeConvertItemToTemplate", () => {
         fetchMock
           .post(
             utils.PORTAL_SUBSET.restUrl +
-            "/content/items/qck1234567890/resources",
+              "/content/items/qck1234567890/resources",
             resources
           )
           .post(
             utils.PORTAL_SUBSET.restUrl +
-            "/content/items/qck1234567890/info/metadata/metadata.xml",
+              "/content/items/qck1234567890/info/metadata/metadata.xml",
             mockItems.get500Failure()
           )
           .post(
             utils.PORTAL_SUBSET.restUrl +
-            "/content/items/qck1234567890/info/thumbnail/ago_downloaded.png",
+              "/content/items/qck1234567890/info/thumbnail/ago_downloaded.png",
             utils.getSampleImage(),
             { sendAsJson: false }
           )
           .post(
             utils.PORTAL_SUBSET.restUrl +
-            "/content/items/qck1234567890/resources/images/Camera.png",
+              "/content/items/qck1234567890/resources/images/Camera.png",
             utils.getSampleImage(),
             { sendAsJson: false }
           )
           .post(
             utils.PORTAL_SUBSET.restUrl +
-            "/content/items/qck1234567890/resources/qc.project.json",
+              "/content/items/qck1234567890/resources/qc.project.json",
             utils.getSampleJsonAsFile("qc.project.json"),
             { sendAsJson: false }
           )
           .post(
             utils.PORTAL_SUBSET.restUrl +
-            "/content/users/casey/items/" +
-            solutionItemId +
-            "/addResources",
+              "/content/users/casey/items/" +
+              solutionItemId +
+              "/addResources",
             { success: true, id: solutionItemId }
           );
         staticRelatedItemsMocks.fetchMockRelatedItems("qck1234567890", {
@@ -571,12 +576,12 @@ describe("simpleTypeConvertItemToTemplate", () => {
         fetchMock
           .post(
             utils.PORTAL_SUBSET.restUrl +
-            "/content/items/abc0cab401af4828a25cc6eaeb59fb69/resources",
+              "/content/items/abc0cab401af4828a25cc6eaeb59fb69/resources",
             []
           )
           .post(
             utils.PORTAL_SUBSET.restUrl +
-            "/content/items/abc0cab401af4828a25cc6eaeb59fb69/data",
+              "/content/items/abc0cab401af4828a25cc6eaeb59fb69/data",
             new Blob([JSON.stringify(itemTemplate.data)], {
               type: "application/json"
             }),
@@ -584,7 +589,7 @@ describe("simpleTypeConvertItemToTemplate", () => {
           )
           .post(
             utils.PORTAL_SUBSET.restUrl +
-            "/content/users/casey/items/sln1234567890/addResources",
+              "/content/users/casey/items/sln1234567890/addResources",
             utils.getSuccessResponse()
           );
         staticRelatedItemsMocks.fetchMockRelatedItems(
@@ -655,17 +660,17 @@ describe("simpleTypeConvertItemToTemplate", () => {
           .post("https://fake.com/arcgis/rest/info", {})
           .post(
             utils.PORTAL_SUBSET.restUrl +
-            "/content/items/abc0cab401af4828a25cc6eaeb59fb69/resources",
+              "/content/items/abc0cab401af4828a25cc6eaeb59fb69/resources",
             []
           )
           .post(
             utils.PORTAL_SUBSET.restUrl +
-            "/content/items/abc0cab401af4828a25cc6eaeb59fb69/data",
+              "/content/items/abc0cab401af4828a25cc6eaeb59fb69/data",
             data
           )
           .post(
             utils.PORTAL_SUBSET.restUrl +
-            "/content/users/casey/items/sln1234567890/addResources",
+              "/content/users/casey/items/sln1234567890/addResources",
             utils.getSuccessResponse()
           )
           .post(
@@ -738,30 +743,30 @@ describe("simpleTypeConvertItemToTemplate", () => {
         fetchMock
           .post(
             utils.PORTAL_SUBSET.restUrl +
-            "/content/items/" +
-            itemTemplate.itemId +
-            "/data",
+              "/content/items/" +
+              itemTemplate.itemId +
+              "/data",
             200
           )
           .post(
             utils.PORTAL_SUBSET.restUrl +
-            "/content/items/" +
-            itemTemplate.itemId +
-            "/resources",
+              "/content/items/" +
+              itemTemplate.itemId +
+              "/resources",
             noResourcesResponse
           )
           .post(
             utils.PORTAL_SUBSET.restUrl +
-            "/content/items/" +
-            itemTemplate.itemId +
-            "/info/metadata/metadata.xml",
+              "/content/items/" +
+              itemTemplate.itemId +
+              "/info/metadata/metadata.xml",
             mockItems.get400Failure()
           )
           .post(
             utils.PORTAL_SUBSET.restUrl +
-            "/content/users/casey/items/" +
-            solutionItemId +
-            "/addResources",
+              "/content/users/casey/items/" +
+              solutionItemId +
+              "/addResources",
             { success: true, id: solutionItemId }
           );
         staticRelatedItemsMocks.fetchMockRelatedItems("wma1234567890", {
@@ -839,29 +844,29 @@ describe("simpleTypeConvertItemToTemplate", () => {
         fetchMock
           .post(
             utils.PORTAL_SUBSET.restUrl +
-            "/content/items/abc0cab401af4828a25cc6eaeb59fb69/resources",
+              "/content/items/abc0cab401af4828a25cc6eaeb59fb69/resources",
             noResourcesResponse
           )
           .post(
             utils.PORTAL_SUBSET.restUrl +
-            "/content/items/abc0cab401af4828a25cc6eaeb59fb69/info/metadata/metadata.xml",
+              "/content/items/abc0cab401af4828a25cc6eaeb59fb69/info/metadata/metadata.xml",
             mockItems.get500Failure()
           )
           .post(
             utils.PORTAL_SUBSET.restUrl +
-            "/content/users/casey/items/" +
-            solutionItemId +
-            "/addResources",
+              "/content/users/casey/items/" +
+              solutionItemId +
+              "/addResources",
             { success: true, id: solutionItemId }
           )
           .post(
             utils.PORTAL_SUBSET.restUrl +
-            "/content/items/abc0cab401af4828a25cc6eaeb59fb69/data",
+              "/content/items/abc0cab401af4828a25cc6eaeb59fb69/data",
             dataResponse
           )
           .get(
             utils.PORTAL_SUBSET.restUrl +
-            "/community/groups/grp1234567890?f=json&token=fake-token",
+              "/community/groups/grp1234567890?f=json&token=fake-token",
             {}
           );
         staticRelatedItemsMocks.fetchMockRelatedItems(
@@ -877,6 +882,5 @@ describe("simpleTypeConvertItemToTemplate", () => {
           }, done.fail);
       });
     });
-
   }
 });

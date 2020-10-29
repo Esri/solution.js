@@ -18,6 +18,7 @@ import { getStoryMapSubdomain } from "./get-storymap-subdomain";
 /**
  * For a given environment Prod/qa/dev/portal
  * return the correct storymaps base url
+ *
  * @param authentication
  */
 export function getStoryMapBaseUrl(authentication: UserSession): string {

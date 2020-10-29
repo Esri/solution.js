@@ -25,6 +25,7 @@ import { simpleTypes } from "@esri/solution-simple-types";
 
 /**
  * Creates a template from a Form item
+ *
  * @param {string} solutionItemId The solution item ID
  * @param {any} itemInfo: The base item info
  * @param {UserSession} authentication The source user session information

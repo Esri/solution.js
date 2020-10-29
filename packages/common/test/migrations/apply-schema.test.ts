@@ -32,7 +32,7 @@ describe("applySchema :: ", () => {
         }
       }
     } as ISolutionItem;
-    const chk = _applySchema(m, MOCK_USER_SESSION);
+    const chk = _applySchema(m);
     expect(chk).toBe(m, "should pass model through without cloning");
   });
 
@@ -41,7 +41,7 @@ describe("applySchema :: ", () => {
       item: {},
       data: {}
     } as ISolutionItem;
-    const chk = _applySchema(m, MOCK_USER_SESSION);
+    const chk = _applySchema(m);
     expect(chk).not.toBe(m, "should clone model");
     expect(chk.item.properties).toBeDefined("should add item.properties");
   });
@@ -85,7 +85,7 @@ describe("applySchema :: ", () => {
         ]
       }
     } as unknown) as ISolutionItem;
-    const chk = _applySchema(m, MOCK_USER_SESSION);
+    const chk = _applySchema(m);
     expect(chk).not.toBe(m, "should clone model");
     expect(chk.item.properties).toBeDefined("should add item.properties");
     const tmpl0 = chk.data.templates[0];

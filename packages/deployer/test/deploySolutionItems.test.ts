@@ -1052,7 +1052,7 @@ describe("Module `deploySolutionItems`", () => {
       const resourceFilePaths: common.IDeployFileCopyPath[] = [];
       const templateDictionary: any = {};
 
-      // tslint:disable-next-line: no-floating-promises
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
       deploySolution
         ._createItemFromTemplateWhenReady(
           itemTemplate,
@@ -1076,7 +1076,7 @@ describe("Module `deploySolutionItems`", () => {
       const resourceFilePaths: common.IDeployFileCopyPath[] = [];
       const templateDictionary: any = {};
 
-      // tslint:disable-next-line: no-floating-promises
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
       deploySolution
         ._createItemFromTemplateWhenReady(
           itemTemplate,
@@ -1141,7 +1141,7 @@ describe("Module `deploySolutionItems`", () => {
       delete expectedClone.item.spatialReference;
       expectedClone.dependencies = [];
 
-      // tslint:disable-next-line: no-floating-promises
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
       deploySolution
         ._createItemFromTemplateWhenReady(
           itemTemplate,
@@ -1207,7 +1207,7 @@ describe("Module `deploySolutionItems`", () => {
           updatedItem
         );
 
-      // tslint:disable-next-line: no-floating-promises
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
       deploySolution
         ._createItemFromTemplateWhenReady(
           itemTemplate,
@@ -1301,7 +1301,7 @@ describe("Module `deploySolutionItems`", () => {
       expectedClone.properties.layers[0].viewDefinitionQuery = null;
       expectedClone.properties.layers[0].adminLayerInfo = undefined;
 
-      // tslint:disable-next-line: no-floating-promises
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
       deploySolution
         ._createItemFromTemplateWhenReady(
           itemTemplate,
@@ -1367,7 +1367,7 @@ describe("Module `deploySolutionItems`", () => {
           )
           .post(utils.PORTAL_SUBSET.restUrl + "/info", SERVER_INFO);
 
-        // tslint:disable-next-line: no-floating-promises
+        // eslint-disable-next-line @typescript-eslint/no-floating-promises
         deploySolution
           ._createItemFromTemplateWhenReady(
             itemTemplate,
@@ -1426,7 +1426,7 @@ describe("Module `deploySolutionItems`", () => {
           .post("http://someurl//rest/info", {})
           .post("http://someurl/", mockItems.get400Failure());
 
-        // tslint:disable-next-line: no-floating-promises
+        // eslint-disable-next-line @typescript-eslint/no-floating-promises
         deploySolution
           ._createItemFromTemplateWhenReady(
             itemTemplate,
@@ -1485,7 +1485,7 @@ describe("Module `deploySolutionItems`", () => {
           .post("http://someurl//rest/info", {})
           .post("http://someurl/", mockItems.get400Failure());
 
-        // tslint:disable-next-line: no-floating-promises
+        // eslint-disable-next-line @typescript-eslint/no-floating-promises
         deploySolution
           ._createItemFromTemplateWhenReady(
             itemTemplate,
@@ -1532,7 +1532,7 @@ describe("Module `deploySolutionItems`", () => {
         "Web Map"
       );
 
-      // tslint:disable-next-line: no-floating-promises
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
       deploySolution
         ._moveResourcesIntoTemplate(filePaths, template, MOCK_USER_SESSION)
         .then(updatedFilePaths => {

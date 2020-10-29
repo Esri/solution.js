@@ -112,16 +112,16 @@ export function createItemTemplate(
             }
 
             const placeholder = findTemplateInList(existingTemplates, itemId);
-            let itemType = placeholder!.type;
+            let itemType = placeholder.type;
             if (!itemType) {
               // Groups have this defined when their placeholder is created
               itemType = itemInfo.type;
-              placeholder!.type = itemType;
+              placeholder.type = itemType;
             }
             if (!itemInfo.type) {
               itemInfo.type = itemType; // Groups don't have this property, so we'll patch it in
             }
-            placeholder!.item = {
+            placeholder.item = {
               ...itemInfo
             } as IItemGeneralized;
 
@@ -175,8 +175,8 @@ export function createItemTemplate(
                   resolve();
                 } else {
                   itemProgressCallback(itemId, EItemProgressStatus.Failed, 1);
-                  placeholder!.properties["failed"] = true;
-                  replaceTemplate(existingTemplates, itemId, placeholder!);
+                  placeholder.properties["failed"] = true;
+                  replaceTemplate(existingTemplates, itemId, placeholder);
                   resolve(
                     fail(
                       "The type of AGO item " +
@@ -205,6 +205,7 @@ export function createItemTemplate(
                   )
                   .then(
                     itemTemplate => {
+                      // eslint-disable-next-line @typescript-eslint/no-floating-promises
                       storeItemResources(
                         itemTemplate,
                         solutionItemId,
@@ -254,7 +255,7 @@ export function createItemTemplate(
                               );
                             }
                           });
-                          // tslint:disable-next-line: no-floating-promises
+                          // eslint-disable-next-line @typescript-eslint/no-floating-promises
                           Promise.all(dependentDfds).then(() => {
                             // Templatization of item and its dependencies done
                             itemProgressCallback(
@@ -268,8 +269,8 @@ export function createItemTemplate(
                       });
                     },
                     error => {
-                      placeholder!.properties["error"] = JSON.stringify(error);
-                      replaceTemplate(existingTemplates, itemId, placeholder!);
+                      placeholder.properties["error"] = JSON.stringify(error);
+                      replaceTemplate(existingTemplates, itemId, placeholder);
                       itemProgressCallback(
                         itemId,
                         EItemProgressStatus.Failed,

@@ -210,24 +210,27 @@ describe("Module `quick capture`: manages the creation and deployment of quick c
     });
 
     it("postProcess QuickCapture projects--no changes needed", done => {
-      const qcTemplate: common.IItemTemplate = templates.getItemTemplate("QuickCapture Project");
+      const qcTemplate: common.IItemTemplate = templates.getItemTemplate(
+        "QuickCapture Project"
+      );
       const newItemId = qcTemplate.itemId;
       qcTemplate.item.id = newItemId;
       qcTemplate.item.extent = null;
-      qcTemplate.item.licenseInfo = "https://abc12/apps/opsdashboard/index.html#/" + newItemId + "?areaname=";
+      qcTemplate.item.licenseInfo =
+        "https://abc12/apps/opsdashboard/index.html#/" +
+        newItemId +
+        "?areaname=";
       qcTemplate.data = {
         application: {
           basemap: {},
           dataSources: [
             {
-              featureServiceItemId:
-                "xxxe5f693de34620934787ead6693f10",
+              featureServiceItemId: "xxxe5f693de34620934787ead6693f10",
               dataSourceId: "1d4de1e4-ef58-4e02-9159-7a6e6701cada",
               url: "https://abc123/name/FeatureServer/0"
             },
             {
-              featureServiceItemId:
-                "xxxe5f693de34620934787ead6693f10",
+              featureServiceItemId: "xxxe5f693de34620934787ead6693f10",
               dataSourceId: "1687a71b-cf77-48ed-b948-c66e228a0f74",
               url: "https://abc123/name/FeatureServer/1"
             }
@@ -290,18 +293,24 @@ describe("Module `quick capture`: manages the creation and deployment of quick c
       ).and.callThrough();
 
       fetchMock
-      .get(
-        utils.PORTAL_SUBSET.restUrl + "/content/items/" + newItemId + "?f=json&token=fake-token",
-        qcTemplate.item
-      )
-      .post(
-        utils.PORTAL_SUBSET.restUrl + "/content/items/" + newItemId + "/data",
-        qcTemplate.data
-      )
-      .post(
-        utils.PORTAL_SUBSET.restUrl + "/content/users/casey/items/" + newItemId + "/updateResources",
-        { success: true }
-      );
+        .get(
+          utils.PORTAL_SUBSET.restUrl +
+            "/content/items/" +
+            newItemId +
+            "?f=json&token=fake-token",
+          qcTemplate.item
+        )
+        .post(
+          utils.PORTAL_SUBSET.restUrl + "/content/items/" + newItemId + "/data",
+          qcTemplate.data
+        )
+        .post(
+          utils.PORTAL_SUBSET.restUrl +
+            "/content/users/casey/items/" +
+            newItemId +
+            "/updateResources",
+          { success: true }
+        );
 
       quickcapture
         .postProcess(
@@ -323,11 +332,14 @@ describe("Module `quick capture`: manages the creation and deployment of quick c
     });
 
     it("postProcess QuickCapture projects--changes needed", done => {
-      const qcTemplate: common.IItemTemplate = templates.getItemTemplate("QuickCapture Project");
+      const qcTemplate: common.IItemTemplate = templates.getItemTemplate(
+        "QuickCapture Project"
+      );
       const newItemId = qcTemplate.itemId;
       qcTemplate.item.id = newItemId;
       qcTemplate.item.extent = null;
-      qcTemplate.item.licenseInfo = "{{portalBaseUrl}}/apps/opsdashboard/index.html#/{{9da79c91fc7642ebb4c0bbacfbacd510.itemId}}?areaname=";
+      qcTemplate.item.licenseInfo =
+        "{{portalBaseUrl}}/apps/opsdashboard/index.html#/{{9da79c91fc7642ebb4c0bbacfbacd510.itemId}}?areaname=";
       qcTemplate.data = {
         application: {
           basemap: {},
@@ -403,22 +415,31 @@ describe("Module `quick capture`: manages the creation and deployment of quick c
       ).and.callThrough();
 
       fetchMock
-      .get(
-        utils.PORTAL_SUBSET.restUrl + "/content/items/" + newItemId + "?f=json&token=fake-token",
-        qcTemplate.item
-      )
-      .post(
-        utils.PORTAL_SUBSET.restUrl + "/content/items/" + newItemId + "/data",
-        qcTemplate.data
-      )
-      .post(
-        utils.PORTAL_SUBSET.restUrl + "/content/users/casey/items/" + newItemId + "/update",
-        { success: true }
-      )
-      .post(
-        utils.PORTAL_SUBSET.restUrl + "/content/users/casey/items/" + newItemId + "/updateResources",
-        { success: true }
-      );
+        .get(
+          utils.PORTAL_SUBSET.restUrl +
+            "/content/items/" +
+            newItemId +
+            "?f=json&token=fake-token",
+          qcTemplate.item
+        )
+        .post(
+          utils.PORTAL_SUBSET.restUrl + "/content/items/" + newItemId + "/data",
+          qcTemplate.data
+        )
+        .post(
+          utils.PORTAL_SUBSET.restUrl +
+            "/content/users/casey/items/" +
+            newItemId +
+            "/update",
+          { success: true }
+        )
+        .post(
+          utils.PORTAL_SUBSET.restUrl +
+            "/content/users/casey/items/" +
+            newItemId +
+            "/updateResources",
+          { success: true }
+        );
 
       quickcapture
         .postProcess(
@@ -438,6 +459,5 @@ describe("Module `quick capture`: manages the creation and deployment of quick c
           done();
         }, done.fail);
     });
-
   });
 });

@@ -194,6 +194,7 @@ export function createItemFromTemplate(
 
 /**
  * QuickCapture post-processing actions
+ *
  * @param {string} itemId The item ID
  * @param {string} type The template type
  * @param {any[]} itemInfos Array of {id: 'ef3', type: 'Web Map'} objects
@@ -212,21 +213,22 @@ export function postProcess(
 ): Promise<any> {
   return new Promise<any>((resolve, reject) => {
     template.data = common.replaceInTemplate(template.data, templateDictionary);
-    common.updateItemTemplateFromDictionary(
-      itemId,
-      templateDictionary,
-      authentication
-    ).then(
-      () => {
-        common.updateItemResourceText(
-          itemId,
-          template.data.name,
-          JSON.stringify(template.data.application),
-          authentication
-        ).then(resolve, reject);
-      },
-      reject
-    );
+    common
+      .updateItemTemplateFromDictionary(
+        itemId,
+        templateDictionary,
+        authentication
+      )
+      .then(() => {
+        common
+          .updateItemResourceText(
+            itemId,
+            template.data.name,
+            JSON.stringify(template.data.application),
+            authentication
+          )
+          .then(resolve, reject);
+      }, reject);
   });
 }
 

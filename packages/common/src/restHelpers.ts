@@ -196,7 +196,7 @@ export function addForwardItemRelationships(
         );
       });
     });
-    // tslint:disable-next-line: no-floating-promises
+    // eslint-disable-next-line @typescript-eslint/no-floating-promises
     Promise.all(relationshipPromises).then((responses: IStatusResponse[]) =>
       resolve(responses)
     );
@@ -356,13 +356,13 @@ export function convertExtent(
   const _requestOptions: any = Object.assign({}, authentication);
   return new Promise<any>((resolve, reject) => {
     // tslint:disable-next-line:no-unnecessary-type-assertion
-    if (extent.spatialReference!.wkid === outSR?.wkid || !outSR) {
+    if (extent.spatialReference.wkid === outSR?.wkid || !outSR) {
       resolve(extent);
     } else {
       _requestOptions.params = {
         f: "json",
         // tslint:disable-next-line:no-unnecessary-type-assertion
-        inSR: extent.spatialReference!.wkid,
+        inSR: extent.spatialReference.wkid,
         outSR: outSR.wkid,
         extentOfInterest: JSON.stringify(extent)
       };
@@ -389,7 +389,7 @@ export function convertExtent(
             f: "json",
             outSR: outSR.wkid,
             // tslint:disable-next-line:no-unnecessary-type-assertion
-            inSR: extent.spatialReference!.wkid,
+            inSR: extent.spatialReference.wkid,
             geometries: {
               geometryType: "esriGeometryPoint",
               geometries: [
@@ -498,7 +498,7 @@ export function createFullItem(
       authentication: destinationAuthentication
     };
 
-    // tslint:disable-next-line: no-floating-promises
+    // eslint-disable-next-line @typescript-eslint/no-floating-promises
     addTokenToUrl(itemThumbnailUrl, itemThumbnailAuthentication).then(
       updatedThumbnailUrl => {
         /* istanbul ignore else */
@@ -1136,7 +1136,7 @@ export function removeItem(
       id: itemId,
       authentication: authentication
     };
-    return portalRemoveItem(requestOptions).then(
+    portalRemoveItem(requestOptions).then(
       result => (result.success ? resolve(result) : reject(result)),
       reject
     );
@@ -1330,6 +1330,7 @@ export function updateItemExtended(
 
 /**
  * Update an item's base and data using a dictionary.
+ *
  * @param {string} itemId The item ID
  * @param {any} templateDictionary The template dictionary
  * @param {UserSession} authentication The destination session info
@@ -1486,7 +1487,6 @@ export function _getCreateServiceOptions(
     const serviceInfo: any = newItemTemplate.properties;
     const folderId: any = templateDictionary.folderId;
     const isPortal: boolean = templateDictionary.isPortal;
-    const solutionItemId: string = templateDictionary.solutionItemId;
     const itemId: string = newItemTemplate.itemId;
 
     validateSpatialReferenceAndExtent(

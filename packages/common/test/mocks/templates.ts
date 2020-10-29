@@ -519,24 +519,6 @@ export function getWebMappingApplicationTemplateNoWebmapOrGroup(): interfaces.II
 
 // -- Internals ------------------------------------------------------------------------------------------------------//
 
-function addCondensedFormOfLayer(
-  layersOrTables: any[],
-  serviceLayerList: any[]
-) {
-  layersOrTables.forEach(layer => {
-    serviceLayerList.push({
-      id: layer.id,
-      name: layer.name,
-      parentLayerId: -1,
-      defaultVisibility: true,
-      subLayerIds: null,
-      minScale: 0,
-      maxScale: 0,
-      geometryType: "esriGeometryPoint"
-    });
-  });
-}
-
 function createItemTemplateRelationship(
   id: number,
   relatedTableId: number,

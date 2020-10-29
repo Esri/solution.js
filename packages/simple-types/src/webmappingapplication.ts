@@ -328,7 +328,7 @@ export function findUrls(
     authentication: authentication
   };
   // test for URLs
-  const results = testString.match(/(\bhttps?:\/\/[-A-Z0-9\/._]*)/gim);
+  const results = testString.match(/(\bhttps?:\/\/[-A-Z0-9/._]*)/gim);
   if (results && results.length) {
     results.forEach((url: string) => {
       if (url.indexOf("NAServer") > -1) {

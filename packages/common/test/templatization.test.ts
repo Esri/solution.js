@@ -214,13 +214,15 @@ describe("Module `templatization`: common functions involving the adlib library"
     });
 
     it("should handle missing variables", () => {
-      const template = "{{organization.name}}<br />{{organization.nonexistantproperty.sharedTheme.logo.small}}<br />{{organization.name}}";
+      const template =
+        "{{organization.name}}<br />{{organization.nonexistantproperty.sharedTheme.logo.small}}<br />{{organization.name}}";
       const templateDictionary: any = {
         organization: {
           name: "myOrg"
         }
       };
-      const expected = "myOrg<br />{{organization.nonexistantproperty.sharedTheme.logo.small}}<br />myOrg";
+      const expected =
+        "myOrg<br />{{organization.nonexistantproperty.sharedTheme.logo.small}}<br />myOrg";
       const actual: any = templatization.replaceInTemplate(
         template,
         templateDictionary
@@ -229,13 +231,15 @@ describe("Module `templatization`: common functions involving the adlib library"
     });
 
     it("should handle missing variables with defaults", () => {
-      const template = "{{organization.name||My Community}}<br />{{organization.nonexistantproperty.sharedTheme.logo.small||https://www.arcgis.com/sharing/rest/content/items/28989a5ecc2d4b2fbf62ac0f5075b7ff/data}}<br />{{organization.name||My Community}}";
+      const template =
+        "{{organization.name||My Community}}<br />{{organization.nonexistantproperty.sharedTheme.logo.small||https://www.arcgis.com/sharing/rest/content/items/28989a5ecc2d4b2fbf62ac0f5075b7ff/data}}<br />{{organization.name||My Community}}";
       const templateDictionary: any = {
         organization: {
           name: "myOrg"
         }
       };
-      const expected = "myOrg<br />https://www.arcgis.com/sharing/rest/content/items/28989a5ecc2d4b2fbf62ac0f5075b7ff/data<br />myOrg";
+      const expected =
+        "myOrg<br />https://www.arcgis.com/sharing/rest/content/items/28989a5ecc2d4b2fbf62ac0f5075b7ff/data<br />myOrg";
       const actual: any = templatization.replaceInTemplate(
         template,
         templateDictionary
