@@ -693,6 +693,9 @@ export function updateFeatureServiceDefinition(
       if (templateDictionary.isPortal) {
         item = _updateForPortal(item, itemTemplate, templateDictionary);
       }
+
+      removeLayerOptimization(item);
+
       if (item.type === "Feature Layer") {
         options.layers.push(item);
       } else {
@@ -704,6 +707,14 @@ export function updateFeatureServiceDefinition(
       e => reject(fail(e))
     );
   });
+}
+
+export function removeLayerOptimization(layer: any): void {
+  // Removed for issue #526 to prevent invalid enablement of layer optimization
+  /* istanbul ignore else */
+  if (layer.multiScaleGeometryInfo) {
+    deleteProp(layer, "multiScaleGeometryInfo");
+  }
 }
 
 export function _updateForPortal(
