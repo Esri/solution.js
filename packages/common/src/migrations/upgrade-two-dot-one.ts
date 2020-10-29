@@ -13,8 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { UserSession } from "../interfaces";
-import { getProp, cloneObject } from "@esri/hub-common";
+import { getProp } from "@esri/hub-common";
 
 /**
  *
@@ -22,7 +21,7 @@ import { getProp, cloneObject } from "@esri/hub-common";
  * @param authentication
  * @private
  */
-export function _upgradeTwoDotOne(model: any, authentication: UserSession) {
+export function _upgradeTwoDotOne(model: any) {
   if (getProp(model, "item.properties.schemaVersion") >= 2.1) {
     return model;
   }

@@ -49,9 +49,13 @@ describe("Module `webmap`: manages the creation and deployment of OIC (Oriented 
 
   describe("convertItemToTemplate", () => {
     it("handles failure to get layer information", done => {
-      const itemTemplate = templates.getItemTemplate("Oriented Imagery Catalog");
-      itemTemplate.data.properties.ServiceURL = "http://services.arcgis.com/myOrg/ArcGIS/rest/services/myService1/FeatureServer/1";
-      itemTemplate.data.properties.OverviewURL = "http://services.arcgis.com/myOrg/ArcGIS/rest/services/myService2/FeatureServer/2";
+      const itemTemplate = templates.getItemTemplate(
+        "Oriented Imagery Catalog"
+      );
+      itemTemplate.data.properties.ServiceURL =
+        "http://services.arcgis.com/myOrg/ArcGIS/rest/services/myService1/FeatureServer/1";
+      itemTemplate.data.properties.OverviewURL =
+        "http://services.arcgis.com/myOrg/ArcGIS/rest/services/myService2/FeatureServer/2";
 
       fetchMock
         .post(
@@ -63,28 +67,27 @@ describe("Module `webmap`: manages the creation and deployment of OIC (Oriented 
           { serviceItemId: "svc1234567890b", id: 2 }
         );
 
-      oic.convertItemToTemplate(itemTemplate, MOCK_USER_SESSION)
-        .then(
-          () => done.fail(),
-          () => done()
-        );
+      oic.convertItemToTemplate(itemTemplate, MOCK_USER_SESSION).then(
+        () => done.fail(),
+        () => done()
+      );
     });
 
     it("handles missing data section", done => {
-      const itemTemplate = templates.getItemTemplate("Oriented Imagery Catalog");
+      const itemTemplate = templates.getItemTemplate(
+        "Oriented Imagery Catalog"
+      );
       itemTemplate.data = null;
 
       const expected = templates.getItemTemplate("Oriented Imagery Catalog");
       expected.data = null;
 
-      oic.convertItemToTemplate(itemTemplate, MOCK_USER_SESSION)
-      .then(
-        actual => {
+      oic
+        .convertItemToTemplate(itemTemplate, MOCK_USER_SESSION)
+        .then(actual => {
           expect(actual).toEqual(expected);
           done();
-        },
-        done.fail
-      );
+        }, done.fail);
     });
   });
 
@@ -95,41 +98,37 @@ describe("Module `webmap`: manages the creation and deployment of OIC (Oriented 
         urlHash: {} as any
       };
 
-      oic._extractDependencies(templates.getItemTemplateSkeleton(), null)
-        .then(
-          actual => {
-            expect(actual).toEqual(expectedDependencies);
-            done();
-          },
-          done.fail
-        );
+      oic
+        ._extractDependencies(templates.getItemTemplateSkeleton(), null)
+        .then(actual => {
+          expect(actual).toEqual(expectedDependencies);
+          done();
+        }, done.fail);
 
-      const itemTemplate = templates.getItemTemplate("Oriented Imagery Catalog");
+      const itemTemplate = templates.getItemTemplate(
+        "Oriented Imagery Catalog"
+      );
       itemTemplate.data.properties = null;
-      oic._extractDependencies(itemTemplate, null)
-        .then(
-          actual => {
-            expect(actual).toEqual(expectedDependencies);
-            done();
-          },
-          done.fail
-        );
+      oic._extractDependencies(itemTemplate, null).then(actual => {
+        expect(actual).toEqual(expectedDependencies);
+        done();
+      }, done.fail);
 
       itemTemplate.data = null;
-      oic._extractDependencies(itemTemplate, null)
-        .then(
-          actual => {
-            expect(actual).toEqual(expectedDependencies);
-            done();
-          },
-          done.fail
-        );
+      oic._extractDependencies(itemTemplate, null).then(actual => {
+        expect(actual).toEqual(expectedDependencies);
+        done();
+      }, done.fail);
     });
 
     it("handles both of the URL properties", done => {
-      const itemTemplate = templates.getItemTemplate("Oriented Imagery Catalog");
-      itemTemplate.data.properties.ServiceURL = "http://services.arcgis.com/myOrg/ArcGIS/rest/services/myService1/FeatureServer/1";
-      itemTemplate.data.properties.OverviewURL = "http://services.arcgis.com/myOrg/ArcGIS/rest/services/myService2/FeatureServer/2";
+      const itemTemplate = templates.getItemTemplate(
+        "Oriented Imagery Catalog"
+      );
+      itemTemplate.data.properties.ServiceURL =
+        "http://services.arcgis.com/myOrg/ArcGIS/rest/services/myService1/FeatureServer/1";
+      itemTemplate.data.properties.OverviewURL =
+        "http://services.arcgis.com/myOrg/ArcGIS/rest/services/myService2/FeatureServer/2";
 
       fetchMock
         .post(
@@ -144,25 +143,27 @@ describe("Module `webmap`: manages the creation and deployment of OIC (Oriented 
       const expected = {
         dependencies: ["svc1234567890a", "svc1234567890b"],
         urlHash: {
-          "http://services.arcgis.com/myOrg/ArcGIS/rest/services/myService1/FeatureServer/1": "svc1234567890a",
-          "http://services.arcgis.com/myOrg/ArcGIS/rest/services/myService2/FeatureServer/2": "svc1234567890b"
+          "http://services.arcgis.com/myOrg/ArcGIS/rest/services/myService1/FeatureServer/1":
+            "svc1234567890a",
+          "http://services.arcgis.com/myOrg/ArcGIS/rest/services/myService2/FeatureServer/2":
+            "svc1234567890b"
         }
       };
 
-      oic._extractDependencies(itemTemplate, MOCK_USER_SESSION)
-        .then(
-          actual => {
-            expect(actual).toEqual(expected);
-            done();
-          },
-          done.fail
-        );
+      oic._extractDependencies(itemTemplate, MOCK_USER_SESSION).then(actual => {
+        expect(actual).toEqual(expected);
+        done();
+      }, done.fail);
     });
 
     it("handles failure to get layer information", done => {
-      const itemTemplate = templates.getItemTemplate("Oriented Imagery Catalog");
-      itemTemplate.data.properties.ServiceURL = "http://services.arcgis.com/myOrg/ArcGIS/rest/services/myService1/FeatureServer/1";
-      itemTemplate.data.properties.OverviewURL = "http://services.arcgis.com/myOrg/ArcGIS/rest/services/myService2/FeatureServer/2";
+      const itemTemplate = templates.getItemTemplate(
+        "Oriented Imagery Catalog"
+      );
+      itemTemplate.data.properties.ServiceURL =
+        "http://services.arcgis.com/myOrg/ArcGIS/rest/services/myService1/FeatureServer/1";
+      itemTemplate.data.properties.OverviewURL =
+        "http://services.arcgis.com/myOrg/ArcGIS/rest/services/myService2/FeatureServer/2";
 
       fetchMock
         .post(
@@ -174,11 +175,10 @@ describe("Module `webmap`: manages the creation and deployment of OIC (Oriented 
           { serviceItemId: "svc1234567890b", id: 2 }
         );
 
-      oic._extractDependencies(itemTemplate, MOCK_USER_SESSION)
-        .then(
-          () => done.fail(),
-          () => done()
-        );
+      oic._extractDependencies(itemTemplate, MOCK_USER_SESSION).then(
+        () => done.fail(),
+        () => done()
+      );
     });
   });
 
@@ -202,13 +202,12 @@ describe("Module `webmap`: manages the creation and deployment of OIC (Oriented 
         urlHash: {} as any
       };
 
-      oic._getLayerIds(layerURLs, dependencies, MOCK_USER_SESSION).then(
-        actual => {
+      oic
+        ._getLayerIds(layerURLs, dependencies, MOCK_USER_SESSION)
+        .then(actual => {
           expect(actual).toEqual(expected);
           done();
-        },
-        done.fail
-      );
+        }, done.fail);
     });
 
     it("handles single layer URL", done => {
@@ -217,26 +216,25 @@ describe("Module `webmap`: manages the creation and deployment of OIC (Oriented 
       ];
       const dependencies: string[] = [];
 
-      fetchMock
-        .post(
-          "http://services.arcgis.com/myOrg/ArcGIS/rest/services/myService1/FeatureServer/1",
-          { serviceItemId: "svc1234567890a", id: 1 }
-        );
+      fetchMock.post(
+        "http://services.arcgis.com/myOrg/ArcGIS/rest/services/myService1/FeatureServer/1",
+        { serviceItemId: "svc1234567890a", id: 1 }
+      );
 
       const expected = {
         dependencies: ["svc1234567890a"],
         urlHash: {
-          "http://services.arcgis.com/myOrg/ArcGIS/rest/services/myService1/FeatureServer/1": "svc1234567890a"
+          "http://services.arcgis.com/myOrg/ArcGIS/rest/services/myService1/FeatureServer/1":
+            "svc1234567890a"
         }
       };
 
-      oic._getLayerIds(layerURLs, dependencies, MOCK_USER_SESSION).then(
-        actual => {
+      oic
+        ._getLayerIds(layerURLs, dependencies, MOCK_USER_SESSION)
+        .then(actual => {
           expect(actual).toEqual(expected);
           done();
-        },
-        done.fail
-      );
+        }, done.fail);
     });
 
     it("handles duplicate, empty, MapServer layer URLs", done => {
@@ -263,18 +261,19 @@ describe("Module `webmap`: manages the creation and deployment of OIC (Oriented 
       const expected = {
         dependencies: ["svc1234567890b", "svc1234567890a"],
         urlHash: {
-          "http://services.arcgis.com/myOrg/ArcGIS/rest/services/myService2/FeatureServer/2": "svc1234567890b",
-          "http://services.arcgis.com/myOrg/ArcGIS/rest/services/myService1/FeatureServer/1": "svc1234567890a"
+          "http://services.arcgis.com/myOrg/ArcGIS/rest/services/myService2/FeatureServer/2":
+            "svc1234567890b",
+          "http://services.arcgis.com/myOrg/ArcGIS/rest/services/myService1/FeatureServer/1":
+            "svc1234567890a"
         }
       };
 
-      oic._getLayerIds(layerURLs, dependencies, MOCK_USER_SESSION).then(
-        actual => {
+      oic
+        ._getLayerIds(layerURLs, dependencies, MOCK_USER_SESSION)
+        .then(actual => {
           expect(actual).toEqual(expected);
           done();
-        },
-        done.fail
-      );
+        }, done.fail);
     });
 
     it("handles failure to get layer information", done => {
@@ -283,11 +282,10 @@ describe("Module `webmap`: manages the creation and deployment of OIC (Oriented 
       ];
       const dependencies: string[] = [];
 
-      fetchMock
-        .post(
-          "http://services.arcgis.com/myOrg/ArcGIS/rest/services/myService1/FeatureServer/1",
-          mockItems.get400Failure()
-        );
+      fetchMock.post(
+        "http://services.arcgis.com/myOrg/ArcGIS/rest/services/myService1/FeatureServer/1",
+        mockItems.get400Failure()
+      );
 
       oic._getLayerIds(layerURLs, dependencies, MOCK_USER_SESSION).then(
         () => done.fail(),
@@ -309,12 +307,20 @@ describe("Module `webmap`: manages the creation and deployment of OIC (Oriented 
         "http://services.arcgis.com/myOrg/ArcGIS/rest/services/myService2/FeatureServer/2":
           "svc1234567890b"
       };
-      expect(oic
-        ._templatizeOicLayerUrl("http://services.arcgis.com/myOrg/ArcGIS/rest/services/myService0/FeatureServer/0", urlHash))
-        .toEqual("http://services.arcgis.com/myOrg/ArcGIS/rest/services/myService0/FeatureServer/0");
-      expect(oic
-        ._templatizeOicLayerUrl("http://services.arcgis.com/myOrg/ArcGIS/rest/services/myService1/FeatureServer/1", urlHash))
-        .toEqual("{{svc1234567890a.layer1.url}}");
+      expect(
+        oic._templatizeOicLayerUrl(
+          "http://services.arcgis.com/myOrg/ArcGIS/rest/services/myService0/FeatureServer/0",
+          urlHash
+        )
+      ).toEqual(
+        "http://services.arcgis.com/myOrg/ArcGIS/rest/services/myService0/FeatureServer/0"
+      );
+      expect(
+        oic._templatizeOicLayerUrl(
+          "http://services.arcgis.com/myOrg/ArcGIS/rest/services/myService1/FeatureServer/1",
+          urlHash
+        )
+      ).toEqual("{{svc1234567890a.layer1.url}}");
     });
   });
 });

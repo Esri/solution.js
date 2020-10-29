@@ -39,6 +39,7 @@ import * as simpleTypeHelpers from "./helpers/simple-type-helpers";
 
 /**
  * Delegate to the simpleType converter
+ *
  * @param solutionItemId
  * @param itemInfo
  * @param authentication
@@ -57,6 +58,7 @@ export function convertItemToTemplate(
 
 /**
  * Delegate to simpleType creator
+ *
  * @param template
  * @param templateDictionary
  * @param destinationAuthentication
@@ -109,6 +111,7 @@ export function postProcessFieldReferences(
 
 /**
  * Simple Type post-processing actions
+ *
  * @param {string} itemId The item ID
  * @param {string} type The template type
  * @param {any[]} itemInfos Array of {id: 'ef3', type: 'Web Map'} objects

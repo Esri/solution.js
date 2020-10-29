@@ -36,6 +36,7 @@ import { createStoryMap } from "./helpers/create-storymap";
 
 /**
  * Convert a StoryMap to a template
+ *
  * @param solutionItemId
  * @param itemInfo
  * @param authentication
@@ -55,7 +56,7 @@ export function convertItemToTemplate(
       // append into the model
       model.data = data;
       // and use that to create a template
-      return convertStoryMapToTemplate(model, authentication);
+      return convertStoryMapToTemplate(model);
     })
     .then(tmpl => {
       return tmpl;
@@ -64,6 +65,7 @@ export function convertItemToTemplate(
 
 /**
  * Create a StoryMap from the passed in template
+ *
  * @param template
  * @param templateDictionary
  * @param destinationAuthentication

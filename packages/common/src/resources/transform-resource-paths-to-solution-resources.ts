@@ -20,6 +20,7 @@ import { isGuid } from "@esri/hub-common";
  * Convert an array of resource strings into an array of ISolutionResources
  *
  * Used to migrate Solutions to a more extensible resource schema
+ *
  * @param resourceStrings Array of resource paths
  */
 export function transformResourcePathsToSolutionResources(
@@ -30,6 +31,7 @@ export function transformResourcePathsToSolutionResources(
 
 /**
  * Convert a resource path to a ISolutionResource
+ *
  * @param resourcePath String
  */
 export function transformResourcePathToSolutionResource(
@@ -45,6 +47,7 @@ export function transformResourcePathToSolutionResource(
 
 /**
  * Convert a resource path to a SolutionResourceType
+ *
  * @param resourcePath String
  */
 export function _getSolutionResourceTypeFromResourcePath(
@@ -81,6 +84,7 @@ const PATH_TO_TYPE_MAP = [
 
 /**
  * Extract the filename from a path
+ *
  * @param path String that is a path
  * @private
  */
@@ -107,6 +111,7 @@ export function _extractFilenameFromResourcePath(path: string): string {
  * Original resource paths encoded information in the path
  * including actual sub-folders. The logic is kinda complex
  * thus this function has extensive tests
+ *
  * @param path
  * @private
  */

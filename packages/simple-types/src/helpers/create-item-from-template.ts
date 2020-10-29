@@ -190,9 +190,7 @@ export function createItemFromTemplate(
               }
 
               Promise.all([relationshipsDef, customProcDef]).then(
-                results => {
-                  const [relationships, customProcs] = results;
-
+                () => {
                   // Interrupt process if progress callback returns `false`
                   if (
                     !itemProgressCallback(

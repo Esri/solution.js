@@ -76,8 +76,11 @@ export function _extractDependencies(
         layerURLs.push(itemTemplate.data.properties.ServiceURL);
       }
       /* istanbul ignore else */
-      if (itemTemplate.data.properties.OverviewURL &&
-        itemTemplate.data.properties.OverviewURL !== itemTemplate.data.properties.ServiceURL) {
+      if (
+        itemTemplate.data.properties.OverviewURL &&
+        itemTemplate.data.properties.OverviewURL !==
+          itemTemplate.data.properties.ServiceURL
+      ) {
         layerURLs.push(itemTemplate.data.properties.OverviewURL);
       }
       _getLayerIds(layerURLs, dependencies, authentication).then(
@@ -177,18 +180,17 @@ export function _getLayerIds(
  * @return Templatized URL if layerURL is in the urlHash
  * @protected
  */
-export function _templatizeOicLayerUrl(
-  layerURL: string,
-  urlHash: any
-): string {
+export function _templatizeOicLayerUrl(layerURL: string, urlHash: any): string {
   let templatizedURL = layerURL;
   if (layerURL) {
     const id: any = urlHash[layerURL];
     if (id) {
-      const layerId = layerURL.substr(
-        layerURL.lastIndexOf("/") + 1
+      const layerId = layerURL.substr(layerURL.lastIndexOf("/") + 1);
+      templatizedURL = common.templatizeTerm(
+        id,
+        id,
+        ".layer" + layerId + ".url"
       );
-      templatizedURL = common.templatizeTerm(id, id, ".layer" + layerId + ".url");
     }
   }
   return templatizedURL;

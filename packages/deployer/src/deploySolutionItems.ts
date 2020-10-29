@@ -147,11 +147,11 @@ export function deploySolutionItems(
           const template = common.findTemplateInList(templates, id);
           awaitAllItems.push(
             _createItemFromTemplateWhenReady(
-              template!,
+              template,
               common.generateStorageFilePaths(
                 portalSharingUrl,
                 storageItemId,
-                template!.resources
+                template.resources
               ),
               storageAuthentication,
               templateDictionary,
@@ -162,14 +162,14 @@ export function deploySolutionItems(
         });
 
         // Wait until all items have been created
-        // tslint:disable-next-line: no-floating-promises
+        // eslint-disable-next-line @typescript-eslint/no-floating-promises
         Promise.all(awaitAllItems).then(
           (clonedSolutionItems: common.ICreateItemFromTemplateResponse[]) => {
             if (failedTemplateItemIds.length === 0) {
               resolve(clonedSolutionItems);
             } else {
               // Delete created items
-              // tslint:disable-next-line: no-floating-promises
+            // eslint-disable-next-line @typescript-eslint/no-floating-promises
               common
                 .removeListOfItemsOrGroups(
                   deployedItemIds,
@@ -698,14 +698,14 @@ export function _createItemFromTemplateWhenReady(
           } else {
             // Glean item content that can be added via the create call rather than as an update, e.g.,
             // metadata, thumbnail; this content is moved from the resourceFilePaths into the template
-            // tslint:disable-next-line: no-floating-promises
+            // eslint-disable-next-line @typescript-eslint/no-floating-promises
             _moveResourcesIntoTemplate(
               resourceFilePaths,
               template,
               storageAuthentication
             ).then(updatedResourceFilePaths => {
               // Delegate the creation of the item to the handler
-              // tslint:disable-next-line: no-floating-promises
+              // eslint-disable-next-line @typescript-eslint/no-floating-promises
               itemHandler
                 .createItemFromTemplate(
                   template,
@@ -823,7 +823,7 @@ export function _moveResourcesIntoTemplate(
       }
     });
 
-    // tslint:disable-next-line: no-floating-promises
+    // eslint-disable-next-line @typescript-eslint/no-floating-promises
     thumbnailDef.then(updatedThumbnailUrl => {
       /* istanbul ignore else */
       if (updatedThumbnailUrl) {

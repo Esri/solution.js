@@ -13,24 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import {
-  ISolutionItem,
-  ISolutionItemData,
-  UserSession,
-  IItemGeneralized,
-  IItemTemplate
-} from "../interfaces";
+import { ISolutionItem, IItemGeneralized, IItemTemplate } from "../interfaces";
 import { getProp, cloneObject } from "@esri/hub-common";
 
 /**
  * Apply the initial schema for old Hub Solutions
+ *
  * @param model
  * @param authentication
  */
-export function _applySchema(
-  model: ISolutionItem,
-  authentication: UserSession
-): ISolutionItem {
+export function _applySchema(model: ISolutionItem): ISolutionItem {
   if (getProp(model, "item.properties.schemaVersion") >= 1) {
     return model;
   }

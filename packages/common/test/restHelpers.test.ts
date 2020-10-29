@@ -222,7 +222,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
       const originItemId: string = "itm1234567890";
       const destinationRelationships: interfaces.IRelatedItems[] = [];
 
-      // tslint:disable-next-line: no-floating-promises
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
       restHelpers
         .addForwardItemRelationships(
           originItemId,
@@ -248,7 +248,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
         utils.PORTAL_SUBSET.restUrl + "/content/users/casey/addRelationship";
       fetchMock.post(addRelationshipUrl, { success: true });
 
-      // tslint:disable-next-line: no-floating-promises
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
       restHelpers
         .addForwardItemRelationships(
           originItemId,
@@ -292,7 +292,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
         utils.PORTAL_SUBSET.restUrl + "/content/users/casey/addRelationship";
       fetchMock.post(addRelationshipUrl, { success: true });
 
-      // tslint:disable-next-line: no-floating-promises
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
       restHelpers
         .addForwardItemRelationships(
           originItemId,
@@ -339,7 +339,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
         () => ({ success: ++callNum % 2 === 0 }) // alternate successes and fails
       );
 
-      // tslint:disable-next-line: no-floating-promises
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
       restHelpers
         .addForwardItemRelationships(
           originItemId,
@@ -2693,7 +2693,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
           utils.getFailureResponse()
         );
 
-      // tslint:disable-next-line: no-floating-promises
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
       restHelpers
         .removeListOfItemsOrGroups(itemIds, MOCK_USER_SESSION)
         .then(() => done());

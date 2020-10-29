@@ -102,7 +102,7 @@ describe("Module `createItemTemplate`", () => {
           relatedItems: []
         });
 
-        // tslint:disable-next-line: no-floating-promises
+        // eslint-disable-next-line @typescript-eslint/no-floating-promises
         return createItemTemplate
           .createItemTemplate(
             solutionItemId,
@@ -186,7 +186,7 @@ describe("Module `createItemTemplate`", () => {
           templates.getItemTemplate("Web Map")
         ];
 
-        // tslint:disable-next-line: no-floating-promises
+        // eslint-disable-next-line @typescript-eslint/no-floating-promises
         createItemTemplate
           .createItemTemplate(
             solutionItemId,
@@ -279,7 +279,7 @@ describe("Module `createItemTemplate`", () => {
           relatedItems: []
         });
 
-        // tslint:disable-next-line: no-floating-promises
+        // eslint-disable-next-line @typescript-eslint/no-floating-promises
         createItemTemplate
           .createItemTemplate(
             solutionItemId,
@@ -350,7 +350,7 @@ describe("Module `createItemTemplate`", () => {
             { success: true, id: solutionItemId }
           );
 
-        // tslint:disable-next-line: no-floating-promises
+        // eslint-disable-next-line @typescript-eslint/no-floating-promises
         createItemTemplate
           .createItemTemplate(
             solutionItemId,
@@ -422,7 +422,7 @@ describe("Module `createItemTemplate`", () => {
             { success: true, id: solutionItemId }
           );
 
-        // tslint:disable-next-line: no-floating-promises
+        // eslint-disable-next-line @typescript-eslint/no-floating-promises
         createItemTemplate
           .createItemTemplate(
             solutionItemId,
@@ -500,7 +500,7 @@ describe("Module `createItemTemplate`", () => {
             mockItems.get400Failure()
           );
 
-        // tslint:disable-next-line: no-floating-promises
+        // eslint-disable-next-line @typescript-eslint/no-floating-promises
         createItemTemplate
           .createItemTemplate(
             solutionItemId,
@@ -606,7 +606,7 @@ describe("Module `createItemTemplate`", () => {
           relatedItems: []
         });
 
-        // tslint:disable-next-line: no-floating-promises
+        // eslint-disable-next-line @typescript-eslint/no-floating-promises
         createItemTemplate
           .createItemTemplate(
             solutionItemId,
@@ -700,7 +700,7 @@ describe("Module `createItemTemplate`", () => {
           relatedItems: []
         });
 
-        // tslint:disable-next-line: no-floating-promises
+        // eslint-disable-next-line @typescript-eslint/no-floating-promises
         createItemTemplate
           .createItemTemplate(
             solutionItemId,
@@ -774,7 +774,7 @@ describe("Module `createItemTemplate`", () => {
             { success: true, id: solutionItemId }
           );
 
-        // tslint:disable-next-line: no-floating-promises
+        // eslint-disable-next-line @typescript-eslint/no-floating-promises
         createItemTemplate
           .createItemTemplate(
             solutionItemId,
@@ -811,7 +811,7 @@ describe("Module `createItemTemplate`", () => {
             { success: true, id: solutionItemId }
           );
 
-        // tslint:disable-next-line: no-floating-promises
+        // eslint-disable-next-line @typescript-eslint/no-floating-promises
         createItemTemplate
           .createItemTemplate(
             solutionItemId,
@@ -841,7 +841,7 @@ describe("Module `createItemTemplate`", () => {
           mockItems.getAGOLItem("Unsupported")
         );
 
-        // tslint:disable-next-line: no-floating-promises
+        // eslint-disable-next-line @typescript-eslint/no-floating-promises
         createItemTemplate
           .createItemTemplate(
             solutionItemId,
@@ -926,7 +926,7 @@ describe("Module `createItemTemplate`", () => {
         const expectedTags: string[] = ["test"];
         const expectedTypeKeywords: string[] = ["JavaScript"];
 
-        // tslint:disable-next-line: no-floating-promises
+        // eslint-disable-next-line @typescript-eslint/no-floating-promises
         createItemTemplate
           .createItemTemplate(
             solutionItemId,

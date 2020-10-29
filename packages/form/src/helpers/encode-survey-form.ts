@@ -25,6 +25,7 @@ import { cloneObject } from "@esri/solution-common";
 /**
  * URI Encodes Survey123 form content parameter
  * values
+ *
  * @param {any} form Unencoded form data
  * @returns {any} Encoded form data
  */

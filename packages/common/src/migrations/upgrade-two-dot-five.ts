@@ -14,20 +14,17 @@
  * limitations under the License.
  */
 
-import { ISolutionItem, UserSession } from "../interfaces";
+import { ISolutionItem } from "../interfaces";
 import { getProp, cloneObject } from "../generalHelpers";
 
 /**
  * Applies Survey123 Form Config Schema migrations.
+ *
  * @param {ISolutionItem} model A Solution model
- * @param {UserSession} authentication User session info
  * @returns {ISolutionItem}
  * @private
  */
-export function _upgradeTwoDotFive(
-  model: ISolutionItem,
-  authentication: UserSession
-): ISolutionItem {
+export function _upgradeTwoDotFive(model: ISolutionItem): ISolutionItem {
   if (getProp(model, "item.properties.schemaVersion") >= 2.5) {
     return model;
   } else {

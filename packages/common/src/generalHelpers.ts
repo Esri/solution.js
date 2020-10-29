@@ -93,7 +93,7 @@ export function blobToText(blob: Blob): Promise<string> {
     reader.onload = function(evt) {
       // Disable needed because Node requires cast
       // tslint:disable-next-line: no-unnecessary-type-assertion
-      const blobContents = (evt.target as FileReader).result;
+      const blobContents = evt.target.result;
       resolve(blobContents ? (blobContents as string) : ""); // not handling ArrayContents variant
     };
     reader.readAsText(blob);
@@ -210,7 +210,7 @@ export function saveBlobAsFile(filename: string, blob: Blob): Promise<void> {
     document.body.appendChild(linkElement);
     linkElement.click();
     document.body.removeChild(linkElement);
-    setTimeout(_ => {
+    setTimeout(() => {
       URL.revokeObjectURL(dataUrl);
       resolve();
     }, 500);
@@ -269,8 +269,8 @@ export function compareJSON(json1: any, json2: any): boolean {
  * @return True if objects are the same
  */
 export function compareJSONNoEmptyStrings(json1: any, json2: any): boolean {
-  const jsonStr1 = JSON.stringify(json1).replace(/\"\:\"\"/g, '":null');
-  const jsonStr2 = JSON.stringify(json2).replace(/\"\:\"\"/g, '":null');
+  const jsonStr1 = JSON.stringify(json1).replace(/":""/g, '":null');
+  const jsonStr2 = JSON.stringify(json2).replace(/":""/g, '":null');
   return jsonStr1 === jsonStr2;
 }
 

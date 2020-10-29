@@ -14,6 +14,9 @@
     "@types/jasmine": "^3.5.11",
     "@types/node": "^10.17.0",
     "@types/sinon": "^9.0.0",
+    "@typescript-eslint/eslint-plugin": "^4.6.0",
+    "@typescript-eslint/eslint-plugin-tslint": "^4.6.0",
+    "@typescript-eslint/parser": "^4.6.0",
     "acetate": "^2.0.8",
     "acetate-cli": "^1.0.1",
     "acorn": "^8.0.1",
@@ -30,12 +33,18 @@
     "cz-lerna-changelog": "^2.0.2",
     "date-fns": "^1.29.0",
     "es6-promise": "^4.2.8",
+    "eslint": "^7.12.0",
+    "eslint-config-prettier": "^6.14.0",
+    "eslint-plugin-import": "^2.22.1",
+    "eslint-plugin-jsdoc": "^30.7.3",
+    "eslint-plugin-prefer-arrow": "^1.2.2",
+    "eslint-plugin-react": "^7.21.5",
     "event-stream": "3.3.4",
     "fetch-mock": "^7.7.3",
     "gh-pages": "^1.1.0",
     "gh-release": "^4.0.3",
     "handlebars": "^4.5.1",
-    "husky": "^0.14.3",
+    "husky": "^4.3.0",
     "inspect-process": "^0.5.0",
     "isomorphic-fetch": "^3.0.0",
     "isomorphic-form-data": "^2.0.0",
@@ -74,11 +83,8 @@
     "slug": "^0.9.1",
     "sri-toolbox": "0.2.0",
     "ts-node": "^8.3.0",
-    "tslint": "^5.16.0",
-    "tslint-config-prettier": "^1.6.0",
-    "tslint-config-standard": "^9.0.0",
     "typedoc": "^0.19.2",
-    "typescript": "^4.0.3",
+    "typescript": "^4.0.5",
     "uuid": "^8.0.0"
   },
   "dependencies": {
@@ -88,10 +94,20 @@
   },
   "lint-staged": {
     "packages/**/*.ts": [
-      "prettier --write --parser typescript --tab-width 2 --use-tabs false",
-      "tslint --project tsconfig.json",
+      "prettier --write",
+      "eslint . --ext .ts --fix",
       "git add"
     ]
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "npm run lint:staged"
+    }
+  },
+  "prettier": {
+    "parser": "typescript",
+    "tabWidth": 2,
+    "useTabs": false
   },
   "scripts": {
     "start:deployer": "lerna run build && http-server ./demos/deploySolution",
@@ -101,9 +117,10 @@
     "clean:src": "rm -rf packages/*/{src,test}/*.{d.ts,js,js.map} && rm -rf packages/*/{src,test}/**/*.{d.ts,js,js.map}",
     "clean:dist": "rm -rf packages/*/dist/ && rm -rf packages/*/.rpt2_cache",
     "deepclean": "rm -rf ./node_modules && rm -rf packages/*/node_modules && npm run clean",
-    "lint": "tslint --project tsconfig.json --exclude '**/*.d.ts demos/**/*'",
-    "lint:fix": "tslint --project tsconfig.json --exclude '**/*.d.ts' --fix",
-    "prettify": "prettier --write --parser typescript --tab-width 2 --use-tabs false \"packages/**/+(src|test)/**/*.ts\"",
+    "lint": "eslint . --ext .ts",
+    "lint:fix": "eslint . --ext .ts --fix",
+    "lint:staged": "npx lint-staged",
+    "prettify": "prettier --write \"packages/**/+(src|test)/**/*.ts\"",
     "dev": "support/dev.sh",
     "test": "npm run lint && npm run test:node && npm run test:chrome",
     "test:browsers": "karma start --single-run --browsers Chrome,Firefox,Edge",

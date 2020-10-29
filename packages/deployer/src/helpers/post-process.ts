@@ -19,7 +19,6 @@ import {
   ICreateItemFromTemplateResponse,
   getTemplateById
 } from "@esri/solution-common";
-import { _getGroupUpdates } from "../deploySolutionItems";
 import { moduleMap } from "../module-map";
 import { shareTemplatesToGroups } from "./share-templates-to-groups";
 
@@ -28,6 +27,7 @@ import { shareTemplatesToGroups } from "./share-templates-to-groups";
  * processors. This allows each type to have fine-grained
  * control over what they do. Common post-processing is
  * exposed as functions that can be imported
+ *
  * @param templates
  * @param clonedSolutions
  * @param authentication

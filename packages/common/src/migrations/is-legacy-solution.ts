@@ -20,6 +20,7 @@ import { getProp } from "../generalHelpers";
 /**
  * Determine if the Solution is a legacy item created by Hub
  * vs one that is 100% compatible with Solution.js
+ *
  * @param model ISolutionModel
  * @private
  */

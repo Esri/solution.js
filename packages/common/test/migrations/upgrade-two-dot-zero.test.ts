@@ -38,7 +38,7 @@ describe("_upgradeTwoDotZero :: ", () => {
           }
         }
       } as ISolutionItem;
-      const chk = _upgradeTwoDotZero(m, MOCK_USER_SESSION);
+      const chk = _upgradeTwoDotZero(m);
       expect(chk).toBe(m, "should pass model through without cloning");
     });
 
@@ -53,7 +53,7 @@ describe("_upgradeTwoDotZero :: ", () => {
           configurationSettings: []
         }
       } as unknown) as ISolutionItem;
-      const chk = _upgradeTwoDotZero(m, MOCK_USER_SESSION);
+      const chk = _upgradeTwoDotZero(m);
       expect(chk).not.toBe(m, "should clone model");
       expect(chk.item.properties.schemaVersion).toBe(
         2,
@@ -73,7 +73,7 @@ describe("_upgradeTwoDotZero :: ", () => {
         },
         data: {}
       } as unknown) as ISolutionItem;
-      const chk = _upgradeTwoDotZero(m, MOCK_USER_SESSION);
+      const chk = _upgradeTwoDotZero(m);
       expect(chk).not.toBe(m, "should clone model");
       expect(chk.item.properties.schemaVersion).toBe(
         2,
@@ -99,7 +99,7 @@ describe("_upgradeTwoDotZero :: ", () => {
           ]
         }
       } as unknown) as ISolutionItem;
-      const chk = _upgradeTwoDotZero(m, MOCK_USER_SESSION);
+      const chk = _upgradeTwoDotZero(m);
       expect(chk).not.toBe(m, "should clone model");
       expect(chk.item.properties.schemaVersion).toBe(
         2,

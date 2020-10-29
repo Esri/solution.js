@@ -27,7 +27,6 @@ import {
   createPlaceholderTemplate
 } from "@esri/solution-common";
 import { IItem } from "@esri/arcgis-rest-portal";
-import { UserSession } from "@esri/arcgis-rest-auth";
 import { getWebExperienceDependencies } from "./get-web-experience-dependencies";
 
 /**
@@ -40,8 +39,7 @@ import { getWebExperienceDependencies } from "./get-web-experience-dependencies"
  * @param authentication
  */
 export function convertWebExperienceToTemplate(
-  model: IModel,
-  authentication: UserSession // not currently used
+  model: IModel
 ): Promise<IItemTemplate> {
   const tmpl = createPlaceholderTemplate(model.item.id, model.item.type);
   tmpl.key = `${propifyString(model.item.title)}_${createId("i")}`;

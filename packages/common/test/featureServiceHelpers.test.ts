@@ -3116,14 +3116,7 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
       itemTemplate = templates.getItemTemplate("Feature Service");
       itemTemplate.item.url = null;
 
-      updateLayerFieldReferences(
-        itemTemplate,
-        null,
-        null,
-        null,
-        null,
-        MOCK_USER_SESSION
-      ).then(
+      updateLayerFieldReferences(itemTemplate, null, null, null, null).then(
         () => done.fail(),
         () => done()
       );
@@ -3203,8 +3196,7 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
         fieldInfos,
         popupInfos,
         adminLayerInfos,
-        settings,
-        MOCK_USER_SESSION
+        settings
       ).then(
         (layerInfos: any) => {
           // verify that fieldInfos are set
@@ -3238,14 +3230,7 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
       itemTemplate = templates.getItemTemplate("Feature Service");
       itemTemplate.item.url = null;
 
-      postProcessFields(
-        itemTemplate,
-        null,
-        null,
-        null,
-        null,
-        MOCK_USER_SESSION
-      ).then(
+      postProcessFields(itemTemplate, null, null, null, null).then(
         () => done.fail(),
         error => {
           expect(error).toEqual(
@@ -3278,8 +3263,7 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
         {},
         cachePopupInfos(itemTemplate.data),
         {},
-        {},
-        MOCK_USER_SESSION
+        {}
       ).then(layerInfos => {
         expect(layerInfos).toEqual({
           popupInfos: {
