@@ -292,11 +292,16 @@ export function deploySolutionFromTemplate(
         }
 
         // Pass metadata in via params because item property is serialized, which discards a File
+        const additionalParams: any = {};
+        /* istanbul ignore else */
+        if (solutionTemplateMetadata) {
+          additionalParams.metadata = solutionTemplateMetadata;
+        }
         return common.updateItem(
           solutionTemplateBase,
           authentication,
           deployedFolderId,
-          { metadata: solutionTemplateMetadata }
+          additionalParams
         );
       })
       .then(
