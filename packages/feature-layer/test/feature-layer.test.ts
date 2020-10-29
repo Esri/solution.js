@@ -511,9 +511,14 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
           '{"success":true}'
         );
 
-      const expectedClone: common.IItemTemplate = common.cloneObject(itemTemplate);
+      const expectedClone: common.IItemTemplate = common.cloneObject(
+        itemTemplate
+      );
       expectedClone.item.id = "svc1234567890";
-      expectedClone.item.extent = [ [ 0, 0 ], [ 1, 1 ] ];
+      expectedClone.item.extent = [
+        [0, 0],
+        [1, 1]
+      ];
       expectedClone.properties.service.serviceItemId = "svc1234567890";
       expectedClone.properties.layers[0].serviceItemId = "svc1234567890";
       expectedClone.properties.layers[0].relationships = null;
@@ -610,9 +615,14 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
       const createResponse: any = mockItems.getAGOLService([], [], true);
       createResponse.success = true;
 
-      const expectedClone: common.IItemTemplate = common.cloneObject(itemTemplate);
+      const expectedClone: common.IItemTemplate = common.cloneObject(
+        itemTemplate
+      );
       expectedClone.item.id = "svc1234567890";
-      expectedClone.item.extent = [ [ 0, 0 ], [ 1, 1 ] ];
+      expectedClone.item.extent = [
+        [0, 0],
+        [1, 1]
+      ];
       expectedClone.properties.service.serviceItemId = "svc1234567890";
       expectedClone.properties.layers[0].serviceItemId = "svc1234567890";
       expectedClone.properties.layers[0].relationships = null;
@@ -740,9 +750,14 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
       const createResponse: any = mockItems.getAGOLService([], [], true);
       createResponse.success = true;
 
-      const expectedClone: common.IItemTemplate = common.cloneObject(itemTemplate);
+      const expectedClone: common.IItemTemplate = common.cloneObject(
+        itemTemplate
+      );
       expectedClone.item.id = "svc1234567890";
-      expectedClone.item.extent = [ [ 0, 0 ], [ 1, 1 ] ];
+      expectedClone.item.extent = [
+        [0, 0],
+        [1, 1]
+      ];
       expectedClone.properties.service.serviceItemId = "svc1234567890";
       expectedClone.properties.layers[0].serviceItemId = "svc1234567890";
       expectedClone.properties.layers[0].relationships = null;
@@ -929,9 +944,14 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
           '{"success":true}'
         );
 
-      const expectedClone: common.IItemTemplate = common.cloneObject(itemTemplate);
+      const expectedClone: common.IItemTemplate = common.cloneObject(
+        itemTemplate
+      );
       expectedClone.item.id = "svc1234567890";
-      expectedClone.item.extent = [ [ 0, 0 ], [ 1, 1 ] ];
+      expectedClone.item.extent = [
+        [0, 0],
+        [1, 1]
+      ];
       expectedClone.properties.service.serviceItemId = "svc1234567890";
       expectedClone.properties.layers[0].serviceItemId = "svc1234567890";
       expectedClone.properties.layers[0].relationships = null;

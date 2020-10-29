@@ -50,9 +50,9 @@ describe("Module `deploySolutionItems`", () => {
   describe("deploySolutionItems", () => {
     it("can handle unimplemented item type gracefully", done => {
       // tslint:disable-next-line: no-empty
-      spyOn(console, "log").and.callFake(() => { });
+      spyOn(console, "log").and.callFake(() => {});
       // tslint:disable-next-line: no-empty
-      spyOn(console, "error").and.callFake(() => { });
+      spyOn(console, "error").and.callFake(() => {});
       deploySolution
         .deploySolutionItems(
           "",
@@ -103,9 +103,9 @@ describe("Module `deploySolutionItems`", () => {
       fetchMock
         .get(
           utils.PORTAL_SUBSET.restUrl +
-          "/search?f=json&q=typekeywords%3Asource-" +
-          id +
-          "%20type%3AWeb%20Mapping%20Application%20owner%3Acasey&token=fake-token",
+            "/search?f=json&q=typekeywords%3Asource-" +
+            id +
+            "%20type%3AWeb%20Mapping%20Application%20owner%3Acasey&token=fake-token",
           {
             query: "typekeywords='source-" + id + "'",
             results: []
@@ -113,9 +113,9 @@ describe("Module `deploySolutionItems`", () => {
         )
         .get(
           utils.PORTAL_SUBSET.restUrl +
-          "/search?f=json&q=tags%3D%27source-" +
-          id +
-          "%27&token=fake-token",
+            "/search?f=json&q=tags%3D%27source-" +
+            id +
+            "%27&token=fake-token",
           {
             query: "typekeywords='source-" + id + "'",
             results: []
@@ -127,37 +127,42 @@ describe("Module `deploySolutionItems`", () => {
         )
         .post(
           utils.PORTAL_SUBSET.restUrl +
-          "/content/users/casey/items/" +
-          newItemID +
-          "/update",
+            "/content/users/casey/items/" +
+            newItemID +
+            "/update",
           utils.getSuccessResponse({ id: newItemID })
         )
         .get(
           utils.PORTAL_SUBSET.restUrl +
-          "/content/items/" +
-          newItemID +
-          "?f=json&token=fake-token",
+            "/content/items/" +
+            newItemID +
+            "?f=json&token=fake-token",
           updatedItem
         );
 
-      const expectedClone: common.IItemTemplate = common.cloneObject(itemTemplate);
+      const expectedClone: common.IItemTemplate = common.cloneObject(
+        itemTemplate
+      );
       expectedClone.itemId = "ba4a6047326243b290f625e80ebe6531";
       expectedClone.dependencies = [];
       delete expectedClone.item.spatialReference;
 
-      const expected: common.ICreateItemFromTemplateResponse[] = [{
-        item: expectedClone,
-        id: newItemID,
-        type: type,
-        postProcess: true
-      }];
+      const expected: common.ICreateItemFromTemplateResponse[] = [
+        {
+          item: expectedClone,
+          id: newItemID,
+          type: type,
+          postProcess: true
+        }
+      ];
 
       const expectedTemplateDictionary: any = {
         user: mockItems.getAGOLUser("casey")
       };
       expectedTemplateDictionary[id] = {
         itemId: newItemID,
-        url: "https://apl.maps.arcgis.com/apps/Viewer/index.html?appid=map1234567890"
+        url:
+          "https://apl.maps.arcgis.com/apps/Viewer/index.html?appid=map1234567890"
       };
 
       deploySolution
@@ -208,9 +213,9 @@ describe("Module `deploySolutionItems`", () => {
 
       fetchMock.get(
         utils.PORTAL_SUBSET.restUrl +
-        "/search?f=json&q=typekeywords%3Asource-" +
-        id +
-        "%20type%3AWeb%20Mapping%20Application%20owner%3Acasey&token=fake-token",
+          "/search?f=json&q=typekeywords%3Asource-" +
+          id +
+          "%20type%3AWeb%20Mapping%20Application%20owner%3Acasey&token=fake-token",
         {
           query: "typekeywords='source-" + id + "'",
           results: [
@@ -227,12 +232,14 @@ describe("Module `deploySolutionItems`", () => {
         }
       );
 
-      const expected: common.ICreateItemFromTemplateResponse[] = [{
-        item: null as common.IItemTemplate,
-        id: foundItemID,
-        type: type,
-        postProcess: false
-      }];
+      const expected: common.ICreateItemFromTemplateResponse[] = [
+        {
+          item: null as common.IItemTemplate,
+          id: foundItemID,
+          type: type,
+          postProcess: false
+        }
+      ];
 
       const expectedTemplateDictionary: any = {
         user: mockItems.getAGOLUser("casey")
@@ -289,9 +296,9 @@ describe("Module `deploySolutionItems`", () => {
       fetchMock
         .get(
           utils.PORTAL_SUBSET.restUrl +
-          "/search?f=json&q=typekeywords%3Asource-" +
-          id +
-          "%20type%3AWeb%20Mapping%20Application%20owner%3Acasey&token=fake-token",
+            "/search?f=json&q=typekeywords%3Asource-" +
+            id +
+            "%20type%3AWeb%20Mapping%20Application%20owner%3Acasey&token=fake-token",
           {
             query: "typekeywords='source-" + id + "'",
             results: []
@@ -299,9 +306,9 @@ describe("Module `deploySolutionItems`", () => {
         )
         .get(
           utils.PORTAL_SUBSET.restUrl +
-          "/search?f=json&q=tags%3D%27source-" +
-          id +
-          "%27&token=fake-token",
+            "/search?f=json&q=tags%3D%27source-" +
+            id +
+            "%27&token=fake-token",
           {
             query: "tags='source-" + id + "'",
             results: [
@@ -318,12 +325,14 @@ describe("Module `deploySolutionItems`", () => {
           }
         );
 
-      const expected: common.ICreateItemFromTemplateResponse[] = [{
-        item: null as common.IItemTemplate,
-        id: foundItemID,
-        type: type,
-        postProcess: false
-      }];
+      const expected: common.ICreateItemFromTemplateResponse[] = [
+        {
+          item: null as common.IItemTemplate,
+          id: foundItemID,
+          type: type,
+          postProcess: false
+        }
+      ];
       const expectedTemplateDictionary: any = {
         user: mockItems.getAGOLUser("casey")
       };
@@ -385,9 +394,9 @@ describe("Module `deploySolutionItems`", () => {
 
       fetchMock.get(
         utils.PORTAL_SUBSET.restUrl +
-        "/search?f=json&q=typekeywords%3Asource-" +
-        id +
-        "%20type%3AWeb%20Mapping%20Application%20owner%3Acasey&token=fake-token",
+          "/search?f=json&q=typekeywords%3Asource-" +
+          id +
+          "%20type%3AWeb%20Mapping%20Application%20owner%3Acasey&token=fake-token",
         {
           query: "typekeywords='source-" + id + "'",
           results: [
@@ -411,12 +420,14 @@ describe("Module `deploySolutionItems`", () => {
         }
       );
 
-      const expected: common.ICreateItemFromTemplateResponse[] = [{
-        item: null as common.IItemTemplate,
-        id: foundItemID2,
-        type: type,
-        postProcess: false
-      }];
+      const expected: common.ICreateItemFromTemplateResponse[] = [
+        {
+          item: null as common.IItemTemplate,
+          id: foundItemID2,
+          type: type,
+          postProcess: false
+        }
+      ];
       const expectedTemplateDictionary: any = {
         user: mockItems.getAGOLUser("casey"),
         organization: {
@@ -477,9 +488,9 @@ describe("Module `deploySolutionItems`", () => {
       fetchMock
         .get(
           utils.PORTAL_SUBSET.restUrl +
-          "/search?f=json&q=typekeywords%3Asource-" +
-          id +
-          "%20type%3AFeature%20Service%20owner%3Acasey&token=fake-token",
+            "/search?f=json&q=typekeywords%3Asource-" +
+            id +
+            "%20type%3AFeature%20Service%20owner%3Acasey&token=fake-token",
           {
             query: "typekeywords='source-" + id + "'",
             results: [
@@ -511,12 +522,14 @@ describe("Module `deploySolutionItems`", () => {
           }
         });
 
-      const expected: common.ICreateItemFromTemplateResponse[] = [{
-        item: null as common.IItemTemplate,
-        id: foundItemID2,
-        type: type,
-        postProcess: false
-      }];
+      const expected: common.ICreateItemFromTemplateResponse[] = [
+        {
+          item: null as common.IItemTemplate,
+          id: foundItemID2,
+          type: type,
+          postProcess: false
+        }
+      ];
 
       const expectedTemplateDictionary: any = {
         user: mockItems.getAGOLUser("casey")
@@ -585,12 +598,14 @@ describe("Module `deploySolutionItems`", () => {
         user: user
       };
 
-      const expected: common.ICreateItemFromTemplateResponse[] = [{
-        item: null as common.IItemTemplate,
-        id: foundItemID,
-        type: type,
-        postProcess: false
-      }];
+      const expected: common.ICreateItemFromTemplateResponse[] = [
+        {
+          item: null as common.IItemTemplate,
+          id: foundItemID,
+          type: type,
+          postProcess: false
+        }
+      ];
       const expectedTemplateDictionary: any = {
         user: user
       };
@@ -645,18 +660,20 @@ describe("Module `deploySolutionItems`", () => {
 
       fetchMock.get(
         utils.PORTAL_SUBSET.restUrl +
-        "/search?f=json&q=typekeywords%3Asource-" +
-        id +
-        "%20type%3AWeb%20Mapping%20Application%20owner%3Acasey&token=fake-token",
+          "/search?f=json&q=typekeywords%3Asource-" +
+          id +
+          "%20type%3AWeb%20Mapping%20Application%20owner%3Acasey&token=fake-token",
         mockItems.get400Failure()
       );
 
-      const expected: common.ICreateItemFromTemplateResponse[] = [{
-        item: null as common.IItemTemplate,
-        id: foundItemID,
-        type: type,
-        postProcess: false
-      }];
+      const expected: common.ICreateItemFromTemplateResponse[] = [
+        {
+          item: null as common.IItemTemplate,
+          id: foundItemID,
+          type: type,
+          postProcess: false
+        }
+      ];
 
       const expectedTemplateDictionary: any = {
         user: mockItems.getAGOLUser("casey")
@@ -669,7 +686,7 @@ describe("Module `deploySolutionItems`", () => {
       };
 
       // tslint:disable-next-line: no-empty
-      spyOn(console, "error").and.callFake(() => { });
+      spyOn(console, "error").and.callFake(() => {});
       deploySolution
         .deploySolutionItems(
           utils.PORTAL_URL,
@@ -683,10 +700,7 @@ describe("Module `deploySolutionItems`", () => {
             progressCallback: utils.SOLUTION_PROGRESS_CALLBACK
           }
         )
-        .then(
-          () => done.fail(),
-          done
-        );
+        .then(() => done.fail(), done);
     });
 
     it("can handle error on find items by tag", done => {
@@ -713,9 +727,9 @@ describe("Module `deploySolutionItems`", () => {
       fetchMock
         .get(
           utils.PORTAL_SUBSET.restUrl +
-          "/search?f=json&q=typekeywords%3Asource-" +
-          id +
-          "%20type%3AWeb%20Mapping%20Application%20owner%3Acasey&token=fake-token",
+            "/search?f=json&q=typekeywords%3Asource-" +
+            id +
+            "%20type%3AWeb%20Mapping%20Application%20owner%3Acasey&token=fake-token",
           {
             query: "typekeywords='source-" + id + "'",
             results: []
@@ -723,18 +737,20 @@ describe("Module `deploySolutionItems`", () => {
         )
         .get(
           utils.PORTAL_SUBSET.restUrl +
-          "/search?f=json&q=tags%3D%27source-" +
-          id +
-          "%27&token=fake-token",
+            "/search?f=json&q=tags%3D%27source-" +
+            id +
+            "%27&token=fake-token",
           mockItems.get400Failure()
         );
 
-      const expected: common.ICreateItemFromTemplateResponse[] = [{
-        item: null as common.IItemTemplate,
-        id: foundItemID,
-        type: type,
-        postProcess: false
-      }];
+      const expected: common.ICreateItemFromTemplateResponse[] = [
+        {
+          item: null as common.IItemTemplate,
+          id: foundItemID,
+          type: type,
+          postProcess: false
+        }
+      ];
       const expectedTemplateDictionary: any = {
         user: mockItems.getAGOLUser("casey")
       };
@@ -746,7 +762,7 @@ describe("Module `deploySolutionItems`", () => {
       };
 
       // tslint:disable-next-line: no-empty
-      spyOn(console, "error").and.callFake(() => { });
+      spyOn(console, "error").and.callFake(() => {});
 
       deploySolution
         .deploySolutionItems(
@@ -761,10 +777,7 @@ describe("Module `deploySolutionItems`", () => {
             progressCallback: utils.SOLUTION_PROGRESS_CALLBACK
           }
         )
-        .then(
-          () => done.fail(),
-          done
-        );
+        .then(() => done.fail(), done);
     });
 
     it("handles failure to delete all items when unwinding after failure to deploy", done => {
@@ -794,9 +807,9 @@ describe("Module `deploySolutionItems`", () => {
       fetchMock
         .get(
           utils.PORTAL_SUBSET.restUrl +
-          "/search?f=json&q=typekeywords%3Asource-" +
-          id +
-          "%20type%3AWeb%20Mapping%20Application%20owner%3Acasey&token=fake-token",
+            "/search?f=json&q=typekeywords%3Asource-" +
+            id +
+            "%20type%3AWeb%20Mapping%20Application%20owner%3Acasey&token=fake-token",
           {
             query: "typekeywords='source-" + id + "'",
             results: []
@@ -804,9 +817,9 @@ describe("Module `deploySolutionItems`", () => {
         )
         .get(
           utils.PORTAL_SUBSET.restUrl +
-          "/search?f=json&q=tags%3D%27source-" +
-          id +
-          "%27&token=fake-token",
+            "/search?f=json&q=tags%3D%27source-" +
+            id +
+            "%27&token=fake-token",
           {
             query: "typekeywords='source-" + id + "'",
             results: []
@@ -818,31 +831,33 @@ describe("Module `deploySolutionItems`", () => {
         )
         .post(
           utils.PORTAL_SUBSET.restUrl +
-          "/content/users/casey/items/" +
-          newItemID +
-          "/delete",
+            "/content/users/casey/items/" +
+            newItemID +
+            "/delete",
           utils.getFailureResponse({
             itemId: newItemID
           })
         )
         .post(
           utils.PORTAL_SUBSET.restUrl +
-          "/community/groups/" +
-          newItemID +
-          "/delete",
+            "/community/groups/" +
+            newItemID +
+            "/delete",
           utils.getFailureResponse({
             groupId: "aa4a6047326243b290f625e80ebe6531"
           })
         );
       // tslint:disable-next-line: no-empty
-      spyOn(console, "error").and.callFake(() => { });
+      spyOn(console, "error").and.callFake(() => {});
 
-      const expected: common.ICreateItemFromTemplateResponse[] = [{
-        item: null as common.IItemTemplate,
-        id: newItemID,
-        type: type,
-        postProcess: true
-      }];
+      const expected: common.ICreateItemFromTemplateResponse[] = [
+        {
+          item: null as common.IItemTemplate,
+          id: newItemID,
+          type: type,
+          postProcess: true
+        }
+      ];
 
       const expectedTemplateDictionary: any = {
         user: mockItems.getAGOLUser("casey")
@@ -852,7 +867,7 @@ describe("Module `deploySolutionItems`", () => {
       };
 
       // tslint:disable-next-line: no-empty
-      spyOn(console, "log").and.callFake(() => { });
+      spyOn(console, "log").and.callFake(() => {});
       deploySolution
         .deploySolutionItems(
           utils.PORTAL_URL,
@@ -982,9 +997,9 @@ describe("Module `deploySolutionItems`", () => {
       fetchMock
         .get(
           utils.PORTAL_SUBSET.restUrl +
-          "/search?f=json&q=typekeywords%3Asource-" +
-          id +
-          "%20type%3AFeature%20Service%20owner%3Acasey&token=fake-token",
+            "/search?f=json&q=typekeywords%3Asource-" +
+            id +
+            "%20type%3AFeature%20Service%20owner%3Acasey&token=fake-token",
           {
             query: "typekeywords='source-" + id + "'",
             results: [
@@ -1010,7 +1025,7 @@ describe("Module `deploySolutionItems`", () => {
         .post(url2, mockItems.get500Failure());
 
       // tslint:disable-next-line: no-empty
-      spyOn(console, "error").and.callFake(() => { });
+      spyOn(console, "error").and.callFake(() => {});
       deploySolution
         .deploySolutionItems(
           utils.PORTAL_URL,
@@ -1024,10 +1039,7 @@ describe("Module `deploySolutionItems`", () => {
             progressCallback: utils.SOLUTION_PROGRESS_CALLBACK
           }
         )
-        .then(
-          () => done.fail(),
-          done
-        );
+        .then(() => done.fail(), done);
     });
   });
 
@@ -1103,25 +1115,27 @@ describe("Module `deploySolutionItems`", () => {
         )
         .post(
           utils.PORTAL_SUBSET.restUrl +
-          "/content/users/casey/items/wma1234567891/update",
+            "/content/users/casey/items/wma1234567891/update",
           utils.getSuccessResponse({ id: newItemID })
         )
         .get(
           utils.PORTAL_SUBSET.restUrl +
-          "/content/items/wma1234567890?f=json&token=fake-token",
+            "/content/items/wma1234567890?f=json&token=fake-token",
           mockItems.getAGOLItem(
             "Web Mapping Application",
             utils.PORTAL_SUBSET.portalUrl +
-            "/home/webmap/viewer.html?webmap=wma1234567890"
+              "/home/webmap/viewer.html?webmap=wma1234567890"
           )
         )
         .get(
           utils.PORTAL_SUBSET.restUrl +
-          "/content/items/wma1234567891?f=json&token=fake-token",
+            "/content/items/wma1234567891?f=json&token=fake-token",
           updatedItem
         );
 
-      const expectedClone: common.IItemTemplate = common.cloneObject(itemTemplate);
+      const expectedClone: common.IItemTemplate = common.cloneObject(
+        itemTemplate
+      );
       expectedClone.itemId = "wma1234567891";
       expectedClone.item.id = "wma1234567891";
       delete expectedClone.item.spatialReference;
@@ -1175,21 +1189,21 @@ describe("Module `deploySolutionItems`", () => {
         )
         .post(
           utils.PORTAL_SUBSET.restUrl +
-          "/content/users/casey/items/wma1234567891/update",
+            "/content/users/casey/items/wma1234567891/update",
           utils.getSuccessResponse({ id: newItemID })
         )
         .get(
           utils.PORTAL_SUBSET.restUrl +
-          "/content/items/wma1234567890?f=json&token=fake-token",
+            "/content/items/wma1234567890?f=json&token=fake-token",
           mockItems.getAGOLItem(
             "Web Mapping Application",
             utils.PORTAL_SUBSET.portalUrl +
-            "/home/webmap/viewer.html?webmap=wma1234567890"
+              "/home/webmap/viewer.html?webmap=wma1234567890"
           )
         )
         .get(
           utils.PORTAL_SUBSET.restUrl +
-          "/content/items/wma1234567891?f=json&token=fake-token",
+            "/content/items/wma1234567891?f=json&token=fake-token",
           updatedItem
         );
 
@@ -1221,7 +1235,7 @@ describe("Module `deploySolutionItems`", () => {
       const resourceFilePaths: common.IDeployFileCopyPath[] = [];
       const templateDictionary: any = {
         aa4a6047326243b290f625e80ebe6531: {
-          def: function () {
+          def: function() {
             return Promise.resolve();
           }
         },
@@ -1256,7 +1270,7 @@ describe("Module `deploySolutionItems`", () => {
         )
         .get(
           utils.PORTAL_SUBSET.restUrl +
-          "/content/items/wma1234567891?f=json&token=fake-token",
+            "/content/items/wma1234567891?f=json&token=fake-token",
           updatedItem
         )
         .post(
@@ -1276,7 +1290,9 @@ describe("Module `deploySolutionItems`", () => {
           utils.getSuccessResponse()
         );
 
-      const expectedClone: common.IItemTemplate = common.cloneObject(itemTemplate);
+      const expectedClone: common.IItemTemplate = common.cloneObject(
+        itemTemplate
+      );
       expectedClone.itemId = "svc1234567890";
       expectedClone.item.id = "svc1234567890";
       expectedClone.properties.service.serviceItemId = "svc1234567890";
@@ -1331,7 +1347,7 @@ describe("Module `deploySolutionItems`", () => {
           )
           .post(
             utils.PORTAL_SUBSET.restUrl +
-            "/content/users/casey/items/map1234567891/update",
+              "/content/users/casey/items/map1234567891/update",
             utils.getFailureResponse()
           )
           .post(
@@ -1400,7 +1416,7 @@ describe("Module `deploySolutionItems`", () => {
         fetchMock
           .get(
             utils.PORTAL_SUBSET.restUrl +
-            "/community/groups?f=json&q=Dam%20Inspection%20Assignments&token=fake-token",
+              "/community/groups?f=json&q=Dam%20Inspection%20Assignments&token=fake-token",
             searchResult
           )
           .post(utils.PORTAL_SUBSET.restUrl + "/community/createGroup", {
@@ -1458,12 +1474,12 @@ describe("Module `deploySolutionItems`", () => {
           )
           .post(
             utils.PORTAL_SUBSET.restUrl +
-            "/content/users/casey/items/wma1234567891/update",
+              "/content/users/casey/items/wma1234567891/update",
             utils.getSuccessResponse({ id: newItemID })
           )
           .get(
             utils.PORTAL_SUBSET.restUrl +
-            "/content/items/wma1234567891?f=json&token=fake-token",
+              "/content/items/wma1234567891?f=json&token=fake-token",
             updatedItem
           )
           .post("http://someurl//rest/info", {})
@@ -1524,8 +1540,8 @@ describe("Module `deploySolutionItems`", () => {
           expect(template.item.thumbnail).toBeUndefined();
           expect(template.item.thumbnailurl).toEqual(
             utils.PORTAL_SUBSET.restUrl +
-            "/content/items/ffb0b76754ae4ce497bb4789f3940146/resources/9ed8414bb27a441cbddb1227870ed038_info_thumbnail/thumbnail1581708282265.png" +
-            "?token=fake-token&w=400"
+              "/content/items/ffb0b76754ae4ce497bb4789f3940146/resources/9ed8414bb27a441cbddb1227870ed038_info_thumbnail/thumbnail1581708282265.png" +
+              "?token=fake-token&w=400"
           );
         });
     });
@@ -1605,7 +1621,7 @@ describe("Module `deploySolutionItems`", () => {
       });
 
       // tslint:disable-next-line: no-empty
-      spyOn(common, "getLayerSettings").and.callFake(() => { });
+      spyOn(common, "getLayerSettings").and.callFake(() => {});
 
       deploySolution
         ._updateTemplateDictionary(
@@ -1654,7 +1670,7 @@ describe("Module `deploySolutionItems`", () => {
       fetchMock.post(fsUrl, mockItems.get400Failure());
 
       // tslint:disable-next-line: no-empty
-      spyOn(common, "getLayerSettings").and.callFake(() => { });
+      spyOn(common, "getLayerSettings").and.callFake(() => {});
 
       deploySolution
         ._updateTemplateDictionary(

@@ -70,9 +70,9 @@ describe("simpleTypeCreateItemFromTemplate", () => {
           )
           .post(
             utils.PORTAL_SUBSET.restUrl +
-            "/content/users/casey/items/" +
-            newItemID +
-            "/update",
+              "/content/users/casey/items/" +
+              newItemID +
+              "/update",
             { success: true }
           )
           .get(userUrl, {
@@ -80,7 +80,9 @@ describe("simpleTypeCreateItemFromTemplate", () => {
             fullName: "casey"
           });
 
-        const expectedClone: common.IItemTemplate = common.cloneObject(itemTemplate);
+        const expectedClone: common.IItemTemplate = common.cloneObject(
+          itemTemplate
+        );
         expectedClone.itemId = newItemID;
         expectedClone.item.id = "abc1cab401af4828a25cc6eaeb59fb69";
 
@@ -126,9 +128,9 @@ describe("simpleTypeCreateItemFromTemplate", () => {
           )
           .post(
             utils.PORTAL_SUBSET.restUrl +
-            "/content/users/casey/items/" +
-            newItemID +
-            "/update",
+              "/content/users/casey/items/" +
+              newItemID +
+              "/update",
             mockItems.get400Failure()
           )
           .get(userUrl, {
@@ -137,7 +139,7 @@ describe("simpleTypeCreateItemFromTemplate", () => {
           })
           .post(
             utils.PORTAL_SUBSET.restUrl +
-            "/content/users/casey/items/map1234567890/delete",
+              "/content/users/casey/items/map1234567890/delete",
             utils.getSuccessResponse({ itemId: "map1234567890" })
           );
 
@@ -289,33 +291,40 @@ describe("simpleTypeCreateItemFromTemplate", () => {
         )
         .post(
           utils.PORTAL_SUBSET.restUrl +
-          "/content/users/casey/items/" +
-          newItemId +
-          "/update",
+            "/content/users/casey/items/" +
+            newItemId +
+            "/update",
           { success: true }
         )
         .post(
           utils.PORTAL_SUBSET.restUrl +
-          "/content/users/casey/items/" +
-          newItemId +
-          "/addResources",
+            "/content/users/casey/items/" +
+            newItemId +
+            "/addResources",
           { success: true }
         )
         .post(
           utils.PORTAL_SUBSET.restUrl +
-          "/content/users/casey/items/" +
-          newItemId +
-          "/updateResources",
+            "/content/users/casey/items/" +
+            newItemId +
+            "/updateResources",
           { success: true }
         );
 
-      const expectedClone: common.IItemTemplate = common.cloneObject(itemTemplate);
+      const expectedClone: common.IItemTemplate = common.cloneObject(
+        itemTemplate
+      );
       expectedClone.itemId = newItemId;
-      expectedClone.data.application.dataSources[0].featureServiceItemId = "xxxe5f693de34620934787ead6693f10";
-      expectedClone.data.application.dataSources[0].url = "https://abc123/name/FeatureServer/0";
-      expectedClone.data.application.dataSources[1].featureServiceItemId = "xxxe5f693de34620934787ead6693f10";
-      expectedClone.data.application.dataSources[1].url = "https://abc123/name/FeatureServer/1";
-      expectedClone.data.application.itemId = "xxx79c91fc7642ebb4c0bbacfbacd510";
+      expectedClone.data.application.dataSources[0].featureServiceItemId =
+        "xxxe5f693de34620934787ead6693f10";
+      expectedClone.data.application.dataSources[0].url =
+        "https://abc123/name/FeatureServer/0";
+      expectedClone.data.application.dataSources[1].featureServiceItemId =
+        "xxxe5f693de34620934787ead6693f10";
+      expectedClone.data.application.dataSources[1].url =
+        "https://abc123/name/FeatureServer/1";
+      expectedClone.data.application.itemId =
+        "xxx79c91fc7642ebb4c0bbacfbacd510";
       expectedClone.data.application.preferences.adminEmail = "casey@esri.com";
 
       // eslint-disable-next-line @typescript-eslint/no-floating-promises
@@ -370,16 +379,16 @@ describe("simpleTypeCreateItemFromTemplate", () => {
         )
         .post(
           utils.PORTAL_SUBSET.restUrl +
-          "/content/users/casey/items/" +
-          newItemId +
-          "/update",
+            "/content/users/casey/items/" +
+            newItemId +
+            "/update",
           { success: true }
         )
         .post(
           utils.PORTAL_SUBSET.restUrl +
-          "/content/users/casey/items/" +
-          newItemId +
-          "/updateResources",
+            "/content/users/casey/items/" +
+            newItemId +
+            "/updateResources",
           mockItems.get400Failure()
         );
 
@@ -409,7 +418,8 @@ describe("simpleTypeCreateItemFromTemplate", () => {
         id: "{{abc0cab401af4828a25cc6eaeb59fb69.itemId}}",
         type: "Web Mapping Application",
         typeKeywords: ["WAB2D"],
-        url: "{{portalBaseUrl}}/home/item.html?id={{abc0cab401af4828a25cc6eaeb59fb69.itemId}}",
+        url:
+          "{{portalBaseUrl}}/home/item.html?id={{abc0cab401af4828a25cc6eaeb59fb69.itemId}}",
         properties: null
       };
       itemTemplate.data = {
@@ -435,7 +445,7 @@ describe("simpleTypeCreateItemFromTemplate", () => {
       const updatedItem = mockItems.getAGOLItem(
         "Web Mapping Application",
         utils.PORTAL_SUBSET.portalUrl +
-        "/home/item.html?id=abc0cab401af4828a25cc6eaeb59fb69"
+          "/home/item.html?id=abc0cab401af4828a25cc6eaeb59fb69"
       );
       updatedItem.id = "abc0cab401af4828a25cc6eaeb59fb69";
 
@@ -460,7 +470,7 @@ describe("simpleTypeCreateItemFromTemplate", () => {
         )
         .post(
           utils.PORTAL_SUBSET.restUrl +
-          "/content/users/casey/folderb401af4828a25cc6eaeb59fb69/addItem",
+            "/content/users/casey/folderb401af4828a25cc6eaeb59fb69/addItem",
           utils.getSuccessResponse({
             id: "abc0cab401af4828a25cc6eaeb59fb69",
             folder: null
@@ -468,12 +478,12 @@ describe("simpleTypeCreateItemFromTemplate", () => {
         )
         .post(
           utils.PORTAL_SUBSET.restUrl +
-          "/content/users/casey/items/abc0cab401af4828a25cc6eaeb59fb69/update",
+            "/content/users/casey/items/abc0cab401af4828a25cc6eaeb59fb69/update",
           { success: true }
         )
         .get(
           utils.PORTAL_SUBSET.restUrl +
-          "/content/items/abc0cab401af4828a25cc6eaeb59fb69?f=json&token=fake-token",
+            "/content/items/abc0cab401af4828a25cc6eaeb59fb69?f=json&token=fake-token",
           updatedItem
         );
       staticRelatedItemsMocks.fetchMockRelatedItems(
@@ -481,13 +491,17 @@ describe("simpleTypeCreateItemFromTemplate", () => {
         { total: 0, relatedItems: [] }
       );
 
-      const expectedClone: common.IItemTemplate = common.cloneObject(itemTemplate);
+      const expectedClone: common.IItemTemplate = common.cloneObject(
+        itemTemplate
+      );
       expectedClone.itemId = updatedItem.id;
       expectedClone.item.id = "abc0cab401af4828a25cc6eaeb59fb69";
-      expectedClone.item.url = "https://myorg.maps.arcgis.com/home/item.html?id=abc0cab401af4828a25cc6eaeb59fb69";
+      expectedClone.item.url =
+        "https://myorg.maps.arcgis.com/home/item.html?id=abc0cab401af4828a25cc6eaeb59fb69";
       expectedClone.data.appItemId = "abc0cab401af4828a25cc6eaeb59fb69";
       expectedClone.data.values.webmap = "map0cab401af4828a25cc6eaeb59fb69";
-      expectedClone.data.map.appProxy.mapItemId = "map0cab401af4828a25cc6eaeb59fb69";
+      expectedClone.data.map.appProxy.mapItemId =
+        "map0cab401af4828a25cc6eaeb59fb69";
       expectedClone.data.map.itemId = "map0cab401af4828a25cc6eaeb59fb69";
       expectedClone.data.folderId = "folderb401af4828a25cc6eaeb59fb69";
 
@@ -527,7 +541,8 @@ describe("simpleTypeCreateItemFromTemplate", () => {
         id: "{{abc0cab401af4828a25cc6eaeb59fb69.itemId}}",
         type: "Web Mapping Application",
         typeKeywords: [],
-        url: "{{portalBaseUrl}}/home/item.html?id={{abc0cab401af4828a25cc6eaeb59fb69.itemId}}",
+        url:
+          "{{portalBaseUrl}}/home/item.html?id={{abc0cab401af4828a25cc6eaeb59fb69.itemId}}",
         properties: null
       };
       itemTemplate.data = {
@@ -553,7 +568,7 @@ describe("simpleTypeCreateItemFromTemplate", () => {
       const updatedItem = mockItems.getAGOLItem(
         "Web Mapping Application",
         utils.PORTAL_SUBSET.portalUrl +
-        "/home/item.html?id=abc0cab401af4828a25cc6eaeb59fb69"
+          "/home/item.html?id=abc0cab401af4828a25cc6eaeb59fb69"
       );
       updatedItem.id = "abc0cab401af4828a25cc6eaeb59fb69";
 
@@ -578,7 +593,7 @@ describe("simpleTypeCreateItemFromTemplate", () => {
         )
         .post(
           utils.PORTAL_SUBSET.restUrl +
-          "/content/users/casey/folderb401af4828a25cc6eaeb59fb69/addItem",
+            "/content/users/casey/folderb401af4828a25cc6eaeb59fb69/addItem",
           utils.getSuccessResponse({
             id: "abc0cab401af4828a25cc6eaeb59fb69",
             folder: null
@@ -586,12 +601,12 @@ describe("simpleTypeCreateItemFromTemplate", () => {
         )
         .post(
           utils.PORTAL_SUBSET.restUrl +
-          "/content/users/casey/items/abc0cab401af4828a25cc6eaeb59fb69/update",
+            "/content/users/casey/items/abc0cab401af4828a25cc6eaeb59fb69/update",
           { success: true }
         )
         .get(
           utils.PORTAL_SUBSET.restUrl +
-          "/content/items/abc0cab401af4828a25cc6eaeb59fb69?f=json&token=fake-token",
+            "/content/items/abc0cab401af4828a25cc6eaeb59fb69?f=json&token=fake-token",
           updatedItem
         );
       staticRelatedItemsMocks.fetchMockRelatedItems(
@@ -599,13 +614,17 @@ describe("simpleTypeCreateItemFromTemplate", () => {
         { total: 0, relatedItems: [] }
       );
 
-      const expectedClone: common.IItemTemplate = common.cloneObject(itemTemplate);
+      const expectedClone: common.IItemTemplate = common.cloneObject(
+        itemTemplate
+      );
       expectedClone.itemId = updatedItem.id;
       expectedClone.item.id = "abc0cab401af4828a25cc6eaeb59fb69";
-      expectedClone.item.url = "https://myorg.maps.arcgis.com/home/item.html?id=abc0cab401af4828a25cc6eaeb59fb69";
+      expectedClone.item.url =
+        "https://myorg.maps.arcgis.com/home/item.html?id=abc0cab401af4828a25cc6eaeb59fb69";
       expectedClone.data.appItemId = "abc0cab401af4828a25cc6eaeb59fb69";
       expectedClone.data.values.webmap = "map0cab401af4828a25cc6eaeb59fb69";
-      expectedClone.data.map.appProxy.mapItemId = "map0cab401af4828a25cc6eaeb59fb69";
+      expectedClone.data.map.appProxy.mapItemId =
+        "map0cab401af4828a25cc6eaeb59fb69";
       expectedClone.data.map.itemId = "map0cab401af4828a25cc6eaeb59fb69";
       expectedClone.data.folderId = "folderb401af4828a25cc6eaeb59fb69";
 
@@ -685,7 +704,7 @@ describe("simpleTypeCreateItemFromTemplate", () => {
       const updatedItem = mockItems.getAGOLItem(
         "Web Mapping Application",
         utils.PORTAL_SUBSET.portalUrl +
-        "/home/item.html?id=abc0cab401af4828a25cc6eaeb59fb69"
+          "/home/item.html?id=abc0cab401af4828a25cc6eaeb59fb69"
       );
       updatedItem.id = "abc0cab401af4828a25cc6eaeb59fb69";
 
@@ -696,7 +715,7 @@ describe("simpleTypeCreateItemFromTemplate", () => {
         )
         .post(
           utils.PORTAL_SUBSET.restUrl +
-          "/content/users/casey/folderb401af4828a25cc6eaeb59fb69/addItem",
+            "/content/users/casey/folderb401af4828a25cc6eaeb59fb69/addItem",
           utils.getSuccessResponse({
             id: "abc0cab401af4828a25cc6eaeb59fb69",
             folder: null
@@ -708,17 +727,17 @@ describe("simpleTypeCreateItemFromTemplate", () => {
         )
         .post(
           utils.PORTAL_SUBSET.restUrl +
-          "/content/users/casey/items/abc0cab401af4828a25cc6eaeb59fb69/update",
+            "/content/users/casey/items/abc0cab401af4828a25cc6eaeb59fb69/update",
           { success: true }
         )
         .get(
           utils.PORTAL_SUBSET.restUrl +
-          "/content/items/abc0cab401af4828a25cc6eaeb59fb69?f=json&token=fake-token",
+            "/content/items/abc0cab401af4828a25cc6eaeb59fb69?f=json&token=fake-token",
           updatedItem
         )
         .post(
           utils.PORTAL_SUBSET.restUrl +
-          "/content/users/casey/items/map1234567890/delete",
+            "/content/users/casey/items/map1234567890/delete",
           utils.getSuccessResponse({ itemId: "map1234567890" })
         );
 
@@ -729,9 +748,9 @@ describe("simpleTypeCreateItemFromTemplate", () => {
       );
       fetchMock.get(
         utils.PORTAL_SUBSET.restUrl +
-        "/content/items/" +
-        itemTemplate.itemId +
-        "/relatedItems?f=json&direction=forward&relationshipType=Survey2Data&token=fake-token",
+          "/content/items/" +
+          itemTemplate.itemId +
+          "/relatedItems?f=json&direction=forward&relationshipType=Survey2Data&token=fake-token",
         {
           total: 2,
           relatedItems: [
@@ -746,9 +765,9 @@ describe("simpleTypeCreateItemFromTemplate", () => {
       );
       fetchMock.get(
         utils.PORTAL_SUBSET.restUrl +
-        "/content/items/" +
-        itemTemplate.itemId +
-        "/relatedItems?f=json&direction=forward&relationshipType=Survey2Service&token=fake-token",
+          "/content/items/" +
+          itemTemplate.itemId +
+          "/relatedItems?f=json&direction=forward&relationshipType=Survey2Service&token=fake-token",
         {
           total: 1,
           relatedItems: [
@@ -759,10 +778,13 @@ describe("simpleTypeCreateItemFromTemplate", () => {
         }
       );
 
-      const expectedClone: common.IItemTemplate = common.cloneObject(itemTemplate);
+      const expectedClone: common.IItemTemplate = common.cloneObject(
+        itemTemplate
+      );
       expectedClone.itemId = updatedItem.id;
       expectedClone.item.id = updatedItem.id;
-      expectedClone.item.url = "https://myorg.maps.arcgis.com/home/item.html?id=abc0cab401af4828a25cc6eaeb59fb69";
+      expectedClone.item.url =
+        "https://myorg.maps.arcgis.com/home/item.html?id=abc0cab401af4828a25cc6eaeb59fb69";
       expectedClone.data = {
         appItemId: updatedItem.id,
         values: {
@@ -814,7 +836,8 @@ describe("simpleTypeCreateItemFromTemplate", () => {
         type: "Web Mapping Application",
         properties: null,
         typeKeywords: ["WAB2D"],
-        url: "{{portalBaseUrl}}/home/item.html?id={{abc0cab401af4828a25cc6eaeb59fb69.itemId}}"
+        url:
+          "{{portalBaseUrl}}/home/item.html?id={{abc0cab401af4828a25cc6eaeb59fb69.itemId}}"
       };
       itemTemplate.data = undefined;
       itemTemplate.dependencies = [];
@@ -822,7 +845,7 @@ describe("simpleTypeCreateItemFromTemplate", () => {
       const updatedItem = mockItems.getAGOLItem(
         "Web Mapping Application",
         utils.PORTAL_SUBSET.portalUrl +
-        "/home/item.html?id=abc0cab401af4828a25cc6eaeb59fb69"
+          "/home/item.html?id=abc0cab401af4828a25cc6eaeb59fb69"
       );
       updatedItem.id = "abc0cab401af4828a25cc6eaeb59fb69";
       updatedItem.thumbnail = null;
@@ -837,19 +860,22 @@ describe("simpleTypeCreateItemFromTemplate", () => {
         )
         .post(
           utils.PORTAL_SUBSET.restUrl +
-          "/content/users/casey/items/abc0cab401af4828a25cc6eaeb59fb69/update",
+            "/content/users/casey/items/abc0cab401af4828a25cc6eaeb59fb69/update",
           { success: true }
         )
         .get(
           utils.PORTAL_SUBSET.restUrl +
-          "/content/items/abc0cab401af4828a25cc6eaeb59fb69?f=json&token=fake-token",
+            "/content/items/abc0cab401af4828a25cc6eaeb59fb69?f=json&token=fake-token",
           updatedItem
         );
 
-      const expectedClone: common.IItemTemplate = common.cloneObject(itemTemplate);
+      const expectedClone: common.IItemTemplate = common.cloneObject(
+        itemTemplate
+      );
       expectedClone.itemId = updatedItem.id;
       expectedClone.item.id = "abc0cab401af4828a25cc6eaeb59fb69";
-      expectedClone.item.url = "https://myorg.maps.arcgis.com/home/item.html?id=abc0cab401af4828a25cc6eaeb59fb69";
+      expectedClone.item.url =
+        "https://myorg.maps.arcgis.com/home/item.html?id=abc0cab401af4828a25cc6eaeb59fb69";
 
       // eslint-disable-next-line @typescript-eslint/no-floating-promises
       simpleTypes
@@ -883,7 +909,8 @@ describe("simpleTypeCreateItemFromTemplate", () => {
         id: "{{abc0cab401af4828a25cc6eaeb59fb69.itemId}}",
         type: "Web Mapping Application",
         typeKeywords: ["WAB2D"],
-        url: "{{portalBaseUrl}}/home/item.html?id={{abc0cab401af4828a25cc6eaeb59fb69.itemId}}"
+        url:
+          "{{portalBaseUrl}}/home/item.html?id={{abc0cab401af4828a25cc6eaeb59fb69.itemId}}"
       };
       itemTemplate.data = {
         appItemId: "{{myAppItemId.itemId}}",
@@ -926,17 +953,17 @@ describe("simpleTypeCreateItemFromTemplate", () => {
         )
         .post(
           utils.PORTAL_SUBSET.restUrl +
-          "/content/users/casey/items/abc2cab401af4828a25cc6eaeb59fb69/update",
+            "/content/users/casey/items/abc2cab401af4828a25cc6eaeb59fb69/update",
           mockItems.get400FailureResponse()
         )
         .post(
           utils.PORTAL_SUBSET.restUrl +
-          "/content/users/casey/items/abc0cab401af4828a25cc6eaeb59fb69/update",
+            "/content/users/casey/items/abc0cab401af4828a25cc6eaeb59fb69/update",
           mockItems.get400FailureResponse()
         )
         .post(
           utils.PORTAL_SUBSET.restUrl +
-          "/content/users/casey/items/map1234567890/delete",
+            "/content/users/casey/items/map1234567890/delete",
           utils.getSuccessResponse({ itemId: "map1234567890" })
         );
 
@@ -983,7 +1010,7 @@ describe("simpleTypeCreateItemFromTemplate", () => {
       fetchMock
         .get(
           utils.PORTAL_SUBSET.restUrl +
-          "/community/self?f=json&token=fake-token",
+            "/community/self?f=json&token=fake-token",
           communitySelfResponse
         )
         .post(
@@ -992,9 +1019,9 @@ describe("simpleTypeCreateItemFromTemplate", () => {
         )
         .post(
           utils.PORTAL_SUBSET.restUrl +
-          "/content/users/casey/items/" +
-          newItemID +
-          "/update",
+            "/content/users/casey/items/" +
+            newItemID +
+            "/update",
           { success: true }
         )
         .get(queryUrl, {
@@ -1004,7 +1031,9 @@ describe("simpleTypeCreateItemFromTemplate", () => {
           addResults: [{}]
         });
 
-      const expectedClone: common.IItemTemplate = common.cloneObject(itemTemplate);
+      const expectedClone: common.IItemTemplate = common.cloneObject(
+        itemTemplate
+      );
       expectedClone.itemId = newItemID;
       expectedClone.item.id = newItemID;
 
