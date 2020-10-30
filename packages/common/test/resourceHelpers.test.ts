@@ -1031,46 +1031,6 @@ describe("Module `resourceHelpers`: common functions involving the management of
     // });
   }
 
-  describe("generateGroupFilePaths", () => {
-    it("generates paths for a group thumbnail", () => {
-      const portalSharingUrl = utils.PORTAL_SUBSET.restUrl;
-      const itemId = "8f7ec78195d0479784036387d522e29f";
-      const thumbnailUrlPart = "thumbnail.png";
-      const expected: interfaces.ISourceFileCopyPath[] = [
-        {
-          url:
-            utils.PORTAL_SUBSET.restUrl +
-            "/community/groups/8f7ec78195d0479784036387d522e29f/info/thumbnail.png",
-          folder: "8f7ec78195d0479784036387d522e29f_info_thumbnail",
-          filename: "thumbnail.png"
-        }
-      ];
-
-      const actual = resourceHelpers.generateGroupFilePaths(
-        portalSharingUrl,
-        itemId,
-        thumbnailUrlPart
-      );
-      expect(actual.length).toEqual(1);
-      expect(actual).toEqual(expected);
-    });
-
-    it("handles the absence of a group thumbnail", () => {
-      const portalSharingUrl = utils.PORTAL_SUBSET.restUrl;
-      const itemId = "8f7ec78195d0479784036387d522e29f";
-      const thumbnailUrlPart = "";
-      const expected: interfaces.IDeployFileCopyPath[] = [];
-
-      const actual = resourceHelpers.generateGroupFilePaths(
-        portalSharingUrl,
-        itemId,
-        thumbnailUrlPart
-      );
-      expect(actual.length).toEqual(0);
-      expect(actual).toEqual(expected);
-    });
-  });
-
   describe("generateInfoStorageFilename", () => {
     it("generates storage name for an info file", () => {
       const itemId = "8f7ec78195d0479784036387d522e29f";
