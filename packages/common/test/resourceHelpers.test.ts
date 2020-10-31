@@ -175,7 +175,7 @@ describe("Module `resourceHelpers`: common functions involving the management of
 
     describe("addThumbnailFromBlob", () => {
       it("gets an item's thumbnail from a blob", done => {
-        const blob = utils.getSampleImage();
+        const blob = utils.getSampleImageAsBlob();
         const itemId = "itm1234567890";
         const updateUrl =
           utils.PORTAL_SUBSET.restUrl +
@@ -202,7 +202,7 @@ describe("Module `resourceHelpers`: common functions involving the management of
       });
 
       it("gets a group's thumbnail from a blob", done => {
-        const blob = utils.getSampleImage();
+        const blob = utils.getSampleImageAsBlob();
         const itemId = "grp1234567890";
         const updateUrl =
           utils.PORTAL_SUBSET.restUrl +
@@ -940,7 +940,7 @@ describe("Module `resourceHelpers`: common functions involving the management of
     //     const expected = { success: true, id: destination.itemId };
 
     //     fetchMock
-    //       .post(fetchUrl, utils.getSampleImage(), { sendAsJson: false })
+    //       .post(fetchUrl, utils.getSampleImageAsBlob(), { sendAsJson: false })
     //       .post(updateUrl, expected);
     //     copyResourceModule
     //       .copyResource(source, destination)
@@ -1017,7 +1017,7 @@ describe("Module `resourceHelpers`: common functions involving the management of
     //     const expected = 500;
 
     //     fetchMock
-    //       .post(fetchUrl, utils.getSampleImage(), { sendAsJson: false })
+    //       .post(fetchUrl, utils.getSampleImageAsBlob(), { sendAsJson: false })
     //       .post(updateUrl, expected);
     //     return copyResourceModule
     //       .copyResource(source, destination)
@@ -1722,7 +1722,7 @@ describe("Module `resourceHelpers`: common functions involving the management of
   //         .post(
   //           utils.PORTAL_SUBSET.restUrl +
   //             "/content/items/qck1234567890/info/thumbnail/ago_downloaded.png?w=400",
-  //           utils.getSampleImage(),
+  //           utils.getSampleImageAsBlob(),
   //           { sendAsJson: false }
   //         )
   //         .post(
@@ -1891,7 +1891,7 @@ describe("Module `resourceHelpers`: common functions involving the management of
   //             "/content/items/" +
   //             itemTemplate.itemId +
   //             "/info/thumbnail/banner.png?w=400",
-  //           utils.getSampleImage(),
+  //           utils.getSampleImageAsBlob(),
   //           { sendAsJson: false }
   //         )
   //         .post(

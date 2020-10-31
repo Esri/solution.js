@@ -19,12 +19,11 @@
  */
 
 import * as common from "@esri/solution-common";
-import * as hubCommon from "@esri/hub-common";
 import * as creator from "../src/creator";
 import * as fetchMock from "fetch-mock";
+import * as hubCommon from "@esri/hub-common";
 import * as mockItems from "../../common/test/mocks/agolItems";
 import * as staticRelatedItemsMocks from "../../common/test/mocks/staticRelatedItemsMocks";
-
 import * as utils from "../../common/test/mocks/utils";
 
 // Set up a UserSession to use in all these tests
@@ -95,7 +94,6 @@ describe("Module `creator`", () => {
               "/content/users/casey/items/sln1234567890/delete",
             utils.getSuccessResponse({ itemId: "sln1234567890" })
           );
-        // tslint:disable-next-line: no-empty
         spyOn(console, "error").and.callFake(() => {});
 
         creator.createSolution(solutionGroupId, authentication, options).then(
@@ -128,6 +126,12 @@ describe("Module `creator`", () => {
               "/content/groups/grp1234567890?f=json&start=1&num=100&token=fake-token",
             mockItems.getAGOLGroupContentsList(1, "Web Map")
           )
+          .post(
+            utils.PORTAL_SUBSET.restUrl +
+              "/community/groups/grp1234567890/info/ROWPermitManager.png",
+            utils.getSampleImageAsFile(),
+            { sendAsJson: false }
+          )
           .get(
             utils.PORTAL_SUBSET.restUrl +
               "/content/items/map12345678900?f=json&token=fake-token",
@@ -155,7 +159,6 @@ describe("Module `creator`", () => {
             utils.getSuccessResponse({ id: expectedSolutionId })
           );
 
-        // tslint:disable-next-line: no-empty
         spyOn(console, "error").and.callFake(() => {});
         spyOn(common, "createShortId").and.callFake(() => "xfakeidx");
         creator.createSolution(solutionGroupId, authentication).then(
@@ -186,6 +189,12 @@ describe("Module `creator`", () => {
               "/content/groups/grp1234567890?f=json&start=1&num=100&token=fake-token",
             mockItems.getAGOLGroupContentsList(1, "Web Map")
           )
+          .post(
+            utils.PORTAL_SUBSET.restUrl +
+              "/community/groups/grp1234567890/info/ROWPermitManager.png",
+            utils.getSampleImageAsFile(),
+            { sendAsJson: false }
+          )
           .get(
             utils.PORTAL_SUBSET.restUrl +
               "/content/items/map12345678900?f=json&token=fake-token",
@@ -213,7 +222,6 @@ describe("Module `creator`", () => {
             utils.getSuccessResponse({ id: expectedSolutionId })
           );
 
-        // tslint:disable-next-line: no-empty
         spyOn(console, "error").and.callFake(() => {});
         spyOn(common, "createShortId").and.callFake(() => "xfakeidx");
         creator.createSolution(solutionGroupId, authentication).then(
@@ -241,6 +249,12 @@ describe("Module `creator`", () => {
             utils.PORTAL_SUBSET.restUrl +
               "/content/groups/grp1234567890?f=json&start=1&num=100&token=fake-token",
             mockItems.getAGOLGroupContentsList(2, "Web Map")
+          )
+          .post(
+            utils.PORTAL_SUBSET.restUrl +
+              "/community/groups/grp1234567890/info/ROWPermitManager.png",
+            utils.getSampleImageAsFile(),
+            { sendAsJson: false }
           )
           .post(
             utils.PORTAL_SUBSET.restUrl + "/content/users/casey/addItem",
@@ -331,11 +345,8 @@ describe("Module `creator`", () => {
               utils.PORTAL_SUBSET.restUrl + "/content/users/casey/addItem"
             );
             expect(
-              (addSolnCall[0][1]["body"] as string).indexOf(
-                "title=" +
-                  mockItems.getAGOLItem("Group").title.replace(/ /g, "%20")
-              ) > 0
-            ).toBeTruthy();
+              (addSolnCall[0][1]["body"] as FormData).get("title")
+            ).toEqual(mockItems.getAGOLItem("Group").title);
 
             done();
           },
@@ -371,6 +382,12 @@ describe("Module `creator`", () => {
             utils.PORTAL_SUBSET.restUrl +
               "/content/items/map12345678900?f=json&token=fake-token",
             mockItems.getAGOLItemWithId("Web Map", 0)
+          )
+          .post(
+            utils.PORTAL_SUBSET.restUrl +
+              "/community/groups/grp1234567890/info/ROWPermitManager.png",
+            utils.getSampleImageAsFile(),
+            { sendAsJson: false }
           )
           .post(
             utils.PORTAL_SUBSET.restUrl +
@@ -459,7 +476,6 @@ describe("Module `creator`", () => {
               name: "a map"
             }
           },
-          // tslint:disable-next-line: no-empty
           progressCallback: () => {}
         };
         creator.createSolution(solutionGroupId, authentication, options).then(
@@ -470,10 +486,8 @@ describe("Module `creator`", () => {
               utils.PORTAL_SUBSET.restUrl + "/content/users/casey/addItem"
             );
             expect(
-              (addSolnCall[0][1]["body"] as string).indexOf(
-                "title=" + solutionName
-              ) > 0
-            ).toBeTruthy();
+              (addSolnCall[0][1]["body"] as FormData).get("title")
+            ).toEqual(solutionName);
 
             done();
           },
@@ -493,6 +507,12 @@ describe("Module `creator`", () => {
             utils.PORTAL_SUBSET.restUrl +
               "/community/groups/grp1234567890?f=json&token=fake-token",
             mockItems.getAGOLItem("Group")
+          )
+          .post(
+            utils.PORTAL_SUBSET.restUrl +
+              "/community/groups/grp1234567890/info/ROWPermitManager.png",
+            utils.getSampleImageAsFile(),
+            { sendAsJson: false }
           )
           .get(
             utils.PORTAL_SUBSET.restUrl +
@@ -532,11 +552,8 @@ describe("Module `creator`", () => {
               utils.PORTAL_SUBSET.restUrl + "/content/users/casey/addItem"
             );
             expect(
-              (addSolnCall[0][1]["body"] as string).indexOf(
-                "title=" +
-                  mockItems.getAGOLItem("Group").title.replace(/ /g, "%20")
-              ) > 0
-            ).toBeTruthy();
+              (addSolnCall[0][1]["body"] as FormData).get("title")
+            ).toEqual(mockItems.getAGOLItem("Group").title);
 
             done();
           },
@@ -558,6 +575,12 @@ describe("Module `creator`", () => {
             utils.PORTAL_SUBSET.restUrl +
               "/community/groups/grp1234567890?f=json&token=fake-token",
             mockItems.getAGOLItem("Group")
+          )
+          .post(
+            utils.PORTAL_SUBSET.restUrl +
+              "/community/groups/grp1234567890/info/ROWPermitManager.png",
+            utils.getSampleImageAsFile(),
+            { sendAsJson: false }
           )
           .get(
             utils.PORTAL_SUBSET.restUrl +
@@ -601,10 +624,8 @@ describe("Module `creator`", () => {
               utils.PORTAL_SUBSET.restUrl + "/content/users/casey/addItem"
             );
             expect(
-              (addSolnCall[0][1]["body"] as string).indexOf(
-                "title=" + solutionName
-              ) > 0
-            ).toBeTruthy();
+              (addSolnCall[0][1]["body"] as FormData).get("title")
+            ).toEqual(solutionName);
 
             done();
           },
@@ -626,6 +647,12 @@ describe("Module `creator`", () => {
             utils.PORTAL_SUBSET.restUrl +
               "/community/groups/grp1234567890?f=json&token=fake-token",
             mockItems.getAGOLItem("Group")
+          )
+          .post(
+            utils.PORTAL_SUBSET.restUrl +
+              "/community/groups/grp1234567890/info/ROWPermitManager.png",
+            utils.getSampleImageAsFile(),
+            { sendAsJson: false }
           )
           .get(
             utils.PORTAL_SUBSET.restUrl +
@@ -657,13 +684,11 @@ describe("Module `creator`", () => {
             { success: true, id: expectedSolutionId }
           );
 
-        // tslint:disable-next-line: no-empty
         spyOn(console, "error").and.callFake(() => {});
 
         const options: common.ICreateSolutionOptions = {
           title: solutionName,
           templatizeFields: true,
-          // tslint:disable-next-line: no-empty
           progressCallback: () => {}
         };
         creator.createSolution(solutionGroupId, authentication, options).then(
@@ -674,10 +699,8 @@ describe("Module `creator`", () => {
               utils.PORTAL_SUBSET.restUrl + "/content/users/casey/addItem"
             );
             expect(
-              (addSolnCall[0][1]["body"] as string).indexOf(
-                "title=" + solutionName
-              ) > 0
-            ).toBeTruthy();
+              (addSolnCall[0][1]["body"] as FormData).get("title")
+            ).toEqual(solutionName);
 
             done();
           },
@@ -728,7 +751,6 @@ describe("Module `creator`", () => {
             utils.getSuccessResponse({ id: expectedSolutionId })
           );
 
-        // tslint:disable-next-line: no-empty
         spyOn(console, "error").and.callFake(() => {});
         spyOn(common, "createShortId").and.callFake(() => "xfakeidx");
         creator.createSolution(itemIds, authentication).then(
@@ -766,6 +788,12 @@ describe("Module `creator`", () => {
             JSON.stringify(expectedItem)
           )
           .post(
+            utils.PORTAL_SUBSET.restUrl +
+              "/content/items/map1234567890/info/thumbnail/ago_downloaded.png",
+            utils.getSampleImageAsFile(),
+            { sendAsJson: false }
+          )
+          .post(
             utils.PORTAL_SUBSET.restUrl + "/content/items/map1234567890/data",
             noDataResponse
           )
@@ -782,7 +810,7 @@ describe("Module `creator`", () => {
           .post(
             utils.PORTAL_SUBSET.restUrl +
               "/content/items/map1234567890/info/thumbnail/ago_downloaded.png?w=400",
-            utils.getSampleImage(),
+            utils.getSampleImageAsBlob(),
             { sendAsJson: false }
           )
           .post(
@@ -810,7 +838,6 @@ describe("Module `creator`", () => {
           relatedItems: []
         });
 
-        // tslint:disable-next-line: no-empty
         spyOn(console, "error").and.callFake(() => {});
 
         spyOn(common, "createShortId").and.callFake(() => "xfakeidx");
@@ -825,20 +852,108 @@ describe("Module `creator`", () => {
     });
   }
 
+  describe("_addThumbnailFileToCreateOptions", () => {
+    if (typeof window !== "undefined") {
+      it("doesn't modify creation options if there's no thumbnailurl", done => {
+        const createOptions: common.ICreateSolutionOptions = {};
+        const expectedUpdatedCreateOptions: common.ICreateSolutionOptions = {};
+
+        creator
+          ._addThumbnailFileToCreateOptions(createOptions, MOCK_USER_SESSION)
+          .then((updatedCreateOptions: common.ICreateSolutionOptions) => {
+            expect(updatedCreateOptions).toEqual(expectedUpdatedCreateOptions);
+            done();
+          }, done.fail);
+      });
+
+      it("fetches a thumbnail", done => {
+        const createOptions: common.ICreateSolutionOptions = {
+          thumbnailurl:
+            utils.PORTAL_SUBSET.restUrl +
+            "/content/items/itm1234567890/folder/sampelImage?f=json&token=fake-token"
+        };
+        const expectedUpdatedCreateOptions: common.ICreateSolutionOptions = {
+          thumbnail: utils.getSampleImageAsFile()
+        };
+
+        fetchMock.post(
+          utils.PORTAL_SUBSET.restUrl +
+            "/content/items/itm1234567890/folder/sampelImage?f=json&token=fake-token",
+          utils.getSampleImageAsFile(),
+          { sendAsJson: false }
+        );
+
+        creator
+          ._addThumbnailFileToCreateOptions(createOptions, MOCK_USER_SESSION)
+          .then((updatedCreateOptions: common.ICreateSolutionOptions) => {
+            expect(updatedCreateOptions).toEqual(expectedUpdatedCreateOptions);
+            done();
+          }, done.fail);
+      });
+
+      it("has a fallback filename", done => {
+        const createOptions: common.ICreateSolutionOptions = {
+          thumbnailurl:
+            utils.PORTAL_SUBSET.restUrl +
+            "/content/items/itm1234567890/folder/?f=json&token=fake-token"
+        };
+        const expectedUpdatedCreateOptions: common.ICreateSolutionOptions = {
+          thumbnail: utils.getSampleImageAsFile("thumbnail")
+        };
+
+        fetchMock.post(
+          utils.PORTAL_SUBSET.restUrl +
+            "/content/items/itm1234567890/folder/?f=json&token=fake-token",
+          utils.getSampleImageAsFile(),
+          { sendAsJson: false }
+        );
+
+        creator
+          ._addThumbnailFileToCreateOptions(createOptions, MOCK_USER_SESSION)
+          .then((updatedCreateOptions: common.ICreateSolutionOptions) => {
+            expect(updatedCreateOptions).toEqual(expectedUpdatedCreateOptions);
+            done();
+          }, done.fail);
+      });
+
+      it("handles a failure to fetch a thumbnail", done => {
+        const createOptions: common.ICreateSolutionOptions = {
+          thumbnailurl:
+            utils.PORTAL_SUBSET.restUrl +
+            "/content/items/itm1234567890/folder/sampelImage?f=json&token=fake-token"
+        };
+        const expectedUpdatedCreateOptions: common.ICreateSolutionOptions = {};
+
+        fetchMock.post(
+          utils.PORTAL_SUBSET.restUrl +
+            "/content/items/itm1234567890/folder/sampelImage?f=json&token=fake-token",
+          mockItems.get400Failure()
+        );
+
+        creator
+          ._addThumbnailFileToCreateOptions(createOptions, MOCK_USER_SESSION)
+          .then((updatedCreateOptions: common.ICreateSolutionOptions) => {
+            expect(updatedCreateOptions).toEqual(expectedUpdatedCreateOptions);
+            done();
+          }, done.fail);
+      });
+    }
+  });
+
   describe("_createSolutionFromItemIds", () => {
     if (typeof window !== "undefined") {
       it("handles failure to create the solution", done => {
-        const solutionCreationError = "Cannot create solution";
-        const itemIds = ["map1234567890", "wma1234567890"];
+        const options: common.ICreateSolutionOptions = {
+          itemIds: ["map1234567890", "wma1234567890"]
+        };
 
         spyOn(common, "createItemWithData").and.returnValue(
-          Promise.reject(solutionCreationError)
+          Promise.reject(utils.getFailureResponse())
         );
 
-        creator._createSolutionFromItemIds(itemIds, MOCK_USER_SESSION, {}).then(
+        creator._createSolutionFromItemIds(options, MOCK_USER_SESSION).then(
           () => done.fail(),
           response => {
-            expect(response).toEqual(solutionCreationError);
             done();
           }
         );
@@ -847,7 +962,9 @@ describe("Module `creator`", () => {
 
     it("handles failure to delete the solution if items can't be added to it", done => {
       const solutionId = "sln1234567890";
-      const itemIds = ["wma1234567890"];
+      const options: common.ICreateSolutionOptions = {
+        itemIds: ["wma1234567890"]
+      };
 
       fetchMock
         .post(
@@ -874,10 +991,9 @@ describe("Module `creator`", () => {
             "/content/users/casey/items/sln1234567890/delete",
           utils.getFailureResponse({ itemId: solutionId })
         );
-      // tslint:disable-next-line: no-empty
       spyOn(console, "error").and.callFake(() => {});
 
-      creator._createSolutionFromItemIds(itemIds, MOCK_USER_SESSION, {}).then(
+      creator._createSolutionFromItemIds(options, MOCK_USER_SESSION).then(
         () => done.fail(),
         response => {
           done();
@@ -909,7 +1025,7 @@ describe("Module `creator`", () => {
               encodeURIComponent(
                 JSON.stringify({ schemaVersion: common.CURRENT_SCHEMA_VERSION })
               ) +
-              "&thumbnailurl=&tags=&typeKeywords=Solution%2CTemplate%2Csolutionid-guid%2Csolutionversion-1.0" +
+              "&tags=&typeKeywords=Solution%2CTemplate%2Csolutionid-guid%2Csolutionversion-1.0" +
               "&text=%7B%22metadata%22%3A%7B%7D%2C%22templates%22%3A%5B%5D%7D&token=fake-token"
           );
           done();
@@ -972,8 +1088,6 @@ describe("Module `creator`", () => {
                     schemaVersion: common.CURRENT_SCHEMA_VERSION
                   })
                 ) +
-                "&thumbnailurl=" +
-                encodeURIComponent(options.thumbnailurl) +
                 "&tags=" +
                 options.tags.map(encodeURIComponent).join("%2C") +
                 "&typeKeywords=" +
@@ -991,138 +1105,6 @@ describe("Module `creator`", () => {
             done();
           },
           () => done.fail()
-        );
-      });
-
-      it("handles failure to update the solution item with its icon; success property", done => {
-        const authentication: common.UserSession = MOCK_USER_SESSION;
-        const solutionId = "sln1234567890";
-        const options: common.ICreateSolutionOptions = {
-          thumbnailurl: utils.PORTAL_SUBSET.portalUrl + "/thumbnail.png"
-        };
-        const updateUrl =
-          utils.PORTAL_SUBSET.restUrl +
-          "/content/users/casey/items/sln1234567890/update";
-
-        fetchMock
-          .post(
-            utils.PORTAL_SUBSET.restUrl + "/content/users/casey/addItem",
-            utils.getSuccessResponse({ id: solutionId, folder: null })
-          )
-          .post(
-            utils.PORTAL_SUBSET.portalUrl + "/thumbnail.png?w=400",
-            utils.getSampleImage(),
-            { sendAsJson: false }
-          )
-          .post(updateUrl, utils.getFailureResponse({ id: solutionId }))
-          .post(
-            utils.PORTAL_SUBSET.restUrl +
-              "/content/users/casey/items/sln1234567890/delete",
-            utils.getSuccessResponse({ itemId: solutionId })
-          );
-        spyOn(common, "createShortId").and.callFake(() => solutionId);
-        creator._createSolutionItem(authentication, options).then(
-          () => done.fail(),
-          () => done()
-        );
-      });
-
-      it("handles failure to update the solution item with its icon; reject", done => {
-        const authentication: common.UserSession = MOCK_USER_SESSION;
-        const solutionId = "sln1234567890";
-        const options: common.ICreateSolutionOptions = {
-          thumbnailurl: utils.PORTAL_SUBSET.portalUrl + "/thumbnail.png"
-        };
-        const updateUrl =
-          utils.PORTAL_SUBSET.restUrl +
-          "/content/users/casey/items/sln1234567890/update";
-
-        fetchMock
-          .post(
-            utils.PORTAL_SUBSET.restUrl + "/content/users/casey/addItem",
-            utils.getSuccessResponse({ id: solutionId, folder: null })
-          )
-          .post(
-            utils.PORTAL_SUBSET.portalUrl + "/thumbnail.png?w=400",
-            utils.getSampleImage(),
-            { sendAsJson: false }
-          )
-          .post(updateUrl, mockItems.get400Failure())
-          .post(
-            utils.PORTAL_SUBSET.restUrl +
-              "/content/users/casey/items/sln1234567890/delete",
-            utils.getSuccessResponse({ itemId: solutionId })
-          );
-        spyOn(common, "createShortId").and.callFake(() => solutionId);
-        creator._createSolutionItem(authentication, options).then(
-          () => done.fail(),
-          () => done()
-        );
-      });
-
-      it("handles failure to delete solution after failing to update the solution item with its icon; success property", done => {
-        const authentication: common.UserSession = MOCK_USER_SESSION;
-        const solutionId = "sln1234567890";
-        const options: common.ICreateSolutionOptions = {
-          thumbnailurl: utils.PORTAL_SUBSET.portalUrl + "/thumbnail.png"
-        };
-        const updateUrl =
-          utils.PORTAL_SUBSET.restUrl +
-          "/content/users/casey/items/sln1234567890/update";
-
-        fetchMock
-          .post(
-            utils.PORTAL_SUBSET.restUrl + "/content/users/casey/addItem",
-            utils.getSuccessResponse({ id: solutionId, folder: null })
-          )
-          .post(
-            utils.PORTAL_SUBSET.portalUrl + "/thumbnail.png?w=400",
-            utils.getSampleImage(),
-            { sendAsJson: false }
-          )
-          .post(updateUrl, utils.getFailureResponse({ id: solutionId }))
-          .post(
-            utils.PORTAL_SUBSET.restUrl +
-              "/content/users/casey/items/sln1234567890/delete",
-            utils.getFailureResponse()
-          );
-        spyOn(common, "createShortId").and.callFake(() => solutionId);
-        return creator._createSolutionItem(authentication, options).then(
-          () => done.fail(),
-          () => done()
-        );
-      });
-
-      it("handles failure to delete solution after failing to update the solution item with its icon; reject", done => {
-        const authentication: common.UserSession = MOCK_USER_SESSION;
-        const solutionId = "sln1234567890";
-        const options: common.ICreateSolutionOptions = {
-          thumbnailurl: utils.PORTAL_SUBSET.portalUrl + "/thumbnail.png"
-        };
-        const updateUrl =
-          utils.PORTAL_SUBSET.restUrl +
-          "/content/users/casey/items/sln1234567890/update";
-
-        fetchMock
-          .post(
-            utils.PORTAL_SUBSET.restUrl + "/content/users/casey/addItem",
-            utils.getSuccessResponse({ id: solutionId, folder: null })
-          )
-          .post(
-            utils.PORTAL_SUBSET.portalUrl + "/thumbnail.png?w=400",
-            utils.getSampleImage(),
-            { sendAsJson: false }
-          )
-          .post(updateUrl, mockItems.get400Failure())
-          .post(
-            utils.PORTAL_SUBSET.restUrl +
-              "/content/users/casey/items/sln1234567890/delete",
-            utils.getFailureResponse()
-          );
-        spyOn(common, "createShortId").and.callFake(() => solutionId);
-        creator._createSolutionItem(authentication, options).then(
-          () => done.fail(),
-          () => done()
         );
       });
     }
@@ -1146,7 +1128,7 @@ describe("Module `creator`", () => {
               encodeURIComponent(
                 JSON.stringify({ schemaVersion: common.CURRENT_SCHEMA_VERSION })
               ) +
-              "&thumbnailurl=&tags=&typeKeywords=Solution%2CTemplate%2Csolutionid-guid%2Csolutionversion-1.0" +
+              "&tags=&typeKeywords=Solution%2CTemplate%2Csolutionid-guid%2Csolutionversion-1.0" +
               "&text=%7B%22metadata%22%3A%7B%7D%2C%22templates%22%3A%5B%5D%7D&token=fake-token"
           );
           done();
@@ -1219,7 +1201,6 @@ describe("Module `creator`", () => {
     });
 
     it("sanitizes the item", () => {
-      // tslint:disable-next-line: no-empty
       spyOn(console, "warn").and.callFake(() => {});
       const opts = {
         title: "The Title",
@@ -1257,8 +1238,8 @@ describe("Module `creator`", () => {
     });
   });
 
-  describe("_applyGroupToCreateOptions", () => {
-    it("copies properties and thumbnail", () => {
+  describe("_applySourceToCreateOptions", () => {
+    it("copies properties and thumbnail for a group", () => {
       const opts = {};
 
       const grp = {
@@ -1270,10 +1251,11 @@ describe("Module `creator`", () => {
         thumbnail: "smile.png"
       } as common.IGroup;
 
-      const chk = creator._applyGroupToCreateOptions(
+      const chk = creator._applySourceToCreateOptions(
         opts,
         grp,
-        MOCK_USER_SESSION
+        MOCK_USER_SESSION,
+        true
       );
       expect(chk).toEqual({
         title: "the group title",
@@ -1282,6 +1264,39 @@ describe("Module `creator`", () => {
         tags: ["the group tags"],
         thumbnailurl:
           "https://myorg.maps.arcgis.com/sharing/rest/community/groups/3ef/info/smile.png"
+      });
+    });
+
+    it("copies properties and thumbnail for an item", () => {
+      const opts = {};
+
+      const itm = {
+        id: "3ef",
+        title: "the item title",
+        snippet: "the item snippet",
+        description: "the item desc",
+        tags: ["the item tags"],
+        thumbnail: "smile.png",
+        type: "Web Map",
+        owner: "Fred",
+        created: 1,
+        modified: 2,
+        numViews: 3,
+        size: 4
+      } as common.IItem;
+
+      const chk = creator._applySourceToCreateOptions(
+        opts,
+        itm,
+        MOCK_USER_SESSION
+      );
+      expect(chk).toEqual({
+        title: "the item title",
+        snippet: "the item snippet",
+        description: "the item desc",
+        tags: ["the item tags"],
+        thumbnailurl:
+          "https://myorg.maps.arcgis.com/sharing/rest/content/items/3ef/info/smile.png"
       });
     });
 
@@ -1299,10 +1314,11 @@ describe("Module `creator`", () => {
         thumbnail: "smile.png"
       } as common.IGroup;
 
-      const chk = creator._applyGroupToCreateOptions(
+      const chk = creator._applySourceToCreateOptions(
         opts,
         grp,
-        MOCK_USER_SESSION
+        MOCK_USER_SESSION,
+        true
       );
       expect(chk).toEqual({
         title: "Opts Title",
@@ -1325,10 +1341,11 @@ describe("Module `creator`", () => {
         thumbnail: ""
       } as common.IGroup;
 
-      const chk = creator._applyGroupToCreateOptions(
+      const chk = creator._applySourceToCreateOptions(
         opts,
         grp,
-        MOCK_USER_SESSION
+        MOCK_USER_SESSION,
+        true
       );
       expect(chk).toEqual({
         title: "the group title",

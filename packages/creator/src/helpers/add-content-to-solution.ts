@@ -43,21 +43,24 @@ import {
  * Adds a list of AGO item ids to a solution item.
  *
  * @param solutionItemId AGO id of solution to receive items
- * @param itemIds AGO ids of items that are to be added to solution
- * @param authentication Credentials for the request
  * @param options Customizations for creating the solution
+ * @param authentication Credentials for the request
  * @return A promise that resolves with the AGO id of the updated solution
  * @internal
  */
 export function _addContentToSolution(
   solutionItemId: string,
-  itemIds: string[],
-  authentication: UserSession,
-  options: ICreateSolutionOptions
+  options: ICreateSolutionOptions,
+  authentication: UserSession
 ): Promise<string> {
   return new Promise((resolve, reject) => {
+    if (!options.itemIds || options.itemIds.length === 0) {
+      resolve(solutionItemId);
+      return;
+    }
+
     // Prepare feedback mechanism
-    let totalEstimatedCost = 2 * itemIds.length + 1; // solution items, plus avoid divide by 0
+    let totalEstimatedCost = 2 * options.itemIds.length + 1; // solution items, plus avoid divide by 0
     let percentDone: number = 16; // allow for previous creation work
     let progressPercentStep = (99 - percentDone) / totalEstimatedCost; // leave some % for caller for wrapup
 
@@ -70,10 +73,10 @@ export function _addContentToSolution(
       costUsed: number
     ) => {
       // ---------------------------------------------------------------------------------------------------------------
-      if (itemIds.indexOf(itemId) < 0) {
+      if (options.itemIds.indexOf(itemId) < 0) {
         // New item--a dependency that wasn't in the supplied list of itemIds; add it to the list
         // and recalculate the progress percent step based on how much progress remains to be done
-        itemIds.push(itemId);
+        options.itemIds.push(itemId);
 
         totalEstimatedCost += 2;
         progressPercentStep =
@@ -121,7 +124,6 @@ export function _addContentToSolution(
         if (failedItemIds.indexOf(itemId) < 0) {
           failedItemIds.push(itemId);
         }
-        console.error("Item " + itemId + " has failed " + error);
         statusOK = false;
       } else if (status === EItemProgressStatus.Ignored) {
         removeTemplate(solutionTemplates, itemId);
@@ -138,7 +140,7 @@ export function _addContentToSolution(
     // Handle a list of one or more AGO ids by stepping through the list
     // and calling this function recursively
     const getItemsPromise: Array<Promise<void>> = [];
-    itemIds.forEach(itemId => {
+    options.itemIds.forEach(itemId => {
       const createDef = createItemTemplate(
         solutionItemId,
         itemId,

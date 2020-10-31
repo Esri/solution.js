@@ -467,7 +467,6 @@ describe("Module `deployer`", () => {
               "/content/users/casey/items/sln1234567890/addResources",
             testUtils.getSuccessResponse({ id: "sln1234567890" })
           );
-        // tslint:disable-next-line: no-empty
         spyOn(console, "log").and.callFake(() => {});
 
         const expected: string = "map1234567890";
@@ -1702,7 +1701,6 @@ describe("Module `deployer`", () => {
               "/content/users/casey/items/map1234567890/delete",
             testUtils.getSuccessResponse({ itemId: "map1234567890" })
           );
-        // tslint:disable-next-line: no-empty
         spyOn(console, "error").and.callFake(() => {});
 
         const options: common.IDeploySolutionOptions = {

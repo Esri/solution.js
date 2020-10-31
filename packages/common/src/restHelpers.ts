@@ -636,6 +636,14 @@ export function createItemWithData(
       authentication: authentication
     };
 
+    if (itemInfo.thumbnail) {
+      createOptions.params = {
+        // Pass thumbnail file in via params because item property is serialized, which discards a blob
+        thumbnail: itemInfo.thumbnail
+      };
+      delete createOptions.item.thumbnail;
+    }
+
     createItemInFolder(createOptions).then(
       createResponse => {
         if (createResponse.success) {

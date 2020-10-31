@@ -712,7 +712,7 @@ describe("Module `group`: manages the creation and deployment of groups", () => 
             utils.PORTAL_SUBSET.restUrl +
               "/content/items/abc9cab401af4828a25cc6eaeb59fb69/resources/" +
               itemTemplate.item.thumbnail,
-            utils.getSampleImage()
+            utils.getSampleImageAsBlob()
           )
           .post(utils.PORTAL_SUBSET.restUrl + "/community/createGroup", {
             success: true,

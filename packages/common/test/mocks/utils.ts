@@ -179,11 +179,15 @@ export function xmlToBlob(xml: any, mimeType = "text/xml"): Blob {
   return new Blob([xml], { type: mimeType });
 }
 
-export function getSampleImage(): Blob {
+export function getSampleImageAsBlob(): Blob {
   // Decode base-64 to binary, then binary to character codes as Uint8
   return _imageDataToBlob(
     _binaryToUint8CharCodes(atob(_imageAsDataUri(false)))
   );
+}
+
+export function getSampleImageAsFile(filename = "sampleImage"): File {
+  return generalHelpers.blobToFile(getSampleImageAsBlob(), filename);
 }
 
 function _binaryToUint8CharCodes(binaryData: string): Uint8Array {
