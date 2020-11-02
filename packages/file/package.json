@@ -1,6 +1,6 @@
 {
   "name": "@esri/solution-file",
-  "version": "0.19.3",
+  "version": "0.20.1",
   "description": "Manages the creation and deployment of  item types that contain files for @esri/solution.js.",
   "main": "dist/node/index.js",
   "unpkg": "dist/umd/file.umd.min.js",
@@ -37,7 +37,7 @@
     "@esri/hub-teams": "^6.14.0"
   },
   "dependencies": {
-    "@esri/solution-common": "^0.19.3",
+    "@esri/solution-common": "^0.20.1",
     "tslib": "^1.13.0"
   },
   "scripts": {
