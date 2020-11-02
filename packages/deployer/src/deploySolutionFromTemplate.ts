@@ -182,7 +182,9 @@ export function deploySolutionFromTemplate(
         templateDictionary.solutionItemId = deployedSolutionId;
         solutionTemplateBase.id = deployedSolutionId;
 
-        return common.addTokenToUrl(options.thumbnailurl, authentication);
+        return options.thumbnailurl
+          ? common.addTokenToUrl(options.thumbnailurl, authentication)
+          : Promise.resolve(null);
       })
       .then(updatedThumbnailUrl => {
         /* istanbul ignore else */
@@ -292,11 +294,16 @@ export function deploySolutionFromTemplate(
         }
 
         // Pass metadata in via params because item property is serialized, which discards a File
+        const additionalParams: any = {};
+        /* istanbul ignore else */
+        if (solutionTemplateMetadata) {
+          additionalParams.metadata = solutionTemplateMetadata;
+        }
         return common.updateItem(
           solutionTemplateBase,
           authentication,
           deployedFolderId,
-          { metadata: solutionTemplateMetadata }
+          additionalParams
         );
       })
       .then(

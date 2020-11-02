@@ -629,6 +629,7 @@ export function createItemWithData(
     // Create item
     const createOptions: ICreateItemOptions = {
       item: {
+        title: "_", // provide backup title
         ...itemInfo,
         data: dataInfo
       },

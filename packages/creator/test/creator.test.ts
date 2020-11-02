@@ -904,7 +904,7 @@ describe("Module `creator`", () => {
           const options: fetchMock.MockOptions = fetchMock.lastOptions(url);
           const fetchBody = (options as fetchMock.MockResponseObject).body;
           expect(fetchBody).toEqual(
-            "f=json&type=Solution&title=xfakeidx&snippet=&description=" +
+            "f=json&title=xfakeidx&type=Solution&snippet=&description=" +
               "&properties=" +
               encodeURIComponent(
                 JSON.stringify({ schemaVersion: common.CURRENT_SCHEMA_VERSION })
@@ -960,8 +960,9 @@ describe("Module `creator`", () => {
             const fetchBody = (fetchOptions as fetchMock.MockResponseObject)
               .body;
             expect(fetchBody).toEqual(
-              "f=json&type=Solution&title=" +
+              "f=json&title=" +
                 encodeURIComponent(options.title) +
+                "&type=Solution" +
                 "&snippet=" +
                 encodeURIComponent(options.snippet) +
                 "&description=" +
@@ -1141,7 +1142,7 @@ describe("Module `creator`", () => {
           const options: fetchMock.MockOptions = fetchMock.lastOptions(url);
           const fetchBody = (options as fetchMock.MockResponseObject).body;
           expect(fetchBody).toEqual(
-            "f=json&type=Solution&title=xfakeidx&snippet=&description=" +
+            "f=json&title=xfakeidx&type=Solution&snippet=&description=" +
               "&properties=" +
               encodeURIComponent(
                 JSON.stringify({ schemaVersion: common.CURRENT_SCHEMA_VERSION })

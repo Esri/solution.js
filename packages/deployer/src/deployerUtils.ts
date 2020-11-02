@@ -73,12 +73,9 @@ export function updateDeployOptions(
   deployOptions.description = deployOptions.description ?? item.description;
   deployOptions.tags = deployOptions.tags ?? item.tags;
   // add the thumbnail url
-  deployOptions.thumbnailurl = common.getItemThumbnailUrl(
-    item.id,
-    item.thumbnail,
-    false,
-    authentication
-  );
+  deployOptions.thumbnailurl = item.thumbnail
+    ? common.getItemThumbnailUrl(item.id, item.thumbnail, false, authentication)
+    : null;
 
   return deployOptions;
 }
