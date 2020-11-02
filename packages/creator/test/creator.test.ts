@@ -1007,6 +1007,17 @@ describe("Module `creator`", () => {
       const authentication: common.UserSession = MOCK_USER_SESSION;
       const url = utils.PORTAL_SUBSET.restUrl + "/content/users/casey/addItem";
       const expectedSolutionId = "sln1234567890";
+      const expectedFetchBody =
+        "f=json" +
+        (typeof window !== "undefined"
+          ? "&title=xfakeidx&type=Solution"
+          : "&type=Solution&title=xfakeidx") +
+        "&snippet=&description=&properties=" +
+        encodeURIComponent(
+          JSON.stringify({ schemaVersion: common.CURRENT_SCHEMA_VERSION })
+        ) +
+        "&tags=&typeKeywords=Solution%2CTemplate%2Csolutionid-guid%2Csolutionversion-1.0" +
+        "&text=%7B%22metadata%22%3A%7B%7D%2C%22templates%22%3A%5B%5D%7D&token=fake-token";
 
       fetchMock.post(
         url,
@@ -1019,15 +1030,7 @@ describe("Module `creator`", () => {
           expect(solutionId).toEqual(expectedSolutionId);
           const options: fetchMock.MockOptions = fetchMock.lastOptions(url);
           const fetchBody = (options as fetchMock.MockResponseObject).body;
-          expect(fetchBody).toEqual(
-            "f=json&title=xfakeidx&type=Solution&snippet=&description=" +
-              "&properties=" +
-              encodeURIComponent(
-                JSON.stringify({ schemaVersion: common.CURRENT_SCHEMA_VERSION })
-              ) +
-              "&tags=&typeKeywords=Solution%2CTemplate%2Csolutionid-guid%2Csolutionversion-1.0" +
-              "&text=%7B%22metadata%22%3A%7B%7D%2C%22templates%22%3A%5B%5D%7D&token=fake-token"
-          );
+          expect(fetchBody).toEqual(expectedFetchBody);
           done();
         },
         () => done.fail()
@@ -1113,6 +1116,17 @@ describe("Module `creator`", () => {
     it("handles failure to create the solution item", done => {
       const authentication: common.UserSession = MOCK_USER_SESSION;
       const url = utils.PORTAL_SUBSET.restUrl + "/content/users/casey/addItem";
+      const expectedFetchBody =
+        "f=json" +
+        (typeof window !== "undefined"
+          ? "&title=xfakeidx&type=Solution"
+          : "&type=Solution&title=xfakeidx") +
+        "&snippet=&description=&properties=" +
+        encodeURIComponent(
+          JSON.stringify({ schemaVersion: common.CURRENT_SCHEMA_VERSION })
+        ) +
+        "&tags=&typeKeywords=Solution%2CTemplate%2Csolutionid-guid%2Csolutionversion-1.0" +
+        "&text=%7B%22metadata%22%3A%7B%7D%2C%22templates%22%3A%5B%5D%7D&token=fake-token";
 
       fetchMock.post(url, utils.getFailureResponse());
       spyOn(common, "createShortId").and.callFake(() => "xfakeidx");
@@ -1123,15 +1137,7 @@ describe("Module `creator`", () => {
           expect(error.success).toBeFalsy();
           const options: fetchMock.MockOptions = fetchMock.lastOptions(url);
           const fetchBody = (options as fetchMock.MockResponseObject).body;
-          expect(fetchBody).toEqual(
-            "f=json&title=xfakeidx&type=Solution&snippet=&description=" +
-              "&properties=" +
-              encodeURIComponent(
-                JSON.stringify({ schemaVersion: common.CURRENT_SCHEMA_VERSION })
-              ) +
-              "&tags=&typeKeywords=Solution%2CTemplate%2Csolutionid-guid%2Csolutionversion-1.0" +
-              "&text=%7B%22metadata%22%3A%7B%7D%2C%22templates%22%3A%5B%5D%7D&token=fake-token"
-          );
+          expect(fetchBody).toEqual(expectedFetchBody);
           done();
         }
       );
