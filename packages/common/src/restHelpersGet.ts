@@ -160,7 +160,7 @@ export function getBlobCheckForError(
       _fixTextBlobType(blob).then(adjustedBlob => {
         if (adjustedBlob.type === "application/json") {
           // Blob may be an error
-          // tslint:disable-next-line: no-floating-promises
+          // eslint-disable-next-line @typescript-eslint/no-floating-promises
           blobToJson(adjustedBlob).then((json: any) => {
             // Check for valid JSON with an error
             if (json && json.error) {
@@ -427,16 +427,22 @@ export function getItemInfoFileUrlPrefix(
  *
  * @param itemId Id of an item whose data information is sought
  * @param authentication Credentials for the request to AGO
- * @return Promise that will resolve with a File containing the metadata or an AGO-style JSON failure response
+ * @return Promise that will resolve with `undefined` or a File containing the metadata
  */
 export function getItemMetadataAsFile(
   itemId: string,
   authentication: UserSession
 ): Promise<File> {
-  return new Promise<File>((resolve, reject) => {
+  return new Promise<File>(resolve => {
     getItemMetadataBlob(itemId, authentication).then(
-      blob => (!blob ? resolve() : resolve(blobToFile(blob, "metadata.xml"))),
-      reject
+      blob => {
+        if (!blob || (blob && blob.type.startsWith("application/json"))) {
+          resolve(); // JSON error
+        } else {
+          resolve(blobToFile(blob, "metadata.xml"));
+        }
+      },
+      () => resolve()
     );
   });
 }
@@ -566,7 +572,7 @@ export function getItemRelatedItemsInSameDirection(
         authentication
       )
     );
-    // tslint:disable-next-line: no-floating-promises
+    // eslint-disable-next-line @typescript-eslint/no-floating-promises
     Promise.all(relatedItemDefs).then(
       (relationshipResponses: IGetRelatedItemsResponse[]) => {
         const relatedItems: IRelatedItems[] = [];
@@ -726,6 +732,7 @@ export function getPortalUrlFromAuth(authentication: UserSession): string {
 
 /**
  * Fixes the types of Blobs incorrectly typed as text/plain.
+ *
  * @param blob Blob to check
  * @return Promise resolving to original Blob, unless it's originally typed as text/plain but is
  * really JSON, ZIP, or XML
@@ -874,6 +881,7 @@ export function _getItemResourcesTranche(
 
 /**
  * Retrieves the default basemap for the given & basemapGalleryGroupQuery, basemapTitle
+ *
  * @param {string} basemapGalleryGroupQuery The default basemap group query
  * @param {string} basemapTitle The default basemap title
  * @param {UserSession} authentication The session info

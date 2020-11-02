@@ -34,6 +34,7 @@ import {
   addFeatureServiceLayersAndTables,
   updateLayerFieldReferences,
   postProcessFields,
+  removeLayerOptimization,
   _getFieldVisibilityUpdates,
   _validateDomains,
   updatePopupInfo,
@@ -1428,6 +1429,47 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
         expectedTemplate,
         expectedTemplate2
       ];
+
+      const actual: interfaces.IItemTemplate[] = setNamesAndTitles(
+        _templates,
+        itemId
+      );
+      expect(actual).toEqual(expected);
+    });
+
+    it("should limit the base name to 50 chars", () => {
+      const t: interfaces.IItemTemplate = templates.getItemTemplateSkeleton();
+      t.item.type = "Feature Service";
+      t.item.name = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaab";
+      t.item.title = "TheName";
+      const _templates: interfaces.IItemTemplate[] = [t];
+
+      const expectedTemplate: interfaces.IItemTemplate = templates.getItemTemplateSkeleton();
+      expectedTemplate.item.type = "Feature Service";
+      expectedTemplate.item.name = `aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa_${itemId}`;
+      expectedTemplate.item.title = "TheName";
+      const expected: interfaces.IItemTemplate[] = [expectedTemplate];
+
+      const actual: interfaces.IItemTemplate[] = setNamesAndTitles(
+        _templates,
+        itemId
+      );
+      expect(actual).toEqual(expected);
+    });
+
+    it("should limit the base name to 50 chars and handle existing guid in the name", () => {
+      const t: interfaces.IItemTemplate = templates.getItemTemplateSkeleton();
+      t.item.type = "Feature Service";
+      t.item.name =
+        "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaab_aa766cba0dd44ec080420acc10990282";
+      t.item.title = "TheName";
+      const _templates: interfaces.IItemTemplate[] = [t];
+
+      const expectedTemplate: interfaces.IItemTemplate = templates.getItemTemplateSkeleton();
+      expectedTemplate.item.type = "Feature Service";
+      expectedTemplate.item.name = `aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa_${itemId}`;
+      expectedTemplate.item.title = "TheName";
+      const expected: interfaces.IItemTemplate[] = [expectedTemplate];
 
       const actual: interfaces.IItemTemplate[] = setNamesAndTitles(
         _templates,
@@ -3115,14 +3157,7 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
       itemTemplate = templates.getItemTemplate("Feature Service");
       itemTemplate.item.url = null;
 
-      updateLayerFieldReferences(
-        itemTemplate,
-        null,
-        null,
-        null,
-        null,
-        MOCK_USER_SESSION
-      ).then(
+      updateLayerFieldReferences(itemTemplate, null, null, null, null).then(
         () => done.fail(),
         () => done()
       );
@@ -3202,8 +3237,7 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
         fieldInfos,
         popupInfos,
         adminLayerInfos,
-        settings,
-        MOCK_USER_SESSION
+        settings
       ).then(
         (layerInfos: any) => {
           // verify that fieldInfos are set
@@ -3237,14 +3271,7 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
       itemTemplate = templates.getItemTemplate("Feature Service");
       itemTemplate.item.url = null;
 
-      postProcessFields(
-        itemTemplate,
-        null,
-        null,
-        null,
-        null,
-        MOCK_USER_SESSION
-      ).then(
+      postProcessFields(itemTemplate, null, null, null, null).then(
         () => done.fail(),
         error => {
           expect(error).toEqual(
@@ -3277,8 +3304,7 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
         {},
         cachePopupInfos(itemTemplate.data),
         {},
-        {},
-        MOCK_USER_SESSION
+        {}
       ).then(layerInfos => {
         expect(layerInfos).toEqual({
           popupInfos: {
@@ -3290,6 +3316,22 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
         });
         done();
       }, done.fail);
+    });
+  });
+
+  describe("removeLayerOptimization", () => {
+    it("will remove multiScaleGeometryInfo", () => {
+      const actual: any = {
+        a: "A",
+        multiScaleGeometryInfo: []
+      };
+
+      const expected: any = {
+        a: "A"
+      };
+
+      removeLayerOptimization(actual);
+      expect(actual).toEqual(expected);
     });
   });
 

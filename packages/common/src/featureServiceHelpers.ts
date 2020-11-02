@@ -377,13 +377,14 @@ export function setNamesAndTitles(
       t.item.title = t.item.title || t.item.name;
 
       // Need to set the service name: name + "_" + newItemId
-      const baseName: string = t.item.name || t.item.title;
+      let baseName: string = t.item.name || t.item.title;
 
-      // If the name already contains a GUID replace it with the newItemID
-      const regEx: any = new RegExp("[0-9A-F]{32}", "gmi");
-      const name: string = regEx.exec(baseName)
-        ? baseName.replace(regEx, solutionItemId)
-        : baseName + "_" + solutionItemId;
+      // If the name already contains a GUID remove it
+      baseName = baseName.replace(/_[0-9A-F]{32}/gi, "");
+
+      // The name length limit is 98
+      // Limit the baseName to 50 characters before the _<guid>
+      const name: string = baseName.substring(0, 50) + "_" + solutionItemId;
 
       // If the name + GUID already exists then append "_occurrenceCount"
       t.item.name =
@@ -591,14 +592,14 @@ export function addFeatureServiceLayersAndTables(
       ).then(
         () => {
           // Detemplatize field references and update the layer properties
-          // tslint:disable-next-line: no-floating-promises only failure path is handled by updateFeatureServiceDefinition
+          // Only failure path is handled by updateFeatureServiceDefinition
+          // eslint-disable-next-line @typescript-eslint/no-floating-promises
           updateLayerFieldReferences(
             itemTemplate,
             fieldInfos,
             popupInfos,
             adminLayerInfos,
-            templateDictionary,
-            authentication
+            templateDictionary
           ).then(r => {
             // Update relationships and layer definitions
             const updates: IUpdate[] = getLayerUpdates({
@@ -693,6 +694,9 @@ export function updateFeatureServiceDefinition(
       if (templateDictionary.isPortal) {
         item = _updateForPortal(item, itemTemplate, templateDictionary);
       }
+
+      removeLayerOptimization(item);
+
       if (item.type === "Feature Layer") {
         options.layers.push(item);
       } else {
@@ -704,6 +708,14 @@ export function updateFeatureServiceDefinition(
       e => reject(fail(e))
     );
   });
+}
+
+export function removeLayerOptimization(layer: any): void {
+  // Removed for issue #526 to prevent invalid enablement of layer optimization
+  /* istanbul ignore else */
+  if (layer.multiScaleGeometryInfo) {
+    deleteProp(layer, "multiScaleGeometryInfo");
+  }
 }
 
 export function _updateForPortal(
@@ -969,8 +981,7 @@ export function updateLayerFieldReferences(
   fieldInfos: any,
   popupInfos: IPopupInfos,
   adminLayerInfos: any,
-  templateDictionary: any,
-  authentication: UserSession
+  templateDictionary: any
 ): Promise<any> {
   return new Promise((resolveFn, rejectFn) => {
     // Will need to do some post processing for fields
@@ -980,8 +991,7 @@ export function updateLayerFieldReferences(
       fieldInfos,
       popupInfos,
       adminLayerInfos,
-      templateDictionary,
-      authentication
+      templateDictionary
     ).then(
       (layerInfos: any) => {
         // Update the items text with detemplatized popupInfo
@@ -1014,8 +1024,7 @@ export function postProcessFields(
   layerInfos: any,
   popupInfos: any,
   adminLayerInfos: any,
-  templateDictionary: any,
-  authentication: UserSession
+  templateDictionary: any
 ): Promise<any> {
   return new Promise((resolveFn, rejectFn) => {
     if (!itemTemplate.item.url) {

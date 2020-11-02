@@ -18,6 +18,7 @@ import * as common from "@esri/solution-common";
 
 /**
  * The relevant elements of a Dashboard widget.
+ *
  * @protected
  */
 interface IDashboardWidget {
@@ -38,6 +39,7 @@ interface IDashboardWidget {
 
 /**
  * The relevant elements of a dashboards dataset
+ *
  * @protected
  */
 interface IDashboardDataset {
@@ -53,6 +55,7 @@ interface IDashboardDataset {
 
 /**
  * The relevant datasource properties that describe a dataset
+ *
  * @protected
  */
 interface IDashboardDatasource {
@@ -78,8 +81,7 @@ interface IDashboardDatasource {
  * @return templatized itemTemplate
  */
 export function convertItemToTemplate(
-  itemTemplate: common.IItemTemplate,
-  authentication: common.UserSession
+  itemTemplate: common.IItemTemplate
 ): common.IItemTemplate {
   return _extractDependencies(itemTemplate);
 }

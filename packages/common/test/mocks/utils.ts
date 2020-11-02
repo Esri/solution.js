@@ -25,13 +25,13 @@ import * as polyfills from "../../src/polyfills";
 export const ORG_URL = "https://myorg.maps.arcgis.com";
 export const PORTAL_URL = "https://myorg.maps.arcgis.com";
 
-export const TOMORROW = (function () {
+export const TOMORROW = (function() {
   const now = new Date();
   now.setDate(now.getDate() + 1);
   return now;
 })();
 
-export const YESTERDAY = (function () {
+export const YESTERDAY = (function() {
   const now = new Date();
   now.setDate(now.getDate() - 1);
   return now;
@@ -77,22 +77,27 @@ export const PORTAL_SUBSET = {
   urlKey: "deploymentTest"
 };
 
-export const ITEM_PROGRESS_CALLBACK: interfaces.IItemProgressCallback = function (
+export const ITEM_PROGRESS_CALLBACK: interfaces.IItemProgressCallback = function(
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   itemId: string,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   status: interfaces.EItemProgressStatus,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   costUsed: number,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   createdItemId: string // supplied when status is EItemProgressStatus.Created or .Finished
 ): boolean {
   return true;
 };
 
-export const SOLUTION_PROGRESS_CALLBACK: interfaces.ISolutionProgressCallback = function (
+export const SOLUTION_PROGRESS_CALLBACK: interfaces.ISolutionProgressCallback = function(
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   percentDone: number,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   jobId: string,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   progressEvent: interfaces.ISolutionProgressEvent
-): void {
-  const tick = "tok";
-};
+): void {};
 
 /**
  * Provides a successful progress callback until the nth call.
@@ -104,7 +109,7 @@ export function createFailingItemProgressCallbackOnNthCall(
   callToFailOn: number
 ): interfaces.IItemProgressCallback {
   let numCalls = 0;
-  return function (itemId, status, costUsed) {
+  return function() {
     return callToFailOn !== ++numCalls;
   };
 }
@@ -199,7 +204,7 @@ export function getSampleJson(): any {
   };
 }
 
-export function getSampleJsonAsBlob(mimeType = "application/json"): Blob {
+export function getSampleJsonAsBlob(): Blob {
   return jsonToBlob(getSampleJson());
 }
 
@@ -207,7 +212,7 @@ export function getSampleJsonAsFile(
   filename: string,
   mimeType = "application/json"
 ): File {
-  return polyfills.new_File([getSampleJsonAsBlob(mimeType)], filename, {
+  return polyfills.new_File([getSampleJsonAsBlob()], filename, {
     type: mimeType
   });
 }
@@ -372,7 +377,10 @@ export function createMockSettings(
   return settings;
 }
 
-export function createRuntimeMockUserSession(now?: number, portalUrl?: string): UserSession {
+export function createRuntimeMockUserSession(
+  now?: number,
+  portalUrl?: string
+): UserSession {
   if (now === undefined) {
     now = Date.now();
   }
@@ -1167,24 +1175,24 @@ export function getGroupResponse(query: string, hasResult: boolean) {
     results: !hasResult
       ? []
       : [
-        {
-          id: "2146ddb18dbe4fe1bb11dc9594164549",
-          title: query,
-          isInvitationOnly: false,
-          owner: "casey",
-          description: "",
-          snippet: "",
-          tags: ["test"],
-          phone: "123-456-7890",
-          sortField: "title",
-          sortOrder: "asc",
-          isViewOnly: false,
-          isFav: false,
-          thumbnail: "test.jpg",
-          created: 1258061693000,
-          access: "public"
-        }
-      ]
+          {
+            id: "2146ddb18dbe4fe1bb11dc9594164549",
+            title: query,
+            isInvitationOnly: false,
+            owner: "casey",
+            description: "",
+            snippet: "",
+            tags: ["test"],
+            phone: "123-456-7890",
+            sortField: "title",
+            sortOrder: "asc",
+            isViewOnly: false,
+            isFav: false,
+            thumbnail: "test.jpg",
+            created: 1258061693000,
+            access: "public"
+          }
+        ]
   };
 }
 
@@ -1194,7 +1202,7 @@ export function getCreateServiceResponse(
   isView: boolean = false
 ) {
   const name: string = url
-    .replace(/.+services[\/]/, "")
+    .replace(/.+services[/]/, "")
     .replace("/FeatureServer", "");
   return getSuccessResponse({
     encodedServiceURL: url,
@@ -1223,7 +1231,7 @@ export function returnOnNthCall(
   itemBeforeNthCall: any
 ): interfaces.INoArgFunction {
   let numCalls = 0;
-  return function () {
+  return function() {
     return ++numCalls < trigger ? itemBeforeNthCall : itemForNthCall;
   };
 }

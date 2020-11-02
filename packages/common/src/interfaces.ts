@@ -128,6 +128,10 @@ export interface IAdditionalSearchOptions {
 
 export interface ICreateItemFromTemplateResponse {
   /**
+   * Created item
+   */
+  item?: IItemTemplate;
+  /**
    * Item's AGO id
    */
   id: string;
@@ -139,8 +143,6 @@ export interface ICreateItemFromTemplateResponse {
    * Does the item need post processing to handle unresolved variables
    */
   postProcess: boolean;
-  item?: any;
-  itemData?: any;
 }
 
 /**
@@ -590,7 +592,7 @@ export interface ISolutionProgressEvent {
 }
 
 /**
- *  Information for storing a resource in a storage item.
+ * Information for storing a resource in a storage item.
  */
 export interface ISourceFileCopyPath {
   /**

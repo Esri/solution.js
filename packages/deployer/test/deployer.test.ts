@@ -114,8 +114,8 @@ describe("Module `deployer`", () => {
                 "getSolutionTemplateItem should be called"
               );
               expect(metaStub.calledOnce).toBe(
-                true,
-                "getItemMetadataAsFile should be called once"
+                false,
+                "getItemMetadataAsFile should not be called because item id is not a GUID"
               );
               expect(deployFnStub.calledOnce).toBe(
                 true,
@@ -170,6 +170,8 @@ describe("Module `deployer`", () => {
 
           // itemInfo that has not been mutated
           const _itemInfo = cloneObject(templates.getSolutionTemplateItem([]));
+          itemInfo.item.id = _itemInfo.item.id =
+            "11181d776d164656836f2fc3c23512b8";
 
           // create stub...
           const pgStub = sinon.stub(opts, "progressCallback");
@@ -182,7 +184,7 @@ describe("Module `deployer`", () => {
               );
               expect(metaStub.calledOnce).toBe(
                 true,
-                "getItemMetadataAsFile should be called once"
+                "getItemMetadataAsFile should be called once because item id is a GUID"
               );
               expect(deployFnStub.calledOnce).toBe(
                 true,
@@ -604,7 +606,9 @@ describe("Module `deployer`", () => {
             }
           },
           map1234567890: {
-            itemId: "map1234567890"
+            itemId: "map1234567890",
+            url:
+              "https://myorg.maps.arcgis.com/home/webmap/viewer.html?webmap=map1234567890"
           },
           params: {
             testProperty: "ABC"
@@ -1810,7 +1814,7 @@ describe("Module `deployer`", () => {
       });
     }
   });
-  describe("_replaceParamVaiables", () => {
+  describe("_replaceParamVariables", () => {
     it("should update custom sr prop", () => {
       const featureServiceTemplate: any = templates.getItemTemplate(
         "Feature Service"
@@ -1837,7 +1841,7 @@ describe("Module `deployer`", () => {
         templates: [featureServiceTemplate]
       };
 
-      deploySolutionFromTemplate._replaceParamVaiables(
+      deploySolutionFromTemplate._replaceParamVariables(
         solutionData,
         templateDictionary
       );

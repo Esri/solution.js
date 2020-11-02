@@ -664,6 +664,21 @@ describe("Module `restHelpersGet`: common REST fetch functions shared across pac
           }, done.fail);
       });
 
+      it("handles server error", done => {
+        const itemId = "itm1234567890";
+        const url = restHelpersGet.getItemMetadataBlobUrl(
+          itemId,
+          MOCK_USER_SESSION
+        );
+        fetchMock.post(url, mockItems.get500Failure());
+        restHelpersGet
+          .getItemMetadataAsFile(itemId, MOCK_USER_SESSION)
+          .then((json: any) => {
+            expect(json).toBeUndefined();
+            done();
+          }, done.fail);
+      });
+
       it("gets metadata", done => {
         const itemId = "itm1234567890";
         const url = restHelpersGet.getItemMetadataBlobUrl(

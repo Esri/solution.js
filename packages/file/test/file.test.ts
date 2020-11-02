@@ -366,7 +366,7 @@ describe("Module `file`: manages the creation and deployment of item types that 
           { success: true, id: newItemID }
         );
 
-        // tslint:disable-next-line: no-floating-promises
+        // eslint-disable-next-line @typescript-eslint/no-floating-promises
         file
           .createItemFromTemplate(
             itemTemplate,
@@ -375,7 +375,9 @@ describe("Module `file`: manages the creation and deployment of item types that 
             utils.ITEM_PROGRESS_CALLBACK
           )
           .then(response => {
+            itemTemplate.itemId = "map1234567891";
             expect(response).toEqual({
+              item: itemTemplate,
               id: newItemID,
               type: itemTemplate.type,
               postProcess: false
@@ -414,7 +416,7 @@ describe("Module `file`: manages the creation and deployment of item types that 
             { success: true }
           );
 
-        // tslint:disable-next-line: no-floating-promises
+        // eslint-disable-next-line @typescript-eslint/no-floating-promises
         file
           .createItemFromTemplate(
             itemTemplate,
@@ -423,7 +425,9 @@ describe("Module `file`: manages the creation and deployment of item types that 
             utils.ITEM_PROGRESS_CALLBACK
           )
           .then(response => {
+            itemTemplate.itemId = "map1234567891";
             expect(response).toEqual({
+              item: itemTemplate,
               id: newItemID,
               type: itemTemplate.type,
               postProcess: false
@@ -445,7 +449,7 @@ describe("Module `file`: manages the creation and deployment of item types that 
           utils.getFailureResponse()
         );
 
-        // tslint:disable-next-line: no-floating-promises
+        // eslint-disable-next-line @typescript-eslint/no-floating-promises
         file
           .createItemFromTemplate(
             itemTemplate,

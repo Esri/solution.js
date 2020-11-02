@@ -31,15 +31,11 @@ describe("Module `ClassicStorymapProcessor`: ", () => {
   describe("convertItemToTemplate :: ", () => {
     it("recognizes Classic StoryMap", done => {
       const solutionItemId = "sln1234567890";
-      ClassicStorymapProcessor.convertItemToTemplate(
-        solutionItemId,
-        {
-          type: "Web Mapping Application",
-          url:
-            "{{portalBaseUrl}}/apps/MapJournal/index.html?appid={{wma1234567890.itemId}}"
-        },
-        MOCK_USER_SESSION
-      ).then(
+      ClassicStorymapProcessor.convertItemToTemplate(solutionItemId, {
+        type: "Web Mapping Application",
+        url:
+          "{{portalBaseUrl}}/apps/MapJournal/index.html?appid={{wma1234567890.itemId}}"
+      }).then(
         () => done.fail(), // not yet implemented
         response => {
           expect(response).toEqual(
@@ -52,16 +48,12 @@ describe("Module `ClassicStorymapProcessor`: ", () => {
 
     it("rejects a non-StoryMap", done => {
       const solutionItemId = "sln1234567890";
-      ClassicStorymapProcessor.convertItemToTemplate(
-        solutionItemId,
-        {
-          id: "wma1234567890",
-          type: "Web Mapping Application",
-          url:
-            "http://anOrg.maps.arcgis.com/apps/CrowdsourcePolling/index.html?appid=itm1234567890"
-        },
-        MOCK_USER_SESSION
-      ).then(
+      ClassicStorymapProcessor.convertItemToTemplate(solutionItemId, {
+        id: "wma1234567890",
+        type: "Web Mapping Application",
+        url:
+          "http://anOrg.maps.arcgis.com/apps/CrowdsourcePolling/index.html?appid=itm1234567890"
+      }).then(
         () => done.fail(), // not yet implemented
         response => {
           expect(response).toEqual(
@@ -87,7 +79,8 @@ describe("Module `ClassicStorymapProcessor`: ", () => {
         utils.ITEM_PROGRESS_CALLBACK
       ).then(response => {
         expect(response).toEqual({
-          id: "Classic StoryMap is not yet implemented", // temporary
+          item: null as common.IItemTemplate,
+          id: "",
           type: templateSTO.type,
           postProcess: false
         });
@@ -106,6 +99,7 @@ describe("Module `ClassicStorymapProcessor`: ", () => {
         utils.ITEM_PROGRESS_CALLBACK
       ).then(response => {
         expect(response).toEqual({
+          item: null as common.IItemTemplate,
           id: "",
           type: templateSTO.type,
           postProcess: false

@@ -23,7 +23,4 @@ describe("quickcaptureHelpers:: ", () => {
   it("should have convertItemToTemplate", () => {
     expect(quickcaptureHelpers.convertItemToTemplate).toBeDefined();
   });
-  it("should have generateEmptyCreationResponse", () => {
-    expect(quickcaptureHelpers.generateEmptyCreationResponse).toBeDefined();
-  });
 });

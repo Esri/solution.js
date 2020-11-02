@@ -19,6 +19,7 @@ import { IModel, getProp } from "@esri/hub-common";
 /**
  * Extract a list of Items this storymap depends on
  * At this point we are just extracting webmaps
+ *
  * @param model IModel
  */
 export function getStoryMapDependencies(model: IModel): any[] {

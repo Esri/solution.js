@@ -334,6 +334,17 @@ describe("Module `generalHelpers`: common utility functions shared across packag
     });
   });
 
+  describe("compareJSONNoEmptyStrings", () => {
+    it("converts empty strings to null", () => {
+      expect(
+        generalHelpers.compareJSONNoEmptyStrings(
+          { a: 1, b: 2, c: "" },
+          { a: 1, b: 2, c: null }
+        )
+      ).toBeTruthy();
+    });
+  });
+
   describe("compareJSONProperties", () => {
     it("should not report if no property changed", () => {
       const json1: ITestCompareJSONProperties = {
@@ -834,6 +845,25 @@ describe("Module `generalHelpers`: common utility functions shared across packag
         itemIds
       };
       expect(generalHelpers.failWithIds(itemIds, error)).toEqual(expected);
+    });
+  });
+
+  describe("generateEmptyCreationResponse", () => {
+    it("returns an empty response", () => {
+      const chk = generalHelpers.generateEmptyCreationResponse("Some Type");
+      expect(chk.id).toBe("", "id should be empty");
+      expect(chk.type).toBe("Some Type", "type should be set");
+      expect(chk.postProcess).toBe(false, "postProcess set to false");
+    });
+
+    it("returns an empty response with id", () => {
+      const chk = generalHelpers.generateEmptyCreationResponse(
+        "Some Type",
+        "Some Id"
+      );
+      expect(chk.id).toBe("Some Id", "id should be empty");
+      expect(chk.type).toBe("Some Type", "type should be set");
+      expect(chk.postProcess).toBe(false, "postProcess set to false");
     });
   });
 

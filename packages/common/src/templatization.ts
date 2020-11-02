@@ -31,12 +31,14 @@ import { IItemTemplate } from "./interfaces";
  * A parameterized server name to replace the organization URL in a Web Mapping Application's URL to
  * itself; name has to be acceptable to AGOL, otherwise it discards the URL, so substitution must be
  * made before attempting to create the item.
+ *
  * @protected
  */
 export const SERVER_NAME: string = "portalBaseUrl";
 
 /**
  * A parameterized geometry server name
+ *
  * @protected
  */
 export const GEOMETRY_SERVER_NAME: string =
@@ -44,6 +46,7 @@ export const GEOMETRY_SERVER_NAME: string =
 
 /**
  * A parameterized geocode server name
+ *
  * @protected
  */
 export const GEOCODE_SERVER_NAME: string =
@@ -51,19 +54,21 @@ export const GEOCODE_SERVER_NAME: string =
 
 /**
  * A parameterized network analyst server name
+ *
  * @protected
  */
 export const NA_SERVER_NAME: string = "organization.helperServices.route.url";
 
 /**
  * A parameterized network analyst server name
+ *
  * @protected
  */
 export const PRINT_SERVER_NAME: string =
   "organization.helperServices.printTask.url";
 
 export const TRANSFORMS: any = {
-  getDefaultLocatorURL(key: string, val: any, settings: any) {
+  getDefaultLocatorURL(key: string, val: any) {
     // get the url from the template dictionary or return the default template variable when it's not present
     // this fallback is needed when we detemplatize living atlas layers as a part of the create process
     return val ? val[0].url : `{{${GEOCODE_SERVER_NAME}}}`;

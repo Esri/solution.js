@@ -26,7 +26,7 @@ import {
   ICreateItemFromTemplateResponse,
   EItemProgressStatus,
   UserSession,
-  fail
+  generateEmptyCreationResponse
 } from "@esri/solution-common";
 import { cloneObject, IModel, failSafe } from "@esri/hub-common";
 import { getItemData, removeItem } from "@esri/arcgis-rest-portal";
@@ -36,6 +36,7 @@ import { createStoryMap } from "./helpers/create-storymap";
 
 /**
  * Convert a StoryMap to a template
+ *
  * @param solutionItemId
  * @param itemInfo
  * @param authentication
@@ -55,7 +56,7 @@ export function convertItemToTemplate(
       // append into the model
       model.data = data;
       // and use that to create a template
-      return convertStoryMapToTemplate(model, authentication);
+      return convertStoryMapToTemplate(model);
     })
     .then(tmpl => {
       return tmpl;
@@ -64,6 +65,7 @@ export function convertItemToTemplate(
 
 /**
  * Create a StoryMap from the passed in template
+ *
  * @param template
  * @param templateDictionary
  * @param destinationAuthentication
@@ -84,7 +86,7 @@ export function createItemFromTemplate(
 
   // and if it returned false, just resolve out
   if (!startStatus) {
-    return Promise.resolve({ id: "", type: template.type, postProcess: false });
+    return Promise.resolve(generateEmptyCreationResponse(template.type));
   }
 
   // convert the templateDictionary to a settings hash
@@ -127,7 +129,7 @@ export function createItemFromTemplate(
     .then(createdModel => {
       model = createdModel;
       // Update the template dictionary
-      // TODO: This should be done in whatever recieves
+      // TODO: This should be done in whatever receives
       // the outcome of this promise chain
       templateDictionary[template.itemId] = {
         itemId: model.item.id
@@ -146,15 +148,15 @@ export function createItemFromTemplate(
           id: model.item.id,
           authentication: destinationAuthentication
         }).then(() => {
-          return Promise.resolve({
-            id: "",
-            type: template.type,
-            postProcess: false
-          });
+          return Promise.resolve(generateEmptyCreationResponse(template.type));
         });
       } else {
         // finally, return ICreateItemFromTemplateResponse
         return {
+          item: {
+            ...template,
+            ...model
+          },
           id: model.item.id,
           type: template.type,
           postProcess: false

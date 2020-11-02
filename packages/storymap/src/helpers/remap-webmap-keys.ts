@@ -21,6 +21,7 @@ import { getProp } from "@esri/hub-common";
  * They look like this: r-<webmap-item-id>-<timestamp>
  * This interpolation is hard to accomplish given our current setup, so we're just overwriting
  * them with "webmap0", "webmap1" and so forth. This _seems_ to make no difference.
+ *
  * @param model
  */
 export function remapWebmapKeys(resources: any = {}): any[] {

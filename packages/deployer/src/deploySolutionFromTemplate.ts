@@ -55,7 +55,7 @@ export function deploySolutionFromTemplate(
       );
     }
 
-    _replaceParamVaiables(solutionTemplateData, templateDictionary);
+    _replaceParamVariables(solutionTemplateData, templateDictionary);
 
     // Get information about deployment environment
     Promise.all([
@@ -110,7 +110,8 @@ export function deploySolutionFromTemplate(
         templateDictionary.user = userResponse;
         templateDictionary.user.folders = foldersAndGroupsResponse.folders;
         templateDictionary.user.groups = foldersAndGroupsResponse.groups.filter(
-          (group: common.IGroup) => group.owner === templateDictionary.user.username
+          (group: common.IGroup) =>
+            group.owner === templateDictionary.user.username
         );
 
         // Create a folder to hold the deployed solution. We use the solution name, appending a sequential
@@ -181,7 +182,9 @@ export function deploySolutionFromTemplate(
         templateDictionary.solutionItemId = deployedSolutionId;
         solutionTemplateBase.id = deployedSolutionId;
 
-        return common.addTokenToUrl(options.thumbnailurl, authentication);
+        return options.thumbnailurl
+          ? common.addTokenToUrl(options.thumbnailurl, authentication)
+          : Promise.resolve(null);
       })
       .then(updatedThumbnailUrl => {
         /* istanbul ignore else */
@@ -219,38 +222,40 @@ export function deploySolutionFromTemplate(
           options
         );
       })
-      .then(clonedSolutionsResponse => {
-        // TODO: if deploySolutionItems returned what was pushed into the templateDictionary
-        // we could add that at this point vs mutating
-        // why is this a reassignment?
-        solutionTemplateData.templates = solutionTemplateData.templates.map(
-          (itemTemplate: common.IItemTemplate) => {
-            // Update ids present in template dictionary
-            const itemId = getProp(
-              templateDictionary,
-              `${itemTemplate.itemId}.itemId`
-            );
-            // why a guard? can this ever be false? what happens if so?
-            // why are we updating this same property vs adding a new one? seems confusing
-            /* istanbul ignore else */
-            if (itemId) {
-              itemTemplate.originalItemId = itemTemplate.itemId;
-              itemTemplate.itemId = itemId;
+      .then(
+        (clonedSolutionsResponse: common.ICreateItemFromTemplateResponse[]) => {
+          // TODO: if deploySolutionItems returned what was pushed into the templateDictionary
+          // we could add that at this point vs mutating
+          // why is this a reassignment?
+          solutionTemplateData.templates = solutionTemplateData.templates.map(
+            (itemTemplate: common.IItemTemplate) => {
+              // Update ids present in template dictionary
+              const itemId = getProp(
+                templateDictionary,
+                `${itemTemplate.itemId}.itemId`
+              );
+              // why a guard? can this ever be false? what happens if so?
+              // why are we updating this same property vs adding a new one? seems confusing
+              /* istanbul ignore else */
+              if (itemId) {
+                itemTemplate.originalItemId = itemTemplate.itemId;
+                itemTemplate.itemId = itemId;
+              }
+              // update the dependencies hash to point to the new item ids
+              itemTemplate.dependencies = itemTemplate.dependencies.map(id =>
+                getWithDefault(templateDictionary, `${id}.itemId`, id)
+              );
+              return itemTemplate;
             }
-            // update the dependencies hash to point to the new item ids
-            itemTemplate.dependencies = itemTemplate.dependencies.map(id =>
-              getWithDefault(templateDictionary, `${id}.itemId`, id)
-            );
-            return itemTemplate;
-          }
-        );
-        return postProcess(
-          solutionTemplateData.templates,
-          clonedSolutionsResponse,
-          authentication,
-          templateDictionary
-        );
-      })
+          );
+          return postProcess(
+            solutionTemplateData.templates,
+            clonedSolutionsResponse,
+            authentication,
+            templateDictionary
+          );
+        }
+      )
       .then(() => {
         // Update solution item using internal representation & and the updated data JSON
         solutionTemplateBase.typeKeywords = [].concat(
@@ -289,11 +294,16 @@ export function deploySolutionFromTemplate(
         }
 
         // Pass metadata in via params because item property is serialized, which discards a File
+        const additionalParams: any = {};
+        /* istanbul ignore else */
+        if (solutionTemplateMetadata) {
+          additionalParams.metadata = solutionTemplateMetadata;
+        }
         return common.updateItem(
           solutionTemplateBase,
           authentication,
           deployedFolderId,
-          { metadata: solutionTemplateMetadata }
+          additionalParams
         );
       })
       .then(
@@ -320,7 +330,7 @@ export function deploySolutionFromTemplate(
   });
 }
 
-export function _replaceParamVaiables(
+export function _replaceParamVariables(
   solutionTemplateData: any,
   templateDictionary: any
 ): void {

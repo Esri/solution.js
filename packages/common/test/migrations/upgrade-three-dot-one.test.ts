@@ -51,14 +51,14 @@ describe("Upgrade 3.1 ::", () => {
   it("returns same model if above 3", () => {
     const m = cloneObject(defaultModel);
     m.item.properties.schemaVersion = 3.1;
-    const chk = _upgradeThreeDotOne(m, MOCK_USER_SESSION);
+    const chk = _upgradeThreeDotOne(m);
     expect(chk).toEqual(m, "should return the exact same object");
   });
 
   it("handles missing resource array", () => {
     const m = cloneObject(defaultModel);
     delete m.data.templates[0].resources;
-    const chk = _upgradeThreeDotOne(m, MOCK_USER_SESSION);
+    const chk = _upgradeThreeDotOne(m);
     expect(chk).not.toBe(m, "should not return the exact same object");
     expect(chk.item.properties.schemaVersion).toBe(
       3.1,
@@ -69,7 +69,7 @@ describe("Upgrade 3.1 ::", () => {
 
   it("updates resource structure", () => {
     const m = cloneObject(defaultModel);
-    const chk = _upgradeThreeDotOne(m, MOCK_USER_SESSION);
+    const chk = _upgradeThreeDotOne(m);
     expect(chk).not.toBe(m, "should not return the exact same object");
     expect(chk.item.properties.schemaVersion).toBe(
       3.1,

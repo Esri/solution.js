@@ -19,6 +19,7 @@ import { IModel, getProp, maybePush } from "@esri/hub-common";
 /**
  * Given an Web Experience model, extract out all the
  * items it depends on from the `dataSources` hash
+ *
  * @param model IModel
  */
 export function getWebExperienceDependencies(model: IModel): any[] {

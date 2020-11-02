@@ -39,7 +39,7 @@ describe("Upgrade 2.2 ::", () => {
   it("returns same model if on or above 2.2", () => {
     const m = cloneObject(defaultModel);
     m.item.properties.schemaVersion = 2.3;
-    const chk = _upgradeTwoDotTwo(m, MOCK_USER_SESSION);
+    const chk = _upgradeTwoDotTwo(m);
     expect(chk).toBe(m, "should return the exact same object");
   });
 
@@ -49,7 +49,7 @@ describe("Upgrade 2.2 ::", () => {
     m.data.metadata.chk = {
       solName: "{{solution.name}}"
     };
-    const chk = _upgradeTwoDotTwo(m, MOCK_USER_SESSION);
+    const chk = _upgradeTwoDotTwo(m);
     expect(chk).not.toBe(m, "should not return the exact same object");
     expect(chk.data.metadata.chk.solName).toBe(
       "{{solution.title}}",

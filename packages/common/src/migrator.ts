@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { ISolutionItem, UserSession } from "./interfaces";
+import { ISolutionItem } from "./interfaces";
 import { _isLegacySolution } from "./migrations/is-legacy-solution";
 import { _applySchema } from "./migrations/apply-schema";
 import { _upgradeTwoDotZero } from "./migrations/upgrade-two-dot-zero";
@@ -25,6 +25,7 @@ import { _upgradeTwoDotFour } from "./migrations/upgrade-two-dot-four";
 import { _upgradeTwoDotFive } from "./migrations/upgrade-two-dot-five";
 import { _upgradeTwoDotSix } from "./migrations/upgrade-two-dot-six";
 import { _upgradeThreeDotZero } from "./migrations/upgrade-three-dot-zero";
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { _upgradeThreeDotOne } from "./migrations/upgrade-three-dot-one";
 
 import { getProp } from "@esri/hub-common";
@@ -36,12 +37,10 @@ export const CURRENT_SCHEMA_VERSION = 3.0;
  * Apply schema migrations to a Solution item
  * This system allows the schema of the Solution item to change over time
  * while abstracting those changes into a single set of functional transforms
+ *
  * @param model ISolutionItem
  */
-export function migrateSchema(
-  model: ISolutionItem,
-  authentication: UserSession
-): Promise<ISolutionItem> {
+export function migrateSchema(model: ISolutionItem): Promise<ISolutionItem> {
   // ensure properties
   if (!getProp(model, "item.properties")) {
     model.item.properties = {};
@@ -86,9 +85,7 @@ export function migrateSchema(
     // or Promise<ISolutionItem>
     return schemaUpgrades.reduce(
       (promise, upgradeFn) =>
-        promise.then((updatedModel: ISolutionItem) =>
-          upgradeFn(updatedModel, authentication)
-        ),
+        promise.then((updatedModel: ISolutionItem) => upgradeFn(updatedModel)),
       Promise.resolve(model)
     );
   }

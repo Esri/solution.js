@@ -136,11 +136,7 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
           );
 
         featureLayer
-          .convertItemToTemplate(
-            "A",
-            itemTemplate.item,
-            MOCK_USER_SESSION
-          )
+          .convertItemToTemplate("A", itemTemplate.item, MOCK_USER_SESSION)
           .then(r => {
             // verify the state up front
             expect(r.item.id).toEqual(expectedId);
@@ -152,7 +148,11 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
             expect(r.properties.tables[0].serviceItemId).toEqual(expectedId);
 
             // Templatize layer & table fields
-            common.templatize(r, [{ "id": "svc1234567890", "name": "OtherSourceServiceName" }], true);
+            common.templatize(
+              r,
+              [{ id: "svc1234567890", name: "OtherSourceServiceName" }],
+              true
+            );
 
             expect(r.properties.layers[0].relationships[0].keyField).toEqual(
               expectedLayerKeyField
@@ -211,11 +211,7 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
         };
 
         featureLayer
-          .convertItemToTemplate(
-            "A",
-            itemTemplate.item,
-            MOCK_USER_SESSION
-          )
+          .convertItemToTemplate("A", itemTemplate.item, MOCK_USER_SESSION)
           .then(r => {
             // verify the state after
             expect(r.item.id).toEqual(id);
@@ -247,7 +243,10 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
             MOCK_USER_SESSION,
             true
           )
-          .then(() => done.fail(), () => done());
+          .then(
+            () => done.fail(),
+            () => done()
+          );
       });
 
       it("handle template item with missing url for invalid group designations", done => {
@@ -259,11 +258,7 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
         delete itemTemplate.item.url;
 
         featureLayer
-          .convertItemToTemplate(
-            "A",
-            itemTemplate.item,
-            MOCK_USER_SESSION
-          )
+          .convertItemToTemplate("A", itemTemplate.item, MOCK_USER_SESSION)
           .then(r => {
             // verify the state after
             expect(r.item.id).toEqual(id);
@@ -289,11 +284,7 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
         fetchMock.post(url + "?f=json", serviceResponse);
 
         featureLayer
-          .convertItemToTemplate(
-            "A",
-            itemTemplate.item,
-            MOCK_USER_SESSION
-          )
+          .convertItemToTemplate("A", itemTemplate.item, MOCK_USER_SESSION)
           .then(r => {
             // verify the state after
             expect(r.item.id).toEqual(id);
@@ -346,7 +337,12 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
 
         const templateDictionary = {};
         featureLayer
-          .convertItemToTemplate("A", itemTemplate.item, MOCK_USER_SESSION, templateDictionary)
+          .convertItemToTemplate(
+            "A",
+            itemTemplate.item,
+            MOCK_USER_SESSION,
+            templateDictionary
+          )
           .then(r => {
             done.fail();
           }, done);
@@ -368,7 +364,12 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
 
         const templateDictionary = {};
         featureLayer
-          .convertItemToTemplate("A", itemTemplate.item, MOCK_USER_SESSION, templateDictionary)
+          .convertItemToTemplate(
+            "A",
+            itemTemplate.item,
+            MOCK_USER_SESSION,
+            templateDictionary
+          )
           .then(r => {
             done.fail();
           }, done);
@@ -406,7 +407,12 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
 
         const templateDictionary = {};
         featureLayer
-          .convertItemToTemplate("A", itemTemplate.item, MOCK_USER_SESSION, templateDictionary)
+          .convertItemToTemplate(
+            "A",
+            itemTemplate.item,
+            MOCK_USER_SESSION,
+            templateDictionary
+          )
           .then(r => {
             done.fail();
           }, done);
@@ -501,11 +507,31 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
         )
         .post(
           utils.PORTAL_SUBSET.restUrl +
-          "/content/users/casey/items/svc1234567890/update",
+            "/content/users/casey/items/svc1234567890/update",
           '{"success":true}'
         );
 
-      // tslint:disable-next-line: no-floating-promises
+      const expectedClone: common.IItemTemplate = common.cloneObject(
+        itemTemplate
+      );
+      expectedClone.item.id = "svc1234567890";
+      expectedClone.item.extent = [
+        [0, 0],
+        [1, 1]
+      ];
+      expectedClone.properties.service.serviceItemId = "svc1234567890";
+      expectedClone.properties.layers[0].serviceItemId = "svc1234567890";
+      expectedClone.properties.layers[0].relationships = null;
+      expectedClone.properties.layers[0].viewDefinitionQuery = null;
+      expectedClone.properties.layers[0].adminLayerInfo = undefined;
+      delete expectedClone.properties.layers[0].definitionQuery;
+      expectedClone.properties.tables[0].serviceItemId = "svc1234567890";
+      expectedClone.properties.tables[0].relationships = null;
+      expectedClone.properties.tables[0].viewDefinitionQuery = null;
+      expectedClone.properties.tables[0].adminLayerInfo = undefined;
+      delete expectedClone.properties.tables[0].definitionQuery;
+
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
       featureLayer
         .createItemFromTemplate(
           itemTemplate,
@@ -519,6 +545,7 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
         )
         .then(r => {
           expect(r).toEqual({
+            item: expectedClone,
             id: "svc1234567890",
             type: itemTemplate.type,
             postProcess: false
@@ -588,6 +615,26 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
       const createResponse: any = mockItems.getAGOLService([], [], true);
       createResponse.success = true;
 
+      const expectedClone: common.IItemTemplate = common.cloneObject(
+        itemTemplate
+      );
+      expectedClone.item.id = "svc1234567890";
+      expectedClone.item.extent = [
+        [0, 0],
+        [1, 1]
+      ];
+      expectedClone.properties.service.serviceItemId = "svc1234567890";
+      expectedClone.properties.layers[0].serviceItemId = "svc1234567890";
+      expectedClone.properties.layers[0].relationships = null;
+      expectedClone.properties.layers[0].viewDefinitionQuery = null;
+      expectedClone.properties.layers[0].adminLayerInfo = undefined;
+      delete expectedClone.properties.layers[0].definitionQuery;
+      expectedClone.properties.tables[0].serviceItemId = "svc1234567890";
+      expectedClone.properties.tables[0].relationships = null;
+      expectedClone.properties.tables[0].viewDefinitionQuery = null;
+      expectedClone.properties.tables[0].adminLayerInfo = undefined;
+      delete expectedClone.properties.tables[0].definitionQuery;
+
       fetchMock
         .post(url + "?f=json", itemTemplate.properties.service)
         .post(adminUrl + "/0?f=json", itemTemplate.properties.layers[0])
@@ -615,11 +662,11 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
         )
         .post(
           utils.PORTAL_SUBSET.restUrl +
-          "/content/users/casey/items/svc1234567890/update",
+            "/content/users/casey/items/svc1234567890/update",
           '{"success":true}'
         );
 
-      // tslint:disable-next-line: no-floating-promises
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
       featureLayer
         .createItemFromTemplate(
           itemTemplate,
@@ -633,6 +680,7 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
         )
         .then(r => {
           expect(r).toEqual({
+            item: expectedClone,
             id: "svc1234567890",
             type: itemTemplate.type,
             postProcess: true
@@ -702,6 +750,26 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
       const createResponse: any = mockItems.getAGOLService([], [], true);
       createResponse.success = true;
 
+      const expectedClone: common.IItemTemplate = common.cloneObject(
+        itemTemplate
+      );
+      expectedClone.item.id = "svc1234567890";
+      expectedClone.item.extent = [
+        [0, 0],
+        [1, 1]
+      ];
+      expectedClone.properties.service.serviceItemId = "svc1234567890";
+      expectedClone.properties.layers[0].serviceItemId = "svc1234567890";
+      expectedClone.properties.layers[0].relationships = null;
+      expectedClone.properties.layers[0].viewDefinitionQuery = null;
+      expectedClone.properties.layers[0].adminLayerInfo = undefined;
+      delete expectedClone.properties.layers[0].definitionQuery;
+      expectedClone.properties.tables[0].serviceItemId = "svc1234567890";
+      expectedClone.properties.tables[0].relationships = null;
+      expectedClone.properties.tables[0].viewDefinitionQuery = null;
+      expectedClone.properties.tables[0].adminLayerInfo = undefined;
+      delete expectedClone.properties.tables[0].definitionQuery;
+
       fetchMock
         .post(url + "?f=json", itemTemplate.properties.service)
         .post(adminUrl + "/0?f=json", itemTemplate.properties.layers[0])
@@ -729,11 +797,11 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
         )
         .post(
           utils.PORTAL_SUBSET.restUrl +
-          "/content/users/casey/items/svc1234567890/update",
+            "/content/users/casey/items/svc1234567890/update",
           '{"success":true}'
         );
 
-      // tslint:disable-next-line: no-floating-promises
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
       featureLayer
         .createItemFromTemplate(
           itemTemplate,
@@ -747,6 +815,7 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
         )
         .then(r => {
           expect(r).toEqual({
+            item: expectedClone,
             id: "svc1234567890",
             type: itemTemplate.type,
             postProcess: true
@@ -850,7 +919,7 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
         .post(url + "/sources?f=json", mockItems.getAGOLServiceSources())
         .post(
           utils.PORTAL_SUBSET.restUrl +
-          "/content/users/casey/fld1234567890/createService",
+            "/content/users/casey/fld1234567890/createService",
           createResponse
         )
         .post(
@@ -871,10 +940,37 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
         )
         .post(
           utils.PORTAL_SUBSET.restUrl +
-          "/content/users/casey/items/svc1234567890/update",
+            "/content/users/casey/items/svc1234567890/update",
           '{"success":true}'
         );
-      // tslint:disable-next-line: no-floating-promises
+
+      const expectedClone: common.IItemTemplate = common.cloneObject(
+        itemTemplate
+      );
+      expectedClone.item.id = "svc1234567890";
+      expectedClone.item.extent = [
+        [0, 0],
+        [1, 1]
+      ];
+      expectedClone.properties.service.serviceItemId = "svc1234567890";
+      expectedClone.properties.layers[0].serviceItemId = "svc1234567890";
+      expectedClone.properties.layers[0].relationships = null;
+      expectedClone.properties.layers[0].viewDefinitionQuery = null;
+      expectedClone.properties.layers[0].adminLayerInfo = undefined;
+      expectedClone.properties.layers[0].uniqueIdField.name = "objectid";
+      delete expectedClone.properties.layers[0].definitionQuery;
+      delete expectedClone.properties.layers[0].isView;
+      delete expectedClone.properties.layers[0].sourceSchemaChangesAllowed;
+      expectedClone.properties.tables[0].serviceItemId = "svc1234567890";
+      expectedClone.properties.tables[0].relationships = null;
+      expectedClone.properties.tables[0].viewDefinitionQuery = null;
+      expectedClone.properties.tables[0].adminLayerInfo = {};
+      expectedClone.properties.tables[0].uniqueIdField.name = "objectid";
+      delete expectedClone.properties.tables[0].definitionQuery;
+      delete expectedClone.properties.tables[0].isView;
+      delete expectedClone.properties.tables[0].sourceSchemaChangesAllowed;
+
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
       featureLayer
         .createItemFromTemplate(
           itemTemplate,
@@ -886,6 +982,7 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
           expect(r)
             .withContext("result")
             .toEqual({
+              item: expectedClone,
               id: "svc1234567890",
               type: itemTemplate.type,
               postProcess: false
@@ -962,16 +1059,16 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
         )
         .post(
           utils.PORTAL_SUBSET.restUrl +
-          "/content/users/casey/items/svc1234567890/update",
+            "/content/users/casey/items/svc1234567890/update",
           mockItems.get400Failure()
         )
         .post(
           utils.PORTAL_SUBSET.restUrl +
-          "/content/users/casey/items/svc1234567890/delete",
+            "/content/users/casey/items/svc1234567890/delete",
           utils.getFailureResponse({ itemId: itemTemplate.itemId })
         );
 
-      // tslint:disable-next-line: no-floating-promises
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
       featureLayer
         .createItemFromTemplate(
           itemTemplate,
@@ -1044,11 +1141,11 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
         )
         .post(
           utils.PORTAL_SUBSET.restUrl +
-          "/content/users/casey/items/svc1234567890/delete",
+            "/content/users/casey/items/svc1234567890/delete",
           utils.getSuccessResponse({ itemId: itemTemplate.itemId })
         );
 
-      // tslint:disable-next-line: no-floating-promises
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
       featureLayer
         .createItemFromTemplate(
           itemTemplate,
@@ -1121,11 +1218,11 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
         )
         .post(
           utils.PORTAL_SUBSET.restUrl +
-          "/content/users/casey/items/svc1234567890/delete",
+            "/content/users/casey/items/svc1234567890/delete",
           utils.getFailureResponse({ itemId: itemTemplate.itemId })
         );
 
-      // tslint:disable-next-line: no-floating-promises
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
       featureLayer
         .createItemFromTemplate(
           itemTemplate,
@@ -1193,7 +1290,7 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
           mockItems.get400Failure()
         );
 
-      // tslint:disable-next-line: no-floating-promises
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
       featureLayer
         .createItemFromTemplate(
           itemTemplate,
@@ -1244,7 +1341,7 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
           createResponse
         );
 
-      // tslint:disable-next-line: no-floating-promises
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
       featureLayer
         .createItemFromTemplate(
           itemTemplate,
@@ -1332,16 +1429,16 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
         )
         .post(
           utils.PORTAL_SUBSET.restUrl +
-          "/content/users/casey/items/svc1234567890/update",
+            "/content/users/casey/items/svc1234567890/update",
           mockItems.get400Failure()
         )
         .post(
           utils.PORTAL_SUBSET.restUrl +
-          "/content/users/casey/items/svc1234567890/delete",
+            "/content/users/casey/items/svc1234567890/delete",
           utils.getFailureResponse({ itemId: itemTemplate.itemId })
         );
 
-      // tslint:disable-next-line: no-floating-promises
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
       featureLayer
         .createItemFromTemplate(
           itemTemplate,
@@ -1427,11 +1524,11 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
         )
         .post(
           utils.PORTAL_SUBSET.restUrl +
-          "/content/users/casey/items/svc1234567890/update",
+            "/content/users/casey/items/svc1234567890/update",
           mockItems.get400Failure()
         );
 
-      // tslint:disable-next-line: no-floating-promises
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
       featureLayer
         .createItemFromTemplate(
           itemTemplate,
@@ -1500,11 +1597,11 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
         )
         .post(
           utils.PORTAL_SUBSET.restUrl +
-          "/content/users/casey/items/svc1234567890/update",
+            "/content/users/casey/items/svc1234567890/update",
           mockItems.get400Failure()
         );
 
-      // tslint:disable-next-line: no-floating-promises
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
       featureLayer
         .createItemFromTemplate(
           itemTemplate,
@@ -1523,7 +1620,7 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
     it("should handle cancellation before deployment of item starts", done => {
       const templateDictionary: any = {};
 
-      // tslint:disable-next-line: no-floating-promises
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
       featureLayer
         .createItemFromTemplate(
           itemTemplate,
@@ -1593,16 +1690,16 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
         )
         .post(
           utils.PORTAL_SUBSET.restUrl +
-          "/content/users/casey/items/svc1234567890/update",
+            "/content/users/casey/items/svc1234567890/update",
           '{"success":true}'
         )
         .post(
           utils.PORTAL_SUBSET.restUrl +
-          "/content/users/casey/items/svc1234567890/delete",
+            "/content/users/casey/items/svc1234567890/delete",
           utils.getSuccessResponse({ itemId: itemTemplate.itemId })
         );
 
-      // tslint:disable-next-line: no-floating-promises
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
       featureLayer
         .createItemFromTemplate(
           itemTemplate,
@@ -1676,16 +1773,16 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
         )
         .post(
           utils.PORTAL_SUBSET.restUrl +
-          "/content/users/casey/items/svc1234567890/update",
+            "/content/users/casey/items/svc1234567890/update",
           '{"success":true}'
         )
         .post(
           utils.PORTAL_SUBSET.restUrl +
-          "/content/users/casey/items/svc1234567890/delete",
+            "/content/users/casey/items/svc1234567890/delete",
           utils.getFailureResponse({ itemId: itemTemplate.itemId })
         );
 
-      // tslint:disable-next-line: no-floating-promises
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
       featureLayer
         .createItemFromTemplate(
           itemTemplate,
@@ -1759,16 +1856,16 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
         )
         .post(
           utils.PORTAL_SUBSET.restUrl +
-          "/content/users/casey/items/svc1234567890/update",
+            "/content/users/casey/items/svc1234567890/update",
           '{"success":true}'
         )
         .post(
           utils.PORTAL_SUBSET.restUrl +
-          "/content/users/casey/items/svc1234567890/delete",
+            "/content/users/casey/items/svc1234567890/delete",
           utils.getSuccessResponse({ itemId: itemTemplate.itemId })
         );
 
-      // tslint:disable-next-line: no-floating-promises
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
       featureLayer
         .createItemFromTemplate(
           itemTemplate,
@@ -1842,16 +1939,16 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
         )
         .post(
           utils.PORTAL_SUBSET.restUrl +
-          "/content/users/casey/items/svc1234567890/update",
+            "/content/users/casey/items/svc1234567890/update",
           '{"success":true}'
         )
         .post(
           utils.PORTAL_SUBSET.restUrl +
-          "/content/users/casey/items/svc1234567890/delete",
+            "/content/users/casey/items/svc1234567890/delete",
           utils.getFailureResponse({ itemId: itemTemplate.itemId })
         );
 
-      // tslint:disable-next-line: no-floating-promises
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
       featureLayer
         .createItemFromTemplate(
           itemTemplate,
@@ -1895,6 +1992,7 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
         const templates = [itemTemplate];
         const itemInfos = [
           {
+            item: itemTemplate,
             id: itemTemplate.id,
             type: itemTemplate.type,
             postProcess: true
@@ -1922,12 +2020,12 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
         fetchMock
           .get(
             utils.PORTAL_SUBSET.restUrl +
-            "/content/items/a369baed619441cfb5e862694d33d44c?f=json&token=fake-token",
+              "/content/items/a369baed619441cfb5e862694d33d44c?f=json&token=fake-token",
             item
           )
           .post(
             utils.PORTAL_SUBSET.restUrl +
-            "/content/items/a369baed619441cfb5e862694d33d44c/data",
+              "/content/items/a369baed619441cfb5e862694d33d44c/data",
             data
           )
           .post(updateUrl, utils.getSuccessResponse({ id: item.id }));
@@ -1957,8 +2055,8 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
               const callBody = fetchMock.calls(updateUrl)[0][1].body as string;
               expect(callBody).toEqual(
                 "f=json&text=%7B%22someProp%22%3A%22b369baed619441cfb5e862694d33d44c%22%7D&id=a369baed619441cfb5e862" +
-                "694d33d44c&owner=brubble&tags=tag1&created=1590520700158&modified=1590520700158&numViews=10&size=50" +
-                "&title=My%20Form&type=Form&typeKeywords=b369baed619441cfb5e862694d33d44c&token=fake-token"
+                  "694d33d44c&owner=brubble&tags=tag1&created=1590520700158&modified=1590520700158&numViews=10&size=50" +
+                  "&title=My%20Form&type=Form&typeKeywords=b369baed619441cfb5e862694d33d44c&token=fake-token"
               );
               done();
             },

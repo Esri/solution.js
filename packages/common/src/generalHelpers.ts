@@ -21,7 +21,11 @@
  */
 
 import { createId } from "@esri/hub-common";
-import { IDatasourceInfo, IItemTemplate } from "./interfaces";
+import {
+  ICreateItemFromTemplateResponse,
+  IDatasourceInfo,
+  IItemTemplate
+} from "./interfaces";
 import { Sanitizer, sanitizeJSON } from "./libConnectors";
 import { new_File } from "./polyfills";
 
@@ -89,7 +93,7 @@ export function blobToText(blob: Blob): Promise<string> {
     reader.onload = function(evt) {
       // Disable needed because Node requires cast
       // tslint:disable-next-line: no-unnecessary-type-assertion
-      const blobContents = (evt.target as FileReader).result;
+      const blobContents = evt.target.result;
       resolve(blobContents ? (blobContents as string) : ""); // not handling ArrayContents variant
     };
     reader.readAsText(blob);
@@ -132,6 +136,25 @@ export function createShortId(): string {
     2,
     8
   );
+}
+
+/**
+ * Flags a failure to create an item from a template.
+ *
+ * @param itemType The AGO item type
+ * @param id Item id to include in response
+ * @return Empty creation response
+ */
+export function generateEmptyCreationResponse(
+  itemType: string,
+  id = ""
+): ICreateItemFromTemplateResponse {
+  return {
+    item: null,
+    id,
+    type: itemType,
+    postProcess: false
+  };
 }
 
 /**
@@ -187,7 +210,7 @@ export function saveBlobAsFile(filename: string, blob: Blob): Promise<void> {
     document.body.appendChild(linkElement);
     linkElement.click();
     document.body.removeChild(linkElement);
-    setTimeout(_ => {
+    setTimeout(() => {
       URL.revokeObjectURL(dataUrl);
       resolve();
     }, 500);
@@ -246,8 +269,8 @@ export function compareJSON(json1: any, json2: any): boolean {
  * @return True if objects are the same
  */
 export function compareJSONNoEmptyStrings(json1: any, json2: any): boolean {
-  const jsonStr1 = JSON.stringify(json1).replace(/\"\:\"\"/g, '":null');
-  const jsonStr2 = JSON.stringify(json2).replace(/\"\:\"\"/g, '":null');
+  const jsonStr1 = JSON.stringify(json1).replace(/":""/g, '":null');
+  const jsonStr2 = JSON.stringify(json2).replace(/":""/g, '":null');
   return jsonStr1 === jsonStr2;
 }
 
@@ -648,7 +671,7 @@ export function getUniqueTitle(
   templateDictionary: any,
   path: string
 ): string {
-  title = title.trim();
+  title = title ? title.trim() : "_";
   const objs: any[] = getProp(templateDictionary, path) || [];
   const titles: string[] = objs.map(obj => {
     return obj.title;

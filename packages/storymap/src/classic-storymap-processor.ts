@@ -26,8 +26,7 @@ import * as common from "@esri/solution-common";
 
 export function convertItemToTemplate(
   solutionItemId: string,
-  itemInfo: any,
-  authentication: common.UserSession
+  itemInfo: any
 ): Promise<common.IItemTemplate> {
   return new Promise<common.IItemTemplate>((resolve, reject) => {
     if (isAStoryMap(itemInfo.type, itemInfo.url)) {
@@ -52,11 +51,7 @@ export function createItemFromTemplate(
         common.EItemProgressStatus.Failed,
         0
       );
-      resolve({
-        id: "Classic StoryMap is not yet implemented", // temporary
-        type: template.type,
-        postProcess: false
-      });
+      resolve(common.generateEmptyCreationResponse(template.type));
     } else {
       // Not valid
       itemProgressCallback(
@@ -64,11 +59,7 @@ export function createItemFromTemplate(
         common.EItemProgressStatus.Failed,
         0
       );
-      resolve({
-        id: "",
-        type: template.type,
-        postProcess: false
-      });
+      resolve(common.generateEmptyCreationResponse(template.type));
     }
   });
 }

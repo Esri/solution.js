@@ -140,8 +140,16 @@ describe("Module `deploySolutionItems`", () => {
           updatedItem
         );
 
-      const expected: any[] = [
+      const expectedClone: common.IItemTemplate = common.cloneObject(
+        itemTemplate
+      );
+      expectedClone.itemId = "ba4a6047326243b290f625e80ebe6531";
+      expectedClone.dependencies = [];
+      delete expectedClone.item.spatialReference;
+
+      const expected: common.ICreateItemFromTemplateResponse[] = [
         {
+          item: expectedClone,
           id: newItemID,
           type: type,
           postProcess: true
@@ -152,7 +160,9 @@ describe("Module `deploySolutionItems`", () => {
         user: mockItems.getAGOLUser("casey")
       };
       expectedTemplateDictionary[id] = {
-        itemId: newItemID
+        itemId: newItemID,
+        url:
+          "https://apl.maps.arcgis.com/apps/Viewer/index.html?appid=map1234567890"
       };
 
       deploySolution
@@ -222,8 +232,9 @@ describe("Module `deploySolutionItems`", () => {
         }
       );
 
-      const expected: any[] = [
+      const expected: common.ICreateItemFromTemplateResponse[] = [
         {
+          item: null as common.IItemTemplate,
           id: foundItemID,
           type: type,
           postProcess: false
@@ -314,8 +325,9 @@ describe("Module `deploySolutionItems`", () => {
           }
         );
 
-      const expected: any[] = [
+      const expected: common.ICreateItemFromTemplateResponse[] = [
         {
+          item: null as common.IItemTemplate,
           id: foundItemID,
           type: type,
           postProcess: false
@@ -408,8 +420,9 @@ describe("Module `deploySolutionItems`", () => {
         }
       );
 
-      const expected: any[] = [
+      const expected: common.ICreateItemFromTemplateResponse[] = [
         {
+          item: null as common.IItemTemplate,
           id: foundItemID2,
           type: type,
           postProcess: false
@@ -509,8 +522,9 @@ describe("Module `deploySolutionItems`", () => {
           }
         });
 
-      const expected: any[] = [
+      const expected: common.ICreateItemFromTemplateResponse[] = [
         {
+          item: null as common.IItemTemplate,
           id: foundItemID2,
           type: type,
           postProcess: false
@@ -584,8 +598,9 @@ describe("Module `deploySolutionItems`", () => {
         user: user
       };
 
-      const expected: any[] = [
+      const expected: common.ICreateItemFromTemplateResponse[] = [
         {
+          item: null as common.IItemTemplate,
           id: foundItemID,
           type: type,
           postProcess: false
@@ -651,8 +666,9 @@ describe("Module `deploySolutionItems`", () => {
         mockItems.get400Failure()
       );
 
-      const expected: any[] = [
+      const expected: common.ICreateItemFromTemplateResponse[] = [
         {
+          item: null as common.IItemTemplate,
           id: foundItemID,
           type: type,
           postProcess: false
@@ -684,7 +700,7 @@ describe("Module `deploySolutionItems`", () => {
             progressCallback: utils.SOLUTION_PROGRESS_CALLBACK
           }
         )
-        .then(done.fail, done);
+        .then(() => done.fail(), done);
     });
 
     it("can handle error on find items by tag", done => {
@@ -727,8 +743,9 @@ describe("Module `deploySolutionItems`", () => {
           mockItems.get400Failure()
         );
 
-      const expected: any[] = [
+      const expected: common.ICreateItemFromTemplateResponse[] = [
         {
+          item: null as common.IItemTemplate,
           id: foundItemID,
           type: type,
           postProcess: false
@@ -760,7 +777,7 @@ describe("Module `deploySolutionItems`", () => {
             progressCallback: utils.SOLUTION_PROGRESS_CALLBACK
           }
         )
-        .then(done.fail, done);
+        .then(() => done.fail(), done);
     });
 
     it("handles failure to delete all items when unwinding after failure to deploy", done => {
@@ -833,8 +850,9 @@ describe("Module `deploySolutionItems`", () => {
       // tslint:disable-next-line: no-empty
       spyOn(console, "error").and.callFake(() => {});
 
-      const expected: any[] = [
+      const expected: common.ICreateItemFromTemplateResponse[] = [
         {
+          item: null as common.IItemTemplate,
           id: newItemID,
           type: type,
           postProcess: true
@@ -865,14 +883,17 @@ describe("Module `deploySolutionItems`", () => {
             consoleProgress: true
           }
         )
-        .then(done.fail, actual => {
-          expect(actual).toEqual(
-            utils.getFailureResponse({
-              itemIds: ["aa4a6047326243b290f625e80ebe6531"]
-            })
-          );
-          done();
-        });
+        .then(
+          () => done.fail(),
+          actual => {
+            expect(actual).toEqual(
+              utils.getFailureResponse({
+                itemIds: ["aa4a6047326243b290f625e80ebe6531"]
+              })
+            );
+            done();
+          }
+        );
     });
 
     it("can delay when multiple views share the same source when deploying portal", () => {
@@ -1018,7 +1039,7 @@ describe("Module `deploySolutionItems`", () => {
             progressCallback: utils.SOLUTION_PROGRESS_CALLBACK
           }
         )
-        .then(done.fail, done);
+        .then(() => done.fail(), done);
     });
   });
 
@@ -1031,7 +1052,7 @@ describe("Module `deploySolutionItems`", () => {
       const resourceFilePaths: common.IDeployFileCopyPath[] = [];
       const templateDictionary: any = {};
 
-      // tslint:disable-next-line: no-floating-promises
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
       deploySolution
         ._createItemFromTemplateWhenReady(
           itemTemplate,
@@ -1055,7 +1076,7 @@ describe("Module `deploySolutionItems`", () => {
       const resourceFilePaths: common.IDeployFileCopyPath[] = [];
       const templateDictionary: any = {};
 
-      // tslint:disable-next-line: no-floating-promises
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
       deploySolution
         ._createItemFromTemplateWhenReady(
           itemTemplate,
@@ -1112,7 +1133,15 @@ describe("Module `deploySolutionItems`", () => {
           updatedItem
         );
 
-      // tslint:disable-next-line: no-floating-promises
+      const expectedClone: common.IItemTemplate = common.cloneObject(
+        itemTemplate
+      );
+      expectedClone.itemId = "wma1234567891";
+      expectedClone.item.id = "wma1234567891";
+      delete expectedClone.item.spatialReference;
+      expectedClone.dependencies = [];
+
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
       deploySolution
         ._createItemFromTemplateWhenReady(
           itemTemplate,
@@ -1124,10 +1153,11 @@ describe("Module `deploySolutionItems`", () => {
         )
         .then((response: common.ICreateItemFromTemplateResponse) => {
           expect(response).toEqual({
+            item: expectedClone,
             id: newItemID,
             type: itemTemplate.type,
             postProcess: true
-          });
+          } as common.ICreateItemFromTemplateResponse);
           done();
         });
     });
@@ -1177,7 +1207,7 @@ describe("Module `deploySolutionItems`", () => {
           updatedItem
         );
 
-      // tslint:disable-next-line: no-floating-promises
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
       deploySolution
         ._createItemFromTemplateWhenReady(
           itemTemplate,
@@ -1260,7 +1290,18 @@ describe("Module `deploySolutionItems`", () => {
           utils.getSuccessResponse()
         );
 
-      // tslint:disable-next-line: no-floating-promises
+      const expectedClone: common.IItemTemplate = common.cloneObject(
+        itemTemplate
+      );
+      expectedClone.itemId = "svc1234567890";
+      expectedClone.item.id = "svc1234567890";
+      expectedClone.properties.service.serviceItemId = "svc1234567890";
+      delete expectedClone.properties.layers[0].definitionQuery;
+      expectedClone.properties.layers[0].relationships = null;
+      expectedClone.properties.layers[0].viewDefinitionQuery = null;
+      expectedClone.properties.layers[0].adminLayerInfo = undefined;
+
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
       deploySolution
         ._createItemFromTemplateWhenReady(
           itemTemplate,
@@ -1272,10 +1313,11 @@ describe("Module `deploySolutionItems`", () => {
         )
         .then((response: common.ICreateItemFromTemplateResponse) => {
           expect(response).toEqual({
+            item: expectedClone,
             id: "svc1234567890",
             type: itemTemplate.type,
             postProcess: true
-          });
+          } as common.ICreateItemFromTemplateResponse);
           done();
         });
     });
@@ -1325,7 +1367,7 @@ describe("Module `deploySolutionItems`", () => {
           )
           .post(utils.PORTAL_SUBSET.restUrl + "/info", SERVER_INFO);
 
-        // tslint:disable-next-line: no-floating-promises
+        // eslint-disable-next-line @typescript-eslint/no-floating-promises
         deploySolution
           ._createItemFromTemplateWhenReady(
             itemTemplate,
@@ -1384,7 +1426,7 @@ describe("Module `deploySolutionItems`", () => {
           .post("http://someurl//rest/info", {})
           .post("http://someurl/", mockItems.get400Failure());
 
-        // tslint:disable-next-line: no-floating-promises
+        // eslint-disable-next-line @typescript-eslint/no-floating-promises
         deploySolution
           ._createItemFromTemplateWhenReady(
             itemTemplate,
@@ -1443,7 +1485,7 @@ describe("Module `deploySolutionItems`", () => {
           .post("http://someurl//rest/info", {})
           .post("http://someurl/", mockItems.get400Failure());
 
-        // tslint:disable-next-line: no-floating-promises
+        // eslint-disable-next-line @typescript-eslint/no-floating-promises
         deploySolution
           ._createItemFromTemplateWhenReady(
             itemTemplate,
@@ -1490,7 +1532,7 @@ describe("Module `deploySolutionItems`", () => {
         "Web Map"
       );
 
-      // tslint:disable-next-line: no-floating-promises
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
       deploySolution
         ._moveResourcesIntoTemplate(filePaths, template, MOCK_USER_SESSION)
         .then(updatedFilePaths => {

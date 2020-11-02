@@ -31,6 +31,7 @@ import { encodeSurveyForm } from "./encode-survey-form";
 
 /**
  * Builds the Survey123 create API parameters
+ *
  * @param {IItemTemplate} template The template
  * @param {any} templateDictionary The template dictionary
  * @param {UserSession} destinationAuthentication The destination session info

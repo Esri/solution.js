@@ -46,7 +46,6 @@ afterEach(() => {
 // ------------------------------------------------------------------------------------------------------------------ //
 
 describe("simpleTypeCreateItemFromTemplate", () => {
-
   describe("notebook", () => {
     if (typeof window !== "undefined") {
       it("should create and fine tune python notebook", done => {
@@ -81,7 +80,13 @@ describe("simpleTypeCreateItemFromTemplate", () => {
             fullName: "casey"
           });
 
-        // tslint:disable-next-line: no-floating-promises
+        const expectedClone: common.IItemTemplate = common.cloneObject(
+          itemTemplate
+        );
+        expectedClone.itemId = newItemID;
+        expectedClone.item.id = "abc1cab401af4828a25cc6eaeb59fb69";
+
+        // eslint-disable-next-line @typescript-eslint/no-floating-promises
         simpleTypes
           .createItemFromTemplate(
             itemTemplate,
@@ -92,6 +97,7 @@ describe("simpleTypeCreateItemFromTemplate", () => {
           .then(r => {
             expect(templateDictionary).toEqual(expected);
             expect(r).toEqual({
+              item: expectedClone,
               id: newItemID,
               type: itemTemplate.type,
               postProcess: false
@@ -137,7 +143,7 @@ describe("simpleTypeCreateItemFromTemplate", () => {
             utils.getSuccessResponse({ itemId: "map1234567890" })
           );
 
-        // tslint:disable-next-line: no-floating-promises
+        // eslint-disable-next-line @typescript-eslint/no-floating-promises
         simpleTypes
           .createItemFromTemplate(
             itemTemplate,
@@ -305,7 +311,23 @@ describe("simpleTypeCreateItemFromTemplate", () => {
           { success: true }
         );
 
-      // tslint:disable-next-line: no-floating-promises
+      const expectedClone: common.IItemTemplate = common.cloneObject(
+        itemTemplate
+      );
+      expectedClone.itemId = newItemId;
+      expectedClone.data.application.dataSources[0].featureServiceItemId =
+        "xxxe5f693de34620934787ead6693f10";
+      expectedClone.data.application.dataSources[0].url =
+        "https://abc123/name/FeatureServer/0";
+      expectedClone.data.application.dataSources[1].featureServiceItemId =
+        "xxxe5f693de34620934787ead6693f10";
+      expectedClone.data.application.dataSources[1].url =
+        "https://abc123/name/FeatureServer/1";
+      expectedClone.data.application.itemId =
+        "xxx79c91fc7642ebb4c0bbacfbacd510";
+      expectedClone.data.application.preferences.adminEmail = "casey@esri.com";
+
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
       simpleTypes
         .createItemFromTemplate(
           itemTemplate,
@@ -315,6 +337,7 @@ describe("simpleTypeCreateItemFromTemplate", () => {
         )
         .then(actual => {
           expect(actual).toEqual({
+            item: expectedClone,
             id: newItemId,
             type: itemTemplate.type,
             postProcess: true
@@ -369,7 +392,7 @@ describe("simpleTypeCreateItemFromTemplate", () => {
           mockItems.get400Failure()
         );
 
-      // tslint:disable-next-line: no-floating-promises
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
       simpleTypes
         .createItemFromTemplate(
           itemTemplate,
@@ -394,19 +417,10 @@ describe("simpleTypeCreateItemFromTemplate", () => {
         title: "Voting Centers",
         id: "{{abc0cab401af4828a25cc6eaeb59fb69.itemId}}",
         type: "Web Mapping Application",
-        categories: undefined,
-        culture: undefined,
-        description: undefined,
-        extent: undefined,
-        tags: undefined,
-        thumbnail: undefined,
         typeKeywords: ["WAB2D"],
         url:
           "{{portalBaseUrl}}/home/item.html?id={{abc0cab401af4828a25cc6eaeb59fb69.itemId}}",
-        licenseInfo: undefined,
-        properties: null,
-        name: undefined,
-        snippet: undefined
+        properties: null
       };
       itemTemplate.data = {
         appItemId: "{{abc0cab401af4828a25cc6eaeb59fb69.itemId}}",
@@ -477,7 +491,21 @@ describe("simpleTypeCreateItemFromTemplate", () => {
         { total: 0, relatedItems: [] }
       );
 
-      // tslint:disable-next-line: no-floating-promises
+      const expectedClone: common.IItemTemplate = common.cloneObject(
+        itemTemplate
+      );
+      expectedClone.itemId = updatedItem.id;
+      expectedClone.item.id = "abc0cab401af4828a25cc6eaeb59fb69";
+      expectedClone.item.url =
+        "https://myorg.maps.arcgis.com/home/item.html?id=abc0cab401af4828a25cc6eaeb59fb69";
+      expectedClone.data.appItemId = "abc0cab401af4828a25cc6eaeb59fb69";
+      expectedClone.data.values.webmap = "map0cab401af4828a25cc6eaeb59fb69";
+      expectedClone.data.map.appProxy.mapItemId =
+        "map0cab401af4828a25cc6eaeb59fb69";
+      expectedClone.data.map.itemId = "map0cab401af4828a25cc6eaeb59fb69";
+      expectedClone.data.folderId = "folderb401af4828a25cc6eaeb59fb69";
+
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
       simpleTypes
         .createItemFromTemplate(
           itemTemplate,
@@ -493,6 +521,7 @@ describe("simpleTypeCreateItemFromTemplate", () => {
         )
         .then(actual => {
           expect(actual).toEqual({
+            item: expectedClone,
             id: "abc0cab401af4828a25cc6eaeb59fb69",
             type: itemTemplate.type,
             postProcess: false
@@ -511,19 +540,10 @@ describe("simpleTypeCreateItemFromTemplate", () => {
         title: "Voting Centers",
         id: "{{abc0cab401af4828a25cc6eaeb59fb69.itemId}}",
         type: "Web Mapping Application",
-        categories: undefined,
-        culture: undefined,
-        description: undefined,
-        extent: undefined,
-        tags: undefined,
-        thumbnail: undefined,
         typeKeywords: [],
         url:
           "{{portalBaseUrl}}/home/item.html?id={{abc0cab401af4828a25cc6eaeb59fb69.itemId}}",
-        licenseInfo: undefined,
-        properties: null,
-        name: undefined,
-        snippet: undefined
+        properties: null
       };
       itemTemplate.data = {
         appItemId: "{{abc0cab401af4828a25cc6eaeb59fb69.itemId}}",
@@ -594,7 +614,21 @@ describe("simpleTypeCreateItemFromTemplate", () => {
         { total: 0, relatedItems: [] }
       );
 
-      // tslint:disable-next-line: no-floating-promises
+      const expectedClone: common.IItemTemplate = common.cloneObject(
+        itemTemplate
+      );
+      expectedClone.itemId = updatedItem.id;
+      expectedClone.item.id = "abc0cab401af4828a25cc6eaeb59fb69";
+      expectedClone.item.url =
+        "https://myorg.maps.arcgis.com/home/item.html?id=abc0cab401af4828a25cc6eaeb59fb69";
+      expectedClone.data.appItemId = "abc0cab401af4828a25cc6eaeb59fb69";
+      expectedClone.data.values.webmap = "map0cab401af4828a25cc6eaeb59fb69";
+      expectedClone.data.map.appProxy.mapItemId =
+        "map0cab401af4828a25cc6eaeb59fb69";
+      expectedClone.data.map.itemId = "map0cab401af4828a25cc6eaeb59fb69";
+      expectedClone.data.folderId = "folderb401af4828a25cc6eaeb59fb69";
+
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
       simpleTypes
         .createItemFromTemplate(
           itemTemplate,
@@ -613,6 +647,7 @@ describe("simpleTypeCreateItemFromTemplate", () => {
         )
         .then(actual => {
           expect(actual).toEqual({
+            item: expectedClone,
             id: "abc0cab401af4828a25cc6eaeb59fb69",
             type: itemTemplate.type,
             postProcess: false
@@ -631,19 +666,10 @@ describe("simpleTypeCreateItemFromTemplate", () => {
         title: "Voting Centers",
         id: "{{abc0cab401af4828a25cc6eaeb59fb69.itemId}}",
         type: "Web Mapping Application",
-        categories: undefined,
-        culture: undefined,
-        description: undefined,
-        extent: undefined,
-        tags: undefined,
-        thumbnail: undefined,
         typeKeywords: ["WAB2D"],
         url:
           "{{portalBaseUrl}}/home/item.html?id={{abc0cab401af4828a25cc6eaeb59fb69.itemId}}",
-        licenseInfo: undefined,
-        properties: null,
-        name: undefined,
-        snippet: undefined
+        properties: null
       };
       itemTemplate.data = {
         appItemId: "{{abc0cab401af4828a25cc6eaeb59fb69.itemId}}",
@@ -752,7 +778,28 @@ describe("simpleTypeCreateItemFromTemplate", () => {
         }
       );
 
-      // tslint:disable-next-line: no-floating-promises
+      const expectedClone: common.IItemTemplate = common.cloneObject(
+        itemTemplate
+      );
+      expectedClone.itemId = updatedItem.id;
+      expectedClone.item.id = updatedItem.id;
+      expectedClone.item.url =
+        "https://myorg.maps.arcgis.com/home/item.html?id=abc0cab401af4828a25cc6eaeb59fb69";
+      expectedClone.data = {
+        appItemId: updatedItem.id,
+        values: {
+          webmap: "map0cab401af4828a25cc6eaeb59fb69"
+        },
+        map: {
+          appProxy: {
+            mapItemId: "map0cab401af4828a25cc6eaeb59fb69"
+          },
+          itemId: "map0cab401af4828a25cc6eaeb59fb69"
+        },
+        folderId: "folderb401af4828a25cc6eaeb59fb69"
+      };
+
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
       simpleTypes
         .createItemFromTemplate(
           itemTemplate,
@@ -768,7 +815,8 @@ describe("simpleTypeCreateItemFromTemplate", () => {
         )
         .then(actual => {
           expect(actual).toEqual({
-            id: "abc0cab401af4828a25cc6eaeb59fb69",
+            item: expectedClone,
+            id: updatedItem.id,
             type: itemTemplate.type,
             postProcess: false
           });
@@ -786,19 +834,10 @@ describe("simpleTypeCreateItemFromTemplate", () => {
         title: "Voting Centers",
         id: "{{abc0cab401af4828a25cc6eaeb59fb69.itemId}}",
         type: "Web Mapping Application",
-        categories: undefined,
-        culture: undefined,
-        description: undefined,
-        extent: undefined,
         properties: null,
-        tags: undefined,
-        thumbnail: undefined,
         typeKeywords: ["WAB2D"],
         url:
-          "{{portalBaseUrl}}/home/item.html?id={{abc0cab401af4828a25cc6eaeb59fb69.itemId}}",
-        licenseInfo: undefined,
-        name: undefined,
-        snippet: undefined
+          "{{portalBaseUrl}}/home/item.html?id={{abc0cab401af4828a25cc6eaeb59fb69.itemId}}"
       };
       itemTemplate.data = undefined;
       itemTemplate.dependencies = [];
@@ -830,7 +869,15 @@ describe("simpleTypeCreateItemFromTemplate", () => {
           updatedItem
         );
 
-      // tslint:disable-next-line: no-floating-promises
+      const expectedClone: common.IItemTemplate = common.cloneObject(
+        itemTemplate
+      );
+      expectedClone.itemId = updatedItem.id;
+      expectedClone.item.id = "abc0cab401af4828a25cc6eaeb59fb69";
+      expectedClone.item.url =
+        "https://myorg.maps.arcgis.com/home/item.html?id=abc0cab401af4828a25cc6eaeb59fb69";
+
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
       simpleTypes
         .createItemFromTemplate(
           itemTemplate,
@@ -842,6 +889,7 @@ describe("simpleTypeCreateItemFromTemplate", () => {
         )
         .then(actual => {
           expect(actual).toEqual({
+            item: expectedClone,
             id: "abc0cab401af4828a25cc6eaeb59fb69",
             type: itemTemplate.type,
             postProcess: false
@@ -860,18 +908,9 @@ describe("simpleTypeCreateItemFromTemplate", () => {
         title: "Voting Centers",
         id: "{{abc0cab401af4828a25cc6eaeb59fb69.itemId}}",
         type: "Web Mapping Application",
-        categories: undefined,
-        culture: undefined,
-        description: undefined,
-        extent: undefined,
-        tags: undefined,
-        thumbnail: undefined,
         typeKeywords: ["WAB2D"],
         url:
-          "{{portalBaseUrl}}/home/item.html?id={{abc0cab401af4828a25cc6eaeb59fb69.itemId}}",
-        licenseInfo: undefined,
-        name: undefined,
-        snippet: undefined
+          "{{portalBaseUrl}}/home/item.html?id={{abc0cab401af4828a25cc6eaeb59fb69.itemId}}"
       };
       itemTemplate.data = {
         appItemId: "{{myAppItemId.itemId}}",
@@ -928,7 +967,7 @@ describe("simpleTypeCreateItemFromTemplate", () => {
           utils.getSuccessResponse({ itemId: "map1234567890" })
         );
 
-      // tslint:disable-next-line: no-floating-promises
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
       simpleTypes
         .createItemFromTemplate(
           itemTemplate,
@@ -992,7 +1031,13 @@ describe("simpleTypeCreateItemFromTemplate", () => {
           addResults: [{}]
         });
 
-      // tslint:disable-next-line: no-floating-promises
+      const expectedClone: common.IItemTemplate = common.cloneObject(
+        itemTemplate
+      );
+      expectedClone.itemId = newItemID;
+      expectedClone.item.id = newItemID;
+
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
       simpleTypes
         .createItemFromTemplate(
           itemTemplate,
@@ -1003,6 +1048,7 @@ describe("simpleTypeCreateItemFromTemplate", () => {
         .then(r => {
           expect(templateDictionary).toEqual(expected);
           expect(r).toEqual({
+            item: expectedClone,
             id: newItemID,
             type: itemTemplate.type,
             postProcess: false
@@ -1011,5 +1057,4 @@ describe("simpleTypeCreateItemFromTemplate", () => {
         });
     });
   });
-
 });

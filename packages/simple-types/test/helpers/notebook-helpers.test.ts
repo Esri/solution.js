@@ -23,9 +23,6 @@ describe("notebookHelpers:: ", () => {
   it("should have convertItemToTemplate", () => {
     expect(notebookHelpers.convertItemToTemplate).toBeDefined();
   });
-  it("should have generateEmptyCreationResponse", () => {
-    expect(notebookHelpers.generateEmptyCreationResponse).toBeDefined();
-  });
   it("should have updateNotebookData", () => {
     expect(notebookHelpers.updateNotebookData).toBeDefined();
   });

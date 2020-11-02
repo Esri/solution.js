@@ -26,16 +26,13 @@ import {
   ICreateItemFromTemplateResponse,
   EItemProgressStatus,
   UserSession,
-  getProp,
-  replaceInTemplate
+  generateEmptyCreationResponse,
+  getProp
 } from "@esri/solution-common";
 import {
   createSiteModelFromTemplate,
   createSite,
   getSiteById,
-  _getSecondPassSharingOptions,
-  _shareItemsToSiteGroups,
-  _updatePages,
   removeSite,
   convertSiteToTemplate
 } from "@esri/hub-sites";
@@ -51,7 +48,6 @@ import {
 import { moveModelToFolder } from "./helpers/move-model-to-folder";
 import { createHubRequestOptions } from "./helpers/create-hub-request-options";
 import { _postProcessSite } from "./helpers/_post-process-site";
-import { _updateSitePages } from "./helpers/_update-site-pages";
 import { replaceItemIds } from "./helpers/replace-item-ids";
 /**
  * Handle deployment of Site item templates
@@ -77,7 +73,7 @@ export function createItemFromTemplate(
   );
   // if it returned false, just resolve out
   if (!startStatus) {
-    return Promise.resolve({ id: "", type: template.type, postProcess: false });
+    return Promise.resolve(generateEmptyCreationResponse(template.type));
   }
 
   // TODO: Reassess with resource unification
@@ -130,7 +126,7 @@ export function createItemFromTemplate(
         destinationAuthentication
       );
     })
-    .then(_ => {
+    .then(() => {
       // Update the template dictionary
       // TODO: This should be done in whatever recieves
       // the outcome of this promise chain
@@ -148,15 +144,15 @@ export function createItemFromTemplate(
         // clean up the site we just created
         const failSafeRemove = failSafe(removeSite, { success: true });
         return failSafeRemove(siteModel, hubRo).then(() => {
-          return Promise.resolve({
-            id: "",
-            type: template.type,
-            postProcess: false
-          });
+          return Promise.resolve(generateEmptyCreationResponse(template.type));
         });
       } else {
         // finally, return ICreateItemFromTemplateResponse
         return {
+          item: {
+            ...template,
+            ...siteModel
+          },
           id: siteModel.item.id,
           type: template.type,
           postProcess: true
@@ -175,14 +171,12 @@ export function createItemFromTemplate(
  * @param solutionItemId
  * @param itemInfo Hub Site Application item
  * @param userSession The session used to interact with the service the template is based on
- * @param templateDictionary Hash mapping property names to replacement values
  * @return A promise that will resolve when fullItem has been updated
  */
 export function convertItemToTemplate(
   solutionItemId: string,
   itemInfo: any,
-  authentication: UserSession,
-  templateDictionary: any
+  authentication: UserSession
 ): Promise<IItemTemplate> {
   let hubRo: IHubRequestOptions;
   // get hubRequestOptions
@@ -221,6 +215,7 @@ export function convertItemToTemplate(
  * - share all items to the content team, and (if created)
  *   the core team (depends on user privs)
  * - link all Page items that were created, to the Site
+ *
  * @param model
  * @param items
  * @param authentication
@@ -256,9 +251,10 @@ export function postProcess(
  * Check of an item type is a Site
  * Hub Site Application is for ArcGIS Online
  * Site Application is for ArcGIS Enterprise
+ *
  * @param itemType
  */
-export function isASite(itemType: string, itemUrl?: string): boolean {
+export function isASite(itemType: string): boolean {
   let result = false;
   if (itemType === "Hub Site Application" || itemType === "Site Application") {
     result = true;

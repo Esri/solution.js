@@ -38,6 +38,7 @@ import { buildCreateParams } from "./build-create-params";
 
 /**
  * Orchestrates creation of Surveys from Hub templates
+ *
  * @param {IItemTemplate} template The template
  * @param {any} templateDictionary The template dictionary
  * @param {UserSession} destinationAuthentication The destination session info
@@ -73,11 +74,11 @@ export function createItemFromHubTemplate(
         });
       });
       return Promise.all(movePromises)
-        .then(_ => {
+        .then(() => {
           // then remove the folder that Survey123 created
           return removeFolder(folderId, destinationAuthentication);
         })
-        .then(_ => {
+        .then(() => {
           templateDictionary[interpolatedTemplate.itemId] = {
             itemId: formId
           };
@@ -93,6 +94,7 @@ export function createItemFromHubTemplate(
             formId
           );
           return {
+            item: null,
             id: formId,
             type: "Form",
             postProcess: true

@@ -20,7 +20,7 @@
   -->
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
   <link rel="stylesheet" href="http://esri.github.io/calcite-bootstrap/styles/calcite-bootstrap.min.css">
-  <link rel="stylesheet" href="https://js.arcgis.com/4.15/esri/themes/light/main.css" />
+  <link rel="stylesheet" href="https://js.arcgis.com/4.17/esri/themes/light/main.css" />
   <style>
   html {
     font-family: Arial;
@@ -62,9 +62,6 @@
     var package_path = window.location.href.substring(0, window.location.href.lastIndexOf('/'));
     var dojoConfig = {
       "paths": {
-        "tslib": package_path + "/../node_modules/tslib/tslib",
-
-        // load the local versions
         "@esri/arcgis-html-sanitizer": package_path + "/../node_modules/@esri/arcgis-html-sanitizer/dist/umd/arcgis-html-sanitizer.min",
         "@esri/arcgis-rest-auth": package_path + "/../node_modules/@esri/arcgis-rest-auth/dist/umd/auth.umd.min",
         "@esri/arcgis-rest-feature-layer": package_path + "/../node_modules/@esri/arcgis-rest-feature-layer/dist/umd/feature-layer.umd.min",
@@ -76,12 +73,12 @@
         "@esri/hub-sites": package_path + "/../node_modules/@esri/hub-sites/dist/umd/sites.umd.min",
         "@esri/hub-teams": package_path + "/../node_modules/@esri/hub-teams/dist/umd/teams.umd.min",
         "@esri/solution-common": package_path + "/../node_modules/@esri/solution-common/dist/umd/common.umd",
-
-        "dist": package_path + "../dist"
+        "adlib": package_path + "/../node_modules/adlib/dist/adlib",
+        "tslib": package_path + "/../node_modules/tslib/tslib"
       }
     };
   </script>
-  <script src="https://js.arcgis.com/4.15/"></script>
+  <script src="https://js.arcgis.com/4.17/"></script>
 </head>
 <body>
   <h3>Copy solution templates</h3>
@@ -106,7 +103,7 @@
       </div>
       <div class="labeledItem">
         <label for="srcPortal">Portal:&nbsp;</label>
-        <input type="text" id="srcPortal" style="width:256px" placeholder="https://myorg.maps.arcgis.com">
+        <input type="text" id="srcPortal" style="width:256px" placeholder="https://www.arcgis.com">
       </div>
       <button id="connectToSourceBtn fader" onclick="connectToSourceFcn()">Connect</button>
 
@@ -128,7 +125,7 @@
       </div>
       <div class="labeledItem">
         <label for="destPortal">Portal:&nbsp;</label>
-        <input type="text" id="destPortal" style="width:256px" placeholder="https://myorg.maps.arcgis.com">
+        <input type="text" id="destPortal" style="width:256px" placeholder="https://www.arcgis.com">
       </div>
       <button id="connectToDestinationBtn fader" onclick="connectToDestinationFcn()">Connect</button>
     </div>
@@ -184,9 +181,12 @@
           haveSourceTemplates = false;
           updateCopyBtn();
 
+          const srcPortal = (document.getElementById("srcPortal").value || "https://www.arcgis.com") + "/sharing/rest";
           sourceAuthentication = main.getRequestAuthentication(
             document.getElementById("srcUsername").value, document.getElementById("srcPassword").value,
-            document.getElementById("srcPortal").value + "/sharing/rest");
+            srcPortal
+          );
+
 
           main.getTemplates(sourceAuthentication, !document.getElementById("srcOnlyMySolns").checked)
           .then(
@@ -229,9 +229,11 @@
           haveDestinationAccess = false;
           updateCopyBtn();
 
+          const destPortal = (document.getElementById("destPortal").value || "https://www.arcgis.com") + "/sharing/rest";
           destinationAuthentication = main.getRequestAuthentication(
             document.getElementById("destUsername").value, document.getElementById("destPassword").value,
-            document.getElementById("destPortal").value + "/sharing/rest");
+            destPortal
+          );
 
           main.getTemplates(destinationAuthentication, !document.getElementById("destOnlyMySolns").checked)
           .then(

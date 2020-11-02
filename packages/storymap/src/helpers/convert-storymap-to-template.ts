@@ -23,7 +23,6 @@ import {
   deepStringReplace
 } from "@esri/hub-common";
 import { IItem } from "@esri/arcgis-rest-portal";
-import { UserSession } from "@esri/arcgis-rest-auth";
 import {
   IItemTemplate,
   createPlaceholderTemplate
@@ -33,12 +32,12 @@ import { getStoryMapDependencies } from "./get-storymap-dependencies";
 
 /**
  * Convert a StoryMap IModel to an IItemTemplate
+ *
  * @param model
  * @param authentication
  */
 export function convertStoryMapToTemplate(
-  model: IModel,
-  authentication: UserSession // not currently used
+  model: IModel
 ): Promise<IItemTemplate> {
   const tmpl = createPlaceholderTemplate(model.item.id, model.item.type);
   tmpl.key = `${propifyString(model.item.title)}_${createId("i")}`;
@@ -114,8 +113,7 @@ const oEmbedTemplates = {
     provider_url: "{{storyMapBaseUrl}}",
     width: 800,
     height: 600,
-    thumbnail_url:
-      "{{storyMapThumbnailUrl}}",
+    thumbnail_url: "{{storyMapThumbnailUrl}}",
     thumbnail_height: "100.5",
     thumbnail_width: "400",
     html:

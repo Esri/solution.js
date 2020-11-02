@@ -52,8 +52,7 @@ describe("Module `dashboard`: manages the creation and deployment of dashboard i
     if (typeof window !== "undefined") {
       it("should templatize webmap ids and external datasource ids", () => {
         const actualTemplate = dashboard.convertItemToTemplate(
-          initialDashboardTemplate,
-          MOCK_USER_SESSION
+          initialDashboardTemplate
         );
 
         const actualHS: any = common.getProp(
@@ -161,10 +160,7 @@ describe("Module `dashboard`: manages the creation and deployment of dashboard i
   describe("postProcessFieldReferences", () => {
     it("should templatize field references", () => {
       // need to the dependencies
-      const actual = dashboard.convertItemToTemplate(
-        initialDashboardTemplate,
-        MOCK_USER_SESSION
-      );
+      const actual = dashboard.convertItemToTemplate(initialDashboardTemplate);
       const actualTemplate: common.IItemTemplate = dashboard.postProcessFieldReferences(
         actual,
         datasourceInfos

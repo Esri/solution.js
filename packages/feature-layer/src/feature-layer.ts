@@ -56,9 +56,7 @@ export function convertItemToTemplate(
       common
         .updateTemplateForInvalidDesignations(template, authentication)
         .then(
-          _template => {
-            resolve(_template);
-          },
+          _template => resolve(_template),
           e => reject(common.fail(e))
         );
     } else {
@@ -135,133 +133,105 @@ export function createItemFromTemplate(
         common.EItemProgressStatus.Ignored,
         0
       );
-      resolve(_generateEmptyCreationResponse(template.type));
-    } else {
-      let newItemTemplate: common.IItemTemplate = common.cloneObject(template);
+      resolve(common.generateEmptyCreationResponse(template.type));
+      return;
+    }
 
-      // cache the popup info to be added later
-      const popupInfos: common.IPopupInfos = common.cachePopupInfos(
-        newItemTemplate.data
-      );
+    // Replace the templatized symbols in a copy of the template
+    let newItemTemplate: common.IItemTemplate = common.cloneObject(template);
+    newItemTemplate = common.replaceInTemplate(
+      newItemTemplate,
+      templateDictionary
+    );
 
-      // Create the item, then update its URL with its new id
-      common
-        .createFeatureService(
-          newItemTemplate,
-          destinationAuthentication,
-          templateDictionary
-        )
-        .then(
-          createResponse => {
-            if (createResponse.success) {
-              // Interrupt process if progress callback returns `false`
-              if (
-                !itemProgressCallback(
-                  template.itemId,
-                  common.EItemProgressStatus.Created,
-                  template.estimatedDeploymentCostFactor / 2,
-                  createResponse.serviceItemId
+    // cache the popup info to be added later
+    const popupInfos: common.IPopupInfos = common.cachePopupInfos(
+      newItemTemplate.data
+    );
+
+    // Create the item, then update its URL with its new id
+    common
+      .createFeatureService(
+        newItemTemplate,
+        destinationAuthentication,
+        templateDictionary
+      )
+      .then(
+        createResponse => {
+          if (createResponse.success) {
+            // Interrupt process if progress callback returns `false`
+            if (
+              !itemProgressCallback(
+                template.itemId,
+                common.EItemProgressStatus.Created,
+                template.estimatedDeploymentCostFactor / 2,
+                createResponse.serviceItemId
+              )
+            ) {
+              itemProgressCallback(
+                template.itemId,
+                common.EItemProgressStatus.Cancelled,
+                0
+              );
+              common
+                .removeItem(
+                  createResponse.serviceItemId,
+                  destinationAuthentication
                 )
-              ) {
-                itemProgressCallback(
-                  template.itemId,
-                  common.EItemProgressStatus.Cancelled,
-                  0
+                .then(
+                  () =>
+                    resolve(
+                      common.generateEmptyCreationResponse(template.type)
+                    ),
+                  () =>
+                    resolve(common.generateEmptyCreationResponse(template.type))
                 );
-                common
-                  .removeItem(
-                    createResponse.serviceItemId,
-                    destinationAuthentication
-                  )
-                  .then(
-                    () =>
-                      resolve(_generateEmptyCreationResponse(template.type)),
-                    () => resolve(_generateEmptyCreationResponse(template.type))
-                  );
-              } else {
-                // Detemplatize what we can now that the service has been created
-                newItemTemplate = common.updateTemplate(
+            } else {
+              // Detemplatize what we can now that the service has been created
+              newItemTemplate = common.updateTemplate(
+                newItemTemplate,
+                templateDictionary,
+                createResponse
+              );
+              // Add the layers and tables to the feature service
+              common
+                .addFeatureServiceLayersAndTables(
                   newItemTemplate,
                   templateDictionary,
-                  createResponse
-                );
-                // Add the layers and tables to the feature service
-                common
-                  .addFeatureServiceLayersAndTables(
-                    newItemTemplate,
-                    templateDictionary,
-                    popupInfos,
-                    destinationAuthentication
-                  )
-                  .then(
-                    () => {
-                      newItemTemplate = common.updateTemplate(
-                        newItemTemplate,
-                        templateDictionary,
-                        createResponse
-                      );
-                      // Update the item with snippet, description, popupInfo, ect.
-                      common
-                        .updateItemExtended(
-                          {
-                            ...newItemTemplate.item,
-                            url: undefined // can't update the URL of a feature service
-                          },
-                          newItemTemplate.data,
-                          destinationAuthentication
-                        )
-                        .then(
-                          () => {
-                            // Interrupt process if progress callback returns `false`
-                            if (
-                              !itemProgressCallback(
-                                template.itemId,
-                                common.EItemProgressStatus.Finished,
-                                template.estimatedDeploymentCostFactor / 2,
-                                createResponse.serviceItemId
-                              )
-                            ) {
-                              itemProgressCallback(
-                                template.itemId,
-                                common.EItemProgressStatus.Cancelled,
-                                0
-                              );
-                              common
-                                .removeItem(
-                                  createResponse.serviceItemId,
-                                  destinationAuthentication
-                                )
-                                .then(
-                                  () =>
-                                    resolve(
-                                      _generateEmptyCreationResponse(
-                                        template.type
-                                      )
-                                    ),
-                                  () =>
-                                    resolve(
-                                      _generateEmptyCreationResponse(
-                                        template.type
-                                      )
-                                    )
-                                );
-                            } else {
-                              resolve({
-                                id: createResponse.serviceItemId,
-                                type: newItemTemplate.type,
-                                postProcess:
-                                  common.hasUnresolvedVariables({
-                                    item: newItemTemplate.item,
-                                    data: newItemTemplate.data
-                                  }) ||
-                                  common.isWorkforceProject(newItemTemplate)
-                              });
-                            }
-                          },
-                          () => {
+                  popupInfos,
+                  destinationAuthentication
+                )
+                .then(
+                  () => {
+                    newItemTemplate = common.updateTemplate(
+                      newItemTemplate,
+                      templateDictionary,
+                      createResponse
+                    );
+                    // Update the item with snippet, description, popupInfo, ect.
+                    common
+                      .updateItemExtended(
+                        {
+                          ...newItemTemplate.item,
+                          url: undefined // can't update the URL of a feature service
+                        },
+                        newItemTemplate.data,
+                        destinationAuthentication
+                      )
+                      .then(
+                        () => {
+                          // Interrupt process if progress callback returns `false`
+                          if (
+                            !itemProgressCallback(
+                              template.itemId,
+                              common.EItemProgressStatus.Finished,
+                              template.estimatedDeploymentCostFactor / 2,
+                              createResponse.serviceItemId
+                            )
+                          ) {
                             itemProgressCallback(
                               template.itemId,
-                              common.EItemProgressStatus.Failed,
+                              common.EItemProgressStatus.Cancelled,
                               0
                             );
                             common
@@ -272,68 +242,106 @@ export function createItemFromTemplate(
                               .then(
                                 () =>
                                   resolve(
-                                    _generateEmptyCreationResponse(
+                                    common.generateEmptyCreationResponse(
                                       template.type
                                     )
                                   ),
                                 () =>
                                   resolve(
-                                    _generateEmptyCreationResponse(
+                                    common.generateEmptyCreationResponse(
                                       template.type
                                     )
                                   )
                               );
-                          } // fails to update item
-                        );
-                    },
-                    () => {
-                      itemProgressCallback(
-                        template.itemId,
-                        common.EItemProgressStatus.Failed,
-                        0
-                      );
-                      common
-                        .removeItem(
-                          createResponse.serviceItemId,
-                          destinationAuthentication
-                        )
-                        .then(
-                          () =>
-                            resolve(
-                              _generateEmptyCreationResponse(template.type)
-                            ),
-                          () =>
-                            resolve(
-                              _generateEmptyCreationResponse(template.type)
+                          } else {
+                            resolve({
+                              item: newItemTemplate,
+                              id: createResponse.serviceItemId,
+                              type: newItemTemplate.type,
+                              postProcess:
+                                common.hasUnresolvedVariables({
+                                  item: newItemTemplate.item,
+                                  data: newItemTemplate.data
+                                }) || common.isWorkforceProject(newItemTemplate)
+                            });
+                          }
+                        },
+                        () => {
+                          itemProgressCallback(
+                            template.itemId,
+                            common.EItemProgressStatus.Failed,
+                            0
+                          );
+                          common
+                            .removeItem(
+                              createResponse.serviceItemId,
+                              destinationAuthentication
                             )
-                        );
-                    } // fails to add service layers and/or tables
-                  );
-              }
-            } else {
-              itemProgressCallback(
-                template.itemId,
-                common.EItemProgressStatus.Failed,
-                0
-              );
-              resolve(_generateEmptyCreationResponse(template.type)); // fails to create item
+                            .then(
+                              () =>
+                                resolve(
+                                  common.generateEmptyCreationResponse(
+                                    template.type
+                                  )
+                                ),
+                              () =>
+                                resolve(
+                                  common.generateEmptyCreationResponse(
+                                    template.type
+                                  )
+                                )
+                            );
+                        } // fails to update item
+                      );
+                  },
+                  () => {
+                    itemProgressCallback(
+                      template.itemId,
+                      common.EItemProgressStatus.Failed,
+                      0
+                    );
+                    common
+                      .removeItem(
+                        createResponse.serviceItemId,
+                        destinationAuthentication
+                      )
+                      .then(
+                        () =>
+                          resolve(
+                            common.generateEmptyCreationResponse(template.type)
+                          ),
+                        () =>
+                          resolve(
+                            common.generateEmptyCreationResponse(template.type)
+                          )
+                      );
+                  } // fails to add service layers and/or tables
+                );
             }
-          },
-          () => {
+          } else {
             itemProgressCallback(
               template.itemId,
               common.EItemProgressStatus.Failed,
               0
             );
-            resolve(_generateEmptyCreationResponse(template.type)); // fails to create item
+            resolve(common.generateEmptyCreationResponse(template.type)); // fails to create item
           }
-        );
-    }
+        },
+        () => {
+          itemProgressCallback(
+            template.itemId,
+            common.EItemProgressStatus.Failed,
+            0
+          );
+          resolve(common.generateEmptyCreationResponse(template.type)); // fails to create item
+        }
+      );
   });
 }
 
 /**
  * Feature Layer post-processing actions
+ *
  * @param {string} itemId The item ID
  * @param {string} type The template type
  * @param {any[]} itemInfos Array of {id: 'ef3', type: 'Web Map'} objects
@@ -373,18 +381,6 @@ export function postProcess(
         }
       }, reject);
   });
-}
-
-// ------------------------------------------------------------------------------------------------------------------ //
-
-export function _generateEmptyCreationResponse(
-  templateType: string
-): common.ICreateItemFromTemplateResponse {
-  return {
-    id: "",
-    type: templateType,
-    postProcess: false
-  };
 }
 
 //#endregion

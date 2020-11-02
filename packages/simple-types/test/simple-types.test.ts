@@ -80,7 +80,7 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
         fetchMock
           .post(
             utils.PORTAL_SUBSET.restUrl +
-            "/content/items/wrk1234567890/resources",
+              "/content/items/wrk1234567890/resources",
             mockItems.get400Failure()
           )
           .post(
@@ -89,12 +89,12 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
           )
           .post(
             utils.PORTAL_SUBSET.restUrl +
-            "/content/items/wrk1234567890/info/metadata/metadata.xml",
+              "/content/items/wrk1234567890/info/metadata/metadata.xml",
             mockItems.get500Failure()
           )
           .post(
             utils.PORTAL_SUBSET.restUrl +
-            "/content/users/casey/items/sln1234567890/addResources",
+              "/content/users/casey/items/sln1234567890/addResources",
             utils.getSuccessResponse()
           );
         staticRelatedItemsMocks.fetchMockRelatedItems("wrk1234567890", {
@@ -126,17 +126,17 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
           .post(url, mockItems.get400Failure())
           .post(
             utils.PORTAL_SUBSET.restUrl +
-            "/content/items/abc0cab401af4828a25cc6eaeb59fb69/resources",
+              "/content/items/abc0cab401af4828a25cc6eaeb59fb69/resources",
             mockItems.get400Failure()
           )
           .post(
             utils.PORTAL_SUBSET.restUrl +
-            "/content/items/abc0cab401af4828a25cc6eaeb59fb69/info/metadata/metadata.xml",
+              "/content/items/abc0cab401af4828a25cc6eaeb59fb69/info/metadata/metadata.xml",
             mockItems.get500Failure()
           )
           .post(
             utils.PORTAL_SUBSET.restUrl +
-            "/content/users/casey/items/sln1234567890/addResources",
+              "/content/users/casey/items/sln1234567890/addResources",
             utils.getSuccessResponse()
           );
         staticRelatedItemsMocks.fetchMockRelatedItems(
@@ -196,9 +196,9 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
         fetchMock
           .post(
             utils.PORTAL_SUBSET.restUrl +
-            "/content/items/" +
-            itemTemplate.itemId +
-            "/resources",
+              "/content/items/" +
+              itemTemplate.itemId +
+              "/resources",
             {
               total: 1,
               start: 1,
@@ -215,19 +215,19 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
           )
           .post(
             utils.PORTAL_SUBSET.restUrl +
-            "/content/items/" +
-            itemTemplate.itemId +
-            "/resources/image/banner.png",
+              "/content/items/" +
+              itemTemplate.itemId +
+              "/resources/image/banner.png",
             expectedFetch,
             { sendAsJson: false }
           )
           .post(
             utils.PORTAL_SUBSET.restUrl +
-            "/content/users/" +
-            MOCK_USER_SESSION.username +
-            "/items/" +
-            solutionItemId +
-            "/addResources",
+              "/content/users/" +
+              MOCK_USER_SESSION.username +
+              "/items/" +
+              solutionItemId +
+              "/addResources",
             {
               success: true,
               itemId: solutionItemId,
@@ -237,24 +237,24 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
           )
           .post(
             utils.PORTAL_SUBSET.restUrl +
-            "/content/items/" +
-            itemTemplate.itemId +
-            "/info/thumbnail/banner.png",
+              "/content/items/" +
+              itemTemplate.itemId +
+              "/info/thumbnail/banner.png",
             expectedFetch,
             { sendAsJson: false }
           )
           .post(
             utils.PORTAL_SUBSET.restUrl +
-            "/content/items/" +
-            itemTemplate.itemId +
-            "/data",
+              "/content/items/" +
+              itemTemplate.itemId +
+              "/data",
             mockItems.get500Failure()
           )
           .post(
             utils.PORTAL_SUBSET.restUrl +
-            "/content/items/" +
-            itemTemplate.itemId +
-            "/info/metadata/metadata.xml",
+              "/content/items/" +
+              itemTemplate.itemId +
+              "/info/metadata/metadata.xml",
             mockItems.get400Failure()
           );
         staticRelatedItemsMocks.fetchMockRelatedItems("map1234567890", {
@@ -286,12 +286,12 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
         fetchMock
           .post(
             utils.PORTAL_SUBSET.restUrl +
-            "/content/items/frm1234567890/info/metadata/metadata.xml",
+              "/content/items/frm1234567890/info/metadata/metadata.xml",
             mockItems.get500Failure()
           )
           .post(
             utils.PORTAL_SUBSET.restUrl +
-            "/content/items/frm1234567890/resources",
+              "/content/items/frm1234567890/resources",
             mockItems.get500Failure()
           )
           .post(
@@ -300,30 +300,30 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
           )
           .post(
             utils.PORTAL_SUBSET.restUrl +
-            "/content/items/" +
-            itemTemplate.itemId +
-            "/info/form.json",
+              "/content/items/" +
+              itemTemplate.itemId +
+              "/info/form.json",
             utils.getSampleJsonAsFile("form.json")
           )
           .post(
             utils.PORTAL_SUBSET.restUrl +
-            "/content/items/" +
-            itemTemplate.itemId +
-            "/info/forminfo.json",
+              "/content/items/" +
+              itemTemplate.itemId +
+              "/info/forminfo.json",
             utils.getSampleJsonAsFile("forminfo.json")
           )
           .post(
             utils.PORTAL_SUBSET.restUrl +
-            "/content/items/" +
-            itemTemplate.itemId +
-            "/info/form.webform",
+              "/content/items/" +
+              itemTemplate.itemId +
+              "/info/form.webform",
             utils.getSampleJsonAsFile("form.webform")
           )
           .post(
             utils.PORTAL_SUBSET.restUrl +
-            "/content/users/casey/items/" +
-            solutionItemId +
-            "/addResources",
+              "/content/users/casey/items/" +
+              solutionItemId +
+              "/addResources",
             { success: true, id: solutionItemId }
           );
         staticRelatedItemsMocks.fetchMockRelatedItems(
@@ -360,54 +360,54 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
         fetchMock
           .post(
             utils.PORTAL_SUBSET.restUrl +
-            "/content/items/" +
-            itemTemplate.itemId +
-            "/data",
+              "/content/items/" +
+              itemTemplate.itemId +
+              "/data",
             utils.getSampleZip(),
             { sendAsJson: false }
           )
           .post(
             utils.PORTAL_SUBSET.restUrl +
-            "/content/items/" +
-            itemTemplate.itemId +
-            "/resources",
+              "/content/items/" +
+              itemTemplate.itemId +
+              "/resources",
             noResourcesResponse
           )
           .post(
             utils.PORTAL_SUBSET.restUrl +
-            "/content/items/" +
-            itemTemplate.itemId +
-            "/info/metadata/metadata.xml",
+              "/content/items/" +
+              itemTemplate.itemId +
+              "/info/metadata/metadata.xml",
             mockItems.get400Failure()
           )
           .post(
             utils.PORTAL_SUBSET.restUrl +
-            "/content/items/" +
-            itemTemplate.itemId +
-            "/info/form.json",
+              "/content/items/" +
+              itemTemplate.itemId +
+              "/info/form.json",
             utils.getSampleJsonAsFile("form.json")
           )
           .post(
             utils.PORTAL_SUBSET.restUrl +
-            "/content/items/" +
-            itemTemplate.itemId +
-            "/info/forminfo.json",
+              "/content/items/" +
+              itemTemplate.itemId +
+              "/info/forminfo.json",
             utils.getSampleJsonAsFile("forminfo.json")
           )
           .post(
             utils.PORTAL_SUBSET.restUrl +
-            "/content/items/" +
-            itemTemplate.itemId +
-            "/info/form.webform",
+              "/content/items/" +
+              itemTemplate.itemId +
+              "/info/form.webform",
             utils.getSampleJsonAsFile("form.webform")
           )
           .post(
             utils.PORTAL_SUBSET.restUrl +
-            "/content/users/" +
-            MOCK_USER_SESSION.username +
-            "/items/" +
-            solutionItemId +
-            "/addResources",
+              "/content/users/" +
+              MOCK_USER_SESSION.username +
+              "/items/" +
+              solutionItemId +
+              "/addResources",
             mockItems.get400Failure()
           );
 
@@ -460,11 +460,11 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
         )
         .post(
           utils.PORTAL_SUBSET.restUrl +
-          "/content/users/casey/items/map1234567890/delete",
+            "/content/users/casey/items/map1234567890/delete",
           utils.getSuccessResponse({ itemId: "map1234567890" })
         );
 
-      // tslint:disable-next-line: no-floating-promises
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
       simpleTypes
         .createItemFromTemplate(
           itemTemplate,
@@ -500,11 +500,11 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
         )
         .post(
           utils.PORTAL_SUBSET.restUrl +
-          "/content/users/casey/items/map1234567890/delete",
+            "/content/users/casey/items/map1234567890/delete",
           utils.getSuccessResponse({ itemId: "map1234567890" })
         );
 
-      // tslint:disable-next-line: no-floating-promises
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
       simpleTypes
         .createItemFromTemplate(
           itemTemplate,
@@ -549,7 +549,7 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
         )
         .post(
           utils.PORTAL_SUBSET.restUrl +
-          "/content/users/casey/items/map1234567890/delete",
+            "/content/users/casey/items/map1234567890/delete",
           utils.getSuccessResponse({ itemId: itemTemplate.itemId })
         );
 
@@ -579,7 +579,7 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
         )
         .post(
           utils.PORTAL_SUBSET.restUrl +
-          "/content/users/casey/items/map1234567890/delete",
+            "/content/users/casey/items/map1234567890/delete",
           utils.getFailureResponse({ itemId: itemTemplate.itemId })
         );
 
@@ -616,17 +616,17 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
         )
         .post(
           utils.PORTAL_SUBSET.restUrl +
-          "/content/users/casey/items/map1234567890/update",
+            "/content/users/casey/items/map1234567890/update",
           { success: true, id: itemTemplate.itemId }
         )
         .get(
           utils.PORTAL_SUBSET.restUrl +
-          "/content/items/map1234567890?f=json&token=fake-token",
+            "/content/items/map1234567890?f=json&token=fake-token",
           updatedItem
         )
         .post(
           utils.PORTAL_SUBSET.restUrl +
-          "/content/users/casey/items/map1234567890/delete",
+            "/content/users/casey/items/map1234567890/delete",
           utils.getSuccessResponse({ itemId: itemTemplate.itemId })
         );
 
@@ -663,17 +663,17 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
         )
         .post(
           utils.PORTAL_SUBSET.restUrl +
-          "/content/users/casey/items/map1234567890/update",
+            "/content/users/casey/items/map1234567890/update",
           { success: true, id: itemTemplate.itemId }
         )
         .get(
           utils.PORTAL_SUBSET.restUrl +
-          "/content/items/map1234567890?f=json&token=fake-token",
+            "/content/items/map1234567890?f=json&token=fake-token",
           updatedItem
         )
         .post(
           utils.PORTAL_SUBSET.restUrl +
-          "/content/users/casey/items/map1234567890/delete",
+            "/content/users/casey/items/map1234567890/delete",
           utils.getFailureResponse({ itemId: itemTemplate.itemId })
         );
 
@@ -831,7 +831,7 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
         fetchMock
           .get(
             utils.PORTAL_SUBSET.restUrl +
-            "/content/items/3ef?f=json&token=fake-token",
+              "/content/items/3ef?f=json&token=fake-token",
             template.item
           )
           .post(utils.PORTAL_SUBSET.restUrl + "/content/items/3ef/data", {
@@ -857,12 +857,12 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
             const callBody = fetchMock.calls(updateUrl)[0][1].body as string;
             expect(callBody).toEqual(
               "f=json&text=%7B%22value%22%3A%22Luke%20Skywalker%22%7D&id=3ef&name=Name%20of%20an%20AGOL%20item&" +
-              "title=An%20AGOL%20item&type=Web%20Map&typeKeywords=JavaScript&description=Description%20of%20an%20" +
-              "AGOL%20item&tags=test&snippet=Snippet%20of%20an%20AGOL%20item&thumbnail=https%3A%2F%2F" +
-              "myorg.maps.arcgis.com%2Fsharing%2Frest%2Fcontent%2Fitems%2Fmap1234567890%2Finfo%2Fthumbnail%2F" +
-              "ago_downloaded.png&extent=%7B%7BsolutionItemExtent%7D%7D&categories=&accessInformation=Esri%2C%20" +
-              "Inc.&culture=en-us&url=%7B%7BportalBaseUrl%7D%7D%2Fhome%2Fwebmap%2Fviewer.html%3Fwebmap%3D%7B%7B" +
-              "map1234567890.itemId%7D%7D&token=fake-token"
+                "title=An%20AGOL%20item&type=Web%20Map&typeKeywords=JavaScript&description=Description%20of%20an%20" +
+                "AGOL%20item&tags=test&snippet=Snippet%20of%20an%20AGOL%20item&thumbnail=https%3A%2F%2F" +
+                "myorg.maps.arcgis.com%2Fsharing%2Frest%2Fcontent%2Fitems%2Fmap1234567890%2Finfo%2Fthumbnail%2F" +
+                "ago_downloaded.png&extent=%7B%7BsolutionItemExtent%7D%7D&categories=&accessInformation=Esri%2C%20" +
+                "Inc.&culture=en-us&url=%7B%7BportalBaseUrl%7D%7D%2Fhome%2Fwebmap%2Fviewer.html%3Fwebmap%3D%7B%7B" +
+                "map1234567890.itemId%7D%7D&token=fake-token"
             );
           });
       });
@@ -880,7 +880,7 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
       fetchMock
         .get(
           utils.PORTAL_SUBSET.restUrl +
-          "/content/items/3ef?f=json&token=fake-token",
+            "/content/items/3ef?f=json&token=fake-token",
           template.item
         )
         .post(utils.PORTAL_SUBSET.restUrl + "/content/items/3ef/data", {
