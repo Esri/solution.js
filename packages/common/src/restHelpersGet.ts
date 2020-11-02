@@ -499,7 +499,7 @@ export function getItemRelatedItems(
   direction: "forward" | "reverse",
   authentication: UserSession
 ): Promise<IGetRelatedItemsResponse> {
-  return new Promise<IGetRelatedItemsResponse>((resolve, reject) => {
+  return new Promise<IGetRelatedItemsResponse>(resolve => {
     const itemRelatedItemsParam: IItemRelationshipOptions = {
       id: itemId,
       relationshipType,
