@@ -3,22 +3,17 @@
 #### Checklist
 
 * \[ \] Stop automatic recompilation software
-* \[ \] Create `release-candidate` branch
+* \[ \] Create `release/X.X.X` branch
 * \[ \] Remove node_modules and run `npm install`
 * \[ \] Run `npm run release:prepare` and pick new version number
 * \[ \] Run `npm run release:review`
-* \[ \] Fix CHANGELOG.md and solution.js package references
+* \[ \] Fix CHANGELOG.md by moving "[Unreleased][HEAD]" ahead of any versions
 * \[ \] Commit changes without using version number
-* \[ \] Switch to `master` branch
-* \[ \] Merge `release-candidate` branch into `master` branch but don't commit
 * \[ \] Run `npm run release:publish`
 * \[ \] Check that publishing worked using `check_npm_package_versions.html`
 * \[ \] Run `npm run release:publish-retry` as needed until all packages are published
-* \[ \] Push `master` branch to GitHub
-* \[ \] Delete `release-candidate` branch
-* \[ \] Switch to `develop` branch
-* \[ \] Merge `master` branch into `develop` branch
-* \[ \] Push `develop` branch to GitHub
+* \[ \] Push `release/X.X.X` branch to GitHub
+* \[ \] Merge `release/X.X.X` into `master` and `develop` and push them to GitHub
 * \[ \] Update documentation via `npm run docs:deploy`
 
 #### Versioning
@@ -34,29 +29,13 @@
 
 1. Stop any code-change watchers that automatically recompile TypeScript, e.g., the watch task in Visual Studio Code
 
-2. Create a branch off of `develop` called `release-candidate`.
+2. Create a branch off of `develop` called `release/X.X.X`, where "X.X.X" is the version to be created. (For hotfixes off of an existing release, one works in a branch `hotfix/X.X.Y` off of the major version to be patched.)
 
 3. Remove the node_modules directories.
-```
-  ..\solution.js\node_modules
-  ..\solution.js\packages\common\node_modules
-  ..\solution.js\packages\creator\node_modules
-  ..\solution.js\packages\deployer\node_modules
-  ..\solution.js\packages\feature-layer\node_modules
-  ..\solution.js\packages\file\node_modules
-  ..\solution.js\packages\group\node_modules
-  ..\solution.js\packages\simple-types\node_modules
-  ..\solution.js\packages\storymap\node_modules
-  ..\solution.js\packages\viewer\node_modules
-  ..\solution.js\packages\web-experience\node_modules
- ```
 
 4. Launch a git-bash window (e.g., C:\Program Files\Git\git-bash.exe on a Windows computer or using the "Git bash" icon in the Git Extensions program)
 
-5. From the repo's root folder install a fresh copy of the node modules
-```
-npm install
-```
+5. From the repo's root folder install a fresh copy of the node modules using npm install.
 
 5. Log in to npmjs
 *Note: the computer remembers for a long time that you're logged in; you can check that you are logged in by typing `npm whoami`*
@@ -98,18 +77,7 @@ npm run release:review
 git tag -d tagName
 ```
 
-10. Update the solution.js package references in the *peerDependencies* sections of the package package.json files; don't change the package.version or the references in the devDependencies section. Update all solution.js package references in the demo package.json files to the new release.
-
-11. Commit the changed files in the repo: CHANGELOG.md, lerna.json, package.json files, package-lock.json files. (While the publishing step will do the commit for you, lerna doesn't notice the package.json changes and doesn't publish correctly.) This is just an intermediate publishing step and should not be labeled or tagged for the release. It is not necessary to push the commit to GitHub, unless...
-
-12. If you wish to test the release before it is created, you can push `release-candidate` to GitHub for sharing.
-
-13. Switch to the `master` branch and merge in the `release-candidate` branch, but without committing it.
-```
-git merge --no-ff --no-commit release-candidate
-```
-
-14. Publish the release, supplying a two-factor code (e.g., from Okta Verify) when prompted. (While `release:publish` accepts a two-factor command-line parameter, the code expires by the time that publishing get around to using it and the release will not be uploaded to npmjs.) Use the freshest possible code: pick it right after it updates in the two-factor app.
+10. Publish the release, supplying a two-factor code (e.g., from Okta Verify) when prompted. (While `release:publish` accepts a two-factor command-line parameter, the code expires by the time that publishing get around to using it and the release will not be uploaded to npmjs.) Use the freshest possible code: pick it right after it updates in the two-factor app.
 
  ```
  npm run release:publish
@@ -127,17 +95,15 @@ git merge --no-ff --no-commit release-candidate
 
  It's OK to push the version to GitHub even if not all packages appear to have been published. "Publishing" is sending them to npm and is a separate process that we can patch below.
 
-15. Check that publishing worked using the repository's web page `check_npm_package_versions.html`; sometimes, only some of the packages show up in npm. It may take five or more minutes for a general request such as `https://unpkg.com/@esri/solution-simple-types/dist/umd/simple-types.umd.js` to 302 resolve to the latest version.
+11. Check that publishing worked using the repository's web page `check_npm_package_versions.html`; sometimes, only some of the packages show up in npm. It may take ten or more minutes for a general request such as `https://unpkg.com/@esri/solution-simple-types/dist/umd/simple-types.umd.js` to 302 resolve to the latest version.
 
-16. Due to the large number of packages and the very sort validity window of the two-factor code, not all packages may get published. In this case, repeat `npm run release:publish-retry` until it reports "lerna notice from-package No unpublished release found; lerna success No changed packages to publish".
+12. Due to the large number of packages and the very short validity window of the two-factor code, not all packages may get published. In this case, repeat `npm run release:publish-retry` until it reports "lerna notice from-package No unpublished release found; lerna success No changed packages to publish".
 
-17. Push your `master` branch to GitHub.
+13. Push your `release/X.X.X` branch to GitHub.
 
-18. Delete the `release-candidate` branch locally and in GitHub.
+14. Merge `release/X.X.X` into `master` and `develop` and push them to GitHub.
 
-19. Merge `master` into `develop` and push `develop` to GitHub.
-
-20. Update the repository's API documentation (see "Publishing API documentation to GitHub" section below).
+15. Update the repository's API documentation (see "Publishing API documentation to GitHub" section below).
 
 ---
 
