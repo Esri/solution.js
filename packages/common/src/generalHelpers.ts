@@ -671,7 +671,7 @@ export function getUniqueTitle(
   templateDictionary: any,
   path: string
 ): string {
-  title = title.trim();
+  title = title ? title.trim() : "_";
   const objs: any[] = getProp(templateDictionary, path) || [];
   const titles: string[] = objs.map(obj => {
     return obj.title;

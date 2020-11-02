@@ -28,7 +28,7 @@ import {
   isSolutionTemplateItem,
   updateDeployOptions
 } from "./deployerUtils";
-import { IModel } from "@esri/hub-common";
+import { IModel, isGuid } from "@esri/hub-common";
 
 /**
  * Deploy a Solution
@@ -68,11 +68,13 @@ export function deploySolution(
           common.fail(`${model.item.id} is not a Solution Template`)
         );
       } else {
-        // fetch the metadata and pass the item & data forward
+        // fetch the metadata if the model's id is a GUID and pass the item & data forward
         return Promise.all([
           Promise.resolve(model.item),
           Promise.resolve(model.data),
-          common.getItemMetadataAsFile(model.item.id, storageAuthentication)
+          isGuid(model.item.id)
+            ? common.getItemMetadataAsFile(model.item.id, storageAuthentication)
+            : Promise.resolve()
         ]);
       }
     })

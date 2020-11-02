@@ -427,16 +427,22 @@ export function getItemInfoFileUrlPrefix(
  *
  * @param itemId Id of an item whose data information is sought
  * @param authentication Credentials for the request to AGO
- * @return Promise that will resolve with a File containing the metadata or an AGO-style JSON failure response
+ * @return Promise that will resolve with `undefined` or a File containing the metadata
  */
 export function getItemMetadataAsFile(
   itemId: string,
   authentication: UserSession
 ): Promise<File> {
-  return new Promise<File>((resolve, reject) => {
+  return new Promise<File>(resolve => {
     getItemMetadataBlob(itemId, authentication).then(
-      blob => (!blob ? resolve() : resolve(blobToFile(blob, "metadata.xml"))),
-      reject
+      blob => {
+        if (!blob || (blob && blob.type.startsWith("application/json"))) {
+          resolve(); // JSON error
+        } else {
+          resolve(blobToFile(blob, "metadata.xml"));
+        }
+      },
+      () => resolve()
     );
   });
 }
@@ -493,7 +499,7 @@ export function getItemRelatedItems(
   direction: "forward" | "reverse",
   authentication: UserSession
 ): Promise<IGetRelatedItemsResponse> {
-  return new Promise<IGetRelatedItemsResponse>(resolve => {
+  return new Promise<IGetRelatedItemsResponse>((resolve, reject) => {
     const itemRelatedItemsParam: IItemRelationshipOptions = {
       id: itemId,
       relationshipType,

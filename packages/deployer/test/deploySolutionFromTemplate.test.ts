@@ -153,110 +153,118 @@ describe("Module `deploySolutionFromTemplate`", () => {
       fetchMock.restore();
     });
 
-    it("defaults storageAuthentication to authentication", done => {
-      const templates: common.IItemTemplate[] = [
-        mockTemplates.getItemTemplate("Web Map")
-      ];
-      const solution: common.ISolutionItem = mockTemplates.getSolutionTemplateItem(
-        templates
-      );
-      const folderId = "fld1234567890";
-      const templateSolutionId: string = "sln1234567890";
-      const solutionTemplateBase: any = solution.item;
-      const solutionTemplateData: any = solution.data;
-      const solutionTemplateMetadata: File = null;
-      const authentication: common.UserSession = MOCK_USER_SESSION;
-      const options: common.IDeploySolutionOptions = {};
-      const deployedSolutionId = "dpl1234567890";
-      const templateDictionary = {} as any;
-
-      const deployFnStub = sinon
-        .stub(deployItems, "deploySolutionItems")
-        .resolves([
-          {
-            id: deployedSolutionId,
-            type: "Web Map",
-            postProcess: false
-          }
-        ]);
-      const postProcessFnStub = sinon
-        .stub(postProcess, "postProcess")
-        .resolves();
-
-      fetchMock
-        .get(
-          testUtils.PORTAL_SUBSET.restUrl +
-            "/portals/self?f=json&token=fake-token",
-          portalsSelfResponse
-        )
-        .get(
-          testUtils.PORTAL_SUBSET.restUrl +
-            "/community/self?f=json&token=fake-token",
-          communitySelfResponse
-        )
-        .get(
-          testUtils.PORTAL_SUBSET.restUrl +
-            "/content/users/casey?f=json&token=fake-token",
-          testUtils.getSuccessResponse()
-        )
-        .get(
-          testUtils.PORTAL_SUBSET.restUrl +
-            "/community/users/casey?f=json&token=fake-token",
-          testUtils.getSuccessResponse()
-        )
-        .post(
-          "https://utility.arcgisonline.com/arcgis/rest/services/Geometry/GeometryServer/findTransformations",
-          testUtils.getTransformationsResponse()
-        )
-        .post(
-          testUtils.PORTAL_SUBSET.restUrl + "/content/users/casey/createFolder",
-          testUtils.getCreateFolderResponse(folderId)
-        )
-        .post(
-          "https://utility.arcgisonline.com/arcgis/rest/services/Geometry/GeometryServer/project",
-          testUtils.getProjectResponse()
-        )
-        .post(
-          testUtils.PORTAL_SUBSET.restUrl +
-            "/content/users/casey/" +
-            folderId +
-            "/addItem",
-          testUtils.getSuccessResponse({
-            id: deployedSolutionId,
-            folder: folderId
-          })
-        )
-        .post(
-          testUtils.PORTAL_SUBSET.restUrl +
-            "/content/users/casey/fld1234567890/items/dpl1234567890/update",
-          testUtils.getSuccessResponse({ id: deployedSolutionId })
+    // Because metadata file is used in test, shield from Node because it doesn't have Blob
+    if (typeof window !== "undefined") {
+      it("defaults storageAuthentication to authentication", done => {
+        const templates: common.IItemTemplate[] = [
+          mockTemplates.getItemTemplate("Web Map")
+        ];
+        const solution: common.ISolutionItem = mockTemplates.getSolutionTemplateItem(
+          templates
         );
+        const folderId = "fld1234567890";
+        const templateSolutionId: string = "sln1234567890";
+        const solutionTemplateBase: any = solution.item;
+        const solutionTemplateData: any = solution.data;
+        const solutionTemplateMetadata: File = testUtils.getSampleMetadataAsFile();
+        const authentication: common.UserSession = MOCK_USER_SESSION;
+        const options: common.IDeploySolutionOptions = {};
+        const deployedSolutionId = "dpl1234567890";
+        const templateDictionary = {} as any;
 
-      deploySolutionFromTemplate(
-        templateSolutionId,
-        solutionTemplateBase,
-        solutionTemplateData,
-        solutionTemplateMetadata,
-        authentication,
-        options
-      ).then(
-        () => {
-          const deployFnCall = deployFnStub.getCall(0);
-          expect(deployFnCall.args[0]).toEqual(MOCK_USER_SESSION.portal); // portalSharingUrl
-          expect(deployFnCall.args[3].portal).toEqual(MOCK_USER_SESSION.portal); // storageAuthentication
-          expect(deployFnCall.args[5].portal).toEqual(MOCK_USER_SESSION.portal); // destinationAuthentication
+        const deployFnStub = sinon
+          .stub(deployItems, "deploySolutionItems")
+          .resolves([
+            {
+              id: deployedSolutionId,
+              type: "Web Map",
+              postProcess: false
+            }
+          ]);
+        const postProcessFnStub = sinon
+          .stub(postProcess, "postProcess")
+          .resolves();
 
-          deployFnStub.restore();
-          postProcessFnStub.restore();
-          done();
-        },
-        () => {
-          deployFnStub.restore();
-          postProcessFnStub.restore();
-          done.fail();
-        }
-      );
-    });
+        fetchMock
+          .get(
+            testUtils.PORTAL_SUBSET.restUrl +
+              "/portals/self?f=json&token=fake-token",
+            portalsSelfResponse
+          )
+          .get(
+            testUtils.PORTAL_SUBSET.restUrl +
+              "/community/self?f=json&token=fake-token",
+            communitySelfResponse
+          )
+          .get(
+            testUtils.PORTAL_SUBSET.restUrl +
+              "/content/users/casey?f=json&token=fake-token",
+            testUtils.getSuccessResponse()
+          )
+          .get(
+            testUtils.PORTAL_SUBSET.restUrl +
+              "/community/users/casey?f=json&token=fake-token",
+            testUtils.getSuccessResponse()
+          )
+          .post(
+            "https://utility.arcgisonline.com/arcgis/rest/services/Geometry/GeometryServer/findTransformations",
+            testUtils.getTransformationsResponse()
+          )
+          .post(
+            testUtils.PORTAL_SUBSET.restUrl +
+              "/content/users/casey/createFolder",
+            testUtils.getCreateFolderResponse(folderId)
+          )
+          .post(
+            "https://utility.arcgisonline.com/arcgis/rest/services/Geometry/GeometryServer/project",
+            testUtils.getProjectResponse()
+          )
+          .post(
+            testUtils.PORTAL_SUBSET.restUrl +
+              "/content/users/casey/" +
+              folderId +
+              "/addItem",
+            testUtils.getSuccessResponse({
+              id: deployedSolutionId,
+              folder: folderId
+            })
+          )
+          .post(
+            testUtils.PORTAL_SUBSET.restUrl +
+              "/content/users/casey/fld1234567890/items/dpl1234567890/update",
+            testUtils.getSuccessResponse({ id: deployedSolutionId })
+          );
+
+        deploySolutionFromTemplate(
+          templateSolutionId,
+          solutionTemplateBase,
+          solutionTemplateData,
+          solutionTemplateMetadata,
+          authentication,
+          options
+        ).then(
+          () => {
+            const deployFnCall = deployFnStub.getCall(0);
+            expect(deployFnCall.args[0]).toEqual(MOCK_USER_SESSION.portal); // portalSharingUrl
+            expect(deployFnCall.args[3].portal).toEqual(
+              MOCK_USER_SESSION.portal
+            ); // storageAuthentication
+            expect(deployFnCall.args[5].portal).toEqual(
+              MOCK_USER_SESSION.portal
+            ); // destinationAuthentication
+
+            deployFnStub.restore();
+            postProcessFnStub.restore();
+            done();
+          },
+          () => {
+            deployFnStub.restore();
+            postProcessFnStub.restore();
+            done.fail();
+          }
+        );
+      });
+    }
 
     it("allows distinct authentication to the solution template", done => {
       const templates: common.IItemTemplate[] = [
