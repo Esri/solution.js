@@ -167,6 +167,7 @@ export function _applySourceToCreateOptions(
       sourceInfo.thumbnail,
       isGroup
     );
+    delete sourceInfo.thumbnail;
   }
 
   return createOptions;
