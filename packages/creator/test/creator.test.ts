@@ -1008,11 +1008,7 @@ describe("Module `creator`", () => {
       const url = utils.PORTAL_SUBSET.restUrl + "/content/users/casey/addItem";
       const expectedSolutionId = "sln1234567890";
       const expectedFetchBody =
-        "f=json" +
-        (typeof window !== "undefined"
-          ? "&title=xfakeidx&type=Solution"
-          : "&type=Solution&title=xfakeidx") +
-        "&snippet=&description=&properties=" +
+        "f=json&title=xfakeidx&type=Solution&snippet=&description=&properties=" +
         encodeURIComponent(
           JSON.stringify({ schemaVersion: common.CURRENT_SCHEMA_VERSION })
         ) +
@@ -1117,11 +1113,7 @@ describe("Module `creator`", () => {
       const authentication: common.UserSession = MOCK_USER_SESSION;
       const url = utils.PORTAL_SUBSET.restUrl + "/content/users/casey/addItem";
       const expectedFetchBody =
-        "f=json" +
-        (typeof window !== "undefined"
-          ? "&title=xfakeidx&type=Solution"
-          : "&type=Solution&title=xfakeidx") +
-        "&snippet=&description=&properties=" +
+        "f=json&title=xfakeidx&type=Solution&snippet=&description=&properties=" +
         encodeURIComponent(
           JSON.stringify({ schemaVersion: common.CURRENT_SCHEMA_VERSION })
         ) +
