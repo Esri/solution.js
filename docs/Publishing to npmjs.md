@@ -7,7 +7,7 @@
 * \[ \] Remove node_modules and run `npm install`
 * \[ \] Run `npm run release:prepare` and pick new version number
 * \[ \] Run `npm run release:review`
-* \[ \] Fix CHANGELOG.md by moving "[Unreleased][HEAD]" ahead of any versions
+* \[ \] Check and fix CHANGELOG.md
 * \[ \] Run `npm run release:publish`
 * \[ \] Check that publishing worked using `check_npm_package_versions.html`
 * \[ \] Run `npm run release:publish-retry` as needed until all packages are published
@@ -76,9 +76,19 @@ npm run release:review
 git tag -d tagName
 ```
 
-10. Commit changes without using version number.
+10. Test the CHANGELOG.md file using `npx changelog-parser CHANGELOG.md`. You should see a result beginning with
+```
+{"versions":[{"version":null,"title":"[Unreleased]"
+```
+If the `versions` array is empty (e.g.,
+```
+{"versions":[],"title":"Changelog
+```
+), then CHANGELOG.md needs to be re-saved as an ASCII file: the GitHub publishing tool cannot read UTF-8 files.
 
-11. Publish the release, supplying a two-factor code (e.g., from Okta Verify) when prompted. (While `release:publish` accepts a two-factor command-line parameter, the code expires by the time that publishing get around to using it and the release will not be uploaded to npmjs.) Use the freshest possible code: pick it right after it updates in the two-factor app.
+11. Commit changes without using version number.
+
+12. Publish the release, supplying a two-factor code (e.g., from Okta Verify) when prompted. (While `release:publish` accepts a two-factor command-line parameter, the code expires by the time that publishing get around to using it and the release will not be uploaded to npmjs.) Use the freshest possible code: pick it right after it updates in the two-factor app.
 
  ```
  npm run release:publish
@@ -96,15 +106,15 @@ git tag -d tagName
 
  It's OK to push the version to GitHub even if not all packages appear to have been published. "Publishing" is sending them to npm and is a separate process that we can patch below.
 
-12. Check that publishing worked using the repository's web page `check_npm_package_versions.html`; sometimes, only some of the packages show up in npm. It may take ten or more minutes for a general request such as `https://unpkg.com/@esri/solution-simple-types/dist/umd/simple-types.umd.js` to 302 resolve to the latest version.
+13. Check that publishing worked using the repository's web page `check_npm_package_versions.html`; sometimes, only some of the packages show up in npm. It may take ten or more minutes for a general request such as `https://unpkg.com/@esri/solution-simple-types/dist/umd/simple-types.umd.js` to 302 resolve to the latest version.
 
-13. Due to the large number of packages and the very short validity window of the two-factor code, not all packages may get published. In this case, repeat `npm run release:publish-retry` until it reports "lerna notice from-package No unpublished release found; lerna success No changed packages to publish".
+14. Due to the large number of packages and the very short validity window of the two-factor code, not all packages may get published. In this case, repeat `npm run release:publish-retry` until it reports "lerna notice from-package No unpublished release found; lerna success No changed packages to publish".
 
-14. Push your `release/X.X.X` branch to GitHub.
+15. Push your `release/X.X.X` branch to GitHub.
 
-15. Merge `release/X.X.X` into `master` and `develop` and push them to GitHub.
+16. Merge `release/X.X.X` into `master` and `develop` and push them to GitHub.
 
-16. Update the repository's API documentation (see "Publishing API documentation to GitHub" section below).
+17. Update the repository's API documentation (see "Publishing API documentation to GitHub" section below).
 
 ---
 
