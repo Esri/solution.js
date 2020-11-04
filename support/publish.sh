@@ -10,6 +10,7 @@ VERSION=$(node --eval "console.log(require('./lerna.json').version);")
 npm run docs:srihash
 
 # commit the changes from `npm run release:prepare`
+echo Commit the changes from npm run release:prepare
 git add --all
 git commit -am "v$VERSION" --no-verify
 
@@ -17,19 +18,24 @@ git commit -am "v$VERSION" --no-verify
 npm version $VERSION --allow-same-version --no-git-tag-version
 
 # amend the changes from `npm version` to the release commit
+echo Amend the changes from npm version to the release commit
 git add --all
 git commit -am "v$VERSION" --no-verify --amend
 
 # tag this version
 git tag v$VERSION
 
-# push everything up to this point to master
-git push https://github.com/Esri/solution.js.git master
+# push everything up to this point
+branch=$(git branch --show-current)
+echo Push everything up to this point
+git push https://github.com/Esri/solution.js.git $branch
 
 # push the new tag, not the old tags
+echo Push the new tag, not the old tags
 git push https://github.com/Esri/solution.js.git v$VERSION
 
 # publish each package on npm
+echo Publish each package on npm
 lerna publish from-package --force-publish=* --no-git-tag-version --no-push --yes
 
 # create a ZIP archive of the dist files
@@ -65,6 +71,7 @@ zip -r $TEMP_FOLDER.zip $TEMP_FOLDER
 rm -rf $TEMP_FOLDER
 
 # Run gh-release to create a new release with our changelog changes and ZIP archive
+echo npx gh-release -t v$VERSION -b v$VERSION -r solution.js -o Esri -a $TEMP_FOLDER.zip
 npx gh-release -t v$VERSION -b v$VERSION -r solution.js -o Esri -a $TEMP_FOLDER.zip
 
 # Delete the ZIP archive
