@@ -8,7 +8,6 @@
 * \[ \] Run `npm run release:prepare` and pick new version number
 * \[ \] Run `npm run release:review`
 * \[ \] Fix CHANGELOG.md by moving "[Unreleased][HEAD]" ahead of any versions
-* \[ \] Commit changes without using version number
 * \[ \] Run `npm run release:publish`
 * \[ \] Check that publishing worked using `check_npm_package_versions.html`
 * \[ \] Run `npm run release:publish-retry` as needed until all packages are published
@@ -77,7 +76,9 @@ npm run release:review
 git tag -d tagName
 ```
 
-10. Publish the release, supplying a two-factor code (e.g., from Okta Verify) when prompted. (While `release:publish` accepts a two-factor command-line parameter, the code expires by the time that publishing get around to using it and the release will not be uploaded to npmjs.) Use the freshest possible code: pick it right after it updates in the two-factor app.
+10. Commit changes without using version number.
+
+11. Publish the release, supplying a two-factor code (e.g., from Okta Verify) when prompted. (While `release:publish` accepts a two-factor command-line parameter, the code expires by the time that publishing get around to using it and the release will not be uploaded to npmjs.) Use the freshest possible code: pick it right after it updates in the two-factor app.
 
  ```
  npm run release:publish
@@ -95,15 +96,15 @@ git tag -d tagName
 
  It's OK to push the version to GitHub even if not all packages appear to have been published. "Publishing" is sending them to npm and is a separate process that we can patch below.
 
-11. Check that publishing worked using the repository's web page `check_npm_package_versions.html`; sometimes, only some of the packages show up in npm. It may take ten or more minutes for a general request such as `https://unpkg.com/@esri/solution-simple-types/dist/umd/simple-types.umd.js` to 302 resolve to the latest version.
+12. Check that publishing worked using the repository's web page `check_npm_package_versions.html`; sometimes, only some of the packages show up in npm. It may take ten or more minutes for a general request such as `https://unpkg.com/@esri/solution-simple-types/dist/umd/simple-types.umd.js` to 302 resolve to the latest version.
 
-12. Due to the large number of packages and the very short validity window of the two-factor code, not all packages may get published. In this case, repeat `npm run release:publish-retry` until it reports "lerna notice from-package No unpublished release found; lerna success No changed packages to publish".
+13. Due to the large number of packages and the very short validity window of the two-factor code, not all packages may get published. In this case, repeat `npm run release:publish-retry` until it reports "lerna notice from-package No unpublished release found; lerna success No changed packages to publish".
 
-13. Push your `release/X.X.X` branch to GitHub.
+14. Push your `release/X.X.X` branch to GitHub.
 
-14. Merge `release/X.X.X` into `master` and `develop` and push them to GitHub.
+15. Merge `release/X.X.X` into `master` and `develop` and push them to GitHub.
 
-15. Update the repository's API documentation (see "Publishing API documentation to GitHub" section below).
+16. Update the repository's API documentation (see "Publishing API documentation to GitHub" section below).
 
 ---
 
@@ -147,7 +148,9 @@ npm run docs:deploy
 
 ## Deprecating older versions on npmjs
 
-One can mark a version or versions deprecated using the `npm deprecate` command. For example, to deprecate all versions before 0.5.1,
+One can mark a version or versions deprecated using the `npm deprecate` command. *Note: If you deprecate your highest version, the whole package will appear as deprecated in npm. This can be reversed.*
+
+For example:
 
 1. Launch a git-bash window
 
@@ -155,52 +158,21 @@ One can mark a version or versions deprecated using the `npm deprecate` command.
 
 3. Get a two-factor code. Because one deprecates one package at a time, you might want to wait until the next code change in your two-factor code app so that the code lasts through all of the deprecation calls.
 
-4. Deprecate packages using two-factor code; this example uses the deprecation message "obsolete" and deprecates every version below 0.5.4
+4. Deprecate packages using two-factor code; this example deprecates version 0.20.0 using the deprecation message "obsolete".
 ```
-twoFactorCode=<2-factor-code>
-newVersion=<new-version-number>
-npm deprecate @esri/solution-common@"<$newVersion" "obsolete" --otp=$twoFactorCode
-npm deprecate @esri/solution-creator@"<$newVersion" "obsolete" --otp=$twoFactorCode
-npm deprecate @esri/solution-deployer@"<$newVersion" "obsolete" --otp=$twoFactorCode
-npm deprecate @esri/solution-feature-layer@"<$newVersion" "obsolete" --otp=$twoFactorCode
-npm deprecate @esri/solution-file@"<$newVersion" "obsolete" --otp=$twoFactorCode
-npm deprecate @esri/solution-group@"<$newVersion" "obsolete" --otp=$twoFactorCode
-npm deprecate @esri/solution-simple-types@"<$newVersion" "obsolete" --otp=$twoFactorCode
-npm deprecate @esri/solution-storymap@"<$newVersion" "obsolete" --otp=$twoFactorCode
-npm deprecate @esri/solution-viewer@"<$newVersion" "obsolete" --otp=$twoFactorCode
-call npm deprecate @esri/solution-web-experience@"<%newVersion%" "obsolete" --otp=%twoFactorCode%
-echo done
-```
-
----
-
-## Removing older versions on npmjs
-
-Within 72 hours, one can unpublish a version; beyond 72 hours, a request must be made to npmjs support by one of the Esri npmjs account owners.
-
-Note that if you unpublish a version, you may have to patch the links in the CHANGELOG.md file because npmjs doesn't accept the re-use of version numbers.
-
-One can mark a version or versions deprecated using the `npm deprecate` command. For example, to unpublish version 0.5.1,
-
-1. Launch a git-bash window
-
-2. Log in to npmjs
-
-3. Get a two-factor code. Because one unpublishes one package at a time, you might want to wait until the next code change in your two-factor code app so that the code lasts through all unpublish calls.
-
-4. Unpublish package(s) using two-factor code; this example unpublishes version 0.5.1
-```
-twoFactorCode=<2-factor-code>
-newVersion=<new-version-number>
-npm unpublish @esri/solution-common@$newVersion --otp=$twoFactorCode
-npm unpublish @esri/solution-creator@$newVersion --otp=$twoFactorCode
-npm unpublish @esri/solution-deployer@$newVersion --otp=$twoFactorCode
-npm unpublish @esri/solution-feature-layer@$newVersion --otp=$twoFactorCode
-npm unpublish @esri/solution-file@$newVersion --otp=$twoFactorCode
-npm unpublish @esri/solution-group@$newVersion --otp=$twoFactorCode
-npm unpublish @esri/solution-simple-types@$newVersion --otp=$twoFactorCode
-npm unpublish @esri/solution-storymap@$newVersion --otp=$twoFactorCode
-npm unpublish @esri/solution-viewer@$newVersion --otp=$twoFactorCode
-npm unpublish @esri/solution-web-experience@$newVersion --otp=$twoFactorCode
+set twoFactorCode=<2-factor-code>
+set obsoleteVersion=0.20.0
+call npm deprecate "@esri/solution-common@%obsoleteVersion%" "obsolete" --otp=%twoFactorCode%
+call npm deprecate "@esri/solution-creator@%obsoleteVersion%" "obsolete" --otp=%twoFactorCode%
+call npm deprecate "@esri/solution-deployer@%obsoleteVersion%" "obsolete" --otp=%twoFactorCode%
+call npm deprecate "@esri/solution-feature-layer@%obsoleteVersion%" "obsolete" --otp=%twoFactorCode%
+call npm deprecate "@esri/solution-file@%obsoleteVersion%" "obsolete" --otp=%twoFactorCode%
+call npm deprecate "@esri/solution-form@%obsoleteVersion%" "obsolete" --otp=%twoFactorCode%
+call npm deprecate "@esri/solution-group@%obsoleteVersion%" "obsolete" --otp=%twoFactorCode%
+call npm deprecate "@esri/solution-hub-types@%obsoleteVersion%" "obsolete" --otp=%twoFactorCode%
+call npm deprecate "@esri/solution-simple-types@%obsoleteVersion%" "obsolete" --otp=%twoFactorCode%
+call npm deprecate "@esri/solution-storymap@%obsoleteVersion%" "obsolete" --otp=%twoFactorCode%
+call npm deprecate "@esri/solution-viewer@%obsoleteVersion%" "obsolete" --otp=%twoFactorCode%
+call npm deprecate "@esri/solution-web-experience@%obsoleteVersion%" "obsolete" --otp=%twoFactorCode%
 ```
 
