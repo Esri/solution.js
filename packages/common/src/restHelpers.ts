@@ -1311,7 +1311,7 @@ export function updateItemExtended(
     const updateOptions: IUpdateItemOptions = {
       item: itemInfo,
       params: {
-        text: data
+        text: data || {} // AGO ignores update if `data` is empty
       },
       authentication: authentication
     };
