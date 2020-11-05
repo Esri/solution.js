@@ -1194,7 +1194,7 @@ export function getAnImageResponse(): any {
     return fs.createReadStream("./test/mocks/success.png");
   } else {
     // Chrome test
-    return utils.getSampleImage();
+    return utils.getSampleImageAsBlob();
   }
 }
 

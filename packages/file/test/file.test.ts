@@ -116,7 +116,7 @@ describe("Module `file`: manages the creation and deployment of item types that 
           .post(
             utils.PORTAL_SUBSET.restUrl +
               "/content/items/jsn1234567890/resources/anImage.png",
-            utils.getSampleImage()
+            utils.getSampleImageAsBlob()
           )
           .post(
             utils.PORTAL_SUBSET.restUrl +
@@ -328,7 +328,7 @@ describe("Module `file`: manages the creation and deployment of item types that 
           .post(
             utils.PORTAL_SUBSET.restUrl +
               "/content/items/wma1234567890/resources/anImage.png",
-            utils.getSampleImage()
+            utils.getSampleImageAsBlob()
           )
           .post(
             utils.PORTAL_SUBSET.restUrl +

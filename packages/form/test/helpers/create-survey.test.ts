@@ -40,7 +40,7 @@ describe("createSurvey", () => {
       username: "myusername",
       token: "mytoken",
       portalUrl: "https://myportal.arcgis.com",
-      thumbnailFile: utils.getSampleImage()
+      thumbnailFile: utils.getSampleImageAsBlob()
     } as ISurvey123CreateParams;
 
     afterEach(() => {

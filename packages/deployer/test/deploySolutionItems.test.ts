@@ -49,9 +49,7 @@ const SERVER_INFO = {
 describe("Module `deploySolutionItems`", () => {
   describe("deploySolutionItems", () => {
     it("can handle unimplemented item type gracefully", done => {
-      // tslint:disable-next-line: no-empty
       spyOn(console, "log").and.callFake(() => {});
-      // tslint:disable-next-line: no-empty
       spyOn(console, "error").and.callFake(() => {});
       deploySolution
         .deploySolutionItems(
@@ -685,7 +683,6 @@ describe("Module `deploySolutionItems`", () => {
         url: url
       };
 
-      // tslint:disable-next-line: no-empty
       spyOn(console, "error").and.callFake(() => {});
       deploySolution
         .deploySolutionItems(
@@ -761,7 +758,6 @@ describe("Module `deploySolutionItems`", () => {
         url: url
       };
 
-      // tslint:disable-next-line: no-empty
       spyOn(console, "error").and.callFake(() => {});
 
       deploySolution
@@ -847,7 +843,6 @@ describe("Module `deploySolutionItems`", () => {
             groupId: "aa4a6047326243b290f625e80ebe6531"
           })
         );
-      // tslint:disable-next-line: no-empty
       spyOn(console, "error").and.callFake(() => {});
 
       const expected: common.ICreateItemFromTemplateResponse[] = [
@@ -866,7 +861,6 @@ describe("Module `deploySolutionItems`", () => {
         itemId: newItemID
       };
 
-      // tslint:disable-next-line: no-empty
       spyOn(console, "log").and.callFake(() => {});
       deploySolution
         .deploySolutionItems(
@@ -1024,7 +1018,6 @@ describe("Module `deploySolutionItems`", () => {
         )
         .post(url2, mockItems.get500Failure());
 
-      // tslint:disable-next-line: no-empty
       spyOn(console, "error").and.callFake(() => {});
       deploySolution
         .deploySolutionItems(
@@ -1620,7 +1613,6 @@ describe("Module `deploySolutionItems`", () => {
         }
       });
 
-      // tslint:disable-next-line: no-empty
       spyOn(common, "getLayerSettings").and.callFake(() => {});
 
       deploySolution
@@ -1669,7 +1661,6 @@ describe("Module `deploySolutionItems`", () => {
 
       fetchMock.post(fsUrl, mockItems.get400Failure());
 
-      // tslint:disable-next-line: no-empty
       spyOn(common, "getLayerSettings").and.callFake(() => {});
 
       deploySolution

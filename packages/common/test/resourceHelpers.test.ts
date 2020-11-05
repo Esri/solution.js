@@ -175,7 +175,7 @@ describe("Module `resourceHelpers`: common functions involving the management of
 
     describe("addThumbnailFromBlob", () => {
       it("gets an item's thumbnail from a blob", done => {
-        const blob = utils.getSampleImage();
+        const blob = utils.getSampleImageAsBlob();
         const itemId = "itm1234567890";
         const updateUrl =
           utils.PORTAL_SUBSET.restUrl +
@@ -202,7 +202,7 @@ describe("Module `resourceHelpers`: common functions involving the management of
       });
 
       it("gets a group's thumbnail from a blob", done => {
-        const blob = utils.getSampleImage();
+        const blob = utils.getSampleImageAsBlob();
         const itemId = "grp1234567890";
         const updateUrl =
           utils.PORTAL_SUBSET.restUrl +
@@ -940,7 +940,7 @@ describe("Module `resourceHelpers`: common functions involving the management of
     //     const expected = { success: true, id: destination.itemId };
 
     //     fetchMock
-    //       .post(fetchUrl, utils.getSampleImage(), { sendAsJson: false })
+    //       .post(fetchUrl, utils.getSampleImageAsBlob(), { sendAsJson: false })
     //       .post(updateUrl, expected);
     //     copyResourceModule
     //       .copyResource(source, destination)
@@ -1017,7 +1017,7 @@ describe("Module `resourceHelpers`: common functions involving the management of
     //     const expected = 500;
 
     //     fetchMock
-    //       .post(fetchUrl, utils.getSampleImage(), { sendAsJson: false })
+    //       .post(fetchUrl, utils.getSampleImageAsBlob(), { sendAsJson: false })
     //       .post(updateUrl, expected);
     //     return copyResourceModule
     //       .copyResource(source, destination)
@@ -1030,46 +1030,6 @@ describe("Module `resourceHelpers`: common functions involving the management of
     //   });
     // });
   }
-
-  describe("generateGroupFilePaths", () => {
-    it("generates paths for a group thumbnail", () => {
-      const portalSharingUrl = utils.PORTAL_SUBSET.restUrl;
-      const itemId = "8f7ec78195d0479784036387d522e29f";
-      const thumbnailUrlPart = "thumbnail.png";
-      const expected: interfaces.ISourceFileCopyPath[] = [
-        {
-          url:
-            utils.PORTAL_SUBSET.restUrl +
-            "/community/groups/8f7ec78195d0479784036387d522e29f/info/thumbnail.png",
-          folder: "8f7ec78195d0479784036387d522e29f_info_thumbnail",
-          filename: "thumbnail.png"
-        }
-      ];
-
-      const actual = resourceHelpers.generateGroupFilePaths(
-        portalSharingUrl,
-        itemId,
-        thumbnailUrlPart
-      );
-      expect(actual.length).toEqual(1);
-      expect(actual).toEqual(expected);
-    });
-
-    it("handles the absence of a group thumbnail", () => {
-      const portalSharingUrl = utils.PORTAL_SUBSET.restUrl;
-      const itemId = "8f7ec78195d0479784036387d522e29f";
-      const thumbnailUrlPart = "";
-      const expected: interfaces.IDeployFileCopyPath[] = [];
-
-      const actual = resourceHelpers.generateGroupFilePaths(
-        portalSharingUrl,
-        itemId,
-        thumbnailUrlPart
-      );
-      expect(actual.length).toEqual(0);
-      expect(actual).toEqual(expected);
-    });
-  });
 
   describe("generateInfoStorageFilename", () => {
     it("generates storage name for an info file", () => {
@@ -1762,7 +1722,7 @@ describe("Module `resourceHelpers`: common functions involving the management of
   //         .post(
   //           utils.PORTAL_SUBSET.restUrl +
   //             "/content/items/qck1234567890/info/thumbnail/ago_downloaded.png?w=400",
-  //           utils.getSampleImage(),
+  //           utils.getSampleImageAsBlob(),
   //           { sendAsJson: false }
   //         )
   //         .post(
@@ -1931,7 +1891,7 @@ describe("Module `resourceHelpers`: common functions involving the management of
   //             "/content/items/" +
   //             itemTemplate.itemId +
   //             "/info/thumbnail/banner.png?w=400",
-  //           utils.getSampleImage(),
+  //           utils.getSampleImageAsBlob(),
   //           { sendAsJson: false }
   //         )
   //         .post(

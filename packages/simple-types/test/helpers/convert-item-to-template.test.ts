@@ -419,13 +419,13 @@ describe("simpleTypeConvertItemToTemplate", () => {
           .post(
             utils.PORTAL_SUBSET.restUrl +
               "/content/items/qck1234567890/info/thumbnail/ago_downloaded.png",
-            utils.getSampleImage(),
+            utils.getSampleImageAsBlob(),
             { sendAsJson: false }
           )
           .post(
             utils.PORTAL_SUBSET.restUrl +
               "/content/items/qck1234567890/resources/images/Camera.png",
-            utils.getSampleImage(),
+            utils.getSampleImageAsBlob(),
             { sendAsJson: false }
           )
           .post(

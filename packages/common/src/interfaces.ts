@@ -155,12 +155,14 @@ export interface ICreateSolutionOptions {
   description?: string; // defaults: for a group, group description; for an item, ""
   tags?: string[]; // defaults: for a group, group tags; for an item, []
   thumbnailurl?: string; // default: ""
+  thumbnail?: File; // default: null
   folderId?: string; // default is top level
   templateDictionary?: any; // default: {}
   templatizeFields?: boolean; // default: false
   additionalTypeKeywords?: string[]; // default: []; supplements ["Solution", "Template"]
   progressCallback?: ISolutionProgressCallback;
   consoleProgress?: boolean; // default: false
+  itemIds?: string[];
 }
 
 /**
@@ -592,7 +594,7 @@ export interface ISolutionProgressEvent {
 }
 
 /**
- * Information for storing a resource in a storage item.
+ *  Information for storing a resource in a storage item.
  */
 export interface ISourceFileCopyPath {
   /**

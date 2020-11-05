@@ -1002,7 +1002,7 @@ describe("Module `restHelpersGet`: common REST fetch functions shared across pac
           .post(
             utils.PORTAL_SUBSET.restUrl +
               "/content/items/itm1234567890/resources/Jackson%20Lake.png",
-            utils.getSampleImage(),
+            utils.getSampleImageAsBlob(),
             { sendAsJson: false }
           );
         restHelpersGet
@@ -1031,7 +1031,7 @@ describe("Module `restHelpersGet`: common REST fetch functions shared across pac
         fetchMock.post(
           utils.PORTAL_SUBSET.restUrl +
             "/content/items/itm1234567890/info/thumbnail/ago_downloaded.png",
-          utils.getSampleImage(),
+          utils.getSampleImageAsBlob(),
           { sendAsJson: false }
         );
 
@@ -1154,7 +1154,7 @@ describe("Module `restHelpersGet`: common REST fetch functions shared across pac
 
       it("should pass image blobs through unchanged", done => {
         const testBlobType = "image/png";
-        const testBlob = utils.getSampleImage();
+        const testBlob = utils.getSampleImageAsBlob();
         restHelpersGet._fixTextBlobType(testBlob).then((ok: Blob) => {
           expect(ok.type).toEqual(testBlobType);
           done();
@@ -1571,7 +1571,7 @@ describe("Module `restHelpersGet`: common REST fetch functions shared across pac
           .post(
             utils.PORTAL_SUBSET.restUrl +
               "/content/items/itm1234567890/resources/Jackson%20Lake.png",
-            utils.getSampleImage(),
+            utils.getSampleImageAsBlob(),
             { sendAsJson: false }
           );
         restHelpersGet
@@ -1627,25 +1627,25 @@ describe("Module `restHelpersGet`: common REST fetch functions shared across pac
           .post(
             utils.PORTAL_SUBSET.restUrl +
               "/content/items/itm1234567890/resources/Bradley%20&%20Taggart%20Lakes.png",
-            utils.getSampleImage(),
+            utils.getSampleImageAsBlob(),
             { sendAsJson: false }
           )
           .post(
             utils.PORTAL_SUBSET.restUrl +
               "/content/items/itm1234567890/resources/Jackson%20Lake.png",
-            utils.getSampleImage(),
+            utils.getSampleImageAsBlob(),
             { sendAsJson: false }
           )
           .post(
             utils.PORTAL_SUBSET.restUrl +
               "/content/items/itm1234567890/resources/Jenny%20Lake.png",
-            utils.getSampleImage(),
+            utils.getSampleImageAsBlob(),
             { sendAsJson: false }
           )
           .post(
             utils.PORTAL_SUBSET.restUrl +
               "/content/items/itm1234567890/resources/Leigh%20Lake.png",
-            utils.getSampleImage(),
+            utils.getSampleImageAsBlob(),
             { sendAsJson: false }
           );
         restHelpersGet
@@ -1694,25 +1694,25 @@ describe("Module `restHelpersGet`: common REST fetch functions shared across pac
           .post(
             utils.PORTAL_SUBSET.restUrl +
               "/content/items/itm1234567890/resources/Bradley%20&%20Taggart%20Lakes.png",
-            utils.getSampleImage(),
+            utils.getSampleImageAsBlob(),
             { sendAsJson: false }
           )
           .post(
             utils.PORTAL_SUBSET.restUrl +
               "/content/items/itm1234567890/resources/Jackson%20Lake.png",
-            utils.getSampleImage(),
+            utils.getSampleImageAsBlob(),
             { sendAsJson: false }
           )
           .post(
             utils.PORTAL_SUBSET.restUrl +
               "/content/items/itm1234567890/resources/Jenny%20Lake.png",
-            utils.getSampleImage(),
+            utils.getSampleImageAsBlob(),
             { sendAsJson: false }
           )
           .post(
             utils.PORTAL_SUBSET.restUrl +
               "/content/items/itm1234567890/resources/Leigh%20Lake.png",
-            utils.getSampleImage(),
+            utils.getSampleImageAsBlob(),
             { sendAsJson: false }
           );
         restHelpersGet

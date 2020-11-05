@@ -455,35 +455,6 @@ export function copyMetadata(
 }
 
 /**
- * Generates the full URL and storage folder/filename for storing the thumbnail of a group.
- *
- * @param portalSharingUrl Server/sharing
- * @param itemId Id of item
- * @param thumbnailUrlPart Partial path to the thumbnail held in an item's JSON
- * @return List of item files' URLs and folder/filenames for storing the files
- */
-export function generateGroupFilePaths(
-  portalSharingUrl: string,
-  itemId: string,
-  thumbnailUrlPart: string
-): ISourceFileCopyPath[] {
-  if (!thumbnailUrlPart) {
-    return [];
-  }
-  return [
-    {
-      url: generateSourceThumbnailUrl(
-        portalSharingUrl,
-        itemId,
-        thumbnailUrlPart,
-        true
-      ),
-      ...generateThumbnailStorageFilename(itemId, thumbnailUrlPart)
-    }
-  ];
-}
-
-/**
  * Generates a folder and filename for storing a copy of an item info file in a storage item.
  *
  * @param itemId Id of item

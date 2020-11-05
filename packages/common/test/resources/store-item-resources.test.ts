@@ -276,7 +276,7 @@ describe("storeItemResources :: ", () => {
           .post(
             utils.PORTAL_SUBSET.restUrl +
               "/content/items/qck1234567890/info/thumbnail/ago_downloaded.png?w=400",
-            utils.getSampleImage(),
+            utils.getSampleImageAsBlob(),
             { sendAsJson: false }
           )
           .post(
@@ -449,7 +449,7 @@ describe("storeItemResources :: ", () => {
               "/content/items/" +
               itemTemplate.itemId +
               "/info/thumbnail/banner.png?w=400",
-            utils.getSampleImage(),
+            utils.getSampleImageAsBlob(),
             { sendAsJson: false }
           )
           .post(

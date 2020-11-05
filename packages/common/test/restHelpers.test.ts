@@ -636,7 +636,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
         );
         const metadataFile: File = utils.getSampleMetadataAsFile();
         const resourcesFiles: File[] = [
-          polyfills.new_File([utils.getSampleImage()], "image.png")
+          polyfills.new_File([utils.getSampleImageAsBlob()], "image.png")
         ];
         const access = "org";
 
@@ -701,7 +701,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
         const metadataFile: File = null as File;
         const resourcesFiles: File[] = [
           polyfills.new_File(
-            [utils.getSampleImage()],
+            [utils.getSampleImageAsBlob()],
             "resourceFolder/image.png"
           )
         ];
@@ -3242,7 +3242,6 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
             "/content/items/0?f=json&token=fake-token",
           utils.returnOnNthCall(2, updatedItem, originalItem)
         );
-      // tslint:disable-next-line: no-empty
       spyOn(console, "warn").and.callFake(() => {});
 
       restHelpers._updateItemURL("0", url, MOCK_USER_SESSION, 2).then(
@@ -3301,7 +3300,6 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
             "/content/items/0?f=json&token=fake-token",
           originalItem
         );
-      // tslint:disable-next-line: no-empty
       spyOn(console, "error").and.callFake(() => {});
 
       restHelpers._updateItemURL("0", url, MOCK_USER_SESSION, 2).then(

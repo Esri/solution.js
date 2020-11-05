@@ -21,17 +21,20 @@
  */
 
 import {
-  addThumbnailFromUrl,
   createItemWithData,
   createLongId,
   createShortId,
   CURRENT_SCHEMA_VERSION,
   generateSourceThumbnailUrl,
+  getBlobAsFile,
+  getFilenameFromUrl,
   getGroupBase,
   getGroupContents,
+  getItemBase,
   ICreateSolutionOptions,
   ISolutionItemData,
   IGroup,
+  IItem,
   removeItem,
   sanitizeJSONAndReportChanges
 } from "@esri/solution-common";
@@ -40,7 +43,6 @@ import { failSafe, IModel } from "@esri/hub-common";
 import { _addContentToSolution } from "./helpers/add-content-to-solution";
 
 // Simple no-op to clean up progressCallback management
-// tslint:disable-next-line: no-empty
 const noOp = () => {};
 
 /**
@@ -56,50 +58,79 @@ export function createSolution(
   authentication: UserSession,
   options?: ICreateSolutionOptions
 ): Promise<string> {
-  let createOptions: ICreateSolutionOptions = options || {};
+  const createOptions: ICreateSolutionOptions = options || {};
   const progressCb = createOptions.progressCallback || noOp;
 
   progressCb(1); // let the caller know that we've started
 
-  // Get group information
+  // Assume that source is a group and try to get group's information
   return Promise.all([
     getGroupBase(sourceId, authentication),
     getGroupContents(sourceId, authentication)
   ])
     .then(
+      // Group fetches worked; assumption was correct
       responses => {
-        const [groupInfo, groupItems] = responses;
+        createOptions.itemIds = responses[1];
         progressCb(15);
-        // update the createOptions with values from the group
-        createOptions = _applyGroupToCreateOptions(
-          createOptions,
-          groupInfo,
-          authentication
-        );
-        // Create a solution with the group contents
-        return _createSolutionFromItemIds(
-          groupItems,
-          authentication,
-          createOptions
-        );
+
+        return new Promise<ICreateSolutionOptions>(resolve => {
+          // Update the createOptions with values from the group
+          resolve(
+            _applySourceToCreateOptions(
+              createOptions,
+              responses[0],
+              authentication,
+              true
+            )
+          );
+        });
       },
 
-      // Try sourceId as an item if group fetch fails
+      // Assumption incorrect; try source as an item
       () => {
-        return _createSolutionFromItemIds(
-          [sourceId],
-          authentication,
-          createOptions
-        );
+        return new Promise<ICreateSolutionOptions>((resolve, reject) => {
+          createOptions.itemIds = [sourceId];
+          getItemBase(sourceId, authentication).then(
+            // Update the createOptions with values from the item
+            itemBase =>
+              resolve(
+                _applySourceToCreateOptions(
+                  createOptions,
+                  itemBase,
+                  authentication,
+                  false
+                )
+              ),
+            reject
+          );
+        });
       }
     )
+
     .then(
+      // Use a copy of the thumbnail rather than a URL to it
+      createOptions => {
+        return _addThumbnailFileToCreateOptions(createOptions, authentication);
+      }
+    )
+
+    .then(
+      // Create a solution
+      createOptions => {
+        return _createSolutionFromItemIds(createOptions, authentication);
+      }
+    )
+
+    .then(
+      // Successfully created solution
       createdSolutionId => {
         progressCb(100); // finished
         return createdSolutionId;
       },
+
+      // Error fetching group, group contents, or item, or error creating solution from ids
       error => {
-        // Error fetching group, group contents, or item, or error creating solution from ids
         progressCb(1);
         console.error(error);
         throw error;
@@ -111,48 +142,83 @@ export function createSolution(
  * Update the createOptions with the group properties
  *
  * @param createOptions
- * @param groupInfo
+ * @param sourceInfo
+ * @param authentication
+ * @param isGroup Boolean to indicate if the files are associated with a group or item
+ * @internal
+ */
+export function _applySourceToCreateOptions(
+  createOptions: ICreateSolutionOptions,
+  sourceInfo: IGroup | IItem,
+  authentication: UserSession,
+  isGroup = false
+): ICreateSolutionOptions {
+  // Create a solution from the group's or item's contents,
+  // using the group's or item's information as defaults for the solution item
+  ["title", "snippet", "description", "tags"].forEach(prop => {
+    createOptions[prop] = createOptions[prop] ?? sourceInfo[prop];
+  });
+
+  if (!createOptions.thumbnailurl && sourceInfo.thumbnail) {
+    // Get the full path to the thumbnail
+    createOptions.thumbnailurl = generateSourceThumbnailUrl(
+      authentication.portal,
+      sourceInfo.id,
+      sourceInfo.thumbnail,
+      isGroup
+    );
+  }
+
+  return createOptions;
+}
+
+/**
+ * Update the createOptions with the thumbnail file
+ *
+ * @param createOptions
  * @param authentication
  * @internal
  */
-export function _applyGroupToCreateOptions(
+export function _addThumbnailFileToCreateOptions(
   createOptions: ICreateSolutionOptions,
-  groupInfo: IGroup,
   authentication: UserSession
-): ICreateSolutionOptions {
-  // Create a solution from the group's contents,
-  // using the group's information as defaults for the solution item
-  ["title", "snippet", "description", "tags"].forEach(prop => {
-    createOptions[prop] = createOptions[prop] ?? groupInfo[prop];
-  });
+): Promise<ICreateSolutionOptions> {
+  return new Promise<ICreateSolutionOptions>(resolve => {
+    if (!createOptions.thumbnail && createOptions.thumbnailurl) {
+      // Figure out the thumbnail's filename
+      const filename =
+        getFilenameFromUrl(createOptions.thumbnailurl) || "thumbnail";
+      const thumbnailurl = createOptions.thumbnailurl;
+      delete createOptions.thumbnailurl;
 
-  if (!createOptions.thumbnailurl && groupInfo.thumbnail) {
-    // Copy the group's thumbnail to the new item
-    // createOptions.thumbnail needs to be a full URL
-    createOptions.thumbnailurl = generateSourceThumbnailUrl(
-      authentication.portal,
-      groupInfo.id,
-      groupInfo.thumbnail,
-      true
-    );
-  }
-  return createOptions;
+      // Fetch the thumbnail
+      getBlobAsFile(thumbnailurl, filename, authentication).then(
+        thumbnail => {
+          createOptions.thumbnail = thumbnail;
+          resolve(createOptions);
+        },
+        () => {
+          resolve(createOptions);
+        }
+      );
+    } else {
+      resolve(createOptions);
+    }
+  });
 }
 
 /**
  * Creates a solution item using a list of AGO item ids.
  *
- * @param itemIds AGO ids of items that are to be added to solution
- * @param authentication Credentials for the request
  * @param options Customizations for creating the solution
+ * @param authentication Credentials for the request
  * @return A promise that resolves with the AGO id of the new solution; solution item is deleted if its
  * there is a problem updating it
  * @internal
  */
 export function _createSolutionFromItemIds(
-  itemIds: string[],
-  authentication: UserSession,
-  options: ICreateSolutionOptions
+  options: ICreateSolutionOptions,
+  authentication: UserSession
 ): Promise<string> {
   let solutionId = "";
   // Create a solution from the list of items
@@ -160,12 +226,7 @@ export function _createSolutionFromItemIds(
     .then(id => {
       solutionId = id;
       // Add list of items to the new solution
-      return _addContentToSolution(
-        solutionId,
-        itemIds,
-        authentication,
-        options
-      );
+      return _addContentToSolution(solutionId, options, authentication);
     })
     .catch(addError => {
       // If the solution item got created, delete it
@@ -193,48 +254,26 @@ export function _createSolutionItem(
   authentication: UserSession,
   options?: ICreateSolutionOptions
 ): Promise<string> {
-  const model = _createSolutionItemModel(options);
+  return new Promise<string>((resolve, reject) => {
+    const model = _createSolutionItemModel(options);
 
-  let solutionItemId = "";
-  // Create new solution item
-  return createItemWithData(
-    model.item,
-    model.data,
-    authentication,
-    options?.folderId
-  )
-    .then(createResponse => {
-      solutionItemId = createResponse.id;
-      // Thumbnail must be added manually
-      if (model.item.thumbnailurl) {
-        return addThumbnailFromUrl(
-          model.item.thumbnailurl,
-          solutionItemId,
-          authentication
-        );
-      } else {
-        return Promise.resolve({ success: true });
+    // Create new solution item
+    delete model.item.thumbnailurl;
+    model.item.thumbnail = options?.thumbnail;
+    createItemWithData(
+      model.item,
+      model.data,
+      authentication,
+      options?.folderId
+    ).then(
+      createResponse => {
+        resolve(createResponse.id);
+      },
+      err => {
+        reject(err);
       }
-    })
-    .then(result => {
-      // this seems convoluted - maybe addThumbnailFromUrl should
-      // reject if it gets success: false?
-      if (result.success) {
-        return solutionItemId;
-      } else {
-        throw result;
-      }
-    })
-    .catch(err => {
-      if (solutionItemId) {
-        const failSafeRemove = failSafe(removeItem, { success: true });
-        return failSafeRemove(solutionItemId, authentication).then(() => {
-          throw err;
-        });
-      } else {
-        throw err;
-      }
-    });
+    );
+  });
 }
 
 /**
