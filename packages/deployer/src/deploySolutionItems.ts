@@ -169,7 +169,7 @@ export function deploySolutionItems(
               resolve(clonedSolutionItems);
             } else {
               // Delete created items
-            // eslint-disable-next-line @typescript-eslint/no-floating-promises
+              // eslint-disable-next-line @typescript-eslint/no-floating-promises
               common
                 .removeListOfItemsOrGroups(
                   deployedItemIds,
@@ -729,7 +729,7 @@ export function _createItemFromTemplateWhenReady(
                         );
                       }
 
-                      // Copy resources, metadata, thumbnail, form
+                      // Copy resources, metadata, form
                       common
                         .copyFilesFromStorageItem(
                           storageAuthentication,
@@ -824,15 +824,38 @@ export function _moveResourcesIntoTemplate(
     });
 
     // eslint-disable-next-line @typescript-eslint/no-floating-promises
-    thumbnailDef.then(updatedThumbnailUrl => {
-      /* istanbul ignore else */
-      if (updatedThumbnailUrl) {
-        template.item.thumbnailurl = common.appendQueryParam(
-          updatedThumbnailUrl,
-          "w=400"
-        );
+    thumbnailDef.then(
+      updatedThumbnailUrl => {
+        /* istanbul ignore else */
+        if (updatedThumbnailUrl) {
+          updatedThumbnailUrl = common.appendQueryParam(
+            updatedThumbnailUrl,
+            "w=400"
+          );
+
+          // Figure out the thumbnail's filename
+          const filename =
+            common.getFilenameFromUrl(updatedThumbnailUrl) || "thumbnail";
+
+          // Fetch the thumbnail
+          common
+            .getBlobAsFile(updatedThumbnailUrl, filename, authentication)
+            .then(
+              thumbnail => {
+                template.item.thumbnail = thumbnail;
+                resolve(updatedFilePaths);
+              },
+              () => {
+                resolve(updatedFilePaths);
+              }
+            );
+        } else {
+          resolve(updatedFilePaths);
+        }
+      },
+      () => {
+        resolve(updatedFilePaths);
       }
-      resolve(updatedFilePaths);
-    });
+    );
   });
 }

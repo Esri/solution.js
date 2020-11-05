@@ -144,6 +144,9 @@ export function createItemFromTemplate(
       templateDictionary
     );
 
+    // Thumbnail has to be updated separately; doesn't work in create service call
+    delete newItemTemplate.item.thumbnail;
+
     // cache the popup info to be added later
     const popupInfos: common.IPopupInfos = common.cachePopupInfos(
       newItemTemplate.data
@@ -216,7 +219,8 @@ export function createItemFromTemplate(
                           url: undefined // can't update the URL of a feature service
                         },
                         newItemTemplate.data,
-                        destinationAuthentication
+                        destinationAuthentication,
+                        template.item.thumbnail
                       )
                       .then(
                         () => {

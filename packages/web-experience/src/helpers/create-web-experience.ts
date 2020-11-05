@@ -28,6 +28,7 @@ import {
   createItem,
   updateItem,
   addItemResource,
+  ICreateItemOptions,
   ICreateItemResponse,
   moveItem
 } from "@esri/arcgis-rest-portal";
@@ -46,14 +47,26 @@ export function createWebExperience(
   authentication: UserSession
 ): Promise<IModel> {
   const resources: any[] = [];
-  // need to serialize
+
+  // For unkown reasons we can not seem to spy on createItemInFolder
+  // so we will create-then-move for now
+  const createOptions: ICreateItemOptions = {
+    // need to serialize
+    item: serializeModel(model),
+    authentication
+  };
+
+  if (model.thumbnail) {
+    createOptions.params = {
+      // Pass thumbnail file in via params because item property is serialized, which discards a blob
+      thumbnail: model.thumbnail
+    };
+    delete createOptions.item.thumbnail;
+  }
+
+  // Create the item
   return (
-    // For unkown reasons we can not seem to spy on createItemInFolder
-    // so we will create-then-move for now
-    createItem({
-      item: serializeModel(model),
-      authentication
-    })
+    createItem(createOptions)
       .then((createResponse: ICreateItemResponse) => {
         model.item.id = createResponse.id;
 

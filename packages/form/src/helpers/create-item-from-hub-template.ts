@@ -22,6 +22,7 @@ import {
   EItemProgressStatus,
   removeFolder,
   replaceInTemplate,
+  updateItemExtended,
   ISurvey123CreateParams,
   ISurvey123CreateResult
 } from "@esri/solution-common";
@@ -64,16 +65,30 @@ export function createItemFromHubTemplate(
     })
     .then((createSurveyResponse: ISurvey123CreateResult) => {
       const { formId, folderId, featureServiceId } = createSurveyResponse;
+
+      // Update the item with its thumbnail
+      let thumbDef: Promise<any> = Promise.resolve();
+      if (template.item.thumbnail) {
+        thumbDef = updateItemExtended(
+          { id: formId },
+          null,
+          destinationAuthentication,
+          template.item.thumbnail
+        );
+      }
+
       // Survey123 API creates Form & Feature Service in a different directory,
       // so move those items to the deployed solution folder
-      const movePromises = [formId, featureServiceId].map((id: string) => {
-        return moveItem({
-          itemId: id,
-          folderId: templateDictionary.folderId as string,
-          authentication: destinationAuthentication
-        });
-      });
-      return Promise.all(movePromises)
+      const promises = [thumbDef].concat(
+        [formId, featureServiceId].map((id: string) => {
+          return moveItem({
+            itemId: id,
+            folderId: templateDictionary.folderId as string,
+            authentication: destinationAuthentication
+          });
+        })
+      );
+      return Promise.all(promises)
         .then(() => {
           // then remove the folder that Survey123 created
           return removeFolder(folderId, destinationAuthentication);

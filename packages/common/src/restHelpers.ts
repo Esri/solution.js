@@ -1304,6 +1304,7 @@ export function updateItemExtended(
   itemInfo: IItemUpdate,
   data: any,
   authentication: UserSession,
+  thumbnail?: File,
   access?: string | undefined
 ): Promise<IUpdateItemResponse> {
   return new Promise<IUpdateItemResponse>((resolve, reject) => {
@@ -1314,6 +1315,10 @@ export function updateItemExtended(
       },
       authentication: authentication
     };
+    if (thumbnail) {
+      updateOptions.params.thumbnail = thumbnail;
+    }
+
     portalUpdateItem(updateOptions).then(
       result => {
         if (access && access !== "private") {
@@ -1558,6 +1563,12 @@ export function _getCreateServiceOptions(
           createOptions.params,
           templateDictionary
         );
+
+        if (newItemTemplate.item.thumbnail) {
+          // Pass thumbnail file in via params because item property is serialized, which discards a blob
+          createOptions.params.thumbnail = newItemTemplate.item.thumbnail;
+        }
+
         resolve(createOptions);
       },
       e => reject(fail(e))

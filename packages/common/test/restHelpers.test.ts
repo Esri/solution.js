@@ -2950,6 +2950,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
           itemTemplate.item,
           itemTemplate.data,
           MOCK_USER_SESSION,
+          null,
           "public"
         )
         .then(
@@ -2977,6 +2978,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
           itemTemplate.item,
           itemTemplate.data,
           MOCK_USER_SESSION,
+          null,
           "org"
         )
         .then(
@@ -3004,6 +3006,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
           itemTemplate.item,
           itemTemplate.data,
           MOCK_USER_SESSION,
+          null,
           "org"
         )
         .then(

@@ -145,6 +145,7 @@ export function createItemFromTemplate(
       newItemTemplate,
       templateDictionary
     );
+    newItemTemplate.item.thumbnail = template.item.thumbnail; // make sure that our File is still there
 
     // Create the item, then update its URL with its new id
     common
