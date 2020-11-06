@@ -256,7 +256,9 @@ describe("Module `deployer`", () => {
         const templateDictionary: any = {
           params: {
             testProperty: "ABC"
-          }
+          },
+          thumbnailurl:
+            "https://myorg.maps.arcgis.com/sharing/rest/content/items/sln1234567890/info/thumbnail/ago_downloaded.png"
         };
         const featureServerAdminUrl: string =
           "https://services123.arcgis.com/org1234567890/arcgis/rest/admin/services/ROWPermits_publiccomment/FeatureServer";
@@ -332,6 +334,12 @@ describe("Module `deployer`", () => {
               itemInfo.item.id +
               "/data",
             itemInfo.data
+          )
+          .post(
+            testUtils.PORTAL_SUBSET.restUrl +
+              "/content/items/sln1234567890/info/thumbnail/ago_downloaded.png",
+            testUtils.getSampleImageAsFile(),
+            { sendAsJson: false }
           )
           .post(
             testUtils.PORTAL_SUBSET.restUrl +
