@@ -1095,19 +1095,7 @@ export function postProcessFields(
               layerInfos[item.id].fields = fieldUpdates;
             }
 
-            // when deploying to portal if a view has a different typeIdField than what it being set on the source service
-            // we need to pass it via an updateDef call or it will be set as the typeIdField of the source service
-            const typeIdFields = item.fields.filter((f: any) => {
-              return (
-                f.name &&
-                item.typeIdField &&
-                f.name.toLowerCase() === item.typeIdField.toLowerCase()
-              );
-            });
-            layerInfos[item.id].typeIdField =
-              Array.isArray(typeIdFields) && typeIdFields.length === 1
-                ? typeIdFields[0].name
-                : item.typeIdField;
+            layerInfos[item.id].typeIdField = _getTypeIdField(item);
           }
         }
       });
@@ -1133,6 +1121,28 @@ export function postProcessFields(
       );
     }
   });
+}
+
+/**
+ * when deploying to portal if a view has a different typeIdField than what it being set on the source service
+ *  we need to pass it via an updateDef call or it will be set as the typeIdField of the source service
+ *
+ * @param item current layer or table
+ * @return name of field to set for typeIdField in the update call
+ * @protected
+ */
+export function _getTypeIdField(item: any): string {
+  const typeIdFields = item.fields.filter((f: any) => {
+    return (
+      f.name &&
+      item.typeIdField &&
+      f.name.toLowerCase() === item.typeIdField.toLowerCase()
+    );
+  });
+
+  return Array.isArray(typeIdFields) && typeIdFields.length === 1
+    ? typeIdFields[0].name
+    : item.typeIdField;
 }
 
 /**
