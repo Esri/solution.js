@@ -1054,6 +1054,9 @@ export function postProcessFields(
       // as they are after being added to the definition.
       // This allows us to handle any potential field name changes after deploy to portal
       layersAndTables.forEach((item: any) => {
+        // when deploying to portal "isView" is only set for create service and will fail when
+        // present on addToDef so this property is removed from item and we should check the templates service info
+        const isView = item.isView || itemTemplate.properties.service.isView;
         /* istanbul ignore else */
         if (layerInfos && layerInfos.hasOwnProperty(item.id)) {
           layerInfos[item.id]["isView"] = item.isView;
@@ -1061,7 +1064,7 @@ export function postProcessFields(
           layerInfos[item.id]["sourceSchemaChangesAllowed"] =
             item.sourceSchemaChangesAllowed;
           // when the item is a view bring over the source service fields so we can compare the domains
-          if (item.isView && templateInfo) {
+          if (isView && templateInfo) {
             layerInfos[item.id]["sourceServiceFields"] = getProp(
               templateInfo,
               `sourceServiceFields.${item.id}`
@@ -1079,7 +1082,7 @@ export function postProcessFields(
           // visible true when added with the layer definition
           // update the field visibility to match that of the source
           /* istanbul ignore else */
-          if (item.isView) {
+          if (isView) {
             let fieldUpdates: any[] = _getFieldVisibilityUpdates(
               layerInfos[item.id]
             );
@@ -1091,6 +1094,16 @@ export function postProcessFields(
             if (fieldUpdates.length > 0) {
               layerInfos[item.id].fields = fieldUpdates;
             }
+
+            // when deploying to portal if a view has a different typeIdField than what it being set on the source service
+            // we need to pass it via an updateDef call or it will be set as the typeIdField of the source service
+            const typeIdFields = item.fields.filter((f: any) => {
+              return f.name.toLowerCase() === item.typeIdField.toLowerCase();
+            });
+            layerInfos[item.id].typeIdField =
+              Array.isArray(typeIdFields) && typeIdFields.length === 1
+                ? typeIdFields[0].name
+                : item.typeIdField;
           }
         }
       });
