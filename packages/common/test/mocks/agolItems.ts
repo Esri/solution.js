@@ -1163,7 +1163,8 @@ export function getAGOLLayerOrTable(
     globalIdField: "globalid",
     capabilities: "Create,Query,Editing",
     viewDefinitionQuery: "status = 'BoardReview'",
-    definitionQuery: "status = 'BoardReview'"
+    definitionQuery: "status = 'BoardReview'",
+    typeIdField: "BoardReview"
   };
 }
 

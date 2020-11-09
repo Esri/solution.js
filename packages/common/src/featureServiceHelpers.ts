@@ -1098,7 +1098,11 @@ export function postProcessFields(
             // when deploying to portal if a view has a different typeIdField than what it being set on the source service
             // we need to pass it via an updateDef call or it will be set as the typeIdField of the source service
             const typeIdFields = item.fields.filter((f: any) => {
-              return f.name.toLowerCase() === item.typeIdField.toLowerCase();
+              return (
+                f.name &&
+                item.typeIdField &&
+                f.name.toLowerCase() === item.typeIdField.toLowerCase()
+              );
             });
             layerInfos[item.id].typeIdField =
               Array.isArray(typeIdFields) && typeIdFields.length === 1
