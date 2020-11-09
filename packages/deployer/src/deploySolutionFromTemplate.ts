@@ -66,7 +66,8 @@ export function deploySolutionFromTemplate(
       thumbDef = common.getBlobAsFile(
         thumbnailurl,
         thumbFilename,
-        authentication
+        authentication,
+        [400]
       );
     }
 
