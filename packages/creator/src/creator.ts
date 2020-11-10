@@ -21,6 +21,7 @@
  */
 
 import {
+  appendQueryParam,
   createItemWithData,
   createLongId,
   createShortId,
@@ -189,7 +190,10 @@ export function _addThumbnailFileToCreateOptions(
       // Figure out the thumbnail's filename
       const filename =
         getFilenameFromUrl(createOptions.thumbnailurl) || "thumbnail";
-      const thumbnailurl = createOptions.thumbnailurl;
+      const thumbnailurl = appendQueryParam(
+        createOptions.thumbnailurl,
+        "w=400"
+      );
       delete createOptions.thumbnailurl;
 
       // Fetch the thumbnail

@@ -878,7 +878,7 @@ describe("Module `creator`", () => {
 
         fetchMock.post(
           utils.PORTAL_SUBSET.restUrl +
-            "/content/items/itm1234567890/folder/sampelImage?f=json&token=fake-token",
+            "/content/items/itm1234567890/folder/sampelImage?f=json&token=fake-token&w=400",
           utils.getSampleImageAsFile(),
           { sendAsJson: false }
         );
@@ -903,7 +903,7 @@ describe("Module `creator`", () => {
 
         fetchMock.post(
           utils.PORTAL_SUBSET.restUrl +
-            "/content/items/itm1234567890/folder/?f=json&token=fake-token",
+            "/content/items/itm1234567890/folder/?f=json&token=fake-token&w=400",
           utils.getSampleImageAsFile(),
           { sendAsJson: false }
         );
@@ -920,13 +920,13 @@ describe("Module `creator`", () => {
         const createOptions: common.ICreateSolutionOptions = {
           thumbnailurl:
             utils.PORTAL_SUBSET.restUrl +
-            "/content/items/itm1234567890/folder/sampelImage?f=json&token=fake-token"
+            "/content/items/itm1234567890/folder/sampleImage?f=json&token=fake-token"
         };
         const expectedUpdatedCreateOptions: common.ICreateSolutionOptions = {};
 
         fetchMock.post(
           utils.PORTAL_SUBSET.restUrl +
-            "/content/items/itm1234567890/folder/sampelImage?f=json&token=fake-token",
+            "/content/items/itm1234567890/folder/sampleImage?f=json&token=fake-token&w=400",
           mockItems.get400Failure()
         );
 

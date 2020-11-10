@@ -281,7 +281,7 @@ describe("Module `deploySolutionFromTemplate`", () => {
         const authentication: common.UserSession = MOCK_USER_SESSION;
         const options: common.IDeploySolutionOptions = {
           storageAuthentication: MOCK_USER_SESSION_ALT,
-          thumbnailurl: "https://www.arcgis.com/sln1234567890/info/"
+          thumbnailurl: "https://www.arcgis.com/sln1234567890/thumbnail/"
         };
         const deployedSolutionId = "dpl1234567890";
         const templateDictionary = {} as any;
@@ -308,6 +308,11 @@ describe("Module `deploySolutionFromTemplate`", () => {
           .post(
             "https://www.arcgis.com/sln1234567890/info/",
             portalsSelfResponse
+          )
+          .post(
+            "https://www.arcgis.com/sln1234567890/thumbnail/?w=400",
+            testUtils.getSampleImageAsFile(),
+            { sendAsJson: false }
           )
           .get(
             testUtils.PORTAL_SUBSET.restUrl +
