@@ -20,6 +20,7 @@
  * @module restHelpers
  */
 
+import { encodeFormData, encodeQueryString } from "./categories";
 import {
   removeLayerOptimization,
   setDefaultSpatialReference,
@@ -1244,7 +1245,9 @@ export function searchGroupContents(
       ...additionalSearchOptions
     },
     authentication: authentication,
-    portal: portalUrl
+    portal: portalUrl,
+    encodeFormData,
+    encodeQueryString
   };
   return searchGroupContent(searchOptions);
 }
