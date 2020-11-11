@@ -1223,7 +1223,6 @@ describe("Module `deploySolutionItems`", () => {
         "https://services123.arcgis.com/org1234567890/arcgis/rest/services/ROWPermits_publiccomment/FeatureServer"
       );
       itemTemplate.itemId = "dd4a6047326243b290f625e80ebe6531";
-      itemTemplate.item.thumbnail = null;
       itemTemplate.properties.syncViews = ["aa4a6047326243b290f625e80ebe6531"];
       const resourceFilePaths: common.IDeployFileCopyPath[] = [];
       const templateDictionary: any = {
@@ -1506,37 +1505,6 @@ describe("Module `deploySolutionItems`", () => {
         MOCK_USER_SESSION
       );
       expect(actual.length).toEqual(0);
-    });
-  });
-
-  describe("_moveResourcesIntoTemplate", () => {
-    it("can move a thumbnail resource into a template", () => {
-      const filePaths: common.IDeployFileCopyPath[] = [
-        {
-          type: common.EFileType.Thumbnail,
-          folder: "9ed8414bb27a441cbddb1227870ed038_info_thumbnail",
-          filename: "thumbnail1581708282265.png",
-          url:
-            utils.PORTAL_SUBSET.restUrl +
-            "/content/items/ffb0b76754ae4ce497bb4789f3940146/resources/9ed8414bb27a441cbddb1227870ed038_info_thumbnail/thumbnail1581708282265.png"
-        }
-      ];
-      const template: common.IItemTemplate = templates.getItemTemplate(
-        "Web Map"
-      );
-
-      // eslint-disable-next-line @typescript-eslint/no-floating-promises
-      deploySolution
-        ._moveResourcesIntoTemplate(filePaths, template, MOCK_USER_SESSION)
-        .then(updatedFilePaths => {
-          expect(updatedFilePaths.length).toEqual(0);
-          expect(template.item.thumbnail).toBeUndefined();
-          expect(template.item.thumbnailurl).toEqual(
-            utils.PORTAL_SUBSET.restUrl +
-              "/content/items/ffb0b76754ae4ce497bb4789f3940146/resources/9ed8414bb27a441cbddb1227870ed038_info_thumbnail/thumbnail1581708282265.png" +
-              "?token=fake-token&w=400"
-          );
-        });
     });
   });
 

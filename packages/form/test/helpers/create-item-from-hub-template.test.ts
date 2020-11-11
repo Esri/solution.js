@@ -358,7 +358,7 @@ describe("createItemFromHubTemplate", () => {
       });
   });
 
-  it("should clal itemProgressCallback with Failed then reject", done => {
+  it("should call itemProgressCallback with Failed then reject", done => {
     const error = new Error("Failed to build params");
     spyOn(common, "replaceInTemplate").and.returnValue(interpolatedTemplate);
     spyOn(buildParamsHelper, "buildCreateParams").and.rejectWith(error);
