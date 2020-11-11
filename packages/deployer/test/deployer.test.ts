@@ -337,7 +337,7 @@ describe("Module `deployer`", () => {
           )
           .post(
             testUtils.PORTAL_SUBSET.restUrl +
-              "/content/items/sln1234567890/info/thumbnail/ago_downloaded.png",
+              "/content/items/sln1234567890/info/thumbnail/ago_downloaded.png?w=400",
             testUtils.getSampleImageAsFile(),
             { sendAsJson: false }
           )

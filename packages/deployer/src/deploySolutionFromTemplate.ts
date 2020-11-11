@@ -59,14 +59,18 @@ export function deploySolutionFromTemplate(
       // Figure out the thumbnail's filename
       thumbFilename =
         common.getFilenameFromUrl(options.thumbnailurl) || thumbFilename;
-      const thumbnailurl = options.thumbnailurl;
+      const thumbnailurl = common.appendQueryParam(
+        options.thumbnailurl,
+        "w=400"
+      );
       delete options.thumbnailurl;
 
       // Fetch the thumbnail
       thumbDef = common.getBlobAsFile(
         thumbnailurl,
         thumbFilename,
-        authentication
+        authentication,
+        [400]
       );
     }
 
