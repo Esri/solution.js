@@ -20,6 +20,7 @@
  * @module common
  */
 
+export * from "./categories";
 export * from "./dependencies";
 export * from "./featureServiceHelpers";
 export * from "./generalHelpers";
