@@ -68,6 +68,7 @@ export function createItemFromHubTemplate(
 
       // Update the item with its thumbnail
       let thumbDef: Promise<any> = Promise.resolve();
+      /* istanbul ignore else */
       if (template.item.thumbnail) {
         thumbDef = updateItemExtended(
           { id: formId },

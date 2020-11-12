@@ -51,7 +51,7 @@ export function createStoryMap(
   // that we have to generate from the passed in model
   const resources: any[] = [];
 
-  // For unkown reasons we can not seem to spy on createItemInFolder
+  // For unknown reasons we can not seem to spy on createItemInFolder
   // so we will create-then-move for now
   const createOptions: ICreateItemOptions = {
     // need to serialize
@@ -59,10 +59,11 @@ export function createStoryMap(
     authentication
   };
 
-  if (model.thumbnail) {
+  /* istanbul ignore else */
+  if (model.item.thumbnail) {
     createOptions.params = {
       // Pass thumbnail file in via params because item property is serialized, which discards a blob
-      thumbnail: model.thumbnail
+      thumbnail: model.item.thumbnail
     };
     delete createOptions.item.thumbnail;
   }

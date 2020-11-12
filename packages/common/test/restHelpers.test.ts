@@ -368,6 +368,23 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
     });
   });
 
+  describe("addTokenToUrl", () => {
+    it("can handle failure", done => {
+      const url =
+        "https://services123.arcgis.com/org1234567890/arcgis/rest/services/ROWPermits_publiccomment/FeatureServer/0";
+      const token = "tok1234567890";
+      const getTokenSpy = spyOn(MOCK_USER_SESSION, "getToken").and.resolveTo(
+        token
+      );
+      restHelpers.addTokenToUrl(url, MOCK_USER_SESSION).then(updatedUrl => {
+        expect(getTokenSpy.calls.count()).toEqual(1);
+        expect(getTokenSpy.calls.argsFor(0)[0]).toBe(url);
+        expect(updatedUrl).toEqual(url + "?token=" + token);
+        done();
+      }, done.fail);
+    });
+  });
+
   describe("addToServiceDefinition", () => {
     it("can handle failure", done => {
       const url =
@@ -402,7 +419,69 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
   });
 
   describe("createFeatureService", () => {
-    it("can handle failure", done => {
+    it("can handle failure to get service options due to failure to convert extent", done => {
+      fetchMock
+        .post(
+          utils.PORTAL_SUBSET.restUrl +
+            "/content/users/casey/aabb123456/createService",
+          mockItems.get400Failure()
+        )
+        .post(
+          "https://utility.arcgisonline.com/arcgis/rest/services/Geometry/GeometryServer/findTransformations",
+          mockItems.get400Failure()
+        );
+
+      const properties: any = {
+        service: {
+          somePropNotInItem: true,
+          isView: true,
+          capabilities: "Query",
+          spatialReference: {
+            wkid: -1
+          }
+        },
+        layers: [
+          {
+            fields: []
+          }
+        ],
+        tables: []
+      };
+
+      const template: any = {
+        itemId: "ab766cba0dd44ec080420acc10990282",
+        item: {
+          id: "0",
+          name: "A"
+        },
+        data: {},
+        properties,
+        dependencies: []
+      };
+
+      const templateDictionary: any = {
+        folderId: "aabb123456",
+        isPortal: true,
+        solutionItemId: "sol1234567890",
+        ab766cba0dd44ec080420acc10990282: {},
+        organization: organization,
+        solutionItemExtent: solutionItemExtent
+      };
+
+      restHelpers
+        .createFeatureService(template, MOCK_USER_SESSION, templateDictionary)
+        .then(
+          () => done.fail(),
+          error => {
+            expect(utils.checkForArcgisRestSuccessRequestError(error)).toBe(
+              true
+            );
+            done();
+          }
+        );
+    });
+
+    it("can handle failure to create service", done => {
       fetchMock.post(
         utils.PORTAL_SUBSET.restUrl +
           "/content/users/casey/aabb123456/createService",
@@ -433,7 +512,8 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
           name: "A"
         },
         data: {},
-        properties
+        properties,
+        dependencies: []
       };
 
       const templateDictionary: any = {
@@ -2911,6 +2991,29 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
         );
     });
 
+    it("without data", done => {
+      itemTemplate.item.id = "itm1234567890";
+      itemTemplate.data = null;
+      fetchMock.post(
+        utils.PORTAL_SUBSET.restUrl +
+          "/content/users/casey/items/itm1234567890/update",
+        '{"success":true}'
+      );
+      restHelpers
+        .updateItemExtended(
+          itemTemplate.item,
+          itemTemplate.data,
+          MOCK_USER_SESSION,
+          undefined
+        )
+        .then(
+          () => {
+            done();
+          },
+          () => done.fail()
+        );
+    });
+
     it("without share", done => {
       itemTemplate.item.id = "itm1234567890";
       fetchMock.post(
@@ -3525,6 +3628,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
 
       itemTemplate.item.name = "A";
       itemTemplate.item.title = "A";
+      itemTemplate.item.thumbnail = "thumbnail/image.png";
       itemTemplate.properties.service.spatialReference = {
         wkid: 102100
       };
@@ -3544,7 +3648,9 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
               preserveLayerIds: true
             },
             folderId: "aabb123456",
-            params: {},
+            params: {
+              thumbnail: "thumbnail/image.png"
+            },
             authentication: userSession
           });
           done();

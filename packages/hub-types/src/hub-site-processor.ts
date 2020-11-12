@@ -130,7 +130,7 @@ export function createItemFromTemplate(
     .then(moves => {
       // Update the item with its thumbnail
       if (template.item.thumbnail) {
-        // First move is item itself
+        // First move was item itself
         const itemId = moves[0].itemId;
 
         return new Promise<any>(resolve => {

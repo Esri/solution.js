@@ -258,6 +258,7 @@ export function createItemFromTemplate(
                                   )
                               );
                           } else {
+                            // Update the template to match what we've stored in AGO
                             common
                               .getItemBase(
                                 newItemTemplate.itemId,

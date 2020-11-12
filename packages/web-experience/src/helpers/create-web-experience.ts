@@ -56,10 +56,11 @@ export function createWebExperience(
     authentication
   };
 
-  if (model.thumbnail) {
+  /* istanbul ignore else */
+  if (model.item.thumbnail) {
     createOptions.params = {
       // Pass thumbnail file in via params because item property is serialized, which discards a blob
-      thumbnail: model.thumbnail
+      thumbnail: model.item.thumbnail
     };
     delete createOptions.item.thumbnail;
   }
