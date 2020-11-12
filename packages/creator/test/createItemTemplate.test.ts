@@ -373,7 +373,6 @@ describe("Module `createItemTemplate`", () => {
         const templateDictionary: any = {};
         const authentication: common.UserSession = MOCK_USER_SESSION;
         const existingTemplates: common.IItemTemplate[] = [];
-        const solutionThumbnail = mockItems.getAGOLItemWithId("Image", 1);
 
         fetchMock
           .get(
@@ -401,20 +400,39 @@ describe("Module `createItemTemplate`", () => {
               "/content/items/grp1234567890/resources",
             noResourcesResponse
           )
+
+          // Group with two items: img12345678900 & map12345678901
           .get(
             utils.PORTAL_SUBSET.restUrl +
               "/content/groups/grp1234567890?f=json&start=1&num=100&token=fake-token",
             mockItems.getAGOLGroupContentsListByType(["Image", "Web Map"])
           )
+          // Item img12345678900
           .get(
             utils.PORTAL_SUBSET.restUrl +
               "/content/items/img12345678900?f=json&token=fake-token",
-            solutionThumbnail
+            mockItems.getAGOLItemWithId("Image", 0)
           )
           .post(
             utils.PORTAL_SUBSET.restUrl + "/content/items/img12345678900/data",
             mockItems.getAnImageResponse()
           )
+          .post(
+            utils.PORTAL_SUBSET.restUrl +
+              "/content/items/img12345678900/info/thumbnail/ago_downloaded.png?w=400",
+            mockItems.getAnImageResponse()
+          )
+          .post(
+            utils.PORTAL_SUBSET.restUrl +
+              "/content/items/img12345678900/info/metadata/metadata.xml",
+            noMetadataResponse
+          )
+          .post(
+            utils.PORTAL_SUBSET.restUrl +
+              "/content/items/img12345678900/resources",
+            noResourcesResponse
+          )
+          // Item map12345678901
           .get(
             utils.PORTAL_SUBSET.restUrl +
               "/content/items/map12345678901?f=json&token=fake-token",
@@ -439,6 +457,7 @@ describe("Module `createItemTemplate`", () => {
               "/content/items/map12345678901/resources",
             noResourcesResponse
           )
+
           .post(
             utils.PORTAL_SUBSET.restUrl +
               "/content/users/casey/items/sln1234567890/addResources",

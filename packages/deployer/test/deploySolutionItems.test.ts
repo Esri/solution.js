@@ -1255,6 +1255,18 @@ describe("Module `deploySolutionItems`", () => {
 
       const updatedItem = mockItems.getAGOLItem("Feature Service");
 
+      const expectedClone: common.IItemTemplate = common.cloneObject(
+        itemTemplate
+      );
+      expectedClone.itemId = "svc1234567890";
+      expectedClone.item.id = "svc1234567890";
+      expectedClone.properties.service.serviceItemId = "svc1234567890";
+      delete expectedClone.properties.layers[0].definitionQuery;
+      expectedClone.properties.layers[0].relationships = null;
+      expectedClone.properties.layers[0].viewDefinitionQuery = null;
+      expectedClone.properties.layers[0].adminLayerInfo = undefined;
+      delete expectedClone.item.spatialReference;
+
       fetchMock
         .post(
           utils.PORTAL_SUBSET.restUrl + "/content/users/casey/createService",
@@ -1280,18 +1292,11 @@ describe("Module `deploySolutionItems`", () => {
         .post(
           "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/items/svc1234567890/update",
           utils.getSuccessResponse()
+        )
+        .get(
+          "https://myorg.maps.arcgis.com/sharing/rest/content/items/svc1234567890?f=json&token=fake-token",
+          expectedClone.item
         );
-
-      const expectedClone: common.IItemTemplate = common.cloneObject(
-        itemTemplate
-      );
-      expectedClone.itemId = "svc1234567890";
-      expectedClone.item.id = "svc1234567890";
-      expectedClone.properties.service.serviceItemId = "svc1234567890";
-      delete expectedClone.properties.layers[0].definitionQuery;
-      expectedClone.properties.layers[0].relationships = null;
-      expectedClone.properties.layers[0].viewDefinitionQuery = null;
-      expectedClone.properties.layers[0].adminLayerInfo = undefined;
 
       // eslint-disable-next-line @typescript-eslint/no-floating-promises
       deploySolution

@@ -211,7 +211,7 @@ export function createItemFromTemplate(
                       templateDictionary,
                       createResponse
                     );
-                    // Update the item with snippet, description, popupInfo, ect.
+                    // Update the item with snippet, description, popupInfo, etc.
                     common
                       .updateItemExtended(
                         {
@@ -258,16 +258,53 @@ export function createItemFromTemplate(
                                   )
                               );
                           } else {
-                            resolve({
-                              item: newItemTemplate,
-                              id: createResponse.serviceItemId,
-                              type: newItemTemplate.type,
-                              postProcess:
-                                common.hasUnresolvedVariables({
-                                  item: newItemTemplate.item,
-                                  data: newItemTemplate.data
-                                }) || common.isWorkforceProject(newItemTemplate)
-                            });
+                            common
+                              .getItemBase(
+                                newItemTemplate.itemId,
+                                destinationAuthentication
+                              )
+                              .then(
+                                updatedItem => {
+                                  newItemTemplate.item = updatedItem;
+                                  resolve({
+                                    item: newItemTemplate,
+                                    id: createResponse.serviceItemId,
+                                    type: newItemTemplate.type,
+                                    postProcess:
+                                      common.hasUnresolvedVariables({
+                                        item: newItemTemplate.item,
+                                        data: newItemTemplate.data
+                                      }) ||
+                                      common.isWorkforceProject(newItemTemplate)
+                                  });
+                                },
+                                () => {
+                                  itemProgressCallback(
+                                    template.itemId,
+                                    common.EItemProgressStatus.Failed,
+                                    0
+                                  );
+                                  common
+                                    .removeItem(
+                                      createResponse.serviceItemId,
+                                      destinationAuthentication
+                                    )
+                                    .then(
+                                      () =>
+                                        resolve(
+                                          common.generateEmptyCreationResponse(
+                                            template.type
+                                          )
+                                        ),
+                                      () =>
+                                        resolve(
+                                          common.generateEmptyCreationResponse(
+                                            template.type
+                                          )
+                                        )
+                                    );
+                                } // fails to update item
+                              );
                           }
                         },
                         () => {
