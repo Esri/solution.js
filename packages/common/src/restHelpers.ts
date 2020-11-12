@@ -72,6 +72,7 @@ import {
   createGroup,
   createItemInFolder,
   getItem,
+  getPortalUrl, // for searchGroupContentAlt patch //???
   IAddItemDataOptions,
   ICreateItemOptions,
   IFolderIdOptions,
@@ -90,7 +91,7 @@ import {
   removeFolder as portalRemoveFolder,
   removeGroup as portalRemoveGroup,
   removeItem as portalRemoveItem,
-  searchGroupContent,
+  // searchGroupContent, // for searchGroupContentAlt patch //???
   searchGroups as portalSearchGroups,
   searchItems as portalSearchItems,
   SearchQueryBuilder,
@@ -98,7 +99,15 @@ import {
   shareItemWithGroup,
   updateItem as portalUpdateItem
 } from "@esri/arcgis-rest-portal";
-import { IParams, IRequestOptions, request } from "@esri/arcgis-rest-request";
+import {
+  IParams,
+  IRequestOptions,
+  ArcGISAuthError, // for searchGroupContentAlt patch //???
+  ArcGISRequestError, // for searchGroupContentAlt patch //???
+  checkForErrors, // for searchGroupContentAlt patch //???
+  requiresFormData, // for searchGroupContentAlt patch //???
+  request
+} from "@esri/arcgis-rest-request";
 import {
   ICreateServiceParams,
   addToServiceDefinition as svcAdminAddToServiceDefinition,
@@ -1249,7 +1258,7 @@ export function searchGroupContents(
     encodeFormData,
     encodeQueryString
   };
-  return searchGroupContent(searchOptions);
+  return searchGroupContentAlt(searchOptions);
 }
 
 export function shareItem(
@@ -1885,3 +1894,370 @@ export function _updateItemURL(
     );
   });
 }
+
+// ------------------------------------------------------------------------------------------------------------------ //
+// ------------------------------------------------------------------------------------------------------------------ //
+// Patch implementation pending PR https://github.com/Esri/arcgis-rest-js/pull/777 //???
+/* eslint-disable */
+
+const NODEJS_DEFAULT_REFERER_HEADER = `@esri/arcgis-rest-js`;
+
+const DEFAULT_ARCGIS_REQUEST_OPTIONS: IRequestOptionsAlt = {
+  httpMethod: "POST",
+  params: {
+    f: "json"
+  }
+};
+
+/**
+ * Options for the `request()` method.
+ */
+/* istanbul ignore next */
+interface IRequestOptionsAlt extends IRequestOptions {
+  /**
+   * The implementation for converting parametrs into a query string. Defaults to `encodeQueryString`
+   */
+  encodeQueryString?: (params: IParams) => string;
+  /**
+   * The implementation for converting parametrs into a FormData. Defaults to `encodeFormData`
+   */
+  encodeFormData?: (
+    params: IParams,
+    forceFormData?: boolean
+  ) => FormData | string;
+}
+
+/* istanbul ignore next */
+function searchGroupContentAlt(
+  search: ISearchGroupContentOptions
+): Promise<ISearchResult<IItem>> {
+  const options: IRequestOptionsAlt = appendCustomParamsAlt<ISearchOptions>(
+    search,
+    ["q", "num", "start", "sortField", "sortOrder"],
+    { httpMethod: "GET" }
+  );
+  const path = `/content/groups/${search.groupId}/search`;
+  const url = getPortalUrl(options) + path;
+
+  // send the request
+  return requestAlt(url, options).then(r => {
+    if (r.nextStart && r.nextStart !== -1) {
+      r.nextPage = function() {
+        const newOptions = search;
+        newOptions.start = r.nextStart;
+        return searchGroupContentAlt(newOptions);
+      };
+    }
+    return r;
+  });
+}
+
+/**
+ * Helper for methods with lots of first order request options to pass through as request parameters.
+ */
+/* istanbul ignore next */
+function appendCustomParamsAlt<T extends IRequestOptions>(
+  customOptions: T,
+  keys: Array<keyof T>,
+  baseOptions?: Partial<T>
+): IRequestOptions {
+  const requestOptionsKeys = [
+    "params",
+    "httpMethod",
+    "rawResponse",
+    "authentication",
+    "portal",
+    "fetch",
+    "maxUrlLength",
+    "headers",
+    "encodeFormData",
+    "encodeQueryString"
+  ];
+
+  const options: T = {
+    ...{ params: {} },
+    ...baseOptions,
+    ...customOptions
+  };
+
+  // merge all keys in customOptions into options.params
+  options.params = keys.reduce((value, key) => {
+    if (customOptions[key] || typeof customOptions[key] === "boolean") {
+      value[key as any] = customOptions[key];
+    }
+    return value;
+  }, options.params);
+
+  // now remove all properties in options that don't exist in IRequestOptions
+  return requestOptionsKeys.reduce((value, key) => {
+    if ((options as any)[key]) {
+      (value as any)[key] = (options as any)[key];
+    }
+    return value;
+  }, {} as IRequestOptions);
+}
+
+/**
+ * ```js
+ * import { request } from '@esri/arcgis-rest-request';
+ * //
+ * request('https://www.arcgis.com/sharing/rest')
+ *   .then(response) // response.currentVersion === 5.2
+ * //
+ * request('https://www.arcgis.com/sharing/rest', {
+ *   httpMethod: "GET"
+ * })
+ * //
+ * request('https://www.arcgis.com/sharing/rest/search', {
+ *   params: { q: 'parks' }
+ * })
+ *   .then(response) // response.total => 78379
+ * ```
+ * Generic method for making HTTP requests to ArcGIS REST API endpoints.
+ *
+ * @param url - The URL of the ArcGIS REST API endpoint.
+ * @param requestOptions - Options for the request, including parameters relevant to the endpoint.
+ * @returns A Promise that will resolve with the data from the response.
+ */
+/* istanbul ignore next */
+function requestAlt(
+  url: string,
+  requestOptions: IRequestOptionsAlt = { params: { f: "json" } }
+): Promise<any> {
+  const options: IRequestOptionsAlt = {
+    ...{ httpMethod: "POST" },
+    ...DEFAULT_ARCGIS_REQUEST_OPTIONS,
+    ...requestOptions,
+    ...{
+      params: {
+        ...DEFAULT_ARCGIS_REQUEST_OPTIONS.params,
+        ...requestOptions.params
+      },
+      headers: {
+        ...DEFAULT_ARCGIS_REQUEST_OPTIONS.headers,
+        ...requestOptions.headers
+      }
+    }
+  };
+
+  const missingGlobals: string[] = [];
+  const recommendedPackages: string[] = [];
+
+  // don't check for a global fetch if a custom implementation was passed through
+  if (!options.fetch && typeof fetch !== "undefined") {
+    // eslint-disable-next-line @typescript-eslint/no-implied-eval
+    options.fetch = fetch.bind(Function("return this")());
+  } else {
+    missingGlobals.push("`fetch`");
+    recommendedPackages.push("`node-fetch`");
+  }
+
+  if (typeof Promise === "undefined") {
+    missingGlobals.push("`Promise`");
+    recommendedPackages.push("`es6-promise`");
+  }
+
+  if (typeof FormData === "undefined") {
+    missingGlobals.push("`FormData`");
+    recommendedPackages.push("`isomorphic-form-data`");
+  }
+
+  if (
+    !options.fetch ||
+    typeof Promise === "undefined" ||
+    typeof FormData === "undefined"
+  ) {
+    throw new Error(
+      `\`arcgis-rest-request\` requires a \`fetch\` implementation and global variables for \`Promise\` and \`FormData\` to be present in the global scope. You are missing ${missingGlobals.join(
+        ", "
+      )}. We recommend installing the ${recommendedPackages.join(
+        ", "
+      )} modules at the root of your application to add these to the global scope. See https://bit.ly/2KNwWaJ for more info.`
+    );
+  }
+
+  // Check for custom encoders
+  if (!options.encodeQueryString) {
+    options.encodeQueryString = encodeQueryString;
+  }
+  if (!options.encodeFormData) {
+    options.encodeFormData = encodeFormData;
+  }
+
+  const { httpMethod, authentication, rawResponse } = options;
+
+  const params: IParams = {
+    ...{ f: "json" },
+    ...options.params
+  };
+
+  let originalAuthError: ArcGISAuthError = null;
+
+  const fetchOptions: RequestInit = {
+    method: httpMethod,
+    /* ensures behavior mimics XMLHttpRequest.
+    needed to support sending IWA cookies */
+    credentials: "same-origin"
+  };
+
+  return (authentication
+    ? authentication.getToken(url, { fetch: options.fetch }).catch(err => {
+        /**
+         * append original request url and requestOptions
+         * to the error thrown by getToken()
+         * to assist with retrying
+         */
+        err.url = url;
+        err.options = options;
+        /**
+         * if an attempt is made to talk to an unfederated server
+         * first try the request anonymously. if a 'token required'
+         * error is thrown, throw the UNFEDERATED error then.
+         */
+        originalAuthError = err;
+        return Promise.resolve("");
+      })
+    : Promise.resolve("")
+  )
+    .then(token => {
+      if (token.length) {
+        params.token = token;
+      }
+
+      // Custom headers to add to request. IRequestOptions.headers with merge over requestHeaders.
+      const requestHeaders: {
+        [key: string]: any;
+      } = {};
+
+      if (fetchOptions.method === "GET") {
+        // Prevents token from being passed in query params when hideToken option is used.
+        /* istanbul ignore if - window is always defined in a browser. Test case is covered by Jasmine in node test */
+        if (
+          params.token &&
+          options.hideToken &&
+          // Sharing API does not support preflight check required by modern browsers https://developer.mozilla.org/en-US/docs/Glossary/Preflight_request
+          typeof window === "undefined"
+        ) {
+          requestHeaders["X-Esri-Authorization"] = `Bearer ${params.token}`;
+          delete params.token;
+        }
+        // encode the parameters into the query string
+        const queryParams = options.encodeQueryString(params);
+        // dont append a '?' unless parameters are actually present
+        const urlWithQueryString =
+          queryParams === "" ? url : url + "?" + queryParams;
+
+        if (
+          // This would exceed the maximum length for URLs specified by the consumer and requires POST
+          (options.maxUrlLength &&
+            urlWithQueryString.length > options.maxUrlLength) ||
+          // Or if the customer requires the token to be hidden and it has not already been hidden in the header (for browsers)
+          (params.token && options.hideToken)
+        ) {
+          // the consumer specified a maximum length for URLs
+          // and this would exceed it, so use post instead
+          fetchOptions.method = "POST";
+
+          // If the token was already added as a Auth header, add the token back to body with other params instead of header
+          if (token.length && options.hideToken) {
+            params.token = token;
+            // Remove existing header that was added before url query length was checked
+            delete requestHeaders["X-Esri-Authorization"];
+          }
+        } else {
+          // just use GET
+          url = urlWithQueryString;
+        }
+      }
+
+      /* updateResources currently requires FormData even when the input parameters dont warrant it.
+  https://developers.arcgis.com/rest/users-groups-and-items/update-resources.htm
+      see https://github.com/Esri/arcgis-rest-js/pull/500 for more info. */
+      const forceFormData = new RegExp("/items/.+/updateResources").test(url);
+
+      if (fetchOptions.method === "POST") {
+        fetchOptions.body = options.encodeFormData(params, forceFormData);
+      }
+
+      // Mixin headers from request options
+      fetchOptions.headers = {
+        ...requestHeaders,
+        ...options.headers
+      };
+
+      /* istanbul ignore next - karma reports coverage on browser tests only */
+      if (typeof window === "undefined" && !fetchOptions.headers.referer) {
+        fetchOptions.headers.referer = NODEJS_DEFAULT_REFERER_HEADER;
+      }
+
+      /* istanbul ignore else blob responses are difficult to make cross platform we will just have to trust the isomorphic fetch will do its job */
+      if (!requiresFormData(params) && !forceFormData) {
+        fetchOptions.headers["Content-Type"] =
+          "application/x-www-form-urlencoded";
+      }
+
+      return options.fetch(url, fetchOptions);
+    })
+    .then(response => {
+      if (!response.ok) {
+        // server responded w/ an actual error (404, 500, etc)
+        const { status, statusText } = response;
+        throw new ArcGISRequestError(
+          statusText,
+          `HTTP ${status}`,
+          response,
+          url,
+          options
+        );
+      }
+      if (rawResponse) {
+        return response;
+      }
+      switch (params.f) {
+        case "json":
+          return response.json();
+        case "geojson":
+          return response.json();
+        case "html":
+          return response.text();
+        case "text":
+          return response.text();
+        /* istanbul ignore next blob responses are difficult to make cross platform we will just have to trust that isomorphic fetch will do its job */
+        default:
+          return response.blob();
+      }
+    })
+    .then(data => {
+      if ((params.f === "json" || params.f === "geojson") && !rawResponse) {
+        const response = checkForErrors(
+          data,
+          url,
+          params,
+          options,
+          originalAuthError
+        );
+        if (originalAuthError) {
+          /* if the request was made to an unfederated service that
+          didnt require authentication, add the base url and a dummy token
+          to the list of trusted servers to avoid another federation check
+          in the event of a repeat request */
+          const truncatedUrl: string = url
+            .toLowerCase()
+            .split(/\/rest(\/admin)?\/services\//)[0];
+          (options.authentication as any).trustedServers[truncatedUrl] = {
+            token: [],
+            // default to 24 hours
+            expires: new Date(Date.now() + 86400 * 1000)
+          };
+          originalAuthError = null;
+        }
+        return response;
+      } else {
+        return data;
+      }
+    });
+}
+
+/* eslint-enable */
+// ------------------------------------------------------------------------------------------------------------------ //
+// ------------------------------------------------------------------------------------------------------------------ //
