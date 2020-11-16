@@ -1249,6 +1249,7 @@ export function searchGroupContents(
   };
 
   // If search options include `categories`, switch to new arcgis-rest-js format
+  /* istanbul ignore else */
   if (Array.isArray(searchOptions.params?.categories)) {
     searchOptions.params.categories = searchOptions.params.categories.map(
       andGroup => andGroup.split(",")
