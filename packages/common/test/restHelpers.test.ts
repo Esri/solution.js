@@ -2776,6 +2776,40 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
         () => done.fail()
       );
     });
+
+    fit("can handle a categories search", done => {
+      const groupId: string = "grp1234567890";
+      const additionalSearchOptions: interfaces.IAdditionalSearchOptions = {
+        categories: [
+          "a,b", // a or b
+          // and
+          "c,d" // c or d
+        ]
+      };
+
+      const expectedUrl =
+        utils.PORTAL_SUBSET.restUrl +
+        `/content/groups/${groupId}/search?f=json&categories=a%2Cb&categories=c%2Cd&num=100&token==fake-token`;
+      fetchMock.get(expectedUrl, {});
+
+      restHelpers
+        .searchGroupContents(
+          groupId,
+          null,
+          MOCK_USER_SESSION,
+          additionalSearchOptions
+        )
+        .then(response => {
+          expect(fetchMock.calls(expectedUrl).length).toBe(1);
+          const [url, options] = fetchMock.lastCall(expectedUrl);
+          expect(options.method).toBe("GET");
+          expect(options.body).toContain("f=json");
+          done();
+        })
+        .catch(e => {
+          fail(e);
+        });
+    });
   });
 
   describe("_setItemProperties", () => {
