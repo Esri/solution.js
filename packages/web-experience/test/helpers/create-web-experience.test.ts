@@ -91,6 +91,50 @@ describe("createWebExperience :: ", () => {
       });
     });
 
+    it("happy-path with thumbnail", () => {
+      const model = {
+        item: {
+          thumbnail: "yoda"
+        } as any,
+        data: {
+          some: "properties" // we don't care much what's in here
+        },
+        properties: {
+          imageResourcesList: {
+            another: "property" // again, can be whatever
+          }
+        }
+      } as hubCommonModule.IModel;
+
+      return createWebExperience(
+        model,
+        "fakefolderid",
+        {},
+        MOCK_USER_SESSION
+      ).then(result => {
+        expect(createItemSpy.calls.count()).toBe(1, "should create the item");
+        expect(
+          createItemSpy.calls.argsFor(0)[0].item.thumbnail
+        ).not.toBeDefined();
+        expect(createItemSpy.calls.argsFor(0)[0].params.thumbnail).toEqual(
+          "yoda"
+        );
+
+        expect(interpolateIdSpy.calls.count()).toBe(
+          1,
+          "should call interpolateId"
+        );
+        expect(updateItemSpy.calls.count()).toBe(1, "should call updateItem");
+        expect(addResSpy.calls.count()).toBe(2, "should add three resources");
+        expect(moveItemSpy.calls.count()).toBe(1, "should move the item");
+        const moveOpts = moveItemSpy.calls.argsFor(0)[0];
+        expect(moveOpts.folderId).toBe(
+          "fakefolderid",
+          "should pass the folderid into create item"
+        );
+      });
+    });
+
     it("no image resources", () => {
       const model = {
         item: {} as portalModule.IItem,

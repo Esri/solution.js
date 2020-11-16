@@ -480,6 +480,28 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
       const createResponse: any = mockItems.getAGOLService([], [], true);
       createResponse.success = true;
 
+      const expectedClone: common.IItemTemplate = common.cloneObject(
+        itemTemplate
+      );
+      expectedClone.item.id = "svc1234567890";
+      expectedClone.item.extent = [
+        [0, 0],
+        [1, 1]
+      ];
+      expectedClone.properties.service.serviceItemId = "svc1234567890";
+      expectedClone.properties.layers[0].serviceItemId = "svc1234567890";
+      expectedClone.properties.layers[0].relationships = null;
+      expectedClone.properties.layers[0].viewDefinitionQuery = null;
+      expectedClone.properties.layers[0].adminLayerInfo = undefined;
+      delete expectedClone.properties.layers[0].definitionQuery;
+      expectedClone.properties.tables[0].serviceItemId = "svc1234567890";
+      expectedClone.properties.tables[0].relationships = null;
+      expectedClone.properties.tables[0].viewDefinitionQuery = null;
+      expectedClone.properties.tables[0].adminLayerInfo = undefined;
+      delete expectedClone.properties.tables[0].definitionQuery;
+      expectedClone.item.thumbnail = "thumbnail/ago_downloaded.png";
+      delete expectedClone.item.spatialReference;
+
       fetchMock
         .post(url + "?f=json", itemTemplate.properties.service)
         .post(adminUrl + "/0?f=json", itemTemplate.properties.layers[0])
@@ -509,27 +531,11 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
           utils.PORTAL_SUBSET.restUrl +
             "/content/users/casey/items/svc1234567890/update",
           '{"success":true}'
+        )
+        .get(
+          "https://myorg.maps.arcgis.com/sharing/rest/content/items/svc1234567890?f=json&token=fake-token",
+          expectedClone.item
         );
-
-      const expectedClone: common.IItemTemplate = common.cloneObject(
-        itemTemplate
-      );
-      expectedClone.item.id = "svc1234567890";
-      expectedClone.item.extent = [
-        [0, 0],
-        [1, 1]
-      ];
-      expectedClone.properties.service.serviceItemId = "svc1234567890";
-      expectedClone.properties.layers[0].serviceItemId = "svc1234567890";
-      expectedClone.properties.layers[0].relationships = null;
-      expectedClone.properties.layers[0].viewDefinitionQuery = null;
-      expectedClone.properties.layers[0].adminLayerInfo = undefined;
-      delete expectedClone.properties.layers[0].definitionQuery;
-      expectedClone.properties.tables[0].serviceItemId = "svc1234567890";
-      expectedClone.properties.tables[0].relationships = null;
-      expectedClone.properties.tables[0].viewDefinitionQuery = null;
-      expectedClone.properties.tables[0].adminLayerInfo = undefined;
-      delete expectedClone.properties.tables[0].definitionQuery;
 
       // eslint-disable-next-line @typescript-eslint/no-floating-promises
       featureLayer
@@ -634,6 +640,8 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
       expectedClone.properties.tables[0].viewDefinitionQuery = null;
       expectedClone.properties.tables[0].adminLayerInfo = undefined;
       delete expectedClone.properties.tables[0].definitionQuery;
+      expectedClone.item.thumbnail = "thumbnail/ago_downloaded.png";
+      delete expectedClone.item.spatialReference;
 
       fetchMock
         .post(url + "?f=json", itemTemplate.properties.service)
@@ -664,6 +672,10 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
           utils.PORTAL_SUBSET.restUrl +
             "/content/users/casey/items/svc1234567890/update",
           '{"success":true}'
+        )
+        .get(
+          "https://myorg.maps.arcgis.com/sharing/rest/content/items/svc1234567890?f=json&token=fake-token",
+          expectedClone.item
         );
 
       // eslint-disable-next-line @typescript-eslint/no-floating-promises
@@ -769,6 +781,8 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
       expectedClone.properties.tables[0].viewDefinitionQuery = null;
       expectedClone.properties.tables[0].adminLayerInfo = undefined;
       delete expectedClone.properties.tables[0].definitionQuery;
+      expectedClone.item.thumbnail = "thumbnail/ago_downloaded.png";
+      delete expectedClone.item.spatialReference;
 
       fetchMock
         .post(url + "?f=json", itemTemplate.properties.service)
@@ -799,6 +813,10 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
           utils.PORTAL_SUBSET.restUrl +
             "/content/users/casey/items/svc1234567890/update",
           '{"success":true}'
+        )
+        .get(
+          "https://myorg.maps.arcgis.com/sharing/rest/content/items/svc1234567890?f=json&token=fake-token",
+          expectedClone.item
         );
 
       // eslint-disable-next-line @typescript-eslint/no-floating-promises
@@ -912,6 +930,34 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
       const createResponse: any = mockItems.getAGOLService([], [], true);
       createResponse.success = true;
 
+      const expectedClone: common.IItemTemplate = common.cloneObject(
+        itemTemplate
+      );
+      expectedClone.item.id = "svc1234567890";
+      expectedClone.item.extent = [
+        [0, 0],
+        [1, 1]
+      ];
+      expectedClone.properties.service.serviceItemId = "svc1234567890";
+      expectedClone.properties.layers[0].serviceItemId = "svc1234567890";
+      expectedClone.properties.layers[0].relationships = null;
+      expectedClone.properties.layers[0].viewDefinitionQuery = null;
+      expectedClone.properties.layers[0].adminLayerInfo = undefined;
+      expectedClone.properties.layers[0].uniqueIdField.name = "objectid";
+      delete expectedClone.properties.layers[0].definitionQuery;
+      delete expectedClone.properties.layers[0].isView;
+      delete expectedClone.properties.layers[0].sourceSchemaChangesAllowed;
+      expectedClone.properties.tables[0].serviceItemId = "svc1234567890";
+      expectedClone.properties.tables[0].relationships = null;
+      expectedClone.properties.tables[0].viewDefinitionQuery = null;
+      expectedClone.properties.tables[0].adminLayerInfo = {};
+      expectedClone.properties.tables[0].uniqueIdField.name = "objectid";
+      delete expectedClone.properties.tables[0].definitionQuery;
+      delete expectedClone.properties.tables[0].isView;
+      delete expectedClone.properties.tables[0].sourceSchemaChangesAllowed;
+      expectedClone.item.thumbnail = "thumbnail/ago_downloaded.png";
+      delete expectedClone.item.spatialReference;
+
       fetchMock
         .post(url + "?f=json", itemTemplate.properties.service)
         .post(adminUrl + "/0?f=json", itemTemplate.properties.layers[0])
@@ -942,33 +988,11 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
           utils.PORTAL_SUBSET.restUrl +
             "/content/users/casey/items/svc1234567890/update",
           '{"success":true}'
+        )
+        .get(
+          "https://myorg.maps.arcgis.com/sharing/rest/content/items/svc1234567890?f=json&token=fake-token",
+          expectedClone.item
         );
-
-      const expectedClone: common.IItemTemplate = common.cloneObject(
-        itemTemplate
-      );
-      expectedClone.item.id = "svc1234567890";
-      expectedClone.item.extent = [
-        [0, 0],
-        [1, 1]
-      ];
-      expectedClone.properties.service.serviceItemId = "svc1234567890";
-      expectedClone.properties.layers[0].serviceItemId = "svc1234567890";
-      expectedClone.properties.layers[0].relationships = null;
-      expectedClone.properties.layers[0].viewDefinitionQuery = null;
-      expectedClone.properties.layers[0].adminLayerInfo = undefined;
-      expectedClone.properties.layers[0].uniqueIdField.name = "objectid";
-      delete expectedClone.properties.layers[0].definitionQuery;
-      delete expectedClone.properties.layers[0].isView;
-      delete expectedClone.properties.layers[0].sourceSchemaChangesAllowed;
-      expectedClone.properties.tables[0].serviceItemId = "svc1234567890";
-      expectedClone.properties.tables[0].relationships = null;
-      expectedClone.properties.tables[0].viewDefinitionQuery = null;
-      expectedClone.properties.tables[0].adminLayerInfo = {};
-      expectedClone.properties.tables[0].uniqueIdField.name = "objectid";
-      delete expectedClone.properties.tables[0].definitionQuery;
-      delete expectedClone.properties.tables[0].isView;
-      delete expectedClone.properties.tables[0].sourceSchemaChangesAllowed;
 
       // eslint-disable-next-line @typescript-eslint/no-floating-promises
       featureLayer
@@ -992,6 +1016,303 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
     });
 
     it("should handle error on updateItem", done => {
+      const expectedId: string = "svc1234567890";
+      const id: string = "{{" + expectedId + ".itemId}}";
+
+      const expectedUrl: string =
+        "https://services123.arcgis.com/org1234567890/arcgis/rest/services/ROWPermits_publiccomment/FeatureServer";
+      const url: string = "{{" + expectedId + ".url}}";
+
+      const adminUrl: string =
+        "https://services123.arcgis.com/org1234567890/arcgis/rest/admin/services/ROWPermits_publiccomment/FeatureServer";
+
+      const layerKeyField: string =
+        "{{" + expectedId + ".layer0.fields.globalid.name}}";
+      const tableKeyField: string =
+        "{{" + expectedId + ".layer1.fields.globalid.name}}";
+      const layerDefQuery: string =
+        "status = '{{" + expectedId + ".layer0.fields.boardreview.name}}'";
+      const tableDefQuery: string =
+        "status = '{{" + expectedId + ".layer1.fields.boardreview.name}}'";
+
+      itemTemplate.properties.service.fullExtent = {};
+      itemTemplate.properties.service.initialExtent = {};
+
+      itemTemplate.properties.layers[0].relationships[0].keyField = layerKeyField;
+      itemTemplate.properties.layers[0].definitionQuery = layerDefQuery;
+      itemTemplate.properties.layers[0].viewDefinitionQuery = layerDefQuery;
+
+      itemTemplate.properties.tables[0].relationships[0].keyField = tableKeyField;
+      itemTemplate.properties.tables[0].definitionQuery = tableDefQuery;
+      itemTemplate.properties.tables[0].viewDefinitionQuery = tableDefQuery;
+
+      const settings = utils.createMockSettings();
+      settings.folderId = "fld1234567890";
+      settings[expectedId] = {
+        id: expectedId,
+        url: expectedUrl
+      };
+
+      const createResponse: any = mockItems.getAGOLService([], [], true);
+      createResponse.success = true;
+
+      fetchMock
+        .post(url + "?f=json", itemTemplate.properties.service)
+        .post(adminUrl + "/0?f=json", itemTemplate.properties.layers[0])
+        .post(adminUrl + "/1?f=json", itemTemplate.properties.tables[0])
+        .post(url + "/sources?f=json", mockItems.getAGOLServiceSources())
+        .post(
+          utils.PORTAL_SUBSET.restUrl + "/content/users/casey/createService",
+          createResponse
+        )
+        .post(
+          "https://services123.arcgis.com/org1234567890/arcgis/rest/admin/services/ROWPermits_publiccomment/FeatureServer/addToDefinition",
+          '{"success":true}'
+        )
+        .post(
+          "https://services123.arcgis.com/org1234567890/arcgis/rest/admin/services/ROWPermits_publiccomment/FeatureServer/refresh",
+          '{"success":true}'
+        )
+        .post(
+          "https://services123.arcgis.com/org1234567890/arcgis/rest/admin/services/ROWPermits_publiccomment/FeatureServer/0/updateDefinition",
+          '{"success":true}'
+        )
+        .post(
+          "https://services123.arcgis.com/org1234567890/arcgis/rest/admin/services/ROWPermits_publiccomment/FeatureServer/1/updateDefinition",
+          '{"success":true}'
+        )
+        .post(
+          utils.PORTAL_SUBSET.restUrl +
+            "/content/users/casey/items/svc1234567890/update",
+          '{"success":true}'
+        )
+        .get(
+          "https://myorg.maps.arcgis.com/sharing/rest/content/items/svc1234567890?f=json&token=fake-token",
+          mockItems.get400Failure()
+        )
+        .post(
+          "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/items/svc1234567890/delete",
+          '{"success":true}'
+        );
+
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
+      featureLayer
+        .createItemFromTemplate(
+          itemTemplate,
+          {
+            organization: _organization,
+            svc1234567890: {},
+            solutionItemExtent: _solutionItemExtent
+          },
+          MOCK_USER_SESSION,
+          utils.ITEM_PROGRESS_CALLBACK
+        )
+        .then(response => {
+          expect(response).toEqual(
+            mockSolutions.getFailedItem(itemTemplate.type)
+          );
+          done();
+        });
+    });
+
+    it("should handle error deleting item after error on updateItem", done => {
+      const expectedId: string = "svc1234567890";
+      const id: string = "{{" + expectedId + ".itemId}}";
+
+      const expectedUrl: string =
+        "https://services123.arcgis.com/org1234567890/arcgis/rest/services/ROWPermits_publiccomment/FeatureServer";
+      const url: string = "{{" + expectedId + ".url}}";
+
+      const adminUrl: string =
+        "https://services123.arcgis.com/org1234567890/arcgis/rest/admin/services/ROWPermits_publiccomment/FeatureServer";
+
+      const layerKeyField: string =
+        "{{" + expectedId + ".layer0.fields.globalid.name}}";
+      const tableKeyField: string =
+        "{{" + expectedId + ".layer1.fields.globalid.name}}";
+      const layerDefQuery: string =
+        "status = '{{" + expectedId + ".layer0.fields.boardreview.name}}'";
+      const tableDefQuery: string =
+        "status = '{{" + expectedId + ".layer1.fields.boardreview.name}}'";
+
+      itemTemplate.properties.service.fullExtent = {};
+      itemTemplate.properties.service.initialExtent = {};
+
+      itemTemplate.properties.layers[0].relationships[0].keyField = layerKeyField;
+      itemTemplate.properties.layers[0].definitionQuery = layerDefQuery;
+      itemTemplate.properties.layers[0].viewDefinitionQuery = layerDefQuery;
+
+      itemTemplate.properties.tables[0].relationships[0].keyField = tableKeyField;
+      itemTemplate.properties.tables[0].definitionQuery = tableDefQuery;
+      itemTemplate.properties.tables[0].viewDefinitionQuery = tableDefQuery;
+
+      const settings = utils.createMockSettings();
+      settings.folderId = "fld1234567890";
+      settings[expectedId] = {
+        id: expectedId,
+        url: expectedUrl
+      };
+
+      const createResponse: any = mockItems.getAGOLService([], [], true);
+      createResponse.success = true;
+
+      fetchMock
+        .post(url + "?f=json", itemTemplate.properties.service)
+        .post(adminUrl + "/0?f=json", itemTemplate.properties.layers[0])
+        .post(adminUrl + "/1?f=json", itemTemplate.properties.tables[0])
+        .post(url + "/sources?f=json", mockItems.getAGOLServiceSources())
+        .post(
+          utils.PORTAL_SUBSET.restUrl + "/content/users/casey/createService",
+          createResponse
+        )
+        .post(
+          "https://services123.arcgis.com/org1234567890/arcgis/rest/admin/services/ROWPermits_publiccomment/FeatureServer/addToDefinition",
+          '{"success":true}'
+        )
+        .post(
+          "https://services123.arcgis.com/org1234567890/arcgis/rest/admin/services/ROWPermits_publiccomment/FeatureServer/refresh",
+          '{"success":true}'
+        )
+        .post(
+          "https://services123.arcgis.com/org1234567890/arcgis/rest/admin/services/ROWPermits_publiccomment/FeatureServer/0/updateDefinition",
+          '{"success":true}'
+        )
+        .post(
+          "https://services123.arcgis.com/org1234567890/arcgis/rest/admin/services/ROWPermits_publiccomment/FeatureServer/1/updateDefinition",
+          '{"success":true}'
+        )
+        .post(
+          utils.PORTAL_SUBSET.restUrl +
+            "/content/users/casey/items/svc1234567890/update",
+          '{"success":true}'
+        )
+        .get(
+          "https://myorg.maps.arcgis.com/sharing/rest/content/items/svc1234567890?f=json&token=fake-token",
+          mockItems.get400Failure()
+        )
+        .post(
+          "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/items/svc1234567890/delete",
+          utils.getFailureResponse({ itemId: itemTemplate.itemId })
+        );
+
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
+      featureLayer
+        .createItemFromTemplate(
+          itemTemplate,
+          {
+            organization: _organization,
+            svc1234567890: {},
+            solutionItemExtent: _solutionItemExtent
+          },
+          MOCK_USER_SESSION,
+          utils.ITEM_PROGRESS_CALLBACK
+        )
+        .then(response => {
+          expect(response).toEqual(
+            mockSolutions.getFailedItem(itemTemplate.type)
+          );
+          done();
+        });
+    });
+
+    it("should handle error fetching updated item", done => {
+      const expectedId: string = "svc1234567890";
+      const id: string = "{{" + expectedId + ".itemId}}";
+
+      const expectedUrl: string =
+        "https://services123.arcgis.com/org1234567890/arcgis/rest/services/ROWPermits_publiccomment/FeatureServer";
+      const url: string = "{{" + expectedId + ".url}}";
+
+      const adminUrl: string =
+        "https://services123.arcgis.com/org1234567890/arcgis/rest/admin/services/ROWPermits_publiccomment/FeatureServer";
+
+      const layerKeyField: string =
+        "{{" + expectedId + ".layer0.fields.globalid.name}}";
+      const tableKeyField: string =
+        "{{" + expectedId + ".layer1.fields.globalid.name}}";
+      const layerDefQuery: string =
+        "status = '{{" + expectedId + ".layer0.fields.boardreview.name}}'";
+      const tableDefQuery: string =
+        "status = '{{" + expectedId + ".layer1.fields.boardreview.name}}'";
+
+      itemTemplate.properties.service.fullExtent = {};
+      itemTemplate.properties.service.initialExtent = {};
+
+      itemTemplate.properties.layers[0].relationships[0].keyField = layerKeyField;
+      itemTemplate.properties.layers[0].definitionQuery = layerDefQuery;
+      itemTemplate.properties.layers[0].viewDefinitionQuery = layerDefQuery;
+
+      itemTemplate.properties.tables[0].relationships[0].keyField = tableKeyField;
+      itemTemplate.properties.tables[0].definitionQuery = tableDefQuery;
+      itemTemplate.properties.tables[0].viewDefinitionQuery = tableDefQuery;
+
+      const settings = utils.createMockSettings();
+      settings.folderId = "fld1234567890";
+      settings[expectedId] = {
+        id: expectedId,
+        url: expectedUrl
+      };
+
+      const createResponse: any = mockItems.getAGOLService([], [], true);
+      createResponse.success = true;
+
+      fetchMock
+        .post(url + "?f=json", itemTemplate.properties.service)
+        .post(adminUrl + "/0?f=json", itemTemplate.properties.layers[0])
+        .post(adminUrl + "/1?f=json", itemTemplate.properties.tables[0])
+        .post(url + "/sources?f=json", mockItems.getAGOLServiceSources())
+        .post(
+          utils.PORTAL_SUBSET.restUrl + "/content/users/casey/createService",
+          createResponse
+        )
+        .post(
+          "https://services123.arcgis.com/org1234567890/arcgis/rest/admin/services/ROWPermits_publiccomment/FeatureServer/addToDefinition",
+          '{"success":true}'
+        )
+        .post(
+          "https://services123.arcgis.com/org1234567890/arcgis/rest/admin/services/ROWPermits_publiccomment/FeatureServer/refresh",
+          '{"success":true}'
+        )
+        .post(
+          "https://services123.arcgis.com/org1234567890/arcgis/rest/admin/services/ROWPermits_publiccomment/FeatureServer/0/updateDefinition",
+          '{"success":true}'
+        )
+        .post(
+          "https://services123.arcgis.com/org1234567890/arcgis/rest/admin/services/ROWPermits_publiccomment/FeatureServer/1/updateDefinition",
+          '{"success":true}'
+        )
+        .post(
+          utils.PORTAL_SUBSET.restUrl +
+            "/content/users/casey/items/svc1234567890/update",
+          mockItems.get400Failure()
+        )
+        .post(
+          utils.PORTAL_SUBSET.restUrl +
+            "/content/users/casey/items/svc1234567890/delete",
+          '{"success":true}'
+        );
+
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
+      featureLayer
+        .createItemFromTemplate(
+          itemTemplate,
+          {
+            organization: _organization,
+            svc1234567890: {},
+            solutionItemExtent: _solutionItemExtent
+          },
+          MOCK_USER_SESSION,
+          utils.ITEM_PROGRESS_CALLBACK
+        )
+        .then(response => {
+          expect(response).toEqual(
+            mockSolutions.getFailedItem(itemTemplate.type)
+          );
+          done();
+        });
+    });
+
+    it("should handle error deleting item after error fetching updated item", done => {
       const expectedId: string = "svc1234567890";
       const id: string = "{{" + expectedId + ".itemId}}";
 
@@ -2034,10 +2355,6 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
           common,
           "replaceInTemplate"
         ).and.returnValue(expected);
-        const updateItemExtendedSpy = spyOn(
-          common,
-          "updateItemExtended"
-        ).and.returnValue(utils.getSuccessResponse({ id: item.id }));
         return featureLayer
           .postProcess(
             item.id,

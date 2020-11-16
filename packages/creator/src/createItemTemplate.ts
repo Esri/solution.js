@@ -132,154 +132,110 @@ export function createItemTemplate(
               return;
             }
 
-            // If this is the solution's thumbnail, set the thumbnail rather than include it in solution
-            if (
-              itemInfo.tags &&
-              itemInfo.tags.find(tag => tag === "deploy.thumbnail")
-            ) {
-              // Resolve the thumbnail setting whether or not there's an error
-              getItemDataBlob(itemId, authentication).then(
-                blob =>
-                  addThumbnailFromBlob(
-                    blob,
-                    solutionItemId,
-                    authentication
-                  ).then(
-                    () => {
-                      itemProgressCallback(
-                        itemId,
-                        EItemProgressStatus.Ignored,
-                        1
-                      );
-                      resolve();
-                    }, // solution thumbnail set
-                    () => {
-                      itemProgressCallback(
-                        itemId,
-                        EItemProgressStatus.Ignored,
-                        1
-                      );
-                      resolve();
-                    } // unable to add thumbnail to solution
-                  ),
-                () => {
-                  itemProgressCallback(itemId, EItemProgressStatus.Ignored, 1);
-                  resolve();
-                } // unable to fetch thumbnail
-              );
-            } else {
-              const itemHandler = moduleMap[itemType];
-              if (!itemHandler || itemHandler === UNSUPPORTED) {
-                if (itemHandler === UNSUPPORTED) {
-                  itemProgressCallback(itemId, EItemProgressStatus.Ignored, 1);
-                  resolve();
-                } else {
-                  itemProgressCallback(itemId, EItemProgressStatus.Failed, 1);
-                  placeholder.properties["failed"] = true;
-                  replaceTemplate(existingTemplates, itemId, placeholder);
-                  resolve(
-                    fail(
-                      "The type of AGO item " +
-                        itemId +
-                        " ('" +
-                        itemType +
-                        "') is not supported at this time"
-                    )
-                  );
-                }
+            const itemHandler = moduleMap[itemType];
+            if (!itemHandler || itemHandler === UNSUPPORTED) {
+              if (itemHandler === UNSUPPORTED) {
+                itemProgressCallback(itemId, EItemProgressStatus.Ignored, 1);
+                resolve();
               } else {
-                // Handle original Story Maps with next-gen Story Maps
-                /* istanbul ignore else */
-                /* Not yet supported
-                  if (storyMap.isAStoryMap(itemType, itemInfo.url)) {
-                  itemHandler = storyMap;
-                } */
-
-                // Delegate the creation of the item to the handler
-                itemHandler
-                  .convertItemToTemplate(
-                    solutionItemId,
-                    itemInfo,
-                    authentication,
-                    templateDictionary
+                itemProgressCallback(itemId, EItemProgressStatus.Failed, 1);
+                placeholder.properties["failed"] = true;
+                replaceTemplate(existingTemplates, itemId, placeholder);
+                resolve(
+                  fail(
+                    "The type of AGO item " +
+                      itemId +
+                      " ('" +
+                      itemType +
+                      "') is not supported at this time"
                   )
-                  .then(
-                    itemTemplate => {
-                      // eslint-disable-next-line @typescript-eslint/no-floating-promises
-                      storeItemResources(
-                        itemTemplate,
-                        solutionItemId,
-                        authentication
-                      ).then(resources => {
-                        // update the templates resources
-                        itemTemplate.item.thumbnail = null; // no longer needed; use resources
-                        itemTemplate.resources = itemTemplate.resources.concat(
-                          resources
-                        );
+                );
+              }
+            } else {
+              // Handle original Story Maps with next-gen Story Maps
+              /* istanbul ignore else */
+              /* Not yet supported
+                if (storyMap.isAStoryMap(itemType, itemInfo.url)) {
+                itemHandler = storyMap;
+              } */
 
-                        // Set the value keyed by the id to the created template, replacing the placeholder template
-                        replaceTemplate(
-                          existingTemplates,
-                          itemTemplate.itemId,
-                          itemTemplate
-                        );
+              // Delegate the creation of the item to the handler
+              itemHandler
+                .convertItemToTemplate(
+                  solutionItemId,
+                  itemInfo,
+                  authentication,
+                  templateDictionary
+                )
+                .then(
+                  itemTemplate => {
+                    // eslint-disable-next-line @typescript-eslint/no-floating-promises
+                    storeItemResources(
+                      itemTemplate,
+                      solutionItemId,
+                      authentication
+                    ).then(resources => {
+                      // update the templates resources
+                      itemTemplate.item.thumbnail = null; // no longer needed; use resources
+                      itemTemplate.resources = itemTemplate.resources.concat(
+                        resources
+                      );
 
-                        // Trace item dependencies
-                        if (itemTemplate.dependencies.length === 0) {
+                      // Set the value keyed by the id to the created template, replacing the placeholder template
+                      replaceTemplate(
+                        existingTemplates,
+                        itemTemplate.itemId,
+                        itemTemplate
+                      );
+
+                      // Trace item dependencies
+                      if (itemTemplate.dependencies.length === 0) {
+                        itemProgressCallback(
+                          itemId,
+                          EItemProgressStatus.Finished,
+                          1
+                        );
+                        resolve();
+                      } else {
+                        // Get its dependencies, asking each to get its dependents via
+                        // recursive calls to this function
+                        const dependentDfds: Array<Promise<void>> = [];
+                        itemTemplate.dependencies.forEach(dependentId => {
+                          if (
+                            !findTemplateInList(existingTemplates, dependentId)
+                          ) {
+                            dependentDfds.push(
+                              createItemTemplate(
+                                solutionItemId,
+                                dependentId,
+                                templateDictionary,
+                                authentication,
+                                existingTemplates,
+                                itemProgressCallback
+                              )
+                            );
+                          }
+                        });
+                        // eslint-disable-next-line @typescript-eslint/no-floating-promises
+                        Promise.all(dependentDfds).then(() => {
+                          // Templatization of item and its dependencies done
                           itemProgressCallback(
                             itemId,
                             EItemProgressStatus.Finished,
                             1
                           );
                           resolve();
-                        } else {
-                          // Get its dependencies, asking each to get its dependents via
-                          // recursive calls to this function
-                          const dependentDfds: Array<Promise<void>> = [];
-                          itemTemplate.dependencies.forEach(dependentId => {
-                            if (
-                              !findTemplateInList(
-                                existingTemplates,
-                                dependentId
-                              )
-                            ) {
-                              dependentDfds.push(
-                                createItemTemplate(
-                                  solutionItemId,
-                                  dependentId,
-                                  templateDictionary,
-                                  authentication,
-                                  existingTemplates,
-                                  itemProgressCallback
-                                )
-                              );
-                            }
-                          });
-                          // eslint-disable-next-line @typescript-eslint/no-floating-promises
-                          Promise.all(dependentDfds).then(() => {
-                            // Templatization of item and its dependencies done
-                            itemProgressCallback(
-                              itemId,
-                              EItemProgressStatus.Finished,
-                              1
-                            );
-                            resolve();
-                          });
-                        }
-                      });
-                    },
-                    error => {
-                      placeholder.properties["error"] = JSON.stringify(error);
-                      replaceTemplate(existingTemplates, itemId, placeholder);
-                      itemProgressCallback(
-                        itemId,
-                        EItemProgressStatus.Failed,
-                        1
-                      );
-                      resolve();
-                    }
-                  );
-              }
+                        });
+                      }
+                    });
+                  },
+                  error => {
+                    placeholder.properties["error"] = JSON.stringify(error);
+                    replaceTemplate(existingTemplates, itemId, placeholder);
+                    itemProgressCallback(itemId, EItemProgressStatus.Failed, 1);
+                    resolve();
+                  }
+                );
             }
           },
           // Id not found or item is not accessible

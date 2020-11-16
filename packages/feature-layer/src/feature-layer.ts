@@ -144,6 +144,9 @@ export function createItemFromTemplate(
       templateDictionary
     );
 
+    // Thumbnail has to be updated separately; doesn't work in create service call
+    delete newItemTemplate.item.thumbnail;
+
     // cache the popup info to be added later
     const popupInfos: common.IPopupInfos = common.cachePopupInfos(
       newItemTemplate.data
@@ -208,7 +211,7 @@ export function createItemFromTemplate(
                       templateDictionary,
                       createResponse
                     );
-                    // Update the item with snippet, description, popupInfo, ect.
+                    // Update the item with snippet, description, popupInfo, etc.
                     common
                       .updateItemExtended(
                         {
@@ -216,7 +219,8 @@ export function createItemFromTemplate(
                           url: undefined // can't update the URL of a feature service
                         },
                         newItemTemplate.data,
-                        destinationAuthentication
+                        destinationAuthentication,
+                        template.item.thumbnail
                       )
                       .then(
                         () => {
@@ -254,16 +258,54 @@ export function createItemFromTemplate(
                                   )
                               );
                           } else {
-                            resolve({
-                              item: newItemTemplate,
-                              id: createResponse.serviceItemId,
-                              type: newItemTemplate.type,
-                              postProcess:
-                                common.hasUnresolvedVariables({
-                                  item: newItemTemplate.item,
-                                  data: newItemTemplate.data
-                                }) || common.isWorkforceProject(newItemTemplate)
-                            });
+                            // Update the template to match what we've stored in AGO
+                            common
+                              .getItemBase(
+                                newItemTemplate.itemId,
+                                destinationAuthentication
+                              )
+                              .then(
+                                updatedItem => {
+                                  newItemTemplate.item = updatedItem;
+                                  resolve({
+                                    item: newItemTemplate,
+                                    id: createResponse.serviceItemId,
+                                    type: newItemTemplate.type,
+                                    postProcess:
+                                      common.hasUnresolvedVariables({
+                                        item: newItemTemplate.item,
+                                        data: newItemTemplate.data
+                                      }) ||
+                                      common.isWorkforceProject(newItemTemplate)
+                                  });
+                                },
+                                () => {
+                                  itemProgressCallback(
+                                    template.itemId,
+                                    common.EItemProgressStatus.Failed,
+                                    0
+                                  );
+                                  common
+                                    .removeItem(
+                                      createResponse.serviceItemId,
+                                      destinationAuthentication
+                                    )
+                                    .then(
+                                      () =>
+                                        resolve(
+                                          common.generateEmptyCreationResponse(
+                                            template.type
+                                          )
+                                        ),
+                                      () =>
+                                        resolve(
+                                          common.generateEmptyCreationResponse(
+                                            template.type
+                                          )
+                                        )
+                                    );
+                                } // fails to update item
+                              );
                           }
                         },
                         () => {

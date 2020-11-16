@@ -61,6 +61,10 @@ export function createItemFromTemplate(
           )
         );
       }
+      if (template.item.thumbnail) {
+        newItemTemplate.item.thumbnail = template.item.thumbnail; // make sure that our File is still there
+      }
+
       common
         .createItemWithData(
           newItemTemplate.item,

@@ -476,6 +476,10 @@ describe("Module `deployer`", () => {
             testUtils.PORTAL_SUBSET.restUrl +
               "/content/users/casey/items/sln1234567890/addResources",
             testUtils.getSuccessResponse({ id: "sln1234567890" })
+          )
+          .get(
+            "https://myorg.maps.arcgis.com/sharing/rest/content/items/svc1234567890?f=json&token=fake-token",
+            testUtils.getCreateServiceResponse()
           );
         spyOn(console, "log").and.callFake(() => {});
 
@@ -1307,7 +1311,11 @@ describe("Module `deployer`", () => {
             "https://services123.arcgis.com/org1234567890/arcgis/rest/admin/services/ROWPermits_publiccomment/FeatureServer/refresh",
             testUtils.getSuccessResponse()
           )
-          .post(geometryServer + "/project", mockItems.get400Failure());
+          .post(geometryServer + "/project", mockItems.get400Failure())
+          .get(
+            "https://myorg.maps.arcgis.com/sharing/rest/content/items/svc1234567890?f=json&token=fake-token",
+            testUtils.getCreateServiceResponse()
+          );
 
         const options: common.IDeploySolutionOptions = {
           progressCallback: testUtils.SOLUTION_PROGRESS_CALLBACK
@@ -1510,6 +1518,10 @@ describe("Module `deployer`", () => {
             testUtils.PORTAL_SUBSET.restUrl +
               "/content/users/casey/items/map1234567890/delete",
             testUtils.getSuccessResponse({ itemId: "map1234567890" })
+          )
+          .get(
+            "https://myorg.maps.arcgis.com/sharing/rest/content/items/svc1234567890?f=json&token=fake-token",
+            testUtils.getCreateServiceResponse()
           );
 
         const options: common.IDeploySolutionOptions = {
