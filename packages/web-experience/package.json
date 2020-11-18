@@ -13,22 +13,22 @@
     "dist/**"
   ],
   "devDependencies": {
-    "@esri/arcgis-rest-auth": "^2.20.0",
-    "@esri/arcgis-rest-feature-layer": "^2.20.0",
-    "@esri/arcgis-rest-portal": "^2.20.0",
-    "@esri/arcgis-rest-request": "^2.20.0",
-    "@esri/arcgis-rest-service-admin": "^2.20.0",
+    "@esri/arcgis-rest-auth": "^2.21.0",
+    "@esri/arcgis-rest-feature-layer": "^2.21.0",
+    "@esri/arcgis-rest-portal": "^2.21.0",
+    "@esri/arcgis-rest-request": "^2.21.0",
+    "@esri/arcgis-rest-service-admin": "^2.21.0",
     "@esri/hub-common": "^6.18.0",
     "@esri/hub-initiatives": "^6.18.0",
     "rollup": "^1.22.0",
     "typescript": "^3.9.7"
   },
   "peerDependencies": {
-    "@esri/arcgis-rest-auth": "^2.20.0",
-    "@esri/arcgis-rest-feature-layer": "^2.20.0",
-    "@esri/arcgis-rest-portal": "^2.20.0",
-    "@esri/arcgis-rest-request": "^2.20.0",
-    "@esri/arcgis-rest-service-admin": "^2.20.0",
+    "@esri/arcgis-rest-auth": "^2.21.0",
+    "@esri/arcgis-rest-feature-layer": "^2.21.0",
+    "@esri/arcgis-rest-portal": "^2.21.0",
+    "@esri/arcgis-rest-request": "^2.21.0",
+    "@esri/arcgis-rest-service-admin": "^2.21.0",
     "@esri/hub-common": "^6.18.0",
     "@esri/hub-initiatives": "^6.18.0"
   },
