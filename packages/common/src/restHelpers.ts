@@ -1242,7 +1242,8 @@ export function searchGroupContents(
     groupId,
     q: searchString,
     params: {
-      ...additionalSearchOptions
+      ...additionalSearchOptions,
+      num: 100
     },
     authentication: authentication,
     portal: portalUrl
@@ -1250,7 +1251,7 @@ export function searchGroupContents(
 
   // If search options include `categories`, switch to new arcgis-rest-js format
   /* istanbul ignore else */
-  if (Array.isArray(searchOptions.params?.categories)) {
+  if (Array.isArray(searchOptions.params.categories)) {
     searchOptions.params.categories = searchOptions.params.categories.map(
       andGroup => andGroup.split(",")
     );

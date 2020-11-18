@@ -2745,7 +2745,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
 
       fetchMock.get(
         utils.PORTAL_SUBSET.restUrl +
-          `/content/groups/${groupId}/search?f=json&q=My%20Group&token=fake-token`,
+          `/content/groups/${groupId}/search?f=json&num=100&q=My%20Group&token=fake-token`,
         utils.getGroupResponse(query, false)
       );
 
@@ -2764,7 +2764,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
 
       fetchMock.get(
         utils.PORTAL_SUBSET.restUrl +
-          `/content/groups/${groupId}/search?f=json&q=My%20Group&token=fake-token`,
+          `/content/groups/${groupId}/search?f=json&num=100&q=My%20Group&token=fake-token`,
         utils.getGroupResponse(query, true)
       );
 
@@ -2789,7 +2789,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
 
       const expectedUrl =
         utils.PORTAL_SUBSET.restUrl +
-        `/content/groups/${groupId}/search?f=json&categories=a%2Cb&categories=c%2Cd&num=100&token==fake-token`;
+        `/content/groups/${groupId}/search?f=json&categories=a%2Cb&categories=c%2Cd&num=100&token=fake-token`;
       fetchMock.get(expectedUrl, {});
 
       restHelpers
@@ -2803,7 +2803,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
           expect(fetchMock.calls(expectedUrl).length).toBe(1);
           const [url, options] = fetchMock.lastCall(expectedUrl);
           expect(options.method).toBe("GET");
-          expect(options.body).toContain("f=json");
+          expect(url).toEqual(expectedUrl);
           done();
         })
         .catch(e => {
