@@ -2777,7 +2777,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
       );
     });
 
-    fit("can handle a categories search", done => {
+    it("can handle a categories search", done => {
       const groupId: string = "grp1234567890";
       const additionalSearchOptions: interfaces.IAdditionalSearchOptions = {
         categories: [
