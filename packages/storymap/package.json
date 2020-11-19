@@ -16,7 +16,7 @@
     "@esri/arcgis-rest-auth": "^2.22.0",
     "@esri/arcgis-rest-portal": "^2.22.0",
     "@esri/arcgis-rest-request": "^2.22.0",
-    "@esri/hub-common": "^6.17.0",
+    "@esri/hub-common": "^6.19.0",
     "rollup": "^1.22.0",
     "typescript": "^4.0.3"
   },
@@ -24,7 +24,7 @@
     "@esri/arcgis-rest-auth": "^2.22.0",
     "@esri/arcgis-rest-portal": "^2.22.0",
     "@esri/arcgis-rest-request": "^2.22.0",
-    "@esri/hub-common": "^6.17.0"
+    "@esri/hub-common": "^6.19.0"
   },
   "dependencies": {
     "@esri/solution-common": "^0.20.18",
