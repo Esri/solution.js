@@ -121,6 +121,10 @@ describe("createItemFromHubTemplate", () => {
       createSurveyHelper,
       "createSurvey"
     ).and.resolveTo(createResult);
+    const updateItemExtendedSpy = spyOn(
+      common,
+      "updateItemExtended"
+    ).and.resolveTo();
     const moveItemSpy = spyOn(restPortal, "moveItem").and.resolveTo();
     const removeFolderSpy = spyOn(common, "removeFolder").and.resolveTo();
     const itemProgressCallbackSpy = jasmine.createSpy();
@@ -147,6 +151,10 @@ describe("createItemFromHubTemplate", () => {
           paramResults,
           undefined
         ]);
+        expect(updateItemExtendedSpy.calls.count()).toEqual(1);
+        expect(updateItemExtendedSpy.calls.argsFor(0)[0].id).toBe(
+          createResult.formId
+        );
         expect(moveItemSpy.calls.count()).toEqual(2);
         expect(moveItemSpy.calls.argsFor(0)[0].itemId).toBe(
           createResult.formId
@@ -204,6 +212,10 @@ describe("createItemFromHubTemplate", () => {
       createSurveyHelper,
       "createSurvey"
     ).and.resolveTo(createResult);
+    const updateItemExtendedSpy = spyOn(
+      common,
+      "updateItemExtended"
+    ).and.resolveTo();
     const moveItemSpy = spyOn(restPortal, "moveItem").and.resolveTo();
     const removeFolderSpy = spyOn(common, "removeFolder").and.resolveTo();
     const itemProgressCallbackSpy = jasmine.createSpy();
@@ -230,6 +242,10 @@ describe("createItemFromHubTemplate", () => {
           paramResults,
           undefined
         ]);
+        expect(updateItemExtendedSpy.calls.count()).toEqual(1);
+        expect(updateItemExtendedSpy.calls.argsFor(0)[0].id).toBe(
+          createResult.formId
+        );
         expect(moveItemSpy.calls.count()).toEqual(2);
         expect(moveItemSpy.calls.argsFor(0)[0].itemId).toBe(
           createResult.formId
@@ -287,6 +303,10 @@ describe("createItemFromHubTemplate", () => {
       createSurveyHelper,
       "createSurvey"
     ).and.resolveTo(createResult);
+    const updateItemExtendedSpy = spyOn(
+      common,
+      "updateItemExtended"
+    ).and.resolveTo();
     const moveItemSpy = spyOn(restPortal, "moveItem").and.resolveTo();
     const removeFolderSpy = spyOn(common, "removeFolder").and.resolveTo();
     const itemProgressCallbackSpy = jasmine.createSpy();
@@ -314,6 +334,10 @@ describe("createItemFromHubTemplate", () => {
           paramResults,
           "https://survey123qa.arcgis.com"
         ]);
+        expect(updateItemExtendedSpy.calls.count()).toEqual(1);
+        expect(updateItemExtendedSpy.calls.argsFor(0)[0].id).toBe(
+          createResult.formId
+        );
         expect(moveItemSpy.calls.count()).toEqual(2);
         expect(moveItemSpy.calls.argsFor(0)[0].itemId).toBe(
           createResult.formId
@@ -358,7 +382,7 @@ describe("createItemFromHubTemplate", () => {
       });
   });
 
-  it("should clal itemProgressCallback with Failed then reject", done => {
+  it("should call itemProgressCallback with Failed then reject", done => {
     const error = new Error("Failed to build params");
     spyOn(common, "replaceInTemplate").and.returnValue(interpolatedTemplate);
     spyOn(buildParamsHelper, "buildCreateParams").and.rejectWith(error);

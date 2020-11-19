@@ -27,7 +27,8 @@ import {
   EItemProgressStatus,
   UserSession,
   generateEmptyCreationResponse,
-  getProp
+  getProp,
+  updateItemExtended
 } from "@esri/solution-common";
 import {
   createSiteModelFromTemplate,
@@ -125,6 +126,27 @@ export function createItemFromTemplate(
         templateDictionary.folderId,
         destinationAuthentication
       );
+    })
+    .then(moves => {
+      // Update the item with its thumbnail
+      if (template.item.thumbnail) {
+        // First move was item itself
+        const itemId = moves[0].itemId;
+
+        return new Promise<any>(resolve => {
+          updateItemExtended(
+            { id: itemId },
+            null,
+            destinationAuthentication,
+            template.item.thumbnail
+          ).then(
+            () => resolve(),
+            () => resolve()
+          );
+        });
+      } else {
+        return Promise.resolve();
+      }
     })
     .then(() => {
       // Update the template dictionary

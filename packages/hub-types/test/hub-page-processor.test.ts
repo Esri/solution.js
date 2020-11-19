@@ -24,7 +24,7 @@ import * as common from "@esri/solution-common";
 import * as hubCommon from "@esri/hub-common";
 import * as hubRoModule from "../src/helpers/create-hub-request-options";
 import * as replacerModule from "../src/helpers/replace-item-ids";
-import { cloneObject } from "@esri/solution-common/src/generalHelpers";
+import { cloneObject, fail } from "@esri/solution-common/src/generalHelpers";
 
 describe("HubPageProcessor: ", () => {
   describe("convertItemToTemplate: ", () => {
@@ -141,6 +141,14 @@ describe("HubPageProcessor: ", () => {
       type: "Hub Page",
       item: {}
     } as common.IItemTemplate;
+    const tmplThmb = {
+      itemId: "bc7",
+      type: "Hub Page",
+      item: {
+        thumbnail: "yoda"
+      }
+    } as any;
+
     it("exists", () => {
       expect(HubPageProcessor.createItemFromTemplate).toBeDefined(
         "Should have createItemFromTemplate method"
@@ -188,6 +196,114 @@ describe("HubPageProcessor: ", () => {
         );
         expect(createPageSpy.calls.count()).toBe(1, "should call createPage");
         expect(movePageSpy.calls.count()).toBe(1, "should call move");
+      });
+    });
+    it("happy-path with thumbnail", () => {
+      const createFromTmplSpy = spyOn(
+        sitesPackage,
+        "createPageModelFromTemplate"
+      ).and.resolveTo(fakePage);
+      const createPageSpy = spyOn(sitesPackage, "createPage").and.resolveTo(
+        fakePage
+      );
+      const movePageSpy = spyOn(moveHelper, "moveModelToFolder").and.resolveTo([
+        tmplThmb.itemId
+      ]);
+      const updateItemExtendedSpy = spyOn(
+        common,
+        "updateItemExtended"
+      ).and.resolveTo();
+
+      const td = {
+        organization: {
+          id: "somePortalId",
+          portalHostname: "www.arcgis.com"
+        },
+        user: {
+          username: "vader"
+        },
+        solutionItemExtent: "10,10,20,20",
+        solution: {
+          title: "Some Title"
+        }
+      };
+      const cb = () => true;
+      return HubPageProcessor.createItemFromTemplate(
+        tmplThmb,
+        td,
+        MOCK_USER_SESSION,
+        cb
+      ).then(result => {
+        expect(result.id).toBe("FAKE3ef", "should return the created item id");
+        expect(result.type).toBe("Hub Page", "should return the type");
+        expect(result.postProcess).toBe(true, "should flag postProcess");
+        expect(createFromTmplSpy.calls.count()).toBe(
+          1,
+          "should call createFromTemplate"
+        );
+        expect(createPageSpy.calls.count()).toBe(1, "should call createPage");
+        expect(movePageSpy.calls.count()).toBe(1, "should call move");
+        expect(updateItemExtendedSpy.calls.count()).toBe(
+          1,
+          "should call updateItemExtended"
+        );
+        expect(updateItemExtendedSpy.calls.argsFor(0)[3]).toBe(
+          tmplThmb.item.thumbnail
+        );
+      });
+    });
+    it("happy-path with thumbnail update failure", () => {
+      const createFromTmplSpy = spyOn(
+        sitesPackage,
+        "createPageModelFromTemplate"
+      ).and.resolveTo(fakePage);
+      const createPageSpy = spyOn(sitesPackage, "createPage").and.resolveTo(
+        fakePage
+      );
+      const movePageSpy = spyOn(moveHelper, "moveModelToFolder").and.resolveTo([
+        tmplThmb.itemId
+      ]);
+      const updateItemExtendedSpy = spyOn(
+        common,
+        "updateItemExtended"
+      ).and.returnValue(Promise.reject(fail()));
+
+      const td = {
+        organization: {
+          id: "somePortalId",
+          portalHostname: "www.arcgis.com"
+        },
+        user: {
+          username: "vader"
+        },
+        solutionItemExtent: "10,10,20,20",
+        solution: {
+          title: "Some Title"
+        }
+      };
+      const cb = () => true;
+      return HubPageProcessor.createItemFromTemplate(
+        tmplThmb,
+        td,
+        MOCK_USER_SESSION,
+        cb
+      ).then(result => {
+        expect(result.id).toBe("FAKE3ef", "should return the created item id");
+        expect(result.type).toBe("Hub Page", "should return the type");
+        expect(result.postProcess).toBe(true, "should flag postProcess");
+        expect(createFromTmplSpy.calls.count()).toBe(
+          1,
+          "should call createFromTemplate"
+        );
+        expect(createPageSpy.calls.count()).toBe(1, "should call createPage");
+        expect(movePageSpy.calls.count()).toBe(1, "should call move");
+        expect(updateItemExtendedSpy.calls.count()).toBe(
+          1,
+          "should call updateItemExtended"
+        );
+        expect(updateItemExtendedSpy.calls.argsFor(0)[3]).toBe(
+          tmplThmb.item.thumbnail
+        );
       });
     });
     it("asset and resource juggling", () => {

@@ -169,7 +169,7 @@ export function deploySolutionItems(
               resolve(clonedSolutionItems);
             } else {
               // Delete created items
-            // eslint-disable-next-line @typescript-eslint/no-floating-promises
+              // eslint-disable-next-line @typescript-eslint/no-floating-promises
               common
                 .removeListOfItemsOrGroups(
                   deployedItemIds,
@@ -696,69 +696,58 @@ export function _createItemFromTemplateWhenReady(
             }
             resolve(common.generateEmptyCreationResponse(template.type));
           } else {
-            // Glean item content that can be added via the create call rather than as an update, e.g.,
-            // metadata, thumbnail; this content is moved from the resourceFilePaths into the template
+            // Delegate the creation of the item to the handler
             // eslint-disable-next-line @typescript-eslint/no-floating-promises
-            _moveResourcesIntoTemplate(
-              resourceFilePaths,
-              template,
-              storageAuthentication
-            ).then(updatedResourceFilePaths => {
-              // Delegate the creation of the item to the handler
-              // eslint-disable-next-line @typescript-eslint/no-floating-promises
-              itemHandler
-                .createItemFromTemplate(
-                  template,
-                  templateDictionary,
-                  destinationAuthentication,
-                  itemProgressCallback
-                )
-                .then(
-                  (createResponse: common.ICreateItemFromTemplateResponse) => {
-                    if (createResponse.id === "") {
-                      resolve(
-                        common.generateEmptyCreationResponse(template.type)
-                      ); // fails to create item
-                    } else {
-                      /* istanbul ignore else */
-                      if (createResponse.item.item.url) {
-                        common.setCreateProp(
-                          templateDictionary,
-                          template.itemId + ".url",
-                          createResponse.item.item.url
-                        );
-                      }
-
-                      // Copy resources, metadata, thumbnail, form
-                      common
-                        .copyFilesFromStorageItem(
-                          storageAuthentication,
-                          updatedResourceFilePaths,
-                          templateDictionary.folderId,
-                          createResponse.id,
-                          destinationAuthentication,
-                          templateType === "Group",
-                          createResponse.item
-                        )
-                        .then(
-                          () => resolve(createResponse),
-                          () => {
-                            itemProgressCallback(
-                              template.itemId,
-                              common.EItemProgressStatus.Failed,
-                              0
-                            );
-                            resolve(
-                              common.generateEmptyCreationResponse(
-                                template.type
-                              )
-                            ); // fails to copy resources from storage
-                          }
-                        );
+            itemHandler
+              .createItemFromTemplate(
+                template,
+                templateDictionary,
+                destinationAuthentication,
+                itemProgressCallback
+              )
+              .then(
+                (createResponse: common.ICreateItemFromTemplateResponse) => {
+                  if (createResponse.id === "") {
+                    resolve(
+                      common.generateEmptyCreationResponse(template.type)
+                    ); // fails to create item
+                  } else {
+                    /* istanbul ignore else */
+                    if (createResponse.item.item.url) {
+                      common.setCreateProp(
+                        templateDictionary,
+                        template.itemId + ".url",
+                        createResponse.item.item.url
+                      );
                     }
+
+                    // Copy resources, metadata, form
+                    common
+                      .copyFilesFromStorageItem(
+                        storageAuthentication,
+                        resourceFilePaths,
+                        templateDictionary.folderId,
+                        createResponse.id,
+                        destinationAuthentication,
+                        templateType === "Group",
+                        createResponse.item
+                      )
+                      .then(
+                        () => resolve(createResponse),
+                        () => {
+                          itemProgressCallback(
+                            template.itemId,
+                            common.EItemProgressStatus.Failed,
+                            0
+                          );
+                          resolve(
+                            common.generateEmptyCreationResponse(template.type)
+                          ); // fails to copy resources from storage
+                        }
+                      );
                   }
-                );
-            });
+                }
+              );
           }
         },
         () => resolve(common.generateEmptyCreationResponse(template.type)) // fails to get item dependencies
@@ -801,38 +790,5 @@ export function _getGroupUpdates(
       template.itemId,
       authentication
     );
-  });
-}
-
-export function _moveResourcesIntoTemplate(
-  filePaths: common.IDeployFileCopyPath[],
-  template: common.IItemTemplate,
-  authentication: common.UserSession
-): Promise<common.IDeployFileCopyPath[]> {
-  return new Promise<common.IDeployFileCopyPath[]>(resolve => {
-    // Find content in the file paths that can be moved into the template
-    let thumbnailDef = Promise.resolve("");
-    const updatedFilePaths = filePaths.filter(filePath => {
-      switch (filePath.type) {
-        case common.EFileType.Thumbnail:
-          delete template.item.thumbnail;
-          thumbnailDef = common.addTokenToUrl(filePath.url, authentication);
-          return false;
-        default:
-          return true;
-      }
-    });
-
-    // eslint-disable-next-line @typescript-eslint/no-floating-promises
-    thumbnailDef.then(updatedThumbnailUrl => {
-      /* istanbul ignore else */
-      if (updatedThumbnailUrl) {
-        template.item.thumbnailurl = common.appendQueryParam(
-          updatedThumbnailUrl,
-          "w=400"
-        );
-      }
-      resolve(updatedFilePaths);
-    });
   });
 }

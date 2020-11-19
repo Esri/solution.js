@@ -30,6 +30,7 @@ import {
   moveItem,
   addItemResource,
   updateItem,
+  ICreateItemOptions,
   ICreateItemResponse
 } from "@esri/arcgis-rest-portal";
 
@@ -50,13 +51,25 @@ export function createStoryMap(
   // that we have to generate from the passed in model
   const resources: any[] = [];
 
-  // Create the item
-  // For unkown reasons we can not seem to spy on createItemInFolder
+  // For unknown reasons we can not seem to spy on createItemInFolder
   // so we will create-then-move for now
-  return createItem({
+  const createOptions: ICreateItemOptions = {
+    // need to serialize
     item: serializeModel(model),
     authentication
-  })
+  };
+
+  /* istanbul ignore else */
+  if (model.item.thumbnail) {
+    createOptions.params = {
+      // Pass thumbnail file in via params because item property is serialized, which discards a blob
+      thumbnail: model.item.thumbnail
+    };
+    delete createOptions.item.thumbnail;
+  }
+
+  // Create the item
+  return createItem(createOptions)
     .then((createResponse: ICreateItemResponse) => {
       // hold the id in the model
       model.item.id = createResponse.id;
