@@ -46,6 +46,16 @@
 <body>
   <h3>Deploy a Solution</h3>
 
+  <div id="signin" style="display:none">
+    <div class="labeledItem">
+      <label for="destPortal">Portal:&nbsp;</label>
+      <input type="text" id="destPortal" style="width:256px" placeholder="https://www.arcgis.com">
+    </div>
+
+    <br /><br />
+    <button class="btn btn-default" onclick="signinFcn()">Sign in</button>
+  </div>
+
   <div id="container" style="display:none">
     <div id="input">
       <label for="solutionId">Enter a Solution ID:</label>
@@ -54,42 +64,9 @@
       <select name="Solution Item" id="id" class="form-control"></select>
 
       <br /><br />
-
-      <div class="section-title">Credentials in source organization</div>
-
-      <div class="labeledItem">
-        <label for="srcUsername">Username:&nbsp;</label>
-        <input type="text" id="srcUsername" placeholder="anonymous">
-      </div>
-      <div class="labeledItem">
-        <label for="srcPassword">Password:&nbsp;</label>
-        <input type="password" id="srcPassword">
-      </div>
-      <div class="labeledItem">
-        <label for="srcPortal">Portal:&nbsp;</label>
-        <input type="text" id="srcPortal" style="width:256px" placeholder="https://www.arcgis.com">
-      </div>
-
-      <br/><br/>
-
-      <div class="section-title">Credentials in destination organization</div>
-
-      <div class="labeledItem">
-        <label for="destUsername">Username:&nbsp;</label>
-        <input type="text" id="destUsername">
-      </div>
-      <div class="labeledItem">
-        <label for="destPassword">Password:&nbsp;</label>
-        <input type="password" id="destPassword">
-      </div>
-      <div class="labeledItem">
-        <label for="destPortal">Portal:&nbsp;</label>
-        <input type="text" id="destPortal" style="width:256px" placeholder="https://www.arcgis.com">
-      </div>
-
-      <br /><br />
-
       <button class="btn btn-default" onclick="goFcn()">Deploy Solution</button>
+      <br /><br />
+      <button class="btn btn-default" onclick="signoutFcn()">Sign out</button>
     </div>
 
     <br />
@@ -98,113 +75,125 @@
   </div>
 
   <script crossorigin="anonymous" src="https://polyfill.io/v3/polyfill.min.js?features=fetch%2Ces2015"></script>
-  <script src="https://requirejs.org/docs/release/2.3.6/minified/require.js"></script>
+  <script>
+    var package_path = window.location.pathname.substring(0, window.location.pathname.indexOf('/deploySolution'));
+    var dojoConfig = {
+      paths: {
+        "@esri/arcgis-rest-auth": package_path + "/node_modules/@esri/arcgis-rest-auth/dist/umd/auth.umd.min",
+        "@esri/arcgis-rest-feature-layer": package_path + "/node_modules/@esri/arcgis-rest-feature-layer/dist/umd/feature-layer.umd.min",
+        "@esri/arcgis-rest-portal": package_path + "/node_modules/@esri/arcgis-rest-portal/dist/umd/portal.umd.min",
+        "@esri/arcgis-rest-request": package_path + "/node_modules/@esri/arcgis-rest-request/dist/umd/request.umd.min",
+        "@esri/arcgis-rest-service-admin": package_path + "/node_modules/@esri/arcgis-rest-service-admin/dist/umd/service-admin.umd.min",
+        "@esri/hub-common": package_path + "/node_modules/@esri/hub-common/dist/umd/common.umd",
+        "@esri/hub-initiatives": package_path + "/node_modules/@esri/hub-initiatives/dist/umd/initiatives.umd",
+        "@esri/hub-sites": package_path + "/node_modules/@esri/hub-sites/dist/umd/sites.umd",
+        "@esri/hub-teams": package_path + "/node_modules/@esri/hub-teams/dist/umd/teams.umd",
+        "@esri/solution-common": package_path + "/node_modules/@esri/solution-common/dist/umd/common.umd",
+        "@esri/solution-deployer": package_path + "/node_modules/@esri/solution-deployer/dist/umd/deployer.umd",
+        "@esri/solution-feature-layer": package_path + "/node_modules/@esri/solution-feature-layer/dist/umd/feature-layer.umd",
+        "@esri/solution-file": package_path + "/node_modules/@esri/solution-file/dist/umd/file.umd",
+        "@esri/solution-form": package_path + "/node_modules/@esri/solution-form/dist/umd/form.umd",
+        "@esri/solution-group": package_path + "/node_modules/@esri/solution-group/dist/umd/group.umd",
+        "@esri/solution-simple-types": package_path + "/node_modules/@esri/solution-simple-types/dist/umd/simple-types.umd",
+        "@esri/solution-hub-types": package_path + "/node_modules/@esri/solution-hub-types/dist/umd/hub-types.umd",
+        "@esri/solution-storymap": package_path + "/node_modules/@esri/solution-storymap/dist/umd/storymap.umd",
+        "@esri/solution-web-experience": package_path + "/node_modules/@esri/solution-web-experience/dist/umd/web-experience.umd",
+
+        "root": package_path,
+        "src": package_path + "/dist",
+        "adlib": package_path + "/node_modules/adlib/dist/adlib",
+        "tslib": package_path + "/node_modules/tslib/tslib"
+      }
+    };
+  </script>
+  <script src="https://js.arcgis.com/4.17/dojo/dojo.js"></script>
   <script src="data/appConfig.js"></script>
   <script>
-    var goFcn;
-    require.config({
-      paths: {
-        "@esri/arcgis-rest-auth": "../node_modules/@esri/arcgis-rest-auth/dist/umd/auth.umd.min",
-        "@esri/arcgis-rest-feature-layer": "../node_modules/@esri/arcgis-rest-feature-layer/dist/umd/feature-layer.umd.min",
-        "@esri/arcgis-rest-portal": "../node_modules/@esri/arcgis-rest-portal/dist/umd/portal.umd.min",
-        "@esri/arcgis-rest-request": "../node_modules/@esri/arcgis-rest-request/dist/umd/request.umd.min",
-        "@esri/arcgis-rest-service-admin": "../node_modules/@esri/arcgis-rest-service-admin/dist/umd/service-admin.umd.min",
-        "@esri/hub-common": "../node_modules/@esri/hub-common/dist/umd/common.umd",
-        "@esri/hub-initiatives": "../node_modules/@esri/hub-initiatives/dist/umd/initiatives.umd",
-        "@esri/hub-sites": "../node_modules/@esri/hub-sites/dist/umd/sites.umd",
-        "@esri/hub-teams": "../node_modules/@esri/hub-teams/dist/umd/teams.umd",
-        "@esri/solution-common": "../node_modules/@esri/solution-common/dist/umd/common.umd",
-        "@esri/solution-deployer": "../node_modules/@esri/solution-deployer/dist/umd/deployer.umd",
-        "@esri/solution-feature-layer": "../node_modules/@esri/solution-feature-layer/dist/umd/feature-layer.umd",
-        "@esri/solution-file": "../node_modules/@esri/solution-file/dist/umd/file.umd",
-        "@esri/solution-form": "../node_modules/@esri/solution-form/dist/umd/form.umd",
-        "@esri/solution-group": "../node_modules/@esri/solution-group/dist/umd/group.umd",
-        "@esri/solution-simple-types": "../node_modules/@esri/solution-simple-types/dist/umd/simple-types.umd",
-        "@esri/solution-hub-types": "../node_modules/@esri/solution-hub-types/dist/umd/hub-types.umd",
-        "@esri/solution-storymap": "../node_modules/@esri/solution-storymap/dist/umd/storymap.umd",
-        "@esri/solution-web-experience": "../node_modules/@esri/solution-web-experience/dist/umd/web-experience.umd",
-        "adlib": "../node_modules/adlib/dist/adlib",
-        "tslib": "../node_modules/tslib/tslib"
-      }
-    });
+    var goFcn, signinFcn, signoutFcn;
 
-    require(["@esri/arcgis-rest-auth", "../dist/deploy-solution-main"],
-      function (auth, main) {
+    require(["src/Auth", "@esri/arcgis-rest-auth", "src/deploy-solution-main"],
+      function (Auth, auth, main) {
         "use strict";
 
-        goFcn = go;
-        document.getElementById("container").style.display = "block";
+        const destPortal = (document.getElementById("destPortal").value || "https://www.arcgis.com");
+        const authentication = new Auth.Auth(appConfig.appId, destPortal);
+        authentication.init()
+        .then(() => {
+          signinFcn = signin;
+          signoutFcn = signout;
 
-        const groupId = appConfig.solutionsGroupId;
-        const solutionsSelect = document.getElementById("id");
+          if (authentication.SignedIn) {
+            goFcn = go;
+            document.getElementById("container").style.display = "block";
+            const destCreds = authentication.Credential !== null ? auth.UserSession.fromCredential(authentication.Credential) : null;
+            const groupId = appConfig.solutionsGroupId;
+            const solutionsSelect = document.getElementById("id");
 
-        // Populate solution picklist
-        main.getTemplates(groupId).then((solutions) => {
-          solutions.forEach((solution) => {
-            var option = document.createElement("option");
-            option.value = solution.id
-            option.text = solution.title + " ( " + solution.id + " )";
-            solutionsSelect.add(option);
-          });
+            // Populate solution picklist
+            main.getTemplates(groupId).then((solutions) => {
+              solutions.forEach((solution) => {
+                var option = document.createElement("option");
+                option.value = solution.id
+                option.text = solution.title + " ( " + solution.id + " )";
+                solutionsSelect.add(option);
+              });
+            });
+
+            function go () {
+              document.getElementById("input").style.display = "none";
+              document.getElementById("output").style.display = "block";
+              var startTime = Date.now();
+              var createdItems = [];
+
+              // use the manually entered value, but fall back to the select list
+              var solutionId = document.getElementById("solutionId").value || document.getElementById('id').value;
+
+              // Deploy!
+              main.deploySolution(
+                solutionId,
+                null,
+                destCreds,
+                function (percentDone, jobId, progressEvent) {
+                  if (progressEvent) {
+                    createdItems.push(progressEvent.data)
+                  }
+                  var html = "Deploying..." + percentDone.toFixed().toString() + "%" + "<br><br>Finished items:<ol>";
+                  createdItems.forEach(function (item) { return html += "<li>" + item + "</li>" });
+                  html += "</ol>";
+                  document.getElementById("output").innerHTML = html;
+                }
+              ).then(function (html){
+                  reportElapsedTime(startTime);
+                  document.getElementById("output").innerHTML = html;
+                },
+                function (error) {
+                  var message = error?.error || JSON.stringify(error) || "Unspecified error";
+                  reportElapsedTime(startTime);
+                  document.getElementById("output").innerHTML = "<span style=\"color:red\">" + message + "</span>";
+                }
+              );
+            }
+
+            function reportElapsedTime (startTime) {
+              var endTime = Date.now();
+              console.log("Elapsed time: " + ((endTime - startTime) / 1000).toFixed(1) + " seconds");
+            }
+          } else {
+            document.getElementById("signin").style.display = "block";
+          }
+
+          function signin () {
+            document.getElementById("signin").style.display = "none";
+            authentication.signIn();
+          }
+
+          function signout () {
+            authentication.signOut();
+          }
+        })
+        .catch(error => {
+          console.log("Unable to sign in: " + error);
         });
-
-        function go () {
-          document.getElementById("input").style.display = "none";
-          document.getElementById("output").style.display = "block";
-          var startTime = Date.now();
-          var createdItems = [];
-
-          // use the manually entered value, but fall back to the select list
-          var solutionId = document.getElementById("solutionId").value || document.getElementById('id').value;
-
-          // Source credentials
-          //const srcUsername = document.getElementById("srcUsername").value;
-          //const srcPassword = document.getElementById("srcPassword").value;
-          const srcPortal = (document.getElementById("srcPortal").value || "https://www.arcgis.com") + "/sharing/rest";
-          const srcCreds = new auth.UserSession({
-            username: document.getElementById("srcUsername").value,
-            password: document.getElementById("srcPassword").value,
-            portal: srcPortal
-          });
-
-          // Dest credentials
-          const destPortal = (document.getElementById("destPortal").value || "https://www.arcgis.com") + "/sharing/rest";
-          const destCreds = new auth.UserSession({
-            username: document.getElementById("destUsername").value,
-            password: document.getElementById("destPassword").value,
-            portal: destPortal
-          });
-
-          // Deploy!
-          main.deploySolution(
-            solutionId,
-            srcCreds,
-            destCreds,
-            function (percentDone, jobId, progressEvent) {
-              if (progressEvent) {
-                createdItems.push(progressEvent.data)
-              }
-              var html = "Deploying..." + percentDone.toFixed().toString() + "%" + "<br><br>Finished items:<ol>";
-              createdItems.forEach(function (item) { return html += "<li>" + item + "</li>" });
-              html += "</ol>";
-              document.getElementById("output").innerHTML = html;
-            }
-          ).then(function (html){
-              reportElapsedTime(startTime);
-              document.getElementById("output").innerHTML = html;
-            },
-            function (error) {
-              var message = error?.error || JSON.stringify(error) || "Unspecified error";
-              reportElapsedTime(startTime);
-              document.getElementById("output").innerHTML = "<span style=\"color:red\">" + message + "</span>";
-            }
-          );
-        }
-
-        function reportElapsedTime (startTime) {
-          var endTime = Date.now();
-          console.log("Elapsed time: " + ((endTime - startTime) / 1000).toFixed(1) + " seconds");
-        }
       }
     );
   </script>

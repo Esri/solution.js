@@ -7,6 +7,9 @@
   "author": "",
   "license": "Apache-2.0",
   "devDependencies": {
+    "@esri/arcgis-rest-types": "^2.14.1",
+    "@types/arcgis-js-api": "^4.17.0",
+    "dojo-typings": "^1.11.11",
     "rollup": "^2.31.0"
   },
   "dependencies": {
