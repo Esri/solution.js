@@ -46,33 +46,31 @@
 <body>
   <h3>Deploy a Solution</h3>
 
-  <div id="signin" style="display:none">
-    <div class="labeledItem">
-      <label for="destPortal">Portal:&nbsp;</label>
-      <input type="text" id="destPortal" style="width:256px" placeholder="https://www.arcgis.com">
-    </div>
+  <div id="portals" style="display:none">
+    <label for="destPortalSelect">Destination portal:</label>
+    <select id="destPortalSelect" class="form-control"></select>
 
     <br /><br />
-    <button class="btn btn-default" onclick="signinFcn()">Sign in</button>
+    <button class="btn btn-default" onclick="gotPortalsFcn()">Continue</button>
   </div>
 
-  <div id="container" style="display:none">
-    <div id="input">
-      <label for="solutionId">Enter a Solution ID:</label>
-      <input class="form-control" type="text" id="solutionId">
-      <label for="id">Or pick from the list below:</label>
-      <select name="Solution Item" id="id" class="form-control"></select>
+  <div id="solutionSelection" style="display:none">
+    <label for="srcPortalSelect">Source portal:</label>
+    <select id="srcPortalSelect" class="form-control"></select>
 
-      <br /><br />
-      <button class="btn btn-default" onclick="goFcn()">Deploy Solution</button>
-      <br /><br />
-      <button class="btn btn-default" onclick="signoutFcn()">Sign out</button>
-    </div>
+    <br /><br />
+    <label for="solutionId">Enter a Solution ID:</label>
+    <input class="form-control" type="text" id="solutionId">
+    <label for="solutionPicklist">Or pick from the list below:</label>
+    <select name="Solution Item" id="solutionPicklist" class="form-control"></select>
 
-    <br />
-
-    <div id="output" style="display:none">Deploying...</div>
+    <br /><br />
+    <button id="deploySolnBtn" class="btn btn-default" onclick="goFcn()">Deploy Solution</button>
+    <br /><br />
+    <button class="btn btn-default" onclick="signoutFcn()">Sign out</button>
   </div>
+
+  <div id="output" style="display:none">Deploying...</div>
 
   <script crossorigin="anonymous" src="https://polyfill.io/v3/polyfill.min.js?features=fetch%2Ces2015"></script>
   <script>
@@ -109,91 +107,147 @@
   <script src="https://js.arcgis.com/4.17/dojo/dojo.js"></script>
   <script src="data/appConfig.js"></script>
   <script>
-    var goFcn, signinFcn, signoutFcn;
+    var gotPortalsFcn, goFcn, signoutFcn;
 
+    const hash = window.location.hash;
     require(["src/Auth", "@esri/arcgis-rest-auth", "src/deploy-solution-main"],
       function (Auth, auth, main) {
         "use strict";
 
-        const destPortal = (document.getElementById("destPortal").value || "https://www.arcgis.com");
-        const authentication = new Auth.Auth(appConfig.appId, destPortal);
-        authentication.init()
-        .then(() => {
-          signinFcn = signin;
-          signoutFcn = signout;
+        if (!hash.startsWith("#access_token=")) {
+          const destPortalSelect = document.getElementById("destPortalSelect");
+          appConfig.destinations.forEach(destination => {
+            var option = document.createElement("option");
+            option.value = destination.appId;
+            option.text = destination.portal;
+            destPortalSelect.add(option);
+          });
+          document.getElementById("portals").style.display = "block";
 
-          if (authentication.SignedIn) {
-            goFcn = go;
-            document.getElementById("container").style.display = "block";
-            const destCreds = authentication.Credential !== null ? auth.UserSession.fromCredential(authentication.Credential) : null;
-            const groupId = appConfig.solutionsGroupId;
-            const solutionsSelect = document.getElementById("id");
-
-            // Populate solution picklist
-            main.getTemplates(groupId).then((solutions) => {
-              solutions.forEach((solution) => {
-                var option = document.createElement("option");
-                option.value = solution.id
-                option.text = solution.title + " ( " + solution.id + " )";
-                solutionsSelect.add(option);
-              });
+          gotPortalsFcn = function () {
+            const destAuth = new Auth.Auth(destPortalSelect.value,
+              appConfig.destinations[destPortalSelect.selectedIndex].portal);
+            destAuth.init()
+            .then(() => {
+              if (destAuth.SignedIn) {
+                destAuth.signOut();
+              }
+              destAuth.signIn();
+            })
+            .catch(error => {
+              console.log("Unable to sign in: " + error);
             });
+          }
 
-            function go () {
-              document.getElementById("input").style.display = "none";
-              document.getElementById("output").style.display = "block";
-              var startTime = Date.now();
-              var createdItems = [];
 
-              // use the manually entered value, but fall back to the select list
-              var solutionId = document.getElementById("solutionId").value || document.getElementById('id').value;
+        } else {
+          // Get the destination portal out of the hash
+          let destPortal = "";
+          const sDestPortalFlag = "&state=%7B%22portalUrl%22%3A%22";
+          const iDestPortalFlag = hash.indexOf(sDestPortalFlag);
+          if (iDestPortalFlag > 0) {
+            const sDestPortalEnd = "%22%7D";
+            const iDestPortalEnd = hash.indexOf(sDestPortalEnd, iDestPortalFlag);
+            if (iDestPortalEnd > 0) {
+              destPortal = decodeURIComponent(hash.substring(iDestPortalFlag + sDestPortalFlag.length, iDestPortalEnd));
+            }
+          }
 
-              // Deploy!
-              main.deploySolution(
-                solutionId,
-                null,
-                destCreds,
-                function (percentDone, jobId, progressEvent) {
-                  if (progressEvent) {
-                    createdItems.push(progressEvent.data)
+          const destAuth = new Auth.Auth(appConfig.appId, destPortal);
+          destAuth.init()
+          .then(() => {
+            if (destAuth.SignedIn) {
+              const srcPortalSelect = document.getElementById("srcPortalSelect");
+              appConfig.sources.forEach(source => {
+                var option = document.createElement("option");
+                option.value = source.solutionsGroupId;
+                option.text = source.portal;
+                srcPortalSelect.add(option);
+              });
+              document.getElementById("deploySolnBtn").innerHTML = "Deploy Solution to " + destPortal;
+              document.getElementById("solutionSelection").style.display = "block";
+
+              // Populate solution picklist
+              srcPortalSelect.onchange = solutionPicklistUpdateFcn;
+              solutionPicklistUpdateFcn();
+
+              function solutionPicklistUpdateFcn() {
+                // Clear existing entries
+                let solutionPicklist = document.getElementById("solutionPicklist");
+                const solutionPicklistClone = solutionPicklist.cloneNode(false);
+                solutionPicklist.parentNode.replaceChild(solutionPicklistClone, solutionPicklist);
+                solutionPicklist = document.getElementById("solutionPicklist");
+
+                // Add solutions from group
+                main.getTemplates(srcPortalSelect.value).then(solutions => {
+                  solutions.forEach((solution) => {
+                    var option = document.createElement("option");
+                    option.value = solution.id
+                    option.text = solution.title + " ( " + solution.id + " )";
+                    solutionPicklist.add(option);
+                  });
+                });
+              }
+
+              goFcn = function () {
+                document.getElementById("solutionSelection").style.display = "none";
+                document.getElementById("output").style.display = "block";
+                var startTime = Date.now();
+                var createdItems = [];
+
+                const srcCreds = new auth.UserSession({
+                  portal: appConfig.sources[srcPortalSelect.selectedIndex].portal + "/sharing/rest"
+                });
+                const destCreds = destAuth.Credential !== null ?
+                  auth.UserSession.fromCredential(destAuth.Credential) : null;
+
+                // Use the manually-entered value if it exists, falling back to the select list
+                var solutionId =
+                  document.getElementById("solutionId").value ||
+                  document.getElementById("solutionPicklist").value;
+
+                // Deploy!
+                main.deploySolution(
+                  solutionId,
+                  srcCreds,
+                  destCreds,
+                  function (percentDone, jobId, progressEvent) {
+                    if (progressEvent) {
+                      createdItems.push(progressEvent.data)
+                    }
+                    var html = "Deploying..." + percentDone.toFixed().toString() + "%" + "<br><br>Finished items:<ol>";
+                    createdItems.forEach(function (item) { return html += "<li>" + item + "</li>" });
+                    html += "</ol>";
+                    document.getElementById("output").innerHTML = html;
                   }
-                  var html = "Deploying..." + percentDone.toFixed().toString() + "%" + "<br><br>Finished items:<ol>";
-                  createdItems.forEach(function (item) { return html += "<li>" + item + "</li>" });
-                  html += "</ol>";
-                  document.getElementById("output").innerHTML = html;
-                }
-              ).then(function (html){
-                  reportElapsedTime(startTime);
-                  document.getElementById("output").innerHTML = html;
-                },
-                function (error) {
-                  var message = error?.error || JSON.stringify(error) || "Unspecified error";
-                  reportElapsedTime(startTime);
-                  document.getElementById("output").innerHTML = "<span style=\"color:red\">" + message + "</span>";
-                }
-              );
+                ).then(function (html){
+                    reportElapsedTime(startTime);
+                    document.getElementById("output").innerHTML = html;
+                  },
+                  function (error) {
+                    var message = error?.error || JSON.stringify(error) || "Unspecified error";
+                    reportElapsedTime(startTime);
+                    document.getElementById("output").innerHTML = "<span style=\"color:red\">" + message + "</span>";
+                  }
+                );
+              }
+
+              function reportElapsedTime (startTime) {
+                var endTime = Date.now();
+                console.log("Elapsed time: " + ((endTime - startTime) / 1000).toFixed(1) + " seconds");
+              }
+            } else {
+              destAuth.signIn();
             }
 
-            function reportElapsedTime (startTime) {
-              var endTime = Date.now();
-              console.log("Elapsed time: " + ((endTime - startTime) / 1000).toFixed(1) + " seconds");
+            signoutFcn = function signout () {
+              destAuth.signOut();
             }
-          } else {
-            document.getElementById("signin").style.display = "block";
-          }
-
-          function signin () {
-            document.getElementById("signin").style.display = "none";
-            authentication.signIn();
-          }
-
-          function signout () {
-            authentication.signOut();
-          }
-        })
-        .catch(error => {
-          console.log("Unable to sign in: " + error);
-        });
+          })
+          .catch(error => {
+            console.log("Unable to sign in: " + error);
+          });
+        }
       }
     );
   </script>
