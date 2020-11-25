@@ -37,28 +37,27 @@
   li {
     margin-bottom: 12px;
   }
-  .labeledItem {
-    display: inline-block;
-    margin: 0 8px 8px 0;
-  }
   </style>
 </head>
 <body>
   <h3>Deploy a Solution</h3>
 
-  <div id="portals" style="display:none">
-    <label for="destPortalSelect">Destination portal:</label>
-    <select id="destPortalSelect" class="form-control"></select>
+  <div id="portalChoice" style="display:none">
+    <button class="btn btn-default" onclick="logIntoAGOFcn()">Log in to ArcGIS Online</button>
+    <button class="btn btn-default" onclick="logIntoPortalFcn()">Log in to Portal for ArcGIS</button>
+  </div>
 
-    <br /><br />
-    <button class="btn btn-default" onclick="gotPortalsFcn()">Continue</button>
+  <div id="portalInfo" style="display:none">
+    <label for="portalUrl">Enter the URL to your Portal:</label>
+    <input class="form-control" type="text" id="portalUrl">
+    <br/>
+    <label for="appId">Enter the App ID for the Portal:</label>
+    <input class="form-control" type="text" id="appId">
+    <br/>
+    <button class="btn btn-default" onclick="logIntoPortalFcn2()">Log in</button>
   </div>
 
   <div id="solutionSelection" style="display:none">
-    <label for="srcPortalSelect">Source portal:</label>
-    <select id="srcPortalSelect" class="form-control"></select>
-
-    <br /><br />
     <label for="solutionId">Enter a Solution ID:</label>
     <input class="form-control" type="text" id="solutionId">
     <label for="solutionPicklist">Or pick from the list below:</label>
@@ -66,8 +65,6 @@
 
     <br /><br />
     <button id="deploySolnBtn" class="btn btn-default" onclick="goFcn()">Deploy Solution</button>
-    <br /><br />
-    <button class="btn btn-default" onclick="signoutFcn()">Sign out</button>
   </div>
 
   <div id="output" style="display:none">Deploying...</div>
@@ -107,14 +104,156 @@
   <script src="https://js.arcgis.com/4.17/dojo/dojo.js"></script>
   <script src="data/appConfig.js"></script>
   <script>
-    var gotPortalsFcn, goFcn, signoutFcn;
-
+    var goFcn;
     const hash = window.location.hash;
+    if (!hash.startsWith("#access_token=")) {
+      // Ask for the portal to use
+      document.getElementById("portalChoice").style.display = "block";
+
+    } else {
+      require(["src/Auth", "@esri/arcgis-rest-auth", "src/deploy-solution-main"],
+        function (Auth, auth, main) {
+          "use strict";
+
+          // Get the destination portal out of the hash
+          let destPortal = "";
+          const sDestPortalFlag = "&state=%7B%22portalUrl%22%3A%22";
+          const iDestPortalFlag = hash.indexOf(sDestPortalFlag);
+          if (iDestPortalFlag > 0) {
+            const sDestPortalEnd = "%22%7D";
+            const iDestPortalEnd = hash.indexOf(sDestPortalEnd, iDestPortalFlag);
+            if (iDestPortalEnd > 0) {
+              destPortal = decodeURIComponent(hash.substring(iDestPortalFlag + sDestPortalFlag.length, iDestPortalEnd));
+            }
+          }
+
+          const destAuth = new Auth.Auth(appConfig.appId, destPortal);
+          destAuth.init()
+          .then(() => {
+            if (destAuth.SignedIn) {
+              document.getElementById("deploySolnBtn").innerHTML = "Deploy Solution to " + destPortal;
+              document.getElementById("solutionSelection").style.display = "block";
+
+              // Add solutions from group
+              const solutionPicklist = document.getElementById("solutionPicklist");
+              main.getTemplates(appConfig.solutionsGroupId).then(solutions => {
+                solutions.forEach((solution) => {
+                  var option = document.createElement("option");
+                  option.value = solution.id
+                  option.text = solution.title + " ( " + solution.id + " )";
+                  solutionPicklist.add(option);
+                });
+              });
+
+              goFcn = function () {
+                document.getElementById("solutionSelection").style.display = "none";
+                document.getElementById("output").style.display = "block";
+                var startTime = Date.now();
+                var createdItems = [];
+
+                const srcCreds = new auth.UserSession({
+                  portal: "https://www.arcgis.com/sharing/rest"
+                });
+                const destCreds = destAuth.Credential !== null ?
+                  auth.UserSession.fromCredential(destAuth.Credential) : null;
+
+                // Use the manually-entered value if it exists, falling back to the select list
+                var solutionId =
+                  document.getElementById("solutionId").value ||
+                  document.getElementById("solutionPicklist").value;
+
+                // Deploy!
+                main.deploySolution(
+                  solutionId,
+                  srcCreds,
+                  destCreds,
+                  function (percentDone, jobId, progressEvent) {
+                    if (progressEvent) {
+                      createdItems.push(progressEvent.data)
+                    }
+                    var html = "Deploying..." + percentDone.toFixed().toString() + "%" + "<br><br>Finished items:<ol>";
+                    createdItems.forEach(function (item) { return html += "<li>" + item + "</li>" });
+                    html += "</ol>";
+                    document.getElementById("output").innerHTML = html;
+                  }
+                ).then(function (html){
+                    reportElapsedTime(startTime);
+                    document.getElementById("output").innerHTML = html;
+                  },
+                  function (error) {
+                    var message = error?.error || JSON.stringify(error) || "Unspecified error";
+                    reportElapsedTime(startTime);
+                    document.getElementById("output").innerHTML = "<span style=\"color:red\">" + message + "</span>";
+                  }
+                );
+              }
+
+              function reportElapsedTime (startTime) {
+                var endTime = Date.now();
+                console.log("Elapsed time: " + ((endTime - startTime) / 1000).toFixed(1) + " seconds");
+              }
+            } else {
+              destAuth.signIn();
+            }
+          })
+          .catch(error => {
+            console.log("Unable to sign in: " + error);
+          });
+        }
+      );
+    }
+
+    var logIntoAGOFcn = function logIntoAGO () {
+      require(["src/Auth", "@esri/arcgis-rest-auth", "src/deploy-solution-main"],
+        function (Auth, auth, main) {
+          "use strict";
+          document.getElementById("portalChoice").style.display = "none";
+          logIn(Auth, appConfig.appId, "https://www.arcgis.com");
+        }
+      );
+    }
+
+    var logIntoPortalFcn = function logIntoPortal () {
+      require(["src/Auth", "@esri/arcgis-rest-auth", "src/deploy-solution-main"],
+        function (Auth, auth, main) {
+          "use strict";
+          document.getElementById("portalChoice").style.display = "none";
+          document.getElementById("portalInfo").style.display = "block";
+        }
+      );
+    }
+
+    var logIntoPortalFcn2 = function logIntoPortalFcn2 () {
+      require(["src/Auth", "@esri/arcgis-rest-auth", "src/deploy-solution-main"],
+        function (Auth, auth, main) {
+          "use strict";
+          document.getElementById("portalInfo").style.display = "none";
+          logIn(Auth, document.getElementById("appId").value, document.getElementById("portalUrl").value);
+        }
+      );
+    }
+
+    function logIn(Auth, appId, portalUrl) {
+      const destAuth = new Auth.Auth(appId, portalUrl);
+      destAuth.init()
+      .then(() => {
+        if (destAuth.SignedIn) {
+          destAuth.signOut();
+        }
+        destAuth.signIn();
+      })
+      .catch(error => {
+        document.getElementById("portalChoice").style.display = "block";
+        console.log("Unable to sign in: " + error);
+      });
+    }
+
+
+    /*
     require(["src/Auth", "@esri/arcgis-rest-auth", "src/deploy-solution-main"],
       function (Auth, auth, main) {
         "use strict";
 
-        if (!hash.startsWith("#access_token=")) {
           const destPortalSelect = document.getElementById("destPortalSelect");
           appConfig.destinations.forEach(destination => {
             var option = document.createElement("option");
@@ -122,7 +261,7 @@
             option.text = destination.portal;
             destPortalSelect.add(option);
           });
-          document.getElementById("portals").style.display = "block";
+          document.getElementById("portalChoice").style.display = "block";
 
           gotPortalsFcn = function () {
             const destAuth = new Auth.Auth(destPortalSelect.value,
@@ -250,6 +389,7 @@
         }
       }
     );
+    */
   </script>
 </body>
 </html>
