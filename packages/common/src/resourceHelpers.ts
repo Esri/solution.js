@@ -774,8 +774,12 @@ export function storeFormItemFiles(
 
     // Store form data
     if (itemData) {
+      const originalFilename =
+        itemTemplate.item.name || (itemData as File).name;
       const filename =
-        itemTemplate.item.name || (itemData as File).name || "formData.zip";
+        originalFilename && originalFilename !== "undefined"
+          ? originalFilename
+          : "formData.zip";
       itemTemplate.item.name = filename;
       const storageName = convertItemResourceToStorageResource(
         itemTemplate.itemId,
