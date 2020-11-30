@@ -37,6 +37,9 @@
   li {
     margin-bottom: 12px;
   }
+  td {
+    padding: 12px;
+  }
   </style>
 </head>
 <body>
@@ -51,10 +54,24 @@
     <label for="portalUrl">Enter the URL to your Portal:</label>
     <input class="form-control" type="text" id="portalUrl">
     <br/>
-    <label for="appId">Enter the App ID for the Portal:</label>
-    <input class="form-control" type="text" id="appId">
+    <table>
+      <tr>
+        <td>
+          <label for="appId">App ID:</label>
+          <input type="text" id="appId">
+        </td>
+        <td><span style="font-style:italic">or</span></td>
+        <td>
+          <label for="portalUsername">Username:&nbsp;</label>
+          <input type="text" id="portalUsername">
+          <br/>
+          <label for="portalPassword">Password:&nbsp;</label>
+          <input type="password" id="portalPassword">
+        </td>
+      </tr>
+    </table>
     <br/>
-    <button class="btn btn-default" onclick="logIntoPortalFcn2()">Log in</button>
+    <button class="btn btn-default" onclick="proceedWithPortalLoginFcn()">Log in</button>
   </div>
 
   <div id="solutionSelection" style="display:none">
@@ -105,11 +122,13 @@
   <script src="data/appConfig.js"></script>
   <script>
     var goFcn;
+
+    // Ask for the portal to use
     const hash = window.location.hash;
     if (!hash.startsWith("#access_token=")) {
-      // Ask for the portal to use
       document.getElementById("portalChoice").style.display = "block";
 
+      // Callback after AGO login
     } else {
       require(["src/Auth", "@esri/arcgis-rest-auth", "src/deploy-solution-main"],
         function (Auth, auth, main) {
@@ -131,67 +150,8 @@
           destAuth.init()
           .then(() => {
             if (destAuth.SignedIn) {
-              document.getElementById("deploySolnBtn").innerHTML = "Deploy Solution to " + destPortal;
-              document.getElementById("solutionSelection").style.display = "block";
-
-              // Add solutions from group
-              const solutionPicklist = document.getElementById("solutionPicklist");
-              main.getTemplates(appConfig.solutionsGroupId).then(solutions => {
-                solutions.forEach((solution) => {
-                  var option = document.createElement("option");
-                  option.value = solution.id
-                  option.text = solution.title + " ( " + solution.id + " )";
-                  solutionPicklist.add(option);
-                });
-              });
-
-              goFcn = function () {
-                document.getElementById("solutionSelection").style.display = "none";
-                document.getElementById("output").style.display = "block";
-                var startTime = Date.now();
-                var createdItems = [];
-
-                const srcCreds = new auth.UserSession({
-                  portal: "https://www.arcgis.com/sharing/rest"
-                });
-                const destCreds = destAuth.Credential !== null ?
-                  auth.UserSession.fromCredential(destAuth.Credential) : null;
-
-                // Use the manually-entered value if it exists, falling back to the select list
-                var solutionId =
-                  document.getElementById("solutionId").value ||
-                  document.getElementById("solutionPicklist").value;
-
-                // Deploy!
-                main.deploySolution(
-                  solutionId,
-                  srcCreds,
-                  destCreds,
-                  function (percentDone, jobId, progressEvent) {
-                    if (progressEvent) {
-                      createdItems.push(progressEvent.data)
-                    }
-                    var html = "Deploying..." + percentDone.toFixed().toString() + "%" + "<br><br>Finished items:<ol>";
-                    createdItems.forEach(function (item) { return html += "<li>" + item + "</li>" });
-                    html += "</ol>";
-                    document.getElementById("output").innerHTML = html;
-                  }
-                ).then(function (html){
-                    reportElapsedTime(startTime);
-                    document.getElementById("output").innerHTML = html;
-                  },
-                  function (error) {
-                    var message = error?.error || JSON.stringify(error) || "Unspecified error";
-                    reportElapsedTime(startTime);
-                    document.getElementById("output").innerHTML = "<span style=\"color:red\">" + message + "</span>";
-                  }
-                );
-              }
-
-              function reportElapsedTime (startTime) {
-                var endTime = Date.now();
-                console.log("Elapsed time: " + ((endTime - startTime) / 1000).toFixed(1) + " seconds");
-              }
+              const destUserSess = destAuth.Credential !== null ? auth.UserSession.fromCredential(destAuth.Credential) : null;
+              getSolutions(destPortal, destUserSess, auth, main);
             } else {
               destAuth.signIn();
             }
@@ -223,12 +183,177 @@
       );
     }
 
-    var logIntoPortalFcn2 = function logIntoPortalFcn2 () {
+    var proceedWithPortalLoginFcn = function proceedWithPortalLogin () {
       require(["src/Auth", "@esri/arcgis-rest-auth", "src/deploy-solution-main"],
         function (Auth, auth, main) {
           "use strict";
           document.getElementById("portalInfo").style.display = "none";
-          logIn(Auth, document.getElementById("appId").value, document.getElementById("portalUrl").value);
+          const portalUrl = document.getElementById("portalUrl").value;
+
+          const appId = document.getElementById("appId").value;
+          if (appId) {
+            logIn(Auth, appId, portalUrl);
+
+          } else {
+            const username = document.getElementById("portalUsername").value;
+            const password = document.getElementById("portalPassword").value;
+
+            generateToken(portalUrl, username, password).then(
+              tokenResponse => {
+                self(portalUrl, tokenResponse.token).then(
+                  selfInfo => {
+                    let destPortal;
+                    if (selfInfo.isPortal === true) {
+                      // Portal
+                      destPortal = "https://" + selfInfo.portalHostname + "/";
+                    } else if (selfInfo.isPortal === false && selfInfo.id) {
+                      // ArcGIS Online Org
+                      // Set it to the org's custom URL instead of www.arcgis.com
+                      destPortal = "https://" + selfInfo.urlKey + "." + selfInfo.customBaseUrl + "/";
+                    } else {
+                      // ArcGIS Online personal account
+                      destPortal = "https://" + selfInfo.portalHostname + "/";
+                    }
+
+                    const destUserSess = auth.UserSession.fromCredential({
+                      ...tokenResponse,
+                      server: destPortal,
+                      userId: username
+                    });
+                    getSolutions(destPortal, destUserSess, auth, main);
+                  }
+                );
+              }
+            );
+          }
+
+          function self(portalUrl, token) {
+            let url =  `${portalUrl}/sharing/rest/portals/self`;
+            let parameters = {
+              token: token,
+              f: "json"
+            };
+            let options = {
+              withCredentials: false
+            };
+            return get(url, parameters, options);
+          }
+
+          function generateToken(portalUrl, username, password) {
+            let url = `${portalUrl}/sharing/rest/generateToken`;
+            let payload = {
+              client: "referer",
+              referer: window.location.hostname,
+              expiration: 60,
+              username: username,
+              password: password,
+              f: "json"
+            };
+            let options = {
+              withCredentials: false
+            };
+            return post(url, payload, options);
+          }
+
+          function get(url, parameters, options) {
+            options = typeof options !== "undefined" ? options : { withCredentials: false };
+            return new Promise(function(resolve, reject) {
+
+              let xhr = new XMLHttpRequest();
+              // xhr.responseType = "json"; // Can't use this until IE11 supports it.
+              xhr.withCredentials = options.withCredentials;
+
+              xhr.addEventListener("readystatechange", function() {
+                if (xhr.readyState === 4 && xhr.status == 200) {
+                  // Handle empty responses.
+                  let response;
+                  if (xhr.response === "") {
+                    response = null;
+                  } else {
+                    response = JSON.parse(xhr.response);
+                  }
+
+                  // Resolve the promise with the response.
+                  resolve(response);
+                } else if (xhr.readyState === 4 && xhr.status == 500) {
+                  reject(Error(xhr));
+                }
+              });
+
+              xhr.addEventListener("error", function() {
+                reject(Error(xhr));
+              });
+
+              xhr.open("GET", `${url}?${serialize(parameters)}`);
+
+              // Reject the request after 120 seconds.
+              xhr.timeout = 120000;
+              xhr.ontimeout = function() {
+                console.log("timeout");
+                reject(Error(xhr));
+              };
+
+              xhr.send();
+            });
+          }
+
+          function post(url, data, options) {
+            options = typeof options !== "undefined" ? options : { withCredentials: false };
+
+            return new Promise(function(resolve, reject) {
+
+              let xhr = new XMLHttpRequest();
+              // xhr.responseType = "json"; // Can't use this until IE11 supports it.
+              xhr.withCredentials = options.withCredentials;
+
+              xhr.addEventListener("readystatechange", function() {
+                if (xhr.readyState === 4 && xhr.status == 200) {
+                  // Handle empty responses.
+                  let response;
+                  if (xhr.response === "") {
+                    response = null;
+                  } else {
+                    response = JSON.parse(xhr.response);
+                  }
+
+                  // Resolve the promise with the response.
+                  resolve(response);
+                } else if (xhr.readyState === 4 && xhr.status == 500) {
+                  reject(Error(xhr));
+                }
+              });
+
+              xhr.addEventListener("error", function() {
+                reject(Error(xhr));
+              });
+
+              xhr.open("POST", url);
+
+              // Reject the request after 120 seconds.
+              xhr.timeout = 120000;
+              xhr.ontimeout = function() {
+                console.log("timeout");
+                reject(Error(xhr));
+              };
+
+              xhr.setRequestHeader("content-type", "application/x-www-form-urlencoded");
+              xhr.send(serialize(data));
+            });
+          }
+
+          function serialize(obj, prefix) {
+            let str = [ ];
+            for (let p in obj) {
+              if (obj.hasOwnProperty(p)) {
+                let k = prefix ? prefix + "[" + p + "]" : p;
+                let v = obj[p];
+                str.push(typeof v == "object" ?
+                  serialize(v, k) :
+                  encodeURIComponent(k) + "=" + encodeURIComponent(v));
+              }
+            }
+            return str.join("&");
+          }
         }
       );
     }
@@ -247,6 +372,71 @@
         console.log("Unable to sign in: " + error);
       });
     }
+
+    function getSolutions(destPortal, destUserSess, auth, main) {
+      document.getElementById("deploySolnBtn").innerHTML = "Deploy Solution to " + destPortal;
+      document.getElementById("solutionSelection").style.display = "block";
+
+      // Add solutions from group
+      const solutionPicklist = document.getElementById("solutionPicklist");
+      main.getTemplates(appConfig.solutionsGroupId).then(solutions => {
+        solutions.forEach((solution) => {
+          var option = document.createElement("option");
+          option.value = solution.id
+          option.text = solution.title + " ( " + solution.id + " )";
+          solutionPicklist.add(option);
+        });
+      });
+
+      goFcn = function () {
+        document.getElementById("solutionSelection").style.display = "none";
+        document.getElementById("output").style.display = "block";
+        var startTime = Date.now();
+        var createdItems = [];
+
+        const srcUserSess = new auth.UserSession({
+          portal: "https://www.arcgis.com/sharing/rest"
+        });
+
+        // Use the manually-entered value if it exists, falling back to the select list
+        var solutionId =
+          document.getElementById("solutionId").value ||
+          document.getElementById("solutionPicklist").value;
+
+        // Deploy!
+        main.deploySolution(
+          solutionId,
+          srcUserSess,
+          destUserSess,
+          function (percentDone, jobId, progressEvent) {
+            if (progressEvent) {
+              createdItems.push(progressEvent.data)
+            }
+            var html = "Deploying..." + percentDone.toFixed().toString() + "%" + "<br><br>Finished items:<ol>";
+            createdItems.forEach(function (item) { return html += "<li>" + item + "</li>" });
+            html += "</ol>";
+            document.getElementById("output").innerHTML = html;
+          }
+        ).then(function (html){
+            reportElapsedTime(startTime);
+            document.getElementById("output").innerHTML = html;
+          },
+          function (error) {
+            var message = error?.error || JSON.stringify(error) || "Unspecified error";
+            reportElapsedTime(startTime);
+            document.getElementById("output").innerHTML = "<span style=\"color:red\">" + message + "</span>";
+          }
+        );
+      }
+
+      function reportElapsedTime (startTime) {
+        var endTime = Date.now();
+        console.log("Elapsed time: " + ((endTime - startTime) / 1000).toFixed(1) + " seconds");
+      }
+    }
+
+
+
 
 
     /*
