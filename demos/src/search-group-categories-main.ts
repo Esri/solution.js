@@ -119,7 +119,8 @@ export function runQuery(): void {
 
   const searchString = "";
   const additionalSearchOptions: common.IAdditionalSearchOptions = {
-    categories: queryCategories
+    categories: queryCategories,
+    num: 100
   };
   common
     .searchGroupContents(
@@ -280,7 +281,7 @@ function colorize(color: string, text: string): string {
 function textAreaHtmlFromJSON(json: any): string {
   return textAreaHtmlFromText(
     JSON.stringify(
-      common.sanitizeJSON(json), 
+      common.sanitizeJSON(json),
       null, 2
     )
   );
