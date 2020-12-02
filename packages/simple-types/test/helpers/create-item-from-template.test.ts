@@ -203,12 +203,6 @@ describe("simpleTypeCreateItemFromTemplate", () => {
     });
   });
 
-  /*fdescribe("oic", () => {
-    it("should handle OIC (Oriented Imagery Catalog)", done => {
-      done.fail();
-    });
-  });*/
-
   describe("quick capture", () => {
     it("should create quick capture project", done => {
       const newItemId: string = "xxx79c91fc7642ebb4c0bbacfbacd510";

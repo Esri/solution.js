@@ -1270,7 +1270,7 @@ export function getItemTypeAbbrev(type: string): string {
       Solution: "sol",
       StoryMap: "xxx",
       "Urban Model": "xxx",
-      "Web Experience Template": "xxx",
+      "Web Experience Template": "wex",
       "Web Experience": "xxx",
       "Web Mapping Application": "wma",
       "Workforce Project": "wrk",
