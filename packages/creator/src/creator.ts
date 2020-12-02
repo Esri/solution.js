@@ -41,7 +41,7 @@ import {
 } from "@esri/solution-common";
 import { UserSession } from "@esri/arcgis-rest-auth";
 import { failSafe, IModel } from "@esri/hub-common";
-import { _addContentToSolution } from "./helpers/add-content-to-solution";
+import { addContentToSolution } from "./helpers/add-content-to-solution";
 
 // Simple no-op to clean up progressCallback management
 const noOp = () => {};
@@ -231,7 +231,7 @@ export function _createSolutionFromItemIds(
     .then(id => {
       solutionId = id;
       // Add list of items to the new solution
-      return _addContentToSolution(solutionId, options, authentication);
+      return addContentToSolution(solutionId, options, authentication);
     })
     .catch(addError => {
       // If the solution item got created, delete it

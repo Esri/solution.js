@@ -48,7 +48,7 @@ import {
  * @return A promise that resolves with the AGO id of the updated solution
  * @internal
  */
-export function _addContentToSolution(
+export function addContentToSolution(
   solutionItemId: string,
   options: ICreateSolutionOptions,
   authentication: UserSession
@@ -199,6 +199,73 @@ export function _addContentToSolution(
   });
 }
 
+// ------------------------------------------------------------------------------------------------------------------ //
+
+/**
+ * Gets the dependencies of an item by merging its dependencies list with item references in template variables.
+ *
+ * @param template Template to examine
+ * @return List of dependency ids
+ * @private
+ */
+export function _getDependencies(template: IItemTemplate): string[] {
+  // Get all dependencies
+  let deps = template.dependencies.concat(
+    _getIdsOutOfTemplateVariables(
+      _getTemplateVariables(JSON.stringify(template.item))
+    ),
+    _getIdsOutOfTemplateVariables(
+      _getTemplateVariables(JSON.stringify(template.data))
+    )
+  );
+
+  // Remove duplicates and self-references
+  deps.sort();
+  deps = deps.filter((elem, index, array) => {
+    if (elem === template.itemId) {
+      return false;
+    } else if (index > 0) {
+      return elem !== array[index - 1];
+    } else {
+      return true;
+    }
+  });
+
+  return deps;
+}
+
+/**
+ * Extracts AGO ids out of template variables.
+ *
+ * @param variables List of template variables to examine
+ * @return List of AGO ids referenced in `variables`
+ * @private
+ */
+export function _getIdsOutOfTemplateVariables(variables: string[]): string[] {
+  return variables
+    .map(variable => {
+      const idList = variable.match(/[0-9A-F]{32}/i); // is it a guid?
+      if (idList) {
+        return idList[0];
+      } else {
+        return null;
+      }
+    })
+    .filter(variable => !!variable);
+}
+
+/**
+ * Extracts template variables out of a string.
+ *
+ * @param text String to examine
+ * @return List of template variables found in string
+ * @private
+ */
+export function _getTemplateVariables(text: string): string[] {
+  return (text.match(/{{[a-z0-9.]*}}/gi) || []) // find variable
+    .map(variable => variable.substring(2, variable.length - 2)); // remove "{{" & "}}"
+}
+
 /**
  * Update the items dependencies and groups arrays
  *
@@ -258,7 +325,7 @@ export function _postProcessGroupDependencies(
  *
  * @param templates The array of templates to evaluate
  * @return Updated version of the templates
- * @protected
+ * @private
  */
 export function _postProcessIgnoredItems(
   templates: IItemTemplate[]
@@ -409,5 +476,6 @@ export function _templatizeSolutionIds(templates: IItemTemplate[]): void {
   templates.forEach((template: IItemTemplate) => {
     _replaceRemainingIdsInObject(solutionIds, template.item);
     _replaceRemainingIdsInObject(solutionIds, template.data);
+    template.dependencies = _getDependencies(template);
   });
 }
