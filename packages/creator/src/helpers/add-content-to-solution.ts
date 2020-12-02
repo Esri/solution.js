@@ -48,7 +48,7 @@ import {
  * @return A promise that resolves with the AGO id of the updated solution
  * @internal
  */
-export function _addContentToSolution(
+export function addContentToSolution(
   solutionItemId: string,
   options: ICreateSolutionOptions,
   authentication: UserSession
@@ -197,6 +197,52 @@ export function _addContentToSolution(
       }
     });
   });
+}
+
+// ------------------------------------------------------------------------------------------------------------------ //
+
+export function _getDependencies(template: IItemTemplate): string[] {
+  // Get all dependencies
+  let deps = template.dependencies.concat(
+    _getIdsOutOfTemplateVariables(
+      _getTemplateVariables(JSON.stringify(template.item))
+    ),
+    _getIdsOutOfTemplateVariables(
+      _getTemplateVariables(JSON.stringify(template.data))
+    )
+  );
+
+  // Remove duplicates and self-references
+  deps.sort();
+  deps = deps.filter((elem, index, array) => {
+    if (elem === template.itemId) {
+      return false;
+    } else if (index > 0) {
+      return elem !== array[index - 1];
+    } else {
+      return true;
+    }
+  });
+
+  return deps;
+}
+
+export function _getIdsOutOfTemplateVariables(variables: string[]): string[] {
+  return variables
+    .map(variable => {
+      const idList = variable.match(/[0-9A-F]{32}/i); // is it a guid?
+      if (idList) {
+        return idList[0];
+      } else {
+        return null;
+      }
+    })
+    .filter(variable => !!variable);
+}
+
+export function _getTemplateVariables(text: string): string[] {
+  return (text.match(/{{[a-z0-9.]*}}/gi) || []) // find variable
+    .map(variable => variable.substring(2, variable.length - 2)); // remove "{{" & "}}"
 }
 
 /**
@@ -409,5 +455,6 @@ export function _templatizeSolutionIds(templates: IItemTemplate[]): void {
   templates.forEach((template: IItemTemplate) => {
     _replaceRemainingIdsInObject(solutionIds, template.item);
     _replaceRemainingIdsInObject(solutionIds, template.data);
+    template.dependencies = _getDependencies(template);
   });
 }

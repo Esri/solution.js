@@ -15,7 +15,10 @@
  */
 
 import {
-  _addContentToSolution,
+  addContentToSolution,
+  _getDependencies,
+  _getIdsOutOfTemplateVariables,
+  _getTemplateVariables,
   _postProcessGroupDependencies,
   _postProcessIgnoredItems,
   _templatizeSolutionIds,
@@ -34,8 +37,8 @@ import { findBy } from "@esri/hub-common";
 // Set up a UserSession to use in all these tests
 const MOCK_USER_SESSION = utils.createRuntimeMockUserSession();
 
-describe("_addContentToSolution", () => {
-  it("_addContentToSolution item progress callback with new item", done => {
+describe("addContentToSolution", () => {
+  it("addContentToSolution item progress callback with new item", done => {
     const solutionId = "sln1234567890";
     const options: common.ICreateSolutionOptions = {
       itemIds: ["map1234567890"]
@@ -62,7 +65,7 @@ describe("_addContentToSolution", () => {
       }
     );
 
-    return _addContentToSolution(solutionId, options, MOCK_USER_SESSION).then(
+    return addContentToSolution(solutionId, options, MOCK_USER_SESSION).then(
       () => {
         expect(options.itemIds).toEqual(["map1234567890", "wma1234567890"]);
         done();
@@ -70,7 +73,7 @@ describe("_addContentToSolution", () => {
     );
   });
 
-  it("_addContentToSolution item progress callback with ignored item", done => {
+  it("addContentToSolution item progress callback with ignored item", done => {
     const solutionId = "sln1234567890";
     const options: common.ICreateSolutionOptions = {
       itemIds: ["map1234567890", "wma1234567890"]
@@ -99,7 +102,7 @@ describe("_addContentToSolution", () => {
 
     spyOn(console, "error").and.callFake(() => {});
 
-    return _addContentToSolution(
+    return addContentToSolution(
       solutionId,
       options,
       MOCK_USER_SESSION
@@ -107,7 +110,7 @@ describe("_addContentToSolution", () => {
   });
 
   if (typeof window !== "undefined") {
-    it("_addContentToSolution item progress callback with failed item", done => {
+    it("addContentToSolution item progress callback with failed item", done => {
       const solutionId = "sln1234567890";
       const options: common.ICreateSolutionOptions = {
         itemIds: ["map1234567890"]
@@ -134,7 +137,7 @@ describe("_addContentToSolution", () => {
 
       spyOn(console, "error").and.callFake(() => {});
 
-      return _addContentToSolution(solutionId, options, MOCK_USER_SESSION).then(
+      return addContentToSolution(solutionId, options, MOCK_USER_SESSION).then(
         () => done.fail(),
         e => {
           expect(e.success).toBeFalse();
@@ -146,6 +149,87 @@ describe("_addContentToSolution", () => {
       );
     });
   }
+});
+
+describe("_getDependencies", () => {
+  it("get ids out of string", () => {
+    const template: common.IItemTemplate = templates.getItemTemplate("Web Map");
+    template.itemId = template.item.id = "854f1128cb784cf692e848390452d100";
+    template.item.description =
+      "https://experience.arcgis.com/experience/{{fcb2bf2837a6404ebb418a1f805f976a.itemId}}<div>{{portalBaseUrl}}/apps/webappviewer/index.html?id={{cefb7d787b8b4edb971efba758ee0c1e.itemId}}</div>{{" +
+      template.itemId +
+      "}}";
+    template.dependencies = ["124f66175750431096575c449b42bd65"];
+    expect(_getDependencies(template)).toEqual([
+      "124f66175750431096575c449b42bd65",
+      "cefb7d787b8b4edb971efba758ee0c1e",
+      "fcb2bf2837a6404ebb418a1f805f976a"
+    ]);
+  });
+});
+
+describe("_getIdsOutOfTemplateVariables", () => {
+  it("get ids out of string", () => {
+    expect(_getIdsOutOfTemplateVariables([])).toEqual([]);
+    expect(_getIdsOutOfTemplateVariables(["portalBaseUrl"])).toEqual([]);
+    expect(_getIdsOutOfTemplateVariables(["solutionItemExtent"])).toEqual([]);
+    expect(
+      _getIdsOutOfTemplateVariables(["9fd7d55c84e84fe1b93f073a8088b435"])
+    ).toEqual(["9fd7d55c84e84fe1b93f073a8088b435"]);
+    expect(
+      _getIdsOutOfTemplateVariables([
+        "9fd7d55c84e84fe1b93f073a8088b435",
+        "bad3483e025c47338d43df308c117308"
+      ])
+    ).toEqual([
+      "9fd7d55c84e84fe1b93f073a8088b435",
+      "bad3483e025c47338d43df308c117308"
+    ]);
+    expect(
+      _getIdsOutOfTemplateVariables([
+        "fcb2bf2837a6404ebb418a1f805f976a.itemId",
+        "cefb7d787b8b4edb971efba758ee0c1e"
+      ])
+    ).toEqual([
+      "fcb2bf2837a6404ebb418a1f805f976a",
+      "cefb7d787b8b4edb971efba758ee0c1e"
+    ]);
+  });
+});
+
+describe("_getTemplateVariables", () => {
+  it("get variables out of string", () => {
+    expect(_getTemplateVariables("")).toEqual([]);
+    expect(_getTemplateVariables("{{portalBaseUrl}} and many more")).toEqual([
+      "portalBaseUrl"
+    ]);
+    expect(
+      _getTemplateVariables(
+        "this is a variable: {{solutionItemExtent}} (to be extracted)"
+      )
+    ).toEqual(["solutionItemExtent"]);
+    expect(
+      _getTemplateVariables(
+        "{{9fd7d55c84e84fe1b93f073a8088b435.layer1.itemId}}"
+      )
+    ).toEqual(["9fd7d55c84e84fe1b93f073a8088b435.layer1.itemId"]);
+    expect(
+      _getTemplateVariables(
+        "{{9fd7d55c84e84fe1b93f073a8088b435.layer1.itemId}} and {{bad3483e025c47338d43df308c117308.itemId}}"
+      )
+    ).toEqual([
+      "9fd7d55c84e84fe1b93f073a8088b435.layer1.itemId",
+      "bad3483e025c47338d43df308c117308.itemId"
+    ]);
+    expect(
+      _getTemplateVariables(
+        "https://experience.arcgis.com/experience/{{fcb2bf2837a6404ebb418a1f805f976a.itemId}}<div>https://localdeployment.maps.arcgis.com/apps/webappviewer/index.html?id={{cefb7d787b8b4edb971efba758ee0c1e.itemId}}</div>"
+      )
+    ).toEqual([
+      "fcb2bf2837a6404ebb418a1f805f976a.itemId",
+      "cefb7d787b8b4edb971efba758ee0c1e.itemId"
+    ]);
+  });
 });
 
 describe("_postProcessGroupDependencies", () => {
