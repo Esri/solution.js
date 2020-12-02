@@ -201,6 +201,13 @@ export function addContentToSolution(
 
 // ------------------------------------------------------------------------------------------------------------------ //
 
+/**
+ * Gets the dependencies of an item by merging its dependencies list with item references in template variables.
+ *
+ * @param template Template to examine
+ * @return List of dependency ids
+ * @private
+ */
 export function _getDependencies(template: IItemTemplate): string[] {
   // Get all dependencies
   let deps = template.dependencies.concat(
@@ -227,6 +234,13 @@ export function _getDependencies(template: IItemTemplate): string[] {
   return deps;
 }
 
+/**
+ * Extracts AGO ids out of template variables.
+ *
+ * @param variables List of template variables to examine
+ * @return List of AGO ids referenced in `variables`
+ * @private
+ */
 export function _getIdsOutOfTemplateVariables(variables: string[]): string[] {
   return variables
     .map(variable => {
@@ -240,6 +254,13 @@ export function _getIdsOutOfTemplateVariables(variables: string[]): string[] {
     .filter(variable => !!variable);
 }
 
+/**
+ * Extracts template variables out of a string.
+ *
+ * @param text String to examine
+ * @return List of template variables found in string
+ * @private
+ */
 export function _getTemplateVariables(text: string): string[] {
   return (text.match(/{{[a-z0-9.]*}}/gi) || []) // find variable
     .map(variable => variable.substring(2, variable.length - 2)); // remove "{{" & "}}"
@@ -304,7 +325,7 @@ export function _postProcessGroupDependencies(
  *
  * @param templates The array of templates to evaluate
  * @return Updated version of the templates
- * @protected
+ * @private
  */
 export function _postProcessIgnoredItems(
   templates: IItemTemplate[]
