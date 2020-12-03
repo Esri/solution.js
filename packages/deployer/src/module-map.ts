@@ -83,7 +83,7 @@ export const moduleMap: IItemTypeModuleMap = {
   "Hub Initiative": UNSUPPORTED,
   "Hub Page": HubPageProcessor,
   "Hub Site Application": HubSiteProcessor,
-  "Insights Model": undefined,
+  "Insights Model": simpleTypes,
   "Insights Page": undefined,
   "Insights Theme": undefined,
   "Insights Workbook": undefined,
