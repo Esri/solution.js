@@ -167,6 +167,7 @@ export function addContentToSolution(
           solutionTemplates = _postProcessGroupDependencies(solutionTemplates);
           solutionTemplates = _postProcessIgnoredItems(solutionTemplates);
           solutionTemplates = postProcessWorkforceTemplates(solutionTemplates);
+          _simplifyUrlsInItemDescriptions(solutionTemplates);
           _templatizeSolutionIds(solutionTemplates);
           _replaceDictionaryItemsInObject(
             templateDictionary,
@@ -252,6 +253,24 @@ export function _getIdsOutOfTemplateVariables(variables: string[]): string[] {
       }
     })
     .filter(variable => !!variable);
+}
+
+/**
+ * Creates a list of item URLs.
+ *
+ * @param templates Templates to check for URLs
+ * @return List of URLs
+ * @private
+ */
+export function _getSolutionItemUrls(templates: IItemTemplate[]): string[][] {
+  const solutionUrls: string[][] = [];
+  templates.forEach(template => {
+    /* istanbul ignore else */
+    if (template.item.origUrl) {
+      solutionUrls.push([template.itemId, template.item.origUrl]);
+    }
+  });
+  return solutionUrls;
 }
 
 /**
@@ -425,6 +444,36 @@ export function _replaceRemainingIdsInString(
 }
 
 /**
+ * Finds and templatizes any URLs in solution items' descriptions.
+ *
+ * @param templates The array of templates to evaluate, modified in place
+ * @private
+ */
+export function _simplifyUrlsInItemDescriptions(
+  templates: IItemTemplate[]
+): void {
+  // Get the urls in the solution along with their item ids & convert the id into the form
+  // "{{fcb2bf2837a6404ebb418a1f805f976a.url}}"
+  const solutionUrls = _getSolutionItemUrls(templates).map(idUrl => [
+    "{{" + idUrl[0] + ".url}}",
+    idUrl[1]
+  ]);
+
+  /* istanbul ignore else */
+  if (solutionUrls.length > 0) {
+    // Make the replacements
+    templates.forEach(template => {
+      solutionUrls.forEach(
+        // TypeScript for es2015 doesn't have a definition for `replaceAll`
+        idUrl =>
+          (template.item.description = (template.item
+            .description as any).replaceAll(idUrl[1], idUrl[0]))
+      );
+    });
+  }
+}
+
+/**
  * Templatizes occurrences of the URL to the user's organization in the `item` and `data` template sections.
  *
  * @param templates The array of templates to evaluate; templates is modified in place
@@ -463,7 +512,7 @@ export function _templatizeOrgUrl(
 /**
  * Finds and templatizes any references to solution's items.
  *
- * @param templates The array of templates to evaluate
+ * @param templates The array of templates to evaluate, modified in place
  * @private
  */
 export function _templatizeSolutionIds(templates: IItemTemplate[]): void {
@@ -472,7 +521,9 @@ export function _templatizeSolutionIds(templates: IItemTemplate[]): void {
     (template: IItemTemplate) => template.itemId
   );
 
-  // Cycle through each of the items in the template and scan the `item` and `data` sections of each for ids in our solution
+  // Cycle through each of the items in the template and
+  // 1. templatize untemplatized ids in our solution in the `item` and `data` sections;
+  // 2. update the `dependencies` section
   templates.forEach((template: IItemTemplate) => {
     _replaceRemainingIdsInObject(solutionIds, template.item);
     _replaceRemainingIdsInObject(solutionIds, template.data);

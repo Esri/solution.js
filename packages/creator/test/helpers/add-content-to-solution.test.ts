@@ -18,13 +18,15 @@ import {
   addContentToSolution,
   _getDependencies,
   _getIdsOutOfTemplateVariables,
+  _getSolutionItemUrls,
   _getTemplateVariables,
   _postProcessGroupDependencies,
   _postProcessIgnoredItems,
   _templatizeSolutionIds,
   _replaceDictionaryItemsInObject,
   _replaceRemainingIdsInObject,
-  _replaceRemainingIdsInString
+  _replaceRemainingIdsInString,
+  _simplifyUrlsInItemDescriptions
 } from "../../src/helpers/add-content-to-solution";
 import * as fetchMock from "fetch-mock";
 import * as createItemTemplateModule from "../../src/createItemTemplate";
@@ -194,6 +196,59 @@ describe("_getIdsOutOfTemplateVariables", () => {
       "fcb2bf2837a6404ebb418a1f805f976a",
       "cefb7d787b8b4edb971efba758ee0c1e"
     ]);
+  });
+});
+
+describe("_getSolutionItemUrls", () => {
+  it("gets item id/URL pairs for items with URLs", () => {
+    const templateList = [
+      templates.getItemTemplate("Notebook", null, "url1"),
+      templates.getItemTemplate("Oriented Imagery Catalog", null, "url2"),
+      templates.getItemTemplate("QuickCapture Project", null, "url3"),
+      templates.getItemTemplate("Web Map", null, "url4"),
+      templates.getItemTemplate("Web Mapping Application", null, "url5"),
+      templates.getItemTemplate("Workforce Project", null, "url6")
+    ];
+    expect(_getSolutionItemUrls(templateList)).toEqual([
+      ["nbk1234567890", "url1"],
+      ["oic1234567890", "url2"],
+      ["qck1234567890", "url3"],
+      ["map1234567890", "url4"],
+      ["wma1234567890", "url5"],
+      ["wrk1234567890", "url6"]
+    ]);
+  });
+
+  it("skips items without a URL", () => {
+    const templateList = [
+      templates.getItemTemplate("Notebook", null, ""),
+      templates.getItemTemplate("Oriented Imagery Catalog", null, "url2"),
+      templates.getItemTemplate("QuickCapture Project", null, ""),
+      templates.getItemTemplate("Web Map", null, "url4"),
+      templates.getItemTemplate("Web Mapping Application", null, "url5"),
+      templates.getItemTemplate("Workforce Project", null, "url6")
+    ];
+    expect(_getSolutionItemUrls(templateList)).toEqual([
+      ["oic1234567890", "url2"],
+      ["map1234567890", "url4"],
+      ["wma1234567890", "url5"],
+      ["wrk1234567890", "url6"]
+    ]);
+  });
+
+  it("handles a list of items without URLs", () => {
+    const templateList = [
+      templates.getItemTemplate("Notebook", null, ""),
+      templates.getItemTemplate("Oriented Imagery Catalog", null, ""),
+      templates.getItemTemplate("QuickCapture Project", null, ""),
+      templates.getItemTemplate("Workforce Project", null, "")
+    ];
+    expect(_getSolutionItemUrls(templateList)).toEqual([]);
+  });
+
+  it("handles an empty list", () => {
+    const templateList: common.IItemTemplate[] = [];
+    expect(_getSolutionItemUrls(templateList)).toEqual([]);
   });
 });
 
@@ -1088,3 +1143,92 @@ describe("_replaceRemainingIdsInString", () => {
     );
   });
 });
+
+// TypeScript for es2015 doesn't have a definition for `replaceAll`, so the tests "fail" via a TypeError
+if (typeof window !== "undefined") {
+  describe("_simplifyUrlsInItemDescriptions", () => {
+    it("replaces URL in description with simplified form 1", () => {
+      const descrip1 = "Etiam rhoncus vestibulum enim, a scelerisque sem.";
+      const descrip2 = "Donec rhoncus nunc in odio lobortis venenatis non.";
+
+      const notebookTemplate = templates.getItemTemplate(
+        "Notebook",
+        null,
+        "url1"
+      );
+      notebookTemplate.item.origUrl = notebookTemplate.item.url;
+
+      const webmapTemplate = templates.getItemTemplate("Web Map", null, "url4");
+      webmapTemplate.item.description =
+        descrip1 + " url5,url5,url1 " + descrip2;
+
+      const wmaTemplate = templates.getItemTemplate(
+        "Web Mapping Application",
+        null,
+        "url5"
+      );
+      wmaTemplate.item.description = descrip1 + " url0 " + descrip2;
+      wmaTemplate.item.origUrl = wmaTemplate.item.url;
+
+      const workforceTemplate = templates.getItemTemplate(
+        "Workforce Project",
+        null,
+        "url6"
+      );
+      workforceTemplate.item.origUrl = workforceTemplate.item.url;
+
+      const templateList = [
+        notebookTemplate,
+        webmapTemplate,
+        wmaTemplate,
+        workforceTemplate
+      ];
+
+      _simplifyUrlsInItemDescriptions(templateList);
+
+      expect(webmapTemplate.item.description).toEqual(
+        descrip1 +
+          " {{wma1234567890.url}},{{wma1234567890.url}},{{nbk1234567890.url}} " +
+          descrip2
+      );
+      expect(wmaTemplate.item.description).toEqual(
+        descrip1 + " url0 " + descrip2
+      );
+    });
+
+    it("replaces URL in description with simplified form 2", () => {
+      const templateList = [
+        {
+          itemId: "id1",
+          item: {
+            description:
+              "https://experience.arcgis.com/experience/fcb2bf2837a6404ebb418a1f805f976a<div>https://localdeployment.maps.arcgis.com/apps/webappviewer/index.html?id=cefb7d787b8b4edb971efba758ee0c1e</div>",
+            origUrl: ""
+          }
+        },
+        {
+          itemId: "id2",
+          item: {
+            description: "",
+            origUrl:
+              "https://experience.arcgis.com/experience/fcb2bf2837a6404ebb418a1f805f976a"
+          }
+        },
+        {
+          itemId: "id3",
+          item: {
+            description: "",
+            origUrl:
+              "https://localdeployment.maps.arcgis.com/apps/webappviewer/index.html?id=cefb7d787b8b4edb971efba758ee0c1e"
+          }
+        }
+      ];
+
+      _simplifyUrlsInItemDescriptions(templateList as any[]);
+
+      expect(templateList[0].item.description).toEqual(
+        "{{id2.url}}<div>{{id3.url}}</div>"
+      );
+    });
+  });
+}

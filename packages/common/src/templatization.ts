@@ -110,6 +110,7 @@ export function createInitializedItemTemplate(itemInfo: any): IItemTemplate {
     extent: getDefaultExtent(itemInfo),
     licenseInfo: itemInfo.licenseInfo,
     name: itemInfo.name,
+    origUrl: itemInfo.origUrl,
     properties: itemInfo.properties,
     snippet: itemInfo.snippet,
     spatialReference: undefined,
