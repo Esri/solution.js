@@ -181,6 +181,7 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
             thumbnail: "thumbnail/banner.png",
             title: "An AGOL item",
             typeKeywords: ["JavaScript"],
+            origUrl: undefined,
             url:
               "{{portalBaseUrl}}/home/webmap/viewer.html?webmap={{map1234567890.itemId}}"
           },
@@ -861,8 +862,9 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
                 "AGOL%20item&tags=test&snippet=Snippet%20of%20an%20AGOL%20item&thumbnail=https%3A%2F%2F" +
                 "myorg.maps.arcgis.com%2Fsharing%2Frest%2Fcontent%2Fitems%2Fmap1234567890%2Finfo%2Fthumbnail%2F" +
                 "ago_downloaded.png&extent=%7B%7BsolutionItemExtent%7D%7D&categories=&accessInformation=Esri%2C%20" +
-                "Inc.&culture=en-us&url=%7B%7BportalBaseUrl%7D%7D%2Fhome%2Fwebmap%2Fviewer.html%3Fwebmap%3D%7B%7B" +
-                "map1234567890.itemId%7D%7D&token=fake-token"
+                "Inc.&origUrl=%7B%7BportalBaseUrl%7D%7D%2Fhome%2Fwebmap%2Fviewer.html%3Fwebmap%3D%7B%7B" +
+                "map1234567890.itemId%7D%7D&culture=en-us&url=%7B%7BportalBaseUrl%7D%7D%2Fhome%2Fwebmap%2F" +
+                "viewer.html%3Fwebmap%3D%7B%7Bmap1234567890.itemId%7D%7D&token=fake-token"
             );
           });
       });

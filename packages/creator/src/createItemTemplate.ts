@@ -94,6 +94,7 @@ export function createItemTemplate(
             // Save the URL as a symbol
             if (itemInfo.url) {
               templateDictionary[itemInfo.url] = "{{" + itemInfo.id + ".url}}";
+              itemInfo.origUrl = itemInfo.url;
             }
 
             const idTest: RegExp = /^source-[0-9A-F]{32}/i;
