@@ -57,8 +57,9 @@ export function convertItemToTemplate(
       case "Hub Initiative":
       case "Hub Page":
       case "Hub Site Application":
-      case "Project Package":
+      case "Insights Model":
       case "Oriented Imagery Catalog":
+      case "Project Package":
       case "Workforce Project":
       case "Web Map":
       case "Web Mapping Application":
