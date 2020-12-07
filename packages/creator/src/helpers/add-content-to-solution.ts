@@ -465,9 +465,13 @@ export function _simplifyUrlsInItemDescriptions(
     templates.forEach(template => {
       solutionUrls.forEach(
         // TypeScript for es2015 doesn't have a definition for `replaceAll`
-        idUrl =>
-          (template.item.description = (template.item
-            .description as any).replaceAll(idUrl[1], idUrl[0]))
+        idUrl => {
+          /* istanbul ignore else */
+          if (template.item.description) {
+            template.item.description = (template.item
+              .description as any).replaceAll(idUrl[1], idUrl[0]);
+          }
+        }
       );
     });
   }
