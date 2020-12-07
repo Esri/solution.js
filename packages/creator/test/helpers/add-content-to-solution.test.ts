@@ -1230,5 +1230,18 @@ if (typeof window !== "undefined") {
         "{{id2.url}}<div>{{id3.url}}</div>"
       );
     });
+
+    it("doesn't choke if the description is missing", () => {
+      const notebookTemplate = templates.getItemTemplate(
+        "Notebook",
+        null,
+        "url1"
+      );
+      notebookTemplate.item.origUrl = notebookTemplate.item.url;
+      notebookTemplate.item.description = null;
+
+      _simplifyUrlsInItemDescriptions([notebookTemplate]);
+      expect(notebookTemplate.item.description).toBeNull();
+    });
   });
 }
