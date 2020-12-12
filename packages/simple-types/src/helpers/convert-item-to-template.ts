@@ -53,6 +53,7 @@ export function convertItemToTemplate(
     let dataPromise = Promise.resolve({});
     switch (itemInfo.type) {
       case "Dashboard":
+      case "Feature Collection":
       case "Feature Service":
       case "Hub Initiative":
       case "Hub Page":
