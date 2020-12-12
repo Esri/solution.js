@@ -135,15 +135,18 @@ describe("simpleTypeConvertItemToTemplate", () => {
     });
 
     describe("form", () => {
-      it("should handle form item type with default filename", done => {
-        const solutionItemId = "sln1234567890";
-        const itemTemplate: common.IItemTemplate = templates.getItemTemplateSkeleton();
+      let solutionItemId: string;
+      let itemTemplate: common.IItemTemplate;
+      let expectedTemplate: any;
+
+      beforeEach(() => {
+        solutionItemId = "sln1234567890";
+        itemTemplate = templates.getItemTemplateSkeleton();
         itemTemplate.itemId = "frm1234567890";
         itemTemplate.item = mockItems.getAGOLItem("Form", null);
         itemTemplate.item.thumbnail = null;
-        itemTemplate.item.name = null;
 
-        const expectedTemplate: any = {
+        expectedTemplate = {
           itemId: "frm1234567890",
           type: "Form",
           item: {
@@ -282,6 +285,18 @@ describe("simpleTypeConvertItemToTemplate", () => {
             ]
           }
         );
+      });
+
+      const verifyFormTemplate = (done: DoneFn) => {
+        return (newItemTemplate: common.IItemTemplate) => {
+          delete newItemTemplate.key; // key is randomly generated, and so is not testable
+          expect(newItemTemplate).toEqual(expectedTemplate);
+          done();
+        };
+      };
+
+      it("should handle form item type with default filename for falsy item name", done => {
+        itemTemplate.item.name = null;
 
         simpleTypes
           .convertItemToTemplate(
@@ -289,11 +304,19 @@ describe("simpleTypeConvertItemToTemplate", () => {
             itemTemplate.item,
             MOCK_USER_SESSION
           )
-          .then(newItemTemplate => {
-            delete newItemTemplate.key; // key is randomly generated, and so is not testable
-            expect(newItemTemplate).toEqual(expectedTemplate);
-            done();
-          }, done.fail);
+          .then(verifyFormTemplate(done), done.fail);
+      });
+
+      it('should handle form item type with default filename for "undefined" string literal item name', done => {
+        itemTemplate.item.name = "undefined";
+
+        simpleTypes
+          .convertItemToTemplate(
+            solutionItemId,
+            itemTemplate.item,
+            MOCK_USER_SESSION
+          )
+          .then(verifyFormTemplate(done), done.fail);
       });
     });
 
@@ -419,13 +442,13 @@ describe("simpleTypeConvertItemToTemplate", () => {
           .post(
             utils.PORTAL_SUBSET.restUrl +
               "/content/items/qck1234567890/info/thumbnail/ago_downloaded.png",
-            utils.getSampleImage(),
+            utils.getSampleImageAsBlob(),
             { sendAsJson: false }
           )
           .post(
             utils.PORTAL_SUBSET.restUrl +
               "/content/items/qck1234567890/resources/images/Camera.png",
-            utils.getSampleImage(),
+            utils.getSampleImageAsBlob(),
             { sendAsJson: false }
           )
           .post(

@@ -256,7 +256,9 @@ describe("Module `deployer`", () => {
         const templateDictionary: any = {
           params: {
             testProperty: "ABC"
-          }
+          },
+          thumbnailurl:
+            "https://myorg.maps.arcgis.com/sharing/rest/content/items/sln1234567890/info/thumbnail/ago_downloaded.png"
         };
         const featureServerAdminUrl: string =
           "https://services123.arcgis.com/org1234567890/arcgis/rest/admin/services/ROWPermits_publiccomment/FeatureServer";
@@ -332,6 +334,12 @@ describe("Module `deployer`", () => {
               itemInfo.item.id +
               "/data",
             itemInfo.data
+          )
+          .post(
+            testUtils.PORTAL_SUBSET.restUrl +
+              "/content/items/sln1234567890/info/thumbnail/ago_downloaded.png?w=400",
+            testUtils.getSampleImageAsFile(),
+            { sendAsJson: false }
           )
           .post(
             testUtils.PORTAL_SUBSET.restUrl +
@@ -469,7 +477,6 @@ describe("Module `deployer`", () => {
               "/content/users/casey/items/sln1234567890/addResources",
             testUtils.getSuccessResponse({ id: "sln1234567890" })
           );
-        // tslint:disable-next-line: no-empty
         spyOn(console, "log").and.callFake(() => {});
 
         const expected: string = "map1234567890";
@@ -1704,7 +1711,6 @@ describe("Module `deployer`", () => {
               "/content/users/casey/items/map1234567890/delete",
             testUtils.getSuccessResponse({ itemId: "map1234567890" })
           );
-        // tslint:disable-next-line: no-empty
         spyOn(console, "error").and.callFake(() => {});
 
         const options: common.IDeploySolutionOptions = {

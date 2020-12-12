@@ -37,7 +37,9 @@ const MOCK_USER_SESSION = utils.createRuntimeMockUserSession();
 describe("_addContentToSolution", () => {
   it("_addContentToSolution item progress callback with new item", done => {
     const solutionId = "sln1234567890";
-    const itemIds = ["map1234567890"];
+    const options: common.ICreateSolutionOptions = {
+      itemIds: ["map1234567890"]
+    };
 
     let numSpyCalls = 0;
     spyOn(createItemTemplateModule, "createItemTemplate").and.callFake(
@@ -60,20 +62,19 @@ describe("_addContentToSolution", () => {
       }
     );
 
-    return _addContentToSolution(
-      solutionId,
-      itemIds,
-      MOCK_USER_SESSION,
-      {}
-    ).then(() => {
-      expect(itemIds).toEqual(["map1234567890", "wma1234567890"]);
-      done();
-    });
+    return _addContentToSolution(solutionId, options, MOCK_USER_SESSION).then(
+      () => {
+        expect(options.itemIds).toEqual(["map1234567890", "wma1234567890"]);
+        done();
+      }
+    );
   });
 
   it("_addContentToSolution item progress callback with ignored item", done => {
     const solutionId = "sln1234567890";
-    const itemIds = ["map1234567890", "wma1234567890"];
+    const options: common.ICreateSolutionOptions = {
+      itemIds: ["map1234567890", "wma1234567890"]
+    };
 
     let numSpyCalls = 0;
     spyOn(createItemTemplateModule, "createItemTemplate").and.callFake(
@@ -96,21 +97,21 @@ describe("_addContentToSolution", () => {
       }
     );
 
-    // tslint:disable-next-line: no-empty
     spyOn(console, "error").and.callFake(() => {});
 
     return _addContentToSolution(
       solutionId,
-      itemIds,
-      MOCK_USER_SESSION,
-      {}
+      options,
+      MOCK_USER_SESSION
     ).then(() => done());
   });
 
   if (typeof window !== "undefined") {
     it("_addContentToSolution item progress callback with failed item", done => {
       const solutionId = "sln1234567890";
-      const itemIds = ["map1234567890"];
+      const options: common.ICreateSolutionOptions = {
+        itemIds: ["map1234567890"]
+      };
 
       staticRelatedItemsMocks.fetchMockRelatedItems("map1234567890", {
         total: 0,
@@ -131,15 +132,9 @@ describe("_addContentToSolution", () => {
           mockItems.get400FailureResponse()
         );
 
-      // tslint:disable-next-line: no-empty
       spyOn(console, "error").and.callFake(() => {});
 
-      return _addContentToSolution(
-        solutionId,
-        itemIds,
-        MOCK_USER_SESSION,
-        {}
-      ).then(
+      return _addContentToSolution(solutionId, options, MOCK_USER_SESSION).then(
         () => done.fail(),
         e => {
           expect(e.success).toBeFalse();

@@ -47,6 +47,7 @@ import {
   _templatizeSourceServiceName,
   _templatizeAdminLayerInfoFields,
   _getDependantItemId,
+  _getTypeIdField,
   _templatizeAdminSourceLayerFields,
   _templatizeTopFilter,
   _templatizeRelationshipFields,
@@ -3949,6 +3950,27 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
       const dependencies: interfaces.IDependency[] = [];
       const actual = _getDependantItemId(lookupName, dependencies);
       expect(actual).toEqual("");
+    });
+  });
+
+  describe("_getTypeIdField", () => {
+    it("will get the typeId field", () => {
+      const item: any = {
+        fields: [
+          {
+            name: "a"
+          },
+          {
+            name: "b"
+          }
+        ],
+        typeIdField: "B"
+      };
+
+      const actual = _getTypeIdField(item);
+
+      const expected: string = "b";
+      expect(actual).toEqual(expected);
     });
   });
 

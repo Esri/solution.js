@@ -42,7 +42,7 @@ describe("copyResource :: ", () => {
       const expected = { success: true, id: destination.itemId };
 
       fetchMock
-        .post(source.url, utils.getSampleImage(), { sendAsJson: false })
+        .post(source.url, utils.getSampleImageAsBlob(), { sendAsJson: false })
         .post(updateUrl, expected);
       return copyResourceModule
         .copyResource(source, destination)
@@ -124,7 +124,7 @@ describe("copyResource :: ", () => {
       const expected = 500;
 
       fetchMock
-        .post(fetchUrl, utils.getSampleImage(), { sendAsJson: false })
+        .post(fetchUrl, utils.getSampleImageAsBlob(), { sendAsJson: false })
         .post(updateUrl, expected);
       return copyResourceModule
         .copyResource(source, destination)

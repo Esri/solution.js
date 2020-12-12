@@ -1163,7 +1163,8 @@ export function getAGOLLayerOrTable(
     globalIdField: "globalid",
     capabilities: "Create,Query,Editing",
     viewDefinitionQuery: "status = 'BoardReview'",
-    definitionQuery: "status = 'BoardReview'"
+    definitionQuery: "status = 'BoardReview'",
+    typeIdField: "BoardReview"
   };
 }
 
@@ -1194,7 +1195,7 @@ export function getAnImageResponse(): any {
     return fs.createReadStream("./test/mocks/success.png");
   } else {
     // Chrome test
-    return utils.getSampleImage();
+    return utils.getSampleImageAsBlob();
   }
 }
 

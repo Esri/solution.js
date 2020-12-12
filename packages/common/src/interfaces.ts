@@ -155,12 +155,14 @@ export interface ICreateSolutionOptions {
   description?: string; // defaults: for a group, group description; for an item, ""
   tags?: string[]; // defaults: for a group, group tags; for an item, []
   thumbnailurl?: string; // default: ""
+  thumbnail?: File; // default: null; has priority over thumbnailurl
   folderId?: string; // default is top level
   templateDictionary?: any; // default: {}
   templatizeFields?: boolean; // default: false
   additionalTypeKeywords?: string[]; // default: []; supplements ["Solution", "Template"]
   progressCallback?: ISolutionProgressCallback;
   consoleProgress?: boolean; // default: false
+  itemIds?: string[];
 }
 
 /**
@@ -262,6 +264,7 @@ export interface IDeploySolutionOptions {
   description?: string; // default: copied from solution item
   tags?: string[]; // default: copied from solution item
   thumbnailurl?: string; // default: copied from solution item
+  thumbnail?: File; // default: null; has priority over thumbnailurl
   templateDictionary?: any; // default: {}
   additionalTypeKeywords?: string[]; // default: []; supplements ["Solution", "Deployed"]
   enableItemReuse?: boolean; // when true items with source-itemId type keyword will be reused
@@ -592,7 +595,7 @@ export interface ISolutionProgressEvent {
 }
 
 /**
- * Information for storing a resource in a storage item.
+ *  Information for storing a resource in a storage item.
  */
 export interface ISourceFileCopyPath {
   /**

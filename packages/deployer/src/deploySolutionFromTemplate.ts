@@ -38,14 +38,11 @@ export function deploySolutionFromTemplate(
     let deployedFolderId: string;
     let deployedSolutionId: string;
 
-    ["title", "snippet", "description", "tags", "thumbnailurl"].forEach(
-      property => {
-        if (options[property]) {
-          solutionTemplateBase[property] = options[property];
-          // carry these options forward on the templateDict
-          templateDictionary[property] = options[property];
-        }
-      }
+    _applySourceToDeployOptions(
+      options,
+      solutionTemplateBase,
+      templateDictionary,
+      authentication
     );
 
     if (options.additionalTypeKeywords) {
@@ -55,20 +52,47 @@ export function deploySolutionFromTemplate(
       );
     }
 
+    // Get the thumbnail file
+    let thumbFilename = "thumbnail";
+    let thumbDef = Promise.resolve(null);
+    if (!options.thumbnail && options.thumbnailurl) {
+      // Figure out the thumbnail's filename
+      thumbFilename =
+        common.getFilenameFromUrl(options.thumbnailurl) || thumbFilename;
+      const thumbnailurl = common.appendQueryParam(
+        options.thumbnailurl,
+        "w=400"
+      );
+      delete options.thumbnailurl;
+
+      // Fetch the thumbnail
+      thumbDef = common.getBlobAsFile(
+        thumbnailurl,
+        thumbFilename,
+        authentication,
+        [400]
+      );
+    }
+
     _replaceParamVariables(solutionTemplateData, templateDictionary);
 
     // Get information about deployment environment
     Promise.all([
       common.getPortal("", authentication), // determine if we are deploying to portal
       common.getUser(authentication), // find out about the user
-      common.getFoldersAndGroups(authentication) // get all folders so that we can create a unique one, and all groups
+      common.getFoldersAndGroups(authentication), // get all folders so that we can create a unique one, and all groups
+      thumbDef
     ])
       .then(responses => {
         const [
           portalResponse,
           userResponse,
-          foldersAndGroupsResponse
+          foldersAndGroupsResponse,
+          thumbnailFile
         ] = responses;
+        if (!options.thumbnail && thumbnailFile) {
+          options.thumbnail = thumbnailFile;
+        }
 
         // update template items with source-itemId type keyword
         solutionTemplateData.templates = solutionTemplateData.templates.map(
@@ -168,6 +192,8 @@ export function deploySolutionFromTemplate(
           );
         }
 
+        // Create deployed solution item
+        createSolutionItemBase.thumbnail = options.thumbnail;
         return common.createItemWithData(
           createSolutionItemBase,
           {},
@@ -181,19 +207,6 @@ export function deploySolutionFromTemplate(
         // have stuff like `{{solution.item.title}}
         templateDictionary.solutionItemId = deployedSolutionId;
         solutionTemplateBase.id = deployedSolutionId;
-
-        return options.thumbnailurl
-          ? common.addTokenToUrl(options.thumbnailurl, authentication)
-          : Promise.resolve(null);
-      })
-      .then(updatedThumbnailUrl => {
-        /* istanbul ignore else */
-        if (updatedThumbnailUrl) {
-          solutionTemplateBase.thumbnailurl = common.appendQueryParam(
-            updatedThumbnailUrl,
-            "w=400"
-          );
-        }
 
         solutionTemplateBase.tryitUrl = _checkedReplaceAll(
           solutionTemplateBase.tryitUrl,
@@ -328,6 +341,45 @@ export function deploySolutionFromTemplate(
         }
       );
   });
+}
+
+/**
+ * Update the deployOptions with the group properties
+ *
+ * @param deployOptions
+ * @param sourceInfo
+ * @param authentication
+ * @param isGroup Boolean to indicate if the files are associated with a group or item
+ * @internal
+ */
+export function _applySourceToDeployOptions(
+  deployOptions: common.IDeploySolutionOptions,
+  solutionTemplateBase: any,
+  templateDictionary: any,
+  authentication: UserSession
+): common.IDeploySolutionOptions {
+  // Deploy a solution from the template's contents,
+  // using the template's information as defaults for the deployed solution item
+  ["title", "snippet", "description", "tags"].forEach(prop => {
+    deployOptions[prop] = deployOptions[prop] ?? solutionTemplateBase[prop];
+    if (deployOptions[prop]) {
+      solutionTemplateBase[prop] = deployOptions[prop];
+      // carry these options forward on the templateDict
+      templateDictionary[prop] = deployOptions[prop];
+    }
+  });
+
+  if (!deployOptions.thumbnailurl && solutionTemplateBase.thumbnail) {
+    // Get the full path to the thumbnail
+    deployOptions.thumbnailurl = common.generateSourceThumbnailUrl(
+      authentication.portal,
+      solutionTemplateBase.id,
+      solutionTemplateBase.thumbnail
+    );
+    delete solutionTemplateBase.thumbnail;
+  }
+
+  return deployOptions;
 }
 
 export function _replaceParamVariables(

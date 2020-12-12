@@ -43,7 +43,7 @@ export const moduleMap: IItemTypeModuleMap = {
   ////////////////////////////////////////////////////////
   // Layer types
   "Big Data Analytic": undefined,
-  "Feature Collection": undefined,
+  "Feature Collection": simpleTypes,
   "Feature Service": featureLayer,
   Feed: undefined,
   "Geocoding Service": undefined,
