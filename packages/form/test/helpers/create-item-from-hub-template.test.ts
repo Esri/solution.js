@@ -32,6 +32,7 @@ describe("createItemFromHubTemplate", () => {
   let paramResults: common.ISurvey123CreateParams;
   let createResult: common.ISurvey123CreateResult;
   let MOCK_USER_SESSION: common.UserSession;
+  let getItemBaseResult: common.IItem;
 
   beforeEach(() => {
     MOCK_USER_SESSION = utils.createRuntimeMockUserSession();
@@ -106,6 +107,11 @@ describe("createItemFromHubTemplate", () => {
       featureServiceId: "f7bf45f98d114c3ab85fd63bb44e240d",
       folderId: "g7bf45f98d114c3ab85fd63bb44e240d"
     };
+
+    getItemBaseResult = {
+      ...items.getAGOLItem("form"),
+      id: createResult.formId
+    };
   });
 
   it("should resolve a ISurvey123CreateParams", done => {
@@ -128,6 +134,9 @@ describe("createItemFromHubTemplate", () => {
     const moveItemSpy = spyOn(restPortal, "moveItem").and.resolveTo();
     const removeFolderSpy = spyOn(common, "removeFolder").and.resolveTo();
     const itemProgressCallbackSpy = jasmine.createSpy();
+    const getItemBaseSpy = spyOn(common, "getItemBase").and.resolveTo(
+      getItemBaseResult
+    );
     return createItemFromHubTemplate(
       template,
       templateDictionary,
@@ -168,6 +177,11 @@ describe("createItemFromHubTemplate", () => {
         expect(moveItemSpy.calls.argsFor(1)[0].folderId).toBe(
           templateDictionary.folderId
         );
+        expect(getItemBaseSpy.calls.count()).toEqual(1);
+        expect(getItemBaseSpy.calls.first().args).toEqual([
+          createResult.formId,
+          MOCK_USER_SESSION
+        ]);
         expect(removeFolderSpy.calls.count()).toEqual(1);
         expect(removeFolderSpy.calls.first().args).toEqual([
           createResult.folderId,
@@ -187,98 +201,11 @@ describe("createItemFromHubTemplate", () => {
           createResult.formId
         ]);
         expect(results).toEqual({
-          item: null as common.IItemTemplate,
-          id: createResult.formId,
-          type: "Form",
-          postProcess: true
-        });
-        done();
-      })
-      .catch(e => {
-        done.fail(e);
-      });
-  });
-
-  it("should resolve a ISurvey123CreateParams", done => {
-    const replaceInTemplateSpy = spyOn(
-      common,
-      "replaceInTemplate"
-    ).and.returnValue(interpolatedTemplate);
-    const buildCreateParamsSpy = spyOn(
-      buildParamsHelper,
-      "buildCreateParams"
-    ).and.resolveTo(paramResults);
-    const createSurveySpy = spyOn(
-      createSurveyHelper,
-      "createSurvey"
-    ).and.resolveTo(createResult);
-    const updateItemExtendedSpy = spyOn(
-      common,
-      "updateItemExtended"
-    ).and.resolveTo();
-    const moveItemSpy = spyOn(restPortal, "moveItem").and.resolveTo();
-    const removeFolderSpy = spyOn(common, "removeFolder").and.resolveTo();
-    const itemProgressCallbackSpy = jasmine.createSpy();
-    return createItemFromHubTemplate(
-      template,
-      templateDictionary,
-      MOCK_USER_SESSION,
-      itemProgressCallbackSpy
-    )
-      .then(results => {
-        expect(replaceInTemplateSpy.calls.count()).toEqual(1);
-        expect(replaceInTemplateSpy.calls.first().args).toEqual([
-          template,
-          templateDictionary
-        ]);
-        expect(buildCreateParamsSpy.calls.count()).toEqual(1);
-        expect(buildCreateParamsSpy.calls.first().args).toEqual([
-          interpolatedTemplate,
-          templateDictionary,
-          MOCK_USER_SESSION
-        ]);
-        expect(createSurveySpy.calls.count()).toEqual(1);
-        expect(createSurveySpy.calls.first().args).toEqual([
-          paramResults,
-          undefined
-        ]);
-        expect(updateItemExtendedSpy.calls.count()).toEqual(1);
-        expect(updateItemExtendedSpy.calls.argsFor(0)[0].id).toBe(
-          createResult.formId
-        );
-        expect(moveItemSpy.calls.count()).toEqual(2);
-        expect(moveItemSpy.calls.argsFor(0)[0].itemId).toBe(
-          createResult.formId
-        );
-        expect(moveItemSpy.calls.argsFor(0)[0].folderId).toBe(
-          templateDictionary.folderId
-        );
-        expect(moveItemSpy.calls.argsFor(1)[0].itemId).toBe(
-          createResult.featureServiceId
-        );
-        expect(moveItemSpy.calls.argsFor(1)[0].folderId).toBe(
-          templateDictionary.folderId
-        );
-        expect(removeFolderSpy.calls.count()).toEqual(1);
-        expect(removeFolderSpy.calls.first().args).toEqual([
-          createResult.folderId,
-          MOCK_USER_SESSION
-        ]);
-        expect(templateDictionary[template.itemId]).toEqual({
-          itemId: createResult.formId
-        });
-        expect(
-          templateDictionary[template.properties.info.serviceInfo.itemId]
-        ).toEqual({ itemId: createResult.featureServiceId });
-        expect(itemProgressCallbackSpy.calls.count()).toEqual(1);
-        expect(itemProgressCallbackSpy.calls.first().args).toEqual([
-          template.itemId,
-          common.EItemProgressStatus.Finished,
-          template.estimatedDeploymentCostFactor,
-          createResult.formId
-        ]);
-        expect(results).toEqual({
-          item: null as common.IItemTemplate,
+          item: {
+            ...template,
+            item: getItemBaseResult,
+            itemId: createResult.formId
+          } as common.IItemTemplate,
           id: createResult.formId,
           type: "Form",
           postProcess: true
@@ -310,6 +237,9 @@ describe("createItemFromHubTemplate", () => {
     const moveItemSpy = spyOn(restPortal, "moveItem").and.resolveTo();
     const removeFolderSpy = spyOn(common, "removeFolder").and.resolveTo();
     const itemProgressCallbackSpy = jasmine.createSpy();
+    const getItemBaseSpy = spyOn(common, "getItemBase").and.resolveTo(
+      getItemBaseResult
+    );
     templateDictionary.survey123Url = "https://survey123qa.arcgis.com";
     return createItemFromHubTemplate(
       template,
@@ -351,6 +281,11 @@ describe("createItemFromHubTemplate", () => {
         expect(moveItemSpy.calls.argsFor(1)[0].folderId).toBe(
           templateDictionary.folderId
         );
+        expect(getItemBaseSpy.calls.count()).toEqual(1);
+        expect(getItemBaseSpy.calls.first().args).toEqual([
+          createResult.formId,
+          MOCK_USER_SESSION
+        ]);
         expect(removeFolderSpy.calls.count()).toEqual(1);
         expect(removeFolderSpy.calls.first().args).toEqual([
           createResult.folderId,
@@ -370,7 +305,11 @@ describe("createItemFromHubTemplate", () => {
           createResult.formId
         ]);
         expect(results).toEqual({
-          item: null as common.IItemTemplate,
+          item: {
+            ...template,
+            item: getItemBaseResult,
+            itemId: createResult.formId
+          } as common.IItemTemplate,
           id: createResult.formId,
           type: "Form",
           postProcess: true
