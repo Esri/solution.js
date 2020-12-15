@@ -25,5 +25,5 @@ import * as common from "@esri/solution-common";
  */
 export function isHubFormTemplate(template: common.IItemTemplate): boolean {
   // relying on basic duck typing vs adding extraneous props during migration
-  return !!common.getProp(template, "properties.services.service");
+  return !!common.getProp(template, "properties.services");
 }

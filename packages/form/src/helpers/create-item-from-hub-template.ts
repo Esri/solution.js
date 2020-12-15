@@ -24,7 +24,8 @@ import {
   replaceInTemplate,
   updateItemExtended,
   ISurvey123CreateParams,
-  ISurvey123CreateResult
+  ISurvey123CreateResult,
+  getItemBase
 } from "@esri/solution-common";
 import { moveItem } from "@esri/arcgis-rest-portal";
 import { createSurvey } from "./create-survey";
@@ -92,9 +93,12 @@ export function createItemFromHubTemplate(
       return Promise.all(promises)
         .then(() => {
           // then remove the folder that Survey123 created
-          return removeFolder(folderId, destinationAuthentication);
+          return Promise.all([
+            getItemBase(formId, destinationAuthentication),
+            removeFolder(folderId, destinationAuthentication)
+          ]);
         })
-        .then(() => {
+        .then(([item]) => {
           templateDictionary[interpolatedTemplate.itemId] = {
             itemId: formId
           };
@@ -110,7 +114,11 @@ export function createItemFromHubTemplate(
             formId
           );
           return {
-            item: null,
+            item: {
+              ...template,
+              item,
+              itemId: formId
+            },
             id: formId,
             type: "Form",
             postProcess: true
