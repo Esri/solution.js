@@ -1,0 +1,245 @@
+<!doctype html>
+<html lang="en" dir="ltr">
+<head>
+  <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+  <title>@esri/solution-common text replacement example</title>
+  <!--
+   | Copyright 2020 Esri
+   |
+   | Licensed under the Apache License, Version 2.0 (the "License");
+   | you may not use this file except in compliance with the License.
+   | You may obtain a copy of the License at
+   |
+   |    http://www.apache.org/licenses/LICENSE-2.0
+   |
+   | Unless required by applicable law or agreed to in writing, software
+   | distributed under the License is distributed on an "AS IS" BASIS,
+   | WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   | See the License for the specific language governing permissions and
+   | limitations under the License.
+  -->
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+  <link rel="stylesheet" href="http://esri.github.io/calcite-bootstrap/styles/calcite-bootstrap.min.css">
+  <style>
+  body {
+    padding: 8px;
+  }
+  button {
+    cursor: pointer;
+  }
+  </style>
+</head>
+<body>
+  <div id="input" style="display:none">
+    <label for="template">Template Json</label><br/>
+    <textarea id="template" rows="10" style="width:100%"></textarea>
+    <br/><br/>
+    <label for="replacements">Settings Json</label><br/>
+    <textarea id="replacements" rows="10" style="width:100%"></textarea>
+    <br/><br/>
+    <button onclick="goFcn()">Replace</button>
+    <br/><br/>
+    <label for="output">Output</label><br/>
+    <textarea id="output" rows="10" style="width:100%"></textarea>
+  </div>
+
+  <script crossorigin="anonymous" src="https://polyfill.io/v3/polyfill.min.js?features=fetch%2Ces2015"></script>
+  <script src="https://requirejs.org/docs/release/2.3.6/minified/require.js"></script>
+  <script>
+    var goFcn;
+    require.config({
+      paths: {
+        "@esri/arcgis-rest-auth": "../node_modules/@esri/arcgis-rest-auth/dist/umd/auth.umd.min",
+        "@esri/arcgis-rest-feature-layer": "../node_modules/@esri/arcgis-rest-feature-layer/dist/umd/feature-layer.umd.min",
+        "@esri/arcgis-rest-portal": "../node_modules/@esri/arcgis-rest-portal/dist/umd/portal.umd.min",
+        "@esri/arcgis-rest-request": "../node_modules/@esri/arcgis-rest-request/dist/umd/request.umd.min",
+        "@esri/arcgis-rest-service-admin": "../node_modules/@esri/arcgis-rest-service-admin/dist/umd/service-admin.umd.min",
+        "@esri/hub-common": "../node_modules/@esri/hub-common/dist/umd/common.umd.min",
+        "@esri/hub-initiatives": "../node_modules/@esri/hub-initiatives/dist/umd/initiatives.umd.min",
+        "@esri/hub-sites": "../node_modules/@esri/hub-sites/dist/umd/sites.umd.min",
+        "@esri/hub-teams": "../node_modules/@esri/hub-teams/dist/umd/teams.umd.min",
+        "@esri/solution-common": "../node_modules/@esri/solution-common/dist/umd/common.umd",
+        "adlib": "../node_modules/adlib/dist/adlib",
+        "tslib": "../node_modules/tslib/tslib"
+      }
+    });
+
+    document.getElementById("template").value = JSON.stringify(
+      {
+        "operationalLayers": [
+          {
+            "id": "bikeLanes",
+            "layerType": "ArcGISFeatureLayer",
+            "url": "{{bikeLanes.item.url}}",
+            "visibility": true,
+            "opacity": 1,
+            "mode": 1,
+            "title": "Bike Lanes",
+            "itemId": "{{bikeLanes.item.id}}",
+            "popupInfo": {
+              "title": "Installed in {{{bikeLanes.fields.year.name}}}",
+              "fieldInfos": [],
+              "description": null,
+              "showAttachments": true,
+              "mediaInfos": []
+            }
+          },
+          {
+            "id": "collisionLayer",
+            "layerType": "ArcGISFeatureLayer",
+            "url": "{{collisionLayer.item.url}}",
+            "visibility": true,
+            "opacity": 0.8,
+            "title": "Collisions",
+            "itemId": "{{collisionLayer.item.id}}",
+            "layerDefinition": {
+              "drawingInfo": {
+                "renderer": {
+                  "visualVariables": [
+                    {
+                      "type": "sizeInfo",
+                      "field": "{{collisionLayer.fields.numInjuries.name}}",
+                      "valueUnit": "unknown",
+                      "minSize": 6,
+                      "maxSize": 37.5,
+                      "minDataValue": 1,
+                      "maxDataValue": 48
+                    }
+                  ],
+                  "authoringInfo": {
+                    "visualVariables": [
+                      {
+                        "type": "sizeInfo",
+                        "minSliderValue": 1,
+                        "maxSliderValue": 48
+                      }
+                    ]
+                  },
+                  "type": "classBreaks",
+                  "field": "{{collisionLayer.fields.numInjuries.name}}",
+                  "minValue": -9007199254740991,
+                  "classBreakInfos": [
+                    {
+                      "symbol": {
+                        "color": [
+                          227,
+                          139,
+                          79,
+                          255
+                        ],
+                        "size": 9,
+                        "angle": 0,
+                        "xoffset": 0,
+                        "yoffset": 0,
+                        "type": "esriSMS",
+                        "style": "esriSMSCircle",
+                        "outline": {
+                          "color": [
+                            51,
+                            51,
+                            51,
+                            255
+                          ],
+                          "width": 0.75,
+                          "type": "esriSLS",
+                          "style": "esriSLSSolid"
+                        }
+                      },
+                      "classMaxValue": 9007199254740991
+                    }
+                  ]
+                }
+              }
+            },
+            "popupInfo": {
+              "title": "{{collisionLayer.fields.collisionTimestamp.name}}",
+              "fieldInfos": [],
+              "description": "<div>Fatalities: {{{collisionLayer.fields.numFatalities.name}}}</div><div>Injuries: {{{collisionLayer.fields.numInjuries.name}}}</div>",
+              "showAttachments": true,
+              "mediaInfos": []
+            }
+          }
+        ],
+        "baseMap": {
+          "baseMapLayers": [
+            {
+              "id": "layer0",
+              "layerType": "ArcGISTiledMapServiceLayer",
+              "url": "http://services.arcgisonline.com/arcgis/rest/services/Canvas/World_Dark_Gray_Base/MapServer",
+              "visibility": true,
+              "opacity": 1,
+              "title": "Dark Gray Canvas"
+            },
+            {
+              "id": "World_Dark_Gray_Reference_8618",
+              "layerType": "ArcGISTiledMapServiceLayer",
+              "url": "http://services.arcgisonline.com/arcgis/rest/services/Canvas/World_Dark_Gray_Reference/MapServer",
+              "visibility": true,
+              "opacity": 1,
+              "title": "World_Dark_Gray_Reference",
+              "isReference": true
+            }
+          ],
+          "title": "Dark Gray Canvas"
+        },
+        "spatialReference": {
+          "wkid": 102100,
+          "latestWkid": 3857
+        },
+        "authoringApp": "WebMapViewer",
+        "authoringAppVersion": "4.2",
+        "version": "2.5"
+      }
+    , null, 2);
+
+    document.getElementById("replacements").value = JSON.stringify(
+      {
+        "bikeLanes": {
+          "item": {
+            "id": "3EFGUIDFORITEM0B9",
+            "url": "https://url-to-the-item.com"
+          },
+          "fields": {
+            "year": {
+              "name": "YRINSTALLED"
+            }
+          }
+        },
+        "collisionLayer": {
+          "item": {
+            "id": "BCDGUIDFORITEM0BB",
+            "url": "https://url-to-the-other-item.com"
+          },
+          "fields": {
+            "numInjuries": {
+              "name": "NM_HURT"
+            },
+            "collisionTimestamp": {
+              "name": ""
+            },
+            "numFatalities": {
+              "name": "FATALITIES"
+            }
+          }
+        }
+      }
+    , null, 2);
+
+    require(["../dist/templatization-main"],
+      function (main) {
+        "use strict";
+        goFcn = go;
+        document.getElementById("input").style.display = "block";
+
+        function go () {
+          document.getElementById("output").innerHTML = JSON.stringify(
+            main.replaceInTemplate(
+              JSON.parse(document.getElementById("template").value),
+              JSON.parse(document.getElementById("replacements").value)
+            ), null, 2
+          );
+        }
+      });
+  </script>
+</body>
+</html>
