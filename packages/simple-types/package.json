@@ -21,7 +21,7 @@
     "@esri/hub-common": "6.20.1",
     "@esri/hub-teams": "6.20.1",
     "rollup": "^1.22.0",
-    "typescript": "^4.0.3"
+    "typescript": "^4.0.5"
   },
   "peerDependencies": {
     "@esri/arcgis-rest-auth": "2.23.0",
