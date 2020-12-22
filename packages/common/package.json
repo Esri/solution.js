@@ -1,6 +1,6 @@
 {
   "name": "@esri/solution-common",
-  "version": "0.21.2",
+  "version": "0.21.3",
   "description": "Provides general helper functions for @esri/solution.js.",
   "main": "dist/node/index.js",
   "unpkg": "dist/umd/common.umd.min.js",
@@ -13,28 +13,28 @@
     "dist/**"
   ],
   "devDependencies": {
-    "@esri/arcgis-rest-auth": "^2.22.0",
-    "@esri/arcgis-rest-feature-layer": "^2.22.0",
-    "@esri/arcgis-rest-portal": "^2.22.0",
-    "@esri/arcgis-rest-request": "^2.22.0",
-    "@esri/arcgis-rest-service-admin": "^2.22.0",
-    "@esri/hub-common": "^6.19.0",
+    "@esri/arcgis-rest-auth": "2.23.0",
+    "@esri/arcgis-rest-feature-layer": "2.23.0",
+    "@esri/arcgis-rest-portal": "2.23.0",
+    "@esri/arcgis-rest-request": "2.23.0",
+    "@esri/arcgis-rest-service-admin": "2.23.0",
+    "@esri/hub-common": "6.20.1",
     "@types/adlib": "^3.0.1",
     "rollup": "^1.22.0",
-    "typescript": "^4.0.3"
+    "typescript": "^4.0.5"
   },
   "peerDependencies": {
-    "@esri/arcgis-rest-auth": "^2.22.0",
-    "@esri/arcgis-rest-feature-layer": "^2.22.0",
-    "@esri/arcgis-rest-portal": "^2.22.0",
-    "@esri/arcgis-rest-request": "^2.22.0",
-    "@esri/arcgis-rest-service-admin": "^2.22.0",
-    "@esri/hub-common": "^6.19.0"
+    "@esri/arcgis-rest-auth": "2.23.0",
+    "@esri/arcgis-rest-feature-layer": "2.23.0",
+    "@esri/arcgis-rest-portal": "2.23.0",
+    "@esri/arcgis-rest-request": "2.23.0",
+    "@esri/arcgis-rest-service-admin": "2.23.0",
+    "@esri/hub-common": "6.20.1"
   },
   "dependencies": {
     "@esri/arcgis-html-sanitizer": "~2.1.0",
     "@types/lodash.isplainobject": "^4.0.6",
-    "adlib": "^3.0.6",
+    "adlib": "3.0.7",
     "jszip": "3.4.0",
     "lodash.isplainobject": "^4.0.6",
     "tslib": "^1.13.0",

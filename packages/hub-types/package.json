@@ -1,6 +1,6 @@
 {
   "name": "@esri/solution-hub-types",
-  "version": "0.21.2",
+  "version": "0.21.3",
   "description": "Manages the creation and deployment of Hub Site and Hub Page item types for @esri/solution.js..",
   "main": "dist/node/index.js",
   "unpkg": "dist/umd/hub-types.umd.min.js",
@@ -13,31 +13,31 @@
     "dist/**"
   ],
   "devDependencies": {
-    "@esri/arcgis-rest-auth": "^2.22.0",
-    "@esri/arcgis-rest-feature-layer": "^2.22.0",
-    "@esri/arcgis-rest-portal": "^2.22.0",
-    "@esri/arcgis-rest-request": "^2.22.0",
-    "@esri/arcgis-rest-service-admin": "^2.22.0",
-    "@esri/hub-common": "^6.19.0",
-    "@esri/hub-initiatives": "^6.19.0",
-    "@esri/hub-sites": "^6.19.0",
-    "@esri/hub-teams": "^6.19.0",
+    "@esri/arcgis-rest-auth": "2.23.0",
+    "@esri/arcgis-rest-feature-layer": "2.23.0",
+    "@esri/arcgis-rest-portal": "2.23.0",
+    "@esri/arcgis-rest-request": "2.23.0",
+    "@esri/arcgis-rest-service-admin": "2.23.0",
+    "@esri/hub-common": "6.20.1",
+    "@esri/hub-initiatives": "6.20.1",
+    "@esri/hub-sites": "6.20.1",
+    "@esri/hub-teams": "6.20.1",
     "rollup": "^1.22.0",
-    "typescript": "^3.9.7"
+    "typescript": "^4.0.5"
   },
   "peerDependencies": {
-    "@esri/arcgis-rest-auth": "^2.22.0",
-    "@esri/arcgis-rest-feature-layer": "^2.22.0",
-    "@esri/arcgis-rest-portal": "^2.22.0",
-    "@esri/arcgis-rest-request": "^2.22.0",
-    "@esri/arcgis-rest-service-admin": "^2.22.0",
-    "@esri/hub-common": "^6.19.0",
-    "@esri/hub-initiatives": "^6.19.0",
-    "@esri/hub-sites": "^6.19.0",
-    "@esri/hub-teams": "^6.19.0"
+    "@esri/arcgis-rest-auth": "2.23.0",
+    "@esri/arcgis-rest-feature-layer": "2.23.0",
+    "@esri/arcgis-rest-portal": "2.23.0",
+    "@esri/arcgis-rest-request": "2.23.0",
+    "@esri/arcgis-rest-service-admin": "2.23.0",
+    "@esri/hub-common": "6.20.1",
+    "@esri/hub-initiatives": "6.20.1",
+    "@esri/hub-sites": "6.20.1",
+    "@esri/hub-teams": "6.20.1"
   },
   "dependencies": {
-    "@esri/solution-common": "^0.21.2",
+    "@esri/solution-common": "^0.21.3",
     "tslib": "^1.13.0"
   },
   "scripts": {
