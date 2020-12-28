@@ -19,7 +19,7 @@
  */
 
 import { interpolate, IModelTemplate } from "@esri/hub-common";
-import { UserSession } from "@esri/arcgis-rest-auth";
+import { UserSession } from "@esri/solution-common";
 import { getPortalEnv } from "./get-portal-env";
 import { getStoryMapBaseUrl } from "./get-storymap-base-url";
 import { getStoryMapSubdomain } from "./get-storymap-subdomain";
