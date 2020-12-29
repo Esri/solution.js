@@ -15,12 +15,11 @@
  */
 
 import { getItemResources } from "../restHelpersGet";
-import { UserSession } from "@esri/arcgis-rest-auth";
 import {
   generateSourceFilePaths,
   copyFilesToStorageItem
 } from "../resourceHelpers";
-import { IItemTemplate, ISourceFileCopyPath } from "../interfaces";
+import { IItemTemplate, ISourceFileCopyPath, UserSession } from "../interfaces";
 
 /**
  * Updates the solution item with resources from the itemTemplate

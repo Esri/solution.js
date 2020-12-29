@@ -30,10 +30,10 @@ import {
   replaceInTemplate,
   SItemProgressStatus,
   updateItem,
-  postProcessWorkforceTemplates
+  postProcessWorkforceTemplates,
+  UserSession
 } from "@esri/solution-common";
 import { getProp, getWithDefault } from "@esri/hub-common";
-import { UserSession } from "@esri/arcgis-rest-auth";
 import {
   createItemTemplate,
   postProcessFieldReferences

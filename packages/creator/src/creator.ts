@@ -37,9 +37,9 @@ import {
   IGroup,
   IItem,
   removeItem,
-  sanitizeJSONAndReportChanges
+  sanitizeJSONAndReportChanges,
+  UserSession
 } from "@esri/solution-common";
-import { UserSession } from "@esri/arcgis-rest-auth";
 import { failSafe, IModel } from "@esri/hub-common";
 import { addContentToSolution } from "./helpers/add-content-to-solution";
 

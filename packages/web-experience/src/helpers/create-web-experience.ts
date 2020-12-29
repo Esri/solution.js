@@ -22,7 +22,7 @@ import {
   stringToBlob
 } from "@esri/hub-common";
 
-import { UserSession } from "@esri/arcgis-rest-auth";
+import { UserSession } from "@esri/solution-common";
 
 import {
   createItem,

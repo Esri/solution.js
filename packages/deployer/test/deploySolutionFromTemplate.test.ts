@@ -29,7 +29,6 @@ import * as mockTemplates from "../../common/test/mocks/templates";
 import * as postProcess from "../src/helpers/post-process";
 import * as sinon from "sinon";
 import * as testUtils from "../../common/test/mocks/utils";
-import { UserSession } from "@esri/arcgis-rest-auth";
 
 describe("Module `deploySolutionFromTemplate`", () => {
   describe("_getNewItemId", () => {
@@ -93,7 +92,7 @@ describe("Module `deploySolutionFromTemplate`", () => {
   });
 
   describe("_getPortalBaseUrl", () => {
-    let MOCK_USER_SESSION: UserSession;
+    let MOCK_USER_SESSION: common.UserSession;
 
     beforeEach(() => {
       MOCK_USER_SESSION = testUtils.createRuntimeMockUserSession();
@@ -135,8 +134,8 @@ describe("Module `deploySolutionFromTemplate`", () => {
   });
 
   describe("deploySolutionFromTemplate", () => {
-    let MOCK_USER_SESSION: UserSession;
-    let MOCK_USER_SESSION_ALT: UserSession;
+    let MOCK_USER_SESSION: common.UserSession;
+    let MOCK_USER_SESSION_ALT: common.UserSession;
     const communitySelfResponse: any = testUtils.getUserResponse();
     const portalsSelfResponse: any = testUtils.getPortalsSelfResponse();
     const alternatePortalRestUrl =
@@ -391,7 +390,7 @@ describe("Module `deploySolutionFromTemplate`", () => {
   });
 
   describe("_applySourceToDeployOptions", () => {
-    let MOCK_USER_SESSION: UserSession;
+    let MOCK_USER_SESSION: common.UserSession;
 
     beforeEach(() => {
       MOCK_USER_SESSION = testUtils.createRuntimeMockUserSession();
