@@ -21,14 +21,12 @@
  */
 
 import {
-  addThumbnailFromBlob,
   cleanLayerBasedItemId,
   createPlaceholderTemplate,
   EItemProgressStatus,
   findTemplateInList,
   getGroupBase,
   getItemBase,
-  getItemDataBlob,
   hasDatasource,
   IDatasourceInfo,
   IItemGeneralized,

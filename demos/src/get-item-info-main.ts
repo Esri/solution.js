@@ -264,8 +264,8 @@ export function getItemInfo(
             itemData => {
               // Run some quick checks
               try {
-                const cloneOrderChecklist: string[] = common.topologicallySortItems(itemData.templates);
-                if (cloneOrderChecklist.length !== itemData.templates.length) {
+                const {buildOrder, missingDependencies, itemsToBePatched} = common.topologicallySortItems(itemData.templates);
+                if (buildOrder.length !== itemData.templates.length) {
                   // Duplicate item(s) detected
                   const sortedTemplateIds: string[] = itemData.templates.map((template: any) => template.itemId).sort();
                   let duplicates = "";

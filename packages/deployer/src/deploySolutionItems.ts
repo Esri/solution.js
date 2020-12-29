@@ -116,9 +116,7 @@ export function deploySolutionItems(
 
     // Create an ordered graph of the templates so that dependencies are created
     // before the items that need them
-    const cloneOrderChecklist: string[] = common.topologicallySortItems(
-      templates
-    );
+    const { buildOrder } = common.topologicallySortItems(templates);
 
     // For each item in order from no dependencies to dependent on other items,
     //   * replace template symbols using template dictionary
@@ -142,7 +140,7 @@ export function deploySolutionItems(
           templateDictionary.solutionItemId
         );
 
-        cloneOrderChecklist.forEach(id => {
+        buildOrder.forEach(id => {
           // Get the item's template out of the list of templates
           const template = common.findTemplateInList(templates, id);
           awaitAllItems.push(
