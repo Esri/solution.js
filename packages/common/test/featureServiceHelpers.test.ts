@@ -90,7 +90,7 @@ import {
 import * as interfaces from "../src/interfaces";
 import * as utils from "../../common/test/mocks/utils";
 
-import { IUserRequestOptions, UserSession } from "@esri/arcgis-rest-auth";
+import { IUserRequestOptions } from "@esri/arcgis-rest-auth";
 
 import * as fetchMock from "fetch-mock";
 import * as mockItems from "../../common/test/mocks/agolItems";

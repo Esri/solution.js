@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { UserSession } from "@esri/arcgis-rest-auth";
+import { UserSession } from "@esri/solution-common";
 import { getStoryMapSubdomain } from "./get-storymap-subdomain";
 /**
  * For a given environment Prod/qa/dev/portal
