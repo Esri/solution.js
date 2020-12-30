@@ -28,7 +28,7 @@
   },
   "dependencies": {
     "@esri/solution-common": "^0.21.5",
-    "tslib": "^1.13.0"
+    "tslib": "^2.0.3"
   },
   "scripts": {
     "prepare": "npm run build",

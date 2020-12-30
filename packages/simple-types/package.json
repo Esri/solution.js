@@ -37,7 +37,7 @@
     "@esri/solution-feature-layer": "^0.21.5",
     "@esri/solution-file": "^0.21.5",
     "@esri/solution-group": "^0.21.5",
-    "tslib": "^1.13.0"
+    "tslib": "^2.0.3"
   },
   "scripts": {
     "prepare": "npm run build",

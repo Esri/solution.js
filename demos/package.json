@@ -30,8 +30,7 @@
     "@esri/solution-hub-types": "^0.21.5",
     "@esri/solution-simple-types": "^0.21.5",
     "@esri/solution-storymap": "^0.21.5",
-    "@esri/solution-web-experience": "^0.21.5",
-    "adlib": "3.0.7"
+    "@esri/solution-web-experience": "^0.21.5"
   },
   "scripts": {
     "build": "tsc -p ./tsconfig.json --outDir ./dist"
