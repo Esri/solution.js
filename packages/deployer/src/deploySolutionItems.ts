@@ -114,9 +114,12 @@ export function deploySolutionItems(
       templates = _evaluateSharedViewSources(templates);
     }
 
-    // Create an ordered graph of the templates so that dependencies are created
-    // before the items that need them
-    const { buildOrder } = common.topologicallySortItems(templates);
+    // Create an ordered graph of the templates so that dependencies are created before the items that need them.
+    // Because cycles are permitted, we also keep track of items that need to be patched later because their
+    // dependencies are necessarily created after they are created.
+    const { buildOrder, itemsToBePatched } = common.topologicallySortItems(
+      templates
+    );
 
     // For each item in order from no dependencies to dependent on other items,
     //   * replace template symbols using template dictionary
@@ -140,7 +143,7 @@ export function deploySolutionItems(
           templateDictionary.solutionItemId
         );
 
-        buildOrder.forEach(id => {
+        buildOrder.forEach((id: string) => {
           // Get the item's template out of the list of templates
           const template = common.findTemplateInList(templates, id);
           awaitAllItems.push(
@@ -164,6 +167,23 @@ export function deploySolutionItems(
         Promise.all(awaitAllItems).then(
           (clonedSolutionItems: common.ICreateItemFromTemplateResponse[]) => {
             if (failedTemplateItemIds.length === 0) {
+              // Do we have any items to be patched (i.e., they refer to dependencies using the template id rather
+              // than the cloned id because the item had to be created before the dependency)?
+              let itemIdsToBePatched = Object.keys(itemsToBePatched);
+              if (itemIdsToBePatched.length > 0) {
+                // Replace the ids of the items to be patched (which are template ids) with their cloned versions
+                itemIdsToBePatched = itemIdsToBePatched.map(
+                  id => templateDictionary[id].itemId
+                );
+
+                // Make sure that the items to be patched are flagged for post processing
+                clonedSolutionItems.forEach(item => {
+                  if (itemIdsToBePatched.includes(item.id)) {
+                    item.postProcess = true;
+                  }
+                });
+              }
+
               resolve(clonedSolutionItems);
             } else {
               // Delete created items
@@ -782,7 +802,7 @@ export function _getGroupUpdates(
   templateDictionary: any
 ): Array<Promise<any>> {
   const groups = template.groups || [];
-  return groups.map(sourceGroupId => {
+  return groups.map((sourceGroupId: string) => {
     return common.shareItem(
       templateDictionary[sourceGroupId].itemId,
       template.itemId,
