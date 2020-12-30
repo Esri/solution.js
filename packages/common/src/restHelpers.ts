@@ -1380,6 +1380,24 @@ export function updateItemTemplateFromDictionary(
             { item, data },
             templateDictionary
           );
+          const getUnresolved = (v: any) => {
+            return v ? JSON.stringify(v).match(/{{.+?}}/gim) || [] : [];
+          };
+
+          // Provide feedback about any remaining variables
+          if (hasUnresolvedVariables(updatedItem)) {
+            console.log(
+              itemId + " (" + item.type + ") contains variables in base: ",
+              JSON.stringify(getUnresolved(updatedItem))
+            );
+          }
+          if (hasUnresolvedVariables(updatedData)) {
+            console.log(
+              itemId + " (" + item.type + ") contains variables in data: ",
+              JSON.stringify(getUnresolved(updatedData))
+            );
+          }
+
           return updateItemExtended(updatedItem, updatedData, authentication);
         } else {
           // Shortcut out if not
