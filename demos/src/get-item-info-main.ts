@@ -43,7 +43,7 @@ export function getItemInfo(
 
     const itemBaseDef = common.getItemBase(itemId, authentication);
     const itemDataDef = new Promise<Blob>((resolve2, reject2) => {
-      // tslint:disable-next-line: no-floating-promises
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
       itemBaseDef.then(
         // any error fetching item base will be handled via Promise.all later
         (itemBase: any) => {
@@ -54,7 +54,7 @@ export function getItemInfo(
       );
     });
     const itemThumbnailDef = new Promise<Blob>((resolve3, reject3) => {
-      // tslint:disable-next-line: no-floating-promises
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
       itemBaseDef.then(
         // any error fetching item base will be handled via Promise.all later
         (itemBase: any) => {
@@ -145,9 +145,10 @@ export function getItemInfo(
         } else {
           html += "<ol>";
           // tslint:disable-next-line: prefer-for-of
-          for (let i: number = 0; i < itemResourceFiles.length; ++i) {
+          for (const resource of itemResourceFiles)
+          {
             html += "<li><div>";
-            html += await showBlob(itemResourceFiles[i]);
+            html += await showBlob(resource);
             html += "</div></li>";
           }
           html += "</ol>";
@@ -244,9 +245,9 @@ export function getItemInfo(
                 } else {
                   html += "<ol>";
                   // tslint:disable-next-line: prefer-for-of
-                  for (let i: number = 0; i < formFiles.length; ++i) {
+                  for (const blob of formFiles) {
                     html += "<li><div>";
-                    html += await showBlob(formFiles[i]);
+                    html += await showBlob(blob);
                     html += "</div></li>";
                   }
                   html += "</ol>";
@@ -254,8 +255,13 @@ export function getItemInfo(
                 html += "</p>";
                 resolve(html);
               }
+            )
+            .catch(
+              error => {
+                document.getElementById("errors").innerHTML += "<i>error getting templates: " + error + "</i>";
+              }
             );
-        } else if (itemBase.type === "Solution") {
+          } else if (itemBase.type === "Solution") {
           html += "<p>Dependency graph<br/><div id=\"topologicalSortGraphic\"/>";
           resolve(html);
 
