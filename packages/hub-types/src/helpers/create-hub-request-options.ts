@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { UserSession } from "@esri/arcgis-rest-auth";
+import { UserSession } from "@esri/solution-common";
 
 import {
   IHubRequestOptions,

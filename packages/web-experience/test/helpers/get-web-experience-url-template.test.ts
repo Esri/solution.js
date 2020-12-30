@@ -15,7 +15,7 @@
  */
 import * as getSubdomainModule from "../../src/helpers/get-experience-subdomain";
 import { getWebExperiencepUrlTemplate } from "../../src/helpers/get-web-experience-url-template";
-import { UserSession } from "@esri/arcgis-rest-auth";
+import { UserSession } from "@esri/solution-common";
 describe("getWebExperiencepUrlTemplate ::", () => {
   it("for ago returns templated url", () => {
     const subdomainSpy = spyOn(

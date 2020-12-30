@@ -1,6 +1,6 @@
 {
   "name": "@esri/solution.js",
-  "version": "0.21.4",
+  "version": "0.21.5",
   "description": "A library running in Node.js and modern browsers for transferring ArcGIS Online items from one organization to another.",
   "devDependencies": {
     "@chiragrupani/karma-chromium-edge-launcher": "^2.0.0",
@@ -84,7 +84,7 @@
     "sri-toolbox": "0.2.0",
     "ts-node": "^8.3.0",
     "typedoc": "^0.19.2",
-    "typescript": "^4.0.5",
+    "typescript": "4.0.5",
     "uuid": "^8.0.0"
   },
   "dependencies": {

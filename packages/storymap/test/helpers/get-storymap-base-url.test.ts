@@ -15,7 +15,7 @@
  */
 import { getStoryMapBaseUrl } from "../../src/helpers/get-storymap-base-url";
 import * as getSubdomainModule from "../../src/helpers/get-storymap-subdomain";
-import { UserSession } from "@esri/arcgis-rest-auth";
+import { UserSession } from "@esri/solution-common";
 
 describe("getStoryMapBaseUrl :: ", () => {
   it("for ago, returns the env specific base url", () => {

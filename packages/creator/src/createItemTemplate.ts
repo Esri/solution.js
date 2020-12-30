@@ -35,9 +35,9 @@ import {
   replaceTemplate,
   sanitizeJSONAndReportChanges,
   storeItemResources,
-  fail
+  fail,
+  UserSession
 } from "@esri/solution-common";
-import { UserSession } from "@esri/arcgis-rest-auth";
 import { getProp } from "@esri/hub-common";
 import { moduleMap, UNSUPPORTED } from "./module-map";
 
