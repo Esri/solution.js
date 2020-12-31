@@ -168,21 +168,13 @@ export function deploySolutionItems(
           (clonedSolutionItems: common.ICreateItemFromTemplateResponse[]) => {
             if (failedTemplateItemIds.length === 0) {
               // Do we have any items to be patched (i.e., they refer to dependencies using the template id rather
-              // than the cloned id because the item had to be created before the dependency)?
-              let itemIdsToBePatched = Object.keys(itemsToBePatched);
-              if (itemIdsToBePatched.length > 0) {
-                // Replace the ids of the items to be patched (which are template ids) with their cloned versions
-                itemIdsToBePatched = itemIdsToBePatched.map(
-                  id => templateDictionary[id].itemId
-                );
-
-                // Make sure that the items to be patched are flagged for post processing
-                clonedSolutionItems.forEach(item => {
-                  if (itemIdsToBePatched.includes(item.id)) {
-                    item.postProcess = true;
-                  }
-                });
-              }
+              // than the cloned id because the item had to be created before the dependency)? Flag these items
+              // for post processing in the list of clones.
+              _flagPatchItemsForPostProcessing(
+                itemsToBePatched,
+                templateDictionary,
+                clonedSolutionItems
+              );
 
               resolve(clonedSolutionItems);
             } else {
@@ -204,6 +196,37 @@ export function deploySolutionItems(
       }
     );
   });
+}
+
+/**
+ * For each item to be patched, convert it to its cloned id and mark the item as needing post processing.
+ *
+ * @param itemsToBePatched List of items that need to have their dependencies patched
+ * @param templateDictionary Hash of facts: org URL, adlib replacements
+ * @param templates A collection of AGO item templates
+ */
+export function _flagPatchItemsForPostProcessing(
+  itemsToBePatched: common.IKeyedListsOfStrings,
+  templateDictionary: any,
+  templates: common.ICreateItemFromTemplateResponse[]
+): void {
+  let itemIdsToBePatched = Object.keys(itemsToBePatched);
+
+  /* istanbul ignore else */
+  if (itemIdsToBePatched.length > 0) {
+    // Replace the ids of the items to be patched (which are template ids) with their cloned versions
+    itemIdsToBePatched = itemIdsToBePatched.map(
+      id => templateDictionary[id].itemId
+    );
+
+    // Make sure that the items to be patched are flagged for post processing
+    templates.forEach(item => {
+      /* istanbul ignore else */
+      if (itemIdsToBePatched.includes(item.id)) {
+        item.postProcess = true;
+      }
+    });
+  }
 }
 
 /**

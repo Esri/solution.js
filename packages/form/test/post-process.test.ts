@@ -110,6 +110,7 @@ describe("postProcess", () => {
         )
         .post(updateUrl, utils.getSuccessResponse({ id: template.item.id }));
 
+      spyOn(console, "log").and.callFake(() => {});
       return postProcessor
         .postProcess(
           template.itemId,

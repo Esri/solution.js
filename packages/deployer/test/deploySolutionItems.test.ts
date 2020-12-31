@@ -1502,6 +1502,58 @@ describe("Module `deploySolutionItems`", () => {
     }
   });
 
+  describe("_flagPatchItemsForPostProcessing", () => {
+    it("handles group items without user groups in template dictionary", () => {
+      const itemsToBePatched: common.IKeyedListsOfStrings = {
+        // template ids
+        abc: ["def"],
+        ghi: ["jkl"]
+      };
+      const templateDictionary: any = {
+        // mapping from template ids to cloned ids
+        abc: {
+          itemId: "mno"
+        },
+        ghi: {
+          itemId: "pqr"
+        }
+      };
+      const templates: common.ICreateItemFromTemplateResponse[] = [
+        {
+          // cloned items
+          id: "mno",
+          postProcess: false,
+          type: "Web Map"
+        },
+        {
+          id: "pqr",
+          postProcess: false,
+          type: "Web Map"
+        }
+      ];
+
+      deploySolution._flagPatchItemsForPostProcessing(
+        itemsToBePatched,
+        templateDictionary,
+        templates
+      );
+
+      expect(templates).toEqual([
+        {
+          // updated cloned items
+          id: "mno",
+          postProcess: true,
+          type: "Web Map"
+        },
+        {
+          id: "pqr",
+          postProcess: true,
+          type: "Web Map"
+        }
+      ]);
+    });
+  });
+
   describe("_findExistingItemByKeyword", () => {
     it("handles group items without user groups in template dictionary", () => {
       const actual = deploySolution._findExistingItemByKeyword(

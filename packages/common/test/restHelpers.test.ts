@@ -4168,6 +4168,51 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
     });
   });
 
+  describe("_reportVariablesInItem", () => {
+    it("is silent when there are no unresolved variables", () => {
+      const messages = [] as string[];
+      spyOn(console, "log").and.callFake((message: string) => {
+        messages.push(message);
+      });
+
+      const base: any = {};
+      const data: any = {};
+      restHelpers._reportVariablesInItem(
+        "itm1234567890",
+        "Web Map",
+        base,
+        data
+      );
+
+      expect(messages.length).toEqual(0);
+    });
+
+    it("reports unresolved variables", () => {
+      const messages = [] as string[];
+      spyOn(console, "log").and.callFake((message: string) => {
+        messages.push(message);
+      });
+
+      const base: any = {
+        id: "{{38c1943d2dc844c0bc0524dc98cb9a83.itemId}}"
+      };
+      const data: any = {
+        url: "{{54ad3c7b51264171aaee6ff86dabb2d9.layer6.url}}"
+      };
+      restHelpers._reportVariablesInItem(
+        "itm1234567890",
+        "Web Map",
+        base,
+        data
+      );
+
+      expect(messages).toEqual([
+        'itm1234567890 (Web Map) contains variables in base: ["{{38c1943d2dc844c0bc0524dc98cb9a83.itemId}}"]',
+        'itm1234567890 (Web Map) contains variables in data: ["{{54ad3c7b51264171aaee6ff86dabb2d9.layer6.url}}"]'
+      ]);
+    });
+  });
+
   describe("_setItemProperties", () => {
     it("can get options for HOSTED empty service", () => {
       const item: any = {
