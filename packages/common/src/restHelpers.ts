@@ -1380,6 +1380,8 @@ export function updateItemTemplateFromDictionary(
             { item, data },
             templateDictionary
           );
+          _reportVariablesInItem(itemId, item.type, updatedItem, updatedData);
+
           return updateItemExtended(updatedItem, updatedData, authentication);
         } else {
           // Shortcut out if not
@@ -1691,6 +1693,45 @@ export function _getUpdate(
     params: ops[type].params,
     args: args
   };
+}
+
+/**
+ * Checks the two main parts of an item for unresolved variables and reports any found.
+ *
+ * @param base Item's base section
+ * @param data Item's data section
+ */
+export function _reportVariablesInItem(
+  itemId: string,
+  itemType: string,
+  base: any,
+  data: any
+): void {
+  const getUnresolved = (v: any) => {
+    return JSON.stringify(v).match(/{{.+?}}/gim);
+  };
+
+  // Provide feedback about any remaining unresolved variables
+  /* istanbul ignore else */
+  if (base && hasUnresolvedVariables(base)) {
+    console.log(
+      itemId +
+        " (" +
+        itemType +
+        ") contains variables in base: " +
+        JSON.stringify(getUnresolved(base))
+    );
+  }
+  /* istanbul ignore else */
+  if (data && hasUnresolvedVariables(data)) {
+    console.log(
+      itemId +
+        " (" +
+        itemType +
+        ") contains variables in data: " +
+        JSON.stringify(getUnresolved(data))
+    );
+  }
 }
 
 /**

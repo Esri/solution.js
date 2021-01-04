@@ -106,6 +106,7 @@ describe("Module `notebook`: manages the creation and deployment of notebook pro
           })
           .post(updateUrl, utils.getSuccessResponse({ id: template.item.id }));
 
+        spyOn(console, "log").and.callFake(() => {});
         return notebookProcessor
           .postProcess(
             "3ef",

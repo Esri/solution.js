@@ -114,9 +114,10 @@ export function deploySolutionItems(
       templates = _evaluateSharedViewSources(templates);
     }
 
-    // Create an ordered graph of the templates so that dependencies are created
-    // before the items that need them
-    const cloneOrderChecklist: string[] = common.topologicallySortItems(
+    // Create an ordered graph of the templates so that dependencies are created before the items that need them.
+    // Because cycles are permitted, we also keep track of items that need to be patched later because their
+    // dependencies are necessarily created after they are created.
+    const { buildOrder, itemsToBePatched } = common.topologicallySortItems(
       templates
     );
 
@@ -142,7 +143,7 @@ export function deploySolutionItems(
           templateDictionary.solutionItemId
         );
 
-        cloneOrderChecklist.forEach(id => {
+        buildOrder.forEach((id: string) => {
           // Get the item's template out of the list of templates
           const template = common.findTemplateInList(templates, id);
           awaitAllItems.push(
@@ -166,6 +167,15 @@ export function deploySolutionItems(
         Promise.all(awaitAllItems).then(
           (clonedSolutionItems: common.ICreateItemFromTemplateResponse[]) => {
             if (failedTemplateItemIds.length === 0) {
+              // Do we have any items to be patched (i.e., they refer to dependencies using the template id rather
+              // than the cloned id because the item had to be created before the dependency)? Flag these items
+              // for post processing in the list of clones.
+              _flagPatchItemsForPostProcessing(
+                itemsToBePatched,
+                templateDictionary,
+                clonedSolutionItems
+              );
+
               resolve(clonedSolutionItems);
             } else {
               // Delete created items
@@ -186,6 +196,37 @@ export function deploySolutionItems(
       }
     );
   });
+}
+
+/**
+ * For each item to be patched, convert it to its cloned id and mark the item as needing post processing.
+ *
+ * @param itemsToBePatched List of items that need to have their dependencies patched
+ * @param templateDictionary Hash of facts: org URL, adlib replacements
+ * @param templates A collection of AGO item templates
+ */
+export function _flagPatchItemsForPostProcessing(
+  itemsToBePatched: common.IKeyedListsOfStrings,
+  templateDictionary: any,
+  templates: common.ICreateItemFromTemplateResponse[]
+): void {
+  let itemIdsToBePatched = Object.keys(itemsToBePatched);
+
+  /* istanbul ignore else */
+  if (itemIdsToBePatched.length > 0) {
+    // Replace the ids of the items to be patched (which are template ids) with their cloned versions
+    itemIdsToBePatched = itemIdsToBePatched.map(
+      id => templateDictionary[id].itemId
+    );
+
+    // Make sure that the items to be patched are flagged for post processing
+    templates.forEach(item => {
+      /* istanbul ignore else */
+      if (itemIdsToBePatched.includes(item.id)) {
+        item.postProcess = true;
+      }
+    });
+  }
 }
 
 /**
@@ -784,7 +825,7 @@ export function _getGroupUpdates(
   templateDictionary: any
 ): Array<Promise<any>> {
   const groups = template.groups || [];
-  return groups.map(sourceGroupId => {
+  return groups.map((sourceGroupId: string) => {
     return common.shareItem(
       templateDictionary[sourceGroupId].itemId,
       template.itemId,

@@ -21,7 +21,11 @@
  */
 
 import { getProp } from "./generalHelpers";
-import { IItemTemplate } from "./interfaces";
+import {
+  IBuildOrdering,
+  IKeyedListsOfStrings,
+  IItemTemplate
+} from "./interfaces";
 import { findTemplateIndexInList } from "./templatization";
 
 // ------------------------------------------------------------------------------------------------------------------ //
@@ -30,20 +34,21 @@ import { findTemplateIndexInList } from "./templatization";
  * Topologically sorts a list of items into a build list.
  *
  * @param templates A collection of AGO item templates
- * @return List of ids of items in the order in which they need to be built so that dependencies
- * are built before items that require those dependencies
- * @throws Error("Cyclical dependency detected involving items # and #")
- * Note that items thrown in error may be dependent on each other either directly or via other items.
- * @protected
+ * @return An object containing three parts: a list of ids of items in the order in which they need to be built
+ * so that dependencies are built before items that require those dependencies, a list of item ids found in a
+ * template's dependencies but not present in the supplied list of templates, and a dictionary containing items
+ * that need to be post-processed due to dependency cycles.
  */
-export function topologicallySortItems(templates: IItemTemplate[]): string[] {
+export function topologicallySortItems(
+  templates: IItemTemplate[]
+): IBuildOrdering {
   // Cormen, Thomas H.; Leiserson, Charles E.; Rivest, Ronald L.; Stein, Clifford (2009)
   // Sections 22.3 (Depth-first search) & 22.4 (Topological sort), pp. 603-615
   // Introduction to Algorithms (3rd ed.), The MIT Press, ISBN 978-0-262-03384-8
   //
   // DFS(G)
   // 1 for each vertex u ∈ G,V
-  // 2     u.color = WHITE
+  // 2     u.color = WHITE  (not yet visited)
   // 3     u.π = NIL
   // 4 time = 0
   // 5 for each vertex u ∈ G,V
@@ -51,14 +56,14 @@ export function topologicallySortItems(templates: IItemTemplate[]): string[] {
   // 7         DFS-VISIT(G,u)
   //
   // DFS-VISIT(G,u)
-  // 1 time = time + 1    // white vertex u has just been discovered
+  // 1 time = time + 1  (white vertex u has just been discovered)
   // 2 u.d = time
-  // 3 u.color = GRAY
-  // 4 for each v ∈ G.Adj[u]     // explore edge (u,v)
+  // 3 u.color = GRAY  (visited, in progress)
+  // 4 for each v ∈ G.Adj[u]  (explore edge (u,v))
   // 5     if v.color == WHITE
   // 6         v.π = u
   // 7         DFS-VISIT(G,v)
-  // 8 u.color = BLACK         // blacken u; it is finished
+  // 8 u.color = BLACK  (blacken u; it is finished)
   // 9 time = time + 1
   // 10 u.f = time
   //
@@ -67,59 +72,67 @@ export function topologicallySortItems(templates: IItemTemplate[]): string[] {
   // 2 as each vertex is finished, insert it onto front of a linked list
   // 3 return the linked list of vertices
 
-  const buildList: string[] = []; // list of ordered vertices--don't need linked list because
+  const buildOrder: string[] = []; // list of ordered vertices--don't need linked list because
   // we just want relative ordering
+  const missingDependencies: string[] = [];
+  const itemsToBePatched: IKeyedListsOfStrings = {};
 
   const verticesToVisit: ISortVertex = {};
   templates.forEach(function(template) {
-    verticesToVisit[template.itemId] = ESortVisitColor.White; // not yet visited
+    verticesToVisit[template.itemId] = ESortVisitState.NotYetVisited;
   });
 
   // Algorithm visits each vertex once. Don't need to record times or "from' nodes ("π" in pseudocode)
   templates.forEach(function(template) {
-    if (verticesToVisit[template.itemId] === ESortVisitColor.White) {
+    if (verticesToVisit[template.itemId] === ESortVisitState.NotYetVisited) {
       // if not yet visited
       visit(template.itemId);
     }
   });
 
-  function visitDependants(dependants: any[], vertexId: string) {
-    dependants.forEach(function(id: string) {
-      if (verticesToVisit[id] === ESortVisitColor.White) {
-        // if not yet visited
-        visit(id);
-      } else if (verticesToVisit[id] === ESortVisitColor.Gray) {
-        // visited, in progress
-        throw Error(
-          "Cyclical dependency detected involving items " +
-            vertexId +
-            " and " +
-            id
-        );
-      } else {
-        // finished
-      }
-    });
-  }
-
   // Visit vertex
   function visit(vertexId: string) {
-    verticesToVisit[vertexId] = ESortVisitColor.Gray; // visited, in progress
+    verticesToVisit[vertexId] = ESortVisitState.InProgress; // visited, in progress
 
     // Visit dependents if not already visited; template has to be in templates list because calls to visit()
     // are based on verticiesToVisit[], which is initialized using the templates list
     const template = templates[findTemplateIndexInList(templates, vertexId)];
-    const dependencies: string[] = template.dependencies || [];
-    visitDependants(dependencies, vertexId);
 
-    const syncViews: string[] = getProp(template, "properties.syncViews") || [];
-    visitDependants(syncViews, vertexId);
+    // There are two sources of dependencies
+    const dependencies: string[] = (template.dependencies || []).concat(
+      getProp(template, "properties.syncViews") || []
+    );
 
-    verticesToVisit[vertexId] = ESortVisitColor.Black; // finished
-    buildList.push(vertexId); // add to end of list of ordered vertices because we want dependents first
+    dependencies.forEach(function(dependencyId) {
+      if (verticesToVisit[dependencyId] === ESortVisitState.NotYetVisited) {
+        // if not yet visited
+        visit(dependencyId);
+      } else if (verticesToVisit[dependencyId] === ESortVisitState.InProgress) {
+        // visited, in progress, therefore a cycle
+        // save the dependency that needs to be patched
+        if (itemsToBePatched[vertexId]) {
+          itemsToBePatched[vertexId].push(dependencyId);
+        } else {
+          itemsToBePatched[vertexId] = [dependencyId];
+        }
+      } else if (verticesToVisit[dependencyId] !== ESortVisitState.Finished) {
+        /* istanbul ignore else */
+        if (missingDependencies.indexOf(dependencyId) < 0) {
+          missingDependencies.push(dependencyId);
+        }
+      }
+    });
+
+    verticesToVisit[vertexId] = ESortVisitState.Finished;
+    buildOrder.push(vertexId); // add to end of list of ordered vertices because we want dependents first
   }
 
-  return buildList;
+  const orderingResults: IBuildOrdering = {
+    buildOrder: buildOrder,
+    missingDependencies: missingDependencies,
+    itemsToBePatched: itemsToBePatched
+  };
+  return orderingResults;
 }
 
 // ------------------------------------------------------------------------------------------------------------------ //
@@ -131,7 +144,7 @@ export function topologicallySortItems(templates: IItemTemplate[]): string[] {
  */
 interface ISortVertex {
   /**
-   * Vertex (AGO) id and its visited status, described by the ESortVisitColor enum
+   * Vertex (AGO) id and its visited status, described by the ESortVisitState enum
    */
   [id: string]: number;
 }
@@ -141,11 +154,11 @@ interface ISortVertex {
  *
  * @protected
  */
-enum ESortVisitColor {
+enum ESortVisitState {
   /** not yet visited */
-  White,
+  NotYetVisited, // WHITE
   /** visited, in progress */
-  Gray,
+  InProgress, // GRAY
   /** finished */
-  Black
+  Finished // BLACK
 }

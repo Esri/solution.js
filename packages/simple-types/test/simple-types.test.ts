@@ -840,6 +840,7 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
           })
           .post(updateUrl, utils.getSuccessResponse({ id: template.item.id }));
 
+        spyOn(console, "log").and.callFake(() => {});
         return simpleTypes
           .postProcess(
             "3ef",
