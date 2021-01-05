@@ -63,7 +63,7 @@ describe("addContentToSolution", () => {
             0
           );
         }
-        return Promise.resolve();
+        return Promise.resolve(null);
       }
     );
 
@@ -98,7 +98,7 @@ describe("addContentToSolution", () => {
             0
           );
         }
-        return Promise.resolve();
+        return Promise.resolve(null);
       }
     );
 

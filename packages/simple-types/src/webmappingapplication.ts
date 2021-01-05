@@ -459,12 +459,12 @@ export function fineTuneCreatedItem(
       );
 
       Promise.all([updateDef, createItemWithDataDef]).then(
-        () => resolve(),
-        () => resolve()
+        () => resolve(null),
+        () => resolve(null)
       );
     } else {
       // Otherwise, nothing extra needed
-      resolve();
+      resolve(null);
     }
   });
 }

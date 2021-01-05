@@ -76,9 +76,11 @@ export function blobToFile(
   filename: string,
   mimeType?: string
 ): File {
-  return new_File([blob], filename ? filename : "", {
-    type: mimeType || blob.type
-  });
+  return blob
+    ? new_File([blob], filename ? filename : "", {
+        type: mimeType || blob.type
+      })
+    : null;
 }
 
 /**
@@ -212,7 +214,7 @@ export function saveBlobAsFile(filename: string, blob: Blob): Promise<void> {
     document.body.removeChild(linkElement);
     setTimeout(() => {
       URL.revokeObjectURL(dataUrl);
-      resolve();
+      resolve(null);
     }, 500);
   });
 }

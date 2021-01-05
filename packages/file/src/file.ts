@@ -44,24 +44,20 @@ export function convertItemToTemplate(
 
     // Request file
     const dataPromise = new Promise<File>(dataResolve => {
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
       common
         .getItemDataAsFile(
           itemTemplate.itemId,
           itemTemplate.item.name,
           authentication
         )
-        .then(
-          response => {
-            if (!response || response.size === 0) {
-              dataResolve();
-            } else {
-              dataResolve(response);
-            }
-          },
-          () => {
-            dataResolve();
+        .then(response => {
+          if (!response || response.size === 0) {
+            dataResolve(null);
+          } else {
+            dataResolve(response);
           }
-        );
+        });
     });
 
     // Request related items

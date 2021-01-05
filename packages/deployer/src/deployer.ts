@@ -74,7 +74,7 @@ export function deploySolution(
           Promise.resolve(model.data),
           isGuid(model.item.id)
             ? common.getItemMetadataAsFile(model.item.id, storageAuthentication)
-            : Promise.resolve()
+            : Promise.resolve(null)
         ]);
       }
     })

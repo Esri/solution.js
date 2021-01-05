@@ -142,7 +142,7 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
             expect(r.item.id).toEqual(expectedId);
             expect(r.item.url).toEqual(expectedUrl);
             expect(r.dependencies.length).toEqual(1);
-            expect(r.data).toBeUndefined();
+            expect(r.data).toBeNull();
             expect(r.properties.service.serviceItemId).toEqual(expectedId);
             expect(r.properties.layers[0].serviceItemId).toEqual(expectedId);
             expect(r.properties.tables[0].serviceItemId).toEqual(expectedId);
@@ -352,14 +352,33 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
         const id: string = "svc1234567890";
         const url: string =
           "https://services123.arcgis.com/org1234567890/arcgis/rest/services/ROWPermits_publiccomment/FeatureServer";
+        const adminUrl: string =
+          "https://services123.arcgis.com/org1234567890/arcgis/rest/admin/services/ROWPermits_publiccomment/FeatureServer";
         const itemDataUrl: string =
           utils.PORTAL_SUBSET.restUrl + "/content/items/svc1234567890/data";
 
         itemTemplate.itemId = id;
         itemTemplate.item.id = id;
 
+        const keyField: string = "globalid";
+        const defQuery: string = "status = 'BoardReview'";
+
+        const layer0 = mockItems.getAGOLLayerOrTable(0, "A", "Feature Layer");
+        layer0.relationships = [{}];
+        layer0.relationships[0].keyField = keyField;
+        layer0.viewDefinitionQuery = defQuery;
+
+        const table0 = mockItems.getAGOLLayerOrTable(1, "B", "Table");
+        table0.relationships = [{}];
+        table0.relationships[0].keyField = keyField;
+        table0.viewDefinitionQuery = defQuery;
+
+        const serviceResponse = mockItems.getAGOLService([layer0], [table0]);
+
         fetchMock
-          .post(url + "?f=json", mockItems.get400Failure())
+          .post(url + "?f=json", serviceResponse)
+          .post(adminUrl + "?f=json", serviceResponse)
+          .post(url + "/sources?f=json", mockItems.getAGOLServiceSources())
           .post(itemDataUrl, mockItems.get400Failure());
 
         const templateDictionary = {};
@@ -370,9 +389,7 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
             MOCK_USER_SESSION,
             templateDictionary
           )
-          .then(r => {
-            done.fail();
-          }, done);
+          .then(done, done.fail);
       });
 
       it("should handle error on getServiceLayersAndTables", done => {

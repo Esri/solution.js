@@ -65,7 +65,7 @@ export function createItemTemplate(
   return new Promise(resolve => {
     // Check if item and its dependents are already in list or are queued
     if (findTemplateInList(existingTemplates, itemId)) {
-      resolve();
+      resolve(null);
     } else {
       // Add the id as a placeholder to show that it is being fetched
       existingTemplates.push(createPlaceholderTemplate(itemId));
@@ -135,7 +135,7 @@ export function createItemTemplate(
             if (!itemHandler || itemHandler === UNSUPPORTED) {
               if (itemHandler === UNSUPPORTED) {
                 itemProgressCallback(itemId, EItemProgressStatus.Ignored, 1);
-                resolve();
+                resolve(null);
               } else {
                 itemProgressCallback(itemId, EItemProgressStatus.Failed, 1);
                 placeholder.properties["failed"] = true;
@@ -194,7 +194,7 @@ export function createItemTemplate(
                           EItemProgressStatus.Finished,
                           1
                         );
-                        resolve();
+                        resolve(null);
                       } else {
                         // Get its dependencies, asking each to get its dependents via
                         // recursive calls to this function
@@ -223,7 +223,7 @@ export function createItemTemplate(
                             EItemProgressStatus.Finished,
                             1
                           );
-                          resolve();
+                          resolve(null);
                         });
                       }
                     });
@@ -232,7 +232,7 @@ export function createItemTemplate(
                     placeholder.properties["error"] = JSON.stringify(error);
                     replaceTemplate(existingTemplates, itemId, placeholder);
                     itemProgressCallback(itemId, EItemProgressStatus.Failed, 1);
-                    resolve();
+                    resolve(null);
                   }
                 );
             }
@@ -241,7 +241,7 @@ export function createItemTemplate(
           () => {
             itemProgressCallback(itemId, EItemProgressStatus.Failed, 1);
             itemProgressCallback(itemId, EItemProgressStatus.Failed, 1);
-            resolve();
+            resolve(null);
           }
         );
     }

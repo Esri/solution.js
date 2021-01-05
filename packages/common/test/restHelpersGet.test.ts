@@ -142,7 +142,7 @@ describe("Module `restHelpersGet`: common REST fetch functions shared across pac
         restHelpersGet
           .getBlobAsFile(url, "myFile.png", MOCK_USER_SESSION, [400])
           .then(file => {
-            expect(file).toBeUndefined();
+            expect(file).toBeNull();
             done();
           }, done.fail);
       });
@@ -232,7 +232,7 @@ describe("Module `restHelpersGet`: common REST fetch functions shared across pac
         restHelpersGet
           .getBlobCheckForError(url, MOCK_USER_SESSION, [400])
           .then(blob => {
-            expect(blob).toBeUndefined();
+            expect(blob).toBeNull();
             done();
           }, done.fail);
       });
@@ -346,12 +346,10 @@ describe("Module `restHelpersGet`: common REST fetch functions shared across pac
           infoFilenames,
           MOCK_USER_SESSION
         );
-        Promise.all(filePromises).then(files => {
-          expect(files.length).toEqual(2);
-          expect(typeof files[0]).toEqual("object");
-          expect(files[1]).toBeUndefined();
-          done();
-        }, done.fail);
+        Promise.all(filePromises).then(
+          () => done.fail(),
+          () => done()
+        );
       });
 
       it("fails to get one or more info files via 500 error", done => {
@@ -384,6 +382,27 @@ describe("Module `restHelpersGet`: common REST fetch functions shared across pac
             expect(files).toEqual(mockItems.get500Failure());
             done();
           }
+        );
+      });
+
+      it("handles failed blobs", done => {
+        const itemId = "itm1234567890";
+        const infoFilenames = ["file1"];
+
+        fetchMock.post(
+          utils.PORTAL_SUBSET.restUrl +
+            "/content/items/itm1234567890/info/file1",
+          mockItems.get400Failure()
+        );
+
+        const filePromises = restHelpersGet.getInfoFiles(
+          itemId,
+          infoFilenames,
+          MOCK_USER_SESSION
+        );
+        Promise.all(filePromises).then(
+          () => done.fail(),
+          () => done()
         );
       });
     }
@@ -502,10 +521,10 @@ describe("Module `restHelpersGet`: common REST fetch functions shared across pac
         });
         restHelpersGet
           .getItemDataAsFile(itemId, "myFile.png", MOCK_USER_SESSION)
-          .then((json: any) => {
-            expect(json).toBeUndefined();
-            done();
-          }, done.fail);
+          .then(
+            () => done(),
+            () => done.fail()
+          );
       });
 
       it("gets data section that's an image", done => {
@@ -546,12 +565,10 @@ describe("Module `restHelpersGet`: common REST fetch functions shared across pac
             details: []
           }
         });
-        restHelpersGet
-          .getItemDataAsJson(itemId, MOCK_USER_SESSION)
-          .then((json: any) => {
-            expect(json).toBeUndefined();
-            done();
-          }, done.fail);
+        restHelpersGet.getItemDataAsJson(itemId, MOCK_USER_SESSION).then(
+          () => done(),
+          () => done.fail()
+        );
       });
 
       it("get data section that's JSON", done => {
@@ -659,7 +676,7 @@ describe("Module `restHelpersGet`: common REST fetch functions shared across pac
         restHelpersGet
           .getItemMetadataAsFile(itemId, MOCK_USER_SESSION)
           .then((json: any) => {
-            expect(json).toBeUndefined();
+            expect(json).toBeNull();
             done();
           }, done.fail);
       });
@@ -674,7 +691,22 @@ describe("Module `restHelpersGet`: common REST fetch functions shared across pac
         restHelpersGet
           .getItemMetadataAsFile(itemId, MOCK_USER_SESSION)
           .then((json: any) => {
-            expect(json).toBeUndefined();
+            expect(json).toBeNull();
+            done();
+          }, done.fail);
+      });
+
+      it("handles general error", done => {
+        const itemId = "itm1234567890";
+        const url = restHelpersGet.getItemMetadataBlobUrl(
+          itemId,
+          MOCK_USER_SESSION
+        );
+        fetchMock.post(url, { value: "fred" });
+        restHelpersGet
+          .getItemMetadataAsFile(itemId, MOCK_USER_SESSION)
+          .then((json: any) => {
+            expect(json).toBeNull();
             done();
           }, done.fail);
       });
@@ -1020,7 +1052,7 @@ describe("Module `restHelpersGet`: common REST fetch functions shared across pac
       restHelpersGet
         .getItemThumbnail("itm1234567890", null, false, MOCK_USER_SESSION)
         .then((ok: Blob) => {
-          expect(ok).toBeUndefined();
+          expect(ok).toBeNull();
           done();
         }, done.fail);
     });

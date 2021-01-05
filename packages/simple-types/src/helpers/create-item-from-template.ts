@@ -190,7 +190,7 @@ export function createItemFromTemplate(
                     .then(() => resolve2(), reject2);
                 });
               } else {
-                customProcDef = Promise.resolve();
+                customProcDef = Promise.resolve(null);
               }
 
               Promise.all([relationshipsDef, customProcDef]).then(

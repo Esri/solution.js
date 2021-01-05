@@ -47,7 +47,7 @@ export function convertQuickCaptureToTemplate(
     // The templates data to process
     const data: any = itemTemplate.data;
     if (data && Array.isArray(data)) {
-      let applicationRequest: Promise<any> = Promise.resolve();
+      let applicationRequest: Promise<any> = Promise.resolve(null);
       let applicationName: string = "";
       data.some((item: File) => {
         if (item.type === "application/json") {

@@ -432,7 +432,7 @@ export function _evaluateExistingItems(
         e => reject(common.fail(e))
       );
     } else {
-      resolve();
+      resolve(null);
     }
   });
 }
@@ -509,12 +509,12 @@ export function _updateTemplateDictionary(
               });
             });
           }
-          resolve();
+          resolve(null);
         },
         e => reject(common.fail(e))
       );
     } else {
-      resolve();
+      resolve(null);
     }
   });
 }
@@ -536,7 +536,7 @@ export function _handleExistingItems(
   addTagQuery: boolean
 ): Array<Promise<any>> {
   // if items are not found by type keyword search by tag
-  const existingItemsByTag: Array<Promise<any>> = [Promise.resolve()];
+  const existingItemsByTag: Array<Promise<any>> = [Promise.resolve(null)];
   /* istanbul ignore else */
   if (existingItemsResponse && Array.isArray(existingItemsResponse)) {
     existingItemsResponse.forEach(existingItem => {

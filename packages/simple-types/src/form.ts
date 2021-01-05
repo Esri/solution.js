@@ -36,5 +36,10 @@ export function getFormInfoFiles(
       ["form.json", "forminfo.json", "form.webform"],
       authentication
     )
-  ).then(results => results.filter(result => !!result));
+  ).then(
+    results => results.filter(result => !!result),
+    () => {
+      return [];
+    }
+  );
 }

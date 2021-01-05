@@ -65,10 +65,11 @@ export function convertItemToTemplate(
       case "Web Map":
       case "Web Mapping Application":
       case "Notebook":
-        dataPromise = new Promise((resolveJSON, rejectJSON) => {
+        dataPromise = new Promise(resolveJSON => {
+          // eslint-disable-next-line @typescript-eslint/no-floating-promises
           common
             .getItemDataAsJson(itemTemplate.itemId, authentication)
-            .then(json => resolveJSON(json), rejectJSON);
+            .then(json => resolveJSON(json));
         });
         break;
       case "Form":
@@ -88,106 +89,101 @@ export function convertItemToTemplate(
 
     // Errors are handled as resolved empty values; this means that there's no `reject` clause to handle, hence:
     // eslint-disable-next-line @typescript-eslint/no-floating-promises
-    Promise.all([dataPromise, relatedPromise]).then(
-      responses => {
-        const [itemDataResponse, relatedItemsResponse] = responses;
-        itemTemplate.data = itemDataResponse;
-        const relationships = relatedItemsResponse;
+    Promise.all([dataPromise, relatedPromise]).then(responses => {
+      const [itemDataResponse, relatedItemsResponse] = responses;
+      itemTemplate.data = itemDataResponse;
+      const relationships = relatedItemsResponse;
 
-        // Save the mappings to related items & add those items to the dependencies, but not WMA Code Attachments
-        itemTemplate.dependencies = [] as string[];
-        itemTemplate.relatedItems = [] as common.IRelatedItems[];
+      // Save the mappings to related items & add those items to the dependencies, but not WMA Code Attachments
+      itemTemplate.dependencies = [] as string[];
+      itemTemplate.relatedItems = [] as common.IRelatedItems[];
 
-        relationships.forEach(relationship => {
-          /* istanbul ignore else */
-          if (relationship.relationshipType !== "WMA2Code") {
-            itemTemplate.relatedItems.push(relationship);
-            relationship.relatedItemIds.forEach(relatedItemId => {
-              if (itemTemplate.dependencies.indexOf(relatedItemId) < 0) {
-                itemTemplate.dependencies.push(relatedItemId);
-              }
-            });
-          }
-        });
-
-        let wrapupPromise = Promise.resolve();
-        let templateModifyingPromise = Promise.resolve(itemTemplate);
-        switch (itemInfo.type) {
-          case "Dashboard":
-            dashboard.convertItemToTemplate(itemTemplate);
-            break;
-          case "Form":
-            // Store the form's data in the solution resources, not in template
-            itemTemplate.data = null;
-            form.convertItemToTemplate(itemTemplate);
-
-            wrapupPromise = new Promise(
-              (resolveFormStorage, rejectFormStorage) => {
-                common
-                  .storeFormItemFiles(
-                    itemTemplate,
-                    itemDataResponse,
-                    solutionItemId,
-                    authentication
-                  )
-                  .then(formFilenames => {
-                    // update the templates resources
-                    itemTemplate.resources = itemTemplate.resources.concat(
-                      formFilenames
-                    );
-                    resolveFormStorage();
-                  }, rejectFormStorage);
-              }
-            );
-            break;
-          case "Notebook":
-            notebook.convertNotebookToTemplate(itemTemplate);
-            break;
-          case "Oriented Imagery Catalog":
-            templateModifyingPromise = oic.convertItemToTemplate(
-              itemTemplate,
-              authentication
-            );
-            break;
-          case "Web Map":
-            templateModifyingPromise = webmap.convertItemToTemplate(
-              itemTemplate,
-              authentication
-            );
-            break;
-          case "Web Mapping Application":
-            if (itemDataResponse) {
-              templateModifyingPromise = webmappingapplication.convertItemToTemplate(
-                itemTemplate,
-                authentication
-              );
+      relationships.forEach(relationship => {
+        /* istanbul ignore else */
+        if (relationship.relationshipType !== "WMA2Code") {
+          itemTemplate.relatedItems.push(relationship);
+          relationship.relatedItemIds.forEach(relatedItemId => {
+            if (itemTemplate.dependencies.indexOf(relatedItemId) < 0) {
+              itemTemplate.dependencies.push(relatedItemId);
             }
-            break;
-          case "Workforce Project":
-            templateModifyingPromise = workforce.convertItemToTemplate(
+          });
+        }
+      });
+
+      let wrapupPromise = Promise.resolve(null);
+      let templateModifyingPromise = Promise.resolve(itemTemplate);
+      switch (itemInfo.type) {
+        case "Dashboard":
+          dashboard.convertItemToTemplate(itemTemplate);
+          break;
+        case "Form":
+          // Store the form's data in the solution resources, not in template
+          itemTemplate.data = null;
+          form.convertItemToTemplate(itemTemplate);
+
+          wrapupPromise = new Promise(
+            (resolveFormStorage, rejectFormStorage) => {
+              common
+                .storeFormItemFiles(
+                  itemTemplate,
+                  itemDataResponse,
+                  solutionItemId,
+                  authentication
+                )
+                .then(formFilenames => {
+                  // update the templates resources
+                  itemTemplate.resources = itemTemplate.resources.concat(
+                    formFilenames
+                  );
+                  resolveFormStorage(null);
+                }, rejectFormStorage);
+            }
+          );
+          break;
+        case "Notebook":
+          notebook.convertNotebookToTemplate(itemTemplate);
+          break;
+        case "Oriented Imagery Catalog":
+          templateModifyingPromise = oic.convertItemToTemplate(
+            itemTemplate,
+            authentication
+          );
+          break;
+        case "Web Map":
+          templateModifyingPromise = webmap.convertItemToTemplate(
+            itemTemplate,
+            authentication
+          );
+          break;
+        case "Web Mapping Application":
+          if (itemDataResponse) {
+            templateModifyingPromise = webmappingapplication.convertItemToTemplate(
               itemTemplate,
               authentication
             );
-            break;
-          case "QuickCapture Project":
-            templateModifyingPromise = quickcapture.convertQuickCaptureToTemplate(
-              itemTemplate
-            );
-            break;
-        }
-
-        wrapupPromise.then(
-          () => {
-            templateModifyingPromise.then(resolve, err =>
-              reject(common.fail(err))
-            );
-          },
-          err => reject(common.fail(err))
-        );
-      },
-      error => {
-        reject(error);
+          }
+          break;
+        case "Workforce Project":
+          templateModifyingPromise = workforce.convertItemToTemplate(
+            itemTemplate,
+            authentication
+          );
+          break;
+        case "QuickCapture Project":
+          templateModifyingPromise = quickcapture.convertQuickCaptureToTemplate(
+            itemTemplate
+          );
+          break;
       }
-    );
+
+      wrapupPromise.then(
+        () => {
+          templateModifyingPromise.then(resolve, err =>
+            reject(common.fail(err))
+          );
+        },
+        err => reject(common.fail(err))
+      );
+    });
   });
 }

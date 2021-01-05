@@ -1228,7 +1228,7 @@ describe("Module `deploySolutionItems`", () => {
       const templateDictionary: any = {
         aa4a6047326243b290f625e80ebe6531: {
           def: function() {
-            return Promise.resolve();
+            return Promise.resolve(null);
           }
         },
         organization: utils.getPortalsSelfResponse()
