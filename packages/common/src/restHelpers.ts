@@ -240,7 +240,7 @@ export function addToServiceDefinition(
   return new Promise((resolve, reject) => {
     svcAdminAddToServiceDefinition(url, options).then(
       () => {
-        resolve();
+        resolve(null);
       },
       e => reject(fail(e))
     );
@@ -1185,8 +1185,8 @@ export function removeListOfItemsOrGroups(
     Promise.all(
       itemIds.map(itemId => removeItemOrGroup(itemId, authentication))
     ).then(
-      () => resolve(),
-      () => resolve()
+      () => resolve(null),
+      () => resolve(null)
     );
   });
 }
@@ -1273,7 +1273,7 @@ export function shareItem(
     };
 
     shareItemWithGroup(shareOptions).then(
-      () => resolve(),
+      () => resolve(null),
       (e: any) => reject(fail(e))
     );
   });

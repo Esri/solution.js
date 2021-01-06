@@ -181,12 +181,12 @@ export function createItemFromTemplate(
             destinationAuthentication,
             template.item.thumbnail
           ).then(
-            () => resolve(),
-            () => resolve()
+            () => resolve(null),
+            () => resolve(null)
           );
         });
       } else {
-        return Promise.resolve();
+        return Promise.resolve(null);
       }
     })
     .then(() => {

@@ -134,7 +134,7 @@ export function getBlobAsFile(
     // Get the blob from the URL
     getBlobCheckForError(url, authentication, ignoreErrors).then(
       blob =>
-        !blob ? resolve() : resolve(blobToFile(blob, filename, mimeType)),
+        !blob ? resolve(null) : resolve(blobToFile(blob, filename, mimeType)),
       reject
     );
   });
@@ -166,7 +166,7 @@ export function getBlobCheckForError(
             if (json && json.error) {
               const code: number = json.error.code;
               if (code !== undefined && ignoreErrors.indexOf(code) >= 0) {
-                resolve(); // Error, but ignored
+                resolve(null); // Error, but ignored
               } else {
                 reject(json); // Other error; fail with error
               }
@@ -214,8 +214,7 @@ export function getInfoFiles(
   return infoFilenames.map(filename => {
     return new Promise<File>((resolve, reject) => {
       getItemInfoBlob(itemId, filename, authentication).then(
-        blob =>
-          blob === undefined ? resolve() : resolve(blobToFile(blob, filename)),
+        blob => resolve(blobToFile(blob, filename)),
         reject
       );
     });
@@ -316,12 +315,10 @@ export function getItemDataAsFile(
   filename: string,
   authentication: UserSession
 ): Promise<File> {
-  return new Promise<File>((resolve, reject) => {
+  return new Promise<File>(resolve => {
     getItemDataBlob(itemId, authentication).then(
-      blob => (!blob ? resolve() : resolve(blobToFile(blob, filename))),
-      () => {
-        reject();
-      }
+      blob => resolve(blobToFile(blob, filename)),
+      () => resolve(null)
     );
   });
 }
@@ -338,10 +335,10 @@ export function getItemDataAsJson(
   itemId: string,
   authentication: UserSession
 ): Promise<any> {
-  return new Promise<any>((resolve, reject) => {
+  return new Promise<any>(resolve => {
     getItemDataBlob(itemId, authentication).then(
-      blob => (!blob ? resolve() : resolve(blobToJson(blob))),
-      reject
+      blob => resolve(blobToJson(blob)),
+      () => resolve(null)
     );
   });
 }
@@ -357,13 +354,11 @@ export function getItemDataBlob(
   itemId: string,
   authentication: UserSession
 ): Promise<Blob> {
-  return new Promise<Blob>((resolve, reject) => {
+  return new Promise<Blob>(resolve => {
     const url = getItemDataBlobUrl(itemId, authentication);
     getBlobCheckForError(url, authentication, [500]).then(
       blob => resolve(_fixTextBlobType(blob)),
-      () => {
-        reject();
-      }
+      () => resolve(null)
     );
   });
 }
@@ -437,12 +432,12 @@ export function getItemMetadataAsFile(
     getItemMetadataBlob(itemId, authentication).then(
       blob => {
         if (!blob || (blob && blob.type.startsWith("application/json"))) {
-          resolve(); // JSON error
+          resolve(null); // JSON error
         } else {
           resolve(blobToFile(blob, "metadata.xml"));
         }
       },
-      () => resolve()
+      () => resolve(null)
     );
   });
 }
@@ -461,10 +456,7 @@ export function getItemMetadataBlob(
   return new Promise<Blob>((resolve, reject) => {
     const url = getItemMetadataBlobUrl(itemId, authentication);
 
-    getBlobCheckForError(url, authentication, [400]).then(
-      (blob: Blob) => resolve(_fixTextBlobType(blob)),
-      reject
-    );
+    getBlobCheckForError(url, authentication, [400]).then(resolve, reject);
   });
 }
 
@@ -659,7 +651,7 @@ export function getItemThumbnail(
 ): Promise<Blob> {
   return new Promise<Blob>((resolve, reject) => {
     if (!thumbnailUrlPart) {
-      resolve();
+      resolve(null);
       return;
     }
 
@@ -771,7 +763,11 @@ export function _fixTextBlobType(blob: Blob): Promise<Blob> {
       );
     } else {
       // Empty or not typed as plain text, so simply return
-      resolve(blob);
+      if (blob) {
+        resolve(blob);
+      } else {
+        reject();
+      }
     }
   });
 }

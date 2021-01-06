@@ -114,7 +114,7 @@ export function fineTuneCreatedItem(
     };
     common
       .updateItem(updateOptions, authentication)
-      .then(() => resolve(), reject);
+      .then(() => resolve(null), reject);
   });
 }
 

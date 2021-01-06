@@ -614,9 +614,9 @@ export function addFeatureServiceLayersAndTables(
                 return prev.then(() => {
                   return getRequest(update);
                 });
-              }, Promise.resolve())
+              }, Promise.resolve(null))
               .then(
-                () => resolve(),
+                () => resolve(null),
                 (e: any) => reject(fail(e)) // getRequest
               );
           });
@@ -624,7 +624,7 @@ export function addFeatureServiceLayersAndTables(
         e => reject(fail(e)) // updateFeatureServiceDefinition
       );
     } else {
-      resolve();
+      resolve(null);
     }
   });
 }
@@ -704,7 +704,7 @@ export function updateFeatureServiceDefinition(
       }
     });
     addToServiceDefinition(serviceUrl, options).then(
-      () => resolve(),
+      () => resolve(null),
       e => reject(fail(e))
     );
   });

@@ -353,7 +353,7 @@ export function showDependencyGraph(
       .then(
         itemData => {
           showTopologicalSortGraph(itemData.templates, canvas, width, height, Raphael, Dracula);
-          resolve();
+          resolve(null);
         }
       )
       .catch(

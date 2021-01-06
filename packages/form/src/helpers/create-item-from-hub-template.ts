@@ -68,7 +68,7 @@ export function createItemFromHubTemplate(
       const { formId, folderId, featureServiceId } = createSurveyResponse;
 
       // Update the item with its thumbnail
-      let thumbDef: Promise<any> = Promise.resolve();
+      let thumbDef: Promise<any> = Promise.resolve(null);
       /* istanbul ignore else */
       if (template.item.thumbnail) {
         thumbDef = updateItemExtended(
