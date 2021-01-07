@@ -131,8 +131,6 @@ describe("createItemFromHubTemplate", () => {
       common,
       "updateItemExtended"
     ).and.resolveTo();
-    // const moveItemSpy = spyOn(restPortal, "moveItem").and.resolveTo();
-    // const removeFolderSpy = spyOn(common, "removeFolder").and.resolveTo();
     const itemProgressCallbackSpy = jasmine.createSpy();
     const getItemBaseSpy = spyOn(common, "getItemBase").and.resolveTo(
       getItemBaseResult
@@ -216,8 +214,6 @@ describe("createItemFromHubTemplate", () => {
       common,
       "updateItemExtended"
     ).and.resolveTo();
-    // const moveItemSpy = spyOn(restPortal, "moveItem").and.resolveTo();
-    // const removeFolderSpy = spyOn(common, "removeFolder").and.resolveTo();
     const itemProgressCallbackSpy = jasmine.createSpy();
     const getItemBaseSpy = spyOn(common, "getItemBase").and.resolveTo(
       getItemBaseResult
