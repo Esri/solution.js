@@ -20,14 +20,12 @@ import {
   IItemProgressCallback,
   ICreateItemFromTemplateResponse,
   EItemProgressStatus,
-  removeFolder,
   replaceInTemplate,
   updateItemExtended,
   ISurvey123CreateParams,
   ISurvey123CreateResult,
   getItemBase
 } from "@esri/solution-common";
-import { moveItem } from "@esri/arcgis-rest-portal";
 import { createSurvey } from "./create-survey";
 import { buildCreateParams } from "./build-create-params";
 
@@ -65,7 +63,7 @@ export function createItemFromHubTemplate(
       return createSurvey(params, survey123Url);
     })
     .then((createSurveyResponse: ISurvey123CreateResult) => {
-      const { formId, folderId, featureServiceId } = createSurveyResponse;
+      const { formId, featureServiceId } = createSurveyResponse;
 
       // Update the item with its thumbnail
       let thumbDef: Promise<any> = Promise.resolve();
@@ -79,26 +77,9 @@ export function createItemFromHubTemplate(
         );
       }
 
-      // Survey123 API creates Form & Feature Service in a different directory,
-      // so move those items to the deployed solution folder
-      const promises = [thumbDef].concat(
-        [formId, featureServiceId].map((id: string) => {
-          return moveItem({
-            itemId: id,
-            folderId: templateDictionary.folderId as string,
-            authentication: destinationAuthentication
-          });
-        })
-      );
-      return Promise.all(promises)
-        .then(() => {
-          // then remove the folder that Survey123 created
-          return Promise.all([
-            getItemBase(formId, destinationAuthentication),
-            removeFolder(folderId, destinationAuthentication)
-          ]);
-        })
-        .then(([item]) => {
+      return thumbDef
+        .then(() => getItemBase(formId, destinationAuthentication))
+        .then(item => {
           templateDictionary[interpolatedTemplate.itemId] = {
             itemId: formId
           };

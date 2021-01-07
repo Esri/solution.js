@@ -131,8 +131,8 @@ describe("createItemFromHubTemplate", () => {
       common,
       "updateItemExtended"
     ).and.resolveTo();
-    const moveItemSpy = spyOn(restPortal, "moveItem").and.resolveTo();
-    const removeFolderSpy = spyOn(common, "removeFolder").and.resolveTo();
+    // const moveItemSpy = spyOn(restPortal, "moveItem").and.resolveTo();
+    // const removeFolderSpy = spyOn(common, "removeFolder").and.resolveTo();
     const itemProgressCallbackSpy = jasmine.createSpy();
     const getItemBaseSpy = spyOn(common, "getItemBase").and.resolveTo(
       getItemBaseResult
@@ -164,27 +164,9 @@ describe("createItemFromHubTemplate", () => {
         expect(updateItemExtendedSpy.calls.argsFor(0)[0].id).toBe(
           createResult.formId
         );
-        expect(moveItemSpy.calls.count()).toEqual(2);
-        expect(moveItemSpy.calls.argsFor(0)[0].itemId).toBe(
-          createResult.formId
-        );
-        expect(moveItemSpy.calls.argsFor(0)[0].folderId).toBe(
-          templateDictionary.folderId
-        );
-        expect(moveItemSpy.calls.argsFor(1)[0].itemId).toBe(
-          createResult.featureServiceId
-        );
-        expect(moveItemSpy.calls.argsFor(1)[0].folderId).toBe(
-          templateDictionary.folderId
-        );
         expect(getItemBaseSpy.calls.count()).toEqual(1);
         expect(getItemBaseSpy.calls.first().args).toEqual([
           createResult.formId,
-          MOCK_USER_SESSION
-        ]);
-        expect(removeFolderSpy.calls.count()).toEqual(1);
-        expect(removeFolderSpy.calls.first().args).toEqual([
-          createResult.folderId,
           MOCK_USER_SESSION
         ]);
         expect(templateDictionary[template.itemId]).toEqual({
@@ -234,8 +216,8 @@ describe("createItemFromHubTemplate", () => {
       common,
       "updateItemExtended"
     ).and.resolveTo();
-    const moveItemSpy = spyOn(restPortal, "moveItem").and.resolveTo();
-    const removeFolderSpy = spyOn(common, "removeFolder").and.resolveTo();
+    // const moveItemSpy = spyOn(restPortal, "moveItem").and.resolveTo();
+    // const removeFolderSpy = spyOn(common, "removeFolder").and.resolveTo();
     const itemProgressCallbackSpy = jasmine.createSpy();
     const getItemBaseSpy = spyOn(common, "getItemBase").and.resolveTo(
       getItemBaseResult
@@ -268,27 +250,9 @@ describe("createItemFromHubTemplate", () => {
         expect(updateItemExtendedSpy.calls.argsFor(0)[0].id).toBe(
           createResult.formId
         );
-        expect(moveItemSpy.calls.count()).toEqual(2);
-        expect(moveItemSpy.calls.argsFor(0)[0].itemId).toBe(
-          createResult.formId
-        );
-        expect(moveItemSpy.calls.argsFor(0)[0].folderId).toBe(
-          templateDictionary.folderId
-        );
-        expect(moveItemSpy.calls.argsFor(1)[0].itemId).toBe(
-          createResult.featureServiceId
-        );
-        expect(moveItemSpy.calls.argsFor(1)[0].folderId).toBe(
-          templateDictionary.folderId
-        );
         expect(getItemBaseSpy.calls.count()).toEqual(1);
         expect(getItemBaseSpy.calls.first().args).toEqual([
           createResult.formId,
-          MOCK_USER_SESSION
-        ]);
-        expect(removeFolderSpy.calls.count()).toEqual(1);
-        expect(removeFolderSpy.calls.first().args).toEqual([
-          createResult.folderId,
           MOCK_USER_SESSION
         ]);
         expect(templateDictionary[template.itemId]).toEqual({
