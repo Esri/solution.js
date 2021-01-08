@@ -168,27 +168,6 @@ export function createItemFromTemplate(
         destinationAuthentication
       );
     })
-    .then(moves => {
-      // Update the item with its thumbnail
-      if (template.item.thumbnail) {
-        // First move was item itself
-        const itemId = moves[0].itemId;
-
-        return new Promise<any>(resolve => {
-          updateItemExtended(
-            { id: itemId },
-            null,
-            destinationAuthentication,
-            template.item.thumbnail
-          ).then(
-            () => resolve(null),
-            () => resolve(null)
-          );
-        });
-      } else {
-        return Promise.resolve(null);
-      }
-    })
     .then(() => {
       // Update the template dictionary
       // TODO: This should be done in whatever recieves
