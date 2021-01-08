@@ -1,6 +1,6 @@
 {
   "name": "@esri/solution-viewer",
-  "version": "0.21.5",
+  "version": "0.21.6",
   "description": "Simplifies access to @esri/solution.js.",
   "main": "dist/node/index.js",
   "unpkg": "dist/umd/viewer.umd.min.js",
@@ -37,7 +37,7 @@
     "@esri/hub-teams": "^6.20.1"
   },
   "dependencies": {
-    "@esri/solution-common": "^0.21.5",
+    "@esri/solution-common": "^0.21.6",
     "tslib": "^1.13.0"
   },
   "scripts": {

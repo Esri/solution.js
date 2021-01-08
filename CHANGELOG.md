@@ -8,6 +8,10 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ## [Unreleased]
 
+## [0.21.6] - January 8th 2021
+
+
+
 ## [0.21.5] - December 29th 2020
 
 
@@ -44,7 +48,6 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 
 
-
 [0.19.3]: https://github.com/Esri/solution.js/compare/a41f3b856898e7fbac679ffb44de1c38f55260e3...v0.19.3 "v0.19.3"
 [0.20.1]: https://github.com/Esri/solution.js/compare/v0.19.3...v0.20.1 "v0.20.1"
 [0.20.18]: https://github.com/Esri/solution.js/compare/v0.20.1...v0.20.18 "v0.20.18"
@@ -54,4 +57,5 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 [0.21.3]: https://github.com/Esri/solution.js/compare/v0.21.2...v0.21.3 "v0.21.3"
 [0.21.4]: https://github.com/Esri/solution.js/compare/v0.21.3...v0.21.4 "v0.21.4"
 [0.21.5]: https://github.com/Esri/solution.js/compare/v0.21.4...v0.21.5 "v0.21.5"
-[HEAD]: https://github.com/Esri/solution.js/compare/v0.21.5...HEAD "Unreleased Changes"
+[0.21.6]: https://github.com/Esri/solution.js/compare/v0.21.5...v0.21.6 "v0.21.6"
+[HEAD]: https://github.com/Esri/solution.js/compare/v0.21.6...HEAD "Unreleased Changes"
