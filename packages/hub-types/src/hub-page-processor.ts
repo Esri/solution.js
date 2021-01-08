@@ -26,8 +26,7 @@ import {
   ICreateItemFromTemplateResponse,
   EItemProgressStatus,
   UserSession,
-  generateEmptyCreationResponse,
-  updateItemExtended
+  generateEmptyCreationResponse
 } from "@esri/solution-common";
 import { createHubRequestOptions } from "./helpers/create-hub-request-options";
 import {
@@ -167,27 +166,6 @@ export function createItemFromTemplate(
         templateDictionary.folderId,
         destinationAuthentication
       );
-    })
-    .then(moves => {
-      // Update the item with its thumbnail
-      if (template.item.thumbnail) {
-        // First move was item itself
-        const itemId = moves[0].itemId;
-
-        return new Promise<any>(resolve => {
-          updateItemExtended(
-            { id: itemId },
-            null,
-            destinationAuthentication,
-            template.item.thumbnail
-          ).then(
-            () => resolve(null),
-            () => resolve(null)
-          );
-        });
-      } else {
-        return Promise.resolve(null);
-      }
     })
     .then(() => {
       // Update the template dictionary

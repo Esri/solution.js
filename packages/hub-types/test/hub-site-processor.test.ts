@@ -215,10 +215,6 @@ describe("HubSiteProcessor: ", () => {
       const moveSiteSpy = spyOn(moveHelper, "moveModelToFolder").and.resolveTo([
         tmplThmb.itemId
       ]);
-      const updateItemExtendedSpy = spyOn(
-        common,
-        "updateItemExtended"
-      ).and.resolveTo();
 
       const td = {
         organization: {
@@ -252,72 +248,9 @@ describe("HubSiteProcessor: ", () => {
         );
         expect(createSiteSpy.calls.count()).toBe(1, "should call createSite");
         expect(moveSiteSpy.calls.count()).toBe(1, "should call moveSite");
-        expect(updateItemExtendedSpy.calls.count()).toBe(
-          1,
-          "should call updateItemExtended"
-        );
-        expect(updateItemExtendedSpy.calls.argsFor(0)[3]).toBe(
-          tmplThmb.item.thumbnail
-        );
       });
     });
-    it("happy-path with thumbnail update failure", async () => {
-      const createFromTmplSpy = spyOn(
-        sitesPackage,
-        "createSiteModelFromTemplate"
-      ).and.resolveTo({ assets: [] });
-      const createSiteSpy = spyOn(sitesPackage, "createSite").and.resolveTo(
-        fakeSite
-      );
-      const moveSiteSpy = spyOn(moveHelper, "moveModelToFolder").and.resolveTo([
-        tmplThmb.itemId
-      ]);
-      const updateItemExtendedSpy = spyOn(
-        common,
-        "updateItemExtended"
-      ).and.returnValue(Promise.reject(fail()));
 
-      const td = {
-        organization: {
-          id: "somePortalId",
-          portalHostname: "www.arcgis.com"
-        },
-        user: {
-          username: "vader"
-        },
-        solutionItemExtent: "10,10,20,20",
-        solution: {
-          title: "Some Title"
-        }
-      };
-      const cb = () => true;
-      return HubSiteProcessor.createItemFromTemplate(
-        tmplThmb,
-        td,
-        MOCK_USER_SESSION,
-        cb
-      ).then(result => {
-        expect(result.id).toBe("FAKE3ef", "should return the created item id");
-        expect(result.type).toBe(
-          "Hub Site Application",
-          "should return the type"
-        );
-        expect(result.postProcess).toBe(true, "should flag postProcess");
-        expect(createFromTmplSpy.calls.count()).toBe(
-          1,
-          "should call createFromTemplate"
-        );
-        expect(createSiteSpy.calls.count()).toBe(1, "should call createSite");
-        expect(moveSiteSpy.calls.count()).toBe(1, "should call moveSite");
-        expect(updateItemExtendedSpy.calls.count()).toBe(
-          1,
-          "should call updateItemExtended"
-        );
-        expect(updateItemExtendedSpy.calls.argsFor(0)[3]).toBe(
-          tmplThmb.item.thumbnail
-        );
-      });
-    });
     it("other branches:: delegates to hub.js", () => {
       const createFromTmplSpy = spyOn(
         sitesPackage,
