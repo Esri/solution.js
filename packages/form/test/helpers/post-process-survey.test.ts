@@ -15,6 +15,7 @@
  */
 
 import * as common from "@esri/solution-common";
+import * as restPortal from "@esri/arcgis-rest-portal";
 import { postProcessHubSurvey } from "../../src/helpers/post-process-survey";
 import * as utils from "../../../common/test/mocks/utils";
 import * as agolItems from "../../../common/test/mocks/agolItems";
@@ -46,7 +47,8 @@ describe("postProcessHubSurvey", () => {
     templateDictionary = {
       "3c36d3679e7f4934ac599051df22daf6": {
         itemId: "4c36d3679e7f4934ac599051df22daf6"
-      }
+      },
+      folderId: "h7bf45f98d114c3ab85fd63bb44e240d"
     };
     interpolatedTemplate = {
       ...template,
@@ -66,7 +68,8 @@ describe("postProcessHubSurvey", () => {
       id: "4c36d3679e7f4934ac599051df22daf6",
       title: "original title",
       snippet: "original snippet",
-      culture: "original-culture"
+      culture: "original-culture",
+      ownerFolder: "g7bf45f98d114c3ab85fd63bb44e240d"
     };
     const formTemplateBase = mockTemplates.getItemTemplate("Form");
     formTemplate = {
@@ -97,6 +100,8 @@ describe("postProcessHubSurvey", () => {
       common,
       "createInitializedItemTemplate"
     ).and.returnValue(featureServiceTemplate);
+    const moveItemSpy = spyOn(restPortal, "moveItem").and.resolveTo();
+    const removeFolderSpy = spyOn(common, "removeFolder").and.resolveTo();
     return postProcessHubSurvey(
       formId,
       "Form",
@@ -137,6 +142,22 @@ describe("postProcessHubSurvey", () => {
               `source-${featureServiceSourceBase.id}`
             ]
           },
+          MOCK_USER_SESSION
+        ]);
+        expect(moveItemSpy.calls.count()).toEqual(2);
+        expect(moveItemSpy.calls.argsFor(0)[0].itemId).toBe(formId);
+        expect(moveItemSpy.calls.argsFor(0)[0].folderId).toBe(
+          templateDictionary.folderId
+        );
+        expect(moveItemSpy.calls.argsFor(1)[0].itemId).toBe(
+          featureServiceResultBase.id
+        );
+        expect(moveItemSpy.calls.argsFor(1)[0].folderId).toBe(
+          templateDictionary.folderId
+        );
+        expect(removeFolderSpy.calls.count()).toEqual(1);
+        expect(removeFolderSpy.calls.first().args).toEqual([
+          featureServiceResultBase.ownerFolder,
           MOCK_USER_SESSION
         ]);
         expect(createInitializedItemTemplateSpy.calls.count()).toEqual(1);

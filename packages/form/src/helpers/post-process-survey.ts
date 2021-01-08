@@ -20,8 +20,11 @@ import {
   updateItem,
   replaceInTemplate,
   getItemBase,
-  createInitializedItemTemplate
+  createInitializedItemTemplate,
+  removeFolder,
+  IItemUpdate
 } from "@esri/solution-common";
+import { moveItem } from "@esri/arcgis-rest-portal";
 
 /**
  * Provides utility method to post process Hub surveys
@@ -56,40 +59,52 @@ export function postProcessHubSurvey(
   const interpolated = replaceInTemplate(template, templateDictionary);
   return getItemBase(featureServiceResultId, authentication).then(
     featureServiceResultBase => {
-      const updatePromises = [
+      const itemUpdates = [
         // fix/update form properties we couldn't control via the API
-        updateItem(
-          {
-            id: itemId,
-            title: interpolated.item.title,
-            snippet: interpolated.item.snippet,
-            extent: interpolated.item.extent,
-            culture: interpolated.item.culture
-          },
-          authentication
-        ),
+        {
+          id: itemId,
+          title: interpolated.item.title,
+          snippet: interpolated.item.snippet,
+          extent: interpolated.item.extent,
+          culture: interpolated.item.culture
+        },
         // fix/update feature service properties we couldn't control via the API
-        updateItem(
-          {
-            id: featureServiceResultId,
-            extent: interpolated.item.extent,
-            typeKeywords: [
-              ...featureServiceResultBase.typeKeywords,
-              `source-${featureServiceSourceId}`
-            ]
-          },
-          authentication
-        )
+        {
+          id: featureServiceResultId,
+          extent: interpolated.item.extent,
+          typeKeywords: [
+            ...featureServiceResultBase.typeKeywords,
+            `source-${featureServiceSourceId}`
+          ]
+        }
       ];
-      return Promise.all(updatePromises).then(() => {
-        // Create a template item for the Feature Service that was created by the API
-        const featureServiceTemplate = createInitializedItemTemplate(
-          featureServiceResultBase
-        );
-        templates.push(featureServiceTemplate);
-        template.dependencies.push(featureServiceResultBase.id);
-        return true;
-      });
+      const toUpdatePromise = (updatedItem: IItemUpdate) =>
+        updateItem(updatedItem, authentication);
+      const updatePromises = itemUpdates.map(toUpdatePromise);
+      return Promise.all(updatePromises)
+        .then(() => {
+          const itemIdsToMove = [itemId, featureServiceResultId];
+          const toMovePromise = (id: string) =>
+            moveItem({
+              itemId: id,
+              folderId: templateDictionary.folderId as string,
+              authentication: authentication
+            });
+          const movePromises = itemIdsToMove.map(toMovePromise);
+          return Promise.all(movePromises);
+        })
+        .then(() =>
+          removeFolder(featureServiceResultBase.ownerFolder, authentication)
+        )
+        .then(() => {
+          // Create a template item for the Feature Service that was created by the API
+          const featureServiceTemplate = createInitializedItemTemplate(
+            featureServiceResultBase
+          );
+          templates.push(featureServiceTemplate);
+          template.dependencies.push(featureServiceResultBase.id);
+          return true;
+        });
     }
   );
 }
