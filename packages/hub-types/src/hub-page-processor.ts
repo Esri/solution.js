@@ -26,8 +26,7 @@ import {
   ICreateItemFromTemplateResponse,
   EItemProgressStatus,
   UserSession,
-  generateEmptyCreationResponse,
-  updateItemExtended
+  generateEmptyCreationResponse
 } from "@esri/solution-common";
 import { createHubRequestOptions } from "./helpers/create-hub-request-options";
 import {
