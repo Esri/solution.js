@@ -2869,7 +2869,42 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
 
       const expectedUrl =
         utils.PORTAL_SUBSET.restUrl +
-        `/content/groups/${groupId}/search?f=json&categories=a%2Cb&categories=c%2Cd&num=100&token=fake-token`;
+        `/content/groups/${groupId}/search?f=json&num=100&categories=a%2Cb&categories=c%2Cd&token=fake-token`;
+      fetchMock.get(expectedUrl, {});
+
+      restHelpers
+        .searchGroupContents(
+          groupId,
+          null,
+          MOCK_USER_SESSION,
+          additionalSearchOptions
+        )
+        .then(response => {
+          expect(fetchMock.calls(expectedUrl).length).toBe(1);
+          const [url, options] = fetchMock.lastCall(expectedUrl);
+          expect(options.method).toBe("GET");
+          expect(url).toEqual(expectedUrl);
+          done();
+        })
+        .catch(e => {
+          fail(e);
+        });
+    });
+
+    it("will not override the num passed in additionalSearchOptions", done => {
+      const groupId: string = "grp1234567890";
+      const additionalSearchOptions: interfaces.IAdditionalSearchOptions = {
+        categories: [
+          "a,b", // a or b
+          // and
+          "c,d" // c or d
+        ],
+        num: 24
+      };
+
+      const expectedUrl =
+        utils.PORTAL_SUBSET.restUrl +
+        `/content/groups/${groupId}/search?f=json&num=24&categories=a%2Cb&categories=c%2Cd&token=fake-token`;
       fetchMock.get(expectedUrl, {});
 
       restHelpers
