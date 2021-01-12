@@ -1241,10 +1241,12 @@ export function searchGroupContents(
   const searchOptions: ISearchGroupContentOptions = {
     groupId,
     q: searchString,
-    params: {
-      ...additionalSearchOptions,
-      num: 100
-    },
+    params: Object.assign(
+      {
+        num: 100
+      },
+      additionalSearchOptions
+    ),
     authentication: authentication,
     portal: portalUrl
   };
