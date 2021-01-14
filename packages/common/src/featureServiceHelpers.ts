@@ -658,10 +658,7 @@ export function updateFeatureServiceDefinition(
     let options: any = {
       layers: [],
       tables: [],
-      authentication,
-      params: {
-        async: true
-      }
+      authentication
     };
 
     // if the service has veiws keep track of the fields so we can use them to
@@ -707,15 +704,12 @@ export function updateFeatureServiceDefinition(
         options.tables.push(item);
       }
 
-      if ((i + 1) % 10 === 0 || i + 1 === listToAdd.length) {
+      if ((i + 1) % 20 === 0 || i + 1 === listToAdd.length) {
         layerChunks.push(Object.assign({}, options));
         options = {
           layers: [],
           tables: [],
-          authentication,
-          params: {
-            async: true
-          }
+          authentication
         };
       }
     });
