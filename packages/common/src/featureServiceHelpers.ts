@@ -714,10 +714,6 @@ export function updateFeatureServiceDefinition(
       }
     });
 
-    if (options.layers.length > 0 || options.tables.length > 0) {
-      layerChunks.push(Object.assign({}, options));
-    }
-
     layerChunks
       .reduce(
         (prev, curr) =>
