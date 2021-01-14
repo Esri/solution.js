@@ -655,7 +655,7 @@ export function updateFeatureServiceDefinition(
   itemTemplate: IItemTemplate
 ): Promise<void> {
   return new Promise((resolve, reject) => {
-    const options: any = {
+    let options: any = {
       layers: [],
       tables: [],
       authentication
@@ -668,7 +668,8 @@ export function updateFeatureServiceDefinition(
       _updateTemplateDictionaryFields(itemTemplate, templateDictionary);
     }
 
-    listToAdd.forEach(toAdd => {
+    const layerChunks: any[] = [];
+    listToAdd.forEach((toAdd, i) => {
       let item = toAdd.item;
       const originalId = item.id;
       fieldInfos = cacheFieldInfos(item, fieldInfos);
@@ -702,11 +703,31 @@ export function updateFeatureServiceDefinition(
       } else {
         options.tables.push(item);
       }
+
+      if ((i + 1) % 20 === 0 || i + 1 === listToAdd.length) {
+        layerChunks.push(Object.assign({}, options));
+        options = {
+          layers: [],
+          tables: [],
+          authentication
+        };
+      }
     });
-    addToServiceDefinition(serviceUrl, options).then(
-      () => resolve(null),
-      e => reject(fail(e))
-    );
+
+    if (options.layers.length > 0 || options.tables.length > 0) {
+      layerChunks.push(Object.assign({}, options));
+    }
+
+    layerChunks
+      .reduce(
+        (prev, curr) =>
+          prev.then(() => addToServiceDefinition(serviceUrl, curr)),
+        Promise.resolve(null)
+      )
+      .then(
+        () => resolve(null),
+        (e: any) => reject(fail(e))
+      );
   });
 }
 
