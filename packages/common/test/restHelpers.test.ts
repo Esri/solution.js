@@ -4307,6 +4307,10 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
               {
                 fields: "b",
                 isUnique: false
+              },
+              {
+                fields: "Pa",
+                isUnique: false
               }
             ]
           }
@@ -4321,6 +4325,10 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
         },
         {
           fields: "b",
+          isUnique: false
+        },
+        {
+          fields: "Pa",
           isUnique: false
         }
       ];

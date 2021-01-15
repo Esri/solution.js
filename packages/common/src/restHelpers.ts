@@ -1857,14 +1857,23 @@ export function _updateIndexesForRelationshipKeyFields(serviceInfo: any): void {
     ) {
       const keyFields: string[] = relationships.reduce((acc, v) => {
         /* istanbul ignore else */
-        if (v.role === "esriRelRoleOrigin" && v.keyField) {
+        if (
+          v.role === "esriRelRoleOrigin" &&
+          v.keyField &&
+          acc.indexOf(v.keyField) < 0
+        ) {
           acc.push(v.keyField);
         }
         return acc;
       }, []);
       indexes.map(i => {
         /* istanbul ignore else */
-        if (keyFields.some(k => i.fields.indexOf(k) > -1)) {
+        if (
+          keyFields.some(k => {
+            const regEx: RegExp = new RegExp(`\\b${k}\\b`);
+            return regEx.test(i.fields);
+          })
+        ) {
           i.isUnique = true;
         }
         return i;
