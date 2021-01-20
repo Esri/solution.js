@@ -23,6 +23,7 @@ import * as hubCommon from "@esri/hub-common";
 import * as postProcessSiteModule from "../src/helpers/_post-process-site";
 import * as hubRoModule from "../src/helpers/create-hub-request-options";
 import * as replacerModule from "../src/helpers/replace-item-ids";
+import { fail } from "@esri/solution-common/src/generalHelpers";
 
 describe("HubSiteProcessor: ", () => {
   describe("convertItemToTemplate: ", () => {
@@ -143,6 +144,13 @@ describe("HubSiteProcessor: ", () => {
       type: "Hub Site Application",
       item: {}
     } as common.IItemTemplate;
+    const tmplThmb = {
+      itemId: "bc7",
+      type: "Hub Site Application",
+      item: {
+        thumbnail: "yoda"
+      }
+    } as any;
 
     it("exists", () => {
       expect(HubSiteProcessor.createItemFromTemplate).toBeDefined(
@@ -196,6 +204,53 @@ describe("HubSiteProcessor: ", () => {
         expect(moveSiteSpy.calls.count()).toBe(1, "should call moveSite");
       });
     });
+    it("happy-path with thumbnail", () => {
+      const createFromTmplSpy = spyOn(
+        sitesPackage,
+        "createSiteModelFromTemplate"
+      ).and.resolveTo({ assets: [] });
+      const createSiteSpy = spyOn(sitesPackage, "createSite").and.resolveTo(
+        fakeSite
+      );
+      const moveSiteSpy = spyOn(moveHelper, "moveModelToFolder").and.resolveTo([
+        tmplThmb.itemId
+      ]);
+
+      const td = {
+        organization: {
+          id: "somePortalId",
+          portalHostname: "www.arcgis.com"
+        },
+        user: {
+          username: "vader"
+        },
+        solutionItemExtent: "10,10,20,20",
+        solution: {
+          title: "Some Title"
+        }
+      };
+      const cb = () => true;
+      return HubSiteProcessor.createItemFromTemplate(
+        tmplThmb,
+        td,
+        MOCK_USER_SESSION,
+        cb
+      ).then(result => {
+        expect(result.id).toBe("FAKE3ef", "should return the created item id");
+        expect(result.type).toBe(
+          "Hub Site Application",
+          "should return the type"
+        );
+        expect(result.postProcess).toBe(true, "should flag postProcess");
+        expect(createFromTmplSpy.calls.count()).toBe(
+          1,
+          "should call createFromTemplate"
+        );
+        expect(createSiteSpy.calls.count()).toBe(1, "should call createSite");
+        expect(moveSiteSpy.calls.count()).toBe(1, "should call moveSite");
+      });
+    });
+
     it("other branches:: delegates to hub.js", () => {
       const createFromTmplSpy = spyOn(
         sitesPackage,

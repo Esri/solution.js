@@ -126,6 +126,21 @@ export interface IAdditionalSearchOptions {
   [key: string]: any;
 }
 
+export interface IBuildOrdering {
+  /**
+   * Item ids in order in which items are to be built.
+   */
+  buildOrder: string[];
+  /**
+   * Item ids of dependencies that were not supplied to ordering algorithm.
+   */
+  missingDependencies: string[];
+  /**
+   * Dictionary of item ids that need dependency patching; each id has a list of the ids of the dependencies to be patched.
+   */
+  itemsToBePatched: IKeyedListsOfStrings;
+}
+
 export interface ICreateItemFromTemplateResponse {
   /**
    * Created item
@@ -465,6 +480,10 @@ export interface IItemUpdate {
    * N.B.: Use `data` key for binary data; all other keys are serialized, which zeroes out binary data!
    */
   [key: string]: any;
+}
+
+export interface IKeyedListsOfStrings {
+  [key: string]: string[];
 }
 
 export interface IMimeTypes {

@@ -1223,13 +1223,12 @@ describe("Module `deploySolutionItems`", () => {
         "https://services123.arcgis.com/org1234567890/arcgis/rest/services/ROWPermits_publiccomment/FeatureServer"
       );
       itemTemplate.itemId = "dd4a6047326243b290f625e80ebe6531";
-      itemTemplate.item.thumbnail = null;
       itemTemplate.properties.syncViews = ["aa4a6047326243b290f625e80ebe6531"];
       const resourceFilePaths: common.IDeployFileCopyPath[] = [];
       const templateDictionary: any = {
         aa4a6047326243b290f625e80ebe6531: {
           def: function() {
-            return Promise.resolve();
+            return Promise.resolve(null);
           }
         },
         organization: utils.getPortalsSelfResponse()
@@ -1256,6 +1255,18 @@ describe("Module `deploySolutionItems`", () => {
 
       const updatedItem = mockItems.getAGOLItem("Feature Service");
 
+      const expectedClone: common.IItemTemplate = common.cloneObject(
+        itemTemplate
+      );
+      expectedClone.itemId = "svc1234567890";
+      expectedClone.item.id = "svc1234567890";
+      expectedClone.properties.service.serviceItemId = "svc1234567890";
+      delete expectedClone.properties.layers[0].definitionQuery;
+      expectedClone.properties.layers[0].relationships = null;
+      expectedClone.properties.layers[0].viewDefinitionQuery = null;
+      expectedClone.properties.layers[0].adminLayerInfo = undefined;
+      delete expectedClone.item.spatialReference;
+
       fetchMock
         .post(
           utils.PORTAL_SUBSET.restUrl + "/content/users/casey/createService",
@@ -1281,18 +1292,11 @@ describe("Module `deploySolutionItems`", () => {
         .post(
           "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/items/svc1234567890/update",
           utils.getSuccessResponse()
+        )
+        .get(
+          "https://myorg.maps.arcgis.com/sharing/rest/content/items/svc1234567890?f=json&token=fake-token",
+          expectedClone.item
         );
-
-      const expectedClone: common.IItemTemplate = common.cloneObject(
-        itemTemplate
-      );
-      expectedClone.itemId = "svc1234567890";
-      expectedClone.item.id = "svc1234567890";
-      expectedClone.properties.service.serviceItemId = "svc1234567890";
-      delete expectedClone.properties.layers[0].definitionQuery;
-      expectedClone.properties.layers[0].relationships = null;
-      expectedClone.properties.layers[0].viewDefinitionQuery = null;
-      expectedClone.properties.layers[0].adminLayerInfo = undefined;
 
       // eslint-disable-next-line @typescript-eslint/no-floating-promises
       deploySolution
@@ -1498,6 +1502,58 @@ describe("Module `deploySolutionItems`", () => {
     }
   });
 
+  describe("_flagPatchItemsForPostProcessing", () => {
+    it("handles group items without user groups in template dictionary", () => {
+      const itemsToBePatched: common.IKeyedListsOfStrings = {
+        // template ids
+        abc: ["def"],
+        ghi: ["jkl"]
+      };
+      const templateDictionary: any = {
+        // mapping from template ids to cloned ids
+        abc: {
+          itemId: "mno"
+        },
+        ghi: {
+          itemId: "pqr"
+        }
+      };
+      const templates: common.ICreateItemFromTemplateResponse[] = [
+        {
+          // cloned items
+          id: "mno",
+          postProcess: false,
+          type: "Web Map"
+        },
+        {
+          id: "pqr",
+          postProcess: false,
+          type: "Web Map"
+        }
+      ];
+
+      deploySolution._flagPatchItemsForPostProcessing(
+        itemsToBePatched,
+        templateDictionary,
+        templates
+      );
+
+      expect(templates).toEqual([
+        {
+          // updated cloned items
+          id: "mno",
+          postProcess: true,
+          type: "Web Map"
+        },
+        {
+          id: "pqr",
+          postProcess: true,
+          type: "Web Map"
+        }
+      ]);
+    });
+  });
+
   describe("_findExistingItemByKeyword", () => {
     it("handles group items without user groups in template dictionary", () => {
       const actual = deploySolution._findExistingItemByKeyword(
@@ -1506,37 +1562,6 @@ describe("Module `deploySolutionItems`", () => {
         MOCK_USER_SESSION
       );
       expect(actual.length).toEqual(0);
-    });
-  });
-
-  describe("_moveResourcesIntoTemplate", () => {
-    it("can move a thumbnail resource into a template", () => {
-      const filePaths: common.IDeployFileCopyPath[] = [
-        {
-          type: common.EFileType.Thumbnail,
-          folder: "9ed8414bb27a441cbddb1227870ed038_info_thumbnail",
-          filename: "thumbnail1581708282265.png",
-          url:
-            utils.PORTAL_SUBSET.restUrl +
-            "/content/items/ffb0b76754ae4ce497bb4789f3940146/resources/9ed8414bb27a441cbddb1227870ed038_info_thumbnail/thumbnail1581708282265.png"
-        }
-      ];
-      const template: common.IItemTemplate = templates.getItemTemplate(
-        "Web Map"
-      );
-
-      // eslint-disable-next-line @typescript-eslint/no-floating-promises
-      deploySolution
-        ._moveResourcesIntoTemplate(filePaths, template, MOCK_USER_SESSION)
-        .then(updatedFilePaths => {
-          expect(updatedFilePaths.length).toEqual(0);
-          expect(template.item.thumbnail).toBeUndefined();
-          expect(template.item.thumbnailurl).toEqual(
-            utils.PORTAL_SUBSET.restUrl +
-              "/content/items/ffb0b76754ae4ce497bb4789f3940146/resources/9ed8414bb27a441cbddb1227870ed038_info_thumbnail/thumbnail1581708282265.png" +
-              "?token=fake-token&w=400"
-          );
-        });
     });
   });
 

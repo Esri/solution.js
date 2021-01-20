@@ -71,6 +71,7 @@ describe("simpleTypeConvertItemToTemplate", () => {
             spatialReference: undefined,
             licenseInfo: null,
             name: "Name of an AGOL item",
+            origUrl: undefined,
             properties: null,
             snippet: "Snippet of an AGOL item",
             tags: ["test"],
@@ -161,6 +162,7 @@ describe("simpleTypeConvertItemToTemplate", () => {
             spatialReference: undefined,
             licenseInfo: null,
             name: "formData.zip",
+            origUrl: undefined,
             properties: null,
             snippet: "Snippet of an AGOL item",
             tags: ["test"],
@@ -498,6 +500,7 @@ describe("simpleTypeConvertItemToTemplate", () => {
             spatialReference: undefined,
             licenseInfo: null,
             name: "Name of an AGOL item",
+            origUrl: undefined,
             properties: null,
             snippet: "Snippet of an AGOL item",
             tags: ["test"],
@@ -571,6 +574,7 @@ describe("simpleTypeConvertItemToTemplate", () => {
             url:
               "{{portalBaseUrl}}/home/item.html?id={{abc0cab401af4828a25cc6eaeb59fb69.itemId}}",
             licenseInfo: undefined,
+            origUrl: undefined,
             properties: undefined,
             name: undefined,
             snippet: undefined
@@ -636,7 +640,54 @@ describe("simpleTypeConvertItemToTemplate", () => {
           );
       });
 
-      it("should handle error on web mapping application", done => {
+      it("should handle error on web mapping application: data section", done => {
+        const solutionItemId = "sln1234567890";
+        const itemTemplate: common.IItemTemplate = mockItems.getAGOLItem(
+          "Web Mapping Application",
+          null
+        );
+
+        itemTemplate.item = {
+          id: "abc0cab401af4828a25cc6eaeb59fb69",
+          type: "Web Mapping Application",
+          title: "Voting Centers",
+          url:
+            "https://myOrg.arcgis.com/home/item.html?id=abc123da3c304dd0bf46dee75ac31aae"
+        };
+        itemTemplate.itemId = "abc0cab401af4828a25cc6eaeb59fb69";
+
+        fetchMock
+          .post("https://fake.com/arcgis/rest/info", {})
+          .post(
+            utils.PORTAL_SUBSET.restUrl +
+              "/content/items/abc0cab401af4828a25cc6eaeb59fb69/resources",
+            []
+          )
+          .post(
+            utils.PORTAL_SUBSET.restUrl +
+              "/content/items/abc0cab401af4828a25cc6eaeb59fb69/data",
+            mockItems.get400FailureResponse()
+          )
+          .post(
+            utils.PORTAL_SUBSET.restUrl +
+              "/content/users/casey/items/sln1234567890/addResources",
+            utils.getSuccessResponse()
+          );
+        staticRelatedItemsMocks.fetchMockRelatedItems(
+          "abc0cab401af4828a25cc6eaeb59fb69",
+          { total: 0, relatedItems: [] }
+        );
+
+        simpleTypes
+          .convertItemToTemplate(
+            solutionItemId,
+            itemTemplate.item,
+            MOCK_USER_SESSION
+          )
+          .then(() => done());
+      });
+
+      it("should handle error on web mapping application: feature layer", done => {
         const solutionItemId = "sln1234567890";
         const itemTemplate: common.IItemTemplate = mockItems.getAGOLItem(
           "Web Mapping Application",
@@ -742,6 +793,7 @@ describe("simpleTypeConvertItemToTemplate", () => {
             culture: "en-us",
             description: "Description of an AGOL item",
             extent: [],
+            origUrl: undefined,
             properties: null,
             spatialReference: undefined,
             licenseInfo: null,

@@ -367,165 +367,12 @@ describe("Module `createItemTemplate`", () => {
           });
       });
 
-      it("creates a template for an empty group, but solution thumbnail can't be fetched", done => {
-        const solutionItemId: string = "sln1234567890";
-        const itemId: string = "grp1234567890";
-        const templateDictionary: any = {};
-        const authentication: common.UserSession = MOCK_USER_SESSION;
-        const existingTemplates: common.IItemTemplate[] = [];
-        const solutionThumbnail = mockItems.getAGOLItem("Image");
-        solutionThumbnail.tags.push("deploy.thumbnail");
-
-        fetchMock
-          .get(
-            utils.PORTAL_SUBSET.restUrl +
-              "/content/items/grp1234567890?f=json&token=fake-token",
-            mockItems.get400Failure()
-          )
-          .get(
-            utils.PORTAL_SUBSET.restUrl +
-              "/community/groups/grp1234567890?f=json&token=fake-token",
-            mockItems.getAGOLItem("Group")
-          )
-          .post(
-            utils.PORTAL_SUBSET.restUrl +
-              "/community/groups/grp1234567890/info/ROWPermitManager.png?w=400",
-            mockItems.getAnImageResponse()
-          )
-          .post(
-            utils.PORTAL_SUBSET.restUrl +
-              "/community/groups/grp1234567890/info/metadata/metadata.xml",
-            noMetadataResponse
-          )
-          .post(
-            utils.PORTAL_SUBSET.restUrl +
-              "/content/items/grp1234567890/resources",
-            noResourcesResponse
-          )
-          .get(
-            utils.PORTAL_SUBSET.restUrl +
-              "/content/groups/grp1234567890?f=json&start=1&num=100&token=fake-token",
-            mockItems.getAGOLGroupContentsList(1, "Image")
-          )
-          .get(
-            utils.PORTAL_SUBSET.restUrl +
-              "/content/items/img12345678900?f=json&token=fake-token",
-            solutionThumbnail
-          )
-          .post(
-            utils.PORTAL_SUBSET.restUrl + "/content/items/img12345678900/data",
-            mockItems.get400Failure()
-          )
-          .post(
-            utils.PORTAL_SUBSET.restUrl +
-              "/content/users/casey/items/sln1234567890/addResources",
-            { success: true, id: solutionItemId }
-          );
-
-        // eslint-disable-next-line @typescript-eslint/no-floating-promises
-        createItemTemplate
-          .createItemTemplate(
-            solutionItemId,
-            itemId,
-            templateDictionary,
-            authentication,
-            existingTemplates,
-            utils.ITEM_PROGRESS_CALLBACK
-          )
-          .then(() => {
-            expect(existingTemplates.length).toEqual(2);
-            expect(existingTemplates[0].itemId).toEqual(itemId);
-            expect(existingTemplates[1].itemId).toEqual("img12345678900");
-            done();
-          });
-      });
-
-      it("creates a template for an empty group, but solution's thumbnail can't be set", done => {
-        const solutionItemId: string = "sln1234567890";
-        const itemId: string = "grp1234567890";
-        const templateDictionary: any = {};
-        const authentication: common.UserSession = MOCK_USER_SESSION;
-        const existingTemplates: common.IItemTemplate[] = [];
-        const solutionThumbnail = mockItems.getAGOLItem("Image");
-        solutionThumbnail.tags.push("deploy.thumbnail");
-
-        fetchMock
-          .get(
-            utils.PORTAL_SUBSET.restUrl +
-              "/content/items/grp1234567890?f=json&token=fake-token",
-            mockItems.get400Failure()
-          )
-          .get(
-            utils.PORTAL_SUBSET.restUrl +
-              "/community/groups/grp1234567890?f=json&token=fake-token",
-            mockItems.getAGOLItem("Group")
-          )
-          .post(
-            utils.PORTAL_SUBSET.restUrl +
-              "/community/groups/grp1234567890/info/ROWPermitManager.png?w=400",
-            mockItems.getAnImageResponse()
-          )
-          .post(
-            utils.PORTAL_SUBSET.restUrl +
-              "/community/groups/grp1234567890/info/metadata/metadata.xml",
-            noMetadataResponse
-          )
-          .post(
-            utils.PORTAL_SUBSET.restUrl +
-              "/content/items/grp1234567890/resources",
-            noResourcesResponse
-          )
-          .get(
-            utils.PORTAL_SUBSET.restUrl +
-              "/content/groups/grp1234567890?f=json&start=1&num=100&token=fake-token",
-            mockItems.getAGOLGroupContentsList(1, "Image")
-          )
-          .get(
-            utils.PORTAL_SUBSET.restUrl +
-              "/content/items/img12345678900?f=json&token=fake-token",
-            solutionThumbnail
-          )
-          .post(
-            utils.PORTAL_SUBSET.restUrl + "/content/items/img12345678900/data",
-            mockItems.getAnImageResponse()
-          )
-          .post(
-            utils.PORTAL_SUBSET.restUrl +
-              "/content/users/casey/items/sln1234567890/addResources",
-            { success: true, id: solutionItemId }
-          )
-          .post(
-            utils.PORTAL_SUBSET.restUrl +
-              "/content/users/casey/items/sln1234567890/update",
-            mockItems.get400Failure()
-          );
-
-        // eslint-disable-next-line @typescript-eslint/no-floating-promises
-        createItemTemplate
-          .createItemTemplate(
-            solutionItemId,
-            itemId,
-            templateDictionary,
-            authentication,
-            existingTemplates,
-            utils.ITEM_PROGRESS_CALLBACK
-          )
-          .then(() => {
-            expect(existingTemplates.length).toEqual(2);
-            expect(existingTemplates[0].itemId).toEqual(itemId);
-            expect(existingTemplates[1].itemId).toEqual("img12345678900");
-            done();
-          });
-      });
-
       it("creates a template for a group", done => {
         const solutionItemId: string = "sln1234567890";
         const itemId: string = "grp1234567890";
         const templateDictionary: any = {};
         const authentication: common.UserSession = MOCK_USER_SESSION;
         const existingTemplates: common.IItemTemplate[] = [];
-        const solutionThumbnail = mockItems.getAGOLItemWithId("Image", 1);
-        solutionThumbnail.tags.push("deploy.thumbnail");
 
         fetchMock
           .get(
@@ -553,20 +400,39 @@ describe("Module `createItemTemplate`", () => {
               "/content/items/grp1234567890/resources",
             noResourcesResponse
           )
+
+          // Group with two items: img12345678900 & map12345678901
           .get(
             utils.PORTAL_SUBSET.restUrl +
               "/content/groups/grp1234567890?f=json&start=1&num=100&token=fake-token",
             mockItems.getAGOLGroupContentsListByType(["Image", "Web Map"])
           )
+          // Item img12345678900
           .get(
             utils.PORTAL_SUBSET.restUrl +
               "/content/items/img12345678900?f=json&token=fake-token",
-            solutionThumbnail
+            mockItems.getAGOLItemWithId("Image", 0)
           )
           .post(
             utils.PORTAL_SUBSET.restUrl + "/content/items/img12345678900/data",
             mockItems.getAnImageResponse()
           )
+          .post(
+            utils.PORTAL_SUBSET.restUrl +
+              "/content/items/img12345678900/info/thumbnail/ago_downloaded.png?w=400",
+            mockItems.getAnImageResponse()
+          )
+          .post(
+            utils.PORTAL_SUBSET.restUrl +
+              "/content/items/img12345678900/info/metadata/metadata.xml",
+            noMetadataResponse
+          )
+          .post(
+            utils.PORTAL_SUBSET.restUrl +
+              "/content/items/img12345678900/resources",
+            noResourcesResponse
+          )
+          // Item map12345678901
           .get(
             utils.PORTAL_SUBSET.restUrl +
               "/content/items/map12345678901?f=json&token=fake-token",
@@ -591,6 +457,7 @@ describe("Module `createItemTemplate`", () => {
               "/content/items/map12345678901/resources",
             noResourcesResponse
           )
+
           .post(
             utils.PORTAL_SUBSET.restUrl +
               "/content/users/casey/items/sln1234567890/addResources",

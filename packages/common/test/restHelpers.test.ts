@@ -368,6 +368,23 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
     });
   });
 
+  describe("addTokenToUrl", () => {
+    it("can handle failure", done => {
+      const url =
+        "https://services123.arcgis.com/org1234567890/arcgis/rest/services/ROWPermits_publiccomment/FeatureServer/0";
+      const token = "tok1234567890";
+      const getTokenSpy = spyOn(MOCK_USER_SESSION, "getToken").and.resolveTo(
+        token
+      );
+      restHelpers.addTokenToUrl(url, MOCK_USER_SESSION).then(updatedUrl => {
+        expect(getTokenSpy.calls.count()).toEqual(1);
+        expect(getTokenSpy.calls.argsFor(0)[0]).toBe(url);
+        expect(updatedUrl).toEqual(url + "?token=" + token);
+        done();
+      }, done.fail);
+    });
+  });
+
   describe("addToServiceDefinition", () => {
     it("can handle failure", done => {
       const url =
@@ -402,7 +419,69 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
   });
 
   describe("createFeatureService", () => {
-    it("can handle failure", done => {
+    it("can handle failure to get service options due to failure to convert extent", done => {
+      fetchMock
+        .post(
+          utils.PORTAL_SUBSET.restUrl +
+            "/content/users/casey/aabb123456/createService",
+          mockItems.get400Failure()
+        )
+        .post(
+          "https://utility.arcgisonline.com/arcgis/rest/services/Geometry/GeometryServer/findTransformations",
+          mockItems.get400Failure()
+        );
+
+      const properties: any = {
+        service: {
+          somePropNotInItem: true,
+          isView: true,
+          capabilities: "Query",
+          spatialReference: {
+            wkid: -1
+          }
+        },
+        layers: [
+          {
+            fields: []
+          }
+        ],
+        tables: []
+      };
+
+      const template: any = {
+        itemId: "ab766cba0dd44ec080420acc10990282",
+        item: {
+          id: "0",
+          name: "A"
+        },
+        data: {},
+        properties,
+        dependencies: []
+      };
+
+      const templateDictionary: any = {
+        folderId: "aabb123456",
+        isPortal: true,
+        solutionItemId: "sol1234567890",
+        ab766cba0dd44ec080420acc10990282: {},
+        organization: organization,
+        solutionItemExtent: solutionItemExtent
+      };
+
+      restHelpers
+        .createFeatureService(template, MOCK_USER_SESSION, templateDictionary)
+        .then(
+          () => done.fail(),
+          error => {
+            expect(utils.checkForArcgisRestSuccessRequestError(error)).toBe(
+              true
+            );
+            done();
+          }
+        );
+    });
+
+    it("can handle failure to create service", done => {
       fetchMock.post(
         utils.PORTAL_SUBSET.restUrl +
           "/content/users/casey/aabb123456/createService",
@@ -433,7 +512,8 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
           name: "A"
         },
         data: {},
-        properties
+        properties,
+        dependencies: []
       };
 
       const templateDictionary: any = {
@@ -2745,7 +2825,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
 
       fetchMock.get(
         utils.PORTAL_SUBSET.restUrl +
-          `/content/groups/${groupId}/search?f=json&q=My%20Group&token=fake-token`,
+          `/content/groups/${groupId}/search?f=json&num=100&q=My%20Group&token=fake-token`,
         utils.getGroupResponse(query, false)
       );
 
@@ -2764,7 +2844,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
 
       fetchMock.get(
         utils.PORTAL_SUBSET.restUrl +
-          `/content/groups/${groupId}/search?f=json&q=My%20Group&token=fake-token`,
+          `/content/groups/${groupId}/search?f=json&num=100&q=My%20Group&token=fake-token`,
         utils.getGroupResponse(query, true)
       );
 
@@ -2775,6 +2855,75 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
         },
         () => done.fail()
       );
+    });
+
+    it("can handle a categories search", done => {
+      const groupId: string = "grp1234567890";
+      const additionalSearchOptions: interfaces.IAdditionalSearchOptions = {
+        categories: [
+          "a,b", // a or b
+          // and
+          "c,d" // c or d
+        ]
+      };
+
+      const expectedUrl =
+        utils.PORTAL_SUBSET.restUrl +
+        `/content/groups/${groupId}/search?f=json&num=100&categories=a%2Cb&categories=c%2Cd&token=fake-token`;
+      fetchMock.get(expectedUrl, {});
+
+      restHelpers
+        .searchGroupContents(
+          groupId,
+          null,
+          MOCK_USER_SESSION,
+          additionalSearchOptions
+        )
+        .then(response => {
+          expect(fetchMock.calls(expectedUrl).length).toBe(1);
+          const [url, options] = fetchMock.lastCall(expectedUrl);
+          expect(options.method).toBe("GET");
+          expect(url).toEqual(expectedUrl);
+          done();
+        })
+        .catch(e => {
+          fail(e);
+        });
+    });
+
+    it("will not override the num passed in additionalSearchOptions", done => {
+      const groupId: string = "grp1234567890";
+      const additionalSearchOptions: interfaces.IAdditionalSearchOptions = {
+        categories: [
+          "a,b", // a or b
+          // and
+          "c,d" // c or d
+        ],
+        num: 24
+      };
+
+      const expectedUrl =
+        utils.PORTAL_SUBSET.restUrl +
+        `/content/groups/${groupId}/search?f=json&num=24&categories=a%2Cb&categories=c%2Cd&token=fake-token`;
+      fetchMock.get(expectedUrl, {});
+
+      restHelpers
+        .searchGroupContents(
+          groupId,
+          null,
+          MOCK_USER_SESSION,
+          additionalSearchOptions
+        )
+        .then(response => {
+          expect(fetchMock.calls(expectedUrl).length).toBe(1);
+          const [url, options] = fetchMock.lastCall(expectedUrl);
+          expect(options.method).toBe("GET");
+          expect(url).toEqual(expectedUrl);
+          done();
+        })
+        .catch(e => {
+          fail(e);
+        });
     });
   });
 
@@ -2911,6 +3060,29 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
         );
     });
 
+    it("without data", done => {
+      itemTemplate.item.id = "itm1234567890";
+      itemTemplate.data = null;
+      fetchMock.post(
+        utils.PORTAL_SUBSET.restUrl +
+          "/content/users/casey/items/itm1234567890/update",
+        '{"success":true}'
+      );
+      restHelpers
+        .updateItemExtended(
+          itemTemplate.item,
+          itemTemplate.data,
+          MOCK_USER_SESSION,
+          undefined
+        )
+        .then(
+          () => {
+            done();
+          },
+          () => done.fail()
+        );
+    });
+
     it("without share", done => {
       itemTemplate.item.id = "itm1234567890";
       fetchMock.post(
@@ -2950,6 +3122,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
           itemTemplate.item,
           itemTemplate.data,
           MOCK_USER_SESSION,
+          null,
           "public"
         )
         .then(
@@ -2977,6 +3150,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
           itemTemplate.item,
           itemTemplate.data,
           MOCK_USER_SESSION,
+          null,
           "org"
         )
         .then(
@@ -3004,6 +3178,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
           itemTemplate.item,
           itemTemplate.data,
           MOCK_USER_SESSION,
+          null,
           "org"
         )
         .then(
@@ -3522,6 +3697,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
 
       itemTemplate.item.name = "A";
       itemTemplate.item.title = "A";
+      itemTemplate.item.thumbnail = "thumbnail/image.png";
       itemTemplate.properties.service.spatialReference = {
         wkid: 102100
       };
@@ -3541,7 +3717,9 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
               preserveLayerIds: true
             },
             folderId: "aabb123456",
-            params: {},
+            params: {
+              thumbnail: "thumbnail/image.png"
+            },
             authentication: userSession
           });
           done();
@@ -4025,6 +4203,51 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
     });
   });
 
+  describe("_reportVariablesInItem", () => {
+    it("is silent when there are no unresolved variables", () => {
+      const messages = [] as string[];
+      spyOn(console, "log").and.callFake((message: string) => {
+        messages.push(message);
+      });
+
+      const base: any = {};
+      const data: any = {};
+      restHelpers._reportVariablesInItem(
+        "itm1234567890",
+        "Web Map",
+        base,
+        data
+      );
+
+      expect(messages.length).toEqual(0);
+    });
+
+    it("reports unresolved variables", () => {
+      const messages = [] as string[];
+      spyOn(console, "log").and.callFake((message: string) => {
+        messages.push(message);
+      });
+
+      const base: any = {
+        id: "{{38c1943d2dc844c0bc0524dc98cb9a83.itemId}}"
+      };
+      const data: any = {
+        url: "{{54ad3c7b51264171aaee6ff86dabb2d9.layer6.url}}"
+      };
+      restHelpers._reportVariablesInItem(
+        "itm1234567890",
+        "Web Map",
+        base,
+        data
+      );
+
+      expect(messages).toEqual([
+        'itm1234567890 (Web Map) contains variables in base: ["{{38c1943d2dc844c0bc0524dc98cb9a83.itemId}}"]',
+        'itm1234567890 (Web Map) contains variables in data: ["{{54ad3c7b51264171aaee6ff86dabb2d9.layer6.url}}"]'
+      ]);
+    });
+  });
+
   describe("_setItemProperties", () => {
     it("can get options for HOSTED empty service", () => {
       const item: any = {
@@ -4084,6 +4307,10 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
               {
                 fields: "b",
                 isUnique: false
+              },
+              {
+                fields: "Pa",
+                isUnique: false
               }
             ]
           }
@@ -4098,6 +4325,10 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
         },
         {
           fields: "b",
+          isUnique: false
+        },
+        {
+          fields: "Pa",
           isUnique: false
         }
       ];

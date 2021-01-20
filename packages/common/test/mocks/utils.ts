@@ -14,8 +14,6 @@
  * limitations under the License.
  */
 
-import { UserSession } from "@esri/arcgis-rest-auth";
-
 import * as interfaces from "../../src/interfaces";
 import * as generalHelpers from "../../src/generalHelpers";
 import * as polyfills from "../../src/polyfills";
@@ -384,12 +382,12 @@ export function createMockSettings(
 export function createRuntimeMockUserSession(
   now?: number,
   portalUrl?: string
-): UserSession {
+): interfaces.UserSession {
   if (now === undefined) {
     now = Date.now();
   }
   const tomorrow = new Date(now + 86400000);
-  return new UserSession({
+  return new interfaces.UserSession({
     clientId: "clientId",
     redirectUri: "https://example-app.com/redirect-uri",
     token: "fake-token",

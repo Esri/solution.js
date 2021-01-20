@@ -30,10 +30,10 @@ import {
   replaceInTemplate,
   SItemProgressStatus,
   updateItem,
-  postProcessWorkforceTemplates
+  postProcessWorkforceTemplates,
+  UserSession
 } from "@esri/solution-common";
 import { getProp, getWithDefault } from "@esri/hub-common";
-import { UserSession } from "@esri/arcgis-rest-auth";
 import {
   createItemTemplate,
   postProcessFieldReferences
@@ -48,7 +48,7 @@ import {
  * @return A promise that resolves with the AGO id of the updated solution
  * @internal
  */
-export function _addContentToSolution(
+export function addContentToSolution(
   solutionItemId: string,
   options: ICreateSolutionOptions,
   authentication: UserSession
@@ -167,6 +167,7 @@ export function _addContentToSolution(
           solutionTemplates = _postProcessGroupDependencies(solutionTemplates);
           solutionTemplates = _postProcessIgnoredItems(solutionTemplates);
           solutionTemplates = postProcessWorkforceTemplates(solutionTemplates);
+          _simplifyUrlsInItemDescriptions(solutionTemplates);
           _templatizeSolutionIds(solutionTemplates);
           _replaceDictionaryItemsInObject(
             templateDictionary,
@@ -197,6 +198,91 @@ export function _addContentToSolution(
       }
     });
   });
+}
+
+// ------------------------------------------------------------------------------------------------------------------ //
+
+/**
+ * Gets the dependencies of an item by merging its dependencies list with item references in template variables.
+ *
+ * @param template Template to examine
+ * @return List of dependency ids
+ * @private
+ */
+export function _getDependencies(template: IItemTemplate): string[] {
+  // Get all dependencies
+  let deps = template.dependencies.concat(
+    _getIdsOutOfTemplateVariables(
+      _getTemplateVariables(JSON.stringify(template.item))
+    ),
+    _getIdsOutOfTemplateVariables(
+      _getTemplateVariables(JSON.stringify(template.data))
+    )
+  );
+
+  // Remove duplicates and self-references
+  deps.sort();
+  deps = deps.filter((elem, index, array) => {
+    if (elem === template.itemId) {
+      return false;
+    } else if (index > 0) {
+      return elem !== array[index - 1];
+    } else {
+      return true;
+    }
+  });
+
+  return deps;
+}
+
+/**
+ * Extracts AGO ids out of template variables.
+ *
+ * @param variables List of template variables to examine
+ * @return List of AGO ids referenced in `variables`
+ * @private
+ */
+export function _getIdsOutOfTemplateVariables(variables: string[]): string[] {
+  return variables
+    .map(variable => {
+      const idList = variable.match(/[0-9A-F]{32}/i); // is it a guid?
+      if (idList) {
+        return idList[0];
+      } else {
+        return null;
+      }
+    })
+    .filter(variable => !!variable);
+}
+
+/**
+ * Creates a list of item URLs.
+ *
+ * @param templates Templates to check for URLs
+ * @return List of URLs
+ * @private
+ */
+export function _getSolutionItemUrls(templates: IItemTemplate[]): string[][] {
+  const solutionUrls: string[][] = [];
+  templates.forEach(template => {
+    /* istanbul ignore else */
+    if (template.item.origUrl) {
+      solutionUrls.push([template.itemId, template.item.origUrl]);
+    }
+  });
+  return solutionUrls;
+}
+
+/**
+ * Extracts template variables out of a string.
+ *
+ * @param text String to examine
+ * @return List of template variables found in string
+ * @private
+ */
+export function _getTemplateVariables(text: string): string[] {
+  return (text.match(/{{[a-z0-9.]*}}/gi) || []) // find variable
+    .map(variable => variable.substring(2, variable.length - 2)); // remove "{{" & "}}"
 }
 
 /**
@@ -258,7 +344,7 @@ export function _postProcessGroupDependencies(
  *
  * @param templates The array of templates to evaluate
  * @return Updated version of the templates
- * @protected
+ * @private
  */
 export function _postProcessIgnoredItems(
   templates: IItemTemplate[]
@@ -358,6 +444,40 @@ export function _replaceRemainingIdsInString(
 }
 
 /**
+ * Finds and templatizes any URLs in solution items' descriptions.
+ *
+ * @param templates The array of templates to evaluate, modified in place
+ * @private
+ */
+export function _simplifyUrlsInItemDescriptions(
+  templates: IItemTemplate[]
+): void {
+  // Get the urls in the solution along with their item ids & convert the id into the form
+  // "{{fcb2bf2837a6404ebb418a1f805f976a.url}}"
+  const solutionUrls = _getSolutionItemUrls(templates).map(idUrl => [
+    "{{" + idUrl[0] + ".url}}",
+    idUrl[1]
+  ]);
+
+  /* istanbul ignore else */
+  if (solutionUrls.length > 0) {
+    // Make the replacements
+    templates.forEach(template => {
+      solutionUrls.forEach(
+        // TypeScript for es2015 doesn't have a definition for `replaceAll`
+        idUrl => {
+          /* istanbul ignore else */
+          if (template.item.description) {
+            template.item.description = (template.item
+              .description as any).replaceAll(idUrl[1], idUrl[0]);
+          }
+        }
+      );
+    });
+  }
+}
+
+/**
  * Templatizes occurrences of the URL to the user's organization in the `item` and `data` template sections.
  *
  * @param templates The array of templates to evaluate; templates is modified in place
@@ -396,7 +516,7 @@ export function _templatizeOrgUrl(
 /**
  * Finds and templatizes any references to solution's items.
  *
- * @param templates The array of templates to evaluate
+ * @param templates The array of templates to evaluate, modified in place
  * @private
  */
 export function _templatizeSolutionIds(templates: IItemTemplate[]): void {
@@ -405,9 +525,12 @@ export function _templatizeSolutionIds(templates: IItemTemplate[]): void {
     (template: IItemTemplate) => template.itemId
   );
 
-  // Cycle through each of the items in the template and scan the `item` and `data` sections of each for ids in our solution
+  // Cycle through each of the items in the template and
+  // 1. templatize untemplatized ids in our solution in the `item` and `data` sections;
+  // 2. update the `dependencies` section
   templates.forEach((template: IItemTemplate) => {
     _replaceRemainingIdsInObject(solutionIds, template.item);
     _replaceRemainingIdsInObject(solutionIds, template.data);
+    template.dependencies = _getDependencies(template);
   });
 }

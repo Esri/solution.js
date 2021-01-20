@@ -26,7 +26,11 @@ describe("Module `dependencies`: functions for determining deployment order", ()
   describe("topologicallySortItems", () => {
     it("handles empty template list", () => {
       const templatesList: interfaces.IItemTemplate[] = [];
-      const buildOrder = dependencies.topologicallySortItems(templatesList);
+      const {
+        buildOrder,
+        missingDependencies,
+        itemsToBePatched
+      } = dependencies.topologicallySortItems(templatesList);
       expect(buildOrder.length).toEqual(0);
     });
 
@@ -39,7 +43,11 @@ describe("Module `dependencies`: functions for determining deployment order", ()
       templatesList[2].dependencies = ["wma1234567890"]; // dsh1234567890
       templatesList[0].dependencies = ["map1234567890"]; // wma1234567890
 
-      const buildOrder = dependencies.topologicallySortItems(templatesList);
+      const {
+        buildOrder,
+        missingDependencies,
+        itemsToBePatched
+      } = dependencies.topologicallySortItems(templatesList);
       expect(buildOrder).toEqual([
         "map1234567890",
         "wma1234567890",
@@ -57,7 +65,11 @@ describe("Module `dependencies`: functions for determining deployment order", ()
       templatesList[0].dependencies = ["map1234567890"]; // wma1234567890
       delete templatesList[1].dependencies;
 
-      const buildOrder = dependencies.topologicallySortItems(templatesList);
+      const {
+        buildOrder,
+        missingDependencies,
+        itemsToBePatched
+      } = dependencies.topologicallySortItems(templatesList);
       expect(buildOrder).toEqual([
         "map1234567890",
         "wma1234567890",
@@ -73,28 +85,93 @@ describe("Module `dependencies`: functions for determining deployment order", ()
       templatesList[0].dependencies = ["wma1234567890"]; // dsh1234567890
       templatesList[1].dependencies = ["map1234567890"]; // wma1234567890
 
-      const buildOrder = dependencies.topologicallySortItems(templatesList);
+      const {
+        buildOrder,
+        missingDependencies,
+        itemsToBePatched
+      } = dependencies.topologicallySortItems(templatesList);
       expect(buildOrder).toEqual(["wma1234567890", "dsh1234567890"]);
     });
 
-    it("reports a cycle", () => {
+    it("handles a cycle 1", () => {
       const templatesList: interfaces.IItemTemplate[] = [
         templates.getItemTemplate("Web Mapping Application"), // wma1234567890
         templates.getItemTemplate("Web Map"), // map1234567890
         templates.getItemTemplate("Dashboard") // dsh1234567890
       ];
-      templatesList[2].dependencies = ["wma1234567890"]; // dsh1234567890
       templatesList[0].dependencies = ["map1234567890"]; // wma1234567890
       templatesList[1].dependencies = ["dsh1234567890"]; // map1234567890
+      templatesList[2].dependencies = ["wma1234567890"]; // dsh1234567890
 
-      try {
-        dependencies.topologicallySortItems(templatesList);
-        fail();
-      } catch (err) {
-        expect(err.message).toEqual(
-          "Cyclical dependency detected involving items dsh1234567890 and wma1234567890"
-        );
-      }
+      const {
+        buildOrder,
+        missingDependencies,
+        itemsToBePatched
+      } = dependencies.topologicallySortItems(templatesList);
+      expect(buildOrder)
+        .withContext("buildOrder")
+        .toEqual(["dsh1234567890", "map1234567890", "wma1234567890"]);
+      expect(missingDependencies)
+        .withContext("missingDependencies")
+        .toEqual([]);
+      expect(itemsToBePatched)
+        .withContext("itemsToBePatched")
+        .toEqual({
+          dsh1234567890: ["wma1234567890"]
+        });
+    });
+
+    it("handles a cycle 2", () => {
+      const templatesList: interfaces.IItemTemplate[] = [
+        templates.getItemTemplate("Web Mapping Application"), // wma1234567890
+        templates.getItemTemplate("Web Map"), // map1234567890
+        templates.getItemTemplate("Dashboard"), // dsh1234567890
+        templates.getItemTemplate("Feature Service") // svc1234567890
+      ];
+      templatesList[0].dependencies = [
+        "map1234567890",
+        "dsh1234567890",
+        "svc1234567890"
+      ]; // wma1234567890
+      templatesList[1].dependencies = [
+        "wma1234567890",
+        "dsh1234567890",
+        "svc1234567890"
+      ]; // map1234567890
+      templatesList[2].dependencies = [
+        "wma1234567890",
+        "map1234567890",
+        "svc1234567890"
+      ]; // dsh1234567890
+      templatesList[3].dependencies = [
+        "wma1234567890",
+        "map1234567890",
+        "dsh1234567890"
+      ]; // svc1234567890
+
+      const {
+        buildOrder,
+        missingDependencies,
+        itemsToBePatched
+      } = dependencies.topologicallySortItems(templatesList);
+      expect(buildOrder)
+        .withContext("buildOrder")
+        .toEqual([
+          "svc1234567890",
+          "dsh1234567890",
+          "map1234567890",
+          "wma1234567890"
+        ]);
+      expect(missingDependencies)
+        .withContext("missingDependencies")
+        .toEqual([]);
+      expect(itemsToBePatched)
+        .withContext("itemsToBePatched")
+        .toEqual({
+          svc1234567890: ["wma1234567890", "map1234567890", "dsh1234567890"],
+          dsh1234567890: ["wma1234567890", "map1234567890"],
+          map1234567890: ["wma1234567890"]
+        });
     });
   });
 });

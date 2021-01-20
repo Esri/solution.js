@@ -63,37 +63,35 @@ export function convertItemToTemplate(
       // Update the estimated cost factor to deploy this item
       template.estimatedDeploymentCostFactor = 10;
 
-      common.getItemDataAsJson(template.item.id, authentication).then(
-        data => {
-          template.data = data;
-          common.getServiceLayersAndTables(template, authentication).then(
-            itemTemplate => {
-              // Extract dependencies
-              common.extractDependencies(itemTemplate, authentication).then(
-                (dependencies: common.IDependency[]) => {
-                  // set the dependencies as an array of IDs from the array of IDependency
-                  itemTemplate.dependencies = dependencies.map(
-                    (dep: any) => dep.id
-                  );
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
+      common.getItemDataAsJson(template.item.id, authentication).then(data => {
+        template.data = data;
+        common.getServiceLayersAndTables(template, authentication).then(
+          itemTemplate => {
+            // Extract dependencies
+            common.extractDependencies(itemTemplate, authentication).then(
+              (dependencies: common.IDependency[]) => {
+                // set the dependencies as an array of IDs from the array of IDependency
+                itemTemplate.dependencies = dependencies.map(
+                  (dep: any) => dep.id
+                );
 
-                  // resolve the template with templatized values
-                  resolve(
-                    common.templatize(
-                      itemTemplate,
-                      dependencies,
-                      false,
-                      templateDictionary
-                    )
-                  );
-                },
-                (e: any) => reject(common.fail(e))
-              );
-            },
-            e => reject(common.fail(e))
-          );
-        },
-        e => reject(common.fail(e))
-      );
+                // resolve the template with templatized values
+                resolve(
+                  common.templatize(
+                    itemTemplate,
+                    dependencies,
+                    false,
+                    templateDictionary
+                  )
+                );
+              },
+              (e: any) => reject(common.fail(e))
+            );
+          },
+          e => reject(common.fail(e))
+        );
+      });
     }
   });
 }
@@ -143,6 +141,9 @@ export function createItemFromTemplate(
       newItemTemplate,
       templateDictionary
     );
+
+    // Thumbnail has to be updated separately; doesn't work in create service call
+    delete newItemTemplate.item.thumbnail;
 
     // cache the popup info to be added later
     const popupInfos: common.IPopupInfos = common.cachePopupInfos(
@@ -208,7 +209,7 @@ export function createItemFromTemplate(
                       templateDictionary,
                       createResponse
                     );
-                    // Update the item with snippet, description, popupInfo, ect.
+                    // Update the item with snippet, description, popupInfo, etc.
                     common
                       .updateItemExtended(
                         {
@@ -216,7 +217,8 @@ export function createItemFromTemplate(
                           url: undefined // can't update the URL of a feature service
                         },
                         newItemTemplate.data,
-                        destinationAuthentication
+                        destinationAuthentication,
+                        template.item.thumbnail
                       )
                       .then(
                         () => {
@@ -254,16 +256,54 @@ export function createItemFromTemplate(
                                   )
                               );
                           } else {
-                            resolve({
-                              item: newItemTemplate,
-                              id: createResponse.serviceItemId,
-                              type: newItemTemplate.type,
-                              postProcess:
-                                common.hasUnresolvedVariables({
-                                  item: newItemTemplate.item,
-                                  data: newItemTemplate.data
-                                }) || common.isWorkforceProject(newItemTemplate)
-                            });
+                            // Update the template to match what we've stored in AGO
+                            common
+                              .getItemBase(
+                                newItemTemplate.itemId,
+                                destinationAuthentication
+                              )
+                              .then(
+                                updatedItem => {
+                                  newItemTemplate.item = updatedItem;
+                                  resolve({
+                                    item: newItemTemplate,
+                                    id: createResponse.serviceItemId,
+                                    type: newItemTemplate.type,
+                                    postProcess:
+                                      common.hasUnresolvedVariables({
+                                        item: newItemTemplate.item,
+                                        data: newItemTemplate.data
+                                      }) ||
+                                      common.isWorkforceProject(newItemTemplate)
+                                  });
+                                },
+                                () => {
+                                  itemProgressCallback(
+                                    template.itemId,
+                                    common.EItemProgressStatus.Failed,
+                                    0
+                                  );
+                                  common
+                                    .removeItem(
+                                      createResponse.serviceItemId,
+                                      destinationAuthentication
+                                    )
+                                    .then(
+                                      () =>
+                                        resolve(
+                                          common.generateEmptyCreationResponse(
+                                            template.type
+                                          )
+                                        ),
+                                      () =>
+                                        resolve(
+                                          common.generateEmptyCreationResponse(
+                                            template.type
+                                          )
+                                        )
+                                    );
+                                } // fails to update item
+                              );
                           }
                         },
                         () => {

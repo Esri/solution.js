@@ -1,6 +1,6 @@
 {
   "name": "@esri/solution-file",
-  "version": "0.21.3",
+  "version": "0.22.0",
   "description": "Manages the creation and deployment of  item types that contain files for @esri/solution.js.",
   "main": "dist/node/index.js",
   "unpkg": "dist/umd/file.umd.min.js",
@@ -13,31 +13,31 @@
     "dist/**"
   ],
   "devDependencies": {
-    "@esri/arcgis-rest-auth": "^2.21.0",
-    "@esri/arcgis-rest-feature-layer": "^2.21.0",
-    "@esri/arcgis-rest-portal": "^2.21.0",
-    "@esri/arcgis-rest-request": "^2.21.0",
-    "@esri/arcgis-rest-service-admin": "^2.21.0",
-    "@esri/hub-common": "6.20.1",
-    "@esri/hub-initiatives": "6.20.1",
-    "@esri/hub-sites": "6.20.1",
-    "@esri/hub-teams": "6.20.1",
+    "@esri/arcgis-rest-auth": "^2.24.0",
+    "@esri/arcgis-rest-feature-layer": "^2.24.0",
+    "@esri/arcgis-rest-portal": "^2.24.0",
+    "@esri/arcgis-rest-request": "^2.24.0",
+    "@esri/arcgis-rest-service-admin": "^2.24.0",
+    "@esri/hub-common": "^6.22.2",
+    "@esri/hub-initiatives": "^6.22.2",
+    "@esri/hub-sites": "^6.22.2",
+    "@esri/hub-teams": "^6.22.2",
     "rollup": "^1.22.0",
-    "typescript": "^4.0.3"
+    "typescript": "^4.1.3"
   },
   "peerDependencies": {
-    "@esri/arcgis-rest-auth": "^2.21.0",
-    "@esri/arcgis-rest-feature-layer": "^2.21.0",
-    "@esri/arcgis-rest-portal": "^2.21.0",
-    "@esri/arcgis-rest-request": "^2.21.0",
-    "@esri/arcgis-rest-service-admin": "^2.21.0",
-    "@esri/hub-common": "6.20.1",
-    "@esri/hub-initiatives": "6.20.1",
-    "@esri/hub-sites": "6.20.1",
-    "@esri/hub-teams": "6.20.1"
+    "@esri/arcgis-rest-auth": "^2.24.0",
+    "@esri/arcgis-rest-feature-layer": "^2.24.0",
+    "@esri/arcgis-rest-portal": "^2.24.0",
+    "@esri/arcgis-rest-request": "^2.24.0",
+    "@esri/arcgis-rest-service-admin": "^2.24.0",
+    "@esri/hub-common": "^6.22.2",
+    "@esri/hub-initiatives": "^6.22.1",
+    "@esri/hub-sites": "^6.22.2",
+    "@esri/hub-teams": "^6.22.2"
   },
   "dependencies": {
-    "@esri/solution-common": "^0.21.3",
+    "@esri/solution-common": "^0.22.0",
     "tslib": "^1.13.0"
   },
   "scripts": {
@@ -90,5 +90,5 @@
     "esri",
     "ES6"
   ],
-  "gitHead": "2862c957d85fddf3eb7680a9f2b4d97884403a54"
+  "gitHead": "4b9ac585a8cd4c132850aa1e67af67d89c546771"
 }

@@ -54,10 +54,13 @@ describe("Module `form`", () => {
               "/content/items/itm1234567890/info/form.webform",
             expectedFile
           );
-        form.getFormInfoFiles(itemId, MOCK_USER_SESSION).then(results => {
-          expect(results).toEqual([] as File[]);
-          done();
-        }, done.fail);
+        form.getFormInfoFiles(itemId, MOCK_USER_SESSION).then(
+          results => {
+            expect(results).toEqual([] as File[]);
+            done();
+          },
+          () => done()
+        );
       });
 
       it("handles items with form info files", done => {
@@ -97,7 +100,7 @@ describe("Module `form`", () => {
           },
           () => {
             jasmine.clock().uninstall();
-            done.fail();
+            done();
           }
         );
       });

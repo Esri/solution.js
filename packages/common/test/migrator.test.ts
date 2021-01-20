@@ -25,6 +25,7 @@ import * as twoDotThree from "../src/migrations/upgrade-two-dot-three";
 import * as twoDotFour from "../src/migrations/upgrade-two-dot-four";
 import * as twoDotFive from "../src/migrations/upgrade-two-dot-five";
 import * as twoDotSix from "../src/migrations/upgrade-two-dot-six";
+import * as twoDotSeven from "../src/migrations/upgrade-two-dot-seven";
 import * as threeDotZero from "../src/migrations/upgrade-three-dot-zero";
 import * as threeDotOne from "../src/migrations/upgrade-three-dot-one";
 import * as utils from "../../common/test/mocks/utils";
@@ -102,6 +103,11 @@ describe("Schema Migrator", () => {
     const sp5 = spyOn(twoDotSix, "_upgradeTwoDotSix").and.callFake(model => {
       return cloneObject(model);
     });
+    const sp6 = spyOn(twoDotSeven, "_upgradeTwoDotSeven").and.callFake(
+      model => {
+        return cloneObject(model);
+      }
+    );
     const threeZeroUpgradeSpy = spyOn(
       threeDotZero,
       "_upgradeThreeDotZero"
@@ -124,6 +130,7 @@ describe("Schema Migrator", () => {
         expect(sp3.calls.count()).toBe(1, "should call third upgrade");
         expect(sp4.calls.count()).toBe(1, "should call fourth upgrade");
         expect(sp5.calls.count()).toBe(1, "should call fifth upgrade");
+        expect(sp6.calls.count()).toBe(1, "should call sixth upgrade");
         expect(threeZeroUpgradeSpy.calls.count()).toBe(
           1,
           "should call 3.0 upgrade"

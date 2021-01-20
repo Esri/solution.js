@@ -42,7 +42,7 @@
       solutionCommon.convertExtent(
         originalExtent,
         desiredSpatialRef,
-        "http://sampleserver6.arcgisonline.com/arcgis/rest/services/Utilities/Geometry/GeometryServer"
+        "https://sampleserver6.arcgisonline.com/arcgis/rest/services/Utilities/Geometry/GeometryServer"
       ).then(
         response => console.log(JSON.stringify(response, null, 2)),
         response => console.error(JSON.stringify(response, null, 2))

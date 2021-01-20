@@ -15,7 +15,7 @@
  */
 
 import { getExperienceSubdomain } from "../../src/helpers/get-experience-subdomain";
-import { UserSession } from "@esri/arcgis-rest-auth";
+import { UserSession } from "@esri/solution-common";
 
 describe("getExperienceSubdomain :: ", () => {
   it("works", () => {

@@ -614,9 +614,9 @@ export function addFeatureServiceLayersAndTables(
                 return prev.then(() => {
                   return getRequest(update);
                 });
-              }, Promise.resolve())
+              }, Promise.resolve(null))
               .then(
-                () => resolve(),
+                () => resolve(null),
                 (e: any) => reject(fail(e)) // getRequest
               );
           });
@@ -624,7 +624,7 @@ export function addFeatureServiceLayersAndTables(
         e => reject(fail(e)) // updateFeatureServiceDefinition
       );
     } else {
-      resolve();
+      resolve(null);
     }
   });
 }
@@ -655,7 +655,7 @@ export function updateFeatureServiceDefinition(
   itemTemplate: IItemTemplate
 ): Promise<void> {
   return new Promise((resolve, reject) => {
-    const options: any = {
+    let options: any = {
       layers: [],
       tables: [],
       authentication
@@ -668,7 +668,8 @@ export function updateFeatureServiceDefinition(
       _updateTemplateDictionaryFields(itemTemplate, templateDictionary);
     }
 
-    listToAdd.forEach(toAdd => {
+    const layerChunks: any[] = [];
+    listToAdd.forEach((toAdd, i) => {
       let item = toAdd.item;
       const originalId = item.id;
       fieldInfos = cacheFieldInfos(item, fieldInfos);
@@ -702,11 +703,27 @@ export function updateFeatureServiceDefinition(
       } else {
         options.tables.push(item);
       }
+
+      if ((i + 1) % 20 === 0 || i + 1 === listToAdd.length) {
+        layerChunks.push(Object.assign({}, options));
+        options = {
+          layers: [],
+          tables: [],
+          authentication
+        };
+      }
     });
-    addToServiceDefinition(serviceUrl, options).then(
-      () => resolve(),
-      e => reject(fail(e))
-    );
+
+    layerChunks
+      .reduce(
+        (prev, curr) =>
+          prev.then(() => addToServiceDefinition(serviceUrl, curr)),
+        Promise.resolve(null)
+      )
+      .then(
+        () => resolve(null),
+        (e: any) => reject(fail(e))
+      );
   });
 }
 

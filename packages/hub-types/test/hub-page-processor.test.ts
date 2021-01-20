@@ -24,7 +24,7 @@ import * as common from "@esri/solution-common";
 import * as hubCommon from "@esri/hub-common";
 import * as hubRoModule from "../src/helpers/create-hub-request-options";
 import * as replacerModule from "../src/helpers/replace-item-ids";
-import { cloneObject } from "@esri/solution-common/src/generalHelpers";
+import { cloneObject, fail } from "@esri/solution-common/src/generalHelpers";
 
 describe("HubPageProcessor: ", () => {
   describe("convertItemToTemplate: ", () => {
@@ -141,6 +141,14 @@ describe("HubPageProcessor: ", () => {
       type: "Hub Page",
       item: {}
     } as common.IItemTemplate;
+    const tmplThmb = {
+      itemId: "bc7",
+      type: "Hub Page",
+      item: {
+        thumbnail: "yoda"
+      }
+    } as any;
+
     it("exists", () => {
       expect(HubPageProcessor.createItemFromTemplate).toBeDefined(
         "Should have createItemFromTemplate method"
@@ -190,6 +198,7 @@ describe("HubPageProcessor: ", () => {
         expect(movePageSpy.calls.count()).toBe(1, "should call move");
       });
     });
+
     it("asset and resource juggling", () => {
       const createFromTmplSpy = spyOn(
         sitesPackage,

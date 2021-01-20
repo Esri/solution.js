@@ -15,13 +15,18 @@
  */
 
 import {
-  _addContentToSolution,
+  addContentToSolution,
+  _getDependencies,
+  _getIdsOutOfTemplateVariables,
+  _getSolutionItemUrls,
+  _getTemplateVariables,
   _postProcessGroupDependencies,
   _postProcessIgnoredItems,
   _templatizeSolutionIds,
   _replaceDictionaryItemsInObject,
   _replaceRemainingIdsInObject,
-  _replaceRemainingIdsInString
+  _replaceRemainingIdsInString,
+  _simplifyUrlsInItemDescriptions
 } from "../../src/helpers/add-content-to-solution";
 import * as fetchMock from "fetch-mock";
 import * as createItemTemplateModule from "../../src/createItemTemplate";
@@ -34,8 +39,8 @@ import { findBy } from "@esri/hub-common";
 // Set up a UserSession to use in all these tests
 const MOCK_USER_SESSION = utils.createRuntimeMockUserSession();
 
-describe("_addContentToSolution", () => {
-  it("_addContentToSolution item progress callback with new item", done => {
+describe("addContentToSolution", () => {
+  it("addContentToSolution item progress callback with new item", done => {
     const solutionId = "sln1234567890";
     const options: common.ICreateSolutionOptions = {
       itemIds: ["map1234567890"]
@@ -58,11 +63,11 @@ describe("_addContentToSolution", () => {
             0
           );
         }
-        return Promise.resolve();
+        return Promise.resolve(null);
       }
     );
 
-    return _addContentToSolution(solutionId, options, MOCK_USER_SESSION).then(
+    return addContentToSolution(solutionId, options, MOCK_USER_SESSION).then(
       () => {
         expect(options.itemIds).toEqual(["map1234567890", "wma1234567890"]);
         done();
@@ -70,7 +75,7 @@ describe("_addContentToSolution", () => {
     );
   });
 
-  it("_addContentToSolution item progress callback with ignored item", done => {
+  it("addContentToSolution item progress callback with ignored item", done => {
     const solutionId = "sln1234567890";
     const options: common.ICreateSolutionOptions = {
       itemIds: ["map1234567890", "wma1234567890"]
@@ -93,13 +98,13 @@ describe("_addContentToSolution", () => {
             0
           );
         }
-        return Promise.resolve();
+        return Promise.resolve(null);
       }
     );
 
     spyOn(console, "error").and.callFake(() => {});
 
-    return _addContentToSolution(
+    return addContentToSolution(
       solutionId,
       options,
       MOCK_USER_SESSION
@@ -107,7 +112,7 @@ describe("_addContentToSolution", () => {
   });
 
   if (typeof window !== "undefined") {
-    it("_addContentToSolution item progress callback with failed item", done => {
+    it("addContentToSolution item progress callback with failed item", done => {
       const solutionId = "sln1234567890";
       const options: common.ICreateSolutionOptions = {
         itemIds: ["map1234567890"]
@@ -134,7 +139,7 @@ describe("_addContentToSolution", () => {
 
       spyOn(console, "error").and.callFake(() => {});
 
-      return _addContentToSolution(solutionId, options, MOCK_USER_SESSION).then(
+      return addContentToSolution(solutionId, options, MOCK_USER_SESSION).then(
         () => done.fail(),
         e => {
           expect(e.success).toBeFalse();
@@ -146,6 +151,140 @@ describe("_addContentToSolution", () => {
       );
     });
   }
+});
+
+describe("_getDependencies", () => {
+  it("get ids out of string", () => {
+    const template: common.IItemTemplate = templates.getItemTemplate("Web Map");
+    template.itemId = template.item.id = "854f1128cb784cf692e848390452d100";
+    template.item.description =
+      "https://experience.arcgis.com/experience/{{fcb2bf2837a6404ebb418a1f805f976a.itemId}}<div>{{portalBaseUrl}}/apps/webappviewer/index.html?id={{cefb7d787b8b4edb971efba758ee0c1e.itemId}}</div>{{" +
+      template.itemId +
+      "}}";
+    template.dependencies = ["124f66175750431096575c449b42bd65"];
+    expect(_getDependencies(template)).toEqual([
+      "124f66175750431096575c449b42bd65",
+      "cefb7d787b8b4edb971efba758ee0c1e",
+      "fcb2bf2837a6404ebb418a1f805f976a"
+    ]);
+  });
+});
+
+describe("_getIdsOutOfTemplateVariables", () => {
+  it("get ids out of string", () => {
+    expect(_getIdsOutOfTemplateVariables([])).toEqual([]);
+    expect(_getIdsOutOfTemplateVariables(["portalBaseUrl"])).toEqual([]);
+    expect(_getIdsOutOfTemplateVariables(["solutionItemExtent"])).toEqual([]);
+    expect(
+      _getIdsOutOfTemplateVariables(["9fd7d55c84e84fe1b93f073a8088b435"])
+    ).toEqual(["9fd7d55c84e84fe1b93f073a8088b435"]);
+    expect(
+      _getIdsOutOfTemplateVariables([
+        "9fd7d55c84e84fe1b93f073a8088b435",
+        "bad3483e025c47338d43df308c117308"
+      ])
+    ).toEqual([
+      "9fd7d55c84e84fe1b93f073a8088b435",
+      "bad3483e025c47338d43df308c117308"
+    ]);
+    expect(
+      _getIdsOutOfTemplateVariables([
+        "fcb2bf2837a6404ebb418a1f805f976a.itemId",
+        "cefb7d787b8b4edb971efba758ee0c1e"
+      ])
+    ).toEqual([
+      "fcb2bf2837a6404ebb418a1f805f976a",
+      "cefb7d787b8b4edb971efba758ee0c1e"
+    ]);
+  });
+});
+
+describe("_getSolutionItemUrls", () => {
+  it("gets item id/URL pairs for items with URLs", () => {
+    const templateList = [
+      templates.getItemTemplate("Notebook", null, "url1"),
+      templates.getItemTemplate("Oriented Imagery Catalog", null, "url2"),
+      templates.getItemTemplate("QuickCapture Project", null, "url3"),
+      templates.getItemTemplate("Web Map", null, "url4"),
+      templates.getItemTemplate("Web Mapping Application", null, "url5"),
+      templates.getItemTemplate("Workforce Project", null, "url6")
+    ];
+    expect(_getSolutionItemUrls(templateList)).toEqual([
+      ["nbk1234567890", "url1"],
+      ["oic1234567890", "url2"],
+      ["qck1234567890", "url3"],
+      ["map1234567890", "url4"],
+      ["wma1234567890", "url5"],
+      ["wrk1234567890", "url6"]
+    ]);
+  });
+
+  it("skips items without a URL", () => {
+    const templateList = [
+      templates.getItemTemplate("Notebook", null, ""),
+      templates.getItemTemplate("Oriented Imagery Catalog", null, "url2"),
+      templates.getItemTemplate("QuickCapture Project", null, ""),
+      templates.getItemTemplate("Web Map", null, "url4"),
+      templates.getItemTemplate("Web Mapping Application", null, "url5"),
+      templates.getItemTemplate("Workforce Project", null, "url6")
+    ];
+    expect(_getSolutionItemUrls(templateList)).toEqual([
+      ["oic1234567890", "url2"],
+      ["map1234567890", "url4"],
+      ["wma1234567890", "url5"],
+      ["wrk1234567890", "url6"]
+    ]);
+  });
+
+  it("handles a list of items without URLs", () => {
+    const templateList = [
+      templates.getItemTemplate("Notebook", null, ""),
+      templates.getItemTemplate("Oriented Imagery Catalog", null, ""),
+      templates.getItemTemplate("QuickCapture Project", null, ""),
+      templates.getItemTemplate("Workforce Project", null, "")
+    ];
+    expect(_getSolutionItemUrls(templateList)).toEqual([]);
+  });
+
+  it("handles an empty list", () => {
+    const templateList: common.IItemTemplate[] = [];
+    expect(_getSolutionItemUrls(templateList)).toEqual([]);
+  });
+});
+
+describe("_getTemplateVariables", () => {
+  it("get variables out of string", () => {
+    expect(_getTemplateVariables("")).toEqual([]);
+    expect(_getTemplateVariables("{{portalBaseUrl}} and many more")).toEqual([
+      "portalBaseUrl"
+    ]);
+    expect(
+      _getTemplateVariables(
+        "this is a variable: {{solutionItemExtent}} (to be extracted)"
+      )
+    ).toEqual(["solutionItemExtent"]);
+    expect(
+      _getTemplateVariables(
+        "{{9fd7d55c84e84fe1b93f073a8088b435.layer1.itemId}}"
+      )
+    ).toEqual(["9fd7d55c84e84fe1b93f073a8088b435.layer1.itemId"]);
+    expect(
+      _getTemplateVariables(
+        "{{9fd7d55c84e84fe1b93f073a8088b435.layer1.itemId}} and {{bad3483e025c47338d43df308c117308.itemId}}"
+      )
+    ).toEqual([
+      "9fd7d55c84e84fe1b93f073a8088b435.layer1.itemId",
+      "bad3483e025c47338d43df308c117308.itemId"
+    ]);
+    expect(
+      _getTemplateVariables(
+        "https://experience.arcgis.com/experience/{{fcb2bf2837a6404ebb418a1f805f976a.itemId}}<div>https://localdeployment.maps.arcgis.com/apps/webappviewer/index.html?id={{cefb7d787b8b4edb971efba758ee0c1e.itemId}}</div>"
+      )
+    ).toEqual([
+      "fcb2bf2837a6404ebb418a1f805f976a.itemId",
+      "cefb7d787b8b4edb971efba758ee0c1e.itemId"
+    ]);
+  });
 });
 
 describe("_postProcessGroupDependencies", () => {
@@ -1004,3 +1143,105 @@ describe("_replaceRemainingIdsInString", () => {
     );
   });
 });
+
+// TypeScript for es2015 doesn't have a definition for `replaceAll`, so the tests "fail" via a TypeError
+if (typeof window !== "undefined") {
+  describe("_simplifyUrlsInItemDescriptions", () => {
+    it("replaces URL in description with simplified form 1", () => {
+      const descrip1 = "Etiam rhoncus vestibulum enim, a scelerisque sem.";
+      const descrip2 = "Donec rhoncus nunc in odio lobortis venenatis non.";
+
+      const notebookTemplate = templates.getItemTemplate(
+        "Notebook",
+        null,
+        "url1"
+      );
+      notebookTemplate.item.origUrl = notebookTemplate.item.url;
+
+      const webmapTemplate = templates.getItemTemplate("Web Map", null, "url4");
+      webmapTemplate.item.description =
+        descrip1 + " url5,url5,url1 " + descrip2;
+
+      const wmaTemplate = templates.getItemTemplate(
+        "Web Mapping Application",
+        null,
+        "url5"
+      );
+      wmaTemplate.item.description = descrip1 + " url0 " + descrip2;
+      wmaTemplate.item.origUrl = wmaTemplate.item.url;
+
+      const workforceTemplate = templates.getItemTemplate(
+        "Workforce Project",
+        null,
+        "url6"
+      );
+      workforceTemplate.item.origUrl = workforceTemplate.item.url;
+
+      const templateList = [
+        notebookTemplate,
+        webmapTemplate,
+        wmaTemplate,
+        workforceTemplate
+      ];
+
+      _simplifyUrlsInItemDescriptions(templateList);
+
+      expect(webmapTemplate.item.description).toEqual(
+        descrip1 +
+          " {{wma1234567890.url}},{{wma1234567890.url}},{{nbk1234567890.url}} " +
+          descrip2
+      );
+      expect(wmaTemplate.item.description).toEqual(
+        descrip1 + " url0 " + descrip2
+      );
+    });
+
+    it("replaces URL in description with simplified form 2", () => {
+      const templateList = [
+        {
+          itemId: "id1",
+          item: {
+            description:
+              "https://experience.arcgis.com/experience/fcb2bf2837a6404ebb418a1f805f976a<div>https://localdeployment.maps.arcgis.com/apps/webappviewer/index.html?id=cefb7d787b8b4edb971efba758ee0c1e</div>",
+            origUrl: ""
+          }
+        },
+        {
+          itemId: "id2",
+          item: {
+            description: "",
+            origUrl:
+              "https://experience.arcgis.com/experience/fcb2bf2837a6404ebb418a1f805f976a"
+          }
+        },
+        {
+          itemId: "id3",
+          item: {
+            description: "",
+            origUrl:
+              "https://localdeployment.maps.arcgis.com/apps/webappviewer/index.html?id=cefb7d787b8b4edb971efba758ee0c1e"
+          }
+        }
+      ];
+
+      _simplifyUrlsInItemDescriptions(templateList as any[]);
+
+      expect(templateList[0].item.description).toEqual(
+        "{{id2.url}}<div>{{id3.url}}</div>"
+      );
+    });
+
+    it("doesn't choke if the description is missing", () => {
+      const notebookTemplate = templates.getItemTemplate(
+        "Notebook",
+        null,
+        "url1"
+      );
+      notebookTemplate.item.origUrl = notebookTemplate.item.url;
+      notebookTemplate.item.description = null;
+
+      _simplifyUrlsInItemDescriptions([notebookTemplate]);
+      expect(notebookTemplate.item.description).toBeNull();
+    });
+  });
+}

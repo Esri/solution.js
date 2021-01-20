@@ -441,6 +441,7 @@ describe("Module `quick capture`: manages the creation and deployment of quick c
           { success: true }
         );
 
+      spyOn(console, "log").and.callFake(() => {});
       quickcapture
         .postProcess(
           newItemId,

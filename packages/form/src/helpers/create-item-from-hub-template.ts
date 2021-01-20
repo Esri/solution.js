@@ -20,12 +20,12 @@ import {
   IItemProgressCallback,
   ICreateItemFromTemplateResponse,
   EItemProgressStatus,
-  removeFolder,
   replaceInTemplate,
+  updateItemExtended,
   ISurvey123CreateParams,
-  ISurvey123CreateResult
+  ISurvey123CreateResult,
+  getItemBase
 } from "@esri/solution-common";
-import { moveItem } from "@esri/arcgis-rest-portal";
 import { createSurvey } from "./create-survey";
 import { buildCreateParams } from "./build-create-params";
 
@@ -63,22 +63,23 @@ export function createItemFromHubTemplate(
       return createSurvey(params, survey123Url);
     })
     .then((createSurveyResponse: ISurvey123CreateResult) => {
-      const { formId, folderId, featureServiceId } = createSurveyResponse;
-      // Survey123 API creates Form & Feature Service in a different directory,
-      // so move those items to the deployed solution folder
-      const movePromises = [formId, featureServiceId].map((id: string) => {
-        return moveItem({
-          itemId: id,
-          folderId: templateDictionary.folderId as string,
-          authentication: destinationAuthentication
-        });
-      });
-      return Promise.all(movePromises)
-        .then(() => {
-          // then remove the folder that Survey123 created
-          return removeFolder(folderId, destinationAuthentication);
-        })
-        .then(() => {
+      const { formId, featureServiceId } = createSurveyResponse;
+
+      // Update the item with its thumbnail
+      let thumbDef: Promise<any> = Promise.resolve(null);
+      /* istanbul ignore else */
+      if (template.item.thumbnail) {
+        thumbDef = updateItemExtended(
+          { id: formId },
+          null,
+          destinationAuthentication,
+          template.item.thumbnail
+        );
+      }
+
+      return thumbDef
+        .then(() => getItemBase(formId, destinationAuthentication))
+        .then(item => {
           templateDictionary[interpolatedTemplate.itemId] = {
             itemId: formId
           };
@@ -94,7 +95,11 @@ export function createItemFromHubTemplate(
             formId
           );
           return {
-            item: null,
+            item: {
+              ...template,
+              item,
+              itemId: formId
+            },
             id: formId,
             type: "Form",
             postProcess: true

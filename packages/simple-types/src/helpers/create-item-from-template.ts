@@ -61,6 +61,10 @@ export function createItemFromTemplate(
           )
         );
       }
+      if (template.item.thumbnail) {
+        newItemTemplate.item.thumbnail = template.item.thumbnail; // make sure that our File is still there
+      }
+
       common
         .createItemWithData(
           newItemTemplate.item,
@@ -186,7 +190,7 @@ export function createItemFromTemplate(
                     .then(() => resolve2(), reject2);
                 });
               } else {
-                customProcDef = Promise.resolve();
+                customProcDef = Promise.resolve(null);
               }
 
               Promise.all([relationshipsDef, customProcDef]).then(
