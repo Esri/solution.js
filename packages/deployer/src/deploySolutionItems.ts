@@ -485,6 +485,7 @@ export function _useExistingItems(
       const itemIds: string[] = [];
       Object.keys(templateDictionary.params).forEach(k => {
         const v: any = templateDictionary.params[k];
+        /* istanbul ignore else */
         if (v.itemId && v.sourceId) {
           _updateTemplateDictionaryById(
             templateDictionary,
@@ -492,6 +493,7 @@ export function _useExistingItems(
             v.itemId,
             v
           );
+          /* istanbul ignore else */
           if (itemIds.indexOf(v.sourceId) < 0) {
             itemIds.push(v.sourceId);
           }
