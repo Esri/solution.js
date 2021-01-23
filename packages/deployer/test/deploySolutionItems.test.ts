@@ -1034,6 +1034,62 @@ describe("Module `deploySolutionItems`", () => {
         )
         .then(() => done.fail(), done);
     });
+
+    it("handle failure to use exiting items", done => {
+      const _templates: common.IItemTemplate[] = [];
+
+      const sourceId: string = "aa4a6047326243b290f625e80ebe6531";
+      const id: string = "ca4a6047326243b290f625e80ebe6531";
+      const fsUrl: string =
+        "https://services.arcgis.com/orgidFmrV9d1DIvN/arcgis/rest/services/dispatchers2/FeatureServer";
+
+      const newFsUrl: string =
+        "https://services.arcgis.com/orgidFmrV9d1DIvN/arcgis/rest/services/dispatchersNew/FeatureServer";
+
+      const fsTemplate: common.IItemTemplate = templates.getItemTemplate(
+        "Feature Service",
+        [],
+        fsUrl
+      );
+      fsTemplate.itemId = sourceId;
+
+      _templates.push(fsTemplate);
+
+      const templateDictionary: any = {
+        user: mockItems.getAGOLUser("casey"),
+        params: {
+          useExisting: true,
+          customFS: {
+            itemId: id,
+            sourceId: sourceId,
+            name: "Name",
+            title: "Title",
+            type: "Feature Service",
+            url: newFsUrl
+          }
+        }
+      };
+
+      spyOn(common, "getLayerSettings").and.callFake(() => {});
+      spyOn(console, "error").and.callFake(() => {});
+
+      fetchMock.post(newFsUrl, mockItems.get400Failure());
+
+      deploySolution
+        .deploySolutionItems(
+          utils.PORTAL_URL,
+          "sln1234567890",
+          _templates,
+          MOCK_USER_SESSION,
+          templateDictionary,
+          MOCK_USER_SESSION,
+          {
+            enableItemReuse: false,
+            progressCallback: utils.SOLUTION_PROGRESS_CALLBACK
+          }
+        )
+        .then(() => done.fail(), done);
+    });
   });
 
   describe("_createItemFromTemplateWhenReady", () => {
@@ -1691,6 +1747,137 @@ describe("Module `deploySolutionItems`", () => {
       deploySolution
         ._updateTemplateDictionary(
           _templates,
+          templateDictionary,
+          MOCK_USER_SESSION
+        )
+        .then(done.fail, done);
+    });
+  });
+
+  describe("_useExistingItems", () => {
+    it("use existing item", done => {
+      const _templates: common.IItemTemplate[] = [];
+
+      const sourceId: string = "aa4a6047326243b290f625e80ebe6531";
+      const id: string = "ca4a6047326243b290f625e80ebe6531";
+      const fsUrl: string =
+        "https://services.arcgis.com/orgidFmrV9d1DIvN/arcgis/rest/services/dispatchers2/FeatureServer";
+
+      const newFsUrl: string =
+        "https://services.arcgis.com/orgidFmrV9d1DIvN/arcgis/rest/services/dispatchersNew/FeatureServer";
+
+      const fsTemplate: common.IItemTemplate = templates.getItemTemplate(
+        "Feature Service",
+        [],
+        fsUrl
+      );
+      fsTemplate.itemId = sourceId;
+
+      _templates.push(fsTemplate);
+
+      const sr: any = {
+        wkid: 4326
+      };
+
+      const ext: any = {
+        xmin: 0
+      };
+
+      const customFS: any = {
+        itemId: id,
+        sourceId: sourceId,
+        name: "Name",
+        title: "Title",
+        type: "Feature Service",
+        url: newFsUrl
+      };
+
+      const templateDictionary: any = {
+        params: {
+          useExisting: true,
+          customFS
+        }
+      };
+      const expectedTemplateDictionary: any = {
+        params: {
+          useExisting: true,
+          customFS
+        }
+      };
+      expectedTemplateDictionary[sourceId] = {
+        defaultSpatialReference: sr,
+        defaultExtent: ext,
+        name: customFS.name,
+        title: customFS.title,
+        url: customFS.url,
+        itemId: "ca4a6047326243b290f625e80ebe6531"
+      };
+
+      spyOn(common, "getLayerSettings").and.callFake(() => {});
+
+      fetchMock.post(newFsUrl, {
+        serviceItemId: id,
+        spatialReference: sr,
+        initialExtent: ext
+      });
+
+      deploySolution
+        ._useExistingItems(
+          _templates,
+          true,
+          templateDictionary,
+          MOCK_USER_SESSION
+        )
+        .then(() => {
+          expect(templateDictionary[sourceId].def).toBeDefined();
+          delete templateDictionary[sourceId].def;
+          expect(templateDictionary).toEqual(expectedTemplateDictionary);
+          done();
+        }, done.fail);
+    });
+
+    it("will handle failure to fetch spatial ref", done => {
+      const _templates: common.IItemTemplate[] = [];
+
+      const sourceId: string = "aa4a6047326243b290f625e80ebe6531";
+      const id: string = "ca4a6047326243b290f625e80ebe6531";
+      const fsUrl: string =
+        "https://services.arcgis.com/orgidFmrV9d1DIvN/arcgis/rest/services/dispatchers2/FeatureServer";
+
+      const newFsUrl: string =
+        "https://services.arcgis.com/orgidFmrV9d1DIvN/arcgis/rest/services/dispatchersNew/FeatureServer";
+
+      const fsTemplate: common.IItemTemplate = templates.getItemTemplate(
+        "Feature Service",
+        [],
+        fsUrl
+      );
+      fsTemplate.itemId = sourceId;
+
+      _templates.push(fsTemplate);
+
+      const templateDictionary: any = {
+        params: {
+          useExisting: true,
+          customFS: {
+            itemId: id,
+            sourceId: sourceId,
+            name: "Name",
+            title: "Title",
+            type: "Feature Service",
+            url: newFsUrl
+          }
+        }
+      };
+
+      spyOn(common, "getLayerSettings").and.callFake(() => {});
+
+      fetchMock.post(newFsUrl, mockItems.get400Failure());
+
+      deploySolution
+        ._useExistingItems(
+          _templates,
+          true,
           templateDictionary,
           MOCK_USER_SESSION
         )
