@@ -669,6 +669,12 @@ export function updateFeatureServiceDefinition(
     }
 
     const layerChunks: any[] = [];
+    const chunkSize: number = getProp(
+      itemTemplate,
+      "properties.service.isMultiServicesView"
+    )
+      ? 1
+      : 20;
     listToAdd.forEach((toAdd, i) => {
       let item = toAdd.item;
       const originalId = item.id;
@@ -704,7 +710,7 @@ export function updateFeatureServiceDefinition(
         options.tables.push(item);
       }
 
-      if ((i + 1) % 20 === 0 || i + 1 === listToAdd.length) {
+      if ((i + 1) % chunkSize === 0 || i + 1 === listToAdd.length) {
         layerChunks.push(Object.assign({}, options));
         options = {
           layers: [],
