@@ -736,6 +736,19 @@ export function updateFeatureServiceDefinition(
   });
 }
 
+/**
+ * When a viewLayerDefinition table references other layers within itself
+ * we need to make sure that it is added in a separate call after the table that supports it
+ *
+ * @param itemTemplate
+ * @param item Layer or table from the service
+ * @param options Add to service definition options
+ * @param layerChunks Groups of layers or tables to add to the service
+ * @param authentication Credentials for the request
+ *
+ * @return Add to service definition options
+ * @protected
+ */
 export function _updateAddOptions(
   itemTemplate: IItemTemplate,
   item: any,
@@ -758,8 +771,6 @@ export function _updateAddOptions(
         (t: any) => t.sourceServiceName
       );
       tableNames.push(table.sourceServiceName);
-      // when a viewLayerDef table references itself we need to make sure that it is added
-      // in a seperate call after the table that supports it
       /* istanbul ignore else */
       if (tableNames.some(n => n === serviceName)) {
         // if we already have some layers or tables add them first
