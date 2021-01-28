@@ -669,12 +669,9 @@ export function updateFeatureServiceDefinition(
     }
 
     const layerChunks: any[] = [];
-    const chunkSize: number = getProp(
-      itemTemplate,
-      "properties.service.isMultiServicesView"
-    )
-      ? 1
-      : 20;
+    const isMsView: boolean =
+      getProp(itemTemplate, "properties.service.isMultiServicesView") || false;
+    const serviceName: string = getProp(itemTemplate, "item.name");
     listToAdd.forEach((toAdd, i) => {
       let item = toAdd.item;
       const originalId = item.id;
@@ -704,13 +701,39 @@ export function updateFeatureServiceDefinition(
 
       removeLayerOptimization(item);
 
+      if (isMsView) {
+        const table: any = getProp(
+          item,
+          "adminLayerInfo.viewLayerDefinition.table"
+        );
+        if (table) {
+          const tableNames: string[] = (table.relatedTables || []).map(
+            (t: any) => t.sourceServiceName
+          );
+          tableNames.push(table.sourceServiceName);
+          // when a viewLayerDef table references itself we need to make sure that it is added
+          // in a seperate call after the table that supports it
+          if (tableNames.some(n => n === serviceName)) {
+            // if we already have some layers or tables add them first
+            if (options.layers.length > 0 || options.tables.length > 0) {
+              layerChunks.push(Object.assign({}, options));
+              options = {
+                layers: [],
+                tables: [],
+                authentication
+              };
+            }
+          }
+        }
+      }
+
       if (item.type === "Feature Layer") {
         options.layers.push(item);
       } else {
         options.tables.push(item);
       }
 
-      if ((i + 1) % chunkSize === 0 || i + 1 === listToAdd.length) {
+      if ((i + 1) % 20 === 0 || i + 1 === listToAdd.length) {
         layerChunks.push(Object.assign({}, options));
         options = {
           layers: [],
