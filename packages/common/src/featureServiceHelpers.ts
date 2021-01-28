@@ -669,9 +669,6 @@ export function updateFeatureServiceDefinition(
     }
 
     const layerChunks: any[] = [];
-    const isMsView: boolean =
-      getProp(itemTemplate, "properties.service.isMultiServicesView") || false;
-    const serviceName: string = getProp(itemTemplate, "item.name");
     listToAdd.forEach((toAdd, i) => {
       let item = toAdd.item;
       const originalId = item.id;
@@ -701,31 +698,13 @@ export function updateFeatureServiceDefinition(
 
       removeLayerOptimization(item);
 
-      if (isMsView) {
-        const table: any = getProp(
-          item,
-          "adminLayerInfo.viewLayerDefinition.table"
-        );
-        if (table) {
-          const tableNames: string[] = (table.relatedTables || []).map(
-            (t: any) => t.sourceServiceName
-          );
-          tableNames.push(table.sourceServiceName);
-          // when a viewLayerDef table references itself we need to make sure that it is added
-          // in a seperate call after the table that supports it
-          if (tableNames.some(n => n === serviceName)) {
-            // if we already have some layers or tables add them first
-            if (options.layers.length > 0 || options.tables.length > 0) {
-              layerChunks.push(Object.assign({}, options));
-              options = {
-                layers: [],
-                tables: [],
-                authentication
-              };
-            }
-          }
-        }
-      }
+      options = _updateAddOptions(
+        itemTemplate,
+        item,
+        options,
+        layerChunks,
+        authentication
+      );
 
       if (item.type === "Feature Layer") {
         options.layers.push(item);
@@ -733,6 +712,7 @@ export function updateFeatureServiceDefinition(
         options.tables.push(item);
       }
 
+      /* istanbul ignore else */
       if ((i + 1) % 20 === 0 || i + 1 === listToAdd.length) {
         layerChunks.push(Object.assign({}, options));
         options = {
@@ -754,6 +734,48 @@ export function updateFeatureServiceDefinition(
         (e: any) => reject(fail(e))
       );
   });
+}
+
+export function _updateAddOptions(
+  itemTemplate: IItemTemplate,
+  item: any,
+  options: any,
+  layerChunks: any[],
+  authentication: UserSession
+): any {
+  const isMsView: boolean =
+    getProp(itemTemplate, "properties.service.isMultiServicesView") || false;
+  const serviceName: string = getProp(itemTemplate, "item.name");
+  /* istanbul ignore else */
+  if (isMsView) {
+    const table: any = getProp(
+      item,
+      "adminLayerInfo.viewLayerDefinition.table"
+    );
+    /* istanbul ignore else */
+    if (table) {
+      const tableNames: string[] = (table.relatedTables || []).map(
+        (t: any) => t.sourceServiceName
+      );
+      tableNames.push(table.sourceServiceName);
+      // when a viewLayerDef table references itself we need to make sure that it is added
+      // in a seperate call after the table that supports it
+      /* istanbul ignore else */
+      if (tableNames.some(n => n === serviceName)) {
+        // if we already have some layers or tables add them first
+        /* istanbul ignore else */
+        if (options.layers.length > 0 || options.tables.length > 0) {
+          layerChunks.push(Object.assign({}, options));
+          options = {
+            layers: [],
+            tables: [],
+            authentication
+          };
+        }
+      }
+    }
+  }
+  return options;
 }
 
 export function removeLayerOptimization(layer: any): void {
