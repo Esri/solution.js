@@ -78,6 +78,7 @@ import {
   _updateForPortal,
   _updateGeomFieldName,
   _updateTemplateDictionaryFields,
+  _updateTypeKeywords,
   _validateFields,
   _validateDisplayField,
   _validateIndexes,
@@ -803,6 +804,36 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
 
       expect(updatedTemplate).toEqual(expectedTemplate);
       expect(settings).toEqual(expectedSettings);
+    });
+  });
+
+  describe("_updateTypeKeywords", () => {
+    it("should update typeKeywords when some have been added on create", () => {
+      itemTemplate.item.typeKeywords = ["A", "B"];
+
+      const createResponse: any = {
+        typeKeywords: ["C"]
+      };
+
+      const expecetd: string[] = ["A", "B", "C"];
+
+      const template = _updateTypeKeywords(itemTemplate, createResponse);
+
+      expect(template.item.typeKeywords).toEqual(expecetd);
+    });
+
+    it("should NOT update typeKeywords when no new keyWords exist", () => {
+      itemTemplate.item.typeKeywords = ["A", "B"];
+
+      const createResponse: any = {
+        typeKeywords: []
+      };
+
+      const expecetd: string[] = ["A", "B"];
+
+      const template = _updateTypeKeywords(itemTemplate, createResponse);
+
+      expect(template.item.typeKeywords).toEqual(expecetd);
     });
   });
 

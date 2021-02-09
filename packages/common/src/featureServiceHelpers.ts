@@ -312,6 +312,9 @@ export function updateTemplate(
   templateDictionary: any,
   createResponse: any
 ): IItemTemplate {
+  // Update the item with any typeKeywords that were added on create
+  _updateTypeKeywords(itemTemplate, createResponse);
+
   // Add the new item to the template dictionary
   templateDictionary[itemTemplate.itemId] = Object.assign(
     templateDictionary[itemTemplate.itemId] || {},
@@ -324,6 +327,35 @@ export function updateTemplate(
   // Update the item template now that the new service has been created
   itemTemplate.itemId = createResponse.serviceItemId;
   return replaceInTemplate(itemTemplate, templateDictionary);
+}
+
+/**
+ * Updates the items typeKeywords to include any typeKeywords that
+ * were added by the create service request
+ *
+ * @param itemTemplate Item to be created; n.b.: this item is modified
+ * @param createResponse Response from create service
+ * @return An updated instance of the template
+ * @protected
+ */
+export function _updateTypeKeywords(
+  itemTemplate: IItemTemplate,
+  createResponse: any
+): IItemTemplate {
+  // https://github.com/Esri/solution.js/issues/589
+
+  const iKwords: string[] = getProp(itemTemplate, "item.typeKeywords");
+  const cKwords: string[] = getProp(createResponse, "typeKeywords");
+
+  if (iKwords && cKwords) {
+    setProp(
+      itemTemplate,
+      "item.typeKeywords",
+      iKwords.concat(cKwords.filter(k => iKwords.indexOf(k) < 0))
+    );
+  }
+
+  return itemTemplate;
 }
 
 /**
