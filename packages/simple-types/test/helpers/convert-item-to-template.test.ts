@@ -180,12 +180,12 @@ describe("simpleTypeConvertItemToTemplate", () => {
           ],
           relatedItems: [
             {
-              relationshipType: "Survey2Service",
-              relatedItemIds: ["srv1234567890"]
-            },
-            {
               relationshipType: "Survey2Data",
               relatedItemIds: ["srv1234567890", "abc1234567890"]
+            },
+            {
+              relationshipType: "Survey2Service",
+              relatedItemIds: ["srv1234567890"]
             }
           ],
           dependencies: ["srv1234567890", "abc1234567890"],
