@@ -160,7 +160,7 @@ export function getItemInfo(
             "<ul style='margin-left:-36px;list-style-type:none;font-size:smaller;'>";
           for (const relatedItem of itemFwdRelatedItems) {
             html +=
-              "<li>&rarr; " +
+              "<li><span style=\"font-size:x-large\">&rarr;</span> " +
               relatedItem.relationshipType +
               " " +
               JSON.stringify(relatedItem.relatedItemIds) +
@@ -168,7 +168,7 @@ export function getItemInfo(
           }
           for (const relatedItem of itemRevRelatedItems) {
             html +=
-              "<li>&larr; " +
+              "<li><span style=\"font-size:x-large\">&larr;</span> " +
               relatedItem.relationshipType +
               " " +
               JSON.stringify(relatedItem.relatedItemIds) +
@@ -267,7 +267,7 @@ export function getItemInfo(
 function textAreaHtmlFromJSON(json: any): string {
   return textAreaHtmlFromText(
     JSON.stringify(
-      common.sanitizeJSON(json), 
+      common.sanitizeJSON(json),
       null, 2
     )
   );
