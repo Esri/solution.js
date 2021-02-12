@@ -29,6 +29,7 @@ import * as sinon from "sinon";
 import * as deploySolutionFromTemplate from "../src/deploySolutionFromTemplate";
 import { cloneObject } from "@esri/hub-common";
 import * as postProcessModule from "../src/helpers/post-process";
+import * as portalHelper from "@esri/arcgis-rest-portal";
 
 // ------------------------------------------------------------------------------------------------------------------ //
 
@@ -319,6 +320,11 @@ describe("Module `deployer`", () => {
         const portalsSelfResponse: any = testUtils.getPortalsSelfResponse();
         const geometryServer: string =
           portalsSelfResponse.helperServices.geometry.url;
+
+        const relationshipSpy = spyOn(
+          portalHelper,
+          "addItemRelationship"
+        ).and.resolveTo();
 
         fetchMock
           .get(
@@ -1194,6 +1200,11 @@ describe("Module `deployer`", () => {
         const geometryServer: string =
           portalsSelfResponse.helperServices.geometry.url;
 
+        const relationshipSpy = spyOn(
+          portalHelper,
+          "addItemRelationship"
+        ).and.resolveTo();
+
         fetchMock
           .get(
             testUtils.PORTAL_SUBSET.restUrl +
@@ -1384,6 +1395,11 @@ describe("Module `deployer`", () => {
         portalsSelfResponse.urlKey = null;
         const geometryServer: string =
           portalsSelfResponse.helperServices.geometry.url;
+
+        const relationshipSpy = spyOn(
+          portalHelper,
+          "addItemRelationship"
+        ).and.resolveTo();
 
         fetchMock
           .get(

@@ -15,6 +15,7 @@
  */
 import { postProcess } from "../../src/helpers/post-process";
 import { HubSiteProcessor } from "@esri/solution-hub-types";
+import * as portalHelper from "@esri/arcgis-rest-portal";
 import * as shareHelper from "../../src/helpers/share-templates-to-groups";
 import * as testUtils from "@esri/solution-common/test/mocks/utils";
 import {
@@ -36,6 +37,11 @@ describe("postProcess Module", () => {
       "postProcess"
     ).and.resolveTo();
 
+    const relationshipSpy = spyOn(
+      portalHelper,
+      "addItemRelationship"
+    ).and.resolveTo();
+
     const shareSpy = spyOn(
       shareHelper,
       "shareTemplatesToGroups"
@@ -50,28 +56,44 @@ describe("postProcess Module", () => {
       }
     ] as ICreateItemFromTemplateResponse[];
 
-    return postProcess(tmpls, sols, MOCK_USER_SESSION, tmplDict).then(resp => {
-      expect(shareSpy.calls.count()).toBe(1, "should call the shareHelper");
-      expect(resp.length).toBe(2, "should return two promises");
-      expect(siteProcessorSpy.calls.count()).toBe(
-        1,
-        "should delegate to item type processor"
-      );
-      const args = siteProcessorSpy.calls.argsFor(0) as any[];
-      expect(args[0]).toBe("bc3");
-      expect(args[1]).toBe("Hub Site Application");
-      expect(args[2]).toBe(sols, "should pass solutions through");
-      expect(args[3]).toBeUndefined();
-      expect(args[4]).toEqual([]);
-      expect(args[5]).toBe(tmplDict, "should pass template dictionary through");
-      expect(args[6]).toBe(MOCK_USER_SESSION, "should pass auth through");
-    });
+    const solnId = "abc";
+    return postProcess(solnId, tmpls, sols, MOCK_USER_SESSION, tmplDict).then(
+      resp => {
+        expect(relationshipSpy.calls.count()).toBe(
+          1,
+          "should call the addItemRelationship"
+        );
+        expect(shareSpy.calls.count()).toBe(1, "should call the shareHelper");
+        expect(resp.length).toBe(3, "should return two promises");
+        expect(siteProcessorSpy.calls.count()).toBe(
+          1,
+          "should delegate to item type processor"
+        );
+        const args = siteProcessorSpy.calls.argsFor(0) as any[];
+        expect(args[0]).toBe("bc3");
+        expect(args[1]).toBe("Hub Site Application");
+        expect(args[2]).toBe(sols, "should pass solutions through");
+        expect(args[3]).toBeUndefined();
+        expect(args[4]).toEqual([]);
+        expect(args[5]).toBe(
+          tmplDict,
+          "should pass template dictionary through"
+        );
+        expect(args[6]).toBe(MOCK_USER_SESSION, "should pass auth through");
+      }
+    );
   });
   it("only processes multiple solutions with postProcess true", () => {
     const siteProcessorSpy = spyOn(
       HubSiteProcessor,
       "postProcess"
     ).and.resolveTo();
+
+    const relationshipSpy = spyOn(
+      portalHelper,
+      "addItemRelationship"
+    ).and.resolveTo();
+
     const shareSpy = spyOn(
       shareHelper,
       "shareTemplatesToGroups"
@@ -91,20 +113,33 @@ describe("postProcess Module", () => {
       }
     ] as ICreateItemFromTemplateResponse[];
 
-    return postProcess(tmpls, sols, MOCK_USER_SESSION, tmplDict).then(resp => {
-      expect(shareSpy.calls.count()).toBe(1, "should call the shareHelper");
-      expect(resp.length).toBe(3, "should return three promises");
-      expect(siteProcessorSpy.calls.count()).toBe(
-        2,
-        "should call postProcess twice"
-      );
-    });
+    const solnId = "abc";
+    return postProcess(solnId, tmpls, sols, MOCK_USER_SESSION, tmplDict).then(
+      resp => {
+        expect(relationshipSpy.calls.count()).toBe(
+          2,
+          "should call the addItemRelationship"
+        );
+        expect(shareSpy.calls.count()).toBe(1, "should call the shareHelper");
+        expect(resp.length).toBe(5, "should return three promises");
+        expect(siteProcessorSpy.calls.count()).toBe(
+          2,
+          "should call postProcess twice"
+        );
+      }
+    );
   });
   it("only processes solutions with postProcess true", () => {
     const siteProcessorSpy = spyOn(
       HubSiteProcessor,
       "postProcess"
     ).and.resolveTo();
+
+    const relationshipSpy = spyOn(
+      portalHelper,
+      "addItemRelationship"
+    ).and.resolveTo();
+
     const shareSpy = spyOn(
       shareHelper,
       "shareTemplatesToGroups"
@@ -124,14 +159,21 @@ describe("postProcess Module", () => {
       }
     ] as ICreateItemFromTemplateResponse[];
 
-    return postProcess(tmpls, sols, MOCK_USER_SESSION, tmplDict).then(resp => {
-      expect(shareSpy.calls.count()).toBe(1, "should call the shareHelper");
-      expect(resp.length).toBe(2, "should return two promises");
-      expect(siteProcessorSpy.calls.count()).toBe(
-        1,
-        "should call postProcess once"
-      );
-    });
+    const solnId = "abc";
+    return postProcess(solnId, tmpls, sols, MOCK_USER_SESSION, tmplDict).then(
+      resp => {
+        expect(relationshipSpy.calls.count()).toBe(
+          2,
+          "should call the addItemRelationship"
+        );
+        expect(shareSpy.calls.count()).toBe(1, "should call the shareHelper");
+        expect(resp.length).toBe(4, "should return two promises");
+        expect(siteProcessorSpy.calls.count()).toBe(
+          1,
+          "should call postProcess once"
+        );
+      }
+    );
   });
 
   it("it skips undefined itemHandlers", () => {
@@ -143,13 +185,27 @@ describe("postProcess Module", () => {
         postProcess: true
       }
     ] as ICreateItemFromTemplateResponse[];
+
+    const relationshipSpy = spyOn(
+      portalHelper,
+      "addItemRelationship"
+    ).and.resolveTo();
+
     const shareSpy = spyOn(
       shareHelper,
       "shareTemplatesToGroups"
     ).and.resolveTo();
-    return postProcess(tmpls, sols, MOCK_USER_SESSION, tmplDict).then(resp => {
-      expect(shareSpy.calls.count()).toBe(1, "should call the shareHelper");
-      expect(resp.length).toBe(1, "should only delegate to group sharing");
-    });
+
+    const solnId = "abc";
+    return postProcess(solnId, tmpls, sols, MOCK_USER_SESSION, tmplDict).then(
+      resp => {
+        expect(relationshipSpy.calls.count()).toBe(
+          1,
+          "should call the addItemRelationship"
+        );
+        expect(shareSpy.calls.count()).toBe(1, "should call the shareHelper");
+        expect(resp.length).toBe(2, "should only delegate to group sharing");
+      }
+    );
   });
 });
