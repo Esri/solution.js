@@ -199,7 +199,8 @@
                 listDiv.innerHTML = createChecklist(
                   searchResponse.results,
                   sanitizer.sanitize(document.getElementById("srcPortal").value),
-                  "sourceSolutionsList"
+                  "sourceSolutionsList",
+                  true
                 );
                 var copyBtn = addItem("sourceSolutionsListDiv", "BUTTON", "copyBtn", "copyBtn");
                 copyBtn.innerHTML = "Copy Solution(s)";
@@ -270,7 +271,12 @@
           for (var i = 0; i < numSolutionsToCheck; i++) {
             var inputItem = sourceSolutionsList.children[i].children[0];
             if (inputItem.checked) {
-              solutionsToCopy.push(inputItem.value);
+               if (inputItem.value !== "custom") {
+                 solutionsToCopy.push(inputItem.value);
+               } else if (inputItem.nextElementSibling && inputItem.nextElementSibling.value
+                 && inputItem.nextElementSibling.value.length === 32) {
+                 solutionsToCopy.push(inputItem.nextElementSibling.value);
+               }
             }
           }
 
@@ -335,7 +341,7 @@
       return item;
     }
 
-    function createChecklist (searchResults, portal, itemId) {
+    function createChecklist (searchResults, portal, itemId, includeCustom=false) {
       var html = '<ul';
       if (itemId) {
         html += ' id="' + itemId + '"';
@@ -354,6 +360,13 @@
           html += ')</li>';
         }
       );
+
+      if (includeCustom) {
+        html += '<li><input type="checkbox" value="custom"> Solution ';
+        html += '<input type="text" size="40">';
+        html += '</li>';
+      }
+
       return html += '</ul>';
     }
 
