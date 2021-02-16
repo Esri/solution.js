@@ -139,14 +139,14 @@ export function createItemFromTemplate(
               // Interrupt process if progress callback returns `false`
               if (
                 !itemProgressCallback(
-                  createResponse.group.id,
+                  template.itemId,
                   common.EItemProgressStatus.Created,
                   template.estimatedDeploymentCostFactor / 2,
                   createResponse.group.id
                 )
               ) {
                 itemProgressCallback(
-                  createResponse.group.id,
+                  template.itemId,
                   common.EItemProgressStatus.Cancelled,
                   0
                 );
@@ -185,14 +185,14 @@ export function createItemFromTemplate(
                 // Interrupt process if progress callback returns `false`
                 if (
                   !itemProgressCallback(
-                    createResponse.group.id,
+                    template.itemId,
                     common.EItemProgressStatus.Finished,
                     template.estimatedDeploymentCostFactor / 2,
                     createResponse.group.id
                   )
                 ) {
                   itemProgressCallback(
-                    createResponse.group.id,
+                    template.itemId,
                     common.EItemProgressStatus.Cancelled,
                     0
                   );
