@@ -134,7 +134,7 @@ export function deploySolutionItems(
       templateDictionary,
       destinationAuthentication
     );
-
+    // eslint-disable-next-line @typescript-eslint/no-floating-promises
     reuseItemsDef.then(
       () => {
         const useExistingItemsDef: Promise<any> = _useExistingItems(
@@ -143,69 +143,62 @@ export function deploySolutionItems(
           templateDictionary,
           destinationAuthentication
         );
-        useExistingItemsDef.then(
-          () => {
-            templates = common.setNamesAndTitles(
-              templates,
-              templateDictionary.solutionItemId
-            );
+        // eslint-disable-next-line @typescript-eslint/no-floating-promises
+        useExistingItemsDef.then(() => {
+          templates = common.setNamesAndTitles(
+            templates,
+            templateDictionary.solutionItemId
+          );
 
-            buildOrder.forEach((id: string) => {
-              // Get the item's template out of the list of templates
-              const template = common.findTemplateInList(templates, id);
-              awaitAllItems.push(
-                _createItemFromTemplateWhenReady(
-                  template,
-                  common.generateStorageFilePaths(
-                    portalSharingUrl,
-                    storageItemId,
-                    template.resources
-                  ),
-                  storageAuthentication,
+          buildOrder.forEach((id: string) => {
+            // Get the item's template out of the list of templates
+            const template = common.findTemplateInList(templates, id);
+            awaitAllItems.push(
+              _createItemFromTemplateWhenReady(
+                template,
+                common.generateStorageFilePaths(
+                  portalSharingUrl,
+                  storageItemId,
+                  template.resources
+                ),
+                storageAuthentication,
+                templateDictionary,
+                destinationAuthentication,
+                itemProgressCallback
+              )
+            );
+          });
+
+          // Wait until all items have been created
+          // eslint-disable-next-line @typescript-eslint/no-floating-promises
+          Promise.all(awaitAllItems).then(
+            (clonedSolutionItems: common.ICreateItemFromTemplateResponse[]) => {
+              if (failedTemplateItemIds.length === 0) {
+                // Do we have any items to be patched (i.e., they refer to dependencies using the template id rather
+                // than the cloned id because the item had to be created before the dependency)? Flag these items
+                // for post processing in the list of clones.
+                _flagPatchItemsForPostProcessing(
+                  itemsToBePatched,
                   templateDictionary,
-                  destinationAuthentication,
-                  itemProgressCallback
-                )
-              );
-            });
+                  clonedSolutionItems
+                );
 
-            // Wait until all items have been created
-            // eslint-disable-next-line @typescript-eslint/no-floating-promises
-            Promise.all(awaitAllItems).then(
-              (
-                clonedSolutionItems: common.ICreateItemFromTemplateResponse[]
-              ) => {
-                if (failedTemplateItemIds.length === 0) {
-                  // Do we have any items to be patched (i.e., they refer to dependencies using the template id rather
-                  // than the cloned id because the item had to be created before the dependency)? Flag these items
-                  // for post processing in the list of clones.
-                  _flagPatchItemsForPostProcessing(
-                    itemsToBePatched,
-                    templateDictionary,
-                    clonedSolutionItems
+                resolve(clonedSolutionItems);
+              } else {
+                // Delete created items
+                // eslint-disable-next-line @typescript-eslint/no-floating-promises
+                common
+                  .removeListOfItemsOrGroups(
+                    deployedItemIds,
+                    destinationAuthentication
+                  )
+                  .then(() =>
+                    reject(common.failWithIds(failedTemplateItemIds))
                   );
-
-                  resolve(clonedSolutionItems);
-                } else {
-                  // Delete created items
-                  // eslint-disable-next-line @typescript-eslint/no-floating-promises
-                  common
-                    .removeListOfItemsOrGroups(
-                      deployedItemIds,
-                      destinationAuthentication
-                    )
-                    .then(() =>
-                      reject(common.failWithIds(failedTemplateItemIds))
-                    );
-                }
               }
-            );
-          },
-          e => {
-            console.error(e);
-            reject(common.fail(e));
-          }
-        );
+            }
+          );
+        });
       },
       e => {
         console.error(e);
@@ -437,7 +430,7 @@ export function _reuseDeployedItems(
                 authentication,
                 false
               );
-              // eslint-disable-next-line
+              // eslint-disable-next-line @typescript-eslint/no-floating-promises
               _updateTemplateDictionary(
                 templates,
                 templateDictionary,
@@ -500,7 +493,7 @@ export function _useExistingItems(
           }
         }
       });
-      // eslint-disable-next-line
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
       _updateTemplateDictionary(
         itemIds.map(id => common.getTemplateById(templates, id)),
         templateDictionary,
@@ -555,7 +548,7 @@ export function _updateTemplateDictionary(
     });
 
     if (defs.length > 0) {
-      // eslint-disable-next-line
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
       Promise.all(defs.map(p => p.catch(e => e))).then(results => {
         /* istanbul ignore else */
         if (Array.isArray(results) && results.length > 0) {
@@ -617,6 +610,7 @@ export function _updateTemplateDictionaryForError(
   result: any,
   templateDictionary: any
 ): any {
+  /* istanbul ignore else */
   if (result.url) {
     let removeKey: string = "";
     Object.keys(templateDictionary).some(k => {
@@ -626,6 +620,7 @@ export function _updateTemplateDictionaryForError(
         return true;
       }
     });
+    /* istanbul ignore else */
     if (removeKey !== "") {
       delete templateDictionary[removeKey];
     }
