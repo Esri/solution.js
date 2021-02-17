@@ -437,11 +437,12 @@ export function _reuseDeployedItems(
                 authentication,
                 false
               );
+              // eslint-disable-next-line
               _updateTemplateDictionary(
                 templates,
                 templateDictionary,
                 authentication
-              ).then(resolve, e => reject(common.fail(e)));
+              ).then(resolve);
             },
             e => reject(common.fail(e))
           );
@@ -480,7 +481,7 @@ export function _useExistingItems(
   templateDictionary: any,
   authentication: common.UserSession
 ): Promise<any> {
-  return new Promise((resolve, reject) => {
+  return new Promise(resolve => {
     if (useExisting) {
       const itemIds: string[] = [];
       Object.keys(templateDictionary.params).forEach(k => {
@@ -499,11 +500,12 @@ export function _useExistingItems(
           }
         }
       });
+      // eslint-disable-next-line
       _updateTemplateDictionary(
         itemIds.map(id => common.getTemplateById(templates, id)),
         templateDictionary,
         authentication
-      ).then(resolve, e => reject(common.fail(e)));
+      ).then(resolve);
     } else {
       resolve(null);
     }
@@ -523,7 +525,7 @@ export function _updateTemplateDictionary(
   templateDictionary: any,
   authentication: common.UserSession
 ): Promise<any> {
-  return new Promise((resolve, reject) => {
+  return new Promise(resolve => {
     const defs: Array<Promise<any>> = [];
     const urls: string[] = [];
     templates.forEach(t => {
@@ -553,11 +555,13 @@ export function _updateTemplateDictionary(
     });
 
     if (defs.length > 0) {
-      Promise.all(defs).then(
-        results => {
-          /* istanbul ignore else */
-          if (Array.isArray(results) && results.length > 0) {
-            results.forEach(r => {
+      // eslint-disable-next-line
+      Promise.all(defs.map(p => p.catch(e => e))).then(results => {
+        /* istanbul ignore else */
+        if (Array.isArray(results) && results.length > 0) {
+          results.forEach(r => {
+            // the result will contain a serviceItemId when it has successfully fetched a service
+            if (r.serviceItemId) {
               Object.keys(templateDictionary).forEach(k => {
                 const v: any = templateDictionary[k];
                 /* istanbul ignore else */
@@ -580,16 +584,53 @@ export function _updateTemplateDictionary(
                   );
                 }
               });
-            });
-          }
-          resolve(null);
-        },
-        e => reject(common.fail(e))
-      );
+            } else {
+              // if an error is returned we need to clean up the templateDictionary
+              templateDictionary = _updateTemplateDictionaryForError(
+                r,
+                templateDictionary
+              );
+            }
+          });
+        }
+        resolve(null);
+      });
     } else {
       resolve(null);
     }
   });
+}
+
+/**
+ * In some cases an item id search will return a stale item reference
+ * it will subsequently fail when we try to fetch the underlying service.
+ *
+ * We need to remove the item info that has been added to the template dictionary
+ * and treat the item as we do other items that don't already exist on deployment.
+ *
+ * @param result the service request result
+ * @param templateDictionary Hash of facts: org URL, adlib replacements, deferreds for dependencies
+ *
+ * @protected
+ */
+export function _updateTemplateDictionaryForError(
+  result: any,
+  templateDictionary: any
+): any {
+  if (result.url) {
+    let removeKey: string = "";
+    Object.keys(templateDictionary).some(k => {
+      /* istanbul ignore else */
+      if (templateDictionary[k].url === result.url) {
+        removeKey = k;
+        return true;
+      }
+    });
+    if (removeKey !== "") {
+      delete templateDictionary[removeKey];
+    }
+  }
+  return templateDictionary;
 }
 
 /**
