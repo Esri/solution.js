@@ -193,21 +193,17 @@
             searchResponse => {
               removeItem("sourceSolutionsDiv_busySymbol");
               var listDiv = addItem ("sourceSolutionsDiv", "DIV", "sourceSolutionsListDiv");
-              if (searchResponse.total === 0) {
-                listDiv.innerHTML = "<i>No Solution templates found</i>";
-              } else {
-                listDiv.innerHTML = createChecklist(
-                  searchResponse.results,
-                  sanitizer.sanitize(document.getElementById("srcPortal").value),
-                  "sourceSolutionsList",
-                  true
-                );
-                var copyBtn = addItem("sourceSolutionsListDiv", "BUTTON", "copyBtn", "copyBtn");
-                copyBtn.innerHTML = "Copy Solution(s)";
-                copyBtn.addEventListener("click", copyTemplates);
-                haveSourceTemplates = true;
-                updateCopyBtn();
-              }
+              listDiv.innerHTML = createChecklist(
+                searchResponse.results,
+                sanitizer.sanitize(document.getElementById("srcPortal").value),
+                "sourceSolutionsList",
+                true
+              );
+              var copyBtn = addItem("sourceSolutionsListDiv", "BUTTON", "copyBtn", "copyBtn");
+              copyBtn.innerHTML = "Copy Solution(s)";
+              copyBtn.addEventListener("click", copyTemplates);
+              haveSourceTemplates = true;
+              updateCopyBtn();
             },
             error => {
               removeItem("sourceSolutionsDiv_busySymbol");
