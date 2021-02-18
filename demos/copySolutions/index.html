@@ -193,20 +193,17 @@
             searchResponse => {
               removeItem("sourceSolutionsDiv_busySymbol");
               var listDiv = addItem ("sourceSolutionsDiv", "DIV", "sourceSolutionsListDiv");
-              if (searchResponse.total === 0) {
-                listDiv.innerHTML = "<i>No Solution templates found</i>";
-              } else {
-                listDiv.innerHTML = createChecklist(
-                  searchResponse.results,
-                  sanitizer.sanitize(document.getElementById("srcPortal").value),
-                  "sourceSolutionsList"
-                );
-                var copyBtn = addItem("sourceSolutionsListDiv", "BUTTON", "copyBtn", "copyBtn");
-                copyBtn.innerHTML = "Copy Solution(s)";
-                copyBtn.addEventListener("click", copyTemplates);
-                haveSourceTemplates = true;
-                updateCopyBtn();
-              }
+              listDiv.innerHTML = createChecklist(
+                searchResponse.results,
+                sanitizer.sanitize(document.getElementById("srcPortal").value),
+                "sourceSolutionsList",
+                true
+              );
+              var copyBtn = addItem("sourceSolutionsListDiv", "BUTTON", "copyBtn", "copyBtn");
+              copyBtn.innerHTML = "Copy Solution(s)";
+              copyBtn.addEventListener("click", copyTemplates);
+              haveSourceTemplates = true;
+              updateCopyBtn();
             },
             error => {
               removeItem("sourceSolutionsDiv_busySymbol");
@@ -270,7 +267,12 @@
           for (var i = 0; i < numSolutionsToCheck; i++) {
             var inputItem = sourceSolutionsList.children[i].children[0];
             if (inputItem.checked) {
-              solutionsToCopy.push(inputItem.value);
+               if (inputItem.value !== "custom") {
+                 solutionsToCopy.push(inputItem.value);
+               } else if (inputItem.nextElementSibling && inputItem.nextElementSibling.value
+                 && inputItem.nextElementSibling.value.length === 32) {
+                 solutionsToCopy.push(inputItem.nextElementSibling.value);
+               }
             }
           }
 
@@ -335,7 +337,7 @@
       return item;
     }
 
-    function createChecklist (searchResults, portal, itemId) {
+    function createChecklist (searchResults, portal, itemId, includeCustom=false) {
       var html = '<ul';
       if (itemId) {
         html += ' id="' + itemId + '"';
@@ -354,6 +356,13 @@
           html += ')</li>';
         }
       );
+
+      if (includeCustom) {
+        html += '<li><input type="checkbox" value="custom"> Solution ';
+        html += '<input type="text" size="40">';
+        html += '</li>';
+      }
+
       return html += '</ul>';
     }
 
