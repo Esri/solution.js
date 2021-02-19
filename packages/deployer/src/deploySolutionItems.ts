@@ -544,6 +544,13 @@ export function _updateTemplateDictionary(
             urls.push(templateInfo.url);
           }
         }
+
+        // if the service has veiws keep track of the fields so we can use them to
+        // compare with the view fields
+        /* istanbul ignore else */
+        if (common.getProp(t, "properties.service.hasViews")) {
+          common._updateTemplateDictionaryFields(t, templateDictionary, false);
+        }
       }
     });
 
@@ -552,17 +559,14 @@ export function _updateTemplateDictionary(
       Promise.all(defs.map(p => p.catch(e => e))).then(results => {
         /* istanbul ignore else */
         if (Array.isArray(results) && results.length > 0) {
-          results.forEach(r => {
+          const fieldDefs: Array<Promise<any>> = [];
+          results.forEach((r, i) => {
             // the result will contain a serviceItemId when it has successfully fetched a service
             if (r.serviceItemId) {
               Object.keys(templateDictionary).forEach(k => {
                 const v: any = templateDictionary[k];
                 /* istanbul ignore else */
-                if (
-                  v.itemId &&
-                  r.serviceItemId &&
-                  v.itemId === r.serviceItemId
-                ) {
+                if (v.itemId && v.itemId === r.serviceItemId) {
                   common.setDefaultSpatialReference(
                     templateDictionary,
                     k,
@@ -575,6 +579,16 @@ export function _updateTemplateDictionary(
                     `${k}.defaultExtent`,
                     r.fullExtent || r.initialExtent
                   );
+
+                  const layerIds: number[] = r.layers.map((l: any) => l.id);
+                  const tablesIds: number[] = r.tables.map((t: any) => t.id);
+                  fieldDefs.push(
+                    common.getExistingLayersAndTables(
+                      urls[i],
+                      layerIds.concat(tablesIds),
+                      authentication
+                    )
+                  );
                 }
               });
             } else {
@@ -585,8 +599,37 @@ export function _updateTemplateDictionary(
               );
             }
           });
+
+          if (fieldDefs.length > 0) {
+            // eslint-disable-next-line @typescript-eslint/no-floating-promises
+            Promise.all(fieldDefs.map(p => p.catch(e => e))).then(
+              layerTableResult => {
+                layerTableResult.forEach(l => {
+                  l.forEach((ll: any) => {
+                    Object.keys(templateDictionary).forEach(k => {
+                      /* istanbul ignore else */
+                      if (templateDictionary[k].itemId === ll.serviceItemId) {
+                        const layerInfo: any = common.getProp(
+                          templateDictionary,
+                          `${k}.layer${ll.id}`
+                        );
+                        /* istanbul ignore else */
+                        if (layerInfo && ll.fields) {
+                          layerInfo.fields = ll.fields;
+                        }
+                      }
+                    });
+                  });
+                });
+                resolve(null);
+              }
+            );
+          } else {
+            resolve(null);
+          }
+        } else {
+          resolve(null);
         }
-        resolve(null);
       });
     } else {
       resolve(null);

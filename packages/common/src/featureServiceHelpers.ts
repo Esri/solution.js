@@ -588,6 +588,23 @@ export function getLayersAndTables(itemTemplate: IItemTemplate): any[] {
   return layersAndTables;
 }
 
+export function getExistingLayersAndTables(
+  url: string,
+  ids: number[],
+  authentication: UserSession
+): Promise<any> {
+  // eslint-disable-next-line @typescript-eslint/no-floating-promises
+  return new Promise(resolve => {
+    const defs: Array<Promise<any>> = ids.map(id => {
+      return rest_request(checkUrlPathTermination(url) + id, {
+        authentication
+      });
+    });
+    // eslint-disable-next-line @typescript-eslint/no-floating-promises
+    Promise.all(defs.map(p => p.catch(e => e))).then(resolve);
+  });
+}
+
 /**
  * Adds the layers and tables of a feature service to it and restores their relationships.
  *
@@ -859,14 +876,18 @@ export function _updateForPortal(
       setProp(
         item,
         "adminLayerInfo.viewLayerDefinition.table",
-        _updateItemFields(viewLayerDefTable, itemTemplate, templateDictionary)
+        _updateSourceLayerFields(
+          viewLayerDefTable,
+          itemTemplate,
+          templateDictionary
+        )
       );
 
       // Handle related also
       /* istanbul ignore else */
       if (Array.isArray(viewLayerDefTable.relatedTables)) {
         viewLayerDefTable.relatedTables.map((relatedTable: any) => {
-          return _updateItemFields(
+          return _updateSourceLayerFields(
             relatedTable,
             itemTemplate,
             templateDictionary
@@ -874,6 +895,8 @@ export function _updateForPortal(
         });
       }
     }
+
+    item = _updateItemFields(item, templateDictionary);
   }
 
   // not allowed to set sourceSchemaChangesAllowed or isView for portal
@@ -883,7 +906,33 @@ export function _updateForPortal(
   return item;
 }
 
-export function _updateItemFields(
+export function _updateItemFields(item: any, templateDictionary: any): any {
+  // need to remove fields references from fields and indexes that do not exist in the source service
+  let fieldNames: string[] = [];
+  Object.keys(templateDictionary).some(k => {
+    if (templateDictionary[k].itemId === item.serviceItemId) {
+      const layerInfo: any = templateDictionary[k][`layer${item.id}`];
+      fieldNames = layerInfo.fields.map((f: any) => f.name);
+      return true;
+    }
+  });
+
+  if (item.fields) {
+    item.fields = item.fields.filter(
+      (f: any) => fieldNames.indexOf(f.name) > -1
+    );
+  }
+
+  if (item.indexes) {
+    item.indexes = item.indexes.filter(
+      (f: any) => fieldNames.indexOf(f.fields) > -1
+    );
+  }
+
+  return item;
+}
+
+export function _updateSourceLayerFields(
   table: any,
   itemTemplate: IItemTemplate,
   templateDictionary: any
@@ -972,7 +1021,8 @@ export function _updateGeomFieldName(
  */
 export function _updateTemplateDictionaryFields(
   itemTemplate: IItemTemplate,
-  templateDictionary: any
+  templateDictionary: any,
+  compareItemId: boolean = true
 ): void {
   const layers: any[] = itemTemplate.properties.layers;
   const tables: any[] = itemTemplate.properties.tables;
@@ -982,7 +1032,9 @@ export function _updateTemplateDictionaryFields(
     fieldInfos[layerOrTable.id] = layerOrTable.fields;
   });
   Object.keys(templateDictionary).some(k => {
-    if (templateDictionary[k].itemId === itemTemplate.itemId) {
+    if (
+      compareItemId ? templateDictionary[k].itemId : k === itemTemplate.itemId
+    ) {
       templateDictionary[k].fieldInfos = fieldInfos;
       return true;
     } else {
@@ -1170,13 +1222,14 @@ export function postProcessFields(
         const isView = item.isView || itemTemplate.properties.service.isView;
         /* istanbul ignore else */
         if (layerInfos && layerInfos.hasOwnProperty(item.id)) {
-          layerInfos[item.id]["isView"] = item.isView;
-          layerInfos[item.id]["newFields"] = item.fields;
-          layerInfos[item.id]["sourceSchemaChangesAllowed"] =
+          const layerInfo: any = layerInfos[item.id];
+          layerInfo["isView"] = item.isView;
+          layerInfo["newFields"] = item.fields;
+          layerInfo["sourceSchemaChangesAllowed"] =
             item.sourceSchemaChangesAllowed;
           // when the item is a view bring over the source service fields so we can compare the domains
           if (isView && templateInfo) {
-            layerInfos[item.id]["sourceServiceFields"] = getProp(
+            layerInfo["sourceServiceFields"] = getProp(
               templateInfo,
               `sourceServiceFields.${item.id}`
             );
@@ -1184,7 +1237,7 @@ export function postProcessFields(
           /* istanbul ignore else */
           if (item.editFieldsInfo) {
             // more than case change when deployed to protal so keep track of the new names
-            layerInfos[item.id]["newEditFieldsInfo"] = JSON.parse(
+            layerInfo["newEditFieldsInfo"] = JSON.parse(
               JSON.stringify(item.editFieldsInfo)
             );
           }
@@ -1194,19 +1247,24 @@ export function postProcessFields(
           // update the field visibility to match that of the source
           /* istanbul ignore else */
           if (isView) {
-            let fieldUpdates: any[] = _getFieldVisibilityUpdates(
-              layerInfos[item.id]
-            );
+            let fieldUpdates: any[] = _getFieldVisibilityUpdates(layerInfo);
 
             // view field domains can contain different values than the source field domains
             // use the cached view domain when it differs from the source view domain
-            fieldUpdates = _validateDomains(layerInfos[item.id], fieldUpdates);
+            fieldUpdates = _validateDomains(layerInfo, fieldUpdates);
 
             if (fieldUpdates.length > 0) {
-              layerInfos[item.id].fields = fieldUpdates;
+              layerInfo.fields = fieldUpdates;
             }
 
-            layerInfos[item.id].typeIdField = _getTypeIdField(item);
+            layerInfo.typeIdField = _getTypeIdField(item);
+
+            // remove fields that are not in the
+            const fieldNames: string[] = layerInfo.newFields.map(
+              (f: any) => f.name
+            );
+            _validateTemplatesFields(layerInfo, fieldNames);
+            _validateTypesTemplates(layerInfo, fieldNames);
           }
         }
       });
