@@ -588,6 +588,17 @@ export function getLayersAndTables(itemTemplate: IItemTemplate): any[] {
   return layersAndTables;
 }
 
+/**
+ * Fetch each layer and table from service so we can determine what fields they have.
+ * This is leveraged when we are using existing services so we can determine if we need to
+ * remove any fields from views that depend on these layers and tables.
+ *
+ * @param url Feature service endpoint
+ * @param ids layer and table ids
+ * @param authentication Credentials for the request
+ * @return A promise that will resolve an array of promises with either a failure or the data
+ * @protected
+ */
 export function getExistingLayersAndTables(
   url: string,
   ids: number[],
@@ -906,8 +917,16 @@ export function _updateForPortal(
   return item;
 }
 
+/**
+ * Remove fields references from fields and indexes that do not exist in the source service
+ *
+ * @param item Layer or table
+ * @param templateDictionary Hash mapping Solution source id to id of its clone
+ *
+ * @return updated layer or table
+ * @protected
+ */
 export function _updateItemFields(item: any, templateDictionary: any): any {
-  // need to remove fields references from fields and indexes that do not exist in the source service
   let fieldNames: string[] = [];
   Object.keys(templateDictionary).some(k => {
     if (templateDictionary[k].itemId === item.serviceItemId) {
@@ -1259,7 +1278,6 @@ export function postProcessFields(
 
             layerInfo.typeIdField = _getTypeIdField(item);
 
-            // remove fields that are not in the
             const fieldNames: string[] = layerInfo.newFields.map(
               (f: any) => f.name
             );
