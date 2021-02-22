@@ -31,7 +31,6 @@ import {
 import { createHubRequestOptions } from "./helpers/create-hub-request-options";
 import {
   IModel,
-  cloneObject,
   IModelTemplate,
   failSafe,
   getModel,

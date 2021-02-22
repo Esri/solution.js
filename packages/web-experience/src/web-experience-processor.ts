@@ -28,7 +28,7 @@ import {
   ICreateItemFromTemplateResponse,
   generateEmptyCreationResponse
 } from "@esri/solution-common";
-import { cloneObject, IModel, failSafe } from "@esri/hub-common";
+import { IModel, failSafe } from "@esri/hub-common";
 import { getItemData, removeItem } from "@esri/arcgis-rest-portal";
 import { createWebExperienceModelFromTemplate } from "./helpers/create-web-experience-model-from-template";
 import { createWebExperience } from "./helpers/create-web-experience";
