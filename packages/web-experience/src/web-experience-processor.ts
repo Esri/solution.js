@@ -87,13 +87,10 @@ export function createItemFromTemplate(
     return Promise.resolve(generateEmptyCreationResponse(template.type));
   }
 
-  // convert the templateDictionary to a settings hash
-  const settings = cloneObject(templateDictionary);
-
   let exbModel: IModel;
   return createWebExperienceModelFromTemplate(
     template,
-    settings,
+    templateDictionary,
     {},
     destinationAuthentication
   )
