@@ -28,7 +28,7 @@ import {
   UserSession,
   generateEmptyCreationResponse
 } from "@esri/solution-common";
-import { cloneObject, IModel, failSafe } from "@esri/hub-common";
+import { IModel, failSafe } from "@esri/hub-common";
 import { getItemData, removeItem } from "@esri/arcgis-rest-portal";
 import { convertStoryMapToTemplate } from "./helpers/convert-storymap-to-template";
 import { createStoryMapModelFromTemplate } from "./helpers/create-storymap-model-from-template";

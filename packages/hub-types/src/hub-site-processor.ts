@@ -39,7 +39,6 @@ import {
 
 import {
   IModel,
-  cloneObject,
   failSafe,
   IHubRequestOptions,
   without
