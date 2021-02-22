@@ -28,7 +28,7 @@ import {
   UserSession,
   generateEmptyCreationResponse
 } from "@esri/solution-common";
-import { cloneObject, IModel, failSafe } from "@esri/hub-common";
+import { IModel, failSafe } from "@esri/hub-common";
 import { getItemData, removeItem } from "@esri/arcgis-rest-portal";
 import { convertStoryMapToTemplate } from "./helpers/convert-storymap-to-template";
 import { createStoryMapModelFromTemplate } from "./helpers/create-storymap-model-from-template";
@@ -89,15 +89,12 @@ export function createItemFromTemplate(
     return Promise.resolve(generateEmptyCreationResponse(template.type));
   }
 
-  // convert the templateDictionary to a settings hash
-  const settings = cloneObject(templateDictionary);
-
-  // ensure we have a solution object in the settings hash
-  if (!settings.solution) {
-    settings.solution = {};
+  // ensure we have a solution object in the templateDictionary hash
+  if (!templateDictionary.solution) {
+    templateDictionary.solution = {};
   }
   // .title should always be set on the templateDictionary
-  settings.solution.title = templateDictionary.title;
+  templateDictionary.solution.title = templateDictionary.title;
 
   // TODO: Determine if we need any transforms in this new env
   const transforms = {};
@@ -111,7 +108,7 @@ export function createItemFromTemplate(
   // and initiative item.
   return createStoryMapModelFromTemplate(
     template,
-    settings,
+    templateDictionary,
     transforms,
     destinationAuthentication
   )

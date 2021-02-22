@@ -94,6 +94,8 @@ Planned item types are:
 
 ### Instructions
 
+The repository is set up to use [Volta](https://docs.volta.sh/guide/getting-started) for standardizing the versions of NodeJS and npm. Please install and use this app to get the supported versions.
+
 You can install dependencies by cloning the repository and running:
 
 ```

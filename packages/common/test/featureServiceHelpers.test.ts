@@ -74,9 +74,11 @@ import {
   _templatizeTimeInfo,
   _templatizeDefinitionQuery,
   _getNameMapping,
+  _updateAddOptions,
   _updateForPortal,
   _updateGeomFieldName,
   _updateTemplateDictionaryFields,
+  _updateTypeKeywords,
   _validateFields,
   _validateDisplayField,
   _validateIndexes,
@@ -802,6 +804,36 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
 
       expect(updatedTemplate).toEqual(expectedTemplate);
       expect(settings).toEqual(expectedSettings);
+    });
+  });
+
+  describe("_updateTypeKeywords", () => {
+    it("should update typeKeywords when some have been added on create", () => {
+      itemTemplate.item.typeKeywords = ["A", "B"];
+
+      const createResponse: any = {
+        typeKeywords: ["C"]
+      };
+
+      const expecetd: string[] = ["A", "B", "C"];
+
+      const template = _updateTypeKeywords(itemTemplate, createResponse);
+
+      expect(template.item.typeKeywords).toEqual(expecetd);
+    });
+
+    it("should NOT update typeKeywords when no new keyWords exist", () => {
+      itemTemplate.item.typeKeywords = ["A", "B"];
+
+      const createResponse: any = {
+        typeKeywords: []
+      };
+
+      const expecetd: string[] = ["A", "B"];
+
+      const template = _updateTypeKeywords(itemTemplate, createResponse);
+
+      expect(template.item.typeKeywords).toEqual(expecetd);
     });
   });
 
@@ -5755,6 +5787,95 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
       };
       _templatizeDefinitionQuery(layer, basePath, fieldNames);
       expect(layer).toEqual(expected);
+    });
+  });
+
+  describe("_updateAddOptions", () => {
+    it("will split layer adds", () => {
+      const startOptions: any = {
+        layers: [
+          {
+            props: []
+          }
+        ],
+        tables: [],
+        MOCK_USER_SESSION
+      };
+
+      itemTemplate.properties.service = {
+        isMultiServicesView: true
+      };
+
+      itemTemplate.item.name = "A";
+
+      const item: any = {
+        adminLayerInfo: {
+          viewLayerDefinition: {
+            table: {
+              sourceServiceName: "A"
+            }
+          }
+        }
+      };
+
+      const layerChunks: any[] = [];
+
+      const actual: any = _updateAddOptions(
+        itemTemplate,
+        item,
+        startOptions,
+        layerChunks,
+        MOCK_USER_SESSION
+      );
+      expect(actual.layers).toEqual([]);
+      expect(actual.tables).toEqual([]);
+      expect(layerChunks).toEqual([startOptions]);
+    });
+
+    it("will split table adds", () => {
+      const startOptions: any = {
+        layers: [],
+        tables: [
+          {
+            props: []
+          }
+        ],
+        MOCK_USER_SESSION
+      };
+
+      itemTemplate.properties.service = {
+        isMultiServicesView: true
+      };
+
+      itemTemplate.item.name = "A";
+
+      const item: any = {
+        adminLayerInfo: {
+          viewLayerDefinition: {
+            table: {
+              sourceServiceName: "B",
+              relatedTables: [
+                {
+                  sourceServiceName: "A"
+                }
+              ]
+            }
+          }
+        }
+      };
+
+      const layerChunks: any[] = [];
+
+      const actual: any = _updateAddOptions(
+        itemTemplate,
+        item,
+        startOptions,
+        layerChunks,
+        MOCK_USER_SESSION
+      );
+      expect(actual.layers).toEqual([]);
+      expect(actual.tables).toEqual([]);
+      expect(layerChunks).toEqual([startOptions]);
     });
   });
 

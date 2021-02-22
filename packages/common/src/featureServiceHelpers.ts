@@ -312,6 +312,9 @@ export function updateTemplate(
   templateDictionary: any,
   createResponse: any
 ): IItemTemplate {
+  // Update the item with any typeKeywords that were added on create
+  _updateTypeKeywords(itemTemplate, createResponse);
+
   // Add the new item to the template dictionary
   templateDictionary[itemTemplate.itemId] = Object.assign(
     templateDictionary[itemTemplate.itemId] || {},
@@ -324,6 +327,35 @@ export function updateTemplate(
   // Update the item template now that the new service has been created
   itemTemplate.itemId = createResponse.serviceItemId;
   return replaceInTemplate(itemTemplate, templateDictionary);
+}
+
+/**
+ * Updates the items typeKeywords to include any typeKeywords that
+ * were added by the create service request
+ *
+ * @param itemTemplate Item to be created; n.b.: this item is modified
+ * @param createResponse Response from create service
+ * @return An updated instance of the template
+ * @protected
+ */
+export function _updateTypeKeywords(
+  itemTemplate: IItemTemplate,
+  createResponse: any
+): IItemTemplate {
+  // https://github.com/Esri/solution.js/issues/589
+
+  const iKwords: string[] = getProp(itemTemplate, "item.typeKeywords");
+  const cKwords: string[] = getProp(createResponse, "typeKeywords");
+
+  if (iKwords && cKwords) {
+    setProp(
+      itemTemplate,
+      "item.typeKeywords",
+      iKwords.concat(cKwords.filter(k => iKwords.indexOf(k) < 0))
+    );
+  }
+
+  return itemTemplate;
 }
 
 /**
@@ -698,12 +730,21 @@ export function updateFeatureServiceDefinition(
 
       removeLayerOptimization(item);
 
+      options = _updateAddOptions(
+        itemTemplate,
+        item,
+        options,
+        layerChunks,
+        authentication
+      );
+
       if (item.type === "Feature Layer") {
         options.layers.push(item);
       } else {
         options.tables.push(item);
       }
 
+      /* istanbul ignore else */
       if ((i + 1) % 20 === 0 || i + 1 === listToAdd.length) {
         layerChunks.push(Object.assign({}, options));
         options = {
@@ -725,6 +766,59 @@ export function updateFeatureServiceDefinition(
         (e: any) => reject(fail(e))
       );
   });
+}
+
+/**
+ * When a viewLayerDefinition table references other layers within itself
+ * we need to make sure that it is added in a separate call after the table that supports it
+ *
+ * @param itemTemplate
+ * @param item Layer or table from the service
+ * @param options Add to service definition options
+ * @param layerChunks Groups of layers or tables to add to the service
+ * @param authentication Credentials for the request
+ *
+ * @return Add to service definition options
+ * @protected
+ */
+export function _updateAddOptions(
+  itemTemplate: IItemTemplate,
+  item: any,
+  options: any,
+  layerChunks: any[],
+  authentication: UserSession
+): any {
+  const isMsView: boolean =
+    getProp(itemTemplate, "properties.service.isMultiServicesView") || false;
+  const serviceName: string = getProp(itemTemplate, "item.name");
+  /* istanbul ignore else */
+  if (isMsView) {
+    const table: any = getProp(
+      item,
+      "adminLayerInfo.viewLayerDefinition.table"
+    );
+    /* istanbul ignore else */
+    if (table) {
+      const tableNames: string[] = (table.relatedTables || []).map(
+        (t: any) => t.sourceServiceName
+      );
+      tableNames.push(table.sourceServiceName);
+      /* istanbul ignore else */
+      if (tableNames.some(n => n === serviceName)) {
+        // if we already have some layers or tables add them first
+        /* istanbul ignore else */
+        if (options.layers.length > 0 || options.tables.length > 0) {
+          layerChunks.push(Object.assign({}, options));
+          options = {
+            layers: [],
+            tables: [],
+            authentication
+          };
+        }
+      }
+    }
+  }
+  return options;
 }
 
 export function removeLayerOptimization(layer: any): void {

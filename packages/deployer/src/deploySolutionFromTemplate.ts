@@ -261,6 +261,7 @@ export function deploySolutionFromTemplate(
             }
           );
           return postProcess(
+            deployedSolutionId,
             solutionTemplateData.templates,
             clonedSolutionsResponse,
             authentication,

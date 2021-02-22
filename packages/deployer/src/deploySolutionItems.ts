@@ -22,7 +22,6 @@
 
 import * as common from "@esri/solution-common";
 import { moduleMap } from "./module-map";
-import { getProp } from "@esri/hub-common";
 
 const UNSUPPORTED: common.moduleHandler = null;
 
@@ -129,64 +128,82 @@ export function deploySolutionItems(
       Promise<common.ICreateItemFromTemplateResponse>
     >;
 
-    const existingItemsDef: Promise<any> = _evaluateExistingItems(
+    const reuseItemsDef: Promise<any> = _reuseDeployedItems(
       templates,
       options.enableItemReuse ?? false,
       templateDictionary,
       destinationAuthentication
     );
 
-    existingItemsDef.then(
+    reuseItemsDef.then(
       () => {
-        templates = common.setNamesAndTitles(
+        const useExistingItemsDef: Promise<any> = _useExistingItems(
           templates,
-          templateDictionary.solutionItemId
+          common.getProp(templateDictionary, "params.useExisting"),
+          templateDictionary,
+          destinationAuthentication
         );
+        useExistingItemsDef.then(
+          () => {
+            templates = common.setNamesAndTitles(
+              templates,
+              templateDictionary.solutionItemId
+            );
 
-        buildOrder.forEach((id: string) => {
-          // Get the item's template out of the list of templates
-          const template = common.findTemplateInList(templates, id);
-          awaitAllItems.push(
-            _createItemFromTemplateWhenReady(
-              template,
-              common.generateStorageFilePaths(
-                portalSharingUrl,
-                storageItemId,
-                template.resources
-              ),
-              storageAuthentication,
-              templateDictionary,
-              destinationAuthentication,
-              itemProgressCallback
-            )
-          );
-        });
-
-        // Wait until all items have been created
-        // eslint-disable-next-line @typescript-eslint/no-floating-promises
-        Promise.all(awaitAllItems).then(
-          (clonedSolutionItems: common.ICreateItemFromTemplateResponse[]) => {
-            if (failedTemplateItemIds.length === 0) {
-              // Do we have any items to be patched (i.e., they refer to dependencies using the template id rather
-              // than the cloned id because the item had to be created before the dependency)? Flag these items
-              // for post processing in the list of clones.
-              _flagPatchItemsForPostProcessing(
-                itemsToBePatched,
-                templateDictionary,
-                clonedSolutionItems
-              );
-
-              resolve(clonedSolutionItems);
-            } else {
-              // Delete created items
-              // eslint-disable-next-line @typescript-eslint/no-floating-promises
-              common
-                .removeListOfItemsOrGroups(
-                  deployedItemIds,
-                  destinationAuthentication
+            buildOrder.forEach((id: string) => {
+              // Get the item's template out of the list of templates
+              const template = common.findTemplateInList(templates, id);
+              awaitAllItems.push(
+                _createItemFromTemplateWhenReady(
+                  template,
+                  common.generateStorageFilePaths(
+                    portalSharingUrl,
+                    storageItemId,
+                    template.resources
+                  ),
+                  storageAuthentication,
+                  templateDictionary,
+                  destinationAuthentication,
+                  itemProgressCallback
                 )
-                .then(() => reject(common.failWithIds(failedTemplateItemIds)));
-            }
+              );
+            });
+
+            // Wait until all items have been created
+            // eslint-disable-next-line @typescript-eslint/no-floating-promises
+            Promise.all(awaitAllItems).then(
+              (
+                clonedSolutionItems: common.ICreateItemFromTemplateResponse[]
+              ) => {
+                if (failedTemplateItemIds.length === 0) {
+                  // Do we have any items to be patched (i.e., they refer to dependencies using the template id rather
+                  // than the cloned id because the item had to be created before the dependency)? Flag these items
+                  // for post processing in the list of clones.
+                  _flagPatchItemsForPostProcessing(
+                    itemsToBePatched,
+                    templateDictionary,
+                    clonedSolutionItems
+                  );
+
+                  resolve(clonedSolutionItems);
+                } else {
+                  // Delete created items
+                  // eslint-disable-next-line @typescript-eslint/no-floating-promises
+                  common
+                    .removeListOfItemsOrGroups(
+                      deployedItemIds,
+                      destinationAuthentication
+                    )
+                    .then(() =>
+                      reject(common.failWithIds(failedTemplateItemIds))
+                    );
+                }
+              }
+            );
+          },
+          e => {
+            console.error(e);
+            reject(common.fail(e));
           }
         );
       },
@@ -387,7 +404,7 @@ export function _getViews(templates: common.IItemTemplate[]): any[] {
  *
  * @protected
  */
-export function _evaluateExistingItems(
+export function _reuseDeployedItems(
   templates: common.IItemTemplate[],
   reuseItems: boolean,
   templateDictionary: any,
@@ -431,6 +448,62 @@ export function _evaluateExistingItems(
         },
         e => reject(common.fail(e))
       );
+    } else {
+      resolve(null);
+    }
+  });
+}
+
+/**
+ * Search for existing items and update the templateDictionary with key details
+ *
+ * Subtle difference between _reuseDeployedItems and _useExistingItems
+ * _reuseDeployedItems: will search all existing items based on specific type keywords
+ *   that would have been added by a previous deployment
+ * _useExistingItems: will search for an existing item that the user provided
+ *   the item id for while configuring in the deployment app.
+ *   This type of item would not necessarily have been laid down by a previous deployment and
+ *   can thus not expect that it will have the type keywords
+ *
+ * @param templates A collection of AGO item templates
+ * @param useExisting Option to search for existing items
+ * @param templateDictionary Hash of facts: org URL, adlib replacements, deferreds for dependencies
+ * @param authentication Credentials for the requests
+ *
+ * @returns A Promise that will resolve once existing items have been evaluated
+ *
+ * @protected
+ */
+export function _useExistingItems(
+  templates: common.IItemTemplate[],
+  useExisting: boolean,
+  templateDictionary: any,
+  authentication: common.UserSession
+): Promise<any> {
+  return new Promise((resolve, reject) => {
+    if (useExisting) {
+      const itemIds: string[] = [];
+      Object.keys(templateDictionary.params).forEach(k => {
+        const v: any = templateDictionary.params[k];
+        /* istanbul ignore else */
+        if (v.itemId && v.sourceId) {
+          _updateTemplateDictionaryById(
+            templateDictionary,
+            v.sourceId,
+            v.itemId,
+            v
+          );
+          /* istanbul ignore else */
+          if (itemIds.indexOf(v.sourceId) < 0) {
+            itemIds.push(v.sourceId);
+          }
+        }
+      });
+      _updateTemplateDictionary(
+        itemIds.map(id => common.getTemplateById(templates, id)),
+        templateDictionary,
+        authentication
+      ).then(resolve, e => reject(common.fail(e)));
     } else {
       resolve(null);
     }
@@ -567,17 +640,11 @@ export function _handleExistingItems(
             : existingItem.sourceId;
           /* istanbul ignore else */
           if (sourceId) {
-            templateDictionary[sourceId] = Object.assign(
-              templateDictionary[sourceId] || {},
-              {
-                def: Promise.resolve(
-                  common.generateEmptyCreationResponse(result.type, result.id)
-                ),
-                itemId: result.id,
-                name: result.name,
-                title: result.title,
-                url: result.url
-              }
+            _updateTemplateDictionaryById(
+              templateDictionary,
+              sourceId,
+              result.id,
+              result
             );
           }
         }
@@ -585,6 +652,26 @@ export function _handleExistingItems(
     });
   }
   return existingItemsByTag;
+}
+
+export function _updateTemplateDictionaryById(
+  templateDictionary: any,
+  sourceId: string,
+  itemId: string,
+  v: any
+): void {
+  templateDictionary[sourceId] = Object.assign(
+    templateDictionary[sourceId] || {},
+    {
+      def: Promise.resolve(
+        common.generateEmptyCreationResponse(v.type, itemId)
+      ),
+      itemId,
+      name: v.name,
+      title: v.title,
+      url: v.url
+    }
+  );
 }
 
 /**
@@ -676,7 +763,7 @@ export function _createItemFromTemplateWhenReady(
   // or if we have a basic entry without the deferred request for its creation, add it
   if (
     !templateDictionary.hasOwnProperty(template.itemId) ||
-    !getProp(templateDictionary[template.itemId], "def")
+    !common.getProp(templateDictionary[template.itemId], "def")
   ) {
     templateDictionary[template.itemId] =
       templateDictionary[template.itemId] || {};
@@ -688,7 +775,7 @@ export function _createItemFromTemplateWhenReady(
       // Wait until all of the item's dependencies are deployed
       const _awaitDependencies = template.dependencies.reduce(
         (acc: any[], id: string) => {
-          const def = getProp(templateDictionary, `${id}.def`);
+          const def = common.getProp(templateDictionary, `${id}.def`);
           // can't use maybePush as that clones the object, which does not work for Promises
           /* istanbul ignore else */
           if (def) {
@@ -707,7 +794,7 @@ export function _createItemFromTemplateWhenReady(
       const awaitDependencies =
         syncViews && syncViews.length > 0
           ? syncViews.reduce((acc: any[], v: any) => {
-              const def = getProp(templateDictionary, `${v}.def`);
+              const def = common.getProp(templateDictionary, `${v}.def`);
               /* istanbul ignore else */
               if (def) {
                 acc.push(def);

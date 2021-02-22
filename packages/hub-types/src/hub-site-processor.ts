@@ -39,7 +39,6 @@ import {
 
 import {
   IModel,
-  cloneObject,
   failSafe,
   IHubRequestOptions,
   without
@@ -81,15 +80,12 @@ export function createItemFromTemplate(
     delete template.assets;
   }
 
-  // convert the templateDictionary to a settings hash
-  const settings = cloneObject(templateDictionary);
-
-  // ensure we have a solution object in the settings hash
-  if (!settings.solution) {
-    settings.solution = {};
+  // ensure we have a solution object in the templateDictionary hash
+  if (!templateDictionary.solution) {
+    templateDictionary.solution = {};
   }
   // .title should always be set on the templateDictionary
-  settings.solution.title = templateDictionary.title;
+  templateDictionary.solution.title = templateDictionary.title;
 
   // TODO: Determine if we need any transforms in this new env
   const transforms = {};
@@ -105,7 +101,12 @@ export function createItemFromTemplate(
   return createHubRequestOptions(destinationAuthentication, templateDictionary)
     .then(ro => {
       hubRo = ro;
-      return createSiteModelFromTemplate(template, settings, transforms, hubRo);
+      return createSiteModelFromTemplate(
+        template,
+        templateDictionary,
+        transforms,
+        hubRo
+      );
     })
     .then(interpolated => {
       const options = {
