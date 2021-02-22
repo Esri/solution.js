@@ -580,8 +580,12 @@ export function _updateTemplateDictionary(
                     r.fullExtent || r.initialExtent
                   );
 
-                  const layerIds: number[] = r.layers.map((l: any) => l.id);
-                  const tablesIds: number[] = r.tables.map((t: any) => t.id);
+                  const layerIds: number[] = (r.layers || []).map(
+                    (l: any) => l.id
+                  );
+                  const tablesIds: number[] = (r.tables || []).map(
+                    (t: any) => t.id
+                  );
                   fieldDefs.push(
                     common.getExistingLayersAndTables(
                       urls[i],
@@ -602,28 +606,26 @@ export function _updateTemplateDictionary(
 
           if (fieldDefs.length > 0) {
             // eslint-disable-next-line @typescript-eslint/no-floating-promises
-            Promise.all(fieldDefs.map(p => p.catch(e => e))).then(
-              layerTableResult => {
-                layerTableResult.forEach(l => {
-                  l.forEach((ll: any) => {
-                    Object.keys(templateDictionary).forEach(k => {
+            Promise.all(fieldDefs).then(layerTableResult => {
+              layerTableResult.forEach(l => {
+                l.forEach((ll: any) => {
+                  Object.keys(templateDictionary).forEach(k => {
+                    /* istanbul ignore else */
+                    if (templateDictionary[k].itemId === ll.serviceItemId) {
+                      const layerInfo: any = common.getProp(
+                        templateDictionary,
+                        `${k}.layer${ll.id}`
+                      );
                       /* istanbul ignore else */
-                      if (templateDictionary[k].itemId === ll.serviceItemId) {
-                        const layerInfo: any = common.getProp(
-                          templateDictionary,
-                          `${k}.layer${ll.id}`
-                        );
-                        /* istanbul ignore else */
-                        if (layerInfo && ll.fields) {
-                          layerInfo.fields = ll.fields;
-                        }
+                      if (layerInfo && ll.fields) {
+                        layerInfo.fields = ll.fields;
                       }
-                    });
+                    }
                   });
                 });
-                resolve(null);
-              }
-            );
+              });
+              resolve(null);
+            });
           } else {
             resolve(null);
           }

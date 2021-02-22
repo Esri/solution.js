@@ -931,21 +931,27 @@ export function _updateItemFields(item: any, templateDictionary: any): any {
   Object.keys(templateDictionary).some(k => {
     if (templateDictionary[k].itemId === item.serviceItemId) {
       const layerInfo: any = templateDictionary[k][`layer${item.id}`];
-      fieldNames = layerInfo.fields.map((f: any) => f.name);
+      if (layerInfo?.fields) {
+        fieldNames = layerInfo.fields.map((f: any) => f.name);
+      }
       return true;
     }
   });
 
-  if (item.fields) {
-    item.fields = item.fields.filter(
-      (f: any) => fieldNames.indexOf(f.name) > -1
-    );
-  }
-
-  if (item.indexes) {
-    item.indexes = item.indexes.filter(
-      (f: any) => fieldNames.indexOf(f.fields) > -1
-    );
+  /* istanbul ignore else */
+  if (fieldNames.length > 0) {
+    /* istanbul ignore else */
+    if (item.fields) {
+      item.fields = item.fields.filter(
+        (f: any) => fieldNames.indexOf(f.name) > -1
+      );
+    }
+    /* istanbul ignore else */
+    if (item.indexes) {
+      item.indexes = item.indexes.filter(
+        (f: any) => fieldNames.indexOf(f.fields) > -1
+      );
+    }
   }
 
   return item;
