@@ -119,14 +119,11 @@ export function createItemFromTemplate(
     delete template.assets;
   }
 
-  // convert the templateDictionary to a settings hash
-  const settings = cloneObject(templateDictionary);
-
   // solutionItemExtent is in geographic, but it's a string, and we want/need a bbox
   // and Hub templates expect it in organization.defaultExtentBBox
-  if (settings.solutionItemExtent) {
-    const parts = settings.solutionItemExtent.split(",");
-    settings.organization.defaultExtentBBox = [
+  if (templateDictionary.solutionItemExtent) {
+    const parts = templateDictionary.solutionItemExtent.split(",");
+    templateDictionary.organization.defaultExtentBBox = [
       [parts[0], parts[1]],
       [parts[2], parts[3]]
     ];
@@ -143,7 +140,12 @@ export function createItemFromTemplate(
   return createHubRequestOptions(destinationAuthentication, templateDictionary)
     .then(ro => {
       hubRo = ro;
-      return createPageModelFromTemplate(template, settings, transforms, hubRo);
+      return createPageModelFromTemplate(
+        template,
+        templateDictionary,
+        transforms,
+        hubRo
+      );
     })
     .then((interpolated: unknown) => {
       // --------------------------------------------
