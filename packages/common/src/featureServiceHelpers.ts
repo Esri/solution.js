@@ -882,32 +882,47 @@ export function _updateForPortal(
       item,
       "adminLayerInfo.viewLayerDefinition.table"
     );
-    /* istanbul ignore else */
+
+    let fieldNames: string[] = [];
     if (viewLayerDefTable) {
+      const tableFieldNames: string[] = _getFieldNames(
+        viewLayerDefTable,
+        itemTemplate,
+        templateDictionary
+      );
+      fieldNames = fieldNames.concat(tableFieldNames);
       setProp(
         item,
         "adminLayerInfo.viewLayerDefinition.table",
-        _updateSourceLayerFields(
-          viewLayerDefTable,
-          itemTemplate,
-          templateDictionary
-        )
+        _updateSourceLayerFields(viewLayerDefTable, tableFieldNames)
       );
 
       // Handle related also
       /* istanbul ignore else */
       if (Array.isArray(viewLayerDefTable.relatedTables)) {
         viewLayerDefTable.relatedTables.map((relatedTable: any) => {
-          return _updateSourceLayerFields(
+          const relatedTableFieldNames: string[] = _getFieldNames(
             relatedTable,
             itemTemplate,
             templateDictionary
           );
+          fieldNames = fieldNames.concat(relatedTableFieldNames);
+          return _updateSourceLayerFields(relatedTable, relatedTableFieldNames);
         });
       }
+    } else {
+      Object.keys(templateDictionary).some(k => {
+        if (templateDictionary[k].itemId === item.serviceItemId) {
+          const layerInfo: any = templateDictionary[k][`layer${item.id}`];
+          if (layerInfo?.fields) {
+            fieldNames = layerInfo.fields.map((f: any) => f.name);
+          }
+          return true;
+        }
+      });
     }
 
-    item = _updateItemFields(item, templateDictionary);
+    item = _updateItemFields(item, fieldNames);
   }
 
   // not allowed to set sourceSchemaChangesAllowed or isView for portal
@@ -915,6 +930,40 @@ export function _updateForPortal(
   deleteProp(item, "sourceSchemaChangesAllowed");
   deleteProp(item, "isView");
   return item;
+}
+
+export function _getFieldNames(
+  table: any,
+  itemTemplate: IItemTemplate,
+  templateDictionary: any
+): string[] {
+  let sourceLayerFields: any[] = [];
+  const viewSourceLayerId: number = table.sourceLayerId;
+
+  /* istanbul ignore else */
+  if (typeof viewSourceLayerId === "number") {
+    // need to make sure these actually exist in the source..
+    itemTemplate.dependencies.forEach(d => {
+      const layerInfo: any = templateDictionary[d][`layer${viewSourceLayerId}`];
+      /* istanbul ignore else */
+      if (
+        layerInfo &&
+        layerInfo.fields &&
+        templateDictionary[d].name === table.sourceServiceName
+      ) {
+        if (Array.isArray(layerInfo.fields)) {
+          sourceLayerFields = sourceLayerFields.concat(
+            layerInfo.fields.map((f: any) => f.name)
+          );
+        } else {
+          sourceLayerFields = sourceLayerFields.concat(
+            Object.keys(layerInfo.fields)
+          );
+        }
+      }
+    });
+    return sourceLayerFields;
+  }
 }
 
 /**
@@ -926,18 +975,7 @@ export function _updateForPortal(
  * @return updated layer or table
  * @protected
  */
-export function _updateItemFields(item: any, templateDictionary: any): any {
-  let fieldNames: string[] = [];
-  Object.keys(templateDictionary).some(k => {
-    if (templateDictionary[k].itemId === item.serviceItemId) {
-      const layerInfo: any = templateDictionary[k][`layer${item.id}`];
-      if (layerInfo?.fields) {
-        fieldNames = layerInfo.fields.map((f: any) => f.name);
-      }
-      return true;
-    }
-  });
-
+export function _updateItemFields(item: any, fieldNames: string[]): any {
   /* istanbul ignore else */
   if (fieldNames.length > 0) {
     /* istanbul ignore else */
@@ -953,43 +991,21 @@ export function _updateItemFields(item: any, templateDictionary: any): any {
       );
     }
   }
-
   return item;
 }
 
 export function _updateSourceLayerFields(
   table: any,
-  itemTemplate: IItemTemplate,
-  templateDictionary: any
+  sourceLayerFields: string[]
 ): any {
-  const viewSourceLayerFields: any[] = table.sourceLayerFields.map((f: any) =>
-    f.source.toLowerCase()
-  );
-  const viewSourceLayerId: number = table.sourceLayerId;
-
   /* istanbul ignore else */
   if (
-    typeof viewSourceLayerId === "number" &&
-    Array.isArray(viewSourceLayerFields)
+    Array.isArray(table.sourceLayerFields) &&
+    table.sourceLayerFields.length > 0
   ) {
     // need to make sure these actually exist in the source..
-    let sourceLayerFields: any[] = [];
-    itemTemplate.dependencies.forEach(d => {
-      const layerInfo: any = templateDictionary[d][`layer${viewSourceLayerId}`];
-      /* istanbul ignore else */
-      if (
-        layerInfo &&
-        layerInfo.fields &&
-        templateDictionary[d].name === table.sourceServiceName
-      ) {
-        sourceLayerFields = sourceLayerFields.concat(
-          Object.keys(layerInfo.fields)
-        );
-      }
-    });
-
     /* istanbul ignore else */
-    if (sourceLayerFields.length > 0 && viewSourceLayerFields.length > 0) {
+    if (sourceLayerFields.length > 0) {
       setProp(
         table,
         "sourceLayerFields",
