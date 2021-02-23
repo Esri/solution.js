@@ -912,10 +912,16 @@ export function _updateForPortal(
       }
     } else {
       Object.keys(templateDictionary).some(k => {
+        /* istanbul ignore else */
         if (templateDictionary[k].itemId === item.serviceItemId) {
           const layerInfo: any = templateDictionary[k][`layer${item.id}`];
-          if (layerInfo?.fields) {
-            fieldNames = layerInfo.fields.map((f: any) => f.name);
+          /* istanbul ignore else */
+          if (layerInfo && layerInfo.fields) {
+            if (Array.isArray(layerInfo.fields)) {
+              fieldNames = layerInfo.fields.map((f: any) => f.name);
+            } else {
+              fieldNames = Object.keys(layerInfo.fields);
+            }
           }
           return true;
         }

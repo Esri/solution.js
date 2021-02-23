@@ -77,6 +77,7 @@ import {
   _getNameMapping,
   _updateAddOptions,
   _updateForPortal,
+  _getFieldNames,
   _updateItemFields,
   _updateGeomFieldName,
   _updateTemplateDictionaryFields,
@@ -5917,7 +5918,7 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
       expect(actual).toEqual(expected);
     });
 
-    it("will remove view fields that are not in the service", () => {
+    it("will remove viewLayerDefinition fields that are not in the service", () => {
       const item = {
         id: "",
         type: "",
@@ -6016,6 +6017,166 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
 
       expect(actual).toEqual(expected);
     });
+
+    it("will remove item fields that are not in the service", () => {
+      const item = {
+        id: 0,
+        type: "",
+        isView: true,
+        sourceSchemaChangesAllowed: true,
+        adminLayerInfo: {},
+        serviceItemId: "55507dff46f54656a74032ac12acd977",
+        fields: [
+          {
+            name: "aa"
+          },
+          {
+            name: "bb"
+          }
+        ]
+      };
+      const expected = {
+        id: 0,
+        type: "",
+        adminLayerInfo: {},
+        serviceItemId: "55507dff46f54656a74032ac12acd977",
+        fields: [
+          {
+            name: "aa"
+          }
+        ]
+      };
+      const _itemTemplate: interfaces.IItemTemplate = templates.getItemTemplateSkeleton();
+      _itemTemplate.dependencies = [
+        "44507dff46f54656a74032ac12acd977",
+        "54507dff46f54656a74032ac12acd977"
+      ];
+
+      const templateDictionary: any = {
+        "44507dff46f54656a74032ac12acd977": {
+          name: "Snowmass",
+          itemId: "55507dff46f54656a74032ac12acd977",
+          layer0: {
+            fields: [
+              {
+                name: "aa"
+              }
+            ]
+          }
+        }
+      };
+      const actual = _updateForPortal(item, _itemTemplate, templateDictionary);
+
+      expect(actual).toEqual(expected);
+    });
+
+    it("will remove item fields that are not in the service", () => {
+      const item = {
+        id: 0,
+        type: "",
+        isView: true,
+        sourceSchemaChangesAllowed: true,
+        adminLayerInfo: {},
+        serviceItemId: "55507dff46f54656a74032ac12acd977",
+        fields: [
+          {
+            name: "aa"
+          },
+          {
+            name: "bb"
+          }
+        ]
+      };
+      const expected = {
+        id: 0,
+        type: "",
+        adminLayerInfo: {},
+        serviceItemId: "55507dff46f54656a74032ac12acd977",
+        fields: [
+          {
+            name: "aa"
+          }
+        ]
+      };
+      const _itemTemplate: interfaces.IItemTemplate = templates.getItemTemplateSkeleton();
+
+      const templateDictionary: any = {
+        "44507dff46f54656a74032ac12acd977": {
+          name: "Snowmass",
+          itemId: "55507dff46f54656a74032ac12acd977",
+          layer0: {
+            fields: {
+              aa: {
+                name: "aa"
+              }
+            }
+          }
+        }
+      };
+      const actual = _updateForPortal(item, _itemTemplate, templateDictionary);
+
+      expect(actual).toEqual(expected);
+    });
+  });
+
+  describe("_getFieldNames", () => {
+    it("cen get field names from array", () => {
+      const table: any = {
+        sourceLayerId: 0,
+        sourceServiceName: "ABC123"
+      };
+      const template: interfaces.IItemTemplate = templates.getItemTemplateSkeleton();
+      template.dependencies = ["ab766cba0dd44ec080420acc10990282"];
+      const templateDictionary: any = {
+        ab766cba0dd44ec080420acc10990282: {
+          name: "ABC123",
+          layer0: {
+            fields: [
+              {
+                name: "A"
+              }
+            ]
+          }
+        }
+      };
+
+      const expected: string[] = ["A"];
+      const actual: string[] = _getFieldNames(
+        table,
+        template,
+        templateDictionary
+      );
+      expect(actual).toEqual(expected);
+    });
+
+    it("cen get field names from object", () => {
+      const table: any = {
+        sourceLayerId: 0,
+        sourceServiceName: "ABC123"
+      };
+      const template: interfaces.IItemTemplate = templates.getItemTemplateSkeleton();
+      template.dependencies = ["ab766cba0dd44ec080420acc10990282"];
+      const templateDictionary: any = {
+        ab766cba0dd44ec080420acc10990282: {
+          name: "ABC123",
+          layer0: {
+            fields: {
+              a: {
+                name: "A"
+              }
+            }
+          }
+        }
+      };
+
+      const expected: string[] = ["a"];
+      const actual: string[] = _getFieldNames(
+        table,
+        template,
+        templateDictionary
+      );
+      expect(actual).toEqual(expected);
+    });
   });
 
   describe("_updateItemFields", () => {
@@ -6047,21 +6208,7 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
         ]
       };
 
-      const templateDictionary: any = {
-        A: {
-          itemId: "AA",
-          layer0: {
-            fields: [
-              {
-                name: "field1"
-              },
-              {
-                name: "field3"
-              }
-            ]
-          }
-        }
-      };
+      const fieldNames: string[] = ["field1", "field3"];
 
       const expected: any = {
         serviceItemId: "AA",
@@ -6084,7 +6231,7 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
         ]
       };
 
-      const actual: any = _updateItemFields(item, templateDictionary);
+      const actual: any = _updateItemFields(item, fieldNames);
       expect(actual).toEqual(expected);
     });
   });
