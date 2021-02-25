@@ -161,7 +161,7 @@ describe("simpleTypeConvertItemToTemplate", () => {
             extent: [],
             spatialReference: undefined,
             licenseInfo: null,
-            name: "formData.zip",
+            name: "frm1234567890.zip",
             origUrl: undefined,
             properties: null,
             snippet: "Snippet of an AGOL item",
@@ -173,7 +173,7 @@ describe("simpleTypeConvertItemToTemplate", () => {
           },
           data: null, // forms don't store info here
           resources: [
-            "frm1234567890_info_data/formData.zip",
+            "frm1234567890_info_data/frm1234567890.zip",
             "frm1234567890_info/form.json",
             "frm1234567890_info/forminfo.json",
             "frm1234567890_info/form.webform.json"
