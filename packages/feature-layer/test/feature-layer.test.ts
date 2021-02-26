@@ -545,6 +545,10 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
           '{"success":true}'
         )
         .post(
+          "https://services123.arcgis.com/org1234567890/arcgis/rest/admin/services/ROWPermits_publiccomment/FeatureServer/updateDefinition",
+          '{"success":true}'
+        )
+        .post(
           utils.PORTAL_SUBSET.restUrl +
             "/content/users/casey/items/svc1234567890/update",
           '{"success":true}'
@@ -686,6 +690,10 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
           '{"success":true}'
         )
         .post(
+          "https://services123.arcgis.com/org1234567890/arcgis/rest/admin/services/ROWPermits_publiccomment/FeatureServer/updateDefinition",
+          '{"success":true}'
+        )
+        .post(
           utils.PORTAL_SUBSET.restUrl +
             "/content/users/casey/items/svc1234567890/update",
           '{"success":true}'
@@ -824,6 +832,10 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
         )
         .post(
           "https://services123.arcgis.com/org1234567890/arcgis/rest/admin/services/ROWPermits_publiccomment/FeatureServer/1/updateDefinition",
+          '{"success":true}'
+        )
+        .post(
+          "https://services123.arcgis.com/org1234567890/arcgis/rest/admin/services/ROWPermits_publiccomment/FeatureServer/updateDefinition",
           '{"success":true}'
         )
         .post(
@@ -1002,6 +1014,10 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
           '{"success":true}'
         )
         .post(
+          "https://services123.arcgis.com/org1234567890/arcgis/rest/admin/services/ROWPermits_publiccomment/FeatureServer/updateDefinition",
+          '{"success":true}'
+        )
+        .post(
           utils.PORTAL_SUBSET.restUrl +
             "/content/users/casey/items/svc1234567890/update",
           '{"success":true}'
@@ -1096,6 +1112,10 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
         )
         .post(
           "https://services123.arcgis.com/org1234567890/arcgis/rest/admin/services/ROWPermits_publiccomment/FeatureServer/1/updateDefinition",
+          '{"success":true}'
+        )
+        .post(
+          "https://services123.arcgis.com/org1234567890/arcgis/rest/admin/services/ROWPermits_publiccomment/FeatureServer/updateDefinition",
           '{"success":true}'
         )
         .post(
@@ -1199,6 +1219,10 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
           '{"success":true}'
         )
         .post(
+          "https://services123.arcgis.com/org1234567890/arcgis/rest/admin/services/ROWPermits_publiccomment/FeatureServer/updateDefinition",
+          '{"success":true}'
+        )
+        .post(
           utils.PORTAL_SUBSET.restUrl +
             "/content/users/casey/items/svc1234567890/update",
           '{"success":true}'
@@ -1299,6 +1323,10 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
           '{"success":true}'
         )
         .post(
+          "https://services123.arcgis.com/org1234567890/arcgis/rest/admin/services/ROWPermits_publiccomment/FeatureServer/updateDefinition",
+          '{"success":true}'
+        )
+        .post(
           utils.PORTAL_SUBSET.restUrl +
             "/content/users/casey/items/svc1234567890/update",
           mockItems.get400Failure()
@@ -1393,6 +1421,10 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
         )
         .post(
           "https://services123.arcgis.com/org1234567890/arcgis/rest/admin/services/ROWPermits_publiccomment/FeatureServer/1/updateDefinition",
+          '{"success":true}'
+        )
+        .post(
+          "https://services123.arcgis.com/org1234567890/arcgis/rest/admin/services/ROWPermits_publiccomment/FeatureServer/updateDefinition",
           '{"success":true}'
         )
         .post(
@@ -1766,6 +1798,10 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
           mockItems.get400Failure()
         )
         .post(
+          "https://services123.arcgis.com/org1234567890/arcgis/rest/admin/services/ROWPermits_publiccomment/FeatureServer/updateDefinition",
+          '{"success":true}'
+        )
+        .post(
           utils.PORTAL_SUBSET.restUrl +
             "/content/users/casey/items/svc1234567890/update",
           mockItems.get400Failure()
@@ -1859,6 +1895,10 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
         .post(
           "https://services123.arcgis.com/org1234567890/arcgis/rest/admin/services/ROWPermits_publiccomment/FeatureServer/1/updateDefinition",
           mockItems.get400Failure()
+        )
+        .post(
+          "https://services123.arcgis.com/org1234567890/arcgis/rest/admin/services/ROWPermits_publiccomment/FeatureServer/updateDefinition",
+          '{"success":true}'
         )
         .post(
           utils.PORTAL_SUBSET.restUrl +
@@ -2027,6 +2067,10 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
           '{"success":true}'
         )
         .post(
+          "https://services123.arcgis.com/org1234567890/arcgis/rest/admin/services/ROWPermits_publiccomment/FeatureServer/updateDefinition",
+          '{"success":true}'
+        )
+        .post(
           utils.PORTAL_SUBSET.restUrl +
             "/content/users/casey/items/svc1234567890/update",
           '{"success":true}'
@@ -2107,6 +2151,10 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
         )
         .post(
           "https://services123.arcgis.com/org1234567890/arcgis/rest/admin/services/ROWPermits_publiccomment/FeatureServer/1/updateDefinition",
+          '{"success":true}'
+        )
+        .post(
+          "https://services123.arcgis.com/org1234567890/arcgis/rest/admin/services/ROWPermits_publiccomment/FeatureServer/updateDefinition",
           '{"success":true}'
         )
         .post(
@@ -2193,6 +2241,10 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
           '{"success":true}'
         )
         .post(
+          "https://services123.arcgis.com/org1234567890/arcgis/rest/admin/services/ROWPermits_publiccomment/FeatureServer/updateDefinition",
+          '{"success":true}'
+        )
+        .post(
           utils.PORTAL_SUBSET.restUrl +
             "/content/users/casey/items/svc1234567890/update",
           '{"success":true}'
@@ -2273,6 +2325,10 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
         )
         .post(
           "https://services123.arcgis.com/org1234567890/arcgis/rest/admin/services/ROWPermits_publiccomment/FeatureServer/1/updateDefinition",
+          '{"success":true}'
+        )
+        .post(
+          "https://services123.arcgis.com/org1234567890/arcgis/rest/admin/services/ROWPermits_publiccomment/FeatureServer/updateDefinition",
           '{"success":true}'
         )
         .post(

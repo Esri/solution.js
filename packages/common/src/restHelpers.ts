@@ -938,6 +938,7 @@ export function getFinalServiceUpdates(
   );
   const isView: boolean = getProp(itemTemplate, "properties.service.isView");
 
+  /* istanbul ignore else */
   if (sourceSchemaChangesAllowed && isView) {
     const adminUrl: string = itemTemplate.item.url.replace(
       "rest/services",
