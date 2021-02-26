@@ -23,7 +23,7 @@
     "@esri/hub-sites": "^6.23.0",
     "@esri/hub-teams": "^6.23.0",
     "rollup": "^1.22.0",
-    "typescript": "^4.0.5"
+    "typescript": "^4.1.3"
   },
   "peerDependencies": {
     "@esri/arcgis-rest-auth": "^3.0.0",
@@ -38,7 +38,7 @@
   },
   "dependencies": {
     "@esri/solution-common": "^0.22.1",
-    "tslib": "^2.1.0"
+    "tslib": "^1.13.0"
   },
   "scripts": {
     "prepare": "npm run build",
