@@ -52,6 +52,7 @@ import {
   templatizeIds
 } from "./templatization";
 import {
+  getFinalServiceUpdates,
   addToServiceDefinition,
   getLayerUpdates,
   getRequest,
@@ -662,12 +663,18 @@ export function addFeatureServiceLayersAndTables(
             templateDictionary
           ).then(r => {
             // Update relationships and layer definitions
-            const updates: IUpdate[] = getLayerUpdates({
+            let updates: IUpdate[] = getLayerUpdates({
               message: "updated layer definition",
               objects: r.layerInfos.fieldInfos,
               itemTemplate: r.itemTemplate,
               authentication
             } as IPostProcessArgs);
+            // Get any updates for the service that should be performed after updates to the layers
+            updates = getFinalServiceUpdates(
+              r.itemTemplate,
+              authentication,
+              updates
+            );
             // Process the updates sequentially
             updates
               .reduce((prev, update) => {

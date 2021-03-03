@@ -1349,6 +1349,10 @@ describe("Module `deploySolutionItems`", () => {
           "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/items/svc1234567890/update",
           utils.getSuccessResponse()
         )
+        .post(
+          "https://services123.arcgis.com/org1234567890/arcgis/rest/admin/services/ROWPermits_publiccomment/FeatureServer/updateDefinition",
+          utils.getSuccessResponse()
+        )
         .get(
           "https://myorg.maps.arcgis.com/sharing/rest/content/items/svc1234567890?f=json&token=fake-token",
           expectedClone.item
