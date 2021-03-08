@@ -454,6 +454,10 @@ describe("Module `deployer`", () => {
             testUtils.getSuccessResponse()
           )
           .post(
+            featureServerAdminUrl + "/updateDefinition",
+            testUtils.getSuccessResponse()
+          )
+          .post(
             testUtils.PORTAL_SUBSET.restUrl +
               "/content/users/casey/items/svc1234567890/update",
             testUtils.getSuccessResponse({ id: "svc1234567890" })
@@ -1304,6 +1308,10 @@ describe("Module `deployer`", () => {
             testUtils.getSuccessResponse()
           )
           .post(
+            "https://services123.arcgis.com/org1234567890/arcgis/rest/admin/services/ROWPermits_publiccomment/FeatureServer/updateDefinition",
+            testUtils.getSuccessResponse()
+          )
+          .post(
             testUtils.PORTAL_SUBSET.restUrl +
               "/content/users/casey/items/svc1234567890/delete",
             testUtils.getSuccessResponse()
@@ -1503,6 +1511,10 @@ describe("Module `deployer`", () => {
           )
           .post(
             featureServerAdminUrl + "/1/updateDefinition",
+            testUtils.getSuccessResponse()
+          )
+          .post(
+            featureServerAdminUrl + "/updateDefinition",
             testUtils.getSuccessResponse()
           )
           .post(
@@ -1707,6 +1719,10 @@ describe("Module `deployer`", () => {
           )
           .post(
             featureServerAdminUrl + "/1/updateDefinition",
+            testUtils.getSuccessResponse()
+          )
+          .post(
+            featureServerAdminUrl + "/updateDefinition",
             testUtils.getSuccessResponse()
           )
           .post(

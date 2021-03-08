@@ -31,6 +31,7 @@ import {
   updateSettingsFieldInfos,
   deTemplatizeFieldInfos,
   getLayersAndTables,
+  getExistingLayersAndTables,
   addFeatureServiceLayersAndTables,
   updateLayerFieldReferences,
   postProcessFields,
@@ -76,6 +77,8 @@ import {
   _getNameMapping,
   _updateAddOptions,
   _updateForPortal,
+  _getFieldNames,
+  _updateItemFields,
   _updateGeomFieldName,
   _updateTemplateDictionaryFields,
   _updateTypeKeywords,
@@ -2907,6 +2910,24 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
       const layersAndTables: any = getLayersAndTables(itemTemplate);
       const expected: any[] = [];
       expect(layersAndTables).toEqual(expected);
+    });
+  });
+
+  describe("getExistingLayersAndTables", () => {
+    it("will fetch each existing layer and table", done => {
+      const url: string =
+        "https://services123.arcgis.com/org1234567890/arcgis/rest/services/ROWPermits_publiccomment/FeatureServer";
+      const ids: number[] = [0, 1];
+      const actual = getExistingLayersAndTables(url, ids, MOCK_USER_SESSION);
+
+      fetchMock
+        .post(url + "/0", mockItems.getAGOLLayerOrTable(0, "test0", "layer"))
+        .post(url + "/1", mockItems.getAGOLLayerOrTable(1, "test1", "layer"));
+
+      actual.then(results => {
+        expect(results).length === 2;
+        done();
+      });
     });
   });
 
@@ -5897,7 +5918,7 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
       expect(actual).toEqual(expected);
     });
 
-    it("will remove view fields that are not in the service", () => {
+    it("will remove viewLayerDefinition fields that are not in the service", () => {
       const item = {
         id: "",
         type: "",
@@ -5996,6 +6017,223 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
 
       expect(actual).toEqual(expected);
     });
+
+    it("will remove item fields that are not in the service", () => {
+      const item = {
+        id: 0,
+        type: "",
+        isView: true,
+        sourceSchemaChangesAllowed: true,
+        adminLayerInfo: {},
+        serviceItemId: "55507dff46f54656a74032ac12acd977",
+        fields: [
+          {
+            name: "aa"
+          },
+          {
+            name: "bb"
+          }
+        ]
+      };
+      const expected = {
+        id: 0,
+        type: "",
+        adminLayerInfo: {},
+        serviceItemId: "55507dff46f54656a74032ac12acd977",
+        fields: [
+          {
+            name: "aa"
+          }
+        ]
+      };
+      const _itemTemplate: interfaces.IItemTemplate = templates.getItemTemplateSkeleton();
+      _itemTemplate.dependencies = [
+        "44507dff46f54656a74032ac12acd977",
+        "54507dff46f54656a74032ac12acd977"
+      ];
+
+      const templateDictionary: any = {
+        "44507dff46f54656a74032ac12acd977": {
+          name: "Snowmass",
+          itemId: "55507dff46f54656a74032ac12acd977",
+          layer0: {
+            fields: [
+              {
+                name: "aa"
+              }
+            ]
+          }
+        }
+      };
+      const actual = _updateForPortal(item, _itemTemplate, templateDictionary);
+
+      expect(actual).toEqual(expected);
+    });
+
+    it("will remove item fields that are not in the service", () => {
+      const item = {
+        id: 0,
+        type: "",
+        isView: true,
+        sourceSchemaChangesAllowed: true,
+        adminLayerInfo: {},
+        serviceItemId: "55507dff46f54656a74032ac12acd977",
+        fields: [
+          {
+            name: "aa"
+          },
+          {
+            name: "bb"
+          }
+        ]
+      };
+      const expected = {
+        id: 0,
+        type: "",
+        adminLayerInfo: {},
+        serviceItemId: "55507dff46f54656a74032ac12acd977",
+        fields: [
+          {
+            name: "aa"
+          }
+        ]
+      };
+      const _itemTemplate: interfaces.IItemTemplate = templates.getItemTemplateSkeleton();
+
+      const templateDictionary: any = {
+        "44507dff46f54656a74032ac12acd977": {
+          name: "Snowmass",
+          itemId: "55507dff46f54656a74032ac12acd977",
+          layer0: {
+            fields: {
+              aa: {
+                name: "aa"
+              }
+            }
+          }
+        }
+      };
+      const actual = _updateForPortal(item, _itemTemplate, templateDictionary);
+
+      expect(actual).toEqual(expected);
+    });
+  });
+
+  describe("_getFieldNames", () => {
+    it("cen get field names from array", () => {
+      const table: any = {
+        sourceLayerId: 0,
+        sourceServiceName: "ABC123"
+      };
+      const template: interfaces.IItemTemplate = templates.getItemTemplateSkeleton();
+      template.dependencies = ["ab766cba0dd44ec080420acc10990282"];
+      const templateDictionary: any = {
+        ab766cba0dd44ec080420acc10990282: {
+          name: "ABC123",
+          layer0: {
+            fields: [
+              {
+                name: "A"
+              }
+            ]
+          }
+        }
+      };
+
+      const expected: string[] = ["A"];
+      const actual: string[] = _getFieldNames(
+        table,
+        template,
+        templateDictionary
+      );
+      expect(actual).toEqual(expected);
+    });
+
+    it("cen get field names from object", () => {
+      const table: any = {
+        sourceLayerId: 0,
+        sourceServiceName: "ABC123"
+      };
+      const template: interfaces.IItemTemplate = templates.getItemTemplateSkeleton();
+      template.dependencies = ["ab766cba0dd44ec080420acc10990282"];
+      const templateDictionary: any = {
+        ab766cba0dd44ec080420acc10990282: {
+          name: "ABC123",
+          layer0: {
+            fields: {
+              a: {
+                name: "A"
+              }
+            }
+          }
+        }
+      };
+
+      const expected: string[] = ["a"];
+      const actual: string[] = _getFieldNames(
+        table,
+        template,
+        templateDictionary
+      );
+      expect(actual).toEqual(expected);
+    });
+  });
+
+  describe("_updateItemFields", () => {
+    it("will remove field references that don't exist in the source service", () => {
+      const item: any = {
+        serviceItemId: "AA",
+        id: 0,
+        fields: [
+          {
+            name: "field1"
+          },
+          {
+            name: "field2"
+          },
+          {
+            name: "field3"
+          }
+        ],
+        indexes: [
+          {
+            fields: "field1"
+          },
+          {
+            fields: "field2"
+          },
+          {
+            fields: "field3"
+          }
+        ]
+      };
+
+      const fieldNames: string[] = ["field1", "field3"];
+
+      const expected: any = {
+        serviceItemId: "AA",
+        id: 0,
+        fields: [
+          {
+            name: "field1"
+          },
+          {
+            name: "field3"
+          }
+        ],
+        indexes: [
+          {
+            fields: "field1"
+          },
+          {
+            fields: "field3"
+          }
+        ]
+      };
+
+      const actual: any = _updateItemFields(item, fieldNames);
+      expect(actual).toEqual(expected);
+    });
   });
 
   describe("_updateGeomFieldName", () => {
@@ -6083,6 +6321,32 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
         }
       };
       _updateTemplateDictionaryFields(template, templateDictionary);
+
+      const expected = {
+        svc0123456789: {
+          itemId: "svc987654321",
+          fieldInfos: {
+            "0": template.properties.layers[0].fields
+          }
+        }
+      };
+
+      expect(templateDictionary).toEqual(expected);
+    });
+
+    it("should update the template dictionary with field info for existing", () => {
+      const template: interfaces.IItemTemplate = templates.getItemTemplateSkeleton();
+      template.itemId = "svc0123456789";
+      template.properties.layers = [
+        mockItems.getAGOLLayerOrTable(0, "A", "Feature Layer", [{}])
+      ];
+      template.properties.tables = [];
+      const templateDictionary = {
+        svc0123456789: {
+          itemId: "svc987654321"
+        }
+      };
+      _updateTemplateDictionaryFields(template, templateDictionary, false);
 
       const expected = {
         svc0123456789: {

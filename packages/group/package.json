@@ -1,6 +1,6 @@
 {
   "name": "@esri/solution-group",
-  "version": "0.22.1",
+  "version": "0.22.2",
   "description": "Manages the creation and deployment of group item types for @esri/solution.js.",
   "main": "dist/node/index.js",
   "unpkg": "dist/umd/group.umd.min.js",
@@ -13,31 +13,31 @@
     "dist/**"
   ],
   "devDependencies": {
-    "@esri/arcgis-rest-auth": "^3.0.0",
-    "@esri/arcgis-rest-feature-layer": "^3.0.0",
-    "@esri/arcgis-rest-portal": "^3.0.0",
-    "@esri/arcgis-rest-request": "^3.0.0",
-    "@esri/arcgis-rest-service-admin": "^3.0.0",
-    "@esri/hub-common": "^6.23.0",
-    "@esri/hub-initiatives": "^6.23.0",
-    "@esri/hub-sites": "^6.23.0",
-    "@esri/hub-teams": "^6.23.0",
+    "@esri/arcgis-rest-auth": "^3.0.2",
+    "@esri/arcgis-rest-feature-layer": "^3.0.2",
+    "@esri/arcgis-rest-portal": "^3.0.2",
+    "@esri/arcgis-rest-request": "^3.0.2",
+    "@esri/arcgis-rest-service-admin": "^3.0.2",
+    "@esri/hub-common": "^7.0.8",
+    "@esri/hub-initiatives": "^7.0.8",
+    "@esri/hub-sites": "^7.0.8",
+    "@esri/hub-teams": "^7.0.8",
     "rollup": "^1.22.0",
     "typescript": "^4.1.3"
   },
   "peerDependencies": {
-    "@esri/arcgis-rest-auth": "^3.0.0",
-    "@esri/arcgis-rest-feature-layer": "^3.0.0",
-    "@esri/arcgis-rest-portal": "^3.0.0",
-    "@esri/arcgis-rest-request": "^3.0.0",
-    "@esri/arcgis-rest-service-admin": "^3.0.0",
-    "@esri/hub-common": "^6.23.0",
-    "@esri/hub-initiatives": "^6.23.0",
-    "@esri/hub-sites": "^6.23.0",
-    "@esri/hub-teams": "^6.23.0"
+    "@esri/arcgis-rest-auth": "^3.0.2",
+    "@esri/arcgis-rest-feature-layer": "^3.0.2",
+    "@esri/arcgis-rest-portal": "^3.0.2",
+    "@esri/arcgis-rest-request": "^3.0.2",
+    "@esri/arcgis-rest-service-admin": "^3.0.2",
+    "@esri/hub-common": "^7.0.8",
+    "@esri/hub-initiatives": "^7.0.8",
+    "@esri/hub-sites": "^7.0.8",
+    "@esri/hub-teams": "^7.0.8"
   },
   "dependencies": {
-    "@esri/solution-common": "^0.22.1",
+    "@esri/solution-common": "^0.22.2",
     "tslib": "^1.13.0"
   },
   "scripts": {

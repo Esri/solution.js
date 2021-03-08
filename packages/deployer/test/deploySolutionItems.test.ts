@@ -1349,6 +1349,10 @@ describe("Module `deploySolutionItems`", () => {
           "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/items/svc1234567890/update",
           utils.getSuccessResponse()
         )
+        .post(
+          "https://services123.arcgis.com/org1234567890/arcgis/rest/admin/services/ROWPermits_publiccomment/FeatureServer/updateDefinition",
+          utils.getSuccessResponse()
+        )
         .get(
           "https://myorg.maps.arcgis.com/sharing/rest/content/items/svc1234567890?f=json&token=fake-token",
           expectedClone.item
@@ -1720,6 +1724,98 @@ describe("Module `deploySolutionItems`", () => {
         }, done.fail);
     });
 
+    it("will update fields and fieldInfos", done => {
+      const _templates: common.IItemTemplate[] = [];
+      const id: string = "ca4a6047326243b290f625e80ebe6531";
+      const fsUrl: string =
+        "https://services.arcgis.com/orgidFmrV9d1DIvN/arcgis/rest/services/dispatchers2/FeatureServer";
+
+      const fsTemplate: common.IItemTemplate = templates.getItemTemplate(
+        "Feature Service",
+        [],
+        fsUrl
+      );
+      fsTemplate.properties.service = {
+        hasViews: true
+      };
+
+      _templates.push(fsTemplate);
+
+      const fieldInfos: any = {};
+      const layer: any = fsTemplate.properties.layers[0];
+      fieldInfos[layer.id] = layer.fields;
+      const table: any = fsTemplate.properties.tables[0];
+      fieldInfos[table.id] = table.fields;
+
+      const templateDictionary: any = {};
+      templateDictionary[fsTemplate.itemId] = {
+        itemId: id,
+        url: fsUrl,
+        layer0: {
+          fields: {},
+          layerId: "0",
+          itemId: id
+        },
+        layer1: {
+          fields: {},
+          layerId: "1",
+          itemId: id
+        }
+      };
+
+      const fsResult: any = {
+        serviceItemId: id,
+        spatialReference: {
+          wkid: 4326
+        },
+        initialExtent: {
+          xmin: 0
+        },
+        layers: [
+          {
+            id: 0
+          }
+        ],
+        tables: [
+          {
+            id: 1
+          }
+        ]
+      };
+
+      const lFields = ["A"];
+      const tFields = ["B"];
+
+      fetchMock
+        .post(fsUrl, fsResult)
+        .post(`${fsUrl}/0`, {
+          serviceItemId: id,
+          id: "0",
+          fields: lFields
+        })
+        .post(`${fsUrl}/1`, {
+          serviceItemId: id,
+          id: "1",
+          fields: tFields
+        });
+
+      spyOn(common, "getLayerSettings").and.callFake(() => {});
+
+      deploySolution
+        ._updateTemplateDictionary(
+          _templates,
+          templateDictionary,
+          MOCK_USER_SESSION
+        )
+        .then(() => {
+          const t: any = templateDictionary[fsTemplate.itemId];
+          expect(t.fieldInfos).toEqual(fieldInfos);
+          expect(t.layer0.fields).toEqual(lFields);
+          expect(t.layer1.fields).toEqual(tFields);
+          done();
+        }, done.fail);
+    });
+
     it("can handle error to fetch feature service", done => {
       const _templates: common.IItemTemplate[] = [];
       const id: string = "ca4a6047326243b290f625e80ebe6531";
@@ -1740,9 +1836,13 @@ describe("Module `deploySolutionItems`", () => {
         url: fsUrl
       };
 
-      fetchMock.post(fsUrl, mockItems.get400Failure());
+      const error: any = {
+        error: {},
+        url: fsUrl
+      };
+      fetchMock.post(fsUrl, error);
 
-      spyOn(common, "getLayerSettings").and.callFake(() => {});
+      const expected: any = {};
 
       deploySolution
         ._updateTemplateDictionary(
@@ -1750,7 +1850,36 @@ describe("Module `deploySolutionItems`", () => {
           templateDictionary,
           MOCK_USER_SESSION
         )
-        .then(done.fail, done);
+        .then(() => {
+          expect(templateDictionary).toEqual(expected);
+          done();
+        }, done.fail);
+    });
+  });
+
+  describe("_updateTemplateDictionaryForError", () => {
+    it("can remove error item", () => {
+      const url: string =
+        "https://services.arcgis.com/orgidFmrV9d1DIvN/arcgis/rest/services/dispatchers2/FeatureServer";
+      const templateDictionary: any = {
+        ca4a6047326243b290f625e80ebe6531: {
+          url: "http://something"
+        },
+        aa4a6047326243b290f625e80ebe6531: {
+          url
+        }
+      };
+      const result: any = { url };
+      const actual: any = deploySolution._updateTemplateDictionaryForError(
+        result,
+        templateDictionary
+      );
+      const expected: any = {
+        ca4a6047326243b290f625e80ebe6531: {
+          url: "http://something"
+        }
+      };
+      expect(actual).toEqual(expected);
     });
   });
 
@@ -1834,54 +1963,6 @@ describe("Module `deploySolutionItems`", () => {
           expect(templateDictionary).toEqual(expectedTemplateDictionary);
           done();
         }, done.fail);
-    });
-
-    it("will handle failure to fetch spatial ref", done => {
-      const _templates: common.IItemTemplate[] = [];
-
-      const sourceId: string = "aa4a6047326243b290f625e80ebe6531";
-      const id: string = "ca4a6047326243b290f625e80ebe6531";
-      const fsUrl: string =
-        "https://services.arcgis.com/orgidFmrV9d1DIvN/arcgis/rest/services/dispatchers2/FeatureServer";
-
-      const newFsUrl: string =
-        "https://services.arcgis.com/orgidFmrV9d1DIvN/arcgis/rest/services/dispatchersNew/FeatureServer";
-
-      const fsTemplate: common.IItemTemplate = templates.getItemTemplate(
-        "Feature Service",
-        [],
-        fsUrl
-      );
-      fsTemplate.itemId = sourceId;
-
-      _templates.push(fsTemplate);
-
-      const templateDictionary: any = {
-        params: {
-          useExisting: true,
-          customFS: {
-            itemId: id,
-            sourceId: sourceId,
-            name: "Name",
-            title: "Title",
-            type: "Feature Service",
-            url: newFsUrl
-          }
-        }
-      };
-
-      spyOn(common, "getLayerSettings").and.callFake(() => {});
-
-      fetchMock.post(newFsUrl, mockItems.get400Failure());
-
-      deploySolution
-        ._useExistingItems(
-          _templates,
-          true,
-          templateDictionary,
-          MOCK_USER_SESSION
-        )
-        .then(done.fail, done);
     });
   });
 });

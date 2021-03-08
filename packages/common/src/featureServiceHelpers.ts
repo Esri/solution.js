@@ -52,6 +52,7 @@ import {
   templatizeIds
 } from "./templatization";
 import {
+  getFinalServiceUpdates,
   addToServiceDefinition,
   getLayerUpdates,
   getRequest,
@@ -589,6 +590,34 @@ export function getLayersAndTables(itemTemplate: IItemTemplate): any[] {
 }
 
 /**
+ * Fetch each layer and table from service so we can determine what fields they have.
+ * This is leveraged when we are using existing services so we can determine if we need to
+ * remove any fields from views that depend on these layers and tables.
+ *
+ * @param url Feature service endpoint
+ * @param ids layer and table ids
+ * @param authentication Credentials for the request
+ * @return A promise that will resolve an array of promises with either a failure or the data
+ * @protected
+ */
+export function getExistingLayersAndTables(
+  url: string,
+  ids: number[],
+  authentication: UserSession
+): Promise<any> {
+  // eslint-disable-next-line @typescript-eslint/no-floating-promises
+  return new Promise(resolve => {
+    const defs: Array<Promise<any>> = ids.map(id => {
+      return rest_request(checkUrlPathTermination(url) + id, {
+        authentication
+      });
+    });
+    // eslint-disable-next-line @typescript-eslint/no-floating-promises
+    Promise.all(defs.map(p => p.catch(e => e))).then(resolve);
+  });
+}
+
+/**
  * Adds the layers and tables of a feature service to it and restores their relationships.
  *
  * @param itemTemplate Feature service
@@ -634,12 +663,18 @@ export function addFeatureServiceLayersAndTables(
             templateDictionary
           ).then(r => {
             // Update relationships and layer definitions
-            const updates: IUpdate[] = getLayerUpdates({
+            let updates: IUpdate[] = getLayerUpdates({
               message: "updated layer definition",
               objects: r.layerInfos.fieldInfos,
               itemTemplate: r.itemTemplate,
               authentication
             } as IPostProcessArgs);
+            // Get any updates for the service that should be performed after updates to the layers
+            updates = getFinalServiceUpdates(
+              r.itemTemplate,
+              authentication,
+              updates
+            );
             // Process the updates sequentially
             updates
               .reduce((prev, update) => {
@@ -854,26 +889,53 @@ export function _updateForPortal(
       item,
       "adminLayerInfo.viewLayerDefinition.table"
     );
-    /* istanbul ignore else */
+
+    let fieldNames: string[] = [];
     if (viewLayerDefTable) {
+      const tableFieldNames: string[] = _getFieldNames(
+        viewLayerDefTable,
+        itemTemplate,
+        templateDictionary
+      );
+      fieldNames = fieldNames.concat(tableFieldNames);
       setProp(
         item,
         "adminLayerInfo.viewLayerDefinition.table",
-        _updateItemFields(viewLayerDefTable, itemTemplate, templateDictionary)
+        _updateSourceLayerFields(viewLayerDefTable, tableFieldNames)
       );
 
       // Handle related also
       /* istanbul ignore else */
       if (Array.isArray(viewLayerDefTable.relatedTables)) {
         viewLayerDefTable.relatedTables.map((relatedTable: any) => {
-          return _updateItemFields(
+          const relatedTableFieldNames: string[] = _getFieldNames(
             relatedTable,
             itemTemplate,
             templateDictionary
           );
+          fieldNames = fieldNames.concat(relatedTableFieldNames);
+          return _updateSourceLayerFields(relatedTable, relatedTableFieldNames);
         });
       }
+    } else {
+      Object.keys(templateDictionary).some(k => {
+        /* istanbul ignore else */
+        if (templateDictionary[k].itemId === item.serviceItemId) {
+          const layerInfo: any = templateDictionary[k][`layer${item.id}`];
+          /* istanbul ignore else */
+          if (layerInfo && layerInfo.fields) {
+            if (Array.isArray(layerInfo.fields)) {
+              fieldNames = layerInfo.fields.map((f: any) => f.name);
+            } else {
+              fieldNames = Object.keys(layerInfo.fields);
+            }
+          }
+          return true;
+        }
+      });
     }
+
+    item = _updateItemFields(item, fieldNames);
   }
 
   // not allowed to set sourceSchemaChangesAllowed or isView for portal
@@ -883,23 +945,17 @@ export function _updateForPortal(
   return item;
 }
 
-export function _updateItemFields(
+export function _getFieldNames(
   table: any,
   itemTemplate: IItemTemplate,
   templateDictionary: any
-): any {
-  const viewSourceLayerFields: any[] = table.sourceLayerFields.map((f: any) =>
-    f.source.toLowerCase()
-  );
+): string[] {
+  let sourceLayerFields: any[] = [];
   const viewSourceLayerId: number = table.sourceLayerId;
 
   /* istanbul ignore else */
-  if (
-    typeof viewSourceLayerId === "number" &&
-    Array.isArray(viewSourceLayerFields)
-  ) {
+  if (typeof viewSourceLayerId === "number") {
     // need to make sure these actually exist in the source..
-    let sourceLayerFields: any[] = [];
     itemTemplate.dependencies.forEach(d => {
       const layerInfo: any = templateDictionary[d][`layer${viewSourceLayerId}`];
       /* istanbul ignore else */
@@ -908,14 +964,61 @@ export function _updateItemFields(
         layerInfo.fields &&
         templateDictionary[d].name === table.sourceServiceName
       ) {
-        sourceLayerFields = sourceLayerFields.concat(
-          Object.keys(layerInfo.fields)
-        );
+        if (Array.isArray(layerInfo.fields)) {
+          sourceLayerFields = sourceLayerFields.concat(
+            layerInfo.fields.map((f: any) => f.name)
+          );
+        } else {
+          sourceLayerFields = sourceLayerFields.concat(
+            Object.keys(layerInfo.fields)
+          );
+        }
       }
     });
+    return sourceLayerFields;
+  }
+}
 
+/**
+ * Remove fields references from fields and indexes that do not exist in the source service
+ *
+ * @param item Layer or table
+ * @param templateDictionary Hash mapping Solution source id to id of its clone
+ *
+ * @return updated layer or table
+ * @protected
+ */
+export function _updateItemFields(item: any, fieldNames: string[]): any {
+  /* istanbul ignore else */
+  if (fieldNames.length > 0) {
     /* istanbul ignore else */
-    if (sourceLayerFields.length > 0 && viewSourceLayerFields.length > 0) {
+    if (item.fields) {
+      item.fields = item.fields.filter(
+        (f: any) => fieldNames.indexOf(f.name) > -1
+      );
+    }
+    /* istanbul ignore else */
+    if (item.indexes) {
+      item.indexes = item.indexes.filter(
+        (f: any) => fieldNames.indexOf(f.fields) > -1
+      );
+    }
+  }
+  return item;
+}
+
+export function _updateSourceLayerFields(
+  table: any,
+  sourceLayerFields: string[]
+): any {
+  /* istanbul ignore else */
+  if (
+    Array.isArray(table.sourceLayerFields) &&
+    table.sourceLayerFields.length > 0
+  ) {
+    // need to make sure these actually exist in the source..
+    /* istanbul ignore else */
+    if (sourceLayerFields.length > 0) {
       setProp(
         table,
         "sourceLayerFields",
@@ -972,7 +1075,8 @@ export function _updateGeomFieldName(
  */
 export function _updateTemplateDictionaryFields(
   itemTemplate: IItemTemplate,
-  templateDictionary: any
+  templateDictionary: any,
+  compareItemId: boolean = true
 ): void {
   const layers: any[] = itemTemplate.properties.layers;
   const tables: any[] = itemTemplate.properties.tables;
@@ -982,7 +1086,9 @@ export function _updateTemplateDictionaryFields(
     fieldInfos[layerOrTable.id] = layerOrTable.fields;
   });
   Object.keys(templateDictionary).some(k => {
-    if (templateDictionary[k].itemId === itemTemplate.itemId) {
+    if (
+      compareItemId ? templateDictionary[k].itemId : k === itemTemplate.itemId
+    ) {
       templateDictionary[k].fieldInfos = fieldInfos;
       return true;
     } else {
@@ -1170,13 +1276,14 @@ export function postProcessFields(
         const isView = item.isView || itemTemplate.properties.service.isView;
         /* istanbul ignore else */
         if (layerInfos && layerInfos.hasOwnProperty(item.id)) {
-          layerInfos[item.id]["isView"] = item.isView;
-          layerInfos[item.id]["newFields"] = item.fields;
-          layerInfos[item.id]["sourceSchemaChangesAllowed"] =
+          const layerInfo: any = layerInfos[item.id];
+          layerInfo["isView"] = item.isView;
+          layerInfo["newFields"] = item.fields;
+          layerInfo["sourceSchemaChangesAllowed"] =
             item.sourceSchemaChangesAllowed;
           // when the item is a view bring over the source service fields so we can compare the domains
           if (isView && templateInfo) {
-            layerInfos[item.id]["sourceServiceFields"] = getProp(
+            layerInfo["sourceServiceFields"] = getProp(
               templateInfo,
               `sourceServiceFields.${item.id}`
             );
@@ -1184,7 +1291,7 @@ export function postProcessFields(
           /* istanbul ignore else */
           if (item.editFieldsInfo) {
             // more than case change when deployed to protal so keep track of the new names
-            layerInfos[item.id]["newEditFieldsInfo"] = JSON.parse(
+            layerInfo["newEditFieldsInfo"] = JSON.parse(
               JSON.stringify(item.editFieldsInfo)
             );
           }
@@ -1194,19 +1301,23 @@ export function postProcessFields(
           // update the field visibility to match that of the source
           /* istanbul ignore else */
           if (isView) {
-            let fieldUpdates: any[] = _getFieldVisibilityUpdates(
-              layerInfos[item.id]
-            );
+            let fieldUpdates: any[] = _getFieldVisibilityUpdates(layerInfo);
 
             // view field domains can contain different values than the source field domains
             // use the cached view domain when it differs from the source view domain
-            fieldUpdates = _validateDomains(layerInfos[item.id], fieldUpdates);
+            fieldUpdates = _validateDomains(layerInfo, fieldUpdates);
 
             if (fieldUpdates.length > 0) {
-              layerInfos[item.id].fields = fieldUpdates;
+              layerInfo.fields = fieldUpdates;
             }
 
-            layerInfos[item.id].typeIdField = _getTypeIdField(item);
+            layerInfo.typeIdField = _getTypeIdField(item);
+
+            const fieldNames: string[] = layerInfo.newFields.map(
+              (f: any) => f.name
+            );
+            _validateTemplatesFields(layerInfo, fieldNames);
+            _validateTypesTemplates(layerInfo, fieldNames);
           }
         }
       });
