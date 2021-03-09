@@ -8,6 +8,11 @@ Note: This file cannot be in UTF-8*
 
 ## [Unreleased]
 
+
+## [0.22.3] - March 9th 2021
+
+
+
 ## [0.22.2] - March 8th 2021
 
 
@@ -78,4 +83,5 @@ Note: This file cannot be in UTF-8*
 [0.22.0]: https://github.com/Esri/solution.js/compare/v0.21.7...v0.22.0 "v0.22.0"
 [0.22.1]: https://github.com/Esri/solution.js/compare/v0.22.0...v0.22.1 "v0.22.1"
 [0.22.2]: https://github.com/Esri/solution.js/compare/v0.22.1...v0.22.2 "v0.22.2"
-[HEAD]: https://github.com/Esri/solution.js/compare/v0.22.2...HEAD "Unreleased Changes"
+[0.22.3]: https://github.com/Esri/solution.js/compare/v0.22.2...v0.22.3 "v0.22.3"
+[HEAD]: https://github.com/Esri/solution.js/compare/v0.22.3...HEAD "Unreleased Changes"
