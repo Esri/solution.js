@@ -76,7 +76,8 @@ export enum EItemProgressStatus {
   Cancelled,
   Finished,
   Ignored,
-  Failed
+  Failed,
+  Unknown
 }
 
 export const SItemProgressStatus = [
@@ -85,7 +86,8 @@ export const SItemProgressStatus = [
   "3 Cancelled",
   "3 Finished",
   "3 Ignored",
-  "3 Failed"
+  "3 Failed",
+  "Unknown"
 ];
 
 //#endregion ---------------------------------------------------------------------------------------------------------//

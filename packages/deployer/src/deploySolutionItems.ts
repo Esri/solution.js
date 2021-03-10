@@ -846,6 +846,10 @@ export function _createItemFromTemplateWhenReady(
     !templateDictionary.hasOwnProperty(template.itemId) ||
     !common.getProp(templateDictionary[template.itemId], "def")
   ) {
+    let createResponse: common.ICreateItemFromTemplateResponse;
+    let statusCode: common.EItemProgressStatus =
+      common.EItemProgressStatus.Unknown;
+
     templateDictionary[template.itemId] =
       templateDictionary[template.itemId] || {};
 
@@ -884,83 +888,72 @@ export function _createItemFromTemplateWhenReady(
             }, _awaitDependencies)
           : _awaitDependencies;
 
-      Promise.all(awaitDependencies).then(
-        () => {
+      Promise.all(awaitDependencies)
+        .then(() => {
           // Find the conversion handler for this item type
           const templateType = template.type;
           const itemHandler = moduleMap[templateType];
           if (!itemHandler || itemHandler === UNSUPPORTED) {
             if (itemHandler === UNSUPPORTED) {
-              itemProgressCallback(
-                template.itemId,
-                common.EItemProgressStatus.Ignored,
-                template.estimatedDeploymentCostFactor
-              );
+              statusCode = common.EItemProgressStatus.Ignored;
+              throw new Error();
             } else {
-              itemProgressCallback(
-                template.itemId,
-                common.EItemProgressStatus.Failed,
-                0
-              );
+              statusCode = common.EItemProgressStatus.Failed;
+              throw new Error();
             }
-            resolve(common.generateEmptyCreationResponse(template.type));
-          } else {
-            // Delegate the creation of the item to the handler
-            // eslint-disable-next-line @typescript-eslint/no-floating-promises
-            itemHandler
-              .createItemFromTemplate(
-                template,
-                templateDictionary,
-                destinationAuthentication,
-                itemProgressCallback
-              )
-              .then(
-                (createResponse: common.ICreateItemFromTemplateResponse) => {
-                  if (createResponse.id === "") {
-                    resolve(
-                      common.generateEmptyCreationResponse(template.type)
-                    ); // fails to create item
-                  } else {
-                    /* istanbul ignore else */
-                    if (createResponse.item.item.url) {
-                      common.setCreateProp(
-                        templateDictionary,
-                        template.itemId + ".url",
-                        createResponse.item.item.url
-                      );
-                    }
-
-                    // Copy resources, metadata, form
-                    common
-                      .copyFilesFromStorageItem(
-                        storageAuthentication,
-                        resourceFilePaths,
-                        templateDictionary.folderId,
-                        createResponse.id,
-                        destinationAuthentication,
-                        templateType === "Group",
-                        createResponse.item
-                      )
-                      .then(
-                        () => resolve(createResponse),
-                        () => {
-                          itemProgressCallback(
-                            template.itemId,
-                            common.EItemProgressStatus.Failed,
-                            0
-                          );
-                          resolve(
-                            common.generateEmptyCreationResponse(template.type)
-                          ); // fails to copy resources from storage
-                        }
-                      );
-                  }
-                }
-              );
           }
-        },
-        () => resolve(common.generateEmptyCreationResponse(template.type)) // fails to get item dependencies
-      );
+
+          // Delegate the creation of the item to the handler
+          // eslint-disable-next-line @typescript-eslint/no-floating-promises
+          return itemHandler.createItemFromTemplate(
+            template,
+            templateDictionary,
+            destinationAuthentication,
+            itemProgressCallback
+          );
+        })
+        .then((response: common.ICreateItemFromTemplateResponse) => {
+          if (response.id === "") {
+            statusCode = common.EItemProgressStatus.Failed;
+            throw new Error(); // fails to create item
+          }
+
+          /* istanbul ignore else */
+          createResponse = response;
+          if (createResponse.item.item.url) {
+            common.setCreateProp(
+              templateDictionary,
+              template.itemId + ".url",
+              createResponse.item.item.url
+            );
+          }
+
+          // Copy resources, metadata, form
+          return common.copyFilesFromStorageItem(
+            storageAuthentication,
+            resourceFilePaths,
+            templateDictionary.folderId,
+            createResponse.id,
+            destinationAuthentication,
+            template.type === "Group",
+            createResponse.item
+          );
+        })
+        .then(() => {
+          resolve(createResponse);
+        })
+        .catch(() => {
+          itemProgressCallback(
+            template.itemId,
+            statusCode === common.EItemProgressStatus.Unknown
+              ? common.EItemProgressStatus.Failed
+              : statusCode,
+            0
+          );
+
+          // Item type not supported or fails to get item dependencies
+          resolve(common.generateEmptyCreationResponse(template.type));
+        });
     });
   }
   return templateDictionary[template.itemId].def;
