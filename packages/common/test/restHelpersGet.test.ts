@@ -1297,6 +1297,37 @@ describe("Module `restHelpersGet`: common REST fetch functions shared across pac
     });
   }
 
+  describe("getThumbnailFile", () => {
+    // Blobs are only available in the browser
+    if (typeof window !== "undefined") {
+      it("should handle error", done => {
+        const url =
+          utils.PORTAL_SUBSET.restUrl +
+          "/content/items/itm1234567890?f=json&token=fake-token";
+        fetchMock.post(url, mockItems.get400Failure());
+        restHelpersGet.getThumbnailFile(url, MOCK_USER_SESSION).then(file => {
+          expect(file).toBeNull();
+          done();
+        }, done.fail);
+      });
+
+      it("should get file", done => {
+        const url =
+          utils.PORTAL_SUBSET.restUrl +
+          "/content/items/itm1234567890?f=json&token=fake-token";
+        fetchMock.post(url, mockItems.getAnImageResponse(), {
+          sendAsJson: false
+        });
+        restHelpersGet.getThumbnailFile(url, MOCK_USER_SESSION).then(file => {
+          expect(file).not.toBeUndefined();
+          expect(file.type).toEqual("image/png");
+          expect(file.name).toEqual("myFile.png");
+          done();
+        }, done.fail);
+      });
+    }
+  });
+
   describe("_getGroupContentsTranche", () => {
     it("handles an inaccessible group", done => {
       const groupId = "grp1234567890";
