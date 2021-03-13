@@ -849,6 +849,7 @@ export function _createItemFromTemplateWhenReady(
     let createResponse: common.ICreateItemFromTemplateResponse;
     let statusCode: common.EItemProgressStatus =
       common.EItemProgressStatus.Unknown;
+    let itemHandler: common.IItemTemplateConversions;
 
     templateDictionary[template.itemId] =
       templateDictionary[template.itemId] || {};
@@ -892,7 +893,7 @@ export function _createItemFromTemplateWhenReady(
         .then(() => {
           // Find the conversion handler for this item type
           const templateType = template.type;
-          const itemHandler = moduleMap[templateType];
+          itemHandler = moduleMap[templateType];
           if (!itemHandler || itemHandler === UNSUPPORTED) {
             if (itemHandler === UNSUPPORTED) {
               statusCode = common.EItemProgressStatus.Ignored;
@@ -902,6 +903,15 @@ export function _createItemFromTemplateWhenReady(
               throw new Error();
             }
           }
+
+          // Get the item's thumbnail
+          return common.getThumbnailFromStorageItem(
+            storageAuthentication,
+            resourceFilePaths
+          );
+        })
+        .then(thumbnail => {
+          template.item.thumbnail = thumbnail;
 
           // Delegate the creation of the item to the handler
           // eslint-disable-next-line @typescript-eslint/no-floating-promises
@@ -915,7 +925,7 @@ export function _createItemFromTemplateWhenReady(
         .then((response: common.ICreateItemFromTemplateResponse) => {
           if (response.id === "") {
             statusCode = common.EItemProgressStatus.Failed;
-            throw new Error(); // fails to create item
+            throw new Error("handled"); // fails to create item
           }
 
           /* istanbul ignore else */
@@ -935,21 +945,22 @@ export function _createItemFromTemplateWhenReady(
             templateDictionary.folderId,
             createResponse.id,
             destinationAuthentication,
-            template.type === "Group",
             createResponse.item
           );
         })
         .then(() => {
           resolve(createResponse);
         })
-        .catch(() => {
-          itemProgressCallback(
-            template.itemId,
-            statusCode === common.EItemProgressStatus.Unknown
-              ? common.EItemProgressStatus.Failed
-              : statusCode,
-            0
-          );
+        .catch(error => {
+          if (!error || error.message !== "handled") {
+            itemProgressCallback(
+              template.itemId,
+              statusCode === common.EItemProgressStatus.Unknown
+                ? common.EItemProgressStatus.Failed
+                : statusCode,
+              0
+            );
+          }
 
           // Item type not supported or fails to get item dependencies
           resolve(common.generateEmptyCreationResponse(template.type));

@@ -434,7 +434,6 @@ describe("Module `resourceHelpers`: common functions involving the management of
           null,
           "3ef",
           storageAuthentication,
-          false,
           tmpl
         )
         .then(resp => {
@@ -534,7 +533,6 @@ describe("Module `resourceHelpers`: common functions involving the management of
             null,
             destinationItemId,
             destinationAuthentication,
-            false,
             { properties: mimeTypes }
           )
           .then((response: any) => {

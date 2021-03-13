@@ -725,6 +725,17 @@ export function getPortalUrlFromAuth(authentication: UserSession): string {
   );
 }
 
+export function getThumbnailFile(
+  url: string,
+  authentication: UserSession
+): Promise<File> {
+  return new Promise<File>(resolve => {
+    getBlobAsFile(url, "thumbnail", authentication, [500]).then(resolve, () =>
+      resolve(null)
+    );
+  });
+}
+
 // ------------------------------------------------------------------------------------------------------------------ //
 
 /**
