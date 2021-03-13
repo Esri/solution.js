@@ -128,22 +128,6 @@ export function addThumbnailFromBlob(
   return isGroup ? updateGroup(updateOptions) : updateItem(updateOptions);
 }
 
-export function addThumbnailFromUrl(
-  url: string,
-  itemId: string,
-  authentication: UserSession,
-  isGroup: boolean = false
-): Promise<any> {
-  return new Promise<any>((resolve, reject) => {
-    getBlob(appendQueryParam(url, "w=400"), authentication).then(async blob => {
-      await addThumbnailFromBlob(blob, itemId, authentication, isGroup).then(
-        resolve,
-        reject
-      );
-    }, reject);
-  });
-}
-
 export function copyData(
   source: {
     url: string;
