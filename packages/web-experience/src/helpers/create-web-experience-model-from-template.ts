@@ -36,6 +36,7 @@ export function createWebExperienceModelFromTemplate(
   const model = interpolate(templateModel, settings, transforms);
   // ensure this is set - there may be some templates w/o `{{experienceTemplateUrl}}
   model.item.url = settings.experienceUrlTemplate;
+  /* istanbul ignore else */
   if (templateModel.item.thumbnail) {
     model.item.thumbnail = templateModel.item.thumbnail;
   }

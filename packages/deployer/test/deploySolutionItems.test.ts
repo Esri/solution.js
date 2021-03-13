@@ -1539,7 +1539,7 @@ describe("Module `deploySolutionItems`", () => {
               "/content/items/wma1234567891?f=json&token=fake-token",
             updatedItem
           )
-          .post("http://someurl/rest/info", {})
+          .post("http://someurl//rest/info", {})
           .post("http://someurl/", mockItems.get400Failure());
 
         // eslint-disable-next-line @typescript-eslint/no-floating-promises

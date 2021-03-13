@@ -1305,25 +1305,29 @@ describe("Module `restHelpersGet`: common REST fetch functions shared across pac
           utils.PORTAL_SUBSET.restUrl +
           "/content/items/itm1234567890?f=json&token=fake-token";
         fetchMock.post(url, mockItems.get400Failure());
-        restHelpersGet.getThumbnailFile(url, MOCK_USER_SESSION).then(file => {
-          expect(file).toBeNull();
-          done();
-        }, done.fail);
+        restHelpersGet
+          .getThumbnailFile(url, "sampleImage", MOCK_USER_SESSION)
+          .then(file => {
+            expect(file).toBeNull();
+            done();
+          }, done.fail);
       });
 
       it("should get file", done => {
         const url =
           utils.PORTAL_SUBSET.restUrl +
           "/content/items/itm1234567890?f=json&token=fake-token";
-        fetchMock.post(url, mockItems.getAnImageResponse(), {
+        fetchMock.post(url, utils.getSampleImageAsFile(), {
           sendAsJson: false
         });
-        restHelpersGet.getThumbnailFile(url, MOCK_USER_SESSION).then(file => {
-          expect(file).not.toBeUndefined();
-          expect(file.type).toEqual("image/png");
-          expect(file.name).toEqual("myFile.png");
-          done();
-        }, done.fail);
+        restHelpersGet
+          .getThumbnailFile(url, "sampleImage", MOCK_USER_SESSION)
+          .then(file => {
+            expect(file).not.toBeUndefined();
+            expect(file.type).toEqual("image/png");
+            expect(file.name).toEqual("sampleImage");
+            done();
+          }, done.fail);
       });
     }
   });

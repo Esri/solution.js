@@ -1641,10 +1641,9 @@ describe("Module `resourceHelpers`: common functions involving the management of
             url: utils.PORTAL_SUBSET.restUrl + "/images/thumbnail.png" // Thumbnail uses only URL
           }
         ];
-        const imageUrl: string = filePaths[0].url + "?w=400";
-        const expectedImage = mockItems.getAnImageResponse();
+        const expectedImage = utils.getSampleImageAsFile(filePaths[0].filename);
 
-        fetchMock.get(imageUrl, expectedImage, { sendAsJson: false });
+        fetchMock.post(filePaths[0].url, expectedImage, { sendAsJson: false });
         resourceHelpers
           .getThumbnailFromStorageItem(storageAuthentication, filePaths)
           .then((response: File) => {

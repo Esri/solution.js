@@ -141,6 +141,7 @@ export function createItemFromTemplate(
       newItemTemplate,
       templateDictionary
     );
+    /* istanbul ignore else */
     if (template.item.thumbnail) {
       newItemTemplate.item.thumbnail = template.item.thumbnail;
     }

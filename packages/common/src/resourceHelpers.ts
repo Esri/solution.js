@@ -734,18 +734,20 @@ export function getThumbnailFromStorageItem(
   authentication: UserSession,
   filePaths: IDeployFileCopyPath[]
 ): Promise<File> {
-  let thumbnailPath: string;
+  let thumbnailUrl: string;
+  let thumbnailFilename: string;
   filePaths.forEach(path => {
     if (path.type === EFileType.Thumbnail) {
-      thumbnailPath = path.url;
+      thumbnailUrl = path.url;
+      thumbnailFilename = path.filename;
     }
   });
 
-  if (!thumbnailPath) {
+  if (!thumbnailUrl) {
     return Promise.resolve(null);
   }
 
-  return getThumbnailFile(thumbnailPath, authentication);
+  return getThumbnailFile(thumbnailUrl, thumbnailFilename, authentication);
 }
 
 /**
