@@ -54,309 +54,287 @@ describe("Module `resourceHelpers`: common functions involving the management of
     fetchMock.restore();
   });
 
-  // Blobs are only available in the browser
-  if (typeof window !== "undefined") {
-    describe("addMetadataFromBlob", () => {
-      it("has metadata", done => {
-        const blob = utils.getSampleMetadataAsBlob();
-        const itemId = "itm1234567890";
-        const updateUrl =
-          utils.PORTAL_SUBSET.restUrl +
-          "/content/users/casey/items/itm1234567890/update";
-        const expected = { success: true, id: itemId };
+  describe("addMetadataFromBlob", () => {
+    it("has metadata", done => {
+      const blob = utils.getSampleMetadataAsBlob();
+      const itemId = "itm1234567890";
+      const updateUrl =
+        utils.PORTAL_SUBSET.restUrl +
+        "/content/users/casey/items/itm1234567890/update";
+      const expected = { success: true, id: itemId };
 
-        fetchMock.post(updateUrl, expected);
-        resourceHelpers
-          .addMetadataFromBlob(blob, itemId, MOCK_USER_SESSION)
-          .then((response: any) => {
-            expect(response).toEqual(expected);
-            const options: fetchMock.MockOptions = fetchMock.lastOptions(
-              updateUrl
-            );
-            const fetchBody = (options as fetchMock.MockResponseObject).body;
-            expect(typeof fetchBody).toEqual("object");
-            done();
-          }, done.fail);
-      });
-    });
-
-    describe("addResourceFromBlob", () => {
-      it("has filename without folder", done => {
-        const blob = utils.getSampleMetadataAsBlob();
-        const itemId = "itm1234567890";
-        const folder = "";
-        const filename = "aFilename.xml";
-        const updateUrl =
-          utils.PORTAL_SUBSET.restUrl +
-          "/content/users/casey/items/itm1234567890/addResources";
-        const expected = { success: true, id: itemId };
-
-        fetchMock.post(updateUrl, expected);
-        addResourceFromBlobModule
-          .addResourceFromBlob(
-            blob,
-            itemId,
-            folder,
-            filename,
-            MOCK_USER_SESSION
-          )
-          .then((response: any) => {
-            expect(response).toEqual(expected);
-            const options: fetchMock.MockOptions = fetchMock.lastOptions(
-              updateUrl
-            );
-            const fetchBody = (options as fetchMock.MockResponseObject).body;
-            expect(typeof fetchBody).toEqual("object");
-            const form = fetchBody as FormData;
-            expect(form.get("fileName")).toEqual(filename);
-            done();
-          }, done.fail);
-      });
-
-      it("has a filename without an extension", done => {
-        const blob = utils.getSampleMetadataAsBlob();
-        const itemId = "itm1234567890";
-        const folder = "aFolder";
-        const filename = "aFilename";
-        const expected = new request.ArcGISAuthError(
-          "Filename must have an extension indicating its type"
-        );
-
-        addResourceFromBlobModule
-          .addResourceFromBlob(
-            blob,
-            itemId,
-            folder,
-            filename,
-            MOCK_USER_SESSION
-          )
-          .then(
-            () => done.fail(),
-            (response: any) => {
-              expect(response).toEqual(expected);
-              done();
-            }
+      fetchMock.post(updateUrl, expected);
+      resourceHelpers
+        .addMetadataFromBlob(blob, itemId, MOCK_USER_SESSION)
+        .then((response: any) => {
+          expect(response).toEqual(expected);
+          const options: fetchMock.MockOptions = fetchMock.lastOptions(
+            updateUrl
           );
-      });
+          const fetchBody = (options as fetchMock.MockResponseObject).body;
+          expect(typeof fetchBody).toEqual("object");
+          done();
+        }, done.fail);
+    });
+  });
 
-      it("has filename with folder", done => {
-        const blob = utils.getSampleMetadataAsBlob();
-        const itemId = "itm1234567890";
-        const folder = "aFolder";
-        const filename = "aFilename.xml";
-        const updateUrl =
-          utils.PORTAL_SUBSET.restUrl +
-          "/content/users/casey/items/itm1234567890/addResources";
-        const expected = { success: true, id: itemId };
+  describe("addResourceFromBlob", () => {
+    it("has filename without folder", done => {
+      const blob = utils.getSampleMetadataAsBlob();
+      const itemId = "itm1234567890";
+      const folder = "";
+      const filename = "aFilename.xml";
+      const updateUrl =
+        utils.PORTAL_SUBSET.restUrl +
+        "/content/users/casey/items/itm1234567890/addResources";
+      const expected = { success: true, id: itemId };
 
-        fetchMock.post(updateUrl, expected);
-        addResourceFromBlobModule
-          .addResourceFromBlob(
-            blob,
-            itemId,
-            folder,
-            filename,
-            MOCK_USER_SESSION
-          )
-          .then((response: any) => {
-            expect(response).toEqual(expected);
-            const options: fetchMock.MockOptions = fetchMock.lastOptions(
-              updateUrl
-            );
-            const fetchBody = (options as fetchMock.MockResponseObject).body;
-            expect(typeof fetchBody).toEqual("object");
-            const form = fetchBody as FormData;
-            expect(form.get("resourcesPrefix")).toEqual(folder);
-            expect(form.get("fileName")).toEqual(filename);
-            done();
-          }, done.fail);
-      });
+      fetchMock.post(updateUrl, expected);
+      addResourceFromBlobModule
+        .addResourceFromBlob(blob, itemId, folder, filename, MOCK_USER_SESSION)
+        .then((response: any) => {
+          expect(response).toEqual(expected);
+          const options: fetchMock.MockOptions = fetchMock.lastOptions(
+            updateUrl
+          );
+          const fetchBody = (options as fetchMock.MockResponseObject).body;
+          expect(typeof fetchBody).toEqual("object");
+          const form = fetchBody as FormData;
+          expect(form.get("fileName")).toEqual(filename);
+          done();
+        }, done.fail);
     });
 
-    describe("addThumbnailFromBlob", () => {
-      it("gets an item's thumbnail from a blob", done => {
-        const blob = utils.getSampleImageAsBlob();
-        const itemId = "itm1234567890";
-        const updateUrl =
-          utils.PORTAL_SUBSET.restUrl +
-          "/content/users/casey/items/itm1234567890/update";
-        const expected = utils.getSuccessResponse({ id: itemId });
-        const serverInfoUrl: string =
-          "https://myserver/images/thumbnail.png/rest/info";
-        const expectedServerInfo = SERVER_INFO;
+    it("has a filename without an extension", done => {
+      const blob = utils.getSampleMetadataAsBlob();
+      const itemId = "itm1234567890";
+      const folder = "aFolder";
+      const filename = "aFilename";
+      const expected = new request.ArcGISAuthError(
+        "Filename must have an extension indicating its type"
+      );
 
-        fetchMock
-          .post(updateUrl, expected)
-          .post(serverInfoUrl, expectedServerInfo);
-        resourceHelpers
-          .addThumbnailFromBlob(blob, itemId, MOCK_USER_SESSION)
-          .then((response: any) => {
-            expect(response).toEqual(expected);
-            const options: fetchMock.MockOptions = fetchMock.lastOptions(
-              updateUrl
-            );
-            const fetchBody = (options as fetchMock.MockResponseObject).body;
-            expect(typeof fetchBody).toEqual("object");
-            done();
-          }, done.fail);
-      });
-
-      it("gets a group's thumbnail from a blob", done => {
-        const blob = utils.getSampleImageAsBlob();
-        const itemId = "grp1234567890";
-        const updateUrl =
-          utils.PORTAL_SUBSET.restUrl +
-          "/community/groups/grp1234567890/update";
-        const expected = utils.getSuccessResponse({ id: itemId });
-        const serverInfoUrl: string =
-          "https://myserver/images/thumbnail.png/rest/info";
-        const expectedServerInfo = SERVER_INFO;
-
-        fetchMock
-          .post(updateUrl, expected)
-          .post(serverInfoUrl, expectedServerInfo);
-        resourceHelpers
-          .addThumbnailFromBlob(blob, itemId, MOCK_USER_SESSION, true)
-          .then((response: any) => {
-            expect(response).toEqual(expected);
-            const options: fetchMock.MockOptions = fetchMock.lastOptions(
-              updateUrl
-            );
-            const fetchBody = (options as fetchMock.MockResponseObject).body;
-            expect(typeof fetchBody).toEqual("object");
-            done();
-          }, done.fail);
-      });
-    });
-
-    describe("copyData", () => {
-      it("should handle error getting data", done => {
-        const source: any = {
-          url: undefined, // <-- Why test this? is this ever possible?
-          authentication: MOCK_USER_SESSION
-        };
-
-        const destination: any = {
-          itemId: "itm1234567890",
-          filename: "filename.txt",
-          mimeType: "text/plain",
-          authentication: MOCK_USER_SESSION
-        };
-
-        return resourceHelpers.copyData(source, destination).then(
+      addResourceFromBlobModule
+        .addResourceFromBlob(blob, itemId, folder, filename, MOCK_USER_SESSION)
+        .then(
           () => done.fail(),
-          () => done()
+          (response: any) => {
+            expect(response).toEqual(expected);
+            done();
+          }
         );
-      });
+    });
 
-      it("should handle error updating item with data", done => {
-        const source: any = {
-          url:
-            utils.PORTAL_SUBSET.restUrl +
+    it("has filename with folder", done => {
+      const blob = utils.getSampleMetadataAsBlob();
+      const itemId = "itm1234567890";
+      const folder = "aFolder";
+      const filename = "aFilename.xml";
+      const updateUrl =
+        utils.PORTAL_SUBSET.restUrl +
+        "/content/users/casey/items/itm1234567890/addResources";
+      const expected = { success: true, id: itemId };
+
+      fetchMock.post(updateUrl, expected);
+      addResourceFromBlobModule
+        .addResourceFromBlob(blob, itemId, folder, filename, MOCK_USER_SESSION)
+        .then((response: any) => {
+          expect(response).toEqual(expected);
+          const options: fetchMock.MockOptions = fetchMock.lastOptions(
+            updateUrl
+          );
+          const fetchBody = (options as fetchMock.MockResponseObject).body;
+          expect(typeof fetchBody).toEqual("object");
+          const form = fetchBody as FormData;
+          expect(form.get("resourcesPrefix")).toEqual(folder);
+          expect(form.get("fileName")).toEqual(filename);
+          done();
+        }, done.fail);
+    });
+  });
+
+  describe("addThumbnailFromBlob", () => {
+    it("gets an item's thumbnail from a blob", done => {
+      const blob = utils.getSampleImageAsBlob();
+      const itemId = "itm1234567890";
+      const updateUrl =
+        utils.PORTAL_SUBSET.restUrl +
+        "/content/users/casey/items/itm1234567890/update";
+      const expected = utils.getSuccessResponse({ id: itemId });
+      const serverInfoUrl: string =
+        "https://myserver/images/thumbnail.png/rest/info";
+      const expectedServerInfo = SERVER_INFO;
+
+      fetchMock
+        .post(updateUrl, expected)
+        .post(serverInfoUrl, expectedServerInfo);
+      resourceHelpers
+        .addThumbnailFromBlob(blob, itemId, MOCK_USER_SESSION)
+        .then((response: any) => {
+          expect(response).toEqual(expected);
+          const options: fetchMock.MockOptions = fetchMock.lastOptions(
+            updateUrl
+          );
+          const fetchBody = (options as fetchMock.MockResponseObject).body;
+          expect(typeof fetchBody).toEqual("object");
+          done();
+        }, done.fail);
+    });
+
+    it("gets a group's thumbnail from a blob", done => {
+      const blob = utils.getSampleImageAsBlob();
+      const itemId = "grp1234567890";
+      const updateUrl =
+        utils.PORTAL_SUBSET.restUrl + "/community/groups/grp1234567890/update";
+      const expected = utils.getSuccessResponse({ id: itemId });
+      const serverInfoUrl: string =
+        "https://myserver/images/thumbnail.png/rest/info";
+      const expectedServerInfo = SERVER_INFO;
+
+      fetchMock
+        .post(updateUrl, expected)
+        .post(serverInfoUrl, expectedServerInfo);
+      resourceHelpers
+        .addThumbnailFromBlob(blob, itemId, MOCK_USER_SESSION, true)
+        .then((response: any) => {
+          expect(response).toEqual(expected);
+          const options: fetchMock.MockOptions = fetchMock.lastOptions(
+            updateUrl
+          );
+          const fetchBody = (options as fetchMock.MockResponseObject).body;
+          expect(typeof fetchBody).toEqual("object");
+          done();
+        }, done.fail);
+    });
+  });
+
+  describe("copyData", () => {
+    it("should handle error getting data", done => {
+      const source: any = {
+        url: undefined, // <-- Why test this? is this ever possible?
+        authentication: MOCK_USER_SESSION
+      };
+
+      const destination: any = {
+        itemId: "itm1234567890",
+        filename: "filename.txt",
+        mimeType: "text/plain",
+        authentication: MOCK_USER_SESSION
+      };
+
+      return resourceHelpers.copyData(source, destination).then(
+        () => done.fail(),
+        () => done()
+      );
+    });
+
+    it("should handle error updating item with data", done => {
+      const source: any = {
+        url:
+          utils.PORTAL_SUBSET.restUrl +
+          "/content/items/itm1234567980/info/filename.txt",
+        authentication: MOCK_USER_SESSION
+      };
+
+      const destination: any = {
+        itemId: "itm1234567890",
+        filename: "filename.txt",
+        mimeType: "text/plain",
+        authentication: MOCK_USER_SESSION
+      };
+
+      fetchMock
+        .post(
+          utils.PORTAL_SUBSET.restUrl +
             "/content/items/itm1234567980/info/filename.txt",
-          authentication: MOCK_USER_SESSION
-        };
-
-        const destination: any = {
-          itemId: "itm1234567890",
-          filename: "filename.txt",
-          mimeType: "text/plain",
-          authentication: MOCK_USER_SESSION
-        };
-
-        fetchMock
-          .post(
-            utils.PORTAL_SUBSET.restUrl +
-              "/content/items/itm1234567980/info/filename.txt",
-            utils.getSampleTextAsFile("filename.txt"),
-            { sendAsJson: false }
-          )
-          .post(
-            utils.PORTAL_SUBSET.restUrl +
-              "/content/users/casey/items/itm1234567890/update",
-            mockItems.get400Failure()
-          );
-
-        resourceHelpers.copyData(source, destination).then(
-          () => done.fail(),
-          () => done()
+          utils.getSampleTextAsFile("filename.txt"),
+          { sendAsJson: false }
+        )
+        .post(
+          utils.PORTAL_SUBSET.restUrl +
+            "/content/users/casey/items/itm1234567890/update",
+          mockItems.get400Failure()
         );
-      });
+
+      resourceHelpers.copyData(source, destination).then(
+        () => done.fail(),
+        () => done()
+      );
+    });
+  });
+
+  describe("convertBlobToSupportableResource", () => {
+    it("uses blob (file) name if it has one", () => {
+      const blob = utils.getSampleTextAsFile("namedBlob.txt");
+      expect(blob.name).toEqual("namedBlob.txt");
+      expect(blob.type).toEqual("text/plain");
+
+      const convertedBlob: interfaces.IFileMimeType = resourceHelpers.convertBlobToSupportableResource(
+        blob,
+        "alternateName.txt"
+      );
+      expect((convertedBlob.blob as File).name).toEqual("namedBlob.txt");
+      expect(convertedBlob.filename).toEqual("namedBlob.txt");
+      expect(convertedBlob.mimeType).toEqual("text/plain");
     });
 
-    describe("convertBlobToSupportableResource", () => {
-      it("uses blob (file) name if it has one", () => {
-        const blob = utils.getSampleTextAsFile("namedBlob.txt");
-        expect(blob.name).toEqual("namedBlob.txt");
-        expect(blob.type).toEqual("text/plain");
+    it("uses supplied file name if blob (file) doesn't have one", () => {
+      const blob = utils.getSampleTextAsFile("");
+      expect(blob.name).toEqual("");
+      expect(blob.type).toEqual("text/plain");
 
-        const convertedBlob: interfaces.IFileMimeType = resourceHelpers.convertBlobToSupportableResource(
-          blob,
-          "alternateName.txt"
-        );
-        expect((convertedBlob.blob as File).name).toEqual("namedBlob.txt");
-        expect(convertedBlob.filename).toEqual("namedBlob.txt");
-        expect(convertedBlob.mimeType).toEqual("text/plain");
-      });
-
-      it("uses supplied file name if blob (file) doesn't have one", () => {
-        const blob = utils.getSampleTextAsFile("");
-        expect(blob.name).toEqual("");
-        expect(blob.type).toEqual("text/plain");
-
-        const convertedBlob: interfaces.IFileMimeType = resourceHelpers.convertBlobToSupportableResource(
-          blob,
-          "alternateName.txt"
-        );
-        expect((convertedBlob.blob as File).name).toEqual("alternateName.txt");
-        expect(convertedBlob.filename).toEqual("alternateName.txt");
-        expect(convertedBlob.mimeType).toEqual("text/plain");
-      });
-
-      it("uses an empty file name if the blob (file) doesn't have a name and a name is not supplied", () => {
-        const blob = utils.getSampleTextAsFile("");
-        expect(blob.name).toEqual("");
-        expect(blob.type).toEqual("text/plain");
-
-        const convertedBlob: interfaces.IFileMimeType = resourceHelpers.convertBlobToSupportableResource(
-          blob
-        );
-        expect((convertedBlob.blob as File).name).toEqual("");
-        expect(convertedBlob.filename).toEqual("");
-        expect(convertedBlob.mimeType).toEqual("text/plain");
-      });
-
-      it("uses alters blob name if its extension indicates a MIME type not supported by AGO", () => {
-        const blob = utils.getSampleTextAsFile("namedBlob.pkg");
-        expect(blob.name).toEqual("namedBlob.pkg");
-        expect(blob.type).toEqual("text/plain");
-
-        const convertedBlob: interfaces.IFileMimeType = resourceHelpers.convertBlobToSupportableResource(
-          blob,
-          "alternateName.pkg"
-        );
-        expect((convertedBlob.blob as File).name).toEqual("namedBlob.pkg.zip");
-        expect(convertedBlob.filename).toEqual("namedBlob.pkg");
-        expect(convertedBlob.mimeType).toEqual("text/plain");
-      });
-
-      it("uses alternate blob name if the supplied filename indicates a MIME type not supported by AGO", () => {
-        const blob = utils.getSampleTextAsFile("");
-        expect(blob.name).toEqual("");
-        expect(blob.type).toEqual("text/plain");
-
-        const convertedBlob: interfaces.IFileMimeType = resourceHelpers.convertBlobToSupportableResource(
-          blob,
-          "alternateName.pkg"
-        );
-        expect((convertedBlob.blob as File).name).toEqual(
-          "alternateName.pkg.zip"
-        );
-        expect(convertedBlob.filename).toEqual("alternateName.pkg");
-        expect(convertedBlob.mimeType).toEqual("text/plain");
-      });
+      const convertedBlob: interfaces.IFileMimeType = resourceHelpers.convertBlobToSupportableResource(
+        blob,
+        "alternateName.txt"
+      );
+      expect((convertedBlob.blob as File).name).toEqual("alternateName.txt");
+      expect(convertedBlob.filename).toEqual("alternateName.txt");
+      expect(convertedBlob.mimeType).toEqual("text/plain");
     });
-  }
+
+    it("uses an empty file name if the blob (file) doesn't have a name and a name is not supplied", () => {
+      const blob = utils.getSampleTextAsFile("");
+      expect(blob.name).toEqual("");
+      expect(blob.type).toEqual("text/plain");
+
+      const convertedBlob: interfaces.IFileMimeType = resourceHelpers.convertBlobToSupportableResource(
+        blob
+      );
+      expect((convertedBlob.blob as File).name).toEqual("");
+      expect(convertedBlob.filename).toEqual("");
+      expect(convertedBlob.mimeType).toEqual("text/plain");
+    });
+
+    it("uses alters blob name if its extension indicates a MIME type not supported by AGO", () => {
+      const blob = utils.getSampleTextAsFile("namedBlob.pkg");
+      expect(blob.name).toEqual("namedBlob.pkg");
+      expect(blob.type).toEqual("text/plain");
+
+      const convertedBlob: interfaces.IFileMimeType = resourceHelpers.convertBlobToSupportableResource(
+        blob,
+        "alternateName.pkg"
+      );
+      expect((convertedBlob.blob as File).name).toEqual("namedBlob.pkg.zip");
+      expect(convertedBlob.filename).toEqual("namedBlob.pkg");
+      expect(convertedBlob.mimeType).toEqual("text/plain");
+    });
+
+    it("uses alternate blob name if the supplied filename indicates a MIME type not supported by AGO", () => {
+      const blob = utils.getSampleTextAsFile("");
+      expect(blob.name).toEqual("");
+      expect(blob.type).toEqual("text/plain");
+
+      const convertedBlob: interfaces.IFileMimeType = resourceHelpers.convertBlobToSupportableResource(
+        blob,
+        "alternateName.pkg"
+      );
+      expect((convertedBlob.blob as File).name).toEqual(
+        "alternateName.pkg.zip"
+      );
+      expect(convertedBlob.filename).toEqual("alternateName.pkg");
+      expect(convertedBlob.mimeType).toEqual("text/plain");
+    });
+  });
 
   describe("copyFilesFromStorageItem", () => {
     it("handles an empty files list", done => {
@@ -424,242 +402,239 @@ describe("Module `resourceHelpers`: common functions involving the management of
         });
     });
 
-    // Blobs are only available in the browser
-    if (typeof window !== "undefined") {
-      it("copies a single data file", done => {
-        const storageAuthentication = MOCK_USER_SESSION;
-        const filePaths: interfaces.IDeployFileCopyPath[] = [
-          {
-            type: interfaces.EFileType.Data,
-            folder: "storageFolder",
-            filename: "storageFilename.png",
-            url: "https://myserver/images/resource.png"
-          }
-        ];
-        const destinationItemId: string = "itm1234567890";
-        const destinationAuthentication = MOCK_USER_SESSION;
-        const serverInfoUrl = "https://myserver/images/resource.png/rest/info";
-        const expectedServerInfo = SERVER_INFO;
-        const fetchUrl = "https://myserver/images/resource.png";
-        const expectedFetch = mockItems.getAnImageResponse();
-        const updateUrl =
-          utils.PORTAL_SUBSET.restUrl +
-          "/content/users/casey/items/itm1234567890/update";
-        const expectedUpdate = true;
+    it("copies a single data file", done => {
+      const storageAuthentication = MOCK_USER_SESSION;
+      const filePaths: interfaces.IDeployFileCopyPath[] = [
+        {
+          type: interfaces.EFileType.Data,
+          folder: "storageFolder",
+          filename: "storageFilename.png",
+          url: "https://myserver/images/resource.png"
+        }
+      ];
+      const destinationItemId: string = "itm1234567890";
+      const destinationAuthentication = MOCK_USER_SESSION;
+      const serverInfoUrl = "https://myserver/images/resource.png/rest/info";
+      const expectedServerInfo = SERVER_INFO;
+      const fetchUrl = "https://myserver/images/resource.png";
+      const expectedFetch = mockItems.getAnImageResponse();
+      const updateUrl =
+        utils.PORTAL_SUBSET.restUrl +
+        "/content/users/casey/items/itm1234567890/update";
+      const expectedUpdate = true;
 
-        fetchMock
-          .post(utils.PORTAL_SUBSET.restUrl + "/info", expectedServerInfo)
-          .post(serverInfoUrl, expectedServerInfo)
-          .post(fetchUrl, expectedFetch, { sendAsJson: false })
-          .post(updateUrl, { success: true });
-        resourceHelpers
-          .copyFilesFromStorageItem(
-            storageAuthentication,
-            filePaths,
-            null,
-            destinationItemId,
-            destinationAuthentication
-          )
-          .then((response: any) => {
-            expect(response).toEqual(expectedUpdate);
-            done();
-          }, done.fail);
-      });
+      fetchMock
+        .post(utils.PORTAL_SUBSET.restUrl + "/info", expectedServerInfo)
+        .post(serverInfoUrl, expectedServerInfo)
+        .post(fetchUrl, expectedFetch, { sendAsJson: false })
+        .post(updateUrl, { success: true });
+      resourceHelpers
+        .copyFilesFromStorageItem(
+          storageAuthentication,
+          filePaths,
+          null,
+          destinationItemId,
+          destinationAuthentication
+        )
+        .then((response: any) => {
+          expect(response).toEqual(expectedUpdate);
+          done();
+        }, done.fail);
+    });
 
-      it("copies a single data file using list of MIME types", done => {
-        const storageAuthentication = MOCK_USER_SESSION;
-        const filePaths: interfaces.IDeployFileCopyPath[] = [
-          {
-            type: interfaces.EFileType.Data,
-            folder: "storageFolder",
-            filename: "storageFilename.png",
-            url: "https://myserver/images/resource.png"
-          }
-        ];
-        const destinationItemId: string = "itm1234567890";
-        const destinationAuthentication = MOCK_USER_SESSION;
-        const mimeTypes: interfaces.IMimeTypes = {
-          "storageFilename.png": "image/png"
-        };
-        const serverInfoUrl = "https://myserver/images/resource.png/rest/info";
-        const expectedServerInfo = SERVER_INFO;
-        const fetchUrl = "https://myserver/images/resource.png";
-        const expectedFetch = mockItems.getAnImageResponse();
-        const updateUrl =
-          utils.PORTAL_SUBSET.restUrl +
-          "/content/users/casey/items/itm1234567890/update";
-        const expectedUpdate = true;
+    it("copies a single data file using list of MIME types", done => {
+      const storageAuthentication = MOCK_USER_SESSION;
+      const filePaths: interfaces.IDeployFileCopyPath[] = [
+        {
+          type: interfaces.EFileType.Data,
+          folder: "storageFolder",
+          filename: "storageFilename.png",
+          url: "https://myserver/images/resource.png"
+        }
+      ];
+      const destinationItemId: string = "itm1234567890";
+      const destinationAuthentication = MOCK_USER_SESSION;
+      const mimeTypes: interfaces.IMimeTypes = {
+        "storageFilename.png": "image/png"
+      };
+      const serverInfoUrl = "https://myserver/images/resource.png/rest/info";
+      const expectedServerInfo = SERVER_INFO;
+      const fetchUrl = "https://myserver/images/resource.png";
+      const expectedFetch = mockItems.getAnImageResponse();
+      const updateUrl =
+        utils.PORTAL_SUBSET.restUrl +
+        "/content/users/casey/items/itm1234567890/update";
+      const expectedUpdate = true;
 
-        fetchMock
-          .post(utils.PORTAL_SUBSET.restUrl + "/info", expectedServerInfo)
-          .post(serverInfoUrl, expectedServerInfo)
-          .post(fetchUrl, expectedFetch, { sendAsJson: false })
-          .post(updateUrl, { success: true });
-        resourceHelpers
-          .copyFilesFromStorageItem(
-            storageAuthentication,
-            filePaths,
-            null,
-            destinationItemId,
-            destinationAuthentication,
-            { properties: mimeTypes }
-          )
-          .then((response: any) => {
-            expect(response).toEqual(expectedUpdate);
-            done();
-          }, done.fail);
-      });
+      fetchMock
+        .post(utils.PORTAL_SUBSET.restUrl + "/info", expectedServerInfo)
+        .post(serverInfoUrl, expectedServerInfo)
+        .post(fetchUrl, expectedFetch, { sendAsJson: false })
+        .post(updateUrl, { success: true });
+      resourceHelpers
+        .copyFilesFromStorageItem(
+          storageAuthentication,
+          filePaths,
+          null,
+          destinationItemId,
+          destinationAuthentication,
+          { properties: mimeTypes }
+        )
+        .then((response: any) => {
+          expect(response).toEqual(expectedUpdate);
+          done();
+        }, done.fail);
+    });
 
-      it("copies a single info file", done => {
-        const storageAuthentication = MOCK_USER_SESSION;
-        const filePaths: interfaces.IDeployFileCopyPath[] = [
-          {
-            type: interfaces.EFileType.Info,
-            folder: null,
-            filename: "form.json",
-            url:
-              utils.PORTAL_SUBSET.restUrl +
-              "/content/items/itm1234567890/info/form.json"
-          }
-        ];
-        const destinationItemId: string = "itm1234567890";
-        const destinationAuthentication = MOCK_USER_SESSION;
-        const updateUrl =
-          utils.PORTAL_SUBSET.restUrl +
-          "/content/users/casey/items/itm1234567890/updateinfo";
-        const expectedUpdate = true;
-
-        fetchMock
-          .post(
+    it("copies a single info file", done => {
+      const storageAuthentication = MOCK_USER_SESSION;
+      const filePaths: interfaces.IDeployFileCopyPath[] = [
+        {
+          type: interfaces.EFileType.Info,
+          folder: null,
+          filename: "form.json",
+          url:
             utils.PORTAL_SUBSET.restUrl +
-              "/content/items/itm1234567890/info/form.json",
-            utils.getSampleJsonAsFile("form.json")
-          )
-          .post(updateUrl, expectedUpdate);
-        resourceHelpers
-          .copyFilesFromStorageItem(
-            storageAuthentication,
-            filePaths,
-            null,
-            destinationItemId,
-            destinationAuthentication
-          )
-          .then((response: any) => {
-            expect(response).toEqual(expectedUpdate);
-            done();
-          }, done.fail);
-      });
+            "/content/items/itm1234567890/info/form.json"
+        }
+      ];
+      const destinationItemId: string = "itm1234567890";
+      const destinationAuthentication = MOCK_USER_SESSION;
+      const updateUrl =
+        utils.PORTAL_SUBSET.restUrl +
+        "/content/users/casey/items/itm1234567890/updateinfo";
+      const expectedUpdate = true;
 
-      it("copies a single metadata file", done => {
-        const storageAuthentication = MOCK_USER_SESSION;
-        const filePaths: interfaces.IDeployFileCopyPath[] = [
-          {
-            type: interfaces.EFileType.Metadata,
-            folder: "",
-            filename: "",
-            url: "https://myserver/doc/metadata.xml" // Metadata uses only URL
-          }
-        ];
-        const destinationItemId: string = "itm1234567890";
-        const destinationAuthentication = MOCK_USER_SESSION;
-        const serverInfoUrl = "https://myserver/doc/metadata.xml/rest/info";
-        const expectedServerInfo = SERVER_INFO;
-        const fetchUrl = "https://myserver/doc/metadata.xml";
-        const expectedFetch = new Blob(
-          ["<meta><value1>a</value1><value2>b</value2></meta>"],
-          { type: "text/xml" }
-        );
-        const updateUrl =
+      fetchMock
+        .post(
           utils.PORTAL_SUBSET.restUrl +
-          "/content/users/casey/items/itm1234567890/update";
-        const expectedUpdate = true;
+            "/content/items/itm1234567890/info/form.json",
+          utils.getSampleJsonAsFile("form.json")
+        )
+        .post(updateUrl, expectedUpdate);
+      resourceHelpers
+        .copyFilesFromStorageItem(
+          storageAuthentication,
+          filePaths,
+          null,
+          destinationItemId,
+          destinationAuthentication
+        )
+        .then((response: any) => {
+          expect(response).toEqual(expectedUpdate);
+          done();
+        }, done.fail);
+    });
 
-        fetchMock
-          .post(utils.PORTAL_SUBSET.restUrl + "/info", expectedServerInfo)
-          .post(serverInfoUrl, expectedServerInfo)
-          .post(fetchUrl, expectedFetch, { sendAsJson: false })
-          .post(updateUrl, expectedUpdate);
-        resourceHelpers
-          .copyFilesFromStorageItem(
-            storageAuthentication,
-            filePaths,
-            null,
-            destinationItemId,
-            destinationAuthentication
-          )
-          .then((response: any) => {
-            expect(response).toEqual(expectedUpdate);
-            done();
-          }, done.fail);
-      });
+    it("copies a single metadata file", done => {
+      const storageAuthentication = MOCK_USER_SESSION;
+      const filePaths: interfaces.IDeployFileCopyPath[] = [
+        {
+          type: interfaces.EFileType.Metadata,
+          folder: "",
+          filename: "",
+          url: "https://myserver/doc/metadata.xml" // Metadata uses only URL
+        }
+      ];
+      const destinationItemId: string = "itm1234567890";
+      const destinationAuthentication = MOCK_USER_SESSION;
+      const serverInfoUrl = "https://myserver/doc/metadata.xml/rest/info";
+      const expectedServerInfo = SERVER_INFO;
+      const fetchUrl = "https://myserver/doc/metadata.xml";
+      const expectedFetch = new Blob(
+        ["<meta><value1>a</value1><value2>b</value2></meta>"],
+        { type: "text/xml" }
+      );
+      const updateUrl =
+        utils.PORTAL_SUBSET.restUrl +
+        "/content/users/casey/items/itm1234567890/update";
+      const expectedUpdate = true;
 
-      it("copies a single resource file", done => {
-        const storageAuthentication = MOCK_USER_SESSION;
-        const filePaths: interfaces.IDeployFileCopyPath[] = [
-          {
-            type: interfaces.EFileType.Resource,
-            folder: "storageFolder",
-            filename: "storageFilename.png",
-            url: "https://myserver/images/resource.png"
-          }
-        ];
-        const destinationItemId: string = "itm1234567890";
-        const destinationAuthentication = MOCK_USER_SESSION;
-        const serverInfoUrl = "https://myserver/images/resource.png/rest/info";
-        const expectedServerInfo = SERVER_INFO;
-        const fetchUrl = "https://myserver/images/resource.png";
-        const expectedFetch = mockItems.getAnImageResponse();
-        const updateUrl =
-          utils.PORTAL_SUBSET.restUrl +
-          "/content/users/casey/items/itm1234567890/addResources";
-        const expectedUpdate = true;
+      fetchMock
+        .post(utils.PORTAL_SUBSET.restUrl + "/info", expectedServerInfo)
+        .post(serverInfoUrl, expectedServerInfo)
+        .post(fetchUrl, expectedFetch, { sendAsJson: false })
+        .post(updateUrl, expectedUpdate);
+      resourceHelpers
+        .copyFilesFromStorageItem(
+          storageAuthentication,
+          filePaths,
+          null,
+          destinationItemId,
+          destinationAuthentication
+        )
+        .then((response: any) => {
+          expect(response).toEqual(expectedUpdate);
+          done();
+        }, done.fail);
+    });
 
-        fetchMock
-          .post("https://www.arcgis.com/sharing/rest/info", expectedServerInfo)
-          .post(serverInfoUrl, expectedServerInfo)
-          .post(fetchUrl, expectedFetch, { sendAsJson: false })
-          .post(updateUrl, expectedUpdate);
-        resourceHelpers
-          .copyFilesFromStorageItem(
-            storageAuthentication,
-            filePaths,
-            null,
-            destinationItemId,
-            destinationAuthentication
-          )
-          .then((response: any) => {
-            expect(response).toEqual(expectedUpdate);
-            done();
-          }, done.fail);
-      });
+    it("copies a single resource file", done => {
+      const storageAuthentication = MOCK_USER_SESSION;
+      const filePaths: interfaces.IDeployFileCopyPath[] = [
+        {
+          type: interfaces.EFileType.Resource,
+          folder: "storageFolder",
+          filename: "storageFilename.png",
+          url: "https://myserver/images/resource.png"
+        }
+      ];
+      const destinationItemId: string = "itm1234567890";
+      const destinationAuthentication = MOCK_USER_SESSION;
+      const serverInfoUrl = "https://myserver/images/resource.png/rest/info";
+      const expectedServerInfo = SERVER_INFO;
+      const fetchUrl = "https://myserver/images/resource.png";
+      const expectedFetch = mockItems.getAnImageResponse();
+      const updateUrl =
+        utils.PORTAL_SUBSET.restUrl +
+        "/content/users/casey/items/itm1234567890/addResources";
+      const expectedUpdate = true;
 
-      it("does not copy thumbnail files", done => {
-        const storageAuthentication = MOCK_USER_SESSION;
-        const filePaths: interfaces.IDeployFileCopyPath[] = [
-          {
-            type: interfaces.EFileType.Thumbnail,
-            folder: "",
-            filename: "",
-            url: utils.PORTAL_SUBSET.restUrl + "/images/thumbnail.png" // Thumbnail uses only URL
-          }
-        ];
-        const destinationItemId: string = "itm1234567890";
-        const destinationAuthentication = MOCK_USER_SESSION;
+      fetchMock
+        .post("https://www.arcgis.com/sharing/rest/info", expectedServerInfo)
+        .post(serverInfoUrl, expectedServerInfo)
+        .post(fetchUrl, expectedFetch, { sendAsJson: false })
+        .post(updateUrl, expectedUpdate);
+      resourceHelpers
+        .copyFilesFromStorageItem(
+          storageAuthentication,
+          filePaths,
+          null,
+          destinationItemId,
+          destinationAuthentication
+        )
+        .then((response: any) => {
+          expect(response).toEqual(expectedUpdate);
+          done();
+        }, done.fail);
+    });
 
-        resourceHelpers
-          .copyFilesFromStorageItem(
-            storageAuthentication,
-            filePaths,
-            null,
-            destinationItemId,
-            destinationAuthentication
-          )
-          .then((response: any) => {
-            expect(response).toBeTruthy();
-            done();
-          }, done.fail);
-      });
-    }
+    it("does not copy thumbnail files", done => {
+      const storageAuthentication = MOCK_USER_SESSION;
+      const filePaths: interfaces.IDeployFileCopyPath[] = [
+        {
+          type: interfaces.EFileType.Thumbnail,
+          folder: "",
+          filename: "",
+          url: utils.PORTAL_SUBSET.restUrl + "/images/thumbnail.png" // Thumbnail uses only URL
+        }
+      ];
+      const destinationItemId: string = "itm1234567890";
+      const destinationAuthentication = MOCK_USER_SESSION;
+
+      resourceHelpers
+        .copyFilesFromStorageItem(
+          storageAuthentication,
+          filePaths,
+          null,
+          destinationItemId,
+          destinationAuthentication
+        )
+        .then((response: any) => {
+          expect(response).toBeTruthy();
+          done();
+        }, done.fail);
+    });
   });
 
   describe("copyFilesToStorageItem", () => {
@@ -683,308 +658,302 @@ describe("Module `resourceHelpers`: common functions involving the management of
         }, done.fail);
     });
 
-    // Blobs are only available in the browser
-    if (typeof window !== "undefined") {
-      it("single file to copy", done => {
-        const sourceUserSession = MOCK_USER_SESSION;
-        const filePaths: interfaces.ISourceFileCopyPath[] = [
-          {
-            folder: "storageFolder",
-            filename: "storageFilename.png",
-            url: "https://myserver/images/thumbnail.png"
-          }
-        ];
-        const storageItemId: string = "itm1234567890";
-        const storageAuthentication = MOCK_USER_SESSION;
-        const serverInfoUrl = "https://myserver/images/thumbnail.png/rest/info";
-        const expectedServerInfo = SERVER_INFO;
-        const fetchUrl = "https://myserver/images/thumbnail.png";
-        const expectedFetch = mockItems.getAnImageResponse();
-        const updateUrl =
-          utils.PORTAL_SUBSET.restUrl +
-          "/content/users/casey/items/itm1234567890/addResources";
-        const expectedUpdate: string[] = ["storageFolder/storageFilename.png"];
+    it("single file to copy", done => {
+      const sourceUserSession = MOCK_USER_SESSION;
+      const filePaths: interfaces.ISourceFileCopyPath[] = [
+        {
+          folder: "storageFolder",
+          filename: "storageFilename.png",
+          url: "https://myserver/images/thumbnail.png"
+        }
+      ];
+      const storageItemId: string = "itm1234567890";
+      const storageAuthentication = MOCK_USER_SESSION;
+      const serverInfoUrl = "https://myserver/images/thumbnail.png/rest/info";
+      const expectedServerInfo = SERVER_INFO;
+      const fetchUrl = "https://myserver/images/thumbnail.png";
+      const expectedFetch = mockItems.getAnImageResponse();
+      const updateUrl =
+        utils.PORTAL_SUBSET.restUrl +
+        "/content/users/casey/items/itm1234567890/addResources";
+      const expectedUpdate: string[] = ["storageFolder/storageFilename.png"];
 
-        fetchMock
-          .post("https://www.arcgis.com/sharing/rest/info", expectedServerInfo)
-          .post(serverInfoUrl, expectedServerInfo)
-          .post(fetchUrl, expectedFetch)
-          .post(updateUrl, expectedUpdate);
-        resourceHelpers
-          .copyFilesToStorageItem(
-            sourceUserSession,
-            filePaths,
-            storageItemId,
-            storageAuthentication
-          )
-          .then((response: any) => {
-            expect(response).toEqual(expectedUpdate);
-            done();
-          }, done.fail);
-      });
-    }
+      fetchMock
+        .post("https://www.arcgis.com/sharing/rest/info", expectedServerInfo)
+        .post(serverInfoUrl, expectedServerInfo)
+        .post(fetchUrl, expectedFetch)
+        .post(updateUrl, expectedUpdate);
+      resourceHelpers
+        .copyFilesToStorageItem(
+          sourceUserSession,
+          filePaths,
+          storageItemId,
+          storageAuthentication
+        )
+        .then((response: any) => {
+          expect(response).toEqual(expectedUpdate);
+          done();
+        }, done.fail);
+    });
   });
 
-  // Blobs are only available in the browser
-  if (typeof window !== "undefined") {
-    describe("copyMetadata", () => {
-      it("copies metadata.xml", done => {
-        const source = {
-          url:
-            "https://myorg.maps.arcgis.com/sharing/rest/content/items/c6732556e299f1/info/metadata/metadata.xml",
-          authentication: MOCK_USER_SESSION
-        };
-        const destination = {
-          itemId: "itm1234567890",
-          authentication: MOCK_USER_SESSION
-        };
+  describe("copyMetadata", () => {
+    it("copies metadata.xml", done => {
+      const source = {
+        url:
+          "https://myorg.maps.arcgis.com/sharing/rest/content/items/c6732556e299f1/info/metadata/metadata.xml",
+        authentication: MOCK_USER_SESSION
+      };
+      const destination = {
+        itemId: "itm1234567890",
+        authentication: MOCK_USER_SESSION
+      };
 
-        const fetchUrl =
-          utils.PORTAL_SUBSET.restUrl +
-          "/content/items/c6732556e299f1/info/metadata/metadata.xml";
-        const updateUrl =
-          utils.PORTAL_SUBSET.restUrl +
-          "/content/users/casey/items/itm1234567890/update";
-        const expectedFetch = utils.getSampleMetadataAsBlob();
-        const expectedUpdate = { success: true, id: destination.itemId };
-        fetchMock
-          .post(fetchUrl, expectedFetch, { sendAsJson: false })
-          .post(updateUrl, expectedUpdate);
+      const fetchUrl =
+        utils.PORTAL_SUBSET.restUrl +
+        "/content/items/c6732556e299f1/info/metadata/metadata.xml";
+      const updateUrl =
+        utils.PORTAL_SUBSET.restUrl +
+        "/content/users/casey/items/itm1234567890/update";
+      const expectedFetch = utils.getSampleMetadataAsBlob();
+      const expectedUpdate = { success: true, id: destination.itemId };
+      fetchMock
+        .post(fetchUrl, expectedFetch, { sendAsJson: false })
+        .post(updateUrl, expectedUpdate);
 
-        resourceHelpers
-          .copyMetadata(source, destination)
-          .then((response: any) => {
-            expect(response).toEqual(expectedUpdate);
-            done();
-          }, done.fail);
-      });
-
-      it("handles inability to get metadata.xml", done => {
-        const source = {
-          url:
-            utils.PORTAL_SUBSET.restUrl +
-            "/content/items/c6732556e299f1/info/metadata/metadata.xml",
-          authentication: MOCK_USER_SESSION
-        };
-        const destination = {
-          itemId: "itm1234567890",
-          authentication: MOCK_USER_SESSION
-        };
-
-        const fetchUrl =
-          utils.PORTAL_SUBSET.restUrl +
-          "/content/items/c6732556e299f1/info/metadata/metadata.xml";
-        const expectedFetch = {
-          error: {
-            code: 400,
-            messageCode: "CONT_0036",
-            message: "Item info file does not exist or is inaccessible.",
-            details: ["Error getting Item Info from DataStore"]
-          }
-        };
-        fetchMock.post(fetchUrl, expectedFetch);
-        resourceHelpers.copyMetadata(source, destination).then(response => {
-          response.success ? done.fail() : done();
-        }, done);
-      });
-
-      it("handles inability to get metadata.xml, hard error", done => {
-        const source = {
-          url:
-            utils.PORTAL_SUBSET.restUrl +
-            "/content/items/c6732556e299f1/info/metadata/metadata.xml",
-          authentication: MOCK_USER_SESSION
-        };
-        const destination = {
-          itemId: "itm1234567890",
-          authentication: MOCK_USER_SESSION
-        };
-
-        const fetchUrl =
-          utils.PORTAL_SUBSET.restUrl +
-          "/content/items/c6732556e299f1/info/metadata/metadata.xml";
-        fetchMock.post(fetchUrl, 500);
-        resourceHelpers.copyMetadata(source, destination).then(response => {
-          response.success ? done.fail() : done();
-        }, done);
-      });
-
-      it("handles inability to store metadata.xml", done => {
-        const source = {
-          url:
-            utils.PORTAL_SUBSET.restUrl +
-            "/content/items/c6732556e299f1/info/metadata/metadata.xml",
-          authentication: MOCK_USER_SESSION
-        };
-        const destination = {
-          itemId: "itm1234567890",
-          authentication: MOCK_USER_SESSION
-        };
-
-        const fetchUrl =
-          utils.PORTAL_SUBSET.restUrl +
-          "/content/items/c6732556e299f1/info/metadata/metadata.xml";
-        const updateUrl =
-          utils.PORTAL_SUBSET.restUrl +
-          "/content/users/casey/items/itm1234567890/update";
-        const expectedFetch = utils.getSampleMetadataAsBlob();
-        const expectedUpdate = { success: false, id: destination.itemId };
-        fetchMock
-          .post(fetchUrl, expectedFetch, { sendAsJson: false })
-          .post(updateUrl, expectedUpdate);
-        resourceHelpers.copyMetadata(source, destination).then(
-          response => {
-            response.success ? done.fail() : done();
-          },
-          () => done()
-        );
-      });
-
-      it("handles inability to store metadata.xml, hard error", done => {
-        const source = {
-          url:
-            utils.PORTAL_SUBSET.restUrl +
-            "/content/items/c6732556e299f1/info/metadata/metadata.xml",
-          authentication: MOCK_USER_SESSION
-        };
-        const destination = {
-          itemId: "itm1234567890",
-          authentication: MOCK_USER_SESSION
-        };
-
-        const fetchUrl =
-          utils.PORTAL_SUBSET.restUrl +
-          "/content/items/c6732556e299f1/info/metadata/metadata.xml";
-        const updateUrl =
-          utils.PORTAL_SUBSET.restUrl +
-          "/content/users/casey/items/itm1234567890/update";
-        const expectedFetch = utils.getSampleMetadataAsBlob();
-        const expectedUpdate = 500;
-        fetchMock
-          .post(fetchUrl, expectedFetch, { sendAsJson: false })
-          .post(updateUrl, expectedUpdate);
-        resourceHelpers.copyMetadata(source, destination).then(
-          response => {
-            response.success ? done.fail() : done();
-          },
-          () => done()
-        );
-      });
+      resourceHelpers
+        .copyMetadata(source, destination)
+        .then((response: any) => {
+          expect(response).toEqual(expectedUpdate);
+          done();
+        }, done.fail);
     });
 
-    // describe("copyResource", () => {
-    //   it("copies resource", done => {
-    //     const source = {
-    //       url:
-    //         utils.PORTAL_SUBSET.restUrl +
-    //         "/content/items/c6732556e299f1/resources/image.png",
-    //       authentication: MOCK_USER_SESSION
-    //     };
-    //     const destination = {
-    //       itemId: "itm1234567890",
-    //       folder: "storageFolder",
-    //       filename: "storageFilename.png",
-    //       authentication: MOCK_USER_SESSION
-    //     };
-    //     const fetchUrl =
-    //       utils.PORTAL_SUBSET.restUrl +
-    //       "/content/items/c6732556e299f1/resources/image.png";
-    //     const updateUrl =
-    //       utils.PORTAL_SUBSET.restUrl +
-    //       "/content/users/casey/items/itm1234567890/addResources";
-    //     const expected = { success: true, id: destination.itemId };
+    it("handles inability to get metadata.xml", done => {
+      const source = {
+        url:
+          utils.PORTAL_SUBSET.restUrl +
+          "/content/items/c6732556e299f1/info/metadata/metadata.xml",
+        authentication: MOCK_USER_SESSION
+      };
+      const destination = {
+        itemId: "itm1234567890",
+        authentication: MOCK_USER_SESSION
+      };
 
-    //     fetchMock
-    //       .post(fetchUrl, utils.getSampleImageAsBlob(), { sendAsJson: false })
-    //       .post(updateUrl, expected);
-    //     copyResourceModule
-    //       .copyResource(source, destination)
-    //       .then((response: any) => {
-    //         expect(response).toEqual(expected);
-    //         done();
-    //       }, done.fail);
-    //   });
-    //   it("handles inexplicable response", done => {
-    //     const source = {
-    //       url:
-    //         utils.PORTAL_SUBSET.restUrl +
-    //         "/content/items/c6732556e299f1/resources/image.png",
-    //       authentication: MOCK_USER_SESSION
-    //     };
-    //     const destination = {
-    //       itemId: "itm1234567890",
-    //       folder: "storageFolder",
-    //       filename: "storageFilename.png",
-    //       authentication: MOCK_USER_SESSION
-    //     };
-    //     const fetchUrl =
-    //       utils.PORTAL_SUBSET.restUrl +
-    //       "/content/items/c6732556e299f1/resources/image.png";
+      const fetchUrl =
+        utils.PORTAL_SUBSET.restUrl +
+        "/content/items/c6732556e299f1/info/metadata/metadata.xml";
+      const expectedFetch = {
+        error: {
+          code: 400,
+          messageCode: "CONT_0036",
+          message: "Item info file does not exist or is inaccessible.",
+          details: ["Error getting Item Info from DataStore"]
+        }
+      };
+      fetchMock.post(fetchUrl, expectedFetch);
+      resourceHelpers.copyMetadata(source, destination).then(response => {
+        response.success ? done.fail() : done();
+      }, done);
+    });
 
-    //     fetchMock.post(
-    //       fetchUrl,
-    //       new Blob(["[1, 2, 3, 4, ]"], { type: "text/plain" }),
-    //       { sendAsJson: false }
-    //     );
-    //     copyResourceModule.copyResource(source, destination).then(done.fail, done);
-    //   });
+    it("handles inability to get metadata.xml, hard error", done => {
+      const source = {
+        url:
+          utils.PORTAL_SUBSET.restUrl +
+          "/content/items/c6732556e299f1/info/metadata/metadata.xml",
+        authentication: MOCK_USER_SESSION
+      };
+      const destination = {
+        itemId: "itm1234567890",
+        authentication: MOCK_USER_SESSION
+      };
 
-    //   it("handles inability to get resource", done => {
-    //     const source = {
-    //       url:
-    //         utils.PORTAL_SUBSET.restUrl +
-    //         "/content/items/c6732556e299f1/resources/image.png",
-    //       authentication: MOCK_USER_SESSION
-    //     };
-    //     const destination = {
-    //       itemId: "itm1234567890",
-    //       folder: "storageFolder",
-    //       filename: "storageFilename.png",
-    //       authentication: MOCK_USER_SESSION
-    //     };
-    //     const fetchUrl =
-    //       utils.PORTAL_SUBSET.restUrl +
-    //       "/content/items/c6732556e299f1/resources/image.png";
+      const fetchUrl =
+        utils.PORTAL_SUBSET.restUrl +
+        "/content/items/c6732556e299f1/info/metadata/metadata.xml";
+      fetchMock.post(fetchUrl, 500);
+      resourceHelpers.copyMetadata(source, destination).then(response => {
+        response.success ? done.fail() : done();
+      }, done);
+    });
 
-    //     fetchMock.post(fetchUrl, 500);
-    //     copyResourceModule.copyResource(source, destination).then(done.fail, done);
-    //   });
+    it("handles inability to store metadata.xml", done => {
+      const source = {
+        url:
+          utils.PORTAL_SUBSET.restUrl +
+          "/content/items/c6732556e299f1/info/metadata/metadata.xml",
+        authentication: MOCK_USER_SESSION
+      };
+      const destination = {
+        itemId: "itm1234567890",
+        authentication: MOCK_USER_SESSION
+      };
 
-    //   it("handles inability to copy resource, hard error", done => {
-    //     const source = {
-    //       url:
-    //         utils.PORTAL_SUBSET.restUrl +
-    //         "/content/items/c6732556e299f1/resources/image.png",
-    //       authentication: MOCK_USER_SESSION
-    //     };
-    //     const destination = {
-    //       itemId: "itm1234567890",
-    //       folder: "storageFolder",
-    //       filename: "storageFilename.png",
-    //       authentication: MOCK_USER_SESSION
-    //     };
-    //     const fetchUrl =
-    //       utils.PORTAL_SUBSET.restUrl +
-    //       "/content/items/c6732556e299f1/resources/image.png";
-    //     const updateUrl =
-    //       utils.PORTAL_SUBSET.restUrl +
-    //       "/content/users/casey/items/itm1234567890/addResources";
-    //     const expected = 500;
+      const fetchUrl =
+        utils.PORTAL_SUBSET.restUrl +
+        "/content/items/c6732556e299f1/info/metadata/metadata.xml";
+      const updateUrl =
+        utils.PORTAL_SUBSET.restUrl +
+        "/content/users/casey/items/itm1234567890/update";
+      const expectedFetch = utils.getSampleMetadataAsBlob();
+      const expectedUpdate = { success: false, id: destination.itemId };
+      fetchMock
+        .post(fetchUrl, expectedFetch, { sendAsJson: false })
+        .post(updateUrl, expectedUpdate);
+      resourceHelpers.copyMetadata(source, destination).then(
+        response => {
+          response.success ? done.fail() : done();
+        },
+        () => done()
+      );
+    });
 
-    //     fetchMock
-    //       .post(fetchUrl, utils.getSampleImageAsBlob(), { sendAsJson: false })
-    //       .post(updateUrl, expected);
-    //     return copyResourceModule
-    //       .copyResource(source, destination)
-    //       .then(r => {
-    //         done.fail();
-    //       })
-    //       .catch(ex => {
-    //         done();
-    //       });
-    //   });
-    // });
-  }
+    it("handles inability to store metadata.xml, hard error", done => {
+      const source = {
+        url:
+          utils.PORTAL_SUBSET.restUrl +
+          "/content/items/c6732556e299f1/info/metadata/metadata.xml",
+        authentication: MOCK_USER_SESSION
+      };
+      const destination = {
+        itemId: "itm1234567890",
+        authentication: MOCK_USER_SESSION
+      };
+
+      const fetchUrl =
+        utils.PORTAL_SUBSET.restUrl +
+        "/content/items/c6732556e299f1/info/metadata/metadata.xml";
+      const updateUrl =
+        utils.PORTAL_SUBSET.restUrl +
+        "/content/users/casey/items/itm1234567890/update";
+      const expectedFetch = utils.getSampleMetadataAsBlob();
+      const expectedUpdate = 500;
+      fetchMock
+        .post(fetchUrl, expectedFetch, { sendAsJson: false })
+        .post(updateUrl, expectedUpdate);
+      resourceHelpers.copyMetadata(source, destination).then(
+        response => {
+          response.success ? done.fail() : done();
+        },
+        () => done()
+      );
+    });
+  });
+
+  // describe("copyResource", () => {
+  //   it("copies resource", done => {
+  //     const source = {
+  //       url:
+  //         utils.PORTAL_SUBSET.restUrl +
+  //         "/content/items/c6732556e299f1/resources/image.png",
+  //       authentication: MOCK_USER_SESSION
+  //     };
+  //     const destination = {
+  //       itemId: "itm1234567890",
+  //       folder: "storageFolder",
+  //       filename: "storageFilename.png",
+  //       authentication: MOCK_USER_SESSION
+  //     };
+  //     const fetchUrl =
+  //       utils.PORTAL_SUBSET.restUrl +
+  //       "/content/items/c6732556e299f1/resources/image.png";
+  //     const updateUrl =
+  //       utils.PORTAL_SUBSET.restUrl +
+  //       "/content/users/casey/items/itm1234567890/addResources";
+  //     const expected = { success: true, id: destination.itemId };
+
+  //     fetchMock
+  //       .post(fetchUrl, utils.getSampleImageAsBlob(), { sendAsJson: false })
+  //       .post(updateUrl, expected);
+  //     copyResourceModule
+  //       .copyResource(source, destination)
+  //       .then((response: any) => {
+  //         expect(response).toEqual(expected);
+  //         done();
+  //       }, done.fail);
+  //   });
+  //   it("handles inexplicable response", done => {
+  //     const source = {
+  //       url:
+  //         utils.PORTAL_SUBSET.restUrl +
+  //         "/content/items/c6732556e299f1/resources/image.png",
+  //       authentication: MOCK_USER_SESSION
+  //     };
+  //     const destination = {
+  //       itemId: "itm1234567890",
+  //       folder: "storageFolder",
+  //       filename: "storageFilename.png",
+  //       authentication: MOCK_USER_SESSION
+  //     };
+  //     const fetchUrl =
+  //       utils.PORTAL_SUBSET.restUrl +
+  //       "/content/items/c6732556e299f1/resources/image.png";
+
+  //     fetchMock.post(
+  //       fetchUrl,
+  //       new Blob(["[1, 2, 3, 4, ]"], { type: "text/plain" }),
+  //       { sendAsJson: false }
+  //     );
+  //     copyResourceModule.copyResource(source, destination).then(done.fail, done);
+  //   });
+
+  //   it("handles inability to get resource", done => {
+  //     const source = {
+  //       url:
+  //         utils.PORTAL_SUBSET.restUrl +
+  //         "/content/items/c6732556e299f1/resources/image.png",
+  //       authentication: MOCK_USER_SESSION
+  //     };
+  //     const destination = {
+  //       itemId: "itm1234567890",
+  //       folder: "storageFolder",
+  //       filename: "storageFilename.png",
+  //       authentication: MOCK_USER_SESSION
+  //     };
+  //     const fetchUrl =
+  //       utils.PORTAL_SUBSET.restUrl +
+  //       "/content/items/c6732556e299f1/resources/image.png";
+
+  //     fetchMock.post(fetchUrl, 500);
+  //     copyResourceModule.copyResource(source, destination).then(done.fail, done);
+  //   });
+
+  //   it("handles inability to copy resource, hard error", done => {
+  //     const source = {
+  //       url:
+  //         utils.PORTAL_SUBSET.restUrl +
+  //         "/content/items/c6732556e299f1/resources/image.png",
+  //       authentication: MOCK_USER_SESSION
+  //     };
+  //     const destination = {
+  //       itemId: "itm1234567890",
+  //       folder: "storageFolder",
+  //       filename: "storageFilename.png",
+  //       authentication: MOCK_USER_SESSION
+  //     };
+  //     const fetchUrl =
+  //       utils.PORTAL_SUBSET.restUrl +
+  //       "/content/items/c6732556e299f1/resources/image.png";
+  //     const updateUrl =
+  //       utils.PORTAL_SUBSET.restUrl +
+  //       "/content/users/casey/items/itm1234567890/addResources";
+  //     const expected = 500;
+
+  //     fetchMock
+  //       .post(fetchUrl, utils.getSampleImageAsBlob(), { sendAsJson: false })
+  //       .post(updateUrl, expected);
+  //     return copyResourceModule
+  //       .copyResource(source, destination)
+  //       .then(r => {
+  //         done.fail();
+  //       })
+  //       .catch(ex => {
+  //         done();
+  //       });
+  //   });
+  // });
 
   describe("generateInfoStorageFilename", () => {
     it("generates storage name for an info file", () => {
@@ -1616,44 +1585,41 @@ describe("Module `resourceHelpers`: common functions involving the management of
     });
   });
 
-  // Blobs are only available in the browser
-  if (typeof window !== "undefined") {
-    describe("getThumbnailFromStorageItem", () => {
-      it("handles an empty files list", done => {
-        const storageAuthentication = MOCK_USER_SESSION;
-        const filePaths: interfaces.IDeployFileCopyPath[] = [] as interfaces.IDeployFileCopyPath[];
+  describe("getThumbnailFromStorageItem", () => {
+    it("handles an empty files list", done => {
+      const storageAuthentication = MOCK_USER_SESSION;
+      const filePaths: interfaces.IDeployFileCopyPath[] = [] as interfaces.IDeployFileCopyPath[];
 
-        resourceHelpers
-          .getThumbnailFromStorageItem(storageAuthentication, filePaths)
-          .then(response => {
-            expect(response).toBeNull();
-            done();
-          }, done.fail);
-      });
-
-      it("copies a thumbnail file", done => {
-        const storageAuthentication = MOCK_USER_SESSION;
-        const filePaths: interfaces.IDeployFileCopyPath[] = [
-          {
-            type: interfaces.EFileType.Thumbnail,
-            folder: "",
-            filename: "thumbnail.png",
-            url: utils.PORTAL_SUBSET.restUrl + "/images/thumbnail.png" // Thumbnail uses only URL
-          }
-        ];
-        const expectedImage = utils.getSampleImageAsFile(filePaths[0].filename);
-
-        fetchMock.post(filePaths[0].url, expectedImage, { sendAsJson: false });
-        resourceHelpers
-          .getThumbnailFromStorageItem(storageAuthentication, filePaths)
-          .then((response: File) => {
-            expect(response).toEqual(expectedImage);
-            expect(response.name).toEqual(filePaths[0].filename);
-            done();
-          }, done.fail);
-      });
+      resourceHelpers
+        .getThumbnailFromStorageItem(storageAuthentication, filePaths)
+        .then(response => {
+          expect(response).toBeNull();
+          done();
+        }, done.fail);
     });
-  }
+
+    it("copies a thumbnail file", done => {
+      const storageAuthentication = MOCK_USER_SESSION;
+      const filePaths: interfaces.IDeployFileCopyPath[] = [
+        {
+          type: interfaces.EFileType.Thumbnail,
+          folder: "",
+          filename: "thumbnail.png",
+          url: utils.PORTAL_SUBSET.restUrl + "/images/thumbnail.png" // Thumbnail uses only URL
+        }
+      ];
+      const expectedImage = utils.getSampleImageAsFile(filePaths[0].filename);
+
+      fetchMock.post(filePaths[0].url, expectedImage, { sendAsJson: false });
+      resourceHelpers
+        .getThumbnailFromStorageItem(storageAuthentication, filePaths)
+        .then((response: File) => {
+          expect(response).toEqual(expectedImage);
+          expect(response.name).toEqual(filePaths[0].filename);
+          done();
+        }, done.fail);
+    });
+  });
 
   describe("isSupportedFileType", () => {
     it("recognizes supported file types for resource", () => {

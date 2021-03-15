@@ -703,173 +703,164 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
         .then(response => (response.success ? done() : done.fail()), done.fail);
     });
 
-    // Files are only available in the browser
-    if (typeof window !== "undefined") {
-      it("can create an org item with goodies", done => {
-        const itemInfo: any = {};
-        const folderId: string = null as string; // default is top level
-        const itemThumbnailUrl: string =
-          "https://myserver/thumbnail/thumbnail.png";
-        const dataFile: File = polyfills.new_File(
-          [utils.getSampleJsonAsBlob()],
-          "data.json"
+    it("can create an org item with goodies", done => {
+      const itemInfo: any = {};
+      const folderId: string = null as string; // default is top level
+      const itemThumbnailUrl: string =
+        "https://myserver/thumbnail/thumbnail.png";
+      const dataFile: File = polyfills.new_File(
+        [utils.getSampleJsonAsBlob()],
+        "data.json"
+      );
+      const metadataFile: File = utils.getSampleMetadataAsFile();
+      const resourcesFiles: File[] = [
+        polyfills.new_File([utils.getSampleImageAsBlob()], "image.png")
+      ];
+      const access = "org";
+
+      fetchMock
+        .post(itemThumbnailUrl + "/rest/info", "{}")
+        .post(
+          utils.PORTAL_SUBSET.restUrl +
+            "/content/users/casey/" +
+            (folderId ? folderId + "/addItem" : "addItem"),
+          {
+            success: true,
+            id: "itm1234567980",
+            folder: folderId
+          }
+        )
+        .post(
+          utils.PORTAL_SUBSET.restUrl +
+            "/content/users/casey/items/itm1234567980/share",
+          {
+            notSharedWith: [] as string[],
+            itemId: "itm1234567980"
+          }
+        )
+        .post(
+          utils.PORTAL_SUBSET.restUrl +
+            "/content/users/casey/items/itm1234567980/update",
+          utils.getSuccessResponse({ id: "itm1234567980" })
+        )
+        .post(
+          utils.PORTAL_SUBSET.restUrl +
+            "/content/users/casey/items/itm1234567980/addResources",
+          utils.getSuccessResponse({
+            itemId: "itm1234567980",
+            owner: MOCK_USER_SESSION.username,
+            folder: null
+          })
         );
-        const metadataFile: File = utils.getSampleMetadataAsFile();
-        const resourcesFiles: File[] = [
-          polyfills.new_File([utils.getSampleImageAsBlob()], "image.png")
-        ];
-        const access = "org";
 
-        fetchMock
-          .post(itemThumbnailUrl + "/rest/info", "{}")
-          .post(
-            utils.PORTAL_SUBSET.restUrl +
-              "/content/users/casey/" +
-              (folderId ? folderId + "/addItem" : "addItem"),
-            {
-              success: true,
-              id: "itm1234567980",
-              folder: folderId
-            }
-          )
-          .post(
-            utils.PORTAL_SUBSET.restUrl +
-              "/content/users/casey/items/itm1234567980/share",
-            {
-              notSharedWith: [] as string[],
-              itemId: "itm1234567980"
-            }
-          )
-          .post(
-            utils.PORTAL_SUBSET.restUrl +
-              "/content/users/casey/items/itm1234567980/update",
-            utils.getSuccessResponse({ id: "itm1234567980" })
-          )
-          .post(
-            utils.PORTAL_SUBSET.restUrl +
-              "/content/users/casey/items/itm1234567980/addResources",
-            utils.getSuccessResponse({
-              itemId: "itm1234567980",
-              owner: MOCK_USER_SESSION.username,
-              folder: null
-            })
-          );
+      restHelpers
+        .createFullItem(
+          itemInfo,
+          folderId,
+          MOCK_USER_SESSION,
+          itemThumbnailUrl,
+          MOCK_USER_SESSION,
+          dataFile,
+          metadataFile,
+          resourcesFiles,
+          access
+        )
+        .then(response => (response.success ? done() : done.fail()), done.fail);
+    });
 
-        restHelpers
-          .createFullItem(
-            itemInfo,
-            folderId,
-            MOCK_USER_SESSION,
-            itemThumbnailUrl,
-            MOCK_USER_SESSION,
-            dataFile,
-            metadataFile,
-            resourcesFiles,
-            access
-          )
-          .then(
-            response => (response.success ? done() : done.fail()),
-            done.fail
-          );
-      });
+    it("can create an item with a resource in a subfolder", done => {
+      const itemInfo: any = {};
+      const folderId: string = null as string; // default is top level
+      const itemThumbnailUrl: string = null as string;
+      const dataFile: File = null as File;
+      const metadataFile: File = null as File;
+      const resourcesFiles: File[] = [
+        polyfills.new_File(
+          [utils.getSampleImageAsBlob()],
+          "resourceFolder/image.png"
+        )
+      ];
+      const access = undefined as string; // default is "private"
 
-      it("can create an item with a resource in a subfolder", done => {
-        const itemInfo: any = {};
-        const folderId: string = null as string; // default is top level
-        const itemThumbnailUrl: string = null as string;
-        const dataFile: File = null as File;
-        const metadataFile: File = null as File;
-        const resourcesFiles: File[] = [
-          polyfills.new_File(
-            [utils.getSampleImageAsBlob()],
-            "resourceFolder/image.png"
-          )
-        ];
-        const access = undefined as string; // default is "private"
+      fetchMock
+        .post(
+          utils.PORTAL_SUBSET.restUrl +
+            "/content/users/casey/" +
+            (folderId ? folderId + "/addItem" : "addItem"),
+          {
+            success: true,
+            id: "itm1234567980",
+            folder: folderId
+          }
+        )
+        .post(
+          utils.PORTAL_SUBSET.restUrl +
+            "/content/users/casey/items/itm1234567980/addResources",
+          utils.getSuccessResponse({
+            itemId: "itm1234567980",
+            owner: MOCK_USER_SESSION.username,
+            folder: "resourceFolder"
+          })
+        );
 
-        fetchMock
-          .post(
-            utils.PORTAL_SUBSET.restUrl +
-              "/content/users/casey/" +
-              (folderId ? folderId + "/addItem" : "addItem"),
-            {
-              success: true,
-              id: "itm1234567980",
-              folder: folderId
-            }
-          )
-          .post(
-            utils.PORTAL_SUBSET.restUrl +
-              "/content/users/casey/items/itm1234567980/addResources",
-            utils.getSuccessResponse({
-              itemId: "itm1234567980",
-              owner: MOCK_USER_SESSION.username,
-              folder: "resourceFolder"
-            })
-          );
+      restHelpers
+        .createFullItem(
+          itemInfo,
+          folderId,
+          MOCK_USER_SESSION,
+          itemThumbnailUrl,
+          MOCK_USER_SESSION,
+          dataFile,
+          metadataFile,
+          resourcesFiles,
+          access
+        )
+        .then(response => (response.success ? done() : done.fail()), done.fail);
+    });
 
-        restHelpers
-          .createFullItem(
-            itemInfo,
-            folderId,
-            MOCK_USER_SESSION,
-            itemThumbnailUrl,
-            MOCK_USER_SESSION,
-            dataFile,
-            metadataFile,
-            resourcesFiles,
-            access
-          )
-          .then(
-            response => (response.success ? done() : done.fail()),
-            done.fail
-          );
-      });
+    it("can handle failure to add metadata to item, hard error", done => {
+      const itemInfo: any = {};
+      const folderId: string = null as string; // default is top level
+      const itemThumbnailUrl: string = null as string;
+      const dataFile: File = null as File;
+      const metadataFile: File = utils.getSampleMetadataAsFile();
+      const resourcesFiles: File[] = null as File[];
+      const access = undefined as string; // default is "private"
 
-      it("can handle failure to add metadata to item, hard error", done => {
-        const itemInfo: any = {};
-        const folderId: string = null as string; // default is top level
-        const itemThumbnailUrl: string = null as string;
-        const dataFile: File = null as File;
-        const metadataFile: File = utils.getSampleMetadataAsFile();
-        const resourcesFiles: File[] = null as File[];
-        const access = undefined as string; // default is "private"
+      fetchMock
+        .post(
+          utils.PORTAL_SUBSET.restUrl +
+            "/content/users/casey/" +
+            (folderId ? folderId + "/addItem" : "addItem"),
+          {
+            success: true,
+            id: "itm1234567980",
+            folder: folderId
+          }
+        )
+        .post(
+          utils.PORTAL_SUBSET.restUrl +
+            "/content/users/casey/items/itm1234567980/update",
+          500
+        );
 
-        fetchMock
-          .post(
-            utils.PORTAL_SUBSET.restUrl +
-              "/content/users/casey/" +
-              (folderId ? folderId + "/addItem" : "addItem"),
-            {
-              success: true,
-              id: "itm1234567980",
-              folder: folderId
-            }
-          )
-          .post(
-            utils.PORTAL_SUBSET.restUrl +
-              "/content/users/casey/items/itm1234567980/update",
-            500
-          );
-
-        restHelpers
-          .createFullItem(
-            itemInfo,
-            folderId,
-            MOCK_USER_SESSION,
-            itemThumbnailUrl,
-            MOCK_USER_SESSION,
-            dataFile,
-            metadataFile,
-            resourcesFiles,
-            access
-          )
-          .then(
-            () => done.fail(),
-            () => done()
-          );
-      });
-    }
+      restHelpers
+        .createFullItem(
+          itemInfo,
+          folderId,
+          MOCK_USER_SESSION,
+          itemThumbnailUrl,
+          MOCK_USER_SESSION,
+          dataFile,
+          metadataFile,
+          resourcesFiles,
+          access
+        )
+        .then(
+          () => done.fail(),
+          () => done()
+        );
+    });
 
     it("can handle failure to create an item", done => {
       const itemInfo: any = {};
@@ -1760,156 +1751,150 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
   });
 
   describe("convertExtentWithFallback", () => {
-    if (typeof window !== "undefined") {
-      it("can handle NaN", done => {
-        // "NaN" extent values are returned when you try to project this to 102100
-        const ext: interfaces.IExtent = {
-          xmax: 180,
-          xmin: -180,
-          ymax: 90,
-          ymin: -90,
-          spatialReference: {
-            wkid: 4326
-          }
-        };
+    it("can handle NaN", done => {
+      // "NaN" extent values are returned when you try to project this to 102100
+      const ext: interfaces.IExtent = {
+        xmax: 180,
+        xmin: -180,
+        ymax: 90,
+        ymin: -90,
+        spatialReference: {
+          wkid: 4326
+        }
+      };
 
-        const NaNGeoms = [
+      const NaNGeoms = [
+        {
+          x: "NaN",
+          y: "NaN"
+        },
+        {
+          x: "NaN",
+          y: "NaN"
+        }
+      ];
+
+      fetchMock
+        .post(geometryServiceUrl + "/findTransformations", {})
+        .postOnce(
+          geometryServiceUrl + "/project",
           {
-            x: "NaN",
-            y: "NaN"
+            geometries: NaNGeoms
           },
+          { overwriteRoutes: false }
+        )
+        .postOnce(
+          geometryServiceUrl + "/project",
           {
-            x: "NaN",
-            y: "NaN"
-          }
-        ];
-
-        fetchMock
-          .post(geometryServiceUrl + "/findTransformations", {})
-          .postOnce(
-            geometryServiceUrl + "/project",
-            {
-              geometries: NaNGeoms
-            },
-            { overwriteRoutes: false }
-          )
-          .postOnce(
-            geometryServiceUrl + "/project",
-            {
-              geometries: projectedGeometries
-            },
-            { overwriteRoutes: false }
-          );
-
-        restHelpers
-          .convertExtentWithFallback(
-            ext,
-            undefined,
-            serviceSR,
-            geometryServiceUrl,
-            MOCK_USER_SESSION
-          )
-          .then(actual => {
-            expect(actual).toEqual(expectedExtent);
-            done();
-          }, done.fail);
-      });
-
-      it("can handle NaN with defaultExtent", done => {
-        // "NaN" extent values are returned when you try to project this to 102100
-        const ext: interfaces.IExtent = {
-          xmax: 180,
-          xmin: -180,
-          ymax: 90,
-          ymin: -90,
-          spatialReference: {
-            wkid: 4326
-          }
-        };
-
-        const NaNGeoms = [
-          {
-            x: "NaN",
-            y: "NaN"
+            geometries: projectedGeometries
           },
+          { overwriteRoutes: false }
+        );
+
+      restHelpers
+        .convertExtentWithFallback(
+          ext,
+          undefined,
+          serviceSR,
+          geometryServiceUrl,
+          MOCK_USER_SESSION
+        )
+        .then(actual => {
+          expect(actual).toEqual(expectedExtent);
+          done();
+        }, done.fail);
+    });
+
+    it("can handle NaN with defaultExtent", done => {
+      // "NaN" extent values are returned when you try to project this to 102100
+      const ext: interfaces.IExtent = {
+        xmax: 180,
+        xmin: -180,
+        ymax: 90,
+        ymin: -90,
+        spatialReference: {
+          wkid: 4326
+        }
+      };
+
+      const NaNGeoms = [
+        {
+          x: "NaN",
+          y: "NaN"
+        },
+        {
+          x: "NaN",
+          y: "NaN"
+        }
+      ];
+
+      fetchMock.post(geometryServiceUrl + "/findTransformations", {}).postOnce(
+        geometryServiceUrl + "/project",
+        {
+          geometries: NaNGeoms
+        },
+        { overwriteRoutes: false }
+      );
+
+      restHelpers
+        .convertExtentWithFallback(
+          ext,
+          expectedExtent,
+          serviceSR,
+          geometryServiceUrl,
+          MOCK_USER_SESSION
+        )
+        .then(actual => {
+          expect(actual).toEqual(expectedExtent);
+          done();
+        }, done.fail);
+    });
+
+    it("can handle error on failover", done => {
+      const ext: interfaces.IExtent = {
+        xmax: 180,
+        xmin: -180,
+        ymax: 90,
+        ymin: -90,
+        spatialReference: {
+          wkid: 4326
+        }
+      };
+
+      const NaNGeoms = [
+        {
+          x: "NaN",
+          y: "NaN"
+        },
+        {
+          x: "NaN",
+          y: "NaN"
+        }
+      ];
+
+      fetchMock
+        .post(geometryServiceUrl + "/findTransformations", {})
+        .postOnce(
+          geometryServiceUrl + "/project",
           {
-            x: "NaN",
-            y: "NaN"
-          }
-        ];
-
-        fetchMock
-          .post(geometryServiceUrl + "/findTransformations", {})
-          .postOnce(
-            geometryServiceUrl + "/project",
-            {
-              geometries: NaNGeoms
-            },
-            { overwriteRoutes: false }
-          );
-
-        restHelpers
-          .convertExtentWithFallback(
-            ext,
-            expectedExtent,
-            serviceSR,
-            geometryServiceUrl,
-            MOCK_USER_SESSION
-          )
-          .then(actual => {
-            expect(actual).toEqual(expectedExtent);
-            done();
-          }, done.fail);
-      });
-
-      it("can handle error on failover", done => {
-        const ext: interfaces.IExtent = {
-          xmax: 180,
-          xmin: -180,
-          ymax: 90,
-          ymin: -90,
-          spatialReference: {
-            wkid: 4326
-          }
-        };
-
-        const NaNGeoms = [
-          {
-            x: "NaN",
-            y: "NaN"
+            geometries: NaNGeoms
           },
-          {
-            x: "NaN",
-            y: "NaN"
-          }
-        ];
+          { overwriteRoutes: false }
+        )
+        .postOnce(geometryServiceUrl + "/project", mockItems.get400Failure(), {
+          overwriteRoutes: false
+        });
 
-        fetchMock
-          .post(geometryServiceUrl + "/findTransformations", {})
-          .postOnce(
-            geometryServiceUrl + "/project",
-            {
-              geometries: NaNGeoms
-            },
-            { overwriteRoutes: false }
-          )
-          .postOnce(
-            geometryServiceUrl + "/project",
-            mockItems.get400Failure(),
-            { overwriteRoutes: false }
-          );
-
-        restHelpers
-          .convertExtentWithFallback(
-            ext,
-            undefined,
-            serviceSR,
-            geometryServiceUrl,
-            MOCK_USER_SESSION
-          )
-          .then(done.fail, done);
-      });
-    }
+      restHelpers
+        .convertExtentWithFallback(
+          ext,
+          undefined,
+          serviceSR,
+          geometryServiceUrl,
+          MOCK_USER_SESSION
+        )
+        .then(done.fail, done);
+    });
   });
 
   describe("getLayers", () => {
@@ -3485,161 +3470,155 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
   });
 
   describe("_addItemDataFile", () => {
-    // Blobs are only available in the browser
-    if (typeof window !== "undefined") {
-      it("should add text/plain data", done => {
-        const itemId = "itm1234567890";
-        const url =
-          utils.PORTAL_SUBSET.restUrl +
-          "/content/users/casey/items/" +
-          itemId +
-          "/update";
-        fetchMock.post(url, '{"success":true}');
-        restHelpers
-          ._addItemDataFile(
-            itemId,
-            utils.getSampleTextAsBlob() as File,
-            MOCK_USER_SESSION
-          )
-          .then(response => {
-            expect(response.success).toBeTruthy();
-            const options: fetchMock.MockOptions = fetchMock.lastOptions(url);
-            const fetchBody = (options as fetchMock.MockResponseObject).body;
-            expect(fetchBody).toEqual(
-              "f=json&id=itm1234567890&text=this%20is%20some%20text&token=fake-token"
-            );
-            done();
-          }, done.fail);
-      });
+    it("should add text/plain data", done => {
+      const itemId = "itm1234567890";
+      const url =
+        utils.PORTAL_SUBSET.restUrl +
+        "/content/users/casey/items/" +
+        itemId +
+        "/update";
+      fetchMock.post(url, '{"success":true}');
+      restHelpers
+        ._addItemDataFile(
+          itemId,
+          utils.getSampleTextAsBlob() as File,
+          MOCK_USER_SESSION
+        )
+        .then(response => {
+          expect(response.success).toBeTruthy();
+          const options: fetchMock.MockOptions = fetchMock.lastOptions(url);
+          const fetchBody = (options as fetchMock.MockResponseObject).body;
+          expect(fetchBody).toEqual(
+            "f=json&id=itm1234567890&text=this%20is%20some%20text&token=fake-token"
+          );
+          done();
+        }, done.fail);
+    });
 
-      it("should add application/json data", done => {
-        const itemId = "itm1234567890";
-        const url =
-          utils.PORTAL_SUBSET.restUrl +
-          "/content/users/casey/items/" +
-          itemId +
-          "/update";
-        fetchMock.post(url, '{"success":true}');
-        restHelpers
-          ._addItemDataFile(
-            itemId,
-            utils.getSampleJsonAsBlob() as File,
-            MOCK_USER_SESSION
-          )
-          .then(response => {
-            expect(response.success).toBeTruthy();
-            const options: fetchMock.MockOptions = fetchMock.lastOptions(url);
-            const fetchBody = (options as fetchMock.MockResponseObject).body;
-            expect(fetchBody).toEqual(
-              "f=json&id=itm1234567890&text=%7B%22a%22%3A%22a%22%2C%22b%22%3A1%2C%22c%22%3A%7B%22d%22%3A%22d%22%7D%7D&token=fake-token"
-            );
-            done();
-          }, done.fail);
-      });
+    it("should add application/json data", done => {
+      const itemId = "itm1234567890";
+      const url =
+        utils.PORTAL_SUBSET.restUrl +
+        "/content/users/casey/items/" +
+        itemId +
+        "/update";
+      fetchMock.post(url, '{"success":true}');
+      restHelpers
+        ._addItemDataFile(
+          itemId,
+          utils.getSampleJsonAsBlob() as File,
+          MOCK_USER_SESSION
+        )
+        .then(response => {
+          expect(response.success).toBeTruthy();
+          const options: fetchMock.MockOptions = fetchMock.lastOptions(url);
+          const fetchBody = (options as fetchMock.MockResponseObject).body;
+          expect(fetchBody).toEqual(
+            "f=json&id=itm1234567890&text=%7B%22a%22%3A%22a%22%2C%22b%22%3A1%2C%22c%22%3A%7B%22d%22%3A%22d%22%7D%7D&token=fake-token"
+          );
+          done();
+        }, done.fail);
+    });
 
-      it("should add text data that's not text/plain or application/json", done => {
-        // With Microsoft Legacy Edge, we have potential date mismatches because of Edge's lack of support for
-        // the File constructor, so we'll have Date return the same value each time it is called for this test
-        const date = new Date(Date.UTC(2019, 2, 4, 5, 6, 7)); // 0-based month
-        utils.setMockDateTime(date.getTime());
+    it("should add text data that's not text/plain or application/json", done => {
+      // With Microsoft Legacy Edge, we have potential date mismatches because of Edge's lack of support for
+      // the File constructor, so we'll have Date return the same value each time it is called for this test
+      const date = new Date(Date.UTC(2019, 2, 4, 5, 6, 7)); // 0-based month
+      utils.setMockDateTime(date.getTime());
 
-        const itemId = "itm1234567890";
-        const url =
-          utils.PORTAL_SUBSET.restUrl +
-          "/content/users/casey/items/" +
-          itemId +
-          "/update";
-        fetchMock.post(url, '{"success":true}');
-        restHelpers
-          ._addItemDataFile(
-            itemId,
-            utils.getSampleMetadataAsFile(),
-            MOCK_USER_SESSION
-          )
-          .then(response => {
-            expect(response.success)
-              .withContext("response.success")
-              .toBeTruthy();
-            const options: fetchMock.MockOptions = fetchMock.lastOptions(url);
-            const fetchBody = (options as fetchMock.MockResponseObject).body;
-            (fetchBody as FormData).forEach(
-              (value: FormDataEntryValue, key: string) => {
-                switch (key) {
-                  case "f":
-                    expect(value.toString())
-                      .withContext("key = f")
-                      .toEqual("json");
-                    break;
-                  case "id":
-                    expect(value.toString())
-                      .withContext("key = id")
-                      .toEqual(itemId);
-                    break;
-                  case "file":
-                    expect(value.valueOf())
-                      .withContext("key = file")
-                      .toEqual(utils.getSampleMetadataAsFile());
-                    break;
-                  case "token":
-                    expect(value.toString())
-                      .withContext("key = token")
-                      .toEqual("fake-token");
-                    break;
-                }
+      const itemId = "itm1234567890";
+      const url =
+        utils.PORTAL_SUBSET.restUrl +
+        "/content/users/casey/items/" +
+        itemId +
+        "/update";
+      fetchMock.post(url, '{"success":true}');
+      restHelpers
+        ._addItemDataFile(
+          itemId,
+          utils.getSampleMetadataAsFile(),
+          MOCK_USER_SESSION
+        )
+        .then(response => {
+          expect(response.success)
+            .withContext("response.success")
+            .toBeTruthy();
+          const options: fetchMock.MockOptions = fetchMock.lastOptions(url);
+          const fetchBody = (options as fetchMock.MockResponseObject).body;
+          (fetchBody as FormData).forEach(
+            (value: FormDataEntryValue, key: string) => {
+              switch (key) {
+                case "f":
+                  expect(value.toString())
+                    .withContext("key = f")
+                    .toEqual("json");
+                  break;
+                case "id":
+                  expect(value.toString())
+                    .withContext("key = id")
+                    .toEqual(itemId);
+                  break;
+                case "file":
+                  expect(value.valueOf())
+                    .withContext("key = file")
+                    .toEqual(utils.getSampleMetadataAsFile());
+                  break;
+                case "token":
+                  expect(value.toString())
+                    .withContext("key = token")
+                    .toEqual("fake-token");
+                  break;
               }
-            );
-            jasmine.clock().uninstall();
-            done();
-          }, done.fail);
-      });
-    }
+            }
+          );
+          jasmine.clock().uninstall();
+          done();
+        }, done.fail);
+    });
   });
 
   describe("_addItemMetadataFile", () => {
-    // Blobs are only available in the browser
-    if (typeof window !== "undefined") {
-      it("should update metadata", done => {
-        const itemId = "itm1234567890";
-        fetchMock.post(
-          utils.PORTAL_SUBSET.restUrl +
-            "/content/users/casey/items/" +
-            itemId +
-            "/update",
-          '{"success":true}'
-        );
-        restHelpers
-          ._addItemMetadataFile(
-            itemId,
-            utils.getSampleMetadataAsFile(),
-            MOCK_USER_SESSION
-          )
-          .then(response => {
-            expect(response.success).toBeTruthy();
-            done();
-          }, done.fail);
-      });
+    it("should update metadata", done => {
+      const itemId = "itm1234567890";
+      fetchMock.post(
+        utils.PORTAL_SUBSET.restUrl +
+          "/content/users/casey/items/" +
+          itemId +
+          "/update",
+        '{"success":true}'
+      );
+      restHelpers
+        ._addItemMetadataFile(
+          itemId,
+          utils.getSampleMetadataAsFile(),
+          MOCK_USER_SESSION
+        )
+        .then(response => {
+          expect(response.success).toBeTruthy();
+          done();
+        }, done.fail);
+    });
 
-      it("should handle failure to update metadata", done => {
-        const itemId = "itm1234567890";
-        fetchMock.post(
-          utils.PORTAL_SUBSET.restUrl +
-            "/content/users/casey/items/" +
-            itemId +
-            "/update",
-          '{"success":false}'
-        );
-        restHelpers
-          ._addItemMetadataFile(
-            itemId,
-            utils.getSampleMetadataAsFile(),
-            MOCK_USER_SESSION
-          )
-          .then(response => {
-            expect(response.success).toBeFalsy();
-            done();
-          }, done.fail);
-      });
-    }
+    it("should handle failure to update metadata", done => {
+      const itemId = "itm1234567890";
+      fetchMock.post(
+        utils.PORTAL_SUBSET.restUrl +
+          "/content/users/casey/items/" +
+          itemId +
+          "/update",
+        '{"success":false}'
+      );
+      restHelpers
+        ._addItemMetadataFile(
+          itemId,
+          utils.getSampleMetadataAsFile(),
+          MOCK_USER_SESSION
+        )
+        .then(response => {
+          expect(response.success).toBeFalsy();
+          done();
+        }, done.fail);
+    });
   });
 
   describe("_countRelationships", () => {
