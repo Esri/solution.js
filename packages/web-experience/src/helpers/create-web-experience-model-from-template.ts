@@ -38,7 +38,7 @@ export function createWebExperienceModelFromTemplate(
   model.item.url = settings.experienceUrlTemplate;
   /* istanbul ignore else */
   if (templateModel.item.thumbnail) {
-    model.item.thumbnail = templateModel.item.thumbnail;
+    model.item.thumbnail = templateModel.item.thumbnail; // interpolation trashes thumbnail binary
   }
 
   return Promise.resolve(model);

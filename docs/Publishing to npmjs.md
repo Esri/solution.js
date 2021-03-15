@@ -3,7 +3,7 @@
 #### Checklist
 
 * \[ \] Stop automatic recompilation software
-* \[ \] Create `release/X.X.X` branch
+* \[ \] Switch to branch to contain release, e.g., `master` or `release/X.X.X`
 * \[ \] Remove node_modules and run `npm install`
 * \[ \] Run `npm run release:prepare` and pick new version number
 * \[ \] Run `npm run release:review`
@@ -11,8 +11,8 @@
 * \[ \] Run `npm run release:publish`
 * \[ \] Check that publishing worked using `check_npm_package_versions.html`
 * \[ \] Run `npm run release:publish-retry` as needed until all packages are published
-* \[ \] Push `release/X.X.X` branch to GitHub
-* \[ \] Merge `release/X.X.X` into `master` and `develop` and push them to GitHub
+* \[ \] Push release branch to GitHub
+* \[ \] Merge release into the `develop` branch and push it to GitHub
 * \[ \] Update documentation via `npm run docs:deploy`
 
 #### Versioning
