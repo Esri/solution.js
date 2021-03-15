@@ -72,25 +72,35 @@ Currently, the item types that can be converted into a template are:
 * Desktop Add In
 * Desktop Application Template
 * Document Link
+* Feature Collection
+* Feature Service
 * Feature Service (Hosted only and Hosted Feature Layer Views)
 * Form
 * Geoprocessing Package
 * Geoprocessing Sample
+* Group
+* Hub Page
+* Hub Site Application
+* Insights Model
 * Layer Package
+* Map Service
 * Map Template
+* Notebook
 * Operation View
+* Oriented Imagery Catalog
 * Pro Map
 * Project Package
 * Project Template
+* QuickCapture Project
+* Site Application
+* Site Page
+* StoryMap
+* Web Experience
 * Web Map
 * Web Mapping Application
 * Workforce Project
 * various file types, such as images and documents
 
-Planned item types are:
-
-* Feature Collection
-* Storymap
 
 ### Instructions
 
