@@ -726,7 +726,7 @@ export function isSupportedFileType(filename: string): boolean {
 /**
  * Gets the thumbnail of an item or group.
  *
- * @param storageAuthentication Credentials for the request to the storage
+ * @param authentication Credentials for the request to the storage
  * @param filePaths List of item files' URLs and folder/filenames for storing the files
  * @return A promise which resolves to a boolean indicating if the copies were successful
  */
