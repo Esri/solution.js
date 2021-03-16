@@ -125,6 +125,22 @@ describe("Module `generalHelpers`: common utility functions shared across packag
   });
 
   describe("cloneObject", () => {
+    it("can clone a typed File", () => {
+      const obj = new File(["dancer"], "fred", { type: "text/plain" });
+      const c = generalHelpers.cloneObject(obj);
+      expect(c).not.toBe(obj);
+      expect(c.name).toBe("fred");
+      expect(c.type).toBe("text/plain");
+    });
+
+    it("can clone an untyped File", () => {
+      const obj = new File(["dancer"], "ginger");
+      const c = generalHelpers.cloneObject(obj);
+      expect(c).not.toBe(obj);
+      expect(c.name).toBe("ginger");
+      expect(c.type).toBe("");
+    });
+
     it("can clone a shallow object", () => {
       const obj = {
         color: "red",

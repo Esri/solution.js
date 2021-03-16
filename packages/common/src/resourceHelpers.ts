@@ -78,7 +78,7 @@ import { copyResource } from "./resources/copy-resource";
 import { getBlob } from "./resources/get-blob";
 
 import { updateItem as helpersUpdateItem } from "./restHelpers";
-import { getBlobAsFile } from "./restHelpersGet";
+import { getBlobAsFile, getThumbnailFile } from "./restHelpersGet";
 
 // ------------------------------------------------------------------------------------------------------------------ //
 
@@ -126,22 +126,6 @@ export function addThumbnailFromBlob(
   };
 
   return isGroup ? updateGroup(updateOptions) : updateItem(updateOptions);
-}
-
-export function addThumbnailFromUrl(
-  url: string,
-  itemId: string,
-  authentication: UserSession,
-  isGroup: boolean = false
-): Promise<any> {
-  return new Promise<any>((resolve, reject) => {
-    getBlob(appendQueryParam(url, "w=400"), authentication).then(async blob => {
-      await addThumbnailFromBlob(blob, itemId, authentication, isGroup).then(
-        resolve,
-        reject
-      );
-    }, reject);
-  });
 }
 
 export function copyData(
@@ -208,7 +192,7 @@ export function convertResourceToFile(resource: IFileMimeType): File {
 
 /**
  * Copies the files described by a list of full URLs and folder/filename combinations for
- * the resources, metadata, and thumbnail of an item or group to an item.
+ * the resources, and metadata of an item or group to an item.
  *
  * @param storageAuthentication Credentials for the request to the storage
  * @param filePaths List of item files' URLs and folder/filenames for storing the files
@@ -223,7 +207,6 @@ export function copyFilesFromStorageItem(
   destinationFolderId: string,
   destinationItemId: string,
   destinationAuthentication: UserSession,
-  isGroup: boolean = false,
   template: any = {}
 ): Promise<boolean> {
   // TODO: This is only used in deployer, so move there
@@ -324,20 +307,6 @@ export function copyFilesFromStorageItem(
                     authentication: destinationAuthentication
                   }
                 ).then(resolveResource, rejectResource);
-              }, msLag);
-            }
-          );
-
-        case EFileType.Thumbnail:
-          return new Promise<IUpdateItemResponse>(
-            (resolveThumbnail, rejectThumbnail) => {
-              setTimeout(() => {
-                addThumbnailFromUrl(
-                  filePath.url,
-                  destinationItemId,
-                  destinationAuthentication,
-                  isGroup
-                ).then(resolveThumbnail, rejectThumbnail);
               }, msLag);
             }
           );
@@ -752,6 +721,33 @@ export function isSupportedFileType(filename: string): boolean {
     !!filenameExtension &&
     supportedExtensions.indexOf("|" + filenameExtension[0] + "|") >= 0
   );
+}
+
+/**
+ * Gets the thumbnail of an item or group.
+ *
+ * @param authentication Credentials for the request to the storage
+ * @param filePaths List of item files' URLs and folder/filenames for storing the files
+ * @return A promise which resolves to a boolean indicating if the copies were successful
+ */
+export function getThumbnailFromStorageItem(
+  authentication: UserSession,
+  filePaths: IDeployFileCopyPath[]
+): Promise<File> {
+  let thumbnailUrl: string;
+  let thumbnailFilename: string;
+  filePaths.forEach(path => {
+    if (path.type === EFileType.Thumbnail) {
+      thumbnailUrl = path.url;
+      thumbnailFilename = path.filename;
+    }
+  });
+
+  if (!thumbnailUrl) {
+    return Promise.resolve(null);
+  }
+
+  return getThumbnailFile(thumbnailUrl, thumbnailFilename, authentication);
 }
 
 /**

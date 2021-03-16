@@ -30,6 +30,7 @@ import {
   addItemResource,
   ICreateItemOptions,
   ICreateItemResponse,
+  IUpdateItemOptions,
   moveItem
 } from "@esri/arcgis-rest-portal";
 
@@ -71,7 +72,10 @@ export function createWebExperience(
       .then((createResponse: ICreateItemResponse) => {
         model.item.id = createResponse.id;
 
+        const savedThumbnail = model.item.thumbnail;
         model = interpolateItemId(model);
+        model.item.thumbnail = savedThumbnail; // interpolation trashes thumbnail binary
+
         // Experiences store draft data in a resource attached to the item
         // We'll just use the published data for the first "draft"
         const draftResourceModel = cloneObject(model.data);
@@ -92,11 +96,20 @@ export function createWebExperience(
 
         delete model.properties;
         // update the experience with the newly interpolated model
+        const updateOptions: IUpdateItemOptions = {
+          item: serializeModel(model),
+          authentication
+        };
+        if (model.item.thumbnail) {
+          updateOptions.params = {
+            // Pass thumbnail file in via params because item property is serialized, which discards a blob
+            thumbnail: model.item.thumbnail
+          };
+          delete updateOptions.item.thumbnail;
+        }
+
         return Promise.all([
-          updateItem({
-            item: serializeModel(model),
-            authentication
-          }),
+          updateItem(updateOptions),
           authentication.getUsername()
         ]);
       })
