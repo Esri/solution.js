@@ -229,37 +229,6 @@ describe("Module `resourceHelpers`: common functions involving the management of
       });
     });
 
-    describe("addThumbnailFromUrl", () => {
-      it("gets a thumbnail from a URL", done => {
-        const thumbnailurl =
-          utils.PORTAL_SUBSET.restUrl + "/images/thumbnail.png";
-        const itemId = "itm1234567890";
-        const updateUrl =
-          utils.PORTAL_SUBSET.restUrl +
-          "/content/users/casey/items/itm1234567890/update";
-
-        const expected = { success: true, id: itemId };
-        const expectedImage = mockItems.getAnImageResponse();
-
-        fetchMock
-          .post(updateUrl, expected)
-          .post(utils.PORTAL_SUBSET.restUrl, SERVER_INFO)
-          .post(thumbnailurl + "?w=400", expectedImage, { sendAsJson: false });
-
-        resourceHelpers
-          .addThumbnailFromUrl(thumbnailurl, itemId, MOCK_USER_SESSION)
-          .then((response: any) => {
-            expect(response).toEqual(expected);
-            const options: fetchMock.MockOptions = fetchMock.lastOptions(
-              updateUrl
-            );
-            const fetchBody = (options as fetchMock.MockResponseObject).body;
-            expect(typeof fetchBody).toEqual("object");
-            done();
-          }, done.fail);
-      });
-    });
-
     describe("copyData", () => {
       it("should handle error getting data", done => {
         const source: any = {
@@ -434,7 +403,6 @@ describe("Module `resourceHelpers`: common functions involving the management of
           null,
           "3ef",
           storageAuthentication,
-          false,
           tmpl
         )
         .then(resp => {
@@ -534,7 +502,6 @@ describe("Module `resourceHelpers`: common functions involving the management of
             null,
             destinationItemId,
             destinationAuthentication,
-            false,
             { properties: mimeTypes }
           )
           .then((response: any) => {
@@ -666,7 +633,7 @@ describe("Module `resourceHelpers`: common functions involving the management of
           }, done.fail);
       });
 
-      it("copies a single thumbnail file", done => {
+      it("does not copy thumbnail files", done => {
         const storageAuthentication = MOCK_USER_SESSION;
         const filePaths: interfaces.IDeployFileCopyPath[] = [
           {
@@ -678,18 +645,6 @@ describe("Module `resourceHelpers`: common functions involving the management of
         ];
         const destinationItemId: string = "itm1234567890";
         const destinationAuthentication = MOCK_USER_SESSION;
-        const updateUrl =
-          utils.PORTAL_SUBSET.restUrl +
-          "/content/users/casey/items/itm1234567890/update";
-        const expectedUpdate = true;
-        const expectedImage = mockItems.getAnImageResponse();
-        const imageUrl: string =
-          utils.PORTAL_SUBSET.restUrl + "/images/thumbnail.png?w=400";
-
-        fetchMock
-          .post(updateUrl, expectedUpdate)
-          .post(utils.PORTAL_SUBSET.restUrl, SERVER_INFO)
-          .post(imageUrl, expectedImage, { sendAsJson: false });
 
         resourceHelpers
           .copyFilesFromStorageItem(
@@ -700,7 +655,7 @@ describe("Module `resourceHelpers`: common functions involving the management of
             destinationAuthentication
           )
           .then((response: any) => {
-            expect(response).toEqual(expectedUpdate);
+            expect(response).toBeTruthy();
             done();
           }, done.fail);
       });
@@ -1660,6 +1615,45 @@ describe("Module `resourceHelpers`: common functions involving the management of
       expect(actual).toEqual(expected);
     });
   });
+
+  // Blobs are only available in the browser
+  if (typeof window !== "undefined") {
+    describe("getThumbnailFromStorageItem", () => {
+      it("handles an empty files list", done => {
+        const storageAuthentication = MOCK_USER_SESSION;
+        const filePaths: interfaces.IDeployFileCopyPath[] = [] as interfaces.IDeployFileCopyPath[];
+
+        resourceHelpers
+          .getThumbnailFromStorageItem(storageAuthentication, filePaths)
+          .then(response => {
+            expect(response).toBeNull();
+            done();
+          }, done.fail);
+      });
+
+      it("copies a thumbnail file", done => {
+        const storageAuthentication = MOCK_USER_SESSION;
+        const filePaths: interfaces.IDeployFileCopyPath[] = [
+          {
+            type: interfaces.EFileType.Thumbnail,
+            folder: "",
+            filename: "thumbnail.png",
+            url: utils.PORTAL_SUBSET.restUrl + "/images/thumbnail.png" // Thumbnail uses only URL
+          }
+        ];
+        const expectedImage = utils.getSampleImageAsFile(filePaths[0].filename);
+
+        fetchMock.post(filePaths[0].url, expectedImage, { sendAsJson: false });
+        resourceHelpers
+          .getThumbnailFromStorageItem(storageAuthentication, filePaths)
+          .then((response: File) => {
+            expect(response).toEqual(expectedImage);
+            expect(response.name).toEqual(filePaths[0].filename);
+            done();
+          }, done.fail);
+      });
+    });
+  }
 
   describe("isSupportedFileType", () => {
     it("recognizes supported file types for resource", () => {

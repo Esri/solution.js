@@ -390,7 +390,6 @@ describe("Module `file`: manages the creation and deployment of item types that 
         const itemTemplate: common.IItemTemplate = templates.getItemTemplate(
           "Web Map"
         );
-        itemTemplate.item.thumbnail = null;
         const templateDictionary: any = {};
         const newItemID: string = "map1234567891";
 
