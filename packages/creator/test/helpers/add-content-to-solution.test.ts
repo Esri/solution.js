@@ -111,46 +111,44 @@ describe("addContentToSolution", () => {
     ).then(() => done());
   });
 
-  if (typeof window !== "undefined") {
-    it("addContentToSolution item progress callback with failed item", done => {
-      const solutionId = "sln1234567890";
-      const options: common.ICreateSolutionOptions = {
-        itemIds: ["map1234567890"]
-      };
+  it("addContentToSolution item progress callback with failed item", done => {
+    const solutionId = "sln1234567890";
+    const options: common.ICreateSolutionOptions = {
+      itemIds: ["map1234567890"]
+    };
 
-      staticRelatedItemsMocks.fetchMockRelatedItems("map1234567890", {
-        total: 0,
-        relatedItems: []
-      });
-
-      fetchMock
-        .get(
-          "https://myorg.maps.arcgis.com/sharing/rest/content/items/map1234567890?f=json&token=fake-token",
-          mockItems.getAGOLItem("Web Map")
-        )
-        .post(
-          "https://myorg.maps.arcgis.com/sharing/rest/content/items/map1234567890/data",
-          mockItems.getAGOLItemData("Web Map")
-        )
-        .post(
-          "https://services123.arcgis.com/org1234567890/arcgis/rest/services/ROWPermits_publiccomment/FeatureServer/0",
-          mockItems.get400FailureResponse()
-        );
-
-      spyOn(console, "error").and.callFake(() => {});
-
-      return addContentToSolution(solutionId, options, MOCK_USER_SESSION).then(
-        () => done.fail(),
-        e => {
-          expect(e.success).toBeFalse();
-          expect(e.error).toEqual(
-            "One or more items cannot be converted into templates"
-          );
-          done();
-        }
-      );
+    staticRelatedItemsMocks.fetchMockRelatedItems("map1234567890", {
+      total: 0,
+      relatedItems: []
     });
-  }
+
+    fetchMock
+      .get(
+        "https://myorg.maps.arcgis.com/sharing/rest/content/items/map1234567890?f=json&token=fake-token",
+        mockItems.getAGOLItem("Web Map")
+      )
+      .post(
+        "https://myorg.maps.arcgis.com/sharing/rest/content/items/map1234567890/data",
+        mockItems.getAGOLItemData("Web Map")
+      )
+      .post(
+        "https://services123.arcgis.com/org1234567890/arcgis/rest/services/ROWPermits_publiccomment/FeatureServer/0",
+        mockItems.get400FailureResponse()
+      );
+
+    spyOn(console, "error").and.callFake(() => {});
+
+    return addContentToSolution(solutionId, options, MOCK_USER_SESSION).then(
+      () => done.fail(),
+      e => {
+        expect(e.success).toBeFalse();
+        expect(e.error).toEqual(
+          "One or more items cannot be converted into templates"
+        );
+        done();
+      }
+    );
+  });
 });
 
 describe("_getDependencies", () => {
@@ -1144,104 +1142,100 @@ describe("_replaceRemainingIdsInString", () => {
   });
 });
 
-// TypeScript for es2015 doesn't have a definition for `replaceAll`, so the tests "fail" via a TypeError
-if (typeof window !== "undefined") {
-  describe("_simplifyUrlsInItemDescriptions", () => {
-    it("replaces URL in description with simplified form 1", () => {
-      const descrip1 = "Etiam rhoncus vestibulum enim, a scelerisque sem.";
-      const descrip2 = "Donec rhoncus nunc in odio lobortis venenatis non.";
+describe("_simplifyUrlsInItemDescriptions", () => {
+  it("replaces URL in description with simplified form 1", () => {
+    const descrip1 = "Etiam rhoncus vestibulum enim, a scelerisque sem.";
+    const descrip2 = "Donec rhoncus nunc in odio lobortis venenatis non.";
 
-      const notebookTemplate = templates.getItemTemplate(
-        "Notebook",
-        null,
-        "url1"
-      );
-      notebookTemplate.item.origUrl = notebookTemplate.item.url;
+    const notebookTemplate = templates.getItemTemplate(
+      "Notebook",
+      null,
+      "url1"
+    );
+    notebookTemplate.item.origUrl = notebookTemplate.item.url;
 
-      const webmapTemplate = templates.getItemTemplate("Web Map", null, "url4");
-      webmapTemplate.item.description =
-        descrip1 + " url5,url5,url1 " + descrip2;
+    const webmapTemplate = templates.getItemTemplate("Web Map", null, "url4");
+    webmapTemplate.item.description = descrip1 + " url5,url5,url1 " + descrip2;
 
-      const wmaTemplate = templates.getItemTemplate(
-        "Web Mapping Application",
-        null,
-        "url5"
-      );
-      wmaTemplate.item.description = descrip1 + " url0 " + descrip2;
-      wmaTemplate.item.origUrl = wmaTemplate.item.url;
+    const wmaTemplate = templates.getItemTemplate(
+      "Web Mapping Application",
+      null,
+      "url5"
+    );
+    wmaTemplate.item.description = descrip1 + " url0 " + descrip2;
+    wmaTemplate.item.origUrl = wmaTemplate.item.url;
 
-      const workforceTemplate = templates.getItemTemplate(
-        "Workforce Project",
-        null,
-        "url6"
-      );
-      workforceTemplate.item.origUrl = workforceTemplate.item.url;
+    const workforceTemplate = templates.getItemTemplate(
+      "Workforce Project",
+      null,
+      "url6"
+    );
+    workforceTemplate.item.origUrl = workforceTemplate.item.url;
 
-      const templateList = [
-        notebookTemplate,
-        webmapTemplate,
-        wmaTemplate,
-        workforceTemplate
-      ];
+    const templateList = [
+      notebookTemplate,
+      webmapTemplate,
+      wmaTemplate,
+      workforceTemplate
+    ];
 
-      _simplifyUrlsInItemDescriptions(templateList);
+    _simplifyUrlsInItemDescriptions(templateList);
 
-      expect(webmapTemplate.item.description).toEqual(
-        descrip1 +
-          " {{wma1234567890.url}},{{wma1234567890.url}},{{nbk1234567890.url}} " +
-          descrip2
-      );
-      expect(wmaTemplate.item.description).toEqual(
-        descrip1 + " url0 " + descrip2
-      );
-    });
-
-    it("replaces URL in description with simplified form 2", () => {
-      const templateList = [
-        {
-          itemId: "id1",
-          item: {
-            description:
-              "https://experience.arcgis.com/experience/fcb2bf2837a6404ebb418a1f805f976a<div>https://localdeployment.maps.arcgis.com/apps/webappviewer/index.html?id=cefb7d787b8b4edb971efba758ee0c1e</div>",
-            origUrl: ""
-          }
-        },
-        {
-          itemId: "id2",
-          item: {
-            description: "",
-            origUrl:
-              "https://experience.arcgis.com/experience/fcb2bf2837a6404ebb418a1f805f976a"
-          }
-        },
-        {
-          itemId: "id3",
-          item: {
-            description: "",
-            origUrl:
-              "https://localdeployment.maps.arcgis.com/apps/webappviewer/index.html?id=cefb7d787b8b4edb971efba758ee0c1e"
-          }
-        }
-      ];
-
-      _simplifyUrlsInItemDescriptions(templateList as any[]);
-
-      expect(templateList[0].item.description).toEqual(
-        "{{id2.url}}<div>{{id3.url}}</div>"
-      );
-    });
-
-    it("doesn't choke if the description is missing", () => {
-      const notebookTemplate = templates.getItemTemplate(
-        "Notebook",
-        null,
-        "url1"
-      );
-      notebookTemplate.item.origUrl = notebookTemplate.item.url;
-      notebookTemplate.item.description = null;
-
-      _simplifyUrlsInItemDescriptions([notebookTemplate]);
-      expect(notebookTemplate.item.description).toBeNull();
-    });
+    expect(webmapTemplate.item.description).toEqual(
+      descrip1 +
+        " {{wma1234567890.url}},{{wma1234567890.url}},{{nbk1234567890.url}} " +
+        descrip2
+    );
+    expect(wmaTemplate.item.description).toEqual(
+      descrip1 + " url0 " + descrip2
+    );
   });
-}
+
+  it("replaces URL in description with simplified form 2", () => {
+    const templateList = [
+      {
+        itemId: "id1",
+        item: {
+          description:
+            "https://experience.arcgis.com/experience/fcb2bf2837a6404ebb418a1f805f976a<div>https://localdeployment.maps.arcgis.com/apps/webappviewer/index.html?id=cefb7d787b8b4edb971efba758ee0c1e</div>",
+          origUrl: ""
+        }
+      },
+      {
+        itemId: "id2",
+        item: {
+          description: "",
+          origUrl:
+            "https://experience.arcgis.com/experience/fcb2bf2837a6404ebb418a1f805f976a"
+        }
+      },
+      {
+        itemId: "id3",
+        item: {
+          description: "",
+          origUrl:
+            "https://localdeployment.maps.arcgis.com/apps/webappviewer/index.html?id=cefb7d787b8b4edb971efba758ee0c1e"
+        }
+      }
+    ];
+
+    _simplifyUrlsInItemDescriptions(templateList as any[]);
+
+    expect(templateList[0].item.description).toEqual(
+      "{{id2.url}}<div>{{id3.url}}</div>"
+    );
+  });
+
+  it("doesn't choke if the description is missing", () => {
+    const notebookTemplate = templates.getItemTemplate(
+      "Notebook",
+      null,
+      "url1"
+    );
+    notebookTemplate.item.origUrl = notebookTemplate.item.url;
+    notebookTemplate.item.description = null;
+
+    _simplifyUrlsInItemDescriptions([notebookTemplate]);
+    expect(notebookTemplate.item.description).toBeNull();
+  });
+});

@@ -47,115 +47,113 @@ afterEach(() => {
 
 describe("simpleTypeCreateItemFromTemplate", () => {
   describe("notebook", () => {
-    if (typeof window !== "undefined") {
-      it("should create and fine tune python notebook", done => {
-        const itemTemplate: common.IItemTemplate = templates.getItemTemplate(
-          "Notebook"
-        );
-        itemTemplate.data = mockItems.getAGOLItemData("Notebook");
+    it("should create and fine tune python notebook", done => {
+      const itemTemplate: common.IItemTemplate = templates.getItemTemplate(
+        "Notebook"
+      );
+      itemTemplate.data = mockItems.getAGOLItemData("Notebook");
 
-        const newItemID: string = "abc1cab401af4828a25cc6eaeb59fb69";
-        const expected: any = {};
-        expected[itemTemplate.itemId] = { itemId: newItemID };
-        const templateDictionary: any = {};
+      const newItemID: string = "abc1cab401af4828a25cc6eaeb59fb69";
+      const expected: any = {};
+      expected[itemTemplate.itemId] = { itemId: newItemID };
+      const templateDictionary: any = {};
 
-        const userUrl: string =
+      const userUrl: string =
+        utils.PORTAL_SUBSET.restUrl +
+        "/community/users/casey?f=json&token=fake-token";
+
+      fetchMock
+        .post(
+          utils.PORTAL_SUBSET.restUrl + "/content/users/casey/addItem",
+          utils.getSuccessResponse({ id: newItemID, folder: null })
+        )
+        .post(
           utils.PORTAL_SUBSET.restUrl +
-          "/community/users/casey?f=json&token=fake-token";
+            "/content/users/casey/items/" +
+            newItemID +
+            "/update",
+          { success: true }
+        )
+        .get(userUrl, {
+          username: "casey",
+          fullName: "casey"
+        });
 
-        fetchMock
-          .post(
-            utils.PORTAL_SUBSET.restUrl + "/content/users/casey/addItem",
-            utils.getSuccessResponse({ id: newItemID, folder: null })
-          )
-          .post(
-            utils.PORTAL_SUBSET.restUrl +
-              "/content/users/casey/items/" +
-              newItemID +
-              "/update",
-            { success: true }
-          )
-          .get(userUrl, {
-            username: "casey",
-            fullName: "casey"
+      const expectedClone: common.IItemTemplate = common.cloneObject(
+        itemTemplate
+      );
+      expectedClone.itemId = newItemID;
+      expectedClone.item.id = "abc1cab401af4828a25cc6eaeb59fb69";
+
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
+      simpleTypes
+        .createItemFromTemplate(
+          itemTemplate,
+          templateDictionary,
+          MOCK_USER_SESSION,
+          utils.ITEM_PROGRESS_CALLBACK
+        )
+        .then(r => {
+          expect(templateDictionary).toEqual(expected);
+          expect(r).toEqual({
+            item: expectedClone,
+            id: newItemID,
+            type: itemTemplate.type,
+            postProcess: false
           });
+          done();
+        });
+    });
 
-        const expectedClone: common.IItemTemplate = common.cloneObject(
-          itemTemplate
-        );
-        expectedClone.itemId = newItemID;
-        expectedClone.item.id = "abc1cab401af4828a25cc6eaeb59fb69";
+    it("should handle error on python notebook update item", done => {
+      const itemTemplate: common.IItemTemplate = templates.getItemTemplate(
+        "Notebook"
+      );
+      itemTemplate.data = mockItems.getAGOLItemData("Notebook");
 
-        // eslint-disable-next-line @typescript-eslint/no-floating-promises
-        simpleTypes
-          .createItemFromTemplate(
-            itemTemplate,
-            templateDictionary,
-            MOCK_USER_SESSION,
-            utils.ITEM_PROGRESS_CALLBACK
-          )
-          .then(r => {
-            expect(templateDictionary).toEqual(expected);
-            expect(r).toEqual({
-              item: expectedClone,
-              id: newItemID,
-              type: itemTemplate.type,
-              postProcess: false
-            });
-            done();
-          });
-      });
+      const newItemID: string = "abc1cab401af4828a25cc6eaeb59fb69";
+      const expected: any = {};
+      expected[itemTemplate.itemId] = { itemId: newItemID };
+      const templateDictionary: any = {};
 
-      it("should handle error on python notebook update item", done => {
-        const itemTemplate: common.IItemTemplate = templates.getItemTemplate(
-          "Notebook"
-        );
-        itemTemplate.data = mockItems.getAGOLItemData("Notebook");
+      const userUrl: string =
+        utils.PORTAL_SUBSET.restUrl +
+        "/community/users/casey?f=json&token=fake-token";
 
-        const newItemID: string = "abc1cab401af4828a25cc6eaeb59fb69";
-        const expected: any = {};
-        expected[itemTemplate.itemId] = { itemId: newItemID };
-        const templateDictionary: any = {};
-
-        const userUrl: string =
+      fetchMock
+        .post(
+          utils.PORTAL_SUBSET.restUrl + "/content/users/casey/addItem",
+          utils.getSuccessResponse({ id: newItemID, folder: null })
+        )
+        .post(
           utils.PORTAL_SUBSET.restUrl +
-          "/community/users/casey?f=json&token=fake-token";
+            "/content/users/casey/items/" +
+            newItemID +
+            "/update",
+          mockItems.get400Failure()
+        )
+        .get(userUrl, {
+          username: "casey",
+          fullName: "casey"
+        })
+        .post(
+          utils.PORTAL_SUBSET.restUrl +
+            "/content/users/casey/items/map1234567890/delete",
+          utils.getSuccessResponse({ itemId: "map1234567890" })
+        );
 
-        fetchMock
-          .post(
-            utils.PORTAL_SUBSET.restUrl + "/content/users/casey/addItem",
-            utils.getSuccessResponse({ id: newItemID, folder: null })
-          )
-          .post(
-            utils.PORTAL_SUBSET.restUrl +
-              "/content/users/casey/items/" +
-              newItemID +
-              "/update",
-            mockItems.get400Failure()
-          )
-          .get(userUrl, {
-            username: "casey",
-            fullName: "casey"
-          })
-          .post(
-            utils.PORTAL_SUBSET.restUrl +
-              "/content/users/casey/items/map1234567890/delete",
-            utils.getSuccessResponse({ itemId: "map1234567890" })
-          );
-
-        // eslint-disable-next-line @typescript-eslint/no-floating-promises
-        simpleTypes
-          .createItemFromTemplate(
-            itemTemplate,
-            templateDictionary,
-            MOCK_USER_SESSION,
-            utils.ITEM_PROGRESS_CALLBACK
-          )
-          .then(response => {
-            done();
-          });
-      });
-    }
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
+      simpleTypes
+        .createItemFromTemplate(
+          itemTemplate,
+          templateDictionary,
+          MOCK_USER_SESSION,
+          utils.ITEM_PROGRESS_CALLBACK
+        )
+        .then(response => {
+          done();
+        });
+    });
 
     it("should handle missing python notebook content: no data", () => {
       const itemTemplate: common.IItemTemplate = templates.getItemTemplate(

@@ -1379,187 +1379,179 @@ describe("Module `deploySolutionItems`", () => {
         });
     });
 
-    if (typeof window !== "undefined") {
-      it("fails to deploy file data to the item", done => {
-        const itemTemplate: common.IItemTemplate = templates.getItemTemplate(
-          "Web Map"
-        );
-        itemTemplate.item.thumbnail = null;
-        const resourceFilePaths: common.IDeployFileCopyPath[] = [
-          {
-            type: common.EFileType.Data,
-            folder: "cod1234567890_info_data",
-            filename: "Name of an AGOL item.zip",
-            url:
-              "https://myserver/doc/cod1234567890_info_data/Name of an AGOL item.zip"
-          }
-        ];
-        const templateDictionary: any = {};
-        const newItemID: string = "map1234567891";
+    it("fails to deploy file data to the item", done => {
+      const itemTemplate: common.IItemTemplate = templates.getItemTemplate(
+        "Web Map"
+      );
+      itemTemplate.item.thumbnail = null;
+      const resourceFilePaths: common.IDeployFileCopyPath[] = [
+        {
+          type: common.EFileType.Data,
+          folder: "cod1234567890_info_data",
+          filename: "Name of an AGOL item.zip",
+          url:
+            "https://myserver/doc/cod1234567890_info_data/Name of an AGOL item.zip"
+        }
+      ];
+      const templateDictionary: any = {};
+      const newItemID: string = "map1234567891";
 
-        fetchMock
-          .post(
-            utils.PORTAL_SUBSET.restUrl + "/content/users/casey/addItem",
-            utils.getSuccessResponse({ id: newItemID })
-          )
-          .post(
-            utils.PORTAL_SUBSET.restUrl +
-              "/content/users/casey/items/map1234567891/update",
-            utils.getFailureResponse()
-          )
-          .post(
-            "https://myserver/doc/cod1234567890_info_data/Name of an AGOL item.zip/rest/info",
-            SERVER_INFO
-          )
-          .post(
-            "https://myserver/doc/cod1234567890_info_data/Name of an AGOL item.zip",
-            utils.getSampleZipFile("Name of an AGOL item.zip")
-          )
-          .post(
-            "https://myserver/doc/metadata.xml",
-            new Blob(["<meta><value1>a</value1><value2>b</value2></meta>"], {
-              type: "text/xml"
-            }),
-            { sendAsJson: false }
-          )
-          .post(utils.PORTAL_SUBSET.restUrl + "/info", SERVER_INFO);
+      fetchMock
+        .post(
+          utils.PORTAL_SUBSET.restUrl + "/content/users/casey/addItem",
+          utils.getSuccessResponse({ id: newItemID })
+        )
+        .post(
+          utils.PORTAL_SUBSET.restUrl +
+            "/content/users/casey/items/map1234567891/update",
+          utils.getFailureResponse()
+        )
+        .post(
+          "https://myserver/doc/cod1234567890_info_data/Name of an AGOL item.zip/rest/info",
+          SERVER_INFO
+        )
+        .post(
+          "https://myserver/doc/cod1234567890_info_data/Name of an AGOL item.zip",
+          utils.getSampleZipFile("Name of an AGOL item.zip")
+        )
+        .post(
+          "https://myserver/doc/metadata.xml",
+          new Blob(["<meta><value1>a</value1><value2>b</value2></meta>"], {
+            type: "text/xml"
+          }),
+          { sendAsJson: false }
+        )
+        .post(utils.PORTAL_SUBSET.restUrl + "/info", SERVER_INFO);
 
-        // eslint-disable-next-line @typescript-eslint/no-floating-promises
-        deploySolution
-          ._createItemFromTemplateWhenReady(
-            itemTemplate,
-            resourceFilePaths,
-            MOCK_USER_SESSION,
-            templateDictionary,
-            MOCK_USER_SESSION,
-            utils.ITEM_PROGRESS_CALLBACK
-          )
-          .then(response => {
-            expect(response).toEqual(
-              templates.getFailedItem(itemTemplate.type)
-            );
-            done();
-          });
-      });
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
+      deploySolution
+        ._createItemFromTemplateWhenReady(
+          itemTemplate,
+          resourceFilePaths,
+          MOCK_USER_SESSION,
+          templateDictionary,
+          MOCK_USER_SESSION,
+          utils.ITEM_PROGRESS_CALLBACK
+        )
+        .then(response => {
+          expect(response).toEqual(templates.getFailedItem(itemTemplate.type));
+          done();
+        });
+    });
 
-      it("should handle error on copy group resources", done => {
-        const itemId: string = "abc9cab401af4828a25cc6eaeb59fb69";
-        const templateDictionary: any = {};
-        const newItemID: string = "abc8cab401af4828a25cc6eaeb59fb69";
+    it("should handle error on copy group resources", done => {
+      const itemId: string = "abc9cab401af4828a25cc6eaeb59fb69";
+      const templateDictionary: any = {};
+      const newItemID: string = "abc8cab401af4828a25cc6eaeb59fb69";
 
-        const itemTemplate: common.IItemTemplate = templates.getItemTemplateSkeleton();
-        itemTemplate.itemId = itemId;
-        itemTemplate.type = "Group";
-        itemTemplate.item.title = "Dam Inspection Assignments";
+      const itemTemplate: common.IItemTemplate = templates.getItemTemplateSkeleton();
+      itemTemplate.itemId = itemId;
+      itemTemplate.type = "Group";
+      itemTemplate.item.title = "Dam Inspection Assignments";
 
-        const searchResult: any = {
-          query: "Dam Inspection Assignments",
-          total: 12,
-          start: 1,
-          num: 10,
-          nextStart: 11,
-          results: []
-        };
+      const searchResult: any = {
+        query: "Dam Inspection Assignments",
+        total: 12,
+        start: 1,
+        num: 10,
+        nextStart: 11,
+        results: []
+      };
 
-        const filePaths: any[] = [
-          {
-            type: common.EFileType.Resource,
-            folder: "aFolder",
-            filename: "git_merge.png",
-            url: "http://someurl"
-          }
-        ];
+      const filePaths: any[] = [
+        {
+          type: common.EFileType.Resource,
+          folder: "aFolder",
+          filename: "git_merge.png",
+          url: "http://someurl"
+        }
+      ];
 
-        fetchMock
-          .get(
-            utils.PORTAL_SUBSET.restUrl +
-              "/community/groups?f=json&q=Dam%20Inspection%20Assignments&token=fake-token",
-            searchResult
-          )
-          .post(utils.PORTAL_SUBSET.restUrl + "/community/createGroup", {
-            success: true,
-            group: { id: newItemID }
-          })
-          .post("http://someurl//rest/info", {})
-          .post("http://someurl/", mockItems.get400Failure());
+      fetchMock
+        .get(
+          utils.PORTAL_SUBSET.restUrl +
+            "/community/groups?f=json&q=Dam%20Inspection%20Assignments&token=fake-token",
+          searchResult
+        )
+        .post(utils.PORTAL_SUBSET.restUrl + "/community/createGroup", {
+          success: true,
+          group: { id: newItemID }
+        })
+        .post("http://someurl//rest/info", {})
+        .post("http://someurl/", mockItems.get400Failure());
 
-        // eslint-disable-next-line @typescript-eslint/no-floating-promises
-        deploySolution
-          ._createItemFromTemplateWhenReady(
-            itemTemplate,
-            filePaths,
-            MOCK_USER_SESSION,
-            templateDictionary,
-            MOCK_USER_SESSION,
-            utils.ITEM_PROGRESS_CALLBACK
-          )
-          .then(response => {
-            expect(response).toEqual(
-              templates.getFailedItem(itemTemplate.type)
-            );
-            done();
-          });
-      });
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
+      deploySolution
+        ._createItemFromTemplateWhenReady(
+          itemTemplate,
+          filePaths,
+          MOCK_USER_SESSION,
+          templateDictionary,
+          MOCK_USER_SESSION,
+          utils.ITEM_PROGRESS_CALLBACK
+        )
+        .then(response => {
+          expect(response).toEqual(templates.getFailedItem(itemTemplate.type));
+          done();
+        });
+    });
 
-      it("can handle error on copyFilesFromStorage", done => {
-        const itemTemplate: common.IItemTemplate = templates.getItemTemplate(
-          "Web Mapping Application",
-          null,
-          "https://apl.maps.arcgis.com/apps/Viewer/index.html?appid=map1234567890"
-        );
-        itemTemplate.item.thumbnail = null;
-        const resourceFilePaths: any[] = [
-          {
-            type: common.EFileType.Resource,
-            folder: "aFolder",
-            filename: "git_merge.png",
-            url: "http://someurl"
-          }
-        ];
-        const templateDictionary: any = {};
-        const newItemID: string = "wma1234567891";
+    it("can handle error on copyFilesFromStorage", done => {
+      const itemTemplate: common.IItemTemplate = templates.getItemTemplate(
+        "Web Mapping Application",
+        null,
+        "https://apl.maps.arcgis.com/apps/Viewer/index.html?appid=map1234567890"
+      );
+      itemTemplate.item.thumbnail = null;
+      const resourceFilePaths: any[] = [
+        {
+          type: common.EFileType.Resource,
+          folder: "aFolder",
+          filename: "git_merge.png",
+          url: "http://someurl"
+        }
+      ];
+      const templateDictionary: any = {};
+      const newItemID: string = "wma1234567891";
 
-        const updatedItem = mockItems.getAGOLItem(
-          "Web Mapping Application",
-          "https://apl.maps.arcgis.com/apps/Viewer/index.html?appid=map1234567890"
-        );
+      const updatedItem = mockItems.getAGOLItem(
+        "Web Mapping Application",
+        "https://apl.maps.arcgis.com/apps/Viewer/index.html?appid=map1234567890"
+      );
 
-        fetchMock
-          .post(
-            utils.PORTAL_SUBSET.restUrl + "/content/users/casey/addItem",
-            utils.getSuccessResponse({ id: newItemID })
-          )
-          .post(
-            utils.PORTAL_SUBSET.restUrl +
-              "/content/users/casey/items/wma1234567891/update",
-            utils.getSuccessResponse({ id: newItemID })
-          )
-          .get(
-            utils.PORTAL_SUBSET.restUrl +
-              "/content/items/wma1234567891?f=json&token=fake-token",
-            updatedItem
-          )
-          .post("http://someurl//rest/info", {})
-          .post("http://someurl/", mockItems.get400Failure());
+      fetchMock
+        .post(
+          utils.PORTAL_SUBSET.restUrl + "/content/users/casey/addItem",
+          utils.getSuccessResponse({ id: newItemID })
+        )
+        .post(
+          utils.PORTAL_SUBSET.restUrl +
+            "/content/users/casey/items/wma1234567891/update",
+          utils.getSuccessResponse({ id: newItemID })
+        )
+        .get(
+          utils.PORTAL_SUBSET.restUrl +
+            "/content/items/wma1234567891?f=json&token=fake-token",
+          updatedItem
+        )
+        .post("http://someurl//rest/info", {})
+        .post("http://someurl/", mockItems.get400Failure());
 
-        // eslint-disable-next-line @typescript-eslint/no-floating-promises
-        deploySolution
-          ._createItemFromTemplateWhenReady(
-            itemTemplate,
-            resourceFilePaths,
-            MOCK_USER_SESSION,
-            templateDictionary,
-            MOCK_USER_SESSION,
-            utils.ITEM_PROGRESS_CALLBACK
-          )
-          .then(response => {
-            expect(response).toEqual(
-              templates.getFailedItem(itemTemplate.type)
-            );
-            done();
-          });
-      });
-    }
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
+      deploySolution
+        ._createItemFromTemplateWhenReady(
+          itemTemplate,
+          resourceFilePaths,
+          MOCK_USER_SESSION,
+          templateDictionary,
+          MOCK_USER_SESSION,
+          utils.ITEM_PROGRESS_CALLBACK
+        )
+        .then(response => {
+          expect(response).toEqual(templates.getFailedItem(itemTemplate.type));
+          done();
+        });
+    });
   });
 
   describe("_flagPatchItemsForPostProcessing", () => {
