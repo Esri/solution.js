@@ -15,6 +15,7 @@
  */
 import * as utils from "../../common/test/mocks/utils";
 import * as sitesPackage from "@esri/hub-sites";
+import * as portalPackage from "@esri/arcgis-rest-portal";
 import * as moveHelper from "../src/helpers/move-model-to-folder";
 const MOCK_USER_SESSION = utils.createRuntimeMockUserSession();
 
@@ -166,6 +167,10 @@ describe("HubPageProcessor: ", () => {
         moveHelper,
         "moveModelToFolder"
       ).and.resolveTo();
+      const thumbnailSpy = spyOn(portalPackage, "updateItem").and.resolveTo({
+        success: true,
+        id: "fred"
+      });
 
       const td = {
         organization: {
@@ -211,6 +216,10 @@ describe("HubPageProcessor: ", () => {
         moveHelper,
         "moveModelToFolder"
       ).and.resolveTo();
+      const thumbnailSpy = spyOn(portalPackage, "updateItem").and.resolveTo({
+        success: true,
+        id: "fred"
+      });
 
       const td = {
         organization: {
@@ -304,6 +313,10 @@ describe("HubPageProcessor: ", () => {
         moveHelper,
         "moveModelToFolder"
       ).and.resolveTo();
+      const thumbnailSpy = spyOn(portalPackage, "updateItem").and.resolveTo({
+        success: true,
+        id: "fred"
+      });
       const removePageSpy = spyOn(sitesPackage, "removePage").and.resolveTo({
         success: true,
         itemId: "FAKE3ef"
