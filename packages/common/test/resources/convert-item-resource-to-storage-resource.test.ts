@@ -100,26 +100,4 @@ describe("convertStorageResourceToItemResource :: ", () => {
 
     expect(actual).toEqual(expected);
   });
-
-  it("handles the form.webform info file", () => {
-    const actual = convertStorageResourceToItemResource(
-      "87f_info/form.webform.json"
-    );
-    const expected: IDeployFilename = {
-      type: EFileType.Info,
-      folder: "87f_info",
-      filename: "form.webform.json"
-    };
-    expect(actual).toEqual(expected);
-  });
-  // TODO: Needed for EXB
-  // it('handles deep nesting with - ified segments', () => {
-  //   const actual = convertStorageResourceToItemResource("3ef_some_folder_images_widget-12/happy.png");
-  //   const expected: IDeployFilename = {
-  //     type: EFileType.Resource,
-  //     folder: "87f_info",
-  //     filename: "form.webform.json"
-  //   };
-  //   expect(actual).toEqual(expected);
-  // });
 });

@@ -16,7 +16,6 @@
 
 import * as common from "@esri/solution-common";
 import * as dashboard from "../dashboard";
-import * as form from "../form";
 import * as notebook from "../notebook";
 import * as oic from "../oic";
 import * as quickcapture from "../quickcapture";
@@ -119,26 +118,41 @@ export function convertItemToTemplate(
         case "Form":
           // Store the form's data in the solution resources, not in template
           itemTemplate.data = null;
-          form.convertItemToTemplate(itemTemplate);
 
-          wrapupPromise = new Promise(
-            (resolveFormStorage, rejectFormStorage) => {
-              common
-                .storeFormItemFiles(
-                  itemTemplate,
-                  itemDataResponse,
-                  solutionItemId,
-                  authentication
-                )
-                .then(formFilenames => {
-                  // update the templates resources
-                  itemTemplate.resources = itemTemplate.resources.concat(
-                    formFilenames
-                  );
-                  resolveFormStorage(null);
-                }, rejectFormStorage);
-            }
-          );
+          // Store form data
+          if (itemDataResponse) {
+            const originalFilename =
+              itemTemplate.item.name || (itemDataResponse as File).name;
+            const filename =
+              originalFilename && originalFilename !== "undefined"
+                ? originalFilename
+                : `${itemTemplate.itemId}.zip`;
+            itemTemplate.item.name = filename;
+            const storageName = common.convertItemResourceToStorageResource(
+              itemTemplate.itemId,
+              filename,
+              "info_data"
+            );
+            wrapupPromise = new Promise<void>(
+              (resolveDataStorage, rejectDataStorage) => {
+                common
+                  .addResourceFromBlob(
+                    itemDataResponse,
+                    solutionItemId,
+                    storageName.folder,
+                    filename,
+                    authentication
+                  )
+                  .then(() => {
+                    // Update the template's resources
+                    itemTemplate.resources.push(
+                      storageName.folder + "/" + storageName.filename
+                    );
+                    resolveDataStorage();
+                  }, rejectDataStorage);
+              }
+            );
+          }
           break;
         case "Notebook":
           notebook.convertNotebookToTemplate(itemTemplate);

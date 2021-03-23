@@ -297,27 +297,6 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
         )
         .post(
           utils.PORTAL_SUBSET.restUrl +
-            "/content/items/" +
-            itemTemplate.itemId +
-            "/info/form.json",
-          utils.getSampleJsonAsFile("form.json")
-        )
-        .post(
-          utils.PORTAL_SUBSET.restUrl +
-            "/content/items/" +
-            itemTemplate.itemId +
-            "/info/forminfo.json",
-          utils.getSampleJsonAsFile("forminfo.json")
-        )
-        .post(
-          utils.PORTAL_SUBSET.restUrl +
-            "/content/items/" +
-            itemTemplate.itemId +
-            "/info/form.webform",
-          utils.getSampleJsonAsFile("form.webform")
-        )
-        .post(
-          utils.PORTAL_SUBSET.restUrl +
             "/content/users/casey/items/" +
             solutionItemId +
             "/addResources",
@@ -370,27 +349,6 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
             itemTemplate.itemId +
             "/info/metadata/metadata.xml",
           mockItems.get400Failure()
-        )
-        .post(
-          utils.PORTAL_SUBSET.restUrl +
-            "/content/items/" +
-            itemTemplate.itemId +
-            "/info/form.json",
-          utils.getSampleJsonAsFile("form.json")
-        )
-        .post(
-          utils.PORTAL_SUBSET.restUrl +
-            "/content/items/" +
-            itemTemplate.itemId +
-            "/info/forminfo.json",
-          utils.getSampleJsonAsFile("forminfo.json")
-        )
-        .post(
-          utils.PORTAL_SUBSET.restUrl +
-            "/content/items/" +
-            itemTemplate.itemId +
-            "/info/form.webform",
-          utils.getSampleJsonAsFile("form.webform")
         )
         .post(
           utils.PORTAL_SUBSET.restUrl +

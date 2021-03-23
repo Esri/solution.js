@@ -486,46 +486,6 @@ describe("Module `resourceHelpers`: common functions involving the management of
         }, done.fail);
     });
 
-    it("copies a single info file", done => {
-      const storageAuthentication = MOCK_USER_SESSION;
-      const filePaths: interfaces.IDeployFileCopyPath[] = [
-        {
-          type: interfaces.EFileType.Info,
-          folder: null,
-          filename: "form.json",
-          url:
-            utils.PORTAL_SUBSET.restUrl +
-            "/content/items/itm1234567890/info/form.json"
-        }
-      ];
-      const destinationItemId: string = "itm1234567890";
-      const destinationAuthentication = MOCK_USER_SESSION;
-      const updateUrl =
-        utils.PORTAL_SUBSET.restUrl +
-        "/content/users/casey/items/itm1234567890/updateinfo";
-      const expectedUpdate = true;
-
-      fetchMock
-        .post(
-          utils.PORTAL_SUBSET.restUrl +
-            "/content/items/itm1234567890/info/form.json",
-          utils.getSampleJsonAsFile("form.json")
-        )
-        .post(updateUrl, expectedUpdate);
-      resourceHelpers
-        .copyFilesFromStorageItem(
-          storageAuthentication,
-          filePaths,
-          null,
-          destinationItemId,
-          destinationAuthentication
-        )
-        .then((response: any) => {
-          expect(response).toEqual(expectedUpdate);
-          done();
-        }, done.fail);
-    });
-
     it("copies a single metadata file", done => {
       const storageAuthentication = MOCK_USER_SESSION;
       const filePaths: interfaces.IDeployFileCopyPath[] = [
@@ -955,23 +915,6 @@ describe("Module `resourceHelpers`: common functions involving the management of
   //   });
   // });
 
-  describe("generateInfoStorageFilename", () => {
-    it("generates storage name for an info file", () => {
-      const itemId = "8f7ec78195d0479784036387d522e29f";
-      const filename = "form.info";
-      const expected = {
-        folder: "8f7ec78195d0479784036387d522e29f_info",
-        filename
-      };
-
-      const actual = resourceHelpers.generateInfoStorageFilename(
-        itemId,
-        filename
-      );
-      expect(actual).toEqual(expected);
-    });
-  });
-
   describe("generateMetadataStorageFilename", () => {
     it("generates storage name for metadata", () => {
       const itemId = "8f7ec78195d0479784036387d522e29f";
@@ -1083,21 +1026,6 @@ describe("Module `resourceHelpers`: common functions involving the management of
         type: interfaces.EFileType.Data,
         folder: "8f7ec78195d0479784036387d522e29f_info_dataz",
         filename: "data.pkg"
-      };
-
-      const actual = resourceHelpers.generateResourceFilenameFromStorage(
-        storageResourceFilename
-      );
-      expect(actual).toEqual(expected);
-    });
-
-    it("handles the form.webform info file", () => {
-      const storageResourceFilename =
-        "8f7ec78195d0479784036387d522e29f_info/form.webform.json";
-      const expected: interfaces.IDeployFilename = {
-        type: interfaces.EFileType.Info,
-        folder: "8f7ec78195d0479784036387d522e29f_info",
-        filename: "form.webform.json"
       };
 
       const actual = resourceHelpers.generateResourceFilenameFromStorage(
@@ -1293,42 +1221,6 @@ describe("Module `resourceHelpers`: common functions involving the management of
         resourceFilenames
       );
       expect(actual.length).toEqual(4);
-      expect(actual).toEqual(expected);
-    });
-  });
-
-  describe("generateSourceFilePaths", () => {
-    it("generates the file paths for the three form info files", () => {
-      const portalSharingUrl = utils.PORTAL_SUBSET.restUrl;
-      const itemId = "03744d6b7a9b4b76bfd45dc2d1e642a5";
-      const expected = [
-        {
-          url:
-            utils.PORTAL_SUBSET.restUrl +
-            "/content/items/03744d6b7a9b4b76bfd45dc2d1e642a5/info/form.json",
-          folder: "03744d6b7a9b4b76bfd45dc2d1e642a5_info",
-          filename: "form.json"
-        },
-        {
-          url:
-            utils.PORTAL_SUBSET.restUrl +
-            "/content/items/03744d6b7a9b4b76bfd45dc2d1e642a5/info/forminfo.json",
-          folder: "03744d6b7a9b4b76bfd45dc2d1e642a5_info",
-          filename: "forminfo.json"
-        },
-        {
-          url:
-            utils.PORTAL_SUBSET.restUrl +
-            "/content/items/03744d6b7a9b4b76bfd45dc2d1e642a5/info/form.webform",
-          folder: "03744d6b7a9b4b76bfd45dc2d1e642a5_info",
-          filename: "form.webform.json"
-        }
-      ];
-
-      const actual = resourceHelpers.generateSourceFormFilePaths(
-        portalSharingUrl,
-        itemId
-      );
       expect(actual).toEqual(expected);
     });
   });
@@ -1860,27 +1752,6 @@ describe("Module `resourceHelpers`: common functions involving the management of
   //             itemTemplate.itemId +
   //             "/info/metadata/metadata.xml",
   //           mockItems.get400Failure()
-  //         )
-  //         .post(
-  //           utils.PORTAL_SUBSET.restUrl +
-  //             "/content/items/" +
-  //             itemTemplate.itemId +
-  //             "/info/form.json",
-  //           utils.getSampleJsonAsFile("form.json")
-  //         )
-  //         .post(
-  //           utils.PORTAL_SUBSET.restUrl +
-  //             "/content/items/" +
-  //             itemTemplate.itemId +
-  //             "/info/forminfo.json",
-  //           utils.getSampleJsonAsFile("forminfo.json")
-  //         )
-  //         .post(
-  //           utils.PORTAL_SUBSET.restUrl +
-  //             "/content/items/" +
-  //             itemTemplate.itemId +
-  //             "/info/form.webform",
-  //           utils.getSampleJsonAsFile("form.webform")
   //         );
 
   //       staticRelatedItemsMocks.fetchMockRelatedItems(itemTemplate.itemId, {

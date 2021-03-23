@@ -256,23 +256,6 @@ export function copyFilesFromStorageItem(
             }, msLag);
           });
 
-        case EFileType.Info:
-          return new Promise<IUpdateItemResponse>((resolveInfo, rejectInfo) => {
-            setTimeout(() => {
-              copyFormInfoFile(
-                {
-                  url: filePath.url,
-                  filename: filePath.filename,
-                  authentication: storageAuthentication
-                },
-                {
-                  itemId: destinationItemId,
-                  authentication: destinationAuthentication
-                }
-              ).then(result => resolveInfo(result), rejectInfo);
-            }, msLag);
-          });
-
         case EFileType.Metadata:
           return new Promise<IUpdateItemResponse>(
             (resolveMetadata, rejectMetadata) => {
@@ -362,36 +345,6 @@ export function copyFilesToStorageItem(
   });
 }
 
-export function copyFormInfoFile(
-  source: {
-    url: string;
-    filename: string;
-    authentication: UserSession;
-  },
-  destination: {
-    itemId: string;
-    authentication: UserSession;
-  }
-): Promise<any> {
-  return new Promise<any>((resolve, reject) => {
-    // Get the info file
-    getBlobAsFile(
-      source.url,
-      source.filename,
-      source.authentication,
-      [],
-      "application/json"
-    ).then(file => {
-      // Send it to the destination item
-      updateItemInfo({
-        id: destination.itemId,
-        file,
-        authentication: destination.authentication
-      }).then(resolve, reject);
-    }, reject);
-  });
-}
-
 export function copyMetadata(
   source: {
     url: string;
@@ -421,27 +374,6 @@ export function copyMetadata(
       e => reject(fail(e)) // unable to get resource
     );
   });
-}
-
-/**
- * Generates a folder and filename for storing a copy of an item info file in a storage item.
- *
- * @param itemId Id of item
- * @param filename Filename of item
- * @return Folder and filename for storage; folder is the itemID suffixed with "_info"
- * @see generateResourceFilenameFromStorage
- */
-export function generateInfoStorageFilename(
-  itemId: string,
-  filename: string
-): {
-  folder: string;
-  filename: string;
-} {
-  return {
-    folder: itemId + "_info",
-    filename
-  };
 }
 
 /**
@@ -492,8 +424,6 @@ export function generateResourceFilenameFromStorage(
   } else if (folder.endsWith("_info_metadata")) {
     type = EFileType.Metadata;
     filename = "metadata.xml";
-  } else if (folder.endsWith("_info")) {
-    type = EFileType.Info;
   } else if (folder.endsWith("_info_data")) {
     type = EFileType.Data;
   } else if (folder.endsWith("_info_dataz")) {
@@ -561,34 +491,6 @@ export function generateSourceFilePaths(
     };
     filePaths.push(path);
   }
-
-  return filePaths;
-}
-
-export function generateSourceFormFilePaths(
-  portalSharingUrl: string,
-  itemId: string
-): ISourceFileCopyPath[] {
-  const baseUrl =
-    checkUrlPathTermination(portalSharingUrl) +
-    "content/items/" +
-    itemId +
-    "/info/";
-  const filePaths: ISourceFileCopyPath[] = [];
-  ["form.json", "forminfo.json"].forEach(filename =>
-    filePaths.push({
-      url: baseUrl + filename,
-      ...generateInfoStorageFilename(itemId, filename)
-    })
-  );
-
-  // We need to add the ".json" extension because AGO uses the extension
-  // rather than the MIME type for updateinfo; it strips it automatically
-  filePaths.push({
-    url: baseUrl + "form.webform",
-    folder: itemId + "_info",
-    filename: "form.webform.json"
-  });
 
   return filePaths;
 }
@@ -748,86 +650,6 @@ export function getThumbnailFromStorageItem(
   }
 
   return getThumbnailFile(thumbnailUrl, thumbnailFilename, authentication);
-}
-
-/**
- * Updates the solution item with form files from the itemTemplate
- *
- * @param itemTemplate Template for AGOL item
- * @param itemData Item's data
- * @param solutionItemId item id for the solution
- * @param authentication Credentials for the request to the storage
- * @return A promise which resolves with an array of resources that have been added to the item
- */
-export function storeFormItemFiles(
-  itemTemplate: IItemTemplate,
-  itemData: any,
-  solutionItemId: string,
-  authentication: UserSession
-): Promise<string[]> {
-  return new Promise<string[]>((resolve, reject) => {
-    const storagePromises: Array<Promise<string[]>> = [];
-
-    // Store form data
-    if (itemData) {
-      const originalFilename =
-        itemTemplate.item.name || (itemData as File).name;
-      const filename =
-        originalFilename && originalFilename !== "undefined"
-          ? originalFilename
-          : `${itemTemplate.itemId}.zip`;
-      itemTemplate.item.name = filename;
-      const storageName = convertItemResourceToStorageResource(
-        itemTemplate.itemId,
-        filename,
-        "info_data"
-      );
-      storagePromises.push(
-        new Promise((resolveDataStorage, rejectDataStorage) => {
-          addResourceFromBlob(
-            itemData,
-            solutionItemId,
-            storageName.folder,
-            storageName.filename,
-            authentication
-          ).then(
-            () =>
-              resolveDataStorage([
-                storageName.folder + "/" + storageName.filename
-              ]),
-            rejectDataStorage
-          );
-        })
-      );
-    }
-
-    // Store form info files
-    const resourceItemFilePaths: ISourceFileCopyPath[] = generateSourceFormFilePaths(
-      authentication.portal,
-      itemTemplate.itemId
-    );
-
-    // eslint-disable-next-line @typescript-eslint/no-floating-promises
-    storagePromises.push(
-      copyFilesToStorageItem(
-        authentication,
-        resourceItemFilePaths,
-        solutionItemId,
-        authentication
-      )
-    );
-
-    Promise.all(storagePromises).then(savedResourceFilenameSets => {
-      let savedResourceFilenames: string[] = [];
-      savedResourceFilenameSets.forEach(filenameSet => {
-        // Remove any empty names before adding set to cumulative list
-        savedResourceFilenames = savedResourceFilenames.concat(
-          filenameSet.filter(item => !!item)
-        );
-      });
-      resolve(savedResourceFilenames);
-    }, reject);
-  });
 }
 
 /**
