@@ -39,7 +39,7 @@
   <div id="input" style="display:none">
     <label for="id">ID of the item to be fetched:&nbsp;</label><input type="text" id="id" style="width:256px">
     <br /><br />
-    <i>For private items or info:</i><br />
+    <i>For feature services, forms, and private items:</i><br />
     <label for="username">username:&nbsp;</label><input type="text" id="username">
     <label for="password">password:&nbsp;</label><input type="password" id="password">
     <label for="srcPortal">portal:&nbsp;</label><input type="text" id="srcPortal" style="width:256px">
@@ -74,8 +74,8 @@
       }
     });
 
-    require(["@esri/arcgis-rest-auth", "../dist/get-item-info-main"],
-      function (auth, main) {
+    require(["@esri/arcgis-rest-auth", "../dist/getFormattedItemInfo"],
+      function (auth, getFormattedItemInfo) {
         "use strict";
         goFcn = go;
         document.getElementById("input").style.display = "block";
@@ -84,8 +84,8 @@
           document.getElementById("input").style.display = "none";
           document.getElementById("output").style.display = "block";
 
-          main.getItemInfo(
-            document.getElementById("id").value,
+          getFormattedItemInfo.getFormattedItemInfo(
+            document.getElementById("id").value.trim(),
             new auth.UserSession({
               username: document.getElementById("username").value,
               password: document.getElementById("password").value,
@@ -94,24 +94,7 @@
           ).then(
             html => {
               document.getElementById("output").innerHTML = html;
-
-              // If the document contains #topologicalSortGraphic, add the dependency graph to it
-              const topologicalSortGraphicDiv = document.getElementById("topologicalSortGraphic");
-              if (topologicalSortGraphicDiv) {
-                require(["../src/raphael_2.2.1.min"], function (Raphael) {
-                  window.Raphael = Raphael;
-                  require(["../src/dracula_1.2.1.min"], function (Dracula) {
-                    main.showDependencyGraph(topologicalSortGraphicDiv, 1400, 1600, Raphael, Dracula)
-                    .then(
-                      () => {},
-                      error => {
-                        topologicalSortGraphicDiv.innerHTML = error;
-                      }
-                    );
-                  });
-                });
-              }
-          },
+            },
             error => {
               document.getElementById("output").innerHTML = "<span style=\"color:red\">" + error + "</span>";
             }

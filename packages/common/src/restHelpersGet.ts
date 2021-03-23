@@ -28,6 +28,8 @@ import {
   getProp
 } from "./generalHelpers";
 import {
+  ICompleteItem,
+  IFeatureServiceProperties,
   IGetResourcesResponse,
   IGroup,
   IItem,
@@ -53,7 +55,11 @@ import {
 } from "@esri/arcgis-rest-portal";
 import { IRequestOptions, request } from "@esri/arcgis-rest-request";
 import { getBlob } from "./resources/get-blob";
-import { searchGroups, searchGroupContents } from "./restHelpers";
+import {
+  getFeatureServiceProperties,
+  searchGroups,
+  searchGroupContents
+} from "./restHelpers";
 
 // ------------------------------------------------------------------------------------------------------------------ //
 
@@ -183,6 +189,114 @@ export function getBlobCheckForError(
 }
 
 /**
+ * Gets everything about an item.
+ *
+ * @param itemId Id of an item whose information is sought
+ * @param authentication Credentials for the request
+ * @return Promise that will resolve with everything known about the item
+ */
+export function getCompleteItem(
+  itemId: string,
+  authentication: UserSession
+): Promise<ICompleteItem> {
+  return new Promise<ICompleteItem>((resolve, reject) => {
+    // Get the item information
+    const itemFwdRelatedItemsDef = getItemRelatedItemsInSameDirection(
+      itemId,
+      "forward",
+      authentication
+    );
+    const itemRevRelatedItemsDef = getItemRelatedItemsInSameDirection(
+      itemId,
+      "reverse",
+      authentication
+    );
+
+    const itemBaseDef = getItemBase(itemId, authentication);
+    const itemDataDef = new Promise<File>((resolve2, reject2) => {
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
+      itemBaseDef.then(
+        // any error fetching item base will be handled via Promise.all later
+        (itemBase: any) => {
+          getItemDataAsFile(
+            itemId,
+            itemBase.name,
+            authentication
+          ).then(resolve2, (error: any) => reject2(JSON.stringify(error)));
+        }
+      );
+    });
+    const itemThumbnailDef = new Promise<File>((resolve3, reject3) => {
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
+      itemBaseDef.then(
+        // any error fetching item base will be handled via Promise.all later
+        (itemBase: any) => {
+          getItemThumbnailAsFile(
+            itemId,
+            itemBase.thumbnail,
+            false,
+            authentication
+          ).then(resolve3, (error: any) => reject3(JSON.stringify(error)));
+        }
+      );
+    });
+    const itemMetadataDef = getItemMetadataAsFile(itemId, authentication);
+    const itemResourcesDef = getItemResourcesFiles(itemId, authentication);
+
+    Promise.all([
+      itemBaseDef,
+      itemDataDef,
+      itemThumbnailDef,
+      itemMetadataDef,
+      itemResourcesDef,
+      itemFwdRelatedItemsDef,
+      itemRevRelatedItemsDef
+    ]).then(responses => {
+      const [
+        itemBase,
+        itemData,
+        itemThumbnail,
+        itemMetadata,
+        itemResources,
+        itemFwdRelatedItems,
+        itemRevRelatedItems
+      ] = responses;
+      // Summarize what we have
+      // ----------------------
+      // (itemBase: IItem)  text/plain JSON
+      // (itemData: File)  */*
+      // (itemThumbnail: File)  image/*
+      // (itemMetadata: File)  application/xml
+      // (itemResources: File[])  list of */*
+      // (itemFwdRelatedItems: IRelatedItems[])  list of forward relationshipType/relatedItems[] pairs
+      // (itemRevRelatedItems: IRelatedItems[])  list of reverse relationshipType/relatedItems[] pairs
+
+      const completeItem: ICompleteItem = {
+        base: itemBase,
+        data: itemData,
+        thumbnail: itemThumbnail,
+        metadata: itemMetadata,
+        resources: itemResources,
+        fwdRelatedItems: itemFwdRelatedItems,
+        revRelatedItems: itemRevRelatedItems
+      };
+
+      if (itemBase.type === "Feature Service") {
+        // eslint-disable-next-line @typescript-eslint/no-floating-promises
+        getFeatureServiceProperties(itemBase.url, authentication).then(
+          (properties: IFeatureServiceProperties) => {
+            completeItem.featureServiceProperties = properties;
+            resolve(completeItem);
+          }
+        );
+      } else {
+        resolve(completeItem);
+      }
+    }, reject);
+  });
+}
+
+/**
  * Extracts the text in a url between the last forward slash and the beginning of the url's parameters.
  *
  * @param url URL to work with
@@ -212,10 +326,12 @@ export function getInfoFiles(
   authentication: UserSession
 ): Array<Promise<File>> {
   return infoFilenames.map(filename => {
-    return new Promise<File>((resolve, reject) => {
+    return new Promise<File>(resolve => {
       getItemInfoBlob(itemId, filename, authentication).then(
         blob => resolve(blobToFile(blob, filename)),
-        reject
+        () => {
+          resolve(null);
+        }
       );
     });
   });
@@ -671,6 +787,42 @@ export function getItemThumbnail(
       blob => resolve(_fixTextBlobType(blob)),
       reject
     );
+  });
+}
+
+/**
+ * Gets the thumbnail of an AGO item.
+ *
+ * @param itemId Id of an item whose resources are sought
+ * @param thumbnailUrlPart The partial name of the item's thumbnail as reported by the `thumbnail` property
+ * in the item's base section
+ * @param isGroup Switch indicating if the item is a group
+ * @param authentication Credentials for the request to AGO
+ * @return Promise that will resolve with an image Blob or an AGO-style JSON failure response
+ */
+export function getItemThumbnailAsFile(
+  itemId: string,
+  thumbnailUrlPart: string,
+  isGroup: boolean,
+  authentication: UserSession
+): Promise<File> {
+  return new Promise<File>((resolve, reject) => {
+    if (!thumbnailUrlPart) {
+      resolve(null);
+      return;
+    }
+
+    const url = getItemThumbnailUrl(
+      itemId,
+      thumbnailUrlPart,
+      isGroup,
+      authentication
+    );
+
+    const iFilenameStart = thumbnailUrlPart.lastIndexOf("/") + 1;
+    const filename = thumbnailUrlPart.substring(iFilenameStart);
+
+    getBlobAsFile(url, filename, authentication, [500]).then(resolve, reject);
   });
 }
 
