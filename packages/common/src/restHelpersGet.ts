@@ -320,23 +320,6 @@ export function getFilenameFromUrl(url: string): string {
     : "";
 }
 
-export function getInfoFiles(
-  itemId: string,
-  infoFilenames: string[],
-  authentication: UserSession
-): Array<Promise<File>> {
-  return infoFilenames.map(filename => {
-    return new Promise<File>(resolve => {
-      getItemInfoBlob(itemId, filename, authentication).then(
-        blob => resolve(blobToFile(blob, filename)),
-        () => {
-          resolve(null);
-        }
-      );
-    });
-  });
-}
-
 /**
  * Gets the primary information of an AGO group.
  *
@@ -493,28 +476,6 @@ export function getItemDataBlobUrl(
   return `${getPortalSharingUrlFromAuth(
     authentication
   )}/content/items/${itemId}/data`;
-}
-
-/**
- * Gets information item in an AGO item.
- *
- * @param itemId Id of an item whose data information is sought
- * @param authentication Credentials for the request to AGO
- * @return A promise that will resolve with the metadata Blob or null if the item doesn't have a metadata file
- */
-export function getItemInfoBlob(
-  itemId: string,
-  infoFilename: string,
-  authentication: UserSession
-): Promise<Blob> {
-  return new Promise<Blob>((resolve, reject) => {
-    const url = getItemInfoFileUrlPrefix(itemId, authentication) + infoFilename;
-
-    getBlobCheckForError(url, authentication, [400]).then(
-      (blob: Blob) => resolve(_fixTextBlobType(blob)),
-      reject
-    );
-  });
 }
 
 /**
