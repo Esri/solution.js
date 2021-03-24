@@ -265,6 +265,17 @@ export function createItemFromTemplate(
                               .then(
                                 updatedItem => {
                                   newItemTemplate.item = updatedItem;
+                                  /* istanbul ignore else */
+                                  if (
+                                    common.getProp(
+                                      newItemTemplate,
+                                      "item.url"
+                                    ) &&
+                                    !newItemTemplate.item.url.endsWith("/")
+                                  ) {
+                                    newItemTemplate.item.url += "/";
+                                  }
+
                                   resolve({
                                     item: newItemTemplate,
                                     id: createResponse.serviceItemId,
