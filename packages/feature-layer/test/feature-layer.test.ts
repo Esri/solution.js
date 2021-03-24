@@ -467,32 +467,44 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
       itemTemplate.properties.tables[0].viewDefinitionQuery = tableDefQuery;
 
       // verify the state up front
-      expect(itemTemplate.item.id).toEqual(id);
-      expect(itemTemplate.item.url).toEqual(expectedUrl);
-      expect(itemTemplate.dependencies.length).toEqual(0);
-      expect(itemTemplate.properties.service.serviceItemId).toEqual(id);
+      expect(itemTemplate.item.id)
+        .withContext("up-front id check")
+        .toEqual(id);
+      expect(itemTemplate.item.url)
+        .withContext("up-front url check")
+        .toEqual(expectedUrl);
+      expect(itemTemplate.dependencies.length)
+        .withContext("up-front dependencies check")
+        .toEqual(0);
+      expect(itemTemplate.properties.service.serviceItemId)
+        .withContext("up-front serviceItemId check")
+        .toEqual(id);
 
-      expect(itemTemplate.properties.layers[0].serviceItemId).toEqual(id);
-      expect(
-        itemTemplate.properties.layers[0].relationships[0].keyField
-      ).toEqual(layerKeyField);
-      expect(itemTemplate.properties.layers[0].viewDefinitionQuery).toEqual(
-        layerDefQuery
-      );
-      expect(itemTemplate.properties.layers[0].definitionQuery).toEqual(
-        layerDefQuery
-      );
+      expect(itemTemplate.properties.layers[0].serviceItemId)
+        .withContext("up-front layers serviceItemId check")
+        .toEqual(id);
+      expect(itemTemplate.properties.layers[0].relationships[0].keyField)
+        .withContext("up-front layers keyField check")
+        .toEqual(layerKeyField);
+      expect(itemTemplate.properties.layers[0].viewDefinitionQuery)
+        .withContext("up-front layers viewDefinitionQuery check")
+        .toEqual(layerDefQuery);
+      expect(itemTemplate.properties.layers[0].definitionQuery)
+        .withContext("up-front layers definitionQuery check")
+        .toEqual(layerDefQuery);
 
-      expect(itemTemplate.properties.tables[0].serviceItemId).toEqual(id);
-      expect(
-        itemTemplate.properties.tables[0].relationships[0].keyField
-      ).toEqual(tableKeyField);
-      expect(itemTemplate.properties.tables[0].viewDefinitionQuery).toEqual(
-        tableDefQuery
-      );
-      expect(itemTemplate.properties.tables[0].definitionQuery).toEqual(
-        tableDefQuery
-      );
+      expect(itemTemplate.properties.tables[0].serviceItemId)
+        .withContext("up-front tables withContext check")
+        .toEqual(id);
+      expect(itemTemplate.properties.tables[0].relationships[0].keyField)
+        .withContext("up-front tables keyField check")
+        .toEqual(tableKeyField);
+      expect(itemTemplate.properties.tables[0].viewDefinitionQuery)
+        .withContext("up-front tables viewDefinitionQuery check")
+        .toEqual(tableDefQuery);
+      expect(itemTemplate.properties.tables[0].definitionQuery)
+        .withContext("up-front tables withContext check")
+        .toEqual(tableDefQuery);
 
       const createResponse: any = mockItems.getAGOLService([], [], true);
       createResponse.success = true;
@@ -571,12 +583,15 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
           utils.ITEM_PROGRESS_CALLBACK
         )
         .then(r => {
-          expect(r).toEqual({
-            item: expectedClone,
-            id: "svc1234567890",
-            type: itemTemplate.type,
-            postProcess: false
-          });
+          expectedClone.item.url = expectedUrl + "/";
+          expect(r)
+            .withContext("results")
+            .toEqual({
+              item: expectedClone,
+              id: "svc1234567890",
+              type: itemTemplate.type,
+              postProcess: false
+            });
           done();
         });
     });
@@ -612,32 +627,44 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
       itemTemplate.item.other = "{{unprocessed.itemId}}";
 
       // verify the state up front
-      expect(itemTemplate.item.id).toEqual(id);
-      expect(itemTemplate.item.url).toEqual(expectedUrl);
-      expect(itemTemplate.dependencies.length).toEqual(0);
-      expect(itemTemplate.properties.service.serviceItemId).toEqual(id);
+      expect(itemTemplate.item.id)
+        .withContext("up-front id check")
+        .toEqual(id);
+      expect(itemTemplate.item.url)
+        .withContext("up-front url check")
+        .toEqual(expectedUrl);
+      expect(itemTemplate.dependencies.length)
+        .withContext("up-front dependencies check")
+        .toEqual(0);
+      expect(itemTemplate.properties.service.serviceItemId)
+        .withContext("up-front serviceItemId check")
+        .toEqual(id);
 
-      expect(itemTemplate.properties.layers[0].serviceItemId).toEqual(id);
-      expect(
-        itemTemplate.properties.layers[0].relationships[0].keyField
-      ).toEqual(layerKeyField);
-      expect(itemTemplate.properties.layers[0].viewDefinitionQuery).toEqual(
-        layerDefQuery
-      );
-      expect(itemTemplate.properties.layers[0].definitionQuery).toEqual(
-        layerDefQuery
-      );
+      expect(itemTemplate.properties.layers[0].serviceItemId)
+        .withContext("up-front layers serviceItemId check")
+        .toEqual(id);
+      expect(itemTemplate.properties.layers[0].relationships[0].keyField)
+        .withContext("up-front layers keyField check")
+        .toEqual(layerKeyField);
+      expect(itemTemplate.properties.layers[0].viewDefinitionQuery)
+        .withContext("up-front layers viewDefinitionQuery check")
+        .toEqual(layerDefQuery);
+      expect(itemTemplate.properties.layers[0].definitionQuery)
+        .withContext("up-front layers definitionQuery check")
+        .toEqual(layerDefQuery);
 
-      expect(itemTemplate.properties.tables[0].serviceItemId).toEqual(id);
-      expect(
-        itemTemplate.properties.tables[0].relationships[0].keyField
-      ).toEqual(tableKeyField);
-      expect(itemTemplate.properties.tables[0].viewDefinitionQuery).toEqual(
-        tableDefQuery
-      );
-      expect(itemTemplate.properties.tables[0].definitionQuery).toEqual(
-        tableDefQuery
-      );
+      expect(itemTemplate.properties.tables[0].serviceItemId)
+        .withContext("up-front tables withContext check")
+        .toEqual(id);
+      expect(itemTemplate.properties.tables[0].relationships[0].keyField)
+        .withContext("up-front tables keyField check")
+        .toEqual(tableKeyField);
+      expect(itemTemplate.properties.tables[0].viewDefinitionQuery)
+        .withContext("up-front tables viewDefinitionQuery check")
+        .toEqual(tableDefQuery);
+      expect(itemTemplate.properties.tables[0].definitionQuery)
+        .withContext("up-front tables withContext check")
+        .toEqual(tableDefQuery);
 
       const createResponse: any = mockItems.getAGOLService([], [], true);
       createResponse.success = true;
@@ -716,6 +743,7 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
           utils.ITEM_PROGRESS_CALLBACK
         )
         .then(r => {
+          expectedClone.item.url = expectedUrl + "/";
           expect(r).toEqual({
             item: expectedClone,
             id: "svc1234567890",
@@ -757,32 +785,44 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
       itemTemplate.data.other = "{{unprocessed.itemId}}";
 
       // verify the state up front
-      expect(itemTemplate.item.id).toEqual(id);
-      expect(itemTemplate.item.url).toEqual(expectedUrl);
-      expect(itemTemplate.dependencies.length).toEqual(0);
-      expect(itemTemplate.properties.service.serviceItemId).toEqual(id);
+      expect(itemTemplate.item.id)
+        .withContext("up-front id check")
+        .toEqual(id);
+      expect(itemTemplate.item.url)
+        .withContext("up-front url check")
+        .toEqual(expectedUrl);
+      expect(itemTemplate.dependencies.length)
+        .withContext("up-front dependencies check")
+        .toEqual(0);
+      expect(itemTemplate.properties.service.serviceItemId)
+        .withContext("up-front serviceItemId check")
+        .toEqual(id);
 
-      expect(itemTemplate.properties.layers[0].serviceItemId).toEqual(id);
-      expect(
-        itemTemplate.properties.layers[0].relationships[0].keyField
-      ).toEqual(layerKeyField);
-      expect(itemTemplate.properties.layers[0].viewDefinitionQuery).toEqual(
-        layerDefQuery
-      );
-      expect(itemTemplate.properties.layers[0].definitionQuery).toEqual(
-        layerDefQuery
-      );
+      expect(itemTemplate.properties.layers[0].serviceItemId)
+        .withContext("up-front layers serviceItemId check")
+        .toEqual(id);
+      expect(itemTemplate.properties.layers[0].relationships[0].keyField)
+        .withContext("up-front layers keyField check")
+        .toEqual(layerKeyField);
+      expect(itemTemplate.properties.layers[0].viewDefinitionQuery)
+        .withContext("up-front layers viewDefinitionQuery check")
+        .toEqual(layerDefQuery);
+      expect(itemTemplate.properties.layers[0].definitionQuery)
+        .withContext("up-front layers definitionQuery check")
+        .toEqual(layerDefQuery);
 
-      expect(itemTemplate.properties.tables[0].serviceItemId).toEqual(id);
-      expect(
-        itemTemplate.properties.tables[0].relationships[0].keyField
-      ).toEqual(tableKeyField);
-      expect(itemTemplate.properties.tables[0].viewDefinitionQuery).toEqual(
-        tableDefQuery
-      );
-      expect(itemTemplate.properties.tables[0].definitionQuery).toEqual(
-        tableDefQuery
-      );
+      expect(itemTemplate.properties.tables[0].serviceItemId)
+        .withContext("up-front tables withContext check")
+        .toEqual(id);
+      expect(itemTemplate.properties.tables[0].relationships[0].keyField)
+        .withContext("up-front tables keyField check")
+        .toEqual(tableKeyField);
+      expect(itemTemplate.properties.tables[0].viewDefinitionQuery)
+        .withContext("up-front tables viewDefinitionQuery check")
+        .toEqual(tableDefQuery);
+      expect(itemTemplate.properties.tables[0].definitionQuery)
+        .withContext("up-front tables withContext check")
+        .toEqual(tableDefQuery);
 
       const createResponse: any = mockItems.getAGOLService([], [], true);
       createResponse.success = true;
@@ -861,12 +901,16 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
           utils.ITEM_PROGRESS_CALLBACK
         )
         .then(r => {
-          expect(r).toEqual({
-            item: expectedClone,
-            id: "svc1234567890",
-            type: itemTemplate.type,
-            postProcess: true
-          });
+          expectedClone.item.url = expectedUrl + "/";
+          expect(r)
+            .withContext("results")
+            .withContext("result")
+            .toEqual({
+              item: expectedClone,
+              id: "svc1234567890",
+              type: itemTemplate.type,
+              postProcess: true
+            });
           done();
         });
     });
@@ -913,33 +957,33 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
         .withContext("up-front dependencies check")
         .toEqual(0);
       expect(itemTemplate.properties.service.serviceItemId)
-        .withContext("up-front service item id check")
+        .withContext("up-front serviceItemId check")
         .toEqual(id);
 
       expect(itemTemplate.properties.layers[0].serviceItemId)
-        .withContext("up-front layer 0 service item id check")
+        .withContext("up-front layers serviceItemId check")
         .toEqual(id);
       expect(itemTemplate.properties.layers[0].relationships[0].keyField)
-        .withContext("up-front layer 0 keyField check")
+        .withContext("up-front layers keyField check")
         .toEqual(layerKeyField);
       expect(itemTemplate.properties.layers[0].viewDefinitionQuery)
-        .withContext("up-front layer 0 view defn query check")
+        .withContext("up-front layers viewDefinitionQuery check")
         .toEqual(layerDefQuery);
       expect(itemTemplate.properties.layers[0].definitionQuery)
-        .withContext("up-front layer 0 defn query check")
+        .withContext("up-front layers definitionQuery check")
         .toEqual(layerDefQuery);
 
       expect(itemTemplate.properties.tables[0].serviceItemId)
-        .withContext("up-front table 0 service item id check")
+        .withContext("up-front tables withContext check")
         .toEqual(id);
       expect(itemTemplate.properties.tables[0].relationships[0].keyField)
-        .withContext("up-front table 0 keyField check")
+        .withContext("up-front tables keyField check")
         .toEqual(tableKeyField);
       expect(itemTemplate.properties.tables[0].viewDefinitionQuery)
-        .withContext("up-front table 0 view defn query check")
+        .withContext("up-front tables viewDefinitionQuery check")
         .toEqual(tableDefQuery);
       expect(itemTemplate.properties.tables[0].definitionQuery)
-        .withContext("up-front table 0 defn query check")
+        .withContext("up-front tables withContext check")
         .toEqual(tableDefQuery);
 
       const settings = utils.createMockSettings();
@@ -1036,6 +1080,7 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
           utils.ITEM_PROGRESS_CALLBACK
         )
         .then(r => {
+          expectedClone.item.url = expectedUrl + "/";
           expect(r)
             .withContext("result")
             .toEqual({
@@ -1053,7 +1098,7 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
       const id: string = "{{" + expectedId + ".itemId}}";
 
       const expectedUrl: string =
-        "https://services123.arcgis.com/org1234567890/arcgis/rest/services/ROWPermits_publiccomment/FeatureServer";
+        "https://services123.arcgis.com/org1234567890/arcgis/rest/services/ROWPermits_publiccomment/FeatureServer/";
       const url: string = "{{" + expectedId + ".url}}";
 
       const adminUrl: string =
@@ -1157,7 +1202,7 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
       const id: string = "{{" + expectedId + ".itemId}}";
 
       const expectedUrl: string =
-        "https://services123.arcgis.com/org1234567890/arcgis/rest/services/ROWPermits_publiccomment/FeatureServer";
+        "https://services123.arcgis.com/org1234567890/arcgis/rest/services/ROWPermits_publiccomment/FeatureServer/";
       const url: string = "{{" + expectedId + ".url}}";
 
       const adminUrl: string =
@@ -1261,7 +1306,7 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
       const id: string = "{{" + expectedId + ".itemId}}";
 
       const expectedUrl: string =
-        "https://services123.arcgis.com/org1234567890/arcgis/rest/services/ROWPermits_publiccomment/FeatureServer";
+        "https://services123.arcgis.com/org1234567890/arcgis/rest/services/ROWPermits_publiccomment/FeatureServer/";
       const url: string = "{{" + expectedId + ".url}}";
 
       const adminUrl: string =
@@ -1362,7 +1407,7 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
       const id: string = "{{" + expectedId + ".itemId}}";
 
       const expectedUrl: string =
-        "https://services123.arcgis.com/org1234567890/arcgis/rest/services/ROWPermits_publiccomment/FeatureServer";
+        "https://services123.arcgis.com/org1234567890/arcgis/rest/services/ROWPermits_publiccomment/FeatureServer/";
       const url: string = "{{" + expectedId + ".url}}";
 
       const adminUrl: string =
@@ -1463,7 +1508,7 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
       const id: string = "{{" + expectedId + ".itemId}}";
 
       const expectedUrl: string =
-        "https://services123.arcgis.com/org1234567890/arcgis/rest/services/ROWPermits_publiccomment/FeatureServer";
+        "https://services123.arcgis.com/org1234567890/arcgis/rest/services/ROWPermits_publiccomment/FeatureServer/";
       const url: string = "{{" + expectedId + ".url}}";
 
       const adminUrl: string =
@@ -1540,7 +1585,7 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
       const id: string = "{{" + expectedId + ".itemId}}";
 
       const expectedUrl: string =
-        "https://services123.arcgis.com/org1234567890/arcgis/rest/services/ROWPermits_publiccomment/FeatureServer";
+        "https://services123.arcgis.com/org1234567890/arcgis/rest/services/ROWPermits_publiccomment/FeatureServer/";
       const url: string = "{{" + expectedId + ".url}}";
 
       const adminUrl: string =
@@ -1617,7 +1662,7 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
       const id: string = "{{" + expectedId + ".itemId}}";
 
       const expectedUrl: string =
-        "https://services123.arcgis.com/org1234567890/arcgis/rest/services/ROWPermits_publiccomment/FeatureServer";
+        "https://services123.arcgis.com/org1234567890/arcgis/rest/services/ROWPermits_publiccomment/FeatureServer/";
       const url: string = "{{" + expectedId + ".url}}";
 
       const adminUrl: string =
@@ -1685,7 +1730,7 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
       const id: string = "{{" + expectedId + ".itemId}}";
 
       const expectedUrl: string =
-        "https://services123.arcgis.com/org1234567890/arcgis/rest/services/ROWPermits_publiccomment/FeatureServer";
+        "https://services123.arcgis.com/org1234567890/arcgis/rest/services/ROWPermits_publiccomment/FeatureServer/";
       const url: string = "{{" + expectedId + ".url}}";
 
       const adminUrl: string =
@@ -1736,7 +1781,7 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
       const id: string = "{{" + expectedId + ".itemId}}";
 
       const expectedUrl: string =
-        "https://services123.arcgis.com/org1234567890/arcgis/rest/services/ROWPermits_publiccomment/FeatureServer";
+        "https://services123.arcgis.com/org1234567890/arcgis/rest/services/ROWPermits_publiccomment/FeatureServer/";
       const url: string = "{{" + expectedId + ".url}}";
 
       const adminUrl: string =
@@ -1837,7 +1882,7 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
       const id: string = "{{" + expectedId + ".itemId}}";
 
       const expectedUrl: string =
-        "https://services123.arcgis.com/org1234567890/arcgis/rest/services/ROWPermits_publiccomment/FeatureServer";
+        "https://services123.arcgis.com/org1234567890/arcgis/rest/services/ROWPermits_publiccomment/FeatureServer/";
       const url: string = "{{" + expectedId + ".url}}";
 
       const adminUrl: string =
@@ -1927,7 +1972,7 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
       const id: string = "{{" + expectedId + ".itemId}}";
 
       const expectedUrl: string =
-        "https://services123.arcgis.com/org1234567890/arcgis/rest/services/ROWPermits_publiccomment/FeatureServer";
+        "https://services123.arcgis.com/org1234567890/arcgis/rest/services/ROWPermits_publiccomment/FeatureServer/";
       const url: string = "{{" + expectedId + ".url}}";
 
       const adminUrl: string =
