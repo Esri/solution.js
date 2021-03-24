@@ -131,6 +131,7 @@ Some useful commands include:
   * `npm run test:chrome` runs karma in the Chrome browser
   * `npm run test:chrome:ci` runs karma in the ChromeHeadlessCI browser
   * `npm run test:chrome:debug` runs karma in the Chrome browser and leaves the browser open for debugging tests
+  * `npm run test:edge` runs karma in the Edge (Chromium) browser
   * `npm run test:firefox` runs karma in the Firefox browser
   * `npm run test:ci` lints, then runs `test:chrome:ci`, `test:firefox`, and `coveralls` from a bash window
   * `npm run test:ci:win` lints, then runs `test:chrome:ci`, `test:firefox`, and `coveralls:win` from a Windows window

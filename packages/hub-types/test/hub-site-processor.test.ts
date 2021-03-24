@@ -14,6 +14,7 @@
  */
 import * as utils from "@esri/solution-common/test/mocks/utils";
 import * as sitesPackage from "@esri/hub-sites";
+import * as portalPackage from "@esri/arcgis-rest-portal";
 import * as moveHelper from "../src/helpers/move-model-to-folder";
 const MOCK_USER_SESSION = utils.createRuntimeMockUserSession();
 
@@ -169,6 +170,10 @@ describe("HubSiteProcessor: ", () => {
         moveHelper,
         "moveModelToFolder"
       ).and.resolveTo();
+      const thumbnailSpy = spyOn(portalPackage, "updateItem").and.resolveTo({
+        success: true,
+        id: "fred"
+      });
 
       const td = {
         organization: {
@@ -215,6 +220,10 @@ describe("HubSiteProcessor: ", () => {
       const moveSiteSpy = spyOn(moveHelper, "moveModelToFolder").and.resolveTo([
         tmplThmb.itemId
       ]);
+      const thumbnailSpy = spyOn(portalPackage, "updateItem").and.resolveTo({
+        success: true,
+        id: "fred"
+      });
 
       const td = {
         organization: {
@@ -263,6 +272,10 @@ describe("HubSiteProcessor: ", () => {
         moveHelper,
         "moveModelToFolder"
       ).and.resolveTo();
+      const thumbnailSpy = spyOn(portalPackage, "updateItem").and.resolveTo({
+        success: true,
+        id: "fred"
+      });
 
       const td = {
         organization: {
@@ -306,6 +319,10 @@ describe("HubSiteProcessor: ", () => {
         moveHelper,
         "moveModelToFolder"
       ).and.resolveTo();
+      const thumbnailSpy = spyOn(portalPackage, "updateItem").and.resolveTo({
+        success: true,
+        id: "fred"
+      });
 
       const td = {
         organization: {
@@ -397,6 +414,10 @@ describe("HubSiteProcessor: ", () => {
         moveHelper,
         "moveModelToFolder"
       ).and.resolveTo();
+      const thumbnailSpy = spyOn(portalPackage, "updateItem").and.resolveTo({
+        success: true,
+        id: "fred"
+      });
 
       const removeSiteSpy = spyOn(sitesPackage, "removeSite").and.resolveTo({
         success: true
