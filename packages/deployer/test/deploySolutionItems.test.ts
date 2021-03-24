@@ -1276,7 +1276,7 @@ describe("Module `deploySolutionItems`", () => {
       const itemTemplate: common.IItemTemplate = templates.getItemTemplate(
         "Feature Service",
         [],
-        "https://services123.arcgis.com/org1234567890/arcgis/rest/services/ROWPermits_publiccomment/FeatureServer"
+        "https://services123.arcgis.com/org1234567890/arcgis/rest/services/ROWPermits_publiccomment/FeatureServer/"
       );
       itemTemplate.itemId = "dd4a6047326243b290f625e80ebe6531";
       itemTemplate.properties.syncViews = ["aa4a6047326243b290f625e80ebe6531"];
