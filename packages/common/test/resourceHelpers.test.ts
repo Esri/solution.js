@@ -27,7 +27,6 @@ import * as templates from "./mocks/templates";
 import * as utils from "./mocks/utils";
 import * as mockItems from "./mocks/agolItems";
 import * as fetchMock from "fetch-mock";
-import * as copyResourceModule from "../src/resources/copy-resource";
 import * as addResourceFromBlobModule from "../src/resources/add-resource-from-blob";
 
 // ------------------------------------------------------------------------------------------------------------------ //
@@ -392,10 +391,10 @@ describe("Module `resourceHelpers`: common functions involving the management of
       ];
       const tmpl = { itemId: "bc3" };
       // Spies
-      const copyResourceSpy = spyOn(
-        copyResourceModule,
-        "copyResource"
-      ).and.resolveTo({ success: true });
+      const resourceHelpersSpy = spyOn(
+        resourceHelpers,
+        "copyFilesFromStorageItem"
+      ).and.resolveTo(true);
       return resourceHelpers
         .copyFilesFromStorageItem(
           storageAuthentication,
@@ -406,16 +405,14 @@ describe("Module `resourceHelpers`: common functions involving the management of
           tmpl
         )
         .then(resp => {
-          expect(copyResourceSpy.calls.count()).toBe(
+          expect(resourceHelpersSpy.calls.count()).toBe(
             1,
-            "should call copyResource once"
+            "should call copyFilesFromStorageItem once"
           );
-          const firstArg = copyResourceSpy.calls.argsFor(0)[0];
-          expect(firstArg.url).toBe(filePaths[0].url, "url should be the same");
-          const secondArg = copyResourceSpy.calls.argsFor(0)[1];
-          expect(secondArg.filename).toBe(
-            "storageFilename.png",
-            "should strip the id off the filename"
+          const secondArg = resourceHelpersSpy.calls.argsFor(0)[1];
+          expect(secondArg[0].url).toBe(
+            filePaths[0].url,
+            "url 0 should be the same"
           );
           done();
         })
@@ -626,6 +623,62 @@ describe("Module `resourceHelpers`: common functions involving the management of
             null,
             destinationItemId,
             destinationAuthentication
+          )
+          .then((response: any) => {
+            expect(response).toEqual(expectedUpdate);
+            done();
+          }, done.fail);
+      });
+
+      it("copies multiple resource files", done => {
+        const storageAuthentication = MOCK_USER_SESSION;
+        const template = {
+          itemId: "abc"
+        };
+        const filePaths: interfaces.IDeployFileCopyPath[] = [
+          {
+            type: interfaces.EFileType.Resource,
+            folder: "storageFolder1",
+            filename: "storageFilename1.png",
+            url: "https://myserver/images/resource.png"
+          },
+          {
+            type: interfaces.EFileType.Resource,
+            folder: "storageFolder2",
+            filename: "storageFilename2.png",
+            url: "https://myserver/images/resource.png"
+          },
+          {
+            type: interfaces.EFileType.Resource,
+            folder: "",
+            filename: template.itemId + "-storageFilename2.png",
+            url: "https://myserver/images/resource.png"
+          }
+        ];
+        const destinationItemId: string = "itm1234567890";
+        const destinationAuthentication = MOCK_USER_SESSION;
+        const serverInfoUrl = "https://myserver/images/resource.png/rest/info";
+        const expectedServerInfo = SERVER_INFO;
+        const fetchUrl = "https://myserver/images/resource.png";
+        const expectedFetch = mockItems.getAnImageResponse();
+        const updateUrl =
+          utils.PORTAL_SUBSET.restUrl +
+          "/content/users/casey/items/itm1234567890/addResources";
+        const expectedUpdate = true;
+
+        fetchMock
+          .post("https://www.arcgis.com/sharing/rest/info", expectedServerInfo)
+          .post(serverInfoUrl, expectedServerInfo)
+          .post(fetchUrl, expectedFetch, { sendAsJson: false })
+          .post(updateUrl, expectedUpdate);
+        resourceHelpers
+          .copyFilesFromStorageItem(
+            storageAuthentication,
+            filePaths,
+            null,
+            destinationItemId,
+            destinationAuthentication,
+            template
           )
           .then((response: any) => {
             expect(response).toEqual(expectedUpdate);

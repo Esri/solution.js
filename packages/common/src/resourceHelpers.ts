@@ -219,8 +219,10 @@ export function copyFilesFromStorageItem(
   const mimeTypes = template.properties || null;
 
   // remove the template.itemId from the fileName in the filePaths
+  /* istanbul ignore else */
   if (template.itemId) {
     filePaths = filePaths.map(fp => {
+      /* istanbul ignore else */
       if (fp.filename.indexOf(template.itemId) === 0 && fp.folder === "") {
         fp.filename = fp.filename.replace(`${template.itemId}-`, "");
       }
