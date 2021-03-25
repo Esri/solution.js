@@ -171,7 +171,10 @@ describe("HubPageProcessor: ", () => {
         success: true,
         id: "fred"
       });
-
+      const hubRoSpy = spyOn(
+        hubRoModule,
+        "createHubRequestOptions"
+      ).and.resolveTo({} as hubCommon.IHubRequestOptions);
       const td = {
         organization: {
           id: "somePortalId",
@@ -205,6 +208,10 @@ describe("HubPageProcessor: ", () => {
     });
 
     it("asset and resource juggling", () => {
+      const hubRoSpy = spyOn(
+        hubRoModule,
+        "createHubRequestOptions"
+      ).and.resolveTo({} as hubCommon.IHubRequestOptions);
       const createFromTmplSpy = spyOn(
         sitesPackage,
         "createPageModelFromTemplate"
@@ -260,7 +267,10 @@ describe("HubPageProcessor: ", () => {
       spyOn(sitesPackage, "createPageModelFromTemplate").and.rejectWith(
         "Whoa thats bad"
       );
-
+      const hubRoSpy = spyOn(
+        hubRoModule,
+        "createHubRequestOptions"
+      ).and.resolveTo({} as hubCommon.IHubRequestOptions);
       const td = {
         organization: {
           id: "somePortalId",
@@ -286,6 +296,10 @@ describe("HubPageProcessor: ", () => {
         });
     });
     it("it early-exits correctly", () => {
+      const hubRoSpy = spyOn(
+        hubRoModule,
+        "createHubRequestOptions"
+      ).and.resolveTo({} as hubCommon.IHubRequestOptions);
       const td = {};
       const cb = () => false;
       return HubPageProcessor.createItemFromTemplate(
@@ -302,6 +316,10 @@ describe("HubPageProcessor: ", () => {
       });
     });
     it("cleans up if job is cancelled late", () => {
+      const hubRoSpy = spyOn(
+        hubRoModule,
+        "createHubRequestOptions"
+      ).and.resolveTo({} as hubCommon.IHubRequestOptions);
       const createFromTmplSpy = spyOn(
         sitesPackage,
         "createPageModelFromTemplate"
