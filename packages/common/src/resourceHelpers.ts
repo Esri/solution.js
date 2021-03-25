@@ -49,6 +49,7 @@
 
 import {
   appendQueryParam,
+  blobToFile,
   checkUrlPathTermination,
   fail
 } from "./generalHelpers";
@@ -60,12 +61,13 @@ import {
   IItemTemplate,
   IItemUpdate,
   ISourceFileCopyPath,
-  IUpdateItemResponse,
   UserSession
 } from "./interfaces";
 import { new_File } from "./polyfills";
 import {
+  IItemResourceOptions,
   IItemResourceResponse,
+  addItemResource,
   updateGroup,
   updateItem,
   updateItemInfo,
@@ -79,6 +81,7 @@ import { getBlob } from "./resources/get-blob";
 
 import { updateItem as helpersUpdateItem } from "./restHelpers";
 import { getBlobAsFile, getThumbnailFile } from "./restHelpersGet";
+import JSZip from "jszip";
 
 // ------------------------------------------------------------------------------------------------------------------ //
 
@@ -216,8 +219,10 @@ export function copyFilesFromStorageItem(
   const mimeTypes = template.properties || null;
 
   // remove the template.itemId from the fileName in the filePaths
+  /* istanbul ignore else */
   if (template.itemId) {
     filePaths = filePaths.map(fp => {
+      /* istanbul ignore else */
       if (fp.filename.indexOf(template.itemId) === 0 && fp.folder === "") {
         fp.filename = fp.filename.replace(`${template.itemId}-`, "");
       }
@@ -226,78 +231,97 @@ export function copyFilesFromStorageItem(
   }
 
   return new Promise<boolean>((resolve, reject) => {
-    // Introduce a lag because AGO update appears to choke with rapid subsequent calls
-    // Note: This is not actually delaying. The map returns an array of promises
-    // all of which will start firing in `lagMs` milliseconds
-    const msLag = 1000;
-
-    const awaitAllItems = filePaths.map(filePath => {
+    let awaitAllItems = filePaths.map(filePath => {
       switch (filePath.type) {
         case EFileType.Data:
-          return new Promise<IUpdateItemResponse>((resolveData, rejectData) => {
-            setTimeout(() => {
-              // We are updating an item with a zip file, which is written to AGO. If the updated
-              // item is in a folder, the zip file is moved to the item's folder after being written.
-              // Without the folder information in the URL, AGO writes the zip to the root folder,
-              // which causes a conflict if an item with the same data is already in that root folder.
-              copyData(
-                {
-                  url: filePath.url,
-                  authentication: storageAuthentication
-                },
-                {
-                  itemId: destinationItemId,
-                  folder: destinationFolderId,
-                  filename: filePath.filename,
-                  mimeType: mimeTypes ? mimeTypes[filePath.filename] : "",
-                  authentication: destinationAuthentication
-                }
-              ).then(result => resolveData(result), rejectData);
-            }, msLag);
-          });
-
-        case EFileType.Metadata:
-          return new Promise<IUpdateItemResponse>(
-            (resolveMetadata, rejectMetadata) => {
-              setTimeout(() => {
-                copyMetadata(
-                  {
-                    url: filePath.url,
-                    authentication: storageAuthentication
-                  },
-                  {
-                    itemId: destinationItemId,
-                    authentication: destinationAuthentication
-                  }
-                ).then(resolveMetadata, rejectMetadata);
-              }, msLag);
+          // We are updating an item with a zip file, which is written to AGO. If the updated
+          // item is in a folder, the zip file is moved to the item's folder after being written.
+          // Without the folder information in the URL, AGO writes the zip to the root folder,
+          // which causes a conflict if an item with the same data is already in that root folder.
+          return copyData(
+            {
+              url: filePath.url,
+              authentication: storageAuthentication
+            },
+            {
+              itemId: destinationItemId,
+              folder: destinationFolderId,
+              filename: filePath.filename,
+              mimeType: mimeTypes ? mimeTypes[filePath.filename] : "",
+              authentication: destinationAuthentication
             }
           );
 
-        case EFileType.Resource:
-          return new Promise<IUpdateItemResponse>(
-            (resolveResource, rejectResource) => {
-              setTimeout(() => {
-                copyResource(
-                  {
-                    url: filePath.url,
-                    authentication: storageAuthentication
-                  },
-                  {
-                    itemId: destinationItemId,
-                    folder: filePath.folder,
-                    filename: filePath.filename,
-                    authentication: destinationAuthentication
-                  }
-                ).then(resolveResource, rejectResource);
-              }, msLag);
+        case EFileType.Metadata:
+          return copyMetadata(
+            {
+              url: filePath.url,
+              authentication: storageAuthentication
+            },
+            {
+              itemId: destinationItemId,
+              authentication: destinationAuthentication
             }
           );
       }
     });
 
-    // Wait until all files have been copied
-    Promise.all(awaitAllItems).then(() => resolve(true), reject);
+    // Bundle the resources into a single update because AGO tends to have problems with
+    // many updates in a row to the same item: it claims success despite randomly failing
+    const resourceFilePaths = filePaths.filter(
+      filePath => filePath.type === EFileType.Resource
+    );
+    let zip: any;
+    if (resourceFilePaths.length > 0) {
+      zip = new JSZip();
+      awaitAllItems = awaitAllItems.concat(
+        // Note that AGO imposes a limit of 50 files, which is not checked in this code
+        // https://developers.arcgis.com/rest/users-groups-and-items/add-resources.htm
+        resourceFilePaths.map(filePath => {
+          return getBlobAsFile(
+            filePath.url,
+            filePath.filename,
+            storageAuthentication
+          ).then(file => {
+            if (filePath.folder) {
+              zip
+                .folder(filePath.folder)
+                .file(filePath.filename, file, { binary: true });
+            } else {
+              zip.file(filePath.filename, file, { binary: true });
+            }
+          });
+        })
+      );
+    }
+
+    // Wait until all files have been copied and the zip file prepared
+    Promise.all(awaitAllItems).then(() => {
+      if (zip) {
+        // Create the ZIP
+        zip
+          .generateAsync({ type: "blob" })
+          .then((content: Blob) => {
+            return blobToFile(content, "resources.zip", "application/zip");
+          })
+          .then((zipfile: File) => {
+            const addResourceOptions: IItemResourceOptions = {
+              id: destinationItemId,
+              resource: zipfile,
+              authentication: destinationAuthentication,
+              params: {
+                archive: true
+              }
+            };
+            addItemResource(addResourceOptions).then(
+              () => resolve(true),
+              reject
+            );
+          });
+      } else {
+        resolve(true);
+      }
+    }, reject);
   });
 }
 
