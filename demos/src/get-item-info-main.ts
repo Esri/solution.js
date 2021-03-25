@@ -223,45 +223,7 @@ export function getItemInfo(
           } else {
             resolve(html);
           }
-        } else if (itemBase.type === "Form") {
-          const formInfoFilenames = [
-            "form.json",
-            "forminfo.json",
-            "form.webform"
-          ];
-          // tslint:disable-next-line: no-floating-promises
-          Promise.all(
-            common.getInfoFiles(itemId, formInfoFilenames, authentication)
-          )
-            .then(results => results.filter(result => !!result))
-            .then(
-              // (formFiles: Blob[3])  list of a Form's "form.json", "forminfo.json", & "form.webform" info files
-              async formFiles => {
-                formFiles = formFiles.filter(result => !!result);
-                console.log("formFiles", formFiles);
-                html += "<p>Form Files<br/>";
-                if (formFiles.length === 0) {
-                  html += "<p><i>none</i>";
-                } else {
-                  html += "<ol>";
-                  // tslint:disable-next-line: prefer-for-of
-                  for (const blob of formFiles) {
-                    html += "<li><div>";
-                    html += await showBlob(blob);
-                    html += "</div></li>";
-                  }
-                  html += "</ol>";
-                }
-                html += "</p>";
-                resolve(html);
-              }
-            )
-            .catch(
-              error => {
-                document.getElementById("errors").innerHTML += "<i>error getting templates: " + error + "</i>";
-              }
-            );
-          } else if (itemBase.type === "Solution") {
+        } else if (itemBase.type === "Solution") {
           html += "<p>Dependency graph<br/><div id=\"topologicalSortGraphic\"/>";
           resolve(html);
 

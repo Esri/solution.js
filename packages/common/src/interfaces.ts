@@ -61,7 +61,6 @@ export {
  */
 export enum EFileType {
   Data,
-  Info,
   Metadata,
   Resource,
   Thumbnail
