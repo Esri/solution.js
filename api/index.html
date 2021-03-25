@@ -441,10 +441,6 @@
             </li>
             
             <li class="tsd-kind-reference padding-right-1 visually-hidden api-list-item">
-              <a href="/solution.js/api/common/addThumbnailFromUrl/" class="tsd-kind-icon padding-right-1">addThumbnailFromUrl</a>
-            </li>
-            
-            <li class="tsd-kind-reference padding-right-1 visually-hidden api-list-item">
               <a href="/solution.js/api/common/addTokenToUrl/" class="tsd-kind-icon padding-right-1">addTokenToUrl</a>
             </li>
             
@@ -922,6 +918,14 @@
             
             <li class="tsd-kind-reference padding-right-1 visually-hidden api-list-item">
               <a href="/solution.js/api/common/getTemplateById/" class="tsd-kind-icon padding-right-1">getTemplateById</a>
+            </li>
+            
+            <li class="tsd-kind-reference padding-right-1 visually-hidden api-list-item">
+              <a href="/solution.js/api/common/getThumbnailFile/" class="tsd-kind-icon padding-right-1">getThumbnailFile</a>
+            </li>
+            
+            <li class="tsd-kind-reference padding-right-1 visually-hidden api-list-item">
+              <a href="/solution.js/api/common/getThumbnailFromStorageItem/" class="tsd-kind-icon padding-right-1">getThumbnailFromStorageItem</a>
             </li>
             
             <li class="tsd-kind-reference padding-right-1 visually-hidden api-list-item">
@@ -1965,10 +1969,6 @@
             </li>
             
             <li class="tsd-kind-function padding-right-1 visually-hidden api-list-item">
-              <a href="/solution.js/api/common/addThumbnailFromUrl/" class="tsd-kind-icon padding-right-1">addThumbnailFromUrl</a>
-            </li>
-            
-            <li class="tsd-kind-function padding-right-1 visually-hidden api-list-item">
               <a href="/solution.js/api/common/addTokenToUrl/" class="tsd-kind-icon padding-right-1">addTokenToUrl</a>
             </li>
             
@@ -2394,6 +2394,14 @@
             
             <li class="tsd-kind-function padding-right-1 visually-hidden api-list-item">
               <a href="/solution.js/api/common/getTemplateById/" class="tsd-kind-icon padding-right-1">getTemplateById</a>
+            </li>
+            
+            <li class="tsd-kind-function padding-right-1 visually-hidden api-list-item">
+              <a href="/solution.js/api/common/getThumbnailFile/" class="tsd-kind-icon padding-right-1">getThumbnailFile</a>
+            </li>
+            
+            <li class="tsd-kind-function padding-right-1 visually-hidden api-list-item">
+              <a href="/solution.js/api/common/getThumbnailFromStorageItem/" class="tsd-kind-icon padding-right-1">getThumbnailFromStorageItem</a>
             </li>
             
             <li class="tsd-kind-function padding-right-1 visually-hidden api-list-item">
@@ -4002,13 +4010,13 @@
   
   
   
-  <small class="label right">Version 0.22.2</small>
+  <small class="label right">Version 0.22.6</small>
 <h1 class=" font-size-3 trailer-half code-face">
   <a href="/solution.js/api/common/">@esri/solution-common</a>
 </h1>
 <p class="font-size--1 trailer-1 avenir-regular">Provides general helper functions for @esri/solution.js.</p>
 <h2 class="font-size-0 trailer-quarter">npm install:</h2>
-<pre><code>npm install @esri/solution-common @esri/arcgis-rest-auth@^3.0.2  @esri/arcgis-rest-feature-layer@^3.0.2  @esri/arcgis-rest-portal@^3.0.2  @esri/arcgis-rest-request@^3.0.2  @esri/arcgis-rest-service-admin@^3.0.2  @esri/hub-common@^7.0.8 </code></pre>
+<pre><code>npm install @esri/solution-common @esri/arcgis-rest-auth@^3.0.3  @esri/arcgis-rest-feature-layer@^3.0.3  @esri/arcgis-rest-portal@^3.0.3  @esri/arcgis-rest-request@^3.0.3  @esri/arcgis-rest-service-admin@^3.0.3  @esri/hub-common@^7.3.0 </code></pre>
 <h2 class="font-size-0 trailer-quarter">Module Import:</h2>
 
 <pre><code class="js"><span class="hljs-keyword">import</span> {
@@ -4099,7 +4107,6 @@
   addMetadataFromBlob,
   addResourceFromBlob,
   addThumbnailFromBlob,
-  addThumbnailFromUrl,
   addTokenToUrl,
   addToServiceDefinition,
   appendQueryParam,
@@ -4207,6 +4214,8 @@
   getProps,
   getReplaceValue,
   getTemplateById,
+  getThumbnailFile,
+  getThumbnailFromStorageItem,
   getUniqueTitle,
   getUrlDependencies,
   getUser,
@@ -4282,10 +4291,10 @@
 } <span class="hljs-keyword">from</span> <span class="hljs-string">"@esri/solution-common"</span>;</code></pre>
 
 <h2 class="font-size-0 trailer-quarter">CDN:</h2>
-<pre><code class="html"><span class="hljs-tag">&lt;<span class="hljs-name">script</span> <span class="hljs-attr">src</span>=<span class="hljs-string">"https://unpkg.com/@esri/solution-common@0.22.2/dist/umd/common.umd.min.js"</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span></code></pre>
+<pre><code class="html"><span class="hljs-tag">&lt;<span class="hljs-name">script</span> <span class="hljs-attr">src</span>=<span class="hljs-string">"https://unpkg.com/@esri/solution-common@0.22.6/dist/umd/common.umd.min.js"</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span></code></pre>
 <h2 class="font-size-0 trailer-quarter">CDN with SRI:</h2>
 
-        <pre><code class="html"><span class="hljs-tag">&lt;<span class="hljs-name">script</span> <span class="hljs-attr">src</span>=<span class="hljs-string">"https://unpkg.com/@esri/solution-common@0.22.2/dist/umd/common.umd.min.js"</span> <span class="hljs-attr">integrity</span>=<span class="hljs-string">"sha384-8az9JThUtKDVB5DCt/jJhbotLFgLw7OdoW5A+RxDs9G2lon3DIBK0ES12dUZmhg2"</span> <span class="hljs-attr">crossorigin</span>=<span class="hljs-string">"anonymous"</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span></code></pre>
+        <pre><code class="html"><span class="hljs-tag">&lt;<span class="hljs-name">script</span> <span class="hljs-attr">src</span>=<span class="hljs-string">"https://unpkg.com/@esri/solution-common@0.22.6/dist/umd/common.umd.min.js"</span> <span class="hljs-attr">integrity</span>=<span class="hljs-string">"sha384-tWSynGrGy0W0NZR7+Olsvb0/3yfeKqcg+RfzeE2KyxtXhH3wm5H1MC1b/fUSMHEg"</span> <span class="hljs-attr">crossorigin</span>=<span class="hljs-string">"anonymous"</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span></code></pre>
 <hr class="leader-half trailer-quarter" />
 <ul class="list-plain package-contents">
   
@@ -4651,10 +4660,6 @@
   
   <li class="tsd-kind-reference">
     <a href="/solution.js/api/common/addThumbnailFromBlob/" class="tsd-kind-icon">addThumbnailFromBlob</a>
-  </li>
-  
-  <li class="tsd-kind-reference">
-    <a href="/solution.js/api/common/addThumbnailFromUrl/" class="tsd-kind-icon">addThumbnailFromUrl</a>
   </li>
   
   <li class="tsd-kind-reference">
@@ -5135,6 +5140,14 @@
   
   <li class="tsd-kind-reference">
     <a href="/solution.js/api/common/getTemplateById/" class="tsd-kind-icon">getTemplateById</a>
+  </li>
+  
+  <li class="tsd-kind-reference">
+    <a href="/solution.js/api/common/getThumbnailFile/" class="tsd-kind-icon">getThumbnailFile</a>
+  </li>
+  
+  <li class="tsd-kind-reference">
+    <a href="/solution.js/api/common/getThumbnailFromStorageItem/" class="tsd-kind-icon">getThumbnailFromStorageItem</a>
   </li>
   
   <li class="tsd-kind-reference">
@@ -6178,10 +6191,6 @@
   </li>
   
   <li class="tsd-kind-function">
-    <a href="/solution.js/api/common/addThumbnailFromUrl/" class="tsd-kind-icon">addThumbnailFromUrl</a>
-  </li>
-  
-  <li class="tsd-kind-function">
     <a href="/solution.js/api/common/addTokenToUrl/" class="tsd-kind-icon">addTokenToUrl</a>
   </li>
   
@@ -6607,6 +6616,14 @@
   
   <li class="tsd-kind-function">
     <a href="/solution.js/api/common/getTemplateById/" class="tsd-kind-icon">getTemplateById</a>
+  </li>
+  
+  <li class="tsd-kind-function">
+    <a href="/solution.js/api/common/getThumbnailFile/" class="tsd-kind-icon">getThumbnailFile</a>
+  </li>
+  
+  <li class="tsd-kind-function">
+    <a href="/solution.js/api/common/getThumbnailFromStorageItem/" class="tsd-kind-icon">getThumbnailFromStorageItem</a>
   </li>
   
   <li class="tsd-kind-function">
@@ -7154,13 +7171,13 @@
   
   
   
-  <small class="label right">Version 0.22.2</small>
+  <small class="label right">Version 0.22.6</small>
 <h1 class=" font-size-3 trailer-half code-face">
   <a href="/solution.js/api/creator/">@esri/solution-creator</a>
 </h1>
 <p class="font-size--1 trailer-1 avenir-regular">Manages the creation of a Solution item for @esri/solution.js.</p>
 <h2 class="font-size-0 trailer-quarter">npm install:</h2>
-<pre><code>npm install @esri/solution-creator @esri/arcgis-rest-auth@^3.0.2  @esri/arcgis-rest-feature-layer@^3.0.2  @esri/arcgis-rest-portal@^3.0.2  @esri/arcgis-rest-request@^3.0.2  @esri/arcgis-rest-service-admin@^3.0.2  @esri/hub-common@^7.0.8  @esri/hub-initiatives@^7.0.8  @esri/hub-sites@^7.0.8  @esri/hub-teams@^7.0.8 </code></pre>
+<pre><code>npm install @esri/solution-creator @esri/arcgis-rest-auth@^3.0.3  @esri/arcgis-rest-feature-layer@^3.0.3  @esri/arcgis-rest-portal@^3.0.3  @esri/arcgis-rest-request@^3.0.3  @esri/arcgis-rest-service-admin@^3.0.3  @esri/hub-common@^7.3.0  @esri/hub-initiatives@^7.3.0  @esri/hub-sites@^7.3.0  @esri/hub-teams@^7.3.0 </code></pre>
 <h2 class="font-size-0 trailer-quarter">Module Import:</h2>
 
 <pre><code class="js"><span class="hljs-keyword">import</span> {
@@ -7184,10 +7201,10 @@
 } <span class="hljs-keyword">from</span> <span class="hljs-string">"@esri/solution-creator"</span>;</code></pre>
 
 <h2 class="font-size-0 trailer-quarter">CDN:</h2>
-<pre><code class="html"><span class="hljs-tag">&lt;<span class="hljs-name">script</span> <span class="hljs-attr">src</span>=<span class="hljs-string">"https://unpkg.com/@esri/solution-creator@0.22.2/dist/umd/creator.umd.min.js"</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span></code></pre>
+<pre><code class="html"><span class="hljs-tag">&lt;<span class="hljs-name">script</span> <span class="hljs-attr">src</span>=<span class="hljs-string">"https://unpkg.com/@esri/solution-creator@0.22.6/dist/umd/creator.umd.min.js"</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span></code></pre>
 <h2 class="font-size-0 trailer-quarter">CDN with SRI:</h2>
 
-        <pre><code class="html"><span class="hljs-tag">&lt;<span class="hljs-name">script</span> <span class="hljs-attr">src</span>=<span class="hljs-string">"https://unpkg.com/@esri/solution-creator@0.22.2/dist/umd/creator.umd.min.js"</span> <span class="hljs-attr">integrity</span>=<span class="hljs-string">"sha384-f202uCjG3beiUJTjMk2+HywJloO51IBtUOT8rvb543GieA7kDP+dd2pQakBc8Cdy"</span> <span class="hljs-attr">crossorigin</span>=<span class="hljs-string">"anonymous"</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span></code></pre>
+        <pre><code class="html"><span class="hljs-tag">&lt;<span class="hljs-name">script</span> <span class="hljs-attr">src</span>=<span class="hljs-string">"https://unpkg.com/@esri/solution-creator@0.22.6/dist/umd/creator.umd.min.js"</span> <span class="hljs-attr">integrity</span>=<span class="hljs-string">"sha384-SsoZrE4fjl6PJ3D467v78o8i9UPACTBhHpqOrH4XIkez7F/MDQxbxlHZpNt8lnjG"</span> <span class="hljs-attr">crossorigin</span>=<span class="hljs-string">"anonymous"</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span></code></pre>
 <hr class="leader-half trailer-quarter" />
 <ul class="list-plain package-contents">
   
@@ -7348,13 +7365,13 @@
   
   
   
-  <small class="label right">Version 0.22.2</small>
+  <small class="label right">Version 0.22.6</small>
 <h1 class=" font-size-3 trailer-half code-face">
   <a href="/solution.js/api/deployer/">@esri/solution-deployer</a>
 </h1>
 <p class="font-size--1 trailer-1 avenir-regular">Manages the deployment of a Solution for @esri/solution.js.</p>
 <h2 class="font-size-0 trailer-quarter">npm install:</h2>
-<pre><code>npm install @esri/solution-deployer @esri/arcgis-rest-auth@^3.0.2  @esri/arcgis-rest-feature-layer@^3.0.2  @esri/arcgis-rest-portal@^3.0.2  @esri/arcgis-rest-request@^3.0.2  @esri/arcgis-rest-service-admin@^3.0.2  @esri/hub-common@^7.0.8  @esri/hub-initiatives@^7.0.8  @esri/hub-sites@^7.0.8  @esri/hub-teams@^7.0.8 </code></pre>
+<pre><code>npm install @esri/solution-deployer @esri/arcgis-rest-auth@^3.0.3  @esri/arcgis-rest-feature-layer@^3.0.3  @esri/arcgis-rest-portal@^3.0.3  @esri/arcgis-rest-request@^3.0.3  @esri/arcgis-rest-service-admin@^3.0.3  @esri/hub-common@^7.3.0  @esri/hub-initiatives@^7.3.0  @esri/hub-sites@^7.3.0  @esri/hub-teams@^7.3.0 </code></pre>
 <h2 class="font-size-0 trailer-quarter">Module Import:</h2>
 
 <pre><code class="js"><span class="hljs-keyword">import</span> {
@@ -7394,10 +7411,10 @@
 } <span class="hljs-keyword">from</span> <span class="hljs-string">"@esri/solution-deployer"</span>;</code></pre>
 
 <h2 class="font-size-0 trailer-quarter">CDN:</h2>
-<pre><code class="html"><span class="hljs-tag">&lt;<span class="hljs-name">script</span> <span class="hljs-attr">src</span>=<span class="hljs-string">"https://unpkg.com/@esri/solution-deployer@0.22.2/dist/umd/deployer.umd.min.js"</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span></code></pre>
+<pre><code class="html"><span class="hljs-tag">&lt;<span class="hljs-name">script</span> <span class="hljs-attr">src</span>=<span class="hljs-string">"https://unpkg.com/@esri/solution-deployer@0.22.6/dist/umd/deployer.umd.min.js"</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span></code></pre>
 <h2 class="font-size-0 trailer-quarter">CDN with SRI:</h2>
 
-        <pre><code class="html"><span class="hljs-tag">&lt;<span class="hljs-name">script</span> <span class="hljs-attr">src</span>=<span class="hljs-string">"https://unpkg.com/@esri/solution-deployer@0.22.2/dist/umd/deployer.umd.min.js"</span> <span class="hljs-attr">integrity</span>=<span class="hljs-string">"sha384-A8gP/VdzRWln72e5PRvi59iiRCdprWk5SeNBJRmG9U75i2HUdk4yKpupQ2GPIZcF"</span> <span class="hljs-attr">crossorigin</span>=<span class="hljs-string">"anonymous"</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span></code></pre>
+        <pre><code class="html"><span class="hljs-tag">&lt;<span class="hljs-name">script</span> <span class="hljs-attr">src</span>=<span class="hljs-string">"https://unpkg.com/@esri/solution-deployer@0.22.6/dist/umd/deployer.umd.min.js"</span> <span class="hljs-attr">integrity</span>=<span class="hljs-string">"sha384-sgzHng6nqOqj5L9gg6YSGV874FXgSzQaRQyZmXEZ44lnx/Hut5h73Ssp998/6Unk"</span> <span class="hljs-attr">crossorigin</span>=<span class="hljs-string">"anonymous"</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span></code></pre>
 <hr class="leader-half trailer-quarter" />
 <ul class="list-plain package-contents">
   
@@ -7646,13 +7663,13 @@
   
   
   
-  <small class="label right">Version 0.22.2</small>
+  <small class="label right">Version 0.22.6</small>
 <h1 class=" font-size-3 trailer-half code-face">
   <a href="/solution.js/api/feature-layer/">@esri/solution-feature-layer</a>
 </h1>
 <p class="font-size--1 trailer-1 avenir-regular">Manages the creation and deployment of feature layers and services for @esri/solution.js.</p>
 <h2 class="font-size-0 trailer-quarter">npm install:</h2>
-<pre><code>npm install @esri/solution-feature-layer @esri/arcgis-rest-auth@^3.0.2  @esri/arcgis-rest-feature-layer@^3.0.2  @esri/arcgis-rest-portal@^3.0.2  @esri/arcgis-rest-request@^3.0.2  @esri/arcgis-rest-service-admin@^3.0.2  @esri/hub-common@^7.0.8  @esri/hub-initiatives@^7.0.8  @esri/hub-sites@^7.0.8  @esri/hub-teams@^7.0.8 </code></pre>
+<pre><code>npm install @esri/solution-feature-layer @esri/arcgis-rest-auth@^3.0.3  @esri/arcgis-rest-feature-layer@^3.0.3  @esri/arcgis-rest-portal@^3.0.3  @esri/arcgis-rest-request@^3.0.3  @esri/arcgis-rest-service-admin@^3.0.3  @esri/hub-common@^7.3.0  @esri/hub-initiatives@^7.3.0  @esri/hub-sites@^7.3.0  @esri/hub-teams@^7.3.0 </code></pre>
 <h2 class="font-size-0 trailer-quarter">Module Import:</h2>
 
 <pre><code class="js"><span class="hljs-keyword">import</span> {
@@ -7662,10 +7679,10 @@
 } <span class="hljs-keyword">from</span> <span class="hljs-string">"@esri/solution-feature-layer"</span>;</code></pre>
 
 <h2 class="font-size-0 trailer-quarter">CDN:</h2>
-<pre><code class="html"><span class="hljs-tag">&lt;<span class="hljs-name">script</span> <span class="hljs-attr">src</span>=<span class="hljs-string">"https://unpkg.com/@esri/solution-feature-layer@0.22.2/dist/umd/feature-layer.umd.min.js"</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span></code></pre>
+<pre><code class="html"><span class="hljs-tag">&lt;<span class="hljs-name">script</span> <span class="hljs-attr">src</span>=<span class="hljs-string">"https://unpkg.com/@esri/solution-feature-layer@0.22.6/dist/umd/feature-layer.umd.min.js"</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span></code></pre>
 <h2 class="font-size-0 trailer-quarter">CDN with SRI:</h2>
 
-        <pre><code class="html"><span class="hljs-tag">&lt;<span class="hljs-name">script</span> <span class="hljs-attr">src</span>=<span class="hljs-string">"https://unpkg.com/@esri/solution-feature-layer@0.22.2/dist/umd/feature-layer.umd.min.js"</span> <span class="hljs-attr">integrity</span>=<span class="hljs-string">"sha384-WUYzdLEVTRegjiMgVsELugW4ATr2NVSaQ0/ocbCBAs6J2LX62pRayZFmOVhotiQd"</span> <span class="hljs-attr">crossorigin</span>=<span class="hljs-string">"anonymous"</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span></code></pre>
+        <pre><code class="html"><span class="hljs-tag">&lt;<span class="hljs-name">script</span> <span class="hljs-attr">src</span>=<span class="hljs-string">"https://unpkg.com/@esri/solution-feature-layer@0.22.6/dist/umd/feature-layer.umd.min.js"</span> <span class="hljs-attr">integrity</span>=<span class="hljs-string">"sha384-JcqqRJnIg56scVYeKnX3O0gn3lyyQc3ke6KulynD74IvLV1tC1ZRJzNua/eJZd+U"</span> <span class="hljs-attr">crossorigin</span>=<span class="hljs-string">"anonymous"</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span></code></pre>
 <hr class="leader-half trailer-quarter" />
 <ul class="list-plain package-contents">
   
@@ -7702,13 +7719,13 @@
   
   
   
-  <small class="label right">Version 0.22.2</small>
+  <small class="label right">Version 0.22.6</small>
 <h1 class=" font-size-3 trailer-half code-face">
   <a href="/solution.js/api/file/">@esri/solution-file</a>
 </h1>
 <p class="font-size--1 trailer-1 avenir-regular">Manages the creation and deployment of  item types that contain files for @esri/solution.js.</p>
 <h2 class="font-size-0 trailer-quarter">npm install:</h2>
-<pre><code>npm install @esri/solution-file @esri/arcgis-rest-auth@^3.0.2  @esri/arcgis-rest-feature-layer@^3.0.2  @esri/arcgis-rest-portal@^3.0.2  @esri/arcgis-rest-request@^3.0.2  @esri/arcgis-rest-service-admin@^3.0.2  @esri/hub-common@^7.0.8  @esri/hub-initiatives@^7.0.8  @esri/hub-sites@^7.0.8  @esri/hub-teams@^7.0.8 </code></pre>
+<pre><code>npm install @esri/solution-file @esri/arcgis-rest-auth@^3.0.3  @esri/arcgis-rest-feature-layer@^3.0.3  @esri/arcgis-rest-portal@^3.0.3  @esri/arcgis-rest-request@^3.0.3  @esri/arcgis-rest-service-admin@^3.0.3  @esri/hub-common@^7.3.0  @esri/hub-initiatives@^7.3.0  @esri/hub-sites@^7.3.0  @esri/hub-teams@^7.3.0 </code></pre>
 <h2 class="font-size-0 trailer-quarter">Module Import:</h2>
 
 <pre><code class="js"><span class="hljs-keyword">import</span> {
@@ -7717,10 +7734,10 @@
 } <span class="hljs-keyword">from</span> <span class="hljs-string">"@esri/solution-file"</span>;</code></pre>
 
 <h2 class="font-size-0 trailer-quarter">CDN:</h2>
-<pre><code class="html"><span class="hljs-tag">&lt;<span class="hljs-name">script</span> <span class="hljs-attr">src</span>=<span class="hljs-string">"https://unpkg.com/@esri/solution-file@0.22.2/dist/umd/file.umd.min.js"</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span></code></pre>
+<pre><code class="html"><span class="hljs-tag">&lt;<span class="hljs-name">script</span> <span class="hljs-attr">src</span>=<span class="hljs-string">"https://unpkg.com/@esri/solution-file@0.22.6/dist/umd/file.umd.min.js"</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span></code></pre>
 <h2 class="font-size-0 trailer-quarter">CDN with SRI:</h2>
 
-        <pre><code class="html"><span class="hljs-tag">&lt;<span class="hljs-name">script</span> <span class="hljs-attr">src</span>=<span class="hljs-string">"https://unpkg.com/@esri/solution-file@0.22.2/dist/umd/file.umd.min.js"</span> <span class="hljs-attr">integrity</span>=<span class="hljs-string">"sha384-VAbspd/4Dzqc7ulkHrk2ZI0bmC/r6aEFbpXEhTKrvEFpu1jQDsuhE50BgBNU7iNL"</span> <span class="hljs-attr">crossorigin</span>=<span class="hljs-string">"anonymous"</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span></code></pre>
+        <pre><code class="html"><span class="hljs-tag">&lt;<span class="hljs-name">script</span> <span class="hljs-attr">src</span>=<span class="hljs-string">"https://unpkg.com/@esri/solution-file@0.22.6/dist/umd/file.umd.min.js"</span> <span class="hljs-attr">integrity</span>=<span class="hljs-string">"sha384-usfr56bIhnnE9lwfqVyVq4nBAUgDE1DG2/sRtKA05cPFgiFLD2fzwLNIwjfuxHlC"</span> <span class="hljs-attr">crossorigin</span>=<span class="hljs-string">"anonymous"</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span></code></pre>
 <hr class="leader-half trailer-quarter" />
 <ul class="list-plain package-contents">
   
@@ -7749,13 +7766,13 @@
   
   
   
-  <small class="label right">Version 0.22.2</small>
+  <small class="label right">Version 0.22.6</small>
 <h1 class=" font-size-3 trailer-half code-face">
   <a href="/solution.js/api/form/">@esri/solution-form</a>
 </h1>
 <p class="font-size--1 trailer-1 avenir-regular">Manages the creation and deployment of form item types for @esri/solution.js.</p>
 <h2 class="font-size-0 trailer-quarter">npm install:</h2>
-<pre><code>npm install @esri/solution-form @esri/arcgis-rest-auth@^3.0.2  @esri/arcgis-rest-feature-layer@^3.0.2  @esri/arcgis-rest-portal@^3.0.2  @esri/arcgis-rest-request@^3.0.2  @esri/arcgis-rest-service-admin@^3.0.2  @esri/hub-common@^7.0.8  @esri/hub-initiatives@^7.0.8  @esri/hub-sites@^7.0.8  @esri/hub-teams@^7.0.8 </code></pre>
+<pre><code>npm install @esri/solution-form @esri/arcgis-rest-auth@^3.0.3  @esri/arcgis-rest-feature-layer@^3.0.3  @esri/arcgis-rest-portal@^3.0.3  @esri/arcgis-rest-request@^3.0.3  @esri/arcgis-rest-service-admin@^3.0.3  @esri/hub-common@^7.3.0  @esri/hub-initiatives@^7.3.0  @esri/hub-sites@^7.3.0  @esri/hub-teams@^7.3.0 </code></pre>
 <h2 class="font-size-0 trailer-quarter">Module Import:</h2>
 
 <pre><code class="js"><span class="hljs-keyword">import</span> {
@@ -7771,7 +7788,7 @@
 } <span class="hljs-keyword">from</span> <span class="hljs-string">"@esri/solution-form"</span>;</code></pre>
 
 <h2 class="font-size-0 trailer-quarter">CDN:</h2>
-<pre><code class="html"><span class="hljs-tag">&lt;<span class="hljs-name">script</span> <span class="hljs-attr">src</span>=<span class="hljs-string">"https://unpkg.com/@esri/solution-form@0.22.2/dist/umd/form.umd.min.js"</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span></code></pre>
+<pre><code class="html"><span class="hljs-tag">&lt;<span class="hljs-name">script</span> <span class="hljs-attr">src</span>=<span class="hljs-string">"https://unpkg.com/@esri/solution-form@0.22.6/dist/umd/form.umd.min.js"</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span></code></pre>
 <h2 class="font-size-0 trailer-quarter">CDN with SRI:</h2>
 
 <hr class="leader-half trailer-quarter" />
@@ -7834,13 +7851,13 @@
   
   
   
-  <small class="label right">Version 0.22.2</small>
+  <small class="label right">Version 0.22.6</small>
 <h1 class=" font-size-3 trailer-half code-face">
   <a href="/solution.js/api/group/">@esri/solution-group</a>
 </h1>
 <p class="font-size--1 trailer-1 avenir-regular">Manages the creation and deployment of group item types for @esri/solution.js.</p>
 <h2 class="font-size-0 trailer-quarter">npm install:</h2>
-<pre><code>npm install @esri/solution-group @esri/arcgis-rest-auth@^3.0.2  @esri/arcgis-rest-feature-layer@^3.0.2  @esri/arcgis-rest-portal@^3.0.2  @esri/arcgis-rest-request@^3.0.2  @esri/arcgis-rest-service-admin@^3.0.2  @esri/hub-common@^7.0.8  @esri/hub-initiatives@^7.0.8  @esri/hub-sites@^7.0.8  @esri/hub-teams@^7.0.8 </code></pre>
+<pre><code>npm install @esri/solution-group @esri/arcgis-rest-auth@^3.0.3  @esri/arcgis-rest-feature-layer@^3.0.3  @esri/arcgis-rest-portal@^3.0.3  @esri/arcgis-rest-request@^3.0.3  @esri/arcgis-rest-service-admin@^3.0.3  @esri/hub-common@^7.3.0  @esri/hub-initiatives@^7.3.0  @esri/hub-sites@^7.3.0  @esri/hub-teams@^7.3.0 </code></pre>
 <h2 class="font-size-0 trailer-quarter">Module Import:</h2>
 
 <pre><code class="js"><span class="hljs-keyword">import</span> {
@@ -7849,10 +7866,10 @@
 } <span class="hljs-keyword">from</span> <span class="hljs-string">"@esri/solution-group"</span>;</code></pre>
 
 <h2 class="font-size-0 trailer-quarter">CDN:</h2>
-<pre><code class="html"><span class="hljs-tag">&lt;<span class="hljs-name">script</span> <span class="hljs-attr">src</span>=<span class="hljs-string">"https://unpkg.com/@esri/solution-group@0.22.2/dist/umd/group.umd.min.js"</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span></code></pre>
+<pre><code class="html"><span class="hljs-tag">&lt;<span class="hljs-name">script</span> <span class="hljs-attr">src</span>=<span class="hljs-string">"https://unpkg.com/@esri/solution-group@0.22.6/dist/umd/group.umd.min.js"</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span></code></pre>
 <h2 class="font-size-0 trailer-quarter">CDN with SRI:</h2>
 
-        <pre><code class="html"><span class="hljs-tag">&lt;<span class="hljs-name">script</span> <span class="hljs-attr">src</span>=<span class="hljs-string">"https://unpkg.com/@esri/solution-group@0.22.2/dist/umd/group.umd.min.js"</span> <span class="hljs-attr">integrity</span>=<span class="hljs-string">"sha384-si43b1QXKfFW8E1xg6f1NyDJ19mSsYvHDzzUrQvXhcnC8UfYXEKSPPJHVKsknEWQ"</span> <span class="hljs-attr">crossorigin</span>=<span class="hljs-string">"anonymous"</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span></code></pre>
+        <pre><code class="html"><span class="hljs-tag">&lt;<span class="hljs-name">script</span> <span class="hljs-attr">src</span>=<span class="hljs-string">"https://unpkg.com/@esri/solution-group@0.22.6/dist/umd/group.umd.min.js"</span> <span class="hljs-attr">integrity</span>=<span class="hljs-string">"sha384-0+nAh7N4RDaE0cDrG1NhopKZj30ziAsn+YTimjQXLXQNWbz3hjxJGREohxn+HRvm"</span> <span class="hljs-attr">crossorigin</span>=<span class="hljs-string">"anonymous"</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span></code></pre>
 <hr class="leader-half trailer-quarter" />
 <ul class="list-plain package-contents">
   
@@ -7881,13 +7898,13 @@
   
   
   
-  <small class="label right">Version 0.22.2</small>
+  <small class="label right">Version 0.22.6</small>
 <h1 class=" font-size-3 trailer-half code-face">
   <a href="/solution.js/api/hub-types/">@esri/solution-hub-types</a>
 </h1>
 <p class="font-size--1 trailer-1 avenir-regular">Manages the creation and deployment of Hub Site and Hub Page item types for @esri/solution.js..</p>
 <h2 class="font-size-0 trailer-quarter">npm install:</h2>
-<pre><code>npm install @esri/solution-hub-types @esri/arcgis-rest-auth@^3.0.2  @esri/arcgis-rest-feature-layer@^3.0.2  @esri/arcgis-rest-portal@^3.0.2  @esri/arcgis-rest-request@^3.0.2  @esri/arcgis-rest-service-admin@^3.0.2  @esri/hub-common@^7.0.8  @esri/hub-initiatives@^7.0.8  @esri/hub-sites@^7.0.8  @esri/hub-teams@^7.0.8 </code></pre>
+<pre><code>npm install @esri/solution-hub-types @esri/arcgis-rest-auth@^3.0.3  @esri/arcgis-rest-feature-layer@^3.0.3  @esri/arcgis-rest-portal@^3.0.3  @esri/arcgis-rest-request@^3.0.3  @esri/arcgis-rest-service-admin@^3.0.3  @esri/hub-common@^7.3.0  @esri/hub-initiatives@^7.3.0  @esri/hub-sites@^7.3.0  @esri/hub-teams@^7.3.0 </code></pre>
 <h2 class="font-size-0 trailer-quarter">Module Import:</h2>
 
 <pre><code class="js"><span class="hljs-keyword">import</span> {
@@ -7908,7 +7925,7 @@
 } <span class="hljs-keyword">from</span> <span class="hljs-string">"@esri/solution-hub-types"</span>;</code></pre>
 
 <h2 class="font-size-0 trailer-quarter">CDN:</h2>
-<pre><code class="html"><span class="hljs-tag">&lt;<span class="hljs-name">script</span> <span class="hljs-attr">src</span>=<span class="hljs-string">"https://unpkg.com/@esri/solution-hub-types@0.22.2/dist/umd/hub-types.umd.min.js"</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span></code></pre>
+<pre><code class="html"><span class="hljs-tag">&lt;<span class="hljs-name">script</span> <span class="hljs-attr">src</span>=<span class="hljs-string">"https://unpkg.com/@esri/solution-hub-types@0.22.6/dist/umd/hub-types.umd.min.js"</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span></code></pre>
 <h2 class="font-size-0 trailer-quarter">CDN with SRI:</h2>
 
 <hr class="leader-half trailer-quarter" />
@@ -7979,13 +7996,13 @@
   
   
   
-  <small class="label right">Version 0.22.2</small>
+  <small class="label right">Version 0.22.6</small>
 <h1 class=" font-size-3 trailer-half code-face">
   <a href="/solution.js/api/simple-types/">@esri/solution-simple-types</a>
 </h1>
 <p class="font-size--1 trailer-1 avenir-regular">Manages the creation and deployment of simple item types for @esri/solution.js.</p>
 <h2 class="font-size-0 trailer-quarter">npm install:</h2>
-<pre><code>npm install @esri/solution-simple-types @esri/arcgis-rest-auth@^3.0.2  @esri/arcgis-rest-feature-layer@^3.0.2  @esri/arcgis-rest-portal@^3.0.2  @esri/arcgis-rest-request@^3.0.2  @esri/arcgis-rest-service-admin@^3.0.2  @esri/hub-common@^7.0.8  @esri/hub-teams@^7.0.8 </code></pre>
+<pre><code>npm install @esri/solution-simple-types @esri/arcgis-rest-auth@^3.0.3  @esri/arcgis-rest-feature-layer@^3.0.3  @esri/arcgis-rest-portal@^3.0.3  @esri/arcgis-rest-request@^3.0.3  @esri/arcgis-rest-service-admin@^3.0.3  @esri/hub-common@^7.3.0  @esri/hub-teams@^7.3.0 </code></pre>
 <h2 class="font-size-0 trailer-quarter">Module Import:</h2>
 
 <pre><code class="js"><span class="hljs-keyword">import</span> {
@@ -8060,10 +8077,10 @@
 } <span class="hljs-keyword">from</span> <span class="hljs-string">"@esri/solution-simple-types"</span>;</code></pre>
 
 <h2 class="font-size-0 trailer-quarter">CDN:</h2>
-<pre><code class="html"><span class="hljs-tag">&lt;<span class="hljs-name">script</span> <span class="hljs-attr">src</span>=<span class="hljs-string">"https://unpkg.com/@esri/solution-simple-types@0.22.2/dist/umd/simple-types.umd.min.js"</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span></code></pre>
+<pre><code class="html"><span class="hljs-tag">&lt;<span class="hljs-name">script</span> <span class="hljs-attr">src</span>=<span class="hljs-string">"https://unpkg.com/@esri/solution-simple-types@0.22.6/dist/umd/simple-types.umd.min.js"</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span></code></pre>
 <h2 class="font-size-0 trailer-quarter">CDN with SRI:</h2>
 
-        <pre><code class="html"><span class="hljs-tag">&lt;<span class="hljs-name">script</span> <span class="hljs-attr">src</span>=<span class="hljs-string">"https://unpkg.com/@esri/solution-simple-types@0.22.2/dist/umd/simple-types.umd.min.js"</span> <span class="hljs-attr">integrity</span>=<span class="hljs-string">"sha384-92mnAPkR6GT/Z/uikduLQXYwfiHipaUAZMQvcl6DDv6kKwfIYoLx6Rm9LEmSPvSK"</span> <span class="hljs-attr">crossorigin</span>=<span class="hljs-string">"anonymous"</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span></code></pre>
+        <pre><code class="html"><span class="hljs-tag">&lt;<span class="hljs-name">script</span> <span class="hljs-attr">src</span>=<span class="hljs-string">"https://unpkg.com/@esri/solution-simple-types@0.22.6/dist/umd/simple-types.umd.min.js"</span> <span class="hljs-attr">integrity</span>=<span class="hljs-string">"sha384-JKZXmuclJCmrPFrcWuTeV1/URLbARjHQFmZ4cq0DDEI/hfLDSvvN6xPQpPqqmzfT"</span> <span class="hljs-attr">crossorigin</span>=<span class="hljs-string">"anonymous"</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span></code></pre>
 <hr class="leader-half trailer-quarter" />
 <ul class="list-plain package-contents">
   
@@ -8348,13 +8365,13 @@
   
   
   
-  <small class="label right">Version 0.22.2</small>
+  <small class="label right">Version 0.22.6</small>
 <h1 class=" font-size-3 trailer-half code-face">
   <a href="/solution.js/api/storymap/">@esri/solution-storymap</a>
 </h1>
 <p class="font-size--1 trailer-1 avenir-regular">Manages the creation and deployment of Story Map item types for @esri/solution.js.</p>
 <h2 class="font-size-0 trailer-quarter">npm install:</h2>
-<pre><code>npm install @esri/solution-storymap @esri/arcgis-rest-auth@^3.0.2  @esri/arcgis-rest-portal@^3.0.2  @esri/arcgis-rest-request@^3.0.2  @esri/hub-common@^7.0.8 </code></pre>
+<pre><code>npm install @esri/solution-storymap @esri/arcgis-rest-auth@^3.0.3  @esri/arcgis-rest-portal@^3.0.3  @esri/arcgis-rest-request@^3.0.3  @esri/hub-common@^7.3.0 </code></pre>
 <h2 class="font-size-0 trailer-quarter">Module Import:</h2>
 
 <pre><code class="js"><span class="hljs-keyword">import</span> {
@@ -8375,10 +8392,10 @@
 } <span class="hljs-keyword">from</span> <span class="hljs-string">"@esri/solution-storymap"</span>;</code></pre>
 
 <h2 class="font-size-0 trailer-quarter">CDN:</h2>
-<pre><code class="html"><span class="hljs-tag">&lt;<span class="hljs-name">script</span> <span class="hljs-attr">src</span>=<span class="hljs-string">"https://unpkg.com/@esri/solution-storymap@0.22.2/dist/umd/storymap.umd.min.js"</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span></code></pre>
+<pre><code class="html"><span class="hljs-tag">&lt;<span class="hljs-name">script</span> <span class="hljs-attr">src</span>=<span class="hljs-string">"https://unpkg.com/@esri/solution-storymap@0.22.6/dist/umd/storymap.umd.min.js"</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span></code></pre>
 <h2 class="font-size-0 trailer-quarter">CDN with SRI:</h2>
 
-        <pre><code class="html"><span class="hljs-tag">&lt;<span class="hljs-name">script</span> <span class="hljs-attr">src</span>=<span class="hljs-string">"https://unpkg.com/@esri/solution-storymap@0.22.2/dist/umd/storymap.umd.min.js"</span> <span class="hljs-attr">integrity</span>=<span class="hljs-string">"sha384-rTm/p4fT3ij//TeGFQrNKWwyUSLbyJkrdxtlYNEelqEKMb/sv1DWE3Hj2xDtDGvh"</span> <span class="hljs-attr">crossorigin</span>=<span class="hljs-string">"anonymous"</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span></code></pre>
+        <pre><code class="html"><span class="hljs-tag">&lt;<span class="hljs-name">script</span> <span class="hljs-attr">src</span>=<span class="hljs-string">"https://unpkg.com/@esri/solution-storymap@0.22.6/dist/umd/storymap.umd.min.js"</span> <span class="hljs-attr">integrity</span>=<span class="hljs-string">"sha384-dG8mFoD/Zod7SNZxk3eAp+x0L5hJJcRn1AarFaj6dRI9GkAYCXmh2xz19bIf7pkU"</span> <span class="hljs-attr">crossorigin</span>=<span class="hljs-string">"anonymous"</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span></code></pre>
 <hr class="leader-half trailer-quarter" />
 <ul class="list-plain package-contents">
   
@@ -8447,13 +8464,13 @@
   
   
   
-  <small class="label right">Version 0.22.2</small>
+  <small class="label right">Version 0.22.6</small>
 <h1 class=" font-size-3 trailer-half code-face">
   <a href="/solution.js/api/viewer/">@esri/solution-viewer</a>
 </h1>
 <p class="font-size--1 trailer-1 avenir-regular">Simplifies access to @esri/solution.js.</p>
 <h2 class="font-size-0 trailer-quarter">npm install:</h2>
-<pre><code>npm install @esri/solution-viewer @esri/arcgis-rest-auth@^3.0.2  @esri/arcgis-rest-feature-layer@^3.0.2  @esri/arcgis-rest-portal@^3.0.2  @esri/arcgis-rest-request@^3.0.2  @esri/arcgis-rest-service-admin@^3.0.2  @esri/hub-common@^7.0.8  @esri/hub-initiatives@^7.0.8  @esri/hub-sites@^7.0.8  @esri/hub-teams@^7.0.8 </code></pre>
+<pre><code>npm install @esri/solution-viewer @esri/arcgis-rest-auth@^3.0.3  @esri/arcgis-rest-feature-layer@^3.0.3  @esri/arcgis-rest-portal@^3.0.3  @esri/arcgis-rest-request@^3.0.3  @esri/arcgis-rest-service-admin@^3.0.3  @esri/hub-common@^7.3.0  @esri/hub-initiatives@^7.3.0  @esri/hub-sites@^7.3.0  @esri/hub-teams@^7.3.0 </code></pre>
 <h2 class="font-size-0 trailer-quarter">Module Import:</h2>
 
 <pre><code class="js"><span class="hljs-keyword">import</span> {
@@ -8461,10 +8478,10 @@
 } <span class="hljs-keyword">from</span> <span class="hljs-string">"@esri/solution-viewer"</span>;</code></pre>
 
 <h2 class="font-size-0 trailer-quarter">CDN:</h2>
-<pre><code class="html"><span class="hljs-tag">&lt;<span class="hljs-name">script</span> <span class="hljs-attr">src</span>=<span class="hljs-string">"https://unpkg.com/@esri/solution-viewer@0.22.2/dist/umd/viewer.umd.min.js"</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span></code></pre>
+<pre><code class="html"><span class="hljs-tag">&lt;<span class="hljs-name">script</span> <span class="hljs-attr">src</span>=<span class="hljs-string">"https://unpkg.com/@esri/solution-viewer@0.22.6/dist/umd/viewer.umd.min.js"</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span></code></pre>
 <h2 class="font-size-0 trailer-quarter">CDN with SRI:</h2>
 
-        <pre><code class="html"><span class="hljs-tag">&lt;<span class="hljs-name">script</span> <span class="hljs-attr">src</span>=<span class="hljs-string">"https://unpkg.com/@esri/solution-viewer@0.22.2/dist/umd/viewer.umd.min.js"</span> <span class="hljs-attr">integrity</span>=<span class="hljs-string">"sha384-L65NROq4VM1vYzhfcdxpKv5+osPQCrKyK2eef+8/JcF/dhzpifn3CGwSuvljegRT"</span> <span class="hljs-attr">crossorigin</span>=<span class="hljs-string">"anonymous"</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span></code></pre>
+        <pre><code class="html"><span class="hljs-tag">&lt;<span class="hljs-name">script</span> <span class="hljs-attr">src</span>=<span class="hljs-string">"https://unpkg.com/@esri/solution-viewer@0.22.6/dist/umd/viewer.umd.min.js"</span> <span class="hljs-attr">integrity</span>=<span class="hljs-string">"sha384-ylC1BWIqJlYNh3nfTHximrgkSI22QZ/VK0Hq3dohdIW8+GfyfxS/BWijzwCb/6R1"</span> <span class="hljs-attr">crossorigin</span>=<span class="hljs-string">"anonymous"</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span></code></pre>
 <hr class="leader-half trailer-quarter" />
 <ul class="list-plain package-contents">
   
@@ -8485,13 +8502,13 @@
   
   
   
-  <small class="label right">Version 0.22.2</small>
+  <small class="label right">Version 0.22.6</small>
 <h1 class=" font-size-3 trailer-half code-face">
   <a href="/solution.js/api/web-experience/">@esri/solution-web-experience</a>
 </h1>
 <p class="font-size--1 trailer-1 avenir-regular">Manages the creation and deployment of Web Experience item types for @esri/solution.js.</p>
 <h2 class="font-size-0 trailer-quarter">npm install:</h2>
-<pre><code>npm install @esri/solution-web-experience @esri/arcgis-rest-auth@^3.0.2  @esri/arcgis-rest-feature-layer@^3.0.2  @esri/arcgis-rest-portal@^3.0.2  @esri/arcgis-rest-request@^3.0.2  @esri/arcgis-rest-service-admin@^3.0.2  @esri/hub-common@^7.0.8  @esri/hub-initiatives@^7.0.8 </code></pre>
+<pre><code>npm install @esri/solution-web-experience @esri/arcgis-rest-auth@^3.0.3  @esri/arcgis-rest-feature-layer@^3.0.3  @esri/arcgis-rest-portal@^3.0.3  @esri/arcgis-rest-request@^3.0.3  @esri/arcgis-rest-service-admin@^3.0.3  @esri/hub-common@^7.3.0  @esri/hub-initiatives@^7.3.0 </code></pre>
 <h2 class="font-size-0 trailer-quarter">Module Import:</h2>
 
 <pre><code class="js"><span class="hljs-keyword">import</span> {
@@ -8506,7 +8523,7 @@
 } <span class="hljs-keyword">from</span> <span class="hljs-string">"@esri/solution-web-experience"</span>;</code></pre>
 
 <h2 class="font-size-0 trailer-quarter">CDN:</h2>
-<pre><code class="html"><span class="hljs-tag">&lt;<span class="hljs-name">script</span> <span class="hljs-attr">src</span>=<span class="hljs-string">"https://unpkg.com/@esri/solution-web-experience@0.22.2/dist/umd/web-experience.umd.min.js"</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span></code></pre>
+<pre><code class="html"><span class="hljs-tag">&lt;<span class="hljs-name">script</span> <span class="hljs-attr">src</span>=<span class="hljs-string">"https://unpkg.com/@esri/solution-web-experience@0.22.6/dist/umd/web-experience.umd.min.js"</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span></code></pre>
 <h2 class="font-size-0 trailer-quarter">CDN with SRI:</h2>
 
 <hr class="leader-half trailer-quarter" />
