@@ -4,5 +4,5 @@
     "packages/**",
     "demos/"
   ],
-  "version": "0.22.5"
+  "version": "0.22.6"
 }
