@@ -78,6 +78,10 @@ describe("_postProcessSite :: ", () => {
           "ef66",
           "it should do a second pass interpolation before updating"
         );
+        expect(updateSiteSpy.calls.argsFor(0)[1]).toEqual({
+          ...fakeRo,
+          allowList: null
+        });
       });
   });
 
@@ -103,6 +107,10 @@ describe("_postProcessSite :: ", () => {
           ["ef1", "ef2", "ef3"],
           "it should populate children array and exclude site"
         );
+        expect(updateSiteSpy.calls.argsFor(0)[1]).toEqual({
+          ...fakeRo,
+          allowList: null
+        });
       });
   });
 });
