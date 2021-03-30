@@ -75,7 +75,12 @@ export function _postProcessSite(
   // re-interpolate the siteModel using the itemInfos
   siteModel = interpolate(siteModel, templateDictionary, {});
   // and update the model
-  secondPassPromises.push(updateSite(siteModel, null, hubRequestOptions));
+  secondPassPromises.push(
+    updateSite(siteModel, {
+      ...hubRequestOptions,
+      allowList: null
+    })
+  );
 
   return Promise.all(secondPassPromises).then(() => {
     return true;

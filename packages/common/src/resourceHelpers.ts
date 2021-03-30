@@ -58,7 +58,6 @@ import {
   IDeployFileCopyPath,
   IDeployFilename,
   IFileMimeType,
-  IItemTemplate,
   IItemUpdate,
   ISourceFileCopyPath,
   UserSession
@@ -70,10 +69,8 @@ import {
   addItemResource,
   updateGroup,
   updateItem,
-  updateItemInfo,
   updateItemResource
 } from "@esri/arcgis-rest-portal";
-import { addResourceFromBlob } from "./resources/add-resource-from-blob";
 import { convertItemResourceToStorageResource } from "./resources/convert-item-resource-to-storage-resource";
 
 import { copyResource } from "./resources/copy-resource";

@@ -16,12 +16,7 @@
 
 import { UserSession } from "@esri/solution-common";
 
-import {
-  IHubRequestOptions,
-  getHubUrlFromPortal,
-  cloneObject,
-  getProp
-} from "@esri/hub-common";
+import { IHubRequestOptions, getHubUrlFromPortal } from "@esri/hub-common";
 
 import { getSelf, getUser } from "@esri/arcgis-rest-portal";
 
