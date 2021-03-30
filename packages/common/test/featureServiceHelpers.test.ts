@@ -2918,11 +2918,12 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
       const url: string =
         "https://services123.arcgis.com/org1234567890/arcgis/rest/services/ROWPermits_publiccomment/FeatureServer";
       const ids: number[] = [0, 1];
-      const actual = getExistingLayersAndTables(url, ids, MOCK_USER_SESSION);
 
       fetchMock
         .post(url + "/0", mockItems.getAGOLLayerOrTable(0, "test0", "layer"))
         .post(url + "/1", mockItems.getAGOLLayerOrTable(1, "test1", "layer"));
+
+      const actual = getExistingLayersAndTables(url, ids, MOCK_USER_SESSION);
 
       actual.then(results => {
         expect(results).length === 2;
