@@ -2930,6 +2930,26 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
         done();
       });
     });
+
+    it("suppresses and resolves errors", done => {
+      const url: string =
+        "https://services123.arcgis.com/org1234567890/arcgis/rest/services/ROWPermits_publiccomment/FeatureServer";
+      const ids: number[] = [0, 1];
+      const layer0Result = mockItems.getAGOLLayerOrTable(0, "test0", "layer");
+      const layer1Error = new Error("some error");
+
+      fetchMock
+        .post(url + "/0", layer0Result)
+        .post(url + "/1", { throws: layer1Error });
+
+      const actual = getExistingLayersAndTables(url, ids, MOCK_USER_SESSION);
+
+      actual.then(results => {
+        expect(results).length === 2;
+        expect(results).toEqual([layer0Result, layer1Error]);
+        done();
+      });
+    });
   });
 
   describe("addFeatureServiceLayersAndTables", () => {
