@@ -28,6 +28,7 @@ import {
   UserSession,
   generateEmptyCreationResponse
 } from "@esri/solution-common";
+import { IUpdateItemOptions, updateItem } from "@esri/arcgis-rest-portal";
 import { createHubRequestOptions } from "./helpers/create-hub-request-options";
 import {
   IModel,
@@ -136,6 +137,7 @@ export function createItemFromTemplate(
   let pageModel: IModel;
 
   let hubRo: IHubRequestOptions;
+  const thumbnail: File = template.item.thumbnail; // createPageModelFromTemplate trashes thumbnail
   return createHubRequestOptions(destinationAuthentication, templateDictionary)
     .then(ro => {
       hubRo = ro;
@@ -167,6 +169,20 @@ export function createItemFromTemplate(
         templateDictionary.folderId,
         destinationAuthentication
       );
+    })
+    .then(() => {
+      // Fix the thumbnail
+      const updateOptions: IUpdateItemOptions = {
+        item: {
+          id: pageModel.item.id
+        },
+        params: {
+          // Pass thumbnail in via params because item property is serialized, which discards a blob
+          thumbnail
+        },
+        authentication: destinationAuthentication
+      };
+      return updateItem(updateOptions);
     })
     .then(() => {
       // Update the template dictionary

@@ -47,6 +47,10 @@ describe("_postProcessPage :: ", () => {
           "ef66",
           "it should do a second pass interpolation before updating"
         );
+        expect(updatePageSpy.calls.argsFor(0)[1]).toEqual({
+          ...fakeRo,
+          allowList: []
+        });
       });
   });
 });

@@ -29,6 +29,7 @@ import {
   generateEmptyCreationResponse,
   getProp
 } from "@esri/solution-common";
+import { IUpdateItemOptions, updateItem } from "@esri/arcgis-rest-portal";
 import {
   createSiteModelFromTemplate,
   createSite,
@@ -98,6 +99,7 @@ export function createItemFromTemplate(
   // Note: depending on licensing and user privs, will also create the team groups
   // and initiative item.
   let hubRo: IHubRequestOptions;
+  const thumbnail: File = template.item.thumbnail; // createSiteModelFromTemplate trashes thumbnail
   return createHubRequestOptions(destinationAuthentication, templateDictionary)
     .then(ro => {
       hubRo = ro;
@@ -126,6 +128,20 @@ export function createItemFromTemplate(
         templateDictionary.folderId,
         destinationAuthentication
       );
+    })
+    .then(() => {
+      // Fix the thumbnail
+      const updateOptions: IUpdateItemOptions = {
+        item: {
+          id: siteModel.item.id
+        },
+        params: {
+          // Pass thumbnail in via params because item property is serialized, which discards a blob
+          thumbnail
+        },
+        authentication: destinationAuthentication
+      };
+      return updateItem(updateOptions);
     })
     .then(() => {
       // Update the template dictionary

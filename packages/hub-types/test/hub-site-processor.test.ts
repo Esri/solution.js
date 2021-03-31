@@ -14,6 +14,7 @@
  */
 import * as utils from "@esri/solution-common/test/mocks/utils";
 import * as sitesPackage from "@esri/hub-sites";
+import * as portalPackage from "@esri/arcgis-rest-portal";
 import * as moveHelper from "../src/helpers/move-model-to-folder";
 const MOCK_USER_SESSION = utils.createRuntimeMockUserSession();
 
@@ -169,6 +170,14 @@ describe("HubSiteProcessor: ", () => {
         moveHelper,
         "moveModelToFolder"
       ).and.resolveTo();
+      const thumbnailSpy = spyOn(portalPackage, "updateItem").and.resolveTo({
+        success: true,
+        id: "fred"
+      });
+      const hubRoSpy = spyOn(
+        hubRoModule,
+        "createHubRequestOptions"
+      ).and.resolveTo({} as hubCommon.IHubRequestOptions);
 
       const td = {
         organization: {
@@ -205,6 +214,10 @@ describe("HubSiteProcessor: ", () => {
       });
     });
     it("happy-path with thumbnail", () => {
+      const hubRoSpy = spyOn(
+        hubRoModule,
+        "createHubRequestOptions"
+      ).and.resolveTo({} as hubCommon.IHubRequestOptions);
       const createFromTmplSpy = spyOn(
         sitesPackage,
         "createSiteModelFromTemplate"
@@ -215,6 +228,10 @@ describe("HubSiteProcessor: ", () => {
       const moveSiteSpy = spyOn(moveHelper, "moveModelToFolder").and.resolveTo([
         tmplThmb.itemId
       ]);
+      const thumbnailSpy = spyOn(portalPackage, "updateItem").and.resolveTo({
+        success: true,
+        id: "fred"
+      });
 
       const td = {
         organization: {
@@ -252,6 +269,10 @@ describe("HubSiteProcessor: ", () => {
     });
 
     it("other branches:: delegates to hub.js", () => {
+      const hubRoSpy = spyOn(
+        hubRoModule,
+        "createHubRequestOptions"
+      ).and.resolveTo({} as hubCommon.IHubRequestOptions);
       const createFromTmplSpy = spyOn(
         sitesPackage,
         "createSiteModelFromTemplate"
@@ -263,6 +284,10 @@ describe("HubSiteProcessor: ", () => {
         moveHelper,
         "moveModelToFolder"
       ).and.resolveTo();
+      const thumbnailSpy = spyOn(portalPackage, "updateItem").and.resolveTo({
+        success: true,
+        id: "fred"
+      });
 
       const td = {
         organization: {
@@ -295,6 +320,10 @@ describe("HubSiteProcessor: ", () => {
       });
     });
     it("asset and resource juggling", () => {
+      const hubRoSpy = spyOn(
+        hubRoModule,
+        "createHubRequestOptions"
+      ).and.resolveTo({} as hubCommon.IHubRequestOptions);
       const createFromTmplSpy = spyOn(
         sitesPackage,
         "createSiteModelFromTemplate"
@@ -306,6 +335,10 @@ describe("HubSiteProcessor: ", () => {
         moveHelper,
         "moveModelToFolder"
       ).and.resolveTo();
+      const thumbnailSpy = spyOn(portalPackage, "updateItem").and.resolveTo({
+        success: true,
+        id: "fred"
+      });
 
       const td = {
         organization: {
@@ -341,6 +374,10 @@ describe("HubSiteProcessor: ", () => {
       });
     });
     it("callsback on exception", done => {
+      const hubRoSpy = spyOn(
+        hubRoModule,
+        "createHubRequestOptions"
+      ).and.resolveTo({} as hubCommon.IHubRequestOptions);
       spyOn(sitesPackage, "createSiteModelFromTemplate").and.rejectWith(
         "Whoa thats bad"
       );
@@ -370,6 +407,10 @@ describe("HubSiteProcessor: ", () => {
         });
     });
     it("it early-exits correctly", () => {
+      const hubRoSpy = spyOn(
+        hubRoModule,
+        "createHubRequestOptions"
+      ).and.resolveTo({} as hubCommon.IHubRequestOptions);
       const td = {};
       const cb = () => false;
       return HubSiteProcessor.createItemFromTemplate(
@@ -386,6 +427,10 @@ describe("HubSiteProcessor: ", () => {
       });
     });
     it("it cleans up if job is cancelled late", () => {
+      const hubRoSpy = spyOn(
+        hubRoModule,
+        "createHubRequestOptions"
+      ).and.resolveTo({} as hubCommon.IHubRequestOptions);
       const createFromTmplSpy = spyOn(
         sitesPackage,
         "createSiteModelFromTemplate"
@@ -397,6 +442,10 @@ describe("HubSiteProcessor: ", () => {
         moveHelper,
         "moveModelToFolder"
       ).and.resolveTo();
+      const thumbnailSpy = spyOn(portalPackage, "updateItem").and.resolveTo({
+        success: true,
+        id: "fred"
+      });
 
       const removeSiteSpy = spyOn(sitesPackage, "removeSite").and.resolveTo({
         success: true
@@ -452,6 +501,10 @@ describe("HubSiteProcessor: ", () => {
   });
   describe("postProcess ::", () => {
     it("delegates to _postProcessSite", () => {
+      const hubRoSpy = spyOn(
+        hubRoModule,
+        "createHubRequestOptions"
+      ).and.resolveTo({} as hubCommon.IHubRequestOptions);
       const getSiteByIdSpy = spyOn(sitesPackage, "getSiteById").and.resolveTo({
         item: {},
         data: {}

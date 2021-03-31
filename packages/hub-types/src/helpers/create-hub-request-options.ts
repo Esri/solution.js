@@ -16,14 +16,9 @@
 
 import { UserSession } from "@esri/solution-common";
 
-import {
-  IHubRequestOptions,
-  getHubUrlFromPortal,
-  cloneObject,
-  getProp
-} from "@esri/hub-common";
+import { IHubRequestOptions, getHubUrlFromPortal } from "@esri/hub-common";
 
-import { getSelf } from "@esri/arcgis-rest-portal";
+import { getSelf, getUser } from "@esri/arcgis-rest-portal";
 
 /**
  * Create a IHubRequestOptions object from
@@ -40,28 +35,26 @@ export function createHubRequestOptions(
   authentication: UserSession,
   templateDictionary: any = {}
 ): Promise<IHubRequestOptions> {
-  let orgUserPrms;
-  // try to get info from templateDict
-  const portalSelf = getProp(templateDictionary, "organization");
-  const currentUser = getProp(templateDictionary, "user");
+  // We used to pull the user
+  // the template dictionary, but ran into issues
+  // with the user.groups being filtered to groups
+  // the user owns, vs all groups the user belongs to
+  // this was problematic as we need to check if the user
+  // can add more groups, based on how close they are to
+  // the max 512 group limit.
 
-  // if we've been passed the templateDictionary, use it
-  if (portalSelf && currentUser) {
-    orgUserPrms = Promise.all([
-      Promise.resolve(cloneObject(portalSelf)),
-      Promise.resolve(cloneObject(currentUser))
-    ]);
+  // At this time we are simply fetching the user directly
+  const promises = [];
+  if (templateDictionary.organization) {
+    promises.push(Promise.resolve(templateDictionary.organization));
   } else {
-    // need to use the auth to get the user and the org
-    orgUserPrms = Promise.all([
-      getSelf({ authentication }),
-      authentication.getUser()
-    ]);
+    promises.push(getSelf({ authentication }));
   }
+  // always get the user
+  promises.push(getUser({ authentication }));
 
-  return orgUserPrms.then(([pSelf, user]) => {
+  return Promise.all(promises).then(([pSelf, user]) => {
     pSelf.user = user;
-
     const ro = {
       authentication,
       portalSelf: pSelf,
