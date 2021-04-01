@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-// @esri/solution-deployer implementedTypes example
+// implementedTypes example
 
 import * as creator from "@esri/solution-creator";
 import * as deployer from "@esri/solution-deployer";

@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-// @esri/solution-common copySolutions example
+// copySolutions example
 
 import * as common from "@esri/solution-common";
 

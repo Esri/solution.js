@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-// @esri/solution-common templatization example
+// templatization example
 
 import * as common from "@esri/solution-common";
 
