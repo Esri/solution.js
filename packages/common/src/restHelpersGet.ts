@@ -223,7 +223,8 @@ export function getCompleteItem(
             itemBase.name,
             authentication
           ).then(resolve2, (error: any) => reject2(JSON.stringify(error)));
-        }
+        },
+        (error: any) => reject2(JSON.stringify(error))
       );
     });
     const itemThumbnailDef = new Promise<File>((resolve3, reject3) => {
@@ -237,7 +238,8 @@ export function getCompleteItem(
             false,
             authentication
           ).then(resolve3, (error: any) => reject3(JSON.stringify(error)));
-        }
+        },
+        (error: any) => reject3(JSON.stringify(error))
       );
     });
     const itemMetadataDef = getItemMetadataAsFile(itemId, authentication);
