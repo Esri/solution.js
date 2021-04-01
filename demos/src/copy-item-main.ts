@@ -13,13 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-// @esri/solution-common copyItemInfo example
+// copyItem example
 
 import * as common from "@esri/solution-common";
 
-export function copyItemInfo(
+export function copyItem(
   itemId: string,
-  authentication: common.UserSession
+  srcAuthentication: common.UserSession,
+  destAuthentication: common.UserSession
 ): Promise<string> {
   return new Promise<string>((resolve, reject) => {
     if (!itemId) {
@@ -28,25 +29,25 @@ export function copyItemInfo(
     }
 
     // Get the item information
-    const itemBaseDef = common.getItemBase(itemId, authentication);
+    const itemBaseDef = common.getItemBase(itemId, srcAuthentication);
     const itemDataDef = new Promise<File>((resolve2, reject2) => {
       // tslint:disable-next-line: no-floating-promises
       itemBaseDef.then(
         // any error fetching item base will be handled via Promise.all later
         (itemBase: any) => {
           common
-            .getItemDataAsFile(itemId, itemBase.name, authentication)
+            .getItemDataAsFile(itemId, itemBase.name, srcAuthentication)
             .then(resolve2, (error: any) => reject2(JSON.stringify(error)));
         }
       );
     });
     const itemMetadataDef = common.getItemMetadataAsFile(
       itemId,
-      authentication
+      srcAuthentication
     );
     const itemResourcesDef = common.getItemResourcesFiles(
       itemId,
-      authentication
+      srcAuthentication
     );
 
     Promise.all([
@@ -67,7 +68,7 @@ export function copyItemInfo(
           itemId,
           itemBase.thumbnail,
           false,
-          authentication
+          srcAuthentication
         );
 
         // Summarize what we have
@@ -88,9 +89,9 @@ export function copyItemInfo(
           .createFullItem(
             getCopyableItemBaseProperties(itemBase),
             undefined, // folder id
-            authentication,
+            destAuthentication,
             itemThumbnailUrl,
-            authentication,
+            srcAuthentication,
             itemDataFile,
             itemMetadataFile,
             itemResourceFiles,
