@@ -921,6 +921,29 @@ describe("Module `restHelpersGet`: common REST fetch functions shared across pac
     });
   });
 
+  describe("getItemThumbnailAsFile", () => {
+    it("get thumbnail for an item", done => {
+      fetchMock.post(
+        utils.PORTAL_SUBSET.restUrl +
+          "/content/items/itm1234567890/info/thumbnail/ago_downloaded.png",
+        utils.getSampleImageAsBlob(),
+        { sendAsJson: false }
+      );
+
+      restHelpersGet
+        .getItemThumbnailAsFile(
+          "itm1234567890",
+          "thumbnail/ago_downloaded.png",
+          false,
+          MOCK_USER_SESSION
+        )
+        .then((ok: File) => {
+          expect(ok.type).toEqual("image/png");
+          done();
+        }, done.fail);
+    });
+  });
+
   describe("getItemThumbnailUrl", () => {
     it("get thumbnail url for an item", () => {
       expect(
