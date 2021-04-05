@@ -74,7 +74,7 @@ describe("Module `createItemTemplate`", () => {
         .post(
           utils.PORTAL_SUBSET.restUrl +
             "/content/items/map1234567890/info/thumbnail/ago_downloaded.png?w=400",
-          mockItems.getAnImageResponse()
+          utils.getSampleImageAsBlob()
         )
         .post(
           utils.PORTAL_SUBSET.restUrl + "/content/items/map1234567890/data",
@@ -133,7 +133,7 @@ describe("Module `createItemTemplate`", () => {
         .post(
           utils.PORTAL_SUBSET.restUrl +
             "/content/items/map1234567890/info/thumbnail/ago_downloaded.png?w=400",
-          mockItems.getAnImageResponse()
+          utils.getSampleImageAsBlob()
         )
         .post(
           utils.PORTAL_SUBSET.restUrl + "/content/items/map1234567890/data",
@@ -223,7 +223,7 @@ describe("Module `createItemTemplate`", () => {
         .post(
           utils.PORTAL_SUBSET.restUrl +
             "/content/items/wma1234567890/info/thumbnail/ago_downloaded.png?w=400",
-          mockItems.getAnImageResponse()
+          utils.getSampleImageAsBlob()
         )
         .post(
           utils.PORTAL_SUBSET.restUrl + "/content/items/wma1234567890/data",
@@ -247,7 +247,7 @@ describe("Module `createItemTemplate`", () => {
         .post(
           utils.PORTAL_SUBSET.restUrl +
             "/content/items/map1234567890/info/thumbnail/ago_downloaded.png?w=400",
-          mockItems.getAnImageResponse()
+          utils.getSampleImageAsBlob()
         )
         .post(
           utils.PORTAL_SUBSET.restUrl + "/content/items/map1234567890/data",
@@ -323,7 +323,7 @@ describe("Module `createItemTemplate`", () => {
         .post(
           utils.PORTAL_SUBSET.restUrl +
             "/community/groups/grp1234567890/info/ROWPermitManager.png?w=400",
-          mockItems.getAnImageResponse()
+          utils.getSampleImageAsBlob()
         )
         .post(
           utils.PORTAL_SUBSET.restUrl +
@@ -384,7 +384,7 @@ describe("Module `createItemTemplate`", () => {
         .post(
           utils.PORTAL_SUBSET.restUrl +
             "/community/groups/grp1234567890/info/ROWPermitManager.png?w=400",
-          mockItems.getAnImageResponse()
+          utils.getSampleImageAsBlob()
         )
         .post(
           utils.PORTAL_SUBSET.restUrl +
@@ -411,12 +411,12 @@ describe("Module `createItemTemplate`", () => {
         )
         .post(
           utils.PORTAL_SUBSET.restUrl + "/content/items/img12345678900/data",
-          mockItems.getAnImageResponse()
+          utils.getSampleImageAsBlob()
         )
         .post(
           utils.PORTAL_SUBSET.restUrl +
             "/content/items/img12345678900/info/thumbnail/ago_downloaded.png?w=400",
-          mockItems.getAnImageResponse()
+          utils.getSampleImageAsBlob()
         )
         .post(
           utils.PORTAL_SUBSET.restUrl +
@@ -441,7 +441,7 @@ describe("Module `createItemTemplate`", () => {
         .post(
           utils.PORTAL_SUBSET.restUrl +
             "/content/items/map12345678901/info/thumbnail/ago_downloaded.png?w=400",
-          mockItems.getAnImageResponse()
+          utils.getSampleImageAsBlob()
         )
         .post(
           utils.PORTAL_SUBSET.restUrl +
@@ -512,7 +512,7 @@ describe("Module `createItemTemplate`", () => {
         .post(
           utils.PORTAL_SUBSET.restUrl +
             "/community/groups/grp1234567890/info/ROWPermitManager.png?w=400",
-          mockItems.getAnImageResponse()
+          utils.getSampleImageAsBlob()
         )
         .post(
           utils.PORTAL_SUBSET.restUrl +
@@ -537,7 +537,7 @@ describe("Module `createItemTemplate`", () => {
         .post(
           utils.PORTAL_SUBSET.restUrl +
             "/content/items/map1234567890/info/thumbnail/ago_downloaded.png?w=400",
-          mockItems.getAnImageResponse()
+          utils.getSampleImageAsBlob()
         )
         .post(
           utils.PORTAL_SUBSET.restUrl + "/content/items/map1234567890/data",
@@ -604,7 +604,7 @@ describe("Module `createItemTemplate`", () => {
         .post(
           utils.PORTAL_SUBSET.restUrl +
             "/community/groups/grp1234567890/info/ROWPermitManager.png?w=400",
-          mockItems.getAnImageResponse()
+          utils.getSampleImageAsBlob()
         )
         .post(
           utils.PORTAL_SUBSET.restUrl +
@@ -755,7 +755,7 @@ describe("Module `createItemTemplate`", () => {
         .post(
           utils.PORTAL_SUBSET.restUrl +
             "/content/items/map1234567890/info/thumbnail/ago_downloaded.png?w=400",
-          mockItems.getAnImageResponse()
+          utils.getSampleImageAsBlob()
         )
         .post(
           utils.PORTAL_SUBSET.restUrl + "/content/items/map1234567890/data",

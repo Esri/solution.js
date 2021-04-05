@@ -107,7 +107,7 @@ describe("Module `creator`", () => {
       const solutionGroupId: string = "grp1234567890";
       const authentication: common.UserSession = MOCK_USER_SESSION;
       const expectedSolutionId = "sln1234567890";
-      const expectedImage = mockItems.getAnImageResponse();
+      const expectedImage = utils.getSampleImageAsBlob();
 
       fetchMock
         .post(
@@ -206,7 +206,7 @@ describe("Module `creator`", () => {
         .post(
           utils.PORTAL_SUBSET.restUrl +
             "/community/groups/grp1234567890/info/ROWPermitManager.png?w=400",
-          mockItems.getAnImageResponse()
+          utils.getSampleImageAsBlob()
         )
         .post(
           utils.PORTAL_SUBSET.restUrl +
@@ -235,7 +235,7 @@ describe("Module `creator`", () => {
       const authentication: common.UserSession = MOCK_USER_SESSION;
 
       const expectedSolutionId = "sln1234567890";
-      const expectedImage = mockItems.getAnImageResponse();
+      const expectedImage = utils.getSampleImageAsBlob();
 
       fetchMock
         .get(
@@ -266,7 +266,7 @@ describe("Module `creator`", () => {
         .post(
           utils.PORTAL_SUBSET.restUrl +
             "/content/items/map12345678900/info/thumbnail/ago_downloaded.png?w=400",
-          mockItems.getAnImageResponse()
+          utils.getSampleImageAsBlob()
         )
         .post(
           utils.PORTAL_SUBSET.restUrl + "/content/items/map12345678900/data",
@@ -290,7 +290,7 @@ describe("Module `creator`", () => {
         .post(
           utils.PORTAL_SUBSET.restUrl +
             "/content/items/map12345678901/info/thumbnail/ago_downloaded.png?w=400",
-          mockItems.getAnImageResponse()
+          utils.getSampleImageAsBlob()
         )
         .post(
           utils.PORTAL_SUBSET.restUrl + "/content/items/map12345678901/data",
@@ -358,7 +358,7 @@ describe("Module `creator`", () => {
 
       const expectedSolutionId = "sln1234567890";
 
-      const expectedImage = mockItems.getAnImageResponse();
+      const expectedImage = utils.getSampleImageAsBlob();
 
       fetchMock
         .get(
@@ -389,7 +389,7 @@ describe("Module `creator`", () => {
         .post(
           utils.PORTAL_SUBSET.restUrl +
             "/content/items/map12345678900/info/thumbnail/ago_downloaded.png?w=400",
-          mockItems.getAnImageResponse()
+          utils.getSampleImageAsBlob()
         )
         .post(
           utils.PORTAL_SUBSET.restUrl + "/content/items/map12345678900/data",
@@ -413,7 +413,7 @@ describe("Module `creator`", () => {
         .post(
           utils.PORTAL_SUBSET.restUrl +
             "/content/items/map12345678901/info/thumbnail/ago_downloaded.png?w=400",
-          mockItems.getAnImageResponse()
+          utils.getSampleImageAsBlob()
         )
         .post(
           utils.PORTAL_SUBSET.restUrl + "/content/items/map12345678901/data",
@@ -496,7 +496,7 @@ describe("Module `creator`", () => {
       const authentication: common.UserSession = MOCK_USER_SESSION;
 
       const expectedSolutionId = "sln1234567890";
-      const expectedImage = mockItems.getAnImageResponse();
+      const expectedImage = utils.getSampleImageAsBlob();
 
       fetchMock
         .get(
@@ -564,7 +564,7 @@ describe("Module `creator`", () => {
 
       const expectedSolutionId = "sln1234567890";
 
-      const expectedImage = mockItems.getAnImageResponse();
+      const expectedImage = utils.getSampleImageAsBlob();
 
       fetchMock
         .get(
@@ -636,7 +636,7 @@ describe("Module `creator`", () => {
 
       const expectedSolutionId = "sln1234567890";
 
-      const expectedImage = mockItems.getAnImageResponse();
+      const expectedImage = utils.getSampleImageAsBlob();
 
       fetchMock
         .get(
@@ -708,7 +708,7 @@ describe("Module `creator`", () => {
       const itemIds: string = "itm1234567890";
       const authentication: common.UserSession = MOCK_USER_SESSION;
       const expectedSolutionId = "sln1234567890";
-      const expectedImage = mockItems.getAnImageResponse();
+      const expectedImage = utils.getSampleImageAsBlob();
 
       fetchMock
         .post(

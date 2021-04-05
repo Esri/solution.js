@@ -1187,18 +1187,6 @@ export function createAGOLRelationship(
   return relationship;
 }
 
-export function getAnImageResponse(): any {
-  const fs = require("fs");
-  if (fs.createReadStream) {
-    // Node test
-    console.log("getAnImageResponse success.png");
-    return fs.createReadStream("./test/mocks/success.png");
-  } else {
-    // Chrome test
-    return utils.getSampleImageAsBlob();
-  }
-}
-
 export interface IItemTypeAbbrev {
   [id: string]: string;
 }

@@ -27,7 +27,6 @@ import * as interfaces from "../src/interfaces";
 import * as utils from "./mocks/utils";
 import * as fetchMock from "fetch-mock";
 import * as mockItems from "../test/mocks/agolItems";
-import { assert } from "console";
 
 // ------------------------------------------------------------------------------------------------------------------ //
 
@@ -149,7 +148,7 @@ describe("Module `restHelpersGet`: common REST fetch functions shared across pac
       const url =
         utils.PORTAL_SUBSET.restUrl +
         "/content/items/itm1234567890?f=json&token=fake-token";
-      fetchMock.post(url, mockItems.getAnImageResponse(), {
+      fetchMock.post(url, utils.getSampleImageAsBlob(), {
         sendAsJson: false
       });
       restHelpersGet
@@ -168,7 +167,7 @@ describe("Module `restHelpersGet`: common REST fetch functions shared across pac
       const url =
         utils.PORTAL_SUBSET.restUrl +
         "/content/items/itm1234567890?f=json&token=fake-token";
-      fetchMock.post(url, mockItems.getAnImageResponse(), {
+      fetchMock.post(url, utils.getSampleImageAsBlob(), {
         sendAsJson: false
       });
       restHelpersGet
@@ -396,7 +395,7 @@ describe("Module `restHelpersGet`: common REST fetch functions shared across pac
     it("gets data section that's an image", done => {
       const itemId = "itm1234567890";
       const url = restHelpersGet.getItemDataBlobUrl(itemId, MOCK_USER_SESSION);
-      fetchMock.post(url, mockItems.getAnImageResponse(), {
+      fetchMock.post(url, utils.getSampleImageAsBlob(), {
         sendAsJson: false
       });
       restHelpersGet

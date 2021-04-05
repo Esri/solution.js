@@ -414,7 +414,7 @@ describe("Module `resourceHelpers`: common functions involving the management of
       const serverInfoUrl = "https://myserver/images/resource.png/rest/info";
       const expectedServerInfo = SERVER_INFO;
       const fetchUrl = "https://myserver/images/resource.png";
-      const expectedFetch = mockItems.getAnImageResponse();
+      const expectedFetch = utils.getSampleImageAsBlob();
       const updateUrl =
         utils.PORTAL_SUBSET.restUrl +
         "/content/users/casey/items/itm1234567890/update";
@@ -457,7 +457,7 @@ describe("Module `resourceHelpers`: common functions involving the management of
       const serverInfoUrl = "https://myserver/images/resource.png/rest/info";
       const expectedServerInfo = SERVER_INFO;
       const fetchUrl = "https://myserver/images/resource.png";
-      const expectedFetch = mockItems.getAnImageResponse();
+      const expectedFetch = utils.getSampleImageAsBlob();
       const updateUrl =
         utils.PORTAL_SUBSET.restUrl +
         "/content/users/casey/items/itm1234567890/update";
@@ -541,7 +541,7 @@ describe("Module `resourceHelpers`: common functions involving the management of
       const serverInfoUrl = "https://myserver/images/resource.png/rest/info";
       const expectedServerInfo = SERVER_INFO;
       const fetchUrl = "https://myserver/images/resource.png";
-      const expectedFetch = mockItems.getAnImageResponse();
+      const expectedFetch = utils.getSampleImageAsBlob();
       const updateUrl =
         utils.PORTAL_SUBSET.restUrl +
         "/content/users/casey/items/itm1234567890/addResources";
@@ -596,7 +596,7 @@ describe("Module `resourceHelpers`: common functions involving the management of
       const serverInfoUrl = "https://myserver/images/resource.png/rest/info";
       const expectedServerInfo = SERVER_INFO;
       const fetchUrl = "https://myserver/images/resource.png";
-      const expectedFetch = mockItems.getAnImageResponse();
+      const expectedFetch = utils.getSampleImageAsBlob();
       const updateUrl =
         utils.PORTAL_SUBSET.restUrl +
         "/content/users/casey/items/itm1234567890/addResources";
@@ -685,7 +685,7 @@ describe("Module `resourceHelpers`: common functions involving the management of
       const serverInfoUrl = "https://myserver/images/thumbnail.png/rest/info";
       const expectedServerInfo = SERVER_INFO;
       const fetchUrl = "https://myserver/images/thumbnail.png";
-      const expectedFetch = mockItems.getAnImageResponse();
+      const expectedFetch = utils.getSampleImageAsBlob();
       const updateUrl =
         utils.PORTAL_SUBSET.restUrl +
         "/content/users/casey/items/itm1234567890/addResources";
@@ -1661,7 +1661,7 @@ describe("Module `resourceHelpers`: common functions involving the management of
   //       itemTemplate.item.thumbnail = "thumbnail/banner.png";
   //       const solutionItemId = "ee67658b2a98450cba051fd001463df0";
 
-  //       const expectedFetch = mockItems.getAnImageResponse();
+  //       const expectedFetch = utils.getSampleImageAsBlob();
 
   //       const resources: any = {
   //         total: 1,
@@ -1829,7 +1829,7 @@ describe("Module `resourceHelpers`: common functions involving the management of
   //       itemTemplate.item.thumbnail = null;
   //       const solutionItemId = "ee67658b2a98450cba051fd001463df0";
 
-  //       const expectedFetch = mockItems.getAnImageResponse();
+  //       const expectedFetch = utils.getSampleImageAsBlob();
 
   //       const resources: any = {
   //         total: 1,
