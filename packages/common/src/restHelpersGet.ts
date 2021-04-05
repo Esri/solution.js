@@ -65,6 +65,10 @@ import {
 
 const ZIP_FILE_HEADER_SIGNATURE = "PK";
 
+export function checkJsonForError(json: any): boolean {
+  return typeof json?.error !== "undefined";
+}
+
 export function getPortal(
   id: string,
   authentication: UserSession
@@ -169,7 +173,7 @@ export function getBlobCheckForError(
           // eslint-disable-next-line @typescript-eslint/no-floating-promises
           blobToJson(adjustedBlob).then((json: any) => {
             // Check for valid JSON with an error
-            if (json && json.error) {
+            if (json?.error) {
               const code: number = json.error.code;
               if (code !== undefined && ignoreErrors.indexOf(code) >= 0) {
                 resolve(null); // Error, but ignored
@@ -184,116 +188,6 @@ export function getBlobCheckForError(
           resolve(adjustedBlob);
         }
       }, reject);
-    }, reject);
-  });
-}
-
-/**
- * Gets everything about an item.
- *
- * @param itemId Id of an item whose information is sought
- * @param authentication Credentials for the request
- * @return Promise that will resolve with everything known about the item
- */
-export function getCompleteItem(
-  itemId: string,
-  authentication: UserSession
-): Promise<ICompleteItem> {
-  return new Promise<ICompleteItem>((resolve, reject) => {
-    // Get the item information
-    const itemFwdRelatedItemsDef = getItemRelatedItemsInSameDirection(
-      itemId,
-      "forward",
-      authentication
-    );
-    const itemRevRelatedItemsDef = getItemRelatedItemsInSameDirection(
-      itemId,
-      "reverse",
-      authentication
-    );
-
-    const itemBaseDef = getItemBase(itemId, authentication);
-    const itemDataDef = new Promise<File>((resolve2, reject2) => {
-      // eslint-disable-next-line @typescript-eslint/no-floating-promises
-      itemBaseDef.then(
-        // any error fetching item base will be handled via Promise.all later
-        (itemBase: any) => {
-          getItemDataAsFile(
-            itemId,
-            itemBase.name,
-            authentication
-          ).then(resolve2, (error: any) => reject2(JSON.stringify(error)));
-        },
-        (error: any) => reject2(JSON.stringify(error))
-      );
-    });
-    const itemThumbnailDef = new Promise<File>((resolve3, reject3) => {
-      // eslint-disable-next-line @typescript-eslint/no-floating-promises
-      itemBaseDef.then(
-        // any error fetching item base will be handled via Promise.all later
-        (itemBase: any) => {
-          getItemThumbnailAsFile(
-            itemId,
-            itemBase.thumbnail,
-            false,
-            authentication
-          ).then(resolve3, (error: any) => reject3(JSON.stringify(error)));
-        },
-        (error: any) => reject3(JSON.stringify(error))
-      );
-    });
-    const itemMetadataDef = getItemMetadataAsFile(itemId, authentication);
-    const itemResourcesDef = getItemResourcesFiles(itemId, authentication);
-
-    Promise.all([
-      itemBaseDef,
-      itemDataDef,
-      itemThumbnailDef,
-      itemMetadataDef,
-      itemResourcesDef,
-      itemFwdRelatedItemsDef,
-      itemRevRelatedItemsDef
-    ]).then(responses => {
-      const [
-        itemBase,
-        itemData,
-        itemThumbnail,
-        itemMetadata,
-        itemResources,
-        itemFwdRelatedItems,
-        itemRevRelatedItems
-      ] = responses;
-      // Summarize what we have
-      // ----------------------
-      // (itemBase: IItem)  text/plain JSON
-      // (itemData: File)  */*
-      // (itemThumbnail: File)  image/*
-      // (itemMetadata: File)  application/xml
-      // (itemResources: File[])  list of */*
-      // (itemFwdRelatedItems: IRelatedItems[])  list of forward relationshipType/relatedItems[] pairs
-      // (itemRevRelatedItems: IRelatedItems[])  list of reverse relationshipType/relatedItems[] pairs
-
-      const completeItem: ICompleteItem = {
-        base: itemBase,
-        data: itemData,
-        thumbnail: itemThumbnail,
-        metadata: itemMetadata,
-        resources: itemResources,
-        fwdRelatedItems: itemFwdRelatedItems,
-        revRelatedItems: itemRevRelatedItems
-      };
-
-      if (itemBase.type === "Feature Service") {
-        // eslint-disable-next-line @typescript-eslint/no-floating-promises
-        getFeatureServiceProperties(itemBase.url, authentication).then(
-          (properties: IFeatureServiceProperties) => {
-            completeItem.featureServiceProperties = properties;
-            resolve(completeItem);
-          }
-        );
-      } else {
-        resolve(completeItem);
-      }
     }, reject);
   });
 }
@@ -457,7 +351,7 @@ export function getItemDataBlob(
 ): Promise<Blob> {
   return new Promise<Blob>(resolve => {
     const url = getItemDataBlobUrl(itemId, authentication);
-    getBlobCheckForError(url, authentication, [500]).then(
+    getBlobCheckForError(url, authentication, [400, 500]).then(
       blob => resolve(_fixTextBlobType(blob)),
       () => resolve(null)
     );
@@ -785,7 +679,10 @@ export function getItemThumbnailAsFile(
     const iFilenameStart = thumbnailUrlPart.lastIndexOf("/") + 1;
     const filename = thumbnailUrlPart.substring(iFilenameStart);
 
-    getBlobAsFile(url, filename, authentication, [500]).then(resolve, reject);
+    getBlobAsFile(url, filename, authentication, [400, 500]).then(
+      resolve,
+      reject
+    );
   });
 }
 
