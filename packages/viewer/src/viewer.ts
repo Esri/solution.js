@@ -25,70 +25,13 @@ import * as common from "@esri/solution-common";
 // ------------------------------------------------------------------------------------------------------------------ //
 
 /**
- * Compares two AGO items, fetching them if only their id is supplied.
+ * Checks a Solution.
  *
- * @param item1 First item or its AGO id
- * @param item2 Second item or its AGO id
- * @param authentication Credentials for the request to AGO
- * @return True if objects are the same
- * @see Only comparable properties are compared; see deleteItemProps() in the `common` package
- */
-export function compareItems(
-  item1: string | any,
-  item2: string | any,
-  authentication: common.UserSession = null
-): Promise<boolean> {
-  return new Promise<boolean>((resolve, reject) => {
-    // If an input is a string, fetch the item; otherwise, clone the input because we will modify the
-    // item base to remove incomparable properties
-    let itemBaseDef1: Promise<any>;
-    if (typeof item1 === "string") {
-      itemBaseDef1 = common.getItemBase(item1, authentication);
-    } else {
-      itemBaseDef1 = Promise.resolve(common.cloneObject(item1));
-    }
-
-    let itemBaseDef2: Promise<any>;
-    if (typeof item2 === "string") {
-      itemBaseDef2 = common.getItemBase(item2, authentication);
-    } else {
-      itemBaseDef2 = Promise.resolve(common.cloneObject(item2));
-    }
-
-    Promise.all([itemBaseDef1, itemBaseDef2]).then(
-      responses => {
-        const [itemBase1, itemBase2] = responses;
-
-        common.deleteItemProps(itemBase1);
-        common.deleteItemProps(itemBase2);
-
-        if (itemBase1.type === "Solution") {
-          delete itemBase1.typeKeywords;
-          delete itemBase1.size;
-          delete itemBase2.typeKeywords;
-          delete itemBase2.size;
-        }
-
-        /*console.log("----------------------------------------------------------------");
-        console.log("item 1 " + item1 + ": ", JSON.stringify(itemBase1, null, 2));
-        console.log("item 2 " + item2 + ": ", JSON.stringify(itemBase2, null, 2));
-        console.log("----------------------------------------------------------------");*/
-
-        resolve(common.compareJSONNoEmptyStrings(itemBase1, itemBase2));
-      },
-      e => reject(e)
-    );
-  });
-}
-
-/**
- * Checks a Solution for error.
- *
- * @param item Item id
+ * @param item Solution id
  * @param authentication Credentials for the request to AGO
  * @return List of results of checks of Solution
  */
-export function getSolutionErrors(
+export function checkSolution(
   itemId: string,
   authentication: common.UserSession = null
 ): Promise<string[]> {
@@ -224,4 +167,61 @@ export function getSolutionErrors(
         return resultsHtml;
       })
   );
+}
+
+/**
+ * Compares two AGO items, fetching them if only their id is supplied.
+ *
+ * @param item1 First item or its AGO id
+ * @param item2 Second item or its AGO id
+ * @param authentication Credentials for the request to AGO
+ * @return True if objects are the same
+ * @see Only comparable properties are compared; see deleteItemProps() in the `common` package
+ */
+export function compareItems(
+  item1: string | any,
+  item2: string | any,
+  authentication: common.UserSession = null
+): Promise<boolean> {
+  return new Promise<boolean>((resolve, reject) => {
+    // If an input is a string, fetch the item; otherwise, clone the input because we will modify the
+    // item base to remove incomparable properties
+    let itemBaseDef1: Promise<any>;
+    if (typeof item1 === "string") {
+      itemBaseDef1 = common.getItemBase(item1, authentication);
+    } else {
+      itemBaseDef1 = Promise.resolve(common.cloneObject(item1));
+    }
+
+    let itemBaseDef2: Promise<any>;
+    if (typeof item2 === "string") {
+      itemBaseDef2 = common.getItemBase(item2, authentication);
+    } else {
+      itemBaseDef2 = Promise.resolve(common.cloneObject(item2));
+    }
+
+    Promise.all([itemBaseDef1, itemBaseDef2]).then(
+      responses => {
+        const [itemBase1, itemBase2] = responses;
+
+        common.deleteItemProps(itemBase1);
+        common.deleteItemProps(itemBase2);
+
+        if (itemBase1.type === "Solution") {
+          delete itemBase1.typeKeywords;
+          delete itemBase1.size;
+          delete itemBase2.typeKeywords;
+          delete itemBase2.size;
+        }
+
+        /*console.log("----------------------------------------------------------------");
+        console.log("item 1 " + item1 + ": ", JSON.stringify(itemBase1, null, 2));
+        console.log("item 2 " + item2 + ": ", JSON.stringify(itemBase2, null, 2));
+        console.log("----------------------------------------------------------------");*/
+
+        resolve(common.compareJSONNoEmptyStrings(itemBase1, itemBase2));
+      },
+      e => reject(e)
+    );
+  });
 }

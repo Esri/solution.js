@@ -91,7 +91,7 @@
           document.getElementById("output").innerHTML = "Fetching...";
           document.getElementById("input").style.display = "none";
 
-          viewer.getSolutionErrors(
+          viewer.checkSolution(
             itemId,
             new auth.UserSession({
               username: document.getElementById("username").value,

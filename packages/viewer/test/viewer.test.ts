@@ -81,6 +81,22 @@ afterEach(() => {
 // ------------------------------------------------------------------------------------------------------------------ //
 
 describe("Module `viewer`", () => {
+  describe("checkSolution", () => {
+    it("should ignore ignorable error", done => {
+      const itemId = "abc";
+
+      const baseSpy = spyOn(common, "getCompleteItem").and.resolveTo(
+        {} as common.ICompleteItem
+      );
+
+      viewer
+        .checkSolution(itemId, MOCK_USER_SESSION)
+        .then((results: string[]) => {
+          done();
+        }, done.fail);
+    });
+  });
+
   describe("compareItems", () => {
     it("handles identity with supplied Solution items", done => {
       viewer
