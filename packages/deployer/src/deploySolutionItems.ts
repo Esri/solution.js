@@ -613,7 +613,6 @@ export function _updateTemplateDictionary(
               /* istanbul ignore else */
               if (
                 types[i] === "Feature Service" ||
-                !r.id ||
                 common.getProp(r, "response.error")
               ) {
                 // if an error is returned we need to clean up the templateDictionary
