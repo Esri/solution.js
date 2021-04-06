@@ -664,6 +664,7 @@ export function getItemThumbnailAsFile(
   authentication: UserSession
 ): Promise<File> {
   return new Promise<File>((resolve, reject) => {
+    /* istanbul ignore else */
     if (!thumbnailUrlPart) {
       resolve(null);
       return;
