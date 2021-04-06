@@ -521,12 +521,14 @@ export function _updateTemplateDictionary(
   return new Promise(resolve => {
     const defs: Array<Promise<any>> = [];
     const urls: string[] = [];
+    const types: string[] = [];
+    const ids: string[] = [];
     templates.forEach(t => {
+      const templateInfo: any = templateDictionary[t.itemId];
       /* istanbul ignore else */
-      if (t.item.type === "Feature Service") {
-        const templateInfo: any = templateDictionary[t.itemId];
+      if (templateInfo && templateInfo.url && templateInfo.itemId) {
         /* istanbul ignore else */
-        if (templateInfo && templateInfo.url && templateInfo.itemId) {
+        if (t.item.type === "Feature Service") {
           Object.assign(
             templateDictionary[t.itemId],
             common.getLayerSettings(
@@ -535,21 +537,33 @@ export function _updateTemplateDictionary(
               templateInfo.itemId
             )
           );
-          // we need the spatialReference from the service
+
+          // if the service has veiws keep track of the fields so we can use them to
+          // compare with the view fields
           /* istanbul ignore else */
-          if (urls.indexOf(templateInfo.url) < 0) {
-            defs.push(
-              common.rest_request(templateInfo.url, { authentication })
+          if (common.getProp(t, "properties.service.hasViews")) {
+            common._updateTemplateDictionaryFields(
+              t,
+              templateDictionary,
+              false
             );
-            urls.push(templateInfo.url);
           }
         }
 
-        // if the service has veiws keep track of the fields so we can use them to
-        // compare with the view fields
+        // for fs query with its url...for non fs query the item
+        // this is to verify situations where we have a stale search index that will
+        // say some items exist when they don't really exist
+        // searching the services url or with the item id will return an error when this condition occurs
         /* istanbul ignore else */
-        if (common.getProp(t, "properties.service.hasViews")) {
-          common._updateTemplateDictionaryFields(t, templateDictionary, false);
+        if (urls.indexOf(templateInfo.url) < 0) {
+          defs.push(
+            t.item.type === "Feature Service"
+              ? common.rest_request(templateInfo.url, { authentication })
+              : common.getItemBase(templateInfo.itemId, authentication)
+          );
+          urls.push(templateInfo.url);
+          types.push(t.item.type);
+          ids.push(templateInfo.itemId);
         }
       }
     });
@@ -561,8 +575,8 @@ export function _updateTemplateDictionary(
         if (Array.isArray(results) && results.length > 0) {
           const fieldDefs: Array<Promise<any>> = [];
           results.forEach((r, i) => {
-            // the result will contain a serviceItemId when it has successfully fetched a service
-            if (r.serviceItemId) {
+            // a feature service result will contain a serviceItemId if it was successfully fetched
+            if (r.serviceItemId && types[i] === "Feature Service") {
               Object.keys(templateDictionary).forEach(k => {
                 const v: any = templateDictionary[k];
                 /* istanbul ignore else */
@@ -596,11 +610,18 @@ export function _updateTemplateDictionary(
                 }
               });
             } else {
-              // if an error is returned we need to clean up the templateDictionary
-              templateDictionary = _updateTemplateDictionaryForError(
-                r,
-                templateDictionary
-              );
+              /* istanbul ignore else */
+              if (
+                types[i] === "Feature Service" ||
+                !r.id ||
+                common.getProp(r, "response.error")
+              ) {
+                // if an error is returned we need to clean up the templateDictionary
+                templateDictionary = _updateTemplateDictionaryForError(
+                  templateDictionary,
+                  ids[i]
+                );
+              }
             }
           });
 
@@ -652,15 +673,15 @@ export function _updateTemplateDictionary(
  * @protected
  */
 export function _updateTemplateDictionaryForError(
-  result: any,
-  templateDictionary: any
+  templateDictionary: any,
+  itemId: string
 ): any {
   /* istanbul ignore else */
-  if (result.url) {
+  if (itemId) {
     let removeKey: string = "";
     Object.keys(templateDictionary).some(k => {
       /* istanbul ignore else */
-      if (templateDictionary[k].url === result.url) {
+      if (templateDictionary[k].itemId === itemId) {
         removeKey = k;
         return true;
       }
