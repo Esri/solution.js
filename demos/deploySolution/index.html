@@ -87,6 +87,14 @@
         <input type="text" id="destPortal" style="width:256px" placeholder="https://www.arcgis.com">
       </div>
 
+      <br/><br/>
+
+      <div class="section-title">Options</div>
+      <div class="labeledItem">
+        <label for="useExisting">Use Existing Items:</label>
+        <input type="checkbox" id="useExisting">
+      </div>
+
       <br /><br />
 
       <button class="btn btn-default" onclick="goFcn()">Deploy Solution</button>
@@ -175,6 +183,9 @@
             portal: destPortal
           });
 
+          // Use Existing
+          const useExisting = document.getElementById("useExisting").checked;
+
           // Deploy!
           main.deploySolution(
             solutionId,
@@ -188,7 +199,8 @@
               createdItems.forEach(function (item) { return html += "<li>" + item + "</li>" });
               html += "</ol>";
               document.getElementById("output").innerHTML = html;
-            }
+            },
+            useExisting
           ).then(function (html){
               reportElapsedTime(startTime);
               document.getElementById("output").innerHTML = html;
