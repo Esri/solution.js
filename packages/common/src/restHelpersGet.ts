@@ -159,48 +159,30 @@ export function getBlobCheckForError(
 ): Promise<Blob> {
   return new Promise<Blob>((resolve, reject) => {
     // Get the blob from the URL
-    getBlob(url, authentication).then(
-      blob => {
-        // Reclassify text/plain blobs as needed
-        _fixTextBlobType(blob).then(
-          adjustedBlob => {
-            if (adjustedBlob.type === "application/json") {
-              // Blob may be an error
-              // eslint-disable-next-line @typescript-eslint/no-floating-promises
-              blobToJson(adjustedBlob).then((json: any) => {
-                // Check for valid JSON with an error
-                if (json?.error) {
-                  const code: number = json.error.code;
-                  if (code !== undefined && ignoreErrors.indexOf(code) >= 0) {
-                    console.log("Error, but ignored: " + url); //???
-                    resolve(null); // Error, but ignored
-                  } else {
-                    console.log("Other error; fail with error: " + url); //???
-                    reject(json); // Other error; fail with error
-                  }
-                } else {
-                  console.log("not really JSON: " + url); //???
-                  resolve(adjustedBlob);
-                }
-              });
+    getBlob(url, authentication).then(blob => {
+      // Reclassify text/plain blobs as needed
+      _fixTextBlobType(blob).then(adjustedBlob => {
+        if (adjustedBlob.type === "application/json") {
+          // Blob may be an error
+          // eslint-disable-next-line @typescript-eslint/no-floating-promises
+          blobToJson(adjustedBlob).then((json: any) => {
+            // Check for valid JSON with an error
+            if (json?.error) {
+              const code: number = json.error.code;
+              if (code !== undefined && ignoreErrors.indexOf(code) >= 0) {
+                resolve(null); // Error, but ignored
+              } else {
+                reject(json); // Other error; fail with error
+              }
             } else {
-              console.log("not tagged as JSON: " + url); //???
               resolve(adjustedBlob);
             }
-            //}, reject);
-          },
-          err => {
-            console.log("failed _fixTextBlobType: " + url);
-            reject(err);
-          }
-        ); //???
-        //}, reject);
-      },
-      err => {
-        console.log("failed getBlob: " + url);
-        reject(err);
-      }
-    ); //???
+          });
+        } else {
+          resolve(adjustedBlob);
+        }
+      }, reject);
+    }, reject);
   });
 }
 
