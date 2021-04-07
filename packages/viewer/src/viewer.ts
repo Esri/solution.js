@@ -51,7 +51,9 @@ export function checkSolution(
         currentAction = "";
         item = results;
 
-        if (item.base.type !== "Solution") {
+        if (!item) {
+          throw new Error(`item is not found`);
+        } else if (item.base.type !== "Solution") {
           throw new Error(`item is not a Solution`);
         } else if (item.base.typeKeywords.includes("Template")) {
           resultsHtml.push(`&#x2714; item is a Template Solution`);
@@ -77,11 +79,13 @@ export function checkSolution(
       // ---------- Check the Solution2Item relationship from a Deployed Solution to each deployed item ------------------//
       .then(itemDataJson => {
         templateItems = itemDataJson?.templates;
-        if (!templateItems) {
+        /* istanbul ignore else */
+        if (!templateItems || templateItems.length === 0) {
           throw new Error(
             `Solution's data are not valid JSON or the Solution contains no items`
           );
         }
+
         templateItemIds = templateItems
           .map((template: common.IItemTemplate) => template.itemId)
           .sort();
@@ -131,6 +135,7 @@ export function checkSolution(
             []
           )
           .reduce((noDupSet, dependency) => {
+            /* istanbul ignore else */
             if (!noDupSet.includes(dependency)) noDupSet.push(dependency);
             return noDupSet;
           }, [])
@@ -141,7 +146,7 @@ export function checkSolution(
         );
 
         if (missingItems.length === 0) {
-          resultsHtml.push("&#x2714; all dependencies are in Solution: ");
+          resultsHtml.push("&#x2714; all dependencies are in Solution");
         } else {
           resultsHtml.push(
             "&#x2716; dependencies that aren't in Solution: " +
@@ -159,11 +164,7 @@ export function checkSolution(
 
       // ---------- Fatal error ------------------------------------------------------------------------------------------//
       .catch(error => {
-        resultsHtml.push(
-          `&#x2716; error${currentAction}: ${error?.originalMessage ||
-            error?.message ||
-            JSON.stringify(error)}`
-        );
+        resultsHtml.push(`&#x2716; error${currentAction}: ${error.message}`);
         return resultsHtml;
       })
   );

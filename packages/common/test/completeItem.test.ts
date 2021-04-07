@@ -80,7 +80,6 @@ describe("Module `completeItem`: functions for accessing a complete item", () =>
           // resources: File[]; list of */*
           // fwdRelatedItems: IRelatedItems[]; list of forward relationshipType/relatedItems[] pairs
           // revRelatedItems: IRelatedItems[]; list of reverse relationshipType/relatedItems[] pairs
-          //console.log(JSON.stringify(item,null,2));//???
           expect(item).not.toBeNull();
           expect(item.base.id).toEqual("wma1234567890");
           expect((item.data as any).source).toEqual("tpl1234567890");
@@ -131,7 +130,6 @@ describe("Module `completeItem`: functions for accessing a complete item", () =>
           // fwdRelatedItems: IRelatedItems[]; list of forward relationshipType/relatedItems[] pairs
           // revRelatedItems: IRelatedItems[]; list of reverse relationshipType/relatedItems[] pairs
           // featureServiceProperties?: IFeatureServiceProperties (only if item is a feature service)
-          //console.log(JSON.stringify(item,null,2));//???
           expect(item).not.toBeNull();
           expect(item.base.id).toEqual("svc1234567890");
           expect((item.data as any).layers[0].id).toEqual(0);

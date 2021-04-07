@@ -16,6 +16,7 @@
 
 // This file contains examples of items of the type one would expect to get from the AGOL REST API.
 
+import * as generalHelpers from "../../src/generalHelpers";
 import * as interfaces from "../../src/interfaces";
 import * as utils from "./utils";
 
@@ -177,6 +178,10 @@ export function getAGOLItem(type?: string, url = ""): any {
       item = getAGOLItemFundamentals(type);
       break;
 
+    case "Solution":
+      item = getAGOLItemFundamentals(type);
+      break;
+
     case "Web Map":
       item = getAGOLItemFundamentals(type, url || undefined);
       break;
@@ -202,6 +207,62 @@ export function getAGOLItem(type?: string, url = ""): any {
       break;
   }
 
+  return item;
+}
+
+export function getCompleteItem(
+  type = "Web Mapping Application"
+): interfaces.ICompleteItem {
+  const item = {
+    base: getAGOLItem(type),
+    data: generalHelpers.jsonToFile(getAGOLItemData(type), ""),
+    thumbnail: utils.getSampleImageAsFile(),
+    metadata: utils.getSampleMetadataAsFile(),
+    resources: [] as File[],
+    fwdRelatedItems: [] as interfaces.IRelatedItems[],
+    revRelatedItems: [] as interfaces.IRelatedItems[]
+  } as interfaces.ICompleteItem;
+  if (type === "Feature Service") {
+    item.featureServiceProperties = {} as interfaces.IFeatureServiceProperties;
+  }
+  return item;
+}
+
+export function getCompleteDeployedSolutionItem(): interfaces.ICompleteItem {
+  const item = getCompleteItem("Solution");
+  item.base.typeKeywords.push("Deployed");
+  item.data = generalHelpers.jsonToFile(
+    {
+      metadata: {},
+      templates: [
+        {
+          itemId: "wma1234567890",
+          type: "Web Mapping Application",
+          dependencies: ["map1234567890"],
+          groups: []
+        },
+        {
+          itemId: "map1234567890",
+          type: "Web Map",
+          dependencies: [],
+          groups: []
+        }
+      ]
+    },
+    ""
+  );
+  item.fwdRelatedItems = [
+    {
+      relationshipType: "Solution2Item",
+      relatedItemIds: ["wma1234567890", "map1234567890"]
+    }
+  ];
+  return item;
+}
+
+export function getCompleteTemplateSolutionItem(): interfaces.ICompleteItem {
+  const item = getCompleteItem("Solution");
+  item.base.typeKeywords.push("Template");
   return item;
 }
 
@@ -532,6 +593,111 @@ export function getAGOLItemData(type?: string): any {
           }
         }
       ];
+      break;
+
+    case "Solution":
+      data = {
+        metadata: {},
+        templates: [
+          {
+            itemId: "wma1234567890",
+            type: "Web Mapping Application",
+            item: {
+              id: "{{wma1234567890.itemId}}",
+              type: "Web Mapping Application",
+              description: null,
+              extent: [],
+              properties: null,
+              snippet: null,
+              tags: ["test"],
+              thumbnail: null,
+              title: "Basic Viewer",
+              typeKeywords: [
+                "JavaScript",
+                "Map",
+                "Mapping Site",
+                "Online Map",
+                "Web Map"
+              ],
+              url:
+                "{{portalBaseUrl}}/apps/View/index.html?appid={{wma1234567890.itemId}}"
+            },
+            data: {
+              source: "tmp1234567890",
+              folderId: null,
+              values: {
+                webmap: "{{map1234567890.itemId}}"
+              }
+            },
+            resources: ["wma1234567890_info_thumbnail/ago_downloaded.png"],
+            dependencies: ["map1234567890"],
+            groups: [],
+            properties: {},
+            estimatedDeploymentCostFactor: 2,
+            relatedItems: []
+          },
+          {
+            itemId: "map1234567890",
+            type: "Web Map",
+            item: {
+              id: "{{map1234567890.itemId}}",
+              type: "Web Map",
+              description:
+                "This is an extensive, in-depth description about the map with metadata. Although it's also the metadata's abstract.",
+              extent: "{{solutionItemExtent}}",
+              properties: null,
+              snippet: "This is a brief summary about the map with metadata.",
+              tags: ["test"],
+              thumbnail: null,
+              title: "Map with metadata",
+              typeKeywords: [
+                "ArcGIS Online",
+                "Explorer Web Map",
+                "Map",
+                "Metadata",
+                "Offline",
+                "Online Map",
+                "Web Map"
+              ],
+              url:
+                "{{portalBaseUrl}}/home/webmap/viewer.html?webmap={{map1234567890.itemId}}"
+            },
+            data: {
+              operationalLayers: [],
+              baseMap: {
+                baseMapLayers: [
+                  {
+                    id: "defaultBasemap_0",
+                    layerType: "ArcGISTiledMapServiceLayer",
+                    url:
+                      "https://services.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer",
+                    visibility: true,
+                    opacity: 1,
+                    title: "World_Topo_Map"
+                  }
+                ],
+                title: "Topographic"
+              },
+              spatialReference: {
+                wkid: 102100,
+                latestWkid: 3857
+              },
+              authoringApp: "WebMapViewer",
+              authoringAppVersion: "7.3",
+              version: "2.15"
+            },
+            resources: [
+              "map1234567890_info_metadata/metadata.xml",
+              "map1234567890_info_thumbnail/thumbnail1572976699636.png"
+            ],
+            dependencies: [],
+            groups: [],
+            properties: {},
+            estimatedDeploymentCostFactor: 2,
+            relatedItems: []
+          }
+        ]
+      };
       break;
 
     case "Web Map":
