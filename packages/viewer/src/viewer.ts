@@ -25,6 +25,152 @@ import * as common from "@esri/solution-common";
 // ------------------------------------------------------------------------------------------------------------------ //
 
 /**
+ * Checks a Solution.
+ *
+ * @param item Solution id
+ * @param authentication Credentials for the request to AGO
+ * @return List of results of checks of Solution
+ */
+export function checkSolution(
+  itemId: string,
+  authentication: common.UserSession = null
+): Promise<string[]> {
+  const resultsHtml: string[] = [`Item ${itemId}`];
+  let item: common.ICompleteItem;
+  let isTemplate = true;
+  let templateItems: common.IItemTemplate[];
+  let templateItemIds: string[];
+
+  let currentAction: string = " while getting complete item";
+  return (
+    common
+      .getCompleteItem(itemId, authentication)
+
+      // ---------- Is it a Template or Deployed Solution? ---------------------------------------------------------------//
+      .then((results: common.ICompleteItem) => {
+        currentAction = "";
+        item = results;
+
+        if (!item) {
+          throw new Error(`item is not found`);
+        } else if (item.base.type !== "Solution") {
+          throw new Error(`item is not a Solution`);
+        } else if (item.base.typeKeywords.includes("Template")) {
+          resultsHtml.push(`&#x2714; item is a Template Solution`);
+        } else if (item.base.typeKeywords.includes("Deployed")) {
+          isTemplate = false;
+          resultsHtml.push(`&#x2714; item is a Deployed Solution`);
+        } else {
+          throw new Error(
+            `item is neither a Template Solution nor a Deployed Solution`
+          );
+        }
+
+        // base: IItem; text/plain JSON
+        // data: File; */*
+        // thumbnail: File; image/*
+        // metadata: File; application/xml
+        // resources: File[]; list of */*
+        // fwdRelatedItems: IRelatedItems[]; list of forward relationshipType/relatedItems[] pairs
+        // revRelatedItems: IRelatedItems[]; list of reverse relationshipType/relatedItems[] pairs
+        return common.blobToJson(item.data);
+      })
+
+      // ---------- Check the Solution2Item relationship from a Deployed Solution to each deployed item ------------------//
+      .then(itemDataJson => {
+        templateItems = itemDataJson?.templates;
+        /* istanbul ignore else */
+        if (!templateItems || templateItems.length === 0) {
+          throw new Error(
+            `Solution's data are not valid JSON or the Solution contains no items`
+          );
+        }
+
+        templateItemIds = templateItems
+          .map((template: common.IItemTemplate) => template.itemId)
+          .sort();
+
+        if (!isTemplate) {
+          // Make sure that there's a Solution2Item relationship to each deployed item
+          const fwdRelatedItemIds = item.fwdRelatedItems
+            .filter(
+              relationshipSet =>
+                relationshipSet.relationshipType === "Solution2Item"
+            )
+            .reduce(
+              (flatSet, relationshipSet) =>
+                flatSet.concat(relationshipSet.relatedItemIds),
+              []
+            )
+            .sort();
+          if (templateItemIds.length < fwdRelatedItemIds.length) {
+            resultsHtml.push(
+              "&#x2716; there are forward Solution2Item relationship(s) to unknown item(s)"
+            );
+          } else if (templateItemIds.length > fwdRelatedItemIds.length) {
+            resultsHtml.push(
+              "&#x2716; missing forward Solution2Item relationship(s)"
+            );
+          } else if (
+            JSON.stringify(templateItemIds) !==
+            JSON.stringify(fwdRelatedItemIds)
+          ) {
+            resultsHtml.push(
+              "&#x2716; mismatching forward Solution2Item relationship(s)"
+            );
+          } else {
+            resultsHtml.push(
+              "&#x2714; matching forward Solution2Item relationship(s)"
+            );
+          }
+        }
+        return resultsHtml;
+      })
+
+      // ---------- Check that all dependency references are items in Solution -------------------------------------------//
+      .then(() => {
+        const dependencyIds = templateItems
+          .reduce(
+            (flatSet, template) => flatSet.concat(template.dependencies),
+            []
+          )
+          .reduce((noDupSet, dependency) => {
+            /* istanbul ignore else */
+            if (!noDupSet.includes(dependency)) noDupSet.push(dependency);
+            return noDupSet;
+          }, [])
+          .sort();
+
+        const missingItems = dependencyIds.filter(
+          (dependencyId: string) => !templateItemIds.includes(dependencyId)
+        );
+
+        if (missingItems.length === 0) {
+          resultsHtml.push("&#x2714; all dependencies are in Solution");
+        } else {
+          resultsHtml.push(
+            "&#x2716; dependencies that aren't in Solution: " +
+              JSON.stringify(missingItems)
+          );
+        }
+
+        return resultsHtml;
+      })
+
+      // ---------- Done -------------------------------------------------------------------------------------------------//
+      .then(() => {
+        return resultsHtml;
+      })
+
+      // ---------- Fatal error ------------------------------------------------------------------------------------------//
+      .catch(error => {
+        resultsHtml.push(`&#x2716; error${currentAction}: ${error.message}`);
+        return resultsHtml;
+      })
+  );
+}
+
+/**
  * Compares two AGO items, fetching them if only their id is supplied.
  *
  * @param item1 First item or its AGO id

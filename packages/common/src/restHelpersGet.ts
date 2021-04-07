@@ -59,6 +59,10 @@ import { searchGroups, searchGroupContents } from "./restHelpers";
 
 const ZIP_FILE_HEADER_SIGNATURE = "PK";
 
+export function checkJsonForError(json: any): boolean {
+  return typeof json?.error !== "undefined";
+}
+
 export function getPortal(
   id: string,
   authentication: UserSession
@@ -163,7 +167,7 @@ export function getBlobCheckForError(
           // eslint-disable-next-line @typescript-eslint/no-floating-promises
           blobToJson(adjustedBlob).then((json: any) => {
             // Check for valid JSON with an error
-            if (json && json.error) {
+            if (json?.error) {
               const code: number = json.error.code;
               if (code !== undefined && ignoreErrors.indexOf(code) >= 0) {
                 resolve(null); // Error, but ignored
@@ -341,7 +345,7 @@ export function getItemDataBlob(
 ): Promise<Blob> {
   return new Promise<Blob>(resolve => {
     const url = getItemDataBlobUrl(itemId, authentication);
-    getBlobCheckForError(url, authentication, [500]).then(
+    getBlobCheckForError(url, authentication, [400, 500]).then(
       blob => resolve(_fixTextBlobType(blob)),
       () => resolve(null)
     );
@@ -632,6 +636,46 @@ export function getItemThumbnail(
 
     getBlobCheckForError(url, authentication, [500]).then(
       blob => resolve(_fixTextBlobType(blob)),
+      reject
+    );
+  });
+}
+
+/**
+ * Gets the thumbnail of an AGO item.
+ *
+ * @param itemId Id of an item whose resources are sought
+ * @param thumbnailUrlPart The partial name of the item's thumbnail as reported by the `thumbnail` property
+ * in the item's base section
+ * @param isGroup Switch indicating if the item is a group
+ * @param authentication Credentials for the request to AGO
+ * @return Promise that will resolve with an image Blob or an AGO-style JSON failure response
+ */
+export function getItemThumbnailAsFile(
+  itemId: string,
+  thumbnailUrlPart: string,
+  isGroup: boolean,
+  authentication: UserSession
+): Promise<File> {
+  return new Promise<File>((resolve, reject) => {
+    /* istanbul ignore else */
+    if (!thumbnailUrlPart) {
+      resolve(null);
+      return;
+    }
+
+    const url = getItemThumbnailUrl(
+      itemId,
+      thumbnailUrlPart,
+      isGroup,
+      authentication
+    );
+
+    const iFilenameStart = thumbnailUrlPart.lastIndexOf("/") + 1;
+    const filename = thumbnailUrlPart.substring(iFilenameStart);
+
+    getBlobAsFile(url, filename, authentication, [400, 500]).then(
+      resolve,
       reject
     );
   });

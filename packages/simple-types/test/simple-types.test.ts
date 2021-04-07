@@ -154,7 +154,7 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
       itemTemplate.item.item = itemTemplate.itemId = itemTemplate.item.id;
       itemTemplate.item.thumbnail = "thumbnail/banner.png";
 
-      const expectedFetch = mockItems.getAnImageResponse();
+      const expectedFetch = utils.getSampleImageAsBlob();
 
       const expectedTemplate: any = {
         itemId: "map1234567890",

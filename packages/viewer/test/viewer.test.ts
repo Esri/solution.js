@@ -81,6 +81,236 @@ afterEach(() => {
 // ------------------------------------------------------------------------------------------------------------------ //
 
 describe("Module `viewer`", () => {
+  describe("checkSolution", () => {
+    it("should handle inability to get complete item", done => {
+      const compItem = mockItems.getCompleteItem("Web Mapping Application");
+      const itemSpy = spyOn(common, "getCompleteItem").and.resolveTo(null);
+      viewer.checkSolution(compItem.base.id).then(
+        (results: string[]) => {
+          expect(results.length).toEqual(2);
+          expect(results[0]).toEqual("Item wma1234567890");
+          expect(results[1]).toEqual("&#x2716; error: item is not found");
+          done();
+        },
+        () => done.fail()
+      );
+    });
+
+    it("should reject items that are not Solutions", done => {
+      const compItem = mockItems.getCompleteItem("Web Mapping Application");
+      const itemSpy = spyOn(common, "getCompleteItem").and.resolveTo(compItem);
+      viewer.checkSolution(compItem.base.id, MOCK_USER_SESSION).then(
+        (results: string[]) => {
+          expect(results.length).toEqual(2);
+          expect(results[0]).toEqual("Item wma1234567890");
+          expect(results[1]).toEqual("&#x2716; error: item is not a Solution");
+          done();
+        },
+        () => done.fail()
+      );
+    });
+
+    it("should reject Solution items that are neither Templates nor Deployed", done => {
+      const compItem = mockItems.getCompleteItem("Solution");
+      const itemSpy = spyOn(common, "getCompleteItem").and.resolveTo(compItem);
+      viewer.checkSolution(compItem.base.id, MOCK_USER_SESSION).then(
+        (results: string[]) => {
+          expect(results.length).toEqual(2);
+          expect(results[0]).toEqual("Item sol1234567890");
+          expect(results[1]).toEqual(
+            "&#x2716; error: item is neither a Template Solution nor a Deployed Solution"
+          );
+          done();
+        },
+        () => done.fail()
+      );
+    });
+
+    it("should reject reject Solution items that are missing their data sections", done => {
+      const compItem = mockItems.getCompleteItem("Solution");
+      compItem.base.typeKeywords.push("Template");
+      compItem.data = null;
+      const itemSpy = spyOn(common, "getCompleteItem").and.resolveTo(compItem);
+      viewer.checkSolution(compItem.base.id, MOCK_USER_SESSION).then(
+        (results: string[]) => {
+          expect(results.length).toBeGreaterThan(2);
+          expect(results[0]).toEqual("Item sol1234567890");
+          expect(results[1]).toEqual("&#x2714; item is a Template Solution");
+          expect(results[2]).toEqual(
+            "&#x2716; error: Solution's data are not valid JSON or the Solution contains no items"
+          );
+          done();
+        },
+        () => done.fail()
+      );
+    });
+
+    it("should reject reject Solution items that have defective JSON", done => {
+      const compItem = mockItems.getCompleteItem("Solution");
+      compItem.base.typeKeywords.push("Template");
+      compItem.data = common.jsonToFile(
+        {
+          metadata: {}
+        },
+        ""
+      );
+      const itemSpy = spyOn(common, "getCompleteItem").and.resolveTo(compItem);
+      viewer.checkSolution(compItem.base.id, MOCK_USER_SESSION).then(
+        (results: string[]) => {
+          expect(results.length).toBeGreaterThan(2);
+          expect(results[0]).toEqual("Item sol1234567890");
+          expect(results[1]).toEqual("&#x2714; item is a Template Solution");
+          expect(results[2]).toEqual(
+            "&#x2716; error: Solution's data are not valid JSON or the Solution contains no items"
+          );
+          done();
+        },
+        () => done.fail()
+      );
+    });
+
+    it("should reject reject Solution items that have no templates", done => {
+      const compItem = mockItems.getCompleteItem("Solution");
+      compItem.base.typeKeywords.push("Template");
+      compItem.data = common.jsonToFile(
+        {
+          metadata: {},
+          templates: []
+        },
+        ""
+      );
+      const itemSpy = spyOn(common, "getCompleteItem").and.resolveTo(compItem);
+      viewer.checkSolution(compItem.base.id, MOCK_USER_SESSION).then(
+        (results: string[]) => {
+          expect(results.length).toBeGreaterThan(2);
+          expect(results[0]).toEqual("Item sol1234567890");
+          expect(results[1]).toEqual("&#x2714; item is a Template Solution");
+          expect(results[2]).toEqual(
+            "&#x2716; error: Solution's data are not valid JSON or the Solution contains no items"
+          );
+          done();
+        },
+        () => done.fail()
+      );
+    });
+
+    it("should recognize a Template Solution item", done => {
+      const compItem = mockItems.getCompleteTemplateSolutionItem();
+      const itemSpy = spyOn(common, "getCompleteItem").and.resolveTo(compItem);
+      viewer.checkSolution(compItem.base.id, MOCK_USER_SESSION).then(
+        (results: string[]) => {
+          expect(results.length).toBeGreaterThan(2);
+          expect(results[0]).toEqual("Item sol1234567890");
+          expect(results[1]).toEqual("&#x2714; item is a Template Solution");
+          expect(results[2]).toEqual(
+            "&#x2714; all dependencies are in Solution"
+          );
+          done();
+        },
+        () => done.fail()
+      );
+    });
+
+    it("should recognize a Deployed Solution item", done => {
+      const compItem = mockItems.getCompleteDeployedSolutionItem();
+      const itemSpy = spyOn(common, "getCompleteItem").and.resolveTo(compItem);
+      viewer.checkSolution(compItem.base.id, MOCK_USER_SESSION).then(
+        (results: string[]) => {
+          expect(results.length).toBeGreaterThan(2);
+          expect(results[0]).toEqual("Item sol1234567890");
+          expect(results[1]).toEqual("&#x2714; item is a Deployed Solution");
+          expect(results[2]).toEqual(
+            "&#x2714; matching forward Solution2Item relationship(s)"
+          );
+          done();
+        },
+        () => done.fail()
+      );
+    });
+
+    it("should catch forward relationships to unknown items in Deployed Solution", done => {
+      const compItem = mockItems.getCompleteDeployedSolutionItem();
+      compItem.fwdRelatedItems[0].relatedItemIds.push("xxx1234567890");
+      const itemSpy = spyOn(common, "getCompleteItem").and.resolveTo(compItem);
+      viewer.checkSolution(compItem.base.id, MOCK_USER_SESSION).then(
+        (results: string[]) => {
+          expect(results.length).toBeGreaterThan(2);
+          expect(results[0]).toEqual("Item sol1234567890");
+          expect(results[1]).toEqual("&#x2714; item is a Deployed Solution");
+          expect(results[2]).toEqual(
+            "&#x2716; there are forward Solution2Item relationship(s) to unknown item(s)"
+          );
+          done();
+        },
+        () => done.fail()
+      );
+    });
+
+    it("should catch missing forward relationships to items in Deployed Solution", done => {
+      const compItem = mockItems.getCompleteDeployedSolutionItem();
+      compItem.fwdRelatedItems[0].relatedItemIds.pop();
+      const itemSpy = spyOn(common, "getCompleteItem").and.resolveTo(compItem);
+      viewer.checkSolution(compItem.base.id, MOCK_USER_SESSION).then(
+        (results: string[]) => {
+          expect(results.length).toBeGreaterThan(2);
+          expect(results[0]).toEqual("Item sol1234567890");
+          expect(results[1]).toEqual("&#x2714; item is a Deployed Solution");
+          expect(results[2]).toEqual(
+            "&#x2716; missing forward Solution2Item relationship(s)"
+          );
+          done();
+        },
+        () => done.fail()
+      );
+    });
+
+    it("should catch mismatching forward relationships in Deployed Solution", done => {
+      const compItem = mockItems.getCompleteDeployedSolutionItem();
+      compItem.fwdRelatedItems[0].relatedItemIds.pop();
+      compItem.fwdRelatedItems[0].relatedItemIds.push("xxx1234567890");
+      const itemSpy = spyOn(common, "getCompleteItem").and.resolveTo(compItem);
+      viewer.checkSolution(compItem.base.id, MOCK_USER_SESSION).then(
+        (results: string[]) => {
+          expect(results.length).toBeGreaterThan(2);
+          expect(results[0]).toEqual("Item sol1234567890");
+          expect(results[1]).toEqual("&#x2714; item is a Deployed Solution");
+          expect(results[2]).toEqual(
+            "&#x2716; mismatching forward Solution2Item relationship(s)"
+          );
+          done();
+        },
+        () => done.fail()
+      );
+    });
+
+    it("should catch missing dependencies in a Template Solution item", done => {
+      const compItem = mockItems.getCompleteTemplateSolutionItem();
+      common
+        .blobToJson(compItem.data)
+        .then((data: common.ISolutionItemData) => {
+          data.templates[0].dependencies.push("xxx1234567890");
+          compItem.data = common.jsonToFile(data, "");
+          const itemSpy = spyOn(common, "getCompleteItem").and.resolveTo(
+            compItem
+          );
+          viewer.checkSolution(compItem.base.id, MOCK_USER_SESSION).then(
+            (results: string[]) => {
+              expect(results.length).toBeGreaterThan(2);
+              expect(results[0]).toEqual("Item sol1234567890");
+              expect(results[1]).toEqual(
+                "&#x2714; item is a Template Solution"
+              );
+              expect(results[2]).toEqual(
+                '&#x2716; dependencies that aren\'t in Solution: ["xxx1234567890"]'
+              );
+              done();
+            },
+            () => done.fail()
+          );
+        }, done.fail);
+    });
+  });
+
   describe("compareItems", () => {
     it("handles identity with supplied Solution items", done => {
       viewer

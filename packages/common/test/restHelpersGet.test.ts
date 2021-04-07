@@ -27,7 +27,6 @@ import * as interfaces from "../src/interfaces";
 import * as utils from "./mocks/utils";
 import * as fetchMock from "fetch-mock";
 import * as mockItems from "../test/mocks/agolItems";
-import { assert } from "console";
 
 // ------------------------------------------------------------------------------------------------------------------ //
 
@@ -71,6 +70,32 @@ afterEach(() => {
 // ------------------------------------------------------------------------------------------------------------------ //
 
 describe("Module `restHelpersGet`: common REST fetch functions shared across packages", () => {
+  describe("checkJsonForError", () => {
+    it("should handle non-error JSON", () => {
+      const json = { value: "a value" };
+      expect(restHelpersGet.checkJsonForError(json)).toBeFalsy();
+    });
+
+    it("should handle non-JSON", () => {
+      expect(restHelpersGet.checkJsonForError(null)).toBeFalsy();
+    });
+
+    it("should handle error JSON 1", () => {
+      const json = mockItems.get400Failure();
+      expect(restHelpersGet.checkJsonForError(json)).toBeTruthy();
+    });
+
+    it("should handle error JSON 2", () => {
+      const json = mockItems.get400SuccessFailure();
+      expect(restHelpersGet.checkJsonForError(json)).toBeTruthy();
+    });
+
+    it("should handle error JSON 3", () => {
+      const json = mockItems.get500Failure();
+      expect(restHelpersGet.checkJsonForError(json)).toBeTruthy();
+    });
+  });
+
   describe("getUsername", () => {
     it("can get the username from the authentication", done => {
       const communitySelfResponse: any = utils.getUserResponse();
@@ -149,7 +174,7 @@ describe("Module `restHelpersGet`: common REST fetch functions shared across pac
       const url =
         utils.PORTAL_SUBSET.restUrl +
         "/content/items/itm1234567890?f=json&token=fake-token";
-      fetchMock.post(url, mockItems.getAnImageResponse(), {
+      fetchMock.post(url, utils.getSampleImageAsBlob(), {
         sendAsJson: false
       });
       restHelpersGet
@@ -168,7 +193,7 @@ describe("Module `restHelpersGet`: common REST fetch functions shared across pac
       const url =
         utils.PORTAL_SUBSET.restUrl +
         "/content/items/itm1234567890?f=json&token=fake-token";
-      fetchMock.post(url, mockItems.getAnImageResponse(), {
+      fetchMock.post(url, utils.getSampleImageAsBlob(), {
         sendAsJson: false
       });
       restHelpersGet
@@ -396,7 +421,7 @@ describe("Module `restHelpersGet`: common REST fetch functions shared across pac
     it("gets data section that's an image", done => {
       const itemId = "itm1234567890";
       const url = restHelpersGet.getItemDataBlobUrl(itemId, MOCK_USER_SESSION);
-      fetchMock.post(url, mockItems.getAnImageResponse(), {
+      fetchMock.post(url, utils.getSampleImageAsBlob(), {
         sendAsJson: false
       });
       restHelpersGet
@@ -500,6 +525,20 @@ describe("Module `restHelpersGet`: common REST fetch functions shared across pac
           expect(response).toEqual(expected);
           done();
         }, done.fail);
+    });
+  });
+
+  describe("getItemDataBlob", () => {
+    it("handles odd error code", done => {
+      const itemId = "itm1234567890";
+      fetchMock.post(
+        utils.PORTAL_SUBSET.restUrl + "/content/items/itm1234567890/data",
+        { error: { code: 505 } }
+      );
+      restHelpersGet.getItemDataBlob(itemId, MOCK_USER_SESSION).then(
+        () => done(),
+        () => done()
+      );
     });
   });
 
@@ -917,6 +956,38 @@ describe("Module `restHelpersGet`: common REST fetch functions shared across pac
         )
         .then((ok: Blob) => {
           expect(ok.type).toEqual("image/png");
+          done();
+        }, done.fail);
+    });
+  });
+
+  describe("getItemThumbnailAsFile", () => {
+    it("get thumbnail for an item", done => {
+      fetchMock.post(
+        utils.PORTAL_SUBSET.restUrl +
+          "/content/items/itm1234567890/info/thumbnail/ago_downloaded.png",
+        utils.getSampleImageAsBlob(),
+        { sendAsJson: false }
+      );
+
+      restHelpersGet
+        .getItemThumbnailAsFile(
+          "itm1234567890",
+          "thumbnail/ago_downloaded.png",
+          false,
+          MOCK_USER_SESSION
+        )
+        .then((ok: File) => {
+          expect(ok.type).toEqual("image/png");
+          done();
+        }, done.fail);
+    });
+
+    it("handles missing thumbnail info", done => {
+      restHelpersGet
+        .getItemThumbnailAsFile("itm1234567890", null, false, MOCK_USER_SESSION)
+        .then((ok: File) => {
+          expect(ok).toBeNull();
           done();
         }, done.fail);
     });

@@ -61,6 +61,7 @@ export {
  */
 export enum EFileType {
   Data,
+  Info,
   Metadata,
   Resource,
   Thumbnail
@@ -140,6 +141,25 @@ export interface IBuildOrdering {
    * Dictionary of item ids that need dependency patching; each id has a list of the ids of the dependencies to be patched.
    */
   itemsToBePatched: IKeyedListsOfStrings;
+}
+
+export interface ICompleteItem {
+  // text/plain JSON
+  base: IItem;
+  // */*
+  data: File;
+  // image/*
+  thumbnail: File;
+  // application/xml
+  metadata: File;
+  // list of */*
+  resources: File[];
+  // list of forward relationshipType/relatedItems[] pairs
+  fwdRelatedItems: IRelatedItems[];
+  // list of reverse relationshipType/relatedItems[] pairs
+  revRelatedItems: IRelatedItems[];
+  //
+  featureServiceProperties?: IFeatureServiceProperties;
 }
 
 export interface ICreateItemFromTemplateResponse {

@@ -42,7 +42,7 @@ describe("getBlob", () => {
 
     const getUrl = "https://myserver/images/thumbnail.png";
     const expectedServerInfo = SERVER_INFO;
-    const expected = mockItems.getAnImageResponse();
+    const expected = utils.getSampleImageAsBlob();
     fetchMock
       .post(utils.PORTAL_SUBSET.restUrl + "/info", expectedServerInfo)
       .post(getUrl + "/rest/info", expectedServerInfo)

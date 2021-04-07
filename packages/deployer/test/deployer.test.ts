@@ -864,7 +864,7 @@ describe("Module `deployer`", () => {
       const imageUrl2: string =
         testUtils.PORTAL_SUBSET.restUrl +
         "/content/items/c38e59126368495694ca23b7ccacefba/resources/47bb15c2df2b466da05577776e82d044_info_thumbnail/thumbnail1552923181520.png";
-      const expectedImage = mockItems.getAnImageResponse();
+      const expectedImage = testUtils.getSampleImageAsBlob();
 
       const communitySelfResponse: any = testUtils.getUserResponse();
       const portalsSelfResponse: any = testUtils.getPortalsSelfResponse();
