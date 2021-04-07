@@ -2,9 +2,9 @@
 <html lang="en" dir="ltr">
 <head>
   <meta http-equiv="content-type" content="text/html; charset=utf-8" />
-  <title>@esri/solution-common getItemInfo example</title>
+  <title>@esri/solution-common verifySolution example</title>
   <!--
-   | Copyright 2019 Esri
+   | Copyright 2021 Esri
    |
    | Licensed under the Apache License, Version 2.0 (the "License");
    | you may not use this file except in compliance with the License.
@@ -37,9 +37,9 @@
 </head>
 <body>
   <div id="input" style="display:none">
-    <label for="id">ID of the item to be fetched:&nbsp;</label><input type="text" id="id" style="width:256px">
+    <label for="id">ID of the solution to be verified&nbsp;</label><input type="text" id="id" style="width:256px">
     <br /><br />
-    <i>For feature services, forms, and private items:</i><br />
+    <i>For feature services, forms, and private items</i><br />
     <label for="username">username:&nbsp;</label><input type="text" id="username">
     <label for="password">password:&nbsp;</label><input type="password" id="password">
     <label for="srcPortal">portal:&nbsp;</label><input type="text" id="srcPortal" style="width:256px">
@@ -67,6 +67,7 @@
         "@esri/hub-sites": "../node_modules/@esri/hub-sites/dist/umd/sites.umd.min",
         "@esri/hub-teams": "../node_modules/@esri/hub-teams/dist/umd/teams.umd.min",
         "@esri/solution-common": "../node_modules/@esri/solution-common/dist/umd/common.umd",
+        "@esri/solution-viewer": "../node_modules/@esri/solution-viewer/dist/umd/viewer.umd",
         "adlib": "../node_modules/adlib/dist/adlib",
         "dist": package_path + "/dist",
         "src": package_path + "/src",
@@ -74,18 +75,24 @@
       }
     });
 
-    require(["@esri/arcgis-rest-auth", "../dist/getFormattedItemInfo"],
-      function (auth, getFormattedItemInfo) {
+    require(["@esri/arcgis-rest-auth", "@esri/solution-viewer"],
+      function (auth, viewer) {
         "use strict";
         goFcn = go;
         document.getElementById("input").style.display = "block";
 
         function go () {
-          document.getElementById("input").style.display = "none";
           document.getElementById("output").style.display = "block";
+          const itemId = document.getElementById("id").value;
+          if (!itemId) {
+            document.getElementById("output").innerHTML = "<span style=\"color:red\">Item's ID is not defined</span>";
+            return;
+          }
+          document.getElementById("output").innerHTML = "Fetching...";
+          document.getElementById("input").style.display = "none";
 
-          getFormattedItemInfo.getFormattedItemInfo(
-            document.getElementById("id").value.trim(),
+          viewer.checkSolution(
+            itemId,
             new auth.UserSession({
               username: document.getElementById("username").value,
               password: document.getElementById("password").value,
@@ -93,10 +100,10 @@
             })
           ).then(
             html => {
-              document.getElementById("output").innerHTML = html;
-            },
-            error => {
-              document.getElementById("output").innerHTML = "<span style=\"color:red\">" + error + "</span>";
+              var displayHtml = "Solution " + itemId + " checks:<br><br><ol><li>";
+              displayHtml += html.join("</li><li>");
+              displayHtml += "</li></ol>";
+              document.getElementById("output").innerHTML = displayHtml;
             }
           );
         }

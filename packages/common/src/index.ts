@@ -20,17 +20,18 @@
  * @module common
  */
 
+export * from "./completeItem";
 export * from "./dependencies";
 export * from "./featureServiceHelpers";
 export * from "./generalHelpers";
 export * from "./interfaces";
 export * from "./libConnectors";
+export * from "./migrator";
 export * from "./polyfills";
 export * from "./resourceHelpers";
+export * from "./resources";
 export * from "./restHelpers";
 export * from "./restHelpersGet";
 export * from "./sharing";
 export * from "./templatization";
-export * from "./migrator";
-export * from "./resources";
 export * from "./workforceHelpers";

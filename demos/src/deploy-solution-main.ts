@@ -19,7 +19,7 @@ import * as common from "@esri/solution-common";
 import * as deployer from "@esri/solution-deployer";
 import * as portal from "@esri/arcgis-rest-portal";
 
-import * as getItemInfo from "./getItemInfo";
+import * as getFormattedItemInfo from "./getFormattedItemInfo";
 
 export interface ISolutionInfoCard {
   id: string;
@@ -48,7 +48,7 @@ export function deploySolution(
 
     deployer.deploySolution(templateSolutionId, destAuthentication, options).then(
       (deployedSolution: any) => {
-        getItemInfo.getItemInfo(deployedSolution, destAuthentication).then(
+        getFormattedItemInfo.getFormattedItemInfo(deployedSolution, destAuthentication).then(
           itemInfoHtml => resolve(itemInfoHtml),
           error => reject(error.error)
         );

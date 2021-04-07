@@ -18,7 +18,7 @@
 import * as common from "@esri/solution-common";
 import * as creator from "@esri/solution-creator";
 
-import * as getItemInfo from "./getItemInfo";
+import * as getFormattedItemInfo from "./getFormattedItemInfo";
 
 export function createSolution(
   sourceId: string,
@@ -37,7 +37,7 @@ export function createSolution(
     };
     creator.createSolution(sourceId.trim(), authentication, options).then(
       createdSolutionId => {
-        getItemInfo.getItemInfo(createdSolutionId, authentication).then(
+        getFormattedItemInfo.getFormattedItemInfo(createdSolutionId, authentication).then(
           itemInfoHtml => resolve(itemInfoHtml),
           error => reject(error.error)
         );

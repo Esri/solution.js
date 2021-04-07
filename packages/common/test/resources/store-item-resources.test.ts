@@ -311,7 +311,7 @@ describe("storeItemResources :: ", () => {
       itemTemplate.item.thumbnail = "thumbnail/banner.png";
       const solutionItemId = "ee67658b2a98450cba051fd001463df0";
 
-      const expectedFetch = mockItems.getAnImageResponse();
+      const expectedFetch = utils.getSampleImageAsBlob();
 
       const resources: any = {
         total: 1,
@@ -483,7 +483,7 @@ describe("storeItemResources :: ", () => {
       itemTemplate.item.thumbnail = null;
       const solutionItemId = "ee67658b2a98450cba051fd001463df0";
 
-      const expectedFetch = mockItems.getAnImageResponse();
+      const expectedFetch = utils.getSampleImageAsBlob();
 
       const resources: any = {
         total: 1,

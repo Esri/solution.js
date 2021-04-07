@@ -25,6 +25,12 @@ import * as serviceAdmin from "@esri/arcgis-rest-service-admin";
 import * as utils from "../test/mocks/utils";
 
 describe("Module `generalHelpers`: common utility functions shared across packages", () => {
+  describe("blobToFile", () => {
+    it("handles a failed blob", () => {
+      expect(generalHelpers.blobToFile(null, "")).toBeNull();
+    });
+  });
+
   describe("blobToJson", () => {
     it("extracts JSON from a blob", done => {
       const srcJson: any = {
