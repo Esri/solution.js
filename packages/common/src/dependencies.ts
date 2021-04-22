@@ -140,12 +140,14 @@ export function topologicallySortItems(
   const otherIds: string[] = [];
   do {
     const id = buildOrder.shift();
-    if (vertexType[id] === "Feature Service") {
-      fsIds.push(id);
-    } else if (vertexType[id] === "View Service") {
-      fsViewIds.push(id);
-    } else {
-      otherIds.push(id);
+    if (id) {
+      if (vertexType[id] === "Feature Service") {
+        fsIds.push(id);
+      } else if (vertexType[id] === "View Service") {
+        fsViewIds.push(id);
+      } else {
+        otherIds.push(id);
+      }
     }
   } while (buildOrder.length > 0);
   buildOrder = fsIds.concat(fsViewIds, otherIds);
