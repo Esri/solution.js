@@ -1406,7 +1406,7 @@ export function getItemTypeAbbrev(type: string): string {
       Form: "frm",
       "Hub Initiative": "xxx",
       "Hub Page": "xxx",
-      "Hub Site Application": "xxx",
+      "Hub Site Application": "hsa",
       "Insights Model": "xxx",
       "Insights Page": "xxx",
       "Insights Theme": "xxx",

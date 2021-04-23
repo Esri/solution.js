@@ -51,11 +51,13 @@ describe("Module `deploySolutionItems`", () => {
     it("can handle unimplemented item type gracefully", done => {
       spyOn(console, "log").and.callFake(() => {});
       spyOn(console, "error").and.callFake(() => {});
+      const template = templates.getItemTemplateSkeleton();
+      template.itemId = "itm1234567890";
       deploySolution
         .deploySolutionItems(
           "",
           "",
-          [templates.getItemTemplateSkeleton()],
+          [template],
           MOCK_USER_SESSION,
           {},
           MOCK_USER_SESSION,
@@ -68,7 +70,7 @@ describe("Module `deploySolutionItems`", () => {
         .then(
           () => done.fail(),
           error => {
-            expect(error).toEqual(common.failWithIds([""]));
+            expect(error).toEqual(common.failWithIds(["itm1234567890"]));
             done();
           }
         );
