@@ -209,26 +209,31 @@ describe("Module `deploySolutionItems`", () => {
         "https://localdeployment.maps.arcgis.com/apps/CrowdsourcePolling/index.html?appid=" +
         foundItemID;
 
-      fetchMock.get(
-        utils.PORTAL_SUBSET.restUrl +
-          "/search?f=json&q=typekeywords%3Asource-" +
-          id +
-          "%20type%3AWeb%20Mapping%20Application%20owner%3Acasey&token=fake-token",
-        {
-          query: "typekeywords='source-" + id + "'",
-          results: [
-            {
-              id: foundItemID,
-              type: type,
-              name: "name",
-              title: "title",
-              url: url,
-              created: 1582751986000,
-              modified: 1582751989000
-            }
-          ]
-        }
-      );
+      fetchMock
+        .get(
+          utils.PORTAL_SUBSET.restUrl +
+            "/search?f=json&q=typekeywords%3Asource-" +
+            id +
+            "%20type%3AWeb%20Mapping%20Application%20owner%3Acasey&token=fake-token",
+          {
+            query: "typekeywords='source-" + id + "'",
+            results: [
+              {
+                id: foundItemID,
+                type: type,
+                name: "name",
+                title: "title",
+                url: url,
+                created: 1582751986000,
+                modified: 1582751989000
+              }
+            ]
+          }
+        )
+        .get(
+          "https://myorg.maps.arcgis.com/sharing/rest/content/items/ba4a6047326243b290f625e80ebe6531?f=json&token=fake-token",
+          { id: "cc4a6047326243b290f625e80ebe6531" }
+        );
 
       const expected: common.ICreateItemFromTemplateResponse[] = [
         {
@@ -321,6 +326,10 @@ describe("Module `deploySolutionItems`", () => {
               }
             ]
           }
+        )
+        .get(
+          "https://myorg.maps.arcgis.com/sharing/rest/content/items/ba4a6047326243b290f625e80ebe6531?f=json&token=fake-token",
+          { id: "ABC123" }
         );
 
       const expected: common.ICreateItemFromTemplateResponse[] = [
@@ -390,33 +399,38 @@ describe("Module `deploySolutionItems`", () => {
         "https://localdeployment.maps.arcgis.com/apps/CrowdsourcePolling/index.html?appid=" +
         foundItemID2;
 
-      fetchMock.get(
-        utils.PORTAL_SUBSET.restUrl +
-          "/search?f=json&q=typekeywords%3Asource-" +
-          id +
-          "%20type%3AWeb%20Mapping%20Application%20owner%3Acasey&token=fake-token",
-        {
-          query: "typekeywords='source-" + id + "'",
-          results: [
-            {
-              id: foundItemID,
-              type: type,
-              name: "name1",
-              title: "title1",
-              url: url1,
-              created: 1582751986000
-            },
-            {
-              id: foundItemID2,
-              type: type,
-              name: "name2",
-              title: "title2",
-              url: url2,
-              created: 1582751989000
-            }
-          ]
-        }
-      );
+      fetchMock
+        .get(
+          utils.PORTAL_SUBSET.restUrl +
+            "/search?f=json&q=typekeywords%3Asource-" +
+            id +
+            "%20type%3AWeb%20Mapping%20Application%20owner%3Acasey&token=fake-token",
+          {
+            query: "typekeywords='source-" + id + "'",
+            results: [
+              {
+                id: foundItemID,
+                type: type,
+                name: "name1",
+                title: "title1",
+                url: url1,
+                created: 1582751986000
+              },
+              {
+                id: foundItemID2,
+                type: type,
+                name: "name2",
+                title: "title2",
+                url: url2,
+                created: 1582751989000
+              }
+            ]
+          }
+        )
+        .get(
+          "https://myorg.maps.arcgis.com/sharing/rest/content/items/ca4a6047326243b290f625e80ebe6531?f=json&token=fake-token",
+          { id: "ABC123" }
+        );
 
       const expected: common.ICreateItemFromTemplateResponse[] = [
         {
@@ -1858,13 +1872,13 @@ describe("Module `deploySolutionItems`", () => {
           url: "http://something"
         },
         aa4a6047326243b290f625e80ebe6531: {
-          url
+          url,
+          itemId: "ABC123"
         }
       };
-      const result: any = { url };
       const actual: any = deploySolution._updateTemplateDictionaryForError(
-        result,
-        templateDictionary
+        templateDictionary,
+        "ABC123"
       );
       const expected: any = {
         ca4a6047326243b290f625e80ebe6531: {
