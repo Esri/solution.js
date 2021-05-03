@@ -39,6 +39,7 @@ import { IModel, isGuid } from "@esri/hub-common";
  * @param maybeModel Item Id or IModel
  * @param authentication Credentials for the destination organization
  * @param options Options to override deployed information and to provide additional credentials
+ * @return The id of the created deployed solution item
  */
 export function deploySolution(
   maybeModel: string | IModel,
