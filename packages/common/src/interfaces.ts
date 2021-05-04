@@ -54,6 +54,9 @@ export {
 
 //#endregion ---------------------------------------------------------------------------------------------------------//
 
+export const SSolutionTemplateFormatVersion = "0";
+export const SDeployedSolutionFormatVersion = "1";
+
 //#region Enums ------------------------------------------------------------------------------------------------------//
 
 /**
