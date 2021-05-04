@@ -235,30 +235,29 @@ export function deploySolutionFromTemplate(
       })
       .then(
         (clonedSolutionsResponse: common.ICreateItemFromTemplateResponse[]) => {
-          // TODO: if deploySolutionItems returned what was pushed into the templateDictionary
-          // we could add that at this point vs mutating
-          // why is this a reassignment?
-          solutionTemplateData.templates = solutionTemplateData.templates.map(
-            (itemTemplate: common.IItemTemplate) => {
-              // Update ids present in template dictionary
-              const itemId = getProp(
-                templateDictionary,
-                `${itemTemplate.itemId}.itemId`
-              );
-              // why a guard? can this ever be false? what happens if so?
-              // why are we updating this same property vs adding a new one? seems confusing
-              /* istanbul ignore else */
-              if (itemId) {
-                itemTemplate.originalItemId = itemTemplate.itemId;
-                itemTemplate.itemId = itemId;
-              }
-              // update the dependencies hash to point to the new item ids
-              itemTemplate.dependencies = itemTemplate.dependencies.map(id =>
-                getWithDefault(templateDictionary, `${id}.itemId`, id)
-              );
-              return itemTemplate;
+          // Generate reverse template dictionary id lookup to go from deployed item id to template item id;
+          // skip entries that store information for the deployed item (e.g., for feature services)
+          const reverseLookup = {};
+          for (const [key, value] of Object.entries(templateDictionary)) {
+            if ((value as any).itemId && key !== (value as any).itemId) {
+              reverseLookup[(value as any).itemId] = key;
             }
-          );
+          }
+
+          // Sort the solution templates into the order that matches the cloned responses
+          const sortedTemplates = [] as any;
+          clonedSolutionsResponse.forEach(response => {
+            const template = {
+              ...response.item
+            };
+            (template as any).originalItemId = reverseLookup[response.id];
+            (template as any).dependencies = (template as any).dependencies.map(
+              (id: string) =>
+                getWithDefault(templateDictionary, `${id}.itemId`, id)
+            );
+            sortedTemplates.push(template);
+          });
+          solutionTemplateData.templates = sortedTemplates;
           solutionTemplateData.metadata.version =
             common.SDeployedSolutionFormatVersion;
 

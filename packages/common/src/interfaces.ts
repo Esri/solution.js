@@ -605,6 +605,7 @@ export interface ISolutionItem {
    * Supplemental information
    */
   properties?: IStringValuePair;
+  [key: string]: any;
 }
 
 /**

@@ -30,6 +30,7 @@ import * as restHelpersGet from "../src/restHelpersGet";
 import * as templates from "../test/mocks/templates";
 import * as utils from "./mocks/utils";
 import { encodeParam } from "@esri/arcgis-rest-request";
+import * as sinon from "sinon";
 
 // ------------------------------------------------------------------------------------------------------------------ //
 
@@ -3016,6 +3017,36 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
         () => done.fail(),
         () => done()
       );
+    });
+  });
+
+  describe("updateItem", () => {
+    it("handles additional parameters", done => {
+      const itemInfo: interfaces.IItemUpdate = {
+        id: "itm1234567890"
+      };
+      const additionalParams: any = {
+        data: "fred"
+      };
+      const updateItemFnStub = sinon
+        .stub(portal, "updateItem")
+        .resolves(utils.getSuccessResponse());
+      restHelpers
+        .updateItem(itemInfo, MOCK_USER_SESSION, null, additionalParams)
+        .then(response => {
+          const updateItemFnCall = updateItemFnStub.getCall(0);
+          expect(updateItemFnCall.args[0]).toEqual({
+            item: {
+              id: "itm1234567890"
+            },
+            folderId: null,
+            authentication: MOCK_USER_SESSION,
+            params: {
+              data: "fred"
+            }
+          });
+          done();
+        }, done.fail);
     });
   });
 
