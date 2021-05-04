@@ -16,7 +16,7 @@
 
 import * as common from "@esri/solution-common";
 import * as deployItems from "./deploySolutionItems";
-import { getProp, getWithDefault } from "@esri/hub-common";
+import { getWithDefault } from "@esri/hub-common";
 import { postProcess } from "./helpers/post-process";
 
 // NOTE: Moved to separate file to allow stubbing in main deploySolution tests
@@ -25,7 +25,6 @@ export function deploySolutionFromTemplate(
   templateSolutionId: string,
   solutionTemplateBase: any,
   solutionTemplateData: any,
-  solutionTemplateMetadata: File,
   authentication: common.UserSession,
   options: common.IDeploySolutionOptions
 ): Promise<string> {
@@ -306,17 +305,10 @@ export function deploySolutionFromTemplate(
           solutionTemplateBase.data.params = templateDictionary.params;
         }
 
-        // Pass metadata in via params because item property is serialized, which discards a File
-        const additionalParams: any = {};
-        /* istanbul ignore else */
-        if (solutionTemplateMetadata) {
-          additionalParams.metadata = solutionTemplateMetadata;
-        }
         return common.updateItem(
           solutionTemplateBase,
           authentication,
-          deployedFolderId,
-          additionalParams
+          deployedFolderId
         );
       })
       .then(

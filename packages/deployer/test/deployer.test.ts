@@ -182,10 +182,6 @@ describe("Module `deployer`", () => {
               true,
               "getSolutionTemplateItem should be called"
             );
-            expect(metaStub.calledOnce).toBe(
-              true,
-              "getItemMetadataAsFile should be called once because item id is a GUID"
-            );
             expect(deployFnStub.calledOnce).toBe(
               true,
               "deploySolutionFromTemplate should be called once"
