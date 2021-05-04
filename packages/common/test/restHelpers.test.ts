@@ -3021,6 +3021,10 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
   });
 
   describe("updateItem", () => {
+    afterEach(() => {
+      sinon.restore();
+    });
+
     it("handles additional parameters", done => {
       const itemInfo: interfaces.IItemUpdate = {
         id: "itm1234567890"
