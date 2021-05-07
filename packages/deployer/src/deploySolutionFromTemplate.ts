@@ -235,29 +235,19 @@ export function deploySolutionFromTemplate(
       })
       .then(
         (clonedSolutionsResponse: common.ICreateItemFromTemplateResponse[]) => {
-          // Generate reverse template dictionary id lookup to go from deployed item id to template item id;
-          // skip entries that store information for the deployed item (e.g., for feature services)
-          const reverseLookup = {};
-          for (const [key, value] of Object.entries(templateDictionary)) {
-            if ((value as any).itemId && key !== (value as any).itemId) {
-              reverseLookup[(value as any).itemId] = key;
-            }
-          }
-
-          // Sort the solution templates into the order that matches the cloned responses
-          const sortedTemplates = [] as any;
+          solutionTemplateData.templates = [] as any;
           clonedSolutionsResponse.forEach(response => {
             const template = {
               ...response.item
             };
-            (template as any).originalItemId = reverseLookup[response.id];
+
+            // update the dependencies hash to point to the new item ids
             (template as any).dependencies = (template as any).dependencies.map(
               (id: string) =>
                 getWithDefault(templateDictionary, `${id}.itemId`, id)
             );
-            sortedTemplates.push(template);
+            solutionTemplateData.templates.push(template);
           });
-          solutionTemplateData.templates = sortedTemplates;
           solutionTemplateData.metadata.version =
             common.SDeployedSolutionFormatVersion;
 
