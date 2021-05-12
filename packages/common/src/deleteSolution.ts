@@ -157,12 +157,12 @@ export function deleteSolution(
  * @param allItemsSuccessfullyDeleted Current state of all items being deleted
  * @return Promise that will resolve with true if all of the items in the list were successfully deleted
  */
-function _removeItems(
+export function _removeItems(
   itemIds: string[],
   authentication: UserSession,
   percentDone: number,
   progressPercentStep: number,
-  deleteOptions: IDeleteSolutionOptions,
+  deleteOptions: IDeleteSolutionOptions = {},
   allItemsSuccessfullyDeleted = true
 ): Promise<boolean> {
   return new Promise<boolean>(resolve => {
@@ -218,7 +218,7 @@ function _removeItems(
  * @param deleteOptions Reporting options
  * @param deletedItemId Id of item deleted
  */
-function _reportProgress(
+export function _reportProgress(
   percentDone: number,
   deleteOptions: IDeleteSolutionOptions,
   deletedItemId = "",

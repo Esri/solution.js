@@ -19,6 +19,7 @@
  */
 
 import * as interfaces from "../src/interfaces";
+import * as mockItems from "../../common/test/mocks/agolItems";
 import * as templates from "../test/mocks/templates";
 import * as templatization from "../src/templatization";
 import * as utils from "./mocks/utils";
@@ -26,6 +27,27 @@ import * as utils from "./mocks/utils";
 // ------------------------------------------------------------------------------------------------------------------ //
 
 describe("Module `templatization`: common functions involving the adlib library", () => {
+  describe("extractSolutionVersion", () => {
+    it("handles a version 0 solution", () => {
+      const itemData: interfaces.ISolutionItemData = mockItems.getAGOLItemData(
+        "Solution"
+      );
+
+      const version = templatization.extractSolutionVersion(itemData);
+      expect(version).toEqual(0);
+    });
+
+    it("handles a version 1 solution", () => {
+      const itemData: interfaces.ISolutionItemData = mockItems.getAGOLItemData(
+        "Solution"
+      );
+      itemData.metadata.version = "1";
+
+      const version = templatization.extractSolutionVersion(itemData);
+      expect(version).toEqual(1);
+    });
+  });
+
   describe("findTemplateIndexInList", () => {
     it("should handle an empty list", () => {
       const solnTemplates: interfaces.IItemTemplate[] = [];
