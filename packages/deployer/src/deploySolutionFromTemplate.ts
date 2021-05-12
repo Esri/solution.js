@@ -16,7 +16,7 @@
 
 import * as common from "@esri/solution-common";
 import * as deployItems from "./deploySolutionItems";
-import { getProp, getWithDefault } from "@esri/hub-common";
+import { getWithDefault } from "@esri/hub-common";
 import { postProcess } from "./helpers/post-process";
 
 // NOTE: Moved to separate file to allow stubbing in main deploySolution tests
@@ -25,7 +25,6 @@ export function deploySolutionFromTemplate(
   templateSolutionId: string,
   solutionTemplateBase: any,
   solutionTemplateData: any,
-  solutionTemplateMetadata: File,
   authentication: common.UserSession,
   options: common.IDeploySolutionOptions
 ): Promise<string> {
@@ -236,30 +235,23 @@ export function deploySolutionFromTemplate(
       })
       .then(
         (clonedSolutionsResponse: common.ICreateItemFromTemplateResponse[]) => {
-          // TODO: if deploySolutionItems returned what was pushed into the templateDictionary
-          // we could add that at this point vs mutating
-          // why is this a reassignment?
-          solutionTemplateData.templates = solutionTemplateData.templates.map(
-            (itemTemplate: common.IItemTemplate) => {
-              // Update ids present in template dictionary
-              const itemId = getProp(
-                templateDictionary,
-                `${itemTemplate.itemId}.itemId`
-              );
-              // why a guard? can this ever be false? what happens if so?
-              // why are we updating this same property vs adding a new one? seems confusing
-              /* istanbul ignore else */
-              if (itemId) {
-                itemTemplate.originalItemId = itemTemplate.itemId;
-                itemTemplate.itemId = itemId;
-              }
-              // update the dependencies hash to point to the new item ids
-              itemTemplate.dependencies = itemTemplate.dependencies.map(id =>
+          solutionTemplateData.templates = [] as any;
+          clonedSolutionsResponse.forEach(response => {
+            const template = {
+              ...response.item
+            };
+
+            // update the dependencies hash to point to the new item ids
+            (template as any).dependencies = (template as any).dependencies.map(
+              (id: string) =>
                 getWithDefault(templateDictionary, `${id}.itemId`, id)
-              );
-              return itemTemplate;
-            }
-          );
+            );
+            solutionTemplateData.templates.push(template);
+          });
+          solutionTemplateData.metadata.version =
+            common.SDeployedSolutionFormatVersion;
+
+          // Wrap up with post-processing, in which we deal with groups and cycle remnants
           return postProcess(
             deployedSolutionId,
             solutionTemplateData.templates,
@@ -306,17 +298,10 @@ export function deploySolutionFromTemplate(
           solutionTemplateBase.data.params = templateDictionary.params;
         }
 
-        // Pass metadata in via params because item property is serialized, which discards a File
-        const additionalParams: any = {};
-        /* istanbul ignore else */
-        if (solutionTemplateMetadata) {
-          additionalParams.metadata = solutionTemplateMetadata;
-        }
         return common.updateItem(
           solutionTemplateBase,
           authentication,
-          deployedFolderId,
-          additionalParams
+          deployedFolderId
         );
       })
       .then(

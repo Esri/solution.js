@@ -15,6 +15,7 @@
  */
 
 import {
+  SSolutionTemplateFormatVersion,
   EItemProgressStatus,
   failWithIds,
   getIDs,
@@ -177,7 +178,7 @@ export function addContentToSolution(
             solutionTemplates2 => {
               // Update solution item with its data JSON
               const solutionData: ISolutionItemData = {
-                metadata: {},
+                metadata: { version: SSolutionTemplateFormatVersion },
                 templates: options.templatizeFields
                   ? postProcessFieldReferences(solutionTemplates2)
                   : solutionTemplates2
