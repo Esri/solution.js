@@ -27,6 +27,7 @@ import {
   IItemTemplate,
   IItemUpdate,
   ISolutionItemData,
+  isWorkforceProject,
   removeTemplate,
   replaceInTemplate,
   SItemProgressStatus,
@@ -166,10 +167,10 @@ export function addContentToSolution(
         if (solutionTemplates.length > 0) {
           // test for and update group dependencies and other post-processing
           solutionTemplates = _postProcessGroupDependencies(solutionTemplates);
-          solutionTemplates = _postProcessIgnoredItems(solutionTemplates);
           solutionTemplates = postProcessWorkforceTemplates(solutionTemplates);
-          _simplifyUrlsInItemDescriptions(solutionTemplates);
           _templatizeSolutionIds(solutionTemplates);
+          solutionTemplates = _postProcessIgnoredItems(solutionTemplates);
+          _simplifyUrlsInItemDescriptions(solutionTemplates);
           _replaceDictionaryItemsInObject(
             templateDictionary,
             solutionTemplates
@@ -532,6 +533,9 @@ export function _templatizeSolutionIds(templates: IItemTemplate[]): void {
   templates.forEach((template: IItemTemplate) => {
     _replaceRemainingIdsInObject(solutionIds, template.item);
     _replaceRemainingIdsInObject(solutionIds, template.data);
-    template.dependencies = _getDependencies(template);
+    /* istanbul ignore else */
+    if (template.type !== "Group" && !isWorkforceProject(template)) {
+      template.dependencies = _getDependencies(template);
+    }
   });
 }
