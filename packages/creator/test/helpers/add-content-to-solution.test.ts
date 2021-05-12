@@ -34,6 +34,7 @@ import * as common from "@esri/solution-common";
 import * as mockItems from "../../../common/test/mocks/agolItems";
 import * as utils from "../../../common/test/mocks/utils";
 import * as templates from "../../../common/test/mocks/templates";
+import * as sinon from "sinon";
 import * as staticRelatedItemsMocks from "../../../common/test/mocks/staticRelatedItemsMocks";
 import { findBy } from "@esri/hub-common";
 // Set up a UserSession to use in all these tests
@@ -1237,5 +1238,26 @@ describe("_simplifyUrlsInItemDescriptions", () => {
 
     _simplifyUrlsInItemDescriptions([notebookTemplate]);
     expect(notebookTemplate.item.description).toBeNull();
+  });
+});
+
+describe("_templatizeSolutionIds", () => {
+  it("skips _getDependencies for workforce", () => {
+    // added for issue #630
+    const template: common.IItemTemplate = templates.getItemTemplate(
+      "Workforce Project"
+    );
+    template.dependencies = [];
+    template.item.typeKeywords.push("Workforce Project");
+    _templatizeSolutionIds([template]);
+    expect(template.dependencies).toEqual([]);
+  });
+
+  it("skips _getDependencies for group", () => {
+    // added for issue #630
+    const getDependenciesSpy = sinon.spy(_getDependencies);
+    const template: common.IItemTemplate = templates.getItemTemplate("Group");
+    _templatizeSolutionIds([template]);
+    expect(getDependenciesSpy.notCalled).toBe(true);
   });
 });
