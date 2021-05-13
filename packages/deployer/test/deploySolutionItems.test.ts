@@ -1568,6 +1568,118 @@ describe("Module `deploySolutionItems`", () => {
     });
   });
 
+  describe("_appendHubInitiatives", () => {
+    it("handles empty input list", () => {
+      const clonedSolutionItems: common.ICreateItemFromTemplateResponse[] = [];
+      const updatedList = deploySolution._appendHubInitiatives(
+        clonedSolutionItems
+      );
+      expect(updatedList.length).toEqual(clonedSolutionItems.length);
+      expect(updatedList.map(item => item.id)).toEqual(
+        clonedSolutionItems.map(item => item.id)
+      );
+    });
+
+    it("returns input list if it doesn't contain Hub Sites", () => {
+      const clonedSolutionItems: common.ICreateItemFromTemplateResponse[] = [
+        { id: "abc", item: {} as any, postProcess: false, type: "Web Map" },
+        {
+          id: "def",
+          item: {} as any,
+          postProcess: false,
+          type: "Web Mapping Application"
+        },
+        {
+          id: "ghi",
+          item: {} as any,
+          postProcess: false,
+          type: "Feature Service"
+        }
+      ];
+      const updatedList = deploySolution._appendHubInitiatives(
+        clonedSolutionItems
+      );
+      expect(updatedList.length).toEqual(clonedSolutionItems.length);
+      expect(updatedList.map(item => item.id)).toEqual(
+        clonedSolutionItems.map(item => item.id)
+      );
+    });
+
+    it("appends Hub Initiatives to input list", () => {
+      const clonedSolutionItems: common.ICreateItemFromTemplateResponse[] = [
+        { id: "abc", item: {} as any, postProcess: false, type: "Web Map" },
+        {
+          id: "def",
+          item: {
+            properties: {
+              initiativeTemplate: {
+                item: { id: "mno", type: "Hub Initiative" }
+              }
+            }
+          } as any,
+          postProcess: false,
+          type: "Hub Site Application"
+        },
+        {
+          id: "jkl",
+          item: {} as any,
+          postProcess: false,
+          type: "Web Mapping Application"
+        },
+        {
+          id: "ghi",
+          item: {} as any,
+          postProcess: false,
+          type: "Feature Service"
+        }
+      ];
+      const updatedList = deploySolution._appendHubInitiatives(
+        clonedSolutionItems
+      );
+      expect(
+        updatedList.slice(0, clonedSolutionItems.length).map(item => item.id)
+      ).toEqual(clonedSolutionItems.map(item => item.id));
+      expect(
+        updatedList.slice(clonedSolutionItems.length).map(item => item.id)
+      ).toEqual(["mno"]);
+    });
+
+    it("ignores older Hub Initiatives that lack an id", () => {
+      const clonedSolutionItems: common.ICreateItemFromTemplateResponse[] = [
+        { id: "abc", item: {} as any, postProcess: false, type: "Web Map" },
+        {
+          id: "def",
+          item: {
+            properties: {
+              initiativeTemplate: { item: { type: "Hub Initiative" } }
+            }
+          } as any,
+          postProcess: false,
+          type: "Hub Site Application"
+        },
+        {
+          id: "jkl",
+          item: {} as any,
+          postProcess: false,
+          type: "Web Mapping Application"
+        },
+        {
+          id: "ghi",
+          item: {} as any,
+          postProcess: false,
+          type: "Feature Service"
+        }
+      ];
+      const updatedList = deploySolution._appendHubInitiatives(
+        clonedSolutionItems
+      );
+      expect(updatedList.length).toEqual(clonedSolutionItems.length);
+      expect(updatedList.map(item => item.id)).toEqual(
+        clonedSolutionItems.map(item => item.id)
+      );
+    });
+  });
+
   describe("_flagPatchItemsForPostProcessing", () => {
     it("handles group items without user groups in template dictionary", () => {
       const itemsToBePatched: common.IKeyedListsOfStrings = {

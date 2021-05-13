@@ -183,6 +183,11 @@ export function deploySolutionItems(
                   clonedSolutionItems
                 );
 
+                // Get Hub Initiatives out of Hub Sites and Hub Pages and add them to the list of cloned items
+                clonedSolutionItems = _appendHubInitiatives(
+                  clonedSolutionItems
+                );
+
                 resolve(clonedSolutionItems);
               } else {
                 // Delete created items
@@ -206,6 +211,50 @@ export function deploySolutionItems(
       }
     );
   });
+}
+
+/**
+ * Gets Hub Initiatives out of Hub Sites and adds them to the list of cloned items.
+ *
+ * @param clonedSolutionItems Deployed Solution items
+ * @param Copy of input with entries for any Hub Initiatives appended
+ */
+export function _appendHubInitiatives(
+  clonedSolutionItems: common.ICreateItemFromTemplateResponse[]
+): common.ICreateItemFromTemplateResponse[] {
+  const hubInitiatives: common.ICreateItemFromTemplateResponse[] = [];
+  clonedSolutionItems.forEach(clone => {
+    /* istanbul ignore else */
+    if (clone.type === "Hub Site Application") {
+      const initiativeItem = common.getProp(
+        clone,
+        "item.properties.initiativeTemplate.item"
+      );
+      /* istanbul ignore else */
+      if (initiativeItem) {
+        const initiativeId = common.getProp(initiativeItem, "id");
+        /* istanbul ignore else */
+        if (initiativeId) {
+          // older Hub Initiatives lack an id
+          const initiative: common.ICreateItemFromTemplateResponse = {
+            id: initiativeId,
+            item: {
+              itemId: initiativeId,
+              type: initiativeItem.type,
+              data: {},
+              dependencies: [],
+              groups: [],
+              item: initiativeItem
+            } as any,
+            postProcess: false,
+            type: initiativeItem.type
+          };
+          hubInitiatives.push(initiative);
+        }
+      }
+    }
+  });
+  return clonedSolutionItems.concat(hubInitiatives);
 }
 
 /**
