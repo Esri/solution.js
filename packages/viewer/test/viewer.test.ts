@@ -83,7 +83,7 @@ afterEach(() => {
 describe("Module `viewer`", () => {
   describe("checkSolution", () => {
     it("should handle inability to get complete item", done => {
-      const compItem = mockItems.getCompleteItem("Web Mapping Application");
+      const compItem = mockItems.getCompleteMockItem("Web Mapping Application");
       const itemSpy = spyOn(common, "getCompleteItem").and.resolveTo(null);
       viewer.checkSolution(compItem.base.id).then(
         (results: string[]) => {
@@ -97,7 +97,7 @@ describe("Module `viewer`", () => {
     });
 
     it("should reject items that are not Solutions", done => {
-      const compItem = mockItems.getCompleteItem("Web Mapping Application");
+      const compItem = mockItems.getCompleteMockItem("Web Mapping Application");
       const itemSpy = spyOn(common, "getCompleteItem").and.resolveTo(compItem);
       viewer.checkSolution(compItem.base.id, MOCK_USER_SESSION).then(
         (results: string[]) => {
@@ -111,7 +111,7 @@ describe("Module `viewer`", () => {
     });
 
     it("should reject Solution items that are neither Templates nor Deployed", done => {
-      const compItem = mockItems.getCompleteItem("Solution");
+      const compItem = mockItems.getCompleteMockItem("Solution");
       const itemSpy = spyOn(common, "getCompleteItem").and.resolveTo(compItem);
       viewer.checkSolution(compItem.base.id, MOCK_USER_SESSION).then(
         (results: string[]) => {
@@ -127,7 +127,7 @@ describe("Module `viewer`", () => {
     });
 
     it("should reject reject Solution items that are missing their data sections", done => {
-      const compItem = mockItems.getCompleteItem("Solution");
+      const compItem = mockItems.getCompleteMockItem("Solution");
       compItem.base.typeKeywords.push("Template");
       compItem.data = null;
       const itemSpy = spyOn(common, "getCompleteItem").and.resolveTo(compItem);
@@ -146,7 +146,7 @@ describe("Module `viewer`", () => {
     });
 
     it("should reject reject Solution items that have defective JSON", done => {
-      const compItem = mockItems.getCompleteItem("Solution");
+      const compItem = mockItems.getCompleteMockItem("Solution");
       compItem.base.typeKeywords.push("Template");
       compItem.data = common.jsonToFile(
         {
@@ -170,7 +170,7 @@ describe("Module `viewer`", () => {
     });
 
     it("should reject reject Solution items that have no templates", done => {
-      const compItem = mockItems.getCompleteItem("Solution");
+      const compItem = mockItems.getCompleteMockItem("Solution");
       compItem.base.typeKeywords.push("Template");
       compItem.data = common.jsonToFile(
         {
