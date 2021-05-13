@@ -67,7 +67,7 @@ describe("Module `deleteSolution`: functions for deleting a deployed Solution it
         );
     });
 
-    it("rejects a version 0 Solution", done => {
+    it("deletes a version 0 Solution", done => {
       const solutionItem = mockItems.getCompleteDeployedSolutionItemVersioned(
         "0"
       );
@@ -80,19 +80,30 @@ describe("Module `deleteSolution`: functions for deleting a deployed Solution it
         "getItemDataAsJson"
       ).and.resolveTo(solutionItem.data);
 
+      const unprotectItemSpy = spyOn(portal, "unprotectItem").and.resolveTo(
+        utils.getSuccessResponse()
+      );
+
+      const removeItemSpy = spyOn(restHelpers, "removeItem").and.returnValues(
+        Promise.resolve(
+          utils.getSuccessResponse({
+            id: solutionItem.data.templates[0].itemId
+          })
+        ),
+        Promise.resolve(
+          utils.getSuccessResponse({
+            id: solutionItem.data.templates[1].itemId
+          })
+        ),
+        Promise.resolve(utils.getSuccessResponse({ id: solutionItem.base.id }))
+      );
+
       deleteSolution
         .deleteSolution(solutionItem.base.id, MOCK_USER_SESSION)
-        .then(
-          () => done.fail(),
-          failed => {
-            expect(failed).toEqual(
-              "Item " +
-                solutionItem.base.id +
-                " is an older version of deployed Solution and deletion is not yet supported"
-            );
-            done();
-          }
-        );
+        .then(ok => {
+          expect(ok).toBeTruthy();
+          done();
+        }, done.fail);
     });
 
     it("deletes a version 1 Solution", done => {
@@ -209,6 +220,14 @@ describe("Module `deleteSolution`: functions for deleting a deployed Solution it
           expect(ok).toBeFalsy();
           done();
         }, done.fail);
+    });
+  });
+
+  describe("_reconstructBuildOrderIds", () => {
+    it("handles an empty list", () => {
+      const templates: interfaces.IItemTemplate[] = [];
+      const buildOrderIds = deleteSolution._reconstructBuildOrderIds(templates);
+      expect(buildOrderIds).toEqual([]);
     });
   });
 

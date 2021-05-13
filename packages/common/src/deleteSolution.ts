@@ -24,12 +24,15 @@
 import {
   EItemProgressStatus,
   SItemProgressStatus,
+  IBuildOrdering,
   IDeleteSolutionOptions,
   IItemGeneralized,
+  IItemTemplate,
   ISolutionItemData,
   UserSession
 } from "./interfaces";
 import * as portal from "@esri/arcgis-rest-portal";
+import * as dependencies from "./dependencies";
 import * as restHelpers from "./restHelpers";
 import * as restHelpersGet from "./restHelpersGet";
 import * as templatization from "./templatization";
@@ -76,24 +79,22 @@ export function deleteSolution(
       }
 
       // Deletion path depends on version of deployed solution
-      let deleteOrderIds = [] as string[];
+      let buildOrderIds = [] as string[];
       const deployedSolutionVersion = templatization.extractSolutionVersion(
         itemData
       );
       if (deployedSolutionVersion < 1) {
         // Version 0
-        throw new Error(
-          "Item " +
-            solutionItemId +
-            " is an older version of deployed Solution and deletion is not yet supported"
-        );
+        buildOrderIds = _reconstructBuildOrderIds(itemData.templates);
       } else {
         // Version ≥ 1
-        // Get the build order, and then reverse it to get the delete order
-        deleteOrderIds = itemData.templates
-          .map((template: any) => template.itemId)
-          .reverse();
+        buildOrderIds = itemData.templates.map(
+          (template: any) => template.itemId
+        );
       }
+
+      // Reverse the build order to get the delete order
+      const deleteOrderIds = buildOrderIds.reverse();
 
       // Delete the items
       progressPercentStep = 100 / (deleteOrderIds.length + 2); // one extra for starting plus one extra for solution itself
@@ -145,6 +146,22 @@ export function deleteSolution(
     .catch(error => {
       throw error.message;
     });
+}
+
+/**
+ * Reconstructs the build order of a set of templates.
+ *
+ * @param templates A collection of AGO item templates
+ * @return The ids of the source templates in build order, which is not necessarily the same
+ * as the build order used to create the template Solution
+ */
+export function _reconstructBuildOrderIds(
+  templates: IItemTemplate[]
+): string[] {
+  const buildOrdering: IBuildOrdering = dependencies.topologicallySortItems(
+    templates
+  );
+  return buildOrdering.buildOrder;
 }
 
 /**
