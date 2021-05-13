@@ -22,6 +22,7 @@
 import * as deleteSolution from "../src/deleteSolution";
 import * as interfaces from "../src/interfaces";
 import * as mockItems from "../../common/test/mocks/agolItems";
+import * as portal from "@esri/arcgis-rest-portal";
 import * as restHelpers from "../src/restHelpers";
 import * as restHelpersGet from "../src/restHelpersGet";
 import * as utils from "./mocks/utils";
@@ -107,6 +108,10 @@ describe("Module `deleteSolution`: functions for deleting a deployed Solution it
         "getItemDataAsJson"
       ).and.resolveTo(solutionItem.data);
 
+      const unprotectItemSpy = spyOn(portal, "unprotectItem").and.resolveTo(
+        utils.getSuccessResponse()
+      );
+
       const removeItemSpy = spyOn(restHelpers, "removeItem").and.returnValues(
         Promise.resolve(
           utils.getSuccessResponse({
@@ -142,6 +147,10 @@ describe("Module `deleteSolution`: functions for deleting a deployed Solution it
         "getItemDataAsJson"
       ).and.resolveTo(solutionItem.data);
 
+      const unprotectItemSpy = spyOn(portal, "unprotectItem").and.resolveTo(
+        utils.getSuccessResponse()
+      );
+
       const removeItemSpy = spyOn(restHelpers, "removeItem").and.returnValues(
         Promise.resolve(
           utils.getSuccessResponse({
@@ -175,6 +184,10 @@ describe("Module `deleteSolution`: functions for deleting a deployed Solution it
         restHelpersGet,
         "getItemDataAsJson"
       ).and.resolveTo(solutionItem.data);
+
+      const unprotectItemSpy = spyOn(portal, "unprotectItem").and.resolveTo(
+        utils.getSuccessResponse()
+      );
 
       const removeItemSpy = spyOn(restHelpers, "removeItem").and.returnValues(
         Promise.resolve(
@@ -244,6 +257,10 @@ describe("Module `deleteSolution`: functions for deleting a deployed Solution it
       const itemIds: string[] = [firstItemId, secondItemId];
       const percentDone: number = 50.4;
       const progressPercentStep: number = 10.4;
+
+      const unprotectItemSpy = spyOn(portal, "unprotectItem").and.resolveTo(
+        utils.getSuccessResponse()
+      );
 
       const removeItemSpy = spyOn(restHelpers, "removeItem").and.returnValues(
         Promise.resolve(utils.getSuccessResponse({ id: firstItemId })),
@@ -316,8 +333,12 @@ describe("Module `deleteSolution`: functions for deleting a deployed Solution it
       const percentDone: number = 50.4;
       const progressPercentStep: number = 10.4;
 
+      const unprotectItemSpy = spyOn(portal, "unprotectItem").and.resolveTo(
+        utils.getSuccessResponse()
+      );
+
       const removeItemSpy = spyOn(restHelpers, "removeItem").and.returnValues(
-        Promise.resolve(utils.getFailureResponse({ id: firstItemId })),
+        Promise.reject(utils.getFailureResponse({ id: firstItemId })),
         Promise.resolve(utils.getSuccessResponse({ id: secondItemId }))
       );
 
@@ -337,6 +358,19 @@ describe("Module `deleteSolution`: functions for deleting a deployed Solution it
         .then(
           ok => {
             expect(ok).toBeFalsy();
+
+            expect(unprotectItemSpy.calls.count()).toBe(
+              2,
+              "should call unprotectItemSpy twice"
+            );
+            expect(unprotectItemSpy.calls.argsFor(0)[0]).toEqual({
+              id: firstItemId,
+              authentication: MOCK_USER_SESSION
+            });
+            expect(unprotectItemSpy.calls.argsFor(1)[0]).toEqual({
+              id: secondItemId,
+              authentication: MOCK_USER_SESSION
+            });
 
             expect(removeItemSpy.calls.count()).toBe(
               2,
@@ -359,6 +393,90 @@ describe("Module `deleteSolution`: functions for deleting a deployed Solution it
             expect(consoleSpy.calls.argsFor(0)[1]).toBe(firstItemId);
             expect(consoleSpy.calls.argsFor(0)[2]).toBe("");
             expect(consoleSpy.calls.argsFor(0)[3]).toBe("3 Failed");
+            expect(consoleSpy.calls.argsFor(0)[4]).toBe(
+              Math.round(percentDone + progressPercentStep) + "%"
+            );
+            expect(consoleSpy.calls.argsFor(1)[0]).toBe(now);
+            expect(consoleSpy.calls.argsFor(1)[1]).toBe(secondItemId);
+            expect(consoleSpy.calls.argsFor(1)[2]).toBe("");
+            expect(consoleSpy.calls.argsFor(1)[3]).toBe("3 Finished");
+            expect(consoleSpy.calls.argsFor(1)[4]).toBe(
+              Math.round(percentDone + 2 * progressPercentStep) + "%"
+            );
+
+            jasmine.clock().uninstall();
+            done();
+          },
+          () => {
+            jasmine.clock().uninstall();
+            done.fail();
+          }
+        );
+    });
+
+    it("deletes a list of item ids, skipping a missing one", done => {
+      const firstItemId = "map1234567890";
+      const secondItemId = "svc1234567890";
+      const itemIds: string[] = [firstItemId, secondItemId];
+      const percentDone: number = 50.4;
+      const progressPercentStep: number = 10.4;
+
+      const unprotectItemSpy = spyOn(portal, "unprotectItem").and.returnValues(
+        Promise.reject(mockItems.get400Failure()),
+        Promise.resolve(utils.getSuccessResponse({ id: secondItemId }))
+      );
+
+      const removeItemSpy = spyOn(restHelpers, "removeItem").and.resolveTo(
+        utils.getSuccessResponse({ id: secondItemId })
+      );
+
+      const date = new Date(Date.UTC(2019, 2, 4, 5, 6, 7)); // 0-based month
+      const now = date.getTime();
+      utils.setMockDateTime(now);
+      const consoleSpy = spyOn(console, "log");
+
+      deleteSolution
+        ._removeItems(
+          itemIds,
+          MOCK_USER_SESSION,
+          percentDone,
+          progressPercentStep,
+          { consoleProgress: true }
+        )
+        .then(
+          ok => {
+            expect(ok).toBeTruthy();
+
+            expect(unprotectItemSpy.calls.count()).toBe(
+              2,
+              "should call unprotectItemSpy twice"
+            );
+            expect(unprotectItemSpy.calls.argsFor(0)[0]).toEqual({
+              id: firstItemId,
+              authentication: MOCK_USER_SESSION
+            });
+            expect(unprotectItemSpy.calls.argsFor(1)[0]).toEqual({
+              id: secondItemId,
+              authentication: MOCK_USER_SESSION
+            });
+
+            expect(removeItemSpy.calls.count()).toBe(
+              1,
+              "should call removeItem once"
+            );
+            expect(removeItemSpy.calls.argsFor(0)[0]).toEqual(secondItemId);
+            expect(removeItemSpy.calls.argsFor(0)[1]).toEqual(
+              MOCK_USER_SESSION
+            );
+
+            expect(consoleSpy.calls.count()).toBe(
+              2,
+              "should call console.log twice"
+            );
+            expect(consoleSpy.calls.argsFor(0)[0]).toBe(now);
+            expect(consoleSpy.calls.argsFor(0)[1]).toBe(firstItemId);
+            expect(consoleSpy.calls.argsFor(0)[2]).toBe("");
+            expect(consoleSpy.calls.argsFor(0)[3]).toBe("3 Ignored");
             expect(consoleSpy.calls.argsFor(0)[4]).toBe(
               Math.round(percentDone + progressPercentStep) + "%"
             );

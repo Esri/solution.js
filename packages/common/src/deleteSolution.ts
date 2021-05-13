@@ -29,6 +29,7 @@ import {
   ISolutionItemData,
   UserSession
 } from "./interfaces";
+import * as portal from "@esri/arcgis-rest-portal";
 import * as restHelpers from "./restHelpers";
 import * as restHelpersGet from "./restHelpersGet";
 import * as templatization from "./templatization";
@@ -165,50 +166,72 @@ export function _removeItems(
   deleteOptions: IDeleteSolutionOptions = {},
   allItemsSuccessfullyDeleted = true
 ): Promise<boolean> {
-  return new Promise<boolean>(resolve => {
-    const itemToDelete = itemIds.shift();
-    if (itemToDelete) {
-      restHelpers
-        .removeItem(itemToDelete, authentication)
-        .then(result => {
-          if (!result.success) {
-            throw new Error("Failed to delete item");
-          }
+  const itemToDelete = itemIds.shift();
+  if (itemToDelete) {
+    // Remove any delete protection on item
+    return portal
+      .unprotectItem({ id: itemToDelete, authentication: authentication })
+      .then(() => {
+        // Delete the item
+        return restHelpers.removeItem(itemToDelete, authentication);
+      })
+      .then(result => {
+        if (!result.success) {
+          throw new Error("Failed to delete item");
+        }
+        _reportProgress(
+          (percentDone += progressPercentStep),
+          deleteOptions,
+          itemToDelete,
+          EItemProgressStatus.Finished
+        );
+
+        // On to next item in list
+        return _removeItems(
+          itemIds,
+          authentication,
+          percentDone,
+          progressPercentStep,
+          deleteOptions,
+          allItemsSuccessfullyDeleted
+        );
+      })
+      .catch(error => {
+        let stillAllItemsSuccessfullyDeleted = true;
+        const errorMessage = error.error?.message || error.message;
+        if (
+          errorMessage &&
+          errorMessage.includes("Item does not exist or is inaccessible")
+        ) {
+          // Filter out errors where the item doesn't exist, such as from a previous delete attempt
           _reportProgress(
             (percentDone += progressPercentStep),
             deleteOptions,
             itemToDelete,
-            EItemProgressStatus.Finished
+            EItemProgressStatus.Ignored
           );
-          void _removeItems(
-            itemIds,
-            authentication,
-            percentDone,
-            progressPercentStep,
-            deleteOptions,
-            allItemsSuccessfullyDeleted
-          ).then(resolve);
-        })
-        .catch(() => {
+        } else {
+          // Otherwise, we have a real delete error
           _reportProgress(
             (percentDone += progressPercentStep),
             deleteOptions,
             itemToDelete,
             EItemProgressStatus.Failed
           );
-          void _removeItems(
-            itemIds,
-            authentication,
-            percentDone,
-            progressPercentStep,
-            deleteOptions,
-            false
-          ).then(resolve);
-        });
-    } else {
-      resolve(allItemsSuccessfullyDeleted);
-    }
-  });
+          stillAllItemsSuccessfullyDeleted = false;
+        }
+        return _removeItems(
+          itemIds,
+          authentication,
+          percentDone,
+          progressPercentStep,
+          deleteOptions,
+          stillAllItemsSuccessfullyDeleted
+        );
+      });
+  } else {
+    return Promise.resolve(allItemsSuccessfullyDeleted);
+  }
 }
 
 /**
