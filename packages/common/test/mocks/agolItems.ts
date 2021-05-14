@@ -278,13 +278,19 @@ export function getCompleteDeployedSolutionItemVersioned(
           itemId: "map1234567890",
           type: "Web Map",
           dependencies: [],
-          groups: []
+          groups: [],
+          item: {
+            typeKeywords: []
+          }
         },
         {
           itemId: "wma1234567890",
           type: "Web Mapping Application",
           dependencies: ["map1234567890"],
-          groups: []
+          groups: [],
+          item: {
+            typeKeywords: []
+          }
         }
       ]
     };
@@ -296,13 +302,19 @@ export function getCompleteDeployedSolutionItemVersioned(
           itemId: "wma1234567890",
           type: "Web Mapping Application",
           dependencies: ["map1234567890"],
-          groups: []
+          groups: [],
+          item: {
+            typeKeywords: []
+          }
         },
         {
           itemId: "map1234567890",
           type: "Web Map",
           dependencies: [],
-          groups: []
+          groups: [],
+          item: {
+            typeKeywords: []
+          }
         }
       ]
     };
