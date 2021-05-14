@@ -23,7 +23,7 @@
 import { unique } from "@esri/hub-common";
 import { adlib } from "adlib";
 import { createShortId } from "./generalHelpers";
-import { IItemTemplate } from "./interfaces";
+import { IItemTemplate, ISolutionItemData } from "./interfaces";
 
 // ------------------------------------------------------------------------------------------------------------------ //
 
@@ -149,6 +149,17 @@ export function createPlaceholderTemplate(
     properties: {},
     estimatedDeploymentCostFactor: 2
   };
+}
+
+/**
+ * Extracts the version of a solution from its data section.
+ *
+ * @param itemData Data section of the solution as JSON
+ * @return Zero-based version number
+ */
+export function extractSolutionVersion(itemData: ISolutionItemData): number {
+  const version = parseInt(itemData.metadata.version, 10);
+  return isNaN(version) ? 0 : version;
 }
 
 /**

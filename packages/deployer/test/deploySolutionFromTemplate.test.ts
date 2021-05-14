@@ -164,17 +164,20 @@ describe("Module `deploySolutionFromTemplate`", () => {
       const templateSolutionId: string = "sln1234567890";
       const solutionTemplateBase: any = solution.item;
       const solutionTemplateData: any = solution.data;
-      const solutionTemplateMetadata: File = testUtils.getSampleMetadataAsFile();
       const authentication: common.UserSession = MOCK_USER_SESSION;
-      const options: common.IDeploySolutionOptions = {};
+      const options: common.IDeploySolutionOptions = {
+        templateDictionary: {
+          map1234567890: { itemId: "dpl1234567890" }
+        }
+      };
       const deployedSolutionId = "dpl1234567890";
-      const templateDictionary = {} as any;
 
       const deployFnStub = sinon
         .stub(deployItems, "deploySolutionItems")
         .resolves([
           {
             id: deployedSolutionId,
+            item: mockTemplates.getItemTemplate("Web Map"),
             type: "Web Map",
             postProcess: false
           }
@@ -236,7 +239,6 @@ describe("Module `deploySolutionFromTemplate`", () => {
         templateSolutionId,
         solutionTemplateBase,
         solutionTemplateData,
-        solutionTemplateMetadata,
         authentication,
         options
       ).then(
@@ -269,20 +271,22 @@ describe("Module `deploySolutionFromTemplate`", () => {
       const templateSolutionId: string = "sln1234567890";
       const solutionTemplateBase: any = solution.item;
       const solutionTemplateData: any = solution.data;
-      const solutionTemplateMetadata: File = null;
       const authentication: common.UserSession = MOCK_USER_SESSION;
       const options: common.IDeploySolutionOptions = {
         storageAuthentication: MOCK_USER_SESSION_ALT,
-        thumbnailurl: "https://www.arcgis.com/sln1234567890/thumbnail/"
+        thumbnailurl: "https://www.arcgis.com/sln1234567890/thumbnail/",
+        templateDictionary: {
+          map1234567890: { itemId: "dpl1234567890" }
+        }
       };
       const deployedSolutionId = "dpl1234567890";
-      const templateDictionary = {} as any;
 
       const deployFnStub = sinon
         .stub(deployItems, "deploySolutionItems")
         .resolves([
           {
             id: deployedSolutionId,
+            item: mockTemplates.getItemTemplate("Web Map"),
             type: "Web Map",
             postProcess: false
           }
@@ -350,7 +354,6 @@ describe("Module `deploySolutionFromTemplate`", () => {
         templateSolutionId,
         solutionTemplateBase,
         solutionTemplateData,
-        solutionTemplateMetadata,
         authentication,
         options
       ).then(

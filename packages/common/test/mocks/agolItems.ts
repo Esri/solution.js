@@ -210,7 +210,7 @@ export function getAGOLItem(type?: string, url = ""): any {
   return item;
 }
 
-export function getCompleteItem(
+export function getCompleteMockItem(
   type = "Web Mapping Application"
 ): interfaces.ICompleteItem {
   const item = {
@@ -229,7 +229,8 @@ export function getCompleteItem(
 }
 
 export function getCompleteDeployedSolutionItem(): interfaces.ICompleteItem {
-  const item = getCompleteItem("Solution");
+  const item = getCompleteMockItem("Solution");
+  item.base.typeKeywords.push("Solution");
   item.base.typeKeywords.push("Deployed");
   item.data = generalHelpers.jsonToFile(
     {
@@ -260,8 +261,64 @@ export function getCompleteDeployedSolutionItem(): interfaces.ICompleteItem {
   return item;
 }
 
+export function getCompleteDeployedSolutionItemVersioned(
+  version?: string
+): any {
+  const item: any = getCompleteMockItem("Solution");
+  item.base.typeKeywords.push("Solution");
+  item.base.typeKeywords.push("Deployed");
+
+  if (version === "1") {
+    item.data = {
+      metadata: {
+        version: "1"
+      },
+      templates: [
+        {
+          itemId: "map1234567890",
+          type: "Web Map",
+          dependencies: [],
+          groups: []
+        },
+        {
+          itemId: "wma1234567890",
+          type: "Web Mapping Application",
+          dependencies: ["map1234567890"],
+          groups: []
+        }
+      ]
+    };
+  } else {
+    item.data = {
+      metadata: {},
+      templates: [
+        {
+          itemId: "wma1234567890",
+          type: "Web Mapping Application",
+          dependencies: ["map1234567890"],
+          groups: []
+        },
+        {
+          itemId: "map1234567890",
+          type: "Web Map",
+          dependencies: [],
+          groups: []
+        }
+      ]
+    };
+  }
+  item.fwdRelatedItems = [
+    {
+      relationshipType: "Solution2Item",
+      relatedItemIds: ["wma1234567890", "map1234567890"]
+    }
+  ];
+  return item;
+}
+
 export function getCompleteTemplateSolutionItem(): interfaces.ICompleteItem {
-  const item = getCompleteItem("Solution");
+  const item = getCompleteMockItem("Solution");
+  item.base.typeKeywords.push("Solution");
   item.base.typeKeywords.push("Template");
   return item;
 }

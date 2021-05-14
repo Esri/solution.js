@@ -15,7 +15,7 @@
  */
 
 /**
- * Manages the creation and deployment of Story Map item types.
+ * Manages the creation and deployment of Hub Page item types.
  *
  * @module hub-page-processor
  */
@@ -206,7 +206,7 @@ export function createItemFromTemplate(
         });
       } else {
         // finally, return ICreateItemFromTemplateResponse
-        return {
+        const response: ICreateItemFromTemplateResponse = {
           item: {
             ...template,
             ...pageModel
@@ -215,6 +215,8 @@ export function createItemFromTemplate(
           type: template.type,
           postProcess: true
         };
+        response.item.itemId = pageModel.item.id;
+        return response;
       }
     })
     .catch(ex => {

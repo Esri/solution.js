@@ -21,6 +21,7 @@
  */
 
 export * from "./completeItem";
+export * from "./deleteSolution";
 export * from "./dependencies";
 export * from "./featureServiceHelpers";
 export * from "./generalHelpers";

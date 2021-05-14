@@ -54,6 +54,9 @@ export {
 
 //#endregion ---------------------------------------------------------------------------------------------------------//
 
+export const SSolutionTemplateFormatVersion = "0";
+export const SDeployedSolutionFormatVersion = "1";
+
 //#region Enums ------------------------------------------------------------------------------------------------------//
 
 /**
@@ -256,6 +259,15 @@ export interface IDatasourceInfo {
    * Used to fetch relationship info in some cases
    */
   adminLayerInfo: any;
+}
+
+/**
+ * Options for deleting a deployed solution item and all of the items that were created as part of that deployment
+ */
+export interface IDeleteSolutionOptions {
+  jobId?: string; // default: solution id
+  progressCallback?: ISolutionProgressCallback;
+  consoleProgress?: boolean; // default: false
 }
 
 /**
@@ -602,6 +614,7 @@ export interface ISolutionItem {
    * Supplemental information
    */
   properties?: IStringValuePair;
+  [key: string]: any;
 }
 
 /**
