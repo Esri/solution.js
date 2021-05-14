@@ -56,7 +56,6 @@ import {
 import {
   EFileType,
   IDeployFileCopyPath,
-  IDeployFilename,
   IFileMimeType,
   IItemUpdate,
   ISourceFileCopyPath,
@@ -426,6 +425,7 @@ export function generateMetadataStorageFilename(
  * @param thumbnailUrlPart Partial path to the thumbnail held in an item's JSON
  * @param resourceFilenames List of resource filenames for an item, e.g., ["file1", "myFolder/file2"]
  * @param isGroup Boolean to indicate if the files are associated with a group or item
+ * @param storageVersion Version of the Solution template
  * @return List of item files' URLs and folder/filenames for storing the files
  */
 export function generateSourceFilePaths(
@@ -433,7 +433,8 @@ export function generateSourceFilePaths(
   itemId: string,
   thumbnailUrlPart: string,
   resourceFilenames: string[],
-  isGroup: boolean = false
+  isGroup: boolean = false,
+  storageVersion = 0
 ): ISourceFileCopyPath[] {
   const filePaths = resourceFilenames.map(resourceFilename => {
     return {
@@ -442,7 +443,11 @@ export function generateSourceFilePaths(
         itemId,
         resourceFilename
       ),
-      ...convertItemResourceToStorageResource(itemId, resourceFilename)
+      ...convertItemResourceToStorageResource(
+        itemId,
+        resourceFilename,
+        storageVersion
+      )
     };
   });
 
@@ -545,12 +550,14 @@ export function generateSourceThumbnailUrl(
  * @param portalSharingUrl Server/sharing
  * @param storageItemId Id of storage item
  * @param resourceFilenames List of resource filenames for an item, e.g., ["file1", "myFolder/file2"]
+ * @param storageVersion Version of the Solution template
  * @return List of item files' URLs and folder/filenames for storing the files
  */
 export function generateStorageFilePaths(
   portalSharingUrl: string,
   storageItemId: string,
-  resourceFilenames: string[] = []
+  resourceFilenames: string[] = [],
+  storageVersion = 0
 ): IDeployFileCopyPath[] {
   return resourceFilenames.map(resourceFilename => {
     return {
@@ -559,7 +566,7 @@ export function generateStorageFilePaths(
         storageItemId,
         resourceFilename
       ),
-      ...convertStorageResourceToItemResource(resourceFilename)
+      ...convertStorageResourceToItemResource(resourceFilename, storageVersion)
     };
   });
 }

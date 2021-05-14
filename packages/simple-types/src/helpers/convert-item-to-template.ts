@@ -28,6 +28,8 @@ export function convertItemToTemplate(
   itemInfo: any,
   authentication: common.UserSession
 ): Promise<common.IItemTemplate> {
+  const storageVersion = parseInt(common.SSolutionTemplateFormatVersion, 10);
+
   return new Promise<common.IItemTemplate>((resolve, reject) => {
     // Init template
     const itemTemplate: common.IItemTemplate = common.createInitializedItemTemplate(
@@ -129,9 +131,9 @@ export function convertItemToTemplate(
                 : `${itemTemplate.itemId}.zip`;
             itemTemplate.item.name = filename;
             const storageName = common.convertItemResourceToStorageResource(
-              itemTemplate.itemId,
+              itemTemplate.itemId + "_info_data",
               filename,
-              "info_data"
+              storageVersion
             );
             wrapupPromise = new Promise<void>(
               (resolveDataStorage, rejectDataStorage) => {

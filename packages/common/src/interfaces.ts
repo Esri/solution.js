@@ -54,7 +54,7 @@ export {
 
 //#endregion ---------------------------------------------------------------------------------------------------------//
 
-export const SSolutionTemplateFormatVersion = "0";
+export const SSolutionTemplateFormatVersion = "1";
 export const SDeployedSolutionFormatVersion = "1";
 
 //#region Enums ------------------------------------------------------------------------------------------------------//
@@ -69,6 +69,8 @@ export enum EFileType {
   Resource,
   Thumbnail
 }
+
+export const SFileType = ["Data", "Info", "Metadata", "Resource", "Thumbnail"];
 
 /**
  * Flags for reporting the status of creating or deploying an item.
@@ -320,6 +322,7 @@ export interface IDeploySolutionOptions {
   consoleProgress?: boolean; // default: false
   storageAuthentication?: UserSession; // credentials for the organization with the source items; default: use
   // authentication supplied for deployment destination
+  storageVersion?: number; // default: 0
 }
 
 /**

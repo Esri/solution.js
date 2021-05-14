@@ -28,6 +28,8 @@ export function deploySolutionFromTemplate(
   authentication: common.UserSession,
   options: common.IDeploySolutionOptions
 ): Promise<string> {
+  options.storageVersion = common.extractSolutionVersion(solutionTemplateData);
+
   return new Promise((resolve, reject) => {
     // It is possible to provide a separate authentication for the source
     const storageAuthentication: common.UserSession = options.storageAuthentication

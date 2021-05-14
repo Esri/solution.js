@@ -17,33 +17,32 @@
 /**
  * Generates a folder and filename for storing a copy of an item's resource in a storage item.
  *
- * @param itemId Id of item
+ * @param prefix Base prefix for resource
+ * @param storageVersion Version of the Solution template
  * @param sourceResourceFilename Either filename or folder/filename to resource
- * @param storageFolder An additional folder level inserted between the itemId and the sourceResourceFilename
  * @return Folder and filename for storage; folder is the itemID plus ("_" + storageFolder) if storageFolder
  * exists plus ("_" + part of sourceResourceFilename before "/" if that separator exists);
  * file is sourceResourceFilename
- * @see generateResourceFilenameFromStorage
+ * @see convertStorageResourceToItemResource
  */
 export function convertItemResourceToStorageResource(
-  itemId: string,
+  prefix: string,
   sourceResourceFilename: string,
-  storageFolder = ""
+  storageVersion = 0
 ): {
   folder: string;
   filename: string;
 } {
-  let folder = itemId + (storageFolder ? `_${storageFolder}` : "");
-  // let filename = sourceResourceFilename;
-  const parts = sourceResourceFilename.split("/");
-  const filename = parts[parts.length - 1];
-  // remove the filename, and for any part of the path, swap any _'s to -'s
-  const pathParts = parts
-    .filter(p => p !== filename)
-    .map(e => e.replace("_", "-"));
-  // if we have any pathParts, join'em all into the folder with _'s as separators
-  if (pathParts.length) {
-    folder = `${folder}_${pathParts.join("_")}`;
+  let folder = prefix;
+  let filename = sourceResourceFilename;
+  const iLastSlash = filename.lastIndexOf("/");
+  if (iLastSlash >= 0) {
+    let subpath = filename.substr(0, iLastSlash);
+    if (storageVersion === 0) {
+      subpath = subpath.replace("/", "_");
+    }
+    folder += "/" + subpath;
+    filename = filename.substr(iLastSlash + 1);
   }
 
   return { folder, filename };

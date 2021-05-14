@@ -27,12 +27,14 @@ import { IItemTemplate, ISourceFileCopyPath, UserSession } from "../interfaces";
  * @param itemTemplate Template for AGOL item
  * @param solutionItemId item id for the solution
  * @param authentication Credentials for the request to the storage
+ * @param storageVersion Version of the Solution template
  * @return A promise which resolves with an array of resources that have been added to the item
  */
 export function storeItemResources(
   itemTemplate: IItemTemplate,
   solutionItemId: string,
-  authentication: UserSession
+  authentication: UserSession,
+  storageVersion = 0
 ): Promise<string[]> {
   // get the resources for the item
   return getItemResources(itemTemplate.itemId, authentication)
@@ -55,16 +57,6 @@ export function storeItemResources(
               result = false;
             }
           }
-          // Web-Experiences
-          if (itemTemplate.type === "Web Experience") {
-            if (res === "config/config.json") {
-              result = false;
-            }
-            // if it starts w/ images/
-            if (res.indexOf("images/") === 0) {
-              result = false;
-            }
-          }
           return result;
         });
       // create the filePaths
@@ -73,7 +65,8 @@ export function storeItemResources(
         itemTemplate.itemId,
         itemTemplate.item.thumbnail,
         itemResources,
-        itemTemplate.type === "Group"
+        itemTemplate.type === "Group",
+        storageVersion
       );
 
       return copyFilesToStorageItem(
