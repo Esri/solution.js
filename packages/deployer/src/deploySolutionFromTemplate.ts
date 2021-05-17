@@ -251,7 +251,7 @@ export function deploySolutionFromTemplate(
             solutionTemplateData.templates.push(template);
           });
           solutionTemplateData.metadata.version =
-            common.SDeployedSolutionFormatVersion;
+            common.DeployedSolutionFormatVersion;
 
           // Wrap up with post-processing, in which we deal with groups and cycle remnants
           return postProcess(

@@ -24,6 +24,7 @@ import {
   cleanLayerBasedItemId,
   createPlaceholderTemplate,
   EItemProgressStatus,
+  SolutionTemplateFormatVersion,
   findTemplateInList,
   getGroupBase,
   getItemBase,
@@ -172,7 +173,8 @@ export function createItemTemplate(
                     storeItemResources(
                       itemTemplate,
                       solutionItemId,
-                      authentication
+                      authentication,
+                      SolutionTemplateFormatVersion
                     ).then(resources => {
                       // update the templates resources
                       itemTemplate.item.thumbnail = null; // no longer needed; use resources
