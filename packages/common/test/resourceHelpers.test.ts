@@ -868,7 +868,7 @@ describe("Module `resourceHelpers`: common functions involving the management of
     });
   });
 
-  describe("generateSourceFilePaths", () => {
+  describe("generateSourceFilePaths, template version 0", () => {
     it("without resources", () => {
       const portalSharingUrl = utils.PORTAL_SUBSET.restUrl;
       const itemId = "8f7ec78195d0479784036387d522e29f";
@@ -1026,6 +1026,172 @@ describe("Module `resourceHelpers`: common functions involving the management of
     });
   });
 
+  describe("generateSourceFilePaths, template version 1", () => {
+    it("without resources", () => {
+      const portalSharingUrl = utils.PORTAL_SUBSET.restUrl;
+      const itemId = "8f7ec78195d0479784036387d522e29f";
+      const thumbnailUrlPart = "thumbnail/thumbnail.png";
+      const resourceFilenames: string[] = [];
+      const expected: interfaces.ISourceFileCopyPath[] = [
+        {
+          url:
+            utils.PORTAL_SUBSET.restUrl +
+            "/content/items/8f7ec78195d0479784036387d522e29f/info/metadata/metadata.xml",
+          folder: "8f7ec78195d0479784036387d522e29f_info_metadata",
+          filename: "metadata.xml"
+        },
+        {
+          url:
+            utils.PORTAL_SUBSET.restUrl +
+            "/content/items/8f7ec78195d0479784036387d522e29f/info/thumbnail/thumbnail.png?w=400",
+          folder: "8f7ec78195d0479784036387d522e29f_info_thumbnail",
+          filename: "thumbnail.png"
+        }
+      ];
+
+      const actual = resourceHelpers.generateSourceFilePaths(
+        portalSharingUrl,
+        itemId,
+        thumbnailUrlPart,
+        resourceFilenames,
+        false,
+        1
+      );
+      expect(actual.length).toEqual(2);
+      expect(actual).toEqual(expected);
+    });
+
+    it("with one resource at top level", () => {
+      const portalSharingUrl = utils.PORTAL_SUBSET.restUrl;
+      const itemId = "8f7ec78195d0479784036387d522e29f";
+      const thumbnailUrlPart = "thumbnail/thumbnail.png";
+      const resourceFilenames = ["gtnp2.jpg"];
+      const expected: interfaces.ISourceFileCopyPath[] = [
+        {
+          url:
+            utils.PORTAL_SUBSET.restUrl +
+            "/content/items/8f7ec78195d0479784036387d522e29f/resources/gtnp2.jpg",
+          folder: "8f7ec78195d0479784036387d522e29f",
+          filename: "gtnp2.jpg"
+        },
+        {
+          url:
+            utils.PORTAL_SUBSET.restUrl +
+            "/content/items/8f7ec78195d0479784036387d522e29f/info/metadata/metadata.xml",
+          folder: "8f7ec78195d0479784036387d522e29f_info_metadata",
+          filename: "metadata.xml"
+        },
+        {
+          url:
+            utils.PORTAL_SUBSET.restUrl +
+            "/content/items/8f7ec78195d0479784036387d522e29f/info/thumbnail/thumbnail.png?w=400",
+          folder: "8f7ec78195d0479784036387d522e29f_info_thumbnail",
+          filename: "thumbnail.png"
+        }
+      ];
+
+      const actual = resourceHelpers.generateSourceFilePaths(
+        portalSharingUrl,
+        itemId,
+        thumbnailUrlPart,
+        resourceFilenames,
+        false,
+        1
+      );
+      expect(actual.length).toEqual(3);
+      expect(actual).toEqual(expected);
+    });
+
+    it("with one resource in folder", () => {
+      const portalSharingUrl = utils.PORTAL_SUBSET.restUrl;
+      const itemId = "8f7ec78195d0479784036387d522e29f";
+      const thumbnailUrlPart = "thumbnail/thumbnail.png";
+      const resourceFilenames = ["myFolder/gtnp2.jpg"];
+      const expected: interfaces.ISourceFileCopyPath[] = [
+        {
+          url:
+            utils.PORTAL_SUBSET.restUrl +
+            "/content/items/8f7ec78195d0479784036387d522e29f/resources/myFolder/gtnp2.jpg",
+          folder: "8f7ec78195d0479784036387d522e29f/myFolder",
+          filename: "gtnp2.jpg"
+        },
+        {
+          url:
+            utils.PORTAL_SUBSET.restUrl +
+            "/content/items/8f7ec78195d0479784036387d522e29f/info/metadata/metadata.xml",
+          folder: "8f7ec78195d0479784036387d522e29f_info_metadata",
+          filename: "metadata.xml"
+        },
+        {
+          url:
+            utils.PORTAL_SUBSET.restUrl +
+            "/content/items/8f7ec78195d0479784036387d522e29f/info/thumbnail/thumbnail.png?w=400",
+          folder: "8f7ec78195d0479784036387d522e29f_info_thumbnail",
+          filename: "thumbnail.png"
+        }
+      ];
+
+      const actual = resourceHelpers.generateSourceFilePaths(
+        portalSharingUrl,
+        itemId,
+        thumbnailUrlPart,
+        resourceFilenames,
+        false,
+        1
+      );
+      expect(actual.length).toEqual(3);
+      expect(actual).toEqual(expected);
+    });
+
+    it("with multiple resources", () => {
+      const portalSharingUrl = utils.PORTAL_SUBSET.restUrl;
+      const itemId = "8f7ec78195d0479784036387d522e29f";
+      const thumbnailUrlPart = "thumbnail/thumbnail.png";
+      const resourceFilenames = ["gtnp2.jpg", "myFolder/gtnp2.jpg"];
+      const expected: interfaces.ISourceFileCopyPath[] = [
+        {
+          url:
+            utils.PORTAL_SUBSET.restUrl +
+            "/content/items/8f7ec78195d0479784036387d522e29f/resources/gtnp2.jpg",
+          folder: "8f7ec78195d0479784036387d522e29f",
+          filename: "gtnp2.jpg"
+        },
+        {
+          url:
+            utils.PORTAL_SUBSET.restUrl +
+            "/content/items/8f7ec78195d0479784036387d522e29f/resources/myFolder/gtnp2.jpg",
+          folder: "8f7ec78195d0479784036387d522e29f/myFolder",
+          filename: "gtnp2.jpg"
+        },
+        {
+          url:
+            utils.PORTAL_SUBSET.restUrl +
+            "/content/items/8f7ec78195d0479784036387d522e29f/info/metadata/metadata.xml",
+          folder: "8f7ec78195d0479784036387d522e29f_info_metadata",
+          filename: "metadata.xml"
+        },
+        {
+          url:
+            utils.PORTAL_SUBSET.restUrl +
+            "/content/items/8f7ec78195d0479784036387d522e29f/info/thumbnail/thumbnail.png?w=400",
+          folder: "8f7ec78195d0479784036387d522e29f_info_thumbnail",
+          filename: "thumbnail.png"
+        }
+      ];
+
+      const actual = resourceHelpers.generateSourceFilePaths(
+        portalSharingUrl,
+        itemId,
+        thumbnailUrlPart,
+        resourceFilenames,
+        false,
+        1
+      );
+      expect(actual.length).toEqual(4);
+      expect(actual).toEqual(expected);
+    });
+  });
+
   describe("generateSourceMetadataUrl", () => {
     it("item", () => {
       const portalSharingUrl = utils.PORTAL_SUBSET.restUrl;
@@ -1112,7 +1278,7 @@ describe("Module `resourceHelpers`: common functions involving the management of
     });
   });
 
-  describe("generateStorageFilePaths", () => {
+  describe("generateStorageFilePaths, template version 0", () => {
     it("generates paths without resources", () => {
       const portalSharingUrl = utils.PORTAL_SUBSET.restUrl;
       const storageItemId = "03744d6b7a9b4b76bfd45dc2d1e642a5";
@@ -1154,7 +1320,7 @@ describe("Module `resourceHelpers`: common functions involving the management of
       expect(actual).toEqual(expected);
     });
 
-    it("generates paths with a single file resource in a folder", () => {
+    it("generates paths with a single file resource in a folder, template version 0", () => {
       const portalSharingUrl = utils.PORTAL_SUBSET.restUrl;
       const storageItemId = "03744d6b7a9b4b76bfd45dc2d1e642a5";
       const resourceFilenames: string[] = [
@@ -1180,6 +1346,33 @@ describe("Module `resourceHelpers`: common functions involving the management of
       expect(actual).toEqual(expected);
     });
 
+    it("generates paths with a single file resource in a folder, template version 1", () => {
+      const portalSharingUrl = utils.PORTAL_SUBSET.restUrl;
+      const storageItemId = "03744d6b7a9b4b76bfd45dc2d1e642a5";
+      const resourceFilenames: string[] = [
+        "8f7ec78195d0479784036387d522e29f/myFolder/gtnp2.jpg"
+      ];
+      const expected: interfaces.IDeployFileCopyPath[] = [
+        {
+          url:
+            utils.PORTAL_SUBSET.restUrl +
+            "/content/items/03744d6b7a9b4b76bfd45dc2d1e642a5/resources/8f7ec78195d0479784036387d522e29f/myFolder/gtnp2.jpg",
+          folder: "myFolder",
+          filename: "gtnp2.jpg",
+          type: interfaces.EFileType.Resource
+        }
+      ];
+
+      const actual = resourceHelpers.generateStorageFilePaths(
+        portalSharingUrl,
+        storageItemId,
+        resourceFilenames,
+        1
+      );
+      expect(actual.length).toEqual(1);
+      expect(actual).toEqual(expected);
+    });
+
     it("generates paths with metadata", () => {
       const portalSharingUrl = utils.PORTAL_SUBSET.restUrl;
       const storageItemId = "03744d6b7a9b4b76bfd45dc2d1e642a5";
@@ -1191,7 +1384,7 @@ describe("Module `resourceHelpers`: common functions involving the management of
           url:
             utils.PORTAL_SUBSET.restUrl +
             "/content/items/03744d6b7a9b4b76bfd45dc2d1e642a5/resources/8f7ec78195d0479784036387d522e29f_info_metadata/metadata.xml",
-          folder: "8f7ec78195d0479784036387d522e29f_info_metadata",
+          folder: "",
           filename: "metadata.xml",
           type: interfaces.EFileType.Metadata
         }
@@ -1217,7 +1410,7 @@ describe("Module `resourceHelpers`: common functions involving the management of
           url:
             utils.PORTAL_SUBSET.restUrl +
             "/content/items/03744d6b7a9b4b76bfd45dc2d1e642a5/resources/8f7ec78195d0479784036387d522e29f_info_thumbnail/thumbnail.png",
-          folder: "8f7ec78195d0479784036387d522e29f_info_thumbnail",
+          folder: "",
           filename: "thumbnail.png",
           type: interfaces.EFileType.Thumbnail
         }
@@ -1227,6 +1420,145 @@ describe("Module `resourceHelpers`: common functions involving the management of
         portalSharingUrl,
         storageItemId,
         resourceFilenames
+      );
+      expect(actual.length).toEqual(1);
+      expect(actual).toEqual(expected);
+    });
+
+    it("handles the absence of resource filenames", () => {
+      const portalSharingUrl = utils.PORTAL_SUBSET.restUrl;
+      const storageItemId = "03744d6b7a9b4b76bfd45dc2d1e642a5";
+      const expected: interfaces.IDeployFileCopyPath[] = [];
+
+      const actual = resourceHelpers.generateStorageFilePaths(
+        portalSharingUrl,
+        storageItemId
+      );
+      expect(actual.length).toEqual(0);
+      expect(actual).toEqual(expected);
+    });
+  });
+
+  describe("generateStorageFilePaths, template version 1", () => {
+    it("generates paths without resources", () => {
+      const portalSharingUrl = utils.PORTAL_SUBSET.restUrl;
+      const storageItemId = "03744d6b7a9b4b76bfd45dc2d1e642a5";
+      const resourceFilenames: string[] = [];
+      const expected: interfaces.IDeployFileCopyPath[] = [];
+
+      const actual = resourceHelpers.generateStorageFilePaths(
+        portalSharingUrl,
+        storageItemId,
+        resourceFilenames,
+        1
+      );
+      expect(actual.length).toEqual(0);
+      expect(actual).toEqual(expected);
+    });
+
+    it("generates paths with a single top-level file resource", () => {
+      const portalSharingUrl = utils.PORTAL_SUBSET.restUrl;
+      const storageItemId = "03744d6b7a9b4b76bfd45dc2d1e642a5";
+      const resourceFilenames: string[] = [
+        "8f7ec78195d0479784036387d522e29f/gtnp2.jpg"
+      ];
+      const expected: interfaces.IDeployFileCopyPath[] = [
+        {
+          url:
+            utils.PORTAL_SUBSET.restUrl +
+            "/content/items/03744d6b7a9b4b76bfd45dc2d1e642a5/resources/8f7ec78195d0479784036387d522e29f/gtnp2.jpg",
+          folder: "",
+          filename: "gtnp2.jpg",
+          type: interfaces.EFileType.Resource
+        }
+      ];
+
+      const actual = resourceHelpers.generateStorageFilePaths(
+        portalSharingUrl,
+        storageItemId,
+        resourceFilenames,
+        1
+      );
+      expect(actual.length).toEqual(1);
+      expect(actual).toEqual(expected);
+    });
+
+    it("generates paths with a single file resource in a folder", () => {
+      const portalSharingUrl = utils.PORTAL_SUBSET.restUrl;
+      const storageItemId = "03744d6b7a9b4b76bfd45dc2d1e642a5";
+      const resourceFilenames: string[] = [
+        "8f7ec78195d0479784036387d522e29f/myFolder/gtnp2.jpg"
+      ];
+      const expected: interfaces.IDeployFileCopyPath[] = [
+        {
+          url:
+            utils.PORTAL_SUBSET.restUrl +
+            "/content/items/03744d6b7a9b4b76bfd45dc2d1e642a5/resources/8f7ec78195d0479784036387d522e29f/myFolder/gtnp2.jpg",
+          folder: "myFolder",
+          filename: "gtnp2.jpg",
+          type: interfaces.EFileType.Resource
+        }
+      ];
+
+      const actual = resourceHelpers.generateStorageFilePaths(
+        portalSharingUrl,
+        storageItemId,
+        resourceFilenames,
+        1
+      );
+      expect(actual.length).toEqual(1);
+      expect(actual).toEqual(expected);
+    });
+
+    it("generates paths with metadata", () => {
+      const portalSharingUrl = utils.PORTAL_SUBSET.restUrl;
+      const storageItemId = "03744d6b7a9b4b76bfd45dc2d1e642a5";
+      const resourceFilenames: string[] = [
+        "8f7ec78195d0479784036387d522e29f_info_metadata/metadata.xml"
+      ];
+      const expected: interfaces.IDeployFileCopyPath[] = [
+        {
+          url:
+            utils.PORTAL_SUBSET.restUrl +
+            "/content/items/03744d6b7a9b4b76bfd45dc2d1e642a5/resources/8f7ec78195d0479784036387d522e29f_info_metadata/metadata.xml",
+          folder: "",
+          filename: "metadata.xml",
+          type: interfaces.EFileType.Metadata
+        }
+      ];
+
+      const actual = resourceHelpers.generateStorageFilePaths(
+        portalSharingUrl,
+        storageItemId,
+        resourceFilenames,
+        1
+      );
+      expect(actual.length).toEqual(1);
+      expect(actual).toEqual(expected);
+    });
+
+    it("generates paths with a thumbnail", () => {
+      const portalSharingUrl = utils.PORTAL_SUBSET.restUrl;
+      const storageItemId = "03744d6b7a9b4b76bfd45dc2d1e642a5";
+      const resourceFilenames: string[] = [
+        "8f7ec78195d0479784036387d522e29f_info_thumbnail/thumbnail.png"
+      ];
+      const expected: interfaces.IDeployFileCopyPath[] = [
+        {
+          url:
+            utils.PORTAL_SUBSET.restUrl +
+            "/content/items/03744d6b7a9b4b76bfd45dc2d1e642a5/resources/8f7ec78195d0479784036387d522e29f_info_thumbnail/thumbnail.png",
+          folder: "",
+          filename: "thumbnail.png",
+          type: interfaces.EFileType.Thumbnail
+        }
+      ];
+
+      const actual = resourceHelpers.generateStorageFilePaths(
+        portalSharingUrl,
+        storageItemId,
+        resourceFilenames,
+        1
       );
       expect(actual.length).toEqual(1);
       expect(actual).toEqual(expected);

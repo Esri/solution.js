@@ -47,7 +47,7 @@ export function convertStorageResourceToItemResource(
       filename = "metadata.xml";
     } else if (firstPrefixPart.endsWith("_info_data")) {
       type = EFileType.Data;
-    } else if (folder.endsWith("_info_dataz")) {
+    } else if (firstPrefixPart.endsWith("_info_dataz")) {
       filename = filename.replace(/\.zip$/, "");
       type = EFileType.Data;
 

@@ -40,8 +40,10 @@ export function convertItemResourceToStorageResource(
     let subpath = filename.substr(0, iLastSlash);
     if (storageVersion === 0) {
       subpath = subpath.replace("/", "_");
+      folder += "_" + subpath;
+    } else {
+      folder += "/" + subpath;
     }
-    folder += "/" + subpath;
     filename = filename.substr(iLastSlash + 1);
   }
 

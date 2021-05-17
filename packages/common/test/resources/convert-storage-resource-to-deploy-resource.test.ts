@@ -14,55 +14,179 @@
  * limitations under the License.
  */
 
-import { convertItemResourceToStorageResource } from "../../src/resources/convert-item-resource-to-storage-resource";
+import { convertStorageResourceToItemResource } from "../../src/resources/convert-storage-resource-to-item-resource";
 
-describe("convertItemResourceToStorageResource, template version 0", () => {
-  it("handles files", () => {
-    const chk = convertItemResourceToStorageResource("3ef", "happy.png");
-    expect(chk.folder).toBe("3ef");
-    expect(chk.filename).toBe("happy.png");
+import { IDeployFilename, EFileType } from "../../src/interfaces";
+
+describe("convertStorageResourceToItemResource, template version 0", () => {
+  it("handles top-level image file", () => {
+    const actual = convertStorageResourceToItemResource("87f/gtnp2.jpg");
+    const expected: IDeployFilename = {
+      type: EFileType.Resource,
+      folder: "",
+      filename: "gtnp2.jpg"
+    };
+    expect(actual).toEqual(expected);
   });
 
-  it("handles files with single level paths", () => {
-    const chk = convertItemResourceToStorageResource("3ef", "images/happy.png");
-    expect(chk.folder).toBe("3ef_images");
-    expect(chk.filename).toBe("happy.png");
-  });
-
-  it("handles files with N-level paths", () => {
-    const chk = convertItemResourceToStorageResource(
-      "3ef",
-      "images/widget_12/happy.png"
+  it("handles image file in folder", () => {
+    const actual = convertStorageResourceToItemResource(
+      "87f_aFolder/git_merge.png"
     );
-    expect(chk.folder).toBe("3ef_images_widget-12");
-    expect(chk.filename).toBe("happy.png");
+    const expected: IDeployFilename = {
+      type: EFileType.Resource,
+      folder: "aFolder",
+      filename: "git_merge.png"
+    };
+    expect(actual).toEqual(expected);
+  });
+
+  it("handles Hub image file at the root", () => {
+    const actual = convertStorageResourceToItemResource("87f-git_merge.png");
+    const expected: IDeployFilename = {
+      type: EFileType.Resource,
+      folder: "",
+      filename: "87f-git_merge.png"
+    };
+
+    expect(actual).toEqual(expected);
+  });
+
+  it("handles metadata file", () => {
+    const actual = convertStorageResourceToItemResource(
+      "87f_info_metadata/metadata.xml"
+    );
+    const expected: IDeployFilename = {
+      type: EFileType.Metadata,
+      folder: "",
+      filename: "metadata.xml"
+    };
+    expect(actual).toEqual(expected);
+  });
+
+  it("handles thumbnail", () => {
+    const actual = convertStorageResourceToItemResource(
+      "87f_info_thumbnail/thumbnail.png"
+    );
+    const expected: IDeployFilename = {
+      type: EFileType.Thumbnail,
+      folder: "",
+      filename: "thumbnail.png"
+    };
+    expect(actual).toEqual(expected);
+  });
+
+  it("handles data file supported by AGO for resources", () => {
+    const actual = convertStorageResourceToItemResource(
+      "87f_info_data/data.zip"
+    );
+    const expected: IDeployFilename = {
+      type: EFileType.Data,
+      folder: "",
+      filename: "data.zip"
+    };
+    expect(actual).toEqual(expected);
+  });
+
+  it("handles data file unsupported by AGO for resources and thus masquerading as a ZIP file", () => {
+    const actual = convertStorageResourceToItemResource(
+      "87f_info_dataz/data.pkg.zip"
+    );
+    const expected: IDeployFilename = {
+      type: EFileType.Data,
+      folder: "",
+      filename: "data.pkg"
+    };
+
+    expect(actual).toEqual(expected);
   });
 });
 
-describe("convertItemResourceToStorageResource, template version 1", () => {
-  it("handles files", () => {
-    const chk = convertItemResourceToStorageResource("3ef", "happy.png", 1);
-    expect(chk.folder).toBe("3ef");
-    expect(chk.filename).toBe("happy.png");
+describe("convertStorageResourceToItemResource, template version 1", () => {
+  it("handles top-level image file", () => {
+    const actual = convertStorageResourceToItemResource("87f/gtnp2.jpg", 1);
+    const expected: IDeployFilename = {
+      type: EFileType.Resource,
+      folder: "",
+      filename: "gtnp2.jpg"
+    };
+    expect(actual).toEqual(expected);
   });
 
-  it("handles files with single level paths", () => {
-    const chk = convertItemResourceToStorageResource(
-      "3ef",
-      "images/happy.png",
+  it("handles image file in folder", () => {
+    const actual = convertStorageResourceToItemResource(
+      "87f/aFolder/git_merge.png",
       1
     );
-    expect(chk.folder).toBe("3ef/images");
-    expect(chk.filename).toBe("happy.png");
+    const expected: IDeployFilename = {
+      type: EFileType.Resource,
+      folder: "aFolder",
+      filename: "git_merge.png"
+    };
+    expect(actual).toEqual(expected);
   });
 
-  it("handles files with N-level paths", () => {
-    const chk = convertItemResourceToStorageResource(
-      "3ef",
-      "images/widget_12/happy.png",
+  it("handles Hub image file at the root", () => {
+    const actual = convertStorageResourceToItemResource("87f-git_merge.png", 1);
+    const expected: IDeployFilename = {
+      type: EFileType.Resource,
+      folder: "",
+      filename: "87f-git_merge.png"
+    };
+
+    expect(actual).toEqual(expected);
+  });
+
+  it("handles metadata file", () => {
+    const actual = convertStorageResourceToItemResource(
+      "87f_info_metadata/metadata.xml",
       1
     );
-    expect(chk.folder).toBe("3ef/images/widget-12");
-    expect(chk.filename).toBe("happy.png");
+    const expected: IDeployFilename = {
+      type: EFileType.Metadata,
+      folder: "",
+      filename: "metadata.xml"
+    };
+    expect(actual).toEqual(expected);
+  });
+
+  it("handles thumbnail", () => {
+    const actual = convertStorageResourceToItemResource(
+      "87f_info_thumbnail/thumbnail.png",
+      1
+    );
+    const expected: IDeployFilename = {
+      type: EFileType.Thumbnail,
+      folder: "",
+      filename: "thumbnail.png"
+    };
+    expect(actual).toEqual(expected);
+  });
+
+  it("handles data file supported by AGO for resources", () => {
+    const actual = convertStorageResourceToItemResource(
+      "87f_info_data/data.zip",
+      1
+    );
+    const expected: IDeployFilename = {
+      type: EFileType.Data,
+      folder: "",
+      filename: "data.zip"
+    };
+    expect(actual).toEqual(expected);
+  });
+
+  it("handles data file unsupported by AGO for resources and thus masquerading as a ZIP file", () => {
+    const actual = convertStorageResourceToItemResource(
+      "87f_info_dataz/data.pkg.zip",
+      1
+    );
+    const expected: IDeployFilename = {
+      type: EFileType.Data,
+      folder: "",
+      filename: "data.pkg"
+    };
+
+    expect(actual).toEqual(expected);
   });
 });
