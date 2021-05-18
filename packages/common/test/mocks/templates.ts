@@ -93,7 +93,8 @@ export function getItemTemplateSkeleton(): interfaces.IItemTemplate {
     key: "",
     item: {
       id: "",
-      type: ""
+      type: "",
+      typeKeywords: []
     },
     data: {},
     resources: [],
@@ -202,6 +203,15 @@ export function getItemTemplate(
 
     case "Group":
       templatePart = getGroupTemplatePart(dependencies);
+      break;
+
+    case "Hub Site Application":
+      templatePart = getItemTemplateFundamentals(
+        type,
+        mockItems.getItemTypeAbbrev(type),
+        dependencies,
+        url
+      );
       break;
 
     case "Layer Package":
@@ -423,6 +433,7 @@ export function getGroupTemplatePart(dependencies = [] as string[]): any {
       description: "Description of an AGOL group",
       snippet: "Snippet of an AGOL group",
       tags: ["JavaScript"],
+      typeKeywords: [],
       phone: null,
       sortField: "title",
       sortOrder: "asc",

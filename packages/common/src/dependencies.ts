@@ -26,7 +26,7 @@ import {
   IKeyedListsOfStrings,
   IItemTemplate
 } from "./interfaces";
-import { findTemplateIndexInList } from "./templatization";
+import { findTemplateInList } from "./templatization";
 
 // ------------------------------------------------------------------------------------------------------------------ //
 
@@ -72,14 +72,20 @@ export function topologicallySortItems(
   // 2 as each vertex is finished, insert it onto front of a linked list
   // 3 return the linked list of vertices
 
-  const buildOrder: string[] = []; // list of ordered vertices--don't need linked list because
+  let buildOrder: string[] = []; // list of ordered vertices--don't need linked list because
   // we just want relative ordering
   const missingDependencies: string[] = [];
   const itemsToBePatched: IKeyedListsOfStrings = {};
 
   const verticesToVisit: ISortVertex = {};
+  const vertexType: IVertexType = {};
   templates.forEach(function(template) {
     verticesToVisit[template.itemId] = ESortVisitState.NotYetVisited;
+    vertexType[template.itemId] = template.item.typeKeywords.includes(
+      "View Service"
+    )
+      ? "View Service"
+      : template.type;
   });
 
   // Algorithm visits each vertex once. Don't need to record times or "from' nodes ("π" in pseudocode)
@@ -96,7 +102,7 @@ export function topologicallySortItems(
 
     // Visit dependents if not already visited; template has to be in templates list because calls to visit()
     // are based on verticiesToVisit[], which is initialized using the templates list
-    const template = templates[findTemplateIndexInList(templates, vertexId)];
+    const template = findTemplateInList(templates, vertexId);
 
     // There are two sources of dependencies
     const dependencies: string[] = (template.dependencies || []).concat(
@@ -127,6 +133,25 @@ export function topologicallySortItems(
     buildOrder.push(vertexId); // add to end of list of ordered vertices because we want dependents first
   }
 
+  // Move all of the feature services to the beginning of the build order while maintaining their relative ordering
+  // Distinguish between base feature services and view feature services
+  const fsIds: string[] = [];
+  const fsViewIds: string[] = [];
+  const otherIds: string[] = [];
+  do {
+    const id = buildOrder.shift();
+    if (id) {
+      if (vertexType[id] === "Feature Service") {
+        fsIds.push(id);
+      } else if (vertexType[id] === "View Service") {
+        fsViewIds.push(id);
+      } else {
+        otherIds.push(id);
+      }
+    }
+  } while (buildOrder.length > 0);
+  buildOrder = fsIds.concat(fsViewIds, otherIds);
+
   const orderingResults: IBuildOrdering = {
     buildOrder: buildOrder,
     missingDependencies: missingDependencies,
@@ -147,6 +172,18 @@ interface ISortVertex {
    * Vertex (AGO) id and its visited status, described by the ESortVisitState enum
    */
   [id: string]: number;
+}
+
+/**
+ * The item type of a vertex used in the topological sort algorithm.
+ *
+ * @protected
+ */
+interface IVertexType {
+  /**
+   * Vertex (AGO) id and its AGO type
+   */
+  [id: string]: string;
 }
 
 /**
