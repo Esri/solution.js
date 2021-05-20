@@ -26,6 +26,7 @@ import {
   ICreateItemFromTemplateResponse,
   EItemProgressStatus,
   UserSession,
+  createHubRequestOptions,
   generateEmptyCreationResponse,
   getProp
 } from "@esri/solution-common";
@@ -46,7 +47,6 @@ import {
 } from "@esri/hub-common";
 
 import { moveModelToFolder } from "./helpers/move-model-to-folder";
-import { createHubRequestOptions } from "./helpers/create-hub-request-options";
 import { _postProcessSite } from "./helpers/_post-process-site";
 import { replaceItemIds } from "./helpers/replace-item-ids";
 /**

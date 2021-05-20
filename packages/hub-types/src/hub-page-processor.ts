@@ -26,10 +26,10 @@ import {
   ICreateItemFromTemplateResponse,
   EItemProgressStatus,
   UserSession,
+  createHubRequestOptions,
   generateEmptyCreationResponse
 } from "@esri/solution-common";
 import { IUpdateItemOptions, updateItem } from "@esri/arcgis-rest-portal";
-import { createHubRequestOptions } from "./helpers/create-hub-request-options";
 import {
   IModel,
   IModelTemplate,

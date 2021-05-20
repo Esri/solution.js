@@ -234,12 +234,14 @@ describe("Module `deleteSolution`: functions for deleting a deployed Solution it
   describe("_removeItems", () => {
     it("handles an empty list of item ids with all items so far successful", done => {
       const itemIds: string[] = [];
+      const hubSiteItemIds: string[] = [];
       const percentDone: number = 50.4;
       const progressPercentStep: number = 10.4;
 
       deleteSolution
         ._removeItems(
           itemIds,
+          hubSiteItemIds,
           MOCK_USER_SESSION,
           percentDone,
           progressPercentStep
@@ -252,12 +254,14 @@ describe("Module `deleteSolution`: functions for deleting a deployed Solution it
 
     it("handles an empty list of item ids with at least one item so far unsuccessful", done => {
       const itemIds: string[] = [];
+      const hubSiteItemIds: string[] = [];
       const percentDone: number = 50.4;
       const progressPercentStep: number = 10.4;
 
       deleteSolution
         ._removeItems(
           itemIds,
+          hubSiteItemIds,
           MOCK_USER_SESSION,
           percentDone,
           progressPercentStep,
@@ -274,6 +278,7 @@ describe("Module `deleteSolution`: functions for deleting a deployed Solution it
       const firstItemId = "map1234567890";
       const secondItemId = "svc1234567890";
       const itemIds: string[] = [firstItemId, secondItemId];
+      const hubSiteItemIds: string[] = [];
       const percentDone: number = 50.4;
       const progressPercentStep: number = 10.4;
 
@@ -294,6 +299,7 @@ describe("Module `deleteSolution`: functions for deleting a deployed Solution it
       deleteSolution
         ._removeItems(
           itemIds,
+          hubSiteItemIds,
           MOCK_USER_SESSION,
           percentDone,
           progressPercentStep,
@@ -349,6 +355,7 @@ describe("Module `deleteSolution`: functions for deleting a deployed Solution it
       const firstItemId = "map1234567890";
       const secondItemId = "svc1234567890";
       const itemIds: string[] = [firstItemId, secondItemId];
+      const hubSiteItemIds: string[] = [];
       const percentDone: number = 50.4;
       const progressPercentStep: number = 10.4;
 
@@ -369,6 +376,7 @@ describe("Module `deleteSolution`: functions for deleting a deployed Solution it
       deleteSolution
         ._removeItems(
           itemIds,
+          hubSiteItemIds,
           MOCK_USER_SESSION,
           percentDone,
           progressPercentStep,
@@ -437,6 +445,7 @@ describe("Module `deleteSolution`: functions for deleting a deployed Solution it
       const firstItemId = "map1234567890";
       const secondItemId = "svc1234567890";
       const itemIds: string[] = [firstItemId, secondItemId];
+      const hubSiteItemIds: string[] = [];
       const percentDone: number = 50.4;
       const progressPercentStep: number = 10.4;
 
@@ -457,6 +466,7 @@ describe("Module `deleteSolution`: functions for deleting a deployed Solution it
       deleteSolution
         ._removeItems(
           itemIds,
+          hubSiteItemIds,
           MOCK_USER_SESSION,
           percentDone,
           progressPercentStep,

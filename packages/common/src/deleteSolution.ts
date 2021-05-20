@@ -33,9 +33,11 @@ import {
 } from "./interfaces";
 import * as portal from "@esri/arcgis-rest-portal";
 import * as dependencies from "./dependencies";
+import * as hubSites from "@esri/hub-sites";
 import * as restHelpers from "./restHelpers";
 import * as restHelpersGet from "./restHelpersGet";
 import * as templatization from "./templatization";
+import { createHubRequestOptions } from "./create-hub-request-options";
 
 // ------------------------------------------------------------------------------------------------------------------ //
 
@@ -93,6 +95,11 @@ export function deleteSolution(
         );
       }
 
+      let hubSiteItemIds = [] as string[];
+      hubSiteItemIds = itemData.templates
+        .filter((template: any) => template.type === "Hub Site Application")
+        .map((template: any) => template.itemId);
+
       // Reverse the build order to get the delete order
       const deleteOrderIds = buildOrderIds.reverse();
 
@@ -102,6 +109,7 @@ export function deleteSolution(
 
       return _removeItems(
         deleteOrderIds,
+        hubSiteItemIds,
         authentication,
         percentDone,
         progressPercentStep,
@@ -168,6 +176,7 @@ export function _reconstructBuildOrderIds(
  * Removes a list of items.
  *
  * @param itemIds List of ids of items to remove
+ * @param hubSiteItemIds List of ids in itemIds that are for Hub Sites
  * @param authentication Credentials for the request
  * @param percentDone Percent done in range 0 to 100
  * @param progressPercentStep Amount that percentDone changes for each item deleted
@@ -177,6 +186,7 @@ export function _reconstructBuildOrderIds(
  */
 export function _removeItems(
   itemIds: string[],
+  hubSiteItemIds: string[],
   authentication: UserSession,
   percentDone: number,
   progressPercentStep: number,
@@ -188,9 +198,14 @@ export function _removeItems(
     // Remove any delete protection on item
     return portal
       .unprotectItem({ id: itemToDelete, authentication: authentication })
-      .then(() => {
+      .then(async () => {
         // Delete the item
-        return restHelpers.removeItem(itemToDelete, authentication);
+        if (hubSiteItemIds.includes(itemToDelete)) {
+          const options = await createHubRequestOptions(authentication);
+          return hubSites.removeSite(itemToDelete, options);
+        } else {
+          return restHelpers.removeItem(itemToDelete, authentication);
+        }
       })
       .then(result => {
         if (!result.success) {
@@ -206,6 +221,7 @@ export function _removeItems(
         // On to next item in list
         return _removeItems(
           itemIds,
+          hubSiteItemIds,
           authentication,
           percentDone,
           progressPercentStep,
@@ -239,6 +255,7 @@ export function _removeItems(
         }
         return _removeItems(
           itemIds,
+          hubSiteItemIds,
           authentication,
           percentDone,
           progressPercentStep,

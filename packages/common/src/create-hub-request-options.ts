@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { UserSession } from "@esri/solution-common";
+import { UserSession } from "./interfaces";
 
 import { IHubRequestOptions, getHubUrlFromPortal } from "@esri/hub-common";
 
