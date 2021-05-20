@@ -106,6 +106,19 @@ export function getItemTemplateSkeleton(): interfaces.IItemTemplate {
   };
 }
 
+export function getDeployedItemTemplate(
+  itemId: string,
+  type: string,
+  dependencies = [] as string[]
+): any {
+  return {
+    itemId,
+    type,
+    dependencies,
+    groups: []
+  };
+}
+
 export function getItemTemplate(
   type: string,
   dependencies = [] as string[],

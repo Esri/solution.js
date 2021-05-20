@@ -81,11 +81,11 @@ export function topologicallySortItems(
   const vertexType: IVertexType = {};
   templates.forEach(function(template) {
     verticesToVisit[template.itemId] = ESortVisitState.NotYetVisited;
-    vertexType[template.itemId] = template.item.typeKeywords.includes(
-      "View Service"
-    )
-      ? "View Service"
-      : template.type;
+    vertexType[template.itemId] =
+      template.item?.typeKeywords &&
+      template.item.typeKeywords.includes("View Service")
+        ? "View Service"
+        : template.type;
   });
 
   // Algorithm visits each vertex once. Don't need to record times or "from' nodes ("π" in pseudocode)
