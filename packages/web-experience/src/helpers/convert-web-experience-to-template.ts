@@ -54,10 +54,9 @@ export function convertWebExperienceToTemplate(
   // use typeKeyword to mark item as published (we decided to discard unpublished drafts)
   const typeKeywords = tmpl.item.typeKeywords;
   if (typeKeywords.indexOf(changedTypeKW) !== -1) {
-    tmpl.item.typeKeywords = [
-      publishedTypeKW,
-      ...tmpl.item.typeKeywords.filter(word => word !== changedTypeKW)
-    ];
+    tmpl.item.typeKeywords = [publishedTypeKW].concat(
+      tmpl.item.typeKeywords.filter(word => word !== changedTypeKW)
+    );
   }
 
   tmpl.dependencies = getWebExperienceDependencies(model);

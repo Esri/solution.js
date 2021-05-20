@@ -20,42 +20,47 @@ import { IDeployFilename, EFileType } from "../interfaces";
  * Extracts an item's resource folder and filename from the filename used to store a copy in a storage item.
  *
  * @param storageResourceFilename Filename used to store the resource, metadata, or thumbnail of an item
+ * @param storageVersion Version of the Solution template
  * @return Folder and filename for storing information in an item, as well as the type (resource, metadata,
  * or thumbnail) of the information; the folder property is only meaningful for the resource type
  * @see generateResourceStorageFilename
  * @see generateMetadataStorageFilename
  * @see generateThumbnailStorageFilename
+ * @see convertItemResourceToStorageResource
  */
 export function convertStorageResourceToItemResource(
-  storageResourceFilename: string
+  storageResourceFilename: string,
+  storageVersion = 0
 ): IDeployFilename {
-  let type = EFileType.Resource;
-  // Older Hub Solution Templates don't have folders, so
-  // we have some extra logic to handle this
+  const nameParts = storageResourceFilename.split("/");
+  let filename = nameParts.pop();
   let folder = "";
-  let filename = storageResourceFilename;
-  if (storageResourceFilename.indexOf("/") > -1) {
-    [folder, filename] = storageResourceFilename.split("/");
-  }
-  // let [folder, filename] = storageResourceFilename.split("/");
+  const firstPrefixPart = nameParts.shift(); // undefined if there's no folder
 
   // Handle special "folders"
-  if (folder.endsWith("_info_thumbnail")) {
-    type = EFileType.Thumbnail;
-  } else if (folder.endsWith("_info_metadata")) {
-    type = EFileType.Metadata;
-    filename = "metadata.xml";
-  } else if (folder.endsWith("_info_data")) {
-    type = EFileType.Data;
-  } else if (folder.endsWith("_info_dataz")) {
-    filename = filename.replace(/\.zip$/, "");
-    type = EFileType.Data;
-  } else {
-    const folderStart = folder.indexOf("_");
-    if (folderStart > 0) {
-      folder = folder.substr(folderStart + 1);
+  let type = EFileType.Resource;
+  if (firstPrefixPart) {
+    if (firstPrefixPart.endsWith("_info_thumbnail")) {
+      type = EFileType.Thumbnail;
+    } else if (firstPrefixPart.endsWith("_info_metadata")) {
+      type = EFileType.Metadata;
+      filename = "metadata.xml";
+    } else if (firstPrefixPart.endsWith("_info_data")) {
+      type = EFileType.Data;
+    } else if (firstPrefixPart.endsWith("_info_dataz")) {
+      filename = filename.replace(/\.zip$/, "");
+      type = EFileType.Data;
+
+      // Otherwise, strip off item id
+    } else if (storageVersion < 1) {
+      // Version 0
+      const folderStart = firstPrefixPart.indexOf("_");
+      if (folderStart > 0) {
+        folder = firstPrefixPart.substr(folderStart + 1);
+      }
     } else {
-      folder = "";
+      // Version ≥ 1
+      folder = nameParts.join("/"); // folder is optional, in which case this will be ""
     }
   }
 

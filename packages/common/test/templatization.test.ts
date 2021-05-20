@@ -28,7 +28,7 @@ import * as utils from "./mocks/utils";
 
 describe("Module `templatization`: common functions involving the adlib library", () => {
   describe("extractSolutionVersion", () => {
-    it("handles a version 0 solution", () => {
+    it("defaults to a version 0 solution", () => {
       const itemData: interfaces.ISolutionItemData = mockItems.getAGOLItemData(
         "Solution"
       );
@@ -37,11 +37,51 @@ describe("Module `templatization`: common functions involving the adlib library"
       expect(version).toEqual(0);
     });
 
-    it("handles a version 1 solution", () => {
+    it("defaults to a version 0 solution in case of bad version value", () => {
+      const itemData: interfaces.ISolutionItemData = mockItems.getAGOLItemData(
+        "Solution"
+      );
+      itemData.metadata.version = "Darth Vader";
+
+      const version = templatization.extractSolutionVersion(itemData);
+      expect(version).toEqual(0);
+    });
+
+    it("handles a version 0 solution as string", () => {
+      const itemData: interfaces.ISolutionItemData = mockItems.getAGOLItemData(
+        "Solution"
+      );
+      itemData.metadata.version = "0";
+
+      const version = templatization.extractSolutionVersion(itemData);
+      expect(version).toEqual(0);
+    });
+
+    it("handles a version 1 solution as string", () => {
       const itemData: interfaces.ISolutionItemData = mockItems.getAGOLItemData(
         "Solution"
       );
       itemData.metadata.version = "1";
+
+      const version = templatization.extractSolutionVersion(itemData);
+      expect(version).toEqual(1);
+    });
+
+    it("handles a version 0 solution as number", () => {
+      const itemData: interfaces.ISolutionItemData = mockItems.getAGOLItemData(
+        "Solution"
+      );
+      itemData.metadata.version = 0;
+
+      const version = templatization.extractSolutionVersion(itemData);
+      expect(version).toEqual(0);
+    });
+
+    it("handles a version 1 solution as number", () => {
+      const itemData: interfaces.ISolutionItemData = mockItems.getAGOLItemData(
+        "Solution"
+      );
+      itemData.metadata.version = 1;
 
       const version = templatization.extractSolutionVersion(itemData);
       expect(version).toEqual(1);

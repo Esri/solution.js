@@ -28,7 +28,14 @@ export function deploySolutionFromTemplate(
   authentication: common.UserSession,
   options: common.IDeploySolutionOptions
 ): Promise<string> {
+  options.storageVersion = common.extractSolutionVersion(solutionTemplateData);
+
   return new Promise((resolve, reject) => {
+    // It is possible to provide a separate authentication for the source
+    const storageAuthentication: common.UserSession = options.storageAuthentication
+      ? options.storageAuthentication
+      : authentication;
+
     // Replacement dictionary and high-level deployment ids for cleanup
 
     // TODO: Extract all templateDictionary prep into a separate function
@@ -67,7 +74,7 @@ export function deploySolutionFromTemplate(
       thumbDef = common.getBlobAsFile(
         thumbnailurl,
         thumbFilename,
-        authentication,
+        storageAuthentication,
         [400]
       );
     }
@@ -217,11 +224,6 @@ export function deploySolutionFromTemplate(
           deployedSolutionId
         );
 
-        // It is possible to provide a separate authentication for the source
-        const storageAuthentication: common.UserSession = options.storageAuthentication
-          ? options.storageAuthentication
-          : authentication;
-
         // Handle the contained item templates
         return deployItems.deploySolutionItems(
           storageAuthentication.portal,
@@ -249,7 +251,7 @@ export function deploySolutionFromTemplate(
             solutionTemplateData.templates.push(template);
           });
           solutionTemplateData.metadata.version =
-            common.SDeployedSolutionFormatVersion;
+            common.DeployedSolutionFormatVersion;
 
           // Wrap up with post-processing, in which we deal with groups and cycle remnants
           return postProcess(

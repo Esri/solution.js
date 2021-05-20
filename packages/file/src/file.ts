@@ -78,11 +78,12 @@ export function convertItemToTemplate(
         itemTemplate.properties[resource.filename] = resource.mimeType;
 
         const storageName = common.convertItemResourceToStorageResource(
-          itemTemplate.itemId,
+          itemTemplate.itemId +
+            ((resource.blob as File).name === resource.filename
+              ? "_info_data"
+              : "_info_dataz"),
           (resource.blob as File).name,
-          (resource.blob as File).name === resource.filename
-            ? "info_data"
-            : "info_dataz"
+          common.SolutionTemplateFormatVersion
         );
         common
           .addResourceFromBlob(

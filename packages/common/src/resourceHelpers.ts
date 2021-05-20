@@ -56,7 +56,6 @@ import {
 import {
   EFileType,
   IDeployFileCopyPath,
-  IDeployFilename,
   IFileMimeType,
   IItemUpdate,
   ISourceFileCopyPath,
@@ -72,6 +71,7 @@ import {
   updateItemResource
 } from "@esri/arcgis-rest-portal";
 import { convertItemResourceToStorageResource } from "./resources/convert-item-resource-to-storage-resource";
+import { convertStorageResourceToItemResource } from "./resources/convert-storage-resource-to-item-resource";
 
 import { copyResource } from "./resources/copy-resource";
 import { getBlob } from "./resources/get-blob";
@@ -402,7 +402,7 @@ export function copyMetadata(
  *
  * @param itemId Id of item
  * @return Folder and filename for storage; folder is the itemID suffixed with "_info_metadata"
- * @see generateResourceFilenameFromStorage
+ * @see convertStorageResourceToItemResource
  */
 export function generateMetadataStorageFilename(
   itemId: string
@@ -417,52 +417,6 @@ export function generateMetadataStorageFilename(
 }
 
 /**
- * Extracts an item's resource folder and filename from the filename used to store a copy in a storage item.
- *
- * @param storageResourceFilename Filename used to store the resource, metadata, or thumbnail of an item
- * @return Folder and filename for storing information in an item, as well as the type (resource, metadata,
- * or thumbnail) of the information; the folder property is only meaningful for the resource type
- * @see convertItemResourceToStorageResource
- * @see generateMetadataStorageFilename
- * @see generateThumbnailStorageFilename
- */
-export function generateResourceFilenameFromStorage(
-  storageResourceFilename: string
-): IDeployFilename {
-  let type = EFileType.Resource;
-  // Older Hub Solution Templates don't have folders, so
-  // we have some extra logic to handle this
-  let folder = "";
-  let filename = storageResourceFilename;
-  if (storageResourceFilename.indexOf("/") > -1) {
-    [folder, filename] = storageResourceFilename.split("/");
-  }
-  // let [folder, filename] = storageResourceFilename.split("/");
-
-  // Handle special "folders"
-  if (folder.endsWith("_info_thumbnail")) {
-    type = EFileType.Thumbnail;
-  } else if (folder.endsWith("_info_metadata")) {
-    type = EFileType.Metadata;
-    filename = "metadata.xml";
-  } else if (folder.endsWith("_info_data")) {
-    type = EFileType.Data;
-  } else if (folder.endsWith("_info_dataz")) {
-    filename = filename.replace(/\.zip$/, "");
-    type = EFileType.Data;
-  } else {
-    const folderStart = folder.indexOf("_");
-    if (folderStart > 0) {
-      folder = folder.substr(folderStart + 1);
-    } else {
-      folder = "";
-    }
-  }
-
-  return { type, folder, filename };
-}
-
-/**
  * Generates a list of full URLs and storage folder/filename combinations for storing the resources, metadata,
  * and thumbnail of an item.
  *
@@ -471,6 +425,7 @@ export function generateResourceFilenameFromStorage(
  * @param thumbnailUrlPart Partial path to the thumbnail held in an item's JSON
  * @param resourceFilenames List of resource filenames for an item, e.g., ["file1", "myFolder/file2"]
  * @param isGroup Boolean to indicate if the files are associated with a group or item
+ * @param storageVersion Version of the Solution template
  * @return List of item files' URLs and folder/filenames for storing the files
  */
 export function generateSourceFilePaths(
@@ -478,7 +433,8 @@ export function generateSourceFilePaths(
   itemId: string,
   thumbnailUrlPart: string,
   resourceFilenames: string[],
-  isGroup: boolean = false
+  isGroup: boolean = false,
+  storageVersion = 0
 ): ISourceFileCopyPath[] {
   const filePaths = resourceFilenames.map(resourceFilename => {
     return {
@@ -487,7 +443,11 @@ export function generateSourceFilePaths(
         itemId,
         resourceFilename
       ),
-      ...convertItemResourceToStorageResource(itemId, resourceFilename)
+      ...convertItemResourceToStorageResource(
+        itemId,
+        resourceFilename,
+        storageVersion
+      )
     };
   });
 
@@ -590,12 +550,14 @@ export function generateSourceThumbnailUrl(
  * @param portalSharingUrl Server/sharing
  * @param storageItemId Id of storage item
  * @param resourceFilenames List of resource filenames for an item, e.g., ["file1", "myFolder/file2"]
+ * @param storageVersion Version of the Solution template
  * @return List of item files' URLs and folder/filenames for storing the files
  */
 export function generateStorageFilePaths(
   portalSharingUrl: string,
   storageItemId: string,
-  resourceFilenames: string[] = []
+  resourceFilenames: string[] = [],
+  storageVersion = 0
 ): IDeployFileCopyPath[] {
   return resourceFilenames.map(resourceFilename => {
     return {
@@ -604,7 +566,7 @@ export function generateStorageFilePaths(
         storageItemId,
         resourceFilename
       ),
-      ...generateResourceFilenameFromStorage(resourceFilename)
+      ...convertStorageResourceToItemResource(resourceFilename, storageVersion)
     };
   });
 }
@@ -616,7 +578,7 @@ export function generateStorageFilePaths(
  * @param thumbnailUrlPart Partial path to the thumbnail held in an item's JSON
  * @return Folder and filename for storage; folder is the itemID suffixed with "_info_thumbnail";
  * file is URI-encoded thumbnailUrlPart
- * @see generateResourceFilenameFromStorage
+ * @see convertStorageResourceToItemResource
  */
 export function generateThumbnailStorageFilename(
   itemId: string,

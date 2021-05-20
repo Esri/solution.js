@@ -22,7 +22,7 @@
 
 import { unique } from "@esri/hub-common";
 import { adlib } from "adlib";
-import { createShortId } from "./generalHelpers";
+import { createShortId, getProp } from "./generalHelpers";
 import { IItemTemplate, ISolutionItemData } from "./interfaces";
 
 // ------------------------------------------------------------------------------------------------------------------ //
@@ -158,8 +158,15 @@ export function createPlaceholderTemplate(
  * @return Zero-based version number
  */
 export function extractSolutionVersion(itemData: ISolutionItemData): number {
-  const version = parseInt(itemData.metadata.version, 10);
-  return isNaN(version) ? 0 : version;
+  let version = getProp(itemData, "metadata.version");
+  if (!version) {
+    return 0;
+  }
+  if (typeof version === "string") {
+    version = parseInt(itemData.metadata.version, 10);
+    return isNaN(version) ? 0 : version;
+  }
+  return version;
 }
 
 /**

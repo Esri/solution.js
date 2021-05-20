@@ -261,6 +261,15 @@ describe("Module `deploySolutionFromTemplate`", () => {
     });
 
     it("allows distinct authentication to the solution template", done => {
+      const SERVER_INFO = {
+        currentVersion: 10.1,
+        fullVersion: "10.1",
+        soapUrl: "http://server/arcgis/services",
+        secureSoapUrl: "https://server/arcgis/services",
+        owningSystemUrl: "https://myorg.maps.arcgis.com",
+        authInfo: {}
+      };
+
       const templates: common.IItemTemplate[] = [
         mockTemplates.getItemTemplate("Web Map")
       ];
@@ -302,6 +311,10 @@ describe("Module `deploySolutionFromTemplate`", () => {
           portalsSelfResponse
         )
         .post("https://www.arcgis.com/sln1234567890/info/", portalsSelfResponse)
+        .post(
+          "https://www.arcgis.com/sln1234567890/thumbnail/?w=400/rest/info",
+          SERVER_INFO
+        )
         .post(
           "https://www.arcgis.com/sln1234567890/thumbnail/?w=400",
           testUtils.getSampleImageAsFile(),

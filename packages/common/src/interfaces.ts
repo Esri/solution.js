@@ -54,8 +54,8 @@ export {
 
 //#endregion ---------------------------------------------------------------------------------------------------------//
 
-export const SSolutionTemplateFormatVersion = "0";
-export const SDeployedSolutionFormatVersion = "1";
+export const SolutionTemplateFormatVersion = 1;
+export const DeployedSolutionFormatVersion = 1;
 
 //#region Enums ------------------------------------------------------------------------------------------------------//
 
@@ -320,6 +320,7 @@ export interface IDeploySolutionOptions {
   consoleProgress?: boolean; // default: false
   storageAuthentication?: UserSession; // credentials for the organization with the source items; default: use
   // authentication supplied for deployment destination
+  storageVersion?: number; // default: 0
 }
 
 /**
