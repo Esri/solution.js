@@ -59,6 +59,7 @@ export function deleteSolution(
   const deleteOptions: IDeleteSolutionOptions = options || {};
   let progressPercentStep = 0;
   let percentDone = 0;
+  let solutionFolderId: string;
 
   return Promise.all([
     restHelpersGet.getItemBase(solutionItemId, authentication),
@@ -67,6 +68,7 @@ export function deleteSolution(
     .then((response: any) => {
       const itemBase: IItemGeneralized = response[0];
       const itemData: ISolutionItemData = response[1];
+      solutionFolderId = itemBase.ownerFolder;
 
       // Make sure that the item is a deployed Solution
       if (
@@ -151,8 +153,70 @@ export function deleteSolution(
         }
       });
     })
+    .then(allItemsSuccessfullyDeleted => {
+      if (allItemsSuccessfullyDeleted) {
+        // If all deletes succeeded, see if we can delete the folder that contained them
+        return _deleteSolutionFolder(solutionFolderId, authentication);
+      } else {
+        return Promise.resolve(false);
+      }
+    })
     .catch(error => {
       throw error.message;
+    });
+}
+
+/**
+ * Deletes a deployed Solution's folder if the folder is empty.
+ *
+ * @param solutionFolderId Id of the folder of a deployed Solution
+ * @param authentication Credentials for the request
+ * @return Promise that will resolve if deletion was successful and fail if any part of it failed;
+ * if the folder has a non-Solution item, it will not be deleted, but the function will return true
+ */
+export function _deleteSolutionFolder(
+  solutionFolderId: string,
+  authentication: UserSession
+): Promise<boolean> {
+  // See if the deployment folder is empty and can be deleted; first, we need info about user
+  return authentication
+    .getUser({ authentication })
+    .then(user => {
+      // And then we need to be sure that the folder is empty
+      const query = new portal.SearchQueryBuilder()
+        .match(authentication.username)
+        .in("owner")
+        .and()
+        .match(user.orgId)
+        .in("orgid")
+        .and()
+        .match(solutionFolderId)
+        .in("ownerfolder");
+
+      return portal.searchItems({
+        q: query,
+        authentication
+      });
+    })
+    .then((searchResult: portal.ISearchResult<portal.IItem>) => {
+      if (searchResult.total === 0) {
+        // OK to delete the folder
+        return portal.removeFolder({
+          folderId: solutionFolderId,
+          owner: authentication.username,
+          authentication
+        });
+      } else {
+        // A non-deployment item is in the folder, so leave it alone
+        return Promise.resolve({ success: true });
+      }
+    })
+    .then(deleteFolderResponse => {
+      // Extract the success property
+      return deleteFolderResponse.success;
+    })
+    .catch(() => {
+      return Promise.resolve(false);
     });
 }
 
