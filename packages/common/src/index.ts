@@ -25,6 +25,7 @@ export * from "./deleteSolution";
 export * from "./dependencies";
 export * from "./featureServiceHelpers";
 export * from "./generalHelpers";
+export * from "./create-hub-request-options";
 export * from "./interfaces";
 export * from "./libConnectors";
 export * from "./migrator";

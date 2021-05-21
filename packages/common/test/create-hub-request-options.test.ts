@@ -13,8 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { createHubRequestOptions } from "../../src/helpers/create-hub-request-options";
-import * as utils from "../../../common/test/mocks/utils";
+import { createHubRequestOptions } from "../src/create-hub-request-options";
+import * as utils from "./mocks/utils";
 import * as portalModule from "@esri/arcgis-rest-portal";
 const MOCK_USER_SESSION = utils.createRuntimeMockUserSession();
 

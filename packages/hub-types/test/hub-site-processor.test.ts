@@ -22,7 +22,6 @@ import * as HubSiteProcessor from "../src/hub-site-processor";
 import * as common from "@esri/solution-common";
 import * as hubCommon from "@esri/hub-common";
 import * as postProcessSiteModule from "../src/helpers/_post-process-site";
-import * as hubRoModule from "../src/helpers/create-hub-request-options";
 import * as replacerModule from "../src/helpers/replace-item-ids";
 import { fail } from "@esri/solution-common/src/generalHelpers";
 
@@ -50,10 +49,9 @@ describe("HubSiteProcessor: ", () => {
       const getModelSpy = spyOn(sitesPackage, "getSiteById").and.resolveTo(
         model
       );
-      const hubRoSpy = spyOn(
-        hubRoModule,
-        "createHubRequestOptions"
-      ).and.resolveTo({} as hubCommon.IHubRequestOptions);
+      const hubRoSpy = spyOn(common, "createHubRequestOptions").and.resolveTo(
+        {} as hubCommon.IHubRequestOptions
+      );
       const convertSpy = spyOn(
         sitesPackage,
         "convertSiteToTemplate"
@@ -99,10 +97,9 @@ describe("HubSiteProcessor: ", () => {
       const getModelSpy = spyOn(sitesPackage, "getSiteById").and.resolveTo(
         model
       );
-      const hubRoSpy = spyOn(
-        hubRoModule,
-        "createHubRequestOptions"
-      ).and.resolveTo({} as hubCommon.IHubRequestOptions);
+      const hubRoSpy = spyOn(common, "createHubRequestOptions").and.resolveTo(
+        {} as hubCommon.IHubRequestOptions
+      );
       const convertSpy = spyOn(
         sitesPackage,
         "convertSiteToTemplate"
@@ -174,10 +171,9 @@ describe("HubSiteProcessor: ", () => {
         success: true,
         id: "fred"
       });
-      const hubRoSpy = spyOn(
-        hubRoModule,
-        "createHubRequestOptions"
-      ).and.resolveTo({} as hubCommon.IHubRequestOptions);
+      const hubRoSpy = spyOn(common, "createHubRequestOptions").and.resolveTo(
+        {} as hubCommon.IHubRequestOptions
+      );
 
       const td = {
         organization: {
@@ -214,10 +210,9 @@ describe("HubSiteProcessor: ", () => {
       });
     });
     it("happy-path with thumbnail", () => {
-      const hubRoSpy = spyOn(
-        hubRoModule,
-        "createHubRequestOptions"
-      ).and.resolveTo({} as hubCommon.IHubRequestOptions);
+      const hubRoSpy = spyOn(common, "createHubRequestOptions").and.resolveTo(
+        {} as hubCommon.IHubRequestOptions
+      );
       const createFromTmplSpy = spyOn(
         sitesPackage,
         "createSiteModelFromTemplate"
@@ -269,10 +264,9 @@ describe("HubSiteProcessor: ", () => {
     });
 
     it("other branches:: delegates to hub.js", () => {
-      const hubRoSpy = spyOn(
-        hubRoModule,
-        "createHubRequestOptions"
-      ).and.resolveTo({} as hubCommon.IHubRequestOptions);
+      const hubRoSpy = spyOn(common, "createHubRequestOptions").and.resolveTo(
+        {} as hubCommon.IHubRequestOptions
+      );
       const createFromTmplSpy = spyOn(
         sitesPackage,
         "createSiteModelFromTemplate"
@@ -320,10 +314,9 @@ describe("HubSiteProcessor: ", () => {
       });
     });
     it("asset and resource juggling", () => {
-      const hubRoSpy = spyOn(
-        hubRoModule,
-        "createHubRequestOptions"
-      ).and.resolveTo({} as hubCommon.IHubRequestOptions);
+      const hubRoSpy = spyOn(common, "createHubRequestOptions").and.resolveTo(
+        {} as hubCommon.IHubRequestOptions
+      );
       const createFromTmplSpy = spyOn(
         sitesPackage,
         "createSiteModelFromTemplate"
@@ -374,10 +367,9 @@ describe("HubSiteProcessor: ", () => {
       });
     });
     it("callsback on exception", done => {
-      const hubRoSpy = spyOn(
-        hubRoModule,
-        "createHubRequestOptions"
-      ).and.resolveTo({} as hubCommon.IHubRequestOptions);
+      const hubRoSpy = spyOn(common, "createHubRequestOptions").and.resolveTo(
+        {} as hubCommon.IHubRequestOptions
+      );
       spyOn(sitesPackage, "createSiteModelFromTemplate").and.rejectWith(
         "Whoa thats bad"
       );
@@ -407,10 +399,9 @@ describe("HubSiteProcessor: ", () => {
         });
     });
     it("it early-exits correctly", () => {
-      const hubRoSpy = spyOn(
-        hubRoModule,
-        "createHubRequestOptions"
-      ).and.resolveTo({} as hubCommon.IHubRequestOptions);
+      const hubRoSpy = spyOn(common, "createHubRequestOptions").and.resolveTo(
+        {} as hubCommon.IHubRequestOptions
+      );
       const td = {};
       const cb = () => false;
       return HubSiteProcessor.createItemFromTemplate(
@@ -427,10 +418,9 @@ describe("HubSiteProcessor: ", () => {
       });
     });
     it("it cleans up if job is cancelled late", () => {
-      const hubRoSpy = spyOn(
-        hubRoModule,
-        "createHubRequestOptions"
-      ).and.resolveTo({} as hubCommon.IHubRequestOptions);
+      const hubRoSpy = spyOn(common, "createHubRequestOptions").and.resolveTo(
+        {} as hubCommon.IHubRequestOptions
+      );
       const createFromTmplSpy = spyOn(
         sitesPackage,
         "createSiteModelFromTemplate"
@@ -501,10 +491,9 @@ describe("HubSiteProcessor: ", () => {
   });
   describe("postProcess ::", () => {
     it("delegates to _postProcessSite", () => {
-      const hubRoSpy = spyOn(
-        hubRoModule,
-        "createHubRequestOptions"
-      ).and.resolveTo({} as hubCommon.IHubRequestOptions);
+      const hubRoSpy = spyOn(common, "createHubRequestOptions").and.resolveTo(
+        {} as hubCommon.IHubRequestOptions
+      );
       const getSiteByIdSpy = spyOn(sitesPackage, "getSiteById").and.resolveTo({
         item: {},
         data: {}

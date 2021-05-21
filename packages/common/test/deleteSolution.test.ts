@@ -19,7 +19,9 @@
  * as part of that deployment.
  */
 
+import * as createHRO from "../src/create-hub-request-options";
 import * as deleteSolution from "../src/deleteSolution";
+import * as hubSites from "@esri/hub-sites";
 import * as interfaces from "../src/interfaces";
 import * as mockItems from "../../common/test/mocks/agolItems";
 import * as portal from "@esri/arcgis-rest-portal";
@@ -221,6 +223,61 @@ describe("Module `deleteSolution`: functions for deleting a deployed Solution it
           done();
         }, done.fail);
     });
+
+    it("deletes hub site applications via hub.js", done => {
+      const solutionItem = mockItems.getCompleteDeployedSolutionItemVersioned(
+        "1"
+      );
+      solutionItem.data.templates = [
+        {
+          itemId: "hsa1234567890",
+          type: "Hub Site Application",
+          dependencies: [],
+          groups: [],
+          item: {
+            typeKeywords: []
+          }
+        }
+      ];
+
+      const getItemBaseSpy = spyOn(restHelpersGet, "getItemBase").and.resolveTo(
+        solutionItem.base
+      );
+      const getItemDataAsJsonSpy = spyOn(
+        restHelpersGet,
+        "getItemDataAsJson"
+      ).and.resolveTo(solutionItem.data);
+
+      const unprotectItemSpy = spyOn(portal, "unprotectItem").and.resolveTo(
+        utils.getSuccessResponse()
+      );
+
+      const createHubRequestOptionsSpy = spyOn(
+        createHRO,
+        "createHubRequestOptions"
+      ).and.resolveTo(
+        utils.getSuccessResponse({
+          authentication: MOCK_USER_SESSION,
+          hubApiUrl: "https://hub.arcgis.com",
+          isPortal: false
+        })
+      );
+
+      const removeHubItemSpy = spyOn(hubSites, "removeSite").and.resolveTo(
+        utils.getSuccessResponse({ id: solutionItem.data.templates[0].itemId })
+      );
+
+      const removeSolnItemSpy = spyOn(restHelpers, "removeItem").and.resolveTo(
+        utils.getSuccessResponse({ id: solutionItem.base.id })
+      );
+
+      deleteSolution
+        .deleteSolution(solutionItem.base.id, MOCK_USER_SESSION)
+        .then(ok => {
+          expect(ok).toBeTruthy();
+          done();
+        }, done.fail);
+    });
   });
 
   describe("_reconstructBuildOrderIds", () => {
@@ -234,12 +291,14 @@ describe("Module `deleteSolution`: functions for deleting a deployed Solution it
   describe("_removeItems", () => {
     it("handles an empty list of item ids with all items so far successful", done => {
       const itemIds: string[] = [];
+      const hubSiteItemIds: string[] = [];
       const percentDone: number = 50.4;
       const progressPercentStep: number = 10.4;
 
       deleteSolution
         ._removeItems(
           itemIds,
+          hubSiteItemIds,
           MOCK_USER_SESSION,
           percentDone,
           progressPercentStep
@@ -252,12 +311,14 @@ describe("Module `deleteSolution`: functions for deleting a deployed Solution it
 
     it("handles an empty list of item ids with at least one item so far unsuccessful", done => {
       const itemIds: string[] = [];
+      const hubSiteItemIds: string[] = [];
       const percentDone: number = 50.4;
       const progressPercentStep: number = 10.4;
 
       deleteSolution
         ._removeItems(
           itemIds,
+          hubSiteItemIds,
           MOCK_USER_SESSION,
           percentDone,
           progressPercentStep,
@@ -274,6 +335,7 @@ describe("Module `deleteSolution`: functions for deleting a deployed Solution it
       const firstItemId = "map1234567890";
       const secondItemId = "svc1234567890";
       const itemIds: string[] = [firstItemId, secondItemId];
+      const hubSiteItemIds: string[] = [];
       const percentDone: number = 50.4;
       const progressPercentStep: number = 10.4;
 
@@ -294,6 +356,7 @@ describe("Module `deleteSolution`: functions for deleting a deployed Solution it
       deleteSolution
         ._removeItems(
           itemIds,
+          hubSiteItemIds,
           MOCK_USER_SESSION,
           percentDone,
           progressPercentStep,
@@ -349,6 +412,7 @@ describe("Module `deleteSolution`: functions for deleting a deployed Solution it
       const firstItemId = "map1234567890";
       const secondItemId = "svc1234567890";
       const itemIds: string[] = [firstItemId, secondItemId];
+      const hubSiteItemIds: string[] = [];
       const percentDone: number = 50.4;
       const progressPercentStep: number = 10.4;
 
@@ -369,6 +433,7 @@ describe("Module `deleteSolution`: functions for deleting a deployed Solution it
       deleteSolution
         ._removeItems(
           itemIds,
+          hubSiteItemIds,
           MOCK_USER_SESSION,
           percentDone,
           progressPercentStep,
@@ -437,6 +502,7 @@ describe("Module `deleteSolution`: functions for deleting a deployed Solution it
       const firstItemId = "map1234567890";
       const secondItemId = "svc1234567890";
       const itemIds: string[] = [firstItemId, secondItemId];
+      const hubSiteItemIds: string[] = [];
       const percentDone: number = 50.4;
       const progressPercentStep: number = 10.4;
 
@@ -457,6 +523,7 @@ describe("Module `deleteSolution`: functions for deleting a deployed Solution it
       deleteSolution
         ._removeItems(
           itemIds,
+          hubSiteItemIds,
           MOCK_USER_SESSION,
           percentDone,
           progressPercentStep,
@@ -512,6 +579,64 @@ describe("Module `deleteSolution`: functions for deleting a deployed Solution it
           },
           () => {
             jasmine.clock().uninstall();
+            done.fail();
+          }
+        );
+    });
+
+    it("deletes hub site applications via hub.js", done => {
+      const itemId = "hsa1234567890";
+      const itemIds: string[] = [itemId];
+      const hubSiteItemIds: string[] = [itemId];
+      const percentDone: number = 50.4;
+      const progressPercentStep: number = 10.4;
+
+      const unprotectItemSpy = spyOn(portal, "unprotectItem").and.resolveTo(
+        utils.getSuccessResponse()
+      );
+
+      const createHubRequestOptionsSpy = spyOn(
+        createHRO,
+        "createHubRequestOptions"
+      ).and.resolveTo(
+        utils.getSuccessResponse({
+          authentication: MOCK_USER_SESSION,
+          hubApiUrl: "https://hub.arcgis.com",
+          isPortal: false
+        })
+      );
+
+      const removeItemSpy = spyOn(hubSites, "removeSite").and.returnValues(
+        Promise.resolve(utils.getSuccessResponse({ id: itemId }))
+      );
+
+      deleteSolution
+        ._removeItems(
+          itemIds,
+          hubSiteItemIds,
+          MOCK_USER_SESSION,
+          percentDone,
+          progressPercentStep
+        )
+        .then(
+          ok => {
+            expect(ok).toBeTruthy();
+
+            expect(removeItemSpy.calls.count()).toBe(
+              1,
+              "should call removeItem once"
+            );
+            expect(removeItemSpy.calls.argsFor(0)[0]).toEqual(itemId);
+            expect(removeItemSpy.calls.argsFor(0)[1].authentication).toEqual(
+              MOCK_USER_SESSION
+            );
+            expect(removeItemSpy.calls.argsFor(0)[1].hubApiUrl).toEqual(
+              "https://hub.arcgis.com"
+            );
+            expect(removeItemSpy.calls.argsFor(0)[1].isPortal).toBeFalsy();
+            done();
+          },
+          () => {
             done.fail();
           }
         );

@@ -213,5 +213,24 @@ describe("Module `dependencies`: functions for determining deployment order", ()
           "hsa1234567890"
         ]);
     });
+
+    it("handles deployed template list", () => {
+      const templatesList = [
+        templates.getDeployedItemTemplate("map1234567890", "Web Map"),
+        templates.getDeployedItemTemplate(
+          "wma1234567890",
+          "Web Mapping Application",
+          ["map1234567890"]
+        )
+      ];
+      const {
+        buildOrder,
+        missingDependencies,
+        itemsToBePatched
+      } = dependencies.topologicallySortItems(templatesList);
+      expect(buildOrder)
+        .withContext("buildOrder")
+        .toEqual(["map1234567890", "wma1234567890"]);
+    });
   });
 });
