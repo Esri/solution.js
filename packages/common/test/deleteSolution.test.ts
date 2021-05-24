@@ -100,6 +100,19 @@ describe("Module `deleteSolution`: functions for deleting a deployed Solution it
         Promise.resolve(utils.getSuccessResponse({ id: solutionItem.base.id }))
       );
 
+      const getUserSpy = spyOn(MOCK_USER_SESSION, "getUser").and.resolveTo({
+        orgId: "orgABC"
+      });
+
+      const searchSpy = spyOn(portal, "searchItems").and.resolveTo({
+        total: 0,
+        results: []
+      } as any);
+
+      const removeFolderSpy = spyOn(portal, "removeFolder").and.resolveTo({
+        success: true
+      } as any);
+
       deleteSolution
         .deleteSolution(solutionItem.base.id, MOCK_USER_SESSION)
         .then(ok => {
@@ -139,10 +152,114 @@ describe("Module `deleteSolution`: functions for deleting a deployed Solution it
         Promise.resolve(utils.getSuccessResponse({ id: solutionItem.base.id }))
       );
 
+      const getUserSpy = spyOn(MOCK_USER_SESSION, "getUser").and.resolveTo({
+        orgId: "orgABC"
+      });
+
+      const searchSpy = spyOn(portal, "searchItems").and.resolveTo({
+        total: 0,
+        results: []
+      } as any);
+
+      const removeFolderSpy = spyOn(portal, "removeFolder").and.resolveTo({
+        success: true
+      } as any);
+
       deleteSolution
         .deleteSolution(solutionItem.base.id, MOCK_USER_SESSION)
         .then(ok => {
           expect(ok).toBeTruthy();
+          done();
+        }, done.fail);
+    });
+
+    it("deletes a version 1 Solution, but its folder contains a non-Solution item", done => {
+      const solutionItem = mockItems.getCompleteDeployedSolutionItemVersioned(
+        "1"
+      );
+
+      const getItemBaseSpy = spyOn(restHelpersGet, "getItemBase").and.resolveTo(
+        solutionItem.base
+      );
+      const getItemDataAsJsonSpy = spyOn(
+        restHelpersGet,
+        "getItemDataAsJson"
+      ).and.resolveTo(solutionItem.data);
+
+      const unprotectItemSpy = spyOn(portal, "unprotectItem").and.resolveTo(
+        utils.getSuccessResponse()
+      );
+
+      const removeItemSpy = spyOn(restHelpers, "removeItem").and.returnValues(
+        Promise.resolve(
+          utils.getSuccessResponse({
+            id: solutionItem.data.templates[0].itemId
+          })
+        ),
+        Promise.resolve(
+          utils.getSuccessResponse({
+            id: solutionItem.data.templates[1].itemId
+          })
+        ),
+        Promise.resolve(utils.getSuccessResponse({ id: solutionItem.base.id }))
+      );
+
+      const getUserSpy = spyOn(MOCK_USER_SESSION, "getUser").and.resolveTo({
+        orgId: "orgABC"
+      });
+
+      const searchSpy = spyOn(portal, "searchItems").and.resolveTo({
+        total: 1,
+        results: [{ id: "itm1234567890" }]
+      } as any);
+
+      deleteSolution
+        .deleteSolution(solutionItem.base.id, MOCK_USER_SESSION)
+        .then(ok => {
+          expect(ok).toBeTruthy();
+          done();
+        }, done.fail);
+    });
+
+    it("deletes a version 1 Solution, but deleting its folder fails", done => {
+      const solutionItem = mockItems.getCompleteDeployedSolutionItemVersioned(
+        "1"
+      );
+
+      const getItemBaseSpy = spyOn(restHelpersGet, "getItemBase").and.resolveTo(
+        solutionItem.base
+      );
+      const getItemDataAsJsonSpy = spyOn(
+        restHelpersGet,
+        "getItemDataAsJson"
+      ).and.resolveTo(solutionItem.data);
+
+      const unprotectItemSpy = spyOn(portal, "unprotectItem").and.resolveTo(
+        utils.getSuccessResponse()
+      );
+
+      const removeItemSpy = spyOn(restHelpers, "removeItem").and.returnValues(
+        Promise.resolve(
+          utils.getSuccessResponse({
+            id: solutionItem.data.templates[0].itemId
+          })
+        ),
+        Promise.resolve(
+          utils.getSuccessResponse({
+            id: solutionItem.data.templates[1].itemId
+          })
+        ),
+        Promise.resolve(utils.getSuccessResponse({ id: solutionItem.base.id }))
+      );
+
+      const getUserSpy = spyOn(MOCK_USER_SESSION, "getUser").and.resolveTo(
+        utils.getFailureResponse()
+      );
+
+      deleteSolution
+        .deleteSolution(solutionItem.base.id, MOCK_USER_SESSION)
+        .then(ok => {
+          expect(ok).toBeFalsy();
           done();
         }, done.fail);
     });
@@ -270,6 +387,19 @@ describe("Module `deleteSolution`: functions for deleting a deployed Solution it
       const removeSolnItemSpy = spyOn(restHelpers, "removeItem").and.resolveTo(
         utils.getSuccessResponse({ id: solutionItem.base.id })
       );
+
+      const getUserSpy = spyOn(MOCK_USER_SESSION, "getUser").and.resolveTo({
+        orgId: "orgABC"
+      });
+
+      const searchSpy = spyOn(portal, "searchItems").and.resolveTo({
+        total: 0,
+        results: []
+      } as any);
+
+      const removeFolderSpy = spyOn(portal, "removeFolder").and.resolveTo({
+        success: true
+      } as any);
 
       deleteSolution
         .deleteSolution(solutionItem.base.id, MOCK_USER_SESSION)
