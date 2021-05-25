@@ -58,7 +58,7 @@
           <label for="password">Portal:</label>
           <input type="text" id="portal" class="form-control" value="https://www.arcgis.com">
           <br>
-          <button class="btn btn-default danger" onclick="checkFcn()">Delete entire deployed Solution</button>
+          <button id="deleteBtn" class="btn btn-default danger" onclick="checkFcn()">Delete entire deployed Solution</button>
         </div>
       </div>
       <div id="check" class="col-sm-10 col-sm-offset-1" style="display:none">
@@ -139,9 +139,10 @@
             html => {
               document.getElementById("checkOutput").innerHTML = html;
               document.getElementById("check").style.display = "block";
+              document.getElementById("deleteBtn").style.display = "none";
             },
             error => {
-              var message = error?.error || JSON.stringify(error) || "Unspecified error";
+              var message = error?.error || error?.message || "Unspecified error";
               if (error.itemIds) {
                 message += "<ul>";
                 error.itemIds.forEach(
@@ -179,7 +180,7 @@
               document.getElementById("output").innerHTML = html;
             },
             error => {
-              var message = error?.error || JSON.stringify(error) || "Unspecified error";
+              var message = error?.error || error?.message || "Unspecified error";
               if (error.itemIds) {
                 message += "<ul>";
                 error.itemIds.forEach(
