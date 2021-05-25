@@ -242,7 +242,7 @@ export function addToServiceDefinition(
   options: any,
   skipRetry: boolean = false
 ): Promise<void> {
-  //options.params = {...options.params, async: true};
+  options.params = { ...options.params, async: true };
   return new Promise((resolve, reject) => {
     svcAdminAddToServiceDefinition(url, options).then(
       (result: any) => {
@@ -1002,6 +1002,9 @@ export function getRequest(
       params: update.params,
       authentication: update.args.authentication
     };
+    if (update.url.indexOf("addToDefinition") > -1) {
+      options.params = { ...options.params, async: true };
+    }
     request(update.url, options).then(
       result => {
         if (
