@@ -46,27 +46,6 @@ import { createHubRequestOptions } from "./create-hub-request-options";
 // ------------------------------------------------------------------------------------------------------------------ //
 
 /**
- * Reports if a deployed Solution can be automatically deleted.
- *
- * @param solutionItemId Id of a deployed Solution
- * @param authentication Credentials for the request
- * @return Promise resolving to deletable or not
- */
-export function isSolutionDeletable(
-  solutionItemId: string,
-  authentication: UserSession
-): Promise<boolean> {
-  return getSolutionSummary(solutionItemId, authentication).then(
-    (solutionSummary: ISolutionPrecis) => {
-      console.log(
-        "solution is deletable: " + (solutionSummary.items.length > 0)
-      ); //???
-      return solutionSummary.items.length > 0;
-    }
-  );
-}
-
-/**
  * Creates a summary of a deployed Solution.
  *
  * @param solutionItemId Id of a deployed Solution

@@ -17,13 +17,6 @@
 
 import * as common from "@esri/solution-common";
 
-export function isSolutionDeletable(
-  solutionItemId: string,
-  authentication: common.UserSession
-): Promise<boolean> {
-  return common.isSolutionDeletable(solutionItemId.trim(), authentication);
-}
-
 export function checkDeleteSolution(
   solutionItemId: string,
   authentication: common.UserSession
