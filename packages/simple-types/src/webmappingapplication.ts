@@ -93,7 +93,8 @@ export function convertItemToTemplate(
               _itemTemplate,
               authentication,
               portalUrl,
-              "data.widgetOnScreen.widgets"
+              "data.widgetOnScreen.widgets",
+              true
             ).then(
               updatedItemTemplate => {
                 templatizeValues(
@@ -188,7 +189,8 @@ export function templatizeWidgets(
   itemTemplate: common.IItemTemplate,
   authentication: common.UserSession,
   portalUrl: string,
-  widgetPath: string
+  widgetPath: string,
+  isOnScreen = false
 ): Promise<common.IItemTemplate> {
   return new Promise<common.IItemTemplate>((resolve, reject) => {
     // update widgets
@@ -197,7 +199,8 @@ export function templatizeWidgets(
     let requestUrls: string[] = [];
 
     widgets.forEach(widget => {
-      if (common.getProp(widget, "icon")) {
+      /* istanbul ignore else */
+      if (!isOnScreen && common.getProp(widget, "icon")) {
         setValues(widget, ["icon"], common.placeholder(common.SERVER_NAME));
       }
       const config: any = widget.config;
