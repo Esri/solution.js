@@ -634,6 +634,27 @@ export interface ISolutionItemData {
 }
 
 /**
+ * A brief form of an item in a solution.
+ */
+export interface ISolutionItemPrecis {
+  id: string;
+  type: string;
+  title: string;
+  modified: number;
+  owner: string;
+}
+
+/**
+ * A brief form of a solution item.
+ */
+export interface ISolutionPrecis {
+  id: string;
+  title: string;
+  folder: string;
+  items: ISolutionItemPrecis[];
+}
+
+/**
  * Packet of supplemental information provided via a ISolutionProgressCallback call.
  */
 export interface ISolutionProgressEvent {

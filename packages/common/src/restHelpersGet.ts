@@ -606,6 +606,27 @@ export function getItemResourcesFiles(
 }
 
 /**
+ * Gets all of the items associated with a Solution via a Solution2Item relationship.
+ *
+ * @param solutionItemId Id of a deployed Solution
+ * @param authentication Credentials for the request
+ * @return Promise resolving to a list of detailed item information
+ */
+export function getItemsRelatedToASolution(
+  solutionItemId: string,
+  authentication: UserSession
+): Promise<IItem[]> {
+  return getItemRelatedItems(
+    solutionItemId,
+    "Solution2Item",
+    "forward",
+    authentication
+  ).then((relationshipResponse: IGetRelatedItemsResponse) => {
+    return relationshipResponse.relatedItems;
+  });
+}
+
+/**
  * Gets the thumbnail of an AGO item.
  *
  * @param itemId Id of an item whose resources are sought
@@ -730,6 +751,27 @@ export function getPortalUrlFromAuth(authentication: UserSession): string {
     "/sharing/rest",
     ""
   );
+}
+
+/**
+ * Gets the ids of all Solution items associated with an AGO item via a Solution2Item relationship.
+ *
+ * @param itemId Id of an AGO item to query
+ * @param authentication Credentials for the request
+ * @return Promise resolving to a list of Solution item ids
+ */
+export function getSolutionsRelatedToAnItem(
+  itemId: string,
+  authentication: UserSession
+): Promise<string[]> {
+  return getItemRelatedItems(
+    itemId,
+    "Solution2Item",
+    "reverse",
+    authentication
+  ).then((relationshipResponse: IGetRelatedItemsResponse) => {
+    return relationshipResponse.relatedItems.map(item => item.id);
+  });
 }
 
 export function getThumbnailFile(

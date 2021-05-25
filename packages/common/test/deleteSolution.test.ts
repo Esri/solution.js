@@ -416,8 +416,9 @@ describe("Module `deleteSolution`: functions for deleting a deployed Solution it
       const buildOrderIds = deleteSolution._reconstructBuildOrderIds(templates);
       expect(buildOrderIds).toEqual([]);
     });
-  });
+  }); //???
 
+  /*   //???
   describe("_removeItems", () => {
     it("handles an empty list of item ids with all items so far successful", done => {
       const itemIds: string[] = [];
@@ -772,8 +773,7 @@ describe("Module `deleteSolution`: functions for deleting a deployed Solution it
         );
     });
   });
-
-  describe("_reportProgress", () => {
+  */ describe("_reportProgress", () => {
     it("uses progressCallback with just defaults", () => {
       const percentDone: number = 50.4;
       const deleteOptions: interfaces.IDeleteSolutionOptions = {
