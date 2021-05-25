@@ -122,7 +122,6 @@ export function getSolutionSummary(
         (first, second) =>
           buildOrderIds.indexOf(first.id) - buildOrderIds.indexOf(second.id)
       );
-      console.log("got getSolutionSummary"); //???
       return solutionSummary;
     });
 }
@@ -162,18 +161,9 @@ export function getDeletableSolutionInfo(
           (item: ISolutionItemPrecis, index: number) =>
             responses[index].length === 1
         );
-        console.log("got getDeletableSolutionInfo"); //???
         resolve(solutionSummary);
-      }) //???
-      /* //???
-    .catch(reject);
-    */ .catch(err => {
-        console.log(
-          "failed getDeletableSolutionInfo",
-          JSON.stringify(err, null, 2)
-        );
-        reject(err);
-      }); //???
+      })
+      .catch(reject);
   });
 }
 
@@ -233,7 +223,6 @@ export function deleteSolution(
         // Delete the items
         progressPercentStep = 100 / (solutionSummary.items.length + 2); // one extra for starting plus one extra for solution itself
         _reportProgress((percentDone += progressPercentStep), deleteOptions); // let the caller know that we've started
-        console.log("_removeItems..."); //???
 
         return _removeItems(
           solutionSummary,
@@ -374,7 +363,8 @@ export function _reconstructBuildOrderIds(
  * @param deleteOptions Reporting options
  * @param solutionDeletedSummary Solution summary containing items successfully deleted
  * @param solutionFailureSummary Solution summary containing items that could not be deleted
- * @return Promise that will resolve with true if all of the items in the list were successfully deleted
+ * @return Promise that will resolve with true if all of the items in the list were successfully deleted;
+ * also updates item lists in solutionDeletedSummary and solutionFailureSummary
  */
 export function _removeItems(
   solutionSummary: ISolutionPrecis,
@@ -393,7 +383,6 @@ export function _removeItems(
       .unprotectItem({ id: itemToDelete.id, authentication: authentication })
       .then(async () => {
         // Delete the item
-        console.log("delete " + itemToDelete.id + "..."); //???
         if (hubSiteItemIds.includes(itemToDelete.id)) {
           const options = await createHubRequestOptions(authentication);
           return hubSites.removeSite(itemToDelete.id, options);
@@ -410,7 +399,6 @@ export function _removeItems(
           throw new Error("Failed to delete item");
         }
 
-        console.log("deleted " + itemToDelete.id + " OK"); //???
         solutionDeletedSummary.items.push(itemToDelete);
         _reportProgress(
           (percentDone += progressPercentStep),
@@ -437,7 +425,6 @@ export function _removeItems(
           errorMessage &&
           errorMessage.includes("Item does not exist or is inaccessible")
         ) {
-          console.log("deleted " + itemToDelete.id + " ignored"); //???
           // Filter out errors where the item doesn't exist, such as from a previous delete attempt
           _reportProgress(
             (percentDone += progressPercentStep),
@@ -446,7 +433,6 @@ export function _removeItems(
             EItemProgressStatus.Ignored
           );
         } else {
-          console.log("deleted " + itemToDelete.id + " failed"); //???
           // Otherwise, we have a real delete error, including where AGO simply returns "success: false"
           solutionFailureSummary.items.push(itemToDelete);
           _reportProgress(
