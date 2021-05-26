@@ -237,6 +237,7 @@ export function addTokenToUrl(
 //
 // In some cases the call returns successfully but contains a 504
 // and in other cases the call fails
+/* istanbul ignore else */
 export function addToServiceDefinition(
   url: string,
   options: any,
@@ -247,12 +248,13 @@ export function addToServiceDefinition(
     svcAdminAddToServiceDefinition(url, options).then(
       (result: any) => {
         if (
-          (result?.code === 504 || result?.error?.code === 504) &&
+          (getProp(result, "code") === 504 ||
+            getProp(result, "error.code") === 504) &&
           !skipRetry
         ) {
-          svcAdminAddToServiceDefinition(url, options).then(
+          addToServiceDefinition(url, options, true).then(
             () => resolve(null),
-            e => reject(fail(e))
+            e => reject(e)
           );
         } else {
           resolve(null);
@@ -260,9 +262,9 @@ export function addToServiceDefinition(
       },
       e => {
         if (!skipRetry) {
-          svcAdminAddToServiceDefinition(url, options).then(
+          addToServiceDefinition(url, options, true).then(
             () => resolve(null),
-            e => reject(fail(e))
+            e => reject(e)
           );
         } else {
           reject(fail(e));
@@ -993,6 +995,7 @@ export function getFinalServiceUpdates(
  * @return A promise that will resolve when service definition call has completed
  * @private
  */
+/* istanbul ignore else */
 export function getRequest(
   update: IUpdate,
   skipRetry: boolean = false
@@ -1002,16 +1005,22 @@ export function getRequest(
       params: update.params,
       authentication: update.args.authentication
     };
-    if (update.url.indexOf("addToDefinition") > -1) {
+    /* istanbul ignore else */
+    if (
+      update.url.indexOf("addToDefinition") > -1 ||
+      update.url.indexOf("updateDefinition") > -1 ||
+      update.url.indexOf("deleteFromDefinition") > -1
+    ) {
       options.params = { ...options.params, async: true };
     }
     request(update.url, options).then(
       result => {
         if (
-          (result?.code === 504 || result?.error?.code === 504) &&
+          (getProp(result, "code") === 504 ||
+            getProp(result, "error.code") === 504) &&
           !skipRetry
         ) {
-          request(update.url, options).then(
+          getRequest(update, true).then(
             () => resolve(),
             e => reject(e)
           );
@@ -1021,7 +1030,7 @@ export function getRequest(
       },
       (e: any) => {
         if (!skipRetry) {
-          request(update.url, options).then(
+          getRequest(update, true).then(
             () => resolve(),
             e => reject(e)
           );
