@@ -18,18 +18,18 @@
  * Provides tests for functions involving the arcgis-rest-js library.
  */
 
-import * as auth from "@esri/arcgis-rest-auth";
+import * as admin from "@esri/arcgis-rest-service-admin";
 import * as fetchMock from "fetch-mock";
 import * as generalHelpers from "../src/generalHelpers";
 import * as interfaces from "../src/interfaces";
 import * as mockItems from "../test/mocks/agolItems";
 import * as polyfills from "../src/polyfills";
 import * as portal from "@esri/arcgis-rest-portal";
+import * as request from "@esri/arcgis-rest-request";
 import * as restHelpers from "../src/restHelpers";
 import * as restHelpersGet from "../src/restHelpersGet";
 import * as templates from "../test/mocks/templates";
 import * as utils from "./mocks/utils";
-import { encodeParam } from "@esri/arcgis-rest-request";
 import * as sinon from "sinon";
 
 // ------------------------------------------------------------------------------------------------------------------ //
@@ -412,6 +412,48 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
 
       fetchMock.post(adminUrl + "/addToDefinition", '{"success": true}');
 
+      restHelpers.addToServiceDefinition(url, {}).then(
+        () => done(),
+        () => done.fail()
+      );
+    });
+
+    it("can handle success 504", done => {
+      const url =
+        "https://services123.arcgis.com/org1234567890/arcgis/rest/services/ROWPermits_publiccomment/FeatureServer/0";
+
+      spyOn(admin, "addToServiceDefinition").and.returnValues(
+        Promise.resolve({ code: 504, error: { code: 504 } } as any),
+        Promise.resolve({ success: true } as any)
+      );
+      restHelpers.addToServiceDefinition(url, {}).then(
+        () => done(),
+        () => done.fail()
+      );
+    });
+
+    it("can handle failure after success 504", done => {
+      const url =
+        "https://services123.arcgis.com/org1234567890/arcgis/rest/services/ROWPermits_publiccomment/FeatureServer/0";
+
+      spyOn(admin, "addToServiceDefinition").and.returnValues(
+        Promise.resolve({ code: 504, error: { code: 504 } } as any),
+        Promise.reject({ success: false } as any)
+      );
+      restHelpers.addToServiceDefinition(url, {}).then(
+        () => done.fail(),
+        () => done()
+      );
+    });
+
+    it("will retry on first failure", done => {
+      const url =
+        "https://services123.arcgis.com/org1234567890/arcgis/rest/services/ROWPermits_publiccomment/FeatureServer/0";
+
+      spyOn(admin, "addToServiceDefinition").and.returnValues(
+        Promise.reject({ success: false } as any),
+        Promise.resolve({ code: 504, error: { code: 504 } } as any)
+      );
       restHelpers.addToServiceDefinition(url, {}).then(
         () => done(),
         () => done.fail()
@@ -2112,6 +2154,96 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
           expect(error.name).toEqual("ArcGISRequestError");
           done();
         }
+      );
+    });
+
+    it("can handle success 504", done => {
+      itemTemplate.key = "123456";
+
+      const args: interfaces.IPostProcessArgs = {
+        message: "updateDefinition",
+        objects: [],
+        itemTemplate: itemTemplate,
+        authentication: MOCK_USER_SESSION
+      };
+
+      const baseAdminSvcURL =
+        "https://services123.arcgis.com/org1234567890/arcgis/rest/admin/services/ROWPermits_publiccomment";
+
+      const update: interfaces.IUpdate = {
+        url: baseAdminSvcURL + "/FeatureServer/updateDefinition",
+        params: {},
+        args: args
+      };
+
+      spyOn(request, "request").and.returnValues(
+        Promise.resolve({ code: 504, error: { code: 504 } } as any),
+        Promise.resolve({ success: true } as any)
+      );
+
+      restHelpers.getRequest(update).then(
+        () => done(),
+        error => done.fail(error)
+      );
+    });
+
+    it("can handle failure after success 504", done => {
+      itemTemplate.key = "123456";
+
+      const args: interfaces.IPostProcessArgs = {
+        message: "addToDefinition",
+        objects: [],
+        itemTemplate: itemTemplate,
+        authentication: MOCK_USER_SESSION
+      };
+
+      const baseAdminSvcURL =
+        "https://services123.arcgis.com/org1234567890/arcgis/rest/admin/services/ROWPermits_publiccomment";
+
+      const update: interfaces.IUpdate = {
+        url: baseAdminSvcURL + "/FeatureServer/addToDefinition",
+        params: {},
+        args: args
+      };
+
+      spyOn(request, "request").and.returnValues(
+        Promise.resolve({ code: 504, error: { code: 504 } } as any),
+        Promise.reject({ success: false } as any)
+      );
+
+      restHelpers.getRequest(update).then(
+        () => done.fail(),
+        () => done()
+      );
+    });
+
+    it("will retry on first failure", done => {
+      itemTemplate.key = "123456";
+
+      const args: interfaces.IPostProcessArgs = {
+        message: "deleteFromDefinition",
+        objects: [],
+        itemTemplate: itemTemplate,
+        authentication: MOCK_USER_SESSION
+      };
+
+      const baseAdminSvcURL =
+        "https://services123.arcgis.com/org1234567890/arcgis/rest/admin/services/ROWPermits_publiccomment";
+
+      const update: interfaces.IUpdate = {
+        url: baseAdminSvcURL + "/FeatureServer/deleteFromDefinition",
+        params: {},
+        args: args
+      };
+
+      spyOn(request, "request").and.returnValues(
+        Promise.reject({ success: false }),
+        Promise.resolve({ success: true })
+      );
+
+      restHelpers.getRequest(update).then(
+        () => done(),
+        () => done.fail()
       );
     });
   });
