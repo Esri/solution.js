@@ -142,6 +142,10 @@ export function getAGOLItem(type?: string, url = ""): any {
       item = getAGOLGroup();
       break;
 
+    case "Hub Site Application":
+      item = getAGOLItemFundamentals(type, url || undefined);
+      break;
+
     case "Image":
       item = getAGOLItemFundamentals(type, url || undefined);
       break;
@@ -210,6 +214,21 @@ export function getAGOLItem(type?: string, url = ""): any {
   return item;
 }
 
+export function getAGOLItemPrecis(
+  type?: string,
+  url = ""
+): interfaces.ISolutionItemPrecis {
+  const item = getAGOLItem(type, url);
+  const precis: interfaces.ISolutionItemPrecis = {
+    id: item.id,
+    type: item.type,
+    title: item.title,
+    modified: item.modified,
+    owner: item.owner
+  };
+  return precis;
+}
+
 export function getCompleteMockItem(
   type = "Web Mapping Application"
 ): interfaces.ICompleteItem {
@@ -267,6 +286,7 @@ export function getCompleteDeployedSolutionItemVersioned(
   const item: any = getCompleteMockItem("Solution");
   item.base.typeKeywords.push("Solution");
   item.base.typeKeywords.push("Deployed");
+  item.base.ownerFolder = "fld1234567890";
 
   if (version === "1") {
     item.data = {
@@ -337,6 +357,17 @@ export function getCompleteTemplateSolutionItem(): interfaces.ICompleteItem {
 
 export function getSolutionItem(): any {
   return getAGOLItemFundamentals("Solution");
+}
+
+export function getSolutionPrecis(
+  items: interfaces.ISolutionItemPrecis[] = []
+): interfaces.ISolutionPrecis {
+  return {
+    id: "sol1234567890",
+    title: "a solution",
+    folder: "fld1234567890",
+    items
+  };
 }
 
 export function getItemWithoutItemProp(): any {
@@ -1604,6 +1635,7 @@ function getAGOLItemFundamentals(type: string, url = ""): any {
     id: typePrefix + "1234567890",
     item: typePrefix + "1234567890",
     owner: "LocalGovTryItLive",
+    ownerFolder: null,
     orgId: "org1234567890",
     created: 1520968147000,
     modified: 1522178539000,

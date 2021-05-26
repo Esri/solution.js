@@ -58,15 +58,10 @@ describe("Module `deleteSolution`: functions for deleting a deployed Solution it
 
       deleteSolution
         .deleteSolution(solutionItem.base.id, MOCK_USER_SESSION)
-        .then(
-          () => done.fail(),
-          failed => {
-            expect(failed).toEqual(
-              "Item " + solutionItem.base.id + " is not a deployed Solution"
-            );
-            done();
-          }
-        );
+        .then((response: interfaces.ISolutionPrecis[]) => {
+          expect(response).toEqual([undefined, undefined]);
+          done();
+        });
     });
 
     it("deletes a version 0 Solution", done => {
@@ -115,10 +110,10 @@ describe("Module `deleteSolution`: functions for deleting a deployed Solution it
 
       deleteSolution
         .deleteSolution(solutionItem.base.id, MOCK_USER_SESSION)
-        .then(ok => {
-          expect(ok).toBeTruthy();
+        .then((response: interfaces.ISolutionPrecis[]) => {
+          console.log(JSON.stringify(response, null, 2)); //???
           done();
-        }, done.fail);
+        });
     });
 
     it("deletes a version 1 Solution", done => {
@@ -167,10 +162,10 @@ describe("Module `deleteSolution`: functions for deleting a deployed Solution it
 
       deleteSolution
         .deleteSolution(solutionItem.base.id, MOCK_USER_SESSION)
-        .then(ok => {
-          expect(ok).toBeTruthy();
+        .then((response: interfaces.ISolutionPrecis[]) => {
+          console.log(JSON.stringify(response, null, 2)); //???
           done();
-        }, done.fail);
+        });
     });
 
     it("deletes a version 1 Solution, but its folder contains a non-Solution item", done => {
@@ -215,10 +210,10 @@ describe("Module `deleteSolution`: functions for deleting a deployed Solution it
 
       deleteSolution
         .deleteSolution(solutionItem.base.id, MOCK_USER_SESSION)
-        .then(ok => {
-          expect(ok).toBeTruthy();
+        .then((response: interfaces.ISolutionPrecis[]) => {
+          console.log(JSON.stringify(response, null, 2)); //???
           done();
-        }, done.fail);
+        });
     });
 
     it("deletes a version 1 Solution, but deleting its folder fails", done => {
@@ -258,10 +253,10 @@ describe("Module `deleteSolution`: functions for deleting a deployed Solution it
 
       deleteSolution
         .deleteSolution(solutionItem.base.id, MOCK_USER_SESSION)
-        .then(ok => {
-          expect(ok).toBeFalsy();
+        .then((response: interfaces.ISolutionPrecis[]) => {
+          console.log(JSON.stringify(response, null, 2)); //???
           done();
-        }, done.fail);
+        });
     });
 
     it("deletes a version 1 Solution, but one of the items fails", done => {
@@ -296,10 +291,10 @@ describe("Module `deleteSolution`: functions for deleting a deployed Solution it
 
       deleteSolution
         .deleteSolution(solutionItem.base.id, MOCK_USER_SESSION)
-        .then(ok => {
-          expect(ok).toBeFalsy();
+        .then((response: interfaces.ISolutionPrecis[]) => {
+          console.log(JSON.stringify(response, null, 2)); //???
           done();
-        }, done.fail);
+        });
     });
 
     it("deletes a version 1 Solution, but deleting the Solution item fails", done => {
@@ -335,10 +330,10 @@ describe("Module `deleteSolution`: functions for deleting a deployed Solution it
 
       deleteSolution
         .deleteSolution(solutionItem.base.id, MOCK_USER_SESSION)
-        .then(ok => {
-          expect(ok).toBeFalsy();
+        .then((response: interfaces.ISolutionPrecis[]) => {
+          console.log(JSON.stringify(response, null, 2)); //???
           done();
-        }, done.fail);
+        });
     });
 
     it("deletes hub site applications via hub.js", done => {
@@ -403,10 +398,10 @@ describe("Module `deleteSolution`: functions for deleting a deployed Solution it
 
       deleteSolution
         .deleteSolution(solutionItem.base.id, MOCK_USER_SESSION)
-        .then(ok => {
-          expect(ok).toBeTruthy();
+        .then((response: interfaces.ISolutionPrecis[]) => {
+          console.log(JSON.stringify(response, null, 2)); //???
           done();
-        }, done.fail);
+        });
     });
   });
 
@@ -416,48 +411,58 @@ describe("Module `deleteSolution`: functions for deleting a deployed Solution it
       const buildOrderIds = deleteSolution._reconstructBuildOrderIds(templates);
       expect(buildOrderIds).toEqual([]);
     });
-  }); //???
+  });
 
-  /*   //???
   describe("_removeItems", () => {
     it("handles an empty list of item ids with all items so far successful", done => {
-      const itemIds: string[] = [];
+      const solutionSummary: interfaces.ISolutionPrecis = mockItems.getSolutionPrecis();
       const hubSiteItemIds: string[] = [];
       const percentDone: number = 50.4;
       const progressPercentStep: number = 10.4;
+      const solutionDeletedSummary: interfaces.ISolutionPrecis = mockItems.getSolutionPrecis();
+      const solutionFailureSummary: interfaces.ISolutionPrecis = mockItems.getSolutionPrecis();
 
       deleteSolution
         ._removeItems(
-          itemIds,
+          solutionSummary,
           hubSiteItemIds,
           MOCK_USER_SESSION,
           percentDone,
-          progressPercentStep
+          progressPercentStep,
+          solutionDeletedSummary,
+          solutionFailureSummary
         )
-        .then(ok => {
-          expect(ok).toBeTruthy();
+        .then(() => {
+          expect(solutionDeletedSummary.items.length).toEqual(0);
+          expect(solutionFailureSummary.items.length).toEqual(0);
           done();
         }, done.fail);
     });
 
     it("handles an empty list of item ids with at least one item so far unsuccessful", done => {
-      const itemIds: string[] = [];
+      const solutionSummary: interfaces.ISolutionPrecis = mockItems.getSolutionPrecis();
       const hubSiteItemIds: string[] = [];
       const percentDone: number = 50.4;
       const progressPercentStep: number = 10.4;
+      const solutionDeletedSummary: interfaces.ISolutionPrecis = mockItems.getSolutionPrecis();
+      const solutionFailureSummary: interfaces.ISolutionPrecis = mockItems.getSolutionPrecis(
+        [mockItems.getAGOLItem("Web Map")]
+      );
 
       deleteSolution
         ._removeItems(
-          itemIds,
+          solutionSummary,
           hubSiteItemIds,
           MOCK_USER_SESSION,
           percentDone,
           progressPercentStep,
-          {},
-          false
+          solutionDeletedSummary,
+          solutionFailureSummary,
+          {}
         )
-        .then(ok => {
-          expect(ok).toBeFalsy();
+        .then(() => {
+          expect(solutionDeletedSummary.items.length).toEqual(0);
+          expect(solutionFailureSummary.items.length).toEqual(1);
           done();
         }, done.fail);
     });
@@ -465,10 +470,17 @@ describe("Module `deleteSolution`: functions for deleting a deployed Solution it
     it("deletes a list of item ids", done => {
       const firstItemId = "map1234567890";
       const secondItemId = "svc1234567890";
-      const itemIds: string[] = [firstItemId, secondItemId];
+      const solutionSummary: interfaces.ISolutionPrecis = mockItems.getSolutionPrecis(
+        [
+          mockItems.getAGOLItemPrecis("Web Map"),
+          mockItems.getAGOLItemPrecis("Feature Service")
+        ]
+      );
       const hubSiteItemIds: string[] = [];
       const percentDone: number = 50.4;
       const progressPercentStep: number = 10.4;
+      const solutionDeletedSummary: interfaces.ISolutionPrecis = mockItems.getSolutionPrecis();
+      const solutionFailureSummary: interfaces.ISolutionPrecis = mockItems.getSolutionPrecis();
 
       const unprotectItemSpy = spyOn(portal, "unprotectItem").and.resolveTo(
         utils.getSuccessResponse()
@@ -486,16 +498,19 @@ describe("Module `deleteSolution`: functions for deleting a deployed Solution it
 
       deleteSolution
         ._removeItems(
-          itemIds,
+          solutionSummary,
           hubSiteItemIds,
           MOCK_USER_SESSION,
           percentDone,
           progressPercentStep,
+          solutionDeletedSummary,
+          solutionFailureSummary,
           { consoleProgress: true }
         )
         .then(
-          ok => {
-            expect(ok).toBeTruthy();
+          () => {
+            expect(solutionDeletedSummary.items.length).toEqual(2);
+            expect(solutionFailureSummary.items.length).toEqual(0);
 
             expect(removeItemSpy.calls.count()).toBe(
               2,
@@ -542,10 +557,17 @@ describe("Module `deleteSolution`: functions for deleting a deployed Solution it
     it("deletes a list of item ids, with the first one failing", done => {
       const firstItemId = "map1234567890";
       const secondItemId = "svc1234567890";
-      const itemIds: string[] = [firstItemId, secondItemId];
+      const solutionSummary: interfaces.ISolutionPrecis = mockItems.getSolutionPrecis(
+        [
+          mockItems.getAGOLItemPrecis("Web Map"),
+          mockItems.getAGOLItemPrecis("Feature Service")
+        ]
+      );
       const hubSiteItemIds: string[] = [];
       const percentDone: number = 50.4;
       const progressPercentStep: number = 10.4;
+      const solutionDeletedSummary: interfaces.ISolutionPrecis = mockItems.getSolutionPrecis();
+      const solutionFailureSummary: interfaces.ISolutionPrecis = mockItems.getSolutionPrecis();
 
       const unprotectItemSpy = spyOn(portal, "unprotectItem").and.resolveTo(
         utils.getSuccessResponse()
@@ -563,16 +585,19 @@ describe("Module `deleteSolution`: functions for deleting a deployed Solution it
 
       deleteSolution
         ._removeItems(
-          itemIds,
+          solutionSummary,
           hubSiteItemIds,
           MOCK_USER_SESSION,
           percentDone,
           progressPercentStep,
+          solutionDeletedSummary,
+          solutionFailureSummary,
           { consoleProgress: true }
         )
         .then(
           ok => {
-            expect(ok).toBeFalsy();
+            expect(solutionDeletedSummary.items.length).toEqual(1);
+            expect(solutionFailureSummary.items.length).toEqual(1);
 
             expect(unprotectItemSpy.calls.count()).toBe(
               2,
@@ -632,10 +657,17 @@ describe("Module `deleteSolution`: functions for deleting a deployed Solution it
     it("deletes a list of item ids, skipping a missing one", done => {
       const firstItemId = "map1234567890";
       const secondItemId = "svc1234567890";
-      const itemIds: string[] = [firstItemId, secondItemId];
+      const solutionSummary: interfaces.ISolutionPrecis = mockItems.getSolutionPrecis(
+        [
+          mockItems.getAGOLItemPrecis("Web Map"),
+          mockItems.getAGOLItemPrecis("Feature Service")
+        ]
+      );
       const hubSiteItemIds: string[] = [];
       const percentDone: number = 50.4;
       const progressPercentStep: number = 10.4;
+      const solutionDeletedSummary: interfaces.ISolutionPrecis = mockItems.getSolutionPrecis();
+      const solutionFailureSummary: interfaces.ISolutionPrecis = mockItems.getSolutionPrecis();
 
       const unprotectItemSpy = spyOn(portal, "unprotectItem").and.returnValues(
         Promise.reject(mockItems.get400Failure()),
@@ -653,16 +685,19 @@ describe("Module `deleteSolution`: functions for deleting a deployed Solution it
 
       deleteSolution
         ._removeItems(
-          itemIds,
+          solutionSummary,
           hubSiteItemIds,
           MOCK_USER_SESSION,
           percentDone,
           progressPercentStep,
+          solutionDeletedSummary,
+          solutionFailureSummary,
           { consoleProgress: true }
         )
         .then(
           ok => {
-            expect(ok).toBeTruthy();
+            expect(solutionDeletedSummary.items.length).toEqual(1);
+            expect(solutionFailureSummary.items.length).toEqual(0);
 
             expect(unprotectItemSpy.calls.count()).toBe(
               2,
@@ -717,10 +752,14 @@ describe("Module `deleteSolution`: functions for deleting a deployed Solution it
 
     it("deletes hub site applications via hub.js", done => {
       const itemId = "hsa1234567890";
-      const itemIds: string[] = [itemId];
+      const solutionSummary: interfaces.ISolutionPrecis = mockItems.getSolutionPrecis(
+        [mockItems.getAGOLItemPrecis("Hub Site Application")]
+      );
       const hubSiteItemIds: string[] = [itemId];
       const percentDone: number = 50.4;
       const progressPercentStep: number = 10.4;
+      const solutionDeletedSummary: interfaces.ISolutionPrecis = mockItems.getSolutionPrecis();
+      const solutionFailureSummary: interfaces.ISolutionPrecis = mockItems.getSolutionPrecis();
 
       const unprotectItemSpy = spyOn(portal, "unprotectItem").and.resolveTo(
         utils.getSuccessResponse()
@@ -743,15 +782,18 @@ describe("Module `deleteSolution`: functions for deleting a deployed Solution it
 
       deleteSolution
         ._removeItems(
-          itemIds,
+          solutionSummary,
           hubSiteItemIds,
           MOCK_USER_SESSION,
           percentDone,
-          progressPercentStep
+          progressPercentStep,
+          solutionDeletedSummary,
+          solutionFailureSummary
         )
         .then(
           ok => {
-            expect(ok).toBeTruthy();
+            expect(solutionDeletedSummary.items.length).toEqual(1);
+            expect(solutionFailureSummary.items.length).toEqual(0);
 
             expect(removeItemSpy.calls.count()).toBe(
               1,
@@ -773,7 +815,8 @@ describe("Module `deleteSolution`: functions for deleting a deployed Solution it
         );
     });
   });
-  */ describe("_reportProgress", () => {
+
+  describe("_reportProgress", () => {
     it("uses progressCallback with just defaults", () => {
       const percentDone: number = 50.4;
       const deleteOptions: interfaces.IDeleteSolutionOptions = {

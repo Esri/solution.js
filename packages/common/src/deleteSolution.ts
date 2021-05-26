@@ -46,128 +46,6 @@ import { createHubRequestOptions } from "./create-hub-request-options";
 // ------------------------------------------------------------------------------------------------------------------ //
 
 /**
- * Creates a summary of a deployed Solution.
- *
- * @param solutionItemId Id of a deployed Solution
- * @param authentication Credentials for the request
- * @return Promise resolving to a summary of the deployed Solution
- */
-export function getSolutionSummary(
-  solutionItemId: string,
-  authentication: UserSession
-): Promise<ISolutionPrecis> {
-  const solutionSummary: ISolutionPrecis = {
-    id: solutionItemId,
-    title: "",
-    folder: "",
-    items: []
-  };
-  let templates: IItemTemplate[] = [];
-  let deployedSolutionVersion = DeployedSolutionFormatVersion;
-
-  return Promise.all([
-    restHelpersGet.getItemBase(solutionItemId, authentication),
-    restHelpersGet.getItemDataAsJson(solutionItemId, authentication)
-  ])
-    .then((response: any) => {
-      const itemBase: IItemGeneralized = response[0];
-      const itemData: ISolutionItemData = response[1];
-
-      solutionSummary.title = itemBase.title;
-      solutionSummary.folder = itemBase.ownerFolder;
-      deployedSolutionVersion = templatization.extractSolutionVersion(itemData);
-      templates = itemData.templates;
-
-      // Make sure that the item is a deployed Solution
-      if (
-        !(
-          itemBase.typeKeywords.includes("Solution") &&
-          itemBase.typeKeywords.includes("Deployed")
-        )
-      ) {
-        throw new Error(
-          "Item " + solutionItemId + " is not a deployed Solution"
-        );
-      }
-
-      // The Solution item must have a forward Solution2Item relationship to be deletable
-      return restHelpersGet.getItemsRelatedToASolution(
-        solutionItemId,
-        authentication
-      );
-    })
-    .then((relatedItems: portal.IItem[]) => {
-      solutionSummary.items = relatedItems.map(relatedItem => {
-        return {
-          id: relatedItem.id,
-          type: relatedItem.type,
-          title: relatedItem.title,
-          modified: relatedItem.modified,
-          owner: relatedItem.owner
-        };
-      });
-
-      // Get the build order
-      let buildOrderIds = [] as string[];
-      if (deployedSolutionVersion < 1) {
-        // Version 0
-        buildOrderIds = _reconstructBuildOrderIds(templates);
-      } else {
-        // Version ≥ 1
-        buildOrderIds = templates.map((template: any) => template.itemId);
-      }
-
-      // Sort the related items into build order
-      solutionSummary.items.sort(
-        (first, second) =>
-          buildOrderIds.indexOf(first.id) - buildOrderIds.indexOf(second.id)
-      );
-      return solutionSummary;
-    });
-}
-
-/**
- * Returns a list of items in a deployed Solution that would be deleted by the `deleteSolution` function; list
- * does not include the Solution folder, Solution items that are shared with any item other than the deployed
- * Solution, or the Solution item itself.
- *
- * @param solutionItemId Id of a deployed Solution
- * @param authentication Credentials for the request
- * @return Promise resolving to the list of items in the solution that would be deleted.
- */
-export function getDeletableSolutionInfo(
-  solutionItemId: string,
-  authentication: UserSession
-): Promise<ISolutionPrecis> {
-  let solutionSummary: ISolutionPrecis;
-
-  return new Promise<ISolutionPrecis>((resolve, reject) => {
-    getSolutionSummary(solutionItemId, authentication)
-      .then((response: ISolutionPrecis) => {
-        // Fetch each item's relationships back to Solution items
-        solutionSummary = response;
-        const awaitAllItems: Array<Promise<
-          string[]
-        >> = solutionSummary.items.map((item: ISolutionItemPrecis) =>
-          restHelpersGet.getSolutionsRelatedToAnItem(item.id, authentication)
-        );
-
-        // eslint-disable-next-line @typescript-eslint/no-floating-promises
-        return Promise.all(awaitAllItems);
-      })
-      .then((responses: string[][]) => {
-        // Filter out items that are shared with another Solution
-        solutionSummary.items = solutionSummary.items.filter(
-          (item: ISolutionItemPrecis, index: number) =>
-            responses[index].length === 1
-        );
-        resolve(solutionSummary);
-      })
-      .catch(reject);
-  });
-}
-
-/**
  * Deletes a deployed Solution item and and all of the items that were created
  * as part of that deployment.
  *
@@ -230,9 +108,9 @@ export function deleteSolution(
           authentication,
           percentDone,
           progressPercentStep,
-          deleteOptions,
           solutionDeletedSummary,
-          solutionFailureSummary
+          solutionFailureSummary,
+          deleteOptions
         );
       })
       .then(() => {
@@ -270,6 +148,129 @@ export function deleteSolution(
         resolve([solutionDeletedSummary, solutionFailureSummary]);
       });
   });
+}
+
+/**
+ * Returns a list of items in a deployed Solution that would be deleted by the `deleteSolution` function; list
+ * does not include the Solution folder, Solution items that are shared with any item other than the deployed
+ * Solution, or the Solution item itself.
+ *
+ * @param solutionItemId Id of a deployed Solution
+ * @param authentication Credentials for the request
+ * @return Promise resolving to the list of items in the solution that would be deleted.
+ */
+export function getDeletableSolutionInfo(
+  solutionItemId: string,
+  authentication: UserSession
+): Promise<ISolutionPrecis> {
+  let solutionSummary: ISolutionPrecis;
+
+  return new Promise<ISolutionPrecis>((resolve, reject) => {
+    getSolutionSummary(solutionItemId, authentication)
+      .then((response: ISolutionPrecis) => {
+        // Fetch each item's relationships back to Solution items
+        solutionSummary = response;
+        const awaitAllItems: Array<Promise<
+          string[]
+        >> = solutionSummary.items.map((item: ISolutionItemPrecis) =>
+          restHelpersGet.getSolutionsRelatedToAnItem(item.id, authentication)
+        );
+
+        // eslint-disable-next-line @typescript-eslint/no-floating-promises
+        return Promise.all(awaitAllItems);
+      })
+      .then((responses: string[][]) => {
+        // Filter out items that are shared with another Solution
+        solutionSummary.items = solutionSummary.items.filter(
+          (item: ISolutionItemPrecis, index: number) =>
+            responses[index].length === 1
+        );
+        resolve(solutionSummary);
+      })
+      .catch(reject);
+  });
+}
+
+/**
+ * Creates a summary of a deployed Solution.
+ *
+ * @param solutionItemId Id of a deployed Solution
+ * @param authentication Credentials for the request
+ * @return Promise resolving to a summary of the deployed Solution
+ */
+export function getSolutionSummary(
+  solutionItemId: string,
+  authentication: UserSession
+): Promise<ISolutionPrecis> {
+  const solutionSummary: ISolutionPrecis = {
+    id: solutionItemId,
+    title: "",
+    folder: "",
+    items: []
+  };
+  let templates: IItemTemplate[] = [];
+  let deployedSolutionVersion = DeployedSolutionFormatVersion;
+
+  return Promise.all([
+    restHelpersGet.getItemBase(solutionItemId, authentication),
+    restHelpersGet.getItemDataAsJson(solutionItemId, authentication)
+  ])
+    .then((response: any) => {
+      const itemBase: IItemGeneralized = response[0];
+      const itemData: ISolutionItemData = response[1];
+
+      solutionSummary.title = itemBase.title;
+      console.log("itemBase.ownerFolder", itemBase.ownerFolder); //???
+      solutionSummary.folder = itemBase.ownerFolder;
+      deployedSolutionVersion = templatization.extractSolutionVersion(itemData);
+      templates = itemData.templates;
+
+      // Make sure that the item is a deployed Solution
+      if (
+        !(
+          itemBase.typeKeywords.includes("Solution") &&
+          itemBase.typeKeywords.includes("Deployed")
+        )
+      ) {
+        throw new Error(
+          "Item " + solutionItemId + " is not a deployed Solution"
+        );
+      }
+
+      // The Solution item must have a forward Solution2Item relationship to be deletable
+      return restHelpersGet.getItemsRelatedToASolution(
+        solutionItemId,
+        authentication
+      );
+    })
+    .then((relatedItems: portal.IItem[]) => {
+      solutionSummary.items = relatedItems.map(relatedItem => {
+        return {
+          id: relatedItem.id,
+          type: relatedItem.type,
+          title: relatedItem.title,
+          modified: relatedItem.modified,
+          owner: relatedItem.owner
+        };
+      });
+
+      // Get the build order
+      let buildOrderIds = [] as string[];
+      if (deployedSolutionVersion < 1) {
+        // Version 0
+        buildOrderIds = _reconstructBuildOrderIds(templates);
+      } else {
+        // Version ≥ 1
+        buildOrderIds = templates.map((template: any) => template.itemId);
+      }
+
+      // Sort the related items into build order
+      solutionSummary.items.sort(
+        (first, second) =>
+          buildOrderIds.indexOf(first.id) - buildOrderIds.indexOf(second.id)
+      );
+      return solutionSummary;
+    });
 }
 
 /**
@@ -360,9 +361,9 @@ export function _reconstructBuildOrderIds(
  * @param authentication Credentials for the request
  * @param percentDone Percent done in range 0 to 100
  * @param progressPercentStep Amount that percentDone changes for each item deleted
- * @param deleteOptions Reporting options
  * @param solutionDeletedSummary Solution summary containing items successfully deleted
  * @param solutionFailureSummary Solution summary containing items that could not be deleted
+ * @param deleteOptions Reporting options
  * @return Promise that will resolve with true if all of the items in the list were successfully deleted;
  * also updates item lists in solutionDeletedSummary and solutionFailureSummary
  */
@@ -372,9 +373,9 @@ export function _removeItems(
   authentication: UserSession,
   percentDone: number,
   progressPercentStep: number,
-  deleteOptions: IDeleteSolutionOptions = {},
   solutionDeletedSummary: ISolutionPrecis,
-  solutionFailureSummary: ISolutionPrecis
+  solutionFailureSummary: ISolutionPrecis,
+  deleteOptions: IDeleteSolutionOptions = {}
 ): Promise<void> {
   const itemToDelete = solutionSummary.items.shift();
   if (itemToDelete) {
@@ -414,9 +415,9 @@ export function _removeItems(
           authentication,
           percentDone,
           progressPercentStep,
-          deleteOptions,
           solutionDeletedSummary,
-          solutionFailureSummary
+          solutionFailureSummary,
+          deleteOptions
         );
       })
       .catch(error => {
@@ -448,9 +449,9 @@ export function _removeItems(
           authentication,
           percentDone,
           progressPercentStep,
-          deleteOptions,
           solutionDeletedSummary,
-          solutionFailureSummary
+          solutionFailureSummary,
+          deleteOptions
         );
       });
   } else {
