@@ -621,7 +621,7 @@ describe("Module `webmappingapplication`: manages the creation and deployment of
           widgetOnScreen: {
             widgets: [
               {
-                icon: "https://somepath/somename.png",
+                icon: "widgets/Scalebar/images/somename.png",
                 config: {
                   someProperty: {
                     someHttpUrl: "http://path/FeatureServer/1"
@@ -699,7 +699,7 @@ describe("Module `webmappingapplication`: manages the creation and deployment of
           widgetOnScreen: {
             widgets: [
               {
-                icon: "{{portalBaseUrl}}/somename.png",
+                icon: "widgets/Scalebar/images/somename.png",
                 config: {
                   someProperty: {
                     someHttpUrl:
@@ -1261,6 +1261,15 @@ describe("Module `webmappingapplication`: manages the creation and deployment of
             dataSources: {},
             settings: {}
           },
+          widgetOnScreen: {
+            widgets: [
+              {
+                name: "Search",
+                uri: "widgets/Search/Widget",
+                icon: "widgets/Search/images/icon.png?wab_dv=2.1"
+              }
+            ]
+          },
           widgetPool: {
             widgets: [
               {
@@ -1306,6 +1315,13 @@ describe("Module `webmappingapplication`: manages the creation and deployment of
       const expectedItemTemplate: common.IItemTemplate = common.cloneObject(
         itemTemplate
       );
+      expectedItemTemplate.data.widgetOnScreen.widgets = [
+        {
+          name: "Search",
+          uri: "widgets/Search/Widget",
+          icon: "widgets/Search/images/icon.png?wab_dv=2.1"
+        }
+      ];
       expectedItemTemplate.data.widgetPool.widgets = [
         {
           icon: "{{portalBaseUrl}}/somename.png",
