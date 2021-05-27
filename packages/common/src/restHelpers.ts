@@ -255,6 +255,9 @@ export function addToServiceDefinition(
                 if (r.status === "Completed") {
                   clearInterval(checkStatus);
                   resolve(null);
+                } else if (r.status === "Failed") {
+                  clearInterval(checkStatus);
+                  reject(fail(r));
                 }
               },
               e => {
@@ -1030,6 +1033,9 @@ export function getRequest(
                 if (r.status === "Completed") {
                   clearInterval(checkStatus);
                   resolve();
+                } else if (r.status === "Failed") {
+                  clearInterval(checkStatus);
+                  reject(r);
                 }
               },
               e => {
