@@ -245,30 +245,10 @@ export function addToServiceDefinition(
   return new Promise((resolve, reject) => {
     svcAdminAddToServiceDefinition(url, options).then(
       (result: any) => {
-        if (result.statusURL) {
-          const checkStatus = setInterval(() => {
-            request(result.statusURL, {
-              authentication: options.authentication
-            }).then(
-              r => {
-                /* istanbul ignore else */
-                if (r.status === "Completed") {
-                  clearInterval(checkStatus);
-                  resolve(null);
-                } else if (r.status === "Failed") {
-                  clearInterval(checkStatus);
-                  reject(fail(r));
-                }
-              },
-              e => {
-                clearInterval(checkStatus);
-                reject(fail(e));
-              }
-            );
-          }, 2000);
-        } else {
-          resolve(null);
-        }
+        checkRequestStatus(result, options.authentication).then(
+          () => resolve(null),
+          e => reject(fail(e))
+        );
       },
       e => {
         if (!skipRetry) {
@@ -281,6 +261,36 @@ export function addToServiceDefinition(
         }
       }
     );
+  });
+}
+
+export function checkRequestStatus(
+  result: any,
+  authentication: any
+): Promise<void> {
+  return new Promise((resolve, reject) => {
+    if (result.statusURL) {
+      const checkStatus = setInterval(() => {
+        request(result.statusURL, { authentication }).then(
+          r => {
+            /* istanbul ignore else */
+            if (r.status === "Completed") {
+              clearInterval(checkStatus);
+              resolve();
+            } else if (r.status === "Failed") {
+              clearInterval(checkStatus);
+              reject(r);
+            }
+          },
+          e => {
+            clearInterval(checkStatus);
+            reject(e);
+          }
+        );
+      }, 2000);
+    } else {
+      resolve();
+    }
   });
 }
 
@@ -1023,30 +1033,10 @@ export function getRequest(
     // }
     request(update.url, options).then(
       result => {
-        if (result.statusURL) {
-          const checkStatus = setInterval(() => {
-            request(result.statusURL, {
-              authentication: options.authentication
-            }).then(
-              r => {
-                /* istanbul ignore else */
-                if (r.status === "Completed") {
-                  clearInterval(checkStatus);
-                  resolve();
-                } else if (r.status === "Failed") {
-                  clearInterval(checkStatus);
-                  reject(r);
-                }
-              },
-              e => {
-                clearInterval(checkStatus);
-                reject(e);
-              }
-            );
-          }, 2000);
-        } else {
-          resolve();
-        }
+        checkRequestStatus(result, options.authentication).then(
+          () => resolve(null),
+          e => reject(fail(e))
+        );
       },
       (e: any) => {
         if (!skipRetry) {
