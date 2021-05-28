@@ -2064,20 +2064,20 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
           },
           args
         },
-        {
-          url: adminUrl + "/0/updateDefinition",
-          params: {
-            updateDefinition: _object
-          },
-          args: args
-        },
-        {
-          url: adminUrl + "/refresh",
-          params: {
-            f: "json"
-          },
-          args
-        },
+        // {
+        //   url: adminUrl + "/0/updateDefinition",
+        //   params: {
+        //     updateDefinition: _object
+        //   },
+        //   args: args
+        // },
+        // {
+        //   url: adminUrl + "/refresh",
+        //   params: {
+        //     f: "json"
+        //   },
+        //   args
+        // },
         {
           url: adminUrl + "/addToDefinition",
           params: {
