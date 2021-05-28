@@ -944,8 +944,8 @@ export function getLayerUpdates(args: IPostProcessArgs): IUpdate[] {
       updates.push(_getUpdate(adminUrl, null, null, args, "refresh"));
     }
     // handle definition updates
-    updates.push(_getUpdate(adminUrl, id, obj, args, "update"));
-    updates.push(refresh);
+    //updates.push(_getUpdate(adminUrl, id, obj, args, "update"));
+    //updates.push(refresh);
   });
   if (!args.itemTemplate.properties.service.isView) {
     const relUpdates: any = _getRelationshipUpdates({
@@ -974,33 +974,33 @@ export function getLayerUpdates(args: IPostProcessArgs): IUpdate[] {
  * @param updates An array of update instructions
  * @return An array of update instructions
  */
-export function getFinalServiceUpdates(
-  itemTemplate: IItemTemplate,
-  authentication: UserSession,
-  updates: IUpdate[]
-): IUpdate[] {
-  const sourceSchemaChangesAllowed: boolean = getProp(
-    itemTemplate,
-    "properties.service.sourceSchemaChangesAllowed"
-  );
-  const isView: boolean = getProp(itemTemplate, "properties.service.isView");
+// export function getFinalServiceUpdates(
+//   itemTemplate: IItemTemplate,
+//   authentication: UserSession,
+//   updates: IUpdate[]
+// ): IUpdate[] {
+//   const sourceSchemaChangesAllowed: boolean = getProp(
+//     itemTemplate,
+//     "properties.service.sourceSchemaChangesAllowed"
+//   );
+//   const isView: boolean = getProp(itemTemplate, "properties.service.isView");
 
-  /* istanbul ignore else */
-  if (sourceSchemaChangesAllowed && isView) {
-    const adminUrl: string = itemTemplate.item.url.replace(
-      "rest/services",
-      "rest/admin/services"
-    );
-    const args: any = {
-      authentication,
-      message: "final service update"
-    };
-    const serviceUpdates: any = { sourceSchemaChangesAllowed };
-    updates.push(_getUpdate(adminUrl, null, serviceUpdates, args, "update"));
-  }
+//   /* istanbul ignore else */
+//   if (sourceSchemaChangesAllowed && isView) {
+//     const adminUrl: string = itemTemplate.item.url.replace(
+//       "rest/services",
+//       "rest/admin/services"
+//     );
+//     const args: any = {
+//       authentication,
+//       message: "final service update"
+//     };
+//     const serviceUpdates: any = { sourceSchemaChangesAllowed };
+//     updates.push(_getUpdate(adminUrl, null, serviceUpdates, args, "update"));
+//   }
 
-  return updates;
-}
+//   return updates;
+// }
 
 /**
  * Add additional options to a layers definition
