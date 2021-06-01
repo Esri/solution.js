@@ -233,16 +233,43 @@ export function addTokenToUrl(
   });
 }
 
+// Added retry due to some solutions failing to deploy in specific orgs/hives
+//
+// In some cases the call returns successfully but contains a 504
+// and in other cases the call fails
+/* istanbul ignore else */
 export function addToServiceDefinition(
   url: string,
-  options: any
+  options: any,
+  skipRetry: boolean = false
 ): Promise<void> {
+  options.params = { ...options.params, async: true };
   return new Promise((resolve, reject) => {
     svcAdminAddToServiceDefinition(url, options).then(
-      () => {
-        resolve(null);
+      (result: any) => {
+        if (
+          (getProp(result, "code") === 504 ||
+            getProp(result, "error.code") === 504) &&
+          !skipRetry
+        ) {
+          addToServiceDefinition(url, options, true).then(
+            () => resolve(null),
+            e => reject(e)
+          );
+        } else {
+          resolve(null);
+        }
       },
-      e => reject(fail(e))
+      e => {
+        if (!skipRetry) {
+          addToServiceDefinition(url, options, true).then(
+            () => resolve(null),
+            e => reject(e)
+          );
+        } else {
+          reject(fail(e));
+        }
+      }
     );
   });
 }
@@ -958,19 +985,59 @@ export function getFinalServiceUpdates(
 /**
  * Add additional options to a layers definition
  *
+ * Added retry due to some solutions failing to deploy in specific orgs/hives
+ *
+ * In some cases the call returns successfully but contains a 504
+ * and in other cases the call fails
+ *
  * @param Update will contain either add, update, or delete from service definition call
+ * @param skipRetry defaults to false. when true the retry logic will be ignored
  * @return A promise that will resolve when service definition call has completed
  * @private
  */
-export function getRequest(update: IUpdate): Promise<void> {
-  return new Promise((resolveFn, rejectFn) => {
+/* istanbul ignore else */
+export function getRequest(
+  update: IUpdate,
+  skipRetry: boolean = false
+): Promise<void> {
+  return new Promise((resolve, reject) => {
     const options: IRequestOptions = {
       params: update.params,
       authentication: update.args.authentication
     };
+    /* istanbul ignore else */
+    if (
+      update.url.indexOf("addToDefinition") > -1 ||
+      update.url.indexOf("updateDefinition") > -1 ||
+      update.url.indexOf("deleteFromDefinition") > -1
+    ) {
+      options.params = { ...options.params, async: true };
+    }
     request(update.url, options).then(
-      () => resolveFn(),
-      (e: any) => rejectFn(e)
+      result => {
+        if (
+          (getProp(result, "code") === 504 ||
+            getProp(result, "error.code") === 504) &&
+          !skipRetry
+        ) {
+          getRequest(update, true).then(
+            () => resolve(),
+            e => reject(e)
+          );
+        } else {
+          resolve();
+        }
+      },
+      (e: any) => {
+        if (!skipRetry) {
+          getRequest(update, true).then(
+            () => resolve(),
+            e => reject(e)
+          );
+        } else {
+          reject(e);
+        }
+      }
     );
   });
 }
