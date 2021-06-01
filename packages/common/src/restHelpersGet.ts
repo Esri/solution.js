@@ -616,6 +616,7 @@ export function getItemsRelatedToASolution(
   solutionItemId: string,
   authentication: UserSession
 ): Promise<IItem[]> {
+  // eslint-disable-next-line @typescript-eslint/no-floating-promises
   return getItemRelatedItems(
     solutionItemId,
     "Solution2Item",
@@ -764,6 +765,7 @@ export function getSolutionsRelatedToAnItem(
   itemId: string,
   authentication: UserSession
 ): Promise<string[]> {
+  // eslint-disable-next-line @typescript-eslint/no-floating-promises
   return getItemRelatedItems(
     itemId,
     "Solution2Item",

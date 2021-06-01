@@ -281,40 +281,14 @@ export function getCompleteDeployedSolutionItem(): interfaces.ICompleteItem {
 }
 
 export function getCompleteDeployedSolutionItemVersioned(
-  version?: string
+  version = interfaces.DeployedSolutionFormatVersion
 ): any {
   const item: any = getCompleteMockItem("Solution");
   item.base.typeKeywords.push("Solution");
   item.base.typeKeywords.push("Deployed");
   item.base.ownerFolder = "fld1234567890";
 
-  if (version === "1") {
-    item.data = {
-      metadata: {
-        version: "1"
-      },
-      templates: [
-        {
-          itemId: "map1234567890",
-          type: "Web Map",
-          dependencies: [],
-          groups: [],
-          item: {
-            typeKeywords: []
-          }
-        },
-        {
-          itemId: "wma1234567890",
-          type: "Web Mapping Application",
-          dependencies: ["map1234567890"],
-          groups: [],
-          item: {
-            typeKeywords: []
-          }
-        }
-      ]
-    };
-  } else {
+  if (version === 0) {
     item.data = {
       metadata: {},
       templates: [
@@ -338,7 +312,34 @@ export function getCompleteDeployedSolutionItemVersioned(
         }
       ]
     };
+  } else {
+    item.data = {
+      metadata: {
+        version
+      },
+      templates: [
+        {
+          itemId: "map1234567890",
+          type: "Web Map",
+          dependencies: [],
+          groups: [],
+          item: {
+            typeKeywords: []
+          }
+        },
+        {
+          itemId: "wma1234567890",
+          type: "Web Mapping Application",
+          dependencies: ["map1234567890"],
+          groups: [],
+          item: {
+            typeKeywords: []
+          }
+        }
+      ]
+    };
   }
+
   item.fwdRelatedItems = [
     {
       relationshipType: "Solution2Item",
@@ -364,7 +365,7 @@ export function getSolutionPrecis(
 ): interfaces.ISolutionPrecis {
   return {
     id: "sol1234567890",
-    title: "a solution",
+    title: "An AGOL item",
     folder: "fld1234567890",
     items
   };

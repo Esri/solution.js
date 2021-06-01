@@ -929,6 +929,37 @@ describe("Module `restHelpersGet`: common REST fetch functions shared across pac
     });
   });
 
+  describe("getItemsRelatedToASolution", () => {
+    it("gets items", done => {
+      const solutionId = "sol1234567890";
+      const getItemRelatedItemsSpy = spyOn(
+        portal,
+        "getRelatedItems"
+      ).and.resolveTo({
+        total: 0,
+        start: 1,
+        num: 0,
+        nextStart: -1,
+        relatedItems: [mockItems.getAGOLItem("Web Map")]
+      } as interfaces.IGetRelatedItemsResponse);
+      restHelpersGet
+        .getItemsRelatedToASolution(solutionId, MOCK_USER_SESSION)
+        .then((response: interfaces.IItem[]) => {
+          expect(response).toEqual([mockItems.getAGOLItem("Web Map")]);
+          expect(getItemRelatedItemsSpy.calls.count()).toEqual(1);
+          expect(getItemRelatedItemsSpy.calls.first().args).toEqual([
+            {
+              id: solutionId,
+              relationshipType: "Solution2Item",
+              direction: "forward",
+              authentication: MOCK_USER_SESSION
+            } as portal.IItemRelationshipOptions
+          ]);
+          done();
+        }, done.fail);
+    });
+  });
+
   describe("getItemThumbnail", () => {
     it("handle missing thumbnail for an item", done => {
       restHelpersGet
@@ -1073,6 +1104,69 @@ describe("Module `restHelpersGet`: common REST fetch functions shared across pac
     });
   });
 
+  describe("getSolutionsRelatedToAnItem", () => {
+    it("gets solutions", done => {
+      const solutionId = "sol1234567890";
+      const getItemRelatedItemsSpy = spyOn(
+        portal,
+        "getRelatedItems"
+      ).and.resolveTo({
+        total: 0,
+        start: 1,
+        num: 0,
+        nextStart: -1,
+        relatedItems: [mockItems.getAGOLItem("Solution")]
+      } as interfaces.IGetRelatedItemsResponse);
+      restHelpersGet
+        .getSolutionsRelatedToAnItem(solutionId, MOCK_USER_SESSION)
+        .then((response: string[]) => {
+          expect(response).toEqual(["sol1234567890"]);
+          expect(getItemRelatedItemsSpy.calls.count()).toEqual(1);
+          expect(getItemRelatedItemsSpy.calls.first().args).toEqual([
+            {
+              id: solutionId,
+              relationshipType: "Solution2Item",
+              direction: "reverse",
+              authentication: MOCK_USER_SESSION
+            } as portal.IItemRelationshipOptions
+          ]);
+          done();
+        }, done.fail);
+    });
+  });
+
+  describe("getThumbnailFile", () => {
+    it("should handle error", done => {
+      const url =
+        utils.PORTAL_SUBSET.restUrl +
+        "/content/items/itm1234567890?f=json&token=fake-token";
+      fetchMock.post(url, mockItems.get400Failure());
+      restHelpersGet
+        .getThumbnailFile(url, "sampleImage", MOCK_USER_SESSION)
+        .then(file => {
+          expect(file).toBeNull();
+          done();
+        }, done.fail);
+    });
+
+    it("should get file", done => {
+      const url =
+        utils.PORTAL_SUBSET.restUrl +
+        "/content/items/itm1234567890?f=json&token=fake-token";
+      fetchMock.post(url, utils.getSampleImageAsFile(), {
+        sendAsJson: false
+      });
+      restHelpersGet
+        .getThumbnailFile(url, "sampleImage", MOCK_USER_SESSION)
+        .then(file => {
+          expect(file).not.toBeUndefined();
+          expect(file.type).toEqual("image/png");
+          expect(file.name).toEqual("sampleImage");
+          done();
+        }, done.fail);
+    });
+  });
+
   describe("_fixTextBlobType", () => {
     it("should pass application/json blobs through unchanged", done => {
       const testBlobType = "application/json";
@@ -1202,38 +1296,6 @@ describe("Module `restHelpersGet`: common REST fetch functions shared across pac
           done.fail
         );
       }, done.fail);
-    });
-  });
-
-  describe("getThumbnailFile", () => {
-    it("should handle error", done => {
-      const url =
-        utils.PORTAL_SUBSET.restUrl +
-        "/content/items/itm1234567890?f=json&token=fake-token";
-      fetchMock.post(url, mockItems.get400Failure());
-      restHelpersGet
-        .getThumbnailFile(url, "sampleImage", MOCK_USER_SESSION)
-        .then(file => {
-          expect(file).toBeNull();
-          done();
-        }, done.fail);
-    });
-
-    it("should get file", done => {
-      const url =
-        utils.PORTAL_SUBSET.restUrl +
-        "/content/items/itm1234567890?f=json&token=fake-token";
-      fetchMock.post(url, utils.getSampleImageAsFile(), {
-        sendAsJson: false
-      });
-      restHelpersGet
-        .getThumbnailFile(url, "sampleImage", MOCK_USER_SESSION)
-        .then(file => {
-          expect(file).not.toBeUndefined();
-          expect(file.type).toEqual("image/png");
-          expect(file.name).toEqual("sampleImage");
-          done();
-        }, done.fail);
     });
   });
 
