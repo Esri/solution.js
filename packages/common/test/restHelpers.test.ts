@@ -418,13 +418,13 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
       );
     });
 
-    it("will retry on first failure", done => {
+    it("can handle success 504", done => {
       const url =
         "https://services123.arcgis.com/org1234567890/arcgis/rest/services/ROWPermits_publiccomment/FeatureServer/0";
 
       spyOn(admin, "addToServiceDefinition").and.returnValues(
-        Promise.reject({ success: false } as any),
-        Promise.resolve({ success: true })
+        Promise.resolve({ code: 504, error: { code: 504 } } as any),
+        Promise.resolve({ success: true } as any)
       );
       restHelpers.addToServiceDefinition(url, {}).then(
         () => done(),
@@ -432,43 +432,32 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
       );
     });
 
-    it("can async add", done => {
+    it("can handle failure after success 504", done => {
       const url =
         "https://services123.arcgis.com/org1234567890/arcgis/rest/services/ROWPermits_publiccomment/FeatureServer/0";
-      const adminUrl =
-        "https://services123.arcgis.com/org1234567890/arcgis/rest/admin/services/ROWPermits_publiccomment/FeatureServer/0";
-      const statusURL = adminUrl + "/abc123";
 
-      fetchMock.post(adminUrl + "/addToDefinition", { statusURL: statusURL });
-
-      spyOn(request, "request").and.returnValues(
-        Promise.resolve({ status: "Completed" })
+      spyOn(admin, "addToServiceDefinition").and.returnValues(
+        Promise.resolve({ code: 504, error: { code: 504 } } as any),
+        Promise.reject({ success: false } as any)
       );
-
-      restHelpers
-        .addToServiceDefinition(url, { authentication: MOCK_USER_SESSION })
-        .then(
-          () => done(),
-          () => done.fail()
-        );
+      restHelpers.addToServiceDefinition(url, {}).then(
+        () => done.fail(),
+        () => done()
+      );
     });
 
-    it("can async add reject", done => {
+    it("will retry on first failure", done => {
       const url =
         "https://services123.arcgis.com/org1234567890/arcgis/rest/services/ROWPermits_publiccomment/FeatureServer/0";
-      const adminUrl =
-        "https://services123.arcgis.com/org1234567890/arcgis/rest/admin/services/ROWPermits_publiccomment/FeatureServer/0";
-      const statusURL = adminUrl + "/abc123";
 
-      fetchMock.post(adminUrl + "/addToDefinition", { statusURL: statusURL });
-      fetchMock.post(statusURL, mockItems.get400Failure());
-
-      restHelpers
-        .addToServiceDefinition(url, { authentication: MOCK_USER_SESSION })
-        .then(
-          () => done.fail(),
-          () => done()
-        );
+      spyOn(admin, "addToServiceDefinition").and.returnValues(
+        Promise.reject({ success: false } as any),
+        Promise.resolve({ code: 504, error: { code: 504 } } as any)
+      );
+      restHelpers.addToServiceDefinition(url, {}).then(
+        () => done(),
+        () => done.fail()
+      );
     });
   });
 
@@ -2168,6 +2157,66 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
       );
     });
 
+    it("can handle success 504", done => {
+      itemTemplate.key = "123456";
+
+      const args: interfaces.IPostProcessArgs = {
+        message: "updateDefinition",
+        objects: [],
+        itemTemplate: itemTemplate,
+        authentication: MOCK_USER_SESSION
+      };
+
+      const baseAdminSvcURL =
+        "https://services123.arcgis.com/org1234567890/arcgis/rest/admin/services/ROWPermits_publiccomment";
+
+      const update: interfaces.IUpdate = {
+        url: baseAdminSvcURL + "/FeatureServer/updateDefinition",
+        params: {},
+        args: args
+      };
+
+      spyOn(request, "request").and.returnValues(
+        Promise.resolve({ code: 504, error: { code: 504 } } as any),
+        Promise.resolve({ success: true } as any)
+      );
+
+      restHelpers.getRequest(update).then(
+        () => done(),
+        error => done.fail(error)
+      );
+    });
+
+    it("can handle failure after success 504", done => {
+      itemTemplate.key = "123456";
+
+      const args: interfaces.IPostProcessArgs = {
+        message: "addToDefinition",
+        objects: [],
+        itemTemplate: itemTemplate,
+        authentication: MOCK_USER_SESSION
+      };
+
+      const baseAdminSvcURL =
+        "https://services123.arcgis.com/org1234567890/arcgis/rest/admin/services/ROWPermits_publiccomment";
+
+      const update: interfaces.IUpdate = {
+        url: baseAdminSvcURL + "/FeatureServer/addToDefinition",
+        params: {},
+        args: args
+      };
+
+      spyOn(request, "request").and.returnValues(
+        Promise.resolve({ code: 504, error: { code: 504 } } as any),
+        Promise.reject({ success: false } as any)
+      );
+
+      restHelpers.getRequest(update).then(
+        () => done.fail(),
+        () => done()
+      );
+    });
+
     it("will retry on first failure", done => {
       itemTemplate.key = "123456";
 
@@ -2195,66 +2244,6 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
       restHelpers.getRequest(update).then(
         () => done(),
         () => done.fail()
-      );
-    });
-
-    it("should get async request successfully", done => {
-      itemTemplate.key = "123456";
-
-      const args: interfaces.IPostProcessArgs = {
-        message: "addToDefinition",
-        objects: [],
-        itemTemplate: itemTemplate,
-        authentication: MOCK_USER_SESSION
-      };
-
-      const baseAdminSvcURL =
-        "https://services123.arcgis.com/org1234567890/arcgis/rest/admin/services/ROWPermits_publiccomment";
-
-      const update: interfaces.IUpdate = {
-        url: baseAdminSvcURL + "/FeatureServer/addToDefinition",
-        params: {},
-        args: args
-      };
-      const statusURL = update.url + "/123abc";
-
-      spyOn(request, "request").and.returnValues(
-        Promise.resolve({ statusURL: statusURL }),
-        Promise.resolve({ status: "Completed" })
-      );
-
-      restHelpers.getRequest(update).then(
-        () => done(),
-        error => done.fail(error)
-      );
-    });
-
-    it("should get async request reject", done => {
-      itemTemplate.key = "123456";
-
-      const args: interfaces.IPostProcessArgs = {
-        message: "addToDefinition",
-        objects: [],
-        itemTemplate: itemTemplate,
-        authentication: MOCK_USER_SESSION
-      };
-
-      const baseAdminSvcURL =
-        "https://services123.arcgis.com/org1234567890/arcgis/rest/admin/services/ROWPermits_publiccomment";
-
-      const update: interfaces.IUpdate = {
-        url: baseAdminSvcURL + "/FeatureServer/addToDefinition",
-        params: {},
-        args: args
-      };
-      const statusURL = update.url + "/123abc";
-
-      fetchMock.post(update.url, { statusURL: statusURL });
-      fetchMock.post(statusURL, mockItems.get400Failure());
-
-      restHelpers.getRequest(update).then(
-        () => done.fail(),
-        () => done()
       );
     });
   });

@@ -235,6 +235,8 @@ export function addTokenToUrl(
 
 // Added retry due to some solutions failing to deploy in specific orgs/hives
 //
+// In some cases the call returns successfully but contains a 504
+// and in other cases the call fails
 /* istanbul ignore else */
 export function addToServiceDefinition(
   url: string,
@@ -245,24 +247,15 @@ export function addToServiceDefinition(
   return new Promise((resolve, reject) => {
     svcAdminAddToServiceDefinition(url, options).then(
       (result: any) => {
-        if (result.statusURL) {
-          const checkStatus = setInterval(() => {
-            request(result.statusURL, {
-              authentication: options.authentication
-            }).then(
-              r => {
-                /* istanbul ignore else */
-                if (r.status === "Completed") {
-                  clearInterval(checkStatus);
-                  resolve(null);
-                }
-              },
-              e => {
-                clearInterval(checkStatus);
-                reject(fail(e));
-              }
-            );
-          }, 2000);
+        if (
+          (getProp(result, "code") === 504 ||
+            getProp(result, "error.code") === 504) &&
+          !skipRetry
+        ) {
+          addToServiceDefinition(url, options, true).then(
+            () => resolve(null),
+            e => reject(e)
+          );
         } else {
           resolve(null);
         }
@@ -994,6 +987,8 @@ export function getFinalServiceUpdates(
  *
  * Added retry due to some solutions failing to deploy in specific orgs/hives
  *
+ * In some cases the call returns successfully but contains a 504
+ * and in other cases the call fails
  *
  * @param Update will contain either add, update, or delete from service definition call
  * @param skipRetry defaults to false. when true the retry logic will be ignored
@@ -1020,24 +1015,15 @@ export function getRequest(
     }
     request(update.url, options).then(
       result => {
-        if (result.statusURL) {
-          const checkStatus = setInterval(() => {
-            request(result.statusURL, {
-              authentication: options.authentication
-            }).then(
-              r => {
-                /* istanbul ignore else */
-                if (r.status === "Completed") {
-                  clearInterval(checkStatus);
-                  resolve();
-                }
-              },
-              e => {
-                clearInterval(checkStatus);
-                reject(e);
-              }
-            );
-          }, 2000);
+        if (
+          (getProp(result, "code") === 504 ||
+            getProp(result, "error.code") === 504) &&
+          !skipRetry
+        ) {
+          getRequest(update, true).then(
+            () => resolve(),
+            e => reject(e)
+          );
         } else {
           resolve();
         }
