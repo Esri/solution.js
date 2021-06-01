@@ -641,7 +641,7 @@ export function addFeatureServiceLayersAndTables(
     // Add the service's layers and tables to it
     const layersAndTables: any[] = getLayersAndTables(itemTemplate);
     if (layersAndTables.length > 0) {
-      updateFeatureServiceDefinition(
+      addFeatureServiceDefinition(
         itemTemplate.item.url || "",
         layersAndTables,
         templateDictionary,
@@ -653,7 +653,7 @@ export function addFeatureServiceLayersAndTables(
       ).then(
         () => {
           // Detemplatize field references and update the layer properties
-          // Only failure path is handled by updateFeatureServiceDefinition
+          // Only failure path is handled by addFeatureServiceDefinition
           // eslint-disable-next-line @typescript-eslint/no-floating-promises
           updateLayerFieldReferences(
             itemTemplate,
@@ -688,7 +688,7 @@ export function addFeatureServiceLayersAndTables(
               );
           });
         },
-        e => reject(fail(e)) // updateFeatureServiceDefinition
+        e => reject(fail(e)) // addFeatureServiceDefinition
       );
     } else {
       resolve(null);
@@ -711,7 +711,7 @@ export function addFeatureServiceLayersAndTables(
  * @return A promise that will resolve when the feature service has been updated
  * @protected
  */
-export function updateFeatureServiceDefinition(
+export function addFeatureServiceDefinition(
   serviceUrl: string,
   listToAdd: any[],
   templateDictionary: any,
