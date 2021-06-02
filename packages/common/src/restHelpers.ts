@@ -241,7 +241,7 @@ export function addToServiceDefinition(
   options: any,
   skipRetry: boolean = false
 ): Promise<void> {
-  options.params = { ...options.params, async: true };
+  //options.params = { ...options.params, async: true };
   return new Promise((resolve, reject) => {
     svcAdminAddToServiceDefinition(url, options).then(
       (result: any) => {
@@ -1011,13 +1011,13 @@ export function getRequest(
       authentication: update.args.authentication
     };
     /* istanbul ignore else */
-    if (
-      update.url.indexOf("addToDefinition") > -1 ||
-      update.url.indexOf("updateDefinition") > -1 ||
-      update.url.indexOf("deleteFromDefinition") > -1
-    ) {
-      options.params = { ...options.params, async: true };
-    }
+    // if (
+    //   update.url.indexOf("addToDefinition") > -1 ||
+    //   update.url.indexOf("updateDefinition") > -1 ||
+    //   update.url.indexOf("deleteFromDefinition") > -1
+    // ) {
+    //   options.params = { ...options.params, async: true };
+    // }
     request(update.url, options).then(
       result => {
         if (result.statusURL) {
