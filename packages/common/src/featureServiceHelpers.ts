@@ -52,7 +52,7 @@ import {
   templatizeIds
 } from "./templatization";
 import {
-  //getFinalServiceUpdates,
+  getFinalServiceUpdates,
   addToServiceDefinition,
   getLayerUpdates,
   getRequest,
@@ -195,11 +195,20 @@ export function deleteViewProps(layer: any) {
 /**
  * Cache properties that contain field references
  *
+ * removeProp added for issue #644
+ * setting all props on add for online now
+ * investigating if we can also just allow them to be set during add for portal
+ *
  * @param layer The data layer instance with field name references within
  * @param fieldInfos the object that stores the cached field infos
+ * @param removeProps Should the properties be removed.
  * @return An updated instance of the fieldInfos
  */
-export function cacheFieldInfos(layer: any, fieldInfos: any): any {
+export function cacheFieldInfos(
+  layer: any,
+  fieldInfos: any,
+  removeProps: boolean
+): any {
   // cache the source fields as they are in the original source
   if (layer && layer.fields) {
     fieldInfos[layer.id] = {
@@ -221,7 +230,7 @@ export function cacheFieldInfos(layer: any, fieldInfos: any): any {
   ];
 
   props.forEach(prop => {
-    _cacheFieldInfo(layer, prop, fieldInfos);
+    _cacheFieldInfo(layer, prop, fieldInfos, removeProps);
   });
 
   return fieldInfos;
@@ -238,7 +247,8 @@ export function cacheFieldInfos(layer: any, fieldInfos: any): any {
 export function _cacheFieldInfo(
   layer: any,
   prop: string,
-  fieldInfos: any
+  fieldInfos: any,
+  removeProp: boolean
 ): void {
   if (
     layer &&
@@ -249,6 +259,8 @@ export function _cacheFieldInfo(
     fieldInfos[layer.id][prop] = layer[prop];
     // editFieldsInfo does not come through unless its with the layer
     // when it's being added
+    // commented for local testing...as these cause failures without dev fix
+    //if (removeProp && prop !== "editFieldsInfo") {
     if (prop !== "editFieldsInfo") {
       layer[prop] = null;
     }
@@ -453,10 +465,14 @@ export function updateSettingsFieldInfos(
         settingsKeys.forEach((_k: any) => {
           /* istanbul ignore else */
           if (d === _k) {
-            settings[k]["sourceServiceFields"] = getProp(
-              settings[_k],
-              "fieldInfos"
-            );
+            // combine for multi-source views..mult-source views could have the same id...
+            const fieldInfos = {};
+            fieldInfos[d] = getProp(settings[_k], "fieldInfos");
+            settings[k]["sourceServiceFields"] = settings[k][
+              "sourceServiceFields"
+            ]
+              ? { ...settings[k]["sourceServiceFields"], ...fieldInfos }
+              : fieldInfos;
             const layerKeys = Object.keys(settings[_k]);
             layerKeys.forEach(layerKey => {
               if (layerKey.startsWith("layer")) {
@@ -663,18 +679,23 @@ export function addFeatureServiceLayersAndTables(
             templateDictionary
           ).then(r => {
             // Update relationships and layer definitions
-            const updates: IUpdate[] = getLayerUpdates({
-              message: "updated layer definition",
-              objects: r.layerInfos.fieldInfos,
-              itemTemplate: r.itemTemplate,
-              authentication
-            } as IPostProcessArgs);
+            let updates: IUpdate[] = getLayerUpdates(
+              {
+                message: "updated layer definition",
+                objects: r.layerInfos.fieldInfos,
+                itemTemplate: r.itemTemplate,
+                authentication
+              } as IPostProcessArgs,
+              templateDictionary.isPortal
+            );
             // Get any updates for the service that should be performed after updates to the layers
-            // updates = getFinalServiceUpdates(
-            //   r.itemTemplate,
-            //   authentication,
-            //   updates
-            // );
+            if (templateDictionary.isPortal) {
+              updates = getFinalServiceUpdates(
+                r.itemTemplate,
+                authentication,
+                updates
+              );
+            }
             // Process the updates sequentially
             updates
               .reduce((prev, update) => {
@@ -739,7 +760,12 @@ export function addFeatureServiceDefinition(
     listToAdd.forEach((toAdd, i) => {
       let item = toAdd.item;
       const originalId = item.id;
-      fieldInfos = cacheFieldInfos(item, fieldInfos);
+      fieldInfos = cacheFieldInfos(
+        item,
+        fieldInfos,
+        templateDictionary.isPortal
+      );
+
       /* istanbul ignore else */
       if (item.isView) {
         deleteViewProps(item);
@@ -758,6 +784,21 @@ export function addFeatureServiceDefinition(
           item.adminLayerInfo,
           templateDictionary
         );
+
+        if (fieldInfos && fieldInfos.hasOwnProperty(item.id)) {
+          Object.keys(templateDictionary).some(k => {
+            if (templateDictionary[k].itemId === itemTemplate.itemId) {
+              fieldInfos[item.id]["sourceServiceFields"] =
+                templateDictionary[k].sourceServiceFields;
+              return true;
+            } else {
+              return false;
+            }
+          });
+
+          // view field domains can contain different values than the source field domains
+          _validateViewDomainsAndAlias(fieldInfos[item.id], item);
+        }
       }
       if (templateDictionary.isPortal) {
         item = _updateForPortal(item, itemTemplate, templateDictionary);
@@ -1087,7 +1128,9 @@ export function _updateTemplateDictionaryFields(
   });
   Object.keys(templateDictionary).some(k => {
     if (
-      compareItemId ? templateDictionary[k].itemId : k === itemTemplate.itemId
+      compareItemId
+        ? templateDictionary[k].itemId === itemTemplate.itemId
+        : k === itemTemplate.itemId
     ) {
       templateDictionary[k].fieldInfos = fieldInfos;
       return true;
@@ -1450,6 +1493,62 @@ export function _validateDomains(fieldInfo: any, fieldUpdates: any[]) {
     }
   });
   return fieldUpdates;
+}
+
+/**
+ *  view field domains can contain different values than the source feature service field domains
+ *  use the cached domain when it differs from the source view field domain
+ *
+ * @param fieldInfo current view layer or table fieldInfo
+ * @param fieldUpdates any existing field updates
+ * @return Array of fields to be updated
+ * @protected
+ */
+export function _validateViewDomainsAndAlias(fieldInfo: any, item: any): void {
+  const domainFields: any[] = [];
+  const domainNames: string[] = [];
+
+  const aliasFields: any[] = [];
+  const aliasNames: string[] = [];
+
+  if (fieldInfo.sourceServiceFields) {
+    Object.keys(fieldInfo.sourceServiceFields).forEach(k => {
+      Object.keys(fieldInfo.sourceServiceFields[k]).forEach(_k => {
+        fieldInfo.sourceServiceFields[k][_k].forEach((field: any) => {
+          if (field.hasOwnProperty("domain") && field.domain) {
+            domainFields.push(field.domain);
+            domainNames.push(String(field.name).toLocaleLowerCase());
+          }
+          if (field.hasOwnProperty("alias") && field.alias) {
+            aliasFields.push(field.alias);
+            aliasNames.push(String(field.name).toLocaleLowerCase());
+          }
+        });
+      });
+    });
+  }
+
+  // loop through the fields from the item
+  // add isViewOverride when the domains or alias don't match
+  item.fields.map((field: any) => {
+    _isViewFieldOverride(field, domainNames, domainFields, "domain");
+    _isViewFieldOverride(field, aliasNames, aliasFields, "alias");
+    return field;
+  });
+}
+
+export function _isViewFieldOverride(
+  field: any,
+  names: string[],
+  fields: any[],
+  key: string
+): void {
+  if (field.hasOwnProperty(key) && field[key]) {
+    const i: number = names.indexOf(String(field[key]).toLocaleLowerCase());
+    if (i > -1 && JSON.stringify(field[key]) !== JSON.stringify(fields[i])) {
+      field.isViewOverride = true;
+    }
+  }
 }
 
 /**

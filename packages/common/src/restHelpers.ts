@@ -923,7 +923,10 @@ export function getLayers(
  * @return An array of update instructions
  * @private
  */
-export function getLayerUpdates(args: IPostProcessArgs): IUpdate[] {
+export function getLayerUpdates(
+  args: IPostProcessArgs,
+  isPortal: boolean
+): IUpdate[] {
   const adminUrl: string = args.itemTemplate.item.url.replace(
     "rest/services",
     "rest/admin/services"
@@ -935,7 +938,9 @@ export function getLayerUpdates(args: IPostProcessArgs): IUpdate[] {
   Object.keys(args.objects).forEach(id => {
     const obj: any = Object.assign({}, args.objects[id]);
     // These properties cannot be set in the update definition when working with portal
-    deleteProps(obj, ["type", "id", "relationships", "sourceServiceFields"]);
+    if (isPortal) {
+      deleteProps(obj, ["type", "id", "relationships", "sourceServiceFields"]);
+    }
     // handle definition deletes
     // removes previous editFieldsInfo fields if their names were changed
     if (obj.hasOwnProperty("deleteFields")) {
@@ -944,8 +949,11 @@ export function getLayerUpdates(args: IPostProcessArgs): IUpdate[] {
       updates.push(_getUpdate(adminUrl, null, null, args, "refresh"));
     }
     // handle definition updates
-    //updates.push(_getUpdate(adminUrl, id, obj, args, "update"));
-    //updates.push(refresh);
+    // for portal only as online will now all be handled in addToDef
+    if (isPortal) {
+      updates.push(_getUpdate(adminUrl, id, obj, args, "update"));
+      updates.push(refresh);
+    }
   });
   if (!args.itemTemplate.properties.service.isView) {
     const relUpdates: any = _getRelationshipUpdates({
@@ -974,33 +982,33 @@ export function getLayerUpdates(args: IPostProcessArgs): IUpdate[] {
  * @param updates An array of update instructions
  * @return An array of update instructions
  */
-// export function getFinalServiceUpdates(
-//   itemTemplate: IItemTemplate,
-//   authentication: UserSession,
-//   updates: IUpdate[]
-// ): IUpdate[] {
-//   const sourceSchemaChangesAllowed: boolean = getProp(
-//     itemTemplate,
-//     "properties.service.sourceSchemaChangesAllowed"
-//   );
-//   const isView: boolean = getProp(itemTemplate, "properties.service.isView");
+export function getFinalServiceUpdates(
+  itemTemplate: IItemTemplate,
+  authentication: UserSession,
+  updates: IUpdate[]
+): IUpdate[] {
+  const sourceSchemaChangesAllowed: boolean = getProp(
+    itemTemplate,
+    "properties.service.sourceSchemaChangesAllowed"
+  );
+  const isView: boolean = getProp(itemTemplate, "properties.service.isView");
 
-//   /* istanbul ignore else */
-//   if (sourceSchemaChangesAllowed && isView) {
-//     const adminUrl: string = itemTemplate.item.url.replace(
-//       "rest/services",
-//       "rest/admin/services"
-//     );
-//     const args: any = {
-//       authentication,
-//       message: "final service update"
-//     };
-//     const serviceUpdates: any = { sourceSchemaChangesAllowed };
-//     updates.push(_getUpdate(adminUrl, null, serviceUpdates, args, "update"));
-//   }
+  /* istanbul ignore else */
+  if (sourceSchemaChangesAllowed && isView) {
+    const adminUrl: string = itemTemplate.item.url.replace(
+      "rest/services",
+      "rest/admin/services"
+    );
+    const args: any = {
+      authentication,
+      message: "final service update"
+    };
+    const serviceUpdates: any = { sourceSchemaChangesAllowed };
+    updates.push(_getUpdate(adminUrl, null, serviceUpdates, args, "update"));
+  }
 
-//   return updates;
-// }
+  return updates;
+}
 
 /**
  * Add additional options to a layers definition
