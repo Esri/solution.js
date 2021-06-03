@@ -260,8 +260,7 @@ export function _cacheFieldInfo(
     // editFieldsInfo does not come through unless its with the layer
     // when it's being added
     // commented for local testing...as these cause failures without dev fix
-    //if (removeProp && prop !== "editFieldsInfo") {
-    if (prop !== "editFieldsInfo") {
+    if (removeProp && prop !== "editFieldsInfo") {
       layer[prop] = null;
     }
   }
