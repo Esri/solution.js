@@ -785,7 +785,11 @@ export function addFeatureServiceDefinition(
           templateDictionary
         );
 
-        if (fieldInfos && fieldInfos.hasOwnProperty(item.id)) {
+        if (
+          !templateDictionary.isPortal &&
+          fieldInfos &&
+          fieldInfos.hasOwnProperty(item.id)
+        ) {
           Object.keys(templateDictionary).some(k => {
             if (templateDictionary[k].itemId === itemTemplate.itemId) {
               fieldInfos[item.id]["sourceServiceFields"] =
@@ -796,7 +800,8 @@ export function addFeatureServiceDefinition(
             }
           });
 
-          // view field domains can contain different values than the source field domains
+          // view field domain and alias can contain different values than the source field
+          // we need to set isViewOverride when added fields that differ from the source field
           _validateViewDomainsAndAlias(fieldInfos[item.id], item);
         }
       }
@@ -1324,13 +1329,7 @@ export function postProcessFields(
           layerInfo["newFields"] = item.fields;
           layerInfo["sourceSchemaChangesAllowed"] =
             item.sourceSchemaChangesAllowed;
-          // when the item is a view bring over the source service fields so we can compare the domains
-          if (isView && templateInfo) {
-            layerInfo["sourceServiceFields"] = getProp(
-              templateInfo,
-              `sourceServiceFields.${item.id}`
-            );
-          }
+
           /* istanbul ignore else */
           if (item.editFieldsInfo) {
             // more than case change when deployed to protal so keep track of the new names
@@ -1343,7 +1342,10 @@ export function postProcessFields(
           // visible true when added with the layer definition
           // update the field visibility to match that of the source
           /* istanbul ignore else */
-          if (isView) {
+          if (isView && templateInfo && templateDictionary.isPortal) {
+            // when the item is a view bring over the source service fields so we can compare the domains
+            layerInfo["sourceServiceFields"] = templateInfo.sourceServiceFields;
+
             let fieldUpdates: any[] = _getFieldVisibilityUpdates(layerInfo);
 
             // view field domains can contain different values than the source field domains
@@ -1454,45 +1456,63 @@ export function _getFieldVisibilityUpdates(fieldInfo: any): any[] {
  * @protected
  */
 export function _validateDomains(fieldInfo: any, fieldUpdates: any[]) {
-  const domainFields: any[] = [];
-  const domainNames: string[] = [];
+  const domainAliasInfos = _getDomainAndAliasInfos(fieldInfo);
 
-  if (fieldInfo.sourceServiceFields) {
-    fieldInfo.sourceServiceFields.forEach((field: any) => {
-      if (field.hasOwnProperty("domain") && field.domain) {
-        domainFields.push(field.domain);
-        domainNames.push(String(field.name).toLocaleLowerCase());
-      }
-    });
-  }
+  const domainFields: any[] = domainAliasInfos.domainFields;
+  const domainNames: string[] = domainAliasInfos.domainNames;
+
+  const aliasFields: any[] = domainAliasInfos.aliasFields;
+  const aliasNames: string[] = domainAliasInfos.aliasNames;
 
   // loop through the fields from the new view service
   // add an update when the domains don't match
   fieldInfo.newFields.forEach((field: any) => {
-    const i: number = domainNames.indexOf(
-      String(field.name).toLocaleLowerCase()
+    _getPortalViewFieldUpdates(
+      field,
+      domainNames,
+      domainFields,
+      "domain",
+      fieldUpdates
     );
-    if (field.hasOwnProperty("domain") && field.domain) {
-      if (
-        JSON.stringify(field.domain) !==
-        (i > -1 ? JSON.stringify(domainFields[i]) : "")
-      ) {
-        // should mixin the update if the field already has some other update
-        let hasUpdate: boolean = false;
-        fieldUpdates.some((update: any) => {
-          if (update.name === field.name) {
-            hasUpdate = true;
-            update.domain = field.domain;
-          }
-          return hasUpdate;
-        });
-        if (!hasUpdate) {
-          fieldUpdates.push({ name: field.name, domain: field.domain });
-        }
-      }
-    }
+    _getPortalViewFieldUpdates(
+      field,
+      aliasNames,
+      aliasFields,
+      "alias",
+      fieldUpdates
+    );
   });
   return fieldUpdates;
+}
+
+export function _getPortalViewFieldUpdates(
+  field: any,
+  names: string[],
+  fields: any[],
+  key: string,
+  fieldUpdates: any[]
+): void {
+  if (field.hasOwnProperty(key) && field[key]) {
+    const i: number = names.indexOf(String(field.name).toLocaleLowerCase());
+    if (
+      JSON.stringify(field[key]) !== (i > -1 ? JSON.stringify(fields[i]) : "")
+    ) {
+      // should mixin the update if the field already has some other update
+      let hasUpdate: boolean = false;
+      fieldUpdates.some((update: any) => {
+        if (update.name === field.name) {
+          hasUpdate = true;
+          update[key] = field[key];
+        }
+        return hasUpdate;
+      });
+      if (!hasUpdate) {
+        const update = { name: field.name };
+        update[key] = field[key];
+        fieldUpdates.push(update);
+      }
+    }
+  }
 }
 
 /**
@@ -1505,6 +1525,24 @@ export function _validateDomains(fieldInfo: any, fieldUpdates: any[]) {
  * @protected
  */
 export function _validateViewDomainsAndAlias(fieldInfo: any, item: any): void {
+  const domainAliasInfos = _getDomainAndAliasInfos(fieldInfo);
+
+  const domainFields: any[] = domainAliasInfos.domainFields;
+  const domainNames: string[] = domainAliasInfos.domainNames;
+
+  const aliasFields: any[] = domainAliasInfos.aliasFields;
+  const aliasNames: string[] = domainAliasInfos.aliasNames;
+
+  // loop through the fields from the item
+  // add isViewOverride when the domains or alias don't match
+  item.fields.map((field: any) => {
+    _isViewFieldOverride(field, domainNames, domainFields, "domain");
+    _isViewFieldOverride(field, aliasNames, aliasFields, "alias");
+    return field;
+  });
+}
+
+export function _getDomainAndAliasInfos(fieldInfo: any): any {
   const domainFields: any[] = [];
   const domainNames: string[] = [];
 
@@ -1527,14 +1565,12 @@ export function _validateViewDomainsAndAlias(fieldInfo: any, item: any): void {
       });
     });
   }
-
-  // loop through the fields from the item
-  // add isViewOverride when the domains or alias don't match
-  item.fields.map((field: any) => {
-    _isViewFieldOverride(field, domainNames, domainFields, "domain");
-    _isViewFieldOverride(field, aliasNames, aliasFields, "alias");
-    return field;
-  });
+  return {
+    aliasFields,
+    aliasNames,
+    domainFields,
+    domainNames
+  };
 }
 
 export function _isViewFieldOverride(
@@ -1544,8 +1580,10 @@ export function _isViewFieldOverride(
   key: string
 ): void {
   if (field.hasOwnProperty(key) && field[key]) {
-    const i: number = names.indexOf(String(field[key]).toLocaleLowerCase());
-    if (i > -1 && JSON.stringify(field[key]) !== JSON.stringify(fields[i])) {
+    const i: number = names.indexOf(String(field.name).toLocaleLowerCase());
+    if (
+      JSON.stringify(field[key]) !== (i > -1 ? JSON.stringify(fields[i]) : "")
+    ) {
       field.isViewOverride = true;
     }
   }
