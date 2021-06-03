@@ -34,12 +34,18 @@
     color: white;
     background-color: red;
   }
+  table, th, td {
+    border: 1px solid darkgray;
+  }
+  th, td {
+    padding: 4px;
+  }
   </style>
 </head>
 <body>
   <div class="container">
     <div class="row">
-      <div class="col-sm-6 col-sm-offset-3">
+      <div class="col-sm-10 col-sm-offset-1">
         <h1>Delete a Solution</h1>
         <p>Deletes a deployed Solution item and all of the items that were created as part of that deployment.</p>
         <div id="input" class="form-group" style="display:none">
@@ -52,8 +58,13 @@
           <label for="password">Portal:</label>
           <input type="text" id="portal" class="form-control" value="https://www.arcgis.com">
           <br>
-          <button class="btn btn-default danger" onclick="goFcn()">Delete entire deployed Solution</button>
+          <button id="deleteBtn" class="btn btn-default danger" onclick="checkFcn()">Delete entire deployed Solution</button>
         </div>
+      </div>
+      <div id="check" class="col-sm-10 col-sm-offset-1" style="display:none">
+        <div id="checkOutput"></div>
+        <br>
+        <button class="btn btn-default danger" onclick="goFcn()">Confirm Deletion</button>
       </div>
       <div class="col-sm-12">
         <div id="output" style="display:none">Deleting...</div>
@@ -64,7 +75,7 @@
   <script crossorigin="anonymous" src="https://polyfill.io/v3/polyfill.min.js?features=fetch%2Ces2015"></script>
   <script src="https://requirejs.org/docs/release/2.3.6/minified/require.js"></script>
   <script>
-    var goFcn;
+    var checkFcn, goFcn;
     require.config({
       paths: {
         "@esri/arcgis-rest-auth": "../node_modules/@esri/arcgis-rest-auth/dist/umd/auth.umd.min",
@@ -94,11 +105,44 @@
     require(["@esri/arcgis-rest-auth", "../dist/delete-solution-main"],
       function (auth, main) {
         "use strict";
+        checkFcn = check;
         goFcn = go;
         document.getElementById("input").style.display = "block";
 
+        function check () {
+          main.checkDeleteSolution(
+            document.getElementById("solutionId").value,
+            new auth.UserSession({
+              username: document.getElementById("username").value,
+              password: document.getElementById("password").value,
+              portal: document.getElementById("portal").value + "/sharing/rest"
+            })
+          ).then(
+            html => {
+              document.getElementById("checkOutput").innerHTML = html;
+              document.getElementById("check").style.display = "block";
+              document.getElementById("deleteBtn").style.display = "none";
+            },
+            error => {
+              var message = error?.error || error?.message || "Unspecified error";
+              if (error.itemIds) {
+                message += "<ul>";
+                error.itemIds.forEach(
+                  itemId => {
+                    message += "<li>" + itemId + "</li>";
+                  }
+                );
+                message += "</ul>";
+              }
+              document.getElementById("output").innerHTML = "<span style=\"color:red\">" + message + "</span>";
+              document.getElementById("output").style.display = "block";
+            }
+          );
+        }
+
         function go () {
           document.getElementById("input").style.display = "none";
+          document.getElementById("check").style.display = "none";
           document.getElementById("output").style.display = "block";
           var startTime = Date.now();
 
@@ -118,7 +162,7 @@
               document.getElementById("output").innerHTML = html;
             },
             error => {
-              var message = error?.error || JSON.stringify(error) || "Unspecified error";
+              var message = error?.error || error?.message || "Unspecified error";
               if (error.itemIds) {
                 message += "<ul>";
                 error.itemIds.forEach(
