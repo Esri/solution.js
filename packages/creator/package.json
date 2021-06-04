@@ -46,7 +46,7 @@
     "@esri/solution-simple-types": "^0.22.12",
     "@esri/solution-storymap": "^0.22.12",
     "@esri/solution-web-experience": "^0.22.12",
-    "tslib": "^1.13.0"
+    "tslib": "^1.14.1"
   },
   "scripts": {
     "prepare": "npm run build",
