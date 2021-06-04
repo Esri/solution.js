@@ -851,33 +851,37 @@ export function _applyEdits(
   useGlobalIds: boolean = false // only set when contains a globalid
 ): any {
   return new Promise<boolean>((resolve, reject) => {
-    applyEdits({
-      url,
-      adds,
-      useGlobalIds,
-      authentication
-    }).then(
-      addResults => {
-        if (addResults && addResults.addResults) {
-          resolve(true);
-        } else {
+    if (adds.length > 0) {
+      applyEdits({
+        url,
+        adds,
+        useGlobalIds,
+        authentication
+      }).then(
+        addResults => {
+          if (addResults && addResults.addResults) {
+            resolve(true);
+          } else {
+            reject(
+              fail({
+                success: false,
+                message: "Failed to add dispatch record."
+              })
+            );
+          }
+        },
+        e =>
           reject(
             fail({
               success: false,
-              message: "Failed to add dispatch record."
+              message: "Failed to add dispatch record.",
+              error: e
             })
-          );
-        }
-      },
-      e =>
-        reject(
-          fail({
-            success: false,
-            message: "Failed to add dispatch record.",
-            error: e
-          })
-        )
-    );
+          )
+      );
+    } else {
+      resolve(true);
+    }
   });
 }
 
