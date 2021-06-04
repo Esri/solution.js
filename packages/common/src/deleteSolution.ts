@@ -23,21 +23,16 @@
 
 import {
   EItemProgressStatus,
-  SItemProgressStatus,
-  IBuildOrdering,
   IDeleteSolutionOptions,
-  IItemGeneralized,
-  IItemTemplate,
-  ISolutionItemData,
+  ISolutionPrecis,
+  IStatusResponse,
   UserSession
 } from "./interfaces";
-import * as portal from "@esri/arcgis-rest-portal";
-import * as dependencies from "./dependencies";
-import * as hubSites from "@esri/hub-sites";
+import * as _deleteSolutionFolder from "./deleteHelpers/_deleteSolutionFolder";
+import * as _removeItems from "./deleteHelpers/_removeItems";
+import * as _reportProgress from "./deleteHelpers/_reportProgress";
+import * as getDeletableSolutionInfo from "./getDeletableSolutionInfo";
 import * as restHelpers from "./restHelpers";
-import * as restHelpersGet from "./restHelpersGet";
-import * as templatization from "./templatization";
-import { createHubRequestOptions } from "./create-hub-request-options";
 
 // ------------------------------------------------------------------------------------------------------------------ //
 
@@ -47,338 +42,95 @@ import { createHubRequestOptions } from "./create-hub-request-options";
  *
  * @param solutionItemId Id of a deployed Solution
  * @param authentication Credentials for the request
- * @return Promise that will resolve if deletion was successful and fail if any part of it failed;
- * note that Solution item will only be deleted if all of its deployed items were deleted so that
- * deletion can be re-attempted
+ * @return Promise that will resolve with a list of two solution summaries: successful deletions
+ * and failed deletions. Ignored items (e.g., already deleted) and items shared with more than
+ * one Solution will not be in either list.
+ * Note that Solution item and its deployment folder will only be deleted if all of its deployed
+ * items were deleted (the failure list is empty). This makes it possible to re-attempted
+ * deletion using the solutionItemId.
  */
 export function deleteSolution(
   solutionItemId: string,
   authentication: UserSession,
   options?: IDeleteSolutionOptions
-): Promise<boolean> {
+): Promise<ISolutionPrecis[]> {
   const deleteOptions: IDeleteSolutionOptions = options || {};
   let progressPercentStep = 0;
   let percentDone = 0;
-  let solutionFolderId: string;
-  let deletedItemIds = [] as string[];
+  let solutionSummary: ISolutionPrecis;
+  let solutionDeletedSummary: ISolutionPrecis;
+  let solutionFailureSummary: ISolutionPrecis;
+  let solutionIds = [] as string[];
 
-  return Promise.all([
-    restHelpersGet.getItemBase(solutionItemId, authentication),
-    restHelpersGet.getItemDataAsJson(solutionItemId, authentication)
-  ])
-    .then((response: any) => {
-      const itemBase: IItemGeneralized = response[0];
-      const itemData: ISolutionItemData = response[1];
-      solutionFolderId = itemBase.ownerFolder;
+  return new Promise<ISolutionPrecis[]>(resolve => {
+    getDeletableSolutionInfo
+      .getDeletableSolutionInfo(solutionItemId, authentication)
+      .then(response => {
+        solutionSummary = response;
+        if (solutionSummary.items.length === 0) {
+          throw new Error();
+        }
 
-      // Make sure that the item is a deployed Solution
-      if (
-        !(
-          itemBase.typeKeywords.includes("Solution") &&
-          itemBase.typeKeywords.includes("Deployed")
-        )
-      ) {
-        throw new Error(
-          "Item " + solutionItemId + " is not a deployed Solution"
+        // Save a copy of the Solution item ids for the _deleteSolutionFolder call because _removeItems
+        // destroys the solutionSummary.items list
+        solutionIds = solutionSummary.items
+          .map(item => item.id)
+          .concat([solutionItemId]);
+
+        const hubSiteItemIds: string[] = solutionSummary.items
+          .filter((item: any) => item.type === "Hub Site Application")
+          .map((item: any) => item.id);
+
+        // Delete the items
+        progressPercentStep = 100 / (solutionSummary.items.length + 2); // one extra for starting plus one extra for solution itself
+        _reportProgress._reportProgress(
+          (percentDone += progressPercentStep),
+          deleteOptions
+        ); // let the caller know that we've started
+
+        return _removeItems._removeItems(
+          solutionSummary,
+          hubSiteItemIds,
+          authentication,
+          percentDone,
+          progressPercentStep,
+          deleteOptions
         );
-      }
-
-      // Deletion path depends on version of deployed solution
-      let buildOrderIds = [] as string[];
-      const deployedSolutionVersion = templatization.extractSolutionVersion(
-        itemData
-      );
-      if (deployedSolutionVersion < 1) {
-        // Version 0
-        buildOrderIds = _reconstructBuildOrderIds(itemData.templates);
-      } else {
-        // Version ≥ 1
-        buildOrderIds = itemData.templates.map(
-          (template: any) => template.itemId
-        );
-      }
-      deletedItemIds = buildOrderIds.concat([solutionItemId]);
-
-      let hubSiteItemIds = [] as string[];
-      hubSiteItemIds = itemData.templates
-        .filter((template: any) => template.type === "Hub Site Application")
-        .map((template: any) => template.itemId);
-
-      // Reverse the build order to get the delete order
-      const deleteOrderIds = buildOrderIds.reverse();
-
-      // Delete the items
-      progressPercentStep = 100 / (deleteOrderIds.length + 2); // one extra for starting plus one extra for solution itself
-      _reportProgress((percentDone += progressPercentStep), deleteOptions); // let the caller know that we've started
-
-      return _removeItems(
-        deleteOrderIds,
-        hubSiteItemIds,
-        authentication,
-        percentDone,
-        progressPercentStep,
-        deleteOptions
-      );
-    })
-    .then(allItemsSuccessfullyDeleted => {
-      return new Promise<boolean>(resolve => {
-        if (allItemsSuccessfullyDeleted) {
-          // All items were deleted, so OK to delete Solution item
-          restHelpers
-            .removeItem(solutionItemId, authentication)
-            .then(response => {
-              if (response.success) {
-                _reportProgress(
-                  100,
-                  deleteOptions,
-                  solutionItemId,
-                  EItemProgressStatus.Finished
-                );
-                resolve(true);
-              } else {
-                throw new Error();
-              }
-            })
-            .catch(() => {
-              _reportProgress(
-                100,
-                deleteOptions,
-                solutionItemId,
-                EItemProgressStatus.Failed
-              );
-              resolve(false);
-            });
+      })
+      .then((results: ISolutionPrecis[]) => {
+        [solutionDeletedSummary, solutionFailureSummary] = results;
+        // If there were no failed deletes, it's OK to delete Solution item
+        if (solutionFailureSummary.items.length === 0) {
+          return restHelpers.removeItem(solutionItemId, authentication);
         } else {
           // Not all items were deleted, so don't delete solution
-          _reportProgress(100, deleteOptions, "", EItemProgressStatus.Finished);
-          resolve(false);
+          return Promise.resolve({ success: false, itemId: solutionItemId });
         }
-      });
-    })
-    .then(allItemsSuccessfullyDeleted => {
-      if (allItemsSuccessfullyDeleted) {
+      })
+      .then((solutionItemDeleteStatus: IStatusResponse) => {
         // If all deletes succeeded, see if we can delete the folder that contained them
-        return _deleteSolutionFolder(
-          solutionFolderId,
-          deletedItemIds,
-          authentication
-        );
-      } else {
-        return Promise.resolve(false);
-      }
-    })
-    .catch(error => {
-      throw error.message;
-    });
-}
-
-/**
- * Deletes a deployed Solution's folder if the folder is empty.
- *
- * @param solutionFolderId Id of the folder of a deployed Solution
- * @param deletedItemIds Ids in the Solution, including the Solution item; used to deal with lagging folder deletion
- * @param authentication Credentials for the request
- * @return Promise that will resolve if deletion was successful and fail if any part of it failed;
- * if the folder has a non-Solution item, it will not be deleted, but the function will return true
- */
-export function _deleteSolutionFolder(
-  solutionFolderId: string,
-  deletedItemIds: string[],
-  authentication: UserSession
-): Promise<boolean> {
-  // See if the deployment folder is empty and can be deleted; first, we need info about user
-  return authentication
-    .getUser({ authentication })
-    .then(user => {
-      // And then we need to be sure that the folder is empty
-      const query = new portal.SearchQueryBuilder()
-        .match(authentication.username)
-        .in("owner")
-        .and()
-        .match(user.orgId)
-        .in("orgid")
-        .and()
-        .match(solutionFolderId)
-        .in("ownerfolder");
-
-      return portal.searchItems({
-        q: query,
-        authentication
-      });
-    })
-    .then((searchResult: portal.ISearchResult<portal.IItem>) => {
-      // If the search results are all in the deletedItemIds list, then we're dealing with AGO lagging:
-      // successfully reporting a deletion and yet still returning the item in search results.
-      // Filter the Solution items out of the search results.
-      const nonSolutionItems = searchResult.results
-        .map(foundItem => foundItem.id)
-        .filter(foundItemId => !deletedItemIds.includes(foundItemId)); // only save non-solution items
-
-      // If the list is empty, then there are no non-solution items
-      if (nonSolutionItems.length === 0) {
-        // OK to delete the folder
-        return portal.removeFolder({
-          folderId: solutionFolderId,
-          owner: authentication.username,
-          authentication
-        });
-      } else {
-        // A non-deployment item is in the folder, so leave it alone
-        return Promise.resolve({ success: true });
-      }
-    })
-    .then(deleteFolderResponse => {
-      // Extract the success property
-      return deleteFolderResponse.success;
-    })
-    .catch(() => {
-      return Promise.resolve(false);
-    });
-}
-
-/**
- * Reconstructs the build order of a set of templates.
- *
- * @param templates A collection of AGO item templates
- * @return The ids of the source templates in build order, which is not necessarily the same
- * as the build order used to create the template Solution
- */
-export function _reconstructBuildOrderIds(
-  templates: IItemTemplate[]
-): string[] {
-  const buildOrdering: IBuildOrdering = dependencies.topologicallySortItems(
-    templates
-  );
-  return buildOrdering.buildOrder;
-}
-
-/**
- * Removes a list of items.
- *
- * @param itemIds List of ids of items to remove
- * @param hubSiteItemIds List of ids in itemIds that are for Hub Sites
- * @param authentication Credentials for the request
- * @param percentDone Percent done in range 0 to 100
- * @param progressPercentStep Amount that percentDone changes for each item deleted
- * @param deleteOptions Reporting options
- * @param allItemsSuccessfullyDeleted Current state of all items being deleted
- * @return Promise that will resolve with true if all of the items in the list were successfully deleted
- */
-export function _removeItems(
-  itemIds: string[],
-  hubSiteItemIds: string[],
-  authentication: UserSession,
-  percentDone: number,
-  progressPercentStep: number,
-  deleteOptions: IDeleteSolutionOptions = {},
-  allItemsSuccessfullyDeleted = true
-): Promise<boolean> {
-  const itemToDelete = itemIds.shift();
-  if (itemToDelete) {
-    // Remove any delete protection on item
-    return portal
-      .unprotectItem({ id: itemToDelete, authentication: authentication })
-      .then(async () => {
-        // Delete the item
-        if (hubSiteItemIds.includes(itemToDelete)) {
-          const options = await createHubRequestOptions(authentication);
-          return hubSites.removeSite(itemToDelete, options);
-        } else {
-          return restHelpers.removeItem(itemToDelete, authentication);
-        }
-      })
-      .then(result => {
-        if (!result.success) {
-          throw new Error("Failed to delete item");
-        }
-        _reportProgress(
-          (percentDone += progressPercentStep),
-          deleteOptions,
-          itemToDelete,
-          EItemProgressStatus.Finished
-        );
-
-        // On to next item in list
-        return _removeItems(
-          itemIds,
-          hubSiteItemIds,
-          authentication,
-          percentDone,
-          progressPercentStep,
-          deleteOptions,
-          allItemsSuccessfullyDeleted
-        );
-      })
-      .catch(error => {
-        let stillAllItemsSuccessfullyDeleted = true;
-        const errorMessage = error.error?.message || error.message;
-        if (
-          errorMessage &&
-          errorMessage.includes("Item does not exist or is inaccessible")
-        ) {
-          // Filter out errors where the item doesn't exist, such as from a previous delete attempt
-          _reportProgress(
-            (percentDone += progressPercentStep),
+        if (solutionItemDeleteStatus.success) {
+          _reportProgress._reportProgress(
+            99,
             deleteOptions,
-            itemToDelete,
-            EItemProgressStatus.Ignored
+            solutionItemId,
+            EItemProgressStatus.Finished
+          );
+
+          return _deleteSolutionFolder._deleteSolutionFolder(
+            solutionIds,
+            solutionSummary.folder,
+            authentication
           );
         } else {
-          // Otherwise, we have a real delete error
-          _reportProgress(
-            (percentDone += progressPercentStep),
-            deleteOptions,
-            itemToDelete,
-            EItemProgressStatus.Failed
-          );
-          stillAllItemsSuccessfullyDeleted = false;
+          return Promise.resolve(false);
         }
-        return _removeItems(
-          itemIds,
-          hubSiteItemIds,
-          authentication,
-          percentDone,
-          progressPercentStep,
-          deleteOptions,
-          stillAllItemsSuccessfullyDeleted
-        );
+      })
+      .then(() => {
+        resolve([solutionDeletedSummary, solutionFailureSummary]);
+      })
+      .catch(() => {
+        resolve([solutionDeletedSummary, solutionFailureSummary]);
       });
-  } else {
-    return Promise.resolve(allItemsSuccessfullyDeleted);
-  }
-}
-
-/**
- * Reports progress as specified via options.
- *
- * @param percentDone Percent done in range 0 to 100
- * @param deleteOptions Reporting options
- * @param deletedItemId Id of item deleted
- */
-export function _reportProgress(
-  percentDone: number,
-  deleteOptions: IDeleteSolutionOptions,
-  deletedItemId = "",
-  status = EItemProgressStatus.Started
-): void {
-  const iPercentDone = Math.round(percentDone);
-
-  /* istanbul ignore else */
-  if (deleteOptions.progressCallback) {
-    deleteOptions.progressCallback(iPercentDone, deleteOptions.jobId, {
-      event: "",
-      data: deletedItemId
-    });
-  }
-
-  /* istanbul ignore else */
-  if (deleteOptions.consoleProgress) {
-    console.log(
-      Date.now(),
-      deletedItemId,
-      deleteOptions.jobId ?? "",
-      SItemProgressStatus[status],
-      iPercentDone + "%"
-    );
-  }
+  });
 }
