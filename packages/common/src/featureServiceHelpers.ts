@@ -250,6 +250,7 @@ export function _cacheFieldInfo(
   fieldInfos: any,
   removeProp: boolean
 ): void {
+  /* istanbul ignore else */
   if (
     layer &&
     layer.hasOwnProperty(prop) &&
@@ -259,7 +260,7 @@ export function _cacheFieldInfo(
     fieldInfos[layer.id][prop] = layer[prop];
     // editFieldsInfo does not come through unless its with the layer
     // when it's being added
-    // commented for local testing...as these cause failures without dev fix
+    /* istanbul ignore else */
     if (removeProp && prop !== "editFieldsInfo") {
       layer[prop] = null;
     }
@@ -464,7 +465,7 @@ export function updateSettingsFieldInfos(
         settingsKeys.forEach((_k: any) => {
           /* istanbul ignore else */
           if (d === _k) {
-            // combine for multi-source views..mult-source views could have the same id...
+            // combine for multi-source views
             const fieldInfos = {};
             fieldInfos[d] = getProp(settings[_k], "fieldInfos");
             settings[k]["sourceServiceFields"] = settings[k][
@@ -474,6 +475,7 @@ export function updateSettingsFieldInfos(
               : fieldInfos;
             const layerKeys = Object.keys(settings[_k]);
             layerKeys.forEach(layerKey => {
+              /* istanbul ignore else */
               if (layerKey.startsWith("layer")) {
                 settings[k][layerKey] = settings[_k][layerKey];
               }
@@ -784,6 +786,7 @@ export function addFeatureServiceDefinition(
           templateDictionary
         );
 
+        /* istanbul ignore else */
         if (
           !templateDictionary.isPortal &&
           fieldInfos &&
@@ -804,6 +807,7 @@ export function addFeatureServiceDefinition(
           _validateViewDomainsAndAlias(fieldInfos[item.id], item);
         }
       }
+      /* istanbul ignore else */
       if (templateDictionary.isPortal) {
         item = _updateForPortal(item, itemTemplate, templateDictionary);
       }
@@ -1351,6 +1355,7 @@ export function postProcessFields(
             // use the cached view domain when it differs from the source view domain
             fieldUpdates = _validateDomains(layerInfo, fieldUpdates);
 
+            /* istanbul ignore else */
             if (fieldUpdates.length > 0) {
               layerInfo.fields = fieldUpdates;
             }
@@ -1548,14 +1553,17 @@ export function _getDomainAndAliasInfos(fieldInfo: any): any {
   const aliasFields: any[] = [];
   const aliasNames: string[] = [];
 
+  /* istanbul ignore else */
   if (fieldInfo.sourceServiceFields) {
     Object.keys(fieldInfo.sourceServiceFields).forEach(k => {
       Object.keys(fieldInfo.sourceServiceFields[k]).forEach(_k => {
         fieldInfo.sourceServiceFields[k][_k].forEach((field: any) => {
+          /* istanbul ignore else */
           if (field.hasOwnProperty("domain") && field.domain) {
             domainFields.push(field.domain);
             domainNames.push(String(field.name).toLocaleLowerCase());
           }
+          /* istanbul ignore else */
           if (field.hasOwnProperty("alias") && field.alias) {
             aliasFields.push(field.alias);
             aliasNames.push(String(field.name).toLocaleLowerCase());
@@ -1578,8 +1586,10 @@ export function _isViewFieldOverride(
   fields: any[],
   key: string
 ): void {
+  /* istanbul ignore else */
   if (field.hasOwnProperty(key) && field[key]) {
     const i: number = names.indexOf(String(field.name).toLocaleLowerCase());
+    /* istanbul ignore else */
     if (
       JSON.stringify(field[key]) !== (i > -1 ? JSON.stringify(fields[i]) : "")
     ) {
