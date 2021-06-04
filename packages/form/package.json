@@ -1,6 +1,6 @@
 {
   "name": "@esri/solution-form",
-  "version": "0.22.12",
+  "version": "0.23.1",
   "description": "Manages the creation and deployment of form item types for @esri/solution.js.",
   "main": "dist/node/index.js",
   "unpkg": "dist/umd/file.umd.min.js",
@@ -37,12 +37,12 @@
     "@esri/hub-teams": "^8.4.0"
   },
   "dependencies": {
-    "@esri/solution-common": "^0.22.12",
-    "@esri/solution-feature-layer": "^0.22.12",
-    "@esri/solution-file": "^0.22.12",
-    "@esri/solution-group": "^0.22.12",
-    "@esri/solution-simple-types": "^0.22.12",
-    "@esri/solution-storymap": "^0.22.12",
+    "@esri/solution-common": "^0.23.1",
+    "@esri/solution-feature-layer": "^0.23.1",
+    "@esri/solution-file": "^0.23.1",
+    "@esri/solution-group": "^0.23.1",
+    "@esri/solution-simple-types": "^0.23.1",
+    "@esri/solution-storymap": "^0.23.1",
     "tslib": "^1.14.1"
   },
   "scripts": {

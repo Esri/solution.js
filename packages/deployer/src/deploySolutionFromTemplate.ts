@@ -18,6 +18,7 @@ import * as common from "@esri/solution-common";
 import * as deployItems from "./deploySolutionItems";
 import { getWithDefault } from "@esri/hub-common";
 import { postProcess } from "./helpers/post-process";
+import { sortTemplates } from "./helpers/sortTemplates";
 
 // NOTE: Moved to separate file to allow stubbing in main deploySolution tests
 
@@ -237,21 +238,27 @@ export function deploySolutionFromTemplate(
       })
       .then(
         (clonedSolutionsResponse: common.ICreateItemFromTemplateResponse[]) => {
-          solutionTemplateData.templates = [] as any;
-          clonedSolutionsResponse.forEach(response => {
-            const template = {
-              ...response.item
-            };
+          solutionTemplateData.templates = solutionTemplateData.templates.map(
+            (itemTemplate: common.IItemTemplate) => {
+              // Update ids present in template dictionary
+              itemTemplate.itemId = common.getProp(
+                templateDictionary,
+                `${itemTemplate.itemId}.itemId`
+              );
 
-            // update the dependencies hash to point to the new item ids
-            (template as any).dependencies = (template as any).dependencies.map(
-              (id: string) =>
+              // Update the dependencies hash to point to the new item ids
+              itemTemplate.dependencies = itemTemplate.dependencies.map(id =>
                 getWithDefault(templateDictionary, `${id}.itemId`, id)
-            );
-            solutionTemplateData.templates.push(template);
-          });
-          solutionTemplateData.metadata.version =
-            common.DeployedSolutionFormatVersion;
+              );
+              return itemTemplate;
+            }
+          );
+
+          // Sort the templates into build order, which is provided by clonedSolutionsResponse
+          sortTemplates(
+            solutionTemplateData.templates,
+            clonedSolutionsResponse.map(response => response.id)
+          );
 
           // Wrap up with post-processing, in which we deal with groups and cycle remnants
           return postProcess(
