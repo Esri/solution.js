@@ -68,34 +68,47 @@ export function deleteSolution(
       .then(response => {
         solutionSummary = response;
         if (solutionSummary.items.length === 0) {
-          throw new Error();
+          return Promise.resolve([
+            {
+              id: solutionSummary.id,
+              title: solutionSummary.title,
+              folder: solutionSummary.folder,
+              items: []
+            },
+            {
+              id: solutionSummary.id,
+              title: solutionSummary.title,
+              folder: solutionSummary.folder,
+              items: []
+            }
+          ]);
+        } else {
+          // Save a copy of the Solution item ids for the _deleteSolutionFolder call because _removeItems
+          // destroys the solutionSummary.items list
+          solutionIds = solutionSummary.items
+            .map(item => item.id)
+            .concat([solutionItemId]);
+
+          const hubSiteItemIds: string[] = solutionSummary.items
+            .filter((item: any) => item.type === "Hub Site Application")
+            .map((item: any) => item.id);
+
+          // Delete the items
+          progressPercentStep = 100 / (solutionSummary.items.length + 2); // one extra for starting plus one extra for solution itself
+          _reportProgress._reportProgress(
+            (percentDone += progressPercentStep),
+            deleteOptions
+          ); // let the caller know that we've started
+
+          return _removeItems._removeItems(
+            solutionSummary,
+            hubSiteItemIds,
+            authentication,
+            percentDone,
+            progressPercentStep,
+            deleteOptions
+          );
         }
-
-        // Save a copy of the Solution item ids for the _deleteSolutionFolder call because _removeItems
-        // destroys the solutionSummary.items list
-        solutionIds = solutionSummary.items
-          .map(item => item.id)
-          .concat([solutionItemId]);
-
-        const hubSiteItemIds: string[] = solutionSummary.items
-          .filter((item: any) => item.type === "Hub Site Application")
-          .map((item: any) => item.id);
-
-        // Delete the items
-        progressPercentStep = 100 / (solutionSummary.items.length + 2); // one extra for starting plus one extra for solution itself
-        _reportProgress._reportProgress(
-          (percentDone += progressPercentStep),
-          deleteOptions
-        ); // let the caller know that we've started
-
-        return _removeItems._removeItems(
-          solutionSummary,
-          hubSiteItemIds,
-          authentication,
-          percentDone,
-          progressPercentStep,
-          deleteOptions
-        );
       })
       .then((results: ISolutionPrecis[]) => {
         [solutionDeletedSummary, solutionFailureSummary] = results;

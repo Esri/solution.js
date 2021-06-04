@@ -61,13 +61,9 @@ export function getSolutionSummary(
       const itemBase: IItemGeneralized = response[0];
       const itemData: ISolutionItemData = response[1];
 
-      solutionSummary.title = itemBase.title;
-      solutionSummary.folder = itemBase.ownerFolder;
-      deployedSolutionVersion = templatization.extractSolutionVersion(itemData);
-      templates = itemData.templates;
-
       // Make sure that the item is a deployed Solution
       if (
+        itemBase.type !== "Solution" ||
         !(
           itemBase.typeKeywords.includes("Solution") &&
           itemBase.typeKeywords.includes("Deployed")
@@ -77,6 +73,11 @@ export function getSolutionSummary(
           "Item " + solutionItemId + " is not a deployed Solution"
         );
       }
+
+      solutionSummary.title = itemBase.title;
+      solutionSummary.folder = itemBase.ownerFolder;
+      deployedSolutionVersion = templatization.extractSolutionVersion(itemData);
+      templates = itemData.templates;
 
       // Get the forward Solution2Item relationships
       return restHelpersGet.getItemsRelatedToASolution(
