@@ -432,7 +432,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
       );
     });
 
-    it("can async add", done => {
+    xit("can async add, default", done => {
       const url =
         "https://services123.arcgis.com/org1234567890/arcgis/rest/services/ROWPermits_publiccomment/FeatureServer/0";
       const adminUrl =
@@ -453,7 +453,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
         );
     });
 
-    it("can async add reject", done => {
+    xit("can async add reject, default", done => {
       const url =
         "https://services123.arcgis.com/org1234567890/arcgis/rest/services/ROWPermits_publiccomment/FeatureServer/0";
       const adminUrl =
@@ -465,6 +465,51 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
 
       restHelpers
         .addToServiceDefinition(url, { authentication: MOCK_USER_SESSION })
+        .then(
+          () => done.fail(),
+          () => done()
+        );
+    });
+
+    it("can async add, specifying async", done => {
+      const url =
+        "https://services123.arcgis.com/org1234567890/arcgis/rest/services/ROWPermits_publiccomment/FeatureServer/0";
+      const adminUrl =
+        "https://services123.arcgis.com/org1234567890/arcgis/rest/admin/services/ROWPermits_publiccomment/FeatureServer/0";
+      const statusURL = adminUrl + "/abc123";
+
+      fetchMock.post(adminUrl + "/addToDefinition", { statusURL: statusURL });
+
+      spyOn(request, "request").and.returnValues(
+        Promise.resolve({ status: "Completed" })
+      );
+
+      restHelpers
+        .addToServiceDefinition(url, {
+          params: { async: true },
+          authentication: MOCK_USER_SESSION
+        })
+        .then(
+          () => done(),
+          () => done.fail()
+        );
+    });
+
+    it("can async add reject, specifying async", done => {
+      const url =
+        "https://services123.arcgis.com/org1234567890/arcgis/rest/services/ROWPermits_publiccomment/FeatureServer/0";
+      const adminUrl =
+        "https://services123.arcgis.com/org1234567890/arcgis/rest/admin/services/ROWPermits_publiccomment/FeatureServer/0";
+      const statusURL = adminUrl + "/abc123";
+
+      fetchMock.post(adminUrl + "/addToDefinition", { statusURL: statusURL });
+      fetchMock.post(statusURL, mockItems.get400Failure());
+
+      restHelpers
+        .addToServiceDefinition(url, {
+          params: { async: true },
+          authentication: MOCK_USER_SESSION
+        })
         .then(
           () => done.fail(),
           () => done()

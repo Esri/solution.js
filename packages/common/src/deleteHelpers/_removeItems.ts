@@ -89,7 +89,7 @@ export function _removeItems(
           return restHelpers.removeItem(itemToDelete.id, authentication);
         }
       })
-      .then(result => {
+      .then(() => {
         // Successful deletion
         solutionDeletedSummary.items.push(itemToDelete);
         _reportProgress._reportProgress(
