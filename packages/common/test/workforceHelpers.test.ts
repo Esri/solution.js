@@ -40,6 +40,13 @@ afterEach(() => {
 // ------------------------------------------------------------------------------------------------------------------ //
 
 describe("Module `workforceHelpers`: manages the creation and deployment of workforce project item types", () => {
+  describe("_applyEdits", () => {
+    it("will handle no edits", done => {
+      workforceHelpers
+        ._applyEdits("http://url", [], MOCK_USER_SESSION)
+        .then(done, done.fail);
+    });
+  });
   describe("_extractDependencies", () => {
     it("handles serviceItemId variants", done => {
       const data: any = {

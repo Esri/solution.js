@@ -45,413 +45,17 @@ beforeEach(() => {
 
 describe("Module `deleteSolution`: functions for deleting a deployed Solution item and all of its items", () => {
   describe("deleteSolution", () => {
-    /*
     it("rejects a Solution template", done => {
-      const solutionItem = mockItems.getCompleteDeployedSolutionItemVersioned(0);
-      solutionItem.base.typeKeywords = solutionItem.base.typeKeywords.filter(
-        (keyword: string) => keyword != "Deployed"
-      );
-      solutionItem.base.typeKeywords.push("Template");
-
-      const getItemBaseSpy = spyOn(restHelpersGet, "getItemBase").and.resolveTo(
-        solutionItem.base
-      );
-      const getItemDataAsJsonSpy = spyOn(
-        restHelpersGet,
-        "getItemDataAsJson"
-      ).and.resolveTo(solutionItem.data);
-
-      deleteSolution
-        .deleteSolution(solutionItem.base.id, MOCK_USER_SESSION)
-        .then((response: interfaces.ISolutionPrecis[]) => {
-          expect(response).toEqual([undefined, undefined]);
-          done();
-        });
-    });
-
-    it("deletes a version 0 Solution", done => {
-      const solutionItem = mockItems.getCompleteDeployedSolutionItemVersioned(
-        0
-      );
-
-      const getItemBaseSpy = spyOn(restHelpersGet, "getItemBase").and.resolveTo(
-        solutionItem.base
-      );
-      const getItemDataAsJsonSpy = spyOn(
-        restHelpersGet,
-        "getItemDataAsJson"
-      ).and.resolveTo(solutionItem.data);
-
-      const unprotectItemSpy = spyOn(portal, "unprotectItem").and.resolveTo(
-        utils.getSuccessResponse()
-      );
-
-      const removeItemSpy = spyOn(restHelpers, "removeItem").and.returnValues(
-        Promise.resolve(
-          utils.getSuccessResponse({
-            id: solutionItem.data.templates[0].itemId
-          })
-        ),
-        Promise.resolve(
-          utils.getSuccessResponse({
-            id: solutionItem.data.templates[1].itemId
-          })
-        ),
-        Promise.resolve(utils.getSuccessResponse({ id: solutionItem.base.id }))
-      );
-
-      const getUserSpy = spyOn(MOCK_USER_SESSION, "getUser").and.resolveTo({
-        orgId: "orgABC"
-      });
-
-      const searchSpy = spyOn(portal, "searchItems").and.resolveTo({
-        total: 0,
-        results: []
-      } as any);
-
-      const removeFolderSpy = spyOn(portal, "removeFolder").and.resolveTo({
-        success: true
-      } as any);
-
-      deleteSolution
-        .deleteSolution(solutionItem.base.id, MOCK_USER_SESSION)
-        .then((response: interfaces.ISolutionPrecis[]) => {
-          console.log(JSON.stringify(response, null, 2)); //???
-          done();
-        });
-    });
-
-    it("deletes a version 1 Solution", done => {
-      const solutionItem = mockItems.getCompleteDeployedSolutionItemVersioned(
-        1
-      );
-
-      const getItemBaseSpy = spyOn(restHelpersGet, "getItemBase").and.resolveTo(
-        solutionItem.base
-      );
-      const getItemDataAsJsonSpy = spyOn(
-        restHelpersGet,
-        "getItemDataAsJson"
-      ).and.resolveTo(solutionItem.data);
-
-      const unprotectItemSpy = spyOn(portal, "unprotectItem").and.resolveTo(
-        utils.getSuccessResponse()
-      );
-
-      const removeItemSpy = spyOn(restHelpers, "removeItem").and.returnValues(
-        Promise.resolve(
-          utils.getSuccessResponse({
-            id: solutionItem.data.templates[0].itemId
-          })
-        ),
-        Promise.resolve(
-          utils.getSuccessResponse({
-            id: solutionItem.data.templates[1].itemId
-          })
-        ),
-        Promise.resolve(utils.getSuccessResponse({ id: solutionItem.base.id }))
-      );
-
-      const getUserSpy = spyOn(MOCK_USER_SESSION, "getUser").and.resolveTo({
-        orgId: "orgABC"
-      });
-
-      const searchSpy = spyOn(portal, "searchItems").and.resolveTo({
-        total: 0,
-        results: []
-      } as any);
-
-      const removeFolderSpy = spyOn(portal, "removeFolder").and.resolveTo({
-        success: true
-      } as any);
-
-      deleteSolution
-        .deleteSolution(solutionItem.base.id, MOCK_USER_SESSION)
-        .then((response: interfaces.ISolutionPrecis[]) => {
-          console.log(JSON.stringify(response, null, 2)); //???
-          done();
-        });
-    });
-
-    it("deletes a version 1 Solution, but its folder contains a non-Solution item", done => {
-      const solutionItem = mockItems.getCompleteDeployedSolutionItemVersioned(
-        1
-      );
-
-      const getItemBaseSpy = spyOn(restHelpersGet, "getItemBase").and.resolveTo(
-        solutionItem.base
-      );
-      const getItemDataAsJsonSpy = spyOn(
-        restHelpersGet,
-        "getItemDataAsJson"
-      ).and.resolveTo(solutionItem.data);
-
-      const unprotectItemSpy = spyOn(portal, "unprotectItem").and.resolveTo(
-        utils.getSuccessResponse()
-      );
-
-      const removeItemSpy = spyOn(restHelpers, "removeItem").and.returnValues(
-        Promise.resolve(
-          utils.getSuccessResponse({
-            id: solutionItem.data.templates[0].itemId
-          })
-        ),
-        Promise.resolve(
-          utils.getSuccessResponse({
-            id: solutionItem.data.templates[1].itemId
-          })
-        ),
-        Promise.resolve(utils.getSuccessResponse({ id: solutionItem.base.id }))
-      );
-
-      const getUserSpy = spyOn(MOCK_USER_SESSION, "getUser").and.resolveTo({
-        orgId: "orgABC"
-      });
-
-      const searchSpy = spyOn(portal, "searchItems").and.resolveTo({
-        total: 1,
-        results: [{ id: "itm1234567890" }]
-      } as any);
-
-      deleteSolution
-        .deleteSolution(solutionItem.base.id, MOCK_USER_SESSION)
-        .then((response: interfaces.ISolutionPrecis[]) => {
-          console.log(JSON.stringify(response, null, 2)); //???
-          done();
-        });
-    });
-
-    it("deletes a version 1 Solution, but deleting its folder fails", done => {
-      const solutionItem = mockItems.getCompleteDeployedSolutionItemVersioned(
-        1
-      );
-
-      const getItemBaseSpy = spyOn(restHelpersGet, "getItemBase").and.resolveTo(
-        solutionItem.base
-      );
-      const getItemDataAsJsonSpy = spyOn(
-        restHelpersGet,
-        "getItemDataAsJson"
-      ).and.resolveTo(solutionItem.data);
-
-      const unprotectItemSpy = spyOn(portal, "unprotectItem").and.resolveTo(
-        utils.getSuccessResponse()
-      );
-
-      const removeItemSpy = spyOn(restHelpers, "removeItem").and.returnValues(
-        Promise.resolve(
-          utils.getSuccessResponse({
-            id: solutionItem.data.templates[0].itemId
-          })
-        ),
-        Promise.resolve(
-          utils.getSuccessResponse({
-            id: solutionItem.data.templates[1].itemId
-          })
-        ),
-        Promise.resolve(utils.getSuccessResponse({ id: solutionItem.base.id }))
-      );
-
-      const getUserSpy = spyOn(MOCK_USER_SESSION, "getUser").and.resolveTo(
-        utils.getFailureResponse()
-      );
-
-      deleteSolution
-        .deleteSolution(solutionItem.base.id, MOCK_USER_SESSION)
-        .then((response: interfaces.ISolutionPrecis[]) => {
-          console.log(JSON.stringify(response, null, 2)); //???
-          done();
-        });
-    });
-
-    it("deletes a version 1 Solution, but one of the items fails", done => {
-      const solutionItem = mockItems.getCompleteDeployedSolutionItemVersioned(
-        1
-      );
-
-      const getItemBaseSpy = spyOn(restHelpersGet, "getItemBase").and.resolveTo(
-        solutionItem.base
-      );
-      const getItemDataAsJsonSpy = spyOn(
-        restHelpersGet,
-        "getItemDataAsJson"
-      ).and.resolveTo(solutionItem.data);
-
-      const unprotectItemSpy = spyOn(portal, "unprotectItem").and.resolveTo(
-        utils.getSuccessResponse()
-      );
-
-      const removeItemSpy = spyOn(restHelpers, "removeItem").and.returnValues(
-        Promise.resolve(
-          utils.getSuccessResponse({
-            id: solutionItem.data.templates[0].itemId
-          })
-        ),
-        Promise.resolve(
-          utils.getFailureResponse({
-            id: solutionItem.data.templates[1].itemId
-          })
-        )
-      );
-
-      deleteSolution
-        .deleteSolution(solutionItem.base.id, MOCK_USER_SESSION)
-        .then((response: interfaces.ISolutionPrecis[]) => {
-          console.log(JSON.stringify(response, null, 2)); //???
-          done();
-        });
-    });
-
-    it("deletes a version 1 Solution, but deleting the Solution item fails", done => {
-      const solutionItem = mockItems.getCompleteDeployedSolutionItemVersioned(
-        1
-      );
-
-      const getItemBaseSpy = spyOn(restHelpersGet, "getItemBase").and.resolveTo(
-        solutionItem.base
-      );
-      const getItemDataAsJsonSpy = spyOn(
-        restHelpersGet,
-        "getItemDataAsJson"
-      ).and.resolveTo(solutionItem.data);
-
-      const unprotectItemSpy = spyOn(portal, "unprotectItem").and.resolveTo(
-        utils.getSuccessResponse()
-      );
-
-      const removeItemSpy = spyOn(restHelpers, "removeItem").and.returnValues(
-        Promise.resolve(
-          utils.getSuccessResponse({
-            id: solutionItem.data.templates[0].itemId
-          })
-        ),
-        Promise.resolve(
-          utils.getSuccessResponse({
-            id: solutionItem.data.templates[1].itemId
-          })
-        ),
-        Promise.resolve(utils.getFailureResponse({ id: solutionItem.base.id }))
-      );
-
-      deleteSolution
-        .deleteSolution(solutionItem.base.id, MOCK_USER_SESSION)
-        .then((response: interfaces.ISolutionPrecis[]) => {
-          console.log(JSON.stringify(response, null, 2)); //???
-          done();
-        });
-    });
-
-    it("deletes hub site applications via hub.js", done => {
-      const solutionItem = mockItems.getCompleteDeployedSolutionItemVersioned(
-        1
-      );
-      solutionItem.data.templates = [
-        {
-          itemId: "hsa1234567890",
-          type: "Hub Site Application",
-          dependencies: [],
-          groups: [],
-          item: {
-            typeKeywords: []
-          }
-        }
-      ];
-
-      const getItemBaseSpy = spyOn(restHelpersGet, "getItemBase").and.resolveTo(
-        solutionItem.base
-      );
-      const getItemDataAsJsonSpy = spyOn(
-        restHelpersGet,
-        "getItemDataAsJson"
-      ).and.resolveTo(solutionItem.data);
-
-      const unprotectItemSpy = spyOn(portal, "unprotectItem").and.resolveTo(
-        utils.getSuccessResponse()
-      );
-
-      const createHubRequestOptionsSpy = spyOn(
-        createHRO,
-        "createHubRequestOptions"
-      ).and.resolveTo(
-        utils.getSuccessResponse({
-          authentication: MOCK_USER_SESSION,
-          hubApiUrl: "https://hub.arcgis.com",
-          isPortal: false
-        })
-      );
-
-      const removeHubItemSpy = spyOn(hubSites, "removeSite").and.resolveTo(
-        utils.getSuccessResponse({ id: solutionItem.data.templates[0].itemId })
-      );
-
-      const removeSolnItemSpy = spyOn(restHelpers, "removeItem").and.resolveTo(
-        utils.getSuccessResponse({ id: solutionItem.base.id })
-      );
-
-      const getUserSpy = spyOn(MOCK_USER_SESSION, "getUser").and.resolveTo({
-        orgId: "orgABC"
-      });
-
-      const searchSpy = spyOn(portal, "searchItems").and.resolveTo({
-        total: 0,
-        results: []
-      } as any);
-
-      const removeFolderSpy = spyOn(portal, "removeFolder").and.resolveTo({
-        success: true
-      } as any);
-
-      deleteSolution
-        .deleteSolution(solutionItem.base.id, MOCK_USER_SESSION)
-        .then((response: interfaces.ISolutionPrecis[]) => {
-          console.log(JSON.stringify(response, null, 2)); //???
-          done();
-        });
-    });
-
-
-
-
-
-
-    it("empty folder", done => {
-      const solutionSummary = mockItems.getSolutionPrecis(
-        [mockItems.getAGOLItemPrecis("Web Map"), mockItems.getAGOLItemPrecis("Web Mapping Application")]
-      ));
-
-      const getDeletableSolutionInfoSpy = spyOn(getDeletableSolutionInfo, "getDeletableSolutionInfo").and.resolveTo(
-      );
-      const _removeItemsSpy = spyOn(_removeItems, "_removeItems").and.resolveTo(
-      );
-      const _reportProgressSpy = spyOn(_reportProgress, "_reportProgress").and.resolveTo(
-      );
-      const _deleteSolutionFolderSpy = spyOn(_deleteSolutionFolder, "_deleteSolutionFolder").and.resolveTo(
-      );
-
-
-      deleteSolution.deleteSolution(solutionSummary.id, MOCK_USER_SESSION)
-      .then(
-        result => {
-          const deletedSolutionSummary = mockItems.getSolutionPrecis(
-            [mockItems.getAGOLItemPrecis("Web Map"), mockItems.getAGOLItemPrecis("Web Mapping Application")]
-          ));
-          const failedSolutionSummary = mockItems.getSolutionPrecis(
-            [mockItems.getAGOLItemPrecis("Web Map"), mockItems.getAGOLItemPrecis("Web Mapping Application")]
-          ));
-        },
-        done.fail
-      );
-    });
-  */
-
-    it("rejects a Solution template", done => {
+      const testItem = "sol1234567890";
       const getDeletableSolutionInfoSpy = spyOn(
         getDeletableSolutionInfo,
         "getDeletableSolutionInfo"
-      ).and.resolveTo(mockItems.getSolutionPrecis());
+      ).and.rejectWith(
+        new Error("Item " + testItem + " is not a deployed Solution")
+      );
 
       deleteSolution
-        .deleteSolution("sol1234567890", MOCK_USER_SESSION)
+        .deleteSolution(testItem, MOCK_USER_SESSION)
         .then((response: interfaces.ISolutionPrecis[]) => {
           expect(response).toEqual([undefined, undefined]);
           done();
@@ -496,6 +100,32 @@ describe("Module `deleteSolution`: functions for deleting a deployed Solution it
               mockItems.getAGOLItemPrecis("Web Map"),
               mockItems.getAGOLItemPrecis("Web Mapping Application")
             ]),
+            mockItems.getSolutionPrecis()
+          ]);
+          done();
+        });
+    });
+
+    it("deletes a Solution that doesn't contain deletable items", done => {
+      const getDeletableSolutionInfoSpy = spyOn(
+        getDeletableSolutionInfo,
+        "getDeletableSolutionInfo"
+      ).and.resolveTo(mockItems.getSolutionPrecis());
+      const _removeItemSpy = spyOn(restHelpers, "removeItem").and.resolveTo({
+        success: true,
+        itemId: "sol1234567890"
+      });
+      const _reportProgressSpy = spyOn(_reportProgress, "_reportProgress");
+      const _deleteSolutionFolderSpy = spyOn(
+        _deleteSolutionFolder,
+        "_deleteSolutionFolder"
+      ).and.resolveTo(true);
+
+      deleteSolution
+        .deleteSolution("sol1234567890", MOCK_USER_SESSION)
+        .then((response: interfaces.ISolutionPrecis[]) => {
+          expect(response).toEqual([
+            mockItems.getSolutionPrecis(),
             mockItems.getSolutionPrecis()
           ]);
           done();
@@ -740,6 +370,27 @@ describe("Module `deleteSolution`: functions for deleting a deployed Solution it
   });
 
   describe("getSolutionSummary", () => {
+    it("rejects a non-Solution item", done => {
+      const getItemBaseSpy = spyOn(restHelpersGet, "getItemBase").and.resolveTo(
+        mockItems.getAGOLItem("Web Map")
+      );
+      const getItemDataAsJsonSpy = spyOn(
+        restHelpersGet,
+        "getItemDataAsJson"
+      ).and.resolveTo({});
+
+      getSolutionSummary
+        .getSolutionSummary("sol1234567890", MOCK_USER_SESSION)
+        .then(
+          () => {
+            done.fail();
+          },
+          () => {
+            done();
+          }
+        );
+    });
+
     it("rejects a Solution template", done => {
       const solutionItem = mockItems.getCompleteDeployedSolutionItemVersioned();
       solutionItem.base.typeKeywords = solutionItem.base.typeKeywords.filter(
@@ -754,10 +405,6 @@ describe("Module `deleteSolution`: functions for deleting a deployed Solution it
         restHelpersGet,
         "getItemDataAsJson"
       ).and.resolveTo(solutionItem.data);
-      const getItemsRelatedToASolutionSpy = spyOn(
-        restHelpersGet,
-        "getItemsRelatedToASolution"
-      ).and.resolveTo([]);
 
       getSolutionSummary
         .getSolutionSummary("sol1234567890", MOCK_USER_SESSION)
