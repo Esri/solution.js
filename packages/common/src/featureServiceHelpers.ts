@@ -201,13 +201,13 @@ export function deleteViewProps(layer: any) {
  *
  * @param layer The data layer instance with field name references within
  * @param fieldInfos the object that stores the cached field infos
- * @param removeProps Should the properties be removed.
+ * @param isPortal Controls what properties should be removed.
  * @return An updated instance of the fieldInfos
  */
 export function cacheFieldInfos(
   layer: any,
   fieldInfos: any,
-  removeProps: boolean
+  isPortal: boolean
 ): any {
   // cache the source fields as they are in the original source
   if (layer && layer.fields) {
@@ -219,18 +219,20 @@ export function cacheFieldInfos(
   }
 
   // cache each of these properties as they each can contain field references
-  const props: string[] = [
-    "editFieldsInfo",
-    "types",
-    "templates",
-    "relationships",
-    "drawingInfo",
-    "timeInfo",
-    "viewDefinitionQuery"
-  ];
+  // and will have associated updateDefinition calls when deploying to portal
+  // as well as online for relationships...as relationships added with addToDef will cause failure
+  const props = {
+    editFieldsInfo: isPortal,
+    types: isPortal,
+    templates: isPortal,
+    relationships: true,
+    drawingInfo: isPortal,
+    timeInfo: isPortal,
+    viewDefinitionQuery: isPortal
+  };
 
-  props.forEach(prop => {
-    _cacheFieldInfo(layer, prop, fieldInfos, removeProps);
+  Object.keys(props).forEach(k => {
+    _cacheFieldInfo(layer, k, fieldInfos, props[k]);
   });
 
   return fieldInfos;

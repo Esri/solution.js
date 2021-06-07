@@ -949,9 +949,10 @@ export function getLayerUpdates(
       updates.push(_getUpdate(adminUrl, null, null, args, "refresh"));
     }
     // handle definition updates
-    // for portal only as online will now all be handled in addToDef
-    if (isPortal) {
-      updates.push(_getUpdate(adminUrl, id, obj, args, "update"));
+    // for portal only as online will now all be handled in addToDef for everything except relationships
+    if (isPortal || (obj.relationships && obj.relationships.length > 0)) {
+      const o = isPortal ? obj : { relationships: obj.relationships };
+      updates.push(_getUpdate(adminUrl, id, o, args, "update"));
       updates.push(refresh);
     }
   });
