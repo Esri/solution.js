@@ -234,14 +234,16 @@ export function addTokenToUrl(
 }
 
 // Added retry due to some solutions failing to deploy in specific orgs/hives
-//
-/* istanbul ignore else */
 export function addToServiceDefinition(
   url: string,
   options: any,
-  skipRetry: boolean = false
+  skipRetry: boolean = false,
+  useAsync: boolean = false
 ): Promise<void> {
-  options.params = { ...options.params, async: true };
+  /* istanbul ignore else */
+  if (useAsync) {
+    options.params = { ...options.params, async: true };
+  }
   return new Promise((resolve, reject) => {
     svcAdminAddToServiceDefinition(url, options).then(
       (result: any) => {
@@ -252,7 +254,7 @@ export function addToServiceDefinition(
       },
       e => {
         if (!skipRetry) {
-          addToServiceDefinition(url, options, true).then(
+          addToServiceDefinition(url, options, true, true).then(
             () => resolve(null),
             e => reject(e)
           );
@@ -949,10 +951,9 @@ export function getLayerUpdates(
       updates.push(_getUpdate(adminUrl, null, null, args, "refresh"));
     }
     // handle definition updates
-    // for portal only as online will now all be handled in addToDef for everything except relationships
-    if (isPortal || (obj.relationships && obj.relationships.length > 0)) {
-      const o = isPortal ? obj : { relationships: obj.relationships };
-      updates.push(_getUpdate(adminUrl, id, o, args, "update"));
+    // for portal only as online will now all be handled in addToDef
+    if (isPortal) {
+      updates.push(_getUpdate(adminUrl, id, obj, args, "update"));
       updates.push(refresh);
     }
   });
@@ -1025,7 +1026,8 @@ export function getFinalServiceUpdates(
 /* istanbul ignore else */
 export function getRequest(
   update: IUpdate,
-  skipRetry: boolean = false
+  skipRetry: boolean = false,
+  useAsync: boolean = false
 ): Promise<void> {
   return new Promise((resolve, reject) => {
     const options: IRequestOptions = {
@@ -1034,7 +1036,7 @@ export function getRequest(
     };
     /* istanbul ignore else */
     if (
-      update.url.indexOf("addToDefinition") > -1 ||
+      (useAsync && update.url.indexOf("addToDefinition") > -1) ||
       update.url.indexOf("updateDefinition") > -1 ||
       update.url.indexOf("deleteFromDefinition") > -1
     ) {
@@ -1049,7 +1051,7 @@ export function getRequest(
       },
       (e: any) => {
         if (!skipRetry) {
-          getRequest(update, true).then(
+          getRequest(update, true, true).then(
             () => resolve(),
             e => reject(e)
           );
