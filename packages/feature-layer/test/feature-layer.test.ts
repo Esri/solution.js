@@ -606,10 +606,6 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
       const adminUrl: string =
         "https://services123.arcgis.com/org1234567890/arcgis/rest/admin/services/ROWPermits_publiccomment/FeatureServer";
 
-      const layerKeyField: string =
-        "{{" + expectedId + ".layer0.fields.globalid.name}}";
-      const tableKeyField: string =
-        "{{" + expectedId + ".layer1.fields.globalid.name}}";
       const layerDefQuery: string =
         "status = '{{" + expectedId + ".layer0.fields.boardreview.name}}'";
       const tableDefQuery: string =
@@ -617,11 +613,9 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
 
       itemTemplate.properties.service.isView = false;
 
-      itemTemplate.properties.layers[0].relationships[0].keyField = layerKeyField;
       itemTemplate.properties.layers[0].definitionQuery = layerDefQuery;
       itemTemplate.properties.layers[0].viewDefinitionQuery = layerDefQuery;
 
-      itemTemplate.properties.tables[0].relationships[0].keyField = tableKeyField;
       itemTemplate.properties.tables[0].definitionQuery = tableDefQuery;
       itemTemplate.properties.tables[0].viewDefinitionQuery = tableDefQuery;
 
@@ -642,9 +636,6 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
       expect(itemTemplate.properties.layers[0].serviceItemId)
         .withContext("up-front layers serviceItemId check")
         .toEqual(id);
-      expect(itemTemplate.properties.layers[0].relationships[0].keyField)
-        .withContext("up-front layers keyField check")
-        .toEqual(layerKeyField);
       expect(itemTemplate.properties.layers[0].viewDefinitionQuery)
         .withContext("up-front layers viewDefinitionQuery check")
         .toEqual(layerDefQuery);
@@ -655,9 +646,6 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
       expect(itemTemplate.properties.tables[0].serviceItemId)
         .withContext("up-front tables withContext check")
         .toEqual(id);
-      expect(itemTemplate.properties.tables[0].relationships[0].keyField)
-        .withContext("up-front tables keyField check")
-        .toEqual(tableKeyField);
       expect(itemTemplate.properties.tables[0].viewDefinitionQuery)
         .withContext("up-front tables viewDefinitionQuery check")
         .toEqual(tableDefQuery);
@@ -678,17 +666,156 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
       ];
       expectedClone.properties.service.serviceItemId = "svc1234567890";
       expectedClone.properties.layers[0].serviceItemId = "svc1234567890";
-      expectedClone.properties.layers[0].relationships[0].keyField = "globalid";
+      expectedClone.properties.layers[0].relationships = null;
       expectedClone.properties.layers[0].viewDefinitionQuery =
         "status = 'BoardReview'";
-      // expectedClone.properties.layers[0].adminLayerInfo = undefined;
       delete expectedClone.properties.layers[0].definitionQuery;
       expectedClone.properties.tables[0].serviceItemId = "svc1234567890";
-      expectedClone.properties.tables[0].relationships[0].keyField = "globalid";
+      expectedClone.properties.tables[0].relationships = null;
       expectedClone.properties.tables[0].viewDefinitionQuery =
         "status = 'BoardReview'";
-      // expectedClone.properties.tables[0].adminLayerInfo = undefined;
       delete expectedClone.properties.tables[0].definitionQuery;
+      expectedClone.item.thumbnail = "thumbnail/ago_downloaded.png";
+      delete expectedClone.item.spatialReference;
+
+      fetchMock
+        .post(url + "?f=json", itemTemplate.properties.service)
+        .post(adminUrl + "/0?f=json", itemTemplate.properties.layers[0])
+        .post(adminUrl + "/1?f=json", itemTemplate.properties.tables[0])
+        .post(url + "/sources?f=json", mockItems.getAGOLServiceSources())
+        .post(
+          utils.PORTAL_SUBSET.restUrl + "/content/users/casey/createService",
+          createResponse
+        )
+        .post(
+          "https://services123.arcgis.com/org1234567890/arcgis/rest/admin/services/ROWPermits_publiccomment/FeatureServer/addToDefinition",
+          '{"success":true}'
+        )
+        .post(
+          "https://services123.arcgis.com/org1234567890/arcgis/rest/admin/services/ROWPermits_publiccomment/FeatureServer/refresh",
+          '{"success":true}'
+        )
+        .post(
+          utils.PORTAL_SUBSET.restUrl +
+            "/content/users/casey/items/svc1234567890/update",
+          '{"success":true}'
+        )
+        .get(
+          "https://myorg.maps.arcgis.com/sharing/rest/content/items/svc1234567890?f=json&token=fake-token",
+          expectedClone.item
+        );
+
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
+      featureLayer
+        .createItemFromTemplate(
+          itemTemplate,
+          {
+            svc1234567890: {},
+            organization: _organization,
+            solutionItemExtent: _solutionItemExtent
+          },
+          MOCK_USER_SESSION,
+          utils.ITEM_PROGRESS_CALLBACK
+        )
+        .then(r => {
+          expectedClone.item.url = expectedUrl + "/";
+          expect(r)
+            .withContext("results")
+            .toEqual({
+              item: expectedClone,
+              id: "svc1234567890",
+              type: itemTemplate.type,
+              postProcess: false
+            });
+          done();
+        });
+    });
+
+    it("should create a solution with FS from a template", done => {
+      const expectedId: string = "svc1234567890";
+      const id: string = "{{" + expectedId + ".itemId}}";
+
+      const expectedUrl: string =
+        "https://services123.arcgis.com/org1234567890/arcgis/rest/services/ROWPermits_publiccomment/FeatureServer";
+      const url: string = "{{" + expectedId + ".url}}";
+
+      const adminUrl: string =
+        "https://services123.arcgis.com/org1234567890/arcgis/rest/admin/services/ROWPermits_publiccomment/FeatureServer";
+
+      const layerDefQuery: string =
+        "status = '{{" + expectedId + ".layer0.fields.boardreview.name}}'";
+      const tableDefQuery: string =
+        "status = '{{" + expectedId + ".layer1.fields.boardreview.name}}'";
+
+      itemTemplate.properties.service.isView = false;
+
+      itemTemplate.properties.layers[0].isView = false;
+      itemTemplate.properties.layers[0].definitionQuery = layerDefQuery;
+      itemTemplate.properties.layers[0].viewDefinitionQuery = layerDefQuery;
+
+      itemTemplate.properties.tables[0].isView = false;
+      itemTemplate.properties.tables[0].definitionQuery = tableDefQuery;
+      itemTemplate.properties.tables[0].viewDefinitionQuery = tableDefQuery;
+
+      // verify the state up front
+      expect(itemTemplate.item.id)
+        .withContext("up-front id check")
+        .toEqual(id);
+      expect(itemTemplate.item.url)
+        .withContext("up-front url check")
+        .toEqual(expectedUrl);
+      expect(itemTemplate.dependencies.length)
+        .withContext("up-front dependencies check")
+        .toEqual(0);
+      expect(itemTemplate.properties.service.serviceItemId)
+        .withContext("up-front serviceItemId check")
+        .toEqual(id);
+
+      expect(itemTemplate.properties.layers[0].serviceItemId)
+        .withContext("up-front layers serviceItemId check")
+        .toEqual(id);
+      expect(itemTemplate.properties.layers[0].viewDefinitionQuery)
+        .withContext("up-front layers viewDefinitionQuery check")
+        .toEqual(layerDefQuery);
+      expect(itemTemplate.properties.layers[0].definitionQuery)
+        .withContext("up-front layers definitionQuery check")
+        .toEqual(layerDefQuery);
+
+      expect(itemTemplate.properties.tables[0].serviceItemId)
+        .withContext("up-front tables withContext check")
+        .toEqual(id);
+      expect(itemTemplate.properties.tables[0].viewDefinitionQuery)
+        .withContext("up-front tables viewDefinitionQuery check")
+        .toEqual(tableDefQuery);
+      expect(itemTemplate.properties.tables[0].definitionQuery)
+        .withContext("up-front tables withContext check")
+        .toEqual(tableDefQuery);
+
+      const createResponse: any = mockItems.getAGOLService([], [], true);
+      createResponse.success = true;
+
+      const expectedClone: common.IItemTemplate = common.cloneObject(
+        itemTemplate
+      );
+      expectedClone.item.id = "svc1234567890";
+      expectedClone.item.extent = [
+        [0, 0],
+        [1, 1]
+      ];
+      expectedClone.properties.service.serviceItemId = "svc1234567890";
+      expectedClone.properties.layers[0].serviceItemId = "svc1234567890";
+      expectedClone.properties.layers[0].relationships = null;
+      expectedClone.properties.layers[0].viewDefinitionQuery =
+        "status = 'BoardReview'";
+      expectedClone.properties.layers[0].definitionQuery =
+        "status = 'BoardReview'";
+
+      expectedClone.properties.tables[0].serviceItemId = "svc1234567890";
+      expectedClone.properties.tables[0].relationships = null;
+      expectedClone.properties.tables[0].viewDefinitionQuery =
+        "status = 'BoardReview'";
+      expectedClone.properties.tables[0].definitionQuery =
+        "status = 'BoardReview'";
       expectedClone.item.thumbnail = "thumbnail/ago_downloaded.png";
       delete expectedClone.item.spatialReference;
 
@@ -756,20 +883,16 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
       const adminUrl: string =
         "https://services123.arcgis.com/org1234567890/arcgis/rest/admin/services/ROWPermits_publiccomment/FeatureServer";
 
-      const layerKeyField: string =
-        "{{" + expectedId + ".layer0.fields.globalid.name}}";
-      const tableKeyField: string =
-        "{{" + expectedId + ".layer1.fields.globalid.name}}";
       const layerDefQuery: string =
         "status = '{{" + expectedId + ".layer0.fields.boardreview.name}}'";
       const tableDefQuery: string =
         "status = '{{" + expectedId + ".layer1.fields.boardreview.name}}'";
 
-      itemTemplate.properties.layers[0].relationships[0].keyField = layerKeyField;
+      itemTemplate.properties.layers[0].relationships = null;
       itemTemplate.properties.layers[0].definitionQuery = layerDefQuery;
       itemTemplate.properties.layers[0].viewDefinitionQuery = layerDefQuery;
 
-      itemTemplate.properties.tables[0].relationships[0].keyField = tableKeyField;
+      itemTemplate.properties.tables[0].relationships = null;
       itemTemplate.properties.tables[0].definitionQuery = tableDefQuery;
       itemTemplate.properties.tables[0].viewDefinitionQuery = tableDefQuery;
 
@@ -793,9 +916,6 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
       expect(itemTemplate.properties.layers[0].serviceItemId)
         .withContext("up-front layers serviceItemId check")
         .toEqual(id);
-      expect(itemTemplate.properties.layers[0].relationships[0].keyField)
-        .withContext("up-front layers keyField check")
-        .toEqual(layerKeyField);
       expect(itemTemplate.properties.layers[0].viewDefinitionQuery)
         .withContext("up-front layers viewDefinitionQuery check")
         .toEqual(layerDefQuery);
@@ -806,9 +926,6 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
       expect(itemTemplate.properties.tables[0].serviceItemId)
         .withContext("up-front tables withContext check")
         .toEqual(id);
-      expect(itemTemplate.properties.tables[0].relationships[0].keyField)
-        .withContext("up-front tables keyField check")
-        .toEqual(tableKeyField);
       expect(itemTemplate.properties.tables[0].viewDefinitionQuery)
         .withContext("up-front tables viewDefinitionQuery check")
         .toEqual(tableDefQuery);
@@ -829,12 +946,10 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
       ];
       expectedClone.properties.service.serviceItemId = "svc1234567890";
       expectedClone.properties.layers[0].serviceItemId = "svc1234567890";
-      expectedClone.properties.layers[0].relationships[0].keyField = "globalid";
       expectedClone.properties.layers[0].viewDefinitionQuery =
         "status = 'BoardReview'";
       delete expectedClone.properties.layers[0].definitionQuery;
       expectedClone.properties.tables[0].serviceItemId = "svc1234567890";
-      expectedClone.properties.tables[0].relationships[0].keyField = "globalid";
       expectedClone.properties.tables[0].viewDefinitionQuery =
         "status = 'BoardReview'";
       delete expectedClone.properties.tables[0].definitionQuery;
@@ -903,20 +1018,14 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
       const adminUrl: string =
         "https://services123.arcgis.com/org1234567890/arcgis/rest/admin/services/ROWPermits_publiccomment/FeatureServer";
 
-      const layerKeyField: string =
-        "{{" + expectedId + ".layer0.fields.globalid.name}}";
-      const tableKeyField: string =
-        "{{" + expectedId + ".layer1.fields.globalid.name}}";
       const layerDefQuery: string =
         "status = '{{" + expectedId + ".layer0.fields.boardreview.name}}'";
       const tableDefQuery: string =
         "status = '{{" + expectedId + ".layer1.fields.boardreview.name}}'";
 
-      itemTemplate.properties.layers[0].relationships[0].keyField = layerKeyField;
       itemTemplate.properties.layers[0].definitionQuery = layerDefQuery;
       itemTemplate.properties.layers[0].viewDefinitionQuery = layerDefQuery;
 
-      itemTemplate.properties.tables[0].relationships[0].keyField = tableKeyField;
       itemTemplate.properties.tables[0].definitionQuery = tableDefQuery;
       itemTemplate.properties.tables[0].viewDefinitionQuery = tableDefQuery;
 
@@ -941,9 +1050,6 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
       expect(itemTemplate.properties.layers[0].serviceItemId)
         .withContext("up-front layers serviceItemId check")
         .toEqual(id);
-      expect(itemTemplate.properties.layers[0].relationships[0].keyField)
-        .withContext("up-front layers keyField check")
-        .toEqual(layerKeyField);
       expect(itemTemplate.properties.layers[0].viewDefinitionQuery)
         .withContext("up-front layers viewDefinitionQuery check")
         .toEqual(layerDefQuery);
@@ -954,9 +1060,6 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
       expect(itemTemplate.properties.tables[0].serviceItemId)
         .withContext("up-front tables withContext check")
         .toEqual(id);
-      expect(itemTemplate.properties.tables[0].relationships[0].keyField)
-        .withContext("up-front tables keyField check")
-        .toEqual(tableKeyField);
       expect(itemTemplate.properties.tables[0].viewDefinitionQuery)
         .withContext("up-front tables viewDefinitionQuery check")
         .toEqual(tableDefQuery);
@@ -977,12 +1080,12 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
       ];
       expectedClone.properties.service.serviceItemId = "svc1234567890";
       expectedClone.properties.layers[0].serviceItemId = "svc1234567890";
-      expectedClone.properties.layers[0].relationships[0].keyField = "globalid";
+      expectedClone.properties.layers[0].relationships = null;
       expectedClone.properties.layers[0].viewDefinitionQuery =
         "status = 'BoardReview'";
       delete expectedClone.properties.layers[0].definitionQuery;
       expectedClone.properties.tables[0].serviceItemId = "svc1234567890";
-      expectedClone.properties.tables[0].relationships[0].keyField = "globalid";
+      expectedClone.properties.tables[0].relationships = null;
       expectedClone.properties.tables[0].viewDefinitionQuery =
         "status = 'BoardReview'";
       delete expectedClone.properties.tables[0].definitionQuery;

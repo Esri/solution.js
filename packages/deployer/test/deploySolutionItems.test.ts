@@ -1337,7 +1337,7 @@ describe("Module `deploySolutionItems`", () => {
       delete expectedClone.properties.layers[0].definitionQuery;
       expectedClone.properties.layers[0].viewDefinitionQuery =
         "status = 'BoardReview'";
-      expectedClone.properties.layers[0].relationships = [];
+      expectedClone.properties.layers[0].relationships = null;
       delete expectedClone.item.spatialReference;
 
       fetchMock
@@ -1437,7 +1437,7 @@ describe("Module `deploySolutionItems`", () => {
       delete expectedClone.properties.layers[0].definitionQuery;
       expectedClone.properties.layers[0].viewDefinitionQuery =
         "status = 'BoardReview'";
-      expectedClone.properties.layers[0].relationships = [];
+      expectedClone.properties.layers[0].relationships = null;
       expectedClone.properties.layers[0].adminLayerInfo = undefined;
       delete expectedClone.item.spatialReference;
       expectedClone.properties.layers[0].fields = expectedClone.properties.layers[0].fields.map(
