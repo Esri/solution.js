@@ -907,14 +907,29 @@ export function _updateAddOptions(
   return options;
 }
 
+/**
+ * Remove "multiScaleGeometryInfo" for issue #526 to prevent invalid enablement of layer optimization
+ *
+ * @param layer the layer to evaluate
+ * @protected
+ */
 export function removeLayerOptimization(layer: any): void {
-  // Removed for issue #526 to prevent invalid enablement of layer optimization
   /* istanbul ignore else */
   if (layer.multiScaleGeometryInfo) {
     deleteProp(layer, "multiScaleGeometryInfo");
   }
 }
 
+/**
+ * Handle portal specific updates to the item
+ *
+ * @param item the item to update
+ * @param itemTemplate the item template
+ * @param templateDictionary Hash mapping Solution source id to id of its clone
+ *
+ * @return the updated item
+ * @protected
+ */
 export function _updateForPortal(
   item: any,
   itemTemplate: IItemTemplate,
@@ -996,6 +1011,16 @@ export function _updateForPortal(
   return item;
 }
 
+/**
+ * Get a list of the source layer field names
+ *
+ * @param table the table instance to compare
+ * @param itemTemplate the item template
+ * @param templateDictionary Hash mapping Solution source id to id of its clone
+ *
+ * @return an array of the source layers fields
+ * @protected
+ */
 export function _getFieldNames(
   table: any,
   itemTemplate: IItemTemplate,
@@ -1058,6 +1083,14 @@ export function _updateItemFields(item: any, fieldNames: string[]): any {
   return item;
 }
 
+/**
+ *  Filter the sourceLayerFields for the table
+ *
+ * @param table the table instance to evaluate
+ * @param sourceLayerFields array of fields from the source service
+ * @return Updated instance of the table
+ * @protected
+ */
 export function _updateSourceLayerFields(
   table: any,
   sourceLayerFields: string[]
@@ -1491,6 +1524,17 @@ export function _validateDomains(fieldInfo: any, fieldUpdates: any[]) {
   return fieldUpdates;
 }
 
+/**
+ *  Get portal field updates to be added with an updateDefinition call after the
+ * initial addToDef
+ *
+ * @param field the current field instance
+ * @param names the alias of domain field names
+ * @param fields the alias or domain fields
+ * @param key the field key to evaluate
+ * @param fieldUpdates any existing field updates
+ * @protected
+ */
 export function _getPortalViewFieldUpdates(
   field: any,
   names: string[],
@@ -1548,6 +1592,12 @@ export function _validateViewDomainsAndAlias(fieldInfo: any, item: any): void {
   });
 }
 
+/**
+ *  Get array of domain fields and names and alias fields and names
+ *
+ * @param fieldInfo current view layer or table fieldInfo
+ *
+ */
 export function _getDomainAndAliasInfos(fieldInfo: any): any {
   const domainFields: any[] = [];
   const domainNames: string[] = [];
@@ -1582,6 +1632,15 @@ export function _getDomainAndAliasInfos(fieldInfo: any): any {
   };
 }
 
+/**
+ * Set isViewOverride for view fields when they have differences from the source FS field
+ *
+ * @param field the field instance we are testing
+ * @param names array of field names
+ * @param fields array of fields
+ * @param key the field key to compare
+ * @protected
+ */
 export function _isViewFieldOverride(
   field: any,
   names: string[],
@@ -2106,6 +2165,12 @@ export function _templatizeAdminLayerInfoFields(
   }
 }
 
+/**
+ * find id based on dependency name
+ *
+ * @param lookupName name of dependency we want to find the id of
+ * @param dependencies array of item dependencies
+ */
 export function _getDependantItemId(
   lookupName: string,
   dependencies: IDependency[]
@@ -2837,6 +2902,12 @@ export function _templatizeTemplates(layer: any, basePath: string): void {
   });
 }
 
+/**
+ * templatize the layer types and templates
+ *
+ * @param layer the data layer being cloned
+ * @param basePath path used to de-templatize while deploying
+ */
 export function _templatizeTypeTemplates(layer: any, basePath: string): void {
   const types: any[] = layer.types;
   if (types && Array.isArray(types) && types.length > 0) {
@@ -2867,6 +2938,13 @@ export function _templatizeTypeTemplates(layer: any, basePath: string): void {
   }
 }
 
+/**
+ * templatize object keys
+ *
+ * @param obj the object to templatize
+ * @param basePath path used to de-templatize while deploying
+ * @param suffix expected suffix for template variable
+ */
 export function _templatizeKeys(
   obj: any,
   basePath: string,
