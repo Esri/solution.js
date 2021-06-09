@@ -7,7 +7,12 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 Note: This file cannot be in UTF-8*
 
+
 ## [Unreleased]
+
+
+## [0.22.15] - June 4th 2021
+
 
 
 ## [0.23.1] - June 4th 2021
@@ -142,4 +147,5 @@ Note: This file cannot be in UTF-8*
 [0.22.14]: https://github.com/Esri/solution.js/compare/v0.22.13...v0.22.14 "v0.22.14"
 [0.23.0]: https://github.com/Esri/solution.js/compare/v0.22.14...v0.23.0 "v0.23.0"
 [0.23.1]: https://github.com/Esri/solution.js/compare/v0.23.0...v0.23.1 "v0.23.1"
-[HEAD]: https://github.com/Esri/solution.js/compare/v0.23.1...HEAD "Unreleased Changes"
+[0.22.15]: https://github.com/Esri/solution.js/compare/v0.23.1...v0.22.15 "v0.22.15"
+[HEAD]: https://github.com/Esri/solution.js/compare/v0.22.15...HEAD "Unreleased Changes"

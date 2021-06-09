@@ -2077,7 +2077,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
         authentication: MOCK_USER_SESSION
       };
 
-      const updates: any[] = restHelpers.getLayerUpdates(args);
+      const updates: any[] = restHelpers.getLayerUpdates(args, false);
 
       const _object: any = Object.assign({}, objects[0]);
       delete _object.type;
@@ -2109,20 +2109,20 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
           },
           args
         },
-        {
-          url: adminUrl + "/0/updateDefinition",
-          params: {
-            updateDefinition: _object
-          },
-          args: args
-        },
-        {
-          url: adminUrl + "/refresh",
-          params: {
-            f: "json"
-          },
-          args
-        },
+        // {
+        //   url: adminUrl + "/0/updateDefinition",
+        //   params: {
+        //     updateDefinition: _object
+        //   },
+        //   args: args
+        // },
+        // {
+        //   url: adminUrl + "/refresh",
+        //   params: {
+        //     f: "json"
+        //   },
+        //   args
+        // },
         {
           url: adminUrl + "/addToDefinition",
           params: {

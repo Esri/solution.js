@@ -48,7 +48,9 @@ import {
   _templatizeSourceServiceName,
   _templatizeAdminLayerInfoFields,
   _getDependantItemId,
+  _getDomainAndAliasInfos,
   _getTypeIdField,
+  _isViewFieldOverride,
   _templatizeAdminSourceLayerFields,
   _templatizeTopFilter,
   _templatizeRelationshipFields,
@@ -530,7 +532,7 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
     it("should not fail with undefined", () => {
       let fieldInfos: any = {};
       const layer: any = undefined;
-      fieldInfos = cacheFieldInfos(layer, fieldInfos);
+      fieldInfos = cacheFieldInfos(layer, fieldInfos, true);
       expect(layer).toBeUndefined();
       expect(fieldInfos).toEqual({});
     });
@@ -538,7 +540,7 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
     it("should not fail without key properties on the layer", () => {
       let fieldInfos: any = {};
       const layer: any = {};
-      fieldInfos = cacheFieldInfos(layer, fieldInfos);
+      fieldInfos = cacheFieldInfos(layer, fieldInfos, true);
       expect(layer).toEqual({});
       expect(fieldInfos).toEqual({});
     });
@@ -635,7 +637,7 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
         }
       };
 
-      fieldInfos = cacheFieldInfos(layer, fieldInfos);
+      fieldInfos = cacheFieldInfos(layer, fieldInfos, true);
       expect(layer).toEqual(expectedLayer);
       expect(fieldInfos).toEqual(expectedFieldInfos);
     });
@@ -1622,7 +1624,9 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
         name: "ElectionResults_20190425_2018_51947",
         layer0: layer0,
         layer1: layer1,
-        sourceServiceFields: item1.fieldInfos
+        sourceServiceFields: {
+          svc9876543210_org: item1.fieldInfos
+        }
       };
 
       const settings: any = {
@@ -1800,6 +1804,164 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
         }
       };
 
+      updateSettingsFieldInfos(itemTemplate, settings);
+      expect(settings).toEqual(expectedSettings);
+    });
+
+    it("should transfer combine sourceServiceFields", () => {
+      const layer0 = {
+        fields: {
+          objectid: {
+            name: "OBJECTID"
+          },
+          jurisdictionname: {
+            name: "jurisdictionname"
+          },
+          jurisdictiontype: {
+            name: "jurisdictiontype"
+          },
+          regvoters: {
+            name: "regvoters"
+          },
+          ballotscast: {
+            name: "ballotscast"
+          },
+          ballotsnotcast: {
+            name: "ballotsnotcast"
+          },
+          globalid: {
+            name: "GlobalID"
+          },
+          creationdate: {
+            name: "CreationDate"
+          },
+          creator: {
+            name: "Creator"
+          },
+          editdate: {
+            name: "EditDate"
+          },
+          editor: {
+            name: "Editor"
+          }
+        }
+      };
+      const layer1 = {
+        fields: {
+          objectid: {
+            name: "OBJECTID"
+          },
+          contest: {
+            name: "contest"
+          },
+          category: {
+            name: "category"
+          },
+          jurisdictionname: {
+            name: "jurisdictionname"
+          },
+          candidate: {
+            name: "candidate"
+          },
+          party: {
+            name: "party"
+          },
+          numvotes: {
+            name: "numvotes"
+          },
+          percvote: {
+            name: "percvote"
+          },
+          globalid: {
+            name: "GlobalID"
+          },
+          creationdate: {
+            name: "CreationDate"
+          },
+          creator: {
+            name: "Creator"
+          },
+          editdate: {
+            name: "EditDate"
+          },
+          editor: {
+            name: "Editor"
+          }
+        }
+      };
+
+      const item0 = {
+        itemId: "svc0123456789",
+        url: "",
+        name: "ElectionResults_20190425_2018_51947",
+        sourceServiceFields: {
+          svc9876543210_org1: {
+            "2": [{ name: "A" }]
+          }
+        }
+      };
+
+      const item1 = {
+        itemId: "svc987654321",
+        url: "",
+        name: "ElectionResults_join_20190425_2019_12456",
+        layer0: layer0,
+        layer1: layer1,
+        fieldInfos: {
+          "0": layer0.fields,
+          "1": layer1.fields
+        }
+      };
+
+      const expectedItem0 = {
+        itemId: "svc0123456789",
+        url: "",
+        name: "ElectionResults_20190425_2018_51947",
+        layer0: layer0,
+        layer1: layer1,
+        sourceServiceFields: {
+          svc9876543210_org: item1.fieldInfos,
+          svc9876543210_org1: {
+            "2": [{ name: "A" }]
+          }
+        }
+      };
+
+      const settings: any = {
+        solutionName: "test",
+        folderId: "fdr0123456789",
+        organization: {},
+        isPortal: false,
+        svc0123456789_org: item0,
+        svc9876543210_org: item1
+      };
+
+      itemTemplate = {
+        itemId: "svc0123456789",
+        type: "Feature Service",
+        key: "ixxi7v97b",
+        item: {
+          id: "svc0123456789",
+          type: "Feature Service"
+        },
+        dependencies: ["svc9876543210_org"],
+        groups: [],
+        estimatedDeploymentCostFactor: 5,
+        data: {},
+        resources: [],
+        properties: {}
+      };
+
+      const expectedSettings: any = {
+        solutionName: "test",
+        folderId: "fdr0123456789",
+        organization: {},
+        isPortal: false,
+        svc0123456789_org: expectedItem0,
+        svc9876543210_org: item1
+      };
+
+      // test that the settings transfer
       updateSettingsFieldInfos(itemTemplate, settings);
       expect(settings).toEqual(expectedSettings);
     });
@@ -3272,7 +3434,11 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
         "Table",
         [mockItems.createAGOLRelationship(0, 1, "esriRelRoleDestination")]
       );
-      const fieldInfos = cacheFieldInfos(layer1, cacheFieldInfos(layer0, {}));
+      const fieldInfos = cacheFieldInfos(
+        layer1,
+        cacheFieldInfos(layer0, {}, true),
+        true
+      );
 
       Object.keys(fieldInfos).forEach(k => {
         fieldInfos[k].sourceFields[1].visible = false;
@@ -4027,6 +4193,39 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
     });
   });
 
+  describe("_getDomainAndAliasInfos", () => {
+    it("gets domain and alias infos", () => {
+      const fieldInfo = {
+        sourceServiceFields: {
+          svc123: {
+            "0": [
+              {
+                name: "A",
+                domain: {}
+              },
+              {
+                name: "B"
+              },
+              {
+                name: "C",
+                alias: "c123"
+              }
+            ]
+          }
+        }
+      };
+      const expected = {
+        aliasFields: ["c123"],
+        aliasNames: ["c"],
+        domainFields: [{}],
+        domainNames: ["a"]
+      };
+
+      const actual = _getDomainAndAliasInfos(fieldInfo);
+      expect(actual).toEqual(expected);
+    });
+  });
+
   describe("_getTypeIdField", () => {
     it("will get the typeId field", () => {
       const item: any = {
@@ -4045,6 +4244,22 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
 
       const expected: string = "b";
       expect(actual).toEqual(expected);
+    });
+  });
+
+  describe("_isViewFieldOverride", () => {
+    it("", () => {
+      const field = {
+        alias: "a123",
+        name: "A"
+      };
+      const expected = {
+        alias: "a123",
+        name: "A",
+        isViewOverride: true
+      };
+      _isViewFieldOverride(field, ["a"], ["a"], "alias");
+      expect(field).toEqual(expected);
     });
   });
 
@@ -6589,26 +6804,30 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
   describe("_validateDomains", () => {
     it("should not update field when domains match", () => {
       const fieldInfos: any = {
-        sourceServiceFields: [
-          {
-            name: "A"
-          },
-          {
-            name: "B",
-            domain: null
-          },
-          {
-            name: "C",
-            domain: {
-              codedValues: [
-                {
-                  name: "C_1",
-                  value: "C_2"
+        sourceServiceFields: {
+          svc123: {
+            "0": [
+              {
+                name: "A"
+              },
+              {
+                name: "B",
+                domain: null
+              },
+              {
+                name: "C",
+                domain: {
+                  codedValues: [
+                    {
+                      name: "C_1",
+                      value: "C_2"
+                    }
+                  ]
                 }
-              ]
-            }
+              }
+            ]
           }
-        ],
+        },
         newFields: [
           {
             name: "a"
@@ -6641,42 +6860,46 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
 
     it("should update field when domains don't match", () => {
       const fieldInfos: any = {
-        sourceServiceFields: [
-          {
-            name: "A"
-          },
-          {
-            name: "B",
-            domain: null
-          },
-          {
-            name: "C",
-            unrelatedProp: true,
-            domain: {
-              codedValues: [
-                {
-                  name: "C_1",
-                  value: "C_2"
+        sourceServiceFields: {
+          svc123: {
+            "0": [
+              {
+                name: "A"
+              },
+              {
+                name: "B",
+                domain: null
+              },
+              {
+                name: "C",
+                unrelatedProp: true,
+                domain: {
+                  codedValues: [
+                    {
+                      name: "C_1",
+                      value: "C_2"
+                    }
+                  ]
                 }
-              ]
-            }
-          },
-          {
-            name: "D",
-            domain: null
-          },
-          {
-            name: "E",
-            domain: {
-              codedValues: [
-                {
-                  name: "EEE_1",
-                  value: "EEE_2"
+              },
+              {
+                name: "D",
+                domain: null
+              },
+              {
+                name: "E",
+                domain: {
+                  codedValues: [
+                    {
+                      name: "EEE_1",
+                      value: "EEE_2"
+                    }
+                  ]
                 }
-              ]
-            }
+              }
+            ]
           }
-        ],
+        },
         newFields: [
           {
             name: "a"
