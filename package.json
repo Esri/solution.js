@@ -14,10 +14,9 @@
     "@types/jasmine": "^3.6.1",
     "@types/node": "^10.17.45",
     "@types/sinon": "^9.0.0",
-    "@typescript-eslint/eslint-plugin": "^4.26.0",
-    "@typescript-eslint/eslint-plugin-tslint": "^4.26.0",
-    "@typescript-eslint/parser": "^4.26.0",
-    "@wessberg/rollup-plugin-ts": "^1.3.14",
+    "@typescript-eslint/eslint-plugin": "^4.8.1",
+    "@typescript-eslint/eslint-plugin-tslint": "^4.8.1",
+    "@typescript-eslint/parser": "^4.8.1",
     "acetate": "^2.0.8",
     "acetate-cli": "^1.0.1",
     "acorn": "^8.0.1",
@@ -25,7 +24,8 @@
     "changelog-parser": "^2.7.0",
     "cheerio": "^1.0.0-rc.3",
     "codecov": "^3.6.5",
-    "concurrently": "^6.2.0",
+    "commitizen": "^4.1.2",
+    "concurrently": "^5.3.0",
     "core-js": "^3.7.0",
     "coveralls": "^3.1.0",
     "cpx": "^1.5.0",
@@ -35,13 +35,13 @@
     "es6-promise": "^4.2.8",
     "eslint": "^7.13.0",
     "eslint-config-prettier": "^6.14.0",
-    "eslint-plugin-import": "^2.23.4",
-    "eslint-plugin-jsdoc": "^35.1.2",
+    "eslint-plugin-import": "^2.22.1",
+    "eslint-plugin-jsdoc": "^30.7.8",
     "eslint-plugin-prefer-arrow": "^1.2.2",
     "event-stream": "3.3.4",
     "fetch-mock": "^7.7.3",
     "gh-pages": "^1.1.0",
-    "gh-release": "^6.0.0",
+    "gh-release": "^4.0.3",
     "handlebars": "^4.5.1",
     "husky": "^4.3.0",
     "inspect-process": "^0.5.0",
@@ -49,7 +49,7 @@
     "isomorphic-form-data": "^2.0.0",
     "jasmine": "^3.5.0",
     "jasmine-core": "^3.5.0",
-    "karma": "^6.3.3",
+    "karma": "^5.0.9",
     "karma-chrome-launcher": "^3.1.0",
     "karma-coverage": "^2.0.2",
     "karma-firefox-launcher": "^1.1.0",
@@ -58,12 +58,12 @@
     "karma-safari-launcher": "^1.0.0",
     "karma-spec-reporter": "0.0.32",
     "karma-typescript": "^5.0.3",
-    "karma-typescript-es6-transform": "^5.5.1",
-    "lerna": "^4.0.0",
+    "karma-typescript-es6-transform": "^5.2.0",
+    "lerna": "^3.22.1",
     "lint-staged": "^4.3.0",
     "marked": "^0.7.0",
     "minimatch": "^3.0.4",
-    "node-sass": "^6.0.0",
+    "node-sass": "^4.13.0",
     "onchange": "^6.0.0",
     "prettier": "^1.19.1",
     "resolve": "^1.19.0",
@@ -73,9 +73,10 @@
     "rollup-plugin-filesize": "^6.1.1",
     "rollup-plugin-json": "^4.0.0",
     "rollup-plugin-node-resolve": "^5.2.0",
-    "rollup-plugin-terser": "^7.0.2",
+    "rollup-plugin-terser": "^4.0.4",
+    "rollup-plugin-typescript2": "^0.25.3",
     "rollup-plugin-uglify": "^3.0.0",
-    "semantic-release": "^17.4.3",
+    "semantic-release": "^17.2.3",
     "shelljs": "^0.7.8",
     "sinon": "^9.0.2",
     "slug": "^0.9.1",
@@ -88,7 +89,7 @@
   "dependencies": {
     "rollup-plugin-node-builtins": "^2.1.2",
     "rollup-plugin-node-globals": "^1.4.0",
-    "tslib": "^1.14.1"
+    "tslib": "^1.13.0"
   },
   "lint-staged": {
     "packages/**/*.ts": [
@@ -194,8 +195,13 @@
     "url": "https://github.com/Esri/solution.js/issues"
   },
   "homepage": "https://github.com/Esri/solution.js#readme",
+  "config": {
+    "commitizen": {
+      "path": "./node_modules/cz-lerna-changelog"
+    }
+  },
   "volta": {
     "node": "14.15.5",
-    "npm": "7.15.1"
+    "npm": "6.14.11"
   }
 }
