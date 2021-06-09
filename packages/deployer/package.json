@@ -37,16 +37,16 @@
     "@esri/hub-teams": "^8.4.0"
   },
   "dependencies": {
-    "@esri/solution-common": "^0.22.15",
-    "@esri/solution-feature-layer": "^0.22.15",
-    "@esri/solution-file": "^0.22.15",
-    "@esri/solution-form": "^0.22.15",
-    "@esri/solution-group": "^0.22.15",
-    "@esri/solution-hub-types": "^0.22.15",
-    "@esri/solution-simple-types": "^0.22.15",
-    "@esri/solution-storymap": "^0.22.15",
-    "@esri/solution-web-experience": "^0.22.15",
-    "tslib": "^1.13.0"
+    "@esri/solution-common": "^0.23.1",
+    "@esri/solution-feature-layer": "^0.23.1",
+    "@esri/solution-file": "^0.23.1",
+    "@esri/solution-form": "^0.23.1",
+    "@esri/solution-group": "^0.23.1",
+    "@esri/solution-hub-types": "^0.23.1",
+    "@esri/solution-simple-types": "^0.23.1",
+    "@esri/solution-storymap": "^0.23.1",
+    "@esri/solution-web-experience": "^0.23.1",
+    "tslib": "^1.14.1"
   },
   "scripts": {
     "prepare": "npm run build",

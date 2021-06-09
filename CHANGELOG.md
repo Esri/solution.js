@@ -7,12 +7,7 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 Note: This file cannot be in UTF-8*
 
-
 ## [Unreleased]
-
-
-## [0.22.15] - June 4th 2021
-
 
 
 ## [0.23.1] - June 4th 2021
