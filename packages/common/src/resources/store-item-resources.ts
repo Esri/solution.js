@@ -37,8 +37,8 @@ export function storeItemResources(
   storageVersion = 0
 ): Promise<string[]> {
   // get the resources for the item
-  return getItemResources(itemTemplate.itemId, authentication)
-    .then(resourceResponse => {
+  return getItemResources(itemTemplate.itemId, authentication).then(
+    resourceResponse => {
       // map out the resource names and filter for things we
       // don't want transferred at this time
       const itemResources = resourceResponse.resources
@@ -63,7 +63,6 @@ export function storeItemResources(
       const resourceItemFilePaths: ISourceFileCopyPath[] = generateSourceFilePaths(
         authentication.portal,
         itemTemplate.itemId,
-        itemTemplate.item.thumbnail,
         itemResources,
         itemTemplate.type === "Group",
         storageVersion
@@ -75,13 +74,6 @@ export function storeItemResources(
         solutionItemId,
         authentication
       );
-    })
-    .then(savedResourceFilenames => {
-      // ensure not emty entries in the array
-      // TODO: fix this issue in copyFilesToStorageItem when that is hoisted
-      const resources = (savedResourceFilenames as any[]).filter(
-        item => !!item
-      );
-      return resources;
-    });
+    }
+  );
 }

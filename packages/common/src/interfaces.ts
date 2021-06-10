@@ -51,6 +51,7 @@ export {
   IExtent,
   ISpatialReference
 } from "@esri/arcgis-rest-service-admin";
+import JSZip from "jszip";
 
 //#endregion ---------------------------------------------------------------------------------------------------------//
 
@@ -131,6 +132,43 @@ export interface IAdditionalSearchOptions {
   [key: string]: any;
 }
 
+/**
+ * Results of fetching and copying a file associated with an item.
+ */
+export interface IAssociatedFileCopyResults
+  extends IAssociatedFileInfo,
+    ICopyResults {}
+
+/**
+ *  Information for working with a file associated with an item.
+ */
+export interface IAssociatedFileInfo {
+  /**
+   * Resource's "folder"--the prefix before the filename
+   */
+  folder: string;
+
+  /**
+   * Resource's filename
+   */
+  filename: string;
+
+  /**
+   * An internal classification of the type of file: data, metadata, resource
+   */
+  type: EFileType;
+
+  /**
+   * The mime type of the file
+   */
+  mimeType?: string;
+
+  /**
+   * URL where a resource, metadata, or thumbnail of an item or group can be found
+   */
+  url?: string;
+}
+
 export interface IBuildOrdering {
   /**
    * Item ids in order in which items are to be built.
@@ -163,6 +201,21 @@ export interface ICompleteItem {
   revRelatedItems: IRelatedItems[];
   //
   featureServiceProperties?: IFeatureServiceProperties;
+}
+
+/**
+ * Results of fetching and copying an item.
+ */
+export interface ICopyResults {
+  /**
+   * Status of fetching item from source
+   */
+  fetchedFromSource: boolean;
+
+  /**
+   * Status of copying item to destination; undefined if fetchedFromSource is false
+   */
+  copiedToDestination?: boolean;
 }
 
 export interface ICreateItemFromTemplateResponse {
@@ -347,7 +400,7 @@ export interface IFile {
   blob: Blob;
 }
 
-export interface IFileMimeType {
+export interface IFileMimeTyped {
   blob: Blob;
   filename: string;
   mimeType: string;
@@ -883,6 +936,28 @@ export interface ISurvey123CreateResult {
   formId: string;
   featureServiceId: string;
   folderId: string;
+}
+
+/**
+ * Results of sending a zip to an item.
+ */
+export interface IZipCopyResults extends IZipInfo, ICopyResults {}
+
+export interface IZipInfo {
+  /**
+   * Zip's filename
+   */
+  filename: string;
+
+  /**
+   * JSZip object
+   */
+  zip: JSZip;
+
+  /**
+   * List of files included in this zip
+   */
+  filelist: IAssociatedFileInfo[];
 }
 
 //#endregion ---------------------------------------------------------------------------------------------------------//

@@ -207,6 +207,7 @@ describe("Module `resourceHelpers`: common functions involving the management of
     });
   });
 
+  /*
   describe("copyData", () => {
     it("should handle error getting data", done => {
       const source: any = {
@@ -261,6 +262,7 @@ describe("Module `resourceHelpers`: common functions involving the management of
       );
     });
   });
+  */
 
   describe("convertBlobToSupportableResource", () => {
     it("uses blob (file) name if it has one", () => {
@@ -268,7 +270,7 @@ describe("Module `resourceHelpers`: common functions involving the management of
       expect(blob.name).toEqual("namedBlob.txt");
       expect(blob.type).toEqual("text/plain");
 
-      const convertedBlob: interfaces.IFileMimeType = resourceHelpers.convertBlobToSupportableResource(
+      const convertedBlob: interfaces.IFileMimeTyped = resourceHelpers.convertBlobToSupportableResource(
         blob,
         "alternateName.txt"
       );
@@ -282,7 +284,7 @@ describe("Module `resourceHelpers`: common functions involving the management of
       expect(blob.name).toEqual("");
       expect(blob.type).toEqual("text/plain");
 
-      const convertedBlob: interfaces.IFileMimeType = resourceHelpers.convertBlobToSupportableResource(
+      const convertedBlob: interfaces.IFileMimeTyped = resourceHelpers.convertBlobToSupportableResource(
         blob,
         "alternateName.txt"
       );
@@ -296,7 +298,7 @@ describe("Module `resourceHelpers`: common functions involving the management of
       expect(blob.name).toEqual("");
       expect(blob.type).toEqual("text/plain");
 
-      const convertedBlob: interfaces.IFileMimeType = resourceHelpers.convertBlobToSupportableResource(
+      const convertedBlob: interfaces.IFileMimeTyped = resourceHelpers.convertBlobToSupportableResource(
         blob
       );
       expect((convertedBlob.blob as File).name).toEqual("");
@@ -309,7 +311,7 @@ describe("Module `resourceHelpers`: common functions involving the management of
       expect(blob.name).toEqual("namedBlob.pkg");
       expect(blob.type).toEqual("text/plain");
 
-      const convertedBlob: interfaces.IFileMimeType = resourceHelpers.convertBlobToSupportableResource(
+      const convertedBlob: interfaces.IFileMimeTyped = resourceHelpers.convertBlobToSupportableResource(
         blob,
         "alternateName.pkg"
       );
@@ -323,7 +325,7 @@ describe("Module `resourceHelpers`: common functions involving the management of
       expect(blob.name).toEqual("");
       expect(blob.type).toEqual("text/plain");
 
-      const convertedBlob: interfaces.IFileMimeType = resourceHelpers.convertBlobToSupportableResource(
+      const convertedBlob: interfaces.IFileMimeTyped = resourceHelpers.convertBlobToSupportableResource(
         blob,
         "alternateName.pkg"
       );
@@ -710,6 +712,7 @@ describe("Module `resourceHelpers`: common functions involving the management of
     });
   });
 
+  /*
   describe("copyMetadata", () => {
     it("copies metadata.xml", done => {
       const source = {
@@ -1191,6 +1194,7 @@ describe("Module `resourceHelpers`: common functions involving the management of
       expect(actual).toEqual(expected);
     });
   });
+  */
 
   describe("generateSourceMetadataUrl", () => {
     it("item", () => {
