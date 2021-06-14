@@ -818,6 +818,10 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
       const access = "org";
 
       fetchMock
+        .get(
+          "https://myorg.maps.arcgis.com/sharing/rest/portals/self?f=json&token=fake-token",
+          utils.getPortalsSelfResponse()
+        )
         .post(itemThumbnailUrl + "/rest/info", "{}")
         .post(
           utils.PORTAL_SUBSET.restUrl +

@@ -820,6 +820,10 @@ describe("Module `webmap`: manages the creation and deployment of web map item t
       };
 
       fetchMock
+        .get(
+          "https://myorg.maps.arcgis.com/sharing/rest/portals/self?f=json&token=fake-token",
+          utils.getPortalsSelfResponse()
+        )
         .post(utils.PORTAL_SUBSET.restUrl + "/info", SERVER_INFO)
         .post(
           "http://services.arcgis.com/myOrg/ArcGIS/rest/services/myService1/FeatureServer/1",
