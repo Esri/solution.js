@@ -60,7 +60,7 @@ export function convertItemToTemplate(
           );
 
           // Exclude intialState
-          _excludeIntialState(itemTemplate.data);
+          _excludeInitialState(itemTemplate.data);
         }
 
         resolve(itemTemplate);
@@ -113,7 +113,7 @@ export function _extractDependencies(
  * @return void
  * @protected
  */
-export function _excludeIntialState(data: any): void {
+export function excludeInitialState(data: any): void {
   common.deleteProp(data, "initialState");
 }
 
