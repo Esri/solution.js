@@ -113,7 +113,7 @@ export function _extractDependencies(
  * @return void
  * @protected
  */
-export function excludeInitialState(data: any): void {
+export function _excludeInitialState(data: any): void {
   common.deleteProp(data, "initialState");
 }
 
