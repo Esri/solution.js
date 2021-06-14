@@ -306,8 +306,11 @@ describe("Module `deploySolutionFromTemplate`", () => {
 
       fetchMock
         .get(
-          testUtils.PORTAL_SUBSET.restUrl +
-            "/portals/self?f=json&token=fake-token",
+          "https://myorg.maps.arcgis.com/sharing/rest/portals/self?f=json&token=fake-token",
+          portalsSelfResponse
+        )
+        .get(
+          "https://myotherportal.esri.com/portal//sharing/rest/sharing/rest/portals/self?f=json&token=fake-token",
           portalsSelfResponse
         )
         .post("https://www.arcgis.com/sln1234567890/info/", portalsSelfResponse)

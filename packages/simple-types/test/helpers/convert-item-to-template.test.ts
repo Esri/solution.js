@@ -699,6 +699,10 @@ describe("simpleTypeConvertItemToTemplate", () => {
         }
       };
       fetchMock
+        .get(
+          "https://myorg.maps.arcgis.com/sharing/rest/portals/self?f=json&token=fake-token",
+          utils.getPortalsSelfResponse()
+        )
         .post("https://fake.com/arcgis/rest/info", {})
         .post(
           utils.PORTAL_SUBSET.restUrl +

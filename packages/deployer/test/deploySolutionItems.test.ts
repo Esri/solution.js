@@ -1585,6 +1585,10 @@ describe("Module `deploySolutionItems`", () => {
 
       fetchMock
         .get(
+          "https://myorg.maps.arcgis.com/sharing/rest/portals/self?f=json&token=fake-token",
+          utils.getPortalsSelfResponse()
+        )
+        .get(
           utils.PORTAL_SUBSET.restUrl +
             "/community/groups?f=json&q=Dam%20Inspection%20Assignments&token=fake-token",
           searchResult
@@ -1636,6 +1640,10 @@ describe("Module `deploySolutionItems`", () => {
       );
 
       fetchMock
+        .get(
+          "https://myorg.maps.arcgis.com/sharing/rest/portals/self?f=json&token=fake-token",
+          utils.getPortalsSelfResponse()
+        )
         .post(
           utils.PORTAL_SUBSET.restUrl + "/content/users/casey/addItem",
           utils.getSuccessResponse({ id: newItemID })
