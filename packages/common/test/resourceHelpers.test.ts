@@ -53,30 +53,6 @@ describe("Module `resourceHelpers`: common functions involving the management of
     fetchMock.restore();
   });
 
-  describe("addMetadataFromBlob", () => {
-    it("has metadata", done => {
-      const blob = utils.getSampleMetadataAsBlob();
-      const itemId = "itm1234567890";
-      const updateUrl =
-        utils.PORTAL_SUBSET.restUrl +
-        "/content/users/casey/items/itm1234567890/update";
-      const expected = { success: true, id: itemId };
-
-      fetchMock.post(updateUrl, expected);
-      resourceHelpers
-        .addMetadataFromBlob(blob, itemId, MOCK_USER_SESSION)
-        .then((response: any) => {
-          expect(response).toEqual(expected);
-          const options: fetchMock.MockOptions = fetchMock.lastOptions(
-            updateUrl
-          );
-          const fetchBody = (options as fetchMock.MockResponseObject).body;
-          expect(typeof fetchBody).toEqual("object");
-          done();
-        }, done.fail);
-    });
-  });
-
   describe("addResourceFromBlob", () => {
     it("has filename without folder", done => {
       const blob = utils.getSampleMetadataAsBlob();
@@ -206,63 +182,6 @@ describe("Module `resourceHelpers`: common functions involving the management of
         }, done.fail);
     });
   });
-
-  /*
-  describe("copyData", () => {
-    it("should handle error getting data", done => {
-      const source: any = {
-        url: undefined, // <-- Why test this? is this ever possible?
-        authentication: MOCK_USER_SESSION
-      };
-
-      const destination: any = {
-        itemId: "itm1234567890",
-        filename: "filename.txt",
-        mimeType: "text/plain",
-        authentication: MOCK_USER_SESSION
-      };
-
-      return resourceHelpers.copyData(source, destination).then(
-        () => done.fail(),
-        () => done()
-      );
-    });
-
-    it("should handle error updating item with data", done => {
-      const source: any = {
-        url:
-          utils.PORTAL_SUBSET.restUrl +
-          "/content/items/itm1234567980/info/filename.txt",
-        authentication: MOCK_USER_SESSION
-      };
-
-      const destination: any = {
-        itemId: "itm1234567890",
-        filename: "filename.txt",
-        mimeType: "text/plain",
-        authentication: MOCK_USER_SESSION
-      };
-
-      fetchMock
-        .post(
-          utils.PORTAL_SUBSET.restUrl +
-            "/content/items/itm1234567980/info/filename.txt",
-          utils.getSampleTextAsFile("filename.txt"),
-          { sendAsJson: false }
-        )
-        .post(
-          utils.PORTAL_SUBSET.restUrl +
-            "/content/users/casey/items/itm1234567890/update",
-          mockItems.get400Failure()
-        );
-
-      resourceHelpers.copyData(source, destination).then(
-        () => done.fail(),
-        () => done()
-      );
-    });
-  });
-  */
 
   describe("convertBlobToSupportableResource", () => {
     it("uses blob (file) name if it has one", () => {
@@ -712,152 +631,6 @@ describe("Module `resourceHelpers`: common functions involving the management of
     });
   });
 
-  /*
-  describe("copyMetadata", () => {
-    it("copies metadata.xml", done => {
-      const source = {
-        url:
-          "https://myorg.maps.arcgis.com/sharing/rest/content/items/c6732556e299f1/info/metadata/metadata.xml",
-        authentication: MOCK_USER_SESSION
-      };
-      const destination = {
-        itemId: "itm1234567890",
-        authentication: MOCK_USER_SESSION
-      };
-
-      const fetchUrl =
-        utils.PORTAL_SUBSET.restUrl +
-        "/content/items/c6732556e299f1/info/metadata/metadata.xml";
-      const updateUrl =
-        utils.PORTAL_SUBSET.restUrl +
-        "/content/users/casey/items/itm1234567890/update";
-      const expectedFetch = utils.getSampleMetadataAsBlob();
-      const expectedUpdate = { success: true, id: destination.itemId };
-      fetchMock
-        .post(fetchUrl, expectedFetch, { sendAsJson: false })
-        .post(updateUrl, expectedUpdate);
-
-      resourceHelpers
-        .copyMetadata(source, destination)
-        .then((response: any) => {
-          expect(response).toEqual(expectedUpdate);
-          done();
-        }, done.fail);
-    });
-
-    it("handles inability to get metadata.xml", done => {
-      const source = {
-        url:
-          utils.PORTAL_SUBSET.restUrl +
-          "/content/items/c6732556e299f1/info/metadata/metadata.xml",
-        authentication: MOCK_USER_SESSION
-      };
-      const destination = {
-        itemId: "itm1234567890",
-        authentication: MOCK_USER_SESSION
-      };
-
-      const fetchUrl =
-        utils.PORTAL_SUBSET.restUrl +
-        "/content/items/c6732556e299f1/info/metadata/metadata.xml";
-      const expectedFetch = {
-        error: {
-          code: 400,
-          messageCode: "CONT_0036",
-          message: "Item info file does not exist or is inaccessible.",
-          details: ["Error getting Item Info from DataStore"]
-        }
-      };
-      fetchMock.post(fetchUrl, expectedFetch);
-      resourceHelpers.copyMetadata(source, destination).then(response => {
-        response.success ? done.fail() : done();
-      }, done);
-    });
-
-    it("handles inability to get metadata.xml, hard error", done => {
-      const source = {
-        url:
-          utils.PORTAL_SUBSET.restUrl +
-          "/content/items/c6732556e299f1/info/metadata/metadata.xml",
-        authentication: MOCK_USER_SESSION
-      };
-      const destination = {
-        itemId: "itm1234567890",
-        authentication: MOCK_USER_SESSION
-      };
-
-      const fetchUrl =
-        utils.PORTAL_SUBSET.restUrl +
-        "/content/items/c6732556e299f1/info/metadata/metadata.xml";
-      fetchMock.post(fetchUrl, 500);
-      resourceHelpers.copyMetadata(source, destination).then(response => {
-        response.success ? done.fail() : done();
-      }, done);
-    });
-
-    it("handles inability to store metadata.xml", done => {
-      const source = {
-        url:
-          utils.PORTAL_SUBSET.restUrl +
-          "/content/items/c6732556e299f1/info/metadata/metadata.xml",
-        authentication: MOCK_USER_SESSION
-      };
-      const destination = {
-        itemId: "itm1234567890",
-        authentication: MOCK_USER_SESSION
-      };
-
-      const fetchUrl =
-        utils.PORTAL_SUBSET.restUrl +
-        "/content/items/c6732556e299f1/info/metadata/metadata.xml";
-      const updateUrl =
-        utils.PORTAL_SUBSET.restUrl +
-        "/content/users/casey/items/itm1234567890/update";
-      const expectedFetch = utils.getSampleMetadataAsBlob();
-      const expectedUpdate = { success: false, id: destination.itemId };
-      fetchMock
-        .post(fetchUrl, expectedFetch, { sendAsJson: false })
-        .post(updateUrl, expectedUpdate);
-      resourceHelpers.copyMetadata(source, destination).then(
-        response => {
-          response.success ? done.fail() : done();
-        },
-        () => done()
-      );
-    });
-
-    it("handles inability to store metadata.xml, hard error", done => {
-      const source = {
-        url:
-          utils.PORTAL_SUBSET.restUrl +
-          "/content/items/c6732556e299f1/info/metadata/metadata.xml",
-        authentication: MOCK_USER_SESSION
-      };
-      const destination = {
-        itemId: "itm1234567890",
-        authentication: MOCK_USER_SESSION
-      };
-
-      const fetchUrl =
-        utils.PORTAL_SUBSET.restUrl +
-        "/content/items/c6732556e299f1/info/metadata/metadata.xml";
-      const updateUrl =
-        utils.PORTAL_SUBSET.restUrl +
-        "/content/users/casey/items/itm1234567890/update";
-      const expectedFetch = utils.getSampleMetadataAsBlob();
-      const expectedUpdate = 500;
-      fetchMock
-        .post(fetchUrl, expectedFetch, { sendAsJson: false })
-        .post(updateUrl, expectedUpdate);
-      resourceHelpers.copyMetadata(source, destination).then(
-        response => {
-          response.success ? done.fail() : done();
-        },
-        () => done()
-      );
-    });
-  });
-
   describe("generateMetadataStorageFilename", () => {
     it("generates storage name for metadata", () => {
       const itemId = "8f7ec78195d0479784036387d522e29f";
@@ -1194,7 +967,6 @@ describe("Module `resourceHelpers`: common functions involving the management of
       expect(actual).toEqual(expected);
     });
   });
-  */
 
   describe("generateSourceMetadataUrl", () => {
     it("item", () => {

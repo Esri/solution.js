@@ -14,27 +14,24 @@
  * limitations under the License.
  */
 
+/**
+ * Provides functions for sending resources to AGO.
+ */
+
 import {
   EFileType,
   IAssociatedFileCopyResults,
   IAssociatedFileInfo,
-  IFileMimeTyped,
-  IItemUpdate,
   IZipCopyResults,
   IZipInfo,
   UserSession
 } from "../interfaces";
-import {
-  IItemResourceOptions,
-  addItemResource,
-  updateItem
-} from "@esri/arcgis-rest-portal";
-import { blobToFile } from "../generalHelpers";
 import { chunkArray } from "@esri/hub-common";
-import { getBlob } from "./get-blob";
-import { getBlobAsFile } from "../restHelpersGet";
-import { new_File } from "../polyfills";
-import { updateItem as helpersUpdateItem } from "../restHelpers";
+import { copyDataIntoItem } from "./copyDataIntoItem";
+import { copyMetadataIntoItem } from "./copyMetadataIntoItem";
+import { copyResourceIntoZip } from "./copyResourceIntoZip";
+import { copyZipIntoItem } from "./copyZipIntoItem";
+import { createCopyResults } from "./createCopyResults";
 import JSZip from "jszip";
 
 // ------------------------------------------------------------------------------------------------------------------ //
@@ -100,7 +97,9 @@ export function copyAssociatedFiles(
 
       // Now add in the Resources
       resourceFileInfos = fileInfos.filter(
-        fileInfo => fileInfo.type === EFileType.Resource
+        fileInfo =>
+          fileInfo.type === EFileType.Info ||
+          fileInfo.type === EFileType.Resource
       );
     }
 
@@ -150,7 +149,9 @@ export function copyAssociatedFiles(
               )
           );
 
-          // Filter out empty zips
+          // Filter out empty zips, which can happen when none of the files in the chunk going into a zip
+          // can be fetched; e.g., copyBasedOnFileType=false, the only file is metadata.xml, and the
+          // source item doesn't have metadata
           zipInfos = zipInfos.filter(
             (zipInfo: IZipInfo) => Object.keys(zipInfo.zip.files).length > 0
           );
@@ -195,253 +196,4 @@ export function copyAssociatedFiles(
       resolve([]);
     }
   });
-}
-
-// ------------------------------------------------------------------------------------------------------------------ //
-
-/**
- * Adds metadata to an AGO item.
- *
- * @param blob Blob containing metadata
- * @param itemId Item to receive metadata
- * @param authentication Credentials for the request
- * @return Promise resolving to JSON containing success boolean
- */
-export function addMetadataFromBlob(
-  blob: Blob,
-  itemId: string,
-  authentication: UserSession
-): Promise<any> {
-  const updateOptions: any = {
-    item: {
-      id: itemId
-    },
-    params: {
-      // Pass metadata in via params because item property is serialized, which discards a blob
-      metadata: blob
-    },
-    authentication: authentication
-  };
-  return updateItem(updateOptions);
-}
-
-/**
- * Creates a file with a specified mime type.
- *
- * @param fileDescription Structure containing a file and the desired mime type
- * @return Created file
- */
-export function _createMimeTypedFile(fileDescription: IFileMimeTyped): File {
-  return new_File([fileDescription.blob], fileDescription.filename, {
-    type: fileDescription.mimeType
-  });
-}
-
-/**
- * Copies data into an AGO item.
- *
- * @param fileInfo Information about the source and destination of the file such as its URL, folder, filename
- * @param sourceAuthentication Credentials for the request to the source
- * @param destinationItemId Id of item to receive copy of resource/metadata/thumbnail
- * @param destinationAuthentication Credentials for the request to the storage
- * @return A promise which resolves to the result of the copy
- */
-export function copyDataIntoItem(
-  fileInfo: IAssociatedFileInfo,
-  sourceAuthentication: UserSession,
-  destinationItemId: string,
-  destinationAuthentication: UserSession
-): Promise<IAssociatedFileCopyResults> {
-  return new Promise<IAssociatedFileCopyResults>(resolve => {
-    getBlob(fileInfo.url, sourceAuthentication).then(
-      blob => {
-        const update: IItemUpdate = {
-          id: destinationItemId,
-          data: _createMimeTypedFile({
-            blob: blob,
-            filename: fileInfo.filename,
-            mimeType: fileInfo.mimeType || blob.type
-          })
-        };
-
-        helpersUpdateItem(
-          update,
-          destinationAuthentication,
-          fileInfo.folder
-        ).then(
-          () =>
-            resolve(
-              createCopyResults(
-                fileInfo,
-                true,
-                true
-              ) as IAssociatedFileCopyResults
-            ),
-          () =>
-            resolve(
-              createCopyResults(
-                fileInfo,
-                true,
-                false
-              ) as IAssociatedFileCopyResults
-            ) // unable to add resource
-        );
-      },
-      () =>
-        resolve(
-          createCopyResults(fileInfo, false) as IAssociatedFileCopyResults
-        ) // unable to get resource
-    );
-  });
-}
-
-/**
- * Copies metadata into an AGO item.
- *
- * @param fileInfo Information about the source and destination of the file such as its URL, folder, filename
- * @param sourceAuthentication Credentials for the request to the source
- * @param destinationItemId Id of item to receive copy of resource/metadata/thumbnail
- * @param destinationAuthentication Credentials for the request to the storage
- * @return A promise which resolves to the result of the copy
- */
-export function copyMetadataIntoItem(
-  fileInfo: IAssociatedFileInfo,
-  sourceAuthentication: UserSession,
-  destinationItemId: string,
-  destinationAuthentication: UserSession
-): Promise<IAssociatedFileCopyResults> {
-  return new Promise<IAssociatedFileCopyResults>(resolve => {
-    getBlob(fileInfo.url, sourceAuthentication).then(
-      blob => {
-        if (blob.type !== "text/xml" && blob.type !== "application/xml") {
-          resolve(
-            createCopyResults(fileInfo, false) as IAssociatedFileCopyResults
-          ); // unable to get resource
-          return;
-        }
-        addMetadataFromBlob(
-          blob,
-          destinationItemId,
-          destinationAuthentication
-        ).then(
-          () =>
-            resolve(
-              createCopyResults(
-                fileInfo,
-                true,
-                true
-              ) as IAssociatedFileCopyResults
-            ),
-          () =>
-            resolve(
-              createCopyResults(
-                fileInfo,
-                true,
-                false
-              ) as IAssociatedFileCopyResults
-            ) // unable to add resource
-        );
-      },
-      () =>
-        resolve(
-          createCopyResults(fileInfo, false) as IAssociatedFileCopyResults
-        ) // unable to get resource
-    );
-  });
-}
-
-/**
- * Copies a resource into a zipfile.
- *
- * @param fileInfo Information about the source and destination of the file such as its URL, folder, filename
- * @param sourceAuthentication Credentials for the request to the source
- * @param zipInfo Information about a zipfile such as its name and its zip object
- * @return A promise which resolves to the result of the copy
- */
-export function copyResourceIntoZip(
-  fileInfo: IAssociatedFileInfo,
-  sourceAuthentication: UserSession,
-  zipInfo: IZipInfo
-): Promise<IAssociatedFileCopyResults> {
-  return new Promise<IAssociatedFileCopyResults>(resolve => {
-    getBlobAsFile(fileInfo.url, fileInfo.filename, sourceAuthentication).then(
-      (file: any) => {
-        // And add it to the zip
-        if (fileInfo.folder) {
-          zipInfo.zip
-            .folder(fileInfo.folder)
-            .file(fileInfo.filename, file, { binary: true });
-        } else {
-          zipInfo.zip.file(fileInfo.filename, file, { binary: true });
-        }
-        zipInfo.filelist.push(fileInfo);
-        resolve(
-          createCopyResults(fileInfo, true) as IAssociatedFileCopyResults
-        );
-      },
-      () =>
-        resolve(
-          createCopyResults(fileInfo, false) as IAssociatedFileCopyResults
-        ) // unable to get resource
-    );
-  });
-}
-
-/**
- * Copies a zipfile into an AGO item.
- *
- * @param zipInfo Information about a zipfile such as its name and its zip object
- * @param destinationItemId Id of item to receive copy of resource/metadata/thumbnail
- * @param destinationAuthentication Credentials for the request to the storage
- * @return A promise which resolves to the result of the copy
- */
-export function copyZipIntoItem(
-  zipInfo: IZipInfo,
-  destinationItemId: string,
-  destinationAuthentication: UserSession
-): Promise<IZipCopyResults> {
-  return new Promise<IZipCopyResults>(resolve => {
-    zipInfo.zip
-      .generateAsync({ type: "blob" })
-      .then((content: Blob) => {
-        return blobToFile(content, zipInfo.filename, "application/zip");
-      })
-      .then((zipfile: File) => {
-        const addResourceOptions: IItemResourceOptions = {
-          id: destinationItemId,
-          resource: zipfile,
-          authentication: destinationAuthentication,
-          params: {
-            archive: true
-          }
-        };
-        return addItemResource(addResourceOptions);
-      })
-      .then(
-        () =>
-          resolve(createCopyResults(zipInfo, true, true) as IZipCopyResults),
-        () =>
-          resolve(createCopyResults(zipInfo, true, false) as IZipCopyResults) // unable to add resource
-      );
-  });
-}
-
-/**
- * Generates IAssociatedFileCopyResults object.
- *
- * @param fileInfo Info about item that was to be copied
- * @param fetchedFromSource Status of fetching item from source
- * @param copiedToDestination Status of copying item to destination
- * @return IAssociatedFileCopyResults object
- */
-export function createCopyResults(
-  fileInfo: IAssociatedFileInfo | IZipInfo,
-  fetchedFromSource: boolean,
-  copiedToDestination?: boolean
-): IAssociatedFileCopyResults | IZipCopyResults {
-  return {
-    ...fileInfo,
-    fetchedFromSource,
-    copiedToDestination
-  };
 }

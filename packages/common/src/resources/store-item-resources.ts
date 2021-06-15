@@ -45,7 +45,7 @@ export function storeItemResources(
         .map((r: any) => r.resource)
         .filter((res: any) => {
           let result = true;
-          // StoryMaps has a set of resoruces that must be interpolated and can not be
+          // StoryMaps has a set of resources that must be interpolated and can not be
           // directly copied, so they must be filtered out. Sub-optimal as it spreads
           // type specific logic around the app, but until we refactor how resources
           // are handled, this is necessary
@@ -63,6 +63,7 @@ export function storeItemResources(
       const resourceItemFilePaths: ISourceFileCopyPath[] = generateSourceFilePaths(
         authentication.portal,
         itemTemplate.itemId,
+        itemTemplate.item.thumbnail,
         itemResources,
         itemTemplate.type === "Group",
         storageVersion

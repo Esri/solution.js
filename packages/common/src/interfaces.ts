@@ -71,6 +71,14 @@ export enum EFileType {
   Thumbnail
 }
 
+export enum SFileType {
+  "Data",
+  "Info",
+  "Metadata",
+  "Resource",
+  "Thumbnail"
+}
+
 /**
  * Flags for reporting the status of creating or deploying an item.
  */

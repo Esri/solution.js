@@ -14,11 +14,9 @@
  * limitations under the License.
  */
 
-import * as copyResourceModule from "../../src/resources/copy-resource";
 import * as fetchMock from "fetch-mock";
 import * as utils from "../mocks/utils";
 import * as interfaces from "../../src/interfaces";
-import * as mockItems from "../mocks/agolItems";
 import { getBlob } from "../../src/resources/get-blob";
 
 let MOCK_USER_SESSION: interfaces.UserSession;

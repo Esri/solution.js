@@ -156,7 +156,7 @@ function showBlob(blob: Blob): Promise<string> {
 
     // Make sure that a JSON file has the right MIME type; forms have a JSON file with an unsupported extension
     if (filename.endsWith(".json")) {
-      blob = common.convertResourceToFile({
+      blob = common.createMimeTypedFile({
         blob: file,
         filename: filename,
         mimeType: "application/json"

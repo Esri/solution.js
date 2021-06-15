@@ -47,7 +47,6 @@
  *   5. undo the unique folder and filename into the original folder and filename
  */
 
-import { checkUrlPathTermination } from "./generalHelpers";
 import {
   EFileType,
   IAssociatedFileCopyResults,
@@ -64,38 +63,13 @@ import {
   updateItem,
   updateItemResource
 } from "@esri/arcgis-rest-portal";
+import { appendQueryParam, checkUrlPathTermination } from "./generalHelpers";
 import { convertItemResourceToStorageResource } from "./resources/convert-item-resource-to-storage-resource";
 import { convertStorageResourceToItemResource } from "./resources/convert-storage-resource-to-item-resource";
 import { getThumbnailFile } from "./restHelpersGet";
 import { copyAssociatedFiles } from "./resources/copyAssociatedFiles";
 
 // ------------------------------------------------------------------------------------------------------------------ //
-
-/**
- * Adds metadata to an AGO item.
- *
- * @param blob Blob containing metadata
- * @param itemId Item to receive metadata
- * @param authentication Credentials for the request
- * @return Promise resolving to JSON containing success boolean
- */
-export function addMetadataFromBlob(
-  blob: Blob,
-  itemId: string,
-  authentication: UserSession
-): Promise<any> {
-  const updateOptions: any = {
-    item: {
-      id: itemId
-    },
-    params: {
-      // Pass metadata in via params because item property is serialized, which discards a blob
-      metadata: blob
-    },
-    authentication: authentication
-  };
-  return updateItem(updateOptions);
-}
 
 export function addThumbnailFromBlob(
   blob: any,
@@ -132,12 +106,6 @@ export function convertBlobToSupportableResource(
     filename: originalFilename,
     mimeType: blob.type
   };
-}
-
-export function convertResourceToFile(resource: IFileMimeTyped): File {
-  return new_File([resource.blob], resource.filename, {
-    type: resource.mimeType
-  });
 }
 
 /**
@@ -197,14 +165,34 @@ export function copyFilesFromStorageItem(
       destinationAuthentication,
       true
     ).then((results: IAssociatedFileCopyResults[]) => {
-      resolve(true);
+      const allOK: boolean = results
+        // Filter out metadata
+        .filter(
+          (result: IAssociatedFileCopyResults) =>
+            result.filename !== "metadata.xml"
+        )
+        // Extract success
+        .map(
+          (result: IAssociatedFileCopyResults) =>
+            result.fetchedFromSource && result.copiedToDestination
+        )
+        // Boil it down to a single result
+        .reduce(
+          (success: boolean, currentValue: boolean) => success && currentValue,
+          true
+        );
+      if (allOK) {
+        resolve(true);
+      } else {
+        reject();
+      }
     });
   });
 }
 
 /**
  * Copies the files described by a list of full URLs and storage folder/filename combinations for storing
- * the resources and metadata of an item or group to a storage item.
+ * the resources, metadata, and thumbnail of an item or group to a storage item.
  *
  * @param sourceAuthentication Credentials for the request to the source
  * @param filePaths List of item files' URLs and folder/filenames for storing the files
@@ -229,7 +217,7 @@ export function copyFilesToStorageItem(
     ).then((results: IAssociatedFileCopyResults[]) => {
       resolve(
         results
-          //??? // Filter out failures
+          // Filter out failures
           .filter(
             (result: IAssociatedFileCopyResults) =>
               result.fetchedFromSource && result.copiedToDestination
@@ -264,11 +252,12 @@ export function generateMetadataStorageFilename(
 }
 
 /**
- * Generates a list of full URLs and storage folder/filename combinations for storing the resources and metadata
- * of an item.
+ * Generates a list of full URLs and storage folder/filename combinations for storing the resources, metadata,
+ * and thumbnail of an item.
  *
  * @param portalSharingUrl Server/sharing
  * @param itemId Id of item
+ * @param thumbnailUrlPart Partial path to the thumbnail held in an item's JSON
  * @param resourceFilenames List of resource filenames for an item, e.g., ["file1", "myFolder/file2"]
  * @param isGroup Boolean to indicate if the files are associated with a group or item
  * @param storageVersion Version of the Solution template
@@ -277,6 +266,7 @@ export function generateMetadataStorageFilename(
 export function generateSourceFilePaths(
   portalSharingUrl: string,
   itemId: string,
+  thumbnailUrlPart: string,
   resourceFilenames: string[],
   isGroup: boolean = false,
   storageVersion = 0
@@ -300,6 +290,23 @@ export function generateSourceFilePaths(
     url: generateSourceMetadataUrl(portalSharingUrl, itemId, isGroup),
     ...generateMetadataStorageFilename(itemId)
   });
+
+  /* istanbul ignore else */
+  if (thumbnailUrlPart) {
+    const path = {
+      url: appendQueryParam(
+        generateSourceThumbnailUrl(
+          portalSharingUrl,
+          itemId,
+          thumbnailUrlPart,
+          isGroup
+        ),
+        "w=400"
+      ),
+      ...generateThumbnailStorageFilename(itemId, thumbnailUrlPart)
+    };
+    filePaths.push(path);
+  }
 
   return filePaths;
 }
@@ -372,8 +379,8 @@ export function generateSourceThumbnailUrl(
 }
 
 /**
- * Generates a list of full URLs and folder/filename combinations used to store the resources and metadata
- * of an item.
+ * Generates a list of full URLs and folder/filename combinations used to store the resources, metadata,
+ * and thumbnail of an item.
  *
  * @param portalSharingUrl Server/sharing
  * @param storageItemId Id of storage item
