@@ -58,6 +58,9 @@ export function convertItemToTemplate(
             itemTemplate.data.tables,
             results.urlHash
           );
+
+          // Exclude intialState
+          _excludeInitialState(itemTemplate.data);
         }
 
         resolve(itemTemplate);
@@ -98,6 +101,20 @@ export function _extractDependencies(
       });
     }
   });
+}
+
+/**
+ * Remove the initialState prop from webmaps saved from the new map viewer.
+ * This allows the map to use the item extent property that we templatize.
+ *
+ * Added for issue #662
+ *
+ * @param data the data for the web maps item template
+ * @return void
+ * @protected
+ */
+export function _excludeInitialState(data: any): void {
+  common.deleteProp(data, "initialState");
 }
 
 /**

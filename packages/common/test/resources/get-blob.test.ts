@@ -42,6 +42,10 @@ describe("getBlob", () => {
     const expectedServerInfo = SERVER_INFO;
     const expected = utils.getSampleImageAsBlob();
     fetchMock
+      .get(
+        "https://myorg.maps.arcgis.com/sharing/rest/portals/self?f=json&token=fake-token",
+        utils.getPortalsSelfResponse()
+      )
       .post(utils.PORTAL_SUBSET.restUrl + "/info", expectedServerInfo)
       .post(getUrl + "/rest/info", expectedServerInfo)
       .post(getUrl, expected, { sendAsJson: false });
@@ -58,6 +62,10 @@ describe("getBlob", () => {
     const getUrl = "https://myserver/images/thumbnail.png";
     const expectedServerInfo = SERVER_INFO;
     fetchMock
+      .get(
+        "https://myorg.maps.arcgis.com/sharing/rest/portals/self?f=json&token=fake-token",
+        utils.getPortalsSelfResponse()
+      )
       .post(utils.PORTAL_SUBSET.restUrl + "/info", expectedServerInfo)
       .post(getUrl + "/rest/info", expectedServerInfo)
       .post(getUrl, 503);

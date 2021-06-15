@@ -342,6 +342,10 @@ describe("Module `resourceHelpers`: common functions involving the management of
       const expectedUpdate = true;
 
       fetchMock
+        .get(
+          "https://myorg.maps.arcgis.com/sharing/rest/portals/self?f=json&token=fake-token",
+          utils.getPortalsSelfResponse()
+        )
         .post(utils.PORTAL_SUBSET.restUrl + "/info", expectedServerInfo)
         .post(serverInfoUrl, expectedServerInfo)
         .post(fetchUrl, expectedFetch, { sendAsJson: false })
@@ -385,6 +389,10 @@ describe("Module `resourceHelpers`: common functions involving the management of
       const expectedUpdate = true;
 
       fetchMock
+        .get(
+          "https://myorg.maps.arcgis.com/sharing/rest/portals/self?f=json&token=fake-token",
+          utils.getPortalsSelfResponse()
+        )
         .post(utils.PORTAL_SUBSET.restUrl + "/info", expectedServerInfo)
         .post(serverInfoUrl, expectedServerInfo)
         .post(fetchUrl, expectedFetch, { sendAsJson: false })
@@ -429,6 +437,10 @@ describe("Module `resourceHelpers`: common functions involving the management of
       const expectedUpdate = true;
 
       fetchMock
+        .get(
+          "https://myorg.maps.arcgis.com/sharing/rest/portals/self?f=json&token=fake-token",
+          utils.getPortalsSelfResponse()
+        )
         .post(utils.PORTAL_SUBSET.restUrl + "/info", expectedServerInfo)
         .post(serverInfoUrl, expectedServerInfo)
         .post(fetchUrl, expectedFetch, { sendAsJson: false })
@@ -469,6 +481,10 @@ describe("Module `resourceHelpers`: common functions involving the management of
       const expectedUpdate = true;
 
       fetchMock
+        .get(
+          "https://myorg.maps.arcgis.com/sharing/rest/portals/self?f=json&token=fake-token",
+          utils.getPortalsSelfResponse()
+        )
         .post("https://www.arcgis.com/sharing/rest/info", expectedServerInfo)
         .post(serverInfoUrl, expectedServerInfo)
         .post(fetchUrl, expectedFetch, { sendAsJson: false })
@@ -524,6 +540,10 @@ describe("Module `resourceHelpers`: common functions involving the management of
       const expectedUpdate = true;
 
       fetchMock
+        .get(
+          "https://myorg.maps.arcgis.com/sharing/rest/portals/self?f=json&token=fake-token",
+          utils.getPortalsSelfResponse()
+        )
         .post("https://www.arcgis.com/sharing/rest/info", expectedServerInfo)
         .post(serverInfoUrl, expectedServerInfo)
         .post(fetchUrl, expectedFetch, { sendAsJson: false })
@@ -613,6 +633,10 @@ describe("Module `resourceHelpers`: common functions involving the management of
       const expectedUpdate: string[] = ["storageFolder/storageFilename.png"];
 
       fetchMock
+        .get(
+          "https://myorg.maps.arcgis.com/sharing/rest/portals/self?f=json&token=fake-token",
+          utils.getPortalsSelfResponse()
+        )
         .post("https://www.arcgis.com/sharing/rest/info", expectedServerInfo)
         .post(serverInfoUrl, expectedServerInfo)
         .post(fetchUrl, expectedFetch)
