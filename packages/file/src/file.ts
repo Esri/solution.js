@@ -71,7 +71,7 @@ export function convertItemToTemplate(
       const [itemDataResponse] = responses;
 
       if (itemDataResponse) {
-        const resource: common.IFileMimeType = common.convertBlobToSupportableResource(
+        const resource: common.IFileMimeTyped = common.convertBlobToSupportableResource(
           itemDataResponse,
           itemTemplate.item.name
         );

@@ -28,6 +28,13 @@ export function get200Failure(): any {
   };
 }
 
+export function get200Success(itemId = "itm1234567890"): any {
+  return {
+    success: true,
+    id: itemId
+  };
+}
+
 export function get400Failure(): any {
   return {
     error: {

@@ -808,7 +808,6 @@ describe("Module `deleteSolution`: functions for deleting a deployed Solution it
             );
             expect(removeItemSpy.calls.argsFor(1)[0]).toEqual(firstItemId);
             expect(removeItemSpy.calls.argsFor(1)[1]).toEqual(
-              //???
               MOCK_USER_SESSION
             );
 

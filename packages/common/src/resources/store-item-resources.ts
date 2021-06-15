@@ -37,15 +37,15 @@ export function storeItemResources(
   storageVersion = 0
 ): Promise<string[]> {
   // get the resources for the item
-  return getItemResources(itemTemplate.itemId, authentication)
-    .then(resourceResponse => {
+  return getItemResources(itemTemplate.itemId, authentication).then(
+    resourceResponse => {
       // map out the resource names and filter for things we
       // don't want transferred at this time
       const itemResources = resourceResponse.resources
         .map((r: any) => r.resource)
         .filter((res: any) => {
           let result = true;
-          // StoryMaps has a set of resoruces that must be interpolated and can not be
+          // StoryMaps has a set of resources that must be interpolated and can not be
           // directly copied, so they must be filtered out. Sub-optimal as it spreads
           // type specific logic around the app, but until we refactor how resources
           // are handled, this is necessary
@@ -75,13 +75,6 @@ export function storeItemResources(
         solutionItemId,
         authentication
       );
-    })
-    .then(savedResourceFilenames => {
-      // ensure not emty entries in the array
-      // TODO: fix this issue in copyFilesToStorageItem when that is hoisted
-      const resources = (savedResourceFilenames as any[]).filter(
-        item => !!item
-      );
-      return resources;
-    });
+    }
+  );
 }

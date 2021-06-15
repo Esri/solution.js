@@ -218,7 +218,7 @@ function showBlob(blob: Blob): Promise<string> {
 
     // Make sure that a JSON file has the right MIME type
     if (filename.endsWith(".json")) {
-      blob = common.convertResourceToFile({
+      blob = common.createMimeTypedFile({
         blob: file,
         filename: filename,
         mimeType: "application/json"

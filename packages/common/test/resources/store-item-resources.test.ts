@@ -70,7 +70,7 @@ describe("storeItemResources :: ", () => {
         response => {
           expect(Array.isArray(response)).toBe(true, "should return an array");
           expect(response.length).toBe(
-            2,
+            3, // metadata.xml is added automatically
             "filter out empty responses from copyFilesToStorageItem"
           );
           expect(response[0]).toBe(
@@ -91,9 +91,9 @@ describe("storeItemResources :: ", () => {
     });
 
     it("filters out storymap resources", () => {
-      // StoryMaps has a set of resoruces that must be interpolated and can not be
-      // directly copied, so they must be filtered out. Sub-optimal as it spreads
-      // type specific logic around the app, but until we refactor how resources
+      // StoryMaps has a pair of resources (oembed.json, oembed.xml draft_*.json) that must be
+      // interpolated and can not be directly copied, so they must be filtered out. Sub-optimal
+      // as it spreads type specific logic around the app, but until we refactor how resources
       // are handled, this is necessary
       const getResSpy = spyOn(
         restHelpersModule,
@@ -144,8 +144,8 @@ describe("storeItemResources :: ", () => {
         response => {
           expect(Array.isArray(response)).toBe(true, "should return an array");
           expect(response.length).toBe(
-            1,
-            "filter out empty responses from copyFilesToStorageItem"
+            2, // metadata.xml is added automatically
+            "filter out unwanted storymap files"
           );
           expect(response[0]).toBe(
             "bc3/some-image.jpeg",
@@ -165,10 +165,9 @@ describe("storeItemResources :: ", () => {
     });
 
     it("filters out web-experience resources", () => {
-      // StoryMaps has a set of resoruces that must be interpolated and can not be
-      // directly copied, so they must be filtered out. Sub-optimal as it spreads
-      // type specific logic around the app, but until we refactor how resources
-      // are handled, this is necessary
+      // Web Experience has one or more draft resources that we filter out.
+      // Sub-optimal as it spreads  type specific logic around the app, but until
+      // we refactor how resources are handled, this is necessary
       const getResSpy = spyOn(
         restHelpersModule,
         "getItemResources"
@@ -208,7 +207,7 @@ describe("storeItemResources :: ", () => {
       const copyFilesSpy = spyOn(
         resourceHelpersModule,
         "copyFilesToStorageItem"
-      ).and.resolveTo(["bc3/some-image.jpeg", ""]);
+      ).and.resolveTo(["bc3/some-image.jpeg"]);
 
       const itemTemplate: interfaces.IItemTemplate = templates.getItemTemplateSkeleton();
       itemTemplate.itemId = "bc3";
@@ -291,8 +290,8 @@ describe("storeItemResources :: ", () => {
         );
 
       const expected: string[] = [
-        "qck1234567890/qc.project.json",
-        "qck1234567890_info_thumbnail/ago_downloaded.png"
+        "qck1234567890_info_thumbnail/ago_downloaded.png",
+        "qck1234567890/qc.project.json"
       ];
 
       return storeItemResources(
@@ -615,8 +614,8 @@ describe("storeItemResources :: ", () => {
         );
 
       const expected: string[] = [
-        "qck1234567890/qc.project.json",
-        "qck1234567890_info_thumbnail/ago_downloaded.png"
+        "qck1234567890_info_thumbnail/ago_downloaded.png",
+        "qck1234567890/qc.project.json"
       ];
 
       return storeItemResources(

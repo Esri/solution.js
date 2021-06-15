@@ -959,15 +959,19 @@ export function _createItemFromTemplateWhenReady(
             );
           }
 
-          // Copy resources, metadata, form
-          return common.copyFilesFromStorageItem(
-            storageAuthentication,
-            resourceFilePaths,
-            templateDictionary.folderId,
-            createResponse.id,
-            destinationAuthentication,
-            createResponse.item
-          );
+          if (resourceFilePaths.length > 0) {
+            // Copy resources, metadata, form
+            return common.copyFilesFromStorageItem(
+              storageAuthentication,
+              resourceFilePaths,
+              templateDictionary.folderId,
+              createResponse.id,
+              destinationAuthentication,
+              createResponse.item
+            );
+          } else {
+            return Promise.resolve(null);
+          }
         })
         .then(() => {
           resolve(createResponse);
