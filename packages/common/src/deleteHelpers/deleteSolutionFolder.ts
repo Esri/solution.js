@@ -32,7 +32,7 @@ import * as portal from "@esri/arcgis-rest-portal";
  * @return Promise that will resolve if deletion was successful and fail if any part of it failed;
  * if the folder has a non-Solution item, it will not be deleted, but the function will return true
  */
-export function _deleteSolutionFolder(
+export function deleteSolutionFolder(
   solutionIds: string[],
   folderId: string,
   authentication: UserSession

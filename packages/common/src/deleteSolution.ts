@@ -28,9 +28,9 @@ import {
   IStatusResponse,
   UserSession
 } from "./interfaces";
-import * as _deleteSolutionFolder from "./deleteHelpers/_deleteSolutionFolder";
-import * as _removeItems from "./deleteHelpers/_removeItems";
-import * as _reportProgress from "./deleteHelpers/_reportProgress";
+import * as deleteSolutionFolder from "./deleteHelpers/deleteSolutionFolder";
+import * as removeItems from "./deleteHelpers/removeItems";
+import * as reportProgress from "./deleteHelpers/reportProgress";
 import * as getDeletableSolutionInfo from "./getDeletableSolutionInfo";
 import * as restHelpers from "./restHelpers";
 
@@ -83,7 +83,7 @@ export function deleteSolution(
             }
           ]);
         } else {
-          // Save a copy of the Solution item ids for the _deleteSolutionFolder call because _removeItems
+          // Save a copy of the Solution item ids for the deleteSolutionFolder call because removeItems
           // destroys the solutionSummary.items list
           solutionIds = solutionSummary.items
             .map(item => item.id)
@@ -95,12 +95,12 @@ export function deleteSolution(
 
           // Delete the items
           progressPercentStep = 100 / (solutionSummary.items.length + 2); // one extra for starting plus one extra for solution itself
-          _reportProgress._reportProgress(
+          reportProgress.reportProgress(
             (percentDone += progressPercentStep),
             deleteOptions
           ); // let the caller know that we've started
 
-          return _removeItems._removeItems(
+          return removeItems.removeItems(
             solutionSummary,
             hubSiteItemIds,
             authentication,
@@ -123,14 +123,14 @@ export function deleteSolution(
       .then((solutionItemDeleteStatus: IStatusResponse) => {
         // If all deletes succeeded, see if we can delete the folder that contained them
         if (solutionItemDeleteStatus.success) {
-          _reportProgress._reportProgress(
+          reportProgress.reportProgress(
             99,
             deleteOptions,
             solutionItemId,
             EItemProgressStatus.Finished
           );
 
-          return _deleteSolutionFolder._deleteSolutionFolder(
+          return deleteSolutionFolder.deleteSolutionFolder(
             solutionIds,
             solutionSummary.folder,
             authentication

@@ -29,9 +29,7 @@ import * as dependencies from "../dependencies";
  * @return The ids of the source templates in build order, which is not necessarily the same
  * as the build order used to create the template Solution
  */
-export function _reconstructBuildOrderIds(
-  templates: IItemTemplate[]
-): string[] {
+export function reconstructBuildOrderIds(templates: IItemTemplate[]): string[] {
   const buildOrdering: IBuildOrdering = dependencies.topologicallySortItems(
     templates
   );

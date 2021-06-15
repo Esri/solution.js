@@ -26,7 +26,7 @@ import {
   ISolutionPrecis,
   UserSession
 } from "./interfaces";
-import * as _reconstructBuildOrderIds from "./deleteHelpers/_reconstructBuildOrderIds";
+import * as reconstructBuildOrderIds from "./deleteHelpers/reconstructBuildOrderIds";
 import * as portal from "@esri/arcgis-rest-portal";
 import * as restHelpersGet from "./restHelpersGet";
 import * as templatization from "./templatization";
@@ -100,7 +100,7 @@ export function getSolutionSummary(
       let buildOrderIds = [] as string[];
       if (deployedSolutionVersion < 1) {
         // Version 0
-        buildOrderIds = _reconstructBuildOrderIds._reconstructBuildOrderIds(
+        buildOrderIds = reconstructBuildOrderIds.reconstructBuildOrderIds(
           templates
         );
       } else {

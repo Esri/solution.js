@@ -30,10 +30,10 @@ import * as restHelpersGet from "../src/restHelpersGet";
 import * as utils from "./mocks/utils";
 import * as getDeletableSolutionInfo from "../src/getDeletableSolutionInfo";
 import * as getSolutionSummary from "../src/getSolutionSummary";
-import * as _deleteSolutionFolder from "../src/deleteHelpers/_deleteSolutionFolder";
-import * as _removeItems from "../src/deleteHelpers/_removeItems";
-import * as _reportProgress from "../src/deleteHelpers/_reportProgress";
-import * as _reconstructBuildOrderIds from "../src/deleteHelpers/_reconstructBuildOrderIds";
+import * as deleteSolutionFolder from "../src/deleteHelpers/deleteSolutionFolder";
+import * as removeItems from "../src/deleteHelpers/removeItems";
+import * as reportProgress from "../src/deleteHelpers/reportProgress";
+import * as reconstructBuildOrderIds from "../src/deleteHelpers/reconstructBuildOrderIds";
 
 let MOCK_USER_SESSION: interfaces.UserSession;
 
@@ -72,10 +72,7 @@ describe("Module `deleteSolution`: functions for deleting a deployed Solution it
           mockItems.getAGOLItemPrecis("Web Mapping Application")
         ])
       );
-      const _removeItemsSpy = spyOn(
-        _removeItems,
-        "_removeItems"
-      ).and.resolveTo([
+      const _removeItemsSpy = spyOn(removeItems, "removeItems").and.resolveTo([
         mockItems.getSolutionPrecis([
           mockItems.getAGOLItemPrecis("Web Map"),
           mockItems.getAGOLItemPrecis("Web Mapping Application")
@@ -86,10 +83,10 @@ describe("Module `deleteSolution`: functions for deleting a deployed Solution it
         success: true,
         itemId: "sol1234567890"
       });
-      const _reportProgressSpy = spyOn(_reportProgress, "_reportProgress");
+      const _reportProgressSpy = spyOn(reportProgress, "reportProgress");
       const _deleteSolutionFolderSpy = spyOn(
-        _deleteSolutionFolder,
-        "_deleteSolutionFolder"
+        deleteSolutionFolder,
+        "deleteSolutionFolder"
       ).and.resolveTo(true);
 
       deleteSolution
@@ -115,10 +112,10 @@ describe("Module `deleteSolution`: functions for deleting a deployed Solution it
         success: true,
         itemId: "sol1234567890"
       });
-      const _reportProgressSpy = spyOn(_reportProgress, "_reportProgress");
+      const _reportProgressSpy = spyOn(reportProgress, "reportProgress");
       const _deleteSolutionFolderSpy = spyOn(
-        _deleteSolutionFolder,
-        "_deleteSolutionFolder"
+        deleteSolutionFolder,
+        "deleteSolutionFolder"
       ).and.resolveTo(true);
 
       deleteSolution
@@ -142,10 +139,7 @@ describe("Module `deleteSolution`: functions for deleting a deployed Solution it
           mockItems.getAGOLItemPrecis("Hub Site Application")
         ])
       );
-      const _removeItemsSpy = spyOn(
-        _removeItems,
-        "_removeItems"
-      ).and.resolveTo([
+      const _removeItemsSpy = spyOn(removeItems, "removeItems").and.resolveTo([
         mockItems.getSolutionPrecis([
           mockItems.getAGOLItemPrecis("Web Map"),
           mockItems.getAGOLItemPrecis("Hub Site Application")
@@ -166,10 +160,10 @@ describe("Module `deleteSolution`: functions for deleting a deployed Solution it
           isPortal: false
         })
       );
-      const _reportProgressSpy = spyOn(_reportProgress, "_reportProgress");
+      const _reportProgressSpy = spyOn(reportProgress, "reportProgress");
       const _deleteSolutionFolderSpy = spyOn(
-        _deleteSolutionFolder,
-        "_deleteSolutionFolder"
+        deleteSolutionFolder,
+        "deleteSolutionFolder"
       ).and.resolveTo(true);
 
       deleteSolution
@@ -196,10 +190,7 @@ describe("Module `deleteSolution`: functions for deleting a deployed Solution it
           mockItems.getAGOLItemPrecis("Web Mapping Application")
         ])
       );
-      const _removeItemsSpy = spyOn(
-        _removeItems,
-        "_removeItems"
-      ).and.resolveTo([
+      const _removeItemsSpy = spyOn(removeItems, "removeItems").and.resolveTo([
         mockItems.getSolutionPrecis([
           mockItems.getAGOLItemPrecis("Web Mapping Application")
         ]),
@@ -209,10 +200,10 @@ describe("Module `deleteSolution`: functions for deleting a deployed Solution it
         success: true,
         itemId: "sol1234567890"
       });
-      const _reportProgressSpy = spyOn(_reportProgress, "_reportProgress");
+      const _reportProgressSpy = spyOn(reportProgress, "reportProgress");
       const _deleteSolutionFolderSpy = spyOn(
-        _deleteSolutionFolder,
-        "_deleteSolutionFolder"
+        deleteSolutionFolder,
+        "deleteSolutionFolder"
       ).and.resolveTo(true);
 
       deleteSolution
@@ -240,10 +231,7 @@ describe("Module `deleteSolution`: functions for deleting a deployed Solution it
           mockItems.getAGOLItemPrecis("Web Mapping Application")
         ])
       );
-      const _removeItemsSpy = spyOn(
-        _removeItems,
-        "_removeItems"
-      ).and.resolveTo([
+      const _removeItemsSpy = spyOn(removeItems, "removeItems").and.resolveTo([
         mockItems.getSolutionPrecis([
           mockItems.getAGOLItemPrecis("Web Map"),
           mockItems.getAGOLItemPrecis("Web Mapping Application")
@@ -254,7 +242,7 @@ describe("Module `deleteSolution`: functions for deleting a deployed Solution it
         success: false,
         itemId: "sol1234567890"
       });
-      const _reportProgressSpy = spyOn(_reportProgress, "_reportProgress");
+      const _reportProgressSpy = spyOn(reportProgress, "reportProgress");
 
       deleteSolution
         .deleteSolution("sol1234567890", MOCK_USER_SESSION)
@@ -280,10 +268,7 @@ describe("Module `deleteSolution`: functions for deleting a deployed Solution it
           mockItems.getAGOLItemPrecis("Web Mapping Application")
         ])
       );
-      const _removeItemsSpy = spyOn(
-        _removeItems,
-        "_removeItems"
-      ).and.resolveTo([
+      const _removeItemsSpy = spyOn(removeItems, "removeItems").and.resolveTo([
         mockItems.getSolutionPrecis([
           mockItems.getAGOLItemPrecis("Web Map"),
           mockItems.getAGOLItemPrecis("Web Mapping Application")
@@ -294,10 +279,10 @@ describe("Module `deleteSolution`: functions for deleting a deployed Solution it
         success: true,
         itemId: "sol1234567890"
       });
-      const _reportProgressSpy = spyOn(_reportProgress, "_reportProgress");
+      const _reportProgressSpy = spyOn(reportProgress, "reportProgress");
       const _deleteSolutionFolderSpy = spyOn(
-        _deleteSolutionFolder,
-        "_deleteSolutionFolder"
+        deleteSolutionFolder,
+        "deleteSolutionFolder"
       ).and.resolveTo(false);
 
       deleteSolution
@@ -459,8 +444,8 @@ describe("Module `deleteSolution`: functions for deleting a deployed Solution it
         mockItems.getAGOLItem("Web Mapping Application")
       ]);
       const _reconstructBuildOrderIdsSpy = spyOn(
-        _reconstructBuildOrderIds,
-        "_reconstructBuildOrderIds"
+        reconstructBuildOrderIds,
+        "reconstructBuildOrderIds"
       ).and.callThrough();
 
       getSolutionSummary
@@ -496,8 +481,8 @@ describe("Module `deleteSolution`: functions for deleting a deployed Solution it
         mockItems.getAGOLItem("Web Mapping Application")
       ]);
       const _reconstructBuildOrderIdsSpy = spyOn(
-        _reconstructBuildOrderIds,
-        "_reconstructBuildOrderIds"
+        reconstructBuildOrderIds,
+        "reconstructBuildOrderIds"
       ).and.callThrough();
 
       getSolutionSummary
@@ -515,7 +500,7 @@ describe("Module `deleteSolution`: functions for deleting a deployed Solution it
     });
   });
 
-  describe("_deleteSolutionFolder", () => {
+  describe("deleteSolutionFolder", () => {
     it("empty folder", done => {
       const getUserSpy = spyOn(MOCK_USER_SESSION, "getUser").and.resolveTo({
         orgId: "orgABC"
@@ -528,8 +513,8 @@ describe("Module `deleteSolution`: functions for deleting a deployed Solution it
         success: true
       } as any);
 
-      _deleteSolutionFolder
-        ._deleteSolutionFolder([], "fld1234567890", MOCK_USER_SESSION)
+      deleteSolutionFolder
+        .deleteSolutionFolder([], "fld1234567890", MOCK_USER_SESSION)
         .then(result => {
           expect(result).toBeTruthy();
           expect(removeFolderSpy.calls.count()).toEqual(1);
@@ -553,8 +538,8 @@ describe("Module `deleteSolution`: functions for deleting a deployed Solution it
         success: true
       } as any);
 
-      _deleteSolutionFolder
-        ._deleteSolutionFolder(
+      deleteSolutionFolder
+        .deleteSolutionFolder(
           ["map1234567890"],
           "fld1234567890",
           MOCK_USER_SESSION
@@ -585,8 +570,8 @@ describe("Module `deleteSolution`: functions for deleting a deployed Solution it
         success: true
       } as any);
 
-      _deleteSolutionFolder
-        ._deleteSolutionFolder(
+      deleteSolutionFolder
+        .deleteSolutionFolder(
           ["map1234567890"],
           "fld1234567890",
           MOCK_USER_SESSION
@@ -614,8 +599,8 @@ describe("Module `deleteSolution`: functions for deleting a deployed Solution it
         success: false
       } as any);
 
-      _deleteSolutionFolder
-        ._deleteSolutionFolder(
+      deleteSolutionFolder
+        .deleteSolutionFolder(
           ["map1234567890"],
           "fld1234567890",
           MOCK_USER_SESSION
@@ -628,25 +613,25 @@ describe("Module `deleteSolution`: functions for deleting a deployed Solution it
     });
   });
 
-  describe("_reconstructBuildOrderIds", () => {
+  describe("reconstructBuildOrderIds", () => {
     it("handles an empty list", () => {
       const templates: interfaces.IItemTemplate[] = [];
-      const buildOrderIds = _reconstructBuildOrderIds._reconstructBuildOrderIds(
+      const buildOrderIds = reconstructBuildOrderIds.reconstructBuildOrderIds(
         templates
       );
       expect(buildOrderIds).toEqual([]);
     });
   });
 
-  describe("_removeItems", () => {
+  describe("removeItems", () => {
     it("handles an empty list of item ids with all items so far successful", done => {
       const solutionSummary: interfaces.ISolutionPrecis = mockItems.getSolutionPrecis();
       const hubSiteItemIds: string[] = [];
       const percentDone: number = 50.4;
       const progressPercentStep: number = 10.4;
 
-      _removeItems
-        ._removeItems(
+      removeItems
+        .removeItems(
           solutionSummary,
           hubSiteItemIds,
           MOCK_USER_SESSION,
@@ -688,8 +673,8 @@ describe("Module `deleteSolution`: functions for deleting a deployed Solution it
       utils.setMockDateTime(now);
       const consoleSpy = spyOn(console, "log");
 
-      _removeItems
-        ._removeItems(
+      removeItems
+        .removeItems(
           solutionSummary,
           hubSiteItemIds,
           MOCK_USER_SESSION,
@@ -772,8 +757,8 @@ describe("Module `deleteSolution`: functions for deleting a deployed Solution it
       utils.setMockDateTime(now);
       const consoleSpy = spyOn(console, "log");
 
-      _removeItems
-        ._removeItems(
+      removeItems
+        .removeItems(
           solutionSummary,
           hubSiteItemIds,
           MOCK_USER_SESSION,
@@ -873,8 +858,8 @@ describe("Module `deleteSolution`: functions for deleting a deployed Solution it
       utils.setMockDateTime(now);
       const consoleSpy = spyOn(console, "log");
 
-      _removeItems
-        ._removeItems(
+      removeItems
+        .removeItems(
           solutionSummary,
           hubSiteItemIds,
           MOCK_USER_SESSION,
@@ -967,8 +952,8 @@ describe("Module `deleteSolution`: functions for deleting a deployed Solution it
         Promise.resolve(utils.getSuccessResponse({ id: itemId }))
       );
 
-      _removeItems
-        ._removeItems(
+      removeItems
+        .removeItems(
           solutionSummary,
           hubSiteItemIds,
           MOCK_USER_SESSION,
@@ -1002,7 +987,7 @@ describe("Module `deleteSolution`: functions for deleting a deployed Solution it
     });
   });
 
-  describe("_reportProgress", () => {
+  describe("reportProgress", () => {
     it("uses progressCallback with just defaults", () => {
       const percentDone: number = 50.4;
       const deleteOptions: interfaces.IDeleteSolutionOptions = {
@@ -1014,7 +999,7 @@ describe("Module `deleteSolution`: functions for deleting a deployed Solution it
         }
       };
 
-      _reportProgress._reportProgress(percentDone, deleteOptions);
+      reportProgress.reportProgress(percentDone, deleteOptions);
     });
 
     it("uses progressCallback with item id, job id, and status", () => {
@@ -1031,7 +1016,7 @@ describe("Module `deleteSolution`: functions for deleting a deployed Solution it
         }
       };
 
-      _reportProgress._reportProgress(
+      reportProgress.reportProgress(
         percentDone,
         deleteOptions,
         deletedItemId,
@@ -1050,7 +1035,7 @@ describe("Module `deleteSolution`: functions for deleting a deployed Solution it
       utils.setMockDateTime(now);
       const consoleSpy = spyOn(console, "log");
 
-      _reportProgress._reportProgress(percentDone, deleteOptions);
+      reportProgress.reportProgress(percentDone, deleteOptions);
 
       expect(consoleSpy.calls.count()).toBe(1, "should call console.log once");
       expect(consoleSpy.calls.argsFor(0)[0]).toBe(now);
@@ -1076,7 +1061,7 @@ describe("Module `deleteSolution`: functions for deleting a deployed Solution it
       utils.setMockDateTime(now);
       const consoleSpy = spyOn(console, "log");
 
-      _reportProgress._reportProgress(
+      reportProgress.reportProgress(
         percentDone,
         deleteOptions,
         deletedItemId,
