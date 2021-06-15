@@ -19,6 +19,10 @@
  */
 
 import * as addMetadataFromBlob from "../../src/resources/addMetadataFromBlob";
+import * as copyDataIntoItem from "../../src/resources/copyDataIntoItem";
+import * as copyMetadataIntoItem from "../../src/resources/copyMetadataIntoItem";
+import * as copyResourceIntoZip from "../../src/resources/copyResourceIntoZip";
+import * as copyZipIntoItem from "../../src/resources/copyZipIntoItem";
 import * as getBlob from "../../src/resources/get-blob";
 import * as interfaces from "../../src/interfaces";
 import * as portal from "@esri/arcgis-rest-portal";
@@ -26,10 +30,6 @@ import * as resourceHelpers from "../../src/resourceHelpers";
 import * as restHelpers from "../../src/restHelpers";
 import * as restHelpersGet from "../../src/restHelpersGet";
 import { copyAssociatedFiles } from "../../src/resources/copyAssociatedFiles";
-import * as copyDataIntoItem from "../../src/resources/copyDataIntoItem";
-import * as copyMetadataIntoItem from "../../src/resources/copyMetadataIntoItem";
-import * as copyResourceIntoZip from "../../src/resources/copyResourceIntoZip";
-import * as copyZipIntoItem from "../../src/resources/copyZipIntoItem";
 import { createCopyResults } from "../../src/resources/createCopyResults";
 import JSZip from "jszip";
 
