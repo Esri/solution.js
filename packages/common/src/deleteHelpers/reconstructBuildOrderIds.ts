@@ -15,7 +15,7 @@
  */
 
 /**
- * @module deleteSolution
+ * @module reconstructBuildOrderIds
  */
 import { IBuildOrdering, IItemTemplate } from "../interfaces";
 import * as dependencies from "../dependencies";

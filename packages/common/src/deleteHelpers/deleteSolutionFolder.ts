@@ -15,7 +15,7 @@
  */
 
 /**
- * @module deleteSolution
+ * @module deleteSolutionFolder
  */
 
 import { UserSession } from "../interfaces";

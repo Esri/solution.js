@@ -15,7 +15,7 @@
  */
 
 /**
- * @module deleteSolution
+ * @module reportProgress
  */
 
 import {
