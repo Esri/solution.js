@@ -26,15 +26,15 @@ import { UserSession } from "../interfaces";
 /**
  * Deletes a set of empty groups if they're empty and belong to the user in the authentication.
  *
- * @param groupIds Ids of the groups to be deleted
+ * @param groups Ids of the groups to be deleted
  * @param authentication Credentials for the request
  * @return Promise that will resolve with the list of successfully deleted groups
  */
 export function deleteEmptyGroups(
-  groupIds: string[],
+  groups: string[],
   authentication: UserSession
 ): Promise<string[]> {
-  if (groupIds.length === 0) {
+  if (groups.length === 0) {
     return Promise.resolve([]);
   }
 
@@ -45,14 +45,14 @@ export function deleteEmptyGroups(
     .then(username => {
       // Attempt to delete each group
       return Promise.all(
-        groupIds.map(groupId =>
+        groups.map(groupId =>
           deleteGroupIfEmpty(groupId, username, authentication)
         )
       );
     })
     .then((responses: boolean[]) => {
       // Return just the group ids that succeeded
-      return groupIds.filter(
+      return groups.filter(
         (groupId: string, index: number) => responses[index]
       );
     });

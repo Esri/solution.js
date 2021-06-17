@@ -132,14 +132,14 @@ export function removeItems(
       title: solutionSummary.title,
       folder: solutionSummary.folder,
       items: [],
-      groupIds: []
+      groups: []
     };
     solutionFailureSummary = {
       id: solutionSummary.id,
       title: solutionSummary.title,
       folder: solutionSummary.folder,
       items: [],
-      groupIds: []
+      groups: []
     };
     return Promise.resolve([solutionDeletedSummary, solutionFailureSummary]);
   }

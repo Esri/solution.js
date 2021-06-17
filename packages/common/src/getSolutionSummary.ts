@@ -49,7 +49,7 @@ export function getSolutionSummary(
     title: "",
     folder: "",
     items: [],
-    groupIds: []
+    groups: []
   };
   let templates: IItemTemplate[] = [];
   let deployedSolutionVersion = DeployedSolutionFormatVersion;
@@ -117,9 +117,9 @@ export function getSolutionSummary(
           dependentGroups = dependentGroups.add(groupId);
         });
       });
-      solutionSummary.groupIds = [];
+      solutionSummary.groups = [];
       dependentGroups.forEach((value: string) =>
-        solutionSummary.groupIds.push(value)
+        solutionSummary.groups.push(value)
       );
 
       // Sort the related items into build order

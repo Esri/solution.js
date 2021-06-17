@@ -75,14 +75,14 @@ export function deleteSolution(
               title: solutionSummary.title,
               folder: solutionSummary.folder,
               items: [],
-              groupIds: []
+              groups: []
             },
             {
               id: solutionSummary.id,
               title: solutionSummary.title,
               folder: solutionSummary.folder,
               items: [],
-              groupIds: []
+              groups: []
             }
           ]);
         } else {
@@ -119,7 +119,7 @@ export function deleteSolution(
         return new Promise<ISolutionPrecis[]>(resolve => {
           // eslint-disable-next-line @typescript-eslint/no-floating-promises
           deleteEmptyGroups
-            .deleteEmptyGroups(solutionSummary.groupIds, authentication)
+            .deleteEmptyGroups(solutionSummary.groups, authentication)
             .then(() => {
               resolve(results);
             });
