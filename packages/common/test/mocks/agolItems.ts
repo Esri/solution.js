@@ -1041,12 +1041,12 @@ export function getAGOLItemResources(testCase?: string): any {
   return resources;
 }
 
-export function getAGOLGroup(id?: string): any {
+export function getAGOLGroup(id?: string, owner?: string): any {
   return {
     id: id || "grp1234567890",
     title: "An AGOL group",
     isInvitationOnly: true,
-    owner: "LocalGovTryItLive",
+    owner: owner || "LocalGovTryItLive",
     description: "Description of an AGOL group",
     snippet: "Snippet of an AGOL group",
     tags: ["JavaScript"],
@@ -1156,6 +1156,7 @@ export function getAGOLGroupContentsList(
     group.items.push(getAGOLItemWithId(type, group.total++));
     group.num++;
   }
+  group.total = group.num;
   return group;
 }
 

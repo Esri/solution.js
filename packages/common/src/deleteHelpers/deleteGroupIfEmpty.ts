@@ -58,8 +58,7 @@ export function deleteGroupIfEmpty(
         paging: {
           num: 1 // only need 1 item to show that group is not empty
         },
-        authentication,
-        portal: authentication.portal || "https://www.arcgis.com/sharing/rest"
+        authentication
       };
       return portal.getGroupContent(groupId, groupContentOptions);
     })
