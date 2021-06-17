@@ -266,13 +266,13 @@ export function getCompleteDeployedSolutionItem(): interfaces.ICompleteItem {
           itemId: "wma1234567890",
           type: "Web Mapping Application",
           dependencies: ["map1234567890"],
-          groups: []
+          groupIds: []
         },
         {
           itemId: "map1234567890",
           type: "Web Map",
           dependencies: [],
-          groups: []
+          groupIds: []
         }
       ]
     },
@@ -303,7 +303,7 @@ export function getCompleteDeployedSolutionItemVersioned(
           itemId: "wma1234567890",
           type: "Web Mapping Application",
           dependencies: ["map1234567890"],
-          groups: [],
+          groupIds: [],
           item: {
             typeKeywords: []
           }
@@ -312,7 +312,7 @@ export function getCompleteDeployedSolutionItemVersioned(
           itemId: "map1234567890",
           type: "Web Map",
           dependencies: [],
-          groups: [],
+          groupIds: [],
           item: {
             typeKeywords: []
           }
@@ -329,7 +329,7 @@ export function getCompleteDeployedSolutionItemVersioned(
           itemId: "map1234567890",
           type: "Web Map",
           dependencies: [],
-          groups: [],
+          groupIds: [],
           item: {
             typeKeywords: []
           }
@@ -338,7 +338,7 @@ export function getCompleteDeployedSolutionItemVersioned(
           itemId: "wma1234567890",
           type: "Web Mapping Application",
           dependencies: ["map1234567890"],
-          groups: [],
+          groupIds: [],
           item: {
             typeKeywords: []
           }
@@ -368,13 +368,15 @@ export function getSolutionItem(): any {
 }
 
 export function getSolutionPrecis(
-  items: interfaces.ISolutionItemPrecis[] = []
+  items: interfaces.ISolutionItemPrecis[] = [],
+  groupIds: string[] = []
 ): interfaces.ISolutionPrecis {
   return {
     id: "sol1234567890",
     title: "An AGOL item",
     folder: "fld1234567890",
-    items
+    items,
+    groupIds
   };
 }
 
@@ -739,7 +741,7 @@ export function getAGOLItemData(type?: string): any {
             },
             resources: ["wma1234567890_info_thumbnail/ago_downloaded.png"],
             dependencies: ["map1234567890"],
-            groups: [],
+            groupIds: [],
             properties: {},
             estimatedDeploymentCostFactor: 2,
             relatedItems: []
@@ -799,7 +801,7 @@ export function getAGOLItemData(type?: string): any {
               "map1234567890_info_thumbnail/thumbnail1572976699636.png"
             ],
             dependencies: [],
-            groups: [],
+            groupIds: [],
             properties: {},
             estimatedDeploymentCostFactor: 2,
             relatedItems: []

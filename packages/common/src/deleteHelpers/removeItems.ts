@@ -15,7 +15,7 @@
  */
 
 /**
- * @module deleteSolution
+ * @module removeItems
  */
 
 import {
@@ -131,13 +131,15 @@ export function removeItems(
       id: solutionSummary.id,
       title: solutionSummary.title,
       folder: solutionSummary.folder,
-      items: []
+      items: [],
+      groupIds: []
     };
     solutionFailureSummary = {
       id: solutionSummary.id,
       title: solutionSummary.title,
       folder: solutionSummary.folder,
-      items: []
+      items: [],
+      groupIds: []
     };
     return Promise.resolve([solutionDeletedSummary, solutionFailureSummary]);
   }

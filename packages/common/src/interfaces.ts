@@ -713,6 +713,7 @@ export interface ISolutionPrecis {
   title: string;
   folder: string;
   items: ISolutionItemPrecis[];
+  groupIds: string[];
 }
 
 /**

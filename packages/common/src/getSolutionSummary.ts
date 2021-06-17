@@ -48,10 +48,12 @@ export function getSolutionSummary(
     id: solutionItemId,
     title: "",
     folder: "",
-    items: []
+    items: [],
+    groupIds: []
   };
   let templates: IItemTemplate[] = [];
   let deployedSolutionVersion = DeployedSolutionFormatVersion;
+  let itemData: ISolutionItemData;
 
   return Promise.all([
     restHelpersGet.getItemBase(solutionItemId, authentication),
@@ -59,7 +61,7 @@ export function getSolutionSummary(
   ])
     .then((response: any) => {
       const itemBase: IItemGeneralized = response[0];
-      const itemData: ISolutionItemData = response[1];
+      itemData = response[1];
 
       // Make sure that the item is a deployed Solution
       if (
@@ -108,11 +110,24 @@ export function getSolutionSummary(
         buildOrderIds = templates.map((template: any) => template.itemId);
       }
 
+      // Get the dependent groups in the items to be deleted
+      let dependentGroups = new Set<string>();
+      itemData.templates.forEach(item => {
+        item.groups.forEach(groupId => {
+          dependentGroups = dependentGroups.add(groupId);
+        });
+      });
+      solutionSummary.groupIds = [];
+      dependentGroups.forEach((value: string) =>
+        solutionSummary.groupIds.push(value)
+      );
+
       // Sort the related items into build order
       solutionSummary.items.sort(
         (first, second) =>
           buildOrderIds.indexOf(first.id) - buildOrderIds.indexOf(second.id)
       );
+
       return solutionSummary;
     });
 }

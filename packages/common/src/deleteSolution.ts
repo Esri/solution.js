@@ -28,6 +28,7 @@ import {
   IStatusResponse,
   UserSession
 } from "./interfaces";
+import * as deleteEmptyGroups from "./deleteHelpers/deleteEmptyGroups";
 import * as deleteSolutionFolder from "./deleteHelpers/deleteSolutionFolder";
 import * as removeItems from "./deleteHelpers/removeItems";
 import * as reportProgress from "./deleteHelpers/reportProgress";
@@ -73,13 +74,15 @@ export function deleteSolution(
               id: solutionSummary.id,
               title: solutionSummary.title,
               folder: solutionSummary.folder,
-              items: []
+              items: [],
+              groupIds: []
             },
             {
               id: solutionSummary.id,
               title: solutionSummary.title,
               folder: solutionSummary.folder,
-              items: []
+              items: [],
+              groupIds: []
             }
           ]);
         } else {
@@ -100,6 +103,7 @@ export function deleteSolution(
             deleteOptions
           ); // let the caller know that we've started
 
+          // Proceed with the deletion
           return removeItems.removeItems(
             solutionSummary,
             hubSiteItemIds,
@@ -109,6 +113,17 @@ export function deleteSolution(
             deleteOptions
           );
         }
+      })
+      .then((results: ISolutionPrecis[]) => {
+        // Attempt to delete groups; we won't be checking success
+        return new Promise<ISolutionPrecis[]>(resolve => {
+          // eslint-disable-next-line @typescript-eslint/no-floating-promises
+          deleteEmptyGroups
+            .deleteEmptyGroups(solutionSummary.groupIds, authentication)
+            .then(() => {
+              resolve(results);
+            });
+        });
       })
       .then((results: ISolutionPrecis[]) => {
         [solutionDeletedSummary, solutionFailureSummary] = results;

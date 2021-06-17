@@ -15,6 +15,8 @@
  */
 
 export * from "./deleteSolutionFolder";
+export * from "./deleteEmptyGroups";
+export * from "./deleteGroupIfEmpty";
 export * from "./reconstructBuildOrderIds";
 export * from "./removeItems";
 export * from "./reportProgress";
