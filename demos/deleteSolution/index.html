@@ -120,6 +120,7 @@
           ).then(
             html => {
               document.getElementById("checkOutput").innerHTML = html;
+              document.getElementById("output").innerHTML = "";
               document.getElementById("check").style.display = "block";
               document.getElementById("deleteBtn").style.display = "none";
             },
