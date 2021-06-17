@@ -32,18 +32,24 @@ import * as portal from "@esri/arcgis-rest-portal";
  */
 export function deleteGroupIfEmpty(
   groupId: string,
-  username: string,
   authentication: UserSession
 ): Promise<boolean> {
+  let username: string;
   let isGroupProtected: boolean;
 
-  // We need to know the owner and protected status of the group
-  return portal
-    .getGroup(groupId, { authentication })
+  // Get the owner tied to the authentication
+  // eslint-disable-next-line @typescript-eslint/no-floating-promises
+  return authentication
+    .getUsername()
+    .then(response => {
+      username = response;
+
+      // We need to know the owner and protection status of the group
+      return portal.getGroup(groupId, { authentication });
+    })
     .then((group: portal.IGroup) => {
-      // eslint-disable-next-line no-empty
       if (group.owner !== username) {
-        return Promise.resolve(null);
+        return Promise.resolve(null); // don't delete a group we don't own
       }
       isGroupProtected = group.protected; // do we need to unprotect before deleting?
 
@@ -61,7 +67,7 @@ export function deleteGroupIfEmpty(
       // should be IGroupContentResult; see https://github.com/Esri/arcgis-rest-js/pull/858/files
       // If groupContent is null, then we don't own the group; if the group is not empty, then we can't delete it
       if (!groupContent || groupContent.total > 0) {
-        return Promise.resolve({ success: false });
+        return Promise.resolve({ success: false }); // don't delete a group that's not empty
       }
 
       // We're going ahead with deletion; first unprotect it if necessary
@@ -91,5 +97,9 @@ export function deleteGroupIfEmpty(
     .then((response: { success: boolean }) => {
       // Return a simple response
       return Promise.resolve(response.success);
+    })
+    .catch(() => {
+      // In case getGroup or getGroupContent fails
+      return Promise.resolve(false);
     });
 }

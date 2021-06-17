@@ -38,22 +38,11 @@ export function deleteEmptyGroups(
     return Promise.resolve([]);
   }
 
-  // Get the owner tied to the authentication
-  // eslint-disable-next-line @typescript-eslint/no-floating-promises
-  return authentication
-    .getUsername()
-    .then(username => {
-      // Attempt to delete each group
-      return Promise.all(
-        groups.map(groupId =>
-          deleteGroupIfEmpty(groupId, username, authentication)
-        )
-      );
-    })
-    .then((responses: boolean[]) => {
-      // Return just the group ids that succeeded
-      return groups.filter(
-        (groupId: string, index: number) => responses[index]
-      );
-    });
+  // Attempt to delete each group
+  return Promise.all(
+    groups.map(groupId => deleteGroupIfEmpty(groupId, authentication))
+  ).then((responses: boolean[]) => {
+    // Return just the group ids that succeeded
+    return groups.filter((groupId: string, index: number) => responses[index]);
+  });
 }
