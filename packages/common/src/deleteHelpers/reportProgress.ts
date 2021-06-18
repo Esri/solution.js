@@ -15,7 +15,7 @@
  */
 
 /**
- * @module deleteSolution
+ * @module reportProgress
  */
 
 import {
@@ -33,7 +33,7 @@ import {
  * @param deleteOptions Reporting options
  * @param deletedItemId Id of item deleted
  */
-export function _reportProgress(
+export function reportProgress(
   percentDone: number,
   deleteOptions: IDeleteSolutionOptions,
   deletedItemId = "",

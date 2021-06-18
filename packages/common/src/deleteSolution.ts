@@ -28,9 +28,10 @@ import {
   IStatusResponse,
   UserSession
 } from "./interfaces";
-import * as _deleteSolutionFolder from "./deleteHelpers/_deleteSolutionFolder";
-import * as _removeItems from "./deleteHelpers/_removeItems";
-import * as _reportProgress from "./deleteHelpers/_reportProgress";
+import * as deleteEmptyGroups from "./deleteHelpers/deleteEmptyGroups";
+import * as deleteSolutionFolder from "./deleteHelpers/deleteSolutionFolder";
+import * as removeItems from "./deleteHelpers/removeItems";
+import * as reportProgress from "./deleteHelpers/reportProgress";
 import * as getDeletableSolutionInfo from "./getDeletableSolutionInfo";
 import * as restHelpers from "./restHelpers";
 
@@ -73,17 +74,19 @@ export function deleteSolution(
               id: solutionSummary.id,
               title: solutionSummary.title,
               folder: solutionSummary.folder,
-              items: []
+              items: [],
+              groups: []
             },
             {
               id: solutionSummary.id,
               title: solutionSummary.title,
               folder: solutionSummary.folder,
-              items: []
+              items: [],
+              groups: []
             }
           ]);
         } else {
-          // Save a copy of the Solution item ids for the _deleteSolutionFolder call because _removeItems
+          // Save a copy of the Solution item ids for the deleteSolutionFolder call because removeItems
           // destroys the solutionSummary.items list
           solutionIds = solutionSummary.items
             .map(item => item.id)
@@ -95,12 +98,13 @@ export function deleteSolution(
 
           // Delete the items
           progressPercentStep = 100 / (solutionSummary.items.length + 2); // one extra for starting plus one extra for solution itself
-          _reportProgress._reportProgress(
+          reportProgress.reportProgress(
             (percentDone += progressPercentStep),
             deleteOptions
           ); // let the caller know that we've started
 
-          return _removeItems._removeItems(
+          // Proceed with the deletion
+          return removeItems.removeItems(
             solutionSummary,
             hubSiteItemIds,
             authentication,
@@ -109,6 +113,17 @@ export function deleteSolution(
             deleteOptions
           );
         }
+      })
+      .then((results: ISolutionPrecis[]) => {
+        // Attempt to delete groups; we won't be checking success
+        return new Promise<ISolutionPrecis[]>(resolve => {
+          // eslint-disable-next-line @typescript-eslint/no-floating-promises
+          deleteEmptyGroups
+            .deleteEmptyGroups(solutionSummary.groups, authentication)
+            .then(() => {
+              resolve(results);
+            });
+        });
       })
       .then((results: ISolutionPrecis[]) => {
         [solutionDeletedSummary, solutionFailureSummary] = results;
@@ -123,14 +138,14 @@ export function deleteSolution(
       .then((solutionItemDeleteStatus: IStatusResponse) => {
         // If all deletes succeeded, see if we can delete the folder that contained them
         if (solutionItemDeleteStatus.success) {
-          _reportProgress._reportProgress(
+          reportProgress.reportProgress(
             99,
             deleteOptions,
             solutionItemId,
             EItemProgressStatus.Finished
           );
 
-          return _deleteSolutionFolder._deleteSolutionFolder(
+          return deleteSolutionFolder.deleteSolutionFolder(
             solutionIds,
             solutionSummary.folder,
             authentication

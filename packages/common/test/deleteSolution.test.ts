@@ -20,6 +20,8 @@
  */
 
 import * as createHRO from "../src/create-hub-request-options";
+import * as deleteEmptyGroups from "../src/deleteHelpers/deleteEmptyGroups";
+import * as deleteGroupIfEmpty from "../src/deleteHelpers/deleteGroupIfEmpty";
 import * as deleteSolution from "../src/deleteSolution";
 import * as hubSites from "@esri/hub-sites";
 import * as interfaces from "../src/interfaces";
@@ -30,10 +32,10 @@ import * as restHelpersGet from "../src/restHelpersGet";
 import * as utils from "./mocks/utils";
 import * as getDeletableSolutionInfo from "../src/getDeletableSolutionInfo";
 import * as getSolutionSummary from "../src/getSolutionSummary";
-import * as _deleteSolutionFolder from "../src/deleteHelpers/_deleteSolutionFolder";
-import * as _removeItems from "../src/deleteHelpers/_removeItems";
-import * as _reportProgress from "../src/deleteHelpers/_reportProgress";
-import * as _reconstructBuildOrderIds from "../src/deleteHelpers/_reconstructBuildOrderIds";
+import * as deleteSolutionFolder from "../src/deleteHelpers/deleteSolutionFolder";
+import * as removeItems from "../src/deleteHelpers/removeItems";
+import * as reportProgress from "../src/deleteHelpers/reportProgress";
+import * as reconstructBuildOrderIds from "../src/deleteHelpers/reconstructBuildOrderIds";
 
 let MOCK_USER_SESSION: interfaces.UserSession;
 
@@ -44,6 +46,355 @@ beforeEach(() => {
 // ------------------------------------------------------------------------------------------------------------------ //
 
 describe("Module `deleteSolution`: functions for deleting a deployed Solution item and all of its items", () => {
+  describe("deleteEmptyGroups", () => {
+    it("handles an empty list", done => {
+      const deleteGroupIfEmptySpy = spyOn(
+        deleteGroupIfEmpty,
+        "deleteGroupIfEmpty"
+      ).and.resolveTo(true);
+
+      deleteEmptyGroups
+        .deleteEmptyGroups([], MOCK_USER_SESSION)
+        .then(result => {
+          expect(result).toEqual([]);
+          expect(deleteGroupIfEmptySpy.calls.count()).toEqual(0);
+          done();
+        }, done.fail);
+    });
+
+    it("handles a single item", done => {
+      const deleteGroupIfEmptySpy = spyOn(
+        deleteGroupIfEmpty,
+        "deleteGroupIfEmpty"
+      ).and.resolveTo(true);
+
+      deleteEmptyGroups
+        .deleteEmptyGroups(["grp1234567890"], MOCK_USER_SESSION)
+        .then(result => {
+          expect(result).toEqual(["grp1234567890"]);
+          expect(deleteGroupIfEmptySpy.calls.count()).toEqual(1);
+          done();
+        }, done.fail);
+    });
+
+    it("handles multiple items", done => {
+      const deleteGroupIfEmptySpy = spyOn(
+        deleteGroupIfEmpty,
+        "deleteGroupIfEmpty"
+      ).and.resolveTo(true);
+
+      deleteEmptyGroups
+        .deleteEmptyGroups(
+          ["grp1234567890", "grp1234567891"],
+          MOCK_USER_SESSION
+        )
+        .then(result => {
+          expect(result).toEqual(["grp1234567890", "grp1234567891"]);
+          expect(deleteGroupIfEmptySpy.calls.count()).toEqual(2);
+          done();
+        }, done.fail);
+    });
+
+    it("handles failure", done => {
+      const deleteGroupIfEmptySpy = spyOn(
+        deleteGroupIfEmpty,
+        "deleteGroupIfEmpty"
+      ).and.returnValues(
+        Promise.resolve(true),
+        Promise.resolve(false),
+        Promise.resolve(true)
+      );
+
+      deleteEmptyGroups
+        .deleteEmptyGroups(
+          ["grp1234567890", "grp1234567891", "grp1234567892"],
+          MOCK_USER_SESSION
+        )
+        .then(result => {
+          expect(result).toEqual(["grp1234567890", "grp1234567892"]);
+          expect(deleteGroupIfEmptySpy.calls.count()).toEqual(3);
+          done();
+        }, done.fail);
+    });
+  });
+
+  describe("deleteGroupIfEmpty", () => {
+    it("deletes an empty protected group that we own", done => {
+      const group = mockItems.getAGOLGroup("grp1234567890", "casey");
+      group.protected = true;
+
+      const getGroupSpy = spyOn(portal, "getGroup").and.resolveTo(group);
+      const getGroupContentSpy = spyOn(portal, "getGroupContent").and.resolveTo(
+        mockItems.getAGOLGroupContentsList(0)
+      );
+      const unprotectGroupSpy = spyOn(portal, "unprotectGroup").and.resolveTo({
+        success: true
+      });
+      const removeGroupSpy = spyOn(portal, "removeGroup").and.resolveTo({
+        success: true
+      });
+
+      deleteGroupIfEmpty
+        .deleteGroupIfEmpty("grp1234567890", MOCK_USER_SESSION)
+        .then(result => {
+          expect(result).toBeTruthy();
+          expect(getGroupSpy.calls.count())
+            .withContext("getGroupSpy")
+            .toEqual(1);
+          expect(getGroupContentSpy.calls.count())
+            .withContext("getGroupContentSpy")
+            .toEqual(1);
+          expect(unprotectGroupSpy.calls.count())
+            .withContext("unprotectGroupSpy")
+            .toEqual(1);
+          expect(removeGroupSpy.calls.count())
+            .withContext("removeGroupSpy")
+            .toEqual(1);
+          done();
+        }, done.fail);
+    });
+
+    it("deletes an empty unprotected group that we own", done => {
+      const getGroupSpy = spyOn(portal, "getGroup").and.resolveTo(
+        mockItems.getAGOLGroup("grp1234567890", "casey")
+      );
+      const getGroupContentSpy = spyOn(portal, "getGroupContent").and.resolveTo(
+        mockItems.getAGOLGroupContentsList(0)
+      );
+      const unprotectGroupSpy = spyOn(portal, "unprotectGroup").and.resolveTo({
+        success: true
+      });
+      const removeGroupSpy = spyOn(portal, "removeGroup").and.resolveTo({
+        success: true
+      });
+
+      deleteGroupIfEmpty
+        .deleteGroupIfEmpty("grp1234567890", MOCK_USER_SESSION)
+        .then(result => {
+          expect(result).toBeTruthy();
+          expect(getGroupSpy.calls.count())
+            .withContext("getGroupSpy")
+            .toEqual(1);
+          expect(getGroupContentSpy.calls.count())
+            .withContext("getGroupContentSpy")
+            .toEqual(1);
+          expect(unprotectGroupSpy.calls.count())
+            .withContext("unprotectGroupSpy")
+            .toEqual(0);
+          expect(removeGroupSpy.calls.count())
+            .withContext("removeGroupSpy")
+            .toEqual(1);
+          done();
+        }, done.fail);
+    });
+
+    it("does not delete an empty group that we don't own", done => {
+      const getGroupSpy = spyOn(portal, "getGroup").and.resolveTo(
+        mockItems.getAGOLGroup()
+      );
+      const getGroupContentSpy = spyOn(portal, "getGroupContent").and.resolveTo(
+        mockItems.getAGOLGroupContentsList(0)
+      );
+      const unprotectGroupSpy = spyOn(portal, "unprotectGroup").and.resolveTo({
+        success: true
+      });
+      const removeGroupSpy = spyOn(portal, "removeGroup").and.resolveTo({
+        success: true
+      });
+
+      deleteGroupIfEmpty
+        .deleteGroupIfEmpty("grp1234567890", MOCK_USER_SESSION)
+        .then(result => {
+          expect(result).toBeFalsy();
+          expect(getGroupSpy.calls.count())
+            .withContext("getGroupSpy")
+            .toEqual(1);
+          expect(getGroupContentSpy.calls.count())
+            .withContext("getGroupContentSpy")
+            .toEqual(0);
+          expect(unprotectGroupSpy.calls.count())
+            .withContext("unprotectGroupSpy")
+            .toEqual(0);
+          expect(removeGroupSpy.calls.count())
+            .withContext("removeGroupSpy")
+            .toEqual(0);
+          done();
+        }, done.fail);
+    });
+
+    it("does not delete a non-empty group that we own", done => {
+      const getGroupSpy = spyOn(portal, "getGroup").and.resolveTo(
+        mockItems.getAGOLGroup("grp1234567890", "casey")
+      );
+      const getGroupContentSpy = spyOn(portal, "getGroupContent").and.resolveTo(
+        mockItems.getAGOLGroupContentsList(1)
+      );
+      const unprotectGroupSpy = spyOn(portal, "unprotectGroup").and.resolveTo({
+        success: true
+      });
+      const removeGroupSpy = spyOn(portal, "removeGroup").and.resolveTo({
+        success: true
+      });
+
+      deleteGroupIfEmpty
+        .deleteGroupIfEmpty("grp1234567890", MOCK_USER_SESSION)
+        .then(result => {
+          expect(result).toBeFalsy();
+          expect(getGroupSpy.calls.count())
+            .withContext("getGroupSpy")
+            .toEqual(1);
+          expect(getGroupContentSpy.calls.count())
+            .withContext("getGroupContentSpy")
+            .toEqual(1);
+          expect(unprotectGroupSpy.calls.count())
+            .withContext("unprotectGroupSpy")
+            .toEqual(0);
+          expect(removeGroupSpy.calls.count())
+            .withContext("removeGroupSpy")
+            .toEqual(0);
+          done();
+        }, done.fail);
+    });
+
+    it("does not delete group if we fail to get the group info", done => {
+      const getGroupSpy = spyOn(portal, "getGroup").and.rejectWith(
+        mockItems.get400Failure()
+      );
+      const getGroupContentSpy = spyOn(portal, "getGroupContent").and.resolveTo(
+        mockItems.getAGOLGroupContentsList(0)
+      );
+      const unprotectGroupSpy = spyOn(portal, "unprotectGroup").and.resolveTo({
+        success: true
+      });
+      const removeGroupSpy = spyOn(portal, "removeGroup").and.resolveTo({
+        success: true
+      });
+
+      deleteGroupIfEmpty
+        .deleteGroupIfEmpty("grp1234567890", MOCK_USER_SESSION)
+        .then(result => {
+          expect(result).toBeFalsy();
+          expect(getGroupSpy.calls.count())
+            .withContext("getGroupSpy")
+            .toEqual(1);
+          expect(getGroupContentSpy.calls.count())
+            .withContext("getGroupContentSpy")
+            .toEqual(0);
+          expect(unprotectGroupSpy.calls.count())
+            .withContext("unprotectGroupSpy")
+            .toEqual(0);
+          expect(removeGroupSpy.calls.count())
+            .withContext("removeGroupSpy")
+            .toEqual(0);
+          done();
+        }, done.fail);
+    });
+
+    it("does not delete group if we fail to get the group contents", done => {
+      const getGroupSpy = spyOn(portal, "getGroup").and.resolveTo(
+        mockItems.getAGOLGroup("grp1234567890", "casey")
+      );
+      const getGroupContentSpy = spyOn(
+        portal,
+        "getGroupContent"
+      ).and.rejectWith(mockItems.get400Failure());
+      const unprotectGroupSpy = spyOn(portal, "unprotectGroup").and.resolveTo({
+        success: true
+      });
+      const removeGroupSpy = spyOn(portal, "removeGroup").and.resolveTo({
+        success: true
+      });
+
+      deleteGroupIfEmpty
+        .deleteGroupIfEmpty("grp1234567890", MOCK_USER_SESSION)
+        .then(result => {
+          expect(result).toBeFalsy();
+          expect(getGroupSpy.calls.count())
+            .withContext("getGroupSpy")
+            .toEqual(1);
+          expect(getGroupContentSpy.calls.count())
+            .withContext("getGroupContentSpy")
+            .toEqual(1);
+          expect(unprotectGroupSpy.calls.count())
+            .withContext("unprotectGroupSpy")
+            .toEqual(0);
+          expect(removeGroupSpy.calls.count())
+            .withContext("removeGroupSpy")
+            .toEqual(0);
+          done();
+        }, done.fail);
+    });
+
+    it("does not delete group if we cannot unprotect it", done => {
+      const group = mockItems.getAGOLGroup("grp1234567890", "casey");
+      group.protected = true;
+
+      const getGroupSpy = spyOn(portal, "getGroup").and.resolveTo(group);
+      const getGroupContentSpy = spyOn(portal, "getGroupContent").and.resolveTo(
+        mockItems.getAGOLGroupContentsList(0)
+      );
+      const unprotectGroupSpy = spyOn(portal, "unprotectGroup").and.resolveTo({
+        success: false
+      });
+      const removeGroupSpy = spyOn(portal, "removeGroup").and.resolveTo({
+        success: true
+      });
+
+      deleteGroupIfEmpty
+        .deleteGroupIfEmpty("grp1234567890", MOCK_USER_SESSION)
+        .then(result => {
+          expect(result).toBeFalsy();
+          expect(getGroupSpy.calls.count())
+            .withContext("getGroupSpy")
+            .toEqual(1);
+          expect(getGroupContentSpy.calls.count())
+            .withContext("getGroupContentSpy")
+            .toEqual(1);
+          expect(unprotectGroupSpy.calls.count())
+            .withContext("unprotectGroupSpy")
+            .toEqual(1);
+          expect(removeGroupSpy.calls.count())
+            .withContext("removeGroupSpy")
+            .toEqual(0);
+          done();
+        }, done.fail);
+    });
+
+    it("handles failure to delete group", done => {
+      const getGroupSpy = spyOn(portal, "getGroup").and.resolveTo(
+        mockItems.getAGOLGroup("grp1234567890", "casey")
+      );
+      const getGroupContentSpy = spyOn(portal, "getGroupContent").and.resolveTo(
+        mockItems.getAGOLGroupContentsList(0)
+      );
+      const unprotectGroupSpy = spyOn(portal, "unprotectGroup").and.resolveTo({
+        success: true
+      });
+      const removeGroupSpy = spyOn(portal, "removeGroup").and.resolveTo({
+        success: false
+      });
+
+      deleteGroupIfEmpty
+        .deleteGroupIfEmpty("grp1234567890", MOCK_USER_SESSION)
+        .then(result => {
+          expect(result).toBeFalsy();
+          expect(getGroupSpy.calls.count())
+            .withContext("getGroupSpy")
+            .toEqual(1);
+          expect(getGroupContentSpy.calls.count())
+            .withContext("getGroupContentSpy")
+            .toEqual(1);
+          expect(unprotectGroupSpy.calls.count())
+            .withContext("unprotectGroupSpy")
+            .toEqual(0);
+          expect(removeGroupSpy.calls.count())
+            .withContext("removeGroupSpy")
+            .toEqual(1);
+          done();
+        }, done.fail);
+    });
+  });
+
   describe("deleteSolution", () => {
     it("rejects a Solution template", done => {
       const testItem = "sol1234567890";
@@ -72,10 +423,7 @@ describe("Module `deleteSolution`: functions for deleting a deployed Solution it
           mockItems.getAGOLItemPrecis("Web Mapping Application")
         ])
       );
-      const _removeItemsSpy = spyOn(
-        _removeItems,
-        "_removeItems"
-      ).and.resolveTo([
+      const _removeItemsSpy = spyOn(removeItems, "removeItems").and.resolveTo([
         mockItems.getSolutionPrecis([
           mockItems.getAGOLItemPrecis("Web Map"),
           mockItems.getAGOLItemPrecis("Web Mapping Application")
@@ -86,10 +434,10 @@ describe("Module `deleteSolution`: functions for deleting a deployed Solution it
         success: true,
         itemId: "sol1234567890"
       });
-      const _reportProgressSpy = spyOn(_reportProgress, "_reportProgress");
+      const _reportProgressSpy = spyOn(reportProgress, "reportProgress");
       const _deleteSolutionFolderSpy = spyOn(
-        _deleteSolutionFolder,
-        "_deleteSolutionFolder"
+        deleteSolutionFolder,
+        "deleteSolutionFolder"
       ).and.resolveTo(true);
 
       deleteSolution
@@ -115,10 +463,10 @@ describe("Module `deleteSolution`: functions for deleting a deployed Solution it
         success: true,
         itemId: "sol1234567890"
       });
-      const _reportProgressSpy = spyOn(_reportProgress, "_reportProgress");
+      const _reportProgressSpy = spyOn(reportProgress, "reportProgress");
       const _deleteSolutionFolderSpy = spyOn(
-        _deleteSolutionFolder,
-        "_deleteSolutionFolder"
+        deleteSolutionFolder,
+        "deleteSolutionFolder"
       ).and.resolveTo(true);
 
       deleteSolution
@@ -142,10 +490,7 @@ describe("Module `deleteSolution`: functions for deleting a deployed Solution it
           mockItems.getAGOLItemPrecis("Hub Site Application")
         ])
       );
-      const _removeItemsSpy = spyOn(
-        _removeItems,
-        "_removeItems"
-      ).and.resolveTo([
+      const _removeItemsSpy = spyOn(removeItems, "removeItems").and.resolveTo([
         mockItems.getSolutionPrecis([
           mockItems.getAGOLItemPrecis("Web Map"),
           mockItems.getAGOLItemPrecis("Hub Site Application")
@@ -166,10 +511,10 @@ describe("Module `deleteSolution`: functions for deleting a deployed Solution it
           isPortal: false
         })
       );
-      const _reportProgressSpy = spyOn(_reportProgress, "_reportProgress");
+      const _reportProgressSpy = spyOn(reportProgress, "reportProgress");
       const _deleteSolutionFolderSpy = spyOn(
-        _deleteSolutionFolder,
-        "_deleteSolutionFolder"
+        deleteSolutionFolder,
+        "deleteSolutionFolder"
       ).and.resolveTo(true);
 
       deleteSolution
@@ -196,10 +541,7 @@ describe("Module `deleteSolution`: functions for deleting a deployed Solution it
           mockItems.getAGOLItemPrecis("Web Mapping Application")
         ])
       );
-      const _removeItemsSpy = spyOn(
-        _removeItems,
-        "_removeItems"
-      ).and.resolveTo([
+      const _removeItemsSpy = spyOn(removeItems, "removeItems").and.resolveTo([
         mockItems.getSolutionPrecis([
           mockItems.getAGOLItemPrecis("Web Mapping Application")
         ]),
@@ -209,10 +551,10 @@ describe("Module `deleteSolution`: functions for deleting a deployed Solution it
         success: true,
         itemId: "sol1234567890"
       });
-      const _reportProgressSpy = spyOn(_reportProgress, "_reportProgress");
+      const _reportProgressSpy = spyOn(reportProgress, "reportProgress");
       const _deleteSolutionFolderSpy = spyOn(
-        _deleteSolutionFolder,
-        "_deleteSolutionFolder"
+        deleteSolutionFolder,
+        "deleteSolutionFolder"
       ).and.resolveTo(true);
 
       deleteSolution
@@ -240,10 +582,7 @@ describe("Module `deleteSolution`: functions for deleting a deployed Solution it
           mockItems.getAGOLItemPrecis("Web Mapping Application")
         ])
       );
-      const _removeItemsSpy = spyOn(
-        _removeItems,
-        "_removeItems"
-      ).and.resolveTo([
+      const _removeItemsSpy = spyOn(removeItems, "removeItems").and.resolveTo([
         mockItems.getSolutionPrecis([
           mockItems.getAGOLItemPrecis("Web Map"),
           mockItems.getAGOLItemPrecis("Web Mapping Application")
@@ -254,7 +593,7 @@ describe("Module `deleteSolution`: functions for deleting a deployed Solution it
         success: false,
         itemId: "sol1234567890"
       });
-      const _reportProgressSpy = spyOn(_reportProgress, "_reportProgress");
+      const _reportProgressSpy = spyOn(reportProgress, "reportProgress");
 
       deleteSolution
         .deleteSolution("sol1234567890", MOCK_USER_SESSION)
@@ -280,10 +619,7 @@ describe("Module `deleteSolution`: functions for deleting a deployed Solution it
           mockItems.getAGOLItemPrecis("Web Mapping Application")
         ])
       );
-      const _removeItemsSpy = spyOn(
-        _removeItems,
-        "_removeItems"
-      ).and.resolveTo([
+      const _removeItemsSpy = spyOn(removeItems, "removeItems").and.resolveTo([
         mockItems.getSolutionPrecis([
           mockItems.getAGOLItemPrecis("Web Map"),
           mockItems.getAGOLItemPrecis("Web Mapping Application")
@@ -294,10 +630,10 @@ describe("Module `deleteSolution`: functions for deleting a deployed Solution it
         success: true,
         itemId: "sol1234567890"
       });
-      const _reportProgressSpy = spyOn(_reportProgress, "_reportProgress");
+      const _reportProgressSpy = spyOn(reportProgress, "reportProgress");
       const _deleteSolutionFolderSpy = spyOn(
-        _deleteSolutionFolder,
-        "_deleteSolutionFolder"
+        deleteSolutionFolder,
+        "deleteSolutionFolder"
       ).and.resolveTo(false);
 
       deleteSolution
@@ -459,8 +795,8 @@ describe("Module `deleteSolution`: functions for deleting a deployed Solution it
         mockItems.getAGOLItem("Web Mapping Application")
       ]);
       const _reconstructBuildOrderIdsSpy = spyOn(
-        _reconstructBuildOrderIds,
-        "_reconstructBuildOrderIds"
+        reconstructBuildOrderIds,
+        "reconstructBuildOrderIds"
       ).and.callThrough();
 
       getSolutionSummary
@@ -481,6 +817,10 @@ describe("Module `deleteSolution`: functions for deleting a deployed Solution it
       const solutionItem = mockItems.getCompleteDeployedSolutionItemVersioned(
         1
       );
+      solutionItem.data.templates[0].groups = [
+        "grp1234567890",
+        "grp1234567891"
+      ];
       const getItemBaseSpy = spyOn(restHelpersGet, "getItemBase").and.resolveTo(
         solutionItem.base
       );
@@ -496,18 +836,21 @@ describe("Module `deleteSolution`: functions for deleting a deployed Solution it
         mockItems.getAGOLItem("Web Mapping Application")
       ]);
       const _reconstructBuildOrderIdsSpy = spyOn(
-        _reconstructBuildOrderIds,
-        "_reconstructBuildOrderIds"
+        reconstructBuildOrderIds,
+        "reconstructBuildOrderIds"
       ).and.callThrough();
 
       getSolutionSummary
         .getSolutionSummary(solutionItem.base.id, MOCK_USER_SESSION)
         .then(result => {
           expect(result).toEqual(
-            mockItems.getSolutionPrecis([
-              mockItems.getAGOLItemPrecis("Web Map"),
-              mockItems.getAGOLItemPrecis("Web Mapping Application")
-            ])
+            mockItems.getSolutionPrecis(
+              [
+                mockItems.getAGOLItemPrecis("Web Map"),
+                mockItems.getAGOLItemPrecis("Web Mapping Application")
+              ],
+              ["grp1234567890", "grp1234567891"]
+            )
           );
           expect(_reconstructBuildOrderIdsSpy.calls.count()).toEqual(0);
           done();
@@ -515,7 +858,7 @@ describe("Module `deleteSolution`: functions for deleting a deployed Solution it
     });
   });
 
-  describe("_deleteSolutionFolder", () => {
+  describe("deleteSolutionFolder", () => {
     it("empty folder", done => {
       const getUserSpy = spyOn(MOCK_USER_SESSION, "getUser").and.resolveTo({
         orgId: "orgABC"
@@ -528,8 +871,8 @@ describe("Module `deleteSolution`: functions for deleting a deployed Solution it
         success: true
       } as any);
 
-      _deleteSolutionFolder
-        ._deleteSolutionFolder([], "fld1234567890", MOCK_USER_SESSION)
+      deleteSolutionFolder
+        .deleteSolutionFolder([], "fld1234567890", MOCK_USER_SESSION)
         .then(result => {
           expect(result).toBeTruthy();
           expect(removeFolderSpy.calls.count()).toEqual(1);
@@ -553,8 +896,8 @@ describe("Module `deleteSolution`: functions for deleting a deployed Solution it
         success: true
       } as any);
 
-      _deleteSolutionFolder
-        ._deleteSolutionFolder(
+      deleteSolutionFolder
+        .deleteSolutionFolder(
           ["map1234567890"],
           "fld1234567890",
           MOCK_USER_SESSION
@@ -585,8 +928,8 @@ describe("Module `deleteSolution`: functions for deleting a deployed Solution it
         success: true
       } as any);
 
-      _deleteSolutionFolder
-        ._deleteSolutionFolder(
+      deleteSolutionFolder
+        .deleteSolutionFolder(
           ["map1234567890"],
           "fld1234567890",
           MOCK_USER_SESSION
@@ -614,8 +957,8 @@ describe("Module `deleteSolution`: functions for deleting a deployed Solution it
         success: false
       } as any);
 
-      _deleteSolutionFolder
-        ._deleteSolutionFolder(
+      deleteSolutionFolder
+        .deleteSolutionFolder(
           ["map1234567890"],
           "fld1234567890",
           MOCK_USER_SESSION
@@ -628,25 +971,25 @@ describe("Module `deleteSolution`: functions for deleting a deployed Solution it
     });
   });
 
-  describe("_reconstructBuildOrderIds", () => {
+  describe("reconstructBuildOrderIds", () => {
     it("handles an empty list", () => {
       const templates: interfaces.IItemTemplate[] = [];
-      const buildOrderIds = _reconstructBuildOrderIds._reconstructBuildOrderIds(
+      const buildOrderIds = reconstructBuildOrderIds.reconstructBuildOrderIds(
         templates
       );
       expect(buildOrderIds).toEqual([]);
     });
   });
 
-  describe("_removeItems", () => {
+  describe("removeItems", () => {
     it("handles an empty list of item ids with all items so far successful", done => {
       const solutionSummary: interfaces.ISolutionPrecis = mockItems.getSolutionPrecis();
       const hubSiteItemIds: string[] = [];
       const percentDone: number = 50.4;
       const progressPercentStep: number = 10.4;
 
-      _removeItems
-        ._removeItems(
+      removeItems
+        .removeItems(
           solutionSummary,
           hubSiteItemIds,
           MOCK_USER_SESSION,
@@ -688,8 +1031,8 @@ describe("Module `deleteSolution`: functions for deleting a deployed Solution it
       utils.setMockDateTime(now);
       const consoleSpy = spyOn(console, "log");
 
-      _removeItems
-        ._removeItems(
+      removeItems
+        .removeItems(
           solutionSummary,
           hubSiteItemIds,
           MOCK_USER_SESSION,
@@ -772,8 +1115,8 @@ describe("Module `deleteSolution`: functions for deleting a deployed Solution it
       utils.setMockDateTime(now);
       const consoleSpy = spyOn(console, "log");
 
-      _removeItems
-        ._removeItems(
+      removeItems
+        .removeItems(
           solutionSummary,
           hubSiteItemIds,
           MOCK_USER_SESSION,
@@ -873,8 +1216,8 @@ describe("Module `deleteSolution`: functions for deleting a deployed Solution it
       utils.setMockDateTime(now);
       const consoleSpy = spyOn(console, "log");
 
-      _removeItems
-        ._removeItems(
+      removeItems
+        .removeItems(
           solutionSummary,
           hubSiteItemIds,
           MOCK_USER_SESSION,
@@ -967,8 +1310,8 @@ describe("Module `deleteSolution`: functions for deleting a deployed Solution it
         Promise.resolve(utils.getSuccessResponse({ id: itemId }))
       );
 
-      _removeItems
-        ._removeItems(
+      removeItems
+        .removeItems(
           solutionSummary,
           hubSiteItemIds,
           MOCK_USER_SESSION,
@@ -1002,7 +1345,7 @@ describe("Module `deleteSolution`: functions for deleting a deployed Solution it
     });
   });
 
-  describe("_reportProgress", () => {
+  describe("reportProgress", () => {
     it("uses progressCallback with just defaults", () => {
       const percentDone: number = 50.4;
       const deleteOptions: interfaces.IDeleteSolutionOptions = {
@@ -1014,7 +1357,7 @@ describe("Module `deleteSolution`: functions for deleting a deployed Solution it
         }
       };
 
-      _reportProgress._reportProgress(percentDone, deleteOptions);
+      reportProgress.reportProgress(percentDone, deleteOptions);
     });
 
     it("uses progressCallback with item id, job id, and status", () => {
@@ -1031,7 +1374,7 @@ describe("Module `deleteSolution`: functions for deleting a deployed Solution it
         }
       };
 
-      _reportProgress._reportProgress(
+      reportProgress.reportProgress(
         percentDone,
         deleteOptions,
         deletedItemId,
@@ -1050,7 +1393,7 @@ describe("Module `deleteSolution`: functions for deleting a deployed Solution it
       utils.setMockDateTime(now);
       const consoleSpy = spyOn(console, "log");
 
-      _reportProgress._reportProgress(percentDone, deleteOptions);
+      reportProgress.reportProgress(percentDone, deleteOptions);
 
       expect(consoleSpy.calls.count()).toBe(1, "should call console.log once");
       expect(consoleSpy.calls.argsFor(0)[0]).toBe(now);
@@ -1076,7 +1419,7 @@ describe("Module `deleteSolution`: functions for deleting a deployed Solution it
       utils.setMockDateTime(now);
       const consoleSpy = spyOn(console, "log");
 
-      _reportProgress._reportProgress(
+      reportProgress.reportProgress(
         percentDone,
         deleteOptions,
         deletedItemId,
