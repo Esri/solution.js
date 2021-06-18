@@ -259,25 +259,22 @@ export function _createSolutionItem(
   authentication: UserSession,
   options?: ICreateSolutionOptions
 ): Promise<string> {
-  return new Promise<string>((resolve, reject) => {
-    const model = _createSolutionItemModel(options);
+  const model = _createSolutionItemModel(options);
 
-    // Create new solution item
-    delete model.item.thumbnailurl;
-    model.item.thumbnail = options?.thumbnail;
-    createItemWithData(
-      model.item,
-      model.data,
-      authentication,
-      options?.folderId
-    ).then(
-      createResponse => {
-        resolve(createResponse.id);
-      },
-      err => {
-        reject(err);
-      }
-    );
+  // Create new solution item
+  delete model.item.thumbnailurl;
+  model.item.thumbnail = options?.thumbnail;
+  return createItemWithData(
+    model.item,
+    model.data,
+    authentication,
+    options?.folderId
+  ).then(createResponse => {
+    if (createResponse.success) {
+      return Promise.resolve(createResponse.id);
+    } else {
+      return Promise.reject(createResponse);
+    }
   });
 }
 
