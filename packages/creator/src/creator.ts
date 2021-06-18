@@ -308,7 +308,10 @@ export function _createSolutionItemModel(options: any): IModel {
   const sanitizedItem = sanitizeJSONAndReportChanges(solutionItem);
 
   const addlKeywords = options?.additionalTypeKeywords || [];
-  sanitizedItem.typeKeywords = [...solutionItem.typeKeywords, ...addlKeywords];
+  sanitizedItem.typeKeywords = [].concat(
+    solutionItem.typeKeywords,
+    addlKeywords
+  );
 
   const solutionData: ISolutionItemData = {
     metadata: {},
@@ -324,7 +327,7 @@ export function _createSolutionItemModel(options: any): IModel {
  * Gets the deploy.id and deploy.version tag values.
  *
  * @param tags A list of item tags
- * @return A list ocntaining the two values found in the tags, or defaulting to a new GUID and "1.0", respectively,
+ * @return A list containing the two values found in the tags, or defaulting to a new GUID and "1.0", respectively,
  * as needed
  * @internal
  */
