@@ -207,18 +207,23 @@ describe("storeItemResources :: ", () => {
       const copyFilesSpy = spyOn(
         resourceHelpersModule,
         "copyFilesToStorageItem"
-      ).and.resolveTo(["bc3/some-image.jpeg"]);
+      ).and.resolveTo([
+        "bc3/some-image.jpeg",
+        "bc3/images/image-resources-list.json",
+        "bc3/images/draft_1231323.json",
+        "bc3_info_metadata/metadata.xml"
+      ]);
 
       const itemTemplate: interfaces.IItemTemplate = templates.getItemTemplateSkeleton();
       itemTemplate.itemId = "bc3";
       itemTemplate.type = "Web Experience";
 
-      return storeItemResources(itemTemplate, "4de", MOCK_USER_SESSION).then(
+      return storeItemResources(itemTemplate, "4de", MOCK_USER_SESSION, 1).then(
         response => {
           expect(Array.isArray(response)).toBe(true, "should return an array");
           expect(response.length).toBe(
-            1,
-            "filter out empty responses from copyFilesToStorageItem"
+            4, // metadata.xml is added automatically
+            "filter out config/config.json"
           );
           expect(response[0]).toBe(
             "bc3/some-image.jpeg",
@@ -233,6 +238,7 @@ describe("storeItemResources :: ", () => {
             1,
             "should copy files to solution"
           );
+          expect(copyFilesSpy.calls.argsFor(0)[1].length).toEqual(4);
         }
       );
     });

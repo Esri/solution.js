@@ -57,6 +57,12 @@ export function storeItemResources(
               result = false;
             }
           }
+          // Web-Experiences stores drafts in the config.json file; we don't create Solutions with drafts
+          if (itemTemplate.type === "Web Experience") {
+            if (res === "config/config.json") {
+              result = false;
+            }
+          }
           return result;
         });
       // create the filePaths
