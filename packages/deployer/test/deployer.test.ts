@@ -479,6 +479,10 @@ describe("Module `deployer`", () => {
         .get(
           "https://myorg.maps.arcgis.com/sharing/rest/content/items/svc1234567890?f=json&token=fake-token",
           testUtils.getCreateServiceResponse()
+        )
+        .post(
+          "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/items/map1234567890/protect",
+          { success: true }
         );
       spyOn(console, "log").and.callFake(() => {});
 
@@ -1158,6 +1162,10 @@ describe("Module `deployer`", () => {
             itemInfo.item.id +
             "/data",
           mockItems.get400Failure()
+        )
+        .post(
+          "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/items/map1234567890/protect",
+          { success: true }
         );
 
       const options: common.IDeploySolutionOptions = {
@@ -1318,6 +1326,10 @@ describe("Module `deployer`", () => {
         .get(
           "https://myorg.maps.arcgis.com/sharing/rest/content/items/svc1234567890?f=json&token=fake-token",
           testUtils.getCreateServiceResponse()
+        )
+        .post(
+          "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/items/map1234567890/protect",
+          { success: true }
         );
 
       const options: common.IDeploySolutionOptions = {
@@ -1532,6 +1544,10 @@ describe("Module `deployer`", () => {
         .get(
           "https://myorg.maps.arcgis.com/sharing/rest/content/items/svc1234567890?f=json&token=fake-token",
           testUtils.getCreateServiceResponse()
+        )
+        .post(
+          "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/items/map1234567890/protect",
+          { success: true }
         );
 
       const options: common.IDeploySolutionOptions = {
@@ -1735,6 +1751,10 @@ describe("Module `deployer`", () => {
           testUtils.PORTAL_SUBSET.restUrl +
             "/content/users/casey/items/map1234567890/delete",
           testUtils.getSuccessResponse({ itemId: "map1234567890" })
+        )
+        .post(
+          "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/items/map1234567890/protect",
+          { success: true }
         );
       spyOn(console, "error").and.callFake(() => {});
 
