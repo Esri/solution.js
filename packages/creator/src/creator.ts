@@ -270,11 +270,7 @@ export function _createSolutionItem(
     authentication,
     options?.folderId
   ).then(createResponse => {
-    if (createResponse.success) {
-      return Promise.resolve(createResponse.id);
-    } else {
-      return Promise.reject(createResponse);
-    }
+    return Promise.resolve(createResponse.id);
   });
 }
 
