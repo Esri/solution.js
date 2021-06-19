@@ -117,12 +117,12 @@ export function deleteSolution(
       })
       .then((results: ISolutionPrecis[]) => {
         // Attempt to delete groups; we won't be checking success
-        return new Promise<ISolutionPrecis[]>(resolve => {
+        return new Promise<ISolutionPrecis[]>(resolve2 => {
           // eslint-disable-next-line @typescript-eslint/no-floating-promises
           deleteEmptyGroups
             .deleteEmptyGroups(solutionSummary.groups, authentication)
             .then(() => {
-              resolve(results);
+              resolve2(results);
             });
         });
       })
