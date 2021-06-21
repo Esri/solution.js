@@ -17,6 +17,7 @@
 import * as common from "@esri/solution-common";
 import * as deployItems from "./deploySolutionItems";
 import { getWithDefault } from "@esri/hub-common";
+import * as portal from "@esri/arcgis-rest-portal";
 import { postProcess } from "./helpers/post-process";
 import { sortTemplates } from "./helpers/sortTemplates";
 
@@ -209,6 +210,15 @@ export function deploySolutionFromTemplate(
       })
       .then(createSolutionResponse => {
         deployedSolutionId = createSolutionResponse.id;
+
+        // Protect the solution item
+        const protectOptions: portal.IUserItemOptions = {
+          id: deployedSolutionId,
+          authentication
+        };
+        return portal.protectItem(protectOptions);
+      })
+      .then(() => {
         // TODO: Attach the whole solution model so we can
         // have stuff like `{{solution.item.title}}
         templateDictionary.solutionItemId = deployedSolutionId;
@@ -247,8 +257,9 @@ export function deploySolutionFromTemplate(
               );
 
               // Update the dependencies hash to point to the new item ids
-              itemTemplate.dependencies = itemTemplate.dependencies.map(id =>
-                getWithDefault(templateDictionary, `${id}.itemId`, id)
+              itemTemplate.dependencies = itemTemplate.dependencies.map(
+                (id: string) =>
+                  getWithDefault(templateDictionary, `${id}.itemId`, id)
               );
               return itemTemplate;
             }

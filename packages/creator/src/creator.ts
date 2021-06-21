@@ -259,25 +259,18 @@ export function _createSolutionItem(
   authentication: UserSession,
   options?: ICreateSolutionOptions
 ): Promise<string> {
-  return new Promise<string>((resolve, reject) => {
-    const model = _createSolutionItemModel(options);
+  const model = _createSolutionItemModel(options);
 
-    // Create new solution item
-    delete model.item.thumbnailurl;
-    model.item.thumbnail = options?.thumbnail;
-    createItemWithData(
-      model.item,
-      model.data,
-      authentication,
-      options?.folderId
-    ).then(
-      createResponse => {
-        resolve(createResponse.id);
-      },
-      err => {
-        reject(err);
-      }
-    );
+  // Create new solution item
+  delete model.item.thumbnailurl;
+  model.item.thumbnail = options?.thumbnail;
+  return createItemWithData(
+    model.item,
+    model.data,
+    authentication,
+    options?.folderId
+  ).then(createResponse => {
+    return Promise.resolve(createResponse.id);
   });
 }
 
@@ -311,7 +304,10 @@ export function _createSolutionItemModel(options: any): IModel {
   const sanitizedItem = sanitizeJSONAndReportChanges(solutionItem);
 
   const addlKeywords = options?.additionalTypeKeywords || [];
-  sanitizedItem.typeKeywords = [...solutionItem.typeKeywords, ...addlKeywords];
+  sanitizedItem.typeKeywords = [].concat(
+    solutionItem.typeKeywords,
+    addlKeywords
+  );
 
   const solutionData: ISolutionItemData = {
     metadata: {},
@@ -327,7 +323,7 @@ export function _createSolutionItemModel(options: any): IModel {
  * Gets the deploy.id and deploy.version tag values.
  *
  * @param tags A list of item tags
- * @return A list ocntaining the two values found in the tags, or defaulting to a new GUID and "1.0", respectively,
+ * @return A list containing the two values found in the tags, or defaulting to a new GUID and "1.0", respectively,
  * as needed
  * @internal
  */

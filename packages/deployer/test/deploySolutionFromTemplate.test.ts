@@ -233,6 +233,10 @@ describe("Module `deploySolutionFromTemplate`", () => {
           testUtils.PORTAL_SUBSET.restUrl +
             "/content/users/casey/fld1234567890/items/dpl1234567890/update",
           testUtils.getSuccessResponse({ id: deployedSolutionId })
+        )
+        .post(
+          "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/items/dpl1234567890/protect",
+          { success: true }
         );
 
       deploySolutionFromTemplate(
@@ -364,6 +368,10 @@ describe("Module `deploySolutionFromTemplate`", () => {
           testUtils.PORTAL_SUBSET.restUrl +
             "/content/users/casey/fld1234567890/items/dpl1234567890/update",
           testUtils.getSuccessResponse({ id: deployedSolutionId })
+        )
+        .post(
+          "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/items/dpl1234567890/protect",
+          { success: true }
         );
 
       deploySolutionFromTemplate(
