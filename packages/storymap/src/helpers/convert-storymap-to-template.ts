@@ -67,12 +67,11 @@ export function convertStoryMapToTemplate(
   // Note: Hub team decided to discard unpublished drafts when creating a template
   const typeKeywords = tmpl.item.typeKeywords;
   if (typeKeywords.indexOf(unPublishedChangesKW) !== -1) {
-    tmpl.item.typeKeywords = [
-      publishedChangesKW,
-      ...tmpl.item.typeKeywords.filter(
+    tmpl.item.typeKeywords = [publishedChangesKW].concat(
+      tmpl.item.typeKeywords.filter(
         (word: string) => word !== unPublishedChangesKW
       )
-    ];
+    );
   }
 
   tmpl.properties = {};

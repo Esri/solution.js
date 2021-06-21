@@ -72,10 +72,9 @@ export function postProcessHubSurvey(
         {
           id: featureServiceResultId,
           extent: interpolated.item.extent,
-          typeKeywords: [
-            ...featureServiceResultBase.typeKeywords,
-            `source-${featureServiceSourceId}`
-          ]
+          typeKeywords: [`source-${featureServiceSourceId}`].concat(
+            featureServiceResultBase.typeKeywords
+          )
         }
       ];
       const toUpdatePromise = (updatedItem: IItemUpdate) =>
