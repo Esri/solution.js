@@ -430,6 +430,9 @@ describe("Module `deleteSolution`: functions for deleting a deployed Solution it
         ]),
         mockItems.getSolutionPrecis()
       ]);
+      const unprotectItemSpy = spyOn(portal, "unprotectItem").and.resolveTo(
+        utils.getSuccessResponse()
+      );
       const _removeItemSpy = spyOn(restHelpers, "removeItem").and.resolveTo({
         success: true,
         itemId: "sol1234567890"
@@ -450,15 +453,30 @@ describe("Module `deleteSolution`: functions for deleting a deployed Solution it
             ]),
             mockItems.getSolutionPrecis()
           ]);
+          expect(unprotectItemSpy.calls.count()).toBe(
+            1,
+            "should unprotect Solution item"
+          );
+          expect(_removeItemSpy.calls.count()).toBe(
+            1,
+            "should remove Solution item"
+          );
+          expect(_deleteSolutionFolderSpy.calls.count()).toBe(
+            1,
+            "should remove Solution folder"
+          );
           done();
         });
     });
 
-    it("deletes a Solution that doesn't contain deletable items", done => {
+    it("deletes a Solution that doesn't contain items", done => {
       const getDeletableSolutionInfoSpy = spyOn(
         getDeletableSolutionInfo,
         "getDeletableSolutionInfo"
       ).and.resolveTo(mockItems.getSolutionPrecis());
+      const unprotectItemSpy = spyOn(portal, "unprotectItem").and.resolveTo(
+        utils.getSuccessResponse()
+      );
       const _removeItemSpy = spyOn(restHelpers, "removeItem").and.resolveTo({
         success: true,
         itemId: "sol1234567890"
@@ -476,6 +494,18 @@ describe("Module `deleteSolution`: functions for deleting a deployed Solution it
             mockItems.getSolutionPrecis(),
             mockItems.getSolutionPrecis()
           ]);
+          expect(unprotectItemSpy.calls.count()).toBe(
+            1,
+            "should unprotect Solution item"
+          );
+          expect(_removeItemSpy.calls.count()).toBe(
+            1,
+            "should remove Solution item"
+          );
+          expect(_deleteSolutionFolderSpy.calls.count()).toBe(
+            1,
+            "should remove Solution folder"
+          );
           done();
         });
     });
@@ -497,6 +527,9 @@ describe("Module `deleteSolution`: functions for deleting a deployed Solution it
         ]),
         mockItems.getSolutionPrecis()
       ]);
+      const unprotectItemSpy = spyOn(portal, "unprotectItem").and.resolveTo(
+        utils.getSuccessResponse()
+      );
       const _removeItemSpy = spyOn(restHelpers, "removeItem").and.resolveTo({
         success: true,
         itemId: "sol1234567890"
@@ -527,6 +560,18 @@ describe("Module `deleteSolution`: functions for deleting a deployed Solution it
             ]),
             mockItems.getSolutionPrecis()
           ]);
+          expect(unprotectItemSpy.calls.count()).toBe(
+            1,
+            "should unprotect Solution item"
+          );
+          expect(_removeItemSpy.calls.count()).toBe(
+            1,
+            "should remove Solution item"
+          );
+          expect(_deleteSolutionFolderSpy.calls.count()).toBe(
+            1,
+            "should remove Solution folder"
+          );
           done();
         });
     });
@@ -547,6 +592,9 @@ describe("Module `deleteSolution`: functions for deleting a deployed Solution it
         ]),
         mockItems.getSolutionPrecis([mockItems.getAGOLItemPrecis("Web Map")])
       ]);
+      const unprotectItemSpy = spyOn(portal, "unprotectItem").and.resolveTo(
+        utils.getSuccessResponse()
+      );
       const _removeItemSpy = spyOn(restHelpers, "removeItem").and.resolveTo({
         success: true,
         itemId: "sol1234567890"
@@ -568,6 +616,74 @@ describe("Module `deleteSolution`: functions for deleting a deployed Solution it
               mockItems.getAGOLItemPrecis("Web Map")
             ])
           ]);
+          expect(unprotectItemSpy.calls.count()).toBe(
+            0,
+            "should not unprotect Solution item"
+          );
+          expect(_removeItemSpy.calls.count()).toBe(
+            0,
+            "should not remove Solution item"
+          );
+          expect(_deleteSolutionFolderSpy.calls.count()).toBe(
+            0,
+            "should not remove Solution folder"
+          );
+          done();
+        });
+    });
+
+    it("deletes the items of a Solution, but unprotecting the Solution fails", done => {
+      const getDeletableSolutionInfoSpy = spyOn(
+        getDeletableSolutionInfo,
+        "getDeletableSolutionInfo"
+      ).and.resolveTo(
+        mockItems.getSolutionPrecis([
+          mockItems.getAGOLItemPrecis("Web Map"),
+          mockItems.getAGOLItemPrecis("Web Mapping Application")
+        ])
+      );
+      const _removeItemsSpy = spyOn(removeItems, "removeItems").and.resolveTo([
+        mockItems.getSolutionPrecis([
+          mockItems.getAGOLItemPrecis("Web Map"),
+          mockItems.getAGOLItemPrecis("Web Mapping Application")
+        ]),
+        mockItems.getSolutionPrecis()
+      ]);
+      const unprotectItemSpy = spyOn(portal, "unprotectItem").and.resolveTo(
+        utils.getFailureResponse()
+      );
+      const _removeItemSpy = spyOn(restHelpers, "removeItem").and.resolveTo({
+        success: false,
+        itemId: "sol1234567890"
+      });
+      const _deleteSolutionFolderSpy = spyOn(
+        deleteSolutionFolder,
+        "deleteSolutionFolder"
+      ).and.resolveTo(true);
+      const _reportProgressSpy = spyOn(reportProgress, "reportProgress");
+
+      deleteSolution
+        .deleteSolution("sol1234567890", MOCK_USER_SESSION)
+        .then((response: interfaces.ISolutionPrecis[]) => {
+          expect(response).toEqual([
+            mockItems.getSolutionPrecis([
+              mockItems.getAGOLItemPrecis("Web Map"),
+              mockItems.getAGOLItemPrecis("Web Mapping Application")
+            ]),
+            mockItems.getSolutionPrecis()
+          ]);
+          expect(unprotectItemSpy.calls.count()).toBe(
+            1,
+            "should unprotect Solution item"
+          );
+          expect(_removeItemSpy.calls.count()).toBe(
+            0,
+            "should not remove Solution item"
+          );
+          expect(_deleteSolutionFolderSpy.calls.count()).toBe(
+            0,
+            "should not remove Solution folder"
+          );
           done();
         });
     });
@@ -589,10 +705,17 @@ describe("Module `deleteSolution`: functions for deleting a deployed Solution it
         ]),
         mockItems.getSolutionPrecis()
       ]);
+      const unprotectItemSpy = spyOn(portal, "unprotectItem").and.resolveTo(
+        utils.getSuccessResponse()
+      );
       const _removeItemSpy = spyOn(restHelpers, "removeItem").and.resolveTo({
         success: false,
         itemId: "sol1234567890"
       });
+      const _deleteSolutionFolderSpy = spyOn(
+        deleteSolutionFolder,
+        "deleteSolutionFolder"
+      ).and.resolveTo(true);
       const _reportProgressSpy = spyOn(reportProgress, "reportProgress");
 
       deleteSolution
@@ -605,6 +728,18 @@ describe("Module `deleteSolution`: functions for deleting a deployed Solution it
             ]),
             mockItems.getSolutionPrecis()
           ]);
+          expect(unprotectItemSpy.calls.count()).toBe(
+            1,
+            "should unprotect Solution item"
+          );
+          expect(_removeItemSpy.calls.count()).toBe(
+            1,
+            "should remove Solution item"
+          );
+          expect(_deleteSolutionFolderSpy.calls.count()).toBe(
+            0,
+            "should not remove Solution folder"
+          );
           done();
         });
     });
@@ -626,6 +761,9 @@ describe("Module `deleteSolution`: functions for deleting a deployed Solution it
         ]),
         mockItems.getSolutionPrecis()
       ]);
+      const unprotectItemSpy = spyOn(portal, "unprotectItem").and.resolveTo(
+        utils.getSuccessResponse()
+      );
       const _removeItemSpy = spyOn(restHelpers, "removeItem").and.resolveTo({
         success: true,
         itemId: "sol1234567890"
@@ -646,6 +784,18 @@ describe("Module `deleteSolution`: functions for deleting a deployed Solution it
             ]),
             mockItems.getSolutionPrecis()
           ]);
+          expect(unprotectItemSpy.calls.count()).toBe(
+            1,
+            "should unprotect Solution item"
+          );
+          expect(_removeItemSpy.calls.count()).toBe(
+            1,
+            "should remove Solution item"
+          );
+          expect(_deleteSolutionFolderSpy.calls.count()).toBe(
+            1,
+            "should remove Solution folder"
+          );
           done();
         });
     });

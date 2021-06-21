@@ -30,6 +30,7 @@ import {
 } from "./interfaces";
 import * as deleteEmptyGroups from "./deleteHelpers/deleteEmptyGroups";
 import * as deleteSolutionFolder from "./deleteHelpers/deleteSolutionFolder";
+import * as deleteSolutionItem from "./deleteHelpers/deleteSolutionItem";
 import * as removeItems from "./deleteHelpers/removeItems";
 import * as reportProgress from "./deleteHelpers/reportProgress";
 import * as getDeletableSolutionInfo from "./getDeletableSolutionInfo";
@@ -116,12 +117,12 @@ export function deleteSolution(
       })
       .then((results: ISolutionPrecis[]) => {
         // Attempt to delete groups; we won't be checking success
-        return new Promise<ISolutionPrecis[]>(resolve => {
+        return new Promise<ISolutionPrecis[]>(resolve2 => {
           // eslint-disable-next-line @typescript-eslint/no-floating-promises
           deleteEmptyGroups
             .deleteEmptyGroups(solutionSummary.groups, authentication)
             .then(() => {
-              resolve(results);
+              resolve2(results);
             });
         });
       })
@@ -129,7 +130,10 @@ export function deleteSolution(
         [solutionDeletedSummary, solutionFailureSummary] = results;
         // If there were no failed deletes, it's OK to delete Solution item
         if (solutionFailureSummary.items.length === 0) {
-          return restHelpers.removeItem(solutionItemId, authentication);
+          return deleteSolutionItem.deleteSolutionItem(
+            solutionItemId,
+            authentication
+          );
         } else {
           // Not all items were deleted, so don't delete solution
           return Promise.resolve({ success: false, itemId: solutionItemId });
