@@ -454,6 +454,33 @@ describe("Module `generalHelpers`: common utility functions shared across packag
     });
   });
 
+  describe("dedupe", () => {
+    it("should handle undefined list", () => {
+      expect(generalHelpers.dedupe()).toEqual([]);
+    });
+
+    it("should handle empty list", () => {
+      expect(generalHelpers.dedupe([])).toEqual([]);
+    });
+
+    it("should handle list with no duplicates", () => {
+      expect(generalHelpers.dedupe(["a", "b", "c", "d"])).toEqual([
+        "a",
+        "b",
+        "c",
+        "d"
+      ]);
+    });
+
+    it("should handle list with duplicates", () => {
+      expect(generalHelpers.dedupe(["a", "d", "c", "d"])).toEqual([
+        "a",
+        "d",
+        "c"
+      ]);
+    });
+  });
+
   describe("deleteProp", () => {
     it("should handle missing prop", () => {
       const testObject: any = {};
