@@ -14,9 +14,8 @@
  * limitations under the License.
  */
 
-import { IItemTemplate } from "@esri/solution-common";
+import { IItemTemplate, getItemTypeAbbrev } from "@esri/solution-common";
 import { sortTemplates } from "../../src/helpers/sortTemplates";
-import * as mockItems from "@esri/solution-common/test/mocks/agolItems";
 import * as templates from "@esri/solution-common/test/mocks/templates";
 
 describe("sortTemplates", () => {
@@ -28,10 +27,10 @@ describe("sortTemplates", () => {
       templates.getItemTemplate("QuickCapture Project")
     ];
     const sortOrderIds = [
-      mockItems.getItemTypeAbbrev("Web Map"),
-      mockItems.getItemTypeAbbrev("Feature Service"),
-      mockItems.getItemTypeAbbrev("Dashboard"),
-      mockItems.getItemTypeAbbrev("QuickCapture Project")
+      getItemTypeAbbrev("Web Map"),
+      getItemTypeAbbrev("Feature Service"),
+      getItemTypeAbbrev("Dashboard"),
+      getItemTypeAbbrev("QuickCapture Project")
     ]
       .sort()
       .map(id => id + "1234567890");

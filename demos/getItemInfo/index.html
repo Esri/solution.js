@@ -68,38 +68,43 @@
         "@esri/hub-teams": "../node_modules/@esri/hub-teams/dist/umd/teams.umd.min",
         "@esri/solution-common": "../node_modules/@esri/solution-common/dist/umd/common.umd",
         "adlib": "../node_modules/adlib/dist/adlib",
-        "dist": package_path + "/dist",
-        "src": package_path + "/src",
         "tslib": "../node_modules/tslib/tslib"
       }
     });
 
-    require(["@esri/arcgis-rest-auth", "../dist/getFormattedItemInfo"],
-      function (auth, getFormattedItemInfo) {
-        "use strict";
-        goFcn = go;
-        document.getElementById("input").style.display = "block";
+    require(["@esri/arcgis-rest-auth", "../dist/getFormattedItemInfo", "../dist/raphael_2.2.1.min"],
+      function (auth, getFormattedItemInfo, Raphael) {
+        window.Raphael = Raphael;
+        require(["../dist/dracula_1.2.1.min"],
+          function (Dracula) {
+          "use strict";
+          goFcn = go;
+          document.getElementById("input").style.display = "block";
 
-        function go () {
-          document.getElementById("input").style.display = "none";
-          document.getElementById("output").style.display = "block";
+          function go () {
+            document.getElementById("input").style.display = "none";
+            document.getElementById("output").style.display = "block";
 
-          getFormattedItemInfo.getFormattedItemInfo(
-            document.getElementById("id").value.trim(),
-            new auth.UserSession({
-              username: document.getElementById("username").value,
-              password: document.getElementById("password").value,
-              portal: document.getElementById("srcPortal").value + "/sharing/rest"
-            })
-          ).then(
-            html => {
-              document.getElementById("output").innerHTML = html;
-            },
-            error => {
-              document.getElementById("output").innerHTML = "<span style=\"color:red\">" + error + "</span>";
-            }
-          );
-        }
+            getFormattedItemInfo.getFormattedItemInfo(
+              document.getElementById("id").value.trim(),
+              new auth.UserSession({
+                username: document.getElementById("username").value,
+                password: document.getElementById("password").value,
+                portal: document.getElementById("srcPortal").value + "/sharing/rest"
+              }),
+              Raphael,
+              Dracula
+            ).then(
+              html => {
+                document.getElementById("output").innerHTML = html;
+              },
+              error => {
+                document.getElementById("output").innerHTML = "<span style=\"color:red\">" + error + "</span>";
+              }
+            );
+          }
+          }
+        );
       }
     );
   </script>
