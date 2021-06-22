@@ -533,9 +533,5 @@ export function _templatizeSolutionIds(templates: IItemTemplate[]): void {
   templates.forEach((template: IItemTemplate) => {
     _replaceRemainingIdsInObject(solutionIds, template.item);
     _replaceRemainingIdsInObject(solutionIds, template.data);
-    /* istanbul ignore else */
-    if (template.type !== "Group" && !isWorkforceProject(template)) {
-      template.dependencies = _getDependencies(template);
-    }
   });
 }

@@ -16,6 +16,7 @@
 
 // This file contains examples of templates of AGOL items.
 
+import * as getItemTypeAbbrev from "../../src/getItemTypeAbbrev";
 import * as interfaces from "../../src/interfaces";
 import * as mockItems from "./agolItems";
 import * as utils from "./utils";
@@ -140,7 +141,7 @@ export function getItemTemplate(
     case "Dashboard":
       templatePart = getItemTemplateFundamentals(
         type,
-        mockItems.getItemTypeAbbrev(type),
+        getItemTypeAbbrev.getItemTypeAbbrev(type),
         dependencies,
         url
       );
@@ -163,7 +164,7 @@ export function getItemTemplate(
     case "Feature Service":
       templatePart = getItemTemplateFundamentals(
         type,
-        mockItems.getItemTypeAbbrev(type),
+        getItemTypeAbbrev.getItemTypeAbbrev(type),
         dependencies,
         url || "{{svc1234567890.itemId}}"
       );
@@ -202,7 +203,7 @@ export function getItemTemplate(
     case "Form":
       templatePart = getItemTemplateFundamentals(
         type,
-        mockItems.getItemTypeAbbrev(type),
+        getItemTypeAbbrev.getItemTypeAbbrev(type),
         dependencies,
         url
       );
@@ -221,7 +222,7 @@ export function getItemTemplate(
     case "Hub Site Application":
       templatePart = getItemTemplateFundamentals(
         type,
-        mockItems.getItemTypeAbbrev(type),
+        getItemTypeAbbrev.getItemTypeAbbrev(type),
         dependencies,
         url
       );
@@ -233,7 +234,7 @@ export function getItemTemplate(
     case "Map Template": // // ??? temporary definition
       templatePart = getItemTemplateFundamentals(
         type,
-        mockItems.getItemTypeAbbrev(type),
+        getItemTypeAbbrev.getItemTypeAbbrev(type),
         dependencies,
         url
       );
@@ -243,7 +244,7 @@ export function getItemTemplate(
     case "Notebook":
       templatePart = getItemTemplateFundamentals(
         type,
-        mockItems.getItemTypeAbbrev(type),
+        getItemTypeAbbrev.getItemTypeAbbrev(type),
         dependencies,
         url
       );
@@ -257,7 +258,7 @@ export function getItemTemplate(
     case "Oriented Imagery Catalog":
       templatePart = getItemTemplateFundamentals(
         type,
-        mockItems.getItemTypeAbbrev(type),
+        getItemTypeAbbrev.getItemTypeAbbrev(type),
         dependencies,
         url
       );
@@ -277,7 +278,7 @@ export function getItemTemplate(
     case "QuickCapture Project":
       templatePart = getItemTemplateFundamentals(
         type,
-        mockItems.getItemTypeAbbrev(type),
+        getItemTypeAbbrev.getItemTypeAbbrev(type),
         dependencies,
         url
       );
@@ -286,7 +287,7 @@ export function getItemTemplate(
     case "StoryMap":
       templatePart = getItemTemplateFundamentals(
         type,
-        mockItems.getItemTypeAbbrev(type),
+        getItemTypeAbbrev.getItemTypeAbbrev(type),
         dependencies,
         url || "https://storymaps.arcgis.com/stories/{{sto1234567890.itemId}}"
       );
@@ -297,7 +298,7 @@ export function getItemTemplate(
     case "Web Map":
       templatePart = getItemTemplateFundamentals(
         type,
-        mockItems.getItemTypeAbbrev(type),
+        getItemTypeAbbrev.getItemTypeAbbrev(type),
         dependencies,
         url ||
           "{{portalBaseUrl}}/home/webmap/viewer.html?webmap={{map1234567890.itemId}}"
@@ -309,7 +310,7 @@ export function getItemTemplate(
     case "Web Mapping Application":
       templatePart = getItemTemplateFundamentals(
         type,
-        mockItems.getItemTypeAbbrev(type),
+        getItemTypeAbbrev.getItemTypeAbbrev(type),
         dependencies,
         url ||
           "{{portalBaseUrl}}/apps/CrowdsourcePolling/index.html?appid={{wma1234567890.itemId}}"
@@ -321,7 +322,7 @@ export function getItemTemplate(
     case "Workforce Project":
       templatePart = getItemTemplateFundamentals(
         type,
-        mockItems.getItemTypeAbbrev(type),
+        getItemTypeAbbrev.getItemTypeAbbrev(type),
         dependencies,
         url
       );
