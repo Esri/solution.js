@@ -239,11 +239,16 @@ export function cloneObject(obj: { [index: string]: any }): any {
   if (Array.isArray(obj)) {
     clone = obj.map(cloneObject);
   } else if (typeof obj === "object") {
-    for (const i in obj) {
-      if (obj[i] != null && typeof obj[i] === "object") {
-        clone[i] = cloneObject(obj[i]);
-      } else {
-        clone[i] = obj[i];
+    if (obj instanceof File) {
+      const fileOptions = obj.type ? { type: obj.type } : undefined;
+      clone = new File([obj], obj.name, fileOptions);
+    } else {
+      for (const i in obj) {
+        if (obj[i] != null && typeof obj[i] === "object") {
+          clone[i] = cloneObject(obj[i]);
+        } else {
+          clone[i] = obj[i];
+        }
       }
     }
   } else {

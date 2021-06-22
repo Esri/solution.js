@@ -159,7 +159,8 @@ export function deploySolutionItems(
                 common.generateStorageFilePaths(
                   portalSharingUrl,
                   storageItemId,
-                  template.resources
+                  template.resources,
+                  options.storageVersion
                 ),
                 storageAuthentication,
                 templateDictionary,
@@ -521,12 +522,14 @@ export function _updateTemplateDictionary(
   return new Promise(resolve => {
     const defs: Array<Promise<any>> = [];
     const urls: string[] = [];
+    const types: string[] = [];
+    const ids: string[] = [];
     templates.forEach(t => {
+      const templateInfo: any = templateDictionary[t.itemId];
       /* istanbul ignore else */
-      if (t.item.type === "Feature Service") {
-        const templateInfo: any = templateDictionary[t.itemId];
+      if (templateInfo && templateInfo.url && templateInfo.itemId) {
         /* istanbul ignore else */
-        if (templateInfo && templateInfo.url && templateInfo.itemId) {
+        if (t.item.type === "Feature Service") {
           Object.assign(
             templateDictionary[t.itemId],
             common.getLayerSettings(
@@ -535,21 +538,33 @@ export function _updateTemplateDictionary(
               templateInfo.itemId
             )
           );
-          // we need the spatialReference from the service
+
+          // if the service has veiws keep track of the fields so we can use them to
+          // compare with the view fields
           /* istanbul ignore else */
-          if (urls.indexOf(templateInfo.url) < 0) {
-            defs.push(
-              common.rest_request(templateInfo.url, { authentication })
+          if (common.getProp(t, "properties.service.hasViews")) {
+            common._updateTemplateDictionaryFields(
+              t,
+              templateDictionary,
+              false
             );
-            urls.push(templateInfo.url);
           }
         }
 
-        // if the service has veiws keep track of the fields so we can use them to
-        // compare with the view fields
+        // for fs query with its url...for non fs query the item
+        // this is to verify situations where we have a stale search index that will
+        // say some items exist when they don't really exist
+        // searching the services url or with the item id will return an error when this condition occurs
         /* istanbul ignore else */
-        if (common.getProp(t, "properties.service.hasViews")) {
-          common._updateTemplateDictionaryFields(t, templateDictionary, false);
+        if (urls.indexOf(templateInfo.url) < 0) {
+          defs.push(
+            t.item.type === "Feature Service"
+              ? common.rest_request(templateInfo.url, { authentication })
+              : common.getItemBase(templateInfo.itemId, authentication)
+          );
+          urls.push(templateInfo.url);
+          types.push(t.item.type);
+          ids.push(templateInfo.itemId);
         }
       }
     });
@@ -561,8 +576,8 @@ export function _updateTemplateDictionary(
         if (Array.isArray(results) && results.length > 0) {
           const fieldDefs: Array<Promise<any>> = [];
           results.forEach((r, i) => {
-            // the result will contain a serviceItemId when it has successfully fetched a service
-            if (r.serviceItemId) {
+            // a feature service result will contain a serviceItemId if it was successfully fetched
+            if (r.serviceItemId && types[i] === "Feature Service") {
               Object.keys(templateDictionary).forEach(k => {
                 const v: any = templateDictionary[k];
                 /* istanbul ignore else */
@@ -596,11 +611,17 @@ export function _updateTemplateDictionary(
                 }
               });
             } else {
-              // if an error is returned we need to clean up the templateDictionary
-              templateDictionary = _updateTemplateDictionaryForError(
-                r,
-                templateDictionary
-              );
+              /* istanbul ignore else */
+              if (
+                types[i] === "Feature Service" ||
+                common.getProp(r, "response.error")
+              ) {
+                // if an error is returned we need to clean up the templateDictionary
+                templateDictionary = _updateTemplateDictionaryForError(
+                  templateDictionary,
+                  ids[i]
+                );
+              }
             }
           });
 
@@ -652,15 +673,15 @@ export function _updateTemplateDictionary(
  * @protected
  */
 export function _updateTemplateDictionaryForError(
-  result: any,
-  templateDictionary: any
+  templateDictionary: any,
+  itemId: string
 ): any {
   /* istanbul ignore else */
-  if (result.url) {
+  if (itemId) {
     let removeKey: string = "";
     Object.keys(templateDictionary).some(k => {
       /* istanbul ignore else */
-      if (templateDictionary[k].url === result.url) {
+      if (templateDictionary[k].itemId === itemId) {
         removeKey = k;
         return true;
       }
@@ -846,6 +867,11 @@ export function _createItemFromTemplateWhenReady(
     !templateDictionary.hasOwnProperty(template.itemId) ||
     !common.getProp(templateDictionary[template.itemId], "def")
   ) {
+    let createResponse: common.ICreateItemFromTemplateResponse;
+    let statusCode: common.EItemProgressStatus =
+      common.EItemProgressStatus.Unknown;
+    let itemHandler: common.IItemTemplateConversions;
+
     templateDictionary[template.itemId] =
       templateDictionary[template.itemId] || {};
 
@@ -884,83 +910,82 @@ export function _createItemFromTemplateWhenReady(
             }, _awaitDependencies)
           : _awaitDependencies;
 
-      Promise.all(awaitDependencies).then(
-        () => {
+      Promise.all(awaitDependencies)
+        .then(() => {
           // Find the conversion handler for this item type
           const templateType = template.type;
-          const itemHandler = moduleMap[templateType];
+          itemHandler = moduleMap[templateType];
           if (!itemHandler || itemHandler === UNSUPPORTED) {
             if (itemHandler === UNSUPPORTED) {
-              itemProgressCallback(
-                template.itemId,
-                common.EItemProgressStatus.Ignored,
-                template.estimatedDeploymentCostFactor
-              );
+              statusCode = common.EItemProgressStatus.Ignored;
+              throw new Error();
             } else {
-              itemProgressCallback(
-                template.itemId,
-                common.EItemProgressStatus.Failed,
-                0
-              );
+              statusCode = common.EItemProgressStatus.Failed;
+              throw new Error();
             }
-            resolve(common.generateEmptyCreationResponse(template.type));
-          } else {
-            // Delegate the creation of the item to the handler
-            // eslint-disable-next-line @typescript-eslint/no-floating-promises
-            itemHandler
-              .createItemFromTemplate(
-                template,
-                templateDictionary,
-                destinationAuthentication,
-                itemProgressCallback
-              )
-              .then(
-                (createResponse: common.ICreateItemFromTemplateResponse) => {
-                  if (createResponse.id === "") {
-                    resolve(
-                      common.generateEmptyCreationResponse(template.type)
-                    ); // fails to create item
-                  } else {
-                    /* istanbul ignore else */
-                    if (createResponse.item.item.url) {
-                      common.setCreateProp(
-                        templateDictionary,
-                        template.itemId + ".url",
-                        createResponse.item.item.url
-                      );
-                    }
-
-                    // Copy resources, metadata, form
-                    common
-                      .copyFilesFromStorageItem(
-                        storageAuthentication,
-                        resourceFilePaths,
-                        templateDictionary.folderId,
-                        createResponse.id,
-                        destinationAuthentication,
-                        templateType === "Group",
-                        createResponse.item
-                      )
-                      .then(
-                        () => resolve(createResponse),
-                        () => {
-                          itemProgressCallback(
-                            template.itemId,
-                            common.EItemProgressStatus.Failed,
-                            0
-                          );
-                          resolve(
-                            common.generateEmptyCreationResponse(template.type)
-                          ); // fails to copy resources from storage
-                        }
-                      );
-                  }
-                }
-              );
           }
-        },
-        () => resolve(common.generateEmptyCreationResponse(template.type)) // fails to get item dependencies
-      );
+
+          // Get the item's thumbnail
+          return common.getThumbnailFromStorageItem(
+            storageAuthentication,
+            resourceFilePaths
+          );
+        })
+        .then(thumbnail => {
+          template.item.thumbnail = thumbnail;
+
+          // Delegate the creation of the item to the handler
+          // eslint-disable-next-line @typescript-eslint/no-floating-promises
+          return itemHandler.createItemFromTemplate(
+            template,
+            templateDictionary,
+            destinationAuthentication,
+            itemProgressCallback
+          );
+        })
+        .then((response: common.ICreateItemFromTemplateResponse) => {
+          if (response.id === "") {
+            statusCode = common.EItemProgressStatus.Failed;
+            throw new Error("handled"); // fails to create item
+          }
+
+          /* istanbul ignore else */
+          createResponse = response;
+          if (createResponse.item.item.url) {
+            common.setCreateProp(
+              templateDictionary,
+              template.itemId + ".url",
+              createResponse.item.item.url
+            );
+          }
+
+          // Copy resources, metadata, form
+          return common.copyFilesFromStorageItem(
+            storageAuthentication,
+            resourceFilePaths,
+            templateDictionary.folderId,
+            createResponse.id,
+            destinationAuthentication,
+            createResponse.item
+          );
+        })
+        .then(() => {
+          resolve(createResponse);
+        })
+        .catch(error => {
+          if (!error || error.message !== "handled") {
+            itemProgressCallback(
+              template.itemId,
+              statusCode === common.EItemProgressStatus.Unknown
+                ? common.EItemProgressStatus.Failed
+                : statusCode,
+              0
+            );
+          }
+
+          // Item type not supported or fails to get item dependencies
+          resolve(common.generateEmptyCreationResponse(template.type));
+        });
     });
   }
   return templateDictionary[template.itemId].def;

@@ -19,7 +19,7 @@ import * as common from "@esri/solution-common";
 import * as deployer from "@esri/solution-deployer";
 import * as portal from "@esri/arcgis-rest-portal";
 
-import * as getItemInfo from "./getItemInfo";
+import * as getFormattedItemInfo from "./getFormattedItemInfo";
 
 export interface ISolutionInfoCard {
   id: string;
@@ -30,7 +30,8 @@ export function deploySolution(
   templateSolutionId: string,
   srcAuthentication: common.UserSession,
   destAuthentication: common.UserSession,
-  progressCallback: common.ISolutionProgressCallback
+  progressCallback: common.ISolutionProgressCallback,
+  enableItemReuse: boolean
 ): Promise<string> {
   return new Promise<string>((resolve, reject) => {
     if (!templateSolutionId) {
@@ -43,12 +44,13 @@ export function deploySolution(
       jobId: common.createShortId(),
       progressCallback: progressCallback,
       consoleProgress: true,
-      storageAuthentication: srcAuthentication
+      storageAuthentication: srcAuthentication,
+      enableItemReuse
     };
 
     deployer.deploySolution(templateSolutionId, destAuthentication, options).then(
       (deployedSolution: any) => {
-        getItemInfo.getItemInfo(deployedSolution, destAuthentication).then(
+        getFormattedItemInfo.getFormattedItemInfo(deployedSolution, destAuthentication).then(
           itemInfoHtml => resolve(itemInfoHtml),
           error => reject(error.error)
         );

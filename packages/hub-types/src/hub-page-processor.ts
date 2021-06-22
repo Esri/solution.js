@@ -15,7 +15,7 @@
  */
 
 /**
- * Manages the creation and deployment of Story Map item types.
+ * Manages the creation and deployment of Hub Page item types.
  *
  * @module hub-page-processor
  */
@@ -26,9 +26,10 @@ import {
   ICreateItemFromTemplateResponse,
   EItemProgressStatus,
   UserSession,
+  createHubRequestOptions,
   generateEmptyCreationResponse
 } from "@esri/solution-common";
-import { createHubRequestOptions } from "./helpers/create-hub-request-options";
+import { IUpdateItemOptions, updateItem } from "@esri/arcgis-rest-portal";
 import {
   IModel,
   IModelTemplate,
@@ -136,6 +137,7 @@ export function createItemFromTemplate(
   let pageModel: IModel;
 
   let hubRo: IHubRequestOptions;
+  const thumbnail: File = template.item.thumbnail; // createPageModelFromTemplate trashes thumbnail
   return createHubRequestOptions(destinationAuthentication, templateDictionary)
     .then(ro => {
       hubRo = ro;
@@ -169,6 +171,20 @@ export function createItemFromTemplate(
       );
     })
     .then(() => {
+      // Fix the thumbnail
+      const updateOptions: IUpdateItemOptions = {
+        item: {
+          id: pageModel.item.id
+        },
+        params: {
+          // Pass thumbnail in via params because item property is serialized, which discards a blob
+          thumbnail
+        },
+        authentication: destinationAuthentication
+      };
+      return updateItem(updateOptions);
+    })
+    .then(() => {
       // Update the template dictionary
       // TODO: This should be done in whatever recieves
       // the outcome of this promise chain
@@ -190,7 +206,7 @@ export function createItemFromTemplate(
         });
       } else {
         // finally, return ICreateItemFromTemplateResponse
-        return {
+        const response: ICreateItemFromTemplateResponse = {
           item: {
             ...template,
             ...pageModel
@@ -199,6 +215,8 @@ export function createItemFromTemplate(
           type: template.type,
           postProcess: true
         };
+        response.item.itemId = pageModel.item.id;
+        return response;
       }
     })
     .catch(ex => {

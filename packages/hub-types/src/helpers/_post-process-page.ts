@@ -24,7 +24,10 @@ export function _postProcessPage(
 ): Promise<boolean> {
   // re-interpolate the siteModel using the itemInfos; no patches supplied
   pageModel = interpolate(pageModel, templateDictionary, {});
-  return updatePage(pageModel, [], hubRequestOptions).then(() => {
+  return updatePage(pageModel, {
+    ...hubRequestOptions,
+    allowList: []
+  }).then(() => {
     return true;
   });
 }

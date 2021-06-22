@@ -149,7 +149,7 @@ export function createItemFromTemplate(
         });
       } else {
         // finally, return ICreateItemFromTemplateResponse
-        return {
+        const response: ICreateItemFromTemplateResponse = {
           item: {
             ...template,
             ...model
@@ -158,6 +158,8 @@ export function createItemFromTemplate(
           type: template.type,
           postProcess: false
         };
+        response.item.itemId = model.item.id;
+        return response;
       }
     })
     .catch(ex => {

@@ -25,43 +25,46 @@ import * as serviceAdmin from "@esri/arcgis-rest-service-admin";
 import * as utils from "../test/mocks/utils";
 
 describe("Module `generalHelpers`: common utility functions shared across packages", () => {
-  // Blobs are only available in the browser
-  if (typeof window !== "undefined") {
-    describe("blobToJson", () => {
-      it("extracts JSON from a blob", done => {
-        const srcJson: any = {
-          a: "b",
-          c: 4
-        };
-        const blob: Blob = new Blob([JSON.stringify(srcJson)], {
-          type: "application/json"
-        });
-
-        generalHelpers.blobToJson(blob).then(extractedJson => {
-          expect(extractedJson).toEqual(srcJson);
-          done();
-        }, done.fail);
-      });
-
-      it("fails to extract JSON from a blob 1", done => {
-        const blob: Blob = new Blob([], { type: "application/json" });
-
-        generalHelpers.blobToJson(blob).then(extractedJson => {
-          expect(extractedJson).toBeNull();
-          done();
-        }, done.fail);
-      });
-
-      it("fails to extract JSON from a blob 2", done => {
-        const blob: Blob = null;
-
-        generalHelpers.blobToJson(blob).then(extractedJson => {
-          expect(extractedJson).toBeNull();
-          done();
-        }, done.fail);
-      });
+  describe("blobToFile", () => {
+    it("handles a failed blob", () => {
+      expect(generalHelpers.blobToFile(null, "")).toBeNull();
     });
-  }
+  });
+
+  describe("blobToJson", () => {
+    it("extracts JSON from a blob", done => {
+      const srcJson: any = {
+        a: "b",
+        c: 4
+      };
+      const blob: Blob = new Blob([JSON.stringify(srcJson)], {
+        type: "application/json"
+      });
+
+      generalHelpers.blobToJson(blob).then(extractedJson => {
+        expect(extractedJson).toEqual(srcJson);
+        done();
+      }, done.fail);
+    });
+
+    it("fails to extract JSON from a blob 1", done => {
+      const blob: Blob = new Blob([], { type: "application/json" });
+
+      generalHelpers.blobToJson(blob).then(extractedJson => {
+        expect(extractedJson).toBeNull();
+        done();
+      }, done.fail);
+    });
+
+    it("fails to extract JSON from a blob 2", done => {
+      const blob: Blob = null;
+
+      generalHelpers.blobToJson(blob).then(extractedJson => {
+        expect(extractedJson).toBeNull();
+        done();
+      }, done.fail);
+    });
+  });
 
   interface ITestCompareJSONProperties {
     isInvitationOnly: boolean;
@@ -125,6 +128,22 @@ describe("Module `generalHelpers`: common utility functions shared across packag
   });
 
   describe("cloneObject", () => {
+    it("can clone a typed File", () => {
+      const obj = new File(["dancer"], "fred", { type: "text/plain" });
+      const c = generalHelpers.cloneObject(obj);
+      expect(c).not.toBe(obj);
+      expect(c.name).toBe("fred");
+      expect(c.type).toBe("text/plain");
+    });
+
+    it("can clone an untyped File", () => {
+      const obj = new File(["dancer"], "ginger");
+      const c = generalHelpers.cloneObject(obj);
+      expect(c).not.toBe(obj);
+      expect(c.name).toBe("ginger");
+      expect(c.type).toBe("");
+    });
+
     it("can clone a shallow object", () => {
       const obj = {
         color: "red",
@@ -1332,36 +1351,33 @@ describe("Module `generalHelpers`: common utility functions shared across packag
     });
   });
 
-  // Blobs are only available in the browser
-  if (typeof window !== "undefined") {
-    describe("jsonToBlob", () => {
-      it("creates a blob with expected mime type", done => {
-        const json: any = { a: "abc", b: 123 };
-        const blob = generalHelpers.jsonToBlob(json);
-        expect(blob.type).toBe("application/octet-stream");
-        blob.text().then(text => {
-          expect(text).toEqual('{"a":"abc","b":123}');
-          done();
-        }, done.fail);
-      });
+  describe("jsonToBlob", () => {
+    it("creates a blob with expected mime type", done => {
+      const json: any = { a: "abc", b: 123 };
+      const blob = generalHelpers.jsonToBlob(json);
+      expect(blob.type).toBe("application/octet-stream");
+      blob.text().then(text => {
+        expect(text).toEqual('{"a":"abc","b":123}');
+        done();
+      }, done.fail);
     });
+  });
 
-    describe("jsonToFile", () => {
-      it("creates a file with expected mime type", done => {
-        const json: any = { a: "abc", b: 123 };
-        const file = generalHelpers.jsonToFile(
-          json,
-          "myFile.abc",
-          "application/octet-stream"
-        );
-        expect(file.type).toBe("application/octet-stream");
-        file.text().then(text => {
-          expect(text).toEqual('{"a":"abc","b":123}');
-          done();
-        }, done.fail);
-      });
+  describe("jsonToFile", () => {
+    it("creates a file with expected mime type", done => {
+      const json: any = { a: "abc", b: 123 };
+      const file = generalHelpers.jsonToFile(
+        json,
+        "myFile.abc",
+        "application/octet-stream"
+      );
+      expect(file.type).toBe("application/octet-stream");
+      file.text().then(text => {
+        expect(text).toEqual('{"a":"abc","b":123}');
+        done();
+      }, done.fail);
     });
-  }
+  });
 
   describe("sanitizeJSONAndReportChanges", () => {
     it("should not report if no property changed", () => {

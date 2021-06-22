@@ -54,391 +54,383 @@ afterEach(() => {
 
 describe("Module `feature-layer`: manages the creation and deployment of feature service types", () => {
   describe("convertItemToTemplate", () => {
-    // Blobs are only available in the browser
-    if (typeof window !== "undefined") {
-      it("templatize common properties", done => {
-        const id: string = "svc1234567890";
-        const url: string =
-          "https://services123.arcgis.com/org1234567890/arcgis/rest/services/ROWPermits_publiccomment/FeatureServer";
-        const expectedUrl: string = "{{" + id + ".url}}";
-        const adminUrl: string =
-          "https://services123.arcgis.com/org1234567890/arcgis/rest/admin/services/ROWPermits_publiccomment/FeatureServer";
+    it("templatize common properties", done => {
+      const id: string = "svc1234567890";
+      const url: string =
+        "https://services123.arcgis.com/org1234567890/arcgis/rest/services/ROWPermits_publiccomment/FeatureServer";
+      const expectedUrl: string = "{{" + id + ".url}}";
+      const adminUrl: string =
+        "https://services123.arcgis.com/org1234567890/arcgis/rest/admin/services/ROWPermits_publiccomment/FeatureServer";
 
-        const expectedId: string = "{{" + id + ".itemId}}";
-        const keyField: string = "globalid";
-        const expectedLayerKeyField: string =
-          "{{" + id + ".layer0.fields.globalid.name}}";
-        const expectedTableKeyField: string =
-          "{{" + id + ".layer1.fields.globalid.name}}";
-        const defQuery: string = "status = 'BoardReview'";
-        const expectedLayerDefQuery: string =
-          "status = '{{" + id + ".layer0.fields.boardreview.name}}'";
-        const expectedTableDefQuery: string =
-          "status = '{{" + id + ".layer1.fields.boardreview.name}}'";
+      const expectedId: string = "{{" + id + ".itemId}}";
+      const keyField: string = "globalid";
+      const expectedLayerKeyField: string =
+        "{{" + id + ".layer0.fields.globalid.name}}";
+      const expectedTableKeyField: string =
+        "{{" + id + ".layer1.fields.globalid.name}}";
+      const defQuery: string = "status = 'BoardReview'";
+      const expectedLayerDefQuery: string =
+        "status = '{{" + id + ".layer0.fields.boardreview.name}}'";
+      const expectedTableDefQuery: string =
+        "status = '{{" + id + ".layer1.fields.boardreview.name}}'";
 
-        const layer0 = mockItems.getAGOLLayerOrTable(0, "A", "Feature Layer");
-        layer0.relationships = [{}];
-        layer0.relationships[0].keyField = keyField;
-        layer0.viewDefinitionQuery = defQuery;
+      const layer0 = mockItems.getAGOLLayerOrTable(0, "A", "Feature Layer");
+      layer0.relationships = [{}];
+      layer0.relationships[0].keyField = keyField;
+      layer0.viewDefinitionQuery = defQuery;
 
-        const table0 = mockItems.getAGOLLayerOrTable(1, "B", "Table");
-        table0.relationships = [{}];
-        table0.relationships[0].keyField = keyField;
-        table0.viewDefinitionQuery = defQuery;
+      const table0 = mockItems.getAGOLLayerOrTable(1, "B", "Table");
+      table0.relationships = [{}];
+      table0.relationships[0].keyField = keyField;
+      table0.viewDefinitionQuery = defQuery;
 
-        const serviceResponse = mockItems.getAGOLService([layer0], [table0]);
+      const serviceResponse = mockItems.getAGOLService([layer0], [table0]);
 
-        itemTemplate.itemId = id;
-        itemTemplate.item.id = id;
-        itemTemplate.properties.service.serviceItemId = id;
-        itemTemplate.properties.service.cacheMaxAge =
-          serviceResponse.adminServiceInfo.cacheMaxAge;
-        itemTemplate.properties.layers[0] = layer0;
-        itemTemplate.properties.tables[0] = table0;
-        delete itemTemplate.item.item;
+      itemTemplate.itemId = id;
+      itemTemplate.item.id = id;
+      itemTemplate.properties.service.serviceItemId = id;
+      itemTemplate.properties.service.cacheMaxAge =
+        serviceResponse.adminServiceInfo.cacheMaxAge;
+      itemTemplate.properties.layers[0] = layer0;
+      itemTemplate.properties.tables[0] = table0;
+      delete itemTemplate.item.item;
 
-        // verify the state up front
-        expect(itemTemplate.item.id).toEqual(id);
-        expect(itemTemplate.item.url).toEqual(url);
-        expect(itemTemplate.dependencies.length).toEqual(0);
-        expect(itemTemplate.data.layers).toBeDefined();
-        expect(itemTemplate.data.tables).toBeDefined();
-        expect(itemTemplate.properties.service.serviceItemId).toEqual(id);
+      // verify the state up front
+      expect(itemTemplate.item.id).toEqual(id);
+      expect(itemTemplate.item.url).toEqual(url);
+      expect(itemTemplate.dependencies.length).toEqual(0);
+      expect(itemTemplate.data.layers).toBeDefined();
+      expect(itemTemplate.data.tables).toBeDefined();
+      expect(itemTemplate.properties.service.serviceItemId).toEqual(id);
 
-        expect(itemTemplate.properties.layers[0].serviceItemId).toEqual(id);
-        expect(
-          itemTemplate.properties.layers[0].relationships[0].keyField
-        ).toEqual(keyField);
-        expect(itemTemplate.properties.layers[0].viewDefinitionQuery).toEqual(
-          defQuery
-        );
-        expect(itemTemplate.properties.layers[0].definitionQuery).toEqual(
-          defQuery
-        );
+      expect(itemTemplate.properties.layers[0].serviceItemId).toEqual(id);
+      expect(
+        itemTemplate.properties.layers[0].relationships[0].keyField
+      ).toEqual(keyField);
+      expect(itemTemplate.properties.layers[0].viewDefinitionQuery).toEqual(
+        defQuery
+      );
+      expect(itemTemplate.properties.layers[0].definitionQuery).toEqual(
+        defQuery
+      );
 
-        expect(itemTemplate.properties.tables[0].serviceItemId).toEqual(id);
-        expect(
-          itemTemplate.properties.tables[0].relationships[0].keyField
-        ).toEqual(keyField);
-        expect(itemTemplate.properties.tables[0].viewDefinitionQuery).toEqual(
-          defQuery
-        );
-        expect(itemTemplate.properties.tables[0].definitionQuery).toEqual(
-          defQuery
-        );
+      expect(itemTemplate.properties.tables[0].serviceItemId).toEqual(id);
+      expect(
+        itemTemplate.properties.tables[0].relationships[0].keyField
+      ).toEqual(keyField);
+      expect(itemTemplate.properties.tables[0].viewDefinitionQuery).toEqual(
+        defQuery
+      );
+      expect(itemTemplate.properties.tables[0].definitionQuery).toEqual(
+        defQuery
+      );
 
-        fetchMock
-          .post(adminUrl + "?f=json", serviceResponse)
-          .post(url + "/sources?f=json", mockItems.getAGOLServiceSources())
-          .post(
-            utils.PORTAL_SUBSET.restUrl + "/content/items/svc1234567890/data",
-            mockItems.get500Failure()
-          );
-
-        featureLayer
-          .convertItemToTemplate("A", itemTemplate.item, MOCK_USER_SESSION)
-          .then(r => {
-            // verify the state up front
-            expect(r.item.id).toEqual(expectedId);
-            expect(r.item.url).toEqual(expectedUrl);
-            expect(r.dependencies.length).toEqual(1);
-            expect(r.data).toBeNull();
-            expect(r.properties.service.serviceItemId).toEqual(expectedId);
-            expect(r.properties.layers[0].serviceItemId).toEqual(expectedId);
-            expect(r.properties.tables[0].serviceItemId).toEqual(expectedId);
-
-            // Templatize layer & table fields
-            common.templatize(
-              r,
-              [{ id: "svc1234567890", name: "OtherSourceServiceName" }],
-              true
-            );
-
-            expect(r.properties.layers[0].relationships[0].keyField).toEqual(
-              expectedLayerKeyField
-            );
-            expect(r.properties.layers[0].viewDefinitionQuery).toEqual(
-              expectedLayerDefQuery
-            );
-            expect(r.properties.layers[0].definitionQuery).toEqual(
-              expectedLayerDefQuery
-            );
-
-            expect(r.properties.tables[0].relationships[0].keyField).toEqual(
-              expectedTableKeyField
-            );
-            expect(r.properties.tables[0].viewDefinitionQuery).toEqual(
-              expectedTableDefQuery
-            );
-            expect(r.properties.tables[0].definitionQuery).toEqual(
-              expectedTableDefQuery
-            );
-            done();
-          }, done.fail);
-      });
-
-      it("handle invalid group designations", done => {
-        const id: string = "svc1234567890";
-        const url: string =
-          "https://services123.arcgis.com/org1234567890/arcgis/rest/services/ROWPermits_publiccomment/FeatureServer";
-
-        const serviceResponse = mockItems.getAGOLService(
-          [mockItems.getAGOLLayerOrTable(0, "A", "Feature Layer")],
-          [mockItems.getAGOLLayerOrTable(1, "B", "Table")]
+      fetchMock
+        .post(adminUrl + "?f=json", serviceResponse)
+        .post(url + "/sources?f=json", mockItems.getAGOLServiceSources())
+        .post(
+          utils.PORTAL_SUBSET.restUrl + "/content/items/svc1234567890/data",
+          mockItems.get500Failure()
         );
 
-        itemTemplate.itemId = id;
-        itemTemplate.item.id = id;
-        itemTemplate.item.groupDesignations = "livingatlas";
+      featureLayer
+        .convertItemToTemplate("A", itemTemplate.item, MOCK_USER_SESSION)
+        .then(r => {
+          // verify the state up front
+          expect(r.item.id).toEqual(expectedId);
+          expect(r.item.url).toEqual(expectedUrl);
+          expect(r.dependencies.length).toEqual(1);
+          expect(r.data).toBeNull();
+          expect(r.properties.service.serviceItemId).toEqual(expectedId);
+          expect(r.properties.layers[0].serviceItemId).toEqual(expectedId);
+          expect(r.properties.tables[0].serviceItemId).toEqual(expectedId);
 
-        fetchMock.post(url + "?f=json", serviceResponse);
-
-        const expected: any = {};
-        expected[id] = {
-          itemId: id,
-          layer0: {
-            fields: {},
-            url: url + "/0",
-            layerId: "0",
-            itemId: id
-          },
-          layer1: {
-            fields: {},
-            url: url + "/1",
-            layerId: "1",
-            itemId: id
-          }
-        };
-
-        featureLayer
-          .convertItemToTemplate("A", itemTemplate.item, MOCK_USER_SESSION)
-          .then(r => {
-            // verify the state after
-            expect(r.item.id).toEqual(id);
-            expect(r.item.url).toEqual(url);
-            expect(r.dependencies).toEqual([]);
-            expect(r.properties).toEqual({
-              hasInvalidDesignations: true
-            });
-            expect(r.data).toEqual(expected);
-            done();
-          }, done.fail);
-      });
-
-      it("handle error on updateTemplateForInvalidDesignations", done => {
-        const id: string = "svc1234567890";
-        const url: string =
-          "https://services123.arcgis.com/org1234567890/arcgis/rest/services/ROWPermits_publiccomment/FeatureServer";
-
-        itemTemplate.itemId = id;
-        itemTemplate.item.id = id;
-        itemTemplate.item.groupDesignations = "livingatlas";
-
-        fetchMock.post(url + "?f=json", mockItems.get400Failure());
-
-        featureLayer
-          .convertItemToTemplate(
-            "A",
-            itemTemplate.item,
-            MOCK_USER_SESSION,
+          // Templatize layer & table fields
+          common.templatize(
+            r,
+            [{ id: "svc1234567890", name: "OtherSourceServiceName" }],
             true
-          )
-          .then(
-            () => done.fail(),
-            () => done()
           );
-      });
 
-      it("handle template item with missing url for invalid group designations", done => {
-        const id: string = "svc1234567890";
+          expect(r.properties.layers[0].relationships[0].keyField).toEqual(
+            expectedLayerKeyField
+          );
+          expect(r.properties.layers[0].viewDefinitionQuery).toEqual(
+            expectedLayerDefQuery
+          );
+          expect(r.properties.layers[0].definitionQuery).toEqual(
+            expectedLayerDefQuery
+          );
 
-        itemTemplate.itemId = id;
-        itemTemplate.item.id = id;
-        itemTemplate.item.groupDesignations = "livingatlas";
-        delete itemTemplate.item.url;
+          expect(r.properties.tables[0].relationships[0].keyField).toEqual(
+            expectedTableKeyField
+          );
+          expect(r.properties.tables[0].viewDefinitionQuery).toEqual(
+            expectedTableDefQuery
+          );
+          expect(r.properties.tables[0].definitionQuery).toEqual(
+            expectedTableDefQuery
+          );
+          done();
+        }, done.fail);
+    });
 
-        featureLayer
-          .convertItemToTemplate("A", itemTemplate.item, MOCK_USER_SESSION)
-          .then(r => {
-            // verify the state after
-            expect(r.item.id).toEqual(id);
-            expect(r.dependencies).toEqual([]);
-            expect(r.properties).toEqual({
-              hasInvalidDesignations: true
-            });
-            done();
-          }, done.fail);
-      });
+    it("handle invalid group designations", done => {
+      const id: string = "svc1234567890";
+      const url: string =
+        "https://services123.arcgis.com/org1234567890/arcgis/rest/services/ROWPermits_publiccomment/FeatureServer";
 
-      it("handle invalid service data for invalid group designations", done => {
-        const id: string = "svc1234567890";
-        const url: string =
-          "https://services123.arcgis.com/org1234567890/arcgis/rest/services/ROWPermits_publiccomment/FeatureServer";
+      const serviceResponse = mockItems.getAGOLService(
+        [mockItems.getAGOLLayerOrTable(0, "A", "Feature Layer")],
+        [mockItems.getAGOLLayerOrTable(1, "B", "Table")]
+      );
 
-        const serviceResponse = mockItems.getAGOLService();
+      itemTemplate.itemId = id;
+      itemTemplate.item.id = id;
+      itemTemplate.item.groupDesignations = "livingatlas";
 
-        itemTemplate.itemId = id;
-        itemTemplate.item.id = id;
-        itemTemplate.item.groupDesignations = "livingatlas";
+      fetchMock.post(url + "?f=json", serviceResponse);
 
-        fetchMock.post(url + "?f=json", serviceResponse);
+      const expected: any = {};
+      expected[id] = {
+        itemId: id,
+        layer0: {
+          fields: {},
+          url: url + "/0",
+          layerId: "0",
+          itemId: id
+        },
+        layer1: {
+          fields: {},
+          url: url + "/1",
+          layerId: "1",
+          itemId: id
+        }
+      };
 
-        featureLayer
-          .convertItemToTemplate("A", itemTemplate.item, MOCK_USER_SESSION)
-          .then(r => {
-            // verify the state after
-            expect(r.item.id).toEqual(id);
-            expect(r.item.url).toEqual(url);
-            expect(r.dependencies).toEqual([]);
-            expect(r.properties).toEqual({
-              hasInvalidDesignations: true
-            });
-            done();
-          }, done.fail);
-      });
+      featureLayer
+        .convertItemToTemplate("A", itemTemplate.item, MOCK_USER_SESSION)
+        .then(r => {
+          // verify the state after
+          expect(r.item.id).toEqual(id);
+          expect(r.item.url).toEqual(url);
+          expect(r.dependencies).toEqual([]);
+          expect(r.properties).toEqual({
+            hasInvalidDesignations: true
+          });
+          expect(r.data).toEqual(expected);
+          done();
+        }, done.fail);
+    });
 
-      it("should handle error on extractDependencies", done => {
-        const id: string = "svc1234567890";
-        const url: string =
-          "https://services123.arcgis.com/org1234567890/arcgis/rest/services/ROWPermits_publiccomment/FeatureServer";
-        const adminUrl: string =
-          "https://services123.arcgis.com/org1234567890/arcgis/rest/admin/services/ROWPermits_publiccomment/FeatureServer";
-        const itemDataUrl: string =
-          utils.PORTAL_SUBSET.restUrl + "/content/items/svc1234567890/data";
+    it("handle error on updateTemplateForInvalidDesignations", done => {
+      const id: string = "svc1234567890";
+      const url: string =
+        "https://services123.arcgis.com/org1234567890/arcgis/rest/services/ROWPermits_publiccomment/FeatureServer";
 
-        const keyField: string = "globalid";
-        const defQuery: string = "status = 'BoardReview'";
+      itemTemplate.itemId = id;
+      itemTemplate.item.id = id;
+      itemTemplate.item.groupDesignations = "livingatlas";
 
-        const layer0 = mockItems.getAGOLLayerOrTable(0, "A", "Feature Layer");
-        layer0.relationships = [{}];
-        layer0.relationships[0].keyField = keyField;
-        layer0.viewDefinitionQuery = defQuery;
+      fetchMock.post(url + "?f=json", mockItems.get400Failure());
 
-        const table0 = mockItems.getAGOLLayerOrTable(1, "B", "Table");
-        table0.relationships = [{}];
-        table0.relationships[0].keyField = keyField;
-        table0.viewDefinitionQuery = defQuery;
+      featureLayer
+        .convertItemToTemplate("A", itemTemplate.item, MOCK_USER_SESSION, true)
+        .then(
+          () => done.fail(),
+          () => done()
+        );
+    });
 
-        const serviceResponse = mockItems.getAGOLService([layer0], [table0]);
+    it("handle template item with missing url for invalid group designations", done => {
+      const id: string = "svc1234567890";
 
-        itemTemplate.itemId = id;
-        itemTemplate.item.id = id;
-        itemTemplate.properties.service.serviceItemId = id;
-        itemTemplate.properties.service.cacheMaxAge =
-          serviceResponse.adminServiceInfo.cacheMaxAge;
-        itemTemplate.properties.layers[0] = layer0;
-        itemTemplate.properties.tables[0] = table0;
-        delete itemTemplate.item.item;
+      itemTemplate.itemId = id;
+      itemTemplate.item.id = id;
+      itemTemplate.item.groupDesignations = "livingatlas";
+      delete itemTemplate.item.url;
 
-        fetchMock
-          .post(itemDataUrl, "{}")
-          .post(adminUrl + "?f=json", serviceResponse)
-          .post(url + "/sources?f=json", mockItems.get400Failure());
+      featureLayer
+        .convertItemToTemplate("A", itemTemplate.item, MOCK_USER_SESSION)
+        .then(r => {
+          // verify the state after
+          expect(r.item.id).toEqual(id);
+          expect(r.dependencies).toEqual([]);
+          expect(r.properties).toEqual({
+            hasInvalidDesignations: true
+          });
+          done();
+        }, done.fail);
+    });
 
-        const templateDictionary = {};
-        featureLayer
-          .convertItemToTemplate(
-            "A",
-            itemTemplate.item,
-            MOCK_USER_SESSION,
-            templateDictionary
-          )
-          .then(r => {
-            done.fail();
-          }, done);
-      });
+    it("handle invalid service data for invalid group designations", done => {
+      const id: string = "svc1234567890";
+      const url: string =
+        "https://services123.arcgis.com/org1234567890/arcgis/rest/services/ROWPermits_publiccomment/FeatureServer";
 
-      it("should handle error on getItemData", done => {
-        const id: string = "svc1234567890";
-        const url: string =
-          "https://services123.arcgis.com/org1234567890/arcgis/rest/services/ROWPermits_publiccomment/FeatureServer";
-        const adminUrl: string =
-          "https://services123.arcgis.com/org1234567890/arcgis/rest/admin/services/ROWPermits_publiccomment/FeatureServer";
-        const itemDataUrl: string =
-          utils.PORTAL_SUBSET.restUrl + "/content/items/svc1234567890/data";
+      const serviceResponse = mockItems.getAGOLService();
 
-        itemTemplate.itemId = id;
-        itemTemplate.item.id = id;
+      itemTemplate.itemId = id;
+      itemTemplate.item.id = id;
+      itemTemplate.item.groupDesignations = "livingatlas";
 
-        const keyField: string = "globalid";
-        const defQuery: string = "status = 'BoardReview'";
+      fetchMock.post(url + "?f=json", serviceResponse);
 
-        const layer0 = mockItems.getAGOLLayerOrTable(0, "A", "Feature Layer");
-        layer0.relationships = [{}];
-        layer0.relationships[0].keyField = keyField;
-        layer0.viewDefinitionQuery = defQuery;
+      featureLayer
+        .convertItemToTemplate("A", itemTemplate.item, MOCK_USER_SESSION)
+        .then(r => {
+          // verify the state after
+          expect(r.item.id).toEqual(id);
+          expect(r.item.url).toEqual(url);
+          expect(r.dependencies).toEqual([]);
+          expect(r.properties).toEqual({
+            hasInvalidDesignations: true
+          });
+          done();
+        }, done.fail);
+    });
 
-        const table0 = mockItems.getAGOLLayerOrTable(1, "B", "Table");
-        table0.relationships = [{}];
-        table0.relationships[0].keyField = keyField;
-        table0.viewDefinitionQuery = defQuery;
+    it("should handle error on extractDependencies", done => {
+      const id: string = "svc1234567890";
+      const url: string =
+        "https://services123.arcgis.com/org1234567890/arcgis/rest/services/ROWPermits_publiccomment/FeatureServer";
+      const adminUrl: string =
+        "https://services123.arcgis.com/org1234567890/arcgis/rest/admin/services/ROWPermits_publiccomment/FeatureServer";
+      const itemDataUrl: string =
+        utils.PORTAL_SUBSET.restUrl + "/content/items/svc1234567890/data";
 
-        const serviceResponse = mockItems.getAGOLService([layer0], [table0]);
+      const keyField: string = "globalid";
+      const defQuery: string = "status = 'BoardReview'";
 
-        fetchMock
-          .post(url + "?f=json", serviceResponse)
-          .post(adminUrl + "?f=json", serviceResponse)
-          .post(url + "/sources?f=json", mockItems.getAGOLServiceSources())
-          .post(itemDataUrl, mockItems.get400Failure());
+      const layer0 = mockItems.getAGOLLayerOrTable(0, "A", "Feature Layer");
+      layer0.relationships = [{}];
+      layer0.relationships[0].keyField = keyField;
+      layer0.viewDefinitionQuery = defQuery;
 
-        const templateDictionary = {};
-        featureLayer
-          .convertItemToTemplate(
-            "A",
-            itemTemplate.item,
-            MOCK_USER_SESSION,
-            templateDictionary
-          )
-          .then(done, done.fail);
-      });
+      const table0 = mockItems.getAGOLLayerOrTable(1, "B", "Table");
+      table0.relationships = [{}];
+      table0.relationships[0].keyField = keyField;
+      table0.viewDefinitionQuery = defQuery;
 
-      it("should handle error on getServiceLayersAndTables", done => {
-        const id: string = "svc1234567890";
-        const url: string =
-          "https://services123.arcgis.com/org1234567890/arcgis/rest/services/ROWPermits_publiccomment/FeatureServer";
-        const adminUrl: string =
-          "https://services123.arcgis.com/org1234567890/arcgis/rest/admin/services/ROWPermits_publiccomment/FeatureServer";
-        const itemDataUrl: string =
-          utils.PORTAL_SUBSET.restUrl + "/content/items/svc1234567890/data";
+      const serviceResponse = mockItems.getAGOLService([layer0], [table0]);
 
-        const keyField: string = "globalid";
-        const defQuery: string = "status = 'BoardReview'";
+      itemTemplate.itemId = id;
+      itemTemplate.item.id = id;
+      itemTemplate.properties.service.serviceItemId = id;
+      itemTemplate.properties.service.cacheMaxAge =
+        serviceResponse.adminServiceInfo.cacheMaxAge;
+      itemTemplate.properties.layers[0] = layer0;
+      itemTemplate.properties.tables[0] = table0;
+      delete itemTemplate.item.item;
 
-        itemTemplate.itemId = id;
-        itemTemplate.item.id = id;
-        itemTemplate.properties.service.serviceItemId = id;
+      fetchMock
+        .post(itemDataUrl, "{}")
+        .post(adminUrl + "?f=json", serviceResponse)
+        .post(url + "/sources?f=json", mockItems.get400Failure());
 
-        itemTemplate.properties.layers[0].serviceItemId = id;
-        itemTemplate.properties.layers[0].relationships[0].keyField = keyField;
-        itemTemplate.properties.layers[0].viewDefinitionQuery = defQuery;
+      const templateDictionary = {};
+      featureLayer
+        .convertItemToTemplate(
+          "A",
+          itemTemplate.item,
+          MOCK_USER_SESSION,
+          templateDictionary
+        )
+        .then(r => {
+          done.fail();
+        }, done);
+    });
 
-        itemTemplate.properties.tables[0].serviceItemId = id;
-        itemTemplate.properties.tables[0].relationships[0].keyField = keyField;
-        itemTemplate.properties.tables[0].viewDefinitionQuery = defQuery;
-        delete itemTemplate.item.item;
+    it("should handle error on getItemData", done => {
+      const id: string = "svc1234567890";
+      const url: string =
+        "https://services123.arcgis.com/org1234567890/arcgis/rest/services/ROWPermits_publiccomment/FeatureServer";
+      const adminUrl: string =
+        "https://services123.arcgis.com/org1234567890/arcgis/rest/admin/services/ROWPermits_publiccomment/FeatureServer";
+      const itemDataUrl: string =
+        utils.PORTAL_SUBSET.restUrl + "/content/items/svc1234567890/data";
 
-        fetchMock
-          .post(itemDataUrl, "{}")
-          .post(adminUrl + "?f=json", mockItems.get400Failure())
-          .post(url + "/sources?f=json", mockItems.get400Failure());
+      itemTemplate.itemId = id;
+      itemTemplate.item.id = id;
 
-        const templateDictionary = {};
-        featureLayer
-          .convertItemToTemplate(
-            "A",
-            itemTemplate.item,
-            MOCK_USER_SESSION,
-            templateDictionary
-          )
-          .then(r => {
-            done.fail();
-          }, done);
-      });
-    }
+      const keyField: string = "globalid";
+      const defQuery: string = "status = 'BoardReview'";
+
+      const layer0 = mockItems.getAGOLLayerOrTable(0, "A", "Feature Layer");
+      layer0.relationships = [{}];
+      layer0.relationships[0].keyField = keyField;
+      layer0.viewDefinitionQuery = defQuery;
+
+      const table0 = mockItems.getAGOLLayerOrTable(1, "B", "Table");
+      table0.relationships = [{}];
+      table0.relationships[0].keyField = keyField;
+      table0.viewDefinitionQuery = defQuery;
+
+      const serviceResponse = mockItems.getAGOLService([layer0], [table0]);
+
+      fetchMock
+        .post(url + "?f=json", serviceResponse)
+        .post(adminUrl + "?f=json", serviceResponse)
+        .post(url + "/sources?f=json", mockItems.getAGOLServiceSources())
+        .post(itemDataUrl, mockItems.get400Failure());
+
+      const templateDictionary = {};
+      featureLayer
+        .convertItemToTemplate(
+          "A",
+          itemTemplate.item,
+          MOCK_USER_SESSION,
+          templateDictionary
+        )
+        .then(done, done.fail);
+    });
+
+    it("should handle error on getServiceLayersAndTables", done => {
+      const id: string = "svc1234567890";
+      const url: string =
+        "https://services123.arcgis.com/org1234567890/arcgis/rest/services/ROWPermits_publiccomment/FeatureServer";
+      const adminUrl: string =
+        "https://services123.arcgis.com/org1234567890/arcgis/rest/admin/services/ROWPermits_publiccomment/FeatureServer";
+      const itemDataUrl: string =
+        utils.PORTAL_SUBSET.restUrl + "/content/items/svc1234567890/data";
+
+      const keyField: string = "globalid";
+      const defQuery: string = "status = 'BoardReview'";
+
+      itemTemplate.itemId = id;
+      itemTemplate.item.id = id;
+      itemTemplate.properties.service.serviceItemId = id;
+
+      itemTemplate.properties.layers[0].serviceItemId = id;
+      itemTemplate.properties.layers[0].relationships[0].keyField = keyField;
+      itemTemplate.properties.layers[0].viewDefinitionQuery = defQuery;
+
+      itemTemplate.properties.tables[0].serviceItemId = id;
+      itemTemplate.properties.tables[0].relationships[0].keyField = keyField;
+      itemTemplate.properties.tables[0].viewDefinitionQuery = defQuery;
+      delete itemTemplate.item.item;
+
+      fetchMock
+        .post(itemDataUrl, "{}")
+        .post(adminUrl + "?f=json", mockItems.get400Failure())
+        .post(url + "/sources?f=json", mockItems.get400Failure());
+
+      const templateDictionary = {};
+      featureLayer
+        .convertItemToTemplate(
+          "A",
+          itemTemplate.item,
+          MOCK_USER_SESSION,
+          templateDictionary
+        )
+        .then(r => {
+          done.fail();
+        }, done);
+    });
   });
 
   describe("createItemFromTemplate", () => {
-    it("should create a solution from a template", done => {
+    it("should create a solution from a template for portal", done => {
       const expectedId: string = "svc1234567890";
       const id: string = "{{" + expectedId + ".itemId}}";
 
@@ -467,32 +459,44 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
       itemTemplate.properties.tables[0].viewDefinitionQuery = tableDefQuery;
 
       // verify the state up front
-      expect(itemTemplate.item.id).toEqual(id);
-      expect(itemTemplate.item.url).toEqual(expectedUrl);
-      expect(itemTemplate.dependencies.length).toEqual(0);
-      expect(itemTemplate.properties.service.serviceItemId).toEqual(id);
+      expect(itemTemplate.item.id)
+        .withContext("up-front id check")
+        .toEqual(id);
+      expect(itemTemplate.item.url)
+        .withContext("up-front url check")
+        .toEqual(expectedUrl);
+      expect(itemTemplate.dependencies.length)
+        .withContext("up-front dependencies check")
+        .toEqual(0);
+      expect(itemTemplate.properties.service.serviceItemId)
+        .withContext("up-front serviceItemId check")
+        .toEqual(id);
 
-      expect(itemTemplate.properties.layers[0].serviceItemId).toEqual(id);
-      expect(
-        itemTemplate.properties.layers[0].relationships[0].keyField
-      ).toEqual(layerKeyField);
-      expect(itemTemplate.properties.layers[0].viewDefinitionQuery).toEqual(
-        layerDefQuery
-      );
-      expect(itemTemplate.properties.layers[0].definitionQuery).toEqual(
-        layerDefQuery
-      );
+      expect(itemTemplate.properties.layers[0].serviceItemId)
+        .withContext("up-front layers serviceItemId check")
+        .toEqual(id);
+      expect(itemTemplate.properties.layers[0].relationships[0].keyField)
+        .withContext("up-front layers keyField check")
+        .toEqual(layerKeyField);
+      expect(itemTemplate.properties.layers[0].viewDefinitionQuery)
+        .withContext("up-front layers viewDefinitionQuery check")
+        .toEqual(layerDefQuery);
+      expect(itemTemplate.properties.layers[0].definitionQuery)
+        .withContext("up-front layers definitionQuery check")
+        .toEqual(layerDefQuery);
 
-      expect(itemTemplate.properties.tables[0].serviceItemId).toEqual(id);
-      expect(
-        itemTemplate.properties.tables[0].relationships[0].keyField
-      ).toEqual(tableKeyField);
-      expect(itemTemplate.properties.tables[0].viewDefinitionQuery).toEqual(
-        tableDefQuery
-      );
-      expect(itemTemplate.properties.tables[0].definitionQuery).toEqual(
-        tableDefQuery
-      );
+      expect(itemTemplate.properties.tables[0].serviceItemId)
+        .withContext("up-front tables withContext check")
+        .toEqual(id);
+      expect(itemTemplate.properties.tables[0].relationships[0].keyField)
+        .withContext("up-front tables keyField check")
+        .toEqual(tableKeyField);
+      expect(itemTemplate.properties.tables[0].viewDefinitionQuery)
+        .withContext("up-front tables viewDefinitionQuery check")
+        .toEqual(tableDefQuery);
+      expect(itemTemplate.properties.tables[0].definitionQuery)
+        .withContext("up-front tables withContext check")
+        .toEqual(tableDefQuery);
 
       const createResponse: any = mockItems.getAGOLService([], [], true);
       createResponse.success = true;
@@ -510,12 +514,18 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
       expectedClone.properties.layers[0].relationships = null;
       expectedClone.properties.layers[0].viewDefinitionQuery = null;
       expectedClone.properties.layers[0].adminLayerInfo = undefined;
+      expectedClone.properties.layers[0].uniqueIdField.name = "objectid";
       delete expectedClone.properties.layers[0].definitionQuery;
+      delete expectedClone.properties.layers[0].isView;
+      delete expectedClone.properties.layers[0].sourceSchemaChangesAllowed;
       expectedClone.properties.tables[0].serviceItemId = "svc1234567890";
       expectedClone.properties.tables[0].relationships = null;
       expectedClone.properties.tables[0].viewDefinitionQuery = null;
       expectedClone.properties.tables[0].adminLayerInfo = undefined;
+      expectedClone.properties.tables[0].uniqueIdField.name = "objectid";
       delete expectedClone.properties.tables[0].definitionQuery;
+      delete expectedClone.properties.tables[0].isView;
+      delete expectedClone.properties.tables[0].sourceSchemaChangesAllowed;
       expectedClone.item.thumbnail = "thumbnail/ago_downloaded.png";
       delete expectedClone.item.spatialReference;
 
@@ -565,18 +575,299 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
           {
             svc1234567890: {},
             organization: _organization,
+            solutionItemExtent: _solutionItemExtent,
+            isPortal: true
+          },
+          MOCK_USER_SESSION,
+          utils.ITEM_PROGRESS_CALLBACK
+        )
+        .then(r => {
+          expectedClone.item.url = expectedUrl + "/";
+          expect(r)
+            .withContext("results")
+            .toEqual({
+              item: expectedClone,
+              id: "svc1234567890",
+              type: itemTemplate.type,
+              postProcess: false
+            });
+          done();
+        });
+    });
+
+    it("should create a solution from a template", done => {
+      const expectedId: string = "svc1234567890";
+      const id: string = "{{" + expectedId + ".itemId}}";
+
+      const expectedUrl: string =
+        "https://services123.arcgis.com/org1234567890/arcgis/rest/services/ROWPermits_publiccomment/FeatureServer";
+      const url: string = "{{" + expectedId + ".url}}";
+
+      const adminUrl: string =
+        "https://services123.arcgis.com/org1234567890/arcgis/rest/admin/services/ROWPermits_publiccomment/FeatureServer";
+
+      const layerDefQuery: string =
+        "status = '{{" + expectedId + ".layer0.fields.boardreview.name}}'";
+      const tableDefQuery: string =
+        "status = '{{" + expectedId + ".layer1.fields.boardreview.name}}'";
+
+      itemTemplate.properties.service.isView = false;
+
+      itemTemplate.properties.layers[0].definitionQuery = layerDefQuery;
+      itemTemplate.properties.layers[0].viewDefinitionQuery = layerDefQuery;
+
+      itemTemplate.properties.tables[0].definitionQuery = tableDefQuery;
+      itemTemplate.properties.tables[0].viewDefinitionQuery = tableDefQuery;
+
+      // verify the state up front
+      expect(itemTemplate.item.id)
+        .withContext("up-front id check")
+        .toEqual(id);
+      expect(itemTemplate.item.url)
+        .withContext("up-front url check")
+        .toEqual(expectedUrl);
+      expect(itemTemplate.dependencies.length)
+        .withContext("up-front dependencies check")
+        .toEqual(0);
+      expect(itemTemplate.properties.service.serviceItemId)
+        .withContext("up-front serviceItemId check")
+        .toEqual(id);
+
+      expect(itemTemplate.properties.layers[0].serviceItemId)
+        .withContext("up-front layers serviceItemId check")
+        .toEqual(id);
+      expect(itemTemplate.properties.layers[0].viewDefinitionQuery)
+        .withContext("up-front layers viewDefinitionQuery check")
+        .toEqual(layerDefQuery);
+      expect(itemTemplate.properties.layers[0].definitionQuery)
+        .withContext("up-front layers definitionQuery check")
+        .toEqual(layerDefQuery);
+
+      expect(itemTemplate.properties.tables[0].serviceItemId)
+        .withContext("up-front tables withContext check")
+        .toEqual(id);
+      expect(itemTemplate.properties.tables[0].viewDefinitionQuery)
+        .withContext("up-front tables viewDefinitionQuery check")
+        .toEqual(tableDefQuery);
+      expect(itemTemplate.properties.tables[0].definitionQuery)
+        .withContext("up-front tables withContext check")
+        .toEqual(tableDefQuery);
+
+      const createResponse: any = mockItems.getAGOLService([], [], true);
+      createResponse.success = true;
+
+      const expectedClone: common.IItemTemplate = common.cloneObject(
+        itemTemplate
+      );
+      expectedClone.item.id = "svc1234567890";
+      expectedClone.item.extent = [
+        [0, 0],
+        [1, 1]
+      ];
+      expectedClone.properties.service.serviceItemId = "svc1234567890";
+      expectedClone.properties.layers[0].serviceItemId = "svc1234567890";
+      expectedClone.properties.layers[0].relationships = null;
+      expectedClone.properties.layers[0].viewDefinitionQuery =
+        "status = 'BoardReview'";
+      delete expectedClone.properties.layers[0].definitionQuery;
+      expectedClone.properties.tables[0].serviceItemId = "svc1234567890";
+      expectedClone.properties.tables[0].relationships = null;
+      expectedClone.properties.tables[0].viewDefinitionQuery =
+        "status = 'BoardReview'";
+      delete expectedClone.properties.tables[0].definitionQuery;
+      expectedClone.item.thumbnail = "thumbnail/ago_downloaded.png";
+      delete expectedClone.item.spatialReference;
+
+      fetchMock
+        .post(url + "?f=json", itemTemplate.properties.service)
+        .post(adminUrl + "/0?f=json", itemTemplate.properties.layers[0])
+        .post(adminUrl + "/1?f=json", itemTemplate.properties.tables[0])
+        .post(url + "/sources?f=json", mockItems.getAGOLServiceSources())
+        .post(
+          utils.PORTAL_SUBSET.restUrl + "/content/users/casey/createService",
+          createResponse
+        )
+        .post(
+          "https://services123.arcgis.com/org1234567890/arcgis/rest/admin/services/ROWPermits_publiccomment/FeatureServer/addToDefinition",
+          '{"success":true}'
+        )
+        .post(
+          "https://services123.arcgis.com/org1234567890/arcgis/rest/admin/services/ROWPermits_publiccomment/FeatureServer/refresh",
+          '{"success":true}'
+        )
+        .post(
+          utils.PORTAL_SUBSET.restUrl +
+            "/content/users/casey/items/svc1234567890/update",
+          '{"success":true}'
+        )
+        .get(
+          "https://myorg.maps.arcgis.com/sharing/rest/content/items/svc1234567890?f=json&token=fake-token",
+          expectedClone.item
+        );
+
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
+      featureLayer
+        .createItemFromTemplate(
+          itemTemplate,
+          {
+            svc1234567890: {},
+            organization: _organization,
             solutionItemExtent: _solutionItemExtent
           },
           MOCK_USER_SESSION,
           utils.ITEM_PROGRESS_CALLBACK
         )
         .then(r => {
-          expect(r).toEqual({
-            item: expectedClone,
-            id: "svc1234567890",
-            type: itemTemplate.type,
-            postProcess: false
-          });
+          expectedClone.item.url = expectedUrl + "/";
+          expect(r)
+            .withContext("results")
+            .toEqual({
+              item: expectedClone,
+              id: "svc1234567890",
+              type: itemTemplate.type,
+              postProcess: false
+            });
+          done();
+        });
+    });
+
+    it("should create a solution with FS from a template", done => {
+      const expectedId: string = "svc1234567890";
+      const id: string = "{{" + expectedId + ".itemId}}";
+
+      const expectedUrl: string =
+        "https://services123.arcgis.com/org1234567890/arcgis/rest/services/ROWPermits_publiccomment/FeatureServer";
+      const url: string = "{{" + expectedId + ".url}}";
+
+      const adminUrl: string =
+        "https://services123.arcgis.com/org1234567890/arcgis/rest/admin/services/ROWPermits_publiccomment/FeatureServer";
+
+      const layerDefQuery: string =
+        "status = '{{" + expectedId + ".layer0.fields.boardreview.name}}'";
+      const tableDefQuery: string =
+        "status = '{{" + expectedId + ".layer1.fields.boardreview.name}}'";
+
+      itemTemplate.properties.service.isView = false;
+
+      itemTemplate.properties.layers[0].isView = false;
+      itemTemplate.properties.layers[0].definitionQuery = layerDefQuery;
+      itemTemplate.properties.layers[0].viewDefinitionQuery = layerDefQuery;
+
+      itemTemplate.properties.tables[0].isView = false;
+      itemTemplate.properties.tables[0].definitionQuery = tableDefQuery;
+      itemTemplate.properties.tables[0].viewDefinitionQuery = tableDefQuery;
+
+      // verify the state up front
+      expect(itemTemplate.item.id)
+        .withContext("up-front id check")
+        .toEqual(id);
+      expect(itemTemplate.item.url)
+        .withContext("up-front url check")
+        .toEqual(expectedUrl);
+      expect(itemTemplate.dependencies.length)
+        .withContext("up-front dependencies check")
+        .toEqual(0);
+      expect(itemTemplate.properties.service.serviceItemId)
+        .withContext("up-front serviceItemId check")
+        .toEqual(id);
+
+      expect(itemTemplate.properties.layers[0].serviceItemId)
+        .withContext("up-front layers serviceItemId check")
+        .toEqual(id);
+      expect(itemTemplate.properties.layers[0].viewDefinitionQuery)
+        .withContext("up-front layers viewDefinitionQuery check")
+        .toEqual(layerDefQuery);
+      expect(itemTemplate.properties.layers[0].definitionQuery)
+        .withContext("up-front layers definitionQuery check")
+        .toEqual(layerDefQuery);
+
+      expect(itemTemplate.properties.tables[0].serviceItemId)
+        .withContext("up-front tables withContext check")
+        .toEqual(id);
+      expect(itemTemplate.properties.tables[0].viewDefinitionQuery)
+        .withContext("up-front tables viewDefinitionQuery check")
+        .toEqual(tableDefQuery);
+      expect(itemTemplate.properties.tables[0].definitionQuery)
+        .withContext("up-front tables withContext check")
+        .toEqual(tableDefQuery);
+
+      const createResponse: any = mockItems.getAGOLService([], [], true);
+      createResponse.success = true;
+
+      const expectedClone: common.IItemTemplate = common.cloneObject(
+        itemTemplate
+      );
+      expectedClone.item.id = "svc1234567890";
+      expectedClone.item.extent = [
+        [0, 0],
+        [1, 1]
+      ];
+      expectedClone.properties.service.serviceItemId = "svc1234567890";
+      expectedClone.properties.layers[0].serviceItemId = "svc1234567890";
+      expectedClone.properties.layers[0].relationships = null;
+      expectedClone.properties.layers[0].viewDefinitionQuery =
+        "status = 'BoardReview'";
+      expectedClone.properties.layers[0].definitionQuery =
+        "status = 'BoardReview'";
+
+      expectedClone.properties.tables[0].serviceItemId = "svc1234567890";
+      expectedClone.properties.tables[0].relationships = null;
+      expectedClone.properties.tables[0].viewDefinitionQuery =
+        "status = 'BoardReview'";
+      expectedClone.properties.tables[0].definitionQuery =
+        "status = 'BoardReview'";
+      expectedClone.item.thumbnail = "thumbnail/ago_downloaded.png";
+      delete expectedClone.item.spatialReference;
+
+      fetchMock
+        .post(url + "?f=json", itemTemplate.properties.service)
+        .post(adminUrl + "/0?f=json", itemTemplate.properties.layers[0])
+        .post(adminUrl + "/1?f=json", itemTemplate.properties.tables[0])
+        .post(url + "/sources?f=json", mockItems.getAGOLServiceSources())
+        .post(
+          utils.PORTAL_SUBSET.restUrl + "/content/users/casey/createService",
+          createResponse
+        )
+        .post(
+          "https://services123.arcgis.com/org1234567890/arcgis/rest/admin/services/ROWPermits_publiccomment/FeatureServer/addToDefinition",
+          '{"success":true}'
+        )
+        .post(
+          "https://services123.arcgis.com/org1234567890/arcgis/rest/admin/services/ROWPermits_publiccomment/FeatureServer/refresh",
+          '{"success":true}'
+        )
+        .post(
+          utils.PORTAL_SUBSET.restUrl +
+            "/content/users/casey/items/svc1234567890/update",
+          '{"success":true}'
+        )
+        .get(
+          "https://myorg.maps.arcgis.com/sharing/rest/content/items/svc1234567890?f=json&token=fake-token",
+          expectedClone.item
+        );
+
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
+      featureLayer
+        .createItemFromTemplate(
+          itemTemplate,
+          {
+            svc1234567890: {},
+            organization: _organization,
+            solutionItemExtent: _solutionItemExtent
+          },
+          MOCK_USER_SESSION,
+          utils.ITEM_PROGRESS_CALLBACK
+        )
+        .then(r => {
+          expectedClone.item.url = expectedUrl + "/";
+          expect(r)
+            .withContext("results")
+            .toEqual({
+              item: expectedClone,
+              id: "svc1234567890",
+              type: itemTemplate.type,
+              postProcess: false
+            });
           done();
         });
     });
@@ -592,52 +883,55 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
       const adminUrl: string =
         "https://services123.arcgis.com/org1234567890/arcgis/rest/admin/services/ROWPermits_publiccomment/FeatureServer";
 
-      const layerKeyField: string =
-        "{{" + expectedId + ".layer0.fields.globalid.name}}";
-      const tableKeyField: string =
-        "{{" + expectedId + ".layer1.fields.globalid.name}}";
       const layerDefQuery: string =
         "status = '{{" + expectedId + ".layer0.fields.boardreview.name}}'";
       const tableDefQuery: string =
         "status = '{{" + expectedId + ".layer1.fields.boardreview.name}}'";
 
-      itemTemplate.properties.layers[0].relationships[0].keyField = layerKeyField;
+      itemTemplate.properties.layers[0].relationships = null;
       itemTemplate.properties.layers[0].definitionQuery = layerDefQuery;
       itemTemplate.properties.layers[0].viewDefinitionQuery = layerDefQuery;
 
-      itemTemplate.properties.tables[0].relationships[0].keyField = tableKeyField;
+      itemTemplate.properties.tables[0].relationships = null;
       itemTemplate.properties.tables[0].definitionQuery = tableDefQuery;
       itemTemplate.properties.tables[0].viewDefinitionQuery = tableDefQuery;
 
       itemTemplate.item.other = "{{unprocessed.itemId}}";
+      itemTemplate.properties.service.isView = false;
 
       // verify the state up front
-      expect(itemTemplate.item.id).toEqual(id);
-      expect(itemTemplate.item.url).toEqual(expectedUrl);
-      expect(itemTemplate.dependencies.length).toEqual(0);
-      expect(itemTemplate.properties.service.serviceItemId).toEqual(id);
+      expect(itemTemplate.item.id)
+        .withContext("up-front id check")
+        .toEqual(id);
+      expect(itemTemplate.item.url)
+        .withContext("up-front url check")
+        .toEqual(expectedUrl);
+      expect(itemTemplate.dependencies.length)
+        .withContext("up-front dependencies check")
+        .toEqual(0);
+      expect(itemTemplate.properties.service.serviceItemId)
+        .withContext("up-front serviceItemId check")
+        .toEqual(id);
 
-      expect(itemTemplate.properties.layers[0].serviceItemId).toEqual(id);
-      expect(
-        itemTemplate.properties.layers[0].relationships[0].keyField
-      ).toEqual(layerKeyField);
-      expect(itemTemplate.properties.layers[0].viewDefinitionQuery).toEqual(
-        layerDefQuery
-      );
-      expect(itemTemplate.properties.layers[0].definitionQuery).toEqual(
-        layerDefQuery
-      );
+      expect(itemTemplate.properties.layers[0].serviceItemId)
+        .withContext("up-front layers serviceItemId check")
+        .toEqual(id);
+      expect(itemTemplate.properties.layers[0].viewDefinitionQuery)
+        .withContext("up-front layers viewDefinitionQuery check")
+        .toEqual(layerDefQuery);
+      expect(itemTemplate.properties.layers[0].definitionQuery)
+        .withContext("up-front layers definitionQuery check")
+        .toEqual(layerDefQuery);
 
-      expect(itemTemplate.properties.tables[0].serviceItemId).toEqual(id);
-      expect(
-        itemTemplate.properties.tables[0].relationships[0].keyField
-      ).toEqual(tableKeyField);
-      expect(itemTemplate.properties.tables[0].viewDefinitionQuery).toEqual(
-        tableDefQuery
-      );
-      expect(itemTemplate.properties.tables[0].definitionQuery).toEqual(
-        tableDefQuery
-      );
+      expect(itemTemplate.properties.tables[0].serviceItemId)
+        .withContext("up-front tables withContext check")
+        .toEqual(id);
+      expect(itemTemplate.properties.tables[0].viewDefinitionQuery)
+        .withContext("up-front tables viewDefinitionQuery check")
+        .toEqual(tableDefQuery);
+      expect(itemTemplate.properties.tables[0].definitionQuery)
+        .withContext("up-front tables withContext check")
+        .toEqual(tableDefQuery);
 
       const createResponse: any = mockItems.getAGOLService([], [], true);
       createResponse.success = true;
@@ -652,14 +946,12 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
       ];
       expectedClone.properties.service.serviceItemId = "svc1234567890";
       expectedClone.properties.layers[0].serviceItemId = "svc1234567890";
-      expectedClone.properties.layers[0].relationships = null;
-      expectedClone.properties.layers[0].viewDefinitionQuery = null;
-      expectedClone.properties.layers[0].adminLayerInfo = undefined;
+      expectedClone.properties.layers[0].viewDefinitionQuery =
+        "status = 'BoardReview'";
       delete expectedClone.properties.layers[0].definitionQuery;
       expectedClone.properties.tables[0].serviceItemId = "svc1234567890";
-      expectedClone.properties.tables[0].relationships = null;
-      expectedClone.properties.tables[0].viewDefinitionQuery = null;
-      expectedClone.properties.tables[0].adminLayerInfo = undefined;
+      expectedClone.properties.tables[0].viewDefinitionQuery =
+        "status = 'BoardReview'";
       delete expectedClone.properties.tables[0].definitionQuery;
       expectedClone.item.thumbnail = "thumbnail/ago_downloaded.png";
       delete expectedClone.item.spatialReference;
@@ -679,18 +971,6 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
         )
         .post(
           "https://services123.arcgis.com/org1234567890/arcgis/rest/admin/services/ROWPermits_publiccomment/FeatureServer/refresh",
-          '{"success":true}'
-        )
-        .post(
-          "https://services123.arcgis.com/org1234567890/arcgis/rest/admin/services/ROWPermits_publiccomment/FeatureServer/0/updateDefinition",
-          '{"success":true}'
-        )
-        .post(
-          "https://services123.arcgis.com/org1234567890/arcgis/rest/admin/services/ROWPermits_publiccomment/FeatureServer/1/updateDefinition",
-          '{"success":true}'
-        )
-        .post(
-          "https://services123.arcgis.com/org1234567890/arcgis/rest/admin/services/ROWPermits_publiccomment/FeatureServer/updateDefinition",
           '{"success":true}'
         )
         .post(
@@ -716,6 +996,7 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
           utils.ITEM_PROGRESS_CALLBACK
         )
         .then(r => {
+          expectedClone.item.url = expectedUrl + "/";
           expect(r).toEqual({
             item: expectedClone,
             id: "svc1234567890",
@@ -737,52 +1018,54 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
       const adminUrl: string =
         "https://services123.arcgis.com/org1234567890/arcgis/rest/admin/services/ROWPermits_publiccomment/FeatureServer";
 
-      const layerKeyField: string =
-        "{{" + expectedId + ".layer0.fields.globalid.name}}";
-      const tableKeyField: string =
-        "{{" + expectedId + ".layer1.fields.globalid.name}}";
       const layerDefQuery: string =
         "status = '{{" + expectedId + ".layer0.fields.boardreview.name}}'";
       const tableDefQuery: string =
         "status = '{{" + expectedId + ".layer1.fields.boardreview.name}}'";
 
-      itemTemplate.properties.layers[0].relationships[0].keyField = layerKeyField;
       itemTemplate.properties.layers[0].definitionQuery = layerDefQuery;
       itemTemplate.properties.layers[0].viewDefinitionQuery = layerDefQuery;
 
-      itemTemplate.properties.tables[0].relationships[0].keyField = tableKeyField;
       itemTemplate.properties.tables[0].definitionQuery = tableDefQuery;
       itemTemplate.properties.tables[0].viewDefinitionQuery = tableDefQuery;
+
+      itemTemplate.properties.service.isView = false;
 
       itemTemplate.data.other = "{{unprocessed.itemId}}";
 
       // verify the state up front
-      expect(itemTemplate.item.id).toEqual(id);
-      expect(itemTemplate.item.url).toEqual(expectedUrl);
-      expect(itemTemplate.dependencies.length).toEqual(0);
-      expect(itemTemplate.properties.service.serviceItemId).toEqual(id);
+      expect(itemTemplate.item.id)
+        .withContext("up-front id check")
+        .toEqual(id);
+      expect(itemTemplate.item.url)
+        .withContext("up-front url check")
+        .toEqual(expectedUrl);
+      expect(itemTemplate.dependencies.length)
+        .withContext("up-front dependencies check")
+        .toEqual(0);
+      expect(itemTemplate.properties.service.serviceItemId)
+        .withContext("up-front serviceItemId check")
+        .toEqual(id);
 
-      expect(itemTemplate.properties.layers[0].serviceItemId).toEqual(id);
-      expect(
-        itemTemplate.properties.layers[0].relationships[0].keyField
-      ).toEqual(layerKeyField);
-      expect(itemTemplate.properties.layers[0].viewDefinitionQuery).toEqual(
-        layerDefQuery
-      );
-      expect(itemTemplate.properties.layers[0].definitionQuery).toEqual(
-        layerDefQuery
-      );
+      expect(itemTemplate.properties.layers[0].serviceItemId)
+        .withContext("up-front layers serviceItemId check")
+        .toEqual(id);
+      expect(itemTemplate.properties.layers[0].viewDefinitionQuery)
+        .withContext("up-front layers viewDefinitionQuery check")
+        .toEqual(layerDefQuery);
+      expect(itemTemplate.properties.layers[0].definitionQuery)
+        .withContext("up-front layers definitionQuery check")
+        .toEqual(layerDefQuery);
 
-      expect(itemTemplate.properties.tables[0].serviceItemId).toEqual(id);
-      expect(
-        itemTemplate.properties.tables[0].relationships[0].keyField
-      ).toEqual(tableKeyField);
-      expect(itemTemplate.properties.tables[0].viewDefinitionQuery).toEqual(
-        tableDefQuery
-      );
-      expect(itemTemplate.properties.tables[0].definitionQuery).toEqual(
-        tableDefQuery
-      );
+      expect(itemTemplate.properties.tables[0].serviceItemId)
+        .withContext("up-front tables withContext check")
+        .toEqual(id);
+      expect(itemTemplate.properties.tables[0].viewDefinitionQuery)
+        .withContext("up-front tables viewDefinitionQuery check")
+        .toEqual(tableDefQuery);
+      expect(itemTemplate.properties.tables[0].definitionQuery)
+        .withContext("up-front tables withContext check")
+        .toEqual(tableDefQuery);
 
       const createResponse: any = mockItems.getAGOLService([], [], true);
       createResponse.success = true;
@@ -798,13 +1081,13 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
       expectedClone.properties.service.serviceItemId = "svc1234567890";
       expectedClone.properties.layers[0].serviceItemId = "svc1234567890";
       expectedClone.properties.layers[0].relationships = null;
-      expectedClone.properties.layers[0].viewDefinitionQuery = null;
-      expectedClone.properties.layers[0].adminLayerInfo = undefined;
+      expectedClone.properties.layers[0].viewDefinitionQuery =
+        "status = 'BoardReview'";
       delete expectedClone.properties.layers[0].definitionQuery;
       expectedClone.properties.tables[0].serviceItemId = "svc1234567890";
       expectedClone.properties.tables[0].relationships = null;
-      expectedClone.properties.tables[0].viewDefinitionQuery = null;
-      expectedClone.properties.tables[0].adminLayerInfo = undefined;
+      expectedClone.properties.tables[0].viewDefinitionQuery =
+        "status = 'BoardReview'";
       delete expectedClone.properties.tables[0].definitionQuery;
       expectedClone.item.thumbnail = "thumbnail/ago_downloaded.png";
       delete expectedClone.item.spatialReference;
@@ -824,18 +1107,6 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
         )
         .post(
           "https://services123.arcgis.com/org1234567890/arcgis/rest/admin/services/ROWPermits_publiccomment/FeatureServer/refresh",
-          '{"success":true}'
-        )
-        .post(
-          "https://services123.arcgis.com/org1234567890/arcgis/rest/admin/services/ROWPermits_publiccomment/FeatureServer/0/updateDefinition",
-          '{"success":true}'
-        )
-        .post(
-          "https://services123.arcgis.com/org1234567890/arcgis/rest/admin/services/ROWPermits_publiccomment/FeatureServer/1/updateDefinition",
-          '{"success":true}'
-        )
-        .post(
-          "https://services123.arcgis.com/org1234567890/arcgis/rest/admin/services/ROWPermits_publiccomment/FeatureServer/updateDefinition",
           '{"success":true}'
         )
         .post(
@@ -861,12 +1132,16 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
           utils.ITEM_PROGRESS_CALLBACK
         )
         .then(r => {
-          expect(r).toEqual({
-            item: expectedClone,
-            id: "svc1234567890",
-            type: itemTemplate.type,
-            postProcess: true
-          });
+          expectedClone.item.url = expectedUrl + "/";
+          expect(r)
+            .withContext("results")
+            .withContext("result")
+            .toEqual({
+              item: expectedClone,
+              id: "svc1234567890",
+              type: itemTemplate.type,
+              postProcess: true
+            });
           done();
         });
     });
@@ -913,33 +1188,33 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
         .withContext("up-front dependencies check")
         .toEqual(0);
       expect(itemTemplate.properties.service.serviceItemId)
-        .withContext("up-front service item id check")
+        .withContext("up-front serviceItemId check")
         .toEqual(id);
 
       expect(itemTemplate.properties.layers[0].serviceItemId)
-        .withContext("up-front layer 0 service item id check")
+        .withContext("up-front layers serviceItemId check")
         .toEqual(id);
       expect(itemTemplate.properties.layers[0].relationships[0].keyField)
-        .withContext("up-front layer 0 keyField check")
+        .withContext("up-front layers keyField check")
         .toEqual(layerKeyField);
       expect(itemTemplate.properties.layers[0].viewDefinitionQuery)
-        .withContext("up-front layer 0 view defn query check")
+        .withContext("up-front layers viewDefinitionQuery check")
         .toEqual(layerDefQuery);
       expect(itemTemplate.properties.layers[0].definitionQuery)
-        .withContext("up-front layer 0 defn query check")
+        .withContext("up-front layers definitionQuery check")
         .toEqual(layerDefQuery);
 
       expect(itemTemplate.properties.tables[0].serviceItemId)
-        .withContext("up-front table 0 service item id check")
+        .withContext("up-front tables withContext check")
         .toEqual(id);
       expect(itemTemplate.properties.tables[0].relationships[0].keyField)
-        .withContext("up-front table 0 keyField check")
+        .withContext("up-front tables keyField check")
         .toEqual(tableKeyField);
       expect(itemTemplate.properties.tables[0].viewDefinitionQuery)
-        .withContext("up-front table 0 view defn query check")
+        .withContext("up-front tables viewDefinitionQuery check")
         .toEqual(tableDefQuery);
       expect(itemTemplate.properties.tables[0].definitionQuery)
-        .withContext("up-front table 0 defn query check")
+        .withContext("up-front tables withContext check")
         .toEqual(tableDefQuery);
 
       const settings = utils.createMockSettings();
@@ -1036,6 +1311,7 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
           utils.ITEM_PROGRESS_CALLBACK
         )
         .then(r => {
+          expectedClone.item.url = expectedUrl + "/";
           expect(r)
             .withContext("result")
             .toEqual({
@@ -1053,7 +1329,7 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
       const id: string = "{{" + expectedId + ".itemId}}";
 
       const expectedUrl: string =
-        "https://services123.arcgis.com/org1234567890/arcgis/rest/services/ROWPermits_publiccomment/FeatureServer";
+        "https://services123.arcgis.com/org1234567890/arcgis/rest/services/ROWPermits_publiccomment/FeatureServer/";
       const url: string = "{{" + expectedId + ".url}}";
 
       const adminUrl: string =
@@ -1157,7 +1433,7 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
       const id: string = "{{" + expectedId + ".itemId}}";
 
       const expectedUrl: string =
-        "https://services123.arcgis.com/org1234567890/arcgis/rest/services/ROWPermits_publiccomment/FeatureServer";
+        "https://services123.arcgis.com/org1234567890/arcgis/rest/services/ROWPermits_publiccomment/FeatureServer/";
       const url: string = "{{" + expectedId + ".url}}";
 
       const adminUrl: string =
@@ -1261,7 +1537,7 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
       const id: string = "{{" + expectedId + ".itemId}}";
 
       const expectedUrl: string =
-        "https://services123.arcgis.com/org1234567890/arcgis/rest/services/ROWPermits_publiccomment/FeatureServer";
+        "https://services123.arcgis.com/org1234567890/arcgis/rest/services/ROWPermits_publiccomment/FeatureServer/";
       const url: string = "{{" + expectedId + ".url}}";
 
       const adminUrl: string =
@@ -1362,7 +1638,7 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
       const id: string = "{{" + expectedId + ".itemId}}";
 
       const expectedUrl: string =
-        "https://services123.arcgis.com/org1234567890/arcgis/rest/services/ROWPermits_publiccomment/FeatureServer";
+        "https://services123.arcgis.com/org1234567890/arcgis/rest/services/ROWPermits_publiccomment/FeatureServer/";
       const url: string = "{{" + expectedId + ".url}}";
 
       const adminUrl: string =
@@ -1463,7 +1739,7 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
       const id: string = "{{" + expectedId + ".itemId}}";
 
       const expectedUrl: string =
-        "https://services123.arcgis.com/org1234567890/arcgis/rest/services/ROWPermits_publiccomment/FeatureServer";
+        "https://services123.arcgis.com/org1234567890/arcgis/rest/services/ROWPermits_publiccomment/FeatureServer/";
       const url: string = "{{" + expectedId + ".url}}";
 
       const adminUrl: string =
@@ -1540,7 +1816,7 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
       const id: string = "{{" + expectedId + ".itemId}}";
 
       const expectedUrl: string =
-        "https://services123.arcgis.com/org1234567890/arcgis/rest/services/ROWPermits_publiccomment/FeatureServer";
+        "https://services123.arcgis.com/org1234567890/arcgis/rest/services/ROWPermits_publiccomment/FeatureServer/";
       const url: string = "{{" + expectedId + ".url}}";
 
       const adminUrl: string =
@@ -1617,7 +1893,7 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
       const id: string = "{{" + expectedId + ".itemId}}";
 
       const expectedUrl: string =
-        "https://services123.arcgis.com/org1234567890/arcgis/rest/services/ROWPermits_publiccomment/FeatureServer";
+        "https://services123.arcgis.com/org1234567890/arcgis/rest/services/ROWPermits_publiccomment/FeatureServer/";
       const url: string = "{{" + expectedId + ".url}}";
 
       const adminUrl: string =
@@ -1685,7 +1961,7 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
       const id: string = "{{" + expectedId + ".itemId}}";
 
       const expectedUrl: string =
-        "https://services123.arcgis.com/org1234567890/arcgis/rest/services/ROWPermits_publiccomment/FeatureServer";
+        "https://services123.arcgis.com/org1234567890/arcgis/rest/services/ROWPermits_publiccomment/FeatureServer/";
       const url: string = "{{" + expectedId + ".url}}";
 
       const adminUrl: string =
@@ -1736,7 +2012,7 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
       const id: string = "{{" + expectedId + ".itemId}}";
 
       const expectedUrl: string =
-        "https://services123.arcgis.com/org1234567890/arcgis/rest/services/ROWPermits_publiccomment/FeatureServer";
+        "https://services123.arcgis.com/org1234567890/arcgis/rest/services/ROWPermits_publiccomment/FeatureServer/";
       const url: string = "{{" + expectedId + ".url}}";
 
       const adminUrl: string =
@@ -1837,7 +2113,7 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
       const id: string = "{{" + expectedId + ".itemId}}";
 
       const expectedUrl: string =
-        "https://services123.arcgis.com/org1234567890/arcgis/rest/services/ROWPermits_publiccomment/FeatureServer";
+        "https://services123.arcgis.com/org1234567890/arcgis/rest/services/ROWPermits_publiccomment/FeatureServer/";
       const url: string = "{{" + expectedId + ".url}}";
 
       const adminUrl: string =
@@ -1927,7 +2203,7 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
       const id: string = "{{" + expectedId + ".itemId}}";
 
       const expectedUrl: string =
-        "https://services123.arcgis.com/org1234567890/arcgis/rest/services/ROWPermits_publiccomment/FeatureServer";
+        "https://services123.arcgis.com/org1234567890/arcgis/rest/services/ROWPermits_publiccomment/FeatureServer/";
       const url: string = "{{" + expectedId + ".url}}";
 
       const adminUrl: string =
@@ -2364,117 +2640,113 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
   });
 
   describe("postProcess", () => {
-    // Postprocessing uses common.updateItemTemplateFromDictionary, which uses common.getItemDataAsJson, which
-    // requires browser features
-    if (typeof window !== "undefined") {
-      it("fetch and update the item and data", done => {
-        const item: common.IItem = {
-          id: "a369baed619441cfb5e862694d33d44c",
-          owner: "brubble",
-          tags: ["tag1"],
-          created: 1590520700158,
-          modified: 1590520700158,
-          numViews: 10,
-          size: 50,
-          title: "My Form",
-          type: "Form",
-          typeKeywords: ["{{a369baed619441cfb5e862694d33d44c.itemId}}"]
-        };
-        const data = {
-          someProp: "{{a369baed619441cfb5e862694d33d44c.itemId}}"
-        };
-        const templates = [itemTemplate];
-        const itemInfos = [
-          {
-            item: itemTemplate,
-            id: itemTemplate.id,
-            type: itemTemplate.type,
-            postProcess: true
-          }
-        ];
-        const templateDictionary = {
-          a369baed619441cfb5e862694d33d44c: {
-            itemId: "b369baed619441cfb5e862694d33d44c"
-          }
-        };
-        const expected = {
-          item: {
-            ...item,
-            typeKeywords: ["b369baed619441cfb5e862694d33d44c"]
-          },
-          data: {
-            ...data,
-            someProp: "b369baed619441cfb5e862694d33d44c"
-          }
-        };
+    it("fetch and update the item and data", done => {
+      const item: common.IItem = {
+        id: "a369baed619441cfb5e862694d33d44c",
+        owner: "brubble",
+        tags: ["tag1"],
+        created: 1590520700158,
+        modified: 1590520700158,
+        numViews: 10,
+        size: 50,
+        title: "My Form",
+        type: "Form",
+        typeKeywords: ["{{a369baed619441cfb5e862694d33d44c.itemId}}"]
+      };
+      const data = {
+        someProp: "{{a369baed619441cfb5e862694d33d44c.itemId}}"
+      };
+      const templates = [itemTemplate];
+      const itemInfos = [
+        {
+          item: itemTemplate,
+          id: itemTemplate.id,
+          type: itemTemplate.type,
+          postProcess: true
+        }
+      ];
+      const templateDictionary = {
+        a369baed619441cfb5e862694d33d44c: {
+          itemId: "b369baed619441cfb5e862694d33d44c"
+        }
+      };
+      const expected = {
+        item: {
+          ...item,
+          typeKeywords: ["b369baed619441cfb5e862694d33d44c"]
+        },
+        data: {
+          ...data,
+          someProp: "b369baed619441cfb5e862694d33d44c"
+        }
+      };
 
-        const updateUrl =
+      const updateUrl =
+        utils.PORTAL_SUBSET.restUrl +
+        "/content/users/brubble/items/a369baed619441cfb5e862694d33d44c/update";
+      fetchMock
+        .get(
           utils.PORTAL_SUBSET.restUrl +
-          "/content/users/brubble/items/a369baed619441cfb5e862694d33d44c/update";
-        fetchMock
-          .get(
-            utils.PORTAL_SUBSET.restUrl +
-              "/content/items/a369baed619441cfb5e862694d33d44c?f=json&token=fake-token",
-            item
-          )
-          .post(
-            utils.PORTAL_SUBSET.restUrl +
-              "/content/items/a369baed619441cfb5e862694d33d44c/data",
-            data
-          )
-          .post(updateUrl, utils.getSuccessResponse({ id: item.id }));
+            "/content/items/a369baed619441cfb5e862694d33d44c?f=json&token=fake-token",
+          item
+        )
+        .post(
+          utils.PORTAL_SUBSET.restUrl +
+            "/content/items/a369baed619441cfb5e862694d33d44c/data",
+          data
+        )
+        .post(updateUrl, utils.getSuccessResponse({ id: item.id }));
 
-        const replaceInTemplateSpy = spyOn(
-          common,
-          "replaceInTemplate"
-        ).and.returnValue(expected);
-        return featureLayer
-          .postProcess(
-            item.id,
-            item.type,
-            itemInfos,
-            itemTemplate,
-            templates,
-            templateDictionary,
-            MOCK_USER_SESSION
-          )
-          .then(
-            result => {
-              expect(result).toEqual(utils.getSuccessResponse({ id: item.id }));
+      const replaceInTemplateSpy = spyOn(
+        common,
+        "replaceInTemplate"
+      ).and.returnValue(expected);
+      return featureLayer
+        .postProcess(
+          item.id,
+          item.type,
+          itemInfos,
+          itemTemplate,
+          templates,
+          templateDictionary,
+          MOCK_USER_SESSION
+        )
+        .then(
+          result => {
+            expect(result).toEqual(utils.getSuccessResponse({ id: item.id }));
 
-              const callBody = fetchMock.calls(updateUrl)[0][1].body as string;
-              expect(callBody).toEqual(
-                "f=json&text=%7B%22someProp%22%3A%22b369baed619441cfb5e862694d33d44c%22%7D&id=a369baed619441cfb5e862" +
-                  "694d33d44c&owner=brubble&tags=tag1&created=1590520700158&modified=1590520700158&numViews=10&size=50" +
-                  "&title=My%20Form&type=Form&typeKeywords=b369baed619441cfb5e862694d33d44c&token=fake-token"
-              );
-              done();
-            },
-            e => {
-              done.fail(e);
-            }
-          );
-      });
+            const callBody = fetchMock.calls(updateUrl)[0][1].body as string;
+            expect(callBody).toEqual(
+              "f=json&text=%7B%22someProp%22%3A%22b369baed619441cfb5e862694d33d44c%22%7D&id=a369baed619441cfb5e862" +
+                "694d33d44c&owner=brubble&tags=tag1&created=1590520700158&modified=1590520700158&numViews=10&size=50" +
+                "&title=My%20Form&type=Form&typeKeywords=b369baed619441cfb5e862694d33d44c&token=fake-token"
+            );
+            done();
+          },
+          e => {
+            done.fail(e);
+          }
+        );
+    });
 
-      it("will fine tune workforce service project", done => {
-        // the fineTuneCreatedWorkforceItem function is tested in workforce helpers
-        const template: common.IItemTemplate = mockSolutions.getItemTemplateSkeleton();
-        template.item.typeKeywords = ["Workforce Project"];
+    it("will fine tune workforce service project", done => {
+      // the fineTuneCreatedWorkforceItem function is tested in workforce helpers
+      const template: common.IItemTemplate = mockSolutions.getItemTemplateSkeleton();
+      template.item.typeKeywords = ["Workforce Project"];
 
-        const fineTuneCreatedWorkforceItemSpy = spyOn(
-          common,
-          "fineTuneCreatedWorkforceItem"
-        ).and.resolveTo(undefined);
+      const fineTuneCreatedWorkforceItemSpy = spyOn(
+        common,
+        "fineTuneCreatedWorkforceItem"
+      ).and.resolveTo(undefined);
 
-        const updateItemTemplateFromDictionarySpy = spyOn(
-          common,
-          "updateItemTemplateFromDictionary"
-        ).and.resolveTo(undefined);
+      const updateItemTemplateFromDictionarySpy = spyOn(
+        common,
+        "updateItemTemplateFromDictionary"
+      ).and.resolveTo(undefined);
 
-        featureLayer
-          .postProcess("", "", [], template, [], {}, MOCK_USER_SESSION)
-          .then(done, done.fail);
-      });
-    }
+      featureLayer
+        .postProcess("", "", [], template, [], {}, MOCK_USER_SESSION)
+        .then(done, done.fail);
+    });
   });
 });

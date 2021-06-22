@@ -51,11 +51,13 @@ describe("Module `deploySolutionItems`", () => {
     it("can handle unimplemented item type gracefully", done => {
       spyOn(console, "log").and.callFake(() => {});
       spyOn(console, "error").and.callFake(() => {});
+      const template = templates.getItemTemplateSkeleton();
+      template.itemId = "itm1234567890";
       deploySolution
         .deploySolutionItems(
           "",
           "",
-          [templates.getItemTemplateSkeleton()],
+          [template],
           MOCK_USER_SESSION,
           {},
           MOCK_USER_SESSION,
@@ -68,7 +70,7 @@ describe("Module `deploySolutionItems`", () => {
         .then(
           () => done.fail(),
           error => {
-            expect(error).toEqual(common.failWithIds([""]));
+            expect(error).toEqual(common.failWithIds(["itm1234567890"]));
             done();
           }
         );
@@ -209,26 +211,31 @@ describe("Module `deploySolutionItems`", () => {
         "https://localdeployment.maps.arcgis.com/apps/CrowdsourcePolling/index.html?appid=" +
         foundItemID;
 
-      fetchMock.get(
-        utils.PORTAL_SUBSET.restUrl +
-          "/search?f=json&q=typekeywords%3Asource-" +
-          id +
-          "%20type%3AWeb%20Mapping%20Application%20owner%3Acasey&token=fake-token",
-        {
-          query: "typekeywords='source-" + id + "'",
-          results: [
-            {
-              id: foundItemID,
-              type: type,
-              name: "name",
-              title: "title",
-              url: url,
-              created: 1582751986000,
-              modified: 1582751989000
-            }
-          ]
-        }
-      );
+      fetchMock
+        .get(
+          utils.PORTAL_SUBSET.restUrl +
+            "/search?f=json&q=typekeywords%3Asource-" +
+            id +
+            "%20type%3AWeb%20Mapping%20Application%20owner%3Acasey&token=fake-token",
+          {
+            query: "typekeywords='source-" + id + "'",
+            results: [
+              {
+                id: foundItemID,
+                type: type,
+                name: "name",
+                title: "title",
+                url: url,
+                created: 1582751986000,
+                modified: 1582751989000
+              }
+            ]
+          }
+        )
+        .get(
+          "https://myorg.maps.arcgis.com/sharing/rest/content/items/ba4a6047326243b290f625e80ebe6531?f=json&token=fake-token",
+          { id: "cc4a6047326243b290f625e80ebe6531" }
+        );
 
       const expected: common.ICreateItemFromTemplateResponse[] = [
         {
@@ -321,6 +328,10 @@ describe("Module `deploySolutionItems`", () => {
               }
             ]
           }
+        )
+        .get(
+          "https://myorg.maps.arcgis.com/sharing/rest/content/items/ba4a6047326243b290f625e80ebe6531?f=json&token=fake-token",
+          { id: "ABC123" }
         );
 
       const expected: common.ICreateItemFromTemplateResponse[] = [
@@ -390,33 +401,38 @@ describe("Module `deploySolutionItems`", () => {
         "https://localdeployment.maps.arcgis.com/apps/CrowdsourcePolling/index.html?appid=" +
         foundItemID2;
 
-      fetchMock.get(
-        utils.PORTAL_SUBSET.restUrl +
-          "/search?f=json&q=typekeywords%3Asource-" +
-          id +
-          "%20type%3AWeb%20Mapping%20Application%20owner%3Acasey&token=fake-token",
-        {
-          query: "typekeywords='source-" + id + "'",
-          results: [
-            {
-              id: foundItemID,
-              type: type,
-              name: "name1",
-              title: "title1",
-              url: url1,
-              created: 1582751986000
-            },
-            {
-              id: foundItemID2,
-              type: type,
-              name: "name2",
-              title: "title2",
-              url: url2,
-              created: 1582751989000
-            }
-          ]
-        }
-      );
+      fetchMock
+        .get(
+          utils.PORTAL_SUBSET.restUrl +
+            "/search?f=json&q=typekeywords%3Asource-" +
+            id +
+            "%20type%3AWeb%20Mapping%20Application%20owner%3Acasey&token=fake-token",
+          {
+            query: "typekeywords='source-" + id + "'",
+            results: [
+              {
+                id: foundItemID,
+                type: type,
+                name: "name1",
+                title: "title1",
+                url: url1,
+                created: 1582751986000
+              },
+              {
+                id: foundItemID2,
+                type: type,
+                name: "name2",
+                title: "title2",
+                url: url2,
+                created: 1582751989000
+              }
+            ]
+          }
+        )
+        .get(
+          "https://myorg.maps.arcgis.com/sharing/rest/content/items/ca4a6047326243b290f625e80ebe6531?f=json&token=fake-token",
+          { id: "ABC123" }
+        );
 
       const expected: common.ICreateItemFromTemplateResponse[] = [
         {
@@ -1276,8 +1292,9 @@ describe("Module `deploySolutionItems`", () => {
       const itemTemplate: common.IItemTemplate = templates.getItemTemplate(
         "Feature Service",
         [],
-        "https://services123.arcgis.com/org1234567890/arcgis/rest/services/ROWPermits_publiccomment/FeatureServer"
+        "https://services123.arcgis.com/org1234567890/arcgis/rest/services/ROWPermits_publiccomment/FeatureServer/"
       );
+      itemTemplate.properties.service.isView = false;
       itemTemplate.itemId = "dd4a6047326243b290f625e80ebe6531";
       itemTemplate.properties.syncViews = ["aa4a6047326243b290f625e80ebe6531"];
       const resourceFilePaths: common.IDeployFileCopyPath[] = [];
@@ -1318,9 +1335,9 @@ describe("Module `deploySolutionItems`", () => {
       expectedClone.item.id = "svc1234567890";
       expectedClone.properties.service.serviceItemId = "svc1234567890";
       delete expectedClone.properties.layers[0].definitionQuery;
+      expectedClone.properties.layers[0].viewDefinitionQuery =
+        "status = 'BoardReview'";
       expectedClone.properties.layers[0].relationships = null;
-      expectedClone.properties.layers[0].viewDefinitionQuery = null;
-      expectedClone.properties.layers[0].adminLayerInfo = undefined;
       delete expectedClone.item.spatialReference;
 
       fetchMock
@@ -1342,15 +1359,7 @@ describe("Module `deploySolutionItems`", () => {
           utils.getSuccessResponse()
         )
         .post(
-          "https://services123.arcgis.com/org1234567890/arcgis/rest/admin/services/ROWPermits_publiccomment/FeatureServer/0/updateDefinition",
-          utils.getSuccessResponse()
-        )
-        .post(
           "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/items/svc1234567890/update",
-          utils.getSuccessResponse()
-        )
-        .post(
-          "https://services123.arcgis.com/org1234567890/arcgis/rest/admin/services/ROWPermits_publiccomment/FeatureServer/updateDefinition",
           utils.getSuccessResponse()
         )
         .get(
@@ -1379,187 +1388,286 @@ describe("Module `deploySolutionItems`", () => {
         });
     });
 
-    if (typeof window !== "undefined") {
-      it("fails to deploy file data to the item", done => {
-        const itemTemplate: common.IItemTemplate = templates.getItemTemplate(
-          "Web Map"
-        );
-        itemTemplate.item.thumbnail = null;
-        const resourceFilePaths: common.IDeployFileCopyPath[] = [
-          {
-            type: common.EFileType.Data,
-            folder: "cod1234567890_info_data",
-            filename: "Name of an AGOL item.zip",
-            url:
-              "https://myserver/doc/cod1234567890_info_data/Name of an AGOL item.zip"
+    it("handles View FS", done => {
+      const itemTemplate: common.IItemTemplate = templates.getItemTemplate(
+        "Feature Service",
+        [],
+        "https://services123.arcgis.com/org1234567890/arcgis/rest/services/ROWPermits_publiccomment/FeatureServer/"
+      );
+      itemTemplate.properties.service.isView = true;
+      itemTemplate.itemId = "dd4a6047326243b290f625e80ebe6531";
+      itemTemplate.properties.syncViews = ["aa4a6047326243b290f625e80ebe6531"];
+      const resourceFilePaths: common.IDeployFileCopyPath[] = [];
+      const templateDictionary: any = {
+        aa4a6047326243b290f625e80ebe6531: {
+          def: function() {
+            return Promise.resolve(null);
           }
-        ];
-        const templateDictionary: any = {};
-        const newItemID: string = "map1234567891";
+        },
+        organization: utils.getPortalsSelfResponse()
+      };
 
-        fetchMock
-          .post(
-            utils.PORTAL_SUBSET.restUrl + "/content/users/casey/addItem",
-            utils.getSuccessResponse({ id: newItemID })
-          )
-          .post(
-            utils.PORTAL_SUBSET.restUrl +
-              "/content/users/casey/items/map1234567891/update",
-            utils.getFailureResponse()
-          )
-          .post(
-            "https://myserver/doc/cod1234567890_info_data/Name of an AGOL item.zip/rest/info",
-            SERVER_INFO
-          )
-          .post(
-            "https://myserver/doc/cod1234567890_info_data/Name of an AGOL item.zip",
-            utils.getSampleZipFile("Name of an AGOL item.zip")
-          )
-          .post(
-            "https://myserver/doc/metadata.xml",
-            new Blob(["<meta><value1>a</value1><value2>b</value2></meta>"], {
-              type: "text/xml"
-            }),
-            { sendAsJson: false }
-          )
-          .post(utils.PORTAL_SUBSET.restUrl + "/info", SERVER_INFO);
+      itemTemplate.properties.service.spatialReference = {
+        wkid: 102100
+      };
 
-        // eslint-disable-next-line @typescript-eslint/no-floating-promises
-        deploySolution
-          ._createItemFromTemplateWhenReady(
-            itemTemplate,
-            resourceFilePaths,
-            MOCK_USER_SESSION,
-            templateDictionary,
-            MOCK_USER_SESSION,
-            utils.ITEM_PROGRESS_CALLBACK
-          )
-          .then(response => {
-            expect(response).toEqual(
-              templates.getFailedItem(itemTemplate.type)
-            );
-            done();
-          });
-      });
+      itemTemplate.properties.defaultExtent = {
+        xmin: -20037507.0671618,
+        ymin: -20037507.0671618,
+        xmax: 20037507.0671618,
+        ymax: 20037507.0671618,
+        spatialReference: {
+          wkid: 102100
+        }
+      };
 
-      it("should handle error on copy group resources", done => {
-        const itemId: string = "abc9cab401af4828a25cc6eaeb59fb69";
-        const templateDictionary: any = {};
-        const newItemID: string = "abc8cab401af4828a25cc6eaeb59fb69";
+      itemTemplate.properties.layers = [
+        mockItems.getAGOLLayerOrTable(0, "A", "Feature Layer")
+      ];
+      itemTemplate.properties.tables = [];
 
-        const itemTemplate: common.IItemTemplate = templates.getItemTemplateSkeleton();
-        itemTemplate.itemId = itemId;
-        itemTemplate.type = "Group";
-        itemTemplate.item.title = "Dam Inspection Assignments";
+      const updatedItem = mockItems.getAGOLItem("Feature Service");
 
-        const searchResult: any = {
-          query: "Dam Inspection Assignments",
-          total: 12,
-          start: 1,
-          num: 10,
-          nextStart: 11,
-          results: []
-        };
+      const expectedClone: common.IItemTemplate = common.cloneObject(
+        itemTemplate
+      );
+      expectedClone.itemId = "svc1234567890";
+      expectedClone.item.id = "svc1234567890";
+      expectedClone.properties.service.serviceItemId = "svc1234567890";
+      delete expectedClone.properties.layers[0].definitionQuery;
+      expectedClone.properties.layers[0].viewDefinitionQuery =
+        "status = 'BoardReview'";
+      expectedClone.properties.layers[0].relationships = null;
+      expectedClone.properties.layers[0].adminLayerInfo = undefined;
+      delete expectedClone.item.spatialReference;
+      expectedClone.properties.layers[0].fields = expectedClone.properties.layers[0].fields.map(
+        (f: any) => {
+          f.isViewOverride = true;
+          return f;
+        }
+      );
 
-        const filePaths: any[] = [
-          {
-            type: common.EFileType.Resource,
-            folder: "aFolder",
-            filename: "git_merge.png",
-            url: "http://someurl"
-          }
-        ];
-
-        fetchMock
-          .get(
-            utils.PORTAL_SUBSET.restUrl +
-              "/community/groups?f=json&q=Dam%20Inspection%20Assignments&token=fake-token",
-            searchResult
-          )
-          .post(utils.PORTAL_SUBSET.restUrl + "/community/createGroup", {
-            success: true,
-            group: { id: newItemID }
-          })
-          .post("http://someurl//rest/info", {})
-          .post("http://someurl/", mockItems.get400Failure());
-
-        // eslint-disable-next-line @typescript-eslint/no-floating-promises
-        deploySolution
-          ._createItemFromTemplateWhenReady(
-            itemTemplate,
-            filePaths,
-            MOCK_USER_SESSION,
-            templateDictionary,
-            MOCK_USER_SESSION,
-            utils.ITEM_PROGRESS_CALLBACK
-          )
-          .then(response => {
-            expect(response).toEqual(
-              templates.getFailedItem(itemTemplate.type)
-            );
-            done();
-          });
-      });
-
-      it("can handle error on copyFilesFromStorage", done => {
-        const itemTemplate: common.IItemTemplate = templates.getItemTemplate(
-          "Web Mapping Application",
-          null,
-          "https://apl.maps.arcgis.com/apps/Viewer/index.html?appid=map1234567890"
-        );
-        itemTemplate.item.thumbnail = null;
-        const resourceFilePaths: any[] = [
-          {
-            type: common.EFileType.Resource,
-            folder: "aFolder",
-            filename: "git_merge.png",
-            url: "http://someurl"
-          }
-        ];
-        const templateDictionary: any = {};
-        const newItemID: string = "wma1234567891";
-
-        const updatedItem = mockItems.getAGOLItem(
-          "Web Mapping Application",
-          "https://apl.maps.arcgis.com/apps/Viewer/index.html?appid=map1234567890"
+      fetchMock
+        .post(
+          utils.PORTAL_SUBSET.restUrl + "/content/users/casey/createService",
+          utils.getCreateServiceResponse()
+        )
+        .get(
+          utils.PORTAL_SUBSET.restUrl +
+            "/content/items/wma1234567891?f=json&token=fake-token",
+          updatedItem
+        )
+        .post(
+          "https://services123.arcgis.com/org1234567890/arcgis/rest/admin/services/ROWPermits_publiccomment/FeatureServer/addToDefinition",
+          utils.getSuccessResponse()
+        )
+        .post(
+          "https://services123.arcgis.com/org1234567890/arcgis/rest/admin/services/ROWPermits_publiccomment/FeatureServer/refresh",
+          utils.getSuccessResponse()
+        )
+        .post(
+          "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/items/svc1234567890/update",
+          utils.getSuccessResponse()
+        )
+        .get(
+          "https://myorg.maps.arcgis.com/sharing/rest/content/items/svc1234567890?f=json&token=fake-token",
+          expectedClone.item
         );
 
-        fetchMock
-          .post(
-            utils.PORTAL_SUBSET.restUrl + "/content/users/casey/addItem",
-            utils.getSuccessResponse({ id: newItemID })
-          )
-          .post(
-            utils.PORTAL_SUBSET.restUrl +
-              "/content/users/casey/items/wma1234567891/update",
-            utils.getSuccessResponse({ id: newItemID })
-          )
-          .get(
-            utils.PORTAL_SUBSET.restUrl +
-              "/content/items/wma1234567891?f=json&token=fake-token",
-            updatedItem
-          )
-          .post("http://someurl//rest/info", {})
-          .post("http://someurl/", mockItems.get400Failure());
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
+      deploySolution
+        ._createItemFromTemplateWhenReady(
+          itemTemplate,
+          resourceFilePaths,
+          MOCK_USER_SESSION,
+          templateDictionary,
+          MOCK_USER_SESSION,
+          utils.ITEM_PROGRESS_CALLBACK
+        )
+        .then((response: common.ICreateItemFromTemplateResponse) => {
+          expect(response).toEqual({
+            item: expectedClone,
+            id: "svc1234567890",
+            type: itemTemplate.type,
+            postProcess: true
+          } as common.ICreateItemFromTemplateResponse);
+          done();
+        });
+    });
 
-        // eslint-disable-next-line @typescript-eslint/no-floating-promises
-        deploySolution
-          ._createItemFromTemplateWhenReady(
-            itemTemplate,
-            resourceFilePaths,
-            MOCK_USER_SESSION,
-            templateDictionary,
-            MOCK_USER_SESSION,
-            utils.ITEM_PROGRESS_CALLBACK
-          )
-          .then(response => {
-            expect(response).toEqual(
-              templates.getFailedItem(itemTemplate.type)
-            );
-            done();
-          });
-      });
-    }
+    it("fails to deploy file data to the item", done => {
+      const itemTemplate: common.IItemTemplate = templates.getItemTemplate(
+        "Web Map"
+      );
+      itemTemplate.item.thumbnail = null;
+      const resourceFilePaths: common.IDeployFileCopyPath[] = [
+        {
+          type: common.EFileType.Data,
+          folder: "cod1234567890_info_data",
+          filename: "Name of an AGOL item.zip",
+          url:
+            "https://myserver/doc/cod1234567890_info_data/Name of an AGOL item.zip"
+        }
+      ];
+      const templateDictionary: any = {};
+      const newItemID: string = "map1234567891";
+
+      fetchMock
+        .post(
+          utils.PORTAL_SUBSET.restUrl + "/content/users/casey/addItem",
+          utils.getSuccessResponse({ id: newItemID })
+        )
+        .post(
+          utils.PORTAL_SUBSET.restUrl +
+            "/content/users/casey/items/map1234567891/update",
+          utils.getFailureResponse()
+        )
+        .post(
+          "https://myserver/doc/cod1234567890_info_data/Name of an AGOL item.zip/rest/info",
+          SERVER_INFO
+        )
+        .post(
+          "https://myserver/doc/cod1234567890_info_data/Name of an AGOL item.zip",
+          utils.getSampleZipFile("Name of an AGOL item.zip")
+        )
+        .post(
+          "https://myserver/doc/metadata.xml",
+          new Blob(["<meta><value1>a</value1><value2>b</value2></meta>"], {
+            type: "text/xml"
+          }),
+          { sendAsJson: false }
+        )
+        .post(utils.PORTAL_SUBSET.restUrl + "/info", SERVER_INFO);
+
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
+      deploySolution
+        ._createItemFromTemplateWhenReady(
+          itemTemplate,
+          resourceFilePaths,
+          MOCK_USER_SESSION,
+          templateDictionary,
+          MOCK_USER_SESSION,
+          utils.ITEM_PROGRESS_CALLBACK
+        )
+        .then(response => {
+          expect(response).toEqual(templates.getFailedItem(itemTemplate.type));
+          done();
+        });
+    });
+
+    it("should handle error on copy group resources", done => {
+      const itemId: string = "abc9cab401af4828a25cc6eaeb59fb69";
+      const templateDictionary: any = {};
+      const newItemID: string = "abc8cab401af4828a25cc6eaeb59fb69";
+
+      const itemTemplate: common.IItemTemplate = templates.getItemTemplateSkeleton();
+      itemTemplate.itemId = itemId;
+      itemTemplate.type = "Group";
+      itemTemplate.item.title = "Dam Inspection Assignments";
+
+      const searchResult: any = {
+        query: "Dam Inspection Assignments",
+        total: 12,
+        start: 1,
+        num: 10,
+        nextStart: 11,
+        results: []
+      };
+
+      const filePaths: any[] = [
+        {
+          type: common.EFileType.Resource,
+          folder: "aFolder",
+          filename: "git_merge.png",
+          url: "http://someurl"
+        }
+      ];
+
+      fetchMock
+        .get(
+          utils.PORTAL_SUBSET.restUrl +
+            "/community/groups?f=json&q=Dam%20Inspection%20Assignments&token=fake-token",
+          searchResult
+        )
+        .post(utils.PORTAL_SUBSET.restUrl + "/community/createGroup", {
+          success: true,
+          group: { id: newItemID }
+        })
+        .post("http://someurl//rest/info", {})
+        .post("http://someurl/", mockItems.get400Failure());
+
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
+      deploySolution
+        ._createItemFromTemplateWhenReady(
+          itemTemplate,
+          filePaths,
+          MOCK_USER_SESSION,
+          templateDictionary,
+          MOCK_USER_SESSION,
+          utils.ITEM_PROGRESS_CALLBACK
+        )
+        .then(response => {
+          expect(response).toEqual(templates.getFailedItem(itemTemplate.type));
+          done();
+        });
+    });
+
+    it("can handle error on copyFilesFromStorage", done => {
+      const itemTemplate: common.IItemTemplate = templates.getItemTemplate(
+        "Web Mapping Application",
+        null,
+        "https://apl.maps.arcgis.com/apps/Viewer/index.html?appid=map1234567890"
+      );
+      itemTemplate.item.thumbnail = null;
+      const resourceFilePaths: any[] = [
+        {
+          type: common.EFileType.Resource,
+          folder: "aFolder",
+          filename: "git_merge.png",
+          url: "http://someurl"
+        }
+      ];
+      const templateDictionary: any = {};
+      const newItemID: string = "wma1234567891";
+
+      const updatedItem = mockItems.getAGOLItem(
+        "Web Mapping Application",
+        "https://apl.maps.arcgis.com/apps/Viewer/index.html?appid=map1234567890"
+      );
+
+      fetchMock
+        .post(
+          utils.PORTAL_SUBSET.restUrl + "/content/users/casey/addItem",
+          utils.getSuccessResponse({ id: newItemID })
+        )
+        .post(
+          utils.PORTAL_SUBSET.restUrl +
+            "/content/users/casey/items/wma1234567891/update",
+          utils.getSuccessResponse({ id: newItemID })
+        )
+        .get(
+          utils.PORTAL_SUBSET.restUrl +
+            "/content/items/wma1234567891?f=json&token=fake-token",
+          updatedItem
+        )
+        .post("http://someurl//rest/info", {})
+        .post("http://someurl/", mockItems.get400Failure());
+
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
+      deploySolution
+        ._createItemFromTemplateWhenReady(
+          itemTemplate,
+          resourceFilePaths,
+          MOCK_USER_SESSION,
+          templateDictionary,
+          MOCK_USER_SESSION,
+          utils.ITEM_PROGRESS_CALLBACK
+        )
+        .then(response => {
+          expect(response).toEqual(templates.getFailedItem(itemTemplate.type));
+          done();
+        });
+    });
   });
 
   describe("_flagPatchItemsForPostProcessing", () => {
@@ -1866,13 +1974,13 @@ describe("Module `deploySolutionItems`", () => {
           url: "http://something"
         },
         aa4a6047326243b290f625e80ebe6531: {
-          url
+          url,
+          itemId: "ABC123"
         }
       };
-      const result: any = { url };
       const actual: any = deploySolution._updateTemplateDictionaryForError(
-        result,
-        templateDictionary
+        templateDictionary,
+        "ABC123"
       );
       const expected: any = {
         ca4a6047326243b290f625e80ebe6531: {

@@ -59,6 +59,10 @@ import { searchGroups, searchGroupContents } from "./restHelpers";
 
 const ZIP_FILE_HEADER_SIGNATURE = "PK";
 
+export function checkJsonForError(json: any): boolean {
+  return typeof json?.error !== "undefined";
+}
+
 export function getPortal(
   id: string,
   authentication: UserSession
@@ -163,7 +167,7 @@ export function getBlobCheckForError(
           // eslint-disable-next-line @typescript-eslint/no-floating-promises
           blobToJson(adjustedBlob).then((json: any) => {
             // Check for valid JSON with an error
-            if (json && json.error) {
+            if (json?.error) {
               const code: number = json.error.code;
               if (code !== undefined && ignoreErrors.indexOf(code) >= 0) {
                 resolve(null); // Error, but ignored
@@ -204,21 +208,6 @@ export function getFilenameFromUrl(url: string): string {
   return iFilenameStart < iParamsStart
     ? url.substring(iFilenameStart, iParamsStart)
     : "";
-}
-
-export function getInfoFiles(
-  itemId: string,
-  infoFilenames: string[],
-  authentication: UserSession
-): Array<Promise<File>> {
-  return infoFilenames.map(filename => {
-    return new Promise<File>((resolve, reject) => {
-      getItemInfoBlob(itemId, filename, authentication).then(
-        blob => resolve(blobToFile(blob, filename)),
-        reject
-      );
-    });
-  });
 }
 
 /**
@@ -356,7 +345,7 @@ export function getItemDataBlob(
 ): Promise<Blob> {
   return new Promise<Blob>(resolve => {
     const url = getItemDataBlobUrl(itemId, authentication);
-    getBlobCheckForError(url, authentication, [500]).then(
+    getBlobCheckForError(url, authentication, [400, 500]).then(
       blob => resolve(_fixTextBlobType(blob)),
       () => resolve(null)
     );
@@ -377,28 +366,6 @@ export function getItemDataBlobUrl(
   return `${getPortalSharingUrlFromAuth(
     authentication
   )}/content/items/${itemId}/data`;
-}
-
-/**
- * Gets information item in an AGO item.
- *
- * @param itemId Id of an item whose data information is sought
- * @param authentication Credentials for the request to AGO
- * @return A promise that will resolve with the metadata Blob or null if the item doesn't have a metadata file
- */
-export function getItemInfoBlob(
-  itemId: string,
-  infoFilename: string,
-  authentication: UserSession
-): Promise<Blob> {
-  return new Promise<Blob>((resolve, reject) => {
-    const url = getItemInfoFileUrlPrefix(itemId, authentication) + infoFilename;
-
-    getBlobCheckForError(url, authentication, [400]).then(
-      (blob: Blob) => resolve(_fixTextBlobType(blob)),
-      reject
-    );
-  });
 }
 
 /**
@@ -639,6 +606,28 @@ export function getItemResourcesFiles(
 }
 
 /**
+ * Gets all of the items associated with a Solution via a Solution2Item relationship.
+ *
+ * @param solutionItemId Id of a deployed Solution
+ * @param authentication Credentials for the request
+ * @return Promise resolving to a list of detailed item information
+ */
+export function getItemsRelatedToASolution(
+  solutionItemId: string,
+  authentication: UserSession
+): Promise<IItem[]> {
+  // eslint-disable-next-line @typescript-eslint/no-floating-promises
+  return getItemRelatedItems(
+    solutionItemId,
+    "Solution2Item",
+    "forward",
+    authentication
+  ).then((relationshipResponse: IGetRelatedItemsResponse) => {
+    return relationshipResponse.relatedItems;
+  });
+}
+
+/**
  * Gets the thumbnail of an AGO item.
  *
  * @param itemId Id of an item whose resources are sought
@@ -669,6 +658,46 @@ export function getItemThumbnail(
 
     getBlobCheckForError(url, authentication, [500]).then(
       blob => resolve(_fixTextBlobType(blob)),
+      reject
+    );
+  });
+}
+
+/**
+ * Gets the thumbnail of an AGO item.
+ *
+ * @param itemId Id of an item whose resources are sought
+ * @param thumbnailUrlPart The partial name of the item's thumbnail as reported by the `thumbnail` property
+ * in the item's base section
+ * @param isGroup Switch indicating if the item is a group
+ * @param authentication Credentials for the request to AGO
+ * @return Promise that will resolve with an image Blob or an AGO-style JSON failure response
+ */
+export function getItemThumbnailAsFile(
+  itemId: string,
+  thumbnailUrlPart: string,
+  isGroup: boolean,
+  authentication: UserSession
+): Promise<File> {
+  return new Promise<File>((resolve, reject) => {
+    /* istanbul ignore else */
+    if (!thumbnailUrlPart) {
+      resolve(null);
+      return;
+    }
+
+    const url = getItemThumbnailUrl(
+      itemId,
+      thumbnailUrlPart,
+      isGroup,
+      authentication
+    );
+
+    const iFilenameStart = thumbnailUrlPart.lastIndexOf("/") + 1;
+    const filename = thumbnailUrlPart.substring(iFilenameStart);
+
+    getBlobAsFile(url, filename, authentication, [400, 500]).then(
+      resolve,
       reject
     );
   });
@@ -723,6 +752,40 @@ export function getPortalUrlFromAuth(authentication: UserSession): string {
     "/sharing/rest",
     ""
   );
+}
+
+/**
+ * Gets the ids of all Solution items associated with an AGO item via a Solution2Item relationship.
+ *
+ * @param itemId Id of an AGO item to query
+ * @param authentication Credentials for the request
+ * @return Promise resolving to a list of Solution item ids
+ */
+export function getSolutionsRelatedToAnItem(
+  itemId: string,
+  authentication: UserSession
+): Promise<string[]> {
+  // eslint-disable-next-line @typescript-eslint/no-floating-promises
+  return getItemRelatedItems(
+    itemId,
+    "Solution2Item",
+    "reverse",
+    authentication
+  ).then((relationshipResponse: IGetRelatedItemsResponse) => {
+    return relationshipResponse.relatedItems.map(item => item.id);
+  });
+}
+
+export function getThumbnailFile(
+  url: string,
+  filename: string,
+  authentication: UserSession
+): Promise<File> {
+  return new Promise<File>(resolve => {
+    getBlobAsFile(url, filename, authentication, [500]).then(resolve, () =>
+      resolve(null)
+    );
+  });
 }
 
 // ------------------------------------------------------------------------------------------------------------------ //

@@ -117,11 +117,6 @@ describe("convert-resource-paths-to-objects", () => {
           msg: "should work for a deep path"
         },
         {
-          in: "7332c96ad9554b5f937f7f8328cee795_info/forminfo.json",
-          chk: "forminfo.json",
-          msg: "should work _info folders"
-        },
-        {
           in: "https://foo.com/bar/baz/red.png",
           chk: "red.png",
           msg: "should work for a url"

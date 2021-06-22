@@ -51,379 +51,331 @@ afterEach(() => {
 
 describe("Module `simple-types`: manages the creation and deployment of simple item types", () => {
   describe("convertItemToTemplate", () => {
-    // Blobs are only available in the browser
-    if (typeof window !== "undefined") {
-      it("should handle error on getResources", done => {
-        const solutionItemId = "sln1234567890";
-        const item: any = mockItems.getAGOLItem("Workforce Project");
-        item.title = "Dam Inspection Assignments";
-        item.thumbnail = null;
-        const expectedTemplate = templates.getItemTemplate(
-          "Workforce Project",
-          [
-            "abc715c2df2b466da05577776e82d044",
-            "abc116555b16437f8435e079033128d0",
-            "abc26a244163430590151395821fb845",
-            "abc302ec12b74d2f9f2b3cc549420086",
-            "abc4494043c3459faabcfd0e1ab557fc",
-            "abc5dd4bdd18437f8d5ff1aa2d25fd7c",
-            "abc64329e69144c59f69f3f3e0d45269",
-            "cad3483e025c47338d43df308c117308",
-            "bad3483e025c47338d43df308c117308"
-          ]
+    it("should handle error on getResources", done => {
+      const solutionItemId = "sln1234567890";
+      const item: any = mockItems.getAGOLItem("Workforce Project");
+      item.title = "Dam Inspection Assignments";
+      item.thumbnail = null;
+      const expectedTemplate = templates.getItemTemplate("Workforce Project", [
+        "abc715c2df2b466da05577776e82d044",
+        "abc116555b16437f8435e079033128d0",
+        "abc26a244163430590151395821fb845",
+        "abc302ec12b74d2f9f2b3cc549420086",
+        "abc4494043c3459faabcfd0e1ab557fc",
+        "abc5dd4bdd18437f8d5ff1aa2d25fd7c",
+        "abc64329e69144c59f69f3f3e0d45269",
+        "cad3483e025c47338d43df308c117308",
+        "bad3483e025c47338d43df308c117308"
+      ]);
+      expectedTemplate.item.extent = [];
+      expectedTemplate.item.thumbnail = item.thumbnail;
+      expectedTemplate.item.title = item.title;
+      expectedTemplate.estimatedDeploymentCostFactor = 2;
+
+      fetchMock
+        .post(
+          utils.PORTAL_SUBSET.restUrl +
+            "/content/items/wrk1234567890/resources",
+          mockItems.get400Failure()
+        )
+        .post(
+          utils.PORTAL_SUBSET.restUrl + "/content/items/wrk1234567890/data",
+          mockItems.getAGOLItemData("Workforce Project")
+        )
+        .post(
+          utils.PORTAL_SUBSET.restUrl +
+            "/content/items/wrk1234567890/info/metadata/metadata.xml",
+          mockItems.get500Failure()
+        )
+        .post(
+          utils.PORTAL_SUBSET.restUrl +
+            "/content/users/casey/items/sln1234567890/addResources",
+          utils.getSuccessResponse()
         );
-        expectedTemplate.item.extent = [];
-        expectedTemplate.item.thumbnail = item.thumbnail;
-        expectedTemplate.item.title = item.title;
-        expectedTemplate.estimatedDeploymentCostFactor = 2;
-
-        fetchMock
-          .post(
-            utils.PORTAL_SUBSET.restUrl +
-              "/content/items/wrk1234567890/resources",
-            mockItems.get400Failure()
-          )
-          .post(
-            utils.PORTAL_SUBSET.restUrl + "/content/items/wrk1234567890/data",
-            mockItems.getAGOLItemData("Workforce Project")
-          )
-          .post(
-            utils.PORTAL_SUBSET.restUrl +
-              "/content/items/wrk1234567890/info/metadata/metadata.xml",
-            mockItems.get500Failure()
-          )
-          .post(
-            utils.PORTAL_SUBSET.restUrl +
-              "/content/users/casey/items/sln1234567890/addResources",
-            utils.getSuccessResponse()
-          );
-        staticRelatedItemsMocks.fetchMockRelatedItems("wrk1234567890", {
-          total: 0,
-          relatedItems: []
-        });
-
-        simpleTypes
-          .convertItemToTemplate(solutionItemId, item, MOCK_USER_SESSION)
-          .then(newItemTemplate => {
-            newItemTemplate.key = expectedTemplate.key;
-            expect(newItemTemplate).toEqual(expectedTemplate);
-            expect(newItemTemplate.resources).toEqual([]);
-            done();
-          }, done.fail);
+      staticRelatedItemsMocks.fetchMockRelatedItems("wrk1234567890", {
+        total: 0,
+        relatedItems: []
       });
 
-      it("should handle error on dataPromise", done => {
-        const solutionItemId = "sln1234567890";
-        const itemId: string = "abc0cab401af4828a25cc6eaeb59fb69";
-        const item = {
-          id: itemId,
-          type: "Web Mapping Application",
-          title: "Dam Inspection Assignments"
-        };
+      simpleTypes
+        .convertItemToTemplate(solutionItemId, item, MOCK_USER_SESSION)
+        .then(newItemTemplate => {
+          newItemTemplate.key = expectedTemplate.key;
+          expect(newItemTemplate).toEqual(expectedTemplate);
+          expect(newItemTemplate.resources).toEqual([]);
+          done();
+        }, done.fail);
+    });
 
-        const url = common.getItemDataBlobUrl(itemId, MOCK_USER_SESSION);
-        fetchMock
-          .post(url, mockItems.get400Failure())
-          .post(
-            utils.PORTAL_SUBSET.restUrl +
-              "/content/items/abc0cab401af4828a25cc6eaeb59fb69/resources",
-            mockItems.get400Failure()
-          )
-          .post(
-            utils.PORTAL_SUBSET.restUrl +
-              "/content/items/abc0cab401af4828a25cc6eaeb59fb69/info/metadata/metadata.xml",
-            mockItems.get500Failure()
-          )
-          .post(
-            utils.PORTAL_SUBSET.restUrl +
-              "/content/users/casey/items/sln1234567890/addResources",
-            utils.getSuccessResponse()
-          );
-        staticRelatedItemsMocks.fetchMockRelatedItems(
-          "abc0cab401af4828a25cc6eaeb59fb69",
-          { total: 0, relatedItems: [] }
+    it("should handle error on dataPromise", done => {
+      const solutionItemId = "sln1234567890";
+      const itemId: string = "abc0cab401af4828a25cc6eaeb59fb69";
+      const item = {
+        id: itemId,
+        type: "Web Mapping Application",
+        title: "Dam Inspection Assignments"
+      };
+
+      const url = common.getItemDataBlobUrl(itemId, MOCK_USER_SESSION);
+      fetchMock
+        .post(url, mockItems.get400Failure())
+        .post(
+          utils.PORTAL_SUBSET.restUrl +
+            "/content/items/abc0cab401af4828a25cc6eaeb59fb69/resources",
+          mockItems.get400Failure()
+        )
+        .post(
+          utils.PORTAL_SUBSET.restUrl +
+            "/content/items/abc0cab401af4828a25cc6eaeb59fb69/info/metadata/metadata.xml",
+          mockItems.get500Failure()
+        )
+        .post(
+          utils.PORTAL_SUBSET.restUrl +
+            "/content/users/casey/items/sln1234567890/addResources",
+          utils.getSuccessResponse()
         );
+      staticRelatedItemsMocks.fetchMockRelatedItems(
+        "abc0cab401af4828a25cc6eaeb59fb69",
+        { total: 0, relatedItems: [] }
+      );
 
-        simpleTypes
-          .convertItemToTemplate(solutionItemId, item, MOCK_USER_SESSION)
-          .then(
-            () => done(),
-            () => done.fail()
-          );
-      });
+      simpleTypes
+        .convertItemToTemplate(solutionItemId, item, MOCK_USER_SESSION)
+        .then(
+          () => done(),
+          () => done.fail()
+        );
+    });
 
-      it("should handle item resource", done => {
-        const solutionItemId = "sln1234567890";
-        const itemTemplate: common.IItemTemplate = templates.getItemTemplateSkeleton();
-        itemTemplate.item = mockItems.getAGOLItem("Web Map", null);
-        itemTemplate.item.item = itemTemplate.itemId = itemTemplate.item.id;
-        itemTemplate.item.thumbnail = "thumbnail/banner.png";
+    it("should handle item resource", done => {
+      const solutionItemId = "sln1234567890";
+      const itemTemplate: common.IItemTemplate = templates.getItemTemplateSkeleton();
+      itemTemplate.item = mockItems.getAGOLItem("Web Map", null);
+      itemTemplate.item.item = itemTemplate.itemId = itemTemplate.item.id;
+      itemTemplate.item.thumbnail = "thumbnail/banner.png";
 
-        const expectedFetch = mockItems.getAnImageResponse();
+      const expectedFetch = utils.getSampleImageAsBlob();
 
-        const expectedTemplate: any = {
-          itemId: "map1234567890",
+      const expectedTemplate: any = {
+        itemId: "map1234567890",
+        type: "Web Map",
+        item: {
+          id: "{{map1234567890.itemId}}",
           type: "Web Map",
-          item: {
-            id: "{{map1234567890.itemId}}",
-            type: "Web Map",
-            accessInformation: "Esri, Inc.",
-            categories: [],
-            contentStatus: null,
-            culture: "en-us",
-            description: "Description of an AGOL item",
-            extent: [],
-            properties: null,
-            spatialReference: undefined,
-            licenseInfo: null,
-            name: "Name of an AGOL item",
-            snippet: "Snippet of an AGOL item",
-            tags: ["test"],
-            thumbnail: "thumbnail/banner.png",
-            title: "An AGOL item",
-            typeKeywords: ["JavaScript"],
-            origUrl: undefined,
-            url:
-              "{{portalBaseUrl}}/home/webmap/viewer.html?webmap={{map1234567890.itemId}}"
-          },
-          data: null,
-          resources: [],
-          dependencies: [],
-          relatedItems: [],
-          groups: [],
-          properties: {},
-          estimatedDeploymentCostFactor: 2
-        };
+          accessInformation: "Esri, Inc.",
+          categories: [],
+          contentStatus: null,
+          culture: "en-us",
+          description: "Description of an AGOL item",
+          extent: [],
+          properties: null,
+          spatialReference: undefined,
+          licenseInfo: null,
+          name: "Name of an AGOL item",
+          snippet: "Snippet of an AGOL item",
+          tags: ["test"],
+          thumbnail: "thumbnail/banner.png",
+          title: "An AGOL item",
+          typeKeywords: ["JavaScript"],
+          origUrl: undefined,
+          url:
+            "{{portalBaseUrl}}/home/webmap/viewer.html?webmap={{map1234567890.itemId}}"
+        },
+        data: null,
+        resources: [],
+        dependencies: [],
+        relatedItems: [],
+        groups: [],
+        properties: {},
+        estimatedDeploymentCostFactor: 2
+      };
 
-        fetchMock
-          .post(
-            utils.PORTAL_SUBSET.restUrl +
-              "/content/items/" +
-              itemTemplate.itemId +
-              "/resources",
-            {
-              total: 1,
-              start: 1,
-              num: 1,
-              nextStart: -1,
-              resources: [
-                {
-                  resource: "image/banner.png",
-                  created: 1522711362000,
-                  size: 56945
-                }
-              ]
-            }
-          )
-          .post(
-            utils.PORTAL_SUBSET.restUrl +
-              "/content/items/" +
-              itemTemplate.itemId +
-              "/resources/image/banner.png",
-            expectedFetch,
-            { sendAsJson: false }
-          )
-          .post(
-            utils.PORTAL_SUBSET.restUrl +
-              "/content/users/" +
-              MOCK_USER_SESSION.username +
-              "/items/" +
-              solutionItemId +
-              "/addResources",
-            {
-              success: true,
-              itemId: solutionItemId,
-              owner: MOCK_USER_SESSION.username,
-              folder: null
-            }
-          )
-          .post(
-            utils.PORTAL_SUBSET.restUrl +
-              "/content/items/" +
-              itemTemplate.itemId +
-              "/info/thumbnail/banner.png",
-            expectedFetch,
-            { sendAsJson: false }
-          )
-          .post(
-            utils.PORTAL_SUBSET.restUrl +
-              "/content/items/" +
-              itemTemplate.itemId +
-              "/data",
-            mockItems.get500Failure()
-          )
-          .post(
-            utils.PORTAL_SUBSET.restUrl +
-              "/content/items/" +
-              itemTemplate.itemId +
-              "/info/metadata/metadata.xml",
-            mockItems.get400Failure()
-          );
-        staticRelatedItemsMocks.fetchMockRelatedItems("map1234567890", {
-          total: 0,
-          relatedItems: []
-        });
-
-        simpleTypes
-          .convertItemToTemplate(
-            solutionItemId,
-            itemTemplate.item,
-            MOCK_USER_SESSION
-          )
-          .then(newItemTemplate => {
-            delete newItemTemplate.key; // key is randomly generated, and so is not testable
-            expect(newItemTemplate).toEqual(expectedTemplate);
-            done();
-          }, done.fail);
+      fetchMock
+        .post(
+          utils.PORTAL_SUBSET.restUrl +
+            "/content/items/" +
+            itemTemplate.itemId +
+            "/resources",
+          {
+            total: 1,
+            start: 1,
+            num: 1,
+            nextStart: -1,
+            resources: [
+              {
+                resource: "image/banner.png",
+                created: 1522711362000,
+                size: 56945
+              }
+            ]
+          }
+        )
+        .post(
+          utils.PORTAL_SUBSET.restUrl +
+            "/content/items/" +
+            itemTemplate.itemId +
+            "/resources/image/banner.png",
+          expectedFetch,
+          { sendAsJson: false }
+        )
+        .post(
+          utils.PORTAL_SUBSET.restUrl +
+            "/content/users/" +
+            MOCK_USER_SESSION.username +
+            "/items/" +
+            solutionItemId +
+            "/addResources",
+          {
+            success: true,
+            itemId: solutionItemId,
+            owner: MOCK_USER_SESSION.username,
+            folder: null
+          }
+        )
+        .post(
+          utils.PORTAL_SUBSET.restUrl +
+            "/content/items/" +
+            itemTemplate.itemId +
+            "/info/thumbnail/banner.png",
+          expectedFetch,
+          { sendAsJson: false }
+        )
+        .post(
+          utils.PORTAL_SUBSET.restUrl +
+            "/content/items/" +
+            itemTemplate.itemId +
+            "/data",
+          mockItems.get500Failure()
+        )
+        .post(
+          utils.PORTAL_SUBSET.restUrl +
+            "/content/items/" +
+            itemTemplate.itemId +
+            "/info/metadata/metadata.xml",
+          mockItems.get400Failure()
+        );
+      staticRelatedItemsMocks.fetchMockRelatedItems("map1234567890", {
+        total: 0,
+        relatedItems: []
       });
 
-      it("should catch fetch errors", done => {
-        // TODO resolve Karma internal error triggered by this test
-        const solutionItemId = "sln1234567890";
-        const itemTemplate: common.IItemTemplate = templates.getItemTemplateSkeleton();
-        itemTemplate.item = mockItems.getAGOLItem("Form", null);
-        itemTemplate.itemId = itemTemplate.item.id;
-        itemTemplate.item.thumbnail = null;
+      simpleTypes
+        .convertItemToTemplate(
+          solutionItemId,
+          itemTemplate.item,
+          MOCK_USER_SESSION
+        )
+        .then(newItemTemplate => {
+          delete newItemTemplate.key; // key is randomly generated, and so is not testable
+          expect(newItemTemplate).toEqual(expectedTemplate);
+          done();
+        }, done.fail);
+    });
 
-        fetchMock
-          .post(
-            utils.PORTAL_SUBSET.restUrl +
-              "/content/items/frm1234567890/info/metadata/metadata.xml",
-            mockItems.get500Failure()
-          )
-          .post(
-            utils.PORTAL_SUBSET.restUrl +
-              "/content/items/frm1234567890/resources",
-            mockItems.get500Failure()
-          )
-          .post(
-            utils.PORTAL_SUBSET.restUrl + "/content/items/frm1234567890/data",
-            mockItems.get500Failure()
-          )
-          .post(
-            utils.PORTAL_SUBSET.restUrl +
-              "/content/items/" +
-              itemTemplate.itemId +
-              "/info/form.json",
-            utils.getSampleJsonAsFile("form.json")
-          )
-          .post(
-            utils.PORTAL_SUBSET.restUrl +
-              "/content/items/" +
-              itemTemplate.itemId +
-              "/info/forminfo.json",
-            utils.getSampleJsonAsFile("forminfo.json")
-          )
-          .post(
-            utils.PORTAL_SUBSET.restUrl +
-              "/content/items/" +
-              itemTemplate.itemId +
-              "/info/form.webform",
-            utils.getSampleJsonAsFile("form.webform")
-          )
-          .post(
-            utils.PORTAL_SUBSET.restUrl +
-              "/content/users/casey/items/" +
-              solutionItemId +
-              "/addResources",
-            { success: true, id: solutionItemId }
-          );
-        staticRelatedItemsMocks.fetchMockRelatedItems(
-          "frm1234567890",
+    it("should catch fetch errors", done => {
+      // TODO resolve Karma internal error triggered by this test
+      const solutionItemId = "sln1234567890";
+      const itemTemplate: common.IItemTemplate = templates.getItemTemplateSkeleton();
+      itemTemplate.item = mockItems.getAGOLItem("Form", null);
+      itemTemplate.itemId = itemTemplate.item.id;
+      itemTemplate.item.thumbnail = null;
+
+      fetchMock
+        .post(
+          utils.PORTAL_SUBSET.restUrl +
+            "/content/items/frm1234567890/info/metadata/metadata.xml",
           mockItems.get500Failure()
+        )
+        .post(
+          utils.PORTAL_SUBSET.restUrl +
+            "/content/items/frm1234567890/resources",
+          mockItems.get500Failure()
+        )
+        .post(
+          utils.PORTAL_SUBSET.restUrl + "/content/items/frm1234567890/data",
+          mockItems.get500Failure()
+        )
+        .post(
+          utils.PORTAL_SUBSET.restUrl +
+            "/content/users/casey/items/" +
+            solutionItemId +
+            "/addResources",
+          { success: true, id: solutionItemId }
+        );
+      staticRelatedItemsMocks.fetchMockRelatedItems(
+        "frm1234567890",
+        mockItems.get500Failure()
+      );
+
+      simpleTypes
+        .convertItemToTemplate(
+          solutionItemId,
+          itemTemplate.item,
+          MOCK_USER_SESSION
+        )
+        .then(
+          () => done(),
+          () => done.fail()
+        );
+    });
+
+    it("should catch wrapup errors", done => {
+      const solutionItemId = "sln1234567890";
+      const itemTemplate: common.IItemTemplate = templates.getItemTemplateSkeleton();
+      itemTemplate.item = mockItems.getAGOLItem("Form", null);
+      itemTemplate.itemId = itemTemplate.item.id;
+      itemTemplate.item.thumbnail = null;
+      itemTemplate.item.name = "form.zip";
+
+      fetchMock
+        .post(
+          utils.PORTAL_SUBSET.restUrl +
+            "/content/items/" +
+            itemTemplate.itemId +
+            "/data",
+          utils.getSampleZip(),
+          { sendAsJson: false }
+        )
+        .post(
+          utils.PORTAL_SUBSET.restUrl +
+            "/content/items/" +
+            itemTemplate.itemId +
+            "/resources",
+          noResourcesResponse
+        )
+        .post(
+          utils.PORTAL_SUBSET.restUrl +
+            "/content/items/" +
+            itemTemplate.itemId +
+            "/info/metadata/metadata.xml",
+          mockItems.get400Failure()
+        )
+        .post(
+          utils.PORTAL_SUBSET.restUrl +
+            "/content/users/" +
+            MOCK_USER_SESSION.username +
+            "/items/" +
+            solutionItemId +
+            "/addResources",
+          mockItems.get400Failure()
         );
 
-        simpleTypes
-          .convertItemToTemplate(
-            solutionItemId,
-            itemTemplate.item,
-            MOCK_USER_SESSION
-          )
-          .then(
-            () => done(),
-            () => done.fail()
-          );
-      });
+      staticRelatedItemsMocks.fetchMockRelatedItems(
+        "frm1234567890",
+        mockItems.get500Failure()
+      );
 
-      it("should catch wrapup errors", done => {
-        const solutionItemId = "sln1234567890";
-        const itemTemplate: common.IItemTemplate = templates.getItemTemplateSkeleton();
-        itemTemplate.item = mockItems.getAGOLItem("Form", null);
-        itemTemplate.itemId = itemTemplate.item.id;
-        itemTemplate.item.thumbnail = null;
-        itemTemplate.item.name = "form.zip";
-
-        fetchMock
-          .post(
-            utils.PORTAL_SUBSET.restUrl +
-              "/content/items/" +
-              itemTemplate.itemId +
-              "/data",
-            utils.getSampleZip(),
-            { sendAsJson: false }
-          )
-          .post(
-            utils.PORTAL_SUBSET.restUrl +
-              "/content/items/" +
-              itemTemplate.itemId +
-              "/resources",
-            noResourcesResponse
-          )
-          .post(
-            utils.PORTAL_SUBSET.restUrl +
-              "/content/items/" +
-              itemTemplate.itemId +
-              "/info/metadata/metadata.xml",
-            mockItems.get400Failure()
-          )
-          .post(
-            utils.PORTAL_SUBSET.restUrl +
-              "/content/items/" +
-              itemTemplate.itemId +
-              "/info/form.json",
-            utils.getSampleJsonAsFile("form.json")
-          )
-          .post(
-            utils.PORTAL_SUBSET.restUrl +
-              "/content/items/" +
-              itemTemplate.itemId +
-              "/info/forminfo.json",
-            utils.getSampleJsonAsFile("forminfo.json")
-          )
-          .post(
-            utils.PORTAL_SUBSET.restUrl +
-              "/content/items/" +
-              itemTemplate.itemId +
-              "/info/form.webform",
-            utils.getSampleJsonAsFile("form.webform")
-          )
-          .post(
-            utils.PORTAL_SUBSET.restUrl +
-              "/content/users/" +
-              MOCK_USER_SESSION.username +
-              "/items/" +
-              solutionItemId +
-              "/addResources",
-            mockItems.get400Failure()
-          );
-
-        staticRelatedItemsMocks.fetchMockRelatedItems(
-          "frm1234567890",
-          mockItems.get500Failure()
+      simpleTypes
+        .convertItemToTemplate(
+          solutionItemId,
+          itemTemplate.item,
+          MOCK_USER_SESSION
+        )
+        .then(
+          () => done.fail(),
+          () => done()
         );
-
-        simpleTypes
-          .convertItemToTemplate(
-            solutionItemId,
-            itemTemplate.item,
-            MOCK_USER_SESSION
-          )
-          .then(
-            () => done.fail(),
-            () => done()
-          );
-      });
-    }
+    });
   });
 
   describe("createItemFromTemplate", () => {
@@ -808,57 +760,53 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
   });
 
   describe("postProcess hook", () => {
-    // Postprocessing uses common.updateItemTemplateFromDictionary, which uses common.getItemDataAsJson, which
-    // requires browser features
-    if (typeof window !== "undefined") {
-      it("fetch, interpolate and share", () => {
-        const template = templates.getItemTemplate("Web Map");
-        template.item.id = template.itemId = "3ef";
-        const td = { owner: "Luke Skywalker" };
+    it("fetch, interpolate and share", () => {
+      const template = templates.getItemTemplate("Web Map");
+      template.item.id = template.itemId = "3ef";
+      const td = { owner: "Luke Skywalker" };
 
-        const updateUrl =
-          utils.PORTAL_SUBSET.restUrl + "/content/users/casey/items/3ef/update";
-        fetchMock
-          .get(
-            utils.PORTAL_SUBSET.restUrl +
-              "/content/items/3ef?f=json&token=fake-token",
-            template.item
-          )
-          .post(utils.PORTAL_SUBSET.restUrl + "/content/items/3ef/data", {
-            value: "{{owner}}"
-          })
-          .post(updateUrl, utils.getSuccessResponse({ id: template.item.id }));
+      const updateUrl =
+        utils.PORTAL_SUBSET.restUrl + "/content/users/casey/items/3ef/update";
+      fetchMock
+        .get(
+          utils.PORTAL_SUBSET.restUrl +
+            "/content/items/3ef?f=json&token=fake-token",
+          template.item
+        )
+        .post(utils.PORTAL_SUBSET.restUrl + "/content/items/3ef/data", {
+          value: "{{owner}}"
+        })
+        .post(updateUrl, utils.getSuccessResponse({ id: template.item.id }));
 
-        spyOn(console, "log").and.callFake(() => {});
-        return simpleTypes
-          .postProcess(
-            "3ef",
-            "Web Map",
-            [],
-            template,
-            [template],
-            td,
-            MOCK_USER_SESSION
-          )
-          .then(result => {
-            expect(result).toEqual(
-              utils.getSuccessResponse({ id: template.item.id })
-            );
+      spyOn(console, "log").and.callFake(() => {});
+      return simpleTypes
+        .postProcess(
+          "3ef",
+          "Web Map",
+          [],
+          template,
+          [template],
+          td,
+          MOCK_USER_SESSION
+        )
+        .then(result => {
+          expect(result).toEqual(
+            utils.getSuccessResponse({ id: template.item.id })
+          );
 
-            const callBody = fetchMock.calls(updateUrl)[0][1].body as string;
-            expect(callBody).toEqual(
-              "f=json&text=%7B%22value%22%3A%22Luke%20Skywalker%22%7D&id=3ef&name=Name%20of%20an%20AGOL%20item&" +
-                "title=An%20AGOL%20item&type=Web%20Map&typeKeywords=JavaScript&description=Description%20of%20an%20" +
-                "AGOL%20item&tags=test&snippet=Snippet%20of%20an%20AGOL%20item&thumbnail=https%3A%2F%2F" +
-                "myorg.maps.arcgis.com%2Fsharing%2Frest%2Fcontent%2Fitems%2Fmap1234567890%2Finfo%2Fthumbnail%2F" +
-                "ago_downloaded.png&extent=%7B%7BsolutionItemExtent%7D%7D&categories=&accessInformation=Esri%2C%20" +
-                "Inc.&origUrl=%7B%7BportalBaseUrl%7D%7D%2Fhome%2Fwebmap%2Fviewer.html%3Fwebmap%3D%7B%7B" +
-                "map1234567890.itemId%7D%7D&culture=en-us&url=%7B%7BportalBaseUrl%7D%7D%2Fhome%2Fwebmap%2F" +
-                "viewer.html%3Fwebmap%3D%7B%7Bmap1234567890.itemId%7D%7D&token=fake-token"
-            );
-          });
-      });
-    }
+          const callBody = fetchMock.calls(updateUrl)[0][1].body as string;
+          expect(callBody).toEqual(
+            "f=json&text=%7B%22value%22%3A%22Luke%20Skywalker%22%7D&id=3ef&name=Name%20of%20an%20AGOL%20item&" +
+              "title=An%20AGOL%20item&type=Web%20Map&typeKeywords=JavaScript&description=Description%20of%20an%20" +
+              "AGOL%20item&tags=test&snippet=Snippet%20of%20an%20AGOL%20item&thumbnail=https%3A%2F%2F" +
+              "myorg.maps.arcgis.com%2Fsharing%2Frest%2Fcontent%2Fitems%2Fmap1234567890%2Finfo%2Fthumbnail%2F" +
+              "ago_downloaded.png&extent=%7B%7BsolutionItemExtent%7D%7D&categories=&accessInformation=Esri%2C%20" +
+              "Inc.&origUrl=%7B%7BportalBaseUrl%7D%7D%2Fhome%2Fwebmap%2Fviewer.html%3Fwebmap%3D%7B%7B" +
+              "map1234567890.itemId%7D%7D&culture=en-us&url=%7B%7BportalBaseUrl%7D%7D%2Fhome%2Fwebmap%2F" +
+              "viewer.html%3Fwebmap%3D%7B%7Bmap1234567890.itemId%7D%7D&token=fake-token"
+          );
+        });
+    });
     it("should update only if interpolation needed", () => {
       const template = templates.getItemTemplate(
         "Web Map",

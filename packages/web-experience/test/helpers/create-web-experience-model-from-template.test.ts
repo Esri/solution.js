@@ -19,6 +19,7 @@ import * as hubModule from "@esri/hub-common";
 
 import * as utils from "@esri/solution-common/test/mocks/utils";
 import { IItem } from "@esri/solution-common";
+import { IItemTemplate } from "@esri/hub-common";
 const MOCK_USER_SESSION = utils.createRuntimeMockUserSession();
 
 describe("createWebExperienceModelFromTemplate :: ", () => {
@@ -29,10 +30,11 @@ describe("createWebExperienceModelFromTemplate :: ", () => {
       type: "Web Experience",
       key: "foo",
       item: {
+        thumbnail: "thumbnail",
         properties: {
           key: "{{val}}"
         }
-      } as IItem,
+      } as any,
       data: {
         chk: `{{val2}}`
       }
@@ -48,6 +50,7 @@ describe("createWebExperienceModelFromTemplate :: ", () => {
       {},
       MOCK_USER_SESSION
     ).then(model => {
+      expect(model.item.thumbnail).toEqual("thumbnail");
       expect(model.item.properties.key).toBe(
         "rabbit",
         "should interpolate item"

@@ -49,80 +49,73 @@ beforeEach(() => {
 
 describe("Module `dashboard`: manages the creation and deployment of dashboard item type", () => {
   describe("convertItemToTemplate", () => {
-    if (typeof window !== "undefined") {
-      it("should templatize webmap ids and external datasource ids", () => {
-        const actualTemplate = dashboard.convertItemToTemplate(
-          initialDashboardTemplate
-        );
+    it("should templatize webmap ids and external datasource ids", () => {
+      const actualTemplate = dashboard.convertItemToTemplate(
+        initialDashboardTemplate
+      );
 
-        const actualHS: any = common.getProp(
-          actualTemplate,
-          "data.headerPanel.selectors"
-        );
-        const expectedHS: any = common.getProp(
-          expectedTemplate,
-          "data.headerPanel.selectors"
-        );
-        expect(actualHS[4].datasets[0].dataSource.itemId).toEqual(
-          expectedHS[4].datasets[0].dataSource.itemId
-        );
+      const actualHS: any = common.getProp(
+        actualTemplate,
+        "data.headerPanel.selectors"
+      );
+      const expectedHS: any = common.getProp(
+        expectedTemplate,
+        "data.headerPanel.selectors"
+      );
+      expect(actualHS[4].datasets[0].dataSource.itemId).toEqual(
+        expectedHS[4].datasets[0].dataSource.itemId
+      );
 
-        const actualLPS: any = common.getProp(
-          actualTemplate,
-          "data.leftPanel.selectors"
-        );
-        const expectedLPS: any = common.getProp(
-          expectedTemplate,
-          "data.leftPanel.selectors"
-        );
-        expect(actualLPS[0].datasets[0].dataSource.itemId).toEqual(
-          expectedLPS[0].datasets[0].dataSource.itemId
-        );
-        expect(actualLPS[4].datasets[0].dataSource.itemId).toEqual(
-          expectedLPS[4].datasets[0].dataSource.itemId
-        );
+      const actualLPS: any = common.getProp(
+        actualTemplate,
+        "data.leftPanel.selectors"
+      );
+      const expectedLPS: any = common.getProp(
+        expectedTemplate,
+        "data.leftPanel.selectors"
+      );
+      expect(actualLPS[0].datasets[0].dataSource.itemId).toEqual(
+        expectedLPS[0].datasets[0].dataSource.itemId
+      );
+      expect(actualLPS[4].datasets[0].dataSource.itemId).toEqual(
+        expectedLPS[4].datasets[0].dataSource.itemId
+      );
 
-        const actualW: any = common.getProp(actualTemplate, "data.widgets");
-        const expectedW: any = common.getProp(expectedTemplate, "data.widgets");
-        expect(actualW[0].itemId).toEqual(expectedW[0].itemId);
-        expect(actualW[3].datasets[1].dataSource.itemId).toEqual(
-          expectedW[3].datasets[1].dataSource.itemId
-        );
-        expect(actualW[3].datasets[2].dataSource.itemId).toEqual(
-          expectedW[3].datasets[2].dataSource.itemId
-        );
-        expect(actualW[4].datasets[0].dataSource.itemId).toEqual(
-          expectedW[4].datasets[0].dataSource.itemId
-        );
-        expect(actualW[6].datasets[0].dataSource.itemId).toEqual(
-          expectedW[6].datasets[0].dataSource.itemId
-        );
-        expect(actualW[8].datasets[0].dataSource.itemId).toEqual(
-          expectedW[8].datasets[0].dataSource.itemId
-        );
+      const actualW: any = common.getProp(actualTemplate, "data.widgets");
+      const expectedW: any = common.getProp(expectedTemplate, "data.widgets");
+      expect(actualW[0].itemId).toEqual(expectedW[0].itemId);
+      expect(actualW[3].datasets[1].dataSource.itemId).toEqual(
+        expectedW[3].datasets[1].dataSource.itemId
+      );
+      expect(actualW[3].datasets[2].dataSource.itemId).toEqual(
+        expectedW[3].datasets[2].dataSource.itemId
+      );
+      expect(actualW[4].datasets[0].dataSource.itemId).toEqual(
+        expectedW[4].datasets[0].dataSource.itemId
+      );
+      expect(actualW[6].datasets[0].dataSource.itemId).toEqual(
+        expectedW[6].datasets[0].dataSource.itemId
+      );
+      expect(actualW[8].datasets[0].dataSource.itemId).toEqual(
+        expectedW[8].datasets[0].dataSource.itemId
+      );
 
-        const actualP: any = common.getProp(
-          actualTemplate,
-          "data.urlParameters"
-        );
-        const expectedP: any = common.getProp(
-          expectedTemplate,
-          "data.urlParameters"
-        );
-        expect(actualP[4].datasets[0].dataSource.itemId).toEqual(
-          expectedP[4].datasets[0].dataSource.itemId
-        );
-      });
-    }
+      const actualP: any = common.getProp(actualTemplate, "data.urlParameters");
+      const expectedP: any = common.getProp(
+        expectedTemplate,
+        "data.urlParameters"
+      );
+      expect(actualP[4].datasets[0].dataSource.itemId).toEqual(
+        expectedP[4].datasets[0].dataSource.itemId
+      );
+    });
   });
 
   describe("_extractDependencies", () => {
-    if (typeof window !== "undefined") {
-      it("should extract dependencies", () => {
-        const actual = dashboard._extractDependencies(initialDashboardTemplate);
-        expect(actual.dependencies).toEqual(expectedTemplate.dependencies);
-      });
-    }
+    it("should extract dependencies", () => {
+      const actual = dashboard._extractDependencies(initialDashboardTemplate);
+      expect(actual.dependencies).toEqual(expectedTemplate.dependencies);
+    });
   });
 
   describe("_getDatasourceDependencies", () => {

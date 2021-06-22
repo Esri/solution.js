@@ -28,7 +28,7 @@ import {
   isSolutionTemplateItem,
   updateDeployOptions
 } from "./deployerUtils";
-import { IModel, isGuid } from "@esri/hub-common";
+import { IModel } from "@esri/hub-common";
 
 /**
  * Deploy a Solution
@@ -39,6 +39,7 @@ import { IModel, isGuid } from "@esri/hub-common";
  * @param maybeModel Item Id or IModel
  * @param authentication Credentials for the destination organization
  * @param options Options to override deployed information and to provide additional credentials
+ * @return The id of the created deployed solution item
  */
 export function deploySolution(
   maybeModel: string | IModel,
@@ -71,16 +72,13 @@ export function deploySolution(
         // fetch the metadata if the model's id is a GUID and pass the item & data forward
         return Promise.all([
           Promise.resolve(model.item),
-          Promise.resolve(model.data),
-          isGuid(model.item.id)
-            ? common.getItemMetadataAsFile(model.item.id, storageAuthentication)
-            : Promise.resolve(null)
+          Promise.resolve(model.data)
         ]);
       }
     })
     .then(responses => {
       // extract responses
-      const [itemBase, itemData, itemMetadata] = responses;
+      const [itemBase, itemData] = responses;
       // sanitize all the things
       const sanitizer = new common.Sanitizer();
       const item = common.sanitizeJSONAndReportChanges(itemBase, sanitizer);
@@ -89,7 +87,11 @@ export function deploySolution(
       // get the item id before it is deleted
       const itemId = item.id;
       // apply item props to deployOptions
-      deployOptions = updateDeployOptions(deployOptions, item, authentication);
+      deployOptions = updateDeployOptions(
+        deployOptions,
+        item,
+        storageAuthentication
+      );
       // Clone before mutating? This was messing me up in some testing...
       common.deleteItemProps(item);
 
@@ -97,7 +99,6 @@ export function deploySolution(
         itemId,
         item,
         data,
-        itemMetadata,
         authentication,
         deployOptions
       );

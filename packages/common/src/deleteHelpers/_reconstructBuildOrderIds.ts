@@ -14,32 +14,26 @@
  * limitations under the License.
  */
 
-import * as common from "@esri/solution-common";
+/**
+ * @module deleteSolution
+ */
+import { IBuildOrdering, IItemTemplate } from "../interfaces";
+import * as dependencies from "../dependencies";
 
 // ------------------------------------------------------------------------------------------------------------------ //
 
-export function convertItemToTemplate(
-  itemTemplate: common.IItemTemplate
-): common.IItemTemplate {
-  // Extract dependencies
-
-  return itemTemplate;
-}
-
-export function getFormInfoFiles(
-  itemId: string,
-  authentication: common.UserSession
-): Promise<File[]> {
-  return Promise.all(
-    common.getInfoFiles(
-      itemId,
-      ["form.json", "forminfo.json", "form.webform"],
-      authentication
-    )
-  ).then(
-    results => results.filter(result => !!result),
-    () => {
-      return [];
-    }
+/**
+ * Reconstructs the build order of a set of templates.
+ *
+ * @param templates A collection of AGO item templates
+ * @return The ids of the source templates in build order, which is not necessarily the same
+ * as the build order used to create the template Solution
+ */
+export function _reconstructBuildOrderIds(
+  templates: IItemTemplate[]
+): string[] {
+  const buildOrdering: IBuildOrdering = dependencies.topologicallySortItems(
+    templates
   );
+  return buildOrdering.buildOrder;
 }

@@ -233,17 +233,86 @@ export function addTokenToUrl(
   });
 }
 
+/**
+ * Calls addToDefinition for the service.
+ *
+ * Added retry due to some solutions failing to deploy in specific orgs/hives due to timeouts.
+ * On the first pass we will use the quicker sync request to add.
+ * If it fails we will use an async request that will avoid the timeout errors.
+ *
+ * @param url URL to use as base
+ * @param options the info to add to the services definition
+ * @param skipRetry a boolean to control if retry logic will be used. Defaults to false.
+ * @param useAsync a boolean to control if we will use an async request
+ * @return A promise that will resolve when the request has completed
+ */
 export function addToServiceDefinition(
   url: string,
-  options: any
+  options: any,
+  skipRetry: boolean = false,
+  useAsync: boolean = false
 ): Promise<void> {
+  /* istanbul ignore else */
+  if (useAsync) {
+    options.params = { ...options.params, async: true };
+  }
   return new Promise((resolve, reject) => {
     svcAdminAddToServiceDefinition(url, options).then(
-      () => {
-        resolve(null);
+      (result: any) => {
+        checkRequestStatus(result, options.authentication).then(
+          () => resolve(null),
+          e => reject(fail(e))
+        );
       },
-      e => reject(fail(e))
+      e => {
+        if (!skipRetry) {
+          addToServiceDefinition(url, options, true, true).then(
+            () => resolve(null),
+            e => reject(e)
+          );
+        } else {
+          reject(fail(e));
+        }
+      }
     );
+  });
+}
+
+/**
+ * When using an async request we need to poll the status url to know when the request has completed or failed.
+ *
+ * @param result the result returned from the addToDefinition request.
+ * This will contain a status url or the standard sync result.
+ * @param authentication Credentials to be used to generate token for URL
+ * @return A promise that will resolve when the request has completed
+ */
+export function checkRequestStatus(
+  result: any,
+  authentication: any
+): Promise<void> {
+  return new Promise((resolve, reject) => {
+    if (result.statusURL) {
+      const checkStatus = setInterval(() => {
+        request(result.statusURL, { authentication }).then(
+          r => {
+            /* istanbul ignore else */
+            if (r.status === "Completed") {
+              clearInterval(checkStatus);
+              resolve();
+            } else if (r.status === "Failed") {
+              clearInterval(checkStatus);
+              reject(r);
+            }
+          },
+          e => {
+            clearInterval(checkStatus);
+            reject(e);
+          }
+        );
+      }, 2000);
+    } else {
+      resolve();
+    }
   });
 }
 
@@ -835,6 +904,14 @@ export function extractDependencies(
   });
 }
 
+/**
+ * Get json info for the services layers
+ *
+ * @param serviceUrl the url for the service
+ * @param layerList list of base layer info
+ * @param authentication Credentials for the request
+ * @return A promise that will resolve a list of dependencies
+ */
 export function getLayers(
   serviceUrl: string,
   layerList: any[],
@@ -876,7 +953,10 @@ export function getLayers(
  * @return An array of update instructions
  * @private
  */
-export function getLayerUpdates(args: IPostProcessArgs): IUpdate[] {
+export function getLayerUpdates(
+  args: IPostProcessArgs,
+  isPortal: boolean
+): IUpdate[] {
   const adminUrl: string = args.itemTemplate.item.url.replace(
     "rest/services",
     "rest/admin/services"
@@ -888,7 +968,9 @@ export function getLayerUpdates(args: IPostProcessArgs): IUpdate[] {
   Object.keys(args.objects).forEach(id => {
     const obj: any = Object.assign({}, args.objects[id]);
     // These properties cannot be set in the update definition when working with portal
-    deleteProps(obj, ["type", "id", "relationships", "sourceServiceFields"]);
+    if (isPortal) {
+      deleteProps(obj, ["type", "id", "relationships", "sourceServiceFields"]);
+    }
     // handle definition deletes
     // removes previous editFieldsInfo fields if their names were changed
     if (obj.hasOwnProperty("deleteFields")) {
@@ -897,8 +979,11 @@ export function getLayerUpdates(args: IPostProcessArgs): IUpdate[] {
       updates.push(_getUpdate(adminUrl, null, null, args, "refresh"));
     }
     // handle definition updates
-    updates.push(_getUpdate(adminUrl, id, obj, args, "update"));
-    updates.push(refresh);
+    // for portal only as online will now all be handled in addToDef
+    if (isPortal) {
+      updates.push(_getUpdate(adminUrl, id, obj, args, "update"));
+      updates.push(refresh);
+    }
   });
   if (!args.itemTemplate.properties.service.isView) {
     const relUpdates: any = _getRelationshipUpdates({
@@ -958,19 +1043,50 @@ export function getFinalServiceUpdates(
 /**
  * Add additional options to a layers definition
  *
+ * Added retry due to some solutions failing to deploy in specific orgs/hives
+ *
+ *
  * @param Update will contain either add, update, or delete from service definition call
+ * @param skipRetry defaults to false. when true the retry logic will be ignored
  * @return A promise that will resolve when service definition call has completed
  * @private
  */
-export function getRequest(update: IUpdate): Promise<void> {
-  return new Promise((resolveFn, rejectFn) => {
+/* istanbul ignore else */
+export function getRequest(
+  update: IUpdate,
+  skipRetry: boolean = false,
+  useAsync: boolean = false
+): Promise<void> {
+  return new Promise((resolve, reject) => {
     const options: IRequestOptions = {
       params: update.params,
       authentication: update.args.authentication
     };
+    /* istanbul ignore else */
+    if (
+      (useAsync && update.url.indexOf("addToDefinition") > -1) ||
+      update.url.indexOf("updateDefinition") > -1 ||
+      update.url.indexOf("deleteFromDefinition") > -1
+    ) {
+      options.params = { ...options.params, async: true };
+    }
     request(update.url, options).then(
-      () => resolveFn(),
-      (e: any) => rejectFn(e)
+      result => {
+        checkRequestStatus(result, options.authentication).then(
+          () => resolve(null),
+          e => reject(fail(e))
+        );
+      },
+      (e: any) => {
+        if (!skipRetry) {
+          getRequest(update, true, true).then(
+            () => resolve(),
+            e => reject(e)
+          );
+        } else {
+          reject(e);
+        }
+      }
     );
   });
 }
@@ -1014,6 +1130,15 @@ export function getServiceLayersAndTables(
   });
 }
 
+/**
+ * Get service properties for the given url and update key props
+ *
+ * @param serviceUrl the feature service url
+ * @param authentication Credentials for the request to AGOL
+ * @param workforceService boolean to indicate if extra workforce service steps should be handled
+ * @return A promise that will resolve with the service properties
+ * @private
+ */
 export function getFeatureServiceProperties(
   serviceUrl: string,
   authentication: UserSession,
@@ -1113,6 +1238,13 @@ export function _parseAdminServiceData(adminData: any): any {
   return adminData;
 }
 
+/**
+ * livingatlas designation test.
+ * These layers should not be templatized or depolyed
+ *
+ * @param groupDesignations the items group designations to evaluate
+ * @return A boolean indicating if the invalid designation is found in the item info
+ */
 export function hasInvalidGroupDesignations(
   groupDesignations: string
 ): boolean {
@@ -1301,6 +1433,15 @@ export function searchGroupContents(
   return searchGroupContent(searchOptions);
 }
 
+/**
+ * Shares an item to the defined group
+ *
+ * @param groupId Group to share with
+ * @param id the item id to share with the group
+ * @param destinationAuthentication Credentials for the request to AGO
+ * @return A promise that will resolve after the item has been shared
+ *
+ */
 export function shareItem(
   groupId: string,
   id: string,
@@ -1352,6 +1493,16 @@ export function updateItem(
   });
 }
 
+/**
+ * Updates an item.
+ *
+ * @param itemInfo The base info of an item
+ * @param data The items data section
+ * @param authentication Credentials for requests
+ * @param thumbnail optional thumbnail to update
+ * @param access "public" or "org"
+ * @return
+ */
 export function updateItemExtended(
   itemInfo: IItemUpdate,
   data: any,
@@ -1630,6 +1781,18 @@ export function _getCreateServiceOptions(
   });
 }
 
+/**
+ * When the services spatial reference does not match that of it's default extent
+ * use the out SRs default extent if it exists in the templateDictionary
+ * this should be set when adding a custom out wkid to the params before calling deploy
+ * this will help avoid situations where the orgs default extent and default world extent
+ * will not project successfully to the out SR
+ *
+ * @param serviceInfo the object that contains the spatial reference to evaluate
+ * @param templateDictionary the template dictionary
+ * @return the extent to use as the fallback
+ * @private
+ */
 export function _getFallbackExtent(
   serviceInfo: any,
   templateDictionary: any
@@ -1643,12 +1806,6 @@ export function _getFallbackExtent(
     templateDictionary,
     "params.defaultExtent"
   );
-
-  // when the services spatial reference does not match that of it's default extent
-  // use the out SRs default extent if it exists in the templateDictionary
-  // this should be set when adding a custom out wkid to the params before calling deploy
-  // this will help avoid situations where the orgs default extent and default world extent
-  // will not project successfully to the out SR
   return serviceInfoWkid && serviceInfoWkid === serviceSR.wkid
     ? serviceInfo.defaultExtent
     : customDefaultExtent

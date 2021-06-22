@@ -130,7 +130,7 @@ export function createItemFromTemplate(
         });
       } else {
         // finally, return ICreateItemFromTemplateResponse
-        return {
+        const response: ICreateItemFromTemplateResponse = {
           item: {
             ...template,
             ...exbModel
@@ -139,6 +139,8 @@ export function createItemFromTemplate(
           type: template.type,
           postProcess: false
         };
+        response.item.itemId = exbModel.item.id;
+        return response;
       }
     });
 }

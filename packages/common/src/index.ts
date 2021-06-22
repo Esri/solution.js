@@ -20,17 +20,23 @@
  * @module common
  */
 
+export * from "./completeItem";
+export * from "./create-hub-request-options";
+export * from "./deleteHelpers";
+export * from "./deleteSolution";
 export * from "./dependencies";
 export * from "./featureServiceHelpers";
 export * from "./generalHelpers";
+export * from "./getDeletableSolutionInfo";
+export * from "./getSolutionSummary";
 export * from "./interfaces";
 export * from "./libConnectors";
+export * from "./migrator";
 export * from "./polyfills";
 export * from "./resourceHelpers";
+export * from "./resources";
 export * from "./restHelpers";
 export * from "./restHelpersGet";
 export * from "./sharing";
 export * from "./templatization";
-export * from "./migrator";
-export * from "./resources";
 export * from "./workforceHelpers";

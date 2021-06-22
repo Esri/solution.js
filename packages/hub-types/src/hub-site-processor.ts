@@ -15,7 +15,7 @@
  */
 
 /**
- * Manages the creation and deployment of Story Map item types.
+ * Manages the creation and deployment of Hub Site item types.
  *
  * @module hub-site-processor
  */
@@ -26,9 +26,11 @@ import {
   ICreateItemFromTemplateResponse,
   EItemProgressStatus,
   UserSession,
+  createHubRequestOptions,
   generateEmptyCreationResponse,
   getProp
 } from "@esri/solution-common";
+import { IUpdateItemOptions, updateItem } from "@esri/arcgis-rest-portal";
 import {
   createSiteModelFromTemplate,
   createSite,
@@ -45,7 +47,6 @@ import {
 } from "@esri/hub-common";
 
 import { moveModelToFolder } from "./helpers/move-model-to-folder";
-import { createHubRequestOptions } from "./helpers/create-hub-request-options";
 import { _postProcessSite } from "./helpers/_post-process-site";
 import { replaceItemIds } from "./helpers/replace-item-ids";
 /**
@@ -98,6 +99,7 @@ export function createItemFromTemplate(
   // Note: depending on licensing and user privs, will also create the team groups
   // and initiative item.
   let hubRo: IHubRequestOptions;
+  const thumbnail: File = template.item.thumbnail; // createSiteModelFromTemplate trashes thumbnail
   return createHubRequestOptions(destinationAuthentication, templateDictionary)
     .then(ro => {
       hubRo = ro;
@@ -128,6 +130,20 @@ export function createItemFromTemplate(
       );
     })
     .then(() => {
+      // Fix the thumbnail
+      const updateOptions: IUpdateItemOptions = {
+        item: {
+          id: siteModel.item.id
+        },
+        params: {
+          // Pass thumbnail in via params because item property is serialized, which discards a blob
+          thumbnail
+        },
+        authentication: destinationAuthentication
+      };
+      return updateItem(updateOptions);
+    })
+    .then(() => {
       // Update the template dictionary
       // TODO: This should be done in whatever recieves
       // the outcome of this promise chain
@@ -149,7 +165,7 @@ export function createItemFromTemplate(
         });
       } else {
         // finally, return ICreateItemFromTemplateResponse
-        return {
+        const response: ICreateItemFromTemplateResponse = {
           item: {
             ...template,
             ...siteModel
@@ -158,6 +174,8 @@ export function createItemFromTemplate(
           type: template.type,
           postProcess: true
         };
+        response.item.itemId = siteModel.item.id;
+        return response;
       }
     })
     .catch(ex => {

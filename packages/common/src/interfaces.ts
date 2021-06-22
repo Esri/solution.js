@@ -54,6 +54,9 @@ export {
 
 //#endregion ---------------------------------------------------------------------------------------------------------//
 
+export const SolutionTemplateFormatVersion = 1;
+export const DeployedSolutionFormatVersion = 1;
+
 //#region Enums ------------------------------------------------------------------------------------------------------//
 
 /**
@@ -76,7 +79,8 @@ export enum EItemProgressStatus {
   Cancelled,
   Finished,
   Ignored,
-  Failed
+  Failed,
+  Unknown
 }
 
 export const SItemProgressStatus = [
@@ -85,7 +89,8 @@ export const SItemProgressStatus = [
   "3 Cancelled",
   "3 Finished",
   "3 Ignored",
-  "3 Failed"
+  "3 Failed",
+  "Unknown"
 ];
 
 //#endregion ---------------------------------------------------------------------------------------------------------//
@@ -139,6 +144,25 @@ export interface IBuildOrdering {
    * Dictionary of item ids that need dependency patching; each id has a list of the ids of the dependencies to be patched.
    */
   itemsToBePatched: IKeyedListsOfStrings;
+}
+
+export interface ICompleteItem {
+  // text/plain JSON
+  base: IItem;
+  // */*
+  data: File;
+  // image/*
+  thumbnail: File;
+  // application/xml
+  metadata: File;
+  // list of */*
+  resources: File[];
+  // list of forward relationshipType/relatedItems[] pairs
+  fwdRelatedItems: IRelatedItems[];
+  // list of reverse relationshipType/relatedItems[] pairs
+  revRelatedItems: IRelatedItems[];
+  //
+  featureServiceProperties?: IFeatureServiceProperties;
 }
 
 export interface ICreateItemFromTemplateResponse {
@@ -238,6 +262,15 @@ export interface IDatasourceInfo {
 }
 
 /**
+ * Options for deleting a deployed solution item and all of the items that were created as part of that deployment
+ */
+export interface IDeleteSolutionOptions {
+  jobId?: string; // default: solution id
+  progressCallback?: ISolutionProgressCallback;
+  consoleProgress?: boolean; // default: false
+}
+
+/**
  * Storage of dependencies.
  */
 export interface IDependency {
@@ -287,6 +320,7 @@ export interface IDeploySolutionOptions {
   consoleProgress?: boolean; // default: false
   storageAuthentication?: UserSession; // credentials for the organization with the source items; default: use
   // authentication supplied for deployment destination
+  storageVersion?: number; // default: 0
 }
 
 /**
@@ -581,6 +615,7 @@ export interface ISolutionItem {
    * Supplemental information
    */
   properties?: IStringValuePair;
+  [key: string]: any;
 }
 
 /**
@@ -596,6 +631,27 @@ export interface ISolutionItemData {
    * The collection of templates
    */
   templates: IItemTemplate[];
+}
+
+/**
+ * A brief form of an item in a solution.
+ */
+export interface ISolutionItemPrecis {
+  id: string;
+  type: string;
+  title: string;
+  modified: number;
+  owner: string;
+}
+
+/**
+ * A brief form of a solution item.
+ */
+export interface ISolutionPrecis {
+  id: string;
+  title: string;
+  folder: string;
+  items: ISolutionItemPrecis[];
 }
 
 /**
