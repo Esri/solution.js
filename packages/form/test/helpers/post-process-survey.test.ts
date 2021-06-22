@@ -137,10 +137,9 @@ describe("postProcessHubSurvey", () => {
           {
             id: featureServiceResultBase.id,
             extent: interpolatedTemplate.item.extent,
-            typeKeywords: [
-              ...featureServiceResultBase.typeKeywords,
-              `source-${featureServiceSourceBase.id}`
-            ]
+            typeKeywords: [`source-${featureServiceSourceBase.id}`].concat(
+              featureServiceResultBase.typeKeywords
+            )
           },
           MOCK_USER_SESSION
         ]);
