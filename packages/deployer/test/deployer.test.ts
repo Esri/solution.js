@@ -1330,6 +1330,10 @@ describe("Module `deployer`", () => {
         .post(
           "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/items/map1234567890/protect",
           { success: true }
+        )
+        .post(
+          "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/items/map1234567890/unprotect",
+          { success: true }
         );
 
       const options: common.IDeploySolutionOptions = {
@@ -1548,6 +1552,10 @@ describe("Module `deployer`", () => {
         .post(
           "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/items/map1234567890/protect",
           { success: true }
+        )
+        .post(
+          "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/items/map1234567890/unprotect",
+          { success: true }
         );
 
       const options: common.IDeploySolutionOptions = {
@@ -1754,6 +1762,10 @@ describe("Module `deployer`", () => {
         )
         .post(
           "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/items/map1234567890/protect",
+          { success: true }
+        )
+        .post(
+          "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/items/map1234567890/unprotect",
           { success: true }
         );
       spyOn(console, "error").and.callFake(() => {});
