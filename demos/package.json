@@ -36,6 +36,6 @@
     "adlib": "3.0.7"
   },
   "scripts": {
-    "build": "tsc -p ./tsconfig.json --outDir ./dist"
+    "build": "tsc -p ./tsconfig.json --outDir ./dist && start cmd.exe /q/c \"copy .\\src\\*.min.js .\\dist\""
   }
 }
