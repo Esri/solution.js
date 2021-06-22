@@ -19,14 +19,22 @@ import * as quickcaptureHelpers from "./helpers/quickcapture-helpers";
 
 //#region Publish Process ---------------------------------------------------------------------------------------//
 
-// Delegate back to simple-types, which will in-turn delegate
-// to convertNotebookToTemplate at the correct point in the process
-// This is a temporary refactor step
+/**
+ * Converts a Quick Capture item into a template.
+ *
+ * @param solutionItemId The solution to contain the template
+ * @param itemInfo Info about the item
+ * @param authentication Credentials for working with AGO
+ * @return A promise that will resolve when the template has been created
+ */
 export function convertItemToTemplate(
   solutionItemId: string,
   itemInfo: any,
   authentication: common.UserSession
 ): Promise<common.IItemTemplate> {
+  // Delegate back to simple-types, which will in-turn delegate
+  // to convertNotebookToTemplate at the correct point in the process
+  // This is a temporary refactor step
   return quickcaptureHelpers.convertItemToTemplate(
     solutionItemId,
     itemInfo,
