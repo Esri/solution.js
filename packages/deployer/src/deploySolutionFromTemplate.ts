@@ -328,21 +328,37 @@ export function deploySolutionFromTemplate(
         () => resolve(solutionTemplateBase.id),
         error => {
           // Cleanup deployed solution item and solution folder
-          const cleanupPromises = [] as Array<Promise<any>>;
+          // Have to do it in stages because folder deletion is faster than item deletion,
+          // and thus fails if solution is not yet unprotected
+          let cleanupPromise = Promise.resolve({
+            success: true,
+            itemId: solutionTemplateBase.id
+          } as common.IStatusResponse);
           if (deployedSolutionId) {
-            cleanupPromises.push(
-              common.deleteSolutionItem(deployedSolutionId, authentication)
+            cleanupPromise = common.deleteSolutionItem(
+              deployedSolutionId,
+              authentication
             );
           }
-          if (deployedFolderId) {
-            cleanupPromises.push(
-              common.removeFolder(deployedFolderId, authentication)
+
+          cleanupPromise
+            .then(() => {
+              let cleanupPromise2 = Promise.resolve({
+                success: true,
+                folder: null
+              } as common.IFolderStatusResponse);
+              if (deployedFolderId) {
+                cleanupPromise2 = common.removeFolder(
+                  deployedFolderId,
+                  authentication
+                );
+              }
+              return cleanupPromise2;
+            })
+            .then(
+              () => reject(error),
+              () => reject(error)
             );
-          }
-          Promise.all(cleanupPromises).then(
-            () => reject(error),
-            () => reject(error)
-          );
         }
       );
   });
