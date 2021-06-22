@@ -327,16 +327,16 @@ export function deploySolutionFromTemplate(
       .then(
         () => resolve(solutionTemplateBase.id),
         error => {
-          // Cleanup solution folder and deployed solution item
+          // Cleanup deployed solution item and solution folder
           const cleanupPromises = [] as Array<Promise<any>>;
+          if (deployedSolutionId) {
+            cleanupPromises.push(
+              common.deleteSolutionItem(deployedSolutionId, authentication)
+            );
+          }
           if (deployedFolderId) {
             cleanupPromises.push(
               common.removeFolder(deployedFolderId, authentication)
-            );
-          }
-          if (deployedSolutionId) {
-            cleanupPromises.push(
-              common.removeItem(deployedSolutionId, authentication)
             );
           }
           Promise.all(cleanupPromises).then(
