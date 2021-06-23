@@ -18,14 +18,22 @@ import * as common from "@esri/solution-common";
 // Need to import collectively to enable spying
 import * as notebookHelpers from "./helpers/notebook-helpers";
 
-// Delegate back to simple-types, which will in-turn delegate
-// to convertNotebookToTemplate at the correct point in the process
-// This is a temporary refactor step
+/**
+ * Converts a notebook item into a template.
+ *
+ * @param solutionItemId The solution to contain the template
+ * @param itemInfo Info about the item
+ * @param authentication Credentials for working with AGO
+ * @return A promise that will resolve when the template has been created
+ */
 export function convertItemToTemplate(
   solutionItemId: string,
   itemInfo: any,
   authentication: common.UserSession
 ): Promise<common.IItemTemplate> {
+  // Delegate back to simple-types, which will in-turn delegate
+  // to convertNotebookToTemplate at the correct point in the process
+  // This is a temporary refactor step
   return notebookHelpers.convertItemToTemplate(
     solutionItemId,
     itemInfo,

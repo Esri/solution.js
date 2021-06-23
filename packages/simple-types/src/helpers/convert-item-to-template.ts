@@ -23,6 +23,14 @@ import * as webmap from "../webmap";
 import * as webmappingapplication from "../webmappingapplication";
 import * as workforce from "../workforce";
 
+/**
+ * Converts an item into a template.
+ *
+ * @param solutionItemId The solution to contain the template
+ * @param itemInfo Info about the item
+ * @param authentication Credentials for working with AGO
+ * @return A promise that will resolve when the template has been created
+ */
 export function convertItemToTemplate(
   solutionItemId: string,
   itemInfo: any,

@@ -51,11 +51,12 @@ import { replaceItemIds } from "./helpers/replace-item-ids";
 import { moveModelToFolder } from "./helpers/move-model-to-folder";
 
 /**
- * Convert a Page to a Template
+ * Converts a Hub Page item into a template.
  *
- * @param solutionItemId
- * @param itemInfo Item object
- * @param authentication
+ * @param solutionItemId The solution to contain the template
+ * @param itemInfo Info about the item
+ * @param authentication Credentials for working with AGO
+ * @return A promise that will resolve when the template has been created
  */
 export function convertItemToTemplate(
   solutionItemId: string,
