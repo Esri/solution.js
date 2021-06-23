@@ -27,6 +27,7 @@ import {
   EItemProgressStatus,
   UserSession,
   createHubRequestOptions,
+  dedupe,
   generateEmptyCreationResponse,
   getProp
 } from "@esri/solution-common";
@@ -218,7 +219,7 @@ export function convertItemToTemplate(
       }
       // swap out dependency id's to {{<depid>.itemId}}
       // so it will be re-interpolated
-      tmpl.dependencies = [...new Set(tmpl.dependencies || [])]; // dedupe
+      tmpl.dependencies = dedupe(tmpl.dependencies);
       tmpl = replaceItemIds(tmpl);
 
       // and return it

@@ -85,9 +85,7 @@ export function postProcess(
     return acc;
   }, []);
 
-  return Promise.all([
-    ...postProcessPromises,
-    sharePromises,
-    ...relationshipPromises
-  ]);
+  return Promise.all(
+    [sharePromises].concat(postProcessPromises, relationshipPromises)
+  );
 }

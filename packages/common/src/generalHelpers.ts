@@ -141,6 +141,22 @@ export function createShortId(): string {
 }
 
 /**
+ * Copies an input list removing duplicates.
+ *
+ * @param input List to be deduped
+ * @returns Deduped list; order of items in input is not maintained
+ */
+export function dedupe(input: string[] = []): string[] {
+  if (input.length === 0) {
+    return [];
+  }
+  const dedupedList = new Set(input);
+  const output: string[] = [];
+  dedupedList.forEach((value: string) => output.push(value));
+  return output;
+}
+
+/**
  * Flags a failure to create an item from a template.
  *
  * @param itemType The AGO item type
