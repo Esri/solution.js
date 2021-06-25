@@ -117,8 +117,5 @@ export function getCompleteItem(
         completeItem.featureServiceProperties = properties;
       }
       return Promise.resolve(completeItem);
-    })
-    .catch(() => {
-      return null;
     });
 }
