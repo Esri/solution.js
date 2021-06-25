@@ -32,6 +32,7 @@
     "@esri/solution-simple-types": "^0.24.0",
     "@esri/solution-storymap": "^0.24.0",
     "@esri/solution-viewer": "^0.24.0",
+    "@esri/solution-velocity": "^0.24.0",
     "@esri/solution-web-experience": "^0.24.0",
     "adlib": "3.0.7"
   },

@@ -1973,16 +1973,18 @@ export function _validateEditFieldsInfo(
     const editFieldsInfoKeys: string[] = Object.keys(editFieldsInfo);
     editFieldsInfoKeys.forEach(k => {
       const editFieldName: string = editFieldsInfo[k];
-      fieldNames.some(name => {
-        if (name === editFieldName) {
-          return true;
-        } else if (name === editFieldName.toLowerCase()) {
-          editFieldsInfo[k] = name;
-          return true;
-        } else {
-          return false;
-        }
-      });
+      if (editFieldName) {
+        fieldNames.some(name => {
+          if (name === editFieldName) {
+            return true;
+          } else if (name === editFieldName.toLowerCase()) {
+            editFieldsInfo[k] = name;
+            return true;
+          } else {
+            return false;
+          }
+        });
+      }
     });
   }
 }
