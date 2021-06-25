@@ -215,9 +215,6 @@ export function _getDependencies(template: IItemTemplate): string[] {
   // Get all dependencies
   let deps = template.dependencies.concat(
     _getIdsOutOfTemplateVariables(
-      _getTemplateVariables(JSON.stringify(template.item))
-    ),
-    _getIdsOutOfTemplateVariables(
       _getTemplateVariables(JSON.stringify(template.data))
     )
   );
