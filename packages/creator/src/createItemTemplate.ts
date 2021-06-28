@@ -176,8 +176,9 @@ export function createItemTemplate(
                       authentication,
                       SolutionTemplateFormatVersion
                     ).then(resources => {
-                      // update the templates resources
                       itemTemplate.item.thumbnail = null; // no longer needed; use resources
+
+                      // update the templates resources
                       itemTemplate.resources = itemTemplate.resources.concat(
                         resources
                       );
