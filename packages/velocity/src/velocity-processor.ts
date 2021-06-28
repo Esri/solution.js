@@ -24,10 +24,13 @@ import {
   UserSession,
   IItemProgressCallback,
   IItemTemplate,
-  ICreateItemFromTemplateResponse
+  ICreateItemFromTemplateResponse,
+  createPlaceholderTemplate,
+  fail,
+  getVelocityUrl
 } from "@esri/solution-common";
 
-import { convertVelocityToTemplate } from "./helpers/convert-velocity-to-template";
+import { getVelocityDependencies } from "./helpers/get-velocity-dependencies";
 
 /**
  * Convert a Velocity item into a Template
@@ -42,7 +45,19 @@ export function convertItemToTemplate(
   authentication: UserSession
 ): Promise<IItemTemplate> {
   console.log(solutionItemId);
-  return convertVelocityToTemplate(itemInfo, authentication);
+  const template = createPlaceholderTemplate(itemInfo.id, itemInfo.type);
+  return getVelocityUrl(authentication, itemInfo.type, itemInfo.id).then(
+    (url: string) => {
+      return fetch(url)
+        .then(data => data.json())
+        .then(data_json => {
+          template.data = data_json;
+          template.dependencies = getVelocityDependencies(template);
+          return Promise.resolve(template);
+        });
+    },
+    e => fail(e)
+  );
 }
 
 /**
@@ -59,7 +74,7 @@ export function createItemFromTemplate(
   destinationAuthentication: UserSession,
   itemProgressCallback: IItemProgressCallback
 ): Promise<ICreateItemFromTemplateResponse> {
-  return new Promise<ICreateItemFromTemplateResponse>((resolve, reject) => {
+  return new Promise<ICreateItemFromTemplateResponse>(resolve => {
     console.log(template);
     console.log(templateDictionary);
     console.log(destinationAuthentication);

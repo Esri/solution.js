@@ -34,7 +34,6 @@ import * as deleteSolutionItem from "./deleteHelpers/deleteSolutionItem";
 import * as removeItems from "./deleteHelpers/removeItems";
 import * as reportProgress from "./deleteHelpers/reportProgress";
 import * as getDeletableSolutionInfo from "./getDeletableSolutionInfo";
-import * as restHelpers from "./restHelpers";
 
 // ------------------------------------------------------------------------------------------------------------------ //
 

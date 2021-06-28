@@ -46,7 +46,7 @@ export const moduleMap: IItemTypeModuleMap = {
   "Big Data Analytic": VelocityProcessor,
   "Feature Collection": simpleTypes,
   "Feature Service": featureLayer,
-  Feed: undefined,
+  Feed: simpleTypes,
   "Geocoding Service": undefined,
   "Geodata Service": undefined,
   "Geometry Service": undefined,
