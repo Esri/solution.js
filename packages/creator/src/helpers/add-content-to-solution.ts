@@ -215,9 +215,6 @@ export function _getDependencies(template: IItemTemplate): string[] {
   // Get all dependencies
   let deps = template.dependencies.concat(
     _getIdsOutOfTemplateVariables(
-      _getTemplateVariables(JSON.stringify(template.item))
-    ),
-    _getIdsOutOfTemplateVariables(
       _getTemplateVariables(JSON.stringify(template.data))
     )
   );
@@ -533,5 +530,9 @@ export function _templatizeSolutionIds(templates: IItemTemplate[]): void {
   templates.forEach((template: IItemTemplate) => {
     _replaceRemainingIdsInObject(solutionIds, template.item);
     _replaceRemainingIdsInObject(solutionIds, template.data);
+    /* istanbul ignore else */
+    if (template.type !== "Group" && !isWorkforceProject(template)) {
+      template.dependencies = _getDependencies(template);
+    }
   });
 }

@@ -39,10 +39,10 @@ export function getFormattedItemInfo(
         await formatItemInfo(portalUrl, item, Raphael, Dracula)
         .then(
           html => resolve(html),
-          (error: any) => reject(JSON.stringify(error))
+          reject
         );
       },
-      (error: any) => reject(JSON.stringify(error))
+      reject
     );
   });
 }

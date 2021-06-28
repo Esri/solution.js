@@ -47,9 +47,6 @@ export function getCompleteItem(
   return restHelpersGet
     .getItemBase(itemId, authentication)
     .then((response: any) => {
-      if (restHelpersGet.checkJsonForError(response)) {
-        throw new Error();
-      }
       itemBase = response;
 
       return Promise.all([
@@ -117,8 +114,5 @@ export function getCompleteItem(
         completeItem.featureServiceProperties = properties;
       }
       return Promise.resolve(completeItem);
-    })
-    .catch(() => {
-      return null;
     });
 }
