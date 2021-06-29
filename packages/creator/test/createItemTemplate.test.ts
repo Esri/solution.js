@@ -784,8 +784,8 @@ describe("Module `createItemTemplate`", () => {
       const getItemBase = spyOn(common, "getItemBase");
       getItemBase.and.callThrough();
 
-      const storeItemResources = spyOn(common, "storeItemResources");
-      storeItemResources.and.callThrough();
+      const getItemResourcesPaths = spyOn(common, "getItemResourcesPaths");
+      getItemResourcesPaths.and.callThrough();
       const expectedTags: string[] = ["test"];
       const expectedTypeKeywords: string[] = ["JavaScript"];
 
@@ -804,7 +804,7 @@ describe("Module `createItemTemplate`", () => {
           //   expect(v.tags).toEqual(preExpectedTags);
           //   expect(v.typeKeywords).toEqual(preExpectedTypeKeywords);
           // }, done.fail);
-          const actualTemplate: any = storeItemResources.calls.mostRecent()
+          const actualTemplate: any = getItemResourcesPaths.calls.mostRecent()
             .args[0];
           expect(actualTemplate.item.tags)
             .withContext("test final tags")
