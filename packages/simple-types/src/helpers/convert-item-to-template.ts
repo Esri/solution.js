@@ -71,6 +71,7 @@ export function convertItemToTemplate(
       case "Workforce Project":
       case "Web Map":
       case "Web Mapping Application":
+      case "Web Scene":
       case "Notebook":
         dataPromise = new Promise(resolveJSON => {
           // eslint-disable-next-line @typescript-eslint/no-floating-promises
@@ -172,6 +173,7 @@ export function convertItemToTemplate(
           );
           break;
         case "Web Map":
+        case "Web Scene":
           templateModifyingPromise = webmap.convertItemToTemplate(
             itemTemplate,
             authentication

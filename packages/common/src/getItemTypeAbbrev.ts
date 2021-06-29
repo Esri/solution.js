@@ -58,7 +58,7 @@ export function getItemTypeAbbrev(type: string): string {
       // Map types
       "3D Web Scene": "xxx",
       "Web Map": "map",
-      "Web Scene": "xxx",
+      "Web Scene": "sc2",
 
       ////////////////////////////////////////////////////////
       // App types
