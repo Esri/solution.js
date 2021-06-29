@@ -263,6 +263,7 @@ export interface ICreateSolutionOptions {
   progressCallback?: ISolutionProgressCallback;
   consoleProgress?: boolean; // default: false
   itemIds?: string[];
+  sourceItemAuthentication?: UserSession; // default: solution item authentication
 }
 
 /**

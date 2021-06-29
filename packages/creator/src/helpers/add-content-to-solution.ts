@@ -27,12 +27,14 @@ import {
   IItemTemplate,
   IItemUpdate,
   ISolutionItemData,
+  ISourceFileCopyPath,
   isWorkforceProject,
   removeTemplate,
   replaceInTemplate,
   SItemProgressStatus,
-  updateItem,
+  copyFilesToStorageItem,
   postProcessWorkforceTemplates,
+  updateItem,
   UserSession
 } from "@esri/solution-common";
 import { getProp, getWithDefault } from "@esri/hub-common";
@@ -44,27 +46,30 @@ import {
 /**
  * Adds a list of AGO item ids to a solution item.
  *
+ * @param sourceItemAuthentication Credentials for fetching resources from the source item
  * @param solutionItemId AGO id of solution to receive items
  * @param options Customizations for creating the solution
- * @param authentication Credentials for the request
+ * @param solutionItemAuthentication Credentials for the requests to add to the solution item
  * @return A promise that resolves with the AGO id of the updated solution
  * @internal
  */
 export function addContentToSolution(
   solutionItemId: string,
   options: ICreateSolutionOptions,
-  authentication: UserSession
+  solutionItemAuthentication: UserSession
 ): Promise<string> {
   return new Promise((resolve, reject) => {
     if (!options.itemIds || options.itemIds.length === 0) {
       resolve(solutionItemId);
       return;
     }
+    const sourceItemAuthentication: UserSession =
+      options.sourceItemAuthentication || solutionItemAuthentication;
 
     // Prepare feedback mechanism
     let totalEstimatedCost = 2 * options.itemIds.length + 1; // solution items, plus avoid divide by 0
     let percentDone: number = 16; // allow for previous creation work
-    let progressPercentStep = (99 - percentDone) / totalEstimatedCost; // leave some % for caller for wrapup
+    let progressPercentStep = (95 - percentDone) / totalEstimatedCost; // leave some % for caller for wrapup
 
     const failedItemIds: string[] = [];
     let totalExpended = 0;
@@ -82,7 +87,7 @@ export function addContentToSolution(
 
         totalEstimatedCost += 2;
         progressPercentStep =
-          (99 - percentDone) / (totalEstimatedCost - totalExpended);
+          (95 - percentDone) / (totalEstimatedCost - totalExpended);
       }
 
       totalExpended += costUsed;
@@ -141,13 +146,13 @@ export function addContentToSolution(
 
     // Handle a list of one or more AGO ids by stepping through the list
     // and calling this function recursively
-    const getItemsPromise: Array<Promise<void>> = [];
+    const getItemsPromise: Array<Promise<ISourceFileCopyPath[]>> = [];
     options.itemIds.forEach(itemId => {
       const createDef = createItemTemplate(
         solutionItemId,
         itemId,
         templateDictionary,
-        authentication,
+        solutionItemAuthentication,
         solutionTemplates,
         itemProgressCallback
       );
@@ -155,50 +160,71 @@ export function addContentToSolution(
     });
 
     // eslint-disable-next-line @typescript-eslint/no-floating-promises
-    Promise.all(getItemsPromise).then(() => {
-      if (failedItemIds.length > 0) {
-        reject(
-          failWithIds(
-            failedItemIds,
-            "One or more items cannot be converted into templates"
-          )
-        );
-      } else {
-        if (solutionTemplates.length > 0) {
-          // test for and update group dependencies and other post-processing
-          solutionTemplates = _postProcessGroupDependencies(solutionTemplates);
-          solutionTemplates = postProcessWorkforceTemplates(solutionTemplates);
-          _templatizeSolutionIds(solutionTemplates);
-          solutionTemplates = _postProcessIgnoredItems(solutionTemplates);
-          _simplifyUrlsInItemDescriptions(solutionTemplates);
-          _replaceDictionaryItemsInObject(
-            templateDictionary,
-            solutionTemplates
-          );
-          _templatizeOrgUrl(solutionTemplates, authentication).then(
-            solutionTemplates2 => {
-              // Update solution item with its data JSON
-              const solutionData: ISolutionItemData = {
-                metadata: { version: SolutionTemplateFormatVersion },
-                templates: options.templatizeFields
-                  ? postProcessFieldReferences(solutionTemplates2)
-                  : solutionTemplates2
-              };
-              const itemInfo: IItemUpdate = {
-                id: solutionItemId,
-                text: solutionData
-              };
-              updateItem(itemInfo, authentication).then(() => {
-                resolve(solutionItemId);
-              }, reject);
-            },
-            reject
+    Promise.all(getItemsPromise).then(
+      (multipleResourceItemFilePaths: ISourceFileCopyPath[][]) => {
+        if (failedItemIds.length > 0) {
+          reject(
+            failWithIds(
+              failedItemIds,
+              "One or more items cannot be converted into templates"
+            )
           );
         } else {
-          resolve(solutionItemId);
+          if (solutionTemplates.length > 0) {
+            // Coalesce the resource file paths from the created templates
+            const resourceItemFilePaths: ISourceFileCopyPath[] = multipleResourceItemFilePaths.reduce(
+              (accumulator, currentValue) => accumulator.concat(currentValue),
+              [] as ISourceFileCopyPath[]
+            );
+
+            // Send the accumulated resources to the solution item
+            // eslint-disable-next-line @typescript-eslint/no-floating-promises
+            copyFilesToStorageItem(
+              sourceItemAuthentication,
+              resourceItemFilePaths,
+              solutionItemId,
+              solutionItemAuthentication
+            ).then(() => {
+              // test for and update group dependencies and other post-processing
+              solutionTemplates = _postProcessGroupDependencies(
+                solutionTemplates
+              );
+              solutionTemplates = postProcessWorkforceTemplates(
+                solutionTemplates
+              );
+              _templatizeSolutionIds(solutionTemplates);
+              solutionTemplates = _postProcessIgnoredItems(solutionTemplates);
+              _simplifyUrlsInItemDescriptions(solutionTemplates);
+              _replaceDictionaryItemsInObject(
+                templateDictionary,
+                solutionTemplates
+              );
+              _templatizeOrgUrl(
+                solutionTemplates,
+                solutionItemAuthentication
+              ).then(solutionTemplates2 => {
+                // Update solution item with its data JSON
+                const solutionData: ISolutionItemData = {
+                  metadata: { version: SolutionTemplateFormatVersion },
+                  templates: options.templatizeFields
+                    ? postProcessFieldReferences(solutionTemplates2)
+                    : solutionTemplates2
+                };
+                const itemInfo: IItemUpdate = {
+                  id: solutionItemId,
+                  text: solutionData
+                };
+                updateItem(itemInfo, solutionItemAuthentication).then(() => {
+                  resolve(solutionItemId);
+                }, reject);
+              }, reject);
+            });
+          } else {
+            resolve(solutionItemId);
+          }
         }
       }
-    });
+    );
   });
 }
 
