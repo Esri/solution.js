@@ -67,7 +67,10 @@ import { appendQueryParam, checkUrlPathTermination } from "./generalHelpers";
 import { convertItemResourceToStorageResource } from "./resources/convert-item-resource-to-storage-resource";
 import { convertStorageResourceToItemResource } from "./resources/convert-storage-resource-to-item-resource";
 import { getThumbnailFile } from "./restHelpersGet";
-import { copyAssociatedFiles } from "./resources/copyAssociatedFiles";
+import {
+  copyAssociatedFilesAsResources,
+  copyAssociatedFilesByType
+} from "./resources/copyAssociatedFiles";
 
 // ------------------------------------------------------------------------------------------------------------------ //
 
@@ -158,12 +161,11 @@ export function copyFilesFromStorageItem(
       } as IAssociatedFileInfo;
     });
 
-    void copyAssociatedFiles(
+    void copyAssociatedFilesByType(
       fileInfos,
       storageAuthentication,
       destinationItemId,
-      destinationAuthentication,
-      true
+      destinationAuthentication
     ).then((results: IAssociatedFileCopyResults[]) => {
       const allOK: boolean = results
         // Filter out metadata
@@ -208,12 +210,11 @@ export function copyFilesToStorageItem(
 ): Promise<string[]> {
   return new Promise<string[]>(resolve => {
     // tslint:disable-next-line: no-floating-promises
-    void copyAssociatedFiles(
+    void copyAssociatedFilesAsResources(
       filePaths as IAssociatedFileInfo[],
       sourceAuthentication,
       storageItemId,
-      storageAuthentication,
-      false
+      storageAuthentication
     ).then((results: IAssociatedFileCopyResults[]) => {
       resolve(
         results

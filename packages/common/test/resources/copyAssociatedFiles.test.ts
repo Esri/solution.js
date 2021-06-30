@@ -29,7 +29,10 @@ import * as portal from "@esri/arcgis-rest-portal";
 import * as resourceHelpers from "../../src/resourceHelpers";
 import * as restHelpers from "../../src/restHelpers";
 import * as restHelpersGet from "../../src/restHelpersGet";
-import { copyAssociatedFiles } from "../../src/resources/copyAssociatedFiles";
+import {
+  copyAssociatedFilesAsResources,
+  copyAssociatedFilesByType
+} from "../../src/resources/copyAssociatedFiles";
 import { createCopyResults } from "../../src/resources/createCopyResults";
 import JSZip from "jszip";
 
@@ -96,7 +99,7 @@ describe("Module `copyAssociatedFiles`: functions for sending resources to AGO",
         "copyZipIntoItem"
       ).and.rejectWith(mockItems.get400Failure());
 
-      copyAssociatedFiles(
+      copyAssociatedFilesByType(
         fileInfos,
         MOCK_USER_SESSION,
         "itm1234567890",
@@ -147,12 +150,11 @@ describe("Module `copyAssociatedFiles`: functions for sending resources to AGO",
         ])
       );
 
-      copyAssociatedFiles(
+      copyAssociatedFilesAsResources(
         fileInfos,
         MOCK_USER_SESSION,
         "itm1234567890",
-        MOCK_USER_SESSION,
-        false
+        MOCK_USER_SESSION
       ).then((results: interfaces.IAssociatedFileCopyResults[]) => {
         expect(results).toEqual([
           _createIAssociatedFileCopyResults(
@@ -229,7 +231,7 @@ describe("Module `copyAssociatedFiles`: functions for sending resources to AGO",
         ])
       );
 
-      copyAssociatedFiles(
+      copyAssociatedFilesByType(
         fileInfos,
         MOCK_USER_SESSION,
         "itm1234567890",
@@ -288,12 +290,11 @@ describe("Module `copyAssociatedFiles`: functions for sending resources to AGO",
         "copyZipIntoItem"
       ).and.rejectWith(mockItems.get400Failure());
 
-      copyAssociatedFiles(
+      copyAssociatedFilesAsResources(
         fileInfos,
         MOCK_USER_SESSION,
         "itm1234567890",
-        MOCK_USER_SESSION,
-        false
+        MOCK_USER_SESSION
       ).then((results: interfaces.IAssociatedFileCopyResults[]) => {
         expect(results).toEqual([
           {

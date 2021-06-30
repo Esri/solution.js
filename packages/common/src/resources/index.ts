@@ -25,5 +25,5 @@ export * from "./copyResourceIntoZip";
 export * from "./copyZipIntoItem";
 export * from "./createCopyResults";
 export * from "./get-blob";
+export * from "./getItemResourcesPaths";
 export * from "./solution-resource";
-export * from "./store-item-resources";
