@@ -50,13 +50,15 @@ const noOp = () => {};
  * Creates a solution item.
  *
  * @param sourceId AGO id of group whose contents are to be added to solution or of an item to convert into a solution
- * @param authentication Credentials for the request
+ * @param srcAuthentication Credentials for requests to source items
+ * @param destAuthentication Credentials for the requests to destination solution
  * @param options Customizations for creating the solution
  * @return A promise that resolves with the AGO id of the new solution
  */
 export function createSolution(
   sourceId: string,
-  authentication: UserSession,
+  srcAuthentication: UserSession,
+  destAuthentication: UserSession,
   options?: ICreateSolutionOptions
 ): Promise<string> {
   const createOptions: ICreateSolutionOptions = options || {};
@@ -66,8 +68,8 @@ export function createSolution(
 
   // Assume that source is a group and try to get group's information
   return Promise.all([
-    getGroupBase(sourceId, authentication),
-    getGroupContents(sourceId, authentication)
+    getGroupBase(sourceId, srcAuthentication),
+    getGroupContents(sourceId, srcAuthentication)
   ])
     .then(
       // Group fetches worked; assumption was correct
@@ -81,7 +83,7 @@ export function createSolution(
             _applySourceToCreateOptions(
               createOptions,
               responses[0],
-              authentication,
+              srcAuthentication,
               true
             )
           );
@@ -92,14 +94,14 @@ export function createSolution(
       () => {
         return new Promise<ICreateSolutionOptions>((resolve, reject) => {
           createOptions.itemIds = [sourceId];
-          getItemBase(sourceId, authentication).then(
+          getItemBase(sourceId, srcAuthentication).then(
             // Update the createOptions with values from the item
             itemBase =>
               resolve(
                 _applySourceToCreateOptions(
                   createOptions,
                   itemBase,
-                  authentication,
+                  srcAuthentication,
                   false
                 )
               ),
@@ -112,14 +114,21 @@ export function createSolution(
     .then(
       // Use a copy of the thumbnail rather than a URL to it
       createOptions => {
-        return _addThumbnailFileToCreateOptions(createOptions, authentication);
+        return _addThumbnailFileToCreateOptions(
+          createOptions,
+          srcAuthentication
+        );
       }
     )
 
     .then(
       // Create a solution
       createOptions => {
-        return _createSolutionFromItemIds(createOptions, authentication);
+        return _createSolutionFromItemIds(
+          createOptions,
+          srcAuthentication,
+          destAuthentication
+        );
       }
     )
 
@@ -151,7 +160,7 @@ export function createSolution(
 export function _applySourceToCreateOptions(
   createOptions: ICreateSolutionOptions,
   sourceInfo: IGroup | IItem,
-  authentication: UserSession,
+  srcAuthentication: UserSession,
   isGroup = false
 ): ICreateSolutionOptions {
   // Create a solution from the group's or item's contents,
@@ -163,7 +172,7 @@ export function _applySourceToCreateOptions(
   if (!createOptions.thumbnailurl && sourceInfo.thumbnail) {
     // Get the full path to the thumbnail
     createOptions.thumbnailurl = generateSourceThumbnailUrl(
-      authentication.portal,
+      srcAuthentication.portal,
       sourceInfo.id,
       sourceInfo.thumbnail,
       isGroup
@@ -178,12 +187,12 @@ export function _applySourceToCreateOptions(
  * Update the createOptions with the thumbnail file
  *
  * @param createOptions
- * @param authentication
+ * @param srcAuthentication
  * @internal
  */
 export function _addThumbnailFileToCreateOptions(
   createOptions: ICreateSolutionOptions,
-  authentication: UserSession
+  srcAuthentication: UserSession
 ): Promise<ICreateSolutionOptions> {
   return new Promise<ICreateSolutionOptions>(resolve => {
     if (!createOptions.thumbnail && createOptions.thumbnailurl) {
@@ -197,7 +206,7 @@ export function _addThumbnailFileToCreateOptions(
       delete createOptions.thumbnailurl;
 
       // Fetch the thumbnail
-      getBlobAsFile(thumbnailurl, filename, authentication).then(
+      getBlobAsFile(thumbnailurl, filename, srcAuthentication).then(
         thumbnail => {
           createOptions.thumbnail = thumbnail;
           resolve(createOptions);
@@ -216,28 +225,35 @@ export function _addThumbnailFileToCreateOptions(
  * Creates a solution item using a list of AGO item ids.
  *
  * @param options Customizations for creating the solution
- * @param authentication Credentials for the request
+ * @param srcAuthentication Credentials for requests to source items
+ * @param destAuthentication Credentials for the requests to destination solution
  * @return A promise that resolves with the AGO id of the new solution; solution item is deleted if its
  * there is a problem updating it
  * @internal
  */
 export function _createSolutionFromItemIds(
   options: ICreateSolutionOptions,
-  authentication: UserSession
+  srcAuthentication: UserSession,
+  destAuthentication: UserSession
 ): Promise<string> {
   let solutionId = "";
   // Create a solution from the list of items
-  return _createSolutionItem(authentication, options)
+  return _createSolutionItem(destAuthentication, options)
     .then(id => {
       solutionId = id;
       // Add list of items to the new solution
-      return addContentToSolution(solutionId, options, authentication);
+      return addContentToSolution(
+        solutionId,
+        options,
+        srcAuthentication,
+        destAuthentication
+      );
     })
     .catch(addError => {
       // If the solution item got created, delete it
       if (solutionId) {
         const failSafeRemove = failSafe(removeItem, { success: true });
-        return failSafeRemove(solutionId, authentication).then(() => {
+        return failSafeRemove(solutionId, destAuthentication).then(() => {
           throw addError;
         });
       } else {

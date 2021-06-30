@@ -27,7 +27,6 @@ import {
   IItemTemplate,
   IItemUpdate,
   ISolutionItemData,
-  isWorkforceProject,
   removeTemplate,
   replaceInTemplate,
   SItemProgressStatus,
@@ -46,14 +45,16 @@ import {
  *
  * @param solutionItemId AGO id of solution to receive items
  * @param options Customizations for creating the solution
- * @param authentication Credentials for the request
+ * @param srcAuthentication Credentials for requests to source items
+ * @param destAuthentication Credentials for the requests to destination solution
  * @return A promise that resolves with the AGO id of the updated solution
  * @internal
  */
 export function addContentToSolution(
   solutionItemId: string,
   options: ICreateSolutionOptions,
-  authentication: UserSession
+  srcAuthentication: UserSession,
+  destAuthentication: UserSession
 ): Promise<string> {
   return new Promise((resolve, reject) => {
     if (!options.itemIds || options.itemIds.length === 0) {
@@ -147,7 +148,7 @@ export function addContentToSolution(
         solutionItemId,
         itemId,
         templateDictionary,
-        authentication,
+        destAuthentication,
         solutionTemplates,
         itemProgressCallback
       );
@@ -175,7 +176,7 @@ export function addContentToSolution(
             templateDictionary,
             solutionTemplates
           );
-          _templatizeOrgUrl(solutionTemplates, authentication).then(
+          _templatizeOrgUrl(solutionTemplates, destAuthentication).then(
             solutionTemplates2 => {
               // Update solution item with its data JSON
               const solutionData: ISolutionItemData = {
@@ -188,7 +189,7 @@ export function addContentToSolution(
                 id: solutionItemId,
                 text: solutionData
               };
-              updateItem(itemInfo, authentication).then(() => {
+              updateItem(itemInfo, destAuthentication).then(() => {
                 resolve(solutionItemId);
               }, reject);
             },
@@ -483,17 +484,17 @@ export function _simplifyUrlsInItemDescriptions(
  * Templatizes occurrences of the URL to the user's organization in the `item` and `data` template sections.
  *
  * @param templates The array of templates to evaluate; templates is modified in place
- * @param authentication Credentials for request organization info
+ * @param destAuthentication Credentials for request organization info
  * @return Promise resolving with `templates`
  * @private
  */
 export function _templatizeOrgUrl(
   templates: IItemTemplate[],
-  authentication: UserSession
+  destAuthentication: UserSession
 ): Promise<IItemTemplate[]> {
   return new Promise((resolve, reject) => {
     // Get the org's URL
-    getPortal(null, authentication).then(org => {
+    getPortal(null, destAuthentication).then(org => {
       const orgUrl = "https://" + org.urlKey + "." + org.customBaseUrl;
       const templatizedOrgUrl = "{{portalBaseUrl}}";
 

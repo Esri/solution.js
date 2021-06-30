@@ -94,13 +94,20 @@ describe("Module `creator`", () => {
         );
       spyOn(console, "error").and.callFake(() => {});
 
-      creator.createSolution(solutionGroupId, authentication, options).then(
-        () => done.fail(),
-        response => {
-          expect(response.success).toBeFalsy();
-          done();
-        }
-      );
+      creator
+        .createSolution(
+          solutionGroupId,
+          authentication,
+          authentication,
+          options
+        )
+        .then(
+          () => done.fail(),
+          response => {
+            expect(response.success).toBeFalsy();
+            done();
+          }
+        );
     });
 
     it("createSolution fails to get item in group", done => {
@@ -159,12 +166,14 @@ describe("Module `creator`", () => {
 
       spyOn(console, "error").and.callFake(() => {});
       spyOn(common, "createShortId").and.callFake(() => "xfakeidx");
-      creator.createSolution(solutionGroupId, authentication).then(
-        () => done.fail(),
-        response => {
-          done();
-        }
-      );
+      creator
+        .createSolution(solutionGroupId, authentication, authentication)
+        .then(
+          () => done.fail(),
+          response => {
+            done();
+          }
+        );
     });
 
     it("createSolution fails to update solution item", done => {
@@ -222,12 +231,14 @@ describe("Module `creator`", () => {
 
       spyOn(console, "error").and.callFake(() => {});
       spyOn(common, "createShortId").and.callFake(() => "xfakeidx");
-      creator.createSolution(solutionGroupId, authentication).then(
-        () => done.fail(),
-        response => {
-          done();
-        }
-      );
+      creator
+        .createSolution(solutionGroupId, authentication, authentication)
+        .then(
+          () => done.fail(),
+          response => {
+            done();
+          }
+        );
     });
 
     it("createSolution with default name", done => {
@@ -334,21 +345,23 @@ describe("Module `creator`", () => {
         relatedItems: []
       });
 
-      creator.createSolution(solutionGroupId, authentication).then(
-        solutionId => {
-          expect(solutionId).toEqual(expectedSolutionId);
+      creator
+        .createSolution(solutionGroupId, authentication, authentication)
+        .then(
+          solutionId => {
+            expect(solutionId).toEqual(expectedSolutionId);
 
-          const addSolnCall = fetchMock.calls(
-            utils.PORTAL_SUBSET.restUrl + "/content/users/casey/addItem"
-          );
-          expect((addSolnCall[0][1]["body"] as FormData).get("title")).toEqual(
-            mockItems.getAGOLItem("Group").title
-          );
+            const addSolnCall = fetchMock.calls(
+              utils.PORTAL_SUBSET.restUrl + "/content/users/casey/addItem"
+            );
+            expect(
+              (addSolnCall[0][1]["body"] as FormData).get("title")
+            ).toEqual(mockItems.getAGOLItem("Group").title);
 
-          done();
-        },
-        () => done.fail()
-      );
+            done();
+          },
+          () => done.fail()
+        );
     });
 
     it("createSolution with specified name", done => {
@@ -474,21 +487,28 @@ describe("Module `creator`", () => {
         },
         progressCallback: () => {}
       };
-      creator.createSolution(solutionGroupId, authentication, options).then(
-        solutionId => {
-          expect(solutionId).toEqual(expectedSolutionId);
+      creator
+        .createSolution(
+          solutionGroupId,
+          authentication,
+          authentication,
+          options
+        )
+        .then(
+          solutionId => {
+            expect(solutionId).toEqual(expectedSolutionId);
 
-          const addSolnCall = fetchMock.calls(
-            utils.PORTAL_SUBSET.restUrl + "/content/users/casey/addItem"
-          );
-          expect((addSolnCall[0][1]["body"] as FormData).get("title")).toEqual(
-            solutionName
-          );
+            const addSolnCall = fetchMock.calls(
+              utils.PORTAL_SUBSET.restUrl + "/content/users/casey/addItem"
+            );
+            expect(
+              (addSolnCall[0][1]["body"] as FormData).get("title")
+            ).toEqual(solutionName);
 
-          done();
-        },
-        () => done.fail()
-      );
+            done();
+          },
+          () => done.fail()
+        );
     });
 
     it("createSolution with empty group with defaults without progress callback", done => {
@@ -540,21 +560,23 @@ describe("Module `creator`", () => {
           { success: true, id: expectedSolutionId }
         );
 
-      creator.createSolution(solutionGroupId, authentication).then(
-        solutionId => {
-          expect(solutionId).toEqual(expectedSolutionId);
+      creator
+        .createSolution(solutionGroupId, authentication, authentication)
+        .then(
+          solutionId => {
+            expect(solutionId).toEqual(expectedSolutionId);
 
-          const addSolnCall = fetchMock.calls(
-            utils.PORTAL_SUBSET.restUrl + "/content/users/casey/addItem"
-          );
-          expect((addSolnCall[0][1]["body"] as FormData).get("title")).toEqual(
-            mockItems.getAGOLItem("Group").title
-          );
+            const addSolnCall = fetchMock.calls(
+              utils.PORTAL_SUBSET.restUrl + "/content/users/casey/addItem"
+            );
+            expect(
+              (addSolnCall[0][1]["body"] as FormData).get("title")
+            ).toEqual(mockItems.getAGOLItem("Group").title);
 
-          done();
-        },
-        () => done.fail()
-      );
+            done();
+          },
+          () => done.fail()
+        );
     });
 
     it("createSolution with empty group without progress callback", done => {
@@ -612,21 +634,28 @@ describe("Module `creator`", () => {
         title: solutionName,
         templatizeFields: true
       };
-      creator.createSolution(solutionGroupId, authentication, options).then(
-        solutionId => {
-          expect(solutionId).toEqual(expectedSolutionId);
+      creator
+        .createSolution(
+          solutionGroupId,
+          authentication,
+          authentication,
+          options
+        )
+        .then(
+          solutionId => {
+            expect(solutionId).toEqual(expectedSolutionId);
 
-          const addSolnCall = fetchMock.calls(
-            utils.PORTAL_SUBSET.restUrl + "/content/users/casey/addItem"
-          );
-          expect((addSolnCall[0][1]["body"] as FormData).get("title")).toEqual(
-            solutionName
-          );
+            const addSolnCall = fetchMock.calls(
+              utils.PORTAL_SUBSET.restUrl + "/content/users/casey/addItem"
+            );
+            expect(
+              (addSolnCall[0][1]["body"] as FormData).get("title")
+            ).toEqual(solutionName);
 
-          done();
-        },
-        () => done.fail()
-      );
+            done();
+          },
+          () => done.fail()
+        );
     });
 
     it("createSolution with empty group and progress callback", done => {
@@ -687,21 +716,28 @@ describe("Module `creator`", () => {
         templatizeFields: true,
         progressCallback: () => {}
       };
-      creator.createSolution(solutionGroupId, authentication, options).then(
-        solutionId => {
-          expect(solutionId).toEqual(expectedSolutionId);
+      creator
+        .createSolution(
+          solutionGroupId,
+          authentication,
+          authentication,
+          options
+        )
+        .then(
+          solutionId => {
+            expect(solutionId).toEqual(expectedSolutionId);
 
-          const addSolnCall = fetchMock.calls(
-            utils.PORTAL_SUBSET.restUrl + "/content/users/casey/addItem"
-          );
-          expect((addSolnCall[0][1]["body"] as FormData).get("title")).toEqual(
-            solutionName
-          );
+            const addSolnCall = fetchMock.calls(
+              utils.PORTAL_SUBSET.restUrl + "/content/users/casey/addItem"
+            );
+            expect(
+              (addSolnCall[0][1]["body"] as FormData).get("title")
+            ).toEqual(solutionName);
 
-          done();
-        },
-        () => done.fail()
-      );
+            done();
+          },
+          () => done.fail()
+        );
     });
 
     it("createSolution fails to get item or group", done => {
@@ -749,7 +785,7 @@ describe("Module `creator`", () => {
 
       spyOn(console, "error").and.callFake(() => {});
       spyOn(common, "createShortId").and.callFake(() => "xfakeidx");
-      creator.createSolution(itemIds, authentication).then(
+      creator.createSolution(itemIds, authentication, authentication).then(
         () => done.fail(),
         response => {
           done();
@@ -836,7 +872,7 @@ describe("Module `creator`", () => {
       spyOn(console, "error").and.callFake(() => {});
 
       spyOn(common, "createShortId").and.callFake(() => "xfakeidx");
-      creator.createSolution(itemIds, authentication).then(
+      creator.createSolution(itemIds, authentication, authentication).then(
         () => done.fail(),
         error => {
           expect(error.success).toBeFalsy();
@@ -942,12 +978,18 @@ describe("Module `creator`", () => {
         Promise.reject(utils.getFailureResponse())
       );
 
-      creator._createSolutionFromItemIds(options, MOCK_USER_SESSION).then(
-        () => done.fail(),
-        response => {
-          done();
-        }
-      );
+      creator
+        ._createSolutionFromItemIds(
+          options,
+          MOCK_USER_SESSION,
+          MOCK_USER_SESSION
+        )
+        .then(
+          () => done.fail(),
+          response => {
+            done();
+          }
+        );
     });
 
     it("handles failure to delete the solution if items can't be added to it", done => {
@@ -983,12 +1025,18 @@ describe("Module `creator`", () => {
         );
       spyOn(console, "error").and.callFake(() => {});
 
-      creator._createSolutionFromItemIds(options, MOCK_USER_SESSION).then(
-        () => done.fail(),
-        response => {
-          done();
-        }
-      );
+      creator
+        ._createSolutionFromItemIds(
+          options,
+          MOCK_USER_SESSION,
+          MOCK_USER_SESSION
+        )
+        .then(
+          () => done.fail(),
+          response => {
+            done();
+          }
+        );
     });
   });
 
