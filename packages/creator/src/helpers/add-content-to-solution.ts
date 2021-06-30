@@ -46,25 +46,24 @@ import {
 /**
  * Adds a list of AGO item ids to a solution item.
  *
- * @param sourceItemAuthentication Credentials for fetching resources from the source item
  * @param solutionItemId AGO id of solution to receive items
  * @param options Customizations for creating the solution
- * @param solutionItemAuthentication Credentials for the requests to add to the solution item
+ * @param srcAuthentication Credentials for requests to source items
+ * @param destAuthentication Credentials for the requests to destination solution
  * @return A promise that resolves with the AGO id of the updated solution
  * @internal
  */
 export function addContentToSolution(
   solutionItemId: string,
   options: ICreateSolutionOptions,
-  solutionItemAuthentication: UserSession
+  srcAuthentication: UserSession,
+  destAuthentication: UserSession
 ): Promise<string> {
   return new Promise((resolve, reject) => {
     if (!options.itemIds || options.itemIds.length === 0) {
       resolve(solutionItemId);
       return;
     }
-    const sourceItemAuthentication: UserSession =
-      options.sourceItemAuthentication || solutionItemAuthentication;
 
     // Prepare feedback mechanism
     let totalEstimatedCost = 2 * options.itemIds.length + 1; // solution items, plus avoid divide by 0
@@ -152,7 +151,7 @@ export function addContentToSolution(
         solutionItemId,
         itemId,
         templateDictionary,
-        solutionItemAuthentication,
+        destAuthentication,
         solutionTemplates,
         itemProgressCallback
       );
@@ -180,10 +179,10 @@ export function addContentToSolution(
             // Send the accumulated resources to the solution item
             // eslint-disable-next-line @typescript-eslint/no-floating-promises
             copyFilesToStorageItem(
-              sourceItemAuthentication,
+              srcAuthentication,
               resourceItemFilePaths,
               solutionItemId,
-              solutionItemAuthentication
+              destAuthentication
             ).then(() => {
               // test for and update group dependencies and other post-processing
               solutionTemplates = _postProcessGroupDependencies(
@@ -199,25 +198,25 @@ export function addContentToSolution(
                 templateDictionary,
                 solutionTemplates
               );
-              _templatizeOrgUrl(
-                solutionTemplates,
-                solutionItemAuthentication
-              ).then(solutionTemplates2 => {
-                // Update solution item with its data JSON
-                const solutionData: ISolutionItemData = {
-                  metadata: { version: SolutionTemplateFormatVersion },
-                  templates: options.templatizeFields
-                    ? postProcessFieldReferences(solutionTemplates2)
-                    : solutionTemplates2
-                };
-                const itemInfo: IItemUpdate = {
-                  id: solutionItemId,
-                  text: solutionData
-                };
-                updateItem(itemInfo, solutionItemAuthentication).then(() => {
-                  resolve(solutionItemId);
-                }, reject);
-              }, reject);
+              _templatizeOrgUrl(solutionTemplates, destAuthentication).then(
+                solutionTemplates2 => {
+                  // Update solution item with its data JSON
+                  const solutionData: ISolutionItemData = {
+                    metadata: { version: SolutionTemplateFormatVersion },
+                    templates: options.templatizeFields
+                      ? postProcessFieldReferences(solutionTemplates2)
+                      : solutionTemplates2
+                  };
+                  const itemInfo: IItemUpdate = {
+                    id: solutionItemId,
+                    text: solutionData
+                  };
+                  updateItem(itemInfo, destAuthentication).then(() => {
+                    resolve(solutionItemId);
+                  }, reject);
+                },
+                reject
+              );
             });
           } else {
             resolve(solutionItemId);
@@ -506,17 +505,17 @@ export function _simplifyUrlsInItemDescriptions(
  * Templatizes occurrences of the URL to the user's organization in the `item` and `data` template sections.
  *
  * @param templates The array of templates to evaluate; templates is modified in place
- * @param authentication Credentials for request organization info
+ * @param destAuthentication Credentials for request organization info
  * @return Promise resolving with `templates`
  * @private
  */
 export function _templatizeOrgUrl(
   templates: IItemTemplate[],
-  authentication: UserSession
+  destAuthentication: UserSession
 ): Promise<IItemTemplate[]> {
   return new Promise((resolve, reject) => {
     // Get the org's URL
-    getPortal(null, authentication).then(org => {
+    getPortal(null, destAuthentication).then(org => {
       const orgUrl = "https://" + org.urlKey + "." + org.customBaseUrl;
       const templatizedOrgUrl = "{{portalBaseUrl}}";
 
