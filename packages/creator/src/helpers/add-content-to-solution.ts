@@ -151,6 +151,7 @@ export function addContentToSolution(
         solutionItemId,
         itemId,
         templateDictionary,
+        srcAuthentication,
         destAuthentication,
         solutionTemplates,
         itemProgressCallback

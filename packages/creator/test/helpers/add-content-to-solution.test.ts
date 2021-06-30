@@ -53,7 +53,8 @@ describe("addContentToSolution", () => {
         solutionItemId: string,
         itemId: string,
         templateDictionary: any,
-        authentication: common.UserSession,
+        srcAuthentication: common.UserSession,
+        destAuthentication: common.UserSession,
         existingTemplates: common.IItemTemplate[],
         itemProgressCallback: common.IItemProgressCallback
       ) => {
@@ -91,7 +92,8 @@ describe("addContentToSolution", () => {
         solutionItemId: string,
         itemId: string,
         templateDictionary: any,
-        authentication: common.UserSession,
+        srcAuthentication: common.UserSession,
+        destAuthentication: common.UserSession,
         existingTemplates: common.IItemTemplate[],
         itemProgressCallback: common.IItemProgressCallback
       ) => {
