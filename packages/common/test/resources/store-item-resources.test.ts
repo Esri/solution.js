@@ -400,6 +400,10 @@ describe("storeItemResources :: ", () => {
         solutionItemId,
         MOCK_USER_SESSION
       ).then(actual => {
+        // Sort before comparing because Chrome and Firefox tests sometimes have different results on Linux test machine
+        actual.sort();
+        expected.sort();
+
         expect(actual).toEqual(expected);
         done();
       }, done.fail);
@@ -730,6 +734,10 @@ describe("storeItemResources :: ", () => {
         MOCK_USER_SESSION,
         1
       ).then(actual => {
+        // Sort before comparing because Chrome and Firefox tests sometimes have different results on Linux test machine
+        actual.sort();
+        expected.sort();
+
         expect(actual).toEqual(expected);
         done();
       }, done.fail);
