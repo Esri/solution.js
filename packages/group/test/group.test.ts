@@ -663,6 +663,7 @@ describe("Module `group`: manages the creation and deployment of groups", () => 
         itemTemplate
       );
       expectedClone.itemId = newItemID;
+      expectedClone.item.thumbnail = undefined;
 
       // eslint-disable-next-line @typescript-eslint/no-floating-promises
       group
@@ -720,6 +721,7 @@ describe("Module `group`: manages the creation and deployment of groups", () => 
         itemTemplate
       );
       expectedClone.itemId = newItemID;
+      expectedClone.item.thumbnail = undefined;
 
       // eslint-disable-next-line @typescript-eslint/no-floating-promises
       group
