@@ -102,53 +102,80 @@ export function createItemFromTemplate(
       newItemTemplate,
       templateDictionary
     );
+    // Need to manually reset thumbnail because adlib in replaceInTemplate breaks it
+    newItemTemplate.item.thumbnail = template.item.thumbnail;
 
-    // Group uses `thumbnail` instead of `thumbnailurl`, and it has to be an actual file
-    let thumbnailBlobDef = Promise.resolve(null);
-    if (newItemTemplate.item.thumbnailurl) {
-      thumbnailBlobDef = new Promise(resolveThumb => {
-        common
-          .getBlobAsFile(
-            newItemTemplate.item.thumbnailurl,
-            common.getFilenameFromUrl(newItemTemplate.item.thumbnailurl),
-            destinationAuthentication
-          )
-          .then(resolveThumb, () => resolveThumb(null));
-      });
-    }
+    // Set up properties needed to create group
+    const newGroup: common.IGroupAdd = {
+      title: newItemTemplate.item.title || "",
+      access: "private",
+      owner: newItemTemplate.item.owner,
+      tags: newItemTemplate.item.tags,
+      description: newItemTemplate.item.description,
+      thumbnail: newItemTemplate.item.thumbnail,
+      snippet: newItemTemplate.item.snippet
+    };
 
-    // eslint-disable-next-line @typescript-eslint/no-floating-promises
-    thumbnailBlobDef.then(thumbnailBlob => {
-      // Set up properties needed to create group
-      const newGroup: common.IGroupAdd = {
-        title: newItemTemplate.item.title || "",
-        access: "private",
-        owner: newItemTemplate.item.owner,
-        tags: newItemTemplate.item.tags,
-        description: newItemTemplate.item.description,
-        thumbnail: thumbnailBlob,
-        snippet: newItemTemplate.item.snippet
-      };
+    // Create a group, appending a sequential suffix to its name if the group exists, e.g.,
+    //  * Manage Right of Way Activities
+    //  * Manage Right of Way Activities 1
+    //  * Manage Right of Way Activities 2
+    common
+      .createUniqueGroup(
+        newGroup.title,
+        newGroup,
+        templateDictionary,
+        destinationAuthentication
+      )
+      .then(
+        (createResponse: common.IAddGroupResponse) => {
+          if (createResponse.success) {
+            // Interrupt process if progress callback returns `false`
+            if (
+              !itemProgressCallback(
+                template.itemId,
+                common.EItemProgressStatus.Created,
+                template.estimatedDeploymentCostFactor / 2,
+                createResponse.group.id
+              )
+            ) {
+              itemProgressCallback(
+                template.itemId,
+                common.EItemProgressStatus.Cancelled,
+                0
+              );
+              // eslint-disable-next-line @typescript-eslint/no-floating-promises
+              common
+                .removeGroup(createResponse.group.id, destinationAuthentication)
+                .then(
+                  () =>
+                    resolve(
+                      common.generateEmptyCreationResponse(template.type)
+                    ),
+                  () =>
+                    resolve(common.generateEmptyCreationResponse(template.type))
+                );
+            } else {
+              newItemTemplate.itemId = createResponse.group.id;
+              templateDictionary[template.itemId] = {
+                itemId: createResponse.group.id
+              };
 
-      // Create a group, appending a sequential suffix to its name if the group exists, e.g.,
-      //  * Manage Right of Way Activities
-      //  * Manage Right of Way Activities 1
-      //  * Manage Right of Way Activities 2
-      common
-        .createUniqueGroup(
-          newGroup.title,
-          newGroup,
-          templateDictionary,
-          destinationAuthentication
-        )
-        .then(
-          (createResponse: common.IAddGroupResponse) => {
-            if (createResponse.success) {
+              // Update the template again now that we have the new item id
+              newItemTemplate = common.replaceInTemplate(
+                newItemTemplate,
+                templateDictionary
+              );
+
+              // Update the template dictionary with the new id
+              templateDictionary[template.itemId].itemId =
+                createResponse.group.id;
+
               // Interrupt process if progress callback returns `false`
               if (
                 !itemProgressCallback(
                   template.itemId,
-                  common.EItemProgressStatus.Created,
+                  common.EItemProgressStatus.Finished,
                   template.estimatedDeploymentCostFactor / 2,
                   createResponse.group.id
                 )
@@ -175,70 +202,15 @@ export function createItemFromTemplate(
                       )
                   );
               } else {
-                newItemTemplate.itemId = createResponse.group.id;
-                templateDictionary[template.itemId] = {
-                  itemId: createResponse.group.id
-                };
-
-                // Update the template again now that we have the new item id
-                newItemTemplate = common.replaceInTemplate(
-                  newItemTemplate,
-                  templateDictionary
-                );
-
-                // Update the template dictionary with the new id
-                templateDictionary[template.itemId].itemId =
-                  createResponse.group.id;
-
-                // Interrupt process if progress callback returns `false`
-                if (
-                  !itemProgressCallback(
-                    template.itemId,
-                    common.EItemProgressStatus.Finished,
-                    template.estimatedDeploymentCostFactor / 2,
-                    createResponse.group.id
-                  )
-                ) {
-                  itemProgressCallback(
-                    template.itemId,
-                    common.EItemProgressStatus.Cancelled,
-                    0
-                  );
-                  // eslint-disable-next-line @typescript-eslint/no-floating-promises
-                  common
-                    .removeGroup(
-                      createResponse.group.id,
-                      destinationAuthentication
-                    )
-                    .then(
-                      () =>
-                        resolve(
-                          common.generateEmptyCreationResponse(template.type)
-                        ),
-                      () =>
-                        resolve(
-                          common.generateEmptyCreationResponse(template.type)
-                        )
-                    );
-                } else {
-                  resolve({
-                    item: newItemTemplate,
-                    id: createResponse.group.id,
-                    type: newItemTemplate.type,
-                    postProcess: false
-                  });
-                }
+                resolve({
+                  item: newItemTemplate,
+                  id: createResponse.group.id,
+                  type: newItemTemplate.type,
+                  postProcess: false
+                });
               }
-            } else {
-              itemProgressCallback(
-                template.itemId,
-                common.EItemProgressStatus.Failed,
-                0
-              );
-              resolve(common.generateEmptyCreationResponse(template.type)); // fails to create item
             }
-          },
-          () => {
+          } else {
             itemProgressCallback(
               template.itemId,
               common.EItemProgressStatus.Failed,
@@ -246,7 +218,15 @@ export function createItemFromTemplate(
             );
             resolve(common.generateEmptyCreationResponse(template.type)); // fails to create item
           }
-        );
-    });
+        },
+        () => {
+          itemProgressCallback(
+            template.itemId,
+            common.EItemProgressStatus.Failed,
+            0
+          );
+          resolve(common.generateEmptyCreationResponse(template.type)); // fails to create item
+        }
+      );
   });
 }
