@@ -242,7 +242,6 @@ export function copyAssociatedFilesByType(
  * Copies one or more zipfiles to a storage item.
  *
  * @param zipInfos List of zip files containing files to store
- * @param sourceAuthentication Credentials for the request to the source
  * @param destinationItemId Id of item to receive copy of resource/metadata/thumbnail
  * @param destinationAuthentication Credentials for the request to the storage
  * @return A promise which resolves to a list of the result of the copies
