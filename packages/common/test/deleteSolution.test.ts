@@ -23,6 +23,7 @@ import * as createHRO from "../src/create-hub-request-options";
 import * as deleteEmptyGroups from "../src/deleteHelpers/deleteEmptyGroups";
 import * as deleteGroupIfEmpty from "../src/deleteHelpers/deleteGroupIfEmpty";
 import * as deleteSolution from "../src/deleteSolution";
+import * as deleteSolutionContents from "../src/deleteHelpers/deleteSolutionContents";
 import * as hubSites from "@esri/hub-sites";
 import * as interfaces from "../src/interfaces";
 import * as mockItems from "../../common/test/mocks/agolItems";
@@ -798,6 +799,117 @@ describe("Module `deleteSolution`: functions for deleting a deployed Solution it
           );
           done();
         });
+    });
+  });
+
+  describe("deleteSolutionByComponents", () => {
+    function _createTemplate(
+      itemId: string,
+      type: string
+    ): interfaces.IItemTemplate {
+      return ({
+        itemId,
+        type,
+        item: {
+          title: "title"
+        }
+      } as unknown) as interfaces.IItemTemplate;
+    }
+
+    function _createItemPrecis(
+      id: string,
+      type: string
+    ): interfaces.ISolutionItemPrecis {
+      return {
+        id,
+        type,
+        title: "title",
+        modified: 0,
+        owner: ""
+      } as interfaces.ISolutionItemPrecis;
+    }
+
+    it("sorts by itemIds and by item vs. group", done => {
+      const solutionItemId: string = "sln123";
+      const itemIds: string[] = [
+        "grp456",
+        "itm789",
+        "itm123",
+        "itm456",
+        "grp123"
+      ];
+      const templates: interfaces.IItemTemplate[] = [
+        _createTemplate("tmpgrp123", "Group"),
+        _createTemplate("tmpgrp456", "Group"),
+        _createTemplate("tmpgrp789", "Group"),
+        _createTemplate("tmpitm123", "Web Map"),
+        _createTemplate("tmpitm456", "Web Map"),
+        _createTemplate("tmpitm789", "Web Map")
+      ];
+      const templateDictionary: any = {
+        tmpgrp123: { itemId: "grp123" },
+        tmpgrp456: { itemId: "grp456" },
+        tmpgrp789: { itemId: "grp789" },
+        tmpitm123: { itemId: "itm123" },
+        tmpitm456: { itemId: "itm456" },
+        tmpitm789: { itemId: "itm789" },
+        folderId: "fld123"
+      };
+
+      const deleteSolutionContentsSpy = spyOn(
+        deleteSolutionContents,
+        "deleteSolutionContents"
+      ).and.resolveTo([
+        {
+          id: solutionItemId,
+          title: "",
+          folder: "fld123",
+          items: [
+            _createItemPrecis("itm789", "Web Map"),
+            _createItemPrecis("itm123", "Web Map"),
+            _createItemPrecis("itm456", "Web Map")
+          ],
+          groups: ["grp456", "grp123"]
+        },
+        {
+          id: solutionItemId,
+          title: "",
+          folder: "fld123",
+          items: [] as interfaces.ISolutionItemPrecis[],
+          groups: [] as string[]
+        }
+      ] as interfaces.ISolutionPrecis[]);
+
+      deleteSolution
+        .deleteSolutionByComponents(
+          solutionItemId,
+          itemIds,
+          templates,
+          templateDictionary,
+          MOCK_USER_SESSION
+        )
+        .then(() => {
+          expect(deleteSolutionContentsSpy.calls.count())
+            .withContext("call count")
+            .toEqual(1);
+          expect(deleteSolutionContentsSpy.calls.argsFor(0)[0])
+            .withContext("arg 0")
+            .toEqual(solutionItemId);
+          expect(deleteSolutionContentsSpy.calls.argsFor(0)[1])
+            .withContext("arg 1")
+            .toEqual({
+              id: solutionItemId,
+              title: "",
+              folder: "fld123",
+              items: [
+                _createItemPrecis("itm789", "Web Map"),
+                _createItemPrecis("itm123", "Web Map"),
+                _createItemPrecis("itm456", "Web Map")
+              ],
+              groups: ["grp456", "grp123"]
+            });
+          done();
+        }, done.fail);
     });
   });
 

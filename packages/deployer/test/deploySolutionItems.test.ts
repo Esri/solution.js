@@ -1076,7 +1076,9 @@ describe("Module `deploySolutionItems`", () => {
           {}
         );
 
+      spyOn(console, "log").and.callFake(() => {});
       spyOn(console, "error").and.callFake(() => {});
+
       deploySolution
         .deploySolutionItems(
           utils.PORTAL_URL,
@@ -1130,6 +1132,7 @@ describe("Module `deploySolutionItems`", () => {
       };
 
       spyOn(common, "getLayerSettings").and.callFake(() => {});
+      spyOn(console, "log").and.callFake(() => {});
       spyOn(console, "error").and.callFake(() => {});
 
       fetchMock
