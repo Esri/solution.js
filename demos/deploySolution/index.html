@@ -160,6 +160,36 @@
           });
         });
 
+              // Define a global session variable.
+      let session = null;
+
+// Check to see if there is a serialized session in local storage.
+const serializedSession = localStorage.getItem('__ARCGIS_REST_USER_SESSION__');
+if (serializedSession !== null && serializedSession !== "undefined") {
+  // If there is a serialized session, parse it and create a new session object.
+  let parsed = JSON.parse(serializedSession);
+  // Cast the tokenExpires property back into a date.
+  parsed.tokenExpires = new Date(parsed.tokenExpires);
+  // Create the new session object.
+  session = new auth.UserSession(parsed);
+  // console.log(session);
+  // Update the UI.
+  //document.getElementById('clientId').value = session.clientId;
+
+  // Clear the previous session.
+  localStorage.removeItem('__ARCGIS_REST_USER_SESSION__');
+}
+
+      // Function to update the UI with session info.
+      function updateSessionInfo(session) {
+        if (session) {
+          localStorage.setItem('__ARCGIS_REST_USER_SESSION__', session.serialize());
+        }
+      }
+
+      // Call the function on page load to set current state.
+      updateSessionInfo(session);
+
         function go () {
           document.getElementById("input").style.display = "none";
           document.getElementById("output").style.display = "block";
@@ -181,11 +211,18 @@
 
           // Dest credentials
           const destPortal = (document.getElementById("destPortal").value || "https://www.arcgis.com") + "/sharing/rest";
-          const destCreds = new auth.UserSession({
-            username: document.getElementById("destUsername").value,
-            password: document.getElementById("destPassword").value,
-            portal: destPortal,
-            clientId: document.getElementById("clientId").value
+          // const destCreds = new auth.UserSession({
+          //   username: document.getElementById("destUsername").value,
+          //   password: document.getElementById("destPassword").value,
+          //   portal: destPortal,
+          //   clientId: document.getElementById("clientId").value
+          // });
+          const redirect_uri = window.location.origin + window.location.pathname;
+          const clientId = "GczrcF3MkdgzeKud";
+          auth.UserSession.beginOAuth2({
+            clientId: clientId,
+            redirectUri: redirect_uri + 'authenticate.html?clientID=' + clientId,
+            popup: false,
           });
 
           // Use Existing
