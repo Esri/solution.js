@@ -41,7 +41,8 @@ export function getVelocityUrlBase(
 export function getVelocityUrl(
   authentication: UserSession,
   type: string,
-  id: string
+  id?: string,
+  isDeploy: boolean = false
 ): Promise<string> {
   return getVelocityUrlBase(authentication).then(url => {
     const _type: string =
@@ -51,8 +52,12 @@ export function getVelocityUrl(
         ? "analytics/realtime"
         : "analytics/bigdata";
 
+    // id is not used when we are deploying...otherwise the url is the same for each type
     return Promise.resolve(
-      `${url}/iot/${_type}/${id}/?f=json&token=${authentication.token}`
+      //isDeploy ? `${url}/iot/${_type}/?f=json&token=${authentication.token}` :
+      isDeploy
+        ? `${url}/iot/${_type}`
+        : `${url}/iot/${_type}/${id}/?f=json&token=${authentication.token}`
     );
   });
 }

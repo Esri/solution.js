@@ -119,9 +119,6 @@ export function convertItemToTemplate(
         case "Dashboard":
           dashboard.convertItemToTemplate(itemTemplate);
           break;
-        case "Feed":
-          feed.convertItemToTemplate(itemTemplate, authentication);
-          break;
         case "Form":
           // Store the form's data in the solution resources, not in template
           itemTemplate.data = null;

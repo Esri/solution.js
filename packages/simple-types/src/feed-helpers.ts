@@ -16,38 +16,9 @@
 
 import {
   getVelocityUrl,
-  ICreateItemFromTemplateResponse,
-  IItemProgressCallback,
   IItemTemplate,
   UserSession
 } from "@esri/solution-common";
-
-export function convertItemToTemplate(
-  itemTemplate: any,
-  authentication: UserSession
-): IItemTemplate {
-  console.log(authentication);
-  return itemTemplate;
-}
-
-// Delegate back to simple-types
-// This is a temporary refactor step
-export function createItemFromTemplate(
-  template: IItemTemplate,
-  templateDictionary: any,
-  destinationAuthentication: UserSession,
-  itemProgressCallback: IItemProgressCallback
-): Promise<ICreateItemFromTemplateResponse> {
-  console.log(templateDictionary);
-  console.log(destinationAuthentication);
-  console.log(itemProgressCallback);
-  return Promise.resolve({
-    item: template,
-    id: template.itemId,
-    type: template.type,
-    postProcess: false
-  });
-}
 
 export function getFeedData(
   itemId: string,
@@ -56,4 +27,69 @@ export function getFeedData(
   return getVelocityUrl(authentication, "Feed", itemId).then((url: string) => {
     return fetch(url).then(data => data.json());
   });
+}
+
+export function fineTuneCreatedItem(
+  authentication: UserSession,
+  template: IItemTemplate,
+  data: any
+): Promise<any> {
+  return getVelocityUrl(authentication, template.type, undefined, true).then(
+    url => {
+      // create the feed with the template data
+      // This needs to be a POST
+      data.label += Date.now().toString();
+      const requestOpts: any = {
+        body: JSON.stringify(data),
+        headers: {
+          Accept: "application/json",
+          "Accept-Language": "en-US",
+          "Content-Type": "application/json",
+          Authorization: "token=" + authentication.token,
+          //"Authorization": "token=" + "XBMO3KdwKGyz8Po0DqytgUAfDrjCWxtggsyW8t945889Ccu0kYYwbMNe0XiiwcfAXzZ89xAcEyXj1kh21Cv5xrrRitSx_-soytEhwRfTMeSp1otiWS1umDu_aZCJCtmnhWCmDzPyc8EytKYxYWPJsCf-OD09uqPlAc0VqdswcKEfZ5AyxI-AL0pdp_kIkqWya3bHwSN5bcLZWrla84a99EatJv6taNobKNEhb4qbrPc.",
+          // "Referrer": "https://velocity.arcgis.com/",
+          // "Referer": "https://velocity.arcgis.com/",
+          Referrer: "https://localdeployment.maps.arcgis.com/",
+          Referer: "https://localdeployment.maps.arcgis.com/",
+          "Referrer-Policy": "strict-origin-when-cross-origin",
+          referrerPolicy: "strict-origin-when-cross-origin",
+          "Cache-Control": "no-cache",
+          method: "POST",
+          "access-control-allow-origin": "*"
+        },
+        // "referrer": "https://velocity.arcgis.com/",
+        referrer: "https://localdeployment.maps.arcgis.com/",
+        referrerPolicy: "strict-origin-when-cross-origin",
+        method: "POST",
+        mode: "cors" //,
+        //"credentials": "include" // im getting an error when this is included
+      };
+
+      return fetch(url, requestOpts)
+        .then(
+          r => {
+            return r.json();
+          },
+          e => {
+            console.log(e);
+          }
+        )
+        .then(
+          rr => {
+            // check all this
+            // thinking ill be able to get the new itemId from r
+            return {
+              item: template,
+              id: rr.id,
+              type: template.type,
+              postProcess: false
+            };
+          },
+          e => {
+            console.log(e);
+            //Promise.reject(e);
+          }
+        );
+    }
+  );
 }
