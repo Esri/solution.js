@@ -86,6 +86,10 @@
         <label for="destPortal">Portal:&nbsp;</label>
         <input type="text" id="destPortal" style="width:256px" placeholder="https://www.arcgis.com">
       </div>
+      <div class="labeledItem">
+        <label for="clientId">Client ID&nbsp;</label>
+        <input type="text" id="clientId">
+      </div>
 
       <br/><br/>
 
@@ -180,7 +184,8 @@
           const destCreds = new auth.UserSession({
             username: document.getElementById("destUsername").value,
             password: document.getElementById("destPassword").value,
-            portal: destPortal
+            portal: destPortal,
+            clientId: document.getElementById("clientId").value
           });
 
           // Use Existing
