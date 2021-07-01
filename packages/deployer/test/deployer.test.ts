@@ -1632,6 +1632,7 @@ describe("Module `deployer`", () => {
       const geometryServer: string =
         portalsSelfResponse.helperServices.geometry.url;
 
+      const consoleSpy = spyOn(console, "log");
       fetchMock
         .get(
           testUtils.PORTAL_SUBSET.restUrl +
@@ -1767,6 +1768,18 @@ describe("Module `deployer`", () => {
         .post(
           "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/items/map1234567890/unprotect",
           { success: true }
+        )
+        .post(
+          "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/items/svc1234567890/unprotect",
+          { success: true }
+        )
+        .post(
+          "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/items//delete",
+          { success: true }
+        )
+        .get(
+          "https://myorg.maps.arcgis.com/sharing/rest/search?f=json&q=owner%3Acasey%20AND%20orgid%3Aorg1234567890%20AND%20ownerfolder%3Aa4468da125a64526b359b70d8ba4a9dd&token=fake-token",
+          {}
         );
       spyOn(console, "error").and.callFake(() => {});
 

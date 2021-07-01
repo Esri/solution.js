@@ -60,6 +60,7 @@ describe("Module `deploySolutionItems`", () => {
           [template],
           MOCK_USER_SESSION,
           {},
+          "",
           MOCK_USER_SESSION,
           {
             enableItemReuse: false,
@@ -172,6 +173,7 @@ describe("Module `deploySolutionItems`", () => {
           [itemTemplate],
           MOCK_USER_SESSION,
           templateDictionary,
+          "",
           MOCK_USER_SESSION,
           {
             enableItemReuse: true,
@@ -263,6 +265,7 @@ describe("Module `deploySolutionItems`", () => {
           [itemTemplate],
           MOCK_USER_SESSION,
           templateDictionary,
+          "",
           MOCK_USER_SESSION,
           {
             enableItemReuse: true,
@@ -359,6 +362,7 @@ describe("Module `deploySolutionItems`", () => {
           [itemTemplate],
           MOCK_USER_SESSION,
           templateDictionary,
+          "",
           MOCK_USER_SESSION,
           {
             enableItemReuse: true,
@@ -462,6 +466,7 @@ describe("Module `deploySolutionItems`", () => {
           [itemTemplate],
           MOCK_USER_SESSION,
           templateDictionary,
+          "",
           MOCK_USER_SESSION,
           {
             enableItemReuse: true,
@@ -579,6 +584,7 @@ describe("Module `deploySolutionItems`", () => {
           [itemTemplate],
           MOCK_USER_SESSION,
           templateDictionary,
+          "",
           MOCK_USER_SESSION,
           {
             enableItemReuse: true,
@@ -637,6 +643,7 @@ describe("Module `deploySolutionItems`", () => {
           [itemTemplate],
           MOCK_USER_SESSION,
           templateDictionary,
+          "",
           MOCK_USER_SESSION,
           {
             enableItemReuse: true,
@@ -707,6 +714,7 @@ describe("Module `deploySolutionItems`", () => {
           [itemTemplate],
           MOCK_USER_SESSION,
           templateDictionary,
+          "",
           MOCK_USER_SESSION,
           {
             enableItemReuse: true,
@@ -783,6 +791,7 @@ describe("Module `deploySolutionItems`", () => {
           [itemTemplate],
           MOCK_USER_SESSION,
           templateDictionary,
+          "",
           MOCK_USER_SESSION,
           {
             enableItemReuse: true,
@@ -858,6 +867,22 @@ describe("Module `deploySolutionItems`", () => {
           utils.getFailureResponse({
             groupId: "aa4a6047326243b290f625e80ebe6531"
           })
+        )
+        .post(
+          "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/items//unprotect",
+          { success: true }
+        )
+        .post(
+          "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/items//delete",
+          { success: true }
+        )
+        .get(
+          "https://myorg.maps.arcgis.com/sharing/rest/community/self?f=json&token=fake-token",
+          utils.getPortalsSelfResponse()
+        )
+        .get(
+          "https://myorg.maps.arcgis.com/sharing/rest/search?f=json&q=owner%3Acasey%20AND%20orgid%3A%20AND%20ownerfolder%3A&token=fake-token",
+          {}
         );
       spyOn(console, "error").and.callFake(() => {});
 
@@ -885,6 +910,7 @@ describe("Module `deploySolutionItems`", () => {
           [itemTemplate],
           MOCK_USER_SESSION,
           templateDictionary,
+          "",
           MOCK_USER_SESSION,
           {
             jobId: "abc",
@@ -1032,7 +1058,23 @@ describe("Module `deploySolutionItems`", () => {
             ]
           }
         )
-        .post(url2, mockItems.get500Failure());
+        .post(url2, mockItems.get500Failure())
+        .post(
+          "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/items//unprotect",
+          { success: true }
+        )
+        .post(
+          "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/items//delete",
+          { success: true }
+        )
+        .get(
+          "https://myorg.maps.arcgis.com/sharing/rest/community/self?f=json&token=fake-token",
+          utils.getPortalsSelfResponse()
+        )
+        .get(
+          "https://myorg.maps.arcgis.com/sharing/rest/search?f=json&q=owner%3Acasey%20AND%20orgid%3A%20AND%20ownerfolder%3A&token=fake-token",
+          {}
+        );
 
       spyOn(console, "error").and.callFake(() => {});
       deploySolution
@@ -1042,6 +1084,7 @@ describe("Module `deploySolutionItems`", () => {
           [itemTemplate],
           MOCK_USER_SESSION,
           templateDictionary,
+          "",
           MOCK_USER_SESSION,
           {
             enableItemReuse: true,
@@ -1051,7 +1094,7 @@ describe("Module `deploySolutionItems`", () => {
         .then(() => done.fail(), done);
     });
 
-    it("handle failure to use exiting items", done => {
+    it("handle failure to use existing items", done => {
       const _templates: common.IItemTemplate[] = [];
 
       const sourceId: string = "aa4a6047326243b290f625e80ebe6531";
@@ -1089,7 +1132,24 @@ describe("Module `deploySolutionItems`", () => {
       spyOn(common, "getLayerSettings").and.callFake(() => {});
       spyOn(console, "error").and.callFake(() => {});
 
-      fetchMock.post(newFsUrl, mockItems.get400Failure());
+      fetchMock
+        .post(newFsUrl, mockItems.get400Failure())
+        .post(
+          "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/items//unprotect",
+          { success: true }
+        )
+        .post(
+          "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/items//delete",
+          { success: true }
+        )
+        .get(
+          "https://myorg.maps.arcgis.com/sharing/rest/search?f=json&q=owner%3Acasey%20AND%20orgid%3A%20AND%20ownerfolder%3A&token=fake-token",
+          {}
+        )
+        .get(
+          "https://myorg.maps.arcgis.com/sharing/rest/community/self?f=json&token=fake-token",
+          {}
+        );
 
       deploySolution
         .deploySolutionItems(
@@ -1098,6 +1158,7 @@ describe("Module `deploySolutionItems`", () => {
           _templates,
           MOCK_USER_SESSION,
           templateDictionary,
+          "",
           MOCK_USER_SESSION,
           {
             enableItemReuse: false,
