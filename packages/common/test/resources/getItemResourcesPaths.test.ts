@@ -20,8 +20,7 @@ import * as utils from "../mocks/utils";
 import * as mockItems from "../mocks/agolItems";
 import * as fetchMock from "fetch-mock";
 import * as restHelpersModule from "../../src/restHelpersGet";
-import * as resourceHelpersModule from "../../src/resourceHelpers";
-import { storeItemResources } from "../../src/resources/store-item-resources";
+import { getItemResourcesPaths } from "../../src/resources/getItemResourcesPaths";
 import * as staticRelatedItemsMocks from "../mocks/staticRelatedItemsMocks";
 
 let MOCK_USER_SESSION: interfaces.UserSession;
@@ -30,9 +29,9 @@ beforeEach(() => {
   MOCK_USER_SESSION = utils.createRuntimeMockUserSession();
 });
 
-describe("storeItemResources :: ", () => {
+describe("getItemResourcesPaths :: ", () => {
   describe("using spies :: ", () => {
-    it("stores resources", () => {
+    it("gets paths to resources", () => {
       const getResSpy = spyOn(
         restHelpersModule,
         "getItemResources"
@@ -57,34 +56,45 @@ describe("storeItemResources :: ", () => {
         ]
       });
 
-      const copyFilesSpy = spyOn(
-        resourceHelpersModule,
-        "copyFilesToStorageItem"
-      ).and.resolveTo(["bc3/some-image.jpeg", "bc3/foo.json", ""]);
-
       const itemTemplate: interfaces.IItemTemplate = templates.getItemTemplateSkeleton();
       itemTemplate.itemId = "bc3";
       itemTemplate.type = "Web Mapping Application";
 
-      return storeItemResources(itemTemplate, "4de", MOCK_USER_SESSION).then(
+      return getItemResourcesPaths(itemTemplate, "4de", MOCK_USER_SESSION).then(
         response => {
           expect(Array.isArray(response)).toBe(true, "should return an array");
           expect(response.length).toBe(
             3, // metadata.xml is added automatically
             "filter out empty responses from copyFilesToStorageItem"
           );
-          expect(response[0]).toBe(
-            "bc3/some-image.jpeg",
+
+          expect(response).toEqual(
+            [
+              {
+                url:
+                  "https://myorg.maps.arcgis.com/sharing/rest/content/items/bc3/resources/some-image.jpeg",
+                folder: "bc3",
+                filename: "some-image.jpeg"
+              },
+              {
+                url:
+                  "https://myorg.maps.arcgis.com/sharing/rest/content/items/bc3/resources/foo.json",
+                folder: "bc3",
+                filename: "foo.json"
+              },
+              {
+                url:
+                  "https://myorg.maps.arcgis.com/sharing/rest/content/items/bc3/info/metadata/metadata.xml",
+                folder: "bc3_info_metadata",
+                filename: "metadata.xml"
+              }
+            ],
             "should return full path of the file in the storage item"
           );
           expect(getResSpy.calls.count()).toBe(1, "should get resources");
           expect(getResSpy.calls.argsFor(0)[0]).toBe(
             "bc3",
             "should get resources for template item"
-          );
-          expect(copyFilesSpy.calls.count()).toBe(
-            1,
-            "should copy files to solution"
           );
         }
       );
@@ -131,34 +141,39 @@ describe("storeItemResources :: ", () => {
         ]
       });
 
-      const copyFilesSpy = spyOn(
-        resourceHelpersModule,
-        "copyFilesToStorageItem"
-      ).and.resolveTo(["bc3/some-image.jpeg", ""]);
-
       const itemTemplate: interfaces.IItemTemplate = templates.getItemTemplateSkeleton();
       itemTemplate.itemId = "bc3";
       itemTemplate.type = "StoryMap";
 
-      return storeItemResources(itemTemplate, "4de", MOCK_USER_SESSION).then(
+      return getItemResourcesPaths(itemTemplate, "4de", MOCK_USER_SESSION).then(
         response => {
           expect(Array.isArray(response)).toBe(true, "should return an array");
           expect(response.length).toBe(
             2, // metadata.xml is added automatically
             "filter out unwanted storymap files"
           );
-          expect(response[0]).toBe(
-            "bc3/some-image.jpeg",
+
+          expect(response).toEqual(
+            [
+              {
+                url:
+                  "https://myorg.maps.arcgis.com/sharing/rest/content/items/bc3/resources/some-image.jpeg",
+                folder: "bc3",
+                filename: "some-image.jpeg"
+              },
+              {
+                url:
+                  "https://myorg.maps.arcgis.com/sharing/rest/content/items/bc3/info/metadata/metadata.xml",
+                folder: "bc3_info_metadata",
+                filename: "metadata.xml"
+              }
+            ],
             "should return full path of the file in the storage item"
           );
           expect(getResSpy.calls.count()).toBe(1, "should get resources");
           expect(getResSpy.calls.argsFor(0)[0]).toBe(
             "bc3",
             "should get resources for template item"
-          );
-          expect(copyFilesSpy.calls.count()).toBe(
-            1,
-            "should copy files to solution"
           );
         }
       );
@@ -194,58 +209,60 @@ describe("storeItemResources :: ", () => {
             created: 1591306006000,
             size: 37348,
             access: "inherit"
-          },
-          {
-            resource: "images/draft_1231323.json",
-            created: 1591306006000,
-            size: 37348,
-            access: "inherit"
           }
         ]
       });
-
-      const copyFilesSpy = spyOn(
-        resourceHelpersModule,
-        "copyFilesToStorageItem"
-      ).and.resolveTo([
-        "bc3/some-image.jpeg",
-        "bc3/images/image-resources-list.json",
-        "bc3/images/draft_1231323.json",
-        "bc3_info_metadata/metadata.xml"
-      ]);
 
       const itemTemplate: interfaces.IItemTemplate = templates.getItemTemplateSkeleton();
       itemTemplate.itemId = "bc3";
       itemTemplate.type = "Web Experience";
 
-      return storeItemResources(itemTemplate, "4de", MOCK_USER_SESSION, 1).then(
-        response => {
-          expect(Array.isArray(response)).toBe(true, "should return an array");
-          expect(response.length).toBe(
-            4, // metadata.xml is added automatically
-            "filter out config/config.json"
-          );
-          expect(response[0]).toBe(
-            "bc3/some-image.jpeg",
-            "should return full path of the file in the storage item"
-          );
-          expect(getResSpy.calls.count()).toBe(1, "should get resources");
-          expect(getResSpy.calls.argsFor(0)[0]).toBe(
-            "bc3",
-            "should get resources for template item"
-          );
-          expect(copyFilesSpy.calls.count()).toBe(
-            1,
-            "should copy files to solution"
-          );
-          expect(copyFilesSpy.calls.argsFor(0)[1].length).toEqual(4);
-        }
-      );
+      return getItemResourcesPaths(
+        itemTemplate,
+        "4de",
+        MOCK_USER_SESSION,
+        1
+      ).then(response => {
+        expect(Array.isArray(response)).toBe(true, "should return an array");
+        expect(response.length).toBe(
+          3, // metadata.xml is added automatically
+          "filter out config/config.json"
+        );
+
+        expect(response).toEqual(
+          [
+            {
+              url:
+                "https://myorg.maps.arcgis.com/sharing/rest/content/items/bc3/resources/some-image.jpeg",
+              folder: "bc3",
+              filename: "some-image.jpeg"
+            },
+            {
+              url:
+                "https://myorg.maps.arcgis.com/sharing/rest/content/items/bc3/resources/images/image-resources-list.json",
+              folder: "bc3/images",
+              filename: "image-resources-list.json"
+            },
+            {
+              url:
+                "https://myorg.maps.arcgis.com/sharing/rest/content/items/bc3/info/metadata/metadata.xml",
+              folder: "bc3_info_metadata",
+              filename: "metadata.xml"
+            }
+          ],
+          "should return full path of the file in the storage item"
+        );
+        expect(getResSpy.calls.count()).toBe(1, "should get resources");
+        expect(getResSpy.calls.argsFor(0)[0]).toBe(
+          "bc3",
+          "should get resources for template item"
+        );
+      });
     });
   });
 
-  describe("storeItemResources, template version 0", () => {
-    it("can update item resources for quick capture project", done => {
+  describe("getItemResourcesPaths, template version 0", () => {
+    it("can get item resources paths for quick capture project", done => {
       const itemTemplate: interfaces.IItemTemplate = templates.getItemTemplateSkeleton();
       itemTemplate.item = mockItems.getAGOLItem("QuickCapture Project", null);
       itemTemplate.itemId = itemTemplate.item.id;
@@ -295,22 +312,36 @@ describe("storeItemResources :: ", () => {
           utils.getSuccessResponse()
         );
 
-      const expected: string[] = [
-        "qck1234567890_info_thumbnail/ago_downloaded.png",
-        "qck1234567890/qc.project.json"
-      ];
-
-      return storeItemResources(
+      return getItemResourcesPaths(
         itemTemplate,
         solutionItemId,
         MOCK_USER_SESSION
       ).then(actual => {
-        expect(actual).toEqual(expected);
+        expect(actual).toEqual([
+          {
+            url:
+              "https://myorg.maps.arcgis.com/sharing/rest/content/items/qck1234567890/resources/qc.project.json",
+            folder: "qck1234567890",
+            filename: "qc.project.json"
+          },
+          {
+            url:
+              "https://myorg.maps.arcgis.com/sharing/rest/content/items/qck1234567890/info/metadata/metadata.xml",
+            folder: "qck1234567890_info_metadata",
+            filename: "metadata.xml"
+          },
+          {
+            url:
+              "https://myorg.maps.arcgis.com/sharing/rest/content/items/qck1234567890/info/thumbnail/ago_downloaded.png?w=400",
+            folder: "qck1234567890_info_thumbnail",
+            filename: "ago_downloaded.png"
+          }
+        ]);
         done();
       }, done.fail);
     });
 
-    it("can update item resources for web map", done => {
+    it("can get item resources paths for web map", done => {
       const itemTemplate: interfaces.IItemTemplate = templates.getItemTemplateSkeleton();
       itemTemplate.item = mockItems.getAGOLItem("Web Map", null);
       itemTemplate.itemId = itemTemplate.item.id;
@@ -390,22 +421,36 @@ describe("storeItemResources :: ", () => {
         relatedItems: []
       });
 
-      const expected: string[] = [
-        "map1234567890_image/banner.png",
-        "map1234567890_info_thumbnail/banner.png"
-      ];
-
-      return storeItemResources(
+      return getItemResourcesPaths(
         itemTemplate,
         solutionItemId,
         MOCK_USER_SESSION
       ).then(actual => {
-        expect(actual).toEqual(expected);
+        expect(actual).toEqual([
+          {
+            url:
+              "https://myorg.maps.arcgis.com/sharing/rest/content/items/map1234567890/resources/image/banner.png",
+            folder: "map1234567890_image",
+            filename: "banner.png"
+          },
+          {
+            url:
+              "https://myorg.maps.arcgis.com/sharing/rest/content/items/map1234567890/info/metadata/metadata.xml",
+            folder: "map1234567890_info_metadata",
+            filename: "metadata.xml"
+          },
+          {
+            url:
+              "https://myorg.maps.arcgis.com/sharing/rest/content/items/map1234567890/info/thumbnail/banner.png?w=400",
+            folder: "map1234567890_info_thumbnail",
+            filename: "banner.png"
+          }
+        ]);
         done();
       }, done.fail);
     });
 
-    it("can store item resources for a form", done => {
+    it("can get item resources paths for a form", done => {
       const itemTemplate: interfaces.IItemTemplate = templates.getItemTemplate(
         "Form"
       );
@@ -470,106 +515,32 @@ describe("storeItemResources :: ", () => {
         relatedItems: []
       });
 
-      const expected: string[] = ["frm1234567890_info_thumbnail/banner.png"];
-
-      return storeItemResources(
+      return getItemResourcesPaths(
         itemTemplate,
         solutionItemId,
         MOCK_USER_SESSION
       ).then(actual => {
-        expect(actual).toEqual(expected);
+        expect(actual).toEqual([
+          {
+            url:
+              "https://myorg.maps.arcgis.com/sharing/rest/content/items/frm1234567890/info/metadata/metadata.xml",
+            folder: "frm1234567890_info_metadata",
+            filename: "metadata.xml"
+          },
+          {
+            url:
+              "https://myorg.maps.arcgis.com/sharing/rest/content/items/frm1234567890/info/thumbnail/banner.png?w=400",
+            folder: "frm1234567890_info_thumbnail",
+            filename: "banner.png"
+          }
+        ]);
         done();
       }, done.fail);
     });
-
-    it("can handle error on add resources", done => {
-      const itemTemplate: interfaces.IItemTemplate = templates.getItemTemplateSkeleton();
-      itemTemplate.item = mockItems.getAGOLItem("Web Map", null);
-      itemTemplate.itemId = itemTemplate.item.id;
-      itemTemplate.item.thumbnail = null;
-      const solutionItemId = "ee67658b2a98450cba051fd001463df0";
-
-      const expectedFetch = utils.getSampleImageAsBlob();
-
-      const resources: any = {
-        total: 1,
-        start: 1,
-        num: 1,
-        nextStart: -1,
-        resources: [
-          {
-            resource: "image/banner.png",
-            created: 1522711362000,
-            size: 56945
-          }
-        ]
-      };
-
-      fetchMock
-        .post(
-          utils.PORTAL_SUBSET.restUrl +
-            "/content/items/" +
-            itemTemplate.itemId +
-            "/resources",
-          resources
-        )
-        .post(
-          utils.PORTAL_SUBSET.restUrl +
-            "/content/items/" +
-            itemTemplate.itemId +
-            "/resources/image/banner.png",
-          expectedFetch,
-          { sendAsJson: false }
-        )
-        .post(
-          utils.PORTAL_SUBSET.restUrl +
-            "/content/users/" +
-            MOCK_USER_SESSION.username +
-            "/items/" +
-            solutionItemId +
-            "/addResources",
-          mockItems.get500Failure()
-        )
-        .post(
-          utils.PORTAL_SUBSET.restUrl +
-            "/content/items/" +
-            itemTemplate.itemId +
-            "/info/thumbnail/banner.png?w=400",
-          expectedFetch,
-          { sendAsJson: false }
-        )
-        .post(
-          utils.PORTAL_SUBSET.restUrl +
-            "/content/items/" +
-            itemTemplate.itemId +
-            "/data",
-          mockItems.get500Failure()
-        )
-        .post(
-          utils.PORTAL_SUBSET.restUrl +
-            "/content/items/" +
-            itemTemplate.itemId +
-            "/info/metadata/metadata.xml",
-          mockItems.get400Failure()
-        );
-
-      return storeItemResources(itemTemplate, solutionItemId, MOCK_USER_SESSION)
-        .then(actual => {
-          expect(actual).toEqual([]);
-          // expect(fetchMock.done()).toBe(
-          //   true,
-          //   "should use all the fetch mocks"
-          // );
-          done();
-        })
-        .catch(ex => {
-          done.fail(ex);
-        });
-    });
   });
 
-  describe("storeItemResources, template version 1", () => {
-    it("can update item resources for quick capture project", done => {
+  describe("getItemResourcesPaths, template version 1", () => {
+    it("can get item resources paths for quick capture project", done => {
       const itemTemplate: interfaces.IItemTemplate = templates.getItemTemplateSkeleton();
       itemTemplate.item = mockItems.getAGOLItem("QuickCapture Project", null);
       itemTemplate.itemId = itemTemplate.item.id;
@@ -619,27 +590,37 @@ describe("storeItemResources :: ", () => {
           utils.getSuccessResponse()
         );
 
-      const expected: string[] = [
-        "qck1234567890_info_thumbnail/ago_downloaded.png",
-        "qck1234567890/qc.project.json"
-      ];
-
-      return storeItemResources(
+      return getItemResourcesPaths(
         itemTemplate,
         solutionItemId,
         MOCK_USER_SESSION,
         1
       ).then(actual => {
-        // Sort before comparing because Chrome and Firefox tests sometimes have different results on Linux test machine
-        actual.sort();
-        expected.sort();
-
-        expect(actual).toEqual(expected);
+        expect(actual).toEqual([
+          {
+            url:
+              "https://myorg.maps.arcgis.com/sharing/rest/content/items/qck1234567890/resources/qc.project.json",
+            folder: "qck1234567890",
+            filename: "qc.project.json"
+          },
+          {
+            url:
+              "https://myorg.maps.arcgis.com/sharing/rest/content/items/qck1234567890/info/metadata/metadata.xml",
+            folder: "qck1234567890_info_metadata",
+            filename: "metadata.xml"
+          },
+          {
+            url:
+              "https://myorg.maps.arcgis.com/sharing/rest/content/items/qck1234567890/info/thumbnail/ago_downloaded.png?w=400",
+            folder: "qck1234567890_info_thumbnail",
+            filename: "ago_downloaded.png"
+          }
+        ]);
         done();
       }, done.fail);
     });
 
-    it("can update item resources for web map", done => {
+    it("can get item resources paths for web map", done => {
       const itemTemplate: interfaces.IItemTemplate = templates.getItemTemplateSkeleton();
       itemTemplate.item = mockItems.getAGOLItem("Web Map", null);
       itemTemplate.itemId = itemTemplate.item.id;
@@ -719,23 +700,37 @@ describe("storeItemResources :: ", () => {
         relatedItems: []
       });
 
-      const expected: string[] = [
-        "map1234567890/image/banner.png",
-        "map1234567890_info_thumbnail/banner.png"
-      ];
-
-      return storeItemResources(
+      return getItemResourcesPaths(
         itemTemplate,
         solutionItemId,
         MOCK_USER_SESSION,
         1
       ).then(actual => {
-        expect(actual).toEqual(expected);
+        expect(actual).toEqual([
+          {
+            url:
+              "https://myorg.maps.arcgis.com/sharing/rest/content/items/map1234567890/resources/image/banner.png",
+            folder: "map1234567890/image",
+            filename: "banner.png"
+          },
+          {
+            url:
+              "https://myorg.maps.arcgis.com/sharing/rest/content/items/map1234567890/info/metadata/metadata.xml",
+            folder: "map1234567890_info_metadata",
+            filename: "metadata.xml"
+          },
+          {
+            url:
+              "https://myorg.maps.arcgis.com/sharing/rest/content/items/map1234567890/info/thumbnail/banner.png?w=400",
+            folder: "map1234567890_info_thumbnail",
+            filename: "banner.png"
+          }
+        ]);
         done();
       }, done.fail);
     });
 
-    it("can store item resources for a form", done => {
+    it("can get item resources paths for a form", done => {
       const itemTemplate: interfaces.IItemTemplate = templates.getItemTemplate(
         "Form"
       );
@@ -800,107 +795,28 @@ describe("storeItemResources :: ", () => {
         relatedItems: []
       });
 
-      const expected: string[] = ["frm1234567890_info_thumbnail/banner.png"];
-
-      return storeItemResources(
+      return getItemResourcesPaths(
         itemTemplate,
         solutionItemId,
         MOCK_USER_SESSION,
         1
       ).then(actual => {
-        expect(actual).toEqual(expected);
+        expect(actual).toEqual([
+          {
+            url:
+              "https://myorg.maps.arcgis.com/sharing/rest/content/items/frm1234567890/info/metadata/metadata.xml",
+            folder: "frm1234567890_info_metadata",
+            filename: "metadata.xml"
+          },
+          {
+            url:
+              "https://myorg.maps.arcgis.com/sharing/rest/content/items/frm1234567890/info/thumbnail/banner.png?w=400",
+            folder: "frm1234567890_info_thumbnail",
+            filename: "banner.png"
+          }
+        ]);
         done();
       }, done.fail);
-    });
-
-    it("can handle error on add resources", done => {
-      const itemTemplate: interfaces.IItemTemplate = templates.getItemTemplateSkeleton();
-      itemTemplate.item = mockItems.getAGOLItem("Web Map", null);
-      itemTemplate.itemId = itemTemplate.item.id;
-      itemTemplate.item.thumbnail = null;
-      const solutionItemId = "ee67658b2a98450cba051fd001463df0";
-
-      const expectedFetch = utils.getSampleImageAsBlob();
-
-      const resources: any = {
-        total: 1,
-        start: 1,
-        num: 1,
-        nextStart: -1,
-        resources: [
-          {
-            resource: "image/banner.png",
-            created: 1522711362000,
-            size: 56945
-          }
-        ]
-      };
-
-      fetchMock
-        .post(
-          utils.PORTAL_SUBSET.restUrl +
-            "/content/items/" +
-            itemTemplate.itemId +
-            "/resources",
-          resources
-        )
-        .post(
-          utils.PORTAL_SUBSET.restUrl +
-            "/content/items/" +
-            itemTemplate.itemId +
-            "/resources/image/banner.png",
-          expectedFetch,
-          { sendAsJson: false }
-        )
-        .post(
-          utils.PORTAL_SUBSET.restUrl +
-            "/content/users/" +
-            MOCK_USER_SESSION.username +
-            "/items/" +
-            solutionItemId +
-            "/addResources",
-          mockItems.get500Failure()
-        )
-        .post(
-          utils.PORTAL_SUBSET.restUrl +
-            "/content/items/" +
-            itemTemplate.itemId +
-            "/info/thumbnail/banner.png?w=400",
-          expectedFetch,
-          { sendAsJson: false }
-        )
-        .post(
-          utils.PORTAL_SUBSET.restUrl +
-            "/content/items/" +
-            itemTemplate.itemId +
-            "/data",
-          mockItems.get500Failure()
-        )
-        .post(
-          utils.PORTAL_SUBSET.restUrl +
-            "/content/items/" +
-            itemTemplate.itemId +
-            "/info/metadata/metadata.xml",
-          mockItems.get400Failure()
-        );
-
-      return storeItemResources(
-        itemTemplate,
-        solutionItemId,
-        MOCK_USER_SESSION,
-        1
-      )
-        .then(actual => {
-          expect(actual).toEqual([]);
-          // expect(fetchMock.done()).toBe(
-          //   true,
-          //   "should use all the fetch mocks"
-          // );
-          done();
-        })
-        .catch(ex => {
-          done.fail(ex);
-        });
     });
   });
 });

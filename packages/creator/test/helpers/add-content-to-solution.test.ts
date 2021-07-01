@@ -53,7 +53,8 @@ describe("addContentToSolution", () => {
         solutionItemId: string,
         itemId: string,
         templateDictionary: any,
-        authentication: common.UserSession,
+        srcAuthentication: common.UserSession,
+        destAuthentication: common.UserSession,
         existingTemplates: common.IItemTemplate[],
         itemProgressCallback: common.IItemProgressCallback
       ) => {
@@ -68,12 +69,15 @@ describe("addContentToSolution", () => {
       }
     );
 
-    return addContentToSolution(solutionId, options, MOCK_USER_SESSION).then(
-      () => {
-        expect(options.itemIds).toEqual(["map1234567890", "wma1234567890"]);
-        done();
-      }
-    );
+    return addContentToSolution(
+      solutionId,
+      options,
+      MOCK_USER_SESSION,
+      MOCK_USER_SESSION
+    ).then(() => {
+      expect(options.itemIds).toEqual(["map1234567890", "wma1234567890"]);
+      done();
+    });
   });
 
   it("addContentToSolution item progress callback with ignored item", done => {
@@ -88,7 +92,8 @@ describe("addContentToSolution", () => {
         solutionItemId: string,
         itemId: string,
         templateDictionary: any,
-        authentication: common.UserSession,
+        srcAuthentication: common.UserSession,
+        destAuthentication: common.UserSession,
         existingTemplates: common.IItemTemplate[],
         itemProgressCallback: common.IItemProgressCallback
       ) => {
@@ -108,6 +113,7 @@ describe("addContentToSolution", () => {
     return addContentToSolution(
       solutionId,
       options,
+      MOCK_USER_SESSION,
       MOCK_USER_SESSION
     ).then(() => done());
   });
@@ -139,7 +145,12 @@ describe("addContentToSolution", () => {
 
     spyOn(console, "error").and.callFake(() => {});
 
-    return addContentToSolution(solutionId, options, MOCK_USER_SESSION).then(
+    return addContentToSolution(
+      solutionId,
+      options,
+      MOCK_USER_SESSION,
+      MOCK_USER_SESSION
+    ).then(
       () => done.fail(),
       e => {
         expect(e.success).toBeFalse();
