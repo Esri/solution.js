@@ -35,6 +35,7 @@ const UNSUPPORTED: common.moduleHandler = null;
  * @param templates A collection of AGO item templates
  * @param storageAuthentication Credentials for the organization with the source items
  * @param templateDictionary Hash of facts: org URL, adlib replacements
+ * @param deployedSolutionId Id of deployed Solution item
  * @param destinationAuthentication Credentials for the destination organization
  * @param options Options to tune deployment
  * @return A promise that will resolve with the list of information about the created items
@@ -45,6 +46,7 @@ export function deploySolutionItems(
   templates: common.IItemTemplate[],
   storageAuthentication: common.UserSession,
   templateDictionary: any,
+  deployedSolutionId: string,
   destinationAuthentication: common.UserSession,
   options: common.IDeploySolutionOptions
 ): Promise<common.ICreateItemFromTemplateResponse[]> {
@@ -187,14 +189,21 @@ export function deploySolutionItems(
                 resolve(clonedSolutionItems);
               } else {
                 // Delete created items
-                // eslint-disable-next-line @typescript-eslint/no-floating-promises
+                const progressOptions: common.IDeleteSolutionOptions = {
+                  consoleProgress: true
+                };
                 common
-                  .removeListOfItemsOrGroups(
+                  .deleteSolutionByComponents(
+                    deployedSolutionId,
                     deployedItemIds,
-                    destinationAuthentication
+                    templates,
+                    templateDictionary,
+                    destinationAuthentication,
+                    progressOptions
                   )
-                  .then(() =>
-                    reject(common.failWithIds(failedTemplateItemIds))
+                  .then(
+                    () => reject(common.failWithIds(failedTemplateItemIds)),
+                    () => reject(common.failWithIds(failedTemplateItemIds))
                   );
               }
             }
