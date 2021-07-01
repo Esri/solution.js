@@ -192,6 +192,7 @@ export function deploySolutionItems(
                 const progressOptions: common.IDeleteSolutionOptions = {
                   consoleProgress: true
                 };
+                // eslint-disable-next-line @typescript-eslint/no-floating-promises
                 common
                   .deleteSolutionByComponents(
                     deployedSolutionId,
@@ -201,9 +202,8 @@ export function deploySolutionItems(
                     destinationAuthentication,
                     progressOptions
                   )
-                  .then(
-                    () => reject(common.failWithIds(failedTemplateItemIds)),
-                    () => reject(common.failWithIds(failedTemplateItemIds))
+                  .then(() =>
+                    reject(common.failWithIds(failedTemplateItemIds))
                   );
               }
             }
