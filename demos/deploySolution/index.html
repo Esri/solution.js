@@ -41,6 +41,9 @@
     display: inline-block;
     margin: 0 8px 8px 0;
   }
+  .display-none {
+    display: none;
+  }
   </style>
 </head>
 <body>
@@ -75,16 +78,37 @@
       <div class="section-title">Credentials in destination organization</div>
 
       <div class="labeledItem">
-        <label for="destUsername">Username:&nbsp;</label>
-        <input type="text" id="destUsername">
+        <label for="destAuthType">Use OAuth:&nbsp;</label>
+        <input type="checkbox" id="destAuthType" value="OAuth" onclick="updateDestAuth(this)"> 
       </div>
-      <div class="labeledItem">
-        <label for="destPassword">Password:&nbsp;</label>
-        <input type="password" id="destPassword">
+
+      <div id="destCredentials">
+        <div class="labeledItem">
+          <label for="destUsername">Username:&nbsp;</label>
+          <input type="text" id="destUsername">
+        </div>
+        <div class="labeledItem">
+          <label for="destPassword">Password:&nbsp;</label>
+          <input type="password" id="destPassword">
+        </div>
+        <div class="labeledItem">
+          <label for="destPortal">Portal:&nbsp;</label>
+          <input type="text" id="destPortal" style="width:256px" placeholder="https://www.arcgis.com">
+        </div>
       </div>
-      <div class="labeledItem">
-        <label for="destPortal">Portal:&nbsp;</label>
-        <input type="text" id="destPortal" style="width:256px" placeholder="https://www.arcgis.com">
+
+      <div id="clientIdParent" class="labeledItem display-none">
+        <label for="clientId">Client ID&nbsp;</label>
+        <input type="text" id="clientId">
+        <div class="labeledItem">
+          <span class="labeledItem">To obtain client ID:</span>
+          <ol>
+            <li>cd to the demos directory</li>
+            <li>run "npm start"</li>
+            <li>Create an application on the <a target="_blank" href="https://developers.arcgis.com/documentation/mapping-apis-and-services/security/arcgis-identity/serverless-web-apps/">ArcGIS for Developers</a> website.</li>
+            <li>Add one of the urls listed from "npm start" as a redirect uri for your application.</li>
+          </ol>
+        </div>
       </div>
 
       <br/><br/>
@@ -108,6 +132,20 @@
   <script crossorigin="anonymous" src="https://polyfill.io/v3/polyfill.min.js?features=fetch%2Ces2015"></script>
   <script src="https://requirejs.org/docs/release/2.3.6/minified/require.js"></script>
   <script src="data/appConfig.js"></script>
+  <script>
+    function updateDestAuth(a) {
+      var destCredentials = document.getElementById("destCredentials");
+      var clientIdParent = document.getElementById("clientIdParent");
+
+      if (a.checked) {
+        clientIdParent.classList.remove("display-none");
+        destCredentials.classList.add("display-none");
+      } else {
+        clientIdParent.classList.add("display-none");
+        destCredentials.classList.remove("display-none");
+      }
+    }
+  </script>
   <script>
     var goFcn;
     require.config({
@@ -157,6 +195,33 @@
           });
         });
 
+        // Define a global session variable.
+        let session = null;
+
+        // Check to see if there is a serialized session in local storage.
+        const serializedSession = localStorage.getItem('__SOLUTION_JS_USER_SESSION__');
+        if (serializedSession !== null && serializedSession !== "undefined") {
+          // If there is a serialized session, parse it and create a new session object.
+          let parsed = JSON.parse(serializedSession);
+          // Cast the tokenExpires property back into a date.
+          parsed.tokenExpires = new Date(parsed.tokenExpires);
+          // Create the new session object.
+          session = new auth.UserSession(parsed);
+
+          // Clear the previous session.
+          localStorage.removeItem('__SOLUTION_JS_USER_SESSION__');
+        }
+
+        // Function to update the UI with session info.
+        function updateSessionInfo(session) {
+          if (session) {
+            localStorage.setItem('__SOLUTION_JS_USER_SESSION__', session.serialize());
+          }
+        }
+
+        // Call the function on page load to set current state.
+        updateSessionInfo(session);
+
         function go () {
           document.getElementById("input").style.display = "none";
           document.getElementById("output").style.display = "block";
@@ -166,9 +231,10 @@
           // use the manually entered value, but fall back to the select list
           var solutionId = document.getElementById("solutionId").value || document.getElementById('id').value;
 
+          // Use Existing
+          const useExisting = document.getElementById("useExisting").checked;
+
           // Source credentials
-          //const srcUsername = document.getElementById("srcUsername").value;
-          //const srcPassword = document.getElementById("srcPassword").value;
           const srcPortal = (document.getElementById("srcPortal").value || "https://www.arcgis.com") + "/sharing/rest";
           const srcCreds = new auth.UserSession({
             username: document.getElementById("srcUsername").value,
@@ -178,40 +244,60 @@
 
           // Dest credentials
           const destPortal = (document.getElementById("destPortal").value || "https://www.arcgis.com") + "/sharing/rest";
-          const destCreds = new auth.UserSession({
-            username: document.getElementById("destUsername").value,
-            password: document.getElementById("destPassword").value,
-            portal: destPortal
-          });
-
-          // Use Existing
-          const useExisting = document.getElementById("useExisting").checked;
+          let destCreds;
+          if (!document.getElementById("destAuthType").checked) {
+            destCreds = new auth.UserSession({
+              username: document.getElementById("destUsername").value,
+              password: document.getElementById("destPassword").value,
+              portal: destPortal,
+              clientId: document.getElementById("clientId").value
+            });
+            deploySolution(destCreds);
+          } else {
+            const redirect_uri = window.location.origin + window.location.pathname;
+            alert(redirect_uri);
+            const clientId = document.getElementById("clientId").value;
+            auth.UserSession.beginOAuth2({
+              clientId: clientId,
+              redirectUri: redirect_uri + 'authenticate.html?clientID=' + clientId,
+              popup: true,
+            }).then(function (newSession) {
+              // Upon a successful login, update the session with the new session.
+              session = newSession;
+              updateSessionInfo(session);
+              deploySolution(session);
+            }).catch(function (error) {
+              console.log(error);
+            });
+          }
 
           // Deploy!
-          main.deploySolution(
-            solutionId,
-            srcCreds,
-            destCreds,
-            function (percentDone, jobId, progressEvent) {
-              if (progressEvent) {
-                createdItems.push(progressEvent.data)
+          function deploySolution(_destCreds) {
+            main.deploySolution(
+              solutionId,
+              srcCreds,
+              _destCreds,
+              function (percentDone, jobId, progressEvent) {
+                if (progressEvent) {
+                  createdItems.push(progressEvent.data)
+                }
+                var html = "Deploying..." + percentDone.toFixed().toString() + "%" + "<br><br>Finished items:<ol>";
+                createdItems.forEach(function (item) { return html += "<li>" + item + "</li>" });
+                html += "</ol>";
+                document.getElementById("output").innerHTML = html;
+              },
+              useExisting
+            ).then(function (html){
+                reportElapsedTime(startTime);
+                document.getElementById("output").innerHTML = html;
+              },
+              function (error) {
+                var message = error?.error || JSON.stringify(error) || "Unspecified error";
+                reportElapsedTime(startTime);
+                document.getElementById("output").innerHTML = "<span style=\"color:red\">" + message + "</span>";
               }
-              var html = "Deploying..." + percentDone.toFixed().toString() + "%" + "<br><br>Finished items:<ol>";
-              createdItems.forEach(function (item) { return html += "<li>" + item + "</li>" });
-              html += "</ol>";
-              document.getElementById("output").innerHTML = html;
-            },
-            useExisting
-          ).then(function (html){
-              reportElapsedTime(startTime);
-              document.getElementById("output").innerHTML = html;
-            },
-            function (error) {
-              var message = error?.error || JSON.stringify(error) || "Unspecified error";
-              reportElapsedTime(startTime);
-              document.getElementById("output").innerHTML = "<span style=\"color:red\">" + message + "</span>";
-            }
-          );
+            );
+          }
         }
 
         function reportElapsedTime (startTime) {
