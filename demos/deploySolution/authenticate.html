@@ -18,7 +18,7 @@
         session = arcgisRest.UserSession.completeOAuth2({
           clientId: clientId,
         });
-        localStorage.setItem('__ARCGIS_REST_USER_SESSION__', session.serialize());
+        localStorage.setItem('__SOLUTION_JS_USER_SESSION__', session.serialize());
       }
       processAuthentication();
     </script>
