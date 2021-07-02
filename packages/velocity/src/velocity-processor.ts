@@ -28,7 +28,7 @@ import {
   createPlaceholderTemplate,
   fail,
   getVelocityUrl,
-  rest_request
+  postVelocityData
 } from "@esri/solution-common";
 
 import { getVelocityDependencies } from "./helpers/get-velocity-dependencies";
@@ -75,34 +75,5 @@ export function createItemFromTemplate(
   destinationAuthentication: UserSession,
   itemProgressCallback: IItemProgressCallback
 ): Promise<ICreateItemFromTemplateResponse> {
-  return getVelocityUrl(
-    destinationAuthentication,
-    template.type,
-    undefined,
-    true
-  ).then(url => {
-    // create the feed with the template data
-    // This needs to be a POST
-    return rest_request(url, {
-      ...{ httpMethod: "POST" },
-      authentication: destinationAuthentication,
-      params: {
-        body: template.data
-      }
-    }).then(
-      r => {
-        console.log(JSON.stringify(r));
-        return Promise.resolve({
-          item: template, // ??
-          id: r.itemId,
-          type: template.type,
-          postProcess: false
-        });
-      },
-      e => {
-        console.log(e);
-        return Promise.reject(e);
-      }
-    );
-  });
+  return postVelocityData(destinationAuthentication, template, template.data);
 }

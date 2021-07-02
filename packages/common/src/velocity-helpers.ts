@@ -18,7 +18,7 @@ import {
   ISubscriptionInfo,
   getSubscriptionInfo
 } from "./get-subscription-info";
-import { UserSession } from "./interfaces";
+import { UserSession, IItemTemplate } from "./interfaces";
 
 export function getVelocityUrlBase(
   authentication: UserSession
@@ -52,12 +52,54 @@ export function getVelocityUrl(
         ? "analytics/realtime"
         : "analytics/bigdata";
 
-    // id is not used when we are deploying...otherwise the url is the same for each type
     return Promise.resolve(
-      //isDeploy ? `${url}/iot/${_type}/?f=json&token=${authentication.token}` :
       isDeploy
         ? `${url}/iot/${_type}`
         : `${url}/iot/${_type}/${id}/?f=json&token=${authentication.token}`
     );
   });
+}
+
+export function postVelocityData(
+  authentication: UserSession,
+  template: IItemTemplate,
+  data: any
+): Promise<any> {
+  return getVelocityUrl(authentication, template.type, undefined, true).then(
+    url => {
+      // TODO remove as this is just used for testing...will need to
+      // handle rename though..
+      data.label += Date.now().toString();
+      const requestOpts: any = {
+        body: JSON.stringify(data),
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+          Authorization: "token=" + authentication.token
+        },
+        method: "POST"
+      };
+
+      return fetch(url, requestOpts)
+        .then(
+          r => r.json(),
+          e => {
+            console.log(e);
+          }
+        )
+        .then(
+          rr => {
+            return {
+              item: template,
+              id: rr.id,
+              type: template.type,
+              postProcess: false
+            };
+          },
+          e => {
+            console.log(e);
+          }
+        );
+    }
+  );
 }
