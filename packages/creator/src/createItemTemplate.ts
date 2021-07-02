@@ -50,7 +50,7 @@ import { moduleMap, UNSUPPORTED } from "./module-map";
  * @param solutionItemId The solution to contain the item
  * @param itemId AGO id string
  * @param templateDictionary Hash of facts
- * @param authentication Authentication for requesting information from AGO about items to be included in solution item
+ * @param destAuthentication Authentication for requesting information from AGO about items to be included in solution item
  * @param existingTemplates A collection of AGO item templates that can be referenced by newly-created templates
  * @return A promise that will resolve when creation is done
  * @protected
@@ -59,7 +59,7 @@ export function createItemTemplate(
   solutionItemId: string,
   itemId: string,
   templateDictionary: any,
-  authentication: UserSession,
+  destAuthentication: UserSession,
   existingTemplates: IItemTemplate[],
   itemProgressCallback: IItemProgressCallback
 ): Promise<void> {
@@ -74,7 +74,7 @@ export function createItemTemplate(
       itemProgressCallback(itemId, EItemProgressStatus.Started, 0);
 
       // Fetch the item
-      getItemBase(itemId, authentication)
+      getItemBase(itemId, destAuthentication)
         .catch(() => {
           // If item query fails, try fetching item as a group
           // Change its placeholder from an empty type to the Group type so that we can later distinguish
@@ -84,7 +84,7 @@ export function createItemTemplate(
             itemId,
             createPlaceholderTemplate(itemId, "Group")
           );
-          return getGroupBase(itemId, authentication);
+          return getGroupBase(itemId, destAuthentication);
         })
         .then(
           itemInfo => {
@@ -164,7 +164,7 @@ export function createItemTemplate(
                 .convertItemToTemplate(
                   solutionItemId,
                   itemInfo,
-                  authentication,
+                  destAuthentication,
                   templateDictionary
                 )
                 .then(
@@ -173,7 +173,7 @@ export function createItemTemplate(
                     storeItemResources(
                       itemTemplate,
                       solutionItemId,
-                      authentication,
+                      destAuthentication,
                       SolutionTemplateFormatVersion
                     ).then(resources => {
                       // update the templates resources
@@ -210,7 +210,7 @@ export function createItemTemplate(
                                 solutionItemId,
                                 dependentId,
                                 templateDictionary,
-                                authentication,
+                                destAuthentication,
                                 existingTemplates,
                                 itemProgressCallback
                               )

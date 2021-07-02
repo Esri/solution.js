@@ -21,6 +21,13 @@
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
   <link rel="stylesheet" href="https://esri.github.io/calcite-bootstrap/styles/calcite-bootstrap.min.css">
   <style>
+  html {
+    font-family: Arial;
+    color: #4c4c4c;
+  }
+  body {
+    padding: 8px;
+  }
   button {
     cursor: pointer;
   }
@@ -30,34 +37,63 @@
   li {
     margin-bottom: 12px;
   }
+  .labeledItem {
+    display: inline-block;
+    margin: 0 8px 8px 0;
+  }
   </style>
 </head>
 <body>
-  <div class="container">
-    <div class="row">
-      <div class="col-sm-6 col-sm-offset-3">
-        <h1>Create a Solution</h1>
-        <p>Create a solution item from the contents of a group or from a single item and its dependencies.</p>
-        <div id="input" class="form-group" style="display:none">
-          <label for="itemOrGroupId">Enter an Item or Group ID:</label>
-          <input class="form-control" type="text" id="itemOrGroupId" value="a728f0cf8bdc4fb19749cc1cbad1651b">
-          <label for="id">Or pick from the list below:</label>
-          <select name="Solution Item" id="id" class="form-control">
-          </select>
-          <br />
-          <i>Credentials in destination organization:</i><br />
-          <label for="username">username:&nbsp;</label><input type="text" class="form-control" id="username" value="LocalGovDeployJohnH">
-          <label for="password">password:&nbsp;</label><input type="password" class="form-control" id="password" value="password2">
-          <label for="password">Portal:</label>
-          <input type="text" id="portal" class="form-control" value="https://www.arcgis.com">
-          <br>
-          <button class="btn btn-default" onclick="goFcn()">Create Solution</button>
-        </div>
+  <h3>Create a Solution</h3>
+  <p>Create a solution item from the contents of a group or from a single item and its dependencies.</p>
+
+  <div id="container" style="display:none">
+    <div id="input">
+      <label for="itemOrGroupId">Enter an Item or Group ID:</label>
+      <input class="form-control" type="text" id="itemOrGroupId">
+
+      <br /><br />
+
+      <div class="section-title">Credentials in source organization</div>
+
+      <div class="labeledItem">
+        <label for="srcUsername">Username:&nbsp;</label>
+        <input type="text" id="srcUsername" placeholder="anonymous">
       </div>
-      <div class="col-sm-12">
-        <div id="output" style="display:none">Creating...</div>
+      <div class="labeledItem">
+        <label for="srcPassword">Password:&nbsp;</label>
+        <input type="password" id="srcPassword">
       </div>
+      <div class="labeledItem">
+        <label for="srcPortal">Portal:&nbsp;</label>
+        <input type="text" id="srcPortal" style="width:256px" placeholder="https://www.arcgis.com">
+      </div>
+
+      <br/><br/>
+
+      <div class="section-title">Credentials in destination organization</div>
+
+      <div class="labeledItem">
+        <label for="destUsername">Username:&nbsp;</label>
+        <input type="text" id="destUsername">
+      </div>
+      <div class="labeledItem">
+        <label for="destPassword">Password:&nbsp;</label>
+        <input type="password" id="destPassword">
+      </div>
+      <div class="labeledItem">
+        <label for="destPortal">Portal:&nbsp;</label>
+        <input type="text" id="destPortal" style="width:256px" placeholder="https://www.arcgis.com">
+      </div>
+
+      <br/><br/>
+
+      <button class="btn btn-default" onclick="goFcn()">Create Solution</button>
     </div>
+
+    <br />
+
+    <div id="output" style="display:none">Creating...</div>
   </div>
 
   <script crossorigin="anonymous" src="https://polyfill.io/v3/polyfill.min.js?features=fetch%2Ces2015"></script>
@@ -71,19 +107,19 @@
         "@esri/arcgis-rest-portal": "../node_modules/@esri/arcgis-rest-portal/dist/umd/portal.umd.min",
         "@esri/arcgis-rest-request": "../node_modules/@esri/arcgis-rest-request/dist/umd/request.umd.min",
         "@esri/arcgis-rest-service-admin": "../node_modules/@esri/arcgis-rest-service-admin/dist/umd/service-admin.umd.min",
-        "@esri/hub-common": "../node_modules/@esri/hub-common/dist/umd/common.umd.min",
-        "@esri/hub-initiatives": "../node_modules/@esri/hub-initiatives/dist/umd/initiatives.umd.min",
-        "@esri/hub-sites": "../node_modules/@esri/hub-sites/dist/umd/sites.umd.min",
-        "@esri/hub-teams": "../node_modules/@esri/hub-teams/dist/umd/teams.umd.min",
+        "@esri/hub-common": "../node_modules/@esri/hub-common/dist/umd/common.umd",
+        "@esri/hub-initiatives": "../node_modules/@esri/hub-initiatives/dist/umd/initiatives.umd",
+        "@esri/hub-sites": "../node_modules/@esri/hub-sites/dist/umd/sites.umd",
+        "@esri/hub-teams": "../node_modules/@esri/hub-teams/dist/umd/teams.umd",
         "@esri/solution-common": "../node_modules/@esri/solution-common/dist/umd/common.umd",
         "@esri/solution-creator": "../node_modules/@esri/solution-creator/dist/umd/creator.umd",
         "@esri/solution-feature-layer": "../node_modules/@esri/solution-feature-layer/dist/umd/feature-layer.umd",
         "@esri/solution-file": "../node_modules/@esri/solution-file/dist/umd/file.umd",
+        "@esri/solution-form": "../node_modules/@esri/solution-form/dist/umd/form.umd",
         "@esri/solution-group": "../node_modules/@esri/solution-group/dist/umd/group.umd",
         "@esri/solution-simple-types": "../node_modules/@esri/solution-simple-types/dist/umd/simple-types.umd",
         "@esri/solution-hub-types": "../node_modules/@esri/solution-hub-types/dist/umd/hub-types.umd",
         "@esri/solution-storymap": "../node_modules/@esri/solution-storymap/dist/umd/storymap.umd",
-        "@esri/solution-form": "../node_modules/@esri/solution-form/dist/umd/form.umd",
         "@esri/solution-web-experience": "../node_modules/@esri/solution-web-experience/dist/umd/web-experience.umd",
         "@esri/solution-velocity": "../node_modules/@esri/solution-velocity/dist/umd/velocity.umd",
         "adlib": "../node_modules/adlib/dist/adlib",
@@ -94,8 +130,9 @@
     require(["@esri/arcgis-rest-auth", "../dist/create-solution-main"],
       function (auth, main) {
         "use strict";
+
         goFcn = go;
-        document.getElementById("input").style.display = "block";
+        document.getElementById("container").style.display = "block";
 
         function go () {
           document.getElementById("input").style.display = "none";
@@ -103,20 +140,33 @@
           var startTime = Date.now();
 
           // use the manually entered value, but fall back to the select list
-          var id = document.getElementById("itemOrGroupId").value || document.getElementById('id').value;
+          var id = document.getElementById("itemOrGroupId").value;
 
+          // Source credentials
+          const srcPortal = (document.getElementById("srcPortal").value || "https://www.arcgis.com") + "/sharing/rest";
+          const srcCreds = new auth.UserSession({
+            username: document.getElementById("srcUsername").value,
+            password: document.getElementById("srcPassword").value,
+            portal: srcPortal
+          });
+
+          // Dest credentials
+          const destPortal = (document.getElementById("destPortal").value || "https://www.arcgis.com") + "/sharing/rest";
+          const destCreds = new auth.UserSession({
+            username: document.getElementById("destUsername").value,
+            password: document.getElementById("destPassword").value,
+            portal: destPortal
+          });
+
+          // Deploy!
           main.createSolution(
             id,
-            new auth.UserSession({
-              username: document.getElementById("username").value,
-              password: document.getElementById("password").value,
-              portal: document.getElementById("portal").value + "/sharing/rest"
-            }),
+            srcCreds,
+            destCreds,
             percentDone => {
               document.getElementById("output").innerHTML = "Creating..." + percentDone.toFixed().toString() + "%";
             }
-          ).then(
-            html => {
+          ).then(function (html){
               reportElapsedTime(startTime);
               document.getElementById("output").innerHTML = html;
             },

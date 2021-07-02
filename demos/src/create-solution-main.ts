@@ -22,7 +22,8 @@ import * as getFormattedItemInfo from "./getFormattedItemInfo";
 
 export function createSolution(
   sourceId: string,
-  authentication: common.UserSession,
+  srcAuthentication: common.UserSession,
+  destAuthentication: common.UserSession,
   progressCallback: common.ISolutionProgressCallback
 ): Promise<string> {
   return new Promise<string>((resolve, reject) => {
@@ -35,9 +36,9 @@ export function createSolution(
     const options: common.ICreateSolutionOptions = {
       progressCallback: progressCallback
     };
-    creator.createSolution(sourceId.trim(), authentication, options).then(
+    creator.createSolution(sourceId.trim(), srcAuthentication, destAuthentication, options).then(
       createdSolutionId => {
-        getFormattedItemInfo.getFormattedItemInfo(createdSolutionId, authentication).then(
+        getFormattedItemInfo.getFormattedItemInfo(createdSolutionId, destAuthentication).then(
           itemInfoHtml => resolve(itemInfoHtml),
           error => reject(error.error)
         );

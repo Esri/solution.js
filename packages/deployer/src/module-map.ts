@@ -71,7 +71,7 @@ export const moduleMap: IItemTypeModuleMap = {
   // Map types
   "3D Web Scene": undefined,
   "Web Map": simpleTypes,
-  "Web Scene": undefined,
+  "Web Scene": simpleTypes,
 
   ////////////////////////////////////////////////////////
   // App types

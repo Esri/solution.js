@@ -28,6 +28,7 @@ export * from "./dependencies";
 export * from "./featureServiceHelpers";
 export * from "./generalHelpers";
 export * from "./getDeletableSolutionInfo";
+export * from "./getItemTypeAbbrev";
 export * from "./getSolutionSummary";
 export * from "./get-subscription-info";
 export * from "./interfaces";

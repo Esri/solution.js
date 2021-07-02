@@ -24,6 +24,14 @@ import * as webmap from "../webmap";
 import * as webmappingapplication from "../webmappingapplication";
 import * as workforce from "../workforce";
 
+/**
+ * Converts an item into a template.
+ *
+ * @param solutionItemId The solution to contain the template
+ * @param itemInfo Info about the item
+ * @param authentication Credentials for working with AGO
+ * @return A promise that will resolve when the template has been created
+ */
 export function convertItemToTemplate(
   solutionItemId: string,
   itemInfo: any,
@@ -64,6 +72,7 @@ export function convertItemToTemplate(
       case "Workforce Project":
       case "Web Map":
       case "Web Mapping Application":
+      case "Web Scene":
       case "Notebook":
         dataPromise = new Promise(resolveJSON => {
           // eslint-disable-next-line @typescript-eslint/no-floating-promises
@@ -168,6 +177,7 @@ export function convertItemToTemplate(
           );
           break;
         case "Web Map":
+        case "Web Scene":
           templateModifyingPromise = webmap.convertItemToTemplate(
             itemTemplate,
             authentication

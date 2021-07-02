@@ -17,6 +17,7 @@
 // This file contains examples of items of the type one would expect to get from the AGOL REST API.
 
 import * as generalHelpers from "../../src/generalHelpers";
+import * as getItemTypeAbbrev from "../../src/getItemTypeAbbrev";
 import * as interfaces from "../../src/interfaces";
 import * as utils from "./utils";
 
@@ -1100,7 +1101,9 @@ export function getAGOLUser(username: string): interfaces.IUser {
 export function getAGOLItemWithId(type: string, idOffset: number): any {
   const item = getAGOLItem(type);
   item.id = item.item =
-    getItemTypeAbbrev(type) + 1234567890 + idOffset.toString(16).toLowerCase();
+    getItemTypeAbbrev.getItemTypeAbbrev(type) +
+    1234567890 +
+    idOffset.toString(16).toLowerCase();
   return item;
 }
 
@@ -1464,184 +1467,8 @@ export function createAGOLRelationship(
   return relationship;
 }
 
-export interface IItemTypeAbbrev {
-  [id: string]: string;
-}
-
-export function getItemTypeAbbrev(type: string): string {
-  // Supported item types
-  return (
-    ({
-      ////////////////////////////////////////////////////////
-      // Group type
-      Group: "grp",
-
-      ////////////////////////////////////////////////////////
-      // Layer types
-      "Big Data Analytic": "xxx",
-      "Feature Collection": "col",
-      "Feature Service": "svc",
-      Feed: "xxx",
-      "Geocoding Service": "xxx",
-      "Geodata Service": "xxx",
-      "Geometry Service": "xxx",
-      "Geoprocessing Service": "xxx",
-      "Globe Service": "xxx",
-      "Image Service": "xxx",
-      KML: "xxx",
-      "Map Service": "xxx",
-      "Network Analysis Service": "xxx",
-      "Real Time Analytic": "xxx",
-      "Relational Database Connection": "xxx",
-      "Scene Service": "xxx",
-      "Stream Service": "xxx",
-      Tool: "xxx",
-      "Vector Tile Service": "xxx",
-      WFS: "xxx",
-      WMS: "xxx",
-      WMTS: "xxx",
-      "Workflow Manager Service": "xxx",
-
-      ////////////////////////////////////////////////////////
-      // Map types
-      "3D Web Scene": "xxx",
-      "Web Map": "map",
-      "Web Scene": "xxx",
-
-      ////////////////////////////////////////////////////////
-      // App types
-      Application: "xxx",
-      "Data Store": "xxx",
-      "Desktop Application": "xxx",
-      "Excalibur Imagery Project": "xxx",
-      Form: "frm",
-      "Hub Initiative": "xxx",
-      "Hub Page": "xxx",
-      "Hub Site Application": "hsa",
-      "Insights Model": "xxx",
-      "Insights Page": "xxx",
-      "Insights Theme": "xxx",
-      "Insights Workbook": "xxx",
-      Mission: "xxx",
-      "Mobile Application": "xxx",
-      "Native Application": "xxx",
-      Notebook: "nbk",
-      "Oriented Imagery Catalog": "oic",
-      "Ortho Mapping Project": "xxx",
-      "QuickCapture Project": "qck",
-      "Site Application": "xxx",
-      "Site Initiative": "xxx",
-      "Site Page": "xxx",
-      Solution: "sol",
-      StoryMap: "xxx",
-      "Urban Model": "xxx",
-      "Web Experience Template": "wex",
-      "Web Experience": "xxx",
-      "Web Mapping Application": "wma",
-      "Workforce Project": "wrk",
-
-      ////////////////////////////////////////////////////////
-      // File types
-      "360 VR Experience": "xxx",
-      "AppBuilder Extension": "xxx",
-      "AppBuilder Widget Package": "xxx",
-      "Application Configuration": "xxx",
-      "ArcGIS Pro Add In": "pro",
-      "ArcGIS Pro Configuration": "xxx",
-      "ArcPad Package": "xxx",
-      "Basemap Package": "xxx",
-      "CAD Drawing": "xxx",
-      "CityEngine Web Scene": "xxx",
-      "Code Attachment": "cod",
-      "Code Sample": "sam",
-      "Color Set": "xxx",
-      "Compact Tile Package": "xxx",
-      "CSV Collection": "xxx",
-      CSV: "xxx",
-      Dashboard: "dsh",
-      "Deep Learning Package": "xxx",
-      "Desktop Add In": "dai",
-      "Desktop Application Template": "dat",
-      "Desktop Style": "xxx",
-      "Document Link": "doc",
-      "Explorer Add In": "xxx",
-      "Explorer Layer": "xxx",
-      "Explorer Map": "xxx",
-      "Feature Collection Template": "xxx",
-      "File Geodatabase": "xxx",
-      GeoJson: "jsn",
-      GeoPackage: "xxx",
-      "Geoprocessing Package": "gpk",
-      "Geoprocessing Sample": "geo",
-      "Globe Document": "xxx",
-      "Image Collection": "xxx",
-      Image: "img",
-      "iWork Keynote": "xxx",
-      "iWork Numbers": "xxx",
-      "iWork Pages": "xxx",
-      "KML Collection": "xxx",
-      "Layer Package": "lyp",
-      "Layer Template": "xxx",
-      Layer: "xxx",
-      Layout: "xxx",
-      "Locator Package": "xxx",
-      "Map Document": "xxx",
-      "Map Package": "xxx",
-      "Map Template": "mpt",
-      "Microsoft Excel": "xxx",
-      "Microsoft Powerpoint": "xxx",
-      "Microsoft Word": "xxx",
-      "Mobile Basemap Package": "xxx",
-      "Mobile Map Package": "xxx",
-      "Mobile Scene Package": "xxx",
-      "Native Application Installer": "xxx",
-      "Native Application Template": "xxx",
-      netCDF: "xxx",
-      "Operation View": "opv",
-      "Operations Dashboard Add In": "xxx",
-      "Operations Dashboard Extension": "xxx",
-      PDF: "xxx",
-      "Pro Layer Package": "xxx",
-      "Pro Layer": "xxx",
-      "Pro Map Package": "prm",
-      "Pro Map": "xxx",
-      "Pro Report": "xxx",
-      "Project Package": "ppk",
-      "Project Template": "prt",
-      "Published Map": "xxx",
-      "Raster function template": "xxx",
-      "Report Template": "xxx",
-      "Rule Package": "xxx",
-      "Scene Document": "xxx",
-      "Scene Package": "xxx",
-      "Service Definition": "xxx",
-      Shapefile: "xxx",
-      "Statistical Data Collection": "xxx",
-      Style: "xxx",
-      "Survey123 Add In": "xxx",
-      "Symbol Set": "xxx",
-      "Task File": "xxx",
-      "Tile Package": "xxx",
-      "Toolbox Package": "xxx",
-      "Vector Tile Package": "xxx",
-      "Viewer Configuration": "xxx",
-      "Visio Document": "xxx",
-      "Window Mobile Package": "xxx",
-      "Windows Mobile Package": "xxx",
-      "Windows Viewer Add In": "xxx",
-      "Windows Viewer Configuration": "xxx",
-      "Workflow Manager Package": "xxx",
-
-      ////////////////////////////////////////////////////////
-      // Testing "types"
-      Undefined: "und",
-      Unsupported: "unk"
-    } as IItemTypeAbbrev)[type] || "xxx"
-  );
-}
-
 function getAGOLItemFundamentals(type: string, url = ""): any {
-  const typePrefix = getItemTypeAbbrev(type);
+  const typePrefix = getItemTypeAbbrev.getItemTypeAbbrev(type);
   return {
     id: typePrefix + "1234567890",
     item: typePrefix + "1234567890",

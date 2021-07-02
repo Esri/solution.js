@@ -18,6 +18,13 @@ import * as common from "@esri/solution-common";
 
 // ------------------------------------------------------------------------------------------------------------------ //
 
+/**
+ * Converts a web mapping application item into a template.
+ *
+ * @param itemInfo Info about the item
+ * @param authentication Credentials for working with AGO
+ * @return A promise that will resolve when the template has been created
+ */
 export function convertItemToTemplate(
   itemTemplate: common.IItemTemplate,
   authentication: common.UserSession
