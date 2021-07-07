@@ -181,7 +181,7 @@ export function createItemTemplate(
                       srcAuthentication,
                       SolutionTemplateFormatVersion
                     ).then((resourceItemFilePaths: ISourceFileCopyPath[]) => {
-                      itemTemplate.item.thumbnail = null; // not needed; handled as a resource
+                      itemTemplate.item.thumbnail = null; // not needed in this property; handled as a resource
 
                       // eslint-disable-next-line @typescript-eslint/no-floating-promises
                       getItemResourcesFilesFromPaths(
@@ -246,7 +246,7 @@ export function createItemTemplate(
                                 EItemProgressStatus.Finished,
                                 1
                               );
-                              dependentResourceItemFiles.reduce(
+                              resourceItemFiles = dependentResourceItemFiles.reduce(
                                 (accumulator, currentValue) =>
                                   accumulator.concat(currentValue),
                                 resourceItemFiles
