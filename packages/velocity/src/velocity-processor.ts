@@ -28,11 +28,10 @@ import {
   EItemProgressStatus,
   generateEmptyCreationResponse,
   createPlaceholderTemplate,
-  fail,
-  getVelocityUrl,
-  postVelocityData
+  fail
 } from "@esri/solution-common";
 import { getVelocityDependencies } from "./helpers/get-velocity-dependencies";
+import { getVelocityUrl, postVelocityData } from "./helpers/velocity-helpers";
 
 /**
  * Convert a Velocity item into a Template
