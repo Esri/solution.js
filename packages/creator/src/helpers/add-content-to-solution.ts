@@ -27,6 +27,7 @@ import {
   IItemTemplate,
   IItemUpdate,
   ISolutionItemData,
+  ISourceFile,
   ISourceFileCopyPath,
   isWorkforceProject,
   removeTemplate,
@@ -145,7 +146,7 @@ export function addContentToSolution(
 
     // Handle a list of one or more AGO ids by stepping through the list
     // and calling this function recursively
-    const getItemsPromise: Array<Promise<ISourceFileCopyPath[]>> = [];
+    const getItemsPromise: Array<Promise<ISourceFile[]>> = [];
     options.itemIds.forEach(itemId => {
       const createDef = createItemTemplate(
         solutionItemId,
@@ -161,7 +162,7 @@ export function addContentToSolution(
 
     // eslint-disable-next-line @typescript-eslint/no-floating-promises
     Promise.all(getItemsPromise).then(
-      (multipleResourceItemFilePaths: ISourceFileCopyPath[][]) => {
+      (multipleResourceItemFiles: ISourceFile[][]) => {
         if (failedItemIds.length > 0) {
           reject(
             failWithIds(
@@ -172,16 +173,15 @@ export function addContentToSolution(
         } else {
           if (solutionTemplates.length > 0) {
             // Coalesce the resource file paths from the created templates
-            const resourceItemFilePaths: ISourceFileCopyPath[] = multipleResourceItemFilePaths.reduce(
+            const resourceItemFiles: ISourceFile[] = multipleResourceItemFiles.reduce(
               (accumulator, currentValue) => accumulator.concat(currentValue),
-              [] as ISourceFileCopyPath[]
+              [] as ISourceFile[]
             );
 
             // Send the accumulated resources to the solution item
             // eslint-disable-next-line @typescript-eslint/no-floating-promises
             copyFilesToStorageItem(
-              srcAuthentication,
-              resourceItemFilePaths,
+              resourceItemFiles,
               solutionItemId,
               destAuthentication
             ).then(() => {

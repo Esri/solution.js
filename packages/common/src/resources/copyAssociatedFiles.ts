@@ -22,6 +22,7 @@ import {
   EFileType,
   IAssociatedFileCopyResults,
   IAssociatedFileInfo,
+  ISourceFile,
   IZipCopyResults,
   IZipInfo,
   UserSession
@@ -29,7 +30,10 @@ import {
 import { chunkArray } from "@esri/hub-common";
 import { copyDataIntoItem } from "./copyDataIntoItem";
 import { copyMetadataIntoItem } from "./copyMetadataIntoItem";
-import { copyResourceIntoZip } from "./copyResourceIntoZip";
+import {
+  copyResourceIntoZip,
+  copyResourceIntoZipFromInfo
+} from "./copyResourceIntoZip";
 import { copyZipIntoItem } from "./copyZipIntoItem";
 import { createCopyResults } from "./createCopyResults";
 import JSZip from "jszip";
@@ -37,34 +41,31 @@ import JSZip from "jszip";
 // ------------------------------------------------------------------------------------------------------------------ //
 
 /**
- * Copies the files described by a list of full URLs and storage folder/filename combinations for storing
- * the resources, metadata, and thumbnail of an item or group to a storage item as resources
- * in that item.
+ * Copies the files for storing the resources, metadata, and thumbnail of an item or group to a storage item
+ * with a specified path.
  *
- * @param fileInfos List of item files' URLs and folder/filenames for storing the files
- * @param sourceAuthentication Credentials for the request to the source
+ * @param files List of item files' URLs and folder/filenames for storing the files
  * @param destinationItemId Id of item to receive copy of resource/metadata/thumbnail
  * @param destinationAuthentication Credentials for the request to the storage
  * @return A promise which resolves to a list of the result of the copies
  */
-export function copyAssociatedFilesAsResources(
-  fileInfos: IAssociatedFileInfo[],
-  sourceAuthentication: UserSession,
+export function copyFilesAsResources(
+  files: ISourceFile[],
   destinationItemId: string,
   destinationAuthentication: UserSession
 ): Promise<IAssociatedFileCopyResults[]> {
   return new Promise<IAssociatedFileCopyResults[]>(resolve => {
-    let awaitAllItems: Array<Promise<IAssociatedFileCopyResults>> = [];
+    let awaitAllItems: IAssociatedFileCopyResults[] = [];
 
     const zipInfos: IZipInfo[] = [];
-    if (fileInfos.length > 0) {
+    if (files.length > 0) {
       // Bundle the resources into chunked zip updates because AGO tends to have problems with
       // many updates in a row to the same item: it claims success despite randomly failing.
       // Note that AGO imposes a limit of 50 files per zip, so we break the list of resource
       // file info into chunks below this threshold and start a zip for each
       // https://developers.arcgis.com/rest/users-groups-and-items/add-resources.htm
-      const chunkedResourceFileInfo = chunkArray(fileInfos, 40); // leave a bit of room below threshold
-      chunkedResourceFileInfo.forEach((chunk, index) => {
+      const chunkedResourceFilles = chunkArray(files, 40); // leave a bit of room below threshold
+      chunkedResourceFilles.forEach((chunk, index) => {
         // Create a zip for this chunk
         const zipInfo: IZipInfo = {
           filename: `resources${index}.zip`,
@@ -72,9 +73,7 @@ export function copyAssociatedFilesAsResources(
           filelist: [] as IAssociatedFileInfo[]
         };
         awaitAllItems = awaitAllItems.concat(
-          chunk.map(fileInfo => {
-            return copyResourceIntoZip(fileInfo, sourceAuthentication, zipInfo);
-          })
+          chunk.map(file => copyResourceIntoZip(file, zipInfo))
         );
         zipInfos.push(zipInfo);
       });
@@ -193,7 +192,11 @@ export function copyAssociatedFilesByType(
         };
         awaitAllItems = awaitAllItems.concat(
           chunk.map(fileInfo => {
-            return copyResourceIntoZip(fileInfo, sourceAuthentication, zipInfo);
+            return copyResourceIntoZipFromInfo(
+              fileInfo,
+              sourceAuthentication,
+              zipInfo
+            );
           })
         );
         zipInfos.push(zipInfo);
