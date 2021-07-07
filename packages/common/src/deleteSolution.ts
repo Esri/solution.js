@@ -22,19 +22,14 @@
  */
 
 import {
-  EItemProgressStatus,
   IDeleteSolutionOptions,
+  IItemTemplate,
+  ISolutionItemPrecis,
   ISolutionPrecis,
-  IStatusResponse,
   UserSession
 } from "./interfaces";
-import * as deleteEmptyGroups from "./deleteHelpers/deleteEmptyGroups";
-import * as deleteSolutionFolder from "./deleteHelpers/deleteSolutionFolder";
-import * as deleteSolutionItem from "./deleteHelpers/deleteSolutionItem";
-import * as removeItems from "./deleteHelpers/removeItems";
-import * as reportProgress from "./deleteHelpers/reportProgress";
+import * as deleteSolutionContents from "./deleteHelpers/deleteSolutionContents";
 import * as getDeletableSolutionInfo from "./getDeletableSolutionInfo";
-import * as restHelpers from "./restHelpers";
 
 // ------------------------------------------------------------------------------------------------------------------ //
 
@@ -44,6 +39,7 @@ import * as restHelpers from "./restHelpers";
  *
  * @param solutionItemId Id of a deployed Solution
  * @param authentication Credentials for the request
+ * @param options Progress reporting options
  * @return Promise that will resolve with a list of two solution summaries: successful deletions
  * and failed deletions. Ignored items (e.g., already deleted) and items shared with more than
  * one Solution will not be in either list.
@@ -56,113 +52,95 @@ export function deleteSolution(
   authentication: UserSession,
   options?: IDeleteSolutionOptions
 ): Promise<ISolutionPrecis[]> {
-  const deleteOptions: IDeleteSolutionOptions = options || {};
-  let progressPercentStep = 0;
-  let percentDone = 0;
-  let solutionSummary: ISolutionPrecis;
-  let solutionDeletedSummary: ISolutionPrecis;
-  let solutionFailureSummary: ISolutionPrecis;
-  let solutionIds = [] as string[];
+  return getDeletableSolutionInfo
+    .getDeletableSolutionInfo(solutionItemId, authentication)
+    .then((solutionSummary: ISolutionPrecis) => {
+      return deleteSolutionContents.deleteSolutionContents(
+        solutionItemId,
+        solutionSummary,
+        authentication,
+        options
+      );
+    })
+    .catch(() => {
+      return [undefined, undefined];
+    });
+}
 
-  return new Promise<ISolutionPrecis[]>(resolve => {
-    getDeletableSolutionInfo
-      .getDeletableSolutionInfo(solutionItemId, authentication)
-      .then(response => {
-        solutionSummary = response;
-        if (solutionSummary.items.length === 0) {
-          return Promise.resolve([
-            {
-              id: solutionSummary.id,
-              title: solutionSummary.title,
-              folder: solutionSummary.folder,
-              items: [],
-              groups: []
-            },
-            {
-              id: solutionSummary.id,
-              title: solutionSummary.title,
-              folder: solutionSummary.folder,
-              items: [],
-              groups: []
-            }
-          ]);
-        } else {
-          // Save a copy of the Solution item ids for the deleteSolutionFolder call because removeItems
-          // destroys the solutionSummary.items list
-          solutionIds = solutionSummary.items
-            .map(item => item.id)
-            .concat([solutionItemId]);
+/**
+ * Deletes a deployed Solution item and and all of the items that were created
+ * as part of that deployment.
+ *
+ * @param solutionItemId Id of a deployed Solution
+ * @param itemIds Item ids to delete; this list is reversed in this function
+ * @param templates List of Solution's templates
+ * @param templateDictionary Hash of facts: folder id, org URL, adlib replacements
+ * @param authentication Credentials for the request
+ * @param options Progress reporting options
+ * @return Promise that will resolve with a list of two solution summaries: successful deletions
+ * and failed deletions. Ignored items (e.g., already deleted) and items shared with more than
+ * one Solution will not be in either list.
+ * Note that Solution item and its deployment folder will only be deleted if all of its deployed
+ * items were deleted (the failure list is empty). This makes it possible to re-attempted
+ * deletion using the solutionItemId.
+ */
+export function deleteSolutionByComponents(
+  solutionItemId: string,
+  itemIds: string[],
+  templates: IItemTemplate[],
+  templateDictionary: any,
+  authentication: UserSession,
+  options?: IDeleteSolutionOptions
+): Promise<ISolutionPrecis[]> {
+  // Construct a description of the solution from its id and the itemIds using the templateDictionary to fill in details
+  const solutionSummary: ISolutionPrecis = {
+    id: solutionItemId,
+    title: "",
+    folder: templateDictionary.folderId,
+    items: [] as ISolutionItemPrecis[],
+    groups: [] as string[]
+  };
 
-          const hubSiteItemIds: string[] = solutionSummary.items
-            .filter((item: any) => item.type === "Hub Site Application")
-            .map((item: any) => item.id);
+  // Combine the templates and templateDictionary to create summary items
+  let summaries = templates
+    .map(template => {
+      return {
+        id: template.itemId,
+        type: template.type,
+        title: template.item.title,
+        modified: 0,
+        owner: ""
+      } as ISolutionItemPrecis;
+    })
+    .map(summary => {
+      summary.id = templateDictionary[summary.id].itemId;
+      return summary;
+    })
+    .filter(summary => !!summary.id);
 
-          // Delete the items
-          progressPercentStep = 100 / (solutionSummary.items.length + 2); // one extra for starting plus one extra for solution itself
-          reportProgress.reportProgress(
-            (percentDone += progressPercentStep),
-            deleteOptions
-          ); // let the caller know that we've started
+  // Filter to only include items in itemIds
+  summaries = summaries.filter(summary => itemIds.includes(summary.id));
 
-          // Proceed with the deletion
-          return removeItems.removeItems(
-            solutionSummary,
-            hubSiteItemIds,
-            authentication,
-            percentDone,
-            progressPercentStep,
-            deleteOptions
-          );
-        }
-      })
-      .then((results: ISolutionPrecis[]) => {
-        // Attempt to delete groups; we won't be checking success
-        return new Promise<ISolutionPrecis[]>(resolve2 => {
-          // eslint-disable-next-line @typescript-eslint/no-floating-promises
-          deleteEmptyGroups
-            .deleteEmptyGroups(solutionSummary.groups, authentication)
-            .then(() => {
-              resolve2(results);
-            });
-        });
-      })
-      .then((results: ISolutionPrecis[]) => {
-        [solutionDeletedSummary, solutionFailureSummary] = results;
-        // If there were no failed deletes, it's OK to delete Solution item
-        if (solutionFailureSummary.items.length === 0) {
-          return deleteSolutionItem.deleteSolutionItem(
-            solutionItemId,
-            authentication
-          );
-        } else {
-          // Not all items were deleted, so don't delete solution
-          return Promise.resolve({ success: false, itemId: solutionItemId });
-        }
-      })
-      .then((solutionItemDeleteStatus: IStatusResponse) => {
-        // If all deletes succeeded, see if we can delete the folder that contained them
-        if (solutionItemDeleteStatus.success) {
-          reportProgress.reportProgress(
-            99,
-            deleteOptions,
-            solutionItemId,
-            EItemProgressStatus.Finished
-          );
+  // Sort into the order of itemIds (last created is first deleted)
+  summaries.sort(
+    (summary1, summary2) =>
+      itemIds.indexOf(summary1.id) - itemIds.indexOf(summary2.id)
+  );
 
-          return deleteSolutionFolder.deleteSolutionFolder(
-            solutionIds,
-            solutionSummary.folder,
-            authentication
-          );
-        } else {
-          return Promise.resolve(false);
-        }
-      })
-      .then(() => {
-        resolve([solutionDeletedSummary, solutionFailureSummary]);
-      })
-      .catch(() => {
-        resolve([solutionDeletedSummary, solutionFailureSummary]);
-      });
+  // Partition into items and groups
+  summaries.forEach(summary => {
+    if (summary.type === "Group") {
+      solutionSummary.groups.push(summary.id);
+    } else {
+      solutionSummary.items.push(summary);
+    }
   });
+
+  // Delete the solution
+  return deleteSolutionContents.deleteSolutionContents(
+    solutionItemId,
+    solutionSummary,
+    authentication,
+    options
+  );
 }

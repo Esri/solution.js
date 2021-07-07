@@ -2931,33 +2931,6 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
     });
   });
 
-  describe("removeListOfItemsOrGroups", () => {
-    it("handles failure to remove all of a list of items", done => {
-      const itemIds = ["itm1234567890"];
-
-      fetchMock
-        .post(
-          utils.PORTAL_SUBSET.restUrl +
-            "/content/users/casey/items/" +
-            itemIds[0] +
-            "/delete",
-          utils.getFailureResponse()
-        )
-        .post(
-          utils.PORTAL_SUBSET.restUrl +
-            "/community/groups/" +
-            itemIds[0] +
-            "/delete",
-          utils.getFailureResponse()
-        );
-
-      // eslint-disable-next-line @typescript-eslint/no-floating-promises
-      restHelpers
-        .removeListOfItemsOrGroups(itemIds, MOCK_USER_SESSION)
-        .then(() => done());
-    });
-  });
-
   describe("searchGroups", () => {
     it("can handle no results from searching groups", done => {
       const query: string = "My Group";

@@ -250,7 +250,7 @@ describe("Module `deploySolutionFromTemplate`", () => {
           const deployFnCall = deployFnStub.getCall(0);
           expect(deployFnCall.args[0]).toEqual(MOCK_USER_SESSION.portal); // portalSharingUrl
           expect(deployFnCall.args[3].portal).toEqual(MOCK_USER_SESSION.portal); // storageAuthentication
-          expect(deployFnCall.args[5].portal).toEqual(MOCK_USER_SESSION.portal); // destinationAuthentication
+          expect(deployFnCall.args[6].portal).toEqual(MOCK_USER_SESSION.portal); // destinationAuthentication
 
           deployFnStub.restore();
           postProcessFnStub.restore();
@@ -387,7 +387,7 @@ describe("Module `deploySolutionFromTemplate`", () => {
           expect(deployFnCall.args[3].portal).toEqual(
             MOCK_USER_SESSION_ALT.portal
           ); // storageAuthentication
-          expect(deployFnCall.args[5].portal).toEqual(MOCK_USER_SESSION.portal); // destinationAuthentication
+          expect(deployFnCall.args[6].portal).toEqual(MOCK_USER_SESSION.portal); // destinationAuthentication
 
           deployFnStub.restore();
           postProcessFnStub.restore();
