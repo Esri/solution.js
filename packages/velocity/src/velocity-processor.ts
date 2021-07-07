@@ -25,12 +25,13 @@ import {
   IItemProgressCallback,
   IItemTemplate,
   ICreateItemFromTemplateResponse,
+  EItemProgressStatus,
+  generateEmptyCreationResponse,
   createPlaceholderTemplate,
   fail,
   getVelocityUrl,
   postVelocityData
 } from "@esri/solution-common";
-
 import { getVelocityDependencies } from "./helpers/get-velocity-dependencies";
 
 /**
@@ -75,5 +76,57 @@ export function createItemFromTemplate(
   destinationAuthentication: UserSession,
   itemProgressCallback: IItemProgressCallback
 ): Promise<ICreateItemFromTemplateResponse> {
-  return postVelocityData(destinationAuthentication, template, template.data);
+  // let the progress system know we've started...
+  const startStatus = itemProgressCallback(
+    template.itemId,
+    EItemProgressStatus.Started,
+    0
+  );
+
+  // and if it returned false, just resolve out
+  if (!startStatus) {
+    return Promise.resolve(generateEmptyCreationResponse(template.type));
+  }
+
+  // const finalStatus = itemProgressCallback(
+  //   template.itemId,
+  //   EItemProgressStatus.Finished,
+  //   template.estimatedDeploymentCostFactor || 2,
+  //   createdModel.item.id
+  // );
+
+  const orgId = template.itemId;
+
+  return postVelocityData(
+    destinationAuthentication,
+    template,
+    template.data,
+    templateDictionary
+  ).then(result => {
+    const finalStatus = itemProgressCallback(
+      orgId,
+      EItemProgressStatus.Finished,
+      template.estimatedDeploymentCostFactor || 2,
+      result.id
+    );
+
+    if (!finalStatus) {
+      // clean up the site we just created
+      //const failSafeRemove = failSafe(removeItem, { success: true });
+      return Promise.resolve(generateEmptyCreationResponse(template.type));
+    } else {
+      // finally, return ICreateItemFromTemplateResponse
+      const response: ICreateItemFromTemplateResponse = {
+        item: {
+          ...template,
+          ...result
+        },
+        id: result.item.id,
+        type: template.type,
+        postProcess: false
+      };
+      response.item.itemId = result.item.id;
+      return response;
+    }
+  });
 }

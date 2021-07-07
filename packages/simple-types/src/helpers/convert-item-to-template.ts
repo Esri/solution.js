@@ -16,7 +16,6 @@
 
 import * as common from "@esri/solution-common";
 import * as dashboard from "../dashboard";
-import * as feed from "../feed-helpers";
 import * as notebook from "../notebook";
 import * as oic from "../oic";
 import * as quickcapture from "../quickcapture";
@@ -80,9 +79,6 @@ export function convertItemToTemplate(
             .getItemDataAsJson(itemTemplate.itemId, authentication)
             .then(json => resolveJSON(json));
         });
-        break;
-      case "Feed":
-        dataPromise = feed.getFeedData(itemTemplate.itemId, authentication);
         break;
       case "Form":
         dataPromise = common.getItemDataAsFile(

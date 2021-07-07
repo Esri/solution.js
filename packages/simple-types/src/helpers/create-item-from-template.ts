@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 import * as common from "@esri/solution-common";
-import * as feed from "../feed-helpers";
 import * as notebook from "../notebook";
 import * as webmappingapplication from "../webmappingapplication";
 import * as workforce from "../workforce";
@@ -61,12 +60,6 @@ export function createItemFromTemplate(
             templateDictionary
           )
         );
-      }
-      let feedData: any;
-      if (template.type === "Feed" && template.data) {
-        feedData = template.data;
-        feedData.id = "";
-        template.data = {};
       }
 
       if (template.item.thumbnail) {
@@ -185,12 +178,6 @@ export function createItemFromTemplate(
                   newItemTemplate,
                   templateDictionary,
                   destinationAuthentication
-                );
-              } else if (template.type === "Feed") {
-                customProcDef = feed.fineTuneCreatedItem(
-                  destinationAuthentication,
-                  template,
-                  feedData
                 );
               } else if (originalURL !== newItemTemplate.item.url) {
                 // For web mapping applications that are not Web AppBuilder apps
