@@ -270,6 +270,7 @@ export function generateSourceFilePaths(
 ): ISourceFileCopyPath[] {
   const filePaths = resourceFilenames.map(resourceFilename => {
     return {
+      itemId,
       url: generateSourceResourceUrl(
         portalSharingUrl,
         itemId,
@@ -284,6 +285,7 @@ export function generateSourceFilePaths(
   });
 
   filePaths.push({
+    itemId,
     url: generateSourceMetadataUrl(portalSharingUrl, itemId, isGroup),
     ...generateMetadataStorageFilename(itemId)
   });
@@ -291,6 +293,7 @@ export function generateSourceFilePaths(
   /* istanbul ignore else */
   if (thumbnailUrlPart) {
     const path = {
+      itemId,
       url: appendQueryParam(
         generateSourceThumbnailUrl(
           portalSharingUrl,

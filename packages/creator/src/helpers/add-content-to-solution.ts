@@ -28,7 +28,6 @@ import {
   IItemUpdate,
   ISolutionItemData,
   ISourceFile,
-  ISourceFileCopyPath,
   isWorkforceProject,
   removeTemplate,
   replaceInTemplate,
@@ -173,9 +172,29 @@ export function addContentToSolution(
         } else {
           if (solutionTemplates.length > 0) {
             // Coalesce the resource file paths from the created templates
-            const resourceItemFiles: ISourceFile[] = multipleResourceItemFiles.reduce(
+            let resourceItemFiles: ISourceFile[] = multipleResourceItemFiles.reduce(
               (accumulator, currentValue) => accumulator.concat(currentValue),
               [] as ISourceFile[]
+            );
+
+            // test for and update group dependencies and other post-processing
+            solutionTemplates = _postProcessGroupDependencies(
+              solutionTemplates
+            );
+            solutionTemplates = postProcessWorkforceTemplates(
+              solutionTemplates
+            );
+
+            // Filter out any resources from items that have been removed from the templates, such as
+            // Living Atlas layers
+            solutionTemplates = _postProcessIgnoredItems(solutionTemplates);
+            const templateIds = solutionTemplates.map(
+              template => template.itemId
+            );
+
+            // Coalesce the resource file paths from the created templates
+            resourceItemFiles = resourceItemFiles.filter(file =>
+              templateIds.includes(file.itemId)
             );
 
             // Send the accumulated resources to the solution item
@@ -185,14 +204,6 @@ export function addContentToSolution(
               solutionItemId,
               destAuthentication
             ).then(() => {
-              // test for and update group dependencies and other post-processing
-              solutionTemplates = _postProcessGroupDependencies(
-                solutionTemplates
-              );
-              solutionTemplates = postProcessWorkforceTemplates(
-                solutionTemplates
-              );
-              solutionTemplates = _postProcessIgnoredItems(solutionTemplates);
               _templatizeSolutionIds(solutionTemplates);
               _simplifyUrlsInItemDescriptions(solutionTemplates);
               _replaceDictionaryItemsInObject(

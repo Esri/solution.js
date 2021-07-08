@@ -119,11 +119,13 @@ describe("Module `copyAssociatedFiles`: functions for sending resources to AGO",
     it("copies ignoring file type", done => {
       const files: interfaces.ISourceFile[] = [
         {
+          itemId: "itm1234567890",
           folder: "storageFolder",
           filename: "metadata.xml",
           file: utils.getSampleMetadataAsFile()
         },
         {
+          itemId: "itm1234567890",
           folder: "storageFolder",
           filename: "storageFilename.png",
           file: utils.getSampleImageAsFile()
@@ -489,6 +491,7 @@ describe("Module `copyAssociatedFiles`: functions for sending resources to AGO",
   describe("copyResourceIntoZip", () => {
     it("should handle success copying item not in a folder", () => {
       const file = {
+        itemId: "itm1234567890",
         folder: "",
         filename: "storageFilename.png",
         file: utils.getSampleImageAsFile("storageFilename.png")
@@ -502,6 +505,7 @@ describe("Module `copyAssociatedFiles`: functions for sending resources to AGO",
       expect(results)
         .withContext("results")
         .toEqual({
+          itemId: "itm1234567890",
           folder: "",
           filename: "storageFilename.png",
           file: utils.getSampleImageAsFile("storageFilename.png"),
