@@ -30,7 +30,6 @@ import { getBlobAsFile } from "../restHelpersGet";
  * Copies a resource into a zipfile.
  *
  * @param file Information about the source and destination of the file such as its URL, folder, filename
- * @param sourceAuthentication Credentials for the request to the source
  * @param zipInfo Information about a zipfile such as its name and its zip object
  * @return The result of the copy
  */

@@ -23,6 +23,7 @@ import { getBlobAsFile } from "../restHelpersGet";
  * Fetches a set of resources defined by paths.
  *
  * @param resourceItemFilePaths Paths to resources in source
+ * @param authentication Credentials for the request to the source
  * @return A promise which resolves with an array of resource files
  */
 export function getItemResourcesFilesFromPaths(
