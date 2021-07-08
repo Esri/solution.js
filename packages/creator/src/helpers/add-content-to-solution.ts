@@ -192,8 +192,8 @@ export function addContentToSolution(
               solutionTemplates = postProcessWorkforceTemplates(
                 solutionTemplates
               );
-              _templatizeSolutionIds(solutionTemplates);
               solutionTemplates = _postProcessIgnoredItems(solutionTemplates);
+              _templatizeSolutionIds(solutionTemplates);
               _simplifyUrlsInItemDescriptions(solutionTemplates);
               _replaceDictionaryItemsInObject(
                 templateDictionary,
