@@ -33,7 +33,9 @@ import {
   IItemGeneralized,
   IItemProgressCallback,
   IItemTemplate,
+  ISourceFile,
   ISourceFileCopyPath,
+  getItemResourcesFilesFromPaths,
   getItemResourcesPaths,
   replaceTemplate,
   sanitizeJSONAndReportChanges,
@@ -54,7 +56,7 @@ import { moduleMap, UNSUPPORTED } from "./module-map";
  * @param srcAuthentication Credentials for requests to source items
  * @param destAuthentication Authentication for requesting information from AGO about items to be included in solution item
  * @param existingTemplates A collection of AGO item templates that can be referenced by newly-created templates
- * @return A promise which resolves with an array of paths to resources for the item and uts dependencies
+ * @return A promise which resolves with an array of resources for the item and its dependencies
  * @protected
  */
 export function createItemTemplate(
@@ -65,7 +67,7 @@ export function createItemTemplate(
   destAuthentication: UserSession,
   existingTemplates: IItemTemplate[],
   itemProgressCallback: IItemProgressCallback
-): Promise<ISourceFileCopyPath[]> {
+): Promise<ISourceFile[]> {
   return new Promise(resolve => {
     // Check if item and its dependents are already in list or are queued
     if (findTemplateInList(existingTemplates, itemId)) {
@@ -179,74 +181,81 @@ export function createItemTemplate(
                       srcAuthentication,
                       SolutionTemplateFormatVersion
                     ).then((resourceItemFilePaths: ISourceFileCopyPath[]) => {
-                      itemTemplate.item.thumbnail = null; // not needed; handled as a resource
+                      itemTemplate.item.thumbnail = null; // not needed in this property; handled as a resource
 
-                      // update the template's resources
-                      itemTemplate.resources = itemTemplate.resources.concat(
-                        resourceItemFilePaths.map(
-                          (file: ISourceFileCopyPath) =>
-                            file.folder + "/" + file.filename
-                        )
-                      );
-
-                      // Set the value keyed by the id to the created template, replacing the placeholder template
-                      replaceTemplate(
-                        existingTemplates,
-                        itemTemplate.itemId,
-                        itemTemplate
-                      );
-
-                      // Trace item dependencies
-                      if (itemTemplate.dependencies.length === 0) {
-                        itemProgressCallback(
-                          itemId,
-                          EItemProgressStatus.Finished,
-                          1
+                      // eslint-disable-next-line @typescript-eslint/no-floating-promises
+                      getItemResourcesFilesFromPaths(
+                        resourceItemFilePaths,
+                        srcAuthentication
+                      ).then((resourceItemFiles: ISourceFile[]) => {
+                        // update the template's resources
+                        itemTemplate.resources = itemTemplate.resources.concat(
+                          resourceItemFiles.map(
+                            (file: ISourceFile) =>
+                              file.folder + "/" + file.filename
+                          )
                         );
-                        resolve(resourceItemFilePaths);
-                      } else {
-                        // Get its dependencies, asking each to get its dependents via
-                        // recursive calls to this function
-                        const dependentDfds: Array<Promise<
-                          ISourceFileCopyPath[]
-                        >> = [];
-                        itemTemplate.dependencies.forEach(dependentId => {
-                          if (
-                            !findTemplateInList(existingTemplates, dependentId)
-                          ) {
-                            dependentDfds.push(
-                              createItemTemplate(
-                                solutionItemId,
-                                dependentId,
-                                templateDictionary,
-                                srcAuthentication,
-                                destAuthentication,
+
+                        // Set the value keyed by the id to the created template, replacing the placeholder template
+                        replaceTemplate(
+                          existingTemplates,
+                          itemTemplate.itemId,
+                          itemTemplate
+                        );
+
+                        // Trace item dependencies
+                        if (itemTemplate.dependencies.length === 0) {
+                          itemProgressCallback(
+                            itemId,
+                            EItemProgressStatus.Finished,
+                            1
+                          );
+                          resolve(resourceItemFiles);
+                        } else {
+                          // Get its dependencies, asking each to get its dependents via
+                          // recursive calls to this function
+                          const dependentDfds: Array<Promise<
+                            ISourceFile[]
+                          >> = [];
+                          itemTemplate.dependencies.forEach(dependentId => {
+                            if (
+                              !findTemplateInList(
                                 existingTemplates,
-                                itemProgressCallback
+                                dependentId
                               )
-                            );
-                          }
-                        });
-                        // eslint-disable-next-line @typescript-eslint/no-floating-promises
-                        Promise.all(dependentDfds).then(
-                          (
-                            dependentResourceItemFilePaths: ISourceFileCopyPath[][]
-                          ) => {
-                            // Templatization of item and its dependencies done
-                            itemProgressCallback(
-                              itemId,
-                              EItemProgressStatus.Finished,
-                              1
-                            );
-                            dependentResourceItemFilePaths.reduce(
-                              (accumulator, currentValue) =>
-                                accumulator.concat(currentValue),
-                              resourceItemFilePaths
-                            );
-                            resolve(resourceItemFilePaths);
-                          }
-                        );
-                      }
+                            ) {
+                              dependentDfds.push(
+                                createItemTemplate(
+                                  solutionItemId,
+                                  dependentId,
+                                  templateDictionary,
+                                  srcAuthentication,
+                                  destAuthentication,
+                                  existingTemplates,
+                                  itemProgressCallback
+                                )
+                              );
+                            }
+                          });
+                          // eslint-disable-next-line @typescript-eslint/no-floating-promises
+                          Promise.all(dependentDfds).then(
+                            (dependentResourceItemFiles: ISourceFile[][]) => {
+                              // Templatization of item and its dependencies done
+                              itemProgressCallback(
+                                itemId,
+                                EItemProgressStatus.Finished,
+                                1
+                              );
+                              resourceItemFiles = dependentResourceItemFiles.reduce(
+                                (accumulator, currentValue) =>
+                                  accumulator.concat(currentValue),
+                                resourceItemFiles
+                              );
+                              resolve(resourceItemFiles);
+                            }
+                          );
+                        }
+                      });
                     });
                   },
                   error => {

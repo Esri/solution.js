@@ -594,18 +594,13 @@ describe("Module `resourceHelpers`: common functions involving the management of
   describe("copyFilesToStorageItem", () => {
     it("empty files list", done => {
       const sourceUserSession = MOCK_USER_SESSION;
-      const filePaths: interfaces.ISourceFileCopyPath[] = [] as interfaces.ISourceFileCopyPath[];
+      const filePaths: interfaces.ISourceFile[] = [] as interfaces.ISourceFile[];
       const storageItemId: string = "itm1234567890";
       const storageAuthentication = MOCK_USER_SESSION;
       const expected: string[] = [];
 
       resourceHelpers
-        .copyFilesToStorageItem(
-          sourceUserSession,
-          filePaths,
-          storageItemId,
-          storageAuthentication
-        )
+        .copyFilesToStorageItem(filePaths, storageItemId, storageAuthentication)
         .then((response: any) => {
           expect(response).toEqual(expected);
           done();
@@ -614,11 +609,11 @@ describe("Module `resourceHelpers`: common functions involving the management of
 
     it("single file to copy", done => {
       const sourceUserSession = MOCK_USER_SESSION;
-      const filePaths: interfaces.ISourceFileCopyPath[] = [
+      const files: interfaces.ISourceFile[] = [
         {
           folder: "storageFolder",
           filename: "storageFilename.png",
-          url: "https://myserver/images/thumbnail.png"
+          file: utils.getSampleImageAsFile()
         }
       ];
       const storageItemId: string = "itm1234567890";
@@ -642,12 +637,7 @@ describe("Module `resourceHelpers`: common functions involving the management of
         .post(fetchUrl, expectedFetch)
         .post(updateUrl, expectedUpdate);
       resourceHelpers
-        .copyFilesToStorageItem(
-          sourceUserSession,
-          filePaths,
-          storageItemId,
-          storageAuthentication
-        )
+        .copyFilesToStorageItem(files, storageItemId, storageAuthentication)
         .then((response: any) => {
           expect(response).toEqual(expectedUpdate);
           done();

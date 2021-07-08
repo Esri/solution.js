@@ -164,7 +164,7 @@ export interface IAssociatedFileInfo {
   /**
    * An internal classification of the type of file: data, metadata, resource
    */
-  type: EFileType;
+  type?: EFileType;
 
   /**
    * The mime type of the file
@@ -175,6 +175,11 @@ export interface IAssociatedFileInfo {
    * URL where a resource, metadata, or thumbnail of an item or group can be found
    */
   url?: string;
+
+  /**
+   * File holding a resource, metadata, or thumbnail of an item or group
+   */
+  file?: File;
 }
 
 export interface IBuildOrdering {
@@ -732,6 +737,23 @@ export interface ISolutionProgressEvent {
   data?: any;
 }
 
+export interface ISourceFile {
+  /**
+   * Resource file
+   */
+  file: File;
+
+  /**
+   * Resource's "folder"--the prefix before the filename
+   */
+  folder: string;
+
+  /**
+   * Resource's filename
+   */
+  filename: string;
+}
+
 /**
  *  Information for storing a resource in a storage item.
  */
@@ -742,12 +764,12 @@ export interface ISourceFileCopyPath {
   url: string;
 
   /**
-   * Folder for storing a resource in a storage item
+   * Resource's "folder"--the prefix before the filename
    */
   folder: string;
 
   /**
-   * Filename for storing a resource in a storage item
+   * Resource's filename
    */
   filename: string;
 }
@@ -967,7 +989,7 @@ export interface IZipInfo {
   /**
    * List of files included in this zip
    */
-  filelist: IAssociatedFileInfo[];
+  filelist: any[];
 }
 
 //#endregion ---------------------------------------------------------------------------------------------------------//

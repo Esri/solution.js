@@ -18,6 +18,8 @@ import { getItemResources } from "../restHelpersGet";
 import { generateSourceFilePaths } from "../resourceHelpers";
 import { IItemTemplate, ISourceFileCopyPath, UserSession } from "../interfaces";
 
+// ------------------------------------------------------------------------------------------------------------------ //
+
 /**
  * Updates the solution item with resources from the itemTemplate
  *
