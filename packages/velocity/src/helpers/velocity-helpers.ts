@@ -17,6 +17,7 @@
 import {
   ISubscriptionInfo,
   IItemTemplate,
+  getProp,
   getSubscriptionInfo,
   getUniqueTitle,
   replaceInTemplate,
@@ -24,76 +25,78 @@ import {
 } from "@esri/solution-common";
 
 export function getVelocityUrlBase(
-  authentication: UserSession
+  authentication: UserSession,
+  templateDictionary: any
 ): Promise<string> {
-  return getSubscriptionInfo(undefined, { authentication }).then(
-    (subscriptionInfo: ISubscriptionInfo) => {
-      let velocityUrl = "";
-      const orgCapabilities = subscriptionInfo?.orgCapabilities;
-      if (Array.isArray(orgCapabilities)) {
-        orgCapabilities.some(c => {
-          velocityUrl = c.velocityUrl;
-          return velocityUrl;
-        });
+  if (templateDictionary.velocityUrl) {
+    return Promise.resolve(templateDictionary.velocityUrl);
+  } else {
+    return getSubscriptionInfo(undefined, { authentication }).then(
+      (subscriptionInfo: ISubscriptionInfo) => {
+        let velocityUrl = "";
+        const orgCapabilities = subscriptionInfo?.orgCapabilities;
+        if (Array.isArray(orgCapabilities)) {
+          orgCapabilities.some(c => {
+            velocityUrl = c.velocityUrl;
+            return velocityUrl;
+          });
+        }
+        // add the base url to the templateDictionary for reuse
+        templateDictionary.velocityUrl = velocityUrl;
+
+        return Promise.resolve(velocityUrl);
       }
-      return Promise.resolve(velocityUrl);
-    }
-  );
+    );
+  }
 }
 
 export function getVelocityUrl(
   authentication: UserSession,
+  templateDictionary: any,
   type: string,
   id?: string,
-  isDeploy: boolean = false
+  isDeploy: boolean = false,
+  urlSuffix: string = "",
+  urlPrefix: string = ""
 ): Promise<string> {
-  return getVelocityUrlBase(authentication).then(url => {
+  return getVelocityUrlBase(authentication, templateDictionary).then(url => {
     const _type: string =
-      type === "Feed"
-        ? "feed"
-        : type === "Real Time Analytic"
+      type === "Real Time Analytic"
         ? "analytics/realtime"
-        : "analytics/bigdata";
+        : type === "Big Data Analytic"
+        ? "analytics/bigdata"
+        : type.toLowerCase();
+
+    const suffix: string = urlSuffix ? `/${urlSuffix}` : "";
+    const prefix: string = urlPrefix ? `/${urlPrefix}` : "";
 
     return Promise.resolve(
       isDeploy
-        ? `${url}/iot/${_type}`
-        : `${url}/iot/${_type}/${id}/?f=json&token=${authentication.token}`
+        ? `${url}/iot/${_type}${prefix}${suffix}`
+        : id
+        ? `${url}/iot/${_type}${prefix}/${id}${suffix}/?f=json&token=${authentication.token}`
+        : `${url}/iot/${_type}${prefix}${suffix}/?f=json&token=${authentication.token}`
     );
   });
 }
 
 export function getTitle(
-  token: string,
+  authentication: UserSession,
   label: string,
   url: string
 ): Promise<string> {
-  const requestOpts: RequestInit = {
-    headers: {
-      Accept: "application/json",
-      "Content-Type": "application/json",
-      Authorization: "token=" + token
+  return _fetch(authentication, `${url}StatusList?view=admin`, "GET").then(
+    items => {
+      const titles: any[] =
+        items && Array.isArray(items)
+          ? items.map(item => {
+              return { title: item.label };
+            })
+          : [];
+      return Promise.resolve(getUniqueTitle(label, { titles }, "titles"));
     },
-    method: "GET"
-  };
-
-  return fetch(`${url}StatusList?view=admin`, requestOpts)
-    .then(
-      r => r.json(),
-      e => Promise.reject(e)
-    )
-    .then(
-      items => {
-        const titles: any[] =
-          items && Array.isArray(items)
-            ? items.map(item => {
-                return { title: item.label };
-              })
-            : [];
-        return Promise.resolve(getUniqueTitle(label, { titles }, "titles"));
-      },
-      e => Promise.reject(e)
-    );
+    e => Promise.reject(e)
+  );
 }
 
 export function postVelocityData(
@@ -102,49 +105,261 @@ export function postVelocityData(
   data: any,
   templateDictionary: any
 ): Promise<any> {
-  return getVelocityUrl(authentication, template.type, undefined, true).then(
-    url => {
-      return getTitle(authentication.token, data.label, url).then(
-        title => {
-          data.label = title;
-          data.id = "";
+  return getVelocityUrl(
+    authentication,
+    templateDictionary,
+    template.type,
+    undefined,
+    true
+  ).then(url => {
+    return getTitle(authentication, data.label, url).then(
+      title => {
+        data.label = title;
+        data.id = "";
+        const body: any = replaceInTemplate(data, templateDictionary);
 
-          const requestOpts: any = {
-            body: JSON.stringify(replaceInTemplate(data, templateDictionary)),
-            headers: {
-              Accept: "application/json",
-              "Content-Type": "application/json",
-              Authorization: "token=" + authentication.token
-            },
-            method: "POST"
-          };
+        return _fetch(authentication, url, "POST", body).then(
+          rr => {
+            template.item.url = `${url}/${rr.id}`;
 
-          return fetch(url, requestOpts)
-            .then(
-              r => r.json(),
-              e => Promise.reject(e)
-            )
-            .then(
-              rr => {
-                template.item.url = `${url}/${rr.id}`;
+            // Update the template dictionary
+            templateDictionary[template.itemId]["itemId"] = rr.id;
+            templateDictionary[template.itemId]["url"] = template.item.url;
+            templateDictionary[template.itemId]["label"] = data.label;
 
-                // Update the template dictionary
-                templateDictionary[template.itemId]["itemId"] = rr.id;
-                templateDictionary[template.itemId]["url"] = template.item.url;
-                templateDictionary[template.itemId]["label"] = data.label;
+            return validate(
+              authentication,
+              templateDictionary,
+              template.type,
+              rr.id
+            ).then(rrr => {
+              console.log(rrr);
+              return Promise.resolve({
+                item: replaceInTemplate(template.item, templateDictionary),
+                id: rr.id,
+                type: template.type,
+                postProcess: false
+              });
+            });
+          },
+          e => Promise.reject(e)
+        );
+      },
+      e => Promise.reject(e)
+    );
+  });
+}
 
-                return {
-                  item: replaceInTemplate(template.item, templateDictionary),
-                  id: rr.id,
-                  type: template.type,
-                  postProcess: false
-                };
-              },
-              e => Promise.reject(e)
-            );
-        },
-        e => Promise.reject(e)
-      );
-    }
+export function getStatus(
+  authentication: UserSession,
+  templateDictionary: any,
+  type: string,
+  id: string
+): Promise<any> {
+  // /iot/feed/{id}/status/
+  // /iot/analytics/realtime/{id}/status/
+  return getVelocityUrl(
+    authentication,
+    templateDictionary,
+    type,
+    id,
+    false,
+    "status"
+  ).then(url => {
+    return _fetch(authentication, url, "GET").then(result => {
+      console.log(result);
+    });
+  });
+}
+
+export function validate(
+  authentication: UserSession,
+  templateDictionary: any,
+  type: string,
+  id: string
+): Promise<any> {
+  // /iot/feed/validate/{id}/
+  // /iot/analytics/realtime/validate/{id}/
+  return getVelocityUrl(
+    authentication,
+    templateDictionary,
+    type,
+    id,
+    false,
+    "",
+    "validate"
+  ).then(url => {
+    return _fetch(authentication, url, "GET").then(result => {
+      console.log(result);
+      return Promise.resolve(result);
+    });
+  });
+}
+
+export function start(
+  authentication: UserSession,
+  templateDictionary: any,
+  type: string,
+  id: string
+): Promise<any> {
+  // /iot/feed/{id}/start/
+  // /iot/analytics/realtime/{id}/start/
+  return getVelocityUrl(
+    authentication,
+    templateDictionary,
+    type,
+    id,
+    false,
+    "start"
+  ).then(url => {
+    return _fetch(authentication, url, "GET").then(result => {
+      console.log(result);
+      return Promise.resolve(result);
+    });
+  });
+}
+
+export function getServices(
+  authentication: UserSession,
+  templateDictionary: any,
+  serviceType: string, // stream or feature
+  id: string
+): Promise<any> {
+  // TODO any value in getting the associated map services as well??
+
+  // /iot/services/
+  // /iot/services/stream/
+  // /iot/services/feature/
+  // /iot/services/map/
+
+  return getVelocityUrl(
+    authentication,
+    templateDictionary,
+    "Services",
+    id,
+    false,
+    "",
+    serviceType
+  ).then(url => {
+    return _fetch(authentication, url, "GET").then(result => {
+      console.log(result);
+      return Promise.resolve(result);
+    });
+  });
+}
+
+export function getFormats(
+  authentication: UserSession,
+  templateDictionary: any,
+  serviceType: string, // input or output
+  id: string
+): Promise<any> {
+  // /iot/formats/
+  // /iot/formats/input/
+  // /iot/formats/input/{name}/
+  // /iot/formats/output/
+  // /iot/formats/output/{name}/
+  return getVelocityUrl(
+    authentication,
+    templateDictionary,
+    "Formats",
+    id,
+    false,
+    "",
+    serviceType
+  ).then(url => {
+    return _fetch(authentication, url, "GET").then(result => {
+      console.log(result);
+      return Promise.resolve(result);
+    });
+  });
+}
+
+export function getOutputs(
+  authentication: UserSession,
+  templateDictionary: any,
+  serviceType: string, // realtime or bigdata or {name}
+  id: string
+): Promise<any> {
+  // /iot/outputs/
+  // /iot/outputs/{name}/
+  // /iot/outputs/realtime/
+  // /iot/outputs/bigdata/
+  return getVelocityUrl(
+    authentication,
+    templateDictionary,
+    "Outputs",
+    id,
+    false,
+    "",
+    serviceType
+  ).then(url => {
+    return _fetch(authentication, url, "GET").then(result => {
+      console.log(result);
+      return Promise.resolve(result);
+    });
+  });
+}
+
+export function getSources(
+  authentication: UserSession,
+  templateDictionary: any,
+  serviceType: string, // ? {name}
+  id: string
+): Promise<any> {
+  // /iot/sources/
+  // /iot/sources/{name}/
+  return getVelocityUrl(
+    authentication,
+    templateDictionary,
+    "Sources",
+    id,
+    false,
+    "",
+    serviceType
+  ).then(url => {
+    return _fetch(authentication, url, "GET").then(result => {
+      console.log(result);
+      return Promise.resolve(result);
+    });
+  });
+}
+
+export function templatizeFeeds(template: IItemTemplate): any {
+  const feeds = getProp(template, "data.feeds") || [];
+  return feeds.map((feed: any) => {
+    feed.label = `{{${feed.id}.label}}`;
+    feed.id = `{{${feed.id}.itemId}}`;
+    return feed;
+  });
+}
+
+export function _getRequestOpts(
+  authentication: UserSession,
+  method: string
+): RequestInit {
+  return {
+    headers: {
+      Accept: "application/json",
+      "Content-Type": "application/json",
+      Authorization: "token=" + authentication.token
+    },
+    method
+  };
+}
+
+export function _fetch(
+  authentication: UserSession,
+  url: string,
+  method: string, // GET or POST
+  body?: any
+): Promise<any> {
+  const requestOpts: any = _getRequestOpts(authentication, method);
+  if (body) {
+    requestOpts.body = JSON.stringify(body);
+  }
+  return fetch(url, requestOpts).then(
+    r => Promise.resolve(r.json()),
+    e => Promise.reject(e)
   );
 }

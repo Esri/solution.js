@@ -18,7 +18,7 @@
 
 import * as getItemTypeAbbrev from "../../src/getItemTypeAbbrev";
 import * as interfaces from "../../src/interfaces";
-import * as mockItems from "./agolItems";
+//import * as mockItems from "./agolItems";
 import * as utils from "./utils";
 
 // -- Exports -------------------------------------------------------------------------------------------------------//

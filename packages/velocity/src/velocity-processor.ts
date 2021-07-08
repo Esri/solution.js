@@ -28,10 +28,19 @@ import {
   EItemProgressStatus,
   generateEmptyCreationResponse,
   createPlaceholderTemplate,
-  fail
+  fail,
+  setProp
 } from "@esri/solution-common";
 import { getVelocityDependencies } from "./helpers/get-velocity-dependencies";
-import { getVelocityUrl, postVelocityData } from "./helpers/velocity-helpers";
+import {
+  getVelocityUrl,
+  getOutputs,
+  getFormats,
+  getServices,
+  postVelocityData,
+  templatizeFeeds,
+  getSources
+} from "./helpers/velocity-helpers";
 
 /**
  * Convert a Velocity item into a Template
@@ -45,20 +54,42 @@ export function convertItemToTemplate(
   itemInfo: any,
   authentication: UserSession
 ): Promise<IItemTemplate> {
-  console.log(solutionItemId);
   const template = createPlaceholderTemplate(itemInfo.id, itemInfo.type);
-  return getVelocityUrl(authentication, itemInfo.type, itemInfo.id).then(
+  return getVelocityUrl(authentication, {}, itemInfo.type, itemInfo.id).then(
     (url: string) => {
       return fetch(url)
         .then(data => data.json())
         .then(data_json => {
           template.data = data_json;
           template.dependencies = getVelocityDependencies(template);
-          return Promise.resolve(template);
+          setProp(template, "data.feeds", templatizeFeeds(template));
+
+          return testTheAPI(authentication, {}).then(r => {
+            console.log(r);
+            return Promise.resolve(template);
+          });
+
+          // return Promise.resolve(template);
         });
     },
     e => fail(e)
   );
+}
+
+export function testTheAPI(
+  authentication: UserSession,
+  templateDictionary: any
+): Promise<any> {
+  const promises: any[] = [
+    getOutputs(authentication, templateDictionary, "", ""),
+    getFormats(authentication, templateDictionary, "", ""),
+    getServices(authentication, templateDictionary, "", ""),
+    getSources(authentication, templateDictionary, "", "") //,
+    //getStatus(authentication, templateDictionary, "", "")
+  ];
+  return Promise.all(promises).then(r => {
+    return Promise.resolve(r);
+  });
 }
 
 /**
