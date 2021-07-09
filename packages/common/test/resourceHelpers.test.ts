@@ -611,6 +611,7 @@ describe("Module `resourceHelpers`: common functions involving the management of
       const sourceUserSession = MOCK_USER_SESSION;
       const files: interfaces.ISourceFile[] = [
         {
+          itemId: "itm1234567890",
           folder: "storageFolder",
           filename: "storageFilename.png",
           file: utils.getSampleImageAsFile()
@@ -666,6 +667,7 @@ describe("Module `resourceHelpers`: common functions involving the management of
       const resourceFilenames: string[] = [];
       const expected: interfaces.ISourceFileCopyPath[] = [
         {
+          itemId,
           url:
             utils.PORTAL_SUBSET.restUrl +
             "/content/items/8f7ec78195d0479784036387d522e29f/info/metadata/metadata.xml",
@@ -673,6 +675,7 @@ describe("Module `resourceHelpers`: common functions involving the management of
           filename: "metadata.xml"
         },
         {
+          itemId,
           url:
             utils.PORTAL_SUBSET.restUrl +
             "/content/items/8f7ec78195d0479784036387d522e29f/info/thumbnail/thumbnail.png?w=400",
@@ -698,6 +701,7 @@ describe("Module `resourceHelpers`: common functions involving the management of
       const resourceFilenames = ["gtnp2.jpg"];
       const expected: interfaces.ISourceFileCopyPath[] = [
         {
+          itemId,
           url:
             utils.PORTAL_SUBSET.restUrl +
             "/content/items/8f7ec78195d0479784036387d522e29f/resources/gtnp2.jpg",
@@ -705,6 +709,7 @@ describe("Module `resourceHelpers`: common functions involving the management of
           filename: "gtnp2.jpg"
         },
         {
+          itemId,
           url:
             utils.PORTAL_SUBSET.restUrl +
             "/content/items/8f7ec78195d0479784036387d522e29f/info/metadata/metadata.xml",
@@ -712,6 +717,7 @@ describe("Module `resourceHelpers`: common functions involving the management of
           filename: "metadata.xml"
         },
         {
+          itemId,
           url:
             utils.PORTAL_SUBSET.restUrl +
             "/content/items/8f7ec78195d0479784036387d522e29f/info/thumbnail/thumbnail.png?w=400",
@@ -737,6 +743,7 @@ describe("Module `resourceHelpers`: common functions involving the management of
       const resourceFilenames = ["myFolder/gtnp2.jpg"];
       const expected: interfaces.ISourceFileCopyPath[] = [
         {
+          itemId,
           url:
             utils.PORTAL_SUBSET.restUrl +
             "/content/items/8f7ec78195d0479784036387d522e29f/resources/myFolder/gtnp2.jpg",
@@ -744,6 +751,7 @@ describe("Module `resourceHelpers`: common functions involving the management of
           filename: "gtnp2.jpg"
         },
         {
+          itemId,
           url:
             utils.PORTAL_SUBSET.restUrl +
             "/content/items/8f7ec78195d0479784036387d522e29f/info/metadata/metadata.xml",
@@ -751,6 +759,7 @@ describe("Module `resourceHelpers`: common functions involving the management of
           filename: "metadata.xml"
         },
         {
+          itemId,
           url:
             utils.PORTAL_SUBSET.restUrl +
             "/content/items/8f7ec78195d0479784036387d522e29f/info/thumbnail/thumbnail.png?w=400",
@@ -776,6 +785,7 @@ describe("Module `resourceHelpers`: common functions involving the management of
       const resourceFilenames = ["gtnp2.jpg", "myFolder/gtnp2.jpg"];
       const expected: interfaces.ISourceFileCopyPath[] = [
         {
+          itemId,
           url:
             utils.PORTAL_SUBSET.restUrl +
             "/content/items/8f7ec78195d0479784036387d522e29f/resources/gtnp2.jpg",
@@ -783,6 +793,7 @@ describe("Module `resourceHelpers`: common functions involving the management of
           filename: "gtnp2.jpg"
         },
         {
+          itemId,
           url:
             utils.PORTAL_SUBSET.restUrl +
             "/content/items/8f7ec78195d0479784036387d522e29f/resources/myFolder/gtnp2.jpg",
@@ -790,6 +801,7 @@ describe("Module `resourceHelpers`: common functions involving the management of
           filename: "gtnp2.jpg"
         },
         {
+          itemId,
           url:
             utils.PORTAL_SUBSET.restUrl +
             "/content/items/8f7ec78195d0479784036387d522e29f/info/metadata/metadata.xml",
@@ -797,6 +809,7 @@ describe("Module `resourceHelpers`: common functions involving the management of
           filename: "metadata.xml"
         },
         {
+          itemId,
           url:
             utils.PORTAL_SUBSET.restUrl +
             "/content/items/8f7ec78195d0479784036387d522e29f/info/thumbnail/thumbnail.png?w=400",
@@ -824,6 +837,7 @@ describe("Module `resourceHelpers`: common functions involving the management of
       const resourceFilenames: string[] = [];
       const expected: interfaces.ISourceFileCopyPath[] = [
         {
+          itemId,
           url:
             utils.PORTAL_SUBSET.restUrl +
             "/content/items/8f7ec78195d0479784036387d522e29f/info/metadata/metadata.xml",
@@ -831,6 +845,7 @@ describe("Module `resourceHelpers`: common functions involving the management of
           filename: "metadata.xml"
         },
         {
+          itemId,
           url:
             utils.PORTAL_SUBSET.restUrl +
             "/content/items/8f7ec78195d0479784036387d522e29f/info/thumbnail/thumbnail.png?w=400",
@@ -858,6 +873,7 @@ describe("Module `resourceHelpers`: common functions involving the management of
       const resourceFilenames = ["gtnp2.jpg"];
       const expected: interfaces.ISourceFileCopyPath[] = [
         {
+          itemId,
           url:
             utils.PORTAL_SUBSET.restUrl +
             "/content/items/8f7ec78195d0479784036387d522e29f/resources/gtnp2.jpg",
@@ -865,6 +881,7 @@ describe("Module `resourceHelpers`: common functions involving the management of
           filename: "gtnp2.jpg"
         },
         {
+          itemId,
           url:
             utils.PORTAL_SUBSET.restUrl +
             "/content/items/8f7ec78195d0479784036387d522e29f/info/metadata/metadata.xml",
@@ -872,6 +889,7 @@ describe("Module `resourceHelpers`: common functions involving the management of
           filename: "metadata.xml"
         },
         {
+          itemId,
           url:
             utils.PORTAL_SUBSET.restUrl +
             "/content/items/8f7ec78195d0479784036387d522e29f/info/thumbnail/thumbnail.png?w=400",
@@ -899,6 +917,7 @@ describe("Module `resourceHelpers`: common functions involving the management of
       const resourceFilenames = ["myFolder/gtnp2.jpg"];
       const expected: interfaces.ISourceFileCopyPath[] = [
         {
+          itemId,
           url:
             utils.PORTAL_SUBSET.restUrl +
             "/content/items/8f7ec78195d0479784036387d522e29f/resources/myFolder/gtnp2.jpg",
@@ -906,6 +925,7 @@ describe("Module `resourceHelpers`: common functions involving the management of
           filename: "gtnp2.jpg"
         },
         {
+          itemId,
           url:
             utils.PORTAL_SUBSET.restUrl +
             "/content/items/8f7ec78195d0479784036387d522e29f/info/metadata/metadata.xml",
@@ -913,6 +933,7 @@ describe("Module `resourceHelpers`: common functions involving the management of
           filename: "metadata.xml"
         },
         {
+          itemId,
           url:
             utils.PORTAL_SUBSET.restUrl +
             "/content/items/8f7ec78195d0479784036387d522e29f/info/thumbnail/thumbnail.png?w=400",
@@ -940,6 +961,7 @@ describe("Module `resourceHelpers`: common functions involving the management of
       const resourceFilenames = ["gtnp2.jpg", "myFolder/gtnp2.jpg"];
       const expected: interfaces.ISourceFileCopyPath[] = [
         {
+          itemId,
           url:
             utils.PORTAL_SUBSET.restUrl +
             "/content/items/8f7ec78195d0479784036387d522e29f/resources/gtnp2.jpg",
@@ -947,6 +969,7 @@ describe("Module `resourceHelpers`: common functions involving the management of
           filename: "gtnp2.jpg"
         },
         {
+          itemId,
           url:
             utils.PORTAL_SUBSET.restUrl +
             "/content/items/8f7ec78195d0479784036387d522e29f/resources/myFolder/gtnp2.jpg",
@@ -954,6 +977,7 @@ describe("Module `resourceHelpers`: common functions involving the management of
           filename: "gtnp2.jpg"
         },
         {
+          itemId,
           url:
             utils.PORTAL_SUBSET.restUrl +
             "/content/items/8f7ec78195d0479784036387d522e29f/info/metadata/metadata.xml",
@@ -961,6 +985,7 @@ describe("Module `resourceHelpers`: common functions involving the management of
           filename: "metadata.xml"
         },
         {
+          itemId,
           url:
             utils.PORTAL_SUBSET.restUrl +
             "/content/items/8f7ec78195d0479784036387d522e29f/info/thumbnail/thumbnail.png?w=400",

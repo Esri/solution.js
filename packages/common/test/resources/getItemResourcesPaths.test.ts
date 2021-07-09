@@ -71,18 +71,21 @@ describe("getItemResourcesPaths :: ", () => {
           expect(response).toEqual(
             [
               {
+                itemId: "bc3",
                 url:
                   "https://myorg.maps.arcgis.com/sharing/rest/content/items/bc3/resources/some-image.jpeg",
                 folder: "bc3",
                 filename: "some-image.jpeg"
               },
               {
+                itemId: "bc3",
                 url:
                   "https://myorg.maps.arcgis.com/sharing/rest/content/items/bc3/resources/foo.json",
                 folder: "bc3",
                 filename: "foo.json"
               },
               {
+                itemId: "bc3",
                 url:
                   "https://myorg.maps.arcgis.com/sharing/rest/content/items/bc3/info/metadata/metadata.xml",
                 folder: "bc3_info_metadata",
@@ -156,12 +159,14 @@ describe("getItemResourcesPaths :: ", () => {
           expect(response).toEqual(
             [
               {
+                itemId: "bc3",
                 url:
                   "https://myorg.maps.arcgis.com/sharing/rest/content/items/bc3/resources/some-image.jpeg",
                 folder: "bc3",
                 filename: "some-image.jpeg"
               },
               {
+                itemId: "bc3",
                 url:
                   "https://myorg.maps.arcgis.com/sharing/rest/content/items/bc3/info/metadata/metadata.xml",
                 folder: "bc3_info_metadata",
@@ -232,18 +237,21 @@ describe("getItemResourcesPaths :: ", () => {
         expect(response).toEqual(
           [
             {
+              itemId: "bc3",
               url:
                 "https://myorg.maps.arcgis.com/sharing/rest/content/items/bc3/resources/some-image.jpeg",
               folder: "bc3",
               filename: "some-image.jpeg"
             },
             {
+              itemId: "bc3",
               url:
                 "https://myorg.maps.arcgis.com/sharing/rest/content/items/bc3/resources/images/image-resources-list.json",
               folder: "bc3/images",
               filename: "image-resources-list.json"
             },
             {
+              itemId: "bc3",
               url:
                 "https://myorg.maps.arcgis.com/sharing/rest/content/items/bc3/info/metadata/metadata.xml",
               folder: "bc3_info_metadata",
@@ -319,18 +327,21 @@ describe("getItemResourcesPaths :: ", () => {
       ).then(actual => {
         expect(actual).toEqual([
           {
+            itemId: "qck1234567890",
             url:
               "https://myorg.maps.arcgis.com/sharing/rest/content/items/qck1234567890/resources/qc.project.json",
             folder: "qck1234567890",
             filename: "qc.project.json"
           },
           {
+            itemId: "qck1234567890",
             url:
               "https://myorg.maps.arcgis.com/sharing/rest/content/items/qck1234567890/info/metadata/metadata.xml",
             folder: "qck1234567890_info_metadata",
             filename: "metadata.xml"
           },
           {
+            itemId: "qck1234567890",
             url:
               "https://myorg.maps.arcgis.com/sharing/rest/content/items/qck1234567890/info/thumbnail/ago_downloaded.png?w=400",
             folder: "qck1234567890_info_thumbnail",
@@ -428,18 +439,21 @@ describe("getItemResourcesPaths :: ", () => {
       ).then(actual => {
         expect(actual).toEqual([
           {
+            itemId: "map1234567890",
             url:
               "https://myorg.maps.arcgis.com/sharing/rest/content/items/map1234567890/resources/image/banner.png",
             folder: "map1234567890_image",
             filename: "banner.png"
           },
           {
+            itemId: "map1234567890",
             url:
               "https://myorg.maps.arcgis.com/sharing/rest/content/items/map1234567890/info/metadata/metadata.xml",
             folder: "map1234567890_info_metadata",
             filename: "metadata.xml"
           },
           {
+            itemId: "map1234567890",
             url:
               "https://myorg.maps.arcgis.com/sharing/rest/content/items/map1234567890/info/thumbnail/banner.png?w=400",
             folder: "map1234567890_info_thumbnail",
@@ -522,12 +536,14 @@ describe("getItemResourcesPaths :: ", () => {
       ).then(actual => {
         expect(actual).toEqual([
           {
+            itemId: "frm1234567890",
             url:
               "https://myorg.maps.arcgis.com/sharing/rest/content/items/frm1234567890/info/metadata/metadata.xml",
             folder: "frm1234567890_info_metadata",
             filename: "metadata.xml"
           },
           {
+            itemId: "frm1234567890",
             url:
               "https://myorg.maps.arcgis.com/sharing/rest/content/items/frm1234567890/info/thumbnail/banner.png?w=400",
             folder: "frm1234567890_info_thumbnail",
@@ -598,18 +614,21 @@ describe("getItemResourcesPaths :: ", () => {
       ).then(actual => {
         expect(actual).toEqual([
           {
+            itemId: "qck1234567890",
             url:
               "https://myorg.maps.arcgis.com/sharing/rest/content/items/qck1234567890/resources/qc.project.json",
             folder: "qck1234567890",
             filename: "qc.project.json"
           },
           {
+            itemId: "qck1234567890",
             url:
               "https://myorg.maps.arcgis.com/sharing/rest/content/items/qck1234567890/info/metadata/metadata.xml",
             folder: "qck1234567890_info_metadata",
             filename: "metadata.xml"
           },
           {
+            itemId: "qck1234567890",
             url:
               "https://myorg.maps.arcgis.com/sharing/rest/content/items/qck1234567890/info/thumbnail/ago_downloaded.png?w=400",
             folder: "qck1234567890_info_thumbnail",
@@ -708,18 +727,21 @@ describe("getItemResourcesPaths :: ", () => {
       ).then(actual => {
         expect(actual).toEqual([
           {
+            itemId: "map1234567890",
             url:
               "https://myorg.maps.arcgis.com/sharing/rest/content/items/map1234567890/resources/image/banner.png",
             folder: "map1234567890/image",
             filename: "banner.png"
           },
           {
+            itemId: "map1234567890",
             url:
               "https://myorg.maps.arcgis.com/sharing/rest/content/items/map1234567890/info/metadata/metadata.xml",
             folder: "map1234567890_info_metadata",
             filename: "metadata.xml"
           },
           {
+            itemId: "map1234567890",
             url:
               "https://myorg.maps.arcgis.com/sharing/rest/content/items/map1234567890/info/thumbnail/banner.png?w=400",
             folder: "map1234567890_info_thumbnail",
@@ -803,12 +825,14 @@ describe("getItemResourcesPaths :: ", () => {
       ).then(actual => {
         expect(actual).toEqual([
           {
+            itemId: "frm1234567890",
             url:
               "https://myorg.maps.arcgis.com/sharing/rest/content/items/frm1234567890/info/metadata/metadata.xml",
             folder: "frm1234567890_info_metadata",
             filename: "metadata.xml"
           },
           {
+            itemId: "frm1234567890",
             url:
               "https://myorg.maps.arcgis.com/sharing/rest/content/items/frm1234567890/info/thumbnail/banner.png?w=400",
             folder: "frm1234567890_info_thumbnail",

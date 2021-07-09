@@ -739,6 +739,11 @@ export interface ISolutionProgressEvent {
 
 export interface ISourceFile {
   /**
+   * The portal item id, e.g., "4efe5f693de34620934787ead6693f19", that supplies the resource
+   */
+  itemId: string;
+
+  /**
    * Resource file
    */
   file: File;
@@ -758,6 +763,11 @@ export interface ISourceFile {
  *  Information for storing a resource in a storage item.
  */
 export interface ISourceFileCopyPath {
+  /**
+   * The portal item id, e.g., "4efe5f693de34620934787ead6693f19", that supplies the resource
+   */
+  itemId: string;
+
   /**
    * URL where a resource, metadata, or thumbnail of an item or group can be found
    */

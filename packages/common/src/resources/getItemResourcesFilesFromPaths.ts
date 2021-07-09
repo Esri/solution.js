@@ -37,6 +37,7 @@ export function getItemResourcesFilesFromPaths(
         getBlobAsFile(fileInfo.url, fileInfo.filename, authentication).then(
           file => {
             resolve({
+              itemId: fileInfo.itemId,
               file,
               folder: fileInfo.folder,
               filename: fileInfo.filename
