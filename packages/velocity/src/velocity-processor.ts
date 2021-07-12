@@ -28,9 +28,9 @@ import {
   EItemProgressStatus,
   generateEmptyCreationResponse,
   createPlaceholderTemplate,
-  fail,
-  setProp
+  fail
 } from "@esri/solution-common";
+import { templatizeVelocity } from "./helpers/velocity-templatize";
 import { getVelocityDependencies } from "./helpers/get-velocity-dependencies";
 import {
   getVelocityUrl,
@@ -38,7 +38,6 @@ import {
   getFormats,
   getServices,
   postVelocityData,
-  templatizeFeeds,
   getSources
 } from "./helpers/velocity-helpers";
 
@@ -62,14 +61,14 @@ export function convertItemToTemplate(
         .then(data_json => {
           template.data = data_json;
           template.dependencies = getVelocityDependencies(template);
-          setProp(template, "data.feeds", templatizeFeeds(template));
+          templatizeVelocity(template);
 
-          return testTheAPI(authentication, {}).then(r => {
-            console.log(r);
-            return Promise.resolve(template);
-          });
+          // return testTheAPI(authentication, {}).then(r => {
+          //   console.log(r);
+          //   return Promise.resolve(template);
+          // });
 
-          // return Promise.resolve(template);
+          return Promise.resolve(template);
         });
     },
     e => fail(e)

@@ -22,10 +22,19 @@ import { IItemTemplate, getProp } from "@esri/solution-common";
  * @param template IItemTemplate
  */
 export function getVelocityDependencies(template: IItemTemplate): any[] {
-  return [].concat(
-    _getDatasourceDependencies(template),
-    _getFeedDependencies(template)
+  const dependencies: string[] = [];
+
+  _getDatasourceDependencies(
+    getProp(template, "data.sources") || [],
+    dependencies
   );
+  _getDatasourceDependencies(
+    getProp(template, "data.feed") ? [template.data.feed] : [],
+    dependencies
+  );
+  _getFeedDependencies(getProp(template, "data.feeds") || [], dependencies);
+
+  return dependencies;
 }
 
 /**
@@ -33,9 +42,11 @@ export function getVelocityDependencies(template: IItemTemplate): any[] {
  *
  * @param template IItemTemplate
  */
-export function _getDatasourceDependencies(template: IItemTemplate): any[] {
-  const dataSources = getProp(template, "data.sources") || [];
-  return dataSources.reduce((prev: any, cur: any) => {
+export function _getDatasourceDependencies(
+  dataSources: any[],
+  dependencies: string[]
+): void {
+  dataSources.reduce((prev: any, cur: any) => {
     const id: string = cur.properties
       ? cur.properties["feature-layer.portalItemId"]
       : undefined;
@@ -43,7 +54,7 @@ export function _getDatasourceDependencies(template: IItemTemplate): any[] {
       prev.push(id);
     }
     return prev;
-  }, []);
+  }, dependencies);
 }
 
 /**
@@ -51,13 +62,15 @@ export function _getDatasourceDependencies(template: IItemTemplate): any[] {
  *
  * @param template IItemTemplate
  */
-export function _getFeedDependencies(template: IItemTemplate): any[] {
-  const feeds = getProp(template, "data.feeds") || [];
-  return feeds.reduce((prev: any, cur: any) => {
+export function _getFeedDependencies(
+  feeds: any[],
+  dependencies: string[]
+): void {
+  feeds.reduce((prev: any, cur: any) => {
     const id: string = cur.id || undefined;
     if (id && prev.indexOf(id) < 0) {
       prev.push(id);
     }
     return prev;
-  }, []);
+  }, dependencies);
 }

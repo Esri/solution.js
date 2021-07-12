@@ -17,7 +17,6 @@
 import {
   ISubscriptionInfo,
   IItemTemplate,
-  getProp,
   getSubscriptionInfo,
   getUniqueTitle,
   replaceInTemplate,
@@ -103,7 +102,8 @@ export function postVelocityData(
   authentication: UserSession,
   template: IItemTemplate,
   data: any,
-  templateDictionary: any
+  templateDictionary: any,
+  autoStart: boolean = false
 ): Promise<any> {
   return getVelocityUrl(
     authentication,
@@ -123,24 +123,29 @@ export function postVelocityData(
             template.item.url = `${url}/${rr.id}`;
 
             // Update the template dictionary
-            templateDictionary[template.itemId]["itemId"] = rr.id;
             templateDictionary[template.itemId]["url"] = template.item.url;
             templateDictionary[template.itemId]["label"] = data.label;
+            templateDictionary[template.itemId]["itemId"] = rr.id;
 
-            return validate(
-              authentication,
-              templateDictionary,
-              template.type,
-              rr.id
-            ).then(rrr => {
-              console.log(rrr);
-              return Promise.resolve({
-                item: replaceInTemplate(template.item, templateDictionary),
-                id: rr.id,
-                type: template.type,
-                postProcess: false
+            const finalResult = {
+              item: replaceInTemplate(template.item, templateDictionary),
+              id: rr.id,
+              type: template.type,
+              postProcess: false
+            };
+
+            if (autoStart) {
+              return _validateAndStart(
+                authentication,
+                templateDictionary,
+                template,
+                rr.id
+              ).then(() => {
+                return Promise.resolve(finalResult);
               });
-            });
+            } else {
+              return Promise.resolve(finalResult);
+            }
           },
           e => Promise.reject(e)
         );
@@ -148,6 +153,23 @@ export function postVelocityData(
       e => Promise.reject(e)
     );
   });
+}
+
+export function _validateAndStart(
+  authentication: UserSession,
+  templateDictionary: any,
+  template: IItemTemplate,
+  id: string
+): Promise<any> {
+  return validate(authentication, templateDictionary, template.type, id).then(
+    validateResult => {
+      if (validateResult.executable) {
+        return start(authentication, templateDictionary, template.type, id);
+      } else {
+        return Promise.resolve(validateResult);
+      }
+    }
+  );
 }
 
 export function getStatus(
@@ -322,15 +344,6 @@ export function getSources(
       console.log(result);
       return Promise.resolve(result);
     });
-  });
-}
-
-export function templatizeFeeds(template: IItemTemplate): any {
-  const feeds = getProp(template, "data.feeds") || [];
-  return feeds.map((feed: any) => {
-    feed.label = `{{${feed.id}.label}}`;
-    feed.id = `{{${feed.id}.itemId}}`;
-    return feed;
   });
 }
 

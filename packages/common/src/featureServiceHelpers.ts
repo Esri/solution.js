@@ -330,15 +330,21 @@ export function updateTemplate(
   // Update the item with any typeKeywords that were added on create
   _updateTypeKeywords(itemTemplate, createResponse);
 
-  // Add the new item to the template dictionary
-  templateDictionary[itemTemplate.itemId] = Object.assign(
-    templateDictionary[itemTemplate.itemId] || {},
-    {
-      itemId: createResponse.serviceItemId,
-      url: checkUrlPathTermination(createResponse.serviceurl),
-      name: createResponse.name
+  // allow update when the itemTemplate already has the new item id
+  let itemId = itemTemplate.itemId;
+  Object.keys(templateDictionary).some(k => {
+    if (templateDictionary[k].itemId === itemId) {
+      itemId = k;
+      return true;
     }
-  );
+  });
+
+  // Add the new item to the template dictionary
+  templateDictionary[itemId] = Object.assign(templateDictionary[itemId] || {}, {
+    itemId: createResponse.serviceItemId,
+    url: checkUrlPathTermination(createResponse.serviceurl),
+    name: createResponse.name
+  });
   // Update the item template now that the new service has been created
   itemTemplate.itemId = createResponse.serviceItemId;
   return replaceInTemplate(itemTemplate, templateDictionary);
