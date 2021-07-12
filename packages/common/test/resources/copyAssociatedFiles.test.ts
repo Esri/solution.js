@@ -179,6 +179,75 @@ describe("Module `copyAssociatedFiles`: functions for sending resources to AGO",
       );
     });
 
+    it("copies ignoring file type specifying number of files per zip", done => {
+      const files: interfaces.ISourceFile[] = [
+        {
+          itemId: "itm1234567890",
+          folder: "storageFolder",
+          filename: "metadata.xml",
+          file: utils.getSampleMetadataAsFile()
+        },
+        {
+          itemId: "itm1234567890",
+          folder: "storageFolder",
+          filename: "storageFilename.png",
+          file: utils.getSampleImageAsFile()
+        }
+      ];
+
+      const copyDataIntoItemSpy = spyOn(
+        copyDataIntoItem,
+        "copyDataIntoItem"
+      ).and.rejectWith(mockItems.get400Failure());
+      const copyMetadataIntoItemSpy = spyOn(
+        copyMetadataIntoItem,
+        "copyMetadataIntoItem"
+      ).and.rejectWith(mockItems.get400Failure());
+      const getBlobAsFileSpy = spyOn(
+        restHelpersGet,
+        "getBlobAsFile"
+      ).and.resolveTo(utils.getSampleImageAsFile());
+      const copyZipIntoItemSpy = spyOn(
+        copyZipIntoItem,
+        "copyZipIntoItem"
+      ).and.returnValues(
+        Promise.resolve(
+          _createIZipCopyResults(true, true, [
+            _createIAssociatedFileInfo(interfaces.EFileType.Metadata)
+          ])
+        ),
+        Promise.resolve(
+          _createIZipCopyResults(true, true, [
+            _createIAssociatedFileInfo(interfaces.EFileType.Resource)
+          ])
+        )
+      );
+
+      copyFilesAsResources(files, "itm1234567890", MOCK_USER_SESSION, 1).then(
+        (results: interfaces.IAssociatedFileCopyResults[]) => {
+          expect(results).toEqual([
+            _createIAssociatedFileCopyResults(
+              true,
+              true,
+              interfaces.EFileType.Metadata
+            ),
+            _createIAssociatedFileCopyResults(
+              true,
+              true,
+              interfaces.EFileType.Resource
+            )
+          ] as interfaces.IAssociatedFileCopyResults[]);
+
+          expect(copyDataIntoItemSpy).not.toHaveBeenCalled();
+          expect(copyMetadataIntoItemSpy).not.toHaveBeenCalled();
+          expect(copyZipIntoItemSpy).toHaveBeenCalled();
+
+          done();
+        },
+        done.fail
+      );
+    });
+
     it("copies based on file type", done => {
       const fileInfos: interfaces.IAssociatedFileInfo[] = [
         _createIAssociatedFileInfo(interfaces.EFileType.Data),
