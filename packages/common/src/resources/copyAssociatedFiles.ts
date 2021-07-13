@@ -42,17 +42,19 @@ import JSZip from "jszip";
 
 /**
  * Copies the files for storing the resources, metadata, and thumbnail of an item or group to a storage item
- * with a specified path.
+ * with a specified path by collecting files into zip files.
  *
  * @param files List of item files' URLs and folder/filenames for storing the files
  * @param destinationItemId Id of item to receive copy of resource/metadata/thumbnail
  * @param destinationAuthentication Credentials for the request to the storage
+ * @param filesPerZip Number of files to include per zip file; AGO limits zips to 50 files
  * @return A promise which resolves to a list of the result of the copies
  */
 export function copyFilesAsResources(
   files: ISourceFile[],
   destinationItemId: string,
-  destinationAuthentication: UserSession
+  destinationAuthentication: UserSession,
+  filesPerZip = 40
 ): Promise<IAssociatedFileCopyResults[]> {
   return new Promise<IAssociatedFileCopyResults[]>(resolve => {
     let awaitAllItems: IAssociatedFileCopyResults[] = [];
@@ -64,8 +66,8 @@ export function copyFilesAsResources(
       // Note that AGO imposes a limit of 50 files per zip, so we break the list of resource
       // file info into chunks below this threshold and start a zip for each
       // https://developers.arcgis.com/rest/users-groups-and-items/add-resources.htm
-      const chunkedResourceFilles = chunkArray(files, 40); // leave a bit of room below threshold
-      chunkedResourceFilles.forEach((chunk, index) => {
+      const chunkedResourceFiles = chunkArray(files, filesPerZip);
+      chunkedResourceFiles.forEach((chunk, index) => {
         // Create a zip for this chunk
         const zipInfo: IZipInfo = {
           filename: `resources${index}.zip`,
@@ -265,33 +267,78 @@ export function _copyAssociatedFileZips(
 
     if (nonEmptyZipInfos.length > 0) {
       // Send the zip(s) to AGO
-      const awaitSendingZips = nonEmptyZipInfos.map(zipInfo => {
-        return copyZipIntoItem(
-          zipInfo,
-          destinationItemId,
-          destinationAuthentication
-        );
+      void _sendZipsSeriallyToItem(
+        nonEmptyZipInfos,
+        destinationItemId,
+        destinationAuthentication
+      ).then((zipResults: IAssociatedFileCopyResults[]) => {
+        resolve(zipResults);
       });
-      void Promise.all(awaitSendingZips).then(
-        (zipResults: IZipCopyResults[]) => {
-          // Apply the result of sending the zip to AGO to each of the items in the zip
-          zipResults.forEach((zipResult: IZipCopyResults) => {
-            zipResult.filelist.forEach((fileInfo: IAssociatedFileInfo) => {
-              results.push(
-                createCopyResults(
-                  fileInfo,
-                  true,
-                  zipResult.copiedToDestination
-                ) as IAssociatedFileCopyResults
-              );
-            });
-          });
-          resolve(results);
-        }
-      );
     } else {
       // No resources to send; we're done
       resolve(results);
     }
+  });
+}
+
+/**
+ * Copies one or more zipfiles to a storage item in a serial fashion, waiting a bit between sends.
+ *
+ * @param zipInfos List of zip files containing files to store
+ * @param destinationItemId Id of item to receive copy of resource/metadata/thumbnail
+ * @param destinationAuthentication Credentials for the request to the storage
+ * @return A promise which resolves to a list of the result of the copies
+ */
+function _sendZipsSeriallyToItem(
+  zipInfos: IZipInfo[],
+  destinationItemId: string,
+  destinationAuthentication: UserSession
+): Promise<IAssociatedFileCopyResults[]> {
+  return new Promise<IAssociatedFileCopyResults[]>(resolve => {
+    let allResults: IAssociatedFileCopyResults[] = [];
+
+    // Remove zip from bottom of list
+    const zipInfoToSend = zipInfos.pop();
+
+    // Send predecessors in list
+    let sendOthersPromise = Promise.resolve([] as IAssociatedFileCopyResults[]);
+    if (zipInfos.length > 0) {
+      sendOthersPromise = _sendZipsSeriallyToItem(
+        zipInfos,
+        destinationItemId,
+        destinationAuthentication
+      );
+    }
+    void sendOthersPromise
+      .then((response: IAssociatedFileCopyResults[]) => {
+        allResults = response;
+
+        // Stall a little to give AGO time to catch up
+        return new Promise<void>(resolveSleep => {
+          setTimeout(() => resolveSleep(), 1000);
+        });
+      })
+      .then(() => {
+        // Now send the zip removed from bottom of the input list
+        return copyZipIntoItem(
+          zipInfoToSend,
+          destinationItemId,
+          destinationAuthentication
+        );
+      })
+      .then((zipResult: IZipCopyResults) => {
+        // Save the result of copying this zip as a status for each of the files that it contains
+        zipResult.filelist.forEach((fileInfo: IAssociatedFileInfo) => {
+          allResults.push(
+            createCopyResults(
+              fileInfo,
+              true,
+              zipResult.copiedToDestination
+            ) as IAssociatedFileCopyResults
+          );
+        });
+
+        resolve(allResults);
+      });
   });
 }
