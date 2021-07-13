@@ -242,6 +242,7 @@ export function deploySolutionFromTemplate(
           solutionTemplateData.templates,
           storageAuthentication,
           templateDictionary,
+          deployedSolutionId,
           authentication,
           options
         );
@@ -324,43 +325,7 @@ export function deploySolutionFromTemplate(
           deployedFolderId
         );
       })
-      .then(
-        () => resolve(solutionTemplateBase.id),
-        error => {
-          // Cleanup deployed solution item and solution folder
-          // Have to do it in stages because folder deletion is faster than item deletion,
-          // and thus fails if solution is not yet unprotected
-          let cleanupPromise = Promise.resolve({
-            success: true,
-            itemId: solutionTemplateBase.id
-          } as common.IStatusResponse);
-          if (deployedSolutionId) {
-            cleanupPromise = common.deleteSolutionItem(
-              deployedSolutionId,
-              authentication
-            );
-          }
-
-          cleanupPromise
-            .then(() => {
-              let cleanupPromise2 = Promise.resolve({
-                success: true,
-                folder: null
-              } as common.IFolderStatusResponse);
-              if (deployedFolderId) {
-                cleanupPromise2 = common.removeFolder(
-                  deployedFolderId,
-                  authentication
-                );
-              }
-              return cleanupPromise2;
-            })
-            .then(
-              () => reject(error),
-              () => reject(error)
-            );
-        }
-      );
+      .then(() => resolve(solutionTemplateBase.id), reject);
   });
 }
 

@@ -143,10 +143,10 @@ describe("Module `completeItem`: functions for accessing a complete item", () =>
     it("should handle failure to get an item", done => {
       const itemId = "abc";
 
-      const baseSpy = spyOn(restHelpersGet, "getItemBase").and.resolveTo(
+      const baseSpy = spyOn(restHelpersGet, "getItemBase").and.rejectWith(
         mockItems.get400Failure()
       );
-      const dataSpy = spyOn(restHelpersGet, "getItemDataAsFile").and.resolveTo(
+      const dataSpy = spyOn(restHelpersGet, "getItemDataAsFile").and.rejectWith(
         mockItems.get400Failure()
       );
       const thumbnailSpy = spyOn(
@@ -170,12 +170,13 @@ describe("Module `completeItem`: functions for accessing a complete item", () =>
         "getFeatureServiceProperties"
       ).and.resolveTo({} as interfaces.IFeatureServiceProperties);
 
-      completeItem
-        .getCompleteItem(itemId, MOCK_USER_SESSION)
-        .then((item: interfaces.ICompleteItem) => {
-          expect(item).toBeNull();
+      completeItem.getCompleteItem(itemId, MOCK_USER_SESSION).then(
+        () => done.fail(),
+        error => {
+          expect(error.error.code).toEqual(400);
           done();
-        });
+        }
+      );
     });
   });
 });

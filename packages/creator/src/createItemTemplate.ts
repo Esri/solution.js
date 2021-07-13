@@ -33,9 +33,12 @@ import {
   IItemGeneralized,
   IItemProgressCallback,
   IItemTemplate,
+  ISourceFile,
+  ISourceFileCopyPath,
+  getItemResourcesFilesFromPaths,
+  getItemResourcesPaths,
   replaceTemplate,
   sanitizeJSONAndReportChanges,
-  storeItemResources,
   fail,
   UserSession
 } from "@esri/solution-common";
@@ -50,23 +53,25 @@ import { moduleMap, UNSUPPORTED } from "./module-map";
  * @param solutionItemId The solution to contain the item
  * @param itemId AGO id string
  * @param templateDictionary Hash of facts
+ * @param srcAuthentication Credentials for requests to source items
  * @param destAuthentication Authentication for requesting information from AGO about items to be included in solution item
  * @param existingTemplates A collection of AGO item templates that can be referenced by newly-created templates
- * @return A promise that will resolve when creation is done
+ * @return A promise which resolves with an array of resources for the item and its dependencies
  * @protected
  */
 export function createItemTemplate(
   solutionItemId: string,
   itemId: string,
   templateDictionary: any,
+  srcAuthentication: UserSession,
   destAuthentication: UserSession,
   existingTemplates: IItemTemplate[],
   itemProgressCallback: IItemProgressCallback
-): Promise<void> {
+): Promise<ISourceFile[]> {
   return new Promise(resolve => {
     // Check if item and its dependents are already in list or are queued
     if (findTemplateInList(existingTemplates, itemId)) {
-      resolve(null);
+      resolve([]);
     } else {
       // Add the id as a placeholder to show that it is being fetched
       existingTemplates.push(createPlaceholderTemplate(itemId));
@@ -74,7 +79,7 @@ export function createItemTemplate(
       itemProgressCallback(itemId, EItemProgressStatus.Started, 0);
 
       // Fetch the item
-      getItemBase(itemId, destAuthentication)
+      getItemBase(itemId, srcAuthentication)
         .catch(() => {
           // If item query fails, try fetching item as a group
           // Change its placeholder from an empty type to the Group type so that we can later distinguish
@@ -84,7 +89,7 @@ export function createItemTemplate(
             itemId,
             createPlaceholderTemplate(itemId, "Group")
           );
-          return getGroupBase(itemId, destAuthentication);
+          return getGroupBase(itemId, srcAuthentication);
         })
         .then(
           itemInfo => {
@@ -136,7 +141,7 @@ export function createItemTemplate(
             if (!itemHandler || itemHandler === UNSUPPORTED) {
               if (itemHandler === UNSUPPORTED) {
                 itemProgressCallback(itemId, EItemProgressStatus.Ignored, 1);
-                resolve(null);
+                resolve([]);
               } else {
                 itemProgressCallback(itemId, EItemProgressStatus.Failed, 1);
                 placeholder.properties["failed"] = true;
@@ -170,71 +175,94 @@ export function createItemTemplate(
                 .then(
                   itemTemplate => {
                     // eslint-disable-next-line @typescript-eslint/no-floating-promises
-                    storeItemResources(
+                    getItemResourcesPaths(
                       itemTemplate,
                       solutionItemId,
-                      destAuthentication,
+                      srcAuthentication,
                       SolutionTemplateFormatVersion
-                    ).then(resources => {
-                      // update the templates resources
-                      itemTemplate.item.thumbnail = null; // no longer needed; use resources
-                      itemTemplate.resources = itemTemplate.resources.concat(
-                        resources
-                      );
+                    ).then((resourceItemFilePaths: ISourceFileCopyPath[]) => {
+                      itemTemplate.item.thumbnail = null; // not needed in this property; handled as a resource
 
-                      // Set the value keyed by the id to the created template, replacing the placeholder template
-                      replaceTemplate(
-                        existingTemplates,
-                        itemTemplate.itemId,
-                        itemTemplate
-                      );
-
-                      // Trace item dependencies
-                      if (itemTemplate.dependencies.length === 0) {
-                        itemProgressCallback(
-                          itemId,
-                          EItemProgressStatus.Finished,
-                          1
+                      // eslint-disable-next-line @typescript-eslint/no-floating-promises
+                      getItemResourcesFilesFromPaths(
+                        resourceItemFilePaths,
+                        srcAuthentication
+                      ).then((resourceItemFiles: ISourceFile[]) => {
+                        // update the template's resources
+                        itemTemplate.resources = itemTemplate.resources.concat(
+                          resourceItemFiles.map(
+                            (file: ISourceFile) =>
+                              file.folder + "/" + file.filename
+                          )
                         );
-                        resolve(null);
-                      } else {
-                        // Get its dependencies, asking each to get its dependents via
-                        // recursive calls to this function
-                        const dependentDfds: Array<Promise<void>> = [];
-                        itemTemplate.dependencies.forEach(dependentId => {
-                          if (
-                            !findTemplateInList(existingTemplates, dependentId)
-                          ) {
-                            dependentDfds.push(
-                              createItemTemplate(
-                                solutionItemId,
-                                dependentId,
-                                templateDictionary,
-                                destAuthentication,
-                                existingTemplates,
-                                itemProgressCallback
-                              )
-                            );
-                          }
-                        });
-                        // eslint-disable-next-line @typescript-eslint/no-floating-promises
-                        Promise.all(dependentDfds).then(() => {
-                          // Templatization of item and its dependencies done
+
+                        // Set the value keyed by the id to the created template, replacing the placeholder template
+                        replaceTemplate(
+                          existingTemplates,
+                          itemTemplate.itemId,
+                          itemTemplate
+                        );
+
+                        // Trace item dependencies
+                        if (itemTemplate.dependencies.length === 0) {
                           itemProgressCallback(
                             itemId,
                             EItemProgressStatus.Finished,
                             1
                           );
-                          resolve(null);
-                        });
-                      }
+                          resolve(resourceItemFiles);
+                        } else {
+                          // Get its dependencies, asking each to get its dependents via
+                          // recursive calls to this function
+                          const dependentDfds: Array<Promise<
+                            ISourceFile[]
+                          >> = [];
+                          itemTemplate.dependencies.forEach(dependentId => {
+                            if (
+                              !findTemplateInList(
+                                existingTemplates,
+                                dependentId
+                              )
+                            ) {
+                              dependentDfds.push(
+                                createItemTemplate(
+                                  solutionItemId,
+                                  dependentId,
+                                  templateDictionary,
+                                  srcAuthentication,
+                                  destAuthentication,
+                                  existingTemplates,
+                                  itemProgressCallback
+                                )
+                              );
+                            }
+                          });
+                          // eslint-disable-next-line @typescript-eslint/no-floating-promises
+                          Promise.all(dependentDfds).then(
+                            (dependentResourceItemFiles: ISourceFile[][]) => {
+                              // Templatization of item and its dependencies done
+                              itemProgressCallback(
+                                itemId,
+                                EItemProgressStatus.Finished,
+                                1
+                              );
+                              resourceItemFiles = dependentResourceItemFiles.reduce(
+                                (accumulator, currentValue) =>
+                                  accumulator.concat(currentValue),
+                                resourceItemFiles
+                              );
+                              resolve(resourceItemFiles);
+                            }
+                          );
+                        }
+                      });
                     });
                   },
                   error => {
                     placeholder.properties["error"] = JSON.stringify(error);
                     replaceTemplate(existingTemplates, itemId, placeholder);
                     itemProgressCallback(itemId, EItemProgressStatus.Failed, 1);
-                    resolve(null);
+                    resolve([]);
                   }
                 );
             }
@@ -243,7 +271,7 @@ export function createItemTemplate(
           () => {
             itemProgressCallback(itemId, EItemProgressStatus.Failed, 1);
             itemProgressCallback(itemId, EItemProgressStatus.Failed, 1);
-            resolve(null);
+            resolve([]);
           }
         );
     }

@@ -17,6 +17,7 @@
 import {
   IAssociatedFileCopyResults,
   IAssociatedFileInfo,
+  ISourceFile,
   IZipInfo,
   UserSession
 } from "../interfaces";
@@ -28,12 +29,35 @@ import { getBlobAsFile } from "../restHelpersGet";
 /**
  * Copies a resource into a zipfile.
  *
+ * @param file Information about the source and destination of the file such as its URL, folder, filename
+ * @param zipInfo Information about a zipfile such as its name and its zip object
+ * @return The result of the copy
+ */
+export function copyResourceIntoZip(
+  file: ISourceFile,
+  zipInfo: IZipInfo
+): IAssociatedFileCopyResults {
+  // Add it to the zip
+  if (file.folder) {
+    zipInfo.zip
+      .folder(file.folder)
+      .file(file.filename, file.file, { binary: true });
+  } else {
+    zipInfo.zip.file(file.filename, file.file, { binary: true });
+  }
+  zipInfo.filelist.push(file);
+  return createCopyResults(file, true) as IAssociatedFileCopyResults;
+}
+
+/**
+ * Copies a resource into a zipfile.
+ *
  * @param fileInfo Information about the source and destination of the file such as its URL, folder, filename
  * @param sourceAuthentication Credentials for the request to the source
  * @param zipInfo Information about a zipfile such as its name and its zip object
  * @return A promise which resolves to the result of the copy
  */
-export function copyResourceIntoZip(
+export function copyResourceIntoZipFromInfo(
   fileInfo: IAssociatedFileInfo,
   sourceAuthentication: UserSession,
   zipInfo: IZipInfo
