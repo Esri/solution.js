@@ -14,7 +14,10 @@
  * limitations under the License.
  */
 
-export * from "./_deleteSolutionFolder";
-export * from "./_reconstructBuildOrderIds";
-export * from "./_removeItems";
-export * from "./_reportProgress";
+export * from "./deleteEmptyGroups";
+export * from "./deleteGroupIfEmpty";
+export * from "./deleteSolutionFolder";
+export * from "./deleteSolutionItem";
+export * from "./reconstructBuildOrderIds";
+export * from "./removeItems";
+export * from "./reportProgress";

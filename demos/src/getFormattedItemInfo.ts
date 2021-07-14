@@ -17,10 +17,13 @@
 
 import * as common from "@esri/solution-common";
 
+// ------------------------------------------------------------------------------------------------------------------ //
 
 export function getFormattedItemInfo(
   itemId: string,
-  authentication: common.UserSession
+  authentication: common.UserSession,
+  Raphael?: any,
+  Dracula?: any
 ): Promise<string> {
   return new Promise<string>((resolve, reject) => {
     if (!itemId) {
@@ -33,20 +36,32 @@ export function getFormattedItemInfo(
     .then(
       async (item: common.ICompleteItem) => {
         const portalUrl = common.getPortalUrlFromAuth(authentication);
-        await formatItemInfo(portalUrl, item)
+        await formatItemInfo(portalUrl, item, Raphael, Dracula)
         .then(
           html => resolve(html),
-          (error: any) => reject(JSON.stringify(error))
+          reject
         );
       },
-      (error: any) => reject(JSON.stringify(error))
+      reject
     );
   });
 }
 
-export async function formatItemInfo(
+// ------------------------------------------------------------------------------------------------------------------ //
+
+function addFilename(filename: string): string {
+  return filename ? "&nbsp;" + filename : "";
+}
+
+function createGraphTag(template: common.IItemTemplate) {
+  return common.getItemTypeAbbrev(template.type) + ' ' + template.itemId.substr(0, 6);
+}
+
+async function formatItemInfo(
   portalUrl: string,
-  item: common.ICompleteItem
+  item: common.ICompleteItem,
+  Raphael?: any,
+  Dracula?: any
 ): Promise<string> {
   // Summarize what we have
   // ----------------------
@@ -166,38 +181,27 @@ export async function formatItemInfo(
     html += "</p>";
     return html;
 
+  } else if (item.base.type === "Solution" && Raphael && Dracula) {
+    html += "<p>Solution Dependency Graph<br/><div id=\"topologicalSortGraphic\"><i>Drawing...</i></div>";
+
+    setTimeout(
+      () => {
+        const topologicalSortGraphicDiv = document.getElementById("topologicalSortGraphic") as HTMLCanvasElement;
+        if (topologicalSortGraphicDiv && Raphael && Dracula) {
+          topologicalSortGraphicDiv.innerHTML = "";
+          // eslint-disable-next-line @typescript-eslint/no-floating-promises
+          common.blobToJson(item.data).then(itemData => {
+            showTopologicalSortGraph(itemData.templates, topologicalSortGraphicDiv, 1400, 1600, Raphael, Dracula);
+          });
+        }
+      }, 2000
+    );
+
+    return html;
+
   } else {
     return html;
   }
-}
-
-/**
- * Creates the HTML for a textarea using the supplied JSON.
- *
- * @param json JSON to insert into textarea
- * @return textarea HTML
- */
-function textAreaHtmlFromJSON(json: any): string {
-  return textAreaHtmlFromText(
-    JSON.stringify(
-      common.sanitizeJSON(json),
-      null, 2
-    )
-  );
-}
-
-/**
- * Creates the HTML for a textarea using the supplied text.
- *
- * @param text Text to insert into textarea
- * @return textarea HTML
- */
-function textAreaHtmlFromText(text: string): string {
-  return (
-    '<textarea rows="10" style="width:99%;font-size:x-small">' +
-    text +
-    "</textarea>"
-  );
 }
 
 /**
@@ -218,7 +222,7 @@ function showBlob(blob: Blob): Promise<string> {
 
     // Make sure that a JSON file has the right MIME type
     if (filename.endsWith(".json")) {
-      blob = common.convertResourceToFile({
+      blob = common.createMimeTypedFile({
         blob: file,
         filename: filename,
         mimeType: "application/json"
@@ -283,7 +287,55 @@ function showBlob(blob: Blob): Promise<string> {
   });
 }
 
-function addFilename(filename: string): string {
-  return filename ? "&nbsp;" + filename : "";
+function showTopologicalSortGraph(
+  collection: common.IItemTemplate[],
+  canvas: HTMLCanvasElement,
+  width: number,
+  height: number,
+  Raphael: any,
+  Dracula: any
+): void {
+  // Draw solution items as a directed graph
+  const g = new Dracula.Graph();
+
+  collection.map(template => template.itemId)
+  .forEach((id: string) => {
+    const template = collection.find(entry => entry.itemId === id);
+    const dependencies = template.dependencies || [];
+    dependencies.forEach(function (dependencyId: string) {
+      const dependencyTemplate = collection.find(entry => entry.itemId === dependencyId);
+      g.addEdge(createGraphTag(template), createGraphTag(dependencyTemplate), { directed : true });
+    });
+  });
+  (new Dracula.Layout.Spring(g)).layout();
+  (new Dracula.Renderer.Raphael(canvas, g, width, height)).draw();
 }
 
+/**
+ * Creates the HTML for a textarea using the supplied JSON.
+ *
+ * @param json JSON to insert into textarea
+ * @return textarea HTML
+ */
+function textAreaHtmlFromJSON(json: any): string {
+  return textAreaHtmlFromText(
+    JSON.stringify(
+      common.sanitizeJSON(json),
+      null, 2
+    )
+  );
+}
+
+/**
+ * Creates the HTML for a textarea using the supplied text.
+ *
+ * @param text Text to insert into textarea
+ * @return textarea HTML
+ */
+function textAreaHtmlFromText(text: string): string {
+  return (
+    '<textarea rows="10" style="width:99%;font-size:x-small">' +
+    text +
+    "</textarea>"
+  );
+}

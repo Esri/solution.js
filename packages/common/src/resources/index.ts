@@ -14,10 +14,17 @@
  * limitations under the License.
  */
 
+export * from "./addMetadataFromBlob";
 export * from "./add-resource-from-blob";
-export * from "./copy-resource";
-export * from "./get-blob";
 export * from "./convert-item-resource-to-storage-resource";
 export * from "./convert-storage-resource-to-item-resource";
-export * from "./store-item-resources";
+export * from "./copyAssociatedFiles";
+export * from "./copyDataIntoItem";
+export * from "./copyMetadataIntoItem";
+export * from "./copyResourceIntoZip";
+export * from "./copyZipIntoItem";
+export * from "./createCopyResults";
+export * from "./get-blob";
+export * from "./getItemResourcesFilesFromPaths";
+export * from "./getItemResourcesPaths";
 export * from "./solution-resource";

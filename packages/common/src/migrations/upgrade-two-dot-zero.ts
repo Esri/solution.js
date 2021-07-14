@@ -71,8 +71,8 @@ export const _convertIndicatorToDefinition = function(ind: any) {
     optional: ind.optional || false,
     definition: {
       description: ind.label || ind.fieldName,
-      supportedTypes: [...ind.layerOptions.supportedTypes],
-      geometryTypes: [...ind.layerOptions.geometryTypes],
+      supportedTypes: [].concat(ind.layerOptions.supportedTypes),
+      geometryTypes: [].concat(ind.layerOptions.geometryTypes),
       fields: ind.fields.map(_convertIndicatorField)
     }
   };
@@ -90,6 +90,6 @@ export const _convertIndicatorField = function(field: any) {
     name: field.label,
     optional: field.optional || false,
     description: field.tooltip,
-    supportedTypes: [...field.supportedTypes]
+    supportedTypes: [].concat(field.supportedTypes)
   };
 };

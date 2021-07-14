@@ -107,6 +107,7 @@ describe("Module `createItemTemplate`", () => {
           itemId,
           templateDictionary,
           authentication,
+          authentication,
           existingTemplates,
           utils.ITEM_PROGRESS_CALLBACK
         )
@@ -165,6 +166,7 @@ describe("Module `createItemTemplate`", () => {
           itemId,
           templateDictionary,
           authentication,
+          authentication,
           existingTemplates,
           utils.createFailingItemProgressCallbackOnNthCall(2)
         )
@@ -190,6 +192,7 @@ describe("Module `createItemTemplate`", () => {
           solutionItemId,
           itemId,
           templateDictionary,
+          authentication,
           authentication,
           existingTemplates,
           utils.ITEM_PROGRESS_CALLBACK
@@ -284,6 +287,7 @@ describe("Module `createItemTemplate`", () => {
           itemId,
           templateDictionary,
           authentication,
+          authentication,
           existingTemplates,
           utils.ITEM_PROGRESS_CALLBACK
         )
@@ -352,6 +356,7 @@ describe("Module `createItemTemplate`", () => {
           solutionItemId,
           itemId,
           templateDictionary,
+          authentication,
           authentication,
           existingTemplates,
           utils.ITEM_PROGRESS_CALLBACK
@@ -476,6 +481,7 @@ describe("Module `createItemTemplate`", () => {
           itemId,
           templateDictionary,
           authentication,
+          authentication,
           existingTemplates,
           utils.ITEM_PROGRESS_CALLBACK
         )
@@ -570,6 +576,7 @@ describe("Module `createItemTemplate`", () => {
           itemId,
           templateDictionary,
           authentication,
+          authentication,
           existingTemplates,
           utils.ITEM_PROGRESS_CALLBACK
         )
@@ -644,6 +651,7 @@ describe("Module `createItemTemplate`", () => {
           itemId,
           templateDictionary,
           authentication,
+          authentication,
           existingTemplates,
           utils.ITEM_PROGRESS_CALLBACK
         )
@@ -681,6 +689,7 @@ describe("Module `createItemTemplate`", () => {
           itemId,
           templateDictionary,
           authentication,
+          authentication,
           existingTemplates,
           utils.ITEM_PROGRESS_CALLBACK
         )
@@ -710,6 +719,7 @@ describe("Module `createItemTemplate`", () => {
           solutionItemId,
           itemId,
           templateDictionary,
+          authentication,
           authentication,
           existingTemplates,
           utils.ITEM_PROGRESS_CALLBACK
@@ -784,8 +794,8 @@ describe("Module `createItemTemplate`", () => {
       const getItemBase = spyOn(common, "getItemBase");
       getItemBase.and.callThrough();
 
-      const storeItemResources = spyOn(common, "storeItemResources");
-      storeItemResources.and.callThrough();
+      const getItemResourcesPaths = spyOn(common, "getItemResourcesPaths");
+      getItemResourcesPaths.and.callThrough();
       const expectedTags: string[] = ["test"];
       const expectedTypeKeywords: string[] = ["JavaScript"];
 
@@ -796,6 +806,7 @@ describe("Module `createItemTemplate`", () => {
           itemId,
           templateDictionary,
           authentication,
+          authentication,
           existingTemplates,
           utils.ITEM_PROGRESS_CALLBACK
         )
@@ -804,7 +815,7 @@ describe("Module `createItemTemplate`", () => {
           //   expect(v.tags).toEqual(preExpectedTags);
           //   expect(v.typeKeywords).toEqual(preExpectedTypeKeywords);
           // }, done.fail);
-          const actualTemplate: any = storeItemResources.calls.mostRecent()
+          const actualTemplate: any = getItemResourcesPaths.calls.mostRecent()
             .args[0];
           expect(actualTemplate.item.tags)
             .withContext("test final tags")

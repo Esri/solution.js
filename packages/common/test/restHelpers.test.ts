@@ -818,6 +818,10 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
       const access = "org";
 
       fetchMock
+        .get(
+          "https://myorg.maps.arcgis.com/sharing/rest/portals/self?f=json&token=fake-token",
+          utils.getPortalsSelfResponse()
+        )
         .post(itemThumbnailUrl + "/rest/info", "{}")
         .post(
           utils.PORTAL_SUBSET.restUrl +
@@ -2924,33 +2928,6 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
           done();
         }
       );
-    });
-  });
-
-  describe("removeListOfItemsOrGroups", () => {
-    it("handles failure to remove all of a list of items", done => {
-      const itemIds = ["itm1234567890"];
-
-      fetchMock
-        .post(
-          utils.PORTAL_SUBSET.restUrl +
-            "/content/users/casey/items/" +
-            itemIds[0] +
-            "/delete",
-          utils.getFailureResponse()
-        )
-        .post(
-          utils.PORTAL_SUBSET.restUrl +
-            "/community/groups/" +
-            itemIds[0] +
-            "/delete",
-          utils.getFailureResponse()
-        );
-
-      // eslint-disable-next-line @typescript-eslint/no-floating-promises
-      restHelpers
-        .removeListOfItemsOrGroups(itemIds, MOCK_USER_SESSION)
-        .then(() => done());
     });
   });
 

@@ -27,6 +27,7 @@ import {
   EItemProgressStatus,
   UserSession,
   createHubRequestOptions,
+  dedupe,
   generateEmptyCreationResponse,
   getProp
 } from "@esri/solution-common";
@@ -185,12 +186,12 @@ export function createItemFromTemplate(
 }
 
 /**
- * Convert a Site to a Template
+ * Converts a Site item into a template.
  *
- * @param solutionItemId
- * @param itemInfo Hub Site Application item
- * @param userSession The session used to interact with the service the template is based on
- * @return A promise that will resolve when fullItem has been updated
+ * @param solutionItemId The solution to contain the template
+ * @param itemInfo Info about the item
+ * @param authentication Credentials for working with AGO
+ * @return A promise that will resolve when the template has been created
  */
 export function convertItemToTemplate(
   solutionItemId: string,
@@ -218,7 +219,7 @@ export function convertItemToTemplate(
       }
       // swap out dependency id's to {{<depid>.itemId}}
       // so it will be re-interpolated
-      tmpl.dependencies = [...new Set(tmpl.dependencies || [])]; // dedupe
+      tmpl.dependencies = dedupe(tmpl.dependencies);
       tmpl = replaceItemIds(tmpl);
 
       // and return it

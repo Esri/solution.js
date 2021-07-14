@@ -51,6 +51,7 @@ export {
   IExtent,
   ISpatialReference
 } from "@esri/arcgis-rest-service-admin";
+import JSZip from "jszip";
 
 //#endregion ---------------------------------------------------------------------------------------------------------//
 
@@ -68,6 +69,14 @@ export enum EFileType {
   Metadata,
   Resource,
   Thumbnail
+}
+
+export enum SFileType {
+  "Data",
+  "Info",
+  "Metadata",
+  "Resource",
+  "Thumbnail"
 }
 
 /**
@@ -131,6 +140,48 @@ export interface IAdditionalSearchOptions {
   [key: string]: any;
 }
 
+/**
+ * Results of fetching and copying a file associated with an item.
+ */
+export interface IAssociatedFileCopyResults
+  extends IAssociatedFileInfo,
+    ICopyResults {}
+
+/**
+ *  Information for working with a file associated with an item.
+ */
+export interface IAssociatedFileInfo {
+  /**
+   * Resource's "folder"--the prefix before the filename
+   */
+  folder: string;
+
+  /**
+   * Resource's filename
+   */
+  filename: string;
+
+  /**
+   * An internal classification of the type of file: data, metadata, resource
+   */
+  type?: EFileType;
+
+  /**
+   * The mime type of the file
+   */
+  mimeType?: string;
+
+  /**
+   * URL where a resource, metadata, or thumbnail of an item or group can be found
+   */
+  url?: string;
+
+  /**
+   * File holding a resource, metadata, or thumbnail of an item or group
+   */
+  file?: File;
+}
+
 export interface IBuildOrdering {
   /**
    * Item ids in order in which items are to be built.
@@ -163,6 +214,21 @@ export interface ICompleteItem {
   revRelatedItems: IRelatedItems[];
   //
   featureServiceProperties?: IFeatureServiceProperties;
+}
+
+/**
+ * Results of fetching and copying an item.
+ */
+export interface ICopyResults {
+  /**
+   * Status of fetching item from source
+   */
+  fetchedFromSource: boolean;
+
+  /**
+   * Status of copying item to destination; undefined if fetchedFromSource is false
+   */
+  copiedToDestination?: boolean;
 }
 
 export interface ICreateItemFromTemplateResponse {
@@ -202,6 +268,7 @@ export interface ICreateSolutionOptions {
   progressCallback?: ISolutionProgressCallback;
   consoleProgress?: boolean; // default: false
   itemIds?: string[];
+  sourceItemAuthentication?: UserSession; // default: solution item authentication
 }
 
 /**
@@ -347,7 +414,7 @@ export interface IFile {
   blob: Blob;
 }
 
-export interface IFileMimeType {
+export interface IFileMimeTyped {
   blob: Blob;
   filename: string;
   mimeType: string;
@@ -652,6 +719,7 @@ export interface ISolutionPrecis {
   title: string;
   folder: string;
   items: ISolutionItemPrecis[];
+  groups: string[];
 }
 
 /**
@@ -669,22 +737,49 @@ export interface ISolutionProgressEvent {
   data?: any;
 }
 
+export interface ISourceFile {
+  /**
+   * The portal item id, e.g., "4efe5f693de34620934787ead6693f19", that supplies the resource
+   */
+  itemId: string;
+
+  /**
+   * Resource file
+   */
+  file: File;
+
+  /**
+   * Resource's "folder"--the prefix before the filename
+   */
+  folder: string;
+
+  /**
+   * Resource's filename
+   */
+  filename: string;
+}
+
 /**
  *  Information for storing a resource in a storage item.
  */
 export interface ISourceFileCopyPath {
+  /**
+   * The portal item id, e.g., "4efe5f693de34620934787ead6693f19", that supplies the resource
+   */
+  itemId: string;
+
   /**
    * URL where a resource, metadata, or thumbnail of an item or group can be found
    */
   url: string;
 
   /**
-   * Folder for storing a resource in a storage item
+   * Resource's "folder"--the prefix before the filename
    */
   folder: string;
 
   /**
-   * Filename for storing a resource in a storage item
+   * Resource's filename
    */
   filename: string;
 }
@@ -883,6 +978,28 @@ export interface ISurvey123CreateResult {
   formId: string;
   featureServiceId: string;
   folderId: string;
+}
+
+/**
+ * Results of sending a zip to an item.
+ */
+export interface IZipCopyResults extends IZipInfo, ICopyResults {}
+
+export interface IZipInfo {
+  /**
+   * Zip's filename
+   */
+  filename: string;
+
+  /**
+   * JSZip object
+   */
+  zip: JSZip;
+
+  /**
+   * List of files included in this zip
+   */
+  filelist: any[];
 }
 
 //#endregion ---------------------------------------------------------------------------------------------------------//

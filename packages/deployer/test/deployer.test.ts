@@ -479,6 +479,10 @@ describe("Module `deployer`", () => {
         .get(
           "https://myorg.maps.arcgis.com/sharing/rest/content/items/svc1234567890?f=json&token=fake-token",
           testUtils.getCreateServiceResponse()
+        )
+        .post(
+          "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/items/map1234567890/protect",
+          { success: true }
         );
       spyOn(console, "log").and.callFake(() => {});
 
@@ -1158,6 +1162,10 @@ describe("Module `deployer`", () => {
             itemInfo.item.id +
             "/data",
           mockItems.get400Failure()
+        )
+        .post(
+          "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/items/map1234567890/protect",
+          { success: true }
         );
 
       const options: common.IDeploySolutionOptions = {
@@ -1318,6 +1326,14 @@ describe("Module `deployer`", () => {
         .get(
           "https://myorg.maps.arcgis.com/sharing/rest/content/items/svc1234567890?f=json&token=fake-token",
           testUtils.getCreateServiceResponse()
+        )
+        .post(
+          "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/items/map1234567890/protect",
+          { success: true }
+        )
+        .post(
+          "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/items/map1234567890/unprotect",
+          { success: true }
         );
 
       const options: common.IDeploySolutionOptions = {
@@ -1532,6 +1548,14 @@ describe("Module `deployer`", () => {
         .get(
           "https://myorg.maps.arcgis.com/sharing/rest/content/items/svc1234567890?f=json&token=fake-token",
           testUtils.getCreateServiceResponse()
+        )
+        .post(
+          "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/items/map1234567890/protect",
+          { success: true }
+        )
+        .post(
+          "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/items/map1234567890/unprotect",
+          { success: true }
         );
 
       const options: common.IDeploySolutionOptions = {
@@ -1608,6 +1632,7 @@ describe("Module `deployer`", () => {
       const geometryServer: string =
         portalsSelfResponse.helperServices.geometry.url;
 
+      const consoleSpy = spyOn(console, "log");
       fetchMock
         .get(
           testUtils.PORTAL_SUBSET.restUrl +
@@ -1735,6 +1760,26 @@ describe("Module `deployer`", () => {
           testUtils.PORTAL_SUBSET.restUrl +
             "/content/users/casey/items/map1234567890/delete",
           testUtils.getSuccessResponse({ itemId: "map1234567890" })
+        )
+        .post(
+          "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/items/map1234567890/protect",
+          { success: true }
+        )
+        .post(
+          "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/items/map1234567890/unprotect",
+          { success: true }
+        )
+        .post(
+          "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/items/svc1234567890/unprotect",
+          { success: true }
+        )
+        .post(
+          "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/items//delete",
+          { success: true }
+        )
+        .get(
+          "https://myorg.maps.arcgis.com/sharing/rest/search?f=json&q=owner%3Acasey%20AND%20orgid%3Aorg1234567890%20AND%20ownerfolder%3Aa4468da125a64526b359b70d8ba4a9dd&token=fake-token",
+          {}
         );
       spyOn(console, "error").and.callFake(() => {});
 

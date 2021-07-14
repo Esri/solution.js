@@ -990,7 +990,7 @@ export function getUserResponse() {
       "portal:admin:categorizeItems",
       "portal:admin:changeUserRoles",
       "portal:admin:createUpdateCapableGroup",
-      "portal:admin:deleteGroups",
+      "portal:admin:deleteEmptyGroups",
       "portal:admin:deleteItems",
       "portal:admin:deleteUsers",
       "portal:admin:disableUsers",

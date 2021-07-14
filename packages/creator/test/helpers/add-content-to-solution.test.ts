@@ -53,7 +53,8 @@ describe("addContentToSolution", () => {
         solutionItemId: string,
         itemId: string,
         templateDictionary: any,
-        authentication: common.UserSession,
+        srcAuthentication: common.UserSession,
+        destAuthentication: common.UserSession,
         existingTemplates: common.IItemTemplate[],
         itemProgressCallback: common.IItemProgressCallback
       ) => {
@@ -68,12 +69,15 @@ describe("addContentToSolution", () => {
       }
     );
 
-    return addContentToSolution(solutionId, options, MOCK_USER_SESSION).then(
-      () => {
-        expect(options.itemIds).toEqual(["map1234567890", "wma1234567890"]);
-        done();
-      }
-    );
+    return addContentToSolution(
+      solutionId,
+      options,
+      MOCK_USER_SESSION,
+      MOCK_USER_SESSION
+    ).then(() => {
+      expect(options.itemIds).toEqual(["map1234567890", "wma1234567890"]);
+      done();
+    });
   });
 
   it("addContentToSolution item progress callback with ignored item", done => {
@@ -88,7 +92,8 @@ describe("addContentToSolution", () => {
         solutionItemId: string,
         itemId: string,
         templateDictionary: any,
-        authentication: common.UserSession,
+        srcAuthentication: common.UserSession,
+        destAuthentication: common.UserSession,
         existingTemplates: common.IItemTemplate[],
         itemProgressCallback: common.IItemProgressCallback
       ) => {
@@ -108,6 +113,7 @@ describe("addContentToSolution", () => {
     return addContentToSolution(
       solutionId,
       options,
+      MOCK_USER_SESSION,
       MOCK_USER_SESSION
     ).then(() => done());
   });
@@ -139,7 +145,12 @@ describe("addContentToSolution", () => {
 
     spyOn(console, "error").and.callFake(() => {});
 
-    return addContentToSolution(solutionId, options, MOCK_USER_SESSION).then(
+    return addContentToSolution(
+      solutionId,
+      options,
+      MOCK_USER_SESSION,
+      MOCK_USER_SESSION
+    ).then(
       () => done.fail(),
       e => {
         expect(e.success).toBeFalse();
@@ -160,11 +171,12 @@ describe("_getDependencies", () => {
       "https://experience.arcgis.com/experience/{{fcb2bf2837a6404ebb418a1f805f976a.itemId}}<div>{{portalBaseUrl}}/apps/webappviewer/index.html?id={{cefb7d787b8b4edb971efba758ee0c1e.itemId}}</div>{{" +
       template.itemId +
       "}}";
+    template.data.operationalLayers[0].title =
+      "ROW {{5f8c7627614a4c179ea5b243509d5b7c}} {{124f66175750431096575c449b42bd65}} {{854f1128cb784cf692e848390452d100}} Permits";
     template.dependencies = ["124f66175750431096575c449b42bd65"];
     expect(_getDependencies(template)).toEqual([
       "124f66175750431096575c449b42bd65",
-      "cefb7d787b8b4edb971efba758ee0c1e",
-      "fcb2bf2837a6404ebb418a1f805f976a"
+      "5f8c7627614a4c179ea5b243509d5b7c"
     ]);
   });
 });

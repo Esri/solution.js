@@ -15,7 +15,7 @@
  */
 
 /**
- * @module deleteSolution
+ * @module removeItems
  */
 
 import {
@@ -24,7 +24,7 @@ import {
   ISolutionPrecis,
   UserSession
 } from "../interfaces";
-import * as _reportProgress from "./_reportProgress";
+import * as reportProgress from "./reportProgress";
 import * as hubSites from "@esri/hub-sites";
 import * as portal from "@esri/arcgis-rest-portal";
 import * as restHelpers from "../restHelpers";
@@ -46,7 +46,7 @@ import { createHubRequestOptions } from "../create-hub-request-options";
  * @return Promise that will resolve with a list of two solution summaries: successful deletions
  * and failed deletions. Ignored items (e.g., already deleted) will not be in either list.
  */
-export function _removeItems(
+export function removeItems(
   solutionSummary: ISolutionPrecis,
   hubSiteItemIds: string[],
   authentication: UserSession,
@@ -62,7 +62,7 @@ export function _removeItems(
 
   if (itemToDelete) {
     // On to next item in list
-    return _removeItems(
+    return removeItems(
       solutionSummary,
       hubSiteItemIds,
       authentication,
@@ -92,7 +92,7 @@ export function _removeItems(
       .then(() => {
         // Successful deletion
         solutionDeletedSummary.items.push(itemToDelete);
-        _reportProgress._reportProgress(
+        reportProgress.reportProgress(
           percentDoneReport,
           deleteOptions,
           itemToDelete.id,
@@ -107,7 +107,7 @@ export function _removeItems(
           errorMessage.includes("Item does not exist or is inaccessible")
         ) {
           // Filter out errors where the item doesn't exist, such as from a previous delete attempt
-          _reportProgress._reportProgress(
+          reportProgress.reportProgress(
             percentDoneReport,
             deleteOptions,
             itemToDelete.id,
@@ -116,7 +116,7 @@ export function _removeItems(
         } else {
           // Otherwise, we have a real delete error, including where AGO simply returns "success: false"
           solutionFailureSummary.items.push(itemToDelete);
-          _reportProgress._reportProgress(
+          reportProgress.reportProgress(
             percentDoneReport,
             deleteOptions,
             itemToDelete.id,
@@ -131,13 +131,15 @@ export function _removeItems(
       id: solutionSummary.id,
       title: solutionSummary.title,
       folder: solutionSummary.folder,
-      items: []
+      items: [],
+      groups: []
     };
     solutionFailureSummary = {
       id: solutionSummary.id,
       title: solutionSummary.title,
       folder: solutionSummary.folder,
-      items: []
+      items: [],
+      groups: []
     };
     return Promise.resolve([solutionDeletedSummary, solutionFailureSummary]);
   }

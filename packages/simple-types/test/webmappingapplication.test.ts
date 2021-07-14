@@ -274,6 +274,10 @@ describe("Module `webmappingapplication`: manages the creation and deployment of
       };
 
       fetchMock
+        .get(
+          "https://myorg.maps.arcgis.com/sharing/rest/portals/self?f=json&token=fake-token",
+          utils.getPortalsSelfResponse()
+        )
         .post("https://fake.com/arcgis/rest/info", {})
         .post(
           "https://fake.com/arcgis/rest/services/test/FeatureServer/0",
@@ -330,6 +334,10 @@ describe("Module `webmappingapplication`: manages the creation and deployment of
         estimatedDeploymentCostFactor: 0
       };
       fetchMock
+        .get(
+          "https://myorg.maps.arcgis.com/sharing/rest/portals/self?f=json&token=fake-token",
+          utils.getPortalsSelfResponse()
+        )
         .post("https://fake.com/arcgis/rest/info", {})
         .post(
           "https://fake.com/arcgis/rest/services/test/FeatureServer/0",
@@ -554,6 +562,10 @@ describe("Module `webmappingapplication`: manages the creation and deployment of
       };
 
       fetchMock
+        .get(
+          "https://myorg.maps.arcgis.com/sharing/rest/portals/self?f=json&token=fake-token",
+          utils.getPortalsSelfResponse()
+        )
         .post("https://path/FeatureServer/1/rest/info", {})
         .post("http://path/FeatureServer/1/rest/info", {})
         .post("https://path/FeatureServer/1", layer1)
@@ -734,6 +746,10 @@ describe("Module `webmappingapplication`: manages the creation and deployment of
       };
 
       fetchMock
+        .get(
+          "https://myorg.maps.arcgis.com/sharing/rest/portals/self?f=json&token=fake-token",
+          utils.getPortalsSelfResponse()
+        )
         .post("https://path/FeatureServer/1/rest/info", {})
         .post("http://path/FeatureServer/1/rest/info", {})
         .post("https://path/FeatureServer/1", layer1)
@@ -811,6 +827,10 @@ describe("Module `webmappingapplication`: manages the creation and deployment of
       };
 
       fetchMock
+        .get(
+          "https://myorg.maps.arcgis.com/sharing/rest/portals/self?f=json&token=fake-token",
+          utils.getPortalsSelfResponse()
+        )
         .post("https://path/FeatureServer/1/rest/info", {})
         .post("http://path/FeatureServer/1/rest/info", {})
         .post("https://path/FeatureServer/1", layer1)
@@ -887,6 +907,10 @@ describe("Module `webmappingapplication`: manages the creation and deployment of
       };
 
       fetchMock
+        .get(
+          "https://myorg.maps.arcgis.com/sharing/rest/portals/self?f=json&token=fake-token",
+          utils.getPortalsSelfResponse()
+        )
         .post("https://path/FeatureServer/1/rest/info", {})
         .post("http://path/FeatureServer/1/rest/info", {})
         .post("https://path/FeatureServer/1", layer1)
@@ -1214,6 +1238,10 @@ describe("Module `webmappingapplication`: manages the creation and deployment of
       const portalUrl: string = "https://fake.maps.arcgis.com";
 
       fetchMock
+        .get(
+          "https://myorg.maps.arcgis.com/sharing/rest/portals/self?f=json&token=fake-token",
+          utils.getPortalsSelfResponse()
+        )
         .post("https://fake.com/arcgis/rest/info", {})
         .post("https://fake.com/arcgis/rest/services/test/FeatureServer/0", {
           serviceItemId: "2ea59a64b34646f8972a71c7d536e4a3",
@@ -1365,6 +1393,10 @@ describe("Module `webmappingapplication`: manages the creation and deployment of
       };
 
       fetchMock
+        .get(
+          "https://myorg.maps.arcgis.com/sharing/rest/portals/self?f=json&token=fake-token",
+          utils.getPortalsSelfResponse()
+        )
         .post("https://fake.com/arcgis/rest/info", {})
         .post(
           "https://fake.com/arcgis/rest/services/test/FeatureServer/1",
@@ -1610,6 +1642,10 @@ describe("Module `webmappingapplication`: manages the creation and deployment of
       };
 
       fetchMock
+        .get(
+          "https://myorg.maps.arcgis.com/sharing/rest/portals/self?f=json&token=fake-token",
+          utils.getPortalsSelfResponse()
+        )
         .post("https://fake.com/arcgis/rest/info", {})
         .post(
           "https://fake.com/arcgis/rest/services/test/FeatureServer/1",

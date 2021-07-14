@@ -48,65 +48,32 @@
  */
 
 import {
-  appendQueryParam,
-  blobToFile,
-  checkUrlPathTermination,
-  fail
-} from "./generalHelpers";
-import {
   EFileType,
+  IAssociatedFileCopyResults,
+  IAssociatedFileInfo,
   IDeployFileCopyPath,
-  IFileMimeType,
-  IItemUpdate,
+  IFileMimeTyped,
+  ISourceFile,
   ISourceFileCopyPath,
   UserSession
 } from "./interfaces";
 import { new_File } from "./polyfills";
 import {
-  IItemResourceOptions,
   IItemResourceResponse,
-  addItemResource,
   updateGroup,
   updateItem,
   updateItemResource
 } from "@esri/arcgis-rest-portal";
+import { appendQueryParam, checkUrlPathTermination } from "./generalHelpers";
 import { convertItemResourceToStorageResource } from "./resources/convert-item-resource-to-storage-resource";
 import { convertStorageResourceToItemResource } from "./resources/convert-storage-resource-to-item-resource";
-
-import { copyResource } from "./resources/copy-resource";
-import { getBlob } from "./resources/get-blob";
-
-import { updateItem as helpersUpdateItem } from "./restHelpers";
-import { getBlobAsFile, getThumbnailFile } from "./restHelpersGet";
-import JSZip from "jszip";
+import { getThumbnailFile } from "./restHelpersGet";
+import {
+  copyAssociatedFilesByType,
+  copyFilesAsResources
+} from "./resources/copyAssociatedFiles";
 
 // ------------------------------------------------------------------------------------------------------------------ //
-
-/**
- * Adds metadata to an AGO item.
- *
- * @param blob Blob containing metadata
- * @param itemId Item to receive metadata
- * @param authentication Credentials for the request
- * @return Promise resolving to JSON containing success boolean
- */
-export function addMetadataFromBlob(
-  blob: Blob,
-  itemId: string,
-  authentication: UserSession
-): Promise<any> {
-  const updateOptions: any = {
-    item: {
-      id: itemId
-    },
-    params: {
-      // Pass metadata in via params because item property is serialized, which discards a blob
-      metadata: blob
-    },
-    authentication: authentication
-  };
-  return updateItem(updateOptions);
-}
 
 export function addThumbnailFromBlob(
   blob: any,
@@ -128,49 +95,10 @@ export function addThumbnailFromBlob(
   return isGroup ? updateGroup(updateOptions) : updateItem(updateOptions);
 }
 
-export function copyData(
-  source: {
-    url: string;
-    authentication: UserSession;
-  },
-  destination: {
-    itemId: string;
-    folder: string;
-    filename: string;
-    mimeType: string;
-    authentication: UserSession;
-  }
-): Promise<any> {
-  return new Promise<any>((resolve, reject) => {
-    getBlob(source.url, source.authentication).then(
-      blob => {
-        const update: IItemUpdate = {
-          id: destination.itemId,
-          data: convertResourceToFile({
-            blob: blob,
-            filename: destination.filename,
-            mimeType: destination.mimeType || blob.type
-          })
-        };
-
-        helpersUpdateItem(
-          update,
-          destination.authentication,
-          destination.folder
-        ).then(
-          resolve,
-          e => reject(fail(e)) // unable to add resource
-        );
-      },
-      e => reject(fail(e)) // unable to get resource
-    );
-  });
-}
-
 export function convertBlobToSupportableResource(
   blob: Blob,
   filename: string = ""
-): IFileMimeType {
+): IFileMimeTyped {
   const originalFilename = (blob as File).name || filename;
   let filenameToUse = originalFilename;
   if (filenameToUse && !isSupportedFileType(filenameToUse)) {
@@ -184,21 +112,16 @@ export function convertBlobToSupportableResource(
   };
 }
 
-export function convertResourceToFile(resource: IFileMimeType): File {
-  return new_File([resource.blob], resource.filename, {
-    type: resource.mimeType
-  });
-}
-
 /**
  * Copies the files described by a list of full URLs and folder/filename combinations for
- * the resources, and metadata of an item or group to an item.
+ * the resources and metadata of an item or group to an item.
  *
  * @param storageAuthentication Credentials for the request to the storage
  * @param filePaths List of item files' URLs and folder/filenames for storing the files
- * @param destinationItemId Id of item to receive copy of resource/metadata/thumbnail
+ * @param destinationFolderId Id of folder
+ * @param destinationItemId Id of item to receive copy of resource/metadata
  * @param destinationAuthentication Credentials for the request to the destination
- * @param isGroup Boolean to indicate if the files are associated with a group or item
+ * @param template Template for using its itemId and properties for fine-tuning the filename for Hub
  * @return A promise which resolves to a boolean indicating if the copies were successful
  */
 export function copyFilesFromStorageItem(
@@ -212,7 +135,7 @@ export function copyFilesFromStorageItem(
   // TODO: This is only used in deployer, so move there
   // changed to allow the template to be passed in
   // because Hub templates need to swap out the templateId
-  // in the reseource filename
+  // in the resource filename
   const mimeTypes = template.properties || null;
 
   // remove the template.itemId from the fileName in the filePaths
@@ -228,171 +151,80 @@ export function copyFilesFromStorageItem(
   }
 
   return new Promise<boolean>((resolve, reject) => {
-    let awaitAllItems = filePaths.map(filePath => {
-      switch (filePath.type) {
-        case EFileType.Data:
-          // We are updating an item with a zip file, which is written to AGO. If the updated
-          // item is in a folder, the zip file is moved to the item's folder after being written.
-          // Without the folder information in the URL, AGO writes the zip to the root folder,
-          // which causes a conflict if an item with the same data is already in that root folder.
-          return copyData(
-            {
-              url: filePath.url,
-              authentication: storageAuthentication
-            },
-            {
-              itemId: destinationItemId,
-              folder: destinationFolderId,
-              filename: filePath.filename,
-              mimeType: mimeTypes ? mimeTypes[filePath.filename] : "",
-              authentication: destinationAuthentication
-            }
-          );
-
-        case EFileType.Metadata:
-          return copyMetadata(
-            {
-              url: filePath.url,
-              authentication: storageAuthentication
-            },
-            {
-              itemId: destinationItemId,
-              authentication: destinationAuthentication
-            }
-          );
-      }
+    const fileInfos = filePaths.map(path => {
+      return {
+        folder:
+          path.type === EFileType.Data ? destinationFolderId : path.folder,
+        filename: path.filename,
+        type: path.type,
+        mimeType: mimeTypes ? mimeTypes[path.filename] : "",
+        url: path.url
+      } as IAssociatedFileInfo;
     });
 
-    // Bundle the resources into a single update because AGO tends to have problems with
-    // many updates in a row to the same item: it claims success despite randomly failing
-    const resourceFilePaths = filePaths.filter(
-      filePath => filePath.type === EFileType.Resource
-    );
-    let zip: any;
-    if (resourceFilePaths.length > 0) {
-      zip = new JSZip();
-      awaitAllItems = awaitAllItems.concat(
-        // Note that AGO imposes a limit of 50 files, which is not checked in this code
-        // https://developers.arcgis.com/rest/users-groups-and-items/add-resources.htm
-        resourceFilePaths.map(filePath => {
-          return getBlobAsFile(
-            filePath.url,
-            filePath.filename,
-            storageAuthentication
-          ).then(file => {
-            if (filePath.folder) {
-              zip
-                .folder(filePath.folder)
-                .file(filePath.filename, file, { binary: true });
-            } else {
-              zip.file(filePath.filename, file, { binary: true });
-            }
-          });
-        })
-      );
-    }
-
-    // Wait until all files have been copied and the zip file prepared
-    Promise.all(awaitAllItems).then(() => {
-      if (zip) {
-        // Create the ZIP
-        zip
-          .generateAsync({ type: "blob" })
-          .then((content: Blob) => {
-            return blobToFile(content, "resources.zip", "application/zip");
-          })
-          .then((zipfile: File) => {
-            const addResourceOptions: IItemResourceOptions = {
-              id: destinationItemId,
-              resource: zipfile,
-              authentication: destinationAuthentication,
-              params: {
-                archive: true
-              }
-            };
-            addItemResource(addResourceOptions).then(
-              () => resolve(true),
-              reject
-            );
-          });
-      } else {
+    void copyAssociatedFilesByType(
+      fileInfos,
+      storageAuthentication,
+      destinationItemId,
+      destinationAuthentication
+    ).then((results: IAssociatedFileCopyResults[]) => {
+      const allOK: boolean = results
+        // Filter out metadata
+        .filter(
+          (result: IAssociatedFileCopyResults) =>
+            result.filename !== "metadata.xml"
+        )
+        // Extract success
+        .map(
+          (result: IAssociatedFileCopyResults) =>
+            result.fetchedFromSource && result.copiedToDestination
+        )
+        // Boil it down to a single result
+        .reduce(
+          (success: boolean, currentValue: boolean) => success && currentValue,
+          true
+        );
+      if (allOK) {
         resolve(true);
+      } else {
+        reject();
       }
-    }, reject);
+    });
   });
 }
 
 /**
- * Copies the files described by a list of full URLs and storage folder/filename combinations for storing
- * the resources, metadata, and thumbnail of an item or group to a storage item.
+ * Copies the files for storing the resources, metadata, and thumbnail of an item or group to a storage item
+ * with a specified path.
  *
- * @param sourceUserSession Credentials for the request to the source
- * @param filePaths List of item files' URLs and folder/filenames for storing the files
- * @param storageItemId Id of item to receive copy of resource/metadata/thumbnail
+ * @param files List of item files and paths for storing the files
+ * @param storageItemId Id of item to receive copy of resource/metadata
  * @param storageAuthentication Credentials for the request to the storage
- * @return A promise which resolves to a list of the filenames under which the resource/metadata/thumbnails are stored
+ * @return A promise which resolves to a list of the filenames under which the resource/metadata are stored
  */
 export function copyFilesToStorageItem(
-  sourceUserSession: UserSession,
-  filePaths: ISourceFileCopyPath[],
+  files: ISourceFile[],
   storageItemId: string,
   storageAuthentication: UserSession
 ): Promise<string[]> {
   return new Promise<string[]>(resolve => {
-    const awaitAllItems: Array<Promise<string>> = filePaths.map(filePath => {
-      return new Promise<string>(resolveThisFile => {
-        copyResource(
-          {
-            url: filePath.url,
-            authentication: sourceUserSession
-          },
-          {
-            itemId: storageItemId,
-            folder: filePath.folder,
-            filename: filePath.filename,
-            authentication: storageAuthentication
-          }
-        ).then(
-          // Ignore failures because the item may not have metadata or thumbnail
-          () => resolveThisFile(filePath.folder + "/" + filePath.filename),
-          () => resolveThisFile("")
+    // tslint:disable-next-line: no-floating-promises
+    void copyFilesAsResources(files, storageItemId, storageAuthentication).then(
+      (results: IAssociatedFileCopyResults[]) => {
+        resolve(
+          results
+            // Filter out failures
+            .filter(
+              (result: IAssociatedFileCopyResults) =>
+                result.fetchedFromSource && result.copiedToDestination
+            )
+            // Return folder and filename in storage item's resources
+            .map(
+              (result: IAssociatedFileCopyResults) =>
+                result.folder + "/" + result.filename
+            )
         );
-      });
-    });
-
-    // Wait until all items have been copied
-    // eslint-disable-next-line @typescript-eslint/no-floating-promises
-    Promise.all(awaitAllItems).then(r => resolve(r));
-  });
-}
-
-export function copyMetadata(
-  source: {
-    url: string;
-    authentication: UserSession;
-  },
-  destination: {
-    itemId: string;
-    authentication: UserSession;
-  }
-): Promise<any> {
-  return new Promise<any>((resolve, reject) => {
-    getBlob(source.url, source.authentication).then(
-      blob => {
-        if (blob.type !== "text/xml" && blob.type !== "application/xml") {
-          reject(fail()); // unable to get resource
-          return;
-        }
-        addMetadataFromBlob(
-          blob,
-          destination.itemId,
-          destination.authentication
-        ).then(
-          resolve,
-          e => reject(fail(e)) // unable to add resource
-        );
-      },
-      e => reject(fail(e)) // unable to get resource
+      }
     );
   });
 }
@@ -438,6 +270,7 @@ export function generateSourceFilePaths(
 ): ISourceFileCopyPath[] {
   const filePaths = resourceFilenames.map(resourceFilename => {
     return {
+      itemId,
       url: generateSourceResourceUrl(
         portalSharingUrl,
         itemId,
@@ -452,6 +285,7 @@ export function generateSourceFilePaths(
   });
 
   filePaths.push({
+    itemId,
     url: generateSourceMetadataUrl(portalSharingUrl, itemId, isGroup),
     ...generateMetadataStorageFilename(itemId)
   });
@@ -459,6 +293,7 @@ export function generateSourceFilePaths(
   /* istanbul ignore else */
   if (thumbnailUrlPart) {
     const path = {
+      itemId,
       url: appendQueryParam(
         generateSourceThumbnailUrl(
           portalSharingUrl,
