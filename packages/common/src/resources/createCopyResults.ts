@@ -32,7 +32,7 @@ import {
  * @return IAssociatedFileCopyResults object
  */
 export function createCopyResults(
-  fileInfo: IAssociatedFileInfo | IZipInfo,
+  fileInfo: any,
   fetchedFromSource: boolean,
   copiedToDestination?: boolean
 ): IAssociatedFileCopyResults | IZipCopyResults {

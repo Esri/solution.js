@@ -53,6 +53,7 @@ import {
   IAssociatedFileInfo,
   IDeployFileCopyPath,
   IFileMimeTyped,
+  ISourceFile,
   ISourceFileCopyPath,
   UserSession
 } from "./interfaces";
@@ -67,7 +68,10 @@ import { appendQueryParam, checkUrlPathTermination } from "./generalHelpers";
 import { convertItemResourceToStorageResource } from "./resources/convert-item-resource-to-storage-resource";
 import { convertStorageResourceToItemResource } from "./resources/convert-storage-resource-to-item-resource";
 import { getThumbnailFile } from "./restHelpersGet";
-import { copyAssociatedFiles } from "./resources/copyAssociatedFiles";
+import {
+  copyAssociatedFilesByType,
+  copyFilesAsResources
+} from "./resources/copyAssociatedFiles";
 
 // ------------------------------------------------------------------------------------------------------------------ //
 
@@ -158,12 +162,11 @@ export function copyFilesFromStorageItem(
       } as IAssociatedFileInfo;
     });
 
-    void copyAssociatedFiles(
+    void copyAssociatedFilesByType(
       fileInfos,
       storageAuthentication,
       destinationItemId,
-      destinationAuthentication,
-      true
+      destinationAuthentication
     ).then((results: IAssociatedFileCopyResults[]) => {
       const allOK: boolean = results
         // Filter out metadata
@@ -191,44 +194,38 @@ export function copyFilesFromStorageItem(
 }
 
 /**
- * Copies the files described by a list of full URLs and storage folder/filename combinations for storing
- * the resources, metadata, and thumbnail of an item or group to a storage item.
+ * Copies the files for storing the resources, metadata, and thumbnail of an item or group to a storage item
+ * with a specified path.
  *
- * @param sourceAuthentication Credentials for the request to the source
- * @param filePaths List of item files' URLs and folder/filenames for storing the files
+ * @param files List of item files and paths for storing the files
  * @param storageItemId Id of item to receive copy of resource/metadata
  * @param storageAuthentication Credentials for the request to the storage
  * @return A promise which resolves to a list of the filenames under which the resource/metadata are stored
  */
 export function copyFilesToStorageItem(
-  sourceAuthentication: UserSession,
-  filePaths: ISourceFileCopyPath[],
+  files: ISourceFile[],
   storageItemId: string,
   storageAuthentication: UserSession
 ): Promise<string[]> {
   return new Promise<string[]>(resolve => {
     // tslint:disable-next-line: no-floating-promises
-    void copyAssociatedFiles(
-      filePaths as IAssociatedFileInfo[],
-      sourceAuthentication,
-      storageItemId,
-      storageAuthentication,
-      false
-    ).then((results: IAssociatedFileCopyResults[]) => {
-      resolve(
-        results
-          // Filter out failures
-          .filter(
-            (result: IAssociatedFileCopyResults) =>
-              result.fetchedFromSource && result.copiedToDestination
-          )
-          // Return folder and filename in storage item's resources
-          .map(
-            (result: IAssociatedFileCopyResults) =>
-              result.folder + "/" + result.filename
-          )
-      );
-    });
+    void copyFilesAsResources(files, storageItemId, storageAuthentication).then(
+      (results: IAssociatedFileCopyResults[]) => {
+        resolve(
+          results
+            // Filter out failures
+            .filter(
+              (result: IAssociatedFileCopyResults) =>
+                result.fetchedFromSource && result.copiedToDestination
+            )
+            // Return folder and filename in storage item's resources
+            .map(
+              (result: IAssociatedFileCopyResults) =>
+                result.folder + "/" + result.filename
+            )
+        );
+      }
+    );
   });
 }
 
@@ -273,6 +270,7 @@ export function generateSourceFilePaths(
 ): ISourceFileCopyPath[] {
   const filePaths = resourceFilenames.map(resourceFilename => {
     return {
+      itemId,
       url: generateSourceResourceUrl(
         portalSharingUrl,
         itemId,
@@ -287,6 +285,7 @@ export function generateSourceFilePaths(
   });
 
   filePaths.push({
+    itemId,
     url: generateSourceMetadataUrl(portalSharingUrl, itemId, isGroup),
     ...generateMetadataStorageFilename(itemId)
   });
@@ -294,6 +293,7 @@ export function generateSourceFilePaths(
   /* istanbul ignore else */
   if (thumbnailUrlPart) {
     const path = {
+      itemId,
       url: appendQueryParam(
         generateSourceThumbnailUrl(
           portalSharingUrl,

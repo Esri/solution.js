@@ -15,11 +15,10 @@
  */
 
 import { getItemResources } from "../restHelpersGet";
-import {
-  generateSourceFilePaths,
-  copyFilesToStorageItem
-} from "../resourceHelpers";
+import { generateSourceFilePaths } from "../resourceHelpers";
 import { IItemTemplate, ISourceFileCopyPath, UserSession } from "../interfaces";
+
+// ------------------------------------------------------------------------------------------------------------------ //
 
 /**
  * Updates the solution item with resources from the itemTemplate
@@ -28,14 +27,14 @@ import { IItemTemplate, ISourceFileCopyPath, UserSession } from "../interfaces";
  * @param solutionItemId item id for the solution
  * @param authentication Credentials for the request to the storage
  * @param storageVersion Version of the Solution template
- * @return A promise which resolves with an array of resources that have been added to the item
+ * @return A promise which resolves with an array of paths to resources for the item
  */
-export function storeItemResources(
+export function getItemResourcesPaths(
   itemTemplate: IItemTemplate,
   solutionItemId: string,
   authentication: UserSession,
   storageVersion = 0
-): Promise<string[]> {
+): Promise<ISourceFileCopyPath[]> {
   // get the resources for the item
   return getItemResources(itemTemplate.itemId, authentication).then(
     resourceResponse => {
@@ -74,13 +73,7 @@ export function storeItemResources(
         itemTemplate.type === "Group",
         storageVersion
       );
-
-      return copyFilesToStorageItem(
-        authentication,
-        resourceItemFilePaths,
-        solutionItemId,
-        authentication
-      );
+      return Promise.resolve(resourceItemFilePaths);
     }
   );
 }

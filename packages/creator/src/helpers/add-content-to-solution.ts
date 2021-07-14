@@ -27,11 +27,14 @@ import {
   IItemTemplate,
   IItemUpdate,
   ISolutionItemData,
+  ISourceFile,
+  isWorkforceProject,
   removeTemplate,
   replaceInTemplate,
   SItemProgressStatus,
-  updateItem,
+  copyFilesToStorageItem,
   postProcessWorkforceTemplates,
+  updateItem,
   UserSession
 } from "@esri/solution-common";
 import { getProp, getWithDefault } from "@esri/hub-common";
@@ -65,7 +68,7 @@ export function addContentToSolution(
     // Prepare feedback mechanism
     let totalEstimatedCost = 2 * options.itemIds.length + 1; // solution items, plus avoid divide by 0
     let percentDone: number = 16; // allow for previous creation work
-    let progressPercentStep = (99 - percentDone) / totalEstimatedCost; // leave some % for caller for wrapup
+    let progressPercentStep = (95 - percentDone) / totalEstimatedCost; // leave some % for caller for wrapup
 
     const failedItemIds: string[] = [];
     let totalExpended = 0;
@@ -83,7 +86,7 @@ export function addContentToSolution(
 
         totalEstimatedCost += 2;
         progressPercentStep =
-          (99 - percentDone) / (totalEstimatedCost - totalExpended);
+          (95 - percentDone) / (totalEstimatedCost - totalExpended);
       }
 
       totalExpended += costUsed;
@@ -142,12 +145,13 @@ export function addContentToSolution(
 
     // Handle a list of one or more AGO ids by stepping through the list
     // and calling this function recursively
-    const getItemsPromise: Array<Promise<void>> = [];
+    const getItemsPromise: Array<Promise<ISourceFile[]>> = [];
     options.itemIds.forEach(itemId => {
       const createDef = createItemTemplate(
         solutionItemId,
         itemId,
         templateDictionary,
+        srcAuthentication,
         destAuthentication,
         solutionTemplates,
         itemProgressCallback
@@ -156,50 +160,82 @@ export function addContentToSolution(
     });
 
     // eslint-disable-next-line @typescript-eslint/no-floating-promises
-    Promise.all(getItemsPromise).then(() => {
-      if (failedItemIds.length > 0) {
-        reject(
-          failWithIds(
-            failedItemIds,
-            "One or more items cannot be converted into templates"
-          )
-        );
-      } else {
-        if (solutionTemplates.length > 0) {
-          // test for and update group dependencies and other post-processing
-          solutionTemplates = _postProcessGroupDependencies(solutionTemplates);
-          solutionTemplates = postProcessWorkforceTemplates(solutionTemplates);
-          _templatizeSolutionIds(solutionTemplates);
-          solutionTemplates = _postProcessIgnoredItems(solutionTemplates);
-          _simplifyUrlsInItemDescriptions(solutionTemplates);
-          _replaceDictionaryItemsInObject(
-            templateDictionary,
-            solutionTemplates
-          );
-          _templatizeOrgUrl(solutionTemplates, destAuthentication).then(
-            solutionTemplates2 => {
-              // Update solution item with its data JSON
-              const solutionData: ISolutionItemData = {
-                metadata: { version: SolutionTemplateFormatVersion },
-                templates: options.templatizeFields
-                  ? postProcessFieldReferences(solutionTemplates2)
-                  : solutionTemplates2
-              };
-              const itemInfo: IItemUpdate = {
-                id: solutionItemId,
-                text: solutionData
-              };
-              updateItem(itemInfo, destAuthentication).then(() => {
-                resolve(solutionItemId);
-              }, reject);
-            },
-            reject
+    Promise.all(getItemsPromise).then(
+      (multipleResourceItemFiles: ISourceFile[][]) => {
+        if (failedItemIds.length > 0) {
+          reject(
+            failWithIds(
+              failedItemIds,
+              "One or more items cannot be converted into templates"
+            )
           );
         } else {
-          resolve(solutionItemId);
+          if (solutionTemplates.length > 0) {
+            // Coalesce the resource file paths from the created templates
+            let resourceItemFiles: ISourceFile[] = multipleResourceItemFiles.reduce(
+              (accumulator, currentValue) => accumulator.concat(currentValue),
+              [] as ISourceFile[]
+            );
+
+            // test for and update group dependencies and other post-processing
+            solutionTemplates = _postProcessGroupDependencies(
+              solutionTemplates
+            );
+            solutionTemplates = postProcessWorkforceTemplates(
+              solutionTemplates
+            );
+
+            // Filter out any resources from items that have been removed from the templates, such as
+            // Living Atlas layers
+            solutionTemplates = _postProcessIgnoredItems(solutionTemplates);
+            const templateIds = solutionTemplates.map(
+              template => template.itemId
+            );
+
+            // Coalesce the resource file paths from the created templates
+            resourceItemFiles = resourceItemFiles.filter(file =>
+              templateIds.includes(file.itemId)
+            );
+
+            // Send the accumulated resources to the solution item
+            // eslint-disable-next-line @typescript-eslint/no-floating-promises
+            copyFilesToStorageItem(
+              resourceItemFiles,
+              solutionItemId,
+              destAuthentication
+            ).then(() => {
+              _templatizeSolutionIds(solutionTemplates);
+              _simplifyUrlsInItemDescriptions(solutionTemplates);
+              _replaceDictionaryItemsInObject(
+                templateDictionary,
+                solutionTemplates
+              );
+              _templatizeOrgUrl(solutionTemplates, destAuthentication).then(
+                solutionTemplates2 => {
+                  // Update solution item with its data JSON
+                  const solutionData: ISolutionItemData = {
+                    metadata: { version: SolutionTemplateFormatVersion },
+                    templates: options.templatizeFields
+                      ? postProcessFieldReferences(solutionTemplates2)
+                      : solutionTemplates2
+                  };
+                  const itemInfo: IItemUpdate = {
+                    id: solutionItemId,
+                    text: solutionData
+                  };
+                  updateItem(itemInfo, destAuthentication).then(() => {
+                    resolve(solutionItemId);
+                  }, reject);
+                },
+                reject
+              );
+            });
+          } else {
+            resolve(solutionItemId);
+          }
         }
       }
-    });
+    );
   });
 }
 
@@ -215,9 +251,6 @@ export function addContentToSolution(
 export function _getDependencies(template: IItemTemplate): string[] {
   // Get all dependencies
   let deps = template.dependencies.concat(
-    _getIdsOutOfTemplateVariables(
-      _getTemplateVariables(JSON.stringify(template.item))
-    ),
     _getIdsOutOfTemplateVariables(
       _getTemplateVariables(JSON.stringify(template.data))
     )
@@ -534,5 +567,9 @@ export function _templatizeSolutionIds(templates: IItemTemplate[]): void {
   templates.forEach((template: IItemTemplate) => {
     _replaceRemainingIdsInObject(solutionIds, template.item);
     _replaceRemainingIdsInObject(solutionIds, template.data);
+    /* istanbul ignore else */
+    if (template.type !== "Group" && !isWorkforceProject(template)) {
+      template.dependencies = _getDependencies(template);
+    }
   });
 }
