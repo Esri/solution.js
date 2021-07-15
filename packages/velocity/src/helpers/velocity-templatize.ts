@@ -50,10 +50,10 @@ export function _templatize(
 }
 
 /**
- * Updates the template by adding variables for key properties that will
- * need to be swapped when deploying
+ * Updates the template by adding variables for the itemId and the label
+ * The label controls the name and must be unique for the org.
  *
- * @param template velocity item info that should be templatized
+ * @param feeds array of velocity feeds that should be templatized
  *
  */
 export function _templatizeFeeds(feeds: any[]): any {
@@ -65,7 +65,7 @@ export function _templatizeFeeds(feeds: any[]): any {
 }
 
 /**
- * Updates the portal item id and feature layer id variables.
+ * Updates the portal item id and feature layer id variables for the feed properties.
  *
  * @param feed the feed object from the item
  *

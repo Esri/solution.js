@@ -19,7 +19,7 @@ import { IItemTemplate, getProp } from "@esri/solution-common";
 /**
  * Get the dependencies from the velocity data sources and feeds
  *
- * @param template IItemTemplate
+ * @param template The template that for the velocity item
  */
 export function getVelocityDependencies(template: IItemTemplate): any[] {
   const dependencies: string[] = [];
@@ -40,7 +40,8 @@ export function getVelocityDependencies(template: IItemTemplate): any[] {
 /**
  * Get the dependencies from the velocity data sources
  *
- * @param template IItemTemplate
+ * @param dataSources The data sources listed in the velocity template
+ * @param dependencies The current dependency list
  */
 export function _getDatasourceDependencies(
   dataSources: any[],
@@ -60,7 +61,8 @@ export function _getDatasourceDependencies(
 /**
  * Get the dependencies from the velocity feeds
  *
- * @param template IItemTemplate
+ * @param feeds The list of feeds from the velocity template
+ * @param dependencies The current list of dependencies
  */
 export function _getFeedDependencies(
   feeds: any[],

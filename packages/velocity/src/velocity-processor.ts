@@ -37,9 +37,9 @@ import { getVelocityUrl, postVelocityData } from "./helpers/velocity-helpers";
 /**
  * Convert a Velocity item into a Template
  *
- * @param solutionItemId
- * @param itemInfo
- * @param authentication
+ * @param solutionItemId The solution to contain the item
+ * @param itemInfo The basic item info
+ * @param authentication The credentials for requests
  */
 export function convertItemToTemplate(
   solutionItemId: string,
@@ -59,17 +59,17 @@ export function convertItemToTemplate(
           return Promise.resolve(template);
         });
     },
-    e => fail(e)
+    e => Promise.reject(fail(e))
   );
 }
 
 /**
- * Create a Web Experience from a Template
+ * Create Velocity analytics and feeds from a Template
  *
- * @param template
- * @param templateDictionary
- * @param destinationAuthentication
- * @param itemProgressCallback
+ * @param template The template for the volocity items
+ * @param templateDictionary Hash of facts: folder id, org URL, adlib replacements
+ * @param destinationAuthentication Credentials for the deployment requests
+ * @param itemProgressCallback Function for reporting progress updates from type-specific template handlers
  */
 export function createItemFromTemplate(
   template: IItemTemplate,
@@ -89,13 +89,6 @@ export function createItemFromTemplate(
     return Promise.resolve(generateEmptyCreationResponse(template.type));
   }
 
-  // const finalStatus = itemProgressCallback(
-  //   template.itemId,
-  //   EItemProgressStatus.Finished,
-  //   template.estimatedDeploymentCostFactor || 2,
-  //   createdModel.item.id
-  // );
-
   const orgId = template.itemId;
 
   return postVelocityData(
@@ -112,11 +105,8 @@ export function createItemFromTemplate(
     );
 
     if (!finalStatus) {
-      // clean up the site we just created
-      //const failSafeRemove = failSafe(removeItem, { success: true });
       return Promise.resolve(generateEmptyCreationResponse(template.type));
     } else {
-      // finally, return ICreateItemFromTemplateResponse
       const response: ICreateItemFromTemplateResponse = {
         item: {
           ...template,
