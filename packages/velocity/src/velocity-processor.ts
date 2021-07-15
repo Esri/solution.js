@@ -32,14 +32,7 @@ import {
 } from "@esri/solution-common";
 import { templatizeVelocity } from "./helpers/velocity-templatize";
 import { getVelocityDependencies } from "./helpers/get-velocity-dependencies";
-import {
-  getVelocityUrl,
-  getOutputs,
-  getFormats,
-  getServices,
-  postVelocityData,
-  getSources
-} from "./helpers/velocity-helpers";
+import { getVelocityUrl, postVelocityData } from "./helpers/velocity-helpers";
 
 /**
  * Convert a Velocity item into a Template
@@ -59,36 +52,15 @@ export function convertItemToTemplate(
       return fetch(url)
         .then(data => data.json())
         .then(data_json => {
+          template.item.title = data_json.label;
           template.data = data_json;
           template.dependencies = getVelocityDependencies(template);
           templatizeVelocity(template);
-
-          // return testTheAPI(authentication, {}).then(r => {
-          //   console.log(r);
-          //   return Promise.resolve(template);
-          // });
-
           return Promise.resolve(template);
         });
     },
     e => fail(e)
   );
-}
-
-export function testTheAPI(
-  authentication: UserSession,
-  templateDictionary: any
-): Promise<any> {
-  const promises: any[] = [
-    getOutputs(authentication, templateDictionary, "", ""),
-    getFormats(authentication, templateDictionary, "", ""),
-    getServices(authentication, templateDictionary, "", ""),
-    getSources(authentication, templateDictionary, "", "") //,
-    //getStatus(authentication, templateDictionary, "", "")
-  ];
-  return Promise.all(promises).then(r => {
-    return Promise.resolve(r);
-  });
 }
 
 /**

@@ -18,9 +18,9 @@ import {
   ISubscriptionInfo,
   IItemTemplate,
   getSubscriptionInfo,
-  getUniqueTitle,
   replaceInTemplate,
-  UserSession
+  UserSession,
+  getProp
 } from "@esri/solution-common";
 
 export function getVelocityUrlBase(
@@ -98,6 +98,137 @@ export function getTitle(
   );
 }
 
+export function _validateOutputs(
+  authentication: UserSession,
+  templateDictionary: any,
+  type: string,
+  data: any,
+  dataOutputs: any[]
+): Promise<any> {
+  if (dataOutputs.length > 0) {
+    return validate(authentication, templateDictionary, type, "", data).then(
+      (validateResults: any) => {
+        let messages: any[] = getProp(validateResults, "validation.messages");
+
+        const nodes: any[] = getProp(validateResults, "nodes");
+        if (nodes && Array.isArray(nodes)) {
+          nodes.forEach(node => {
+            messages = messages.concat(
+              getProp(node, "validation.messages") || []
+            );
+          });
+        }
+
+        let names: string[] = [];
+        if (messages && Array.isArray(messages)) {
+          messages.forEach(message => {
+            // I don't see a way to ask for all output names that exist
+            // velocityUrl + /outputs/ just gives you generic defaults not what currently exists
+            const nameErrors = [
+              "VALIDATION_ANALYTICS__MULTIPLE_CREATE_FEATURE_LAYER_OUTPUTS_REFERENCE_SAME_LAYER_NAME",
+              "ITEM_MANAGER__CREATE_ANALYTIC_FAILED_DUPLICATE_OUTPUT_NAMES_IN_ORGANIZATION_NOT_ALLOWED"
+            ];
+            // The names returned here seem to replace " " with "_" so they do not match exactly
+            if (nameErrors.indexOf(message.key) > -1) {
+              names = names.concat(message.args);
+            }
+          });
+        }
+
+        if (names.length > 0) {
+          _updateDataOutput(dataOutputs, data, names);
+          return _validateOutputs(
+            authentication,
+            templateDictionary,
+            type,
+            data,
+            dataOutputs
+          );
+        } else {
+          return Promise.resolve(data);
+        }
+      }
+    );
+  } else {
+    return Promise.resolve(data);
+  }
+}
+
+export function _updateDataOutput(
+  dataOutputs: any[],
+  data: any,
+  names: string[]
+) {
+  dataOutputs.forEach(dataOutput => {
+    const update = _getOutputLabel(names, dataOutput);
+    if (update) {
+      data.outputs = data.outputs.map((_dataOutput: any) => {
+        if (_dataOutput.id === update.id) {
+          if (_dataOutput.properties) {
+            const nameProp: string = `${_dataOutput.name}.name`;
+            if (Object.keys(_dataOutput.properties).indexOf(nameProp) > -1) {
+              _dataOutput.properties[nameProp] = update.label;
+            }
+          }
+        }
+        return _dataOutput;
+      });
+    }
+  });
+}
+
+export function _getOutputLabel(names: any[], dataOutput: any): any {
+  const titles: any[] =
+    names && Array.isArray(names)
+      ? names.map((name: any) => {
+          return { title: name };
+        })
+      : [];
+
+  const label = getUniqueTitle(dataOutput.name, { titles }, "titles");
+
+  return label !== dataOutput.name
+    ? {
+        label,
+        id: dataOutput.id
+      }
+    : undefined;
+}
+
+/**
+ * Will return the provided title if it does not exist as a property
+ * in one of the objects at the defined path. Otherwise the title will
+ * have a numerical value attached.
+ *
+ * @param title The root title to test
+ * @param templateDictionary Hash of the facts
+ * @param path to the objects to evaluate for potantial name clashes
+ * @return string The unique title to use
+ */
+export function getUniqueTitle(
+  title: string,
+  templateDictionary: any,
+  path: string
+): string {
+  title = title ? title.trim() : "_";
+  const objs: any[] = getProp(templateDictionary, path) || [];
+  const titles: string[] = objs.map(obj => {
+    return obj.title;
+  });
+  let newTitle: string = title;
+  let i: number = 0;
+  // replace added for velocitcy
+  // validation seems to add "_" to names listed in outputs..so  no way to compare without hacking the name
+  while (
+    titles.indexOf(newTitle) > -1 ||
+    titles.indexOf(newTitle.replace(/ /g, "_")) > -1
+  ) {
+    i++;
+    newTitle = title + " " + i;
+  }
+  return newTitle;
+}
+
 export function postVelocityData(
   authentication: UserSession,
   template: IItemTemplate,
@@ -118,37 +249,53 @@ export function postVelocityData(
         data.id = "";
         const body: any = replaceInTemplate(data, templateDictionary);
 
-        return _fetch(authentication, url, "POST", body).then(
-          rr => {
-            template.item.url = `${url}/${rr.id}`;
+        const dataOutputs: any[] = (data.outputs || []).map((o: any) => {
+          return {
+            id: o.id,
+            name: o.properties[`${o.name}.name`]
+          };
+        });
 
-            // Update the template dictionary
-            templateDictionary[template.itemId]["url"] = template.item.url;
-            templateDictionary[template.itemId]["label"] = data.label;
-            templateDictionary[template.itemId]["itemId"] = rr.id;
+        return _validateOutputs(
+          authentication,
+          templateDictionary,
+          template.type,
+          body,
+          dataOutputs
+        ).then(updatedBody => {
+          return _fetch(authentication, url, "POST", updatedBody).then(
+            rr => {
+              template.item.url = `${url}/${rr.id}`;
+              template.item.title = data.label;
 
-            const finalResult = {
-              item: replaceInTemplate(template.item, templateDictionary),
-              id: rr.id,
-              type: template.type,
-              postProcess: false
-            };
+              // Update the template dictionary
+              templateDictionary[template.itemId]["url"] = template.item.url;
+              templateDictionary[template.itemId]["label"] = data.label;
+              templateDictionary[template.itemId]["itemId"] = rr.id;
 
-            if (autoStart) {
-              return _validateAndStart(
-                authentication,
-                templateDictionary,
-                template,
-                rr.id
-              ).then(() => {
+              const finalResult = {
+                item: replaceInTemplate(template.item, templateDictionary),
+                id: rr.id,
+                type: template.type,
+                postProcess: false
+              };
+
+              if (autoStart) {
+                return _validateAndStart(
+                  authentication,
+                  templateDictionary,
+                  template,
+                  rr.id
+                ).then(() => {
+                  return Promise.resolve(finalResult);
+                });
+              } else {
                 return Promise.resolve(finalResult);
-              });
-            } else {
-              return Promise.resolve(finalResult);
-            }
-          },
-          e => Promise.reject(e)
-        );
+              }
+            },
+            e => Promise.reject(e)
+          );
+        });
       },
       e => Promise.reject(e)
     );
@@ -198,7 +345,8 @@ export function validate(
   authentication: UserSession,
   templateDictionary: any,
   type: string,
-  id: string
+  id: string,
+  body?: any
 ): Promise<any> {
   // /iot/feed/validate/{id}/
   // /iot/analytics/realtime/validate/{id}/
@@ -211,7 +359,7 @@ export function validate(
     "",
     "validate"
   ).then(url => {
-    return _fetch(authentication, url, "GET").then(result => {
+    return _fetch(authentication, url, "POST", body).then(result => {
       console.log(result);
       return Promise.resolve(result);
     });
@@ -297,7 +445,7 @@ export function getFormats(
   });
 }
 
-export function getOutputs(
+export function _getOutputs(
   authentication: UserSession,
   templateDictionary: any,
   serviceType: string, // realtime or bigdata or {name}
