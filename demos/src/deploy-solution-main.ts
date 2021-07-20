@@ -35,8 +35,6 @@ export function deploySolutionsInFolder(
   enableItemReuse: boolean
 ): Promise<string> {
   const query = new portal.SearchQueryBuilder()
-  //.match("ArcGISTeamLocalGovOrg").in("owner").and()
-  //.match("b6gLrKHqgkQb393u").in("orgid").and()
   .match(folderId).in("ownerfolder").and()
   .match("Solution").in("type").and()
   .match("Template").in("typekeywords");
