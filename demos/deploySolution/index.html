@@ -316,17 +316,17 @@
           const createdItems = [];
 
           let deployPromise = Promise.resolve("<i>No Solution(s) provided</i>");
+          const progressFcn =
+            function (percentDone, jobId, progressEvent) {
+              if (progressEvent) {
+                createdItems.push(progressEvent.data)
+              }
+              let html = "Deploying " + jobId + "..." + percentDone.toFixed().toString() + "%" + "<br><br>Finished items:<ol>";
+              createdItems.forEach(function (item) { return html += "<li>" + item + "</li>" });
+              html += "</ol>";
+              document.getElementById("output").innerHTML = html;
+            };
           if (solutionId.length > 0) {
-            const progressFcn =
-              function (percentDone, jobId, progressEvent) {
-                if (progressEvent) {
-                  createdItems.push(progressEvent.data)
-                }
-                let html = "Deploying..." + percentDone.toFixed().toString() + "%" + "<br><br>Finished items:<ol>";
-                createdItems.forEach(function (item) { return html += "<li>" + item + "</li>" });
-                html += "</ol>";
-                document.getElementById("output").innerHTML = html;
-              };
             deployPromise = main.deployAndDisplaySolution(
               solutionId,
               srcCreds,
@@ -335,11 +335,6 @@
               useExisting
             );
           } else if (folderId.length > 0) {
-            const progressFcn =
-              function (percentDone, jobId, progressEvent) {
-                const html = "<br/>Deploying " + jobId + "...<br/>";
-                document.getElementById("output").innerHTML = html;
-              };
             deployPromise = main.deploySolutionsInFolder(
               folderId,
               srcCreds,

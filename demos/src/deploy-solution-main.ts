@@ -44,20 +44,25 @@ export function deploySolutionsInFolder(
     authentication: srcAuthentication
   })
   .then((queryResponse) => {
-    const solutionsToDeploy = queryResponse.results.map(
-      result => {
-        return {
-          id: result.id,
-          title: result.title
-        } as ISolutionInfoCard;
-      }
-    );
-    return deployBatchOfSolutions(solutionsToDeploy, srcAuthentication, destAuthentication, progressCallback, enableItemReuse);
+    if (queryResponse.results.length > 0) {
+      const solutionsToDeploy = queryResponse.results.map(
+        result => {
+          return {
+            id: result.id,
+            title: result.title
+          } as ISolutionInfoCard;
+        }
+      );
+      return deployBatchOfSolutions(solutionsToDeploy, solutionsToDeploy.length, srcAuthentication, destAuthentication, progressCallback, enableItemReuse);
+    } else {
+      return Promise.resolve("<i>No solutions found in folder</i>");
+    }
   });
 }
 
 function deployBatchOfSolutions(
   solutionsToDeploy: ISolutionInfoCard[],
+  totalNumberOfSolutions: number,
   srcAuthentication: common.UserSession,
   destAuthentication: common.UserSession,
   progressCallback: common.ISolutionProgressCallback,
@@ -69,8 +74,10 @@ function deployBatchOfSolutions(
   let deployPromise = Promise.resolve("");
   if (solutionsToDeploy.length > 0) {
     solution = solutionsToDeploy.shift();
+    const index = totalNumberOfSolutions - solutionsToDeploy.length;
     deployPromise = deploySolution(
       solution,
+      index + '/' + totalNumberOfSolutions + ' "' + solution.title + '"',
       srcAuthentication,
       destAuthentication,
       progressCallback,
@@ -84,7 +91,8 @@ function deployBatchOfSolutions(
     // Are there any more items in the list?
     let remainingDeployPromise = Promise.resolve("");
     if (solutionsToDeploy.length > 0) {
-      remainingDeployPromise = deployBatchOfSolutions(solutionsToDeploy, srcAuthentication, destAuthentication, progressCallback, enableItemReuse);
+      remainingDeployPromise = deployBatchOfSolutions(solutionsToDeploy, totalNumberOfSolutions,
+        srcAuthentication, destAuthentication, progressCallback, enableItemReuse);
     }
     return remainingDeployPromise;
   })
@@ -95,6 +103,7 @@ function deployBatchOfSolutions(
 
 export function deploySolution(
   templateSolution: ISolutionInfoCard,
+  jobId: string,
   srcAuthentication: common.UserSession,
   destAuthentication: common.UserSession,
   progressCallback: common.ISolutionProgressCallback,
@@ -102,16 +111,18 @@ export function deploySolution(
 ): Promise<string> {
   // Deploy a solution described by the supplied id
   const options: common.IDeploySolutionOptions = {
-    jobId: templateSolution.title,
+    jobId,
     progressCallback: progressCallback,
     consoleProgress: true,
     storageAuthentication: srcAuthentication,
     enableItemReuse
   };
+  const itemUrlPrefix = destAuthentication.portal.replace("/sharing/rest", "");
 
   return deployer.deploySolution(templateSolution.id, destAuthentication, options)
   .then((deployedSolution: any) => {
-    return "Deployed solution " + templateSolution.title + " into " + deployedSolution + "<br/>";
+    return 'Deployed solution "' + templateSolution.title + '" into <a href="' + itemUrlPrefix +
+      '/home/item.html?id=' + deployedSolution + '" target="_blank">' + deployedSolution + '</a><br/>';
   });
 }
 
