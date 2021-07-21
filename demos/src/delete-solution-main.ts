@@ -102,7 +102,10 @@ export function deleteSolution(
           solutionFailureSummary
         ] = deleteResults;
 
-        if (solutionFailureSummary.items.length === 0) {
+        if (!solutionFailureSummary) {
+          resolve("<h5>Solution Could Not be Deleted</h5><p>An error occurred while deleting the Solution</p>");
+
+        } else if (solutionFailureSummary.items.length === 0) {
           resolve("<h5>Solution Successfully Deleted</h5><p>The Solution Item and components were successfully deleted</p>");
 
         } else {

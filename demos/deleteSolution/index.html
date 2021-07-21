@@ -100,7 +100,8 @@
       <div class="section-title">Select deployed Solutions to delete:</div>
       <div id="sourceSolutionsDiv"></div>
       <button id="toggleBtn" class="toggleBtn" onclick="toggleSelectAllFcn()">Select all</button>
-      <button id="deleteBtn" class="deleteBtn danger" onclick="launchDeleteSolutionsFcn()">Delete Solution(s)</button>
+      <button id="deleteInteractiveBtn" class="deleteBtn danger" onclick="launchDeleteSolutionsFcn(true)">Delete Solution(s) one-by-one</button>
+      <button id="deleteBlastBtn" class="deleteBtn danger" onclick="launchDeleteSolutionsFcn(false)">Delete Solution(s) en masse</button>
     </div>
     <br/><br/>
 
@@ -173,6 +174,7 @@
           numSelected = 0;
           selectAllToggle = true;
           toggleBtn.innerHTML = "Select all";
+          document.getElementById("output").innerHTML = "";
 
           const portal = (document.getElementById("portal").value || "https://www.arcgis.com") + "/sharing/rest";
           authentication = demoCommon.getRequestAuthentication(
@@ -220,10 +222,14 @@
 
         /**
          * Launches the deletion of a list of solutions.
+         *
+         * @param checkBeforeEachDelete Switch indicating if a display of what's about to be deleted appears
+         * before each solution is deleted, which provides an opportunity to cancel deleting that solution
          */
-        function launchDeleteSolutions() {
+        function launchDeleteSolutions(checkBeforeEachDelete) {
           document.getElementById("toggleBtn").style.display = "none";
-          document.getElementById("deleteBtn").style.display = "none";
+          document.getElementById("deleteInteractiveBtn").style.display = "none";
+          document.getElementById("deleteBlastBtn").style.display = "none";
 
           // Get list of solutions to delete
           const solutionsToDelete = [];
@@ -234,45 +240,60 @@
             }
           }
 
+          if (!checkBeforeEachDelete) {
+            alert("Warning: every checked Solution will be deleted! Refresh page to cancel.");
+          }
+
           // Run the deletes
-          deleteListOfSolutions(solutionsToDelete);
+          deleteListOfSolutions(solutionsToDelete, checkBeforeEachDelete);
         }
 
         /**
          * Recursively delete a list of deployed solutions, double-checking each before doing the delete.
          *
          * @param solutionsToDelete List of solution ids
+         * @param checkBeforeEachDelete Switch indicating if a display of what's about to be deleted appears
+         * before each solution is deleted, which provides an opportunity to cancel deleting that solution
          */
-        function deleteListOfSolutions(solutionsToDelete) {
+        function deleteListOfSolutions(solutionsToDelete, checkBeforeEachDelete) {
           console.log(solutionsToDelete);
           document.getElementById("checkOutput").innerHTML = "";
           document.getElementById("continue").style.display = "none";
           if (solutionsToDelete.length > 0) {
             const solutionId = solutionsToDelete.shift();
 
-            (new Promise((resolve) => {
-              confirmDeletionFcn = (okToDelete) => resolve(okToDelete);
-              doublecheck(solutionId);
-            })).then(okToDelete => {
-              let deletePromise = Promise.resolve();
-              if (okToDelete) {
-                deletePromise = deleteSolution(solutionId)
-              } else {
-                document.getElementById("doublecheck").style.display = "none";
-                document.getElementById("output").innerHTML += "<br>Solution " + solutionId + " is unchanged";
-              }
-              deletePromise.then(() => {
-                (new Promise((resolve) => {
-                  continueFcn = () => resolve();
-                  document.getElementById("continue").style.display = "block";
-                })).then(() => {
-                  document.getElementById("output").innerHTML = "";
+            if (!checkBeforeEachDelete) {
+              deleteSolution(solutionId)
+              .then(() => {
+                // Continue with list of solutions
+                deleteListOfSolutions(solutionsToDelete, checkBeforeEachDelete);
+              });
+            } else {
 
-                  // Continue with list of solutions
-                  deleteListOfSolutions(solutionsToDelete);
+              (new Promise((resolve) => {
+                confirmDeletionFcn = (okToDelete) => resolve(okToDelete);
+                doublecheck(solutionId);
+              })).then(okToDelete => {
+                let deletePromise = Promise.resolve();
+                if (okToDelete) {
+                  deletePromise = deleteSolution(solutionId);
+                } else {
+                  document.getElementById("doublecheck").style.display = "none";
+                  document.getElementById("output").innerHTML += "<br>Solution " + solutionId + " is unchanged";
+                }
+                deletePromise.then(() => {
+                  (new Promise((resolve) => {
+                    continueFcn = () => resolve();
+                    document.getElementById("continue").style.display = "block";
+                  })).then(() => {
+                    document.getElementById("output").innerHTML = "";
+
+                    // Continue with list of solutions
+                    deleteListOfSolutions(solutionsToDelete, checkBeforeEachDelete);
+                  });
                 });
               });
-            });
+            }
           } else {
             getDeployedSolutions();
           }
@@ -324,7 +345,7 @@
             solutionId,
             authentication,
             percentDone => {
-              document.getElementById("output").innerHTML = "Deleting..." + percentDone.toFixed().toString() + "%";
+              document.getElementById("output").innerHTML = "Deleting " + solutionId + "..." + percentDone.toFixed().toString() + "%";
             }
           ).then(
             html => {
@@ -363,8 +384,15 @@
          * Updates the visibility of copy button based on presence of templates in source organization.
          */
         function updateDeleteBtn() {
-          var btnItem = document.getElementById("deleteBtn");
-          btnItem.style.display = numSelected > 0 ? "inline-block" : "none";
+          var deleteInteractiveBtn = document.getElementById("deleteInteractiveBtn");
+          var deleteBlastBtn = document.getElementById("deleteBlastBtn");
+          if (numSelected > 0) {
+            document.getElementById("deleteInteractiveBtn").style.display = "inline-block";
+            document.getElementById("deleteBlastBtn").style.display = "inline-block";
+          } else {
+            document.getElementById("deleteInteractiveBtn").style.display = "none";
+            document.getElementById("deleteBlastBtn").style.display = "none";
+          }
         }
 
         /**
