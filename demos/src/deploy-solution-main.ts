@@ -135,7 +135,7 @@ export function deployAndDisplaySolution(
 ): Promise<string> {
   // Deploy a solution described by the supplied id
   const options: common.IDeploySolutionOptions = {
-    jobId: common.createShortId(),
+    jobId: templateSolutionId,
     progressCallback: progressCallback,
     consoleProgress: true,
     storageAuthentication: srcAuthentication,
