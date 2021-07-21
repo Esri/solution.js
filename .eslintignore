@@ -8,3 +8,4 @@ coverage
 *.d.ts
 *.test.ts
 demos
+test

@@ -145,31 +145,6 @@ export function getCopyableItemBaseProperties(sourceItem: any): any {
 }
 
 /**
- * Creates a UserSession.
- *
- * @param username
- * @param password
- * @param portalUrl Base url for the portal you want to make the request to; defaults
- *        to 'https://www.arcgis.com/sharing/rest'
- * @return solutionCommon.UserSession object
- * @see @esri/arcgis-rest-auth
- * @see @esri/arcgis-rest-request
- */
-export function getRequestAuthentication(
-  username: string,
-  password: string,
-  portalUrl: string
-): common.UserSession {
-  const userSessionOptions = {
-    username: username || undefined,
-    password: password || undefined,
-    portal: portalUrl || "https://www.arcgis.com/sharing/rest"
-  };
-
-  return new common.UserSession(userSessionOptions);
-}
-
-/**
  * Gets items with "Solution,Template" type keywords.
  *
  * @param authentication Authentication for server to query

@@ -21,6 +21,13 @@
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
   <link rel="stylesheet" href="https://esri.github.io/calcite-bootstrap/styles/calcite-bootstrap.min.css">
   <style>
+  html {
+    font-family: Arial;
+    color: #4c4c4c;
+  }
+  body {
+    padding: 8px;
+  }
   button {
     cursor: pointer;
   }
@@ -29,6 +36,22 @@
   }
   li {
     margin-bottom: 12px;
+  }
+  .section-title {
+    margin-bottom: 12px;
+  }
+  .labeledItem {
+    display: inline-block;
+    margin: 0 8px 8px 0;
+  }
+  .checklist {
+    list-style-type: none;
+  }
+  .display-none {
+    display: none;
+  }
+  label {
+    margin-top: 5px;
   }
   .danger {
     color: white;
@@ -40,42 +63,66 @@
   th, td {
     padding: 4px;
   }
+  .deleteBtn {
+    margin-left: 16px;
+    display: none;
+  }
+  .fader {
+    transition: 0.5s;
+  }
   </style>
 </head>
 <body>
-  <div class="container">
-    <div class="row">
-      <div class="col-sm-10 col-sm-offset-1">
-        <h1>Delete a Solution</h1>
-        <p>Deletes a deployed Solution item and all of the items that were created as part of that deployment.</p>
-        <div id="input" class="form-group" style="display:none">
-          <label for="solutionId">Enter a Solution ID:</label>
-          <input class="form-control" type="text" id="solutionId">
-          <br />
-          <i>Credentials in Solution's organization:</i><br />
-          <label for="username">username:&nbsp;</label><input type="text" class="form-control" id="username" value="">
-          <label for="password">password:&nbsp;</label><input type="password" class="form-control" id="password" value="">
-          <label for="password">Portal:</label>
-          <input type="text" id="portal" class="form-control" value="https://www.arcgis.com">
-          <br>
-          <button id="deleteBtn" class="btn btn-default danger" onclick="checkFcn()">Delete entire deployed Solution</button>
-        </div>
+  <h3>Delete one or more Deployed Solutions</h3>
+
+  <div id="container">
+    <div id="input" style="display:none">
+
+      <div class="section-title">Credentials in organization</div>
+
+      <div class="labeledItem">
+        <label for="username">Username:&nbsp;</label>
+        <input type="text" id="username" placeholder="anonymous">
       </div>
-      <div id="check" class="col-sm-10 col-sm-offset-1" style="display:none">
-        <div id="checkOutput"></div>
-        <br>
-        <button class="btn btn-default danger" onclick="goFcn()">Confirm Deletion</button>
+      <div class="labeledItem">
+        <label for="password">Password:&nbsp;</label>
+        <input type="password" id="password">
       </div>
-      <div class="col-sm-12">
-        <div id="output" style="display:none">Deleting...</div>
+      <div class="labeledItem">
+        <label for="portal">Portal:&nbsp;</label>
+        <input type="text" id="portal" style="width:256px" placeholder="https://www.arcgis.com">
       </div>
+      <button id="connectBtn fader" onclick="connectFcn()">Connect</button>
+    </div>
+    <br/><br/>
+
+    <div id="solutionSelection" style="display:none">
+      <div class="section-title">Select deployed Solutions to delete:</div>
+      <div id="sourceSolutionsDiv"></div>
+      <button id="toggleBtn" class="toggleBtn" onclick="toggleSelectAllFcn()">Select all</button>
+      <button id="deleteBtn" class="deleteBtn danger" onclick="launchDeleteSolutionsFcn()">Delete Solution(s)</button>
+    </div>
+    <br/><br/>
+
+    <div id="doublecheck" class="col-sm-10 col-sm-offset-1" style="display:none">
+      <div id="checkOutput"></div>
+      <br>
+      <button id="cancelDeletionBtn" class="btn btn-default" onclick="confirmDeletionFcn(false)">Cancel Deletion</button>
+      <button id="confirmDeletionBtn" class="btn btn-default danger" onclick="confirmDeletionFcn(true)">Confirm Deletion</button>
+    </div>
+
+    <div class="col-sm-12">
+      <div id="output" style="display:none">Deleting...</div>
+      <br/>
+      <button id="continue" class="btn btn-default display-none" onclick="continueFcn()">Continue</button>
     </div>
   </div>
 
   <script crossorigin="anonymous" src="https://polyfill.io/v3/polyfill.min.js?features=fetch%2Ces2015"></script>
   <script src="https://requirejs.org/docs/release/2.3.6/minified/require.js"></script>
   <script>
-    var checkFcn, goFcn;
+    let confirmDeletionFcn, connectFcn, continueFcn, launchDeleteSolutionsFcn, toggleSelectAllFcn, updateSolutionSelectionFcn;
+
     require.config({
       paths: {
         "@esri/arcgis-rest-auth": "../node_modules/@esri/arcgis-rest-auth/dist/umd/auth.umd.min",
@@ -102,30 +149,151 @@
       }
     });
 
-    require(["@esri/arcgis-rest-auth", "../dist/delete-solution-main"],
-      function (auth, main) {
+    require(["@esri/arcgis-rest-auth", "../dist/delete-solution-main", "../dist/demoCommon.js"],
+      function (auth, main, demoCommon) {
         "use strict";
-        checkFcn = check;
-        goFcn = go;
+        connectFcn = getDeployedSolutions;
+        launchDeleteSolutionsFcn = launchDeleteSolutions;
+        toggleSelectAllFcn = toggleSelectAll;
+        updateSolutionSelectionFcn = updateSolutionSelection;
         document.getElementById("input").style.display = "block";
 
-        function check () {
-          main.checkDeleteSolution(
-            document.getElementById("solutionId").value,
-            new auth.UserSession({
-              username: document.getElementById("username").value,
-              password: document.getElementById("password").value,
-              portal: document.getElementById("portal").value + "/sharing/rest"
-            })
-          ).then(
-            html => {
-              document.getElementById("checkOutput").innerHTML = html;
-              document.getElementById("output").innerHTML = "";
-              document.getElementById("check").style.display = "block";
-              document.getElementById("deleteBtn").style.display = "none";
+        let haveSolutions = false;
+        let authentication = null;
+        let selectAllToggle = true;
+        let numSelected = 0;
+
+        /**
+         * Gets deployed Solutions from an organization and shows them as a checklist in the div "sourceSolutionsDiv".
+         */
+        function getDeployedSolutions() {
+          demoCommon.removeItem("sourceSolutionsListDiv");
+          authentication = null;
+          haveSolutions = false;
+          numSelected = 0;
+          selectAllToggle = true;
+          toggleBtn.innerHTML = "Select all";
+
+          const portal = (document.getElementById("portal").value || "https://www.arcgis.com") + "/sharing/rest";
+          authentication = demoCommon.getRequestAuthentication(
+            document.getElementById("username").value, document.getElementById("password").value,
+            portal
+          );
+
+          main.getDeployedSolutions(authentication)
+          .then(
+            searchResponse => {
+              var listDiv = demoCommon.addItem("sourceSolutionsDiv", "DIV", "sourceSolutionsListDiv");
+              listDiv.innerHTML = demoCommon.createChecklist(
+                searchResponse.results,
+                document.getElementById("portal").value  || "https://www.arcgis.com",
+                "sourceSolutionsList",
+                false,
+                "updateSolutionSelectionFcn(this)"
+              );
+              updateDeleteBtn();
+              document.getElementById("toggleBtn").style.display = "inline-block";
+              document.getElementById("solutionSelection").style.display = "block";
             },
             error => {
-              var message = error?.error || error?.message || "Unspecified error";
+              var listDiv = addItem("sourceSolutionsDiv", "DIV", "sourceSolutionsListDiv");
+              listDiv.innerHTML = "Unable to get Solution templates: " + error;
+            }
+          );
+        }
+
+        /**
+         * Toggles selection of all solutions or no solutions .
+         */
+        function toggleSelectAll() {
+          const sourceSolutionsList = document.getElementById("sourceSolutionsList");
+          for(let i = 0; i < sourceSolutionsList.children.length; i++) {
+            sourceSolutionsList.children[i].children[0].checked = selectAllToggle;
+          }
+
+          selectAllToggle = !selectAllToggle;
+          const toggleBtn = document.getElementById("toggleBtn");
+          toggleBtn.innerHTML = selectAllToggle ? "Select all" : "Select none";
+          numSelected = selectAllToggle ? 0 : sourceSolutionsList.children.length;
+          updateDeleteBtn();
+        }
+
+        /**
+         * Launches the deletion of a list of solutions.
+         */
+        function launchDeleteSolutions() {
+          document.getElementById("toggleBtn").style.display = "none";
+          document.getElementById("deleteBtn").style.display = "none";
+
+          // Get list of solutions to delete
+          const solutionsToDelete = [];
+          const sourceSolutionsList = document.getElementById("sourceSolutionsList");
+          for(let i = 0; i < sourceSolutionsList.children.length; i++) {
+            if (sourceSolutionsList.children[i].children[0].checked) {
+              solutionsToDelete.push(sourceSolutionsList.children[i].children[0].value);
+            }
+          }
+
+          // Run the deletes
+          deleteListOfSolutions(solutionsToDelete);
+        }
+
+        /**
+         * Recursively delete a list of deployed solutions, double-checking each before doing the delete.
+         *
+         * @param solutionsToDelete List of solution ids
+         */
+        function deleteListOfSolutions(solutionsToDelete) {
+          console.log(solutionsToDelete);
+          document.getElementById("checkOutput").innerHTML = "";
+          document.getElementById("continue").style.display = "none";
+          if (solutionsToDelete.length > 0) {
+            const solutionId = solutionsToDelete.shift();
+
+            (new Promise((resolve) => {
+              confirmDeletionFcn = (okToDelete) => resolve(okToDelete);
+              doublecheck(solutionId);
+            })).then(okToDelete => {
+              let deletePromise = Promise.resolve();
+              if (okToDelete) {
+                deletePromise = deleteSolution(solutionId)
+              } else {
+                document.getElementById("doublecheck").style.display = "none";
+                document.getElementById("output").innerHTML += "<br>Solution " + solutionId + " is unchanged";
+              }
+              deletePromise.then(() => {
+                (new Promise((resolve) => {
+                  continueFcn = () => resolve();
+                  document.getElementById("continue").style.display = "block";
+                })).then(() => {
+                  document.getElementById("output").innerHTML = "";
+
+                  // Continue with list of solutions
+                  deleteListOfSolutions(solutionsToDelete);
+                });
+              });
+            });
+          } else {
+            getDeployedSolutions();
+          }
+        }
+
+        /**
+         * Displays the items that are going to be deleted in a solution to provide the user the opportunity
+         * cancel the deletion.
+         *
+         * @param solutionId Id of solution to delete
+         */
+        function doublecheck(solutionId) {
+          main.checkDeleteSolution(solutionId, authentication).then(
+            html => {
+              document.getElementById("checkOutput").innerHTML = html;
+              document.getElementById("doublecheck").style.display = "block";
+              document.getElementById("output").innerHTML = "";
+              document.getElementById("toggleBtn").style.display = "none";
+            },
+            error => {
+              var message = solutionId + "<br>" + (error?.error || error?.message || "Unspecified error");
               if (error.itemIds) {
                 message += "<ul>";
                 error.itemIds.forEach(
@@ -137,23 +305,24 @@
               }
               document.getElementById("output").innerHTML = "<span style=\"color:red\">" + message + "</span>";
               document.getElementById("output").style.display = "block";
+              confirmDeletionFcn(false);
             }
           );
         }
 
-        function go () {
-          document.getElementById("input").style.display = "none";
-          document.getElementById("check").style.display = "none";
+        /**
+         * Deletes a deployed solution.
+         *
+         * @param solutionId Id of solution to delete
+         */
+        function deleteSolution(solutionId) {
+          document.getElementById("doublecheck").style.display = "none";
           document.getElementById("output").style.display = "block";
           var startTime = Date.now();
 
-          main.deleteSolution(
-            document.getElementById("solutionId").value,
-            new auth.UserSession({
-              username: document.getElementById("username").value,
-              password: document.getElementById("password").value,
-              portal: document.getElementById("portal").value + "/sharing/rest"
-            }),
+          return main.deleteSolution(
+            solutionId,
+            authentication,
             percentDone => {
               document.getElementById("output").innerHTML = "Deleting..." + percentDone.toFixed().toString() + "%";
             }
@@ -163,7 +332,8 @@
               document.getElementById("output").innerHTML = html;
             },
             error => {
-              var message = error?.error || error?.message || "Unspecified error";
+              var message = error?.error || error?.message
+                || "Unspecified error";
               if (error.itemIds) {
                 message += "<ul>";
                 error.itemIds.forEach(
@@ -179,9 +349,32 @@
           );
         }
 
-        function reportElapsedTime (startTime) {
+        /**
+         * Reports the seconds between a supplied start time and the current time.
+         *
+         * @param startTime Start time in the Date.now() format
+         */
+        function reportElapsedTime(startTime) {
           var endTime = Date.now();
           console.log("Elapsed time: " + ((endTime - startTime) / 1000).toFixed(1) + " seconds");
+        }
+
+        /**
+         * Updates the visibility of copy button based on presence of templates in source organization.
+         */
+        function updateDeleteBtn() {
+          var btnItem = document.getElementById("deleteBtn");
+          btnItem.style.display = numSelected > 0 ? "inline-block" : "none";
+        }
+
+        /**
+         * Updates the count of currently-selected solutions based on the onChange event on a checklist item.
+         *
+         * @param element Checklist item that has changed its "checked" state
+         */
+        function updateSolutionSelection(element) {
+          numSelected += element.checked ? 1 : -1;
+          updateDeleteBtn();
         }
       }
     );

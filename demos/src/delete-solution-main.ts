@@ -16,6 +16,35 @@
 // @esri/solution-common deleteSolution example
 
 import * as common from "@esri/solution-common";
+import * as portal from "@esri/arcgis-rest-portal";
+
+
+export function getDeployedSolutions(
+  authentication: common.UserSession
+): Promise<portal.ISearchResult<portal.IItem>> {
+  const query = new portal.SearchQueryBuilder()
+  .match(authentication.username).in("owner").and()
+  .match("Solution").in("type").and()
+  .match("Deployed").in("typekeywords");
+  return portal.searchItems({
+    q: query,
+    num: 100,
+    authentication
+  })
+  .then((searchResponse: portal.ISearchResult<portal.IItem>) => {
+    // Sort the results by title and then id
+    searchResponse.results.sort(
+      (e1, e2) => {
+        if (e1.title !== e2.title) {
+          return e1.title < e2.title ? -1 : 1;
+        } else {
+          return e1.id < e2.id ? -1 : 1;
+        }
+      }
+    );
+    return searchResponse;
+  });
+}
 
 export function checkDeleteSolution(
   solutionItemId: string,
