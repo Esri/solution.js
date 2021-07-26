@@ -148,13 +148,13 @@
   <script>
     var connectToSourceFcn, connectToDestinationFcn;
 
-    require(["@esri/arcgis-rest-auth", "@esri/arcgis-rest-portal", "@esri/arcgis-html-sanitizer", "../dist/copy-solutions-main.js"],
-      function (auth, portal, htmlSanitizer, main) {
+    require(["@esri/arcgis-rest-auth", "@esri/arcgis-rest-portal", "@esri/arcgis-html-sanitizer", "../dist/copy-solutions-main.js", "../dist/demoCommon.js"],
+      function (auth, portal, htmlSanitizer, main, demoCommon) {
         "use strict";
-        removeItem("page_busySymbol");
+        demoCommon.removeItem("page_busySymbol");
         connectToSourceFcn = getSourceTemplates;
         connectToDestinationFcn = getDestinationTemplates;
-        fadeItemIn("credentialsDiv");
+        demoCommon.fadeItemIn("credentialsDiv");
 
         var haveSourceTemplates = false;
         var haveDestinationAccess = false;
@@ -172,17 +172,17 @@
          * Gets templates from an organization and shows them as a checklist in the div "sourceSolutionsDiv".
          */
         function getSourceTemplates () {
-          removeItem("sourceSolutionsListDiv");
-          fadeItemOut("copiedSolutionsDiv");
-          removeItem("copiedSolutionsListDiv");
-          fadeItemIn("sourceSolutionsDiv");
-          addBusySymbol("sourceSolutionsDiv");
+          demoCommon.removeItem("sourceSolutionsListDiv");
+          demoCommon.fadeItemOut("copiedSolutionsDiv");
+          demoCommon.removeItem("copiedSolutionsListDiv");
+          demoCommon.fadeItemIn("sourceSolutionsDiv");
+          demoCommon.addBusySymbol("sourceSolutionsDiv");
           sourceAuthentication = null;
           haveSourceTemplates = false;
           updateCopyBtn();
 
           const srcPortal = (document.getElementById("srcPortal").value || "https://www.arcgis.com") + "/sharing/rest";
-          sourceAuthentication = main.getRequestAuthentication(
+          sourceAuthentication = demoCommon.getRequestAuthentication(
             document.getElementById("srcUsername").value, document.getElementById("srcPassword").value,
             srcPortal
           );
@@ -191,15 +191,15 @@
           main.getTemplates(sourceAuthentication, !document.getElementById("srcOnlyMySolns").checked)
           .then(
             searchResponse => {
-              removeItem("sourceSolutionsDiv_busySymbol");
-              var listDiv = addItem ("sourceSolutionsDiv", "DIV", "sourceSolutionsListDiv");
-              listDiv.innerHTML = createChecklist(
+              demoCommon.removeItem("sourceSolutionsDiv_busySymbol");
+              var listDiv = demoCommon.addItem ("sourceSolutionsDiv", "DIV", "sourceSolutionsListDiv");
+              listDiv.innerHTML = demoCommon.createChecklist(
                 searchResponse.results,
-                sanitizer.sanitize(document.getElementById("srcPortal").value),
+                sanitizer.sanitize(document.getElementById("srcPortal").value) || "https://www.arcgis.com",
                 "sourceSolutionsList",
                 true
               );
-              var copyBtn = addItem("sourceSolutionsListDiv", "BUTTON", "copyBtn", "copyBtn");
+              var copyBtn = demoCommon.addItem("sourceSolutionsListDiv", "BUTTON", "copyBtn", "copyBtn");
               copyBtn.innerHTML = "Copy Solution(s)";
               copyBtn.addEventListener("click", copyTemplates);
               haveSourceTemplates = true;
@@ -217,17 +217,17 @@
          * Gets templates from an organization and shows them as a list in the div "destinationSolutionsDiv".
          */
          function getDestinationTemplates () {
-          removeItem("destinationSolutionsListDiv");
-          fadeItemOut("copiedSolutionsDiv");
-          removeItem("copiedSolutionsListDiv");
-          addBusySymbol("destinationSolutionsDiv");
-          fadeItemIn("destinationSolutionsDiv");
+          demoCommon.removeItem("destinationSolutionsListDiv");
+          demoCommon.fadeItemOut("copiedSolutionsDiv");
+          demoCommon.removeItem("copiedSolutionsListDiv");
+          demoCommon.addBusySymbol("destinationSolutionsDiv");
+          demoCommon.fadeItemIn("destinationSolutionsDiv");
           destinationAuthentication = null;
           haveDestinationAccess = false;
           updateCopyBtn();
 
           const destPortal = (document.getElementById("destPortal").value || "https://www.arcgis.com") + "/sharing/rest";
-          destinationAuthentication = main.getRequestAuthentication(
+          destinationAuthentication = demoCommon.getRequestAuthentication(
             document.getElementById("destUsername").value, document.getElementById("destPassword").value,
             destPortal
           );
@@ -235,22 +235,22 @@
           main.getTemplates(destinationAuthentication, !document.getElementById("destOnlyMySolns").checked)
           .then(
             searchResponse => {
-              removeItem("destinationSolutionsDiv_busySymbol");
-              var listDiv = addItem ("destinationSolutionsDiv", "DIV", "destinationSolutionsListDiv");
+              demoCommon.removeItem("destinationSolutionsDiv_busySymbol");
+              var listDiv = demoCommon.addItem ("destinationSolutionsDiv", "DIV", "destinationSolutionsListDiv");
               if (searchResponse.total === 0) {
                 listDiv.innerHTML = "<i>No Solution templates found</i>";
               } else {
-                listDiv.innerHTML = createSimpleList(
+                listDiv.innerHTML = demoCommon.createSimpleList(
                   searchResponse.results,
-                  sanitizer.sanitize(document.getElementById("destPortal").value)
+                  sanitizer.sanitize(document.getElementById("destPortal").value) || "https://www.arcgis.com"
                 );
               }
               haveDestinationAccess = true;
               updateCopyBtn();
             },
             error => {
-              removeItem("destinationSolutionsDiv_busySymbol");
-              var listDiv = addItem ("destinationSolutionsDiv", "DIV", "destinationSolutionsListDiv");
+              demoCommon.removeItem("destinationSolutionsDiv_busySymbol");
+              var listDiv = demoCommon.addItem ("destinationSolutionsDiv", "DIV", "destinationSolutionsListDiv");
               listDiv.innerHTML = "Unable to get Solution templates: " + error;
             }
           );
@@ -260,7 +260,7 @@
          * Copies checked templates in list in the div "sourceSolutionsList" to the destination organization.
          */
         function copyTemplates () {
-          removeItem("copiedSolutionsListDiv");
+          demoCommon.removeItem("copiedSolutionsListDiv");
           var sourceSolutionsList = document.getElementById("sourceSolutionsList");
           var numSolutionsToCheck = sourceSolutionsList.children.length;
           var solutionsToCopy = [];
@@ -276,8 +276,8 @@
             }
           }
 
-          var listDiv = addItem ("copiedSolutionsDiv", "DIV", "copiedSolutionsListDiv");
-          fadeItemIn("copiedSolutionsDiv");
+          var listDiv = demoCommon.addItem ("copiedSolutionsDiv", "DIV", "copiedSolutionsListDiv");
+          demoCommon.fadeItemIn("copiedSolutionsDiv");
           if (solutionsToCopy.length > 0) {
             listDiv.innerHTML = "Copying...";
 
@@ -314,98 +314,6 @@
 
       }
     );
-
-    //----------------------------------------------------------------------------------------------------------------//
-
-    function addBusySymbol (containerItemId) {
-      var busySymbol = addItem(containerItemId, "IMG", containerItemId + "_busySymbol");
-      busySymbol.src = "../images/loading.gif";
-      return busySymbol;
-    }
-
-    function addItem (containerItemId, itemType, itemId, itemClasses) {
-      var item = document.createElement(itemType);
-      item.id = itemId;
-      if (itemClasses) {
-        var attribute = document.createAttribute("class");
-        attribute.value = itemClasses;
-        item.setAttributeNode(attribute);
-      }
-
-      var containerItem = document.getElementById(containerItemId);
-      containerItem.appendChild(item);
-      return item;
-    }
-
-    function createChecklist (searchResults, portal, itemId, includeCustom=false) {
-      var html = '<ul';
-      if (itemId) {
-        html += ' id="' + itemId + '"';
-      }
-      html += ' class="checklist">';
-      searchResults.forEach(
-        result => {
-          html += '<li><input type="checkbox" value="' + result.id + '"> ' +
-            result.type + ' "' + result.title + '" (';
-          if (portal) {
-            html += '<a href="' + portal + '/home/item.html?id=' + result.id + '" target="_blank">' +
-              result.id + '</a>';
-          } else {
-            html += result.id;
-          }
-          html += ')</li>';
-        }
-      );
-
-      if (includeCustom) {
-        html += '<li><input type="checkbox" value="custom"> Solution ';
-        html += '<input type="text" size="40">';
-        html += '</li>';
-      }
-
-      return html += '</ul>';
-    }
-
-    function createSimpleList (searchResults, portal, itemId) {
-      var html = '<ul';
-      if (itemId) {
-        html += ' id="' + itemId + '"';
-      }
-      html += ' class="simpleList">';
-      searchResults.forEach(
-        result => {
-          html += '<li>' + result.type + ' "' + result.title + '" (';
-          if (portal) {
-            html += '<a href="' + portal + '/home/item.html?id=' + result.id + '" target="_blank">' +
-              result.id + '</a>';
-          } else {
-            html += result.id;
-          }
-          html += ')</li>';
-        }
-      );
-      return html += '</ul>';
-    }
-
-    function fadeItemIn (itemId) {
-      var item = document.getElementById(itemId);
-      if (item) {
-        item.style.opacity = "1";
-      }
-    }
-
-    function fadeItemOut (itemId) {
-      var item = document.getElementById(itemId);
-      if (item) {
-        item.style.opacity = "0";
-      }
-    }
-
-    function removeItem (itemId) {
-      var item = document.getElementById(itemId);
-      item && item.remove();
-    }
-
   </script>
 </body>
 </html>

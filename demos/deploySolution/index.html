@@ -44,19 +44,16 @@
   .display-none {
     display: none;
   }
+  label {
+    margin-top: 5px;
+  }
   </style>
 </head>
 <body>
-  <h3>Deploy a Solution</h3>
+  <h3>Deploy one or more Solutions</h3>
 
   <div id="container" style="display:none">
     <div id="input">
-      <label for="solutionId">Enter a Solution ID:</label>
-      <input class="form-control" type="text" id="solutionId">
-      <label for="id">Or pick from the list below:</label>
-      <select name="Solution Item" id="id" class="form-control"></select>
-
-      <br /><br />
 
       <div class="section-title">Credentials in source organization</div>
 
@@ -75,11 +72,21 @@
 
       <br/><br/>
 
+      <label for="solutionId">Enter a Solution ID:</label>
+      <input class="form-control" type="text" id="solutionId">
+      <label for="solutionPicklist">Or pick a Solution from the list below:</label>
+      <select name="Solution Item" id="solutionPicklist" class="form-control"></select>
+      <label for="foldersPicklist">Or deploy all Solutions in a folder from the list below:</label>
+      <button id="fetchFoldersBtn fader" onclick="fetchFoldersFcn()">Fetch</button>
+      <select name="Solution Folder" id="foldersPicklist" class="form-control"></select>
+
+      <br /><br />
+
       <div class="section-title">Credentials in destination organization</div>
 
       <div class="labeledItem">
         <label for="destAuthType">Use OAuth:&nbsp;</label>
-        <input type="checkbox" id="destAuthType" value="OAuth" onclick="updateDestAuth(this)"> 
+        <input type="checkbox" id="destAuthType" value="OAuth" onclick="updateDestAuth(this)">
       </div>
 
       <div id="destCredentials">
@@ -115,13 +122,13 @@
 
       <div class="section-title">Options</div>
       <div class="labeledItem">
-        <label for="useExisting">Use Existing Items:</label>
-        <input type="checkbox" id="useExisting">
+        <label for="useExistingChk">Use Existing Items:</label>
+        <input type="checkbox" id="useExistingChk">
       </div>
 
       <br /><br />
 
-      <button class="btn btn-default" onclick="goFcn()">Deploy Solution</button>
+      <button class="btn btn-default" onclick="goFcn()">Deploy Solution(s)</button>
     </div>
 
     <br />
@@ -145,9 +152,9 @@
         destCredentials.classList.remove("display-none");
       }
     }
-  </script>
-  <script>
-    var goFcn;
+
+    var fetchFoldersFcn, goFcn;
+
     require.config({
       paths: {
         "@esri/arcgis-rest-auth": "../node_modules/@esri/arcgis-rest-auth/dist/umd/auth.umd.min",
@@ -178,13 +185,16 @@
       function (auth, main) {
         "use strict";
 
+        fetchFoldersFcn = getFolders;
         goFcn = go;
         document.getElementById("container").style.display = "block";
 
-        const groupId = appConfig.solutionsGroupId;
-        const solutionsSelect = document.getElementById("id");
 
         // Populate solution picklist
+        const groupId = appConfig.solutionsGroupId;
+        const solutionsSelect = document.getElementById("solutionPicklist");
+        solutionsSelect.add(document.createElement("option"));
+
         main.getTemplates(groupId).then((solutions) => {
           solutions.forEach((solution) => {
             var option = document.createElement("option");
@@ -221,17 +231,46 @@
         // Call the function on page load to set current state.
         updateSessionInfo(session);
 
+        function getFolders () {
+          // Source credentials
+          const srcPortal = (document.getElementById("srcPortal").value || "https://www.arcgis.com") + "/sharing/rest";
+          const srcCreds = new auth.UserSession({
+            username: document.getElementById("srcUsername").value,
+            password: document.getElementById("srcPassword").value,
+            portal: srcPortal
+          });
+
+          // Populate folders picklist
+          const foldersSelect = document.getElementById("foldersPicklist");
+          const numOptions = foldersSelect.options.length - 1;
+          for(let i = numOptions; i >= 0; i--) {
+            foldersSelect.remove(i);
+          }
+          foldersSelect.add(document.createElement("option"));
+
+          main.getFolders(srcCreds)
+          .then(folders => {
+            folders.forEach((folder) => {
+              var option = document.createElement("option");
+              option.value = folder.id
+              option.text = folder.title + " ( " + folder.id + " )";
+              foldersSelect.add(option);
+            });
+          });
+        }
+
         function go () {
           document.getElementById("input").style.display = "none";
           document.getElementById("output").style.display = "block";
-          var startTime = Date.now();
-          var createdItems = [];
 
-          // use the manually entered value, but fall back to the select list
-          var solutionId = document.getElementById("solutionId").value || document.getElementById('id').value;
+          // use the manually entered value, falling back to the select lists
+          const solutionId =
+            document.getElementById("solutionId").value ||
+            document.getElementById("solutionPicklist").value;
+          const folderId = document.getElementById("foldersPicklist").value;
 
           // Use Existing
-          const useExisting = document.getElementById("useExisting").checked;
+          const useExisting = document.getElementById("useExistingChk").checked;
 
           // Source credentials
           const srcPortal = (document.getElementById("srcPortal").value || "https://www.arcgis.com") + "/sharing/rest";
@@ -251,7 +290,7 @@
               portal: destPortal,
               clientId: document.getElementById("clientId").value
             });
-            deploySolution(destCreds);
+            deploySolution(solutionId, folderId, srcCreds, destCreds, useExisting);
           } else {
             const redirect_uri = window.location.origin + window.location.pathname;
             alert(redirect_uri);
@@ -264,43 +303,61 @@
               // Upon a successful login, update the session with the new session.
               session = newSession;
               updateSessionInfo(session);
-              deploySolution(session);
+              deploySolution(solutionId, folderId, srcCreds, session, useExisting);
             }).catch(function (error) {
               console.log(error);
             });
           }
+        }
 
-          // Deploy!
-          function deploySolution(_destCreds) {
-            main.deploySolution(
+        // Deploy!
+        function deploySolution(solutionId, folderId, srcCreds, destCreds, useExisting) {
+          const startTime = Date.now();
+          const createdItems = [];
+
+          let deployPromise = Promise.resolve("<i>No Solution(s) provided</i>");
+          const progressFcn =
+            function (percentDone, jobId, progressEvent) {
+              if (progressEvent) {
+                createdItems.push(progressEvent.data)
+              }
+              let html = "Deploying " + jobId + "..." + percentDone.toFixed().toString() + "%" + "<br><br>Finished items:<ol>";
+              createdItems.forEach(function (item) { return html += "<li>" + item + "</li>" });
+              html += "</ol>";
+              document.getElementById("output").innerHTML = html;
+            };
+          if (solutionId.length > 0) {
+            deployPromise = main.deployAndDisplaySolution(
               solutionId,
               srcCreds,
-              _destCreds,
-              function (percentDone, jobId, progressEvent) {
-                if (progressEvent) {
-                  createdItems.push(progressEvent.data)
-                }
-                var html = "Deploying..." + percentDone.toFixed().toString() + "%" + "<br><br>Finished items:<ol>";
-                createdItems.forEach(function (item) { return html += "<li>" + item + "</li>" });
-                html += "</ol>";
-                document.getElementById("output").innerHTML = html;
-              },
+              destCreds,
+              progressFcn,
               useExisting
-            ).then(function (html){
-                reportElapsedTime(startTime);
-                document.getElementById("output").innerHTML = html;
-              },
-              function (error) {
-                var message = error?.error || JSON.stringify(error) || "Unspecified error";
-                reportElapsedTime(startTime);
-                document.getElementById("output").innerHTML = "<span style=\"color:red\">" + message + "</span>";
-              }
+            );
+          } else if (folderId.length > 0) {
+            deployPromise = main.deploySolutionsInFolder(
+              folderId,
+              srcCreds,
+              destCreds,
+              progressFcn,
+              useExisting
             );
           }
+
+          deployPromise.then(function (html){
+              reportElapsedTime(startTime);
+              document.getElementById("output").innerHTML = html;
+            },
+            function (error) {
+              const message = error?.error || JSON.stringify(error) || "Unspecified error";
+              reportElapsedTime(startTime);
+              document.getElementById("output").innerHTML = "<span style=\"color:red\">" + message + "</span>";
+            }
+          );
         }
 
         function reportElapsedTime (startTime) {
-          var endTime = Date.now();
+          const endTime = Date.now();
           console.log("Elapsed time: " + ((endTime - startTime) / 1000).toFixed(1) + " seconds");
         }
       }

@@ -14,12 +14,7 @@
  * limitations under the License.
  */
 
-import {
-  IAssociatedFileCopyResults,
-  IAssociatedFileInfo,
-  IZipCopyResults,
-  IZipInfo
-} from "../interfaces";
+import { IAssociatedFileCopyResults, IZipCopyResults } from "../interfaces";
 
 // ------------------------------------------------------------------------------------------------------------------ //
 
