@@ -252,7 +252,7 @@
           .then(folders => {
             folders.forEach((folder) => {
               var option = document.createElement("option");
-              option.value = folder.id
+              option.value = folder.id;
               option.text = folder.title + " ( " + folder.id + " )";
               foldersSelect.add(option);
             });
