@@ -113,7 +113,7 @@
     </div>
 
     <div class="col-sm-12">
-      <div id="output" style="display:none">Deleting...</div>
+      <div id="output"></div>
       <br/>
       <button id="continue" class="btn btn-default display-none" onclick="continueFcn()">Continue</button>
     </div>
@@ -185,21 +185,25 @@
           main.getDeployedSolutions(authentication)
           .then(
             searchResponse => {
-              var listDiv = demoCommon.addItem("sourceSolutionsDiv", "DIV", "sourceSolutionsListDiv");
-              listDiv.innerHTML = demoCommon.createChecklist(
-                searchResponse.results,
-                document.getElementById("portal").value  || "https://www.arcgis.com",
-                "sourceSolutionsList",
-                false,
-                "updateSolutionSelectionFcn(this)"
-              );
-              updateDeleteBtn();
-              document.getElementById("toggleBtn").style.display = "inline-block";
-              document.getElementById("solutionSelection").style.display = "block";
+              if (searchResponse.results.length > 0) {
+                var listDiv = demoCommon.addItem("sourceSolutionsDiv", "DIV", "sourceSolutionsListDiv");
+                listDiv.innerHTML = demoCommon.createChecklist(
+                  searchResponse.results,
+                  document.getElementById("portal").value  || "https://www.arcgis.com",
+                  "sourceSolutionsList",
+                  false,
+                  "updateSolutionSelectionFcn(this)"
+                );
+                updateDeleteBtn();
+                document.getElementById("toggleBtn").style.display = "inline-block";
+                document.getElementById("solutionSelection").style.display = "block";
+              } else {
+                document.getElementById("output").innerHTML = "No deployed Solution templates found";
+              }
             },
             error => {
-              var listDiv = addItem("sourceSolutionsDiv", "DIV", "sourceSolutionsListDiv");
-              listDiv.innerHTML = "Unable to get Solution templates: " + error;
+              document.getElementById("output").innerHTML =
+                "<span style=\"color:red\">Unable to get Solution templates: " + JSON.stringify(error) + "</span>";
             }
           );
         }
@@ -325,7 +329,6 @@
                 message += "</ul>";
               }
               document.getElementById("output").innerHTML = "<span style=\"color:red\">" + message + "</span>";
-              document.getElementById("output").style.display = "block";
               confirmDeletionFcn(false);
             }
           );
@@ -338,7 +341,6 @@
          */
         function deleteSolution(solutionId) {
           document.getElementById("doublecheck").style.display = "none";
-          document.getElementById("output").style.display = "block";
           var startTime = Date.now();
 
           return main.deleteSolution(
