@@ -252,7 +252,7 @@
           .then(folders => {
             folders.forEach((folder) => {
               var option = document.createElement("option");
-              option.value = folder.id
+              option.value = folder.id;
               option.text = folder.title + " ( " + folder.id + " )";
               foldersSelect.add(option);
             });
@@ -319,7 +319,7 @@
           const progressFcn =
             function (percentDone, jobId, progressEvent) {
               if (progressEvent) {
-                createdItems.push(progressEvent.data)
+                createdItems.push(progressEvent.data);
               }
               let html = "Deploying " + jobId + "..." + percentDone.toFixed().toString() + "%" + "<br><br>Finished items:<ol>";
               createdItems.forEach(function (item) { return html += "<li>" + item + "</li>" });
