@@ -20,10 +20,13 @@ import { IItemTemplate, getProp } from "@esri/solution-common";
  * Get the dependencies from the velocity data sources and feeds
  *
  * @param template The template that for the velocity item
+ *
+ * @return a list of dependency ids
  */
-export function getVelocityDependencies(template: IItemTemplate): any[] {
+export function getVelocityDependencies(template: IItemTemplate): string[] {
   const dependencies: string[] = [];
 
+  // get dependencies from data sources
   _getDatasourceDependencies(
     getProp(template, "data.source") ? [template.data.source] : [],
     dependencies
@@ -32,21 +35,23 @@ export function getVelocityDependencies(template: IItemTemplate): any[] {
     getProp(template, "data.sources") ? template.data.sources : [],
     dependencies
   );
-  _getDatasourceDependencies(
+
+  // get dependencies from feeds
+  _getFeedDependencies(
     getProp(template, "data.feed") ? [template.data.feed] : [],
     dependencies
   );
-  _getDatasourceDependencies(
+  _getFeedDependencies(
     getProp(template, "data.feeds") ? template.data.feeds : [],
     dependencies
   );
-  _getFeedDependencies(getProp(template, "data.feeds") || [], dependencies);
 
   return dependencies;
 }
 
 /**
  * Get the dependencies from the velocity data sources
+ * This function will update the input dependencies argument
  *
  * @param dataSources The data sources listed in the velocity template
  * @param dependencies The current dependency list
@@ -68,6 +73,7 @@ export function _getDatasourceDependencies(
 
 /**
  * Get the dependencies from the velocity feeds
+ * This function will update the input dependencies argument
  *
  * @param feeds The list of feeds from the velocity template
  * @param dependencies The current list of dependencies

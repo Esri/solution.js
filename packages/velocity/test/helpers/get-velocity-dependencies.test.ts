@@ -44,7 +44,7 @@ describe("getVelocityDependencies", () => {
     template.data.feed = template.data.feeds[0];
     delete template.data.feeds;
     const actual = getVelocityDependencies(template);
-    expect(actual.length).toEqual(1);
+    expect(actual.length).toEqual(2);
   });
 
   it("handles misssing source and feed", () => {

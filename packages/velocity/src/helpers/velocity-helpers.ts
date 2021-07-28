@@ -26,8 +26,14 @@ import {
 /**
  * Get the base velocity url from the current orgs subscription info
  *
+ * This function will update the input templateDictionary arg with the velocity url
+ * so we can reuse it without pinging the org again for subsequent requests to the
+ * velocity api.
+ *
  * @param authentication Credentials for the requests
  * @param templateDictionary Hash of facts: folder id, org URL, adlib replacements
+ *
+ * @return a promise that will resolve with the velocity url
  *
  */
 export function getVelocityUrlBase(
@@ -66,10 +72,12 @@ export function getVelocityUrlBase(
  * @param authentication Credentials for the requests
  * @param templateDictionary Hash of facts: folder id, org URL, adlib replacements
  * @param type The type of velocity item we are constructing a url for
- * @param id? Optional The id of the velocity item we are constructing a url for
- * @param isDeploy? Optional Is this being constructed as a part of deployment
- * @param urlPrefix? Optional prefix args necessary for some url construction
- * @param urlSuffix? Optional suffix args necessary for some url construction
+ * @param id Optional The id of the velocity item we are constructing a url for
+ * @param isDeploy Optional Is this being constructed as a part of deployment
+ * @param urlPrefix Optional prefix args necessary for some url construction
+ * @param urlSuffix Optional suffix args necessary for some url construction
+ *
+ * @return a promise that will resolve the constructed url
  *
  */
 export function getVelocityUrl(
@@ -111,6 +119,7 @@ export function getVelocityUrl(
  * @param templateDictionary Hash of facts: folder id, org URL, adlib replacements
  * @param autoStart This can be leveraged to start certain velocity items after they are created.
  *
+ * @return a promise that will resolve an object containing the item, id, type, and post process flag
  *
  */
 export function postVelocityData(
@@ -181,13 +190,14 @@ export function postVelocityData(
 }
 
 /**
- * Velocity item labels must be unique across the organization.
- * Check and ensure we set a unique label
+ * Velocity item titles must be unique across the organization.
+ * Check and ensure we set a unique title
  *
  * @param authentication Credentials for the requests
  * @param label The current label of the item from the solution template
  * @param url The base velocity url for checking status
  *
+ * @return a promise that will resolve a unique title
  *
  */
 export function getTitle(
@@ -212,12 +222,15 @@ export function getTitle(
  * Validate the data that will be used and handle any reported issues with the outputs.
  * The output names must be unique across the organization.
  *
+ * This function will update the data arg that is passed in with a unique name.
+ *
  * @param authentication Credentials for the requests
  * @param templateDictionary Hash of facts: folder id, org URL, adlib replacements
  * @param type The type of velocity item
  * @param data The data used to construct the velocity item
  * @param dataOutputs The velocity items output objects.
  *
+ * @return a promise that will resolve the data object passed in with any necessary changes.
  *
  */
 export function _validateOutputs(
@@ -280,7 +293,7 @@ export function _validateOutputs(
 }
 
 /**
- * Updates the data output with a new name when validation fails.
+ * Updates the data object with a new name when validation fails.
  *
  * @param dataOutputs The data output objects from the velocity item.
  * @param data The full data object used for deploying the velocity item.
@@ -292,7 +305,7 @@ export function _updateDataOutput(
   dataOutputs: any[],
   data: any,
   names: string[]
-) {
+): void {
   dataOutputs.forEach(dataOutput => {
     const update = _getOutputLabel(names, dataOutput);
     /* istanbul ignore else */
@@ -321,6 +334,8 @@ export function _updateDataOutput(
  * @param names The names that failed due to duplicate error in validation.
  * @param dataOutput The current data output that is being evaluated.
  *
+ * @return an object with a unique label and the outputs id when a name
+ * conflict is found...otherwise returns undefined
  *
  */
 export function _getOutputLabel(names: any[], dataOutput: any): any {
@@ -349,7 +364,9 @@ export function _getOutputLabel(names: any[], dataOutput: any): any {
  * @param title The root title to test
  * @param templateDictionary Hash of the facts
  * @param path to the objects to evaluate for potantial name clashes
+ *
  * @return string The unique title to use
+ *
  */
 export function getUniqueTitle(
   title: string,
@@ -383,6 +400,9 @@ export function getUniqueTitle(
  * @param template the item template that has the details for deployment
  * @param id the new id for the velocity item that was deployed
  *
+ * @return a promise that will resolve with the validation results
+ * or the start results when validation indicates the item is executable
+ *
  */
 export function _validateAndStart(
   authentication: UserSession,
@@ -411,13 +431,15 @@ export function _validateAndStart(
  * @param id? Optional The id of the velocity item we are constructing a url for
  * @param body? Optional the request body to validate.
  *
+ * @return a promise that will resolve with an object containing messages
+ * indicating any issues found when validating such as name conflict errors
  *
  */
 export function validate(
   authentication: UserSession,
   templateDictionary: any,
   type: string,
-  id: string,
+  id?: string,
   body?: any
 ): Promise<any> {
   // /iot/feed/validate/{id}/
@@ -445,13 +467,14 @@ export function validate(
  * @param type The type of velocity item we are constructing a url for
  * @param id? Optional The id of the velocity item we are constructing a url for
  *
+ * @return a promise that will resolve with the result of the start call
  *
  */
 export function start(
   authentication: UserSession,
   templateDictionary: any,
   type: string,
-  id: string
+  id?: string
 ): Promise<any> {
   // /iot/feed/{id}/start/
   // /iot/analytics/realtime/{id}/start/
@@ -476,6 +499,7 @@ export function start(
  * @param authentication Credentials for the requests
  * @param method Indicate if "GET" or "POST"
  *
+ * @return generic request options used for various calls to velocity api
  *
  */
 export function _getRequestOpts(
@@ -500,6 +524,8 @@ export function _getRequestOpts(
  * @param method The method for the request "GET" or "POST"
  * @param body The body for POST requests
  *
+ * @return a promise that will resolve with the result of the fetch call
+ *
  */
 export function _fetch(
   authentication: UserSession,
@@ -514,130 +540,3 @@ export function _fetch(
   }
   return fetch(url, requestOpts).then(r => Promise.resolve(r.json()));
 }
-
-// Helper functions that we currently have no use for
-
-// export function getStatus(
-//   authentication: UserSession,
-//   templateDictionary: any,
-//   type: string,
-//   id: string
-// ): Promise<any> {
-//   // /iot/feed/{id}/status/
-//   // /iot/analytics/realtime/{id}/status/
-//   return getVelocityUrl(
-//     authentication,
-//     templateDictionary,
-//     type,
-//     id,
-//     false,
-//     "",
-//     "status"
-//   ).then(url => {
-//     return _fetch(authentication, url, "GET").then(result => {
-//       return Promise.resolve(result);
-//     });
-//   });
-// }
-
-//  export function getServices(
-//   authentication: UserSession,
-//   templateDictionary: any,
-//   serviceType: string, // stream or feature
-//   id: string
-// ): Promise<any> {
-//   // TODO any value in getting the associated map services as well??
-
-//   // /iot/services/
-//   // /iot/services/stream/
-//   // /iot/services/feature/
-//   // /iot/services/map/
-
-//   return getVelocityUrl(
-//     authentication,
-//     templateDictionary,
-//     "Services",
-//     id,
-//     false,
-//     serviceType,
-//     ""
-//   ).then(url => {
-//     return _fetch(authentication, url, "GET").then(result => {
-//       return Promise.resolve(result);
-//     });
-//   });
-// }
-
-// export function getFormats(
-//   authentication: UserSession,
-//   templateDictionary: any,
-//   serviceType: string, // input or output
-//   id: string
-// ): Promise<any> {
-//   // /iot/formats/
-//   // /iot/formats/input/
-//   // /iot/formats/input/{name}/
-//   // /iot/formats/output/
-//   // /iot/formats/output/{name}/
-//   return getVelocityUrl(
-//     authentication,
-//     templateDictionary,
-//     "Formats",
-//     id,
-//     false,
-//     serviceType,
-//     ""
-//   ).then(url => {
-//     return _fetch(authentication, url, "GET").then(result => {
-//       return Promise.resolve(result);
-//     });
-//   });
-// }
-
-// export function _getOutputs(
-//   authentication: UserSession,
-//   templateDictionary: any,
-//   serviceType: string, // realtime or bigdata or {name}
-//   id: string
-// ): Promise<any> {
-//   // /iot/outputs/
-//   // /iot/outputs/{name}/
-//   // /iot/outputs/realtime/
-//   // /iot/outputs/bigdata/
-//   return getVelocityUrl(
-//     authentication,
-//     templateDictionary,
-//     "Outputs",
-//     id,
-//     false,
-//     serviceType,
-//     ""
-//   ).then(url => {
-//     return _fetch(authentication, url, "GET").then(result => {
-//       return Promise.resolve(result);
-//     });
-//   });
-// }
-
-// export function getSources(
-//   authentication: UserSession,
-//   templateDictionary: any,
-//   serviceType: string, // ? {name}
-//   id: string
-// ): Promise<any> {
-//   // /iot/sources/
-//   // /iot/sources/{name}/
-//   return getVelocityUrl(
-//     authentication,
-//     templateDictionary,
-//     "Sources",
-//     id,
-//     false,
-//     serviceType,
-//     ""
-//   ).then(url => {
-//     return _fetch(authentication, url, "GET").then(result => {
-//       return Promise.resolve(result);
-//     });
-//   });
-// }

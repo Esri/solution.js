@@ -288,7 +288,78 @@ describe("createItemFromTemplate", () => {
       })
       .post(realtimeUrl, {
         id
-      });
+      })
+      .post(
+        `${utils.PORTAL_SUBSET.restUrl}/content/users/casey/items/aaabbbccc123/delete`,
+        agolItems.get200Success()
+      );
+
+    createItemFromTemplate(
+      template,
+      templateDictionary,
+      destinationAuthentication,
+      utils.createFailingItemProgressCallbackOnNthCall(2)
+    ).then(() => {
+      done();
+    }, done.fail);
+  });
+
+  it("handles issue with removeItem", done => {
+    const type: string = "Real Time Analytic";
+    const template: interfaces.IItemTemplate = templates.getItemTemplate(
+      type,
+      []
+    );
+    template.estimatedDeploymentCostFactor = undefined;
+    const templateDictionary = {};
+    templateDictionary[template.itemId] = {};
+    const destinationAuthentication: interfaces.UserSession = MOCK_USER_SESSION;
+    const realtimeUrl: string =
+      "https://us-iot.arcgis.com/usadvanced00/fliptfmrv9d1divn/iot/analytics/realtime";
+    const id: string = "aaabbbccc123";
+
+    fetchMock
+      .get(
+        `${utils.PORTAL_SUBSET.restUrl}/portals/self/subscriptioninfo?f=json&token=fake-token`,
+        {
+          id: "aaabbbccc",
+          orgCapabilities: [
+            {
+              id: "velocity",
+              test: false,
+              level: "Advanced",
+              region: "US",
+              status: "active",
+              endDate: 1632700800000,
+              itemUnits: 0,
+              computeUnits: 0,
+              velocityUrl:
+                "https://us-iot.arcgis.com/usadvanced00/fliptfmrv9d1divn",
+              storageUnits: 0
+            }
+          ]
+        }
+      )
+      .get(realtimeUrl + "StatusList?view=admin", {})
+      .post(realtimeUrl + "/validate/?f=json&token=fake-token", {
+        validation: {
+          messages: []
+        },
+        nodes: [
+          {
+            validation: {
+              messages: []
+            }
+          }
+        ]
+      })
+      .post(realtimeUrl, {
+        id
+      })
+      .post(
+        `${utils.PORTAL_SUBSET.restUrl}/content/users/casey/items/aaabbbccc123/delete`,
+        agolItems.get400Failure()
+      );
 
     createItemFromTemplate(
       template,

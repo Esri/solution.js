@@ -17,7 +17,7 @@
 /**
  * Manages the creation and deployment of velocity item types.
  *
- * @module solution-velocity
+ * @module velocity
  */
 
 import {
@@ -28,7 +28,8 @@ import {
   EItemProgressStatus,
   generateEmptyCreationResponse,
   createPlaceholderTemplate,
-  fail
+  fail,
+  removeItem
 } from "@esri/solution-common";
 import { templatizeVelocity } from "./helpers/velocity-templatize";
 import { getVelocityDependencies } from "./helpers/get-velocity-dependencies";
@@ -40,6 +41,9 @@ import { getVelocityUrl, postVelocityData } from "./helpers/velocity-helpers";
  * @param solutionItemId The solution to contain the item
  * @param itemInfo The basic item info
  * @param authentication The credentials for requests
+ *
+ * @return a promise that will resolve the constructed IItemTemplate from the input itemInfo
+ *
  */
 export function convertItemToTemplate(
   solutionItemId: string,
@@ -70,6 +74,9 @@ export function convertItemToTemplate(
  * @param templateDictionary Hash of facts: folder id, org URL, adlib replacements
  * @param destinationAuthentication Credentials for the deployment requests
  * @param itemProgressCallback Function for reporting progress updates from type-specific template handlers
+ *
+ * @return a promise that will resolve with the new item info, id, type, and postProcess flag
+ *
  */
 export function createItemFromTemplate(
   template: IItemTemplate,
@@ -106,7 +113,10 @@ export function createItemFromTemplate(
     );
 
     if (!finalStatus) {
-      return Promise.resolve(generateEmptyCreationResponse(template.type));
+      return removeItem(result.id, destinationAuthentication).then(
+        () => Promise.resolve(generateEmptyCreationResponse(template.type)),
+        () => Promise.resolve(generateEmptyCreationResponse(template.type))
+      );
     } else {
       const response: ICreateItemFromTemplateResponse = {
         item: {

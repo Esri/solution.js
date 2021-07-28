@@ -23,10 +23,9 @@ export interface ISubscriptionInfo {
 }
 
 /**
- * Fetch subscription information about the current portal by id.
- * If no id is passed, portals/self/subscriptionInfo will be called.
+ * Fetch subscription information about the current portal using
+ * portals/self/subscriptionInfo
  *
- * @param id
  * @param requestOptions
  */
 export function getSubscriptionInfo(

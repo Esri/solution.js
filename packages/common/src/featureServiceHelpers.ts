@@ -1609,20 +1609,23 @@ export function _getDomainAndAliasInfos(fieldInfo: any): any {
   /* istanbul ignore else */
   if (fieldInfo.sourceServiceFields) {
     Object.keys(fieldInfo.sourceServiceFields).forEach(k => {
-      Object.keys(fieldInfo.sourceServiceFields[k]).forEach(_k => {
-        fieldInfo.sourceServiceFields[k][_k].forEach((field: any) => {
-          /* istanbul ignore else */
-          if (field.hasOwnProperty("domain") && field.domain) {
-            domainFields.push(field.domain);
-            domainNames.push(String(field.name).toLocaleLowerCase());
-          }
-          /* istanbul ignore else */
-          if (field.hasOwnProperty("alias") && field.alias) {
-            aliasFields.push(field.alias);
-            aliasNames.push(String(field.name).toLocaleLowerCase());
-          }
+      /* istanbul ignore else */
+      if (fieldInfo.sourceServiceFields[k]) {
+        Object.keys(fieldInfo.sourceServiceFields[k]).forEach(_k => {
+          fieldInfo.sourceServiceFields[k][_k].forEach((field: any) => {
+            /* istanbul ignore else */
+            if (field.hasOwnProperty("domain") && field.domain) {
+              domainFields.push(field.domain);
+              domainNames.push(String(field.name).toLocaleLowerCase());
+            }
+            /* istanbul ignore else */
+            if (field.hasOwnProperty("alias") && field.alias) {
+              aliasFields.push(field.alias);
+              aliasNames.push(String(field.name).toLocaleLowerCase());
+            }
+          });
         });
-      });
+      }
     });
   }
   return {
