@@ -39,10 +39,11 @@ export function getVelocityUrlBase(
     return Promise.resolve(templateDictionary.velocityUrl);
   } else {
     // get the url from the orgs subscription info
-    return getSubscriptionInfo(undefined, { authentication }).then(
+    return getSubscriptionInfo({ authentication }).then(
       (subscriptionInfo: ISubscriptionInfo) => {
         let velocityUrl = "";
-        const orgCapabilities = subscriptionInfo?.orgCapabilities;
+        const orgCapabilities = getProp(subscriptionInfo, "orgCapabilities");
+        /* istanbul ignore else */
         if (Array.isArray(orgCapabilities)) {
           orgCapabilities.some(c => {
             velocityUrl = c.velocityUrl;
@@ -126,62 +127,56 @@ export function postVelocityData(
     undefined,
     true
   ).then(url => {
-    return getTitle(authentication, data.label, url).then(
-      title => {
-        data.label = title;
-        data.id = "";
-        const body: any = replaceInTemplate(data, templateDictionary);
+    return getTitle(authentication, data.label, url).then(title => {
+      data.label = title;
+      data.id = "";
+      const body: any = replaceInTemplate(data, templateDictionary);
 
-        const dataOutputs: any[] = (data.outputs || []).map((o: any) => {
-          return {
-            id: o.id,
-            name: o.properties[`${o.name}.name`]
+      const dataOutputs: any[] = (data.outputs || []).map((o: any) => {
+        return {
+          id: o.id,
+          name: o.properties[`${o.name}.name`]
+        };
+      });
+
+      return _validateOutputs(
+        authentication,
+        templateDictionary,
+        template.type,
+        body,
+        dataOutputs
+      ).then(updatedBody => {
+        return _fetch(authentication, url, "POST", updatedBody).then(rr => {
+          template.item.url = `${url}/${rr.id}`;
+          template.item.title = data.label;
+
+          // Update the template dictionary
+          templateDictionary[template.itemId]["url"] = template.item.url;
+          templateDictionary[template.itemId]["label"] = data.label;
+          templateDictionary[template.itemId]["itemId"] = rr.id;
+
+          const finalResult = {
+            item: replaceInTemplate(template.item, templateDictionary),
+            id: rr.id,
+            type: template.type,
+            postProcess: false
           };
+
+          if (autoStart) {
+            return _validateAndStart(
+              authentication,
+              templateDictionary,
+              template,
+              rr.id
+            ).then(() => {
+              return Promise.resolve(finalResult);
+            });
+          } else {
+            return Promise.resolve(finalResult);
+          }
         });
-
-        return _validateOutputs(
-          authentication,
-          templateDictionary,
-          template.type,
-          body,
-          dataOutputs
-        ).then(updatedBody => {
-          return _fetch(authentication, url, "POST", updatedBody).then(
-            rr => {
-              template.item.url = `${url}/${rr.id}`;
-              template.item.title = data.label;
-
-              // Update the template dictionary
-              templateDictionary[template.itemId]["url"] = template.item.url;
-              templateDictionary[template.itemId]["label"] = data.label;
-              templateDictionary[template.itemId]["itemId"] = rr.id;
-
-              const finalResult = {
-                item: replaceInTemplate(template.item, templateDictionary),
-                id: rr.id,
-                type: template.type,
-                postProcess: false
-              };
-
-              if (autoStart) {
-                return _validateAndStart(
-                  authentication,
-                  templateDictionary,
-                  template,
-                  rr.id
-                ).then(() => {
-                  return Promise.resolve(finalResult);
-                });
-              } else {
-                return Promise.resolve(finalResult);
-              }
-            },
-            e => Promise.reject(e)
-          );
-        });
-      },
-      e => Promise.reject(e)
-    );
+      });
+    });
   });
 }
 
@@ -209,8 +204,7 @@ export function getTitle(
             })
           : [];
       return Promise.resolve(getUniqueTitle(label, { titles }, "titles"));
-    },
-    e => Promise.reject(e)
+    }
   );
 }
 
@@ -239,6 +233,7 @@ export function _validateOutputs(
         let messages: any[] = getProp(validateResults, "validation.messages");
 
         const nodes: any[] = getProp(validateResults, "nodes");
+        /* istanbul ignore else */
         if (nodes && Array.isArray(nodes)) {
           nodes.forEach(node => {
             messages = messages.concat(
@@ -248,6 +243,7 @@ export function _validateOutputs(
         }
 
         let names: string[] = [];
+        /* istanbul ignore else */
         if (messages && Array.isArray(messages)) {
           messages.forEach(message => {
             // I don't see a way to ask for all output names that exist
@@ -257,6 +253,7 @@ export function _validateOutputs(
               "ITEM_MANAGER__CREATE_ANALYTIC_FAILED_DUPLICATE_OUTPUT_NAMES_IN_ORGANIZATION_NOT_ALLOWED"
             ];
             // The names returned here seem to replace " " with "_" so they do not match exactly
+            /* istanbul ignore else */
             if (nameErrors.indexOf(message.key) > -1) {
               names = names.concat(message.args);
             }
@@ -298,11 +295,15 @@ export function _updateDataOutput(
 ) {
   dataOutputs.forEach(dataOutput => {
     const update = _getOutputLabel(names, dataOutput);
+    /* istanbul ignore else */
     if (update) {
       data.outputs = data.outputs.map((_dataOutput: any) => {
+        /* istanbul ignore else */
         if (_dataOutput.id === update.id) {
+          /* istanbul ignore else */
           if (_dataOutput.properties) {
             const nameProp: string = `${_dataOutput.name}.name`;
+            /* istanbul ignore else */
             if (Object.keys(_dataOutput.properties).indexOf(nameProp) > -1) {
               _dataOutput.properties[nameProp] = update.label;
             }
@@ -323,12 +324,9 @@ export function _updateDataOutput(
  *
  */
 export function _getOutputLabel(names: any[], dataOutput: any): any {
-  const titles: any[] =
-    names && Array.isArray(names)
-      ? names.map((name: any) => {
-          return { title: name };
-        })
-      : [];
+  const titles: any[] = names.map((name: any) => {
+    return { title: name };
+  });
 
   const label = getUniqueTitle(dataOutput.name, { titles }, "titles");
 
@@ -510,13 +508,11 @@ export function _fetch(
   body?: any
 ): Promise<any> {
   const requestOpts: any = _getRequestOpts(authentication, method);
+  /* istanbul ignore else */
   if (body) {
     requestOpts.body = JSON.stringify(body);
   }
-  return fetch(url, requestOpts).then(
-    r => Promise.resolve(r.json()),
-    e => Promise.reject(e)
-  );
+  return fetch(url, requestOpts).then(r => Promise.resolve(r.json()));
 }
 
 // Helper functions that we currently have no use for

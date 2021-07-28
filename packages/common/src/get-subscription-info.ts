@@ -30,14 +30,10 @@ export interface ISubscriptionInfo {
  * @param requestOptions
  */
 export function getSubscriptionInfo(
-  id?: string,
-  requestOptions?: IRequestOptions
+  requestOptions: IRequestOptions
 ): Promise<ISubscriptionInfo> {
   // construct the search url
-  const idOrSelf = id ? id : "self";
-  const url = `${getPortalUrl(
-    requestOptions
-  )}/portals/${idOrSelf}/subscriptioninfo`;
+  const url = `${getPortalUrl(requestOptions)}/portals/self/subscriptioninfo`;
 
   // default to a GET request
   const options: IRequestOptions = {

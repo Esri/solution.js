@@ -44,6 +44,7 @@ export function _templatize(
   fn: (arg: any) => void
 ): void {
   const obj: any = getProp(template, prop);
+  /* istanbul ignore else */
   if (obj) {
     setProp(template, prop, fn(obj));
   }
@@ -72,11 +73,14 @@ export function _templatizeFeeds(feeds: any[]): any {
  */
 export function _templatizeFeed(feed: any): any {
   let id = getProp(feed, "properties.feature-layer.portalItemId");
+  /* istanbul ignore else */
   if (feed.properties) {
+    /* istanbul ignore else */
     if (feed.properties["feature-layer.portalItemId"]) {
       id = feed.properties["feature-layer.portalItemId"];
       feed.properties["feature-layer.portalItemId"] = `{{${id}.itemId}}`;
     }
+    /* istanbul ignore else */
     if (id && feed.properties.hasOwnProperty("feature-layer.layerId")) {
       const flId = feed.properties["feature-layer.layerId"];
       feed.properties[

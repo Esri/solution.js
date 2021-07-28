@@ -85,6 +85,7 @@ export function createItemFromTemplate(
   );
 
   // and if it returned false, just resolve out
+  /* istanbul ignore else */
   if (!startStatus) {
     return Promise.resolve(generateEmptyCreationResponse(template.type));
   }

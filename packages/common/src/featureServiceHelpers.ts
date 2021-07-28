@@ -1974,6 +1974,7 @@ export function _validateEditFieldsInfo(
     const editFieldsInfoKeys: string[] = Object.keys(editFieldsInfo);
     editFieldsInfoKeys.forEach(k => {
       const editFieldName: string = editFieldsInfo[k];
+      /* istanbul ignore else */
       if (editFieldName) {
         fieldNames.some(name => {
           if (name === editFieldName) {

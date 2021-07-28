@@ -25,11 +25,19 @@ export function getVelocityDependencies(template: IItemTemplate): any[] {
   const dependencies: string[] = [];
 
   _getDatasourceDependencies(
-    getProp(template, "data.sources") || [],
+    getProp(template, "data.source") ? [template.data.source] : [],
+    dependencies
+  );
+  _getDatasourceDependencies(
+    getProp(template, "data.sources") ? template.data.sources : [],
     dependencies
   );
   _getDatasourceDependencies(
     getProp(template, "data.feed") ? [template.data.feed] : [],
+    dependencies
+  );
+  _getDatasourceDependencies(
+    getProp(template, "data.feeds") ? template.data.feeds : [],
     dependencies
   );
   _getFeedDependencies(getProp(template, "data.feeds") || [], dependencies);
@@ -70,6 +78,7 @@ export function _getFeedDependencies(
 ): void {
   feeds.reduce((prev: any, cur: any) => {
     const id: string = cur.id || undefined;
+    /* istanbul ignore else */
     if (id && prev.indexOf(id) < 0) {
       prev.push(id);
     }
