@@ -45,6 +45,7 @@
     "@esri/solution-hub-types": "^1.0.0",
     "@esri/solution-simple-types": "^1.0.0",
     "@esri/solution-storymap": "^1.0.0",
+    "@esri/solution-velocity": "^1.0.0",
     "@esri/solution-web-experience": "^1.0.0",
     "tslib": "^1.13.0"
   },

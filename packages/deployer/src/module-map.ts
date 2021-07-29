@@ -25,6 +25,7 @@ import {
   quickcaptureProcessor
 } from "@esri/solution-simple-types";
 import { StoryMapProcessor } from "@esri/solution-storymap";
+import { VelocityProcessor } from "@esri/solution-velocity";
 import { WebExperienceProcessor } from "@esri/solution-web-experience";
 import { HubPageProcessor, HubSiteProcessor } from "@esri/solution-hub-types";
 
@@ -42,10 +43,10 @@ export const moduleMap: IItemTypeModuleMap = {
 
   ////////////////////////////////////////////////////////
   // Layer types
-  "Big Data Analytic": undefined,
+  "Big Data Analytic": VelocityProcessor,
   "Feature Collection": simpleTypes,
   "Feature Service": featureLayer,
-  Feed: undefined,
+  Feed: VelocityProcessor,
   "Geocoding Service": undefined,
   "Geodata Service": undefined,
   "Geometry Service": undefined,
@@ -55,7 +56,7 @@ export const moduleMap: IItemTypeModuleMap = {
   KML: undefined,
   "Map Service": featureLayer,
   "Network Analysis Service": undefined,
-  "Real Time Analytic": undefined,
+  "Real Time Analytic": VelocityProcessor,
   "Relational Database Connection": undefined,
   "Scene Service": undefined,
   "Stream Service": undefined,

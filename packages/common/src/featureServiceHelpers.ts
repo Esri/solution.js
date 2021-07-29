@@ -339,6 +339,7 @@ export function updateTemplate(
       name: createResponse.name
     }
   );
+
   // Update the item template now that the new service has been created
   itemTemplate.itemId = createResponse.serviceItemId;
   return replaceInTemplate(itemTemplate, templateDictionary);
@@ -1976,16 +1977,19 @@ export function _validateEditFieldsInfo(
     const editFieldsInfoKeys: string[] = Object.keys(editFieldsInfo);
     editFieldsInfoKeys.forEach(k => {
       const editFieldName: string = editFieldsInfo[k];
-      fieldNames.some(name => {
-        if (name === editFieldName) {
-          return true;
-        } else if (name === editFieldName.toLowerCase()) {
-          editFieldsInfo[k] = name;
-          return true;
-        } else {
-          return false;
-        }
-      });
+      /* istanbul ignore else */
+      if (editFieldName) {
+        fieldNames.some(name => {
+          if (name === editFieldName) {
+            return true;
+          } else if (name === editFieldName.toLowerCase()) {
+            editFieldsInfo[k] = name;
+            return true;
+          } else {
+            return false;
+          }
+        });
+      }
     });
   }
 }

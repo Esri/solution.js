@@ -18,7 +18,6 @@
 
 import * as getItemTypeAbbrev from "../../src/getItemTypeAbbrev";
 import * as interfaces from "../../src/interfaces";
-import * as mockItems from "./agolItems";
 import * as utils from "./utils";
 
 // -- Exports -------------------------------------------------------------------------------------------------------//
@@ -282,6 +281,17 @@ export function getItemTemplate(
         dependencies,
         url
       );
+      templatePart.data = getItemTemplateData(type);
+      break;
+
+    case "Real Time Analytic":
+      templatePart = getItemTemplateFundamentals(
+        type,
+        getItemTypeAbbrev.getItemTypeAbbrev(type),
+        dependencies,
+        url
+      );
+      templatePart.data = getItemTemplateData(type);
       break;
 
     case "StoryMap":
@@ -817,6 +827,54 @@ export function getItemTemplateData(type?: string): any {
         root: "n-guGGJg",
         nodes: {},
         resources: {}
+      };
+      break;
+
+    case "Real Time Analytic":
+      data = {
+        id: "aaaaf0cf8bdc4fb19749cc1cbad1651b",
+        label: type,
+        description: "",
+        sources: [
+          {
+            id: "40d18a22-9927-97d1-e573-44f197bddfe7",
+            name: "feature-layer",
+            label: "Active_Snowplow_Driver",
+            schemaTransformation: {},
+            properties: {
+              "feature-layer.portalItemId":
+                "{{aaaaf0cf8bdc4fb19749cc1cbad1651b.itemId}}",
+              "feature-layer.outSR": "4326"
+            }
+          }
+        ],
+        feeds: [
+          {
+            id: "{{bbb9398bcf8c4dc5a50cceaa59baf513.itemId}}",
+            label: "WWO Simulation Provider AVL Feed",
+            name: "simulator",
+            properties: {}
+          },
+          {
+            id: "{{ccc6347e0c4f4dc8909da399418cafbe.itemId}}",
+            label: "WWO Simulation ArcGIS Tracking Feed",
+            name: "simulator",
+            properties: {}
+          }
+        ],
+        outputs: [
+          {
+            id: "01aacfd0-754d-3ac0-bb8d-aa3814b32fbf",
+            name: "feat-lyr-new",
+            label: "Custom Velocity Update",
+            properties: {
+              "feat-lyr-new.editorTrackingEnabled": false,
+              "feat-lyr-new.updateExistingFeatures": true,
+              "feat-lyr-new.name": "Custom Velocity Update",
+              "feat-lyr-new.useSpatiotemporal": true
+            }
+          }
+        ]
       };
       break;
 

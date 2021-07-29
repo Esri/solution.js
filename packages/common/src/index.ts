@@ -30,6 +30,7 @@ export * from "./generalHelpers";
 export * from "./getDeletableSolutionInfo";
 export * from "./getItemTypeAbbrev";
 export * from "./getSolutionSummary";
+export * from "./get-subscription-info";
 export * from "./interfaces";
 export * from "./libConnectors";
 export * from "./migrator";

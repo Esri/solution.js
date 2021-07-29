@@ -1,9 +1,9 @@
 {
-  "name": "@esri/solution-deployer",
+  "name": "@esri/solution-velocity",
   "version": "1.0.0",
-  "description": "Manages the deployment of a Solution for @esri/solution.js.",
+  "description": "Manages the creation and deployment of Velocity item types for @esri/solution.js.",
   "main": "dist/node/index.js",
-  "unpkg": "dist/umd/deployer.umd.min.js",
+  "unpkg": "dist/umd/velocity.umd.min.js",
   "module": "dist/esm/index.js",
   "js:next": "dist/esm/index.js",
   "types": "dist/esm/index.d.ts",
@@ -18,10 +18,6 @@
     "@esri/arcgis-rest-portal": "^3.1.1",
     "@esri/arcgis-rest-request": "^3.1.1",
     "@esri/arcgis-rest-service-admin": "^3.1.1",
-    "@esri/hub-common": "^8.5.1",
-    "@esri/hub-initiatives": "^8.5.1",
-    "@esri/hub-sites": "^8.5.1",
-    "@esri/hub-teams": "^8.5.1",
     "rollup": "^1.22.0",
     "typescript": "^4.3.4"
   },
@@ -30,30 +26,17 @@
     "@esri/arcgis-rest-feature-layer": "^3.1.1",
     "@esri/arcgis-rest-portal": "^3.1.1",
     "@esri/arcgis-rest-request": "^3.1.1",
-    "@esri/arcgis-rest-service-admin": "^3.1.1",
-    "@esri/hub-common": "^8.5.1",
-    "@esri/hub-initiatives": "^8.5.1",
-    "@esri/hub-sites": "^8.5.1",
-    "@esri/hub-teams": "^8.5.1"
+    "@esri/arcgis-rest-service-admin": "^3.1.1"
   },
   "dependencies": {
     "@esri/solution-common": "^1.0.0",
-    "@esri/solution-feature-layer": "^1.0.0",
-    "@esri/solution-file": "^1.0.0",
-    "@esri/solution-form": "^1.0.0",
-    "@esri/solution-group": "^1.0.0",
-    "@esri/solution-hub-types": "^1.0.0",
     "@esri/solution-simple-types": "^1.0.0",
-    "@esri/solution-storymap": "^1.0.0",
-    "@esri/solution-velocity": "^1.0.0",
-    "@esri/solution-web-experience": "^1.0.0",
     "tslib": "^1.13.0"
   },
   "scripts": {
     "prepare": "npm run build",
     "build": "npm run build:node && npm run build:umd && npm run build:esm",
     "build:esm": "tsc -p ./tsconfig.json --module esnext --outDir ./dist/esm --declaration",
-    "build:umd:watch": "tsc -w -p ./tsconfig.json --module umd --outDir ./dist/umd --declaration",
     "build:umd": "rollup -c ../../umd-base-profile.js && rollup -c ../../umd-production-profile.js",
     "build:node": "tsc -p ./tsconfig.json --module commonjs --outDir ./dist/node",
     "dev:esm": "tsc -w --module esnext --outDir ./dist/esm --declaration",
@@ -67,7 +50,7 @@
     "type": "git",
     "url": "git+https://github.com/Esri/solution.js.git"
   },
-  "contributors": [
+  "contributors": [    
     {
       "name": "Mike Tschudi",
       "email": "mtschudi@esri.com"
@@ -79,13 +62,6 @@
     {
       "name": "John Hauck",
       "email": "jhauck@esri.com"
-    },
-    {
-      "name": "Dave Bouwman",
-      "email": "dbouwman@esri.com"
-    },
-    {
-      "name": "John Gravois"
     }
   ],
   "bugs": {

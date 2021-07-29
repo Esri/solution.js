@@ -4,7 +4,7 @@
   <meta http-equiv="content-type" content="text/html; charset=utf-8" />
   <title>@esri/solution-deployer deploySolution example</title>
   <!--
-   | Copyright 2019 Esri
+   | Copyright 2021 Esri
    |
    | Licensed under the Apache License, Version 2.0 (the "License");
    | you may not use this file except in compliance with the License.
@@ -104,16 +104,17 @@
         </div>
       </div>
 
-      <div id="clientIdParent" class="labeledItem display-none">
+      <div id="clientIdParent" class="display-none">
         <label for="clientId">Client ID&nbsp;</label>
         <input type="text" id="clientId">
-        <div class="labeledItem">
-          <span class="labeledItem">To obtain client ID:</span>
+        <div>
+          <span class="labeledItem">To work with client ID:</span>
           <ol>
             <li>cd to the demos directory</li>
             <li>run "npm start"</li>
             <li>Create an application on the <a target="_blank" href="https://developers.arcgis.com/documentation/mapping-apis-and-services/security/arcgis-identity/serverless-web-apps/">ArcGIS for Developers</a> website.</li>
             <li>Add one of the urls listed from "npm start" as a redirect uri for your application.</li>
+            <li>Open the deploySolution demo using the url from above and Copy/Paste clientId</li>
           </ol>
         </div>
       </div>
@@ -175,6 +176,7 @@
         "@esri/solution-simple-types": "../node_modules/@esri/solution-simple-types/dist/umd/simple-types.umd",
         "@esri/solution-hub-types": "../node_modules/@esri/solution-hub-types/dist/umd/hub-types.umd",
         "@esri/solution-storymap": "../node_modules/@esri/solution-storymap/dist/umd/storymap.umd",
+        "@esri/solution-velocity": "../node_modules/@esri/solution-velocity/dist/umd/velocity.umd",
         "@esri/solution-web-experience": "../node_modules/@esri/solution-web-experience/dist/umd/web-experience.umd",
         "adlib": "../node_modules/adlib/dist/adlib",
         "tslib": "../node_modules/tslib/tslib"
@@ -293,7 +295,6 @@
             deploySolution(solutionId, folderId, srcCreds, destCreds, useExisting);
           } else {
             const redirect_uri = window.location.origin + window.location.pathname;
-            alert(redirect_uri);
             const clientId = document.getElementById("clientId").value;
             auth.UserSession.beginOAuth2({
               clientId: clientId,
