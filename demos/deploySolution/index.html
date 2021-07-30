@@ -129,6 +129,13 @@
 
       <br /><br />
 
+      <div class="section-title">Custom Params</div>
+      <div class="labeledItem">
+        <textarea id="customParams" cols="40" rows="5" placeholder="requires a valid JSON object"></textarea>
+      </div>
+
+      <br /><br />
+
       <button class="btn btn-default" onclick="goFcn()">Deploy Solution(s)</button>
     </div>
 
@@ -274,6 +281,9 @@
           // Use Existing
           const useExisting = document.getElementById("useExistingChk").checked;
 
+          // Custom Params
+          const customParams = document.getElementById("customParams").value;
+
           // Source credentials
           const srcPortal = (document.getElementById("srcPortal").value || "https://www.arcgis.com") + "/sharing/rest";
           const srcCreds = new auth.UserSession({
@@ -292,7 +302,7 @@
               portal: destPortal,
               clientId: document.getElementById("clientId").value
             });
-            deploySolution(solutionId, folderId, srcCreds, destCreds, useExisting);
+            deploySolution(solutionId, folderId, srcCreds, destCreds, useExisting, customParams);
           } else {
             const redirect_uri = window.location.origin + window.location.pathname;
             const clientId = document.getElementById("clientId").value;
@@ -304,7 +314,7 @@
               // Upon a successful login, update the session with the new session.
               session = newSession;
               updateSessionInfo(session);
-              deploySolution(solutionId, folderId, srcCreds, session, useExisting);
+              deploySolution(solutionId, folderId, srcCreds, session, useExisting, customParams);
             }).catch(function (error) {
               console.log(error);
             });
@@ -312,7 +322,7 @@
         }
 
         // Deploy!
-        function deploySolution(solutionId, folderId, srcCreds, destCreds, useExisting) {
+        function deploySolution(solutionId, folderId, srcCreds, destCreds, useExisting, customParams) {
           const startTime = Date.now();
           const createdItems = [];
 
@@ -333,7 +343,8 @@
               srcCreds,
               destCreds,
               progressFcn,
-              useExisting
+              useExisting,
+              customParams
             );
           } else if (folderId.length > 0) {
             deployPromise = main.deploySolutionsInFolder(
@@ -341,7 +352,8 @@
               srcCreds,
               destCreds,
               progressFcn,
-              useExisting
+              useExisting,
+              customParams
             );
           }
 
