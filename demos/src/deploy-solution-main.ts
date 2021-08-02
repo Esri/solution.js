@@ -120,9 +120,9 @@ export function deploySolution(
     consoleProgress: true,
     storageAuthentication: srcAuthentication,
     enableItemReuse,
-    templateDictionary: {
+    templateDictionary: isJsonStr(customParams) ? {
       params: JSON.parse(customParams)
-    }
+    } : {}
   };
   const itemUrlPrefix = destAuthentication.portal.replace("/sharing/rest", "");
 
@@ -142,15 +142,16 @@ export function deployAndDisplaySolution(
   customParams: any
 ): Promise<string> {
   // Deploy a solution described by the supplied id
+  // only pass custom params to the templateDictionary
   const options: common.IDeploySolutionOptions = {
     jobId: templateSolutionId,
     progressCallback: progressCallback,
     consoleProgress: true,
     storageAuthentication: srcAuthentication,
     enableItemReuse,
-    templateDictionary: {
+    templateDictionary: isJsonStr(customParams) ? {
       params: JSON.parse(customParams)
-    }
+    } : {}
   };
 
   return deployer.deploySolution(templateSolutionId, destAuthentication, options)
@@ -218,4 +219,17 @@ export function getTemplates(
     );
   });
 
+}
+
+export function isJsonStr(
+  v: string
+): boolean {
+  // string must contain valid json object with at least one key
+  let parsedValue = {};
+  try {
+    parsedValue = JSON.parse(v);
+  } catch (e) {
+    return false;
+  }
+  return Object.keys(parsedValue).length > 0;
 }
