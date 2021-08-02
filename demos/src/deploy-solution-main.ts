@@ -32,7 +32,8 @@ export function deploySolutionsInFolder(
   srcAuthentication: common.UserSession,
   destAuthentication: common.UserSession,
   progressCallback: common.ISolutionProgressCallback,
-  enableItemReuse: boolean
+  enableItemReuse: boolean,
+  customParams: any
 ): Promise<string> {
   const query = new portal.SearchQueryBuilder()
   .match(folderId).in("ownerfolder").and()
@@ -53,7 +54,7 @@ export function deploySolutionsInFolder(
           } as ISolutionInfoCard;
         }
       );
-      return deployBatchOfSolutions(solutionsToDeploy, solutionsToDeploy.length, srcAuthentication, destAuthentication, progressCallback, enableItemReuse);
+      return deployBatchOfSolutions(solutionsToDeploy, solutionsToDeploy.length, srcAuthentication, destAuthentication, progressCallback, enableItemReuse, customParams);
     } else {
       return Promise.resolve("<i>No solutions found in folder</i>");
     }
@@ -66,7 +67,8 @@ function deployBatchOfSolutions(
   srcAuthentication: common.UserSession,
   destAuthentication: common.UserSession,
   progressCallback: common.ISolutionProgressCallback,
-  enableItemReuse: boolean
+  enableItemReuse: boolean,
+  customParams: any
 ): Promise<string> {
   // Deploy the first item in the list
   let solution: ISolutionInfoCard = null;
@@ -81,7 +83,8 @@ function deployBatchOfSolutions(
       srcAuthentication,
       destAuthentication,
       progressCallback,
-      enableItemReuse
+      enableItemReuse,
+      customParams
     );
   }
   return deployPromise
@@ -92,7 +95,7 @@ function deployBatchOfSolutions(
     let remainingDeployPromise = Promise.resolve("");
     if (solutionsToDeploy.length > 0) {
       remainingDeployPromise = deployBatchOfSolutions(solutionsToDeploy, totalNumberOfSolutions,
-        srcAuthentication, destAuthentication, progressCallback, enableItemReuse);
+        srcAuthentication, destAuthentication, progressCallback, enableItemReuse, customParams);
     }
     return remainingDeployPromise;
   })
@@ -107,7 +110,8 @@ export function deploySolution(
   srcAuthentication: common.UserSession,
   destAuthentication: common.UserSession,
   progressCallback: common.ISolutionProgressCallback,
-  enableItemReuse: boolean
+  enableItemReuse: boolean,
+  customParams: any
 ): Promise<string> {
   // Deploy a solution described by the supplied id
   const options: common.IDeploySolutionOptions = {
@@ -115,7 +119,10 @@ export function deploySolution(
     progressCallback: progressCallback,
     consoleProgress: true,
     storageAuthentication: srcAuthentication,
-    enableItemReuse
+    enableItemReuse,
+    templateDictionary: isJsonStr(customParams) ? {
+      params: JSON.parse(customParams)
+    } : {}
   };
   const itemUrlPrefix = destAuthentication.portal.replace("/sharing/rest", "");
 
@@ -131,15 +138,20 @@ export function deployAndDisplaySolution(
   srcAuthentication: common.UserSession,
   destAuthentication: common.UserSession,
   progressCallback: common.ISolutionProgressCallback,
-  enableItemReuse: boolean
+  enableItemReuse: boolean,
+  customParams: any
 ): Promise<string> {
   // Deploy a solution described by the supplied id
+  // only pass custom params to the templateDictionary
   const options: common.IDeploySolutionOptions = {
     jobId: templateSolutionId,
     progressCallback: progressCallback,
     consoleProgress: true,
     storageAuthentication: srcAuthentication,
-    enableItemReuse
+    enableItemReuse,
+    templateDictionary: isJsonStr(customParams) ? {
+      params: JSON.parse(customParams)
+    } : {}
   };
 
   return deployer.deploySolution(templateSolutionId, destAuthentication, options)
@@ -207,4 +219,17 @@ export function getTemplates(
     );
   });
 
+}
+
+export function isJsonStr(
+  v: string
+): boolean {
+  // string must contain valid json object with at least one key
+  let parsedValue = {};
+  try {
+    parsedValue = JSON.parse(v);
+  } catch (e) {
+    return false;
+  }
+  return Object.keys(parsedValue).length > 0;
 }
