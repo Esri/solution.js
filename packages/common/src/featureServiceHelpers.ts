@@ -149,7 +149,10 @@ export function templatize(
 
   // in some cases a service does not have a spatial reference defined
   // added for issue #699
-  if (!getProp(itemTemplate, "properties.service.spatialReference")) {
+  if (
+    !getProp(itemTemplate, "properties.service.spatialReference") &&
+    getProp(itemTemplate, "properties.defaultExtent.spatialReference")
+  ) {
     setCreateProp(
       itemTemplate,
       "properties.service.spatialReference",
