@@ -146,6 +146,20 @@ export function templatize(
   // this default extent will be used in cases where it does not make sense to apply the orgs
   // extent to a service with a local spatial reference
   itemTemplate.properties.defaultExtent = initialExtent || fullExtent;
+
+  // in some cases a service does not have a spatial reference defined
+  // added for issue #699
+  if (
+    !getProp(itemTemplate, "properties.service.spatialReference") &&
+    getProp(itemTemplate, "properties.defaultExtent.spatialReference")
+  ) {
+    setCreateProp(
+      itemTemplate,
+      "properties.service.spatialReference",
+      itemTemplate.properties.defaultExtent.spatialReference
+    );
+  }
+
   // if any layer hasZ enabled then we need to set
   // enableZDefaults and zDefault to deploy to enterprise
   let hasZ: boolean = false;

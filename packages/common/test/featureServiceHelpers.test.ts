@@ -187,7 +187,8 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
           service: {
             serviceItemId: "{{DEF456.itemId}}",
             fullExtent: "{{ABC123.solutionExtent}}",
-            initialExtent: "{{ABC123.solutionExtent}}"
+            initialExtent: "{{ABC123.solutionExtent}}",
+            spatialReference: { wkid: 123456 }
           },
           layers: [
             {
@@ -498,7 +499,8 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
         properties: {
           service: {
             serviceItemId: "{{ab766cba0dd44ec080420acc10990282.itemId}}",
-            fullExtent: "{{ab766cba0dd44ec080420acc10990282.solutionExtent}}"
+            fullExtent: "{{ab766cba0dd44ec080420acc10990282.solutionExtent}}",
+            spatialReference: { wkid: 123456 }
           },
           defaultExtent: {
             xmin: -10,
