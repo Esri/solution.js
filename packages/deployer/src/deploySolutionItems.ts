@@ -484,8 +484,10 @@ export function _useExistingItems(
   templateDictionary: any,
   authentication: common.UserSession
 ): Promise<any> {
-  return new Promise(resolve => {
+  return new Promise((resolve, reject) => {
     if (useExisting) {
+      const itemDefs: Array<Promise<any>> = [];
+      const sourceIdHash: any = {};
       const itemIds: string[] = [];
       Object.keys(templateDictionary.params).forEach(k => {
         const v: any = templateDictionary.params[k];
@@ -497,20 +499,84 @@ export function _useExistingItems(
             v.itemId,
             v
           );
+
+          // need to check and set the typeKeyword if it doesn't exist on this service yet
+          // when the user has passed in an itemId that does not come from a previous deployment
+          itemDefs.push(common.getItemBase(v.itemId, authentication));
+          sourceIdHash[v.itemId] = v.sourceId;
+
           /* istanbul ignore else */
           if (itemIds.indexOf(v.sourceId) < 0) {
             itemIds.push(v.sourceId);
           }
         }
       });
-      // eslint-disable-next-line @typescript-eslint/no-floating-promises
-      _updateTemplateDictionary(
-        itemIds.map(id => common.getTemplateById(templates, id)),
-        templateDictionary,
-        authentication
-      ).then(resolve);
+      _setTypekeywordForExisting(itemDefs, sourceIdHash, authentication).then(
+        () => {
+          // eslint-disable-next-line @typescript-eslint/no-floating-promises
+          _updateTemplateDictionary(
+            itemIds.map(id => common.getTemplateById(templates, id)),
+            templateDictionary,
+            authentication
+          ).then(resolve);
+        },
+        reject
+      );
     } else {
       resolve(null);
+    }
+  });
+}
+
+/**
+ * Verify if the existing item has the source-<itemId> typeKeyword and set it if not
+ * This allows items that did not come from deployment to be found for reuse after they
+ * have been used once via a custom itemId param
+ *
+ * @param itemDefs
+ * @param sourceIdHash key value pairs..actual itemId is the key and the source itemId is the value
+ * @param authentication credentials for the requests
+ *
+ * @return a promise to indicate when the requests are complete
+ */
+export function _setTypekeywordForExisting(
+  itemDefs: Array<Promise<any>>,
+  sourceIdHash: any,
+  authentication: common.UserSession
+): Promise<any> {
+  return new Promise((resolve, reject) => {
+    if (itemDefs.length > 0) {
+      Promise.all(itemDefs).then(
+        results => {
+          const itemUpdateDefs: Array<Promise<any>> = [];
+          results.forEach(result => {
+            const sourceId: string = sourceIdHash[result.id];
+            if (result && sourceId && result.typeKeywords) {
+              const sourceKeyword = `source-${sourceId}`;
+              const typeKeywords: string[] = result.typeKeywords;
+              if (typeKeywords.indexOf(sourceKeyword) < 0) {
+                typeKeywords.push(sourceKeyword);
+                const itemUpdate: any = { id: result.id, typeKeywords };
+                itemUpdateDefs.push(
+                  common.updateItem(itemUpdate, authentication)
+                );
+              }
+            }
+          });
+
+          // wait for updates to finish before we resolve
+          if (itemUpdateDefs.length > 0) {
+            Promise.all(itemUpdateDefs).then(resolve, e =>
+              reject(common.fail(e))
+            );
+          } else {
+            resolve(undefined);
+          }
+        },
+        e => reject(common.fail(e))
+      );
+    } else {
+      resolve(undefined);
     }
   });
 }
