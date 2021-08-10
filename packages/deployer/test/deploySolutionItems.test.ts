@@ -1152,6 +1152,10 @@ describe("Module `deploySolutionItems`", () => {
         .get(
           "https://myorg.maps.arcgis.com/sharing/rest/community/self?f=json&token=fake-token",
           {}
+        )
+        .get(
+          "https://myorg.maps.arcgis.com/sharing/rest/content/items/ca4a6047326243b290f625e80ebe6531?f=json&token=fake-token",
+          {}
         );
 
       deploySolution
@@ -2124,11 +2128,20 @@ describe("Module `deploySolutionItems`", () => {
 
       spyOn(common, "getLayerSettings").and.callFake(() => {});
 
-      fetchMock.post(newFsUrl, {
-        serviceItemId: id,
-        spatialReference: sr,
-        initialExtent: ext
-      });
+      fetchMock
+        .post(newFsUrl, {
+          serviceItemId: id,
+          spatialReference: sr,
+          initialExtent: ext
+        })
+        .get(
+          "https://myorg.maps.arcgis.com/sharing/rest/content/items/ca4a6047326243b290f625e80ebe6531?f=json&token=fake-token",
+          { id: "ca4a6047326243b290f625e80ebe6531", typeKeywords: [] }
+        )
+        .post(
+          "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/items/ca4a6047326243b290f625e80ebe6531/update",
+          { success: true }
+        );
 
       deploySolution
         ._useExistingItems(
@@ -2143,6 +2156,280 @@ describe("Module `deploySolutionItems`", () => {
           expect(templateDictionary).toEqual(expectedTemplateDictionary);
           done();
         }, done.fail);
+    });
+
+    it("use existing item will not duplicate source-<itemid>", done => {
+      const _templates: common.IItemTemplate[] = [];
+
+      const sourceId: string = "aa4a6047326243b290f625e80ebe6531";
+      const id: string = "ca4a6047326243b290f625e80ebe6531";
+      const fsUrl: string =
+        "https://services.arcgis.com/orgidFmrV9d1DIvN/arcgis/rest/services/dispatchers2/FeatureServer";
+
+      const newFsUrl: string =
+        "https://services.arcgis.com/orgidFmrV9d1DIvN/arcgis/rest/services/dispatchersNew/FeatureServer";
+
+      const fsTemplate: common.IItemTemplate = templates.getItemTemplate(
+        "Feature Service",
+        [],
+        fsUrl
+      );
+      fsTemplate.itemId = sourceId;
+
+      _templates.push(fsTemplate);
+
+      const sr: any = {
+        wkid: 4326
+      };
+
+      const ext: any = {
+        xmin: 0
+      };
+
+      const customFS: any = {
+        itemId: id,
+        sourceId: sourceId,
+        name: "Name",
+        title: "Title",
+        type: "Feature Service",
+        url: newFsUrl
+      };
+
+      const templateDictionary: any = {
+        params: {
+          useExisting: true,
+          customFS
+        }
+      };
+      const expectedTemplateDictionary: any = {
+        params: {
+          useExisting: true,
+          customFS
+        }
+      };
+      expectedTemplateDictionary[sourceId] = {
+        defaultSpatialReference: sr,
+        defaultExtent: ext,
+        name: customFS.name,
+        title: customFS.title,
+        url: customFS.url,
+        itemId: id
+      };
+
+      spyOn(common, "getLayerSettings").and.callFake(() => {});
+
+      fetchMock
+        .post(newFsUrl, {
+          serviceItemId: id,
+          spatialReference: sr,
+          initialExtent: ext
+        })
+        .get(
+          `https://myorg.maps.arcgis.com/sharing/rest/content/items/${id}?f=json&token=fake-token`,
+          { id, typeKeywords: ["source-aa4a6047326243b290f625e80ebe6531"] }
+        )
+        .post(
+          `https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/items/${id}/update`,
+          mockItems.get400Failure()
+        );
+
+      deploySolution
+        ._useExistingItems(
+          _templates,
+          true,
+          templateDictionary,
+          MOCK_USER_SESSION
+        )
+        .then(() => {
+          expect(templateDictionary[sourceId].def).toBeDefined();
+          delete templateDictionary[sourceId].def;
+          expect(templateDictionary).toEqual(expectedTemplateDictionary);
+          done();
+        }, done.fail);
+    });
+
+    it("use existing item will handle error on update type keyword", done => {
+      const _templates: common.IItemTemplate[] = [];
+
+      const sourceId: string = "aa4a6047326243b290f625e80ebe6531";
+      const id: string = "ca4a6047326243b290f625e80ebe6531";
+      const fsUrl: string =
+        "https://services.arcgis.com/orgidFmrV9d1DIvN/arcgis/rest/services/dispatchers2/FeatureServer";
+
+      const newFsUrl: string =
+        "https://services.arcgis.com/orgidFmrV9d1DIvN/arcgis/rest/services/dispatchersNew/FeatureServer";
+
+      const fsTemplate: common.IItemTemplate = templates.getItemTemplate(
+        "Feature Service",
+        [],
+        fsUrl
+      );
+      fsTemplate.itemId = sourceId;
+
+      _templates.push(fsTemplate);
+
+      const sr: any = {
+        wkid: 4326
+      };
+
+      const ext: any = {
+        xmin: 0
+      };
+
+      const customFS: any = {
+        itemId: id,
+        sourceId: sourceId,
+        name: "Name",
+        title: "Title",
+        type: "Feature Service",
+        url: newFsUrl
+      };
+
+      const templateDictionary: any = {
+        params: {
+          useExisting: true,
+          customFS
+        }
+      };
+      const expectedTemplateDictionary: any = {
+        params: {
+          useExisting: true,
+          customFS
+        }
+      };
+      expectedTemplateDictionary[sourceId] = {
+        defaultSpatialReference: sr,
+        defaultExtent: ext,
+        name: customFS.name,
+        title: customFS.title,
+        url: customFS.url,
+        itemId: id
+      };
+
+      spyOn(common, "getLayerSettings").and.callFake(() => {});
+
+      fetchMock
+        .post(newFsUrl, {
+          serviceItemId: id,
+          spatialReference: sr,
+          initialExtent: ext
+        })
+        .get(
+          `https://myorg.maps.arcgis.com/sharing/rest/content/items/${id}?f=json&token=fake-token`,
+          { id, typeKeywords: [] }
+        )
+        .post(
+          `https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/items/${id}/update`,
+          mockItems.get400Failure()
+        );
+
+      deploySolution
+        ._useExistingItems(
+          _templates,
+          true,
+          templateDictionary,
+          MOCK_USER_SESSION
+        )
+        .then(() => {
+          expect(templateDictionary[sourceId].def).toBeDefined();
+          delete templateDictionary[sourceId].def;
+          expect(templateDictionary).toEqual(expectedTemplateDictionary);
+          done();
+        }, done.fail);
+    });
+
+    it("use existing item will handle error on get item info", done => {
+      const _templates: common.IItemTemplate[] = [];
+
+      const sourceId: string = "aa4a6047326243b290f625e80ebe6531";
+      const id: string = "ca4a6047326243b290f625e80ebe6531";
+      const fsUrl: string =
+        "https://services.arcgis.com/orgidFmrV9d1DIvN/arcgis/rest/services/dispatchers2/FeatureServer";
+
+      const newFsUrl: string =
+        "https://services.arcgis.com/orgidFmrV9d1DIvN/arcgis/rest/services/dispatchersNew/FeatureServer";
+
+      const fsTemplate: common.IItemTemplate = templates.getItemTemplate(
+        "Feature Service",
+        [],
+        fsUrl
+      );
+      fsTemplate.itemId = sourceId;
+
+      _templates.push(fsTemplate);
+
+      const sr: any = {
+        wkid: 4326
+      };
+
+      const ext: any = {
+        xmin: 0
+      };
+
+      const customFS: any = {
+        itemId: id,
+        sourceId: sourceId,
+        name: "Name",
+        title: "Title",
+        type: "Feature Service",
+        url: newFsUrl
+      };
+
+      const templateDictionary: any = {
+        params: {
+          useExisting: true,
+          customFS
+        }
+      };
+      const expectedTemplateDictionary: any = {
+        params: {
+          useExisting: true,
+          customFS
+        }
+      };
+      expectedTemplateDictionary[sourceId] = {
+        defaultSpatialReference: sr,
+        defaultExtent: ext,
+        name: customFS.name,
+        title: customFS.title,
+        url: customFS.url,
+        itemId: id
+      };
+
+      spyOn(common, "getLayerSettings").and.callFake(() => {});
+
+      fetchMock
+        .post(newFsUrl, {
+          serviceItemId: id,
+          spatialReference: sr,
+          initialExtent: ext
+        })
+        .get(
+          `https://myorg.maps.arcgis.com/sharing/rest/content/items/${id}?f=json&token=fake-token`,
+          mockItems.get400Failure()
+        );
+
+      deploySolution
+        ._useExistingItems(
+          _templates,
+          true,
+          templateDictionary,
+          MOCK_USER_SESSION
+        )
+        .then(() => {
+          expect(templateDictionary[sourceId].def).toBeDefined();
+          delete templateDictionary[sourceId].def;
+          expect(templateDictionary).toEqual(expectedTemplateDictionary);
+          done();
+        }, done.fail);
+    });
+  });
+
+  describe("_setTypekeywordForExisting", () => {
+    it("will handle no custom item id requests", done => {
+      deploySolution
+        ._setTypekeywordForExisting([], {}, MOCK_USER_SESSION)
+        .then(done);
     });
   });
 });

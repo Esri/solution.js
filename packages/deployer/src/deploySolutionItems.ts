@@ -544,7 +544,7 @@ export function _setTypekeywordForExisting(
   sourceIdHash: any,
   authentication: common.UserSession
 ): Promise<any> {
-  return new Promise((resolve, reject) => {
+  return new Promise(resolve => {
     if (itemDefs.length > 0) {
       Promise.all(itemDefs).then(
         results => {
@@ -554,6 +554,7 @@ export function _setTypekeywordForExisting(
             if (result && sourceId && result.typeKeywords) {
               const sourceKeyword = `source-${sourceId}`;
               const typeKeywords: string[] = result.typeKeywords;
+              /* istanbul ignore else */
               if (typeKeywords.indexOf(sourceKeyword) < 0) {
                 typeKeywords.push(sourceKeyword);
                 const itemUpdate: any = { id: result.id, typeKeywords };
@@ -566,14 +567,12 @@ export function _setTypekeywordForExisting(
 
           // wait for updates to finish before we resolve
           if (itemUpdateDefs.length > 0) {
-            Promise.all(itemUpdateDefs).then(resolve, e =>
-              reject(common.fail(e))
-            );
+            Promise.all(itemUpdateDefs).then(resolve, () => resolve(undefined));
           } else {
             resolve(undefined);
           }
         },
-        e => reject(common.fail(e))
+        () => resolve(undefined)
       );
     } else {
       resolve(undefined);
