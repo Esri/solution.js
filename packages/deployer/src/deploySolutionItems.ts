@@ -492,22 +492,17 @@ export function _useExistingItems(
       Object.keys(templateDictionary.params).forEach(k => {
         const v: any = templateDictionary.params[k];
         /* istanbul ignore else */
-        if (v.itemId && v.sourceId) {
-          _updateTemplateDictionaryById(
-            templateDictionary,
-            v.sourceId,
-            v.itemId,
-            v
-          );
+        if (v.itemId && /[0-9A-F]{32}/i.test(k)) {
+          _updateTemplateDictionaryById(templateDictionary, k, v.itemId, v);
 
           // need to check and set the typeKeyword if it doesn't exist on this service yet
           // when the user has passed in an itemId that does not come from a previous deployment
           itemDefs.push(common.getItemBase(v.itemId, authentication));
-          sourceIdHash[v.itemId] = v.sourceId;
+          sourceIdHash[v.itemId] = k;
 
           /* istanbul ignore else */
-          if (itemIds.indexOf(v.sourceId) < 0) {
-            itemIds.push(v.sourceId);
+          if (itemIds.indexOf(k) < 0) {
+            itemIds.push(k);
           }
         }
       });
@@ -551,6 +546,7 @@ export function _setTypekeywordForExisting(
           const itemUpdateDefs: Array<Promise<any>> = [];
           results.forEach(result => {
             const sourceId: string = sourceIdHash[result.id];
+            /* istanbul ignore else */
             if (result && sourceId && result.typeKeywords) {
               const sourceKeyword = `source-${sourceId}`;
               const typeKeywords: string[] = result.typeKeywords;

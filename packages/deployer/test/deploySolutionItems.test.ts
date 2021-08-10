@@ -2098,7 +2098,6 @@ describe("Module `deploySolutionItems`", () => {
 
       const customFS: any = {
         itemId: id,
-        sourceId: sourceId,
         name: "Name",
         title: "Title",
         type: "Feature Service",
@@ -2107,16 +2106,17 @@ describe("Module `deploySolutionItems`", () => {
 
       const templateDictionary: any = {
         params: {
-          useExisting: true,
-          customFS
+          useExisting: true
         }
       };
+      templateDictionary.params[sourceId] = customFS;
+
       const expectedTemplateDictionary: any = {
         params: {
-          useExisting: true,
-          customFS
+          useExisting: true
         }
       };
+      expectedTemplateDictionary.params[sourceId] = customFS;
       expectedTemplateDictionary[sourceId] = {
         defaultSpatialReference: sr,
         defaultExtent: ext,
@@ -2188,7 +2188,6 @@ describe("Module `deploySolutionItems`", () => {
 
       const customFS: any = {
         itemId: id,
-        sourceId: sourceId,
         name: "Name",
         title: "Title",
         type: "Feature Service",
@@ -2197,16 +2196,17 @@ describe("Module `deploySolutionItems`", () => {
 
       const templateDictionary: any = {
         params: {
-          useExisting: true,
-          customFS
+          useExisting: true
         }
       };
+      templateDictionary.params[sourceId] = customFS;
+
       const expectedTemplateDictionary: any = {
         params: {
-          useExisting: true,
-          customFS
+          useExisting: true
         }
       };
+      expectedTemplateDictionary.params[sourceId] = customFS;
       expectedTemplateDictionary[sourceId] = {
         defaultSpatialReference: sr,
         defaultExtent: ext,
@@ -2278,7 +2278,6 @@ describe("Module `deploySolutionItems`", () => {
 
       const customFS: any = {
         itemId: id,
-        sourceId: sourceId,
         name: "Name",
         title: "Title",
         type: "Feature Service",
@@ -2287,16 +2286,17 @@ describe("Module `deploySolutionItems`", () => {
 
       const templateDictionary: any = {
         params: {
-          useExisting: true,
-          customFS
+          useExisting: true
         }
       };
+      templateDictionary.params[sourceId] = customFS;
+
       const expectedTemplateDictionary: any = {
         params: {
-          useExisting: true,
-          customFS
+          useExisting: true
         }
       };
+      expectedTemplateDictionary.params[sourceId] = customFS;
       expectedTemplateDictionary[sourceId] = {
         defaultSpatialReference: sr,
         defaultExtent: ext,
@@ -2368,7 +2368,6 @@ describe("Module `deploySolutionItems`", () => {
 
       const customFS: any = {
         itemId: id,
-        sourceId: sourceId,
         name: "Name",
         title: "Title",
         type: "Feature Service",
@@ -2377,16 +2376,17 @@ describe("Module `deploySolutionItems`", () => {
 
       const templateDictionary: any = {
         params: {
-          useExisting: true,
-          customFS
+          useExisting: true
         }
       };
+      templateDictionary.params[sourceId] = customFS;
+
       const expectedTemplateDictionary: any = {
         params: {
-          useExisting: true,
-          customFS
+          useExisting: true
         }
       };
+      expectedTemplateDictionary.params[sourceId] = customFS;
       expectedTemplateDictionary[sourceId] = {
         defaultSpatialReference: sr,
         defaultExtent: ext,
