@@ -484,7 +484,7 @@ export function _useExistingItems(
   templateDictionary: any,
   authentication: common.UserSession
 ): Promise<any> {
-  return new Promise((resolve, reject) => {
+  return new Promise(resolve => {
     if (useExisting) {
       const itemDefs: Array<Promise<any>> = [];
       const sourceIdHash: any = {};
@@ -511,6 +511,7 @@ export function _useExistingItems(
           }
         }
       });
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
       _setTypekeywordForExisting(itemDefs, sourceIdHash, authentication).then(
         () => {
           // eslint-disable-next-line @typescript-eslint/no-floating-promises
@@ -519,8 +520,7 @@ export function _useExistingItems(
             templateDictionary,
             authentication
           ).then(resolve);
-        },
-        reject
+        }
       );
     } else {
       resolve(null);
