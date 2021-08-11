@@ -401,19 +401,24 @@ export function _updateTypeKeywords(
 export function getLayerSettings(
   layerInfos: any,
   url: string,
-  itemId: string
+  itemId: string,
+  enterpriseIDMapping?: any
 ): any {
   const settings: any = {};
-  const ids = Object.keys(layerInfos);
-  ids.forEach((id: any) => {
-    settings["layer" + id] = {
-      fields: _getNameMapping(layerInfos, id),
-      url: checkUrlPathTermination(url) + id,
-      layerId: id,
+  const indexes = Object.keys(layerInfos);
+  indexes.forEach((index: any) => {
+    const layerId: number = enterpriseIDMapping
+      ? enterpriseIDMapping[layerInfos[index].item.id]
+      : layerInfos[index].item.id;
+
+    settings["layer" + layerInfos[index].item.id] = {
+      fields: _getNameMapping(layerInfos, index),
+      url: checkUrlPathTermination(url) + layerId,
+      layerId,
       itemId: itemId
     };
-    deleteProp(layerInfos[id], "newFields");
-    deleteProp(layerInfos[id], "sourceFields");
+    deleteProp(layerInfos[index], "newFields");
+    deleteProp(layerInfos[index], "sourceFields");
   });
   return settings;
 }

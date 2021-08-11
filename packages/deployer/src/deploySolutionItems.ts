@@ -600,12 +600,17 @@ export function _updateTemplateDictionary(
       if (templateInfo && templateInfo.url && templateInfo.itemId) {
         /* istanbul ignore else */
         if (t.item.type === "Feature Service") {
+          const enterpriseIDMapping: any = common.getProp(
+            templateDictionary,
+            `params.${t.itemId}.enterpriseIDMapping`
+          );
           Object.assign(
             templateDictionary[t.itemId],
             common.getLayerSettings(
               common.getLayersAndTables(t),
               templateInfo.url,
-              templateInfo.itemId
+              templateInfo.itemId,
+              enterpriseIDMapping
             )
           );
 
@@ -703,13 +708,27 @@ export function _updateTemplateDictionary(
                   Object.keys(templateDictionary).forEach(k => {
                     /* istanbul ignore else */
                     if (templateDictionary[k].itemId === ll.serviceItemId) {
-                      const layerInfo: any = common.getProp(
+                      let sourceId: string = "";
+                      Object.keys(templateDictionary).some(_k => {
+                        if (
+                          templateDictionary[_k].itemId === ll.serviceItemId
+                        ) {
+                          sourceId = _k;
+                          return true;
+                        }
+                      });
+                      const enterpriseIDMapping: any = common.getProp(
                         templateDictionary,
-                        `${k}.layer${ll.id}`
+                        `params.${sourceId}.enterpriseIDMapping`
                       );
-                      /* istanbul ignore else */
-                      if (layerInfo && ll.fields) {
-                        layerInfo.fields = ll.fields;
+                      if (enterpriseIDMapping) {
+                        Object.keys(enterpriseIDMapping).forEach(id => {
+                          if (enterpriseIDMapping[id] === ll.id) {
+                            _setFields(templateDictionary, k, id, ll.fields);
+                          }
+                        });
+                      } else {
+                        _setFields(templateDictionary, k, ll.id, ll.fields);
                       }
                     }
                   });
@@ -728,6 +747,32 @@ export function _updateTemplateDictionary(
       resolve(null);
     }
   });
+}
+
+/**
+ * Add the fields from the source layer to the template dictionary for any required replacements
+ *
+ * @param templateDictionary Hash of facts: org URL, adlib replacements, deferreds for dependencies
+ * @param itemId the id for the item
+ * @param layerId the id for the layer
+ * @param fields the fields to transfer
+ *
+ * @protected
+ */
+export function _setFields(
+  templateDictionary: any,
+  itemId: string,
+  layerId: string,
+  fields: any[]
+): void {
+  const layerInfo: any = common.getProp(
+    templateDictionary,
+    `${itemId}.layer${layerId}`
+  );
+  /* istanbul ignore else */
+  if (layerInfo && fields) {
+    layerInfo.fields = fields;
+  }
 }
 
 /**
