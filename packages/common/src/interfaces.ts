@@ -41,10 +41,10 @@ export {
   IItem,
   IPagingParams,
   IPortal,
-  IUser,
-  ItemRelationshipType,
   ISearchResult,
-  IUpdateItemResponse
+  ItemRelationshipType,
+  IUpdateItemResponse,
+  IUser
 } from "@esri/arcgis-rest-portal";
 export {
   ICreateServiceResult,
