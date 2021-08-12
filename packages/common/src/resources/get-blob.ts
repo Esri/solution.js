@@ -20,11 +20,13 @@ import { request, IRequestOptions } from "@esri/arcgis-rest-request";
  *
  * @param url Address of Blob
  * @param authentication Credentials for the request
+ * @param requestOptions - Options for the request, including parameters relevant to the endpoint.
  * @return Promise that will resolve with Blob or an AGO-style JSON failure response
  */
 export function getBlob(
   url: string,
-  authentication: UserSession
+  authentication: UserSession,
+  requestOptions: IRequestOptions = {}
 ): Promise<Blob> {
   if (!url) {
     return Promise.reject("Url must be provided");
@@ -32,7 +34,8 @@ export function getBlob(
 
   const blobRequestOptions = {
     authentication: authentication,
-    rawResponse: true
+    rawResponse: true,
+    ...requestOptions
   } as IRequestOptions;
 
   return request(url, blobRequestOptions).then(response => {
