@@ -1008,6 +1008,136 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
       expect(settings).toEqual(expectedSettings);
     });
 
+    it("should use enterpriseIDMapping when it exists", () => {
+      const serviceUrl: string = "https://services/serviceName/FeatureServer";
+      const fieldInfos: any = {};
+      fieldInfos["0"] = {
+        item: {
+          id: 0,
+          newFields: [
+            {
+              name: "A",
+              alias: "A",
+              type: "fieldTypeA"
+            },
+            {
+              name: "B",
+              alias: "B",
+              type: "fieldTypeB"
+            },
+            {
+              name: "CreateDate",
+              alias: "CreateDate",
+              type: "fieldTypeDate"
+            }
+          ],
+          sourceFields: [
+            {
+              name: "A",
+              alias: "A",
+              type: "fieldTypeA"
+            },
+            {
+              name: "B",
+              alias: "B",
+              type: "fieldTypeB"
+            },
+            {
+              name: "CreateDate",
+              alias: "CreateDate",
+              type: "fieldTypeDate"
+            }
+          ],
+          otherProperty: {
+            test: "test"
+          },
+          editFieldsInfo: {
+            createDateField: "CreateDate"
+          },
+          newEditFieldsInfo: {
+            createDateField: "CreateDate"
+          },
+          sourceSchemaChangesAllowed: true
+        }
+      };
+      fieldInfos["1"] = {
+        item: {
+          id: 1,
+          newFields: [
+            {
+              name: "C",
+              alias: "C",
+              type: "fieldTypeC"
+            },
+            {
+              name: "D",
+              alias: "D",
+              type: "fieldTypeD"
+            },
+            {
+              name: "CreateDate",
+              alias: "CreateDate",
+              type: "fieldTypeDate"
+            }
+          ],
+          sourceFields: [
+            {
+              name: "C",
+              alias: "C",
+              type: "fieldTypeC"
+            },
+            {
+              name: "D",
+              alias: "D",
+              type: "fieldTypeD"
+            },
+            {
+              name: "CreateDate",
+              alias: "CreateDate",
+              type: "fieldTypeDate"
+            }
+          ],
+          otherProperty: {
+            test: "test"
+          },
+          editFieldsInfo: {
+            createDateField: "CreateDate"
+          },
+          newEditFieldsInfo: {
+            createDateField: "CreateDate"
+          },
+          sourceSchemaChangesAllowed: true
+        }
+      };
+
+      const enterpriseIDMapping = {
+        "0": "0001",
+        "1": "1000"
+      };
+      const expectedSettings: any = {
+        layer0: {
+          itemId: "33298a2612ba4899adc41180c435425f",
+          url: serviceUrl + "/" + "0001",
+          layerId: "0001",
+          fields: {}
+        },
+        layer1: {
+          itemId: "33298a2612ba4899adc41180c435425f",
+          url: serviceUrl + "/" + 1000,
+          layerId: "1000",
+          fields: {}
+        }
+      };
+
+      const settings = getLayerSettings(
+        fieldInfos,
+        serviceUrl,
+        "33298a2612ba4899adc41180c435425f",
+        enterpriseIDMapping
+      );
+      expect(settings).toEqual(expectedSettings);
+    });
+
     it("should handle fields changed", () => {
       const serviceUrl: string = "https://services/serviceName/FeatureServer";
       const fieldInfos: any = {

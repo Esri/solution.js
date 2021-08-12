@@ -566,13 +566,13 @@ describe("Module `deploySolutionItems`", () => {
         layer0: {
           fields: {},
           url: url2 + "/0",
-          layerId: "0",
+          layerId: 0,
           itemId: foundItemID2
         },
         layer1: {
           fields: {},
           url: url2 + "/1",
-          layerId: "1",
+          layerId: 1,
           itemId: foundItemID2
         }
       };
@@ -2036,6 +2036,103 @@ describe("Module `deploySolutionItems`", () => {
         )
         .then(() => {
           expect(templateDictionary).toEqual(expected);
+          done();
+        }, done.fail);
+    });
+
+    it("will utilize enterpriseIDMapping", done => {
+      const _templates: common.IItemTemplate[] = [];
+      const id: string = "ca4a6047326243b290f625e80ebe6531";
+      const fsUrl: string =
+        "https://services.arcgis.com/orgidFmrV9d1DIvN/arcgis/rest/services/dispatchers2/FeatureServer";
+
+      const fsTemplate: common.IItemTemplate = templates.getItemTemplate(
+        "Feature Service",
+        [],
+        fsUrl
+      );
+      fsTemplate.properties.service = {
+        hasViews: true
+      };
+
+      _templates.push(fsTemplate);
+
+      const fieldInfos: any = {};
+      const layer: any = fsTemplate.properties.layers[0];
+      fieldInfos[layer.id] = layer.fields;
+      const table: any = fsTemplate.properties.tables[0];
+      fieldInfos[table.id] = table.fields;
+
+      const templateDictionary: any = {};
+      templateDictionary[fsTemplate.itemId] = {
+        itemId: id,
+        url: fsUrl,
+        layer0: {
+          fields: {},
+          layerId: "0",
+          itemId: id
+        },
+        layer1: {
+          fields: {},
+          layerId: "1",
+          itemId: id
+        }
+      };
+      templateDictionary.params = {};
+      templateDictionary.params[fsTemplate.itemId] = {
+        enterpriseIDMapping: {
+          101: 0,
+          202: 1
+        }
+      };
+
+      const fsResult: any = {
+        serviceItemId: id,
+        spatialReference: {
+          wkid: 4326
+        },
+        initialExtent: {
+          xmin: 0
+        },
+        layers: [
+          {
+            id: 0
+          }
+        ],
+        tables: [
+          {
+            id: 1
+          }
+        ]
+      };
+
+      const lFields = ["A"];
+      const tFields = ["B"];
+
+      fetchMock
+        .post(fsUrl, fsResult)
+        .post(`${fsUrl}/0`, {
+          serviceItemId: id,
+          id: "0",
+          fields: lFields
+        })
+        .post(`${fsUrl}/1`, {
+          serviceItemId: id,
+          id: "1",
+          fields: tFields
+        });
+
+      spyOn(common, "getLayerSettings").and.callFake(() => {});
+
+      deploySolution
+        ._updateTemplateDictionary(
+          _templates,
+          templateDictionary,
+          MOCK_USER_SESSION
+        )
+        .then(() => {
+          const t: any = templateDictionary[fsTemplate.itemId];
+          expect(t.fieldInfos).toEqual(fieldInfos);
           done();
         }, done.fail);
     });

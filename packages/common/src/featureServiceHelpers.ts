@@ -405,20 +405,24 @@ export function getLayerSettings(
   enterpriseIDMapping?: any
 ): any {
   const settings: any = {};
-  const indexes = Object.keys(layerInfos);
-  indexes.forEach((index: any) => {
-    const layerId: number = enterpriseIDMapping
-      ? enterpriseIDMapping[layerInfos[index].item.id]
-      : layerInfos[index].item.id;
-
-    settings["layer" + layerInfos[index].item.id] = {
-      fields: _getNameMapping(layerInfos, index),
+  const ids = Object.keys(layerInfos);
+  ids.forEach((id: any) => {
+    const _layerId = getProp(layerInfos[id], "item.id");
+    const isNum: boolean = parseInt(_layerId, 10) > -1;
+    const layerId: number =
+      isNum && enterpriseIDMapping
+        ? enterpriseIDMapping[_layerId]
+        : isNum
+        ? _layerId
+        : id;
+    settings[`layer${isNum ? _layerId : id}`] = {
+      fields: _getNameMapping(layerInfos, id),
       url: checkUrlPathTermination(url) + layerId,
       layerId,
-      itemId: itemId
+      itemId
     };
-    deleteProp(layerInfos[index], "newFields");
-    deleteProp(layerInfos[index], "sourceFields");
+    deleteProp(layerInfos[id], "newFields");
+    deleteProp(layerInfos[id], "sourceFields");
   });
   return settings;
 }

@@ -710,6 +710,7 @@ export function _updateTemplateDictionary(
                     if (templateDictionary[k].itemId === ll.serviceItemId) {
                       let sourceId: string = "";
                       Object.keys(templateDictionary).some(_k => {
+                        /* istanbul ignore else */
                         if (
                           templateDictionary[_k].itemId === ll.serviceItemId
                         ) {
@@ -723,7 +724,10 @@ export function _updateTemplateDictionary(
                       );
                       if (enterpriseIDMapping) {
                         Object.keys(enterpriseIDMapping).forEach(id => {
-                          if (enterpriseIDMapping[id] === ll.id) {
+                          if (
+                            enterpriseIDMapping[id].toString() ===
+                            ll.id.toString()
+                          ) {
                             _setFields(templateDictionary, k, id, ll.fields);
                           }
                         });
