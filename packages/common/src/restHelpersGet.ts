@@ -729,6 +729,35 @@ export function getItemThumbnailUrl(
 }
 
 /**
+ * Gets a JSON from a web site.
+ *
+ * @param url Address of JSON
+ * @param authentication Credentials for the request
+ * @return Promise that will resolve with JSON
+ */
+export function getJson(
+  url: string,
+  authentication?: UserSession
+): Promise<any> {
+  // Get the blob from the URL
+  const requestOptions: IRequestOptions = { httpMethod: "GET" };
+  return getBlob(url, authentication, requestOptions)
+    .then(blob => {
+      // Reclassify text/plain blobs as needed
+      return _fixTextBlobType(blob);
+    })
+    .then(adjustedBlob => {
+      if (adjustedBlob.type === "application/json") {
+        // Blob may be an error
+        // eslint-disable-next-line @typescript-eslint/no-floating-promises
+        return blobToJson(adjustedBlob);
+      } else {
+        return Promise.resolve(null);
+      }
+    });
+}
+
+/**
  * Extracts the portal sharing url from a supplied authentication.
  *
  * @param authentication Credentials for the request to AGO
