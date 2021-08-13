@@ -33,7 +33,11 @@ import {
 } from "@esri/solution-common";
 import { templatizeVelocity } from "./helpers/velocity-templatize";
 import { getVelocityDependencies } from "./helpers/get-velocity-dependencies";
-import { getVelocityUrl, postVelocityData } from "./helpers/velocity-helpers";
+import {
+  cleanDataSourcesAndFeeds,
+  getVelocityUrl,
+  postVelocityData
+} from "./helpers/velocity-helpers";
 
 /**
  * Convert a Velocity item into a Template
@@ -58,9 +62,14 @@ export function convertItemToTemplate(
         .then(data_json => {
           template.item.title = data_json.label;
           template.data = data_json;
-          template.dependencies = getVelocityDependencies(template);
-          templatizeVelocity(template);
-          return Promise.resolve(template);
+          return getVelocityDependencies(template, authentication).then(
+            deps => {
+              template.dependencies = deps;
+              cleanDataSourcesAndFeeds(template);
+              templatizeVelocity(template);
+              return Promise.resolve(template);
+            }
+          );
         });
     },
     e => Promise.reject(fail(e))

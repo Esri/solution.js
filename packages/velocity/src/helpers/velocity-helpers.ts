@@ -20,7 +20,8 @@ import {
   getSubscriptionInfo,
   replaceInTemplate,
   UserSession,
-  getProp
+  getProp,
+  setProp
 } from "@esri/solution-common";
 
 /**
@@ -539,4 +540,117 @@ export function _fetch(
     requestOpts.body = JSON.stringify(body);
   }
   return fetch(url, requestOpts).then(r => Promise.resolve(r.json()));
+}
+
+/**
+ * Remove key properties if the dependency was removed due to having the "IoTFeatureLayer" typeKeyword
+ * This function will update the input template.
+ *
+ * @param template The template that for the velocity item
+ *
+ */
+export function cleanDataSourcesAndFeeds(template: IItemTemplate): void {
+  const dependencies: string[] = template.dependencies;
+
+  _removeIdProps(
+    getProp(template, "data.sources") ? template.data.sources : [],
+    dependencies
+  );
+
+  _removeIdProps(
+    getProp(template, "data.feeds") ? template.data.sources : [],
+    dependencies
+  );
+
+  _removeIdPropsAndSetName(
+    getProp(template, "data.outputs") ? template.data.outputs : [],
+    dependencies
+  );
+}
+
+/**
+ * Remove key properties from the input source or feed
+ *
+ * @param sourcesOrFeeds The list of dataSources or feeds
+ * @param dependencies The list of dependencies
+ *
+ */
+export function _removeIdProps(
+  sourcesOrFeeds: any[],
+  dependencies: string[]
+): void {
+  sourcesOrFeeds.forEach(dataSource => {
+    if (
+      dataSource.properties &&
+      dataSource.properties["feature-layer.portalItemId"]
+    ) {
+      const id: string = dataSource.properties["feature-layer.portalItemId"];
+      if (dependencies.indexOf(id) < 0) {
+        delete dataSource.properties["feature-layer.portalItemId"];
+        delete dataSource.properties["feature-layer.layerId"];
+      }
+    }
+  });
+}
+
+/**
+ * Remove key properties from the outputs.
+ *
+ * @param outputs The list of outputs
+ * @param dependencies The list of dependencies
+ *
+ */
+export function _removeIdPropsAndSetName(
+  outputs: any[],
+  dependencies: string[]
+): void {
+  outputs.forEach(output => {
+    if (output.properties) {
+      _removeProp(
+        output.properties,
+        "feat-lyr-new.portal.featureServicePortalItemID",
+        dependencies
+      );
+      _removeProp(
+        output.properties,
+        "feat-lyr-new.portal.mapServicePortalItemID",
+        dependencies
+      );
+    }
+  });
+}
+
+/**
+ * Generic helper function to remove key properties .
+ *
+ * @param props the list of props to update
+ * @param prop the individual prop to remove
+ * @param dependencies The list of dependencies
+ *
+ */
+export function _removeProp(
+  props: any,
+  prop: string,
+  dependencies: string[]
+): void {
+  const id: string = props[prop];
+  if (id) {
+    if (dependencies.indexOf(id) < 0) {
+      delete props[prop];
+      _updateName(props);
+    }
+  }
+}
+
+/**
+ * Update the feature layer name to include the solution item id.
+ *
+ * @param props the list of props to update
+ *
+ */
+export function _updateName(props: any): void {
+  const name: string = props["feat-lyr-new.name"];
+  if (name && name.indexOf("{{solutionId}}") < 0) {
+    props["feat-lyr-new.name"] = `${name}_{{solutionId}}`;
+  }
 }
