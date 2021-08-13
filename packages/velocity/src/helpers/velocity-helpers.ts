@@ -20,8 +20,7 @@ import {
   getSubscriptionInfo,
   replaceInTemplate,
   UserSession,
-  getProp,
-  setProp
+  getProp
 } from "@esri/solution-common";
 
 /**
@@ -558,7 +557,7 @@ export function cleanDataSourcesAndFeeds(template: IItemTemplate): void {
   );
 
   _removeIdProps(
-    getProp(template, "data.feeds") ? template.data.sources : [],
+    getProp(template, "data.feeds") ? template.data.feeds : [],
     dependencies
   );
 
@@ -580,11 +579,13 @@ export function _removeIdProps(
   dependencies: string[]
 ): void {
   sourcesOrFeeds.forEach(dataSource => {
+    /* istanbul ignore else */
     if (
       dataSource.properties &&
       dataSource.properties["feature-layer.portalItemId"]
     ) {
       const id: string = dataSource.properties["feature-layer.portalItemId"];
+      /* istanbul ignore else */
       if (dependencies.indexOf(id) < 0) {
         delete dataSource.properties["feature-layer.portalItemId"];
         delete dataSource.properties["feature-layer.layerId"];
@@ -605,6 +606,7 @@ export function _removeIdPropsAndSetName(
   dependencies: string[]
 ): void {
   outputs.forEach(output => {
+    /* istanbul ignore else */
     if (output.properties) {
       _removeProp(
         output.properties,
@@ -634,11 +636,10 @@ export function _removeProp(
   dependencies: string[]
 ): void {
   const id: string = props[prop];
-  if (id) {
-    if (dependencies.indexOf(id) < 0) {
-      delete props[prop];
-      _updateName(props);
-    }
+  /* istanbul ignore else */
+  if (id && dependencies.indexOf(id) < 0) {
+    delete props[prop];
+    _updateName(props);
   }
 }
 
@@ -650,6 +651,7 @@ export function _removeProp(
  */
 export function _updateName(props: any): void {
   const name: string = props["feat-lyr-new.name"];
+  /* istanbul ignore else */
   if (name && name.indexOf("{{solutionId}}") < 0) {
     props["feat-lyr-new.name"] = `${name}_{{solutionId}}`;
   }

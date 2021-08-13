@@ -817,7 +817,11 @@ export function getAGOLItemData(type?: string, itemId?: string): any {
               "feat-lyr-new.editorTrackingEnabled": false,
               "feat-lyr-new.updateExistingFeatures": true,
               "feat-lyr-new.name": "Custom Velocity Update",
-              "feat-lyr-new.useSpatiotemporal": true
+              "feat-lyr-new.useSpatiotemporal": true,
+              "feat-lyr-new.portal.featureServicePortalItemID":
+                "e620910ed73b4780b5407112d8f1ce30",
+              "feat-lyr-new.portal.mapServicePortalItemID":
+                "d17c3732ceb04e62917d9444863a6c28"
             }
           }
         ]
