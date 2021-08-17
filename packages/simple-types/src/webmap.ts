@@ -141,7 +141,7 @@ export function _getLayerIds(
     const layerPromises: Array<Promise<any>> = [];
     const layerChecks: any = {};
     const layers: any[] = layerList.filter(layer => {
-      if (layer.url) {
+      if (layer.url && layer.url.indexOf("{{velocityUrl}}") < 0) {
         const results: any = /.+FeatureServer/g.exec(layer.url);
         const baseUrl: string =
           Array.isArray(results) && results.length > 0 ? results[0] : undefined;

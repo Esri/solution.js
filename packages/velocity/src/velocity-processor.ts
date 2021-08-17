@@ -52,10 +52,16 @@ import {
 export function convertItemToTemplate(
   solutionItemId: string,
   itemInfo: any,
-  authentication: UserSession
+  authentication: UserSession,
+  templateDictionary: any
 ): Promise<IItemTemplate> {
   const template = createPlaceholderTemplate(itemInfo.id, itemInfo.type);
-  return getVelocityUrl(authentication, {}, itemInfo.type, itemInfo.id).then(
+  return getVelocityUrl(
+    authentication,
+    templateDictionary,
+    itemInfo.type,
+    itemInfo.id
+  ).then(
     (url: string) => {
       return fetch(url)
         .then(data => data.json())

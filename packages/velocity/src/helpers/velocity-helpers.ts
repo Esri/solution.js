@@ -15,55 +15,12 @@
  */
 
 import {
-  ISubscriptionInfo,
   IItemTemplate,
-  getSubscriptionInfo,
+  getVelocityUrlBase,
   replaceInTemplate,
   UserSession,
   getProp
 } from "@esri/solution-common";
-
-/**
- * Get the base velocity url from the current orgs subscription info
- *
- * This function will update the input templateDictionary arg with the velocity url
- * so we can reuse it without pinging the org again for subsequent requests to the
- * velocity api.
- *
- * @param authentication Credentials for the requests
- * @param templateDictionary Hash of facts: folder id, org URL, adlib replacements
- *
- * @return a promise that will resolve with the velocity url
- *
- */
-export function getVelocityUrlBase(
-  authentication: UserSession,
-  templateDictionary: any
-): Promise<string> {
-  // if we already have the base url no need to make any additional requests
-  if (templateDictionary.velocityUrl) {
-    return Promise.resolve(templateDictionary.velocityUrl);
-  } else {
-    // get the url from the orgs subscription info
-    return getSubscriptionInfo({ authentication }).then(
-      (subscriptionInfo: ISubscriptionInfo) => {
-        let velocityUrl = "";
-        const orgCapabilities = getProp(subscriptionInfo, "orgCapabilities");
-        /* istanbul ignore else */
-        if (Array.isArray(orgCapabilities)) {
-          orgCapabilities.some(c => {
-            velocityUrl = c.velocityUrl;
-            return velocityUrl;
-          });
-        }
-        // add the base url to the templateDictionary for reuse
-        templateDictionary.velocityUrl = velocityUrl;
-
-        return Promise.resolve(velocityUrl);
-      }
-    );
-  }
-}
 
 /**
  * Common function to build urls for reading and interacting with the velocity api
@@ -652,7 +609,7 @@ export function _removeProp(
 export function _updateName(props: any): void {
   const name: string = props["feat-lyr-new.name"];
   /* istanbul ignore else */
-  if (name && name.indexOf("{{solutionId}}") < 0) {
-    props["feat-lyr-new.name"] = `${name}_{{solutionId}}`;
+  if (name && name.indexOf("{{solutionItemId}}") < 0) {
+    props["feat-lyr-new.name"] = `${name}_{{solutionItemId}}`;
   }
 }

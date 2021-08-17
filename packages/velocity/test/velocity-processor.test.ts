@@ -107,7 +107,7 @@ describe("convertItemToTemplate", () => {
     convertItemToTemplate(solutionItemId, itemInfo, MOCK_USER_SESSION).then(
       actual => {
         expect(actual.data.outputs[0].properties["feat-lyr-new.name"]).toEqual(
-          "Custom Velocity Update_{{solutionId}}"
+          "Custom Velocity Update_{{solutionItemId}}"
         );
 
         expect(actual.dependencies.length).toEqual(3);

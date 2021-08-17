@@ -29,7 +29,8 @@ import * as notebookHelpers from "./helpers/notebook-helpers";
 export function convertItemToTemplate(
   solutionItemId: string,
   itemInfo: any,
-  authentication: common.UserSession
+  authentication: common.UserSession,
+  templateDictionary: any
 ): Promise<common.IItemTemplate> {
   // Delegate back to simple-types, which will in-turn delegate
   // to convertNotebookToTemplate at the correct point in the process
@@ -37,7 +38,8 @@ export function convertItemToTemplate(
   return notebookHelpers.convertItemToTemplate(
     solutionItemId,
     itemInfo,
-    authentication
+    authentication,
+    templateDictionary
   );
 }
 
