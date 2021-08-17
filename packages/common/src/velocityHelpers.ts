@@ -63,6 +63,19 @@ export function getVelocityUrlBase(
   }
 }
 
+/**
+ * Update any velocity urls found in the data
+ *
+ * This function can be extended to support any item type specific functions such as
+ * removing the itemId from operational layers in a webmap
+ *
+ * @param data The data object of the item
+ * @param type The item type
+ * @param templateDictionary Hash of facts: folder id, org URL, adlib replacements
+ *
+ * @return an updated instance of the data object that was supplied.
+ *
+ */
 export function updateVelocityReferences(
   data: any,
   type: string,
@@ -82,6 +95,16 @@ export function updateVelocityReferences(
   return _replaceVelocityUrls(data, templateDictionary.velocityUrl);
 }
 
+/**
+ * Helper function to update velocity urls found in the data
+ *
+ *
+ * @param data The data object of the item
+ * @param velocityUrl The velocity url from the current organization
+ *
+ * @return an updated instance of the data object that was supplied.
+ *
+ */
 export function _replaceVelocityUrls(data: any, velocityUrl: string): any {
   let dataString: string = JSON.stringify(data);
   if (dataString.indexOf(velocityUrl) > -1) {

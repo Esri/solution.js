@@ -29,6 +29,8 @@ import * as workforce from "../workforce";
  * @param solutionItemId The solution to contain the template
  * @param itemInfo Info about the item
  * @param authentication Credentials for working with AGO
+ * @param templateDictionary Hash of facts: folder id, org URL, adlib replacements
+ *
  * @return A promise that will resolve when the template has been created
  */
 export function convertItemToTemplate(
