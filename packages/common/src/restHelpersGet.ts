@@ -829,7 +829,12 @@ export function getThumbnailFile(
  */
 export function _fixTextBlobType(blob: Blob): Promise<Blob> {
   return new Promise<Blob>((resolve, reject) => {
-    if (blob && blob.size > 0 && blob.type.startsWith("text/plain")) {
+    if (
+      blob &&
+      blob.size > 0 &&
+      (blob.type.startsWith("text/plain") ||
+        blob.type.startsWith("application/json"))
+    ) {
       blobToText(blob).then(
         blobText => {
           // Convertible to JSON?
