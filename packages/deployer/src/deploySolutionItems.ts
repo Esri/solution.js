@@ -492,22 +492,17 @@ export function _useExistingItems(
       Object.keys(templateDictionary.params).forEach(k => {
         const v: any = templateDictionary.params[k];
         /* istanbul ignore else */
-        if (v.itemId && v.sourceId) {
-          _updateTemplateDictionaryById(
-            templateDictionary,
-            v.sourceId,
-            v.itemId,
-            v
-          );
+        if (v.itemId && /[0-9A-F]{32}/i.test(k)) {
+          _updateTemplateDictionaryById(templateDictionary, k, v.itemId, v);
 
           // need to check and set the typeKeyword if it doesn't exist on this service yet
           // when the user has passed in an itemId that does not come from a previous deployment
           itemDefs.push(common.getItemBase(v.itemId, authentication));
-          sourceIdHash[v.itemId] = v.sourceId;
+          sourceIdHash[v.itemId] = k;
 
           /* istanbul ignore else */
-          if (itemIds.indexOf(v.sourceId) < 0) {
-            itemIds.push(v.sourceId);
+          if (itemIds.indexOf(k) < 0) {
+            itemIds.push(k);
           }
         }
       });
@@ -551,6 +546,7 @@ export function _setTypekeywordForExisting(
           const itemUpdateDefs: Array<Promise<any>> = [];
           results.forEach(result => {
             const sourceId: string = sourceIdHash[result.id];
+            /* istanbul ignore else */
             if (result && sourceId && result.typeKeywords) {
               const sourceKeyword = `source-${sourceId}`;
               const typeKeywords: string[] = result.typeKeywords;
@@ -604,12 +600,17 @@ export function _updateTemplateDictionary(
       if (templateInfo && templateInfo.url && templateInfo.itemId) {
         /* istanbul ignore else */
         if (t.item.type === "Feature Service") {
+          const enterpriseIDMapping: any = common.getProp(
+            templateDictionary,
+            `params.${t.itemId}.enterpriseIDMapping`
+          );
           Object.assign(
             templateDictionary[t.itemId],
             common.getLayerSettings(
               common.getLayersAndTables(t),
               templateInfo.url,
-              templateInfo.itemId
+              templateInfo.itemId,
+              enterpriseIDMapping
             )
           );
 
@@ -707,13 +708,31 @@ export function _updateTemplateDictionary(
                   Object.keys(templateDictionary).forEach(k => {
                     /* istanbul ignore else */
                     if (templateDictionary[k].itemId === ll.serviceItemId) {
-                      const layerInfo: any = common.getProp(
+                      let sourceId: string = "";
+                      Object.keys(templateDictionary).some(_k => {
+                        /* istanbul ignore else */
+                        if (
+                          templateDictionary[_k].itemId === ll.serviceItemId
+                        ) {
+                          sourceId = _k;
+                          return true;
+                        }
+                      });
+                      const enterpriseIDMapping: any = common.getProp(
                         templateDictionary,
-                        `${k}.layer${ll.id}`
+                        `params.${sourceId}.enterpriseIDMapping`
                       );
-                      /* istanbul ignore else */
-                      if (layerInfo && ll.fields) {
-                        layerInfo.fields = ll.fields;
+                      if (enterpriseIDMapping) {
+                        Object.keys(enterpriseIDMapping).forEach(id => {
+                          if (
+                            enterpriseIDMapping[id].toString() ===
+                            ll.id.toString()
+                          ) {
+                            _setFields(templateDictionary, k, id, ll.fields);
+                          }
+                        });
+                      } else {
+                        _setFields(templateDictionary, k, ll.id, ll.fields);
                       }
                     }
                   });
@@ -732,6 +751,32 @@ export function _updateTemplateDictionary(
       resolve(null);
     }
   });
+}
+
+/**
+ * Add the fields from the source layer to the template dictionary for any required replacements
+ *
+ * @param templateDictionary Hash of facts: org URL, adlib replacements, deferreds for dependencies
+ * @param itemId the id for the item
+ * @param layerId the id for the layer
+ * @param fields the fields to transfer
+ *
+ * @protected
+ */
+export function _setFields(
+  templateDictionary: any,
+  itemId: string,
+  layerId: string,
+  fields: any[]
+): void {
+  const layerInfo: any = common.getProp(
+    templateDictionary,
+    `${itemId}.layer${layerId}`
+  );
+  /* istanbul ignore else */
+  if (layerInfo && fields) {
+    layerInfo.fields = fields;
+  }
 }
 
 /**
