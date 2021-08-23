@@ -278,6 +278,28 @@ describe("convertItemToTemplate", () => {
       done
     );
   });
+
+  it("handles org without velocity support", done => {
+    const solutionItemId: string = "solaf0cf8bdc4fb19749cc1cbad1651b";
+    const type: string = "Big Data Analytic";
+    const id: string = "aaaaf0cf8bdc4fb19749cc1cbad1651b";
+    const itemInfo: any = { id, type };
+
+    fetchMock.get(
+      `${utils.PORTAL_SUBSET.restUrl}/portals/self/subscriptioninfo?f=json&token=fake-token`,
+      {
+        id: "aaabbbccc",
+        orgCapabilities: []
+      }
+    );
+
+    convertItemToTemplate(solutionItemId, itemInfo, MOCK_USER_SESSION, {}).then(
+      () => {
+        done.fail();
+      },
+      done
+    );
+  });
 });
 
 describe("createItemFromTemplate", () => {
@@ -495,5 +517,34 @@ describe("createItemFromTemplate", () => {
     ).then(() => {
       done();
     }, done.fail);
+  });
+
+  it("handles org without velocity support", done => {
+    const type: string = "Real Time Analytic";
+    const template: interfaces.IItemTemplate = templates.getItemTemplate(
+      type,
+      []
+    );
+    const templateDictionary = {};
+    templateDictionary[template.itemId] = {};
+    const destinationAuthentication: interfaces.UserSession = MOCK_USER_SESSION;
+    const realtimeUrl: string =
+      "https://us-iot.arcgis.com/usadvanced00/fliptfmrv9d1divn/iot/analytics/realtime";
+    const id: string = "aaabbbccc123";
+
+    fetchMock.get(
+      `${utils.PORTAL_SUBSET.restUrl}/portals/self/subscriptioninfo?f=json&token=fake-token`,
+      {
+        id: "aaabbbccc",
+        orgCapabilities: []
+      }
+    );
+
+    createItemFromTemplate(
+      template,
+      templateDictionary,
+      destinationAuthentication,
+      utils.ITEM_PROGRESS_CALLBACK
+    ).then(() => done.fail, done);
   });
 });
