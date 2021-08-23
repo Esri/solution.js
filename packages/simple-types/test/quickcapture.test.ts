@@ -70,7 +70,7 @@ describe("Module `quick capture`: manages the creation and deployment of quick c
         "convertItemToTemplate"
       ).and.resolveTo();
       return quickcapture
-        .convertItemToTemplate("3ef", {}, MOCK_USER_SESSION)
+        .convertItemToTemplate("3ef", {}, MOCK_USER_SESSION, {})
         .then(() => {
           expect(convertSpy.calls.count()).toBe(1, "should delegate");
         });

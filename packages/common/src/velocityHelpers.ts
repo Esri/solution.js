@@ -81,18 +81,15 @@ export function updateVelocityReferences(
   type: string,
   templateDictionary: any
 ): any {
-  if (type === "Web Map") {
-    data?.operationalLayers.forEach((l: any) => {
-      if (
-        l.url &&
-        l.url.indexOf(templateDictionary.velocityUrl) > -1 &&
-        l.itemId
-      ) {
+  const velocityUrl: any = templateDictionary.velocityUrl;
+  if (data && type === "Web Map" && velocityUrl) {
+    (data.operationalLayers || []).forEach((l: any) => {
+      if (l.url && l.url.indexOf(velocityUrl) > -1 && l.itemId) {
         delete l.itemId;
       }
     });
   }
-  return _replaceVelocityUrls(data, templateDictionary.velocityUrl);
+  return velocityUrl && data ? _replaceVelocityUrls(data, velocityUrl) : data;
 }
 
 /**
@@ -117,6 +114,7 @@ export function _replaceVelocityUrls(data: any, velocityUrl: string): any {
     // add solutionItemId to any velocity service names
     const regex = new RegExp("{{velocityUrl}}.+?(?=/[A-Za-z]+Server)", "gi");
     const results = regex.exec(dataString);
+    /* istanbul ignore else */
     if (results) {
       results.forEach(result => {
         dataString = dataString.replace(
@@ -125,6 +123,8 @@ export function _replaceVelocityUrls(data: any, velocityUrl: string): any {
         );
       });
     }
+    return JSON.parse(dataString);
+  } else {
+    return data;
   }
-  return JSON.parse(dataString);
 }
