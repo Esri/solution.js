@@ -19,7 +19,8 @@ import {
   getVelocityUrlBase,
   replaceInTemplate,
   UserSession,
-  getProp
+  getProp,
+  fail
 } from "@esri/solution-common";
 
 /**
@@ -47,23 +48,27 @@ export function getVelocityUrl(
   urlSuffix: string = ""
 ): Promise<string> {
   return getVelocityUrlBase(authentication, templateDictionary).then(url => {
-    const _type: string =
-      type === "Real Time Analytic"
-        ? "analytics/realtime"
-        : type === "Big Data Analytic"
-        ? "analytics/bigdata"
-        : type.toLowerCase();
+    if (url) {
+      const _type: string =
+        type === "Real Time Analytic"
+          ? "analytics/realtime"
+          : type === "Big Data Analytic"
+          ? "analytics/bigdata"
+          : type.toLowerCase();
 
-    const suffix: string = urlSuffix ? `/${urlSuffix}` : "";
-    const prefix: string = urlPrefix ? `/${urlPrefix}` : "";
+      const suffix: string = urlSuffix ? `/${urlSuffix}` : "";
+      const prefix: string = urlPrefix ? `/${urlPrefix}` : "";
 
-    return Promise.resolve(
-      isDeploy
-        ? `${url}/iot/${_type}${prefix}${suffix}`
-        : id
-        ? `${url}/iot/${_type}${prefix}/${id}${suffix}/?f=json&token=${authentication.token}`
-        : `${url}/iot/${_type}${prefix}${suffix}/?f=json&token=${authentication.token}`
-    );
+      return Promise.resolve(
+        isDeploy
+          ? `${url}/iot/${_type}${prefix}${suffix}`
+          : id
+          ? `${url}/iot/${_type}${prefix}/${id}${suffix}/?f=json&token=${authentication.token}`
+          : `${url}/iot/${_type}${prefix}${suffix}/?f=json&token=${authentication.token}`
+      );
+    } else {
+      return Promise.resolve(url);
+    }
   });
 }
 
@@ -93,56 +98,60 @@ export function postVelocityData(
     undefined,
     true
   ).then(url => {
-    return getTitle(authentication, data.label, url).then(title => {
-      data.label = title;
-      data.id = "";
-      const body: any = replaceInTemplate(data, templateDictionary);
+    if (url) {
+      return getTitle(authentication, data.label, url).then(title => {
+        data.label = title;
+        data.id = "";
+        const body: any = replaceInTemplate(data, templateDictionary);
 
-      const dataOutputs: any[] = (data.outputs || []).map((o: any) => {
-        return {
-          id: o.id,
-          name: o.properties[`${o.name}.name`]
-        };
-      });
-
-      return _validateOutputs(
-        authentication,
-        templateDictionary,
-        template.type,
-        body,
-        dataOutputs
-      ).then(updatedBody => {
-        return _fetch(authentication, url, "POST", updatedBody).then(rr => {
-          template.item.url = `${url}/${rr.id}`;
-          template.item.title = data.label;
-
-          // Update the template dictionary
-          templateDictionary[template.itemId]["url"] = template.item.url;
-          templateDictionary[template.itemId]["label"] = data.label;
-          templateDictionary[template.itemId]["itemId"] = rr.id;
-
-          const finalResult = {
-            item: replaceInTemplate(template.item, templateDictionary),
-            id: rr.id,
-            type: template.type,
-            postProcess: false
+        const dataOutputs: any[] = (data.outputs || []).map((o: any) => {
+          return {
+            id: o.id,
+            name: o.properties[`${o.name}.name`]
           };
+        });
 
-          if (autoStart) {
-            return _validateAndStart(
-              authentication,
-              templateDictionary,
-              template,
-              rr.id
-            ).then(() => {
+        return _validateOutputs(
+          authentication,
+          templateDictionary,
+          template.type,
+          body,
+          dataOutputs
+        ).then(updatedBody => {
+          return _fetch(authentication, url, "POST", updatedBody).then(rr => {
+            template.item.url = `${url}/${rr.id}`;
+            template.item.title = data.label;
+
+            // Update the template dictionary
+            templateDictionary[template.itemId]["url"] = template.item.url;
+            templateDictionary[template.itemId]["label"] = data.label;
+            templateDictionary[template.itemId]["itemId"] = rr.id;
+
+            const finalResult = {
+              item: replaceInTemplate(template.item, templateDictionary),
+              id: rr.id,
+              type: template.type,
+              postProcess: false
+            };
+
+            if (autoStart) {
+              return _validateAndStart(
+                authentication,
+                templateDictionary,
+                template,
+                rr.id
+              ).then(() => {
+                return Promise.resolve(finalResult);
+              });
+            } else {
               return Promise.resolve(finalResult);
-            });
-          } else {
-            return Promise.resolve(finalResult);
-          }
+            }
+          });
         });
       });
-    });
+    } else {
+      return Promise.reject(fail("Velocity NOT Supported by Organization"));
+    }
   });
 }
 

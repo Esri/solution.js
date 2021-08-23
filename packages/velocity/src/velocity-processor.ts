@@ -64,20 +64,25 @@ export function convertItemToTemplate(
     itemInfo.id
   ).then(
     (url: string) => {
-      return fetch(url)
-        .then(data => data.json())
-        .then(data_json => {
-          template.item.title = data_json.label;
-          template.data = data_json;
-          return getVelocityDependencies(template, authentication).then(
-            deps => {
-              template.dependencies = deps;
-              cleanDataSourcesAndFeeds(template);
-              templatizeVelocity(template);
-              return Promise.resolve(template);
-            }
-          );
-        });
+      if (url) {
+        return fetch(url)
+          .then(data => data.json())
+          .then(data_json => {
+            template.item.title = data_json.label;
+            template.data = data_json;
+            return getVelocityDependencies(template, authentication).then(
+              deps => {
+                template.dependencies = deps;
+                cleanDataSourcesAndFeeds(template);
+                templatizeVelocity(template);
+                return Promise.resolve(template);
+              }
+            );
+          });
+      } else {
+        // In case the org used to have velocity and they still have items
+        return Promise.reject("Velocity NOT Supported by Organization");
+      }
     },
     e => Promise.reject(fail(e))
   );

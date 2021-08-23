@@ -39,7 +39,7 @@ export function getVelocityUrlBase(
   templateDictionary: any
 ): Promise<string> {
   // if we already have the base url no need to make any additional requests
-  if (templateDictionary.velocityUrl) {
+  if (templateDictionary.hasOwnProperty("velocityUrl")) {
     return Promise.resolve(templateDictionary.velocityUrl);
   } else {
     // get the url from the orgs subscription info
