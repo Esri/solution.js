@@ -31,7 +31,7 @@ import { getProp } from "./generalHelpers";
  * @param authentication Credentials for the requests
  * @param templateDictionary Hash of facts: folder id, org URL, adlib replacements
  *
- * @return a promise that will resolve with the velocity url
+ * @return a promise that will resolve with the velocity url or an empty string when the org does not support velocity
  *
  */
 export function getVelocityUrlBase(
@@ -50,7 +50,9 @@ export function getVelocityUrlBase(
         /* istanbul ignore else */
         if (Array.isArray(orgCapabilities)) {
           orgCapabilities.some(c => {
-            velocityUrl = c.velocityUrl;
+            if (c.id === "velocity" && c.status === "active" && c.velocityUrl) {
+              velocityUrl = c.velocityUrl;
+            }
             return velocityUrl;
           });
         }
