@@ -15,55 +15,13 @@
  */
 
 import {
-  ISubscriptionInfo,
   IItemTemplate,
-  getSubscriptionInfo,
+  getVelocityUrlBase,
   replaceInTemplate,
   UserSession,
-  getProp
+  getProp,
+  fail
 } from "@esri/solution-common";
-
-/**
- * Get the base velocity url from the current orgs subscription info
- *
- * This function will update the input templateDictionary arg with the velocity url
- * so we can reuse it without pinging the org again for subsequent requests to the
- * velocity api.
- *
- * @param authentication Credentials for the requests
- * @param templateDictionary Hash of facts: folder id, org URL, adlib replacements
- *
- * @return a promise that will resolve with the velocity url
- *
- */
-export function getVelocityUrlBase(
-  authentication: UserSession,
-  templateDictionary: any
-): Promise<string> {
-  // if we already have the base url no need to make any additional requests
-  if (templateDictionary.velocityUrl) {
-    return Promise.resolve(templateDictionary.velocityUrl);
-  } else {
-    // get the url from the orgs subscription info
-    return getSubscriptionInfo({ authentication }).then(
-      (subscriptionInfo: ISubscriptionInfo) => {
-        let velocityUrl = "";
-        const orgCapabilities = getProp(subscriptionInfo, "orgCapabilities");
-        /* istanbul ignore else */
-        if (Array.isArray(orgCapabilities)) {
-          orgCapabilities.some(c => {
-            velocityUrl = c.velocityUrl;
-            return velocityUrl;
-          });
-        }
-        // add the base url to the templateDictionary for reuse
-        templateDictionary.velocityUrl = velocityUrl;
-
-        return Promise.resolve(velocityUrl);
-      }
-    );
-  }
-}
 
 /**
  * Common function to build urls for reading and interacting with the velocity api
@@ -90,23 +48,27 @@ export function getVelocityUrl(
   urlSuffix: string = ""
 ): Promise<string> {
   return getVelocityUrlBase(authentication, templateDictionary).then(url => {
-    const _type: string =
-      type === "Real Time Analytic"
-        ? "analytics/realtime"
-        : type === "Big Data Analytic"
-        ? "analytics/bigdata"
-        : type.toLowerCase();
+    if (url) {
+      const _type: string =
+        type === "Real Time Analytic"
+          ? "analytics/realtime"
+          : type === "Big Data Analytic"
+          ? "analytics/bigdata"
+          : type.toLowerCase();
 
-    const suffix: string = urlSuffix ? `/${urlSuffix}` : "";
-    const prefix: string = urlPrefix ? `/${urlPrefix}` : "";
+      const suffix: string = urlSuffix ? `/${urlSuffix}` : "";
+      const prefix: string = urlPrefix ? `/${urlPrefix}` : "";
 
-    return Promise.resolve(
-      isDeploy
-        ? `${url}/iot/${_type}${prefix}${suffix}`
-        : id
-        ? `${url}/iot/${_type}${prefix}/${id}${suffix}/?f=json&token=${authentication.token}`
-        : `${url}/iot/${_type}${prefix}${suffix}/?f=json&token=${authentication.token}`
-    );
+      return Promise.resolve(
+        isDeploy
+          ? `${url}/iot/${_type}${prefix}${suffix}`
+          : id
+          ? `${url}/iot/${_type}${prefix}/${id}${suffix}/?f=json&token=${authentication.token}`
+          : `${url}/iot/${_type}${prefix}${suffix}/?f=json&token=${authentication.token}`
+      );
+    } else {
+      return Promise.resolve(url);
+    }
   });
 }
 
@@ -136,56 +98,60 @@ export function postVelocityData(
     undefined,
     true
   ).then(url => {
-    return getTitle(authentication, data.label, url).then(title => {
-      data.label = title;
-      data.id = "";
-      const body: any = replaceInTemplate(data, templateDictionary);
+    if (url) {
+      return getTitle(authentication, data.label, url).then(title => {
+        data.label = title;
+        data.id = "";
+        const body: any = replaceInTemplate(data, templateDictionary);
 
-      const dataOutputs: any[] = (data.outputs || []).map((o: any) => {
-        return {
-          id: o.id,
-          name: o.properties[`${o.name}.name`]
-        };
-      });
-
-      return _validateOutputs(
-        authentication,
-        templateDictionary,
-        template.type,
-        body,
-        dataOutputs
-      ).then(updatedBody => {
-        return _fetch(authentication, url, "POST", updatedBody).then(rr => {
-          template.item.url = `${url}/${rr.id}`;
-          template.item.title = data.label;
-
-          // Update the template dictionary
-          templateDictionary[template.itemId]["url"] = template.item.url;
-          templateDictionary[template.itemId]["label"] = data.label;
-          templateDictionary[template.itemId]["itemId"] = rr.id;
-
-          const finalResult = {
-            item: replaceInTemplate(template.item, templateDictionary),
-            id: rr.id,
-            type: template.type,
-            postProcess: false
+        const dataOutputs: any[] = (data.outputs || []).map((o: any) => {
+          return {
+            id: o.id,
+            name: o.properties[`${o.name}.name`]
           };
+        });
 
-          if (autoStart) {
-            return _validateAndStart(
-              authentication,
-              templateDictionary,
-              template,
-              rr.id
-            ).then(() => {
+        return _validateOutputs(
+          authentication,
+          templateDictionary,
+          template.type,
+          body,
+          dataOutputs
+        ).then(updatedBody => {
+          return _fetch(authentication, url, "POST", updatedBody).then(rr => {
+            template.item.url = `${url}/${rr.id}`;
+            template.item.title = data.label;
+
+            // Update the template dictionary
+            templateDictionary[template.itemId]["url"] = template.item.url;
+            templateDictionary[template.itemId]["label"] = data.label;
+            templateDictionary[template.itemId]["itemId"] = rr.id;
+
+            const finalResult = {
+              item: replaceInTemplate(template.item, templateDictionary),
+              id: rr.id,
+              type: template.type,
+              postProcess: false
+            };
+
+            if (autoStart) {
+              return _validateAndStart(
+                authentication,
+                templateDictionary,
+                template,
+                rr.id
+              ).then(() => {
+                return Promise.resolve(finalResult);
+              });
+            } else {
               return Promise.resolve(finalResult);
-            });
-          } else {
-            return Promise.resolve(finalResult);
-          }
+            }
+          });
         });
       });
-    });
+    } else {
+      return Promise.reject(fail("Velocity NOT Supported by Organization"));
+    }
   });
 }
 
@@ -539,4 +505,120 @@ export function _fetch(
     requestOpts.body = JSON.stringify(body);
   }
   return fetch(url, requestOpts).then(r => Promise.resolve(r.json()));
+}
+
+/**
+ * Remove key properties if the dependency was removed due to having the "IoTFeatureLayer" typeKeyword
+ * This function will update the input template.
+ *
+ * @param template The template that for the velocity item
+ *
+ */
+export function cleanDataSourcesAndFeeds(template: IItemTemplate): void {
+  const dependencies: string[] = template.dependencies;
+
+  _removeIdProps(
+    getProp(template, "data.sources") ? template.data.sources : [],
+    dependencies
+  );
+
+  _removeIdProps(
+    getProp(template, "data.feeds") ? template.data.feeds : [],
+    dependencies
+  );
+
+  _removeIdPropsAndSetName(
+    getProp(template, "data.outputs") ? template.data.outputs : [],
+    dependencies
+  );
+}
+
+/**
+ * Remove key properties from the input source or feed
+ *
+ * @param sourcesOrFeeds The list of dataSources or feeds
+ * @param dependencies The list of dependencies
+ *
+ */
+export function _removeIdProps(
+  sourcesOrFeeds: any[],
+  dependencies: string[]
+): void {
+  sourcesOrFeeds.forEach(dataSource => {
+    /* istanbul ignore else */
+    if (
+      dataSource.properties &&
+      dataSource.properties["feature-layer.portalItemId"]
+    ) {
+      const id: string = dataSource.properties["feature-layer.portalItemId"];
+      /* istanbul ignore else */
+      if (dependencies.indexOf(id) < 0) {
+        delete dataSource.properties["feature-layer.portalItemId"];
+        delete dataSource.properties["feature-layer.layerId"];
+      }
+    }
+  });
+}
+
+/**
+ * Remove key properties from the outputs.
+ *
+ * @param outputs The list of outputs
+ * @param dependencies The list of dependencies
+ *
+ */
+export function _removeIdPropsAndSetName(
+  outputs: any[],
+  dependencies: string[]
+): void {
+  outputs.forEach(output => {
+    /* istanbul ignore else */
+    if (output.properties) {
+      _removeProp(
+        output.properties,
+        "feat-lyr-new.portal.featureServicePortalItemID",
+        dependencies
+      );
+      _removeProp(
+        output.properties,
+        "feat-lyr-new.portal.mapServicePortalItemID",
+        dependencies
+      );
+    }
+  });
+}
+
+/**
+ * Generic helper function to remove key properties .
+ *
+ * @param props the list of props to update
+ * @param prop the individual prop to remove
+ * @param dependencies The list of dependencies
+ *
+ */
+export function _removeProp(
+  props: any,
+  prop: string,
+  dependencies: string[]
+): void {
+  const id: string = props[prop];
+  /* istanbul ignore else */
+  if (id && dependencies.indexOf(id) < 0) {
+    delete props[prop];
+    _updateName(props);
+  }
+}
+
+/**
+ * Update the feature layer name to include the solution item id.
+ *
+ * @param props the list of props to update
+ *
+ */
+export function _updateName(props: any): void {
+  const name: string = props["feat-lyr-new.name"];
+  /* istanbul ignore else */
+  if (name && name.indexOf("{{solutionItemId}}") < 0) {
+    props["feat-lyr-new.name"] = `${name}_{{solutionItemId}}`;
+  }
 }

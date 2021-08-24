@@ -29,12 +29,15 @@ import * as workforce from "../workforce";
  * @param solutionItemId The solution to contain the template
  * @param itemInfo Info about the item
  * @param authentication Credentials for working with AGO
+ * @param templateDictionary Hash of facts: folder id, org URL, adlib replacements
+ *
  * @return A promise that will resolve when the template has been created
  */
 export function convertItemToTemplate(
   solutionItemId: string,
   itemInfo: any,
-  authentication: common.UserSession
+  authentication: common.UserSession,
+  templateDictionary: any
 ): Promise<common.IItemTemplate> {
   return new Promise<common.IItemTemplate>((resolve, reject) => {
     // Init template
@@ -99,7 +102,13 @@ export function convertItemToTemplate(
     // eslint-disable-next-line @typescript-eslint/no-floating-promises
     Promise.all([dataPromise, relatedPromise]).then(responses => {
       const [itemDataResponse, relatedItemsResponse] = responses;
-      itemTemplate.data = itemDataResponse;
+
+      // need to pre-process for velocity urls before they could be templatized by other processors
+      itemTemplate.data = common.updateVelocityReferences(
+        itemDataResponse,
+        itemInfo.type,
+        templateDictionary
+      );
       const relationships = relatedItemsResponse;
 
       // Save the mappings to related items & add those items to the dependencies, but not WMA Code Attachments

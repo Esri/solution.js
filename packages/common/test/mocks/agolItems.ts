@@ -817,7 +817,11 @@ export function getAGOLItemData(type?: string, itemId?: string): any {
               "feat-lyr-new.editorTrackingEnabled": false,
               "feat-lyr-new.updateExistingFeatures": true,
               "feat-lyr-new.name": "Custom Velocity Update",
-              "feat-lyr-new.useSpatiotemporal": true
+              "feat-lyr-new.useSpatiotemporal": true,
+              "feat-lyr-new.portal.featureServicePortalItemID":
+                "e620910ed73b4780b5407112d8f1ce30",
+              "feat-lyr-new.portal.mapServicePortalItemID":
+                "d17c3732ceb04e62917d9444863a6c28"
             }
           }
         ]
@@ -1631,5 +1635,65 @@ function getAGOLItemFundamentals(type: string, url = "", itemId?: string): any {
     numViews: 690,
     scoreCompleteness: 78,
     groupDesignations: null
+  };
+}
+
+export function getAGOLSubscriptionInfo(hasVelocity: boolean): any {
+  return {
+    id: "9999999999",
+    type: "In House",
+    state: "active",
+    expDate: 1632812399000,
+    userLicenseTypes: {
+      advancedUT: 50,
+      creatorUT: 50,
+      insightsAnalystUT: 50,
+      storytellerUT: 50,
+      viewerUT: 0
+    },
+    maxUsersPerLevel: {
+      "1": 0,
+      "2": 200
+    },
+    maxUsers: 200,
+    availableCredits: 21190.238,
+    collaborationSettings: {
+      level: "4",
+      maxItemSizeInMB: 1024,
+      maxReplicationPackageSizeInMB: 5120
+    },
+    hubSettings: {
+      enabled: true
+    },
+    companionOrganizations: [
+      {
+        organizationUrl: "localdeploy-hub.fake.maps.arcgis.com",
+        orgId: "XXXXJwe2TfrjNh3o",
+        orgName: "ArcGIS for Local Government Fake",
+        type: "Community",
+        canSignInArcGIS: true,
+        canSignInIDP: true,
+        canSignInSocial: true,
+        canSignInOIDC: true
+      }
+    ],
+    orgCapabilities: hasVelocity
+      ? [
+          {
+            id: "velocity",
+            test: false,
+            level: "Advanced",
+            region: "US",
+            status: "active",
+            endDate: 1632700800000,
+            itemUnits: 0,
+            computeUnits: 0,
+            velocityUrl:
+              "https://us-iot.arcgis.com/usadvanced00/faKetfmrv9d1divn",
+            storageUnits: 0
+          }
+        ]
+      : [],
+    storageRegion: "us1"
   };
 }

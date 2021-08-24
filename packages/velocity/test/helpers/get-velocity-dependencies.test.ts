@@ -16,7 +16,7 @@
 
 import {
   getVelocityDependencies,
-  _getDatasourceDependencies
+  _getDependencies
 } from "../../src/helpers/get-velocity-dependencies";
 import * as interfaces from "../../../common/src/interfaces";
 import * as fetchMock from "fetch-mock";
@@ -36,46 +36,55 @@ afterEach(() => {
 jasmine.DEFAULT_TIMEOUT_INTERVAL = 20000; // default is 5000 ms
 
 describe("getVelocityDependencies", () => {
-  it("handles misssing sources and feeds", () => {
+  it("handles misssing sources and feeds", done => {
     const type = "Real Time Analytic";
     const template = templates.getItemTemplate(type, []);
-    template.data.source = template.data.sources[0];
     delete template.data.sources;
-    template.data.feed = template.data.feeds[0];
     delete template.data.feeds;
-    const actual = getVelocityDependencies(template);
-    expect(actual.length).toEqual(2);
+    delete template.data.outputs;
+    getVelocityDependencies(template, MOCK_USER_SESSION).then(actual => {
+      expect(actual.length).toEqual(0);
+      done();
+    }, done.fail);
   });
 
-  it("handles misssing source and feed", () => {
+  it("handles misssing portalItemId", done => {
     const type = "Real Time Analytic";
     const template = templates.getItemTemplate(type, []);
     delete template.data.source;
     delete template.data.feeds[0].id;
     delete template.data.feed;
-    const actual = getVelocityDependencies(template);
-    expect(actual.length).toEqual(2);
-  });
 
-  it("handles misssing portalItemId", () => {
-    const type = "Real Time Analytic";
-    const template = templates.getItemTemplate(type, []);
-    delete template.data.source;
-    delete template.data.feeds[0].id;
-    delete template.data.feed;
-    const actual = getVelocityDependencies(template);
-    expect(actual.length).toEqual(2);
+    fetchMock
+      .get(
+        "https://myorg.maps.arcgis.com/sharing/rest/content/items/%7B%7Bccc6347e0c4f4dc8909da399418cafbe.itemId%7D%7D?f=json&token=fake-token",
+        {
+          id: "ccc6347e0c4f4dc8909da399418cafbe",
+          typeKeywords: []
+        }
+      )
+      .get(
+        "https://myorg.maps.arcgis.com/sharing/rest/content/items/%7B%7Baaaaf0cf8bdc4fb19749cc1cbad1651b.itemId%7D%7D?f=json&token=fake-token",
+        {
+          id: "aaaaf0cf8bdc4fb19749cc1cbad1651b",
+          typeKeywords: []
+        }
+      );
+    getVelocityDependencies(template, MOCK_USER_SESSION).then(actual => {
+      expect(actual.length).toEqual(2);
+      done();
+    }, done.fail);
   });
 });
 
-describe("_getDatasourceDependencies", () => {
+describe("_getDependencies", () => {
   it("handles missing portralItemId", () => {
     const type = "Real Time Analytic";
     const template = templates.getItemTemplate(type, []);
     const dataSources = template.data.sources;
     delete dataSources[0].properties;
     const deps: string[] = [];
-    _getDatasourceDependencies(dataSources, deps);
+    _getDependencies(dataSources, deps, "feature-layer.portalItemId");
     expect(deps.length).toEqual(0);
   });
 });

@@ -25,12 +25,14 @@ import * as quickcaptureHelpers from "./helpers/quickcapture-helpers";
  * @param solutionItemId The solution to contain the template
  * @param itemInfo Info about the item
  * @param authentication Credentials for working with AGO
+ * @param templateDictionary Hash of facts: folder id, org URL, adlib replacements
  * @return A promise that will resolve when the template has been created
  */
 export function convertItemToTemplate(
   solutionItemId: string,
   itemInfo: any,
-  authentication: common.UserSession
+  authentication: common.UserSession,
+  templateDictionary: any
 ): Promise<common.IItemTemplate> {
   // Delegate back to simple-types, which will in-turn delegate
   // to convertNotebookToTemplate at the correct point in the process
@@ -38,7 +40,8 @@ export function convertItemToTemplate(
   return quickcaptureHelpers.convertItemToTemplate(
     solutionItemId,
     itemInfo,
-    authentication
+    authentication,
+    templateDictionary
   );
 }
 

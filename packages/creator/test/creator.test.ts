@@ -63,6 +63,11 @@ describe("Module `creator`", () => {
       };
 
       fetchMock
+        .get(
+          utils.PORTAL_SUBSET.restUrl +
+            "/portals/self/subscriptioninfo?f=json&token=fake-token",
+          mockItems.getAGOLSubscriptionInfo(false)
+        )
         .post(
           utils.PORTAL_SUBSET.restUrl + "/content/users/casey/addItem",
           utils.getSuccessResponse({ id: "sln1234567890", folder: null })
@@ -117,6 +122,11 @@ describe("Module `creator`", () => {
       const expectedImage = utils.getSampleImageAsBlob();
 
       fetchMock
+        .get(
+          utils.PORTAL_SUBSET.restUrl +
+            "/portals/self/subscriptioninfo?f=json&token=fake-token",
+          mockItems.getAGOLSubscriptionInfo(false)
+        )
         .post(
           utils.PORTAL_SUBSET.restUrl + "/content/users/casey/addItem",
           utils.getSuccessResponse({ id: expectedSolutionId, folder: null })
@@ -182,6 +192,11 @@ describe("Module `creator`", () => {
       const expectedSolutionId = "sln1234567890";
 
       fetchMock
+        .get(
+          utils.PORTAL_SUBSET.restUrl +
+            "/portals/self/subscriptioninfo?f=json&token=fake-token",
+          mockItems.getAGOLSubscriptionInfo(false)
+        )
         .post(
           utils.PORTAL_SUBSET.restUrl + "/content/users/casey/addItem",
           utils.getSuccessResponse({ id: expectedSolutionId, folder: null })
@@ -249,6 +264,11 @@ describe("Module `creator`", () => {
       const expectedImage = utils.getSampleImageAsBlob();
 
       fetchMock
+        .get(
+          utils.PORTAL_SUBSET.restUrl +
+            "/portals/self/subscriptioninfo?f=json&token=fake-token",
+          mockItems.getAGOLSubscriptionInfo(true)
+        )
         .get(
           utils.PORTAL_SUBSET.restUrl +
             "/community/groups/grp1234567890?f=json&token=fake-token",
@@ -374,6 +394,11 @@ describe("Module `creator`", () => {
       const expectedImage = utils.getSampleImageAsBlob();
 
       fetchMock
+        .get(
+          utils.PORTAL_SUBSET.restUrl +
+            "/portals/self/subscriptioninfo?f=json&token=fake-token",
+          mockItems.getAGOLSubscriptionInfo(true)
+        )
         .get(
           utils.PORTAL_SUBSET.restUrl +
             "/community/groups/grp1234567890?f=json&token=fake-token",
@@ -521,6 +546,11 @@ describe("Module `creator`", () => {
       fetchMock
         .get(
           utils.PORTAL_SUBSET.restUrl +
+            "/portals/self/subscriptioninfo?f=json&token=fake-token",
+          mockItems.getAGOLSubscriptionInfo(false)
+        )
+        .get(
+          utils.PORTAL_SUBSET.restUrl +
             "/community/groups/grp1234567890?f=json&token=fake-token",
           mockItems.getAGOLItem("Group")
         )
@@ -589,6 +619,11 @@ describe("Module `creator`", () => {
       const expectedImage = utils.getSampleImageAsBlob();
 
       fetchMock
+        .get(
+          utils.PORTAL_SUBSET.restUrl +
+            "/portals/self/subscriptioninfo?f=json&token=fake-token",
+          mockItems.getAGOLSubscriptionInfo(false)
+        )
         .get(
           utils.PORTAL_SUBSET.restUrl +
             "/community/groups/grp1234567890?f=json&token=fake-token",
@@ -670,6 +705,11 @@ describe("Module `creator`", () => {
       fetchMock
         .get(
           utils.PORTAL_SUBSET.restUrl +
+            "/portals/self/subscriptioninfo?f=json&token=fake-token",
+          mockItems.getAGOLSubscriptionInfo(false)
+        )
+        .get(
+          utils.PORTAL_SUBSET.restUrl +
             "/community/groups/grp1234567890?f=json&token=fake-token",
           mockItems.getAGOLItem("Group")
         )
@@ -747,6 +787,11 @@ describe("Module `creator`", () => {
       const expectedImage = utils.getSampleImageAsBlob();
 
       fetchMock
+        .get(
+          utils.PORTAL_SUBSET.restUrl +
+            "/portals/self/subscriptioninfo?f=json&token=fake-token",
+          mockItems.getAGOLSubscriptionInfo(false)
+        )
         .post(
           utils.PORTAL_SUBSET.restUrl + "/content/users/casey/addItem",
           utils.getSuccessResponse({ id: expectedSolutionId, folder: null })
@@ -800,6 +845,11 @@ describe("Module `creator`", () => {
       const expectedItem = mockItems.getAGOLItem("Web Map");
 
       fetchMock
+        .get(
+          utils.PORTAL_SUBSET.restUrl +
+            "/portals/self/subscriptioninfo?f=json&token=fake-token",
+          mockItems.getAGOLSubscriptionInfo(true)
+        )
         .post(
           utils.PORTAL_SUBSET.restUrl + "/content/users/casey/addItem",
           utils.getSuccessResponse({ id: expectedSolutionId, folder: null })

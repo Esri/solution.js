@@ -32,6 +32,7 @@ import {
   getGroupBase,
   getGroupContents,
   getItemBase,
+  getVelocityUrlBase,
   ICreateSolutionOptions,
   ISolutionItemData,
   IGroup,
@@ -63,13 +64,18 @@ export function createSolution(
 ): Promise<string> {
   const createOptions: ICreateSolutionOptions = options || {};
   const progressCb = createOptions.progressCallback || noOp;
+  createOptions.templateDictionary = Object.assign(
+    {},
+    createOptions.templateDictionary
+  );
 
   progressCb(1); // let the caller know that we've started
 
   // Assume that source is a group and try to get group's information
   return Promise.all([
     getGroupBase(sourceId, srcAuthentication),
-    getGroupContents(sourceId, srcAuthentication)
+    getGroupContents(sourceId, srcAuthentication),
+    getVelocityUrlBase(srcAuthentication, createOptions.templateDictionary)
   ])
     .then(
       // Group fetches worked; assumption was correct

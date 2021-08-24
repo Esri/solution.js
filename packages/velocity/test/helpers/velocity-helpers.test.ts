@@ -15,6 +15,7 @@
  */
 
 import {
+  cleanDataSourcesAndFeeds,
   getVelocityUrl,
   postVelocityData,
   _updateDataOutput,
@@ -308,5 +309,17 @@ describe("getUniqueTitle", () => {
     const path = "ABC123";
     const actual = getUniqueTitle(title, templateDictionary, path);
     expect(actual).toEqual("_");
+  });
+});
+
+describe("cleanDataSourcesAndFeeds", () => {
+  it("can handle missing dataSources, feeds, and outputs", () => {
+    const type = "Real Time Analytic";
+    const template = templates.getItemTemplate(type, []);
+    delete template.data.sources;
+    delete template.data.feeds;
+    delete template.data.outputs;
+    cleanDataSourcesAndFeeds(template);
+    expect(template.dependencies.length).toEqual(0);
   });
 });

@@ -14,61 +14,81 @@
  * limitations under the License.
  */
 
-import { IItemTemplate, getProp } from "@esri/solution-common";
+import {
+  getProp,
+  getItemBase,
+  IItemTemplate,
+  UserSession
+} from "@esri/solution-common";
 
 /**
- * Get the dependencies from the velocity data sources and feeds
+ * Get the dependencies from the velocity data sources, feeds, and outputs.
+ * Only dependencies that do NOT have the typeKeyword "IoTFeatureLayer" are returned.
  *
  * @param template The template that for the velocity item
+ * @param authentication The credentials for any requests
  *
  * @return a list of dependency ids
  */
-export function getVelocityDependencies(template: IItemTemplate): string[] {
+export function getVelocityDependencies(
+  template: IItemTemplate,
+  authentication: UserSession
+): Promise<string[]> {
   const dependencies: string[] = [];
 
-  // get dependencies from data sources
-  _getDatasourceDependencies(
-    getProp(template, "data.source") ? [template.data.source] : [],
-    dependencies
-  );
-  _getDatasourceDependencies(
+  _getDependencies(
     getProp(template, "data.sources") ? template.data.sources : [],
-    dependencies
+    dependencies,
+    "feature-layer.portalItemId"
   );
 
-  // get dependencies from feeds
-  _getFeedDependencies(
-    getProp(template, "data.feed") ? [template.data.feed] : [],
-    dependencies
-  );
   _getFeedDependencies(
     getProp(template, "data.feeds") ? template.data.feeds : [],
     dependencies
   );
 
-  return dependencies;
+  _getDependencies(
+    getProp(template, "data.outputs") ? template.data.outputs : [],
+    dependencies,
+    "feat-lyr-new.portal.featureServicePortalItemID"
+  );
+
+  _getDependencies(
+    getProp(template, "data.outputs") ? template.data.outputs : [],
+    dependencies,
+    "feat-lyr-new.portal.mapServicePortalItemID"
+  );
+
+  return _validateDependencies(dependencies, authentication);
 }
 
 /**
- * Get the dependencies from the velocity data sources
- * This function will update the input dependencies argument
+ * Any feature services with the typeKeyword "IoTFeatureLayer" should not be templatized or
+ * listed as a dependency.
+ * We can’t create Velocity feature layers in their spatiotemporal datastore as we have no api.
  *
- * @param dataSources The data sources listed in the velocity template
- * @param dependencies The current dependency list
+ * @param dependencies Any dependencies that have been found for this item
+ * @param authentication The credentials for any requests
+ *
+ * @return a list of dependency ids
  */
-export function _getDatasourceDependencies(
-  dataSources: any[],
-  dependencies: string[]
-): void {
-  dataSources.reduce((prev: any, cur: any) => {
-    const id: string = cur.properties
-      ? cur.properties["feature-layer.portalItemId"]
-      : undefined;
-    if (id && prev.indexOf(id) < 0) {
-      prev.push(id);
-    }
-    return prev;
-  }, dependencies);
+export function _validateDependencies(
+  dependencies: string[],
+  authentication: UserSession
+): Promise<string[]> {
+  const defs: Array<Promise<any>> = dependencies.map(d => {
+    return getItemBase(d, authentication);
+  });
+  return Promise.all(defs).then(itemInfos => {
+    return Promise.resolve(
+      itemInfos.reduce((prev, cur) => {
+        if (cur.typeKeywords.indexOf("IoTFeatureLayer") < 0) {
+          prev.push(cur.id);
+        }
+        return prev;
+      }, [])
+    );
+  });
 }
 
 /**
@@ -85,6 +105,28 @@ export function _getFeedDependencies(
   feeds.reduce((prev: any, cur: any) => {
     const id: string = cur.id || undefined;
     /* istanbul ignore else */
+    if (id && prev.indexOf(id) < 0) {
+      prev.push(id);
+    }
+    return prev;
+  }, dependencies);
+}
+
+/**
+ * Get the dependencies from the velocity outputs or dataSources.
+ * This function will update the input dependencies argument
+ *
+ * @param outputs The list of outputs from the velocity item
+ * @param dependencies The current list of dependencies
+ * @param prop The individual prop to evaluate
+ */
+export function _getDependencies(
+  outputs: any[],
+  dependencies: string[],
+  prop: string
+): void {
+  outputs.reduce((prev: any, cur: any) => {
+    const id: string = cur.properties ? cur.properties[prop] : undefined;
     if (id && prev.indexOf(id) < 0) {
       prev.push(id);
     }

@@ -33,7 +33,11 @@ import {
 } from "@esri/solution-common";
 import { templatizeVelocity } from "./helpers/velocity-templatize";
 import { getVelocityDependencies } from "./helpers/get-velocity-dependencies";
-import { getVelocityUrl, postVelocityData } from "./helpers/velocity-helpers";
+import {
+  cleanDataSourcesAndFeeds,
+  getVelocityUrl,
+  postVelocityData
+} from "./helpers/velocity-helpers";
 
 /**
  * Convert a Velocity item into a Template
@@ -41,6 +45,7 @@ import { getVelocityUrl, postVelocityData } from "./helpers/velocity-helpers";
  * @param solutionItemId The solution to contain the item
  * @param itemInfo The basic item info
  * @param authentication The credentials for requests
+ * @param templateDictionary Hash of facts: folder id, org URL, adlib replacements
  *
  * @return a promise that will resolve the constructed IItemTemplate from the input itemInfo
  *
@@ -48,20 +53,36 @@ import { getVelocityUrl, postVelocityData } from "./helpers/velocity-helpers";
 export function convertItemToTemplate(
   solutionItemId: string,
   itemInfo: any,
-  authentication: UserSession
+  authentication: UserSession,
+  templateDictionary: any
 ): Promise<IItemTemplate> {
   const template = createPlaceholderTemplate(itemInfo.id, itemInfo.type);
-  return getVelocityUrl(authentication, {}, itemInfo.type, itemInfo.id).then(
+  return getVelocityUrl(
+    authentication,
+    templateDictionary,
+    itemInfo.type,
+    itemInfo.id
+  ).then(
     (url: string) => {
-      return fetch(url)
-        .then(data => data.json())
-        .then(data_json => {
-          template.item.title = data_json.label;
-          template.data = data_json;
-          template.dependencies = getVelocityDependencies(template);
-          templatizeVelocity(template);
-          return Promise.resolve(template);
-        });
+      if (url) {
+        return fetch(url)
+          .then(data => data.json())
+          .then(data_json => {
+            template.item.title = data_json.label;
+            template.data = data_json;
+            return getVelocityDependencies(template, authentication).then(
+              deps => {
+                template.dependencies = deps;
+                cleanDataSourcesAndFeeds(template);
+                templatizeVelocity(template);
+                return Promise.resolve(template);
+              }
+            );
+          });
+      } else {
+        // In case the org used to have velocity and they still have items
+        return Promise.reject("Velocity NOT Supported by Organization");
+      }
     },
     e => Promise.reject(fail(e))
   );

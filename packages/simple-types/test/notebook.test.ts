@@ -66,7 +66,7 @@ describe("Module `notebook`: manages the creation and deployment of notebook pro
         "convertItemToTemplate"
       ).and.resolveTo();
       return notebookProcessor
-        .convertItemToTemplate("3ef", {}, MOCK_USER_SESSION)
+        .convertItemToTemplate("3ef", {}, MOCK_USER_SESSION, {})
         .then(() => {
           expect(convertSpy.calls.count()).toBe(1, "should delegate");
         });
