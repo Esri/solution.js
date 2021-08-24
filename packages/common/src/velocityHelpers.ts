@@ -50,6 +50,7 @@ export function getVelocityUrlBase(
         /* istanbul ignore else */
         if (Array.isArray(orgCapabilities)) {
           orgCapabilities.some(c => {
+            /* istanbul ignore else */
             if (c.id === "velocity" && c.status === "active" && c.velocityUrl) {
               velocityUrl = c.velocityUrl;
             }
