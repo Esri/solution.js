@@ -19,7 +19,18 @@
 import { IItemTemplate } from "./interfaces";
 import { getProp } from "./generalHelpers";
 
-// this function will update the templateDictionary arg
+/**
+ * Used by deploy to evaluate if we have everything we need to deploy tracking views.
+ *
+ * This function will update the input templateDictionary with a boolean
+ * indicating if tracking is enabled on the org and the user is an admin.
+ *
+ * @param portalResponse portal self response
+ * @param userResponse portal user response
+ * @param templateDictionary Hash of facts: org URL, adlib replacements, deferreds for dependencies
+ *
+ * @protected
+ */
 export function setLocationTrackingEnabled(
   portalResponse: any,
   userResponse: any,
@@ -32,8 +43,19 @@ export function setLocationTrackingEnabled(
       : false;
 }
 
-// used by deploy
-// expected that you call this after updating the templateDictionary
+/**
+ * Used by deploy to evaluate if we have everything we need to deploy tracking views.
+ *
+ * An error is thrown to prevent additional deployment work if we have Tracking items and tracking is
+ * not enabled or the deployment user is not an admin in the organization.
+ *
+ * This must be called after the templateDictionary with key details
+ *
+ * @param templates the list of IItemTemplates from the solution
+ * @param templateDictionary Hash of facts: org URL, adlib replacements, deferreds for dependencies
+ *
+ * @protected
+ */
 export function validateTrackingTemplates(
   templates: IItemTemplate[],
   templateDictionary: any
