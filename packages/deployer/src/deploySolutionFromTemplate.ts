@@ -145,6 +145,17 @@ export function deploySolutionFromTemplate(
             group.owner === templateDictionary.user.username
         );
 
+        // if we have tracking views and the user is not admin or the org doesn't support tracking an error is thrown
+        common.setLocationTrackingEnabled(
+          portalResponse,
+          userResponse,
+          templateDictionary
+        );
+        common.validateTrackingTemplates(
+          solutionTemplateData.templates,
+          templateDictionary
+        );
+
         // Create a folder to hold the deployed solution. We use the solution name, appending a sequential
         // suffix if the folder exists, e.g.,
         //  * Manage Right of Way Activities

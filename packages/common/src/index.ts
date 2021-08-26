@@ -41,5 +41,6 @@ export * from "./restHelpers";
 export * from "./restHelpersGet";
 export * from "./sharing";
 export * from "./templatization";
+export * from "./trackingHelpers";
 export * from "./velocityHelpers";
 export * from "./workforceHelpers";
