@@ -275,12 +275,7 @@ describe("HubPageProcessor: ", () => {
         }
       };
       const cb = () => true;
-      return HubPageProcessor.createItemFromTemplate(
-        tmpl,
-        td,
-        MOCK_USER_SESSION,
-        cb
-      )
+      HubPageProcessor.createItemFromTemplate(tmpl, td, MOCK_USER_SESSION, cb)
         .then(() => {
           done.fail();
         })
@@ -402,7 +397,7 @@ describe("HubPageProcessor: ", () => {
           id: "new-bc4"
         }
       };
-      return HubPageProcessor.postProcess(
+      HubPageProcessor.postProcess(
         "ef3",
         "Hub Page",
         [],

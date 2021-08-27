@@ -1843,7 +1843,7 @@ describe("Module `restHelpersGet`: common REST fetch functions shared across pac
         restHelpers,
         "searchGroupContents"
       ).and.resolveTo(searchGroupContentsResponse);
-      return restHelpersGet
+      restHelpersGet
         .getPortalDefaultBasemap(
           basemapGalleryGroupQuery,
           basemapTitle,
@@ -1875,7 +1875,7 @@ describe("Module `restHelpersGet`: common REST fetch functions shared across pac
       const searchGroupsSpy = spyOn(restHelpers, "searchGroups").and.resolveTo(
         searchGroupsResponse
       );
-      return restHelpersGet
+      restHelpersGet
         .getPortalDefaultBasemap(
           basemapGalleryGroupQuery,
           basemapTitle,
@@ -1905,7 +1905,7 @@ describe("Module `restHelpersGet`: common REST fetch functions shared across pac
         restHelpers,
         "searchGroupContents"
       ).and.resolveTo(searchGroupContentsResponse);
-      return restHelpersGet
+      restHelpersGet
         .getPortalDefaultBasemap(
           basemapGalleryGroupQuery,
           basemapTitle,

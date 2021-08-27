@@ -173,12 +173,7 @@ describe("Module `storymap`: ", () => {
         "createStoryMapModelFromTemplate"
       ).and.rejectWith("booom");
 
-      return StorymapProcessor.createItemFromTemplate(
-        tmpl,
-        td,
-        MOCK_USER_SESSION,
-        cb
-      )
+      StorymapProcessor.createItemFromTemplate(tmpl, td, MOCK_USER_SESSION, cb)
         .then(result => {
           done.fail();
         })

@@ -102,7 +102,7 @@ describe("postProcessHubSurvey", () => {
     ).and.returnValue(featureServiceTemplate);
     const moveItemSpy = spyOn(restPortal, "moveItem").and.resolveTo();
     const removeFolderSpy = spyOn(common, "removeFolder").and.resolveTo();
-    return postProcessHubSurvey(
+    postProcessHubSurvey(
       formId,
       "Form",
       itemInfos,

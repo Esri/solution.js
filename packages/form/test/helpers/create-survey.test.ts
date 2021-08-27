@@ -70,7 +70,7 @@ describe("createSurvey", () => {
       "encodeFormData"
     ).and.returnValue(encodedForm);
     fetchMock.post(createUrl, response);
-    return createSurvey(params)
+    createSurvey(params)
       .then(result => {
         expect(encodeFormDataSpy.calls.count()).toEqual(1);
         expect(encodeFormDataSpy.calls.first().args).toEqual([
@@ -116,7 +116,7 @@ describe("createSurvey", () => {
       "encodeFormData"
     ).and.returnValue(encodedForm);
     fetchMock.post(createUrl, response);
-    return createSurvey(params, "https://survey123qa.arcgis.com")
+    createSurvey(params, "https://survey123qa.arcgis.com")
       .then(result => {
         expect(encodeFormDataSpy.calls.count()).toEqual(1);
         expect(encodeFormDataSpy.calls.first().args).toEqual([
@@ -143,7 +143,7 @@ describe("createSurvey", () => {
     } as ISurvey123CreateError;
     const createUrl = "https://survey123.arcgis.com/api/survey/create";
     fetchMock.post(createUrl, response);
-    return createSurvey(params).then(
+    createSurvey(params).then(
       _ => {
         done.fail("should have rejected");
       },

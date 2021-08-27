@@ -24,8 +24,11 @@ import * as hubCommon from "@esri/hub-common";
 import * as postProcessSiteModule from "../src/helpers/_post-process-site";
 import * as replacerModule from "../src/helpers/replace-item-ids";
 import { fail } from "@esri/solution-common/src/generalHelpers";
+import * as fetchMock from "fetch-mock";
 
 describe("HubSiteProcessor: ", () => {
+  afterEach(fetchMock.restore);
+
   describe("convertItemToTemplate: ", () => {
     it("exists", () => {
       expect(HubSiteProcessor.convertItemToTemplate).toBeDefined(
@@ -46,9 +49,19 @@ describe("HubSiteProcessor: ", () => {
         data: {},
         properties: {}
       } as hubCommon.IModelTemplate;
-      const getModelSpy = spyOn(sitesPackage, "getSiteById").and.resolveTo(
-        model
-      );
+      fetchMock
+        .get(
+          "https://www.arcgis.com/sharing/rest/content/items/ef4?f=json",
+          Promise.resolve({
+            properties: {
+              schemaVersion: hubCommon.SITE_SCHEMA_VERSION
+            }
+          })
+        )
+        .get(
+          "https://www.arcgis.com/sharing/rest/content/items/ef4/data?f=json",
+          Promise.resolve({})
+        );
       const hubRoSpy = spyOn(common, "createHubRequestOptions").and.resolveTo(
         {} as hubCommon.IHubRequestOptions
       );
@@ -77,7 +90,6 @@ describe("HubSiteProcessor: ", () => {
         );
         expect(convertSpy.calls.count()).toBe(1, "should convert model");
         expect(hubRoSpy.calls.count()).toBe(1, "should create requestOptions");
-        expect(getModelSpy.calls.count()).toBe(1, "should get the page model");
         expect(replaceSpy.calls.count()).toBe(1, "should replace ids");
       });
     });
@@ -94,9 +106,19 @@ describe("HubSiteProcessor: ", () => {
         type: "Hub Site Application",
         data: {}
       } as hubCommon.IModelTemplate;
-      const getModelSpy = spyOn(sitesPackage, "getSiteById").and.resolveTo(
-        model
-      );
+      fetchMock
+        .get(
+          "https://www.arcgis.com/sharing/rest/content/items/ef4?f=json",
+          Promise.resolve({
+            properties: {
+              schemaVersion: hubCommon.SITE_SCHEMA_VERSION
+            }
+          })
+        )
+        .get(
+          "https://www.arcgis.com/sharing/rest/content/items/ef4/data?f=json",
+          Promise.resolve({})
+        );
       const hubRoSpy = spyOn(common, "createHubRequestOptions").and.resolveTo(
         {} as hubCommon.IHubRequestOptions
       );
@@ -125,7 +147,6 @@ describe("HubSiteProcessor: ", () => {
         );
         expect(convertSpy.calls.count()).toBe(1, "should convert model");
         expect(hubRoSpy.calls.count()).toBe(1, "should create requestOptions");
-        expect(getModelSpy.calls.count()).toBe(1, "should get the page model");
         expect(replaceSpy.calls.count()).toBe(1, "should replace ids");
       });
     });
@@ -242,7 +263,7 @@ describe("HubSiteProcessor: ", () => {
         }
       };
       const cb = () => true;
-      return HubSiteProcessor.createItemFromTemplate(
+      HubSiteProcessor.createItemFromTemplate(
         tmplThmb,
         td,
         MOCK_USER_SESSION,
@@ -384,12 +405,7 @@ describe("HubSiteProcessor: ", () => {
         }
       };
       const cb = () => true;
-      return HubSiteProcessor.createItemFromTemplate(
-        tmpl,
-        td,
-        MOCK_USER_SESSION,
-        cb
-      )
+      HubSiteProcessor.createItemFromTemplate(tmpl, td, MOCK_USER_SESSION, cb)
         .then(() => {
           done.fail();
         })
@@ -494,10 +510,19 @@ describe("HubSiteProcessor: ", () => {
       const hubRoSpy = spyOn(common, "createHubRequestOptions").and.resolveTo(
         {} as hubCommon.IHubRequestOptions
       );
-      const getSiteByIdSpy = spyOn(sitesPackage, "getSiteById").and.resolveTo({
-        item: {},
-        data: {}
-      } as hubCommon.IModel);
+      fetchMock
+        .get(
+          "https://www.arcgis.com/sharing/rest/content/items/bc3?f=json",
+          Promise.resolve({
+            properties: {
+              schemaVersion: hubCommon.SITE_SCHEMA_VERSION
+            }
+          })
+        )
+        .get(
+          "https://www.arcgis.com/sharing/rest/content/items/bc3/data?f=json",
+          Promise.resolve({})
+        );
       const postProcessSpy = spyOn(
         postProcessSiteModule,
         "_postProcessSite"
@@ -532,7 +557,6 @@ describe("HubSiteProcessor: ", () => {
         MOCK_USER_SESSION
       ).then(result => {
         expect(result).toBe(true, "should return true");
-        expect(getSiteByIdSpy.calls.count()).toBe(1, "should call getSiteById");
         expect(postProcessSpy.calls.count()).toBe(
           1,
           "should call _postProcessSite"

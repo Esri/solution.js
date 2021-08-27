@@ -61,7 +61,7 @@ describe("createHubRequestOptions", () => {
       username: MOCK_USER_SESSION.username
     });
 
-    return createHubRequestOptions(MOCK_USER_SESSION).then(ro => {
+    createHubRequestOptions(MOCK_USER_SESSION).then(ro => {
       expect(ro.hubApiUrl).toBe(
         "https://hub.arcgis.com",
         "should map up hub url"
@@ -84,7 +84,7 @@ describe("createHubRequestOptions", () => {
       username: MOCK_USER_SESSION.username
     });
 
-    return createHubRequestOptions(MOCK_USER_SESSION).then(ro => {
+    createHubRequestOptions(MOCK_USER_SESSION).then(ro => {
       expect(ro.hubApiUrl).not.toBeDefined(
         "should not return hubApiUrl for portal"
       );
