@@ -60,17 +60,16 @@ export function validateTrackingTemplates(
   templates: IItemTemplate[],
   templateDictionary: any
 ): void {
-  const trackingEnabled: boolean = templateDictionary.locationTrackingEnabled;
-  if (!trackingEnabled) {
-    if (
-      templates.some(template => {
-        const typeKeywords: string[] =
-          getProp(template, "item.typeKeywords") || [];
-        return typeKeywords.indexOf("Location Tracking View") > -1;
-      })
-    ) {
-      console.error("Location tracking not enabled or user is not admin.");
-      throw new Error("Location tracking not enabled or user is not admin.");
-    }
+  /* istanbul ignore else */
+  if (
+    !templateDictionary.locationTrackingEnabled &&
+    templates.some(template => {
+      const typeKeywords: string[] =
+        getProp(template, "item.typeKeywords") || [];
+      return typeKeywords.indexOf("Location Tracking View") > -1;
+    })
+  ) {
+    console.error("Location tracking not enabled or user is not admin.");
+    throw new Error("Location tracking not enabled or user is not admin.");
   }
 }

@@ -626,7 +626,8 @@ describe("Module `deployer`", () => {
         },
         params: {
           testProperty: "ABC"
-        }
+        },
+        locationTrackingEnabled: false
       };
       expectedTemplate[groupId] = {
         itemId: newGroupId
