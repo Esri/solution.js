@@ -144,17 +144,6 @@ describe("Module `trackingHelpers`: common functions", () => {
       ).toThrow(
         new Error("Location tracking not enabled or user is not admin.")
       );
-
-      // const s = Sinon.spy();
-
-      // const errorSpy = spyOn(console, "error");
-      //   //try {
-      //     validateTrackingTemplates(templates, templateDictionary);
-      //   //} catch (e) {
-      //     console.log(errorSpy.calls)
-      //     expect(errorSpy.calls.count()).toEqual(1);
-      //   //}
-      //   expect(s).toThrowError();
     });
   });
 });
