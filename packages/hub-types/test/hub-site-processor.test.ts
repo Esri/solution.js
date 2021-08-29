@@ -53,9 +53,9 @@ describe("HubSiteProcessor: ", () => {
         .get(
           "https://www.arcgis.com/sharing/rest/content/items/ef4?f=json",
           Promise.resolve({
-            properties: {
-              schemaVersion: hubCommon.SITE_SCHEMA_VERSION
-            }
+          properties: {
+            schemaVersion: hubCommon.SITE_SCHEMA_VERSION
+          }
           })
         )
         .get(
@@ -110,9 +110,9 @@ describe("HubSiteProcessor: ", () => {
         .get(
           "https://www.arcgis.com/sharing/rest/content/items/ef4?f=json",
           Promise.resolve({
-            properties: {
-              schemaVersion: hubCommon.SITE_SCHEMA_VERSION
-            }
+          properties: {
+            schemaVersion: hubCommon.SITE_SCHEMA_VERSION
+          }
           })
         )
         .get(
@@ -263,7 +263,7 @@ describe("HubSiteProcessor: ", () => {
         }
       };
       const cb = () => true;
-      HubSiteProcessor.createItemFromTemplate(
+      return HubSiteProcessor.createItemFromTemplate(
         tmplThmb,
         td,
         MOCK_USER_SESSION,
@@ -514,9 +514,9 @@ describe("HubSiteProcessor: ", () => {
         .get(
           "https://www.arcgis.com/sharing/rest/content/items/bc3?f=json",
           Promise.resolve({
-            properties: {
-              schemaVersion: hubCommon.SITE_SCHEMA_VERSION
-            }
+          properties: {
+            schemaVersion: hubCommon.SITE_SCHEMA_VERSION
+          }
           })
         )
         .get(
