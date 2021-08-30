@@ -3220,7 +3220,7 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
       const actual = getExistingLayersAndTables(url, ids, MOCK_USER_SESSION);
 
       actual.then(results => {
-        expect(results).length === 2;
+        expect(results.length === 2);
         done();
       });
     });
@@ -3239,7 +3239,7 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
       const actual = getExistingLayersAndTables(url, ids, MOCK_USER_SESSION);
 
       actual.then(results => {
-        expect(results).length === 2;
+        expect(results.length === 2);
         expect(results).toEqual([layer0Result, layer1Error]);
         done();
       });

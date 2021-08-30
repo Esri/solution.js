@@ -135,7 +135,7 @@ describe("createItemFromHubTemplate", () => {
     const getItemBaseSpy = spyOn(common, "getItemBase").and.resolveTo(
       getItemBaseResult
     );
-    return createItemFromHubTemplate(
+    createItemFromHubTemplate(
       template,
       templateDictionary,
       MOCK_USER_SESSION,
@@ -219,7 +219,7 @@ describe("createItemFromHubTemplate", () => {
       getItemBaseResult
     );
     templateDictionary.survey123Url = "https://survey123qa.arcgis.com";
-    return createItemFromHubTemplate(
+    createItemFromHubTemplate(
       template,
       templateDictionary,
       MOCK_USER_SESSION,
@@ -289,7 +289,7 @@ describe("createItemFromHubTemplate", () => {
     spyOn(restPortal, "moveItem").and.resolveTo();
     spyOn(common, "removeFolder").and.resolveTo();
     const itemProgressCallbackSpy = jasmine.createSpy();
-    return createItemFromHubTemplate(
+    createItemFromHubTemplate(
       template,
       templateDictionary,
       MOCK_USER_SESSION,

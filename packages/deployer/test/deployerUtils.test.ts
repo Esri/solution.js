@@ -117,7 +117,7 @@ describe("Module: `_deployerUtils`", () => {
           });
         }
       );
-      return getSolutionTemplateItem("bc3", MOCK_USER_SESSION)
+      getSolutionTemplateItem("bc3", MOCK_USER_SESSION)
         .then(result => {
           expect(result.item.id).toBe("bc3");
           expect(result.data.templates).toBeDefined();
@@ -134,7 +134,7 @@ describe("Module: `_deployerUtils`", () => {
         });
     });
     it("resolves with a model if passed on", done => {
-      return getSolutionTemplateItem(
+      getSolutionTemplateItem(
         { item: { id: "bc3" }, data: {} },
         MOCK_USER_SESSION
       )
@@ -147,7 +147,7 @@ describe("Module: `_deployerUtils`", () => {
         });
     });
     it("rejects if object is not modelish", done => {
-      return getSolutionTemplateItem(
+      getSolutionTemplateItem(
         { item: { id: "bc3" }, foo: "bar" },
         MOCK_USER_SESSION
       )

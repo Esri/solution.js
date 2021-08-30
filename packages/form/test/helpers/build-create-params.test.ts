@@ -139,7 +139,7 @@ describe("buildCreateParams", () => {
       common,
       "getPortalDefaultBasemap"
     ).and.resolveTo(defaultBasemap);
-    return buildCreateParams(template, templateDictionary, MOCK_USER_SESSION)
+    buildCreateParams(template, templateDictionary, MOCK_USER_SESSION)
       .then(results => {
         const expectedUnencodedForm = common.cloneObject(unencodedForm);
         expectedUnencodedForm.questions[0].maps[0].itemId = defaultBasemap.id;
@@ -194,7 +194,7 @@ describe("buildCreateParams", () => {
       common,
       "getPortalDefaultBasemap"
     ).and.resolveTo(defaultBasemap);
-    return buildCreateParams(template, templateDictionary, MOCK_USER_SESSION)
+    buildCreateParams(template, templateDictionary, MOCK_USER_SESSION)
       .then(results => {
         const expectedUnencodedForm = common.cloneObject(unencodedForm);
         delete expectedUnencodedForm.questions;
@@ -249,7 +249,7 @@ describe("buildCreateParams", () => {
       common,
       "getPortalDefaultBasemap"
     ).and.resolveTo(defaultBasemap);
-    return buildCreateParams(template, templateDictionary, MOCK_USER_SESSION)
+    buildCreateParams(template, templateDictionary, MOCK_USER_SESSION)
       .then(results => {
         const expectedUnencodedForm = common.cloneObject(unencodedForm);
         delete expectedUnencodedForm.questions[0].maps;

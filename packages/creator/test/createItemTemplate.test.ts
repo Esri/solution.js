@@ -101,7 +101,7 @@ describe("Module `createItemTemplate`", () => {
       });
 
       // eslint-disable-next-line @typescript-eslint/no-floating-promises
-      return createItemTemplate
+      createItemTemplate
         .createItemTemplate(
           solutionItemId,
           itemId,
@@ -160,7 +160,7 @@ describe("Module `createItemTemplate`", () => {
         relatedItems: []
       });
 
-      return createItemTemplate
+      createItemTemplate
         .createItemTemplate(
           solutionItemId,
           itemId,

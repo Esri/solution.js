@@ -47,7 +47,7 @@ describe("Schema Migrator", () => {
   const MOCK_USER_SESSION = utils.createRuntimeMockUserSession();
   it("returns model if current schema", done => {
     const m = cloneObject(defaultModel);
-    return migrateSchema(m)
+    migrateSchema(m)
       .then(chk => {
         expect(chk).toBe(m, "should return the exact same object");
         done();
@@ -58,7 +58,7 @@ describe("Schema Migrator", () => {
     const m = cloneObject(defaultModel);
     // kill the item properties
     delete m.item.properties;
-    return migrateSchema(m)
+    migrateSchema(m)
       .then(chk => {
         expect(chk).not.toBe(m, "should return the exact same object");
         expect(chk.item.properties.schemaVersion).toBe(
@@ -120,7 +120,7 @@ describe("Schema Migrator", () => {
     ).and.callFake(model => {
       return cloneObject(model);
     });
-    return migrateSchema(m)
+    migrateSchema(m)
       .then(chk => {
         expect(as.calls.count()).toBe(1, "should apply schema");
         expect(sp20.calls.count()).toBe(1, "should apply 2.0");
@@ -181,7 +181,7 @@ describe("Schema Migrator", () => {
     // this test will go away once we have a 3.0 -> 3.1 migration but it covers an `else` case
     const m = cloneObject(defaultModel);
     m.item.properties.schemaVersion = 3.1;
-    return migrateSchema(m)
+    migrateSchema(m)
       .then(chk => {
         expect(chk).toBe(m, "should return the exact same object");
         expect(chk.item.properties.schemaVersion).toBe(
