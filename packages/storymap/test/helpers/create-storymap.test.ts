@@ -66,7 +66,7 @@ describe("createStoryMap ::", () => {
       itemId: "bc3"
     });
 
-    return createStoryMap(model, "fakefolderid", {}, MOCK_USER_SESSION).then(
+    createStoryMap(model, "fakefolderid", {}, MOCK_USER_SESSION).then(
       result => {
         expect(createItemSpy.calls.count()).toBe(1, "should create the item");
 
@@ -139,7 +139,7 @@ describe("createStoryMap ::", () => {
       itemId: "bc3"
     });
 
-    return createStoryMap(model, "fakefolderid", {}, MOCK_USER_SESSION).then(
+    createStoryMap(model, "fakefolderid", {}, MOCK_USER_SESSION).then(
       result => {
         expect(createItemSpy.calls.count()).toBe(1, "should create the item");
         expect(

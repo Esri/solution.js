@@ -75,7 +75,7 @@ describe("getBlob", () => {
     );
   });
   it("handles undefined url", done => {
-    return getBlob(undefined, MOCK_USER_SESSION).then(
+    getBlob(undefined, MOCK_USER_SESSION).then(
       () => done.fail(),
       () => done()
     );

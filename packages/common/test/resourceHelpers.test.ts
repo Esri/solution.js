@@ -294,7 +294,7 @@ describe("Module `resourceHelpers`: common functions involving the management of
         resourceHelpers,
         "copyFilesFromStorageItem"
       ).and.resolveTo(true);
-      return resourceHelpers
+      resourceHelpers
         .copyFilesFromStorageItem(
           storageAuthentication,
           filePaths,

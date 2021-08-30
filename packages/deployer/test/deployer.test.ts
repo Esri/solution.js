@@ -60,7 +60,7 @@ describe("Module `deployer`", () => {
   });
   describe("deploy solution orchestration", () => {
     it("should reject if no maybeModel passed", done => {
-      return deployer
+      deployer
         .deploySolution(null, MOCK_USER_SESSION)
         .then(_ => {
           fail("deploySolution should reject if passed null");
@@ -106,7 +106,7 @@ describe("Module `deployer`", () => {
       it("ensure main fns are called using stubs", done => {
         // this test assumes all is good and simply checks that
         // the expected delegation occurs
-        return deployer
+        deployer
           .deploySolution(itemInfo.item.id, MOCK_USER_SESSION)
           .then(() => {
             expect(solTmplStub.calledOnce).toBe(
@@ -129,7 +129,7 @@ describe("Module `deployer`", () => {
           });
       });
       it("should default to using supplied authentication for solution source", done => {
-        return deployer
+        deployer
           .deploySolution(itemInfo.item.id, MOCK_USER_SESSION)
           .then(() => {
             expect(solTmplStub.args[0][1]).toBe(
@@ -149,7 +149,7 @@ describe("Module `deployer`", () => {
             "https://myotherorg.maps.arcgis.com"
           )
         };
-        return deployer
+        deployer
           .deploySolution(itemInfo.item.id, MOCK_USER_SESSION, opts)
           .then(() => {
             expect(solTmplStub.args[0][1]).toBe(
@@ -175,7 +175,7 @@ describe("Module `deployer`", () => {
 
         // create stub...
         const pgStub = sinon.stub(opts, "progressCallback");
-        return deployer
+        deployer
           .deploySolution(itemInfo.item.id, MOCK_USER_SESSION, opts)
           .then(() => {
             expect(solTmplStub.calledOnce).toBe(
@@ -205,7 +205,7 @@ describe("Module `deployer`", () => {
   });
   describe("deploySolution", () => {
     it("reports an error if the solution id is not supplied", done => {
-      return deployer
+      deployer
         .deploySolution(null, MOCK_USER_SESSION)
         .then(() => done.fail())
         .catch(err => {
