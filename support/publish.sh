@@ -62,6 +62,8 @@ mkdir $TEMP_FOLDER/simple-types
 cp -r packages/simple-types/dist/umd/* $TEMP_FOLDER/simple-types/
 mkdir $TEMP_FOLDER/storymap
 cp -r packages/storymap/dist/umd/* $TEMP_FOLDER/storymap/
+mkdir $TEMP_FOLDER/velocity
+cp -r packages/velocity/dist/umd/* $TEMP_FOLDER/velocity/
 mkdir $TEMP_FOLDER/viewer
 cp -r packages/viewer/dist/umd/* $TEMP_FOLDER/viewer/
 mkdir $TEMP_FOLDER/web-experience
