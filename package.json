@@ -58,7 +58,7 @@
     "karma-spec-reporter": "0.0.32",
     "karma-typescript": "^5.0.3",
     "karma-typescript-es6-transform": "^5.2.0",
-    "lerna": "^3.22.1",
+    "lerna": "^4.0.0",
     "lint-staged": "^4.3.0",
     "marked": "^0.7.0",
     "minimatch": "^3.0.4",
