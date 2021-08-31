@@ -91,7 +91,7 @@ export function get500Failure(): any {
   };
 }
 
-export function getAGOLItem(type?: string, url = ""): any {
+export function getAGOLItem(type?: string, url = "", itemId?: string): any {
   let item: any = get400FailureResponse();
 
   // Supported item types
@@ -188,6 +188,10 @@ export function getAGOLItem(type?: string, url = ""): any {
 
     case "QuickCapture Project":
       item = getAGOLItemFundamentals(type);
+      break;
+
+    case "Real Time Analytic":
+      item = getAGOLItemFundamentals(type, "", itemId);
       break;
 
     case "Solution":
@@ -411,12 +415,79 @@ export function getNoNameAGOLFeatureServiceItem(): any {
   return item;
 }
 
-export function getAGOLItemData(type?: string): any {
+export function getAGOLItemData(type?: string, itemId?: string): any {
   let data: any = get500Failure();
 
   // Supported item types
   switch (type) {
     case "ArcGIS Pro Add In":
+      break;
+
+    case "Big Data Analytic":
+      data = {
+        id: itemId,
+        label: "Test Analytic",
+        description: "",
+        sources: [
+          {
+            id: "7afde56d-646e-75cc-a53e-4613cc34d359",
+            name: "feature-layer",
+            label: "Snow Routes",
+            schemaTransformation: {},
+            properties: {
+              ui: {
+                top: 10,
+                left: 10,
+                width: 240,
+                height: 70
+              },
+              "feature-layer.portalItemId": "ad6893904c4d4191b5c2312e60e8def7",
+              "feature-layer.outSR": "4326"
+            }
+          },
+          {
+            id: "9b2a43f6-f207-0e8c-812d-f63ec6a95227",
+            name: "feature-layer",
+            label: "WWO1_Simulation_Combined_Fleet_with_Service_Status",
+            schemaTransformation: {},
+            properties: {
+              ui: {
+                top: 140,
+                left: 10,
+                width: 240,
+                height: 70
+              },
+              "feature-layer.portalItemId": "a8d8e6ee3e7d4c889d3e95ad6a99198c",
+              "feature-layer.timestampField": "datetimeprocessed",
+              "feature-layer.outSR": "4326"
+            }
+          }
+        ],
+        tools: [],
+        outputs: [
+          {
+            id: "dd99fcbc-e8fc-f85a-e567-881a2db9afb4",
+            name: "feat-lyr-new",
+            label: "SnowRoutesLastServicedFox",
+            properties: {
+              "feat-lyr-new.replaceFeatures": false,
+              "feat-lyr-new.aggregationStyles": [],
+              "feat-lyr-new.editorTrackingEnabled": false,
+              "feat-lyr-new.updateExistingFeatures": true,
+              "feat-lyr-new.name": "SnowRoutesLastServicedFox"
+            }
+          }
+        ],
+        pipeline: [],
+        recurrence: {
+          expression: "0/3 * * * *",
+          timeZone: "America/New_York"
+        },
+        properties: {
+          mode: "model"
+        },
+        status: {}
+      };
       break;
 
     case "Code Attachment":
@@ -704,6 +775,57 @@ export function getAGOLItemData(type?: string): any {
           }
         }
       ];
+      break;
+
+    case "Real Time Analytic":
+      data = {
+        id: itemId,
+        label: type,
+        description: "",
+        sources: [
+          {
+            id: "40d18a22-9927-97d1-e573-44f197bddfe7",
+            name: "feature-layer",
+            label: "Active_Snowplow_Driver",
+            schemaTransformation: {},
+            properties: {
+              "feature-layer.portalItemId": itemId,
+              "feature-layer.outSR": "4326"
+            }
+          }
+        ],
+        feeds: [
+          {
+            id: "bbb9398bcf8c4dc5a50cceaa59baf513",
+            label: "WWO Simulation Provider AVL Feed",
+            name: "simulator",
+            properties: {}
+          },
+          {
+            id: "ccc6347e0c4f4dc8909da399418cafbe",
+            label: "WWO Simulation ArcGIS Tracking Feed",
+            name: "simulator",
+            properties: {}
+          }
+        ],
+        outputs: [
+          {
+            id: "01aacfd0-754d-3ac0-bb8d-aa3814b32fbf",
+            name: "feat-lyr-new",
+            label: "Custom Velocity Update",
+            properties: {
+              "feat-lyr-new.editorTrackingEnabled": false,
+              "feat-lyr-new.updateExistingFeatures": true,
+              "feat-lyr-new.name": "Custom Velocity Update",
+              "feat-lyr-new.useSpatiotemporal": true,
+              "feat-lyr-new.portal.featureServicePortalItemID":
+                "e620910ed73b4780b5407112d8f1ce30",
+              "feat-lyr-new.portal.mapServicePortalItemID":
+                "d17c3732ceb04e62917d9444863a6c28"
+            }
+          }
+        ]
+      };
       break;
 
     case "Solution":
@@ -1467,10 +1589,10 @@ export function createAGOLRelationship(
   return relationship;
 }
 
-function getAGOLItemFundamentals(type: string, url = ""): any {
+function getAGOLItemFundamentals(type: string, url = "", itemId?: string): any {
   const typePrefix = getItemTypeAbbrev.getItemTypeAbbrev(type);
   return {
-    id: typePrefix + "1234567890",
+    id: itemId ? itemId : typePrefix + "1234567890",
     item: typePrefix + "1234567890",
     owner: "LocalGovTryItLive",
     ownerFolder: null,
@@ -1513,5 +1635,65 @@ function getAGOLItemFundamentals(type: string, url = ""): any {
     numViews: 690,
     scoreCompleteness: 78,
     groupDesignations: null
+  };
+}
+
+export function getAGOLSubscriptionInfo(hasVelocity: boolean): any {
+  return {
+    id: "9999999999",
+    type: "In House",
+    state: "active",
+    expDate: 1632812399000,
+    userLicenseTypes: {
+      advancedUT: 50,
+      creatorUT: 50,
+      insightsAnalystUT: 50,
+      storytellerUT: 50,
+      viewerUT: 0
+    },
+    maxUsersPerLevel: {
+      "1": 0,
+      "2": 200
+    },
+    maxUsers: 200,
+    availableCredits: 21190.238,
+    collaborationSettings: {
+      level: "4",
+      maxItemSizeInMB: 1024,
+      maxReplicationPackageSizeInMB: 5120
+    },
+    hubSettings: {
+      enabled: true
+    },
+    companionOrganizations: [
+      {
+        organizationUrl: "localdeploy-hub.fake.maps.arcgis.com",
+        orgId: "XXXXJwe2TfrjNh3o",
+        orgName: "ArcGIS for Local Government Fake",
+        type: "Community",
+        canSignInArcGIS: true,
+        canSignInIDP: true,
+        canSignInSocial: true,
+        canSignInOIDC: true
+      }
+    ],
+    orgCapabilities: hasVelocity
+      ? [
+          {
+            id: "velocity",
+            test: false,
+            level: "Advanced",
+            region: "US",
+            status: "active",
+            endDate: 1632700800000,
+            itemUnits: 0,
+            computeUnits: 0,
+            velocityUrl:
+              "https://us-iot.arcgis.com/usadvanced00/faKetfmrv9d1divn",
+            storageUnits: 0
+          }
+        ]
+      : [],
+    storageRegion: "us1"
   };
 }

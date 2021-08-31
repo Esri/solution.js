@@ -69,7 +69,7 @@ describe("addContentToSolution", () => {
       }
     );
 
-    return addContentToSolution(
+    addContentToSolution(
       solutionId,
       options,
       MOCK_USER_SESSION,

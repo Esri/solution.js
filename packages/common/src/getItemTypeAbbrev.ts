@@ -30,10 +30,10 @@ export function getItemTypeAbbrev(type: string): string {
 
       ////////////////////////////////////////////////////////
       // Layer types
-      "Big Data Analytic": "xxx",
+      "Big Data Analytic": "bda",
       "Feature Collection": "col",
       "Feature Service": "svc",
-      Feed: "xxx",
+      Feed: "fee",
       "Geocoding Service": "xxx",
       "Geodata Service": "xxx",
       "Geometry Service": "xxx",
@@ -43,7 +43,7 @@ export function getItemTypeAbbrev(type: string): string {
       KML: "xxx",
       "Map Service": "xxx",
       "Network Analysis Service": "xxx",
-      "Real Time Analytic": "xxx",
+      "Real Time Analytic": "rta",
       "Relational Database Connection": "xxx",
       "Scene Service": "xxx",
       "Stream Service": "xxx",
@@ -58,7 +58,7 @@ export function getItemTypeAbbrev(type: string): string {
       // Map types
       "3D Web Scene": "xxx",
       "Web Map": "map",
-      "Web Scene": "xxx",
+      "Web Scene": "sc2",
 
       ////////////////////////////////////////////////////////
       // App types

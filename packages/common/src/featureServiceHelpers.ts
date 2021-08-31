@@ -146,6 +146,20 @@ export function templatize(
   // this default extent will be used in cases where it does not make sense to apply the orgs
   // extent to a service with a local spatial reference
   itemTemplate.properties.defaultExtent = initialExtent || fullExtent;
+
+  // in some cases a service does not have a spatial reference defined
+  // added for issue #699
+  if (
+    !getProp(itemTemplate, "properties.service.spatialReference") &&
+    getProp(itemTemplate, "properties.defaultExtent.spatialReference")
+  ) {
+    setCreateProp(
+      itemTemplate,
+      "properties.service.spatialReference",
+      itemTemplate.properties.defaultExtent.spatialReference
+    );
+  }
+
   // if any layer hasZ enabled then we need to set
   // enableZDefaults and zDefault to deploy to enterprise
   let hasZ: boolean = false;
@@ -339,6 +353,7 @@ export function updateTemplate(
       name: createResponse.name
     }
   );
+
   // Update the item template now that the new service has been created
   itemTemplate.itemId = createResponse.serviceItemId;
   return replaceInTemplate(itemTemplate, templateDictionary);
@@ -386,16 +401,25 @@ export function _updateTypeKeywords(
 export function getLayerSettings(
   layerInfos: any,
   url: string,
-  itemId: string
+  itemId: string,
+  enterpriseIDMapping?: any
 ): any {
   const settings: any = {};
   const ids = Object.keys(layerInfos);
   ids.forEach((id: any) => {
-    settings["layer" + id] = {
+    const _layerId = getProp(layerInfos[id], "item.id");
+    const isNum: boolean = parseInt(_layerId, 10) > -1;
+    const layerId: number =
+      isNum && enterpriseIDMapping
+        ? enterpriseIDMapping[_layerId]
+        : isNum
+        ? _layerId
+        : id;
+    settings[`layer${isNum ? _layerId : id}`] = {
       fields: _getNameMapping(layerInfos, id),
-      url: checkUrlPathTermination(url) + id,
-      layerId: id,
-      itemId: itemId
+      url: checkUrlPathTermination(url) + layerId,
+      layerId,
+      itemId
     };
     deleteProp(layerInfos[id], "newFields");
     deleteProp(layerInfos[id], "sourceFields");
@@ -1976,16 +2000,19 @@ export function _validateEditFieldsInfo(
     const editFieldsInfoKeys: string[] = Object.keys(editFieldsInfo);
     editFieldsInfoKeys.forEach(k => {
       const editFieldName: string = editFieldsInfo[k];
-      fieldNames.some(name => {
-        if (name === editFieldName) {
-          return true;
-        } else if (name === editFieldName.toLowerCase()) {
-          editFieldsInfo[k] = name;
-          return true;
-        } else {
-          return false;
-        }
-      });
+      /* istanbul ignore else */
+      if (editFieldName) {
+        fieldNames.some(name => {
+          if (name === editFieldName) {
+            return true;
+          } else if (name === editFieldName.toLowerCase()) {
+            editFieldsInfo[k] = name;
+            return true;
+          } else {
+            return false;
+          }
+        });
+      }
     });
   }
 }

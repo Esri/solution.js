@@ -146,7 +146,7 @@ describe("Module `web-experience`: ", () => {
       spyOn(createExperienceModule, "createWebExperience").and.rejectWith(
         "booom"
       );
-      return WebExperienceProcessor.createItemFromTemplate(
+      WebExperienceProcessor.createItemFromTemplate(
         tmpl,
         td,
         MOCK_USER_SESSION,

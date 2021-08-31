@@ -320,7 +320,7 @@ describe("getItemResourcesPaths :: ", () => {
           utils.getSuccessResponse()
         );
 
-      return getItemResourcesPaths(
+      getItemResourcesPaths(
         itemTemplate,
         solutionItemId,
         MOCK_USER_SESSION
@@ -432,7 +432,7 @@ describe("getItemResourcesPaths :: ", () => {
         relatedItems: []
       });
 
-      return getItemResourcesPaths(
+      getItemResourcesPaths(
         itemTemplate,
         solutionItemId,
         MOCK_USER_SESSION
@@ -529,7 +529,7 @@ describe("getItemResourcesPaths :: ", () => {
         relatedItems: []
       });
 
-      return getItemResourcesPaths(
+      getItemResourcesPaths(
         itemTemplate,
         solutionItemId,
         MOCK_USER_SESSION
@@ -606,7 +606,7 @@ describe("getItemResourcesPaths :: ", () => {
           utils.getSuccessResponse()
         );
 
-      return getItemResourcesPaths(
+      getItemResourcesPaths(
         itemTemplate,
         solutionItemId,
         MOCK_USER_SESSION,
@@ -719,7 +719,7 @@ describe("getItemResourcesPaths :: ", () => {
         relatedItems: []
       });
 
-      return getItemResourcesPaths(
+      getItemResourcesPaths(
         itemTemplate,
         solutionItemId,
         MOCK_USER_SESSION,
@@ -817,7 +817,7 @@ describe("getItemResourcesPaths :: ", () => {
         relatedItems: []
       });
 
-      return getItemResourcesPaths(
+      getItemResourcesPaths(
         itemTemplate,
         solutionItemId,
         MOCK_USER_SESSION,

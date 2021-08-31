@@ -123,7 +123,8 @@ describe("simpleTypeConvertItemToTemplate", () => {
         .convertItemToTemplate(
           solutionItemId,
           itemTemplate.item,
-          MOCK_USER_SESSION
+          MOCK_USER_SESSION,
+          {}
         )
         .then(newItemTemplate => {
           delete newItemTemplate.key; // key is randomly generated, and so is not testable
@@ -276,7 +277,8 @@ describe("simpleTypeConvertItemToTemplate", () => {
         .convertItemToTemplate(
           solutionItemId,
           itemTemplate.item,
-          MOCK_USER_SESSION
+          MOCK_USER_SESSION,
+          {}
         )
         .then(verifyFormTemplate(done), done.fail);
     });
@@ -288,7 +290,8 @@ describe("simpleTypeConvertItemToTemplate", () => {
         .convertItemToTemplate(
           solutionItemId,
           itemTemplate.item,
-          MOCK_USER_SESSION
+          MOCK_USER_SESSION,
+          {}
         )
         .then(verifyFormTemplate(done), done.fail);
     });
@@ -332,7 +335,7 @@ describe("simpleTypeConvertItemToTemplate", () => {
       );
 
       simpleTypes
-        .convertItemToTemplate(solutionItemId, item, MOCK_USER_SESSION)
+        .convertItemToTemplate(solutionItemId, item, MOCK_USER_SESSION, {})
         .then(newItemTemplate => {
           expect(newItemTemplate.data).toEqual(
             templates.getItemTemplateData("Notebook")
@@ -364,7 +367,7 @@ describe("simpleTypeConvertItemToTemplate", () => {
       });
 
       simpleTypes
-        .convertItemToTemplate(solutionItemId, item, MOCK_USER_SESSION)
+        .convertItemToTemplate(solutionItemId, item, MOCK_USER_SESSION, {})
         .then(newItemTemplate => {
           const expectedTemplate = templates.getItemTemplate(
             "Oriented Imagery Catalog",
@@ -483,7 +486,7 @@ describe("simpleTypeConvertItemToTemplate", () => {
       };
 
       simpleTypes
-        .convertItemToTemplate(solutionItemId, itemInfo, MOCK_USER_SESSION)
+        .convertItemToTemplate(solutionItemId, itemInfo, MOCK_USER_SESSION, {})
         .then(actual => {
           actual.key = expected.key;
           expect(actual).toEqual(expected);
@@ -597,7 +600,8 @@ describe("simpleTypeConvertItemToTemplate", () => {
         .convertItemToTemplate(
           solutionItemId,
           itemTemplate.item,
-          MOCK_USER_SESSION
+          MOCK_USER_SESSION,
+          {}
         )
         .then(
           actual => {
@@ -651,7 +655,8 @@ describe("simpleTypeConvertItemToTemplate", () => {
         .convertItemToTemplate(
           solutionItemId,
           itemTemplate.item,
-          MOCK_USER_SESSION
+          MOCK_USER_SESSION,
+          {}
         )
         .then(() => done());
     });
@@ -732,7 +737,8 @@ describe("simpleTypeConvertItemToTemplate", () => {
         .convertItemToTemplate(
           solutionItemId,
           itemTemplate.item,
-          MOCK_USER_SESSION
+          MOCK_USER_SESSION,
+          {}
         )
         .then(
           () => done.fail(),
@@ -825,7 +831,8 @@ describe("simpleTypeConvertItemToTemplate", () => {
         .convertItemToTemplate(
           solutionItemId,
           itemTemplate.item,
-          MOCK_USER_SESSION
+          MOCK_USER_SESSION,
+          {}
         )
         .then(newItemTemplate => {
           delete newItemTemplate.key; // key is randomly generated, and so is not testable
@@ -920,7 +927,7 @@ describe("simpleTypeConvertItemToTemplate", () => {
       );
 
       simpleTypes
-        .convertItemToTemplate(solutionItemId, item, MOCK_USER_SESSION)
+        .convertItemToTemplate(solutionItemId, item, MOCK_USER_SESSION, {})
         .then(newItemTemplate => {
           expect(newItemTemplate.data).toEqual(expectedTemplateData);
           done();

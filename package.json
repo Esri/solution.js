@@ -1,6 +1,6 @@
 {
   "name": "@esri/solution.js",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "A library running in Node.js and modern browsers for transferring ArcGIS Online items from one organization to another.",
   "devDependencies": {
     "@chiragrupani/karma-chromium-edge-launcher": "^2.0.0",
@@ -14,9 +14,9 @@
     "@types/jasmine": "^3.6.1",
     "@types/node": "^10.17.45",
     "@types/sinon": "^9.0.0",
-    "@typescript-eslint/eslint-plugin": "^4.8.1",
-    "@typescript-eslint/eslint-plugin-tslint": "^4.8.1",
-    "@typescript-eslint/parser": "^4.8.1",
+    "@typescript-eslint/eslint-plugin": "^4.29.3",
+    "@typescript-eslint/eslint-plugin-tslint": "^4.29.3",
+    "@typescript-eslint/parser": "^4.29.3",
     "acetate": "^2.0.8",
     "acetate-cli": "^1.0.1",
     "acorn": "^8.0.1",
@@ -43,7 +43,6 @@
     "gh-pages": "^1.1.0",
     "gh-release": "^4.0.3",
     "handlebars": "^4.5.1",
-    "husky": "^4.3.0",
     "inspect-process": "^0.5.0",
     "isomorphic-fetch": "^3.0.0",
     "isomorphic-form-data": "^2.0.0",
@@ -98,11 +97,6 @@
       "git add"
     ]
   },
-  "husky": {
-    "hooks": {
-      "pre-commit": "npm run lint:staged"
-    }
-  },
   "prettier": {
     "parser": "typescript",
     "tabWidth": 2,
@@ -113,7 +107,7 @@
     "build": "lerna run build",
     "build:umd": "lerna run build:umd",
     "clean": "npm run clean:src && npm run clean:dist",
-    "clean:src": "rm -rf packages/*/{src,test}/*.{d.ts,js,js.map} && rm -rf packages/*/{src,test}/**/*.{d.ts,js,js.map}",
+    "clean:src": "rm -rf packages/*/{src,test}/*.{d.ts,js,js.map} && rm -rf packages/*/{src,test}/**/*.{d.ts,js,js.map} &&  rm -rf demos/dist/*.{d.ts,js,js.map}",
     "clean:dist": "rm -rf packages/*/dist/ && rm -rf packages/*/.rpt2_cache",
     "deepclean": "rm -rf ./node_modules && rm -rf packages/*/node_modules && npm run clean",
     "lint": "eslint . --ext .ts",
@@ -150,8 +144,8 @@
     "docs:serve": "rimraf docs/build && npm run docs:build && concurrently \"npm run docs:dev:js\" \"npm run docs:dev:images\" \"npm run docs:dev:acetate\" \"npm run docs:dev:sass\" \"npm run docs:dev:typedoc\"",
     "docs:deploy": "npm run docs:build && node support/deploy-doc-site.js",
     "docs:srihash": "node docs/generate-srihashes.js",
-    "prerelease:prepare": "git fetch --all && npm run clean && lerna bootstrap && npm run clean:src && npm test",
-    "release:prepare": "lerna publish --no-git-tag-version --no-push --skip-npm --yes && node ./support/changelog.js",
+    "release:prepare1": "git fetch --all && npm run clean && lerna bootstrap && npm run clean:src && npm test",
+    "release:prepare2": "lerna publish --no-git-tag-version --no-push --skip-npm --yes && node ./support/changelog.js",
     "release:review": "git --no-pager diff --word-diff",
     "release:publish": "bash ./support/publish.sh",
     "release:publish-retry": "lerna publish from-package --no-git-tag-version --no-push --yes",
@@ -201,8 +195,8 @@
     }
   },
   "volta": {
-    "node": "14.15.5",
-    "npm": "6.14.11",
+    "node": "14.17.5",
+    "npm": "6.14.14",
     "typescript": "4.3.4"
   }
 }

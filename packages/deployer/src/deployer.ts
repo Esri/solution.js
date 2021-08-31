@@ -53,7 +53,7 @@ export function deploySolution(
   let deployOptions: common.IDeploySolutionOptions = options || {};
   /* istanbul ignore else */
   if (deployOptions.progressCallback) {
-    deployOptions.progressCallback(1); // let the caller know that we've started
+    deployOptions.progressCallback(1, deployOptions.jobId); // let the caller know that we've started
   }
 
   // It is possible to provide a separate authentication for the source
@@ -107,7 +107,7 @@ export function deploySolution(
       createdSolutionId => {
         /* istanbul ignore else */
         if (deployOptions.progressCallback) {
-          deployOptions.progressCallback(100); // we're done
+          deployOptions.progressCallback(100, deployOptions.jobId); // we're done
         }
         return createdSolutionId;
       },
@@ -115,7 +115,7 @@ export function deploySolution(
         // Error deploying solution
         /* istanbul ignore else */
         if (deployOptions.progressCallback) {
-          deployOptions.progressCallback(1);
+          deployOptions.progressCallback(1, deployOptions.jobId);
         }
         return Promise.reject(error);
       }

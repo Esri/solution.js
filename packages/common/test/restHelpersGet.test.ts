@@ -1054,6 +1054,65 @@ describe("Module `restHelpersGet`: common REST fetch functions shared across pac
     });
   });
 
+  describe("getJson", () => {
+    it("get JSON without authentication", () => {
+      fetchMock
+        .post("http://site.com/some.json/rest/info", {})
+        .get(
+          "https://myorg.maps.arcgis.com/sharing/rest/portals/self?f=json&token=fake-token",
+          {}
+        )
+        .get("http://site.com/some.json?f=json", utils.getSampleJsonAsBlob(), {
+          sendAsJson: false
+        });
+      return restHelpersGet
+        .getJson("http://site.com/some.json", MOCK_USER_SESSION)
+        .then(json => {
+          expect(json).toEqual(utils.getSampleJson());
+        });
+    });
+
+    it("get JSON without authentication", () => {
+      fetchMock
+        .get(
+          "https://myorg.maps.arcgis.com/sharing/rest/portals/self?f=json&token=fake-token",
+          {}
+        )
+        .get("http://site.com/some.json?f=json", utils.getSampleJsonAsBlob(), {
+          sendAsJson: false
+        });
+      return restHelpersGet.getJson("http://site.com/some.json").then(json => {
+        expect(json).toEqual(utils.getSampleJson());
+      });
+    });
+
+    it("handles non-JSON", () => {
+      fetchMock
+        .get(
+          "https://myorg.maps.arcgis.com/sharing/rest/portals/self?f=json&token=fake-token",
+          {}
+        )
+        .get("http://site.com/some.json?f=json", utils.getSampleImageAsBlob(), {
+          sendAsJson: false
+        });
+      return restHelpersGet
+        .getJson("http://site.com/some.json")
+        .then(json => expect(json).toEqual(null));
+    });
+
+    it("handles error", () => {
+      fetchMock
+        .get(
+          "https://myorg.maps.arcgis.com/sharing/rest/portals/self?f=json&token=fake-token",
+          {}
+        )
+        .get("http://site.com/some.json?f=json", mockItems.get400Failure());
+      return restHelpersGet
+        .getJson("http://site.com/some.json")
+        .then(json => expect(json).toEqual(mockItems.get400Failure()));
+    });
+  });
+
   describe("getPortalSharingUrlFromAuth", () => {
     it("gets a default portal sharing url with authentication but no portal", () => {
       const mockUserSession = new interfaces.UserSession({
@@ -1784,7 +1843,7 @@ describe("Module `restHelpersGet`: common REST fetch functions shared across pac
         restHelpers,
         "searchGroupContents"
       ).and.resolveTo(searchGroupContentsResponse);
-      return restHelpersGet
+      restHelpersGet
         .getPortalDefaultBasemap(
           basemapGalleryGroupQuery,
           basemapTitle,
@@ -1816,7 +1875,7 @@ describe("Module `restHelpersGet`: common REST fetch functions shared across pac
       const searchGroupsSpy = spyOn(restHelpers, "searchGroups").and.resolveTo(
         searchGroupsResponse
       );
-      return restHelpersGet
+      restHelpersGet
         .getPortalDefaultBasemap(
           basemapGalleryGroupQuery,
           basemapTitle,
@@ -1846,7 +1905,7 @@ describe("Module `restHelpersGet`: common REST fetch functions shared across pac
         restHelpers,
         "searchGroupContents"
       ).and.resolveTo(searchGroupContentsResponse);
-      return restHelpersGet
+      restHelpersGet
         .getPortalDefaultBasemap(
           basemapGalleryGroupQuery,
           basemapTitle,

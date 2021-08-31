@@ -2701,7 +2701,7 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
         common,
         "replaceInTemplate"
       ).and.returnValue(expected);
-      return featureLayer
+      featureLayer
         .postProcess(
           item.id,
           item.type,
