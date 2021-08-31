@@ -28,17 +28,17 @@
 
 #### Details
 
-1. Stop any code-change watchers that automatically recompile TypeScript, e.g., the watch task in Visual Studio Code
+1. Stop any code-change watchers that automatically recompile TypeScript, e.g., the watch task in Visual Studio Code.
 
 2. Create a branch off of `develop` called `release/X.X.X`, where "X.X.X" is the version to be created. (For hotfixes off of an existing release, one works in a branch `hotfix/X.X.Y` off of the major version to be patched.)
 
 3. Remove the node_modules directories.
 
-4. Launch a git-bash window (e.g., C:\Program Files\Git\git-bash.exe on a Windows computer or using the "Git bash" icon in the Git Extensions program)
+4. Launch a Windows command-prompt window and a git-bash window (e.g., C:\Program Files\Git\git-bash.exe on a Windows computer or using the "Git bash" icon in the Git Extensions program). The current state of the npm tools appear to require us to use both of these windows to create a build: the command prompt window for selecting the build version and for entering the OTP for pushing the build to npm; the git-bash window for pre-publish cleaning and for running a useful script. When a step does not specify the window to use, either is OK.
 
 5. From the repo's root folder install a fresh copy of the node modules using npm install.
 
-5. Log in to npmjs
+5. Log in to npmjs.
 *Note: the computer remembers for a long time that you're logged in; you can check that you are logged in by typing `npm whoami`*
 ```
 npm login
@@ -49,7 +49,7 @@ Enter one-time password from your authenticator app: <e.g., from Okta Verify>
 Logged in as <npm username> on https://registry.npmjs.org/
 ```
 
-7. Ensure you have access to the zip command
+7. Ensure you have access to the zip command.
 ```
 zip -?
 Copyright (c) 1990-2008 Info-ZIP...
@@ -66,11 +66,9 @@ Copyright (c) 1990-2008 Info-ZIP...
  ```
 
 8. Prepare the release.
-`release:prepare` gives you the opportunity to select the new version number. The default choice increments the patch version (i.e., the third number in the [*major.minor.patch* version numbering scheme](https://semver.org/)). If a different version is desired, use the keyboard arrow keys to select the desired version. There doesn't seem to be a way to type in a custom version.
-```
-npm run release:prepare
-npm run release:review
-```
+  * `release:prepare1` (git-bash) removes build products and creates a fresh build
+  * `release:prepare2` (Windows) gives you the opportunity to select the new version number. The default choice increments the patch version (i.e., the third number in the [*major.minor.patch* version numbering scheme](https://semver.org/)). If a different version is desired, use the keyboard arrow keys to select the desired version. There doesn't seem to be a way to type in a custom version.
+  * `npm run release:review` shows the list of changes in the release
 
 9. Check, and fix if necessary, CHANGELOG.md by removing any link lines (the ones that begin with, e.g., `[0.5.0]: https://github.com`) except the set at the end of the file. (The set at the end is a full set; if there are any under the previous version(s), they are redundant and don't display properly because their definitions are overwritten by the set at the end.) Also, for some reason, in CHANGELOG.md, the unreleased section appears below the new release. So please move it to the top.
 *Note: To confirm the expected set at the end of this file visit the repos webpage and navigate to releases > tags. If you see additional tags in the CHANGELOG.md you can remove them. To remove them permanently from your local repo use:*
@@ -88,33 +86,18 @@ If the `versions` array is empty (e.g.,
 ```
 ), then CHANGELOG.md needs to be re-saved as an ASCII file: the GitHub publishing tool cannot read UTF-8 files.
 
-11. Commit changes without using version number.
+11. Publish the release. 
+  * `npm run release:publish-git` (git-bash) commits the release, bundles it into a zip file, and sends it to GitHub
+  * `npm run release:publish-npm` (Windows) sends the release's packages to npm. You should be prompted for a two-factor code (e.g., from Okta Verify) when prompted. Because codes expire after around 30 seconds, use the freshest possible code: pick it right after it updates in the two-factor app.
 
-12. Publish the release, supplying a two-factor code (e.g., from Okta Verify) when prompted. (While `release:publish` accepts a two-factor command-line parameter, the code expires by the time that publishing get around to using it and the release will not be uploaded to npmjs.) Use the freshest possible code: pick it right after it updates in the two-factor app.
-
- ```
- npm run release:publish
-     :        :
- ? Enter OTP: <2-factor-code>
- ? publish release to github? (y/N)
- ```
-
- The publish step
- 1. commits the publishing changes
- 2. tags the commit with the new version number that you chose in `release:prepare`
- 3. pushes the version to npmjs and unpkg
 
  Note that you won't see the new version in your GitHub client until the next time that you refresh the repository.
 
  It's OK to push the version to GitHub even if not all packages appear to have been published. "Publishing" is sending them to npm and is a separate process that we can patch below.
 
-13. Check that publishing worked using the repository's web page `check_npm_package_versions.html`; sometimes, only some of the packages show up in npm. It may take ten or more minutes for a general request such as `https://unpkg.com/@esri/solution-simple-types/dist/umd/simple-types.umd.js` to 302 resolve to the latest version.
+12. Check that publishing worked using the repository's web page `check_npm_package_versions.html`; sometimes, only some of the packages show up in npm. It may take ten or more minutes for a general request such as `https://unpkg.com/@esri/solution-simple-types/dist/umd/simple-types.umd.js` to 302 resolve to the latest version.
 
-14. Due to the large number of packages and the very short validity window of the two-factor code, not all packages may get published. In this case, repeat `npm run release:publish-retry` until it reports "lerna notice from-package No unpublished release found; lerna success No changed packages to publish".
-
-15. Push your `release/X.X.X` branch to GitHub.
-
-16. Merge `release/X.X.X` into `master` and `develop` and push them to GitHub.
+13. Merge `release/X.X.X` into `develop` and push the latter to GitHub.
 
 17. Update the repository's API documentation (see "Publishing API documentation to GitHub" section below).
 
@@ -132,6 +115,8 @@ If the `versions` array is empty (e.g.,
 ```
 $ npm publish --access public --otp=<2-factor-code>
 ```
+
+5. Add package to the repository's web page `check_npm_package_versions.html`
 
 ---
 
@@ -184,7 +169,7 @@ call npm deprecate "@esri/solution-group@%obsoleteVersion%" "obsolete" --otp=%tw
 call npm deprecate "@esri/solution-hub-types@%obsoleteVersion%" "obsolete" --otp=%twoFactorCode%
 call npm deprecate "@esri/solution-simple-types@%obsoleteVersion%" "obsolete" --otp=%twoFactorCode%
 call npm deprecate "@esri/solution-storymap@%obsoleteVersion%" "obsolete" --otp=%twoFactorCode%
+call npm deprecate "@esri/solution-velocity@%obsoleteVersion%" "obsolete" --otp=%twoFactorCode%
 call npm deprecate "@esri/solution-viewer@%obsoleteVersion%" "obsolete" --otp=%twoFactorCode%
 call npm deprecate "@esri/solution-web-experience@%obsoleteVersion%" "obsolete" --otp=%twoFactorCode%
 ```
-
