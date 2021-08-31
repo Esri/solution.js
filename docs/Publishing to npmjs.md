@@ -8,11 +8,11 @@
 * \[ \] Remove node_modules and run `npm install`
 * \[ \] Run `npm run release:prepare1` in a bash shell
 * \[ \] Run `npm run release:prepare2` and pick new version number _(may need to be run in a Windows shell due to bash problems picking the new version number)_
-* \[ \] Run `npm run release:review` in a bash shell
+* \[ \] Run `npm run release:review` in a Windows shell
 * \[ \] Check and fix CHANGELOG.md
-* \[ \] Run `npm run release:publish` in a bash shell
+* \[ \] Run `npm run release:publish` in a Windows shell
 * \[ \] Check that publishing worked using `check_npm_package_versions.html` in a browser
-* \[ \] Run `npm run release:publish-retry` in a bash shell as needed until all packages are published
+* \[ \] Run `npm run release:publish-retry` in a Windows shell as needed until all packages are published
 * \[ \] Push `master` branch to GitHub
 * \[ \] Merge `master` into the `develop` branch and push it to GitHub
 * \[ \] Update documentation via `npm run docs:deploy`
