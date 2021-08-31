@@ -1,6 +1,6 @@
 {
   "name": "@esri/solution-creator",
-  "version": "1.1.0",
+  "version": "1.1.2",
   "description": "Manages the creation of a Solution item for @esri/solution.js.",
   "main": "dist/node/index.js",
   "unpkg": "dist/umd/creator.umd.min.js",
@@ -37,16 +37,16 @@
     "@esri/hub-teams": "^8.16.0"
   },
   "dependencies": {
-    "@esri/solution-common": "^1.1.0",
-    "@esri/solution-feature-layer": "^1.1.0",
-    "@esri/solution-file": "^1.1.0",
-    "@esri/solution-form": "^1.1.0",
-    "@esri/solution-group": "^1.1.0",
-    "@esri/solution-hub-types": "^1.1.0",
-    "@esri/solution-simple-types": "^1.1.0",
-    "@esri/solution-storymap": "^1.1.0",
-    "@esri/solution-velocity": "^1.1.0",
-    "@esri/solution-web-experience": "^1.1.0",
+    "@esri/solution-common": "^1.1.2",
+    "@esri/solution-feature-layer": "^1.1.2",
+    "@esri/solution-file": "^1.1.2",
+    "@esri/solution-form": "^1.1.2",
+    "@esri/solution-group": "^1.1.2",
+    "@esri/solution-hub-types": "^1.1.2",
+    "@esri/solution-simple-types": "^1.1.2",
+    "@esri/solution-storymap": "^1.1.2",
+    "@esri/solution-velocity": "^1.1.2",
+    "@esri/solution-web-experience": "^1.1.2",
     "tslib": "^1.13.0"
   },
   "scripts": {
