@@ -34,10 +34,6 @@ git push https://github.com/Esri/solution.js.git $branch
 echo Push the new tag, not the old tags
 git push https://github.com/Esri/solution.js.git v$VERSION
 
-# publish each package on npm
-echo Publish each package on npm
-lerna publish from-package --force-publish=* --no-git-tag-version --no-push --yes
-
 # create a ZIP archive of the dist files
 TEMP_FOLDER=solution.js-v$VERSION;
 mkdir $TEMP_FOLDER
