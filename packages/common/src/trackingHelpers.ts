@@ -28,19 +28,25 @@ import { getProp } from "./generalHelpers";
  * @param portalResponse portal self response
  * @param userResponse portal user response
  * @param templateDictionary Hash of facts: org URL, adlib replacements, deferreds for dependencies
+ * @param templates the list of IItemTemplates from the solution
  *
  * @protected
  */
 export function setLocationTrackingEnabled(
   portalResponse: any,
   userResponse: any,
-  templateDictionary: any
+  templateDictionary: any,
+  templates?: IItemTemplate[]
 ): void {
   templateDictionary.locationTrackingEnabled =
     getProp(portalResponse, "helperServices.locationTracking") &&
     getProp(userResponse, "role") === "org_admin"
       ? true
       : false;
+
+    if (templates) {
+      _validateTrackingTemplates(templates, templateDictionary);
+    }
 }
 
 /**
@@ -49,14 +55,12 @@ export function setLocationTrackingEnabled(
  * An error is thrown to prevent additional deployment work if we have Tracking items and tracking is
  * not enabled or the deployment user is not an admin in the organization.
  *
- * This must be called after the templateDictionary with key details
- *
  * @param templates the list of IItemTemplates from the solution
  * @param templateDictionary Hash of facts: org URL, adlib replacements, deferreds for dependencies
  *
  * @protected
  */
-export function validateTrackingTemplates(
+export function _validateTrackingTemplates(
   templates: IItemTemplate[],
   templateDictionary: any
 ): void {

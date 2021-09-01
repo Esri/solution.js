@@ -149,11 +149,8 @@ export function deploySolutionFromTemplate(
         common.setLocationTrackingEnabled(
           portalResponse,
           userResponse,
-          templateDictionary
-        );
-        common.validateTrackingTemplates(
-          solutionTemplateData.templates,
-          templateDictionary
+          templateDictionary,
+          solutionTemplateData.templates
         );
 
         // Create a folder to hold the deployed solution. We use the solution name, appending a sequential
