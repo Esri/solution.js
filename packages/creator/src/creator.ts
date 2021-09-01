@@ -32,6 +32,8 @@ import {
   getGroupBase,
   getGroupContents,
   getItemBase,
+  getPortal,
+  getUser,
   getVelocityUrlBase,
   ICreateSolutionOptions,
   ISolutionItemData,
@@ -39,6 +41,7 @@ import {
   IItem,
   removeItem,
   sanitizeJSONAndReportChanges,
+  setLocationTrackingEnabled,
   UserSession
 } from "@esri/solution-common";
 import { failSafe, IModel } from "@esri/hub-common";
@@ -116,6 +119,24 @@ export function createSolution(
         });
       }
     )
+
+    .then(createOptions => {
+      return new Promise<ICreateSolutionOptions>((resolve, reject) => {
+        Promise.all([
+          getPortal("", srcAuthentication),
+          getUser(srcAuthentication)
+        ]).then(responses => {
+          // check tracking
+          const [portalResponse, userResponse] = responses;
+          setLocationTrackingEnabled(
+            portalResponse,
+            userResponse,
+            createOptions.templateDictionary
+          );
+          resolve(createOptions);
+        }, reject);
+      });
+    })
 
     .then(
       // Use a copy of the thumbnail rather than a URL to it
