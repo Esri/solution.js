@@ -17,7 +17,7 @@
 import * as mockTemplates from "./mocks/templates";
 import {
   setLocationTrackingEnabled,
-  validateTrackingTemplates
+  _validateTrackingTemplates
 } from "../src/trackingHelpers";
 import { IItemTemplate } from "../src/interfaces";
 import Sinon from "sinon";
@@ -115,9 +115,36 @@ describe("Module `trackingHelpers`: common functions", () => {
 
       expect(templateDictionary).toEqual(expectedTemplateDictionary);
     });
+
+    it("will call _validateTrackingTemplates when templates are provided", () => {
+      const portalResponse: any = {
+        helperServices: {
+          locationTracking: true
+        }
+      };
+      const userResponse: any = {
+        role: "org_admin"
+      };
+      const templateDictionary: any = {};
+      const expectedTemplateDictionary: any = {
+        locationTrackingEnabled: true
+      };
+
+      const templates: IItemTemplate[] = [
+        mockTemplates.getItemTemplate("Feature Service")
+      ];
+
+      setLocationTrackingEnabled(
+        portalResponse,
+        userResponse,
+        templateDictionary
+      );
+
+      expect(templateDictionary).toEqual(expectedTemplateDictionary);
+    });
   });
 
-  describe("validateTrackingTemplates", () => {
+  describe("_validateTrackingTemplates", () => {
     it("handles no typeKeywords", () => {
       const templates: IItemTemplate[] = [
         mockTemplates.getItemTemplate("Feature Service")
@@ -126,7 +153,7 @@ describe("Module `trackingHelpers`: common functions", () => {
       const templateDictionary: any = {
         locationTrackingEnabled: false
       };
-      validateTrackingTemplates(templates, templateDictionary);
+      _validateTrackingTemplates(templates, templateDictionary);
       expect(spyOn(console, "error").calls.count()).toEqual(0);
     });
 
@@ -140,7 +167,7 @@ describe("Module `trackingHelpers`: common functions", () => {
       };
       spyOn(console, "error").and.callFake(() => {});
       expect(() =>
-        validateTrackingTemplates(templates, templateDictionary)
+        _validateTrackingTemplates(templates, templateDictionary)
       ).toThrow(
         new Error("Location tracking not enabled or user is not admin.")
       );
