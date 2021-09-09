@@ -38,6 +38,9 @@ import {
   getVelocityUrl,
   postVelocityData
 } from "./helpers/velocity-helpers";
+import {
+  moveItem
+} from "@esri/arcgis-rest-portal";
 
 /**
  * Convert a Velocity item into a Template
@@ -146,10 +149,42 @@ export function createItemFromTemplate(
         },
         id: result.item.id,
         type: template.type,
-        postProcess: false
+        postProcess: true
       };
       response.item.itemId = result.item.id;
       return response;
     }
+  });
+}
+
+
+/**
+ * Velocity post-processing actions
+ * 
+ * Move all velocity items to the deployment folder.
+ *
+ * @param {string} itemId The item ID
+ * @param {string} type The template type
+ * @param {any[]} itemInfos Array of {id: 'ef3', type: 'Web Map'} objects
+ * @param {IItemTemplate} template The item template
+ * @param {IItemTemplate[]} templates The full collection of item templates
+ * @param {any} templateDictionary Hash of facts such as the folder id for the deployment
+ * @param {UserSession} authentication The destination session info
+ * @returns Promise resolving to successfulness of update
+ */
+ export function postProcess(
+  itemId: string,
+  type: string,
+  itemInfos: any[],
+  template: IItemTemplate,
+  templates: IItemTemplate[],
+  templateDictionary: any,
+  authentication: UserSession
+): Promise<any> {
+  return moveItem({
+    owner: authentication.username,
+    itemId,
+    folderId: templateDictionary.folderId,
+    authentication
   });
 }
