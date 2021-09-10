@@ -15,7 +15,8 @@
  */
 import {
   convertItemToTemplate,
-  createItemFromTemplate
+  createItemFromTemplate,
+  postProcess
 } from "../src/velocity-processor";
 import * as fetchMock from "fetch-mock";
 import * as interfaces from "../../common/src/interfaces";
@@ -546,5 +547,37 @@ describe("createItemFromTemplate", () => {
       destinationAuthentication,
       utils.ITEM_PROGRESS_CALLBACK
     ).then(() => done.fail, done);
+  });
+});
+
+describe("postProcess", () => {
+  it("will move velocity items to the deployment folder", done => {
+    const itemId: string = "thisismyitemid";
+    const templateDictionary: any = {
+      folderId: "thisisafolderid"
+    };
+    const type: string = "Real Time Analytic";
+    const template: interfaces.IItemTemplate = templates.getItemTemplate(
+      type,
+      []
+    );
+
+    fetchMock.post(
+      "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/items/thisismyitemid/move", 
+      {success: true}
+    );
+
+    postProcess(
+      itemId,
+      type,
+      [],
+      template,
+      [template],
+      templateDictionary,
+      MOCK_USER_SESSION
+    ).then(result => {
+      expect(result.success).toEqual(true);
+      done();
+    }, done.fail);
   });
 });
