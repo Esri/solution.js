@@ -27,7 +27,7 @@ import {
   ICreateItemFromTemplateResponse,
   EItemProgressStatus,
   generateEmptyCreationResponse,
-  createPlaceholderTemplate,
+  createInitializedItemTemplate,
   fail,
   removeItem
 } from "@esri/solution-common";
@@ -59,7 +59,7 @@ export function convertItemToTemplate(
   authentication: UserSession,
   templateDictionary: any
 ): Promise<IItemTemplate> {
-  const template = createPlaceholderTemplate(itemInfo.id, itemInfo.type);
+  const template = createInitializedItemTemplate(itemInfo);
   return getVelocityUrl(
     authentication,
     templateDictionary,
