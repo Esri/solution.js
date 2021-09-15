@@ -2081,7 +2081,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
         authentication: MOCK_USER_SESSION
       };
 
-      const updates: any[] = restHelpers.getLayerUpdates(args, false);
+      const updates: any[] = restHelpers.getLayerUpdates(args, false, false);
 
       const _object: any = Object.assign({}, objects[0]);
       delete _object.type;
