@@ -3152,6 +3152,11 @@ export interface IPopupInfos {
   tables: INumberValuePair;
 }
 
+/**
+ * Helper function to ensure same chunk size value is used in multiple locations
+ *
+ * @return a number that represents how many layers should be included per addToDef call
+ */
 export function _getLayerChunkSize() {
   return 20;
 }
