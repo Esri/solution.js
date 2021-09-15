@@ -955,7 +955,8 @@ export function getLayers(
  */
 export function getLayerUpdates(
   args: IPostProcessArgs,
-  isPortal: boolean
+  isPortal: boolean,
+  forceRelationshipCheck: boolean
 ): IUpdate[] {
   const adminUrl: string = args.itemTemplate.item.url.replace(
     "rest/services",
@@ -985,7 +986,7 @@ export function getLayerUpdates(
       updates.push(refresh);
     }
   });
-  if (!args.itemTemplate.properties.service.isView) {
+  if (!args.itemTemplate.properties.service.isView || forceRelationshipCheck) {
     const relUpdates: any = _getRelationshipUpdates({
       message: "updated layer relationships",
       objects: args.objects,

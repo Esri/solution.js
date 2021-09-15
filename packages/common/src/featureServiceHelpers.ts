@@ -713,7 +713,8 @@ export function addFeatureServiceLayersAndTables(
                 itemTemplate: r.itemTemplate,
                 authentication
               } as IPostProcessArgs,
-              templateDictionary.isPortal
+              templateDictionary.isPortal,
+              layersAndTables.length > _getLayerChunkSize()
             );
             // Get any updates for the service that should be performed after updates to the layers
             if (templateDictionary.isPortal) {
@@ -854,8 +855,9 @@ export function addFeatureServiceDefinition(
         options.tables.push(item);
       }
 
+      const chunkSize: number = _getLayerChunkSize();
       /* istanbul ignore else */
-      if ((i + 1) % 20 === 0 || i + 1 === listToAdd.length) {
+      if ((i + 1) % chunkSize === 0 || i + 1 === listToAdd.length) {
         layerChunks.push(Object.assign({}, options));
         options = {
           layers: [],
@@ -3148,4 +3150,8 @@ export function _getNameMapping(fieldInfos: any, id: string): any {
 export interface IPopupInfos {
   layers: INumberValuePair;
   tables: INumberValuePair;
+}
+
+export function _getLayerChunkSize() {
+  return 20;
 }
