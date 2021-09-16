@@ -950,12 +950,16 @@ export function getLayers(
  * Add additional options to a layers definition.
  *
  * @param args The IPostProcessArgs for the request(s)
+ * @param isPortal boolean to indicate if we are deploying to portal
+ * @param forceRelationshipCheck boolean to indicate if additional addToDef calls should be made for view relationships
+ * 
  * @return An array of update instructions
  * @private
  */
 export function getLayerUpdates(
   args: IPostProcessArgs,
-  isPortal: boolean
+  isPortal: boolean,
+  forceRelationshipCheck: boolean
 ): IUpdate[] {
   const adminUrl: string = args.itemTemplate.item.url.replace(
     "rest/services",
@@ -985,7 +989,11 @@ export function getLayerUpdates(
       updates.push(refresh);
     }
   });
-  if (!args.itemTemplate.properties.service.isView) {
+  // issue: #706
+  // forceRelationshipCheck should be true when layers are added in chunks.
+  // When all layers are added in one call relationships are automatically added to a
+  // view when the source service has relationships.
+  if (!args.itemTemplate.properties.service.isView || forceRelationshipCheck) {
     const relUpdates: any = _getRelationshipUpdates({
       message: "updated layer relationships",
       objects: args.objects,
