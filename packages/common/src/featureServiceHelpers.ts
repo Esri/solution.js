@@ -52,7 +52,6 @@ import {
   templatizeIds
 } from "./templatization";
 import {
-  getFinalServiceUpdates,
   addToServiceDefinition,
   getLayerUpdates,
   getRequest,
@@ -237,12 +236,7 @@ export function cacheFieldInfos(
   // as well as online for relationships...as relationships added with addToDef will cause failure
   const props = {
     editFieldsInfo: isPortal,
-    types: isPortal,
-    templates: isPortal,
-    relationships: true,
-    drawingInfo: isPortal,
-    timeInfo: isPortal,
-    viewDefinitionQuery: isPortal
+    relationships: true
   };
 
   Object.keys(props).forEach(k => {
@@ -715,14 +709,6 @@ export function addFeatureServiceLayersAndTables(
               } as IPostProcessArgs,
               templateDictionary.isPortal
             );
-            // Get any updates for the service that should be performed after updates to the layers
-            if (templateDictionary.isPortal) {
-              updates = getFinalServiceUpdates(
-                r.itemTemplate,
-                authentication,
-                updates
-              );
-            }
             // Process the updates sequentially
             updates
               .reduce((prev, update) => {
@@ -814,7 +800,6 @@ export function addFeatureServiceDefinition(
 
         /* istanbul ignore else */
         if (
-          !templateDictionary.isPortal &&
           fieldInfos &&
           fieldInfos.hasOwnProperty(item.id)
         ) {
@@ -959,14 +944,6 @@ export function _updateForPortal(
   itemTemplate: IItemTemplate,
   templateDictionary: any
 ): any {
-  // When deploying to portal we need to adjust the uniquie ID field up front
-  /* istanbul ignore else */
-  if (item.uniqueIdField && item.uniqueIdField.name) {
-    item.uniqueIdField.name = String(
-      item.uniqueIdField.name
-    ).toLocaleLowerCase();
-  }
-
   // Portal will fail if the geometryField is null
   if (item.type === "Table" && item.adminLayerInfo) {
     deleteProp(item.adminLayerInfo, "geometryField");
@@ -1387,10 +1364,10 @@ export function postProcessFields(
         /* istanbul ignore else */
         if (layerInfos && layerInfos.hasOwnProperty(item.id)) {
           const layerInfo: any = layerInfos[item.id];
-          layerInfo["isView"] = item.isView;
+          if (item.hasOwnProperty("isView")) {
+            layerInfo["isView"] = item.isView;
+          }     
           layerInfo["newFields"] = item.fields;
-          layerInfo["sourceSchemaChangesAllowed"] =
-            item.sourceSchemaChangesAllowed;
 
           /* istanbul ignore else */
           if (item.editFieldsInfo) {
@@ -1400,6 +1377,9 @@ export function postProcessFields(
             );
           }
 
+          //TODO may be able to remove this but trying to understand the diffs we see with field visibility on views
+          // as well as field editable for edit fields like last_edited_date  #661
+
           // fields that are marked as visible false on a view are all set to
           // visible true when added with the layer definition
           // update the field visibility to match that of the source
@@ -1408,6 +1388,7 @@ export function postProcessFields(
             // when the item is a view bring over the source service fields so we can compare the domains
             layerInfo["sourceServiceFields"] = templateInfo.sourceServiceFields;
 
+            // start #661
             let fieldUpdates: any[] = _getFieldVisibilityUpdates(layerInfo);
 
             // view field domains can contain different values than the source field domains
@@ -1419,13 +1400,12 @@ export function postProcessFields(
               layerInfo.fields = fieldUpdates;
             }
 
-            layerInfo.typeIdField = _getTypeIdField(item);
-
             const fieldNames: string[] = layerInfo.newFields.map(
               (f: any) => f.name
             );
             _validateTemplatesFields(layerInfo, fieldNames);
             _validateTypesTemplates(layerInfo, fieldNames);
+            // end #661
           }
         }
       });
@@ -1453,28 +1433,7 @@ export function postProcessFields(
   });
 }
 
-/**
- * when deploying to portal if a view has a different typeIdField than what it being set on the source service
- *  we need to pass it via an updateDef call or it will be set as the typeIdField of the source service
- *
- * @param item current layer or table
- * @return name of field to set for typeIdField in the update call
- * @protected
- */
-export function _getTypeIdField(item: any): string {
-  const typeIdFields = item.fields.filter((f: any) => {
-    return (
-      f.name &&
-      item.typeIdField &&
-      f.name.toLowerCase() === item.typeIdField.toLowerCase()
-    );
-  });
-
-  return Array.isArray(typeIdFields) && typeIdFields.length === 1
-    ? typeIdFields[0].name
-    : item.typeIdField;
-}
-
+// TOOD waiting on fix from portal team...we aim to remove this
 /**
  * Update a views field visibility to match that of the source
  *  Fields that are marked as visible false on a view are all set to
@@ -1498,6 +1457,7 @@ export function _getFieldVisibilityUpdates(fieldInfo: any): any[] {
     fieldInfo["newFields"].forEach((f: any) => {
       const name: string = String(f.name).toLocaleLowerCase();
       // only add fields that are not visible
+      // TODO look at and see if we can only add if we find differences since these should now work in add on portal
       if (sourceFields.hasOwnProperty(name) && !sourceFields[name]) {
         visibilityUpdates.push({
           name: f.name,
@@ -1509,6 +1469,7 @@ export function _getFieldVisibilityUpdates(fieldInfo: any): any[] {
   return visibilityUpdates;
 }
 
+// TOOD waiting on fix from portal team...we aim to remove this #661
 /**
  *  view field domains can contain different values than the source feature service field domains
  *  use the cached domain when it differs from the source view field domain
@@ -1548,6 +1509,7 @@ export function _validateDomains(fieldInfo: any, fieldUpdates: any[]) {
   return fieldUpdates;
 }
 
+// TOOD waiting on fix from portal team...we aim to remove this #661
 /**
  *  Get portal field updates to be added with an updateDefinition call after the
  * initial addToDef
@@ -3094,6 +3056,7 @@ export function _getNameMapping(fieldInfos: any, id: string): any {
     });
   });
 
+  // TODO need to make sure if this is all still necessary
   // update for editFieldsInfo
   if (fInfo.editFieldsInfo && fInfo.newEditFieldsInfo) {
     const efi: any = JSON.parse(JSON.stringify(fInfo.editFieldsInfo));

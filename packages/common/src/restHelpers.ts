@@ -980,7 +980,7 @@ export function getLayerUpdates(
     }
     // handle definition updates
     // for portal only as online will now all be handled in addToDef
-    if (isPortal) {
+    if (isPortal && Object.keys(obj).length > 0) {
       updates.push(_getUpdate(adminUrl, id, obj, args, "update"));
       updates.push(refresh);
     }
@@ -998,45 +998,6 @@ export function getLayerUpdates(
       updates.push(refresh);
     }
   }
-  return updates;
-}
-
-/**
- * Update view service when sourceSchemaChangesAllowed is true.
- *
- * This property needs to be set after the fact when deploying to portal as it does not honor
- *  when set during service creation.
- *
- * @param itemTemplate Template of item being deployed
- * @param authentication Credentials for the request
- * @param updates An array of update instructions
- * @return An array of update instructions
- */
-export function getFinalServiceUpdates(
-  itemTemplate: IItemTemplate,
-  authentication: UserSession,
-  updates: IUpdate[]
-): IUpdate[] {
-  const sourceSchemaChangesAllowed: boolean = getProp(
-    itemTemplate,
-    "properties.service.sourceSchemaChangesAllowed"
-  );
-  const isView: boolean = getProp(itemTemplate, "properties.service.isView");
-
-  /* istanbul ignore else */
-  if (sourceSchemaChangesAllowed && isView) {
-    const adminUrl: string = itemTemplate.item.url.replace(
-      "rest/services",
-      "rest/admin/services"
-    );
-    const args: any = {
-      authentication,
-      message: "final service update"
-    };
-    const serviceUpdates: any = { sourceSchemaChangesAllowed };
-    updates.push(_getUpdate(adminUrl, null, serviceUpdates, args, "update"));
-  }
-
   return updates;
 }
 
