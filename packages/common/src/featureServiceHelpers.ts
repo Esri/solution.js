@@ -700,7 +700,7 @@ export function addFeatureServiceLayersAndTables(
             templateDictionary
           ).then(r => {
             // Update relationships and layer definitions
-            let updates: IUpdate[] = getLayerUpdates(
+            const updates: IUpdate[] = getLayerUpdates(
               {
                 message: "updated layer definition",
                 objects: r.layerInfos.fieldInfos,

@@ -49,7 +49,6 @@ import {
   _templatizeAdminLayerInfoFields,
   _getDependantItemId,
   _getDomainAndAliasInfos,
-  _getTypeIdField,
   _isViewFieldOverride,
   _templatizeAdminSourceLayerFields,
   _templatizeTopFilter,
@@ -545,103 +544,6 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
       fieldInfos = cacheFieldInfos(layer, fieldInfos, true);
       expect(layer).toEqual({});
       expect(fieldInfos).toEqual({});
-    });
-
-    it("should cache the key properties for fieldInfos and set certain properties to null", () => {
-      let fieldInfos: any = {};
-      const layer: any = {
-        id: "23",
-        fields: [
-          {
-            name: "A",
-            type: "string"
-          },
-          {
-            name: "B",
-            type: "string"
-          }
-        ],
-        displayField: "DisplayField",
-        editFieldsInfo: ["CreateDate"],
-        templates: [
-          {
-            A: null,
-            B: null
-          }
-        ],
-        relationships: [
-          {
-            relatedId: 0
-          }
-        ],
-        drawingInfo: {
-          renderer: {
-            type: "simple"
-          }
-        },
-        type: "layer",
-        viewDefinitionQuery: "viewDefinitionQuery"
-      };
-
-      const expectedLayer: any = {
-        id: "23",
-        fields: [
-          {
-            name: "A",
-            type: "string"
-          },
-          {
-            name: "B",
-            type: "string"
-          }
-        ],
-        displayField: "DisplayField",
-        editFieldsInfo: ["CreateDate"],
-        templates: null,
-        relationships: null,
-        drawingInfo: null,
-        type: "layer",
-        viewDefinitionQuery: null
-      };
-
-      const expectedFieldInfos: any = {
-        "23": {
-          id: "23",
-          sourceFields: [
-            {
-              name: "A",
-              type: "string"
-            },
-            {
-              name: "B",
-              type: "string"
-            }
-          ],
-          editFieldsInfo: ["CreateDate"],
-          templates: [
-            {
-              A: null,
-              B: null
-            }
-          ],
-          relationships: [
-            {
-              relatedId: 0
-            }
-          ],
-          drawingInfo: {
-            renderer: {
-              type: "simple"
-            }
-          },
-          type: "layer",
-          viewDefinitionQuery: "viewDefinitionQuery"
-        }
-      };
-
-      fieldInfos = cacheFieldInfos(layer, fieldInfos, true);
-      expect(layer).toEqual(expectedLayer);
-      expect(fieldInfos).toEqual(expectedFieldInfos);
     });
   });
 
@@ -4354,27 +4256,6 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
       };
 
       const actual = _getDomainAndAliasInfos(fieldInfo);
-      expect(actual).toEqual(expected);
-    });
-  });
-
-  describe("_getTypeIdField", () => {
-    it("will get the typeId field", () => {
-      const item: any = {
-        fields: [
-          {
-            name: "a"
-          },
-          {
-            name: "b"
-          }
-        ],
-        typeIdField: "B"
-      };
-
-      const actual = _getTypeIdField(item);
-
-      const expected: string = "b";
       expect(actual).toEqual(expected);
     });
   });
