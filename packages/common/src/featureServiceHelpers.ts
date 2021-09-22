@@ -968,7 +968,7 @@ export function _updateForPortal(
       setProp(
         item,
         "adminLayerInfo.viewLayerDefinition.table",
-        _updateSourceLayerFields(viewLayerDefTable, tableFieldNames)
+        _updateSourceLayerFields(viewLayerDefTable, tableFieldNames, item.fields)
       );
 
       // Handle related also
@@ -981,9 +981,10 @@ export function _updateForPortal(
             templateDictionary
           );
           fieldNames = fieldNames.concat(relatedTableFieldNames);
-          return _updateSourceLayerFields(relatedTable, relatedTableFieldNames);
+          return _updateSourceLayerFields(relatedTable, relatedTableFieldNames, []);
         });
       }
+      item = _updateItemFields(item, fieldNames);
     } else {
       Object.keys(templateDictionary).some(k => {
         /* istanbul ignore else */
@@ -1000,9 +1001,20 @@ export function _updateForPortal(
           return true;
         }
       });
-    }
 
-    item = _updateItemFields(item, fieldNames);
+      item = _updateItemFields(item, fieldNames);
+
+      // check sourceLayerFields off of the root..
+      const viewLayerDef: any = getProp(
+        item,
+        "adminLayerInfo.viewLayerDefinition"
+      ) || {};
+      setProp(
+        item,
+        "adminLayerInfo.viewLayerDefinition",
+        _updateSourceLayerFields(viewLayerDef, fieldNames, item.fields)
+      );
+    }
   }
 
   // not allowed to set sourceSchemaChangesAllowed or isView for portal
@@ -1094,8 +1106,12 @@ export function _updateItemFields(item: any, fieldNames: string[]): any {
  */
 export function _updateSourceLayerFields(
   table: any,
-  sourceLayerFields: string[]
+  sourceLayerFieldNames: string[],
+  viewFields: any[]
 ): any {
+  const hasOverrides: boolean = viewFields.some(f => {
+    return f.hasOwnProperty("isViewOverride") || !f.visible;
+  });
   /* istanbul ignore else */
   if (
     Array.isArray(table.sourceLayerFields) &&
@@ -1103,15 +1119,65 @@ export function _updateSourceLayerFields(
   ) {
     // need to make sure these actually exist in the source..
     /* istanbul ignore else */
-    if (sourceLayerFields.length > 0) {
-      setProp(
-        table,
-        "sourceLayerFields",
-        table.sourceLayerFields.filter(
-          (f: any) => sourceLayerFields.indexOf(f.source.toLowerCase()) > -1
-        )
-      );
+    if (sourceLayerFieldNames.length > 0) {
+
+      // may change to reduce so I could do both
+      table.sourceLayerFields = table.sourceLayerFields.reduce((prev: any, cur: any) => {
+        // filter out any fields that don't exist in the sourceLayerFields
+        /* istanbul ignore else */
+        if (
+          sourceLayerFieldNames.indexOf(cur.name.toLowerCase()) > -1 ||
+          sourceLayerFieldNames.indexOf(cur.name) > -1
+        ) {
+          /* istanbul ignore else */
+          if (hasOverrides && viewFields) {
+            viewFields.some(f => {
+              /* istanbul ignore else */
+              if (f.name.toLowerCase() === cur.name.toLowerCase()) {
+                /* istanbul ignore else */
+                if (f.hasOwnProperty("isViewOverride")) {
+                  // pass isViewOverride to the viewLayerDef sourceServiceFields for #661
+                  cur.isViewOverride = f.isViewOverride;
+                }
+                /* istanbul ignore else */
+                if (f.alias) {
+                  cur.alias = f.alias;
+                }
+                /* istanbul ignore else */
+                if (f.domain) {
+                  cur.domain = f.domain;
+                }
+                /* istanbul ignore else */
+                if (f.hasOwnProperty("visible")) {
+                  cur.visible = f.visible;
+                }
+                return true;
+              }
+            });
+          }
+          prev.push(cur);
+        }
+        return cur;
+      }, []);
     }
+  } else if (hasOverrides) {
+    // only update if we have field visibility or domain overrides
+    // add fields to adminLayerInfo #661
+    const _fields: string[] = viewFields.reduce((prev: any, cur: any) => {
+      // add names if they exist in the source
+      // this will bring across fields that are flagged as not visible
+      // this will also bring across any isViewOverride settings 
+      /* istanbul ignore else */
+      if (
+        sourceLayerFieldNames.indexOf(cur.name.toLowerCase()) > -1 ||
+        sourceLayerFieldNames.indexOf(cur.name) > -1
+      ) {
+        cur.source = cur.name;
+        prev.push(cur);
+      }
+      return prev;
+    }, []);
+    setCreateProp(table, "sourceLayerFields", _fields);  
   }
   return table;
 }
@@ -1389,22 +1455,22 @@ export function postProcessFields(
             layerInfo["sourceServiceFields"] = templateInfo.sourceServiceFields;
 
             // start #661
-            let fieldUpdates: any[] = _getFieldVisibilityUpdates(layerInfo);
+            //let fieldUpdates: any[] = _getFieldVisibilityUpdates(layerInfo);
 
             // view field domains can contain different values than the source field domains
             // use the cached view domain when it differs from the source view domain
-            fieldUpdates = _validateDomains(layerInfo, fieldUpdates);
+            // let fieldUpdates = _validateDomains(layerInfo, []);
 
-            /* istanbul ignore else */
-            if (fieldUpdates.length > 0) {
-              layerInfo.fields = fieldUpdates;
-            }
+            // /* istanbul ignore else */
+            // if (fieldUpdates.length > 0) {
+            //   layerInfo.fields = fieldUpdates;
+            // }
 
-            const fieldNames: string[] = layerInfo.newFields.map(
-              (f: any) => f.name
-            );
-            _validateTemplatesFields(layerInfo, fieldNames);
-            _validateTypesTemplates(layerInfo, fieldNames);
+            // const fieldNames: string[] = layerInfo.newFields.map(
+            //   (f: any) => f.name
+            // );
+            // _validateTemplatesFields(layerInfo, fieldNames);
+            // _validateTypesTemplates(layerInfo, fieldNames);
             // end #661
           }
         }
@@ -1433,42 +1499,6 @@ export function postProcessFields(
   });
 }
 
-// TOOD waiting on fix from portal team...we aim to remove this
-/**
- * Update a views field visibility to match that of the source
- *  Fields that are marked as visible false on a view are all set to
- *  visible true when added with the layer definition
- *
- * @param fieldInfo current layers or tables fieldInfo
- * @return Array of fields that should not be visible in the view
- * @protected
- */
-export function _getFieldVisibilityUpdates(fieldInfo: any): any[] {
-  const visibilityUpdates: any[] = [];
-  if (fieldInfo && fieldInfo["sourceFields"] && fieldInfo["newFields"]) {
-    const sourceFields: any = fieldInfo["sourceFields"].reduce(
-      (hash: any, f: any) => {
-        hash[String(f.name).toLocaleLowerCase()] = f.visible;
-        return hash;
-      },
-      {}
-    );
-
-    fieldInfo["newFields"].forEach((f: any) => {
-      const name: string = String(f.name).toLocaleLowerCase();
-      // only add fields that are not visible
-      // TODO look at and see if we can only add if we find differences since these should now work in add on portal
-      if (sourceFields.hasOwnProperty(name) && !sourceFields[name]) {
-        visibilityUpdates.push({
-          name: f.name,
-          visible: sourceFields[name]
-        });
-      }
-    });
-  }
-  return visibilityUpdates;
-}
-
 // TOOD waiting on fix from portal team...we aim to remove this #661
 /**
  *  view field domains can contain different values than the source feature service field domains
@@ -1479,35 +1509,35 @@ export function _getFieldVisibilityUpdates(fieldInfo: any): any[] {
  * @return Array of fields to be updated
  * @protected
  */
-export function _validateDomains(fieldInfo: any, fieldUpdates: any[]) {
-  const domainAliasInfos = _getDomainAndAliasInfos(fieldInfo);
+// export function _validateDomains(fieldInfo: any, fieldUpdates: any[]) {
+//   const domainAliasInfos = _getDomainAndAliasInfos(fieldInfo);
 
-  const domainFields: any[] = domainAliasInfos.domainFields;
-  const domainNames: string[] = domainAliasInfos.domainNames;
+//   const domainFields: any[] = domainAliasInfos.domainFields;
+//   const domainNames: string[] = domainAliasInfos.domainNames;
 
-  const aliasFields: any[] = domainAliasInfos.aliasFields;
-  const aliasNames: string[] = domainAliasInfos.aliasNames;
+//   const aliasFields: any[] = domainAliasInfos.aliasFields;
+//   const aliasNames: string[] = domainAliasInfos.aliasNames;
 
-  // loop through the fields from the new view service
-  // add an update when the domains don't match
-  fieldInfo.newFields.forEach((field: any) => {
-    _getPortalViewFieldUpdates(
-      field,
-      domainNames,
-      domainFields,
-      "domain",
-      fieldUpdates
-    );
-    _getPortalViewFieldUpdates(
-      field,
-      aliasNames,
-      aliasFields,
-      "alias",
-      fieldUpdates
-    );
-  });
-  return fieldUpdates;
-}
+//   // loop through the fields from the new view service
+//   // add an update when the domains don't match
+//   fieldInfo.newFields.forEach((field: any) => {
+//     _getPortalViewFieldUpdates(
+//       field,
+//       domainNames,
+//       domainFields,
+//       "domain",
+//       fieldUpdates
+//     );
+//     _getPortalViewFieldUpdates(
+//       field,
+//       aliasNames,
+//       aliasFields,
+//       "alias",
+//       fieldUpdates
+//     );
+//   });
+//   return fieldUpdates;
+// }
 
 // TOOD waiting on fix from portal team...we aim to remove this #661
 /**
@@ -1521,35 +1551,35 @@ export function _validateDomains(fieldInfo: any, fieldUpdates: any[]) {
  * @param fieldUpdates any existing field updates
  * @protected
  */
-export function _getPortalViewFieldUpdates(
-  field: any,
-  names: string[],
-  fields: any[],
-  key: string,
-  fieldUpdates: any[]
-): void {
-  if (field.hasOwnProperty(key) && field[key]) {
-    const i: number = names.indexOf(String(field.name).toLocaleLowerCase());
-    if (
-      JSON.stringify(field[key]) !== (i > -1 ? JSON.stringify(fields[i]) : "")
-    ) {
-      // should mixin the update if the field already has some other update
-      let hasUpdate: boolean = false;
-      fieldUpdates.some((update: any) => {
-        if (update.name === field.name) {
-          hasUpdate = true;
-          update[key] = field[key];
-        }
-        return hasUpdate;
-      });
-      if (!hasUpdate) {
-        const update = { name: field.name };
-        update[key] = field[key];
-        fieldUpdates.push(update);
-      }
-    }
-  }
-}
+// export function _getPortalViewFieldUpdates(
+//   field: any,
+//   names: string[],
+//   fields: any[],
+//   key: string,
+//   fieldUpdates: any[]
+// ): void {
+//   if (field.hasOwnProperty(key) && field[key]) {
+//     const i: number = names.indexOf(String(field.name).toLocaleLowerCase());
+//     if (
+//       JSON.stringify(field[key]) !== (i > -1 ? JSON.stringify(fields[i]) : "")
+//     ) {
+//       // should mixin the update if the field already has some other update
+//       let hasUpdate: boolean = false;
+//       fieldUpdates.some((update: any) => {
+//         if (update.name === field.name) {
+//           hasUpdate = true;
+//           update[key] = field[key];
+//         }
+//         return hasUpdate;
+//       });
+//       if (!hasUpdate) {
+//         const update = { name: field.name };
+//         update[key] = field[key];
+//         fieldUpdates.push(update);
+//       }
+//     }
+//   }
+// }
 
 /**
  *  view field domains can contain different values than the source feature service field domains
