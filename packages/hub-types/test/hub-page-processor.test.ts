@@ -49,7 +49,7 @@ describe("HubPageProcessor: ", () => {
       } as hubCommon.IModelTemplate;
       const getModelSpy = spyOn(hubCommon, "getModel").and.resolveTo(model);
       const hubRoSpy = spyOn(common, "createHubRequestOptions").and.resolveTo(
-        {} as hubCommon.IHubRequestOptions
+        {} as hubCommon.IHubUserRequestOptions
       );
       const convertSpy = spyOn(
         sitesPackage,
@@ -95,7 +95,7 @@ describe("HubPageProcessor: ", () => {
       } as hubCommon.IModelTemplate;
       const getModelSpy = spyOn(hubCommon, "getModel").and.resolveTo(model);
       const hubRoSpy = spyOn(common, "createHubRequestOptions").and.resolveTo(
-        {} as hubCommon.IHubRequestOptions
+        {} as hubCommon.IHubUserRequestOptions
       );
       const convertSpy = spyOn(
         sitesPackage,
@@ -169,7 +169,7 @@ describe("HubPageProcessor: ", () => {
         id: "fred"
       });
       const hubRoSpy = spyOn(common, "createHubRequestOptions").and.resolveTo(
-        {} as hubCommon.IHubRequestOptions
+        {} as hubCommon.IHubUserRequestOptions
       );
       const td = {
         organization: {
@@ -205,7 +205,7 @@ describe("HubPageProcessor: ", () => {
 
     it("asset and resource juggling", () => {
       const hubRoSpy = spyOn(common, "createHubRequestOptions").and.resolveTo(
-        {} as hubCommon.IHubRequestOptions
+        {} as hubCommon.IHubUserRequestOptions
       );
       const createFromTmplSpy = spyOn(
         sitesPackage,
@@ -263,7 +263,7 @@ describe("HubPageProcessor: ", () => {
         "Whoa thats bad"
       );
       const hubRoSpy = spyOn(common, "createHubRequestOptions").and.resolveTo(
-        {} as hubCommon.IHubRequestOptions
+        {} as hubCommon.IHubUserRequestOptions
       );
       const td = {
         organization: {
@@ -286,7 +286,7 @@ describe("HubPageProcessor: ", () => {
     });
     it("it early-exits correctly", () => {
       const hubRoSpy = spyOn(common, "createHubRequestOptions").and.resolveTo(
-        {} as hubCommon.IHubRequestOptions
+        {} as hubCommon.IHubUserRequestOptions
       );
       const td = {};
       const cb = () => false;
@@ -305,7 +305,7 @@ describe("HubPageProcessor: ", () => {
     });
     it("cleans up if job is cancelled late", () => {
       const hubRoSpy = spyOn(common, "createHubRequestOptions").and.resolveTo(
-        {} as hubCommon.IHubRequestOptions
+        {} as hubCommon.IHubUserRequestOptions
       );
       const createFromTmplSpy = spyOn(
         sitesPackage,
@@ -372,7 +372,7 @@ describe("HubPageProcessor: ", () => {
       const model = {} as hubCommon.IModel;
       const getModelSpy = spyOn(hubCommon, "getModel").and.resolveTo(model);
       const hubRoSpy = spyOn(common, "createHubRequestOptions").and.resolveTo(
-        {} as hubCommon.IHubRequestOptions
+        {} as hubCommon.IHubUserRequestOptions
       );
       const postProcessSpy = spyOn(
         postProcessModule,

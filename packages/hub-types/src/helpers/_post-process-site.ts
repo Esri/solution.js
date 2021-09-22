@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { IModel, IHubRequestOptions, interpolate } from "@esri/hub-common";
+import { IModel, IHubUserRequestOptions, interpolate } from "@esri/hub-common";
 
 import { _shareItemsToSiteGroups, updateSite } from "@esri/hub-sites";
 
@@ -34,7 +34,7 @@ export function _postProcessSite(
   siteModel: IModel,
   itemInfos: any[],
   templateDictionary: any,
-  hubRequestOptions: IHubRequestOptions
+  hubRequestOptions: IHubUserRequestOptions
 ): Promise<boolean> {
   const infosWithoutSite = itemInfos.filter(
     info => info.id !== siteModel.item.id

@@ -33,7 +33,7 @@ describe("_postProcessPage :: ", () => {
     } as hubCommon.IModel;
   });
   it("does second-pass interpolatin", () => {
-    const fakeRo = {} as hubCommon.IHubRequestOptions;
+    const fakeRo = {} as hubCommon.IHubUserRequestOptions;
     const updatePageSpy = spyOn(hubSites, "updatePage").and.resolveTo(
       {} as IUpdateItemResponse
     );
