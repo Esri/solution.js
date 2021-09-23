@@ -980,10 +980,10 @@ export function getLayerUpdates(
     }
     // handle definition updates
     // for portal only as online will now all be handled in addToDef
-    if (isPortal && Object.keys(obj).length > 0) {
-      updates.push(_getUpdate(adminUrl, id, obj, args, "update"));
-      updates.push(refresh);
-    }
+    // if (isPortal && Object.keys(obj).length > 0) {
+    //   updates.push(_getUpdate(adminUrl, id, obj, args, "update"));
+    //   updates.push(refresh);
+    // }
   });
   if (!args.itemTemplate.properties.service.isView) {
     const relUpdates: any = _getRelationshipUpdates({
