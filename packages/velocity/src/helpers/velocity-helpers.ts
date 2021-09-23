@@ -584,6 +584,7 @@ export function _removeIdPropsAndSetName(
         "feat-lyr-new.portal.mapServicePortalItemID",
         dependencies
       );
+      _updateName(output.properties);
     }
   });
 }
@@ -605,7 +606,6 @@ export function _removeProp(
   /* istanbul ignore else */
   if (id && dependencies.indexOf(id) < 0) {
     delete props[prop];
-    _updateName(props);
   }
 }
 
