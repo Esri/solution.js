@@ -86,7 +86,8 @@ export function updateVelocityReferences(
 ): any {
   const velocityUrl: any = templateDictionary.velocityUrl;
   if (data && type === "Web Map" && velocityUrl) {
-    (data.operationalLayers || []).forEach((l: any) => {
+    const layersAndTables: any[] = (data.operationalLayers || []).concat(data.tables || []);
+    (layersAndTables).forEach((l: any) => {
       if (l.url && l.url.indexOf(velocityUrl) > -1 && l.itemId) {
         delete l.itemId;
       }
@@ -116,7 +117,7 @@ export function _replaceVelocityUrls(data: any, velocityUrl: string): any {
 
     // add solutionItemId to any velocity service names
     const regex = new RegExp("{{velocityUrl}}.+?(?=/[A-Za-z]+Server)", "gi");
-    const results = regex.exec(dataString);
+    const results = dataString.match(regex);
     /* istanbul ignore else */
     if (results) {
       results.forEach(result => {
