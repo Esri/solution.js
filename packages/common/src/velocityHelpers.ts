@@ -120,9 +120,13 @@ export function _replaceVelocityUrls(data: any, velocityUrl: string): any {
     const results = dataString.match(regex);
     /* istanbul ignore else */
     if (results) {
-      results.forEach(result => {
-        dataString = dataString.replace(
-          new RegExp(result, "g"),
+      const uniqueResults = results.filter((v, i, self) => self.indexOf(v) === i);
+      uniqueResults.forEach(result => {
+        // these names can contain reserved characters for regex
+        // for example: http://something/name(something else)
+        // TypeScript for es2015 doesn't have a definition for `replaceAll`
+        dataString = (dataString as any).replaceAll(
+          result,
           `${result}_{{solutionItemId}}`
         );
       });

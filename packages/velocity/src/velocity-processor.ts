@@ -29,7 +29,8 @@ import {
   generateEmptyCreationResponse,
   createInitializedItemTemplate,
   fail,
-  removeItem
+  removeItem,
+  updateVelocityReferences
 } from "@esri/solution-common";
 import { templatizeVelocity } from "./helpers/velocity-templatize";
 import { getVelocityDependencies } from "./helpers/get-velocity-dependencies";
@@ -78,6 +79,7 @@ export function convertItemToTemplate(
                 template.dependencies = deps;
                 cleanDataSourcesAndFeeds(template);
                 templatizeVelocity(template);
+                template.item = updateVelocityReferences(template.item, template.type, templateDictionary);
                 return Promise.resolve(template);
               }
             );
