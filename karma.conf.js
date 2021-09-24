@@ -102,6 +102,7 @@ module.exports = function(config) {
       'Edge',
       'Firefox'
     ],
+    browserNoActivityTimeout: 120000,
     plugins: [
       require('@chiragrupani/karma-chromium-edge-launcher'),
       require('karma-chrome-launcher'),
