@@ -43,7 +43,7 @@ import {
 import {
   IModel,
   failSafe,
-  IHubRequestOptions,
+  IHubUserRequestOptions,
   without
 } from "@esri/hub-common";
 
@@ -99,7 +99,7 @@ export function createItemFromTemplate(
   // Create the "siteModel" from the template. Does not save the site item yet
   // Note: depending on licensing and user privs, will also create the team groups
   // and initiative item.
-  let hubRo: IHubRequestOptions;
+  let hubRo: IHubUserRequestOptions;
   const thumbnail: File = template.item.thumbnail; // createSiteModelFromTemplate trashes thumbnail
   return createHubRequestOptions(destinationAuthentication, templateDictionary)
     .then(ro => {
@@ -198,7 +198,7 @@ export function convertItemToTemplate(
   itemInfo: any,
   authentication: UserSession
 ): Promise<IItemTemplate> {
-  let hubRo: IHubRequestOptions;
+  let hubRo: IHubUserRequestOptions;
   // get hubRequestOptions
   return createHubRequestOptions(authentication)
     .then(ro => {
@@ -250,7 +250,7 @@ export function postProcess(
   templateDictionary: any,
   authentication: UserSession
 ): Promise<boolean> {
-  let hubRo: IHubRequestOptions;
+  let hubRo: IHubUserRequestOptions;
   return createHubRequestOptions(authentication, templateDictionary)
     .then(ro => {
       hubRo = ro;

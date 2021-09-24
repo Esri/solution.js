@@ -13,14 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { IModel, IHubRequestOptions, interpolate } from "@esri/hub-common";
+import { IModel, IHubUserRequestOptions, interpolate } from "@esri/hub-common";
 import { updatePage } from "@esri/hub-sites";
 
 export function _postProcessPage(
   pageModel: IModel,
   itemInfos: any[],
   templateDictionary: any,
-  hubRequestOptions: IHubRequestOptions
+  hubRequestOptions: IHubUserRequestOptions
 ): Promise<boolean> {
   // re-interpolate the siteModel using the itemInfos; no patches supplied
   pageModel = interpolate(pageModel, templateDictionary, {});
