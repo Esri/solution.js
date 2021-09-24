@@ -35,7 +35,7 @@ import {
   IModelTemplate,
   failSafe,
   getModel,
-  IHubRequestOptions,
+  IHubUserRequestOptions,
   getProp,
   without
 } from "@esri/hub-common";
@@ -137,7 +137,7 @@ export function createItemFromTemplate(
   // subsequent promise calls
   let pageModel: IModel;
 
-  let hubRo: IHubRequestOptions;
+  let hubRo: IHubUserRequestOptions;
   const thumbnail: File = template.item.thumbnail; // createPageModelFromTemplate trashes thumbnail
   return createHubRequestOptions(destinationAuthentication, templateDictionary)
     .then(ro => {
@@ -248,7 +248,7 @@ export function postProcess(
   authentication: UserSession
 ): Promise<boolean> {
   // create the requestOptions
-  let hubRo: IHubRequestOptions;
+  let hubRo: IHubUserRequestOptions;
   // get hubRequestOptions
   return createHubRequestOptions(authentication)
     .then(ro => {

@@ -40,7 +40,7 @@ describe("_postProcessSite :: ", () => {
 
   it("updateSitePages gets models and updates them", () => {
     infos.push({ itemId: "ef4", type: "Hub Page" });
-    const fakeRo = {} as hubCommon.IHubRequestOptions;
+    const fakeRo = {} as hubCommon.IHubUserRequestOptions;
     const getModelSpy = spyOn(hubCommon, "getModel").and.resolveTo(
       {} as hubCommon.IModel
     );
