@@ -584,6 +584,7 @@ export function _removeIdPropsAndSetName(
         "feat-lyr-new.portal.mapServicePortalItemID",
         dependencies
       );
+      _updateName(output.properties);
     }
   });
 }
@@ -605,7 +606,6 @@ export function _removeProp(
   /* istanbul ignore else */
   if (id && dependencies.indexOf(id) < 0) {
     delete props[prop];
-    _updateName(props);
   }
 }
 
@@ -616,9 +616,15 @@ export function _removeProp(
  *
  */
 export function _updateName(props: any): void {
-  const name: string = props["feat-lyr-new.name"];
+  let name: string = props["feat-lyr-new.name"];
   /* istanbul ignore else */
   if (name && name.indexOf("{{solutionItemId}}") < 0) {
     props["feat-lyr-new.name"] = `${name}_{{solutionItemId}}`;
+  }
+
+  name = props["stream-lyr-new.name"];
+  /* istanbul ignore else */
+  if (name && name.indexOf("{{solutionItemId}}") < 0) {
+    props["stream-lyr-new.name"] = `${name}_{{solutionItemId}}`;
   }
 }

@@ -111,6 +111,10 @@ describe("convertItemToTemplate", () => {
           "Custom Velocity Update_{{solutionItemId}}"
         );
 
+        expect(actual.data.outputs[1].properties["stream-lyr-new.name"]).toEqual(
+          "Custom Stream_{{solutionItemId}}"
+        );
+
         expect(
           actual.data.outputs[0].properties[
             "feat-lyr-new.portal.featureServicePortalItemID"
