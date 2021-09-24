@@ -98,12 +98,13 @@ module.exports = function(config) {
     // start these browsers
     // available browser launchers: https://npmjs.org/browse/keyword/karma-launcher
     browsers: [
-      'Chrome',
+      'ChromeHeadless',
       'Edge',
       'Firefox'
     ],
     browserNoActivityTimeout: 120000,
     captureTimeout: 120000,
+    browserDisconnectTimeout: 120000,
     plugins: [
       require('@chiragrupani/karma-chromium-edge-launcher'),
       require('karma-chrome-launcher'),
