@@ -216,7 +216,7 @@ export function _templatizeTracker(
     setProp(
       itemTemplate, 
       "item.properties.trackViewGroup", 
-      _templatize(trackViewGroup, "itemId")
+      templatizeTerm(trackViewGroup, trackViewGroup, ".itemId")
     );
   }
 }

@@ -43,6 +43,7 @@ import {
   _templatizeProperty,
   _templatizeLayer,
   _templatizeLayerFieldReferences,
+  _templatizeTracker,
   _templatizeAdminLayerInfo,
   _processAdminObject,
   _templatizeSourceServiceName,
@@ -3912,6 +3913,27 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
       expect(obj).toEqual({
         someProp: "{{" + basePath + ".name123.name}}"
       });
+    });
+  });
+
+  describe("_templatizeTracker", () => {
+    it("should templatize group prop for location tracking views", () => {
+      const _itemTemplate: interfaces.IItemTemplate = templates.getItemTemplateSkeleton();
+      _itemTemplate.item.typeKeywords = ["Location Tracking View"];
+      _itemTemplate.item.properties = {
+        trackViewGroup: "aaad83aae2bc4cec884c165d9d0c9988"
+      };
+      _templatizeTracker(_itemTemplate);
+
+      expect(_itemTemplate.item.properties.trackViewGroup).toEqual(
+        "{{aaad83aae2bc4cec884c165d9d0c9988.itemId}}"
+      );
+      expect(_itemTemplate.dependencies).toEqual(
+        ["aaad83aae2bc4cec884c165d9d0c9988"]
+      );
+      expect(_itemTemplate.groups).toEqual(
+        ["aaad83aae2bc4cec884c165d9d0c9988"]
+      );
     });
   });
 
