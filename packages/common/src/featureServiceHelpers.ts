@@ -92,6 +92,9 @@ export function templatize(
     typeKeywords: templatizeIds(itemTemplate.item.typeKeywords)
   };
 
+  // special handeling if we are dealing with a tracker view
+  _templatizeTracker(itemTemplate);
+
   const jsonLayers: any[] = itemTemplate.properties.layers || [];
   const jsonTables: any[] = itemTemplate.properties.tables || [];
   const jsonItems: any[] = jsonLayers.concat(jsonTables);
@@ -191,6 +194,31 @@ export function templatize(
   }
 
   return itemTemplate;
+}
+
+/**
+ * Templatize the tracker view group id for location tracking views.
+ * This function will update the itemTemplate that is passed in when it's a tracking view.
+ *
+ * @param itemTemplate Template for feature service item
+ * 
+ * @protected
+ */
+export function _templatizeTracker(
+  itemTemplate: IItemTemplate
+): void {
+  const typeKeywords: any = getProp(itemTemplate, "item.typeKeywords");
+  const trackViewGroup: any = getProp(itemTemplate, "item.properties.trackViewGroup");
+  /* istanbul ignore else */
+  if (typeKeywords && typeKeywords.indexOf("Location Tracking View") > -1 && trackViewGroup) {
+    itemTemplate.groups.push(trackViewGroup);
+    itemTemplate.dependencies.push(trackViewGroup);
+    setProp(
+      itemTemplate, 
+      "item.properties.trackViewGroup", 
+      _templatize(trackViewGroup, "itemId")
+    );
+  }
 }
 
 /**
