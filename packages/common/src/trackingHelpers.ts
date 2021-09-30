@@ -16,8 +16,9 @@
 
 // Helper functions shared across deploy and create
 
-import { IItemTemplate } from "./interfaces";
+import { IItemTemplate, UserSession } from "./interfaces";
 import { getProp } from "./generalHelpers";
+import { getItemBase } from "./restHelpersGet";
 
 /**
  * Used by deploy to evaluate if we have everything we need to deploy tracking views.
@@ -38,8 +39,16 @@ export function setLocationTrackingEnabled(
   templateDictionary: any,
   templates?: IItemTemplate[]
 ): void {
+  // set locationTracking...contains service url and id
+  const locationTracking = getProp(portalResponse, "helperServices.locationTracking");
+  /* istanbul ignore else */
+  if (locationTracking) {
+    templateDictionary.locationTracking = locationTracking;
+  }
+  
+  // verify we have location tracking service and the user is an admin
   templateDictionary.locationTrackingEnabled =
-    getProp(portalResponse, "helperServices.locationTracking") &&
+    templateDictionary.locationTracking &&
     getProp(userResponse, "role") === "org_admin"
       ? true
       : false;
@@ -75,5 +84,19 @@ export function _validateTrackingTemplates(
   ) {
     console.error("Location tracking not enabled or user is not admin.");
     throw new Error("Location tracking not enabled or user is not admin.");
+  }
+}
+
+export function getTackingServiceOwner(
+  templateDictionary: any,
+  authentication: UserSession
+): Promise<boolean> {
+  if (templateDictionary.locationTrackingEnabled) {
+    const locationTrackingId: string = templateDictionary.locationTracking.id;
+    return getItemBase(locationTrackingId, authentication).then(itemBase => {
+      return Promise.resolve(itemBase && itemBase.owner === authentication.username);
+    }, () => Promise.resolve(false));
+  } else {
+    return Promise.resolve(false);
   }
 }
