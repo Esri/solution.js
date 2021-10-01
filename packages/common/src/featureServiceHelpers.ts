@@ -52,7 +52,6 @@ import {
   templatizeIds
 } from "./templatization";
 import {
-  getFeatureServiceProperties,
   getFinalServiceUpdates,
   addToServiceDefinition,
   getLayerUpdates,
