@@ -958,8 +958,7 @@ export function getLayers(
  */
 export function getLayerUpdates(
   args: IPostProcessArgs,
-  isPortal: boolean,
-  forceRelationshipCheck: boolean
+  isPortal: boolean
 ): IUpdate[] {
   const adminUrl: string = args.itemTemplate.item.url.replace(
     "rest/services",
@@ -993,7 +992,7 @@ export function getLayerUpdates(
   // forceRelationshipCheck should be true when layers are added in chunks.
   // When all layers are added in one call relationships are automatically added to a
   // view when the source service has relationships.
-  if (!args.itemTemplate.properties.service.isView || forceRelationshipCheck) {
+  if (!args.itemTemplate.properties.service.isView) {
     const relUpdates: any = _getRelationshipUpdates({
       message: "updated layer relationships",
       objects: args.objects,
