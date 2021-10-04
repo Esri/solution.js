@@ -741,8 +741,7 @@ export function addFeatureServiceLayersAndTables(
                 itemTemplate: r.itemTemplate,
                 authentication
               } as IPostProcessArgs,
-              templateDictionary.isPortal,
-              layersAndTables.length > _getLayerChunkSize()
+              templateDictionary.isPortal
             );
             // Get any updates for the service that should be performed after updates to the layers
             if (templateDictionary.isPortal) {
@@ -812,6 +811,7 @@ export function addFeatureServiceDefinition(
       _updateTemplateDictionaryFields(itemTemplate, templateDictionary);
     }
 
+    const chunkSize: number = _getLayerChunkSize();
     const layerChunks: any[] = [];
     listToAdd.forEach((toAdd, i) => {
       let item = toAdd.item;
@@ -869,6 +869,7 @@ export function addFeatureServiceDefinition(
 
       removeLayerOptimization(item);
 
+      // this can still chunk layers
       options = _updateAddOptions(
         itemTemplate,
         item,
@@ -883,9 +884,12 @@ export function addFeatureServiceDefinition(
         options.tables.push(item);
       }
 
-      const chunkSize: number = _getLayerChunkSize();
+      // In general we are switching to not use chunking. Rather if we exceed the defined chunk size
+      // we will use an async request.
+      // Currently the only case that should chunk the requests is when we have a multisource view
+      //  handled in _updateAddOptions above
       /* istanbul ignore else */
-      if ((i + 1) % chunkSize === 0 || i + 1 === listToAdd.length) {
+      if (i + 1 === listToAdd.length) {
         layerChunks.push(Object.assign({}, options));
         options = {
           layers: [],
@@ -895,10 +899,14 @@ export function addFeatureServiceDefinition(
       }
     });
 
+    // will use async by default rather than chunk the layer requests when we have more layers
+    // than the defined chunk size
+    const useAsync: boolean = listToAdd.length > chunkSize;
+
     layerChunks
       .reduce(
         (prev, curr) =>
-          prev.then(() => addToServiceDefinition(serviceUrl, curr)),
+          prev.then(() => addToServiceDefinition(serviceUrl, curr, false, useAsync)),
         Promise.resolve(null)
       )
       .then(
