@@ -828,7 +828,7 @@ export function createUniqueFolder(
  *              will be reassigned to the tracking owner.
  * @return Information about created group
  */
- export function createUniqueGroup(
+export function createUniqueGroup(
   title: string,
   groupItem: IGroupAdd,
   templateDictionary: any,
@@ -1399,6 +1399,16 @@ export function searchGroups(
   return portalSearchGroups(searchOptions);
 }
 
+/**
+ * Searches for groups matching criteria recurusively.
+ *
+ * @param searchString Text for which to search, e.g., 'redlands+map', 'type:"Web Map" -type:"Web Mapping Application"'
+ * @param authentication Credentials for the request to AGO
+ * @param groups List of groups that have been found from previous requests
+ * @param inPagingParams The paging params for the recurisve searching
+ * 
+ * @return A promise that will resolve with all groups that meet the search criteria
+ */
 export function searchAllGroups(
   searchString: string,
   authentication: UserSession,
@@ -1480,6 +1490,16 @@ export function searchGroupContents(
   return searchGroupContent(searchOptions);
 }
 
+/**
+ * Reassign ownership of a group
+ *
+ * @param groupId Group to remove users from
+ * @param userName The new owner for the group
+ * @param authentication Credentials for the request to
+ * 
+ * @return A promise that will resolve after the group ownership has been assigned
+ *
+ */
 export function reassignGroup(
   groupId: string,
   userName: string,
@@ -1497,6 +1517,16 @@ export function reassignGroup(
   );
 }
 
+/**
+ * Remove users from a group
+ *
+ * @param groupId Group to remove users from
+ * @param users List of users to remove from the group
+ * @param authentication Credentials for the request to
+ * 
+ * @return A promise that will resolve after the users have been removed
+ *
+ */
 export function removeUsers(
   groupId: string,
   users: string[],
@@ -1515,6 +1545,8 @@ export function removeUsers(
  * @param groupId Group to share with
  * @param id the item id to share with the group
  * @param destinationAuthentication Credentials for the request to AGO
+ * @param owner owner of the group when sharing tracking items (can be different from the deploying user)
+ * 
  * @return A promise that will resolve after the item has been shared
  *
  */

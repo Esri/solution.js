@@ -194,6 +194,12 @@ export function deploySolutionFromTemplate(
           wgs84Extent.xmax +
           "," +
           wgs84Extent.ymax;
+        // Hub Solutions depend on organization defaultExtentBBox as a nested array not a string
+        templateDictionary.organization.defaultExtentBBox = [
+          [wgs84Extent.xmin, wgs84Extent.ymin],
+          [wgs84Extent.xmax, wgs84Extent.ymax]
+        ];
+
         // update templateDictionary to indicate if the user owns the tracking service
         // this will affect how we handle group sharing
         if (templateDictionary.locationTrackingEnabled) {
@@ -203,11 +209,7 @@ export function deploySolutionFromTemplate(
             trackingOwnerResponse
           );
         }
-        // Hub Solutions depend on organization defaultExtentBBox as a nested array not a string
-        templateDictionary.organization.defaultExtentBBox = [
-          [wgs84Extent.xmin, wgs84Extent.ymin],
-          [wgs84Extent.xmax, wgs84Extent.ymax]
-        ];
+
         // Create a deployed Solution item
         const createSolutionItemBase = {
           ...common.sanitizeJSONAndReportChanges(solutionTemplateBase),

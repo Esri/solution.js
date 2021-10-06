@@ -24,6 +24,7 @@ import { IGroupSharingOptions, shareItemWithGroup } from "@esri/arcgis-rest-port
  * @param groups Array of Group Ids
  * @param itemId Item Id
  * @param authentication UserSession
+ * @param owner owner of the group when sharing tracking items (can be different from the deploying user)
  */
 export function shareItemToGroups(
   groupIds: string[],

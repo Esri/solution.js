@@ -89,6 +89,18 @@ export function _validateTrackingTemplates(
   }
 }
 
+/**
+ * Used by deploy to determine the owner of the tracking service.
+ * Only one tracking service per org and all tracking views and tracking groups must be owned by the tracking service owner.
+ *
+ * This function will update the input templateDictionary with the owner as well as
+ *  the item id for the source tracking service.
+ *
+ * @param templateDictionary Hash of facts: org URL, adlib replacements, deferreds for dependencies
+ * @param authentication Credentials for the requests
+ *
+ * @protected
+ */
 export function getTackingServiceOwner(
   templateDictionary: any,
   authentication: UserSession
@@ -107,6 +119,14 @@ export function getTackingServiceOwner(
   }
 }
 
+/**
+ * Check key properties to understand if we are dealing with a tracking template
+ *
+ * @param itemTemplate the template to evaluate
+ * @param itemUpdate the item update to evaluate
+ *
+ * @protected
+ */
 export function isTrackingViewTemplate(
   itemTemplate?: IItemTemplate,
   itemUpdate?: IItemUpdate
@@ -121,7 +141,21 @@ export function isTrackingViewTemplate(
 }
 
 /**
- * Templatize the tracker view group id for location tracking views.
+ * Check key properties to understand if we are dealing with a tracking group template
+ *
+ * @param itemTemplate the template to evaluate
+ *
+ * @protected
+ */
+export function isTrackingViewGroup(
+  itemTemplate: IItemTemplate
+) {
+  const typeKeywords: any = getProp(itemTemplate, "item.tags");
+  return (typeKeywords && typeKeywords.indexOf("Location Tracking Group") > -1) ? true : false
+}
+
+/**
+ * Templatize the tracker view group id and view name for location tracking views.
  * This function will update the itemTemplate that is passed in when it's a tracking view.
  *
  * @param itemTemplate Template for feature service item
@@ -143,8 +177,6 @@ export function isTrackingViewTemplate(
       groupIdVar
     );
     _setName(itemTemplate, "item.name", trackViewGroup, groupIdVar);
-
-    // TODO may get rid of these...we only use createService with specific args and do not add the existing definition
     _setName(itemTemplate, "properties.service.adminServiceInfo.name", trackViewGroup, groupIdVar);
 
     const layersAndTables: any[] = (itemTemplate.properties.layers || []).concat(itemTemplate.properties.tables || []);
@@ -154,6 +186,17 @@ export function isTrackingViewTemplate(
   }
 }
 
+/**
+ * Templatize the tracker view group id and view name for location tracking views.
+ * This function will update the itemTemplate that is passed in when it's a tracking view.
+ *
+ * @param itemTemplate Template for the tracker view
+ * @param path the path to the property that stores the current name
+ * @param groupId the id of the associated tracker group
+ * @param groupIdVar the variable to replace the existing name with
+ * 
+ * @protected
+ */
 export function _setName(
   itemTemplate: IItemTemplate,
   path: string,
@@ -170,6 +213,16 @@ export function _setName(
   }
 }
 
+/**
+ * Templatize the tracker view serviceItemId
+ * 
+ * This function will update the input obj with the templatized variable
+ *
+ * @param obj the object that stores the serviceItemId
+ * @param path the path to the property that stores the serviceItemId
+ * 
+ * @protected
+ */
 export function templatizeServiceItemId(
   obj: any,
   path: string,
@@ -185,14 +238,15 @@ export function templatizeServiceItemId(
   }
 }
 
-export function isTrackingViewGroup(
-  itemTemplate: IItemTemplate
-) {
-  const typeKeywords: any = getProp(itemTemplate, "item.tags");
-  return (typeKeywords && typeKeywords.indexOf("Location Tracking Group") > -1) ? true : false
-}
-
-
+/**
+ * Used by deploy to update the request options with key details for deploying tracker views
+ *
+ * @param itemTemplate Template for feature service item
+ * @param options the current request options to update
+ * @param templateDictionary Hash of facts: org URL, adlib replacements, deferreds for dependencies
+ * 
+ * @protected
+ */
 export function setTrackingOptions(
   itemTemplate: IItemTemplate,
   options: any,
