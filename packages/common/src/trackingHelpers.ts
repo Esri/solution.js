@@ -17,8 +17,10 @@
 // Helper functions shared across deploy and create
 
 import { IItemTemplate, UserSession } from "./interfaces";
-import { getProp } from "./generalHelpers";
+import { getProp, setCreateProp, setProp } from "./generalHelpers";
 import { getItemBase } from "./restHelpersGet";
+import { templatizeTerm } from "./templatization";
+import { IItemUpdate } from "@esri/arcgis-rest-types";
 
 /**
  * Used by deploy to evaluate if we have everything we need to deploy tracking views.
@@ -94,9 +96,120 @@ export function getTackingServiceOwner(
   if (templateDictionary.locationTrackingEnabled) {
     const locationTrackingId: string = templateDictionary.locationTracking.id;
     return getItemBase(locationTrackingId, authentication).then(itemBase => {
+      templateDictionary.locationTracking.owner = itemBase.owner;
+      templateDictionary[itemBase.id] = {
+        itemId: itemBase.id
+      };
       return Promise.resolve(itemBase && itemBase.owner === authentication.username);
     }, () => Promise.resolve(false));
   } else {
     return Promise.resolve(false);
   }
+}
+
+export function isTrackingViewTemplate(
+  itemTemplate?: IItemTemplate,
+  itemUpdate?: IItemUpdate
+): boolean {
+  const typeKeywords: any = itemTemplate ? 
+    getProp(itemTemplate, "item.typeKeywords") : itemUpdate ?
+      getProp(itemUpdate, "typeKeywords") : [];
+  const trackViewGroup: any = itemTemplate ? 
+    getProp(itemTemplate, "item.properties.trackViewGroup") : itemUpdate ?
+      getProp(itemUpdate, "properties.trackViewGroup") : [];
+  return (typeKeywords && typeKeywords.indexOf("Location Tracking View") > -1 && trackViewGroup) ? true : false;
+}
+
+/**
+ * Templatize the tracker view group id for location tracking views.
+ * This function will update the itemTemplate that is passed in when it's a tracking view.
+ *
+ * @param itemTemplate Template for feature service item
+ * 
+ * @protected
+ */
+ export function templatizeTracker(
+  itemTemplate: IItemTemplate
+): void {
+  /* istanbul ignore else */
+  if (isTrackingViewTemplate(itemTemplate)) {
+    const trackViewGroup: any = getProp(itemTemplate, "item.properties.trackViewGroup");
+    itemTemplate.groups.push(trackViewGroup);
+    itemTemplate.dependencies.push(trackViewGroup);
+    const groupIdVar: string = templatizeTerm(trackViewGroup, trackViewGroup, ".itemId");
+    setProp(
+      itemTemplate, 
+      "item.properties.trackViewGroup", 
+      groupIdVar
+    );
+    _setName(itemTemplate, "item.name", trackViewGroup, groupIdVar);
+
+    // TODO may get rid of these...we only use createService with specific args and do not add the existing definition
+    _setName(itemTemplate, "properties.service.adminServiceInfo.name", trackViewGroup, groupIdVar);
+
+    const layersAndTables: any[] = (itemTemplate.properties.layers || []).concat(itemTemplate.properties.tables || []);
+    layersAndTables.forEach(l => {
+      templatizeServiceItemId(l, "adminLayerInfo.viewLayerDefinition.sourceServiceItemId")
+    });
+  }
+}
+
+export function _setName(
+  itemTemplate: IItemTemplate,
+  path: string,
+  groupId: string,
+  groupIdVar: string
+) {
+  const name: string = getProp(itemTemplate, path);
+  if (name) {
+    setProp(
+      itemTemplate,
+      path,
+      name.replace(groupId, groupIdVar)
+    );
+  }
+}
+
+export function templatizeServiceItemId(
+  obj: any,
+  path: string,
+) {
+  const serviceItemId = getProp(obj, path);
+  /* istanbul ignore else */
+  if (serviceItemId) {
+    setProp(
+      obj,
+      path,
+      templatizeTerm(serviceItemId, serviceItemId, ".itemId")
+    );
+  }
+}
+
+export function isTrackingViewGroup(
+  itemTemplate: IItemTemplate
+) {
+  const typeKeywords: any = getProp(itemTemplate, "item.tags");
+  return (typeKeywords && typeKeywords.indexOf("Location Tracking Group") > -1) ? true : false
+}
+
+
+export function setTrackingOptions(
+  itemTemplate: IItemTemplate,
+  options: any,
+  templateDictionary: any
+) {
+  /* istanbul ignore else */
+  if (isTrackingViewTemplate(itemTemplate)) {
+    setCreateProp(options, "owner", templateDictionary.locationTracking.owner);
+
+    setCreateProp(options.item, "name", itemTemplate.item.name);
+    setCreateProp(options.item, "isView", true);
+    setCreateProp(options.item, "owner", templateDictionary.locationTracking.owner);
+
+    setCreateProp(options.params, "isView", true);
+    setCreateProp(options.params, "outputType", "locationTrackingService");
+
+    delete(options.folderId);
+  }
+  return options.item;
 }

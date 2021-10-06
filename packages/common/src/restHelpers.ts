@@ -78,6 +78,7 @@ import {
   IItemResourceOptions,
   IItemResourceResponse,
   IManageItemRelationshipOptions,
+  IPagingParams,
   ISearchGroupContentOptions,
   ISearchOptions,
   ISearchResult,
@@ -88,6 +89,7 @@ import {
   IUserItemOptions,
   removeFolder as portalRemoveFolder,
   removeGroup as portalRemoveGroup,
+  removeGroupUsers as portalRemoveGroupUsers,
   removeItem as portalRemoveItem,
   searchGroupContent,
   searchGroups as portalSearchGroups,
@@ -109,6 +111,10 @@ import {
   getWorkforceServiceInfo
 } from "./workforceHelpers";
 import { hasUnresolvedVariables, replaceInTemplate } from "./templatization";
+import {
+  isTrackingViewTemplate,
+  setTrackingOptions
+} from "./trackingHelpers";
 
 // ------------------------------------------------------------------------------------------------------------------ //
 
@@ -816,46 +822,66 @@ export function createUniqueFolder(
  * @param title Group title, used as-is if possible and with suffix otherwise
  * @param templateDictionary Hash of facts: org URL, adlib replacements, user
  * @param authentication Credentials for creating group
+ * @param owner Optional arg for the Tracking owner
+ *              If the tracking owner is not the one deploying the solution
+ *              tracker groups will be created under the deployment user but
+ *              will be reassigned to the tracking owner.
  * @return Information about created group
  */
-export function createUniqueGroup(
+ export function createUniqueGroup(
   title: string,
   groupItem: IGroupAdd,
   templateDictionary: any,
-  authentication: UserSession
+  authentication: UserSession,
+  owner?: string
 ): Promise<IAddGroupResponse> {
   return new Promise<IAddGroupResponse>((resolve, reject) => {
-    // Get a title that is not already in use
-    groupItem.title = getUniqueTitle(title, templateDictionary, "user.groups");
-    const groupCreationParam = {
-      group: groupItem,
-      authentication: authentication
-    };
-    createGroup(groupCreationParam).then(resolve, err => {
-      // If the name already exists, we'll try again
-      const errorDetails = getProp(err, "response.error.details") as string[];
-      if (Array.isArray(errorDetails) && errorDetails.length > 0) {
-        const nameNotAvailMsg =
-          "You already have a group named '" +
-          groupItem.title +
-          "'. Try a different name.";
-        if (errorDetails.indexOf(nameNotAvailMsg) >= 0) {
-          templateDictionary.user.groups.push({
-            title: groupItem.title
-          });
-          createUniqueGroup(
-            title,
-            groupItem,
-            templateDictionary,
-            authentication
-          ).then(resolve, reject);
+    let groupsPromise: Promise<any>;
+    // when working with tracker we need to consider the groups of the deploying user as well as the groups
+    // of the tracking user...must be unique for both
+    if (owner && owner !== authentication.username) {
+      groupsPromise = searchAllGroups(`(owner:${owner}) orgid:${templateDictionary.organization.id}`, authentication);
+    } else {
+      groupsPromise = Promise.resolve([]);
+    }
+
+    // first get the tracker owner groups
+    groupsPromise.then(groups => {
+      templateDictionary["allGroups"] =
+        groups.concat(getProp(templateDictionary, "user.groups"));
+
+      // Get a title that is not already in use
+      groupItem.title = getUniqueTitle(title, templateDictionary, "allGroups");
+      const groupCreationParam = {
+        group: groupItem,
+        authentication: authentication
+      };
+      createGroup(groupCreationParam).then(resolve, err => {
+        // If the name already exists, we'll try again
+        const errorDetails = getProp(err, "response.error.details") as string[];
+        if (Array.isArray(errorDetails) && errorDetails.length > 0) {
+          const nameNotAvailMsg =
+            "You already have a group named '" +
+            groupItem.title +
+            "'. Try a different name.";
+          if (errorDetails.indexOf(nameNotAvailMsg) >= 0) {
+            templateDictionary.user.groups.push({
+              title: groupItem.title
+            });
+            createUniqueGroup(
+              title,
+              groupItem,
+              templateDictionary,
+              authentication
+            ).then(resolve, reject);
+          } else {
+            reject(err);
+          }
         } else {
+          // Otherwise, error out
           reject(err);
         }
-      } else {
-        // Otherwise, error out
-        reject(err);
-      }
+      });
     });
   });
 }
@@ -875,7 +901,8 @@ export function extractDependencies(
   const dependencies: any[] = [];
   return new Promise((resolve, reject) => {
     // Get service dependencies when the item is a view
-    if (itemTemplate.properties.service.isView && itemTemplate.item.url) {
+    // This step is skipped for tracker views as they will already have a source service in the org
+    if (itemTemplate.properties.service.isView && itemTemplate.item.url && !isTrackingViewTemplate(itemTemplate)) {
       request(
         checkUrlPathTermination(itemTemplate.item.url) + "sources?f=json",
         {
@@ -1372,6 +1399,42 @@ export function searchGroups(
   return portalSearchGroups(searchOptions);
 }
 
+export function searchAllGroups(
+  searchString: string,
+  authentication: UserSession,
+  groups?: IGroup[],
+  inPagingParams? : IPagingParams
+) {
+  const pagingParams: IPagingParams = inPagingParams ? inPagingParams : {
+    start: 0,
+    num: 24
+  };
+  const additionalSearchOptions = {
+    sortField: "title",
+    sortOrder: "asc",
+    ...pagingParams
+  };
+
+  let finalResults: IGroup[] = groups ? groups : [];
+
+  return new Promise<IGroup[]>((resolve, reject) => {
+    searchGroups(
+      searchString,
+      authentication,
+      additionalSearchOptions
+    ).then(response => {
+      finalResults = finalResults.concat(response.results);
+      if (response.nextStart > 0){
+        pagingParams.start = response.nextStart;
+        resolve(searchAllGroups(searchString, authentication, finalResults, pagingParams));
+      }
+      else{
+        resolve(finalResults);
+      }
+    }, e => reject(e));
+  });
+}
+
 /**
  * Searches for group contents matching criteria.
  *
@@ -1417,6 +1480,35 @@ export function searchGroupContents(
   return searchGroupContent(searchOptions);
 }
 
+export function reassignGroup(
+  groupId: string,
+  userName: string,
+  authentication: UserSession
+): Promise<any> {
+  const requestOptions: IRequestOptions = {
+    authentication: authentication,
+    params: {
+      targetUsername: userName
+    }
+  };
+  return request(
+    `${authentication.portal}/community/groups/${groupId}/reassign`,
+    requestOptions
+  );
+}
+
+export function removeUsers(
+  groupId: string,
+  users: string[],
+  authentication: UserSession
+): Promise<any> {
+  return portalRemoveGroupUsers({
+    id: groupId,
+    users,
+    authentication
+  });
+}
+
 /**
  * Shares an item to the defined group
  *
@@ -1429,7 +1521,8 @@ export function searchGroupContents(
 export function shareItem(
   groupId: string,
   id: string,
-  destinationAuthentication: UserSession
+  destinationAuthentication: UserSession,
+  owner?: string
 ): Promise<void> {
   return new Promise((resolve, reject) => {
     const shareOptions: IGroupSharingOptions = {
@@ -1437,6 +1530,11 @@ export function shareItem(
       id,
       authentication: destinationAuthentication
     };
+
+    /* istanbul ignore else */
+    if (owner) {
+      shareOptions.owner = owner;
+    }
 
     shareItemWithGroup(shareOptions).then(
       () => resolve(null),
@@ -1492,7 +1590,8 @@ export function updateItemExtended(
   data: any,
   authentication: UserSession,
   thumbnail?: File,
-  access?: string | undefined
+  access?: string | undefined,
+  templateDictionary?: any
 ): Promise<IUpdateItemResponse> {
   return new Promise<IUpdateItemResponse>((resolve, reject) => {
     const updateOptions: IUpdateItemOptions = {
@@ -1505,7 +1604,9 @@ export function updateItemExtended(
     if (thumbnail) {
       updateOptions.params.thumbnail = thumbnail;
     }
-
+    if (isTrackingViewTemplate(undefined, itemInfo) && templateDictionary) {
+      updateOptions.owner = templateDictionary.locationTracking.owner;
+    }
     portalUpdateItem(updateOptions).then(
       result => {
         if (access && access !== "private") {
@@ -1722,12 +1823,15 @@ export function _getCreateServiceOptions(
       authentication: authentication
     };
 
-    createOptions.item = _setItemProperties(
-      createOptions.item,
-      serviceInfo,
-      params,
-      isPortal
-    );
+    createOptions.item = !isTrackingViewTemplate(newItemTemplate) ? 
+      _setItemProperties(
+        createOptions.item,
+        newItemTemplate,
+        serviceInfo,
+        params,
+        isPortal
+      ) :
+      setTrackingOptions(newItemTemplate, createOptions, templateDictionary);
 
     // project the portals extent to match that of the service
     convertExtentWithFallback(
@@ -1922,6 +2026,7 @@ export function _reportVariablesInItem(
  * Updates a feature service item.
  *
  * @param item Item to update
+ * @param itemTemplate item template for the new item
  * @param serviceInfo Service information
  * @param params arcgis-rest-js params to update
  * @param isPortal Is the service hosted in a portal?
@@ -1929,6 +2034,7 @@ export function _reportVariablesInItem(
  */
 export function _setItemProperties(
   item: any,
+  itemTemplate: IItemTemplate,
   serviceInfo: any,
   params: IParams,
   isPortal: boolean

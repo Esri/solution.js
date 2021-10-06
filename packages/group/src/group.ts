@@ -125,7 +125,8 @@ export function createItemFromTemplate(
         newGroup.title,
         newGroup,
         templateDictionary,
-        destinationAuthentication
+        destinationAuthentication,
+        common.isTrackingViewGroup(newItemTemplate) ? templateDictionary.locationTracking.owner : undefined
       )
       .then(
         (createResponse: common.IAddGroupResponse) => {
@@ -202,12 +203,104 @@ export function createItemFromTemplate(
                       )
                   );
               } else {
-                resolve({
-                  item: newItemTemplate,
-                  id: createResponse.group.id,
-                  type: newItemTemplate.type,
-                  postProcess: false
-                });
+                if (common.isTrackingViewGroup(newItemTemplate)) {
+                  const owner: string = templateDictionary.locationTracking.owner;
+                  common.reassignGroup(
+                    createResponse.group.id,
+                    owner,
+                    destinationAuthentication
+                  ).then(assignResults => {
+                    if (assignResults.success) {
+                      if (
+                        !itemProgressCallback(
+                          template.itemId,
+                          common.EItemProgressStatus.Created,
+                          template.estimatedDeploymentCostFactor / 2,
+                          createResponse.group.id
+                        )
+                      ) {
+                        itemProgressCallback(
+                          template.itemId,
+                          common.EItemProgressStatus.Cancelled,
+                          0
+                        );
+                        // eslint-disable-next-line @typescript-eslint/no-floating-promises
+                        common
+                          .removeGroup(createResponse.group.id, destinationAuthentication)
+                          .then(
+                            () =>
+                              resolve(
+                                common.generateEmptyCreationResponse(template.type)
+                              ),
+                            () =>
+                              resolve(common.generateEmptyCreationResponse(template.type))
+                          );
+                      } else {
+                        common.removeUsers(
+                          createResponse.group.id,
+                          [destinationAuthentication.username],
+                          destinationAuthentication
+                        ).then(removeResults => {
+                          if (Array.isArray(removeResults.notRemoved) && removeResults.notRemoved.length === 0) {
+                            if (
+                              !itemProgressCallback(
+                                template.itemId,
+                                common.EItemProgressStatus.Created,
+                                template.estimatedDeploymentCostFactor / 2,
+                                createResponse.group.id
+                              )
+                            ) {
+                              itemProgressCallback(
+                                template.itemId,
+                                common.EItemProgressStatus.Cancelled,
+                                0
+                              );
+                              // eslint-disable-next-line @typescript-eslint/no-floating-promises
+                              common
+                                .removeGroup(createResponse.group.id, destinationAuthentication)
+                                .then(
+                                  () =>
+                                    resolve(
+                                      common.generateEmptyCreationResponse(template.type)
+                                    ),
+                                  () =>
+                                    resolve(common.generateEmptyCreationResponse(template.type))
+                                );
+                            } else {
+                              resolve({
+                                item: newItemTemplate,
+                                id: createResponse.group.id,
+                                type: newItemTemplate.type,
+                                postProcess: false
+                              });
+                            }
+                          } else {
+                            itemProgressCallback(
+                              template.itemId,
+                              common.EItemProgressStatus.Failed,
+                              0
+                            );
+                            resolve(common.generateEmptyCreationResponse(template.type)); // fails to create item
+                          }
+                        });
+                      }
+                    } else {
+                      itemProgressCallback(
+                        template.itemId,
+                        common.EItemProgressStatus.Failed,
+                        0
+                      );
+                      resolve(common.generateEmptyCreationResponse(template.type)); // fails to create item
+                    }
+                  })
+                } else {
+                  resolve({
+                    item: newItemTemplate,
+                    id: createResponse.group.id,
+                    type: newItemTemplate.type,
+                    postProcess: false
+                  });
+                }
               }
             }
           } else {

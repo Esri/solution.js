@@ -1145,7 +1145,8 @@ export function _getGroupUpdates(
     return common.shareItem(
       templateDictionary[sourceGroupId].itemId,
       template.itemId,
-      authentication
+      authentication,
+      common.isTrackingViewTemplate(template) ? templateDictionary.locationTracking.owner : undefined
     );
   });
 }
