@@ -21,6 +21,7 @@ import { getProp, setCreateProp, setProp } from "./generalHelpers";
 import { getItemBase } from "./restHelpersGet";
 import { templatizeTerm } from "./templatization";
 import { IItemUpdate } from "@esri/arcgis-rest-types";
+import { ICreateServiceParams } from "@esri/arcgis-rest-service-admin";
 
 /**
  * Used by deploy to evaluate if we have everything we need to deploy tracking views.
@@ -131,12 +132,12 @@ export function isTrackingViewTemplate(
   itemTemplate?: IItemTemplate,
   itemUpdate?: IItemUpdate
 ): boolean {
-  const typeKeywords: any = itemTemplate ? 
-    getProp(itemTemplate, "item.typeKeywords") : itemUpdate ?
-      getProp(itemUpdate, "typeKeywords") : [];
-  const trackViewGroup: any = itemTemplate ? 
-    getProp(itemTemplate, "item.properties.trackViewGroup") : itemUpdate ?
-      getProp(itemUpdate, "properties.trackViewGroup") : [];
+  const typeKeywords: any =
+    getProp(itemTemplate, "item.typeKeywords") ||
+      getProp(itemUpdate, "typeKeywords");
+  const trackViewGroup: any =
+    getProp(itemTemplate, "item.properties.trackViewGroup") ||
+      getProp(itemUpdate, "properties.trackViewGroup");
   return (typeKeywords && typeKeywords.indexOf("Location Tracking View") > -1 && trackViewGroup) ? true : false;
 }
 
@@ -204,6 +205,7 @@ export function _setName(
   groupIdVar: string
 ) {
   const name: string = getProp(itemTemplate, path);
+  /* istanbul ignore else */
   if (name) {
     setProp(
       itemTemplate,
@@ -251,7 +253,7 @@ export function setTrackingOptions(
   itemTemplate: IItemTemplate,
   options: any,
   templateDictionary: any
-) {
+): ICreateServiceParams {
   /* istanbul ignore else */
   if (isTrackingViewTemplate(itemTemplate)) {
     setCreateProp(options, "owner", templateDictionary.locationTracking.owner);

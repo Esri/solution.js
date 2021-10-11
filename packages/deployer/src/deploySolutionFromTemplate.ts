@@ -202,6 +202,7 @@ export function deploySolutionFromTemplate(
 
         // update templateDictionary to indicate if the user owns the tracking service
         // this will affect how we handle group sharing
+        /* istanbul ignore else */
         if (templateDictionary.locationTrackingEnabled) {
           setCreateProp(
             templateDictionary,

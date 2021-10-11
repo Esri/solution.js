@@ -39,6 +39,7 @@ export function shareItemToGroups(
         groupId,
         authentication
       };
+      /* istanbul ignore else */
       if (owner) {
         requestOptions.owner = owner;
       }

@@ -3094,6 +3094,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
 
       const actual = restHelpers._setItemProperties(
         item,
+        itemTemplate,
         serviceInfo,
         {},
         true
@@ -3138,7 +3139,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
           }
         );
       restHelpers
-        .shareItem(groupId, id, MOCK_USER_SESSION)
+        .shareItem(groupId, id, MOCK_USER_SESSION, MOCK_USER_SESSION.username)
         .then(() => done())
         .catch(ex => {
           done.fail();
@@ -3309,6 +3310,39 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
           MOCK_USER_SESSION,
           null,
           "public"
+        )
+        .then(
+          () => {
+            done();
+          },
+          () => done.fail()
+        );
+    });
+
+    it("with tracker share", done => {
+      itemTemplate.item.id = "itm1234567890";
+      itemTemplate.item.typeKeywords = ["Location Tracking View"];
+      itemTemplate.item.properties = {
+        trackViewGroup: "grp123"
+      };
+      fetchMock.post(
+        utils.PORTAL_SUBSET.restUrl +
+          "/content/users/LocationTrackingServiceOwner/items/itm1234567890/update",
+        '{"success":true}'
+      );
+      fetchMock.post(
+        utils.PORTAL_SUBSET.restUrl +
+          "/content/users/casey/items/itm1234567890/share",
+        '{"success":true}'
+      );
+      restHelpers
+        .updateItemExtended(
+          itemTemplate.item,
+          itemTemplate.data,
+          MOCK_USER_SESSION,
+          null,
+          "public",
+          { locationTracking: { owner: "LocationTrackingServiceOwner"} }
         )
         .then(
           () => {
@@ -4023,6 +4057,86 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
         }, done.fail);
     });
 
+    it("can get tracker options for HOSTED service with values", done => {
+      const userSession: interfaces.UserSession = new interfaces.UserSession({
+        username: "jsmith",
+        password: "123456"
+      });
+
+      itemTemplate = {
+        itemId: "ab766cba0dd44ec080420acc10990282",
+        key: "",
+        properties: {
+          service: {
+            somePropNotInItem: true, // should be added to item and params
+            hasViews: true, // should be skipped
+            capabilities: ["Query"], // should be added to item and params
+            spatialReference: {
+              wkid: 102100
+            }
+          },
+          layers: [
+            {
+              fields: []
+            }
+          ],
+          tables: []
+        },
+        type: "",
+        item: {
+          id: "",
+          type: "",
+          name: "A",
+          typeKeywords: ["Location Tracking View"],
+          properties: {
+            trackViewGroup: "grp123"
+          }
+        },
+        data: {},
+        resources: [],
+        estimatedDeploymentCostFactor: 0,
+        dependencies: [],
+        groups: []
+      };
+
+      const templateDictionary: any = {
+        folderId: "aabb123456",
+        isPortal: false,
+        solutionItemId: "sol1234567890",
+        ab766cba0dd44ec080420acc10990282: {},
+        organization: organization,
+        solutionItemExtent: solutionItemExtent,
+        locationTracking: {
+          owner: "LocationTrackingServiceOwner"
+        }
+      };
+
+      fetchMock.post(
+        "http://utility/geomServer/findTransformations/rest/info",
+        '{"error":{"code":403,"message":"Access not allowed request","details":[]}}'
+      );
+      restHelpers
+        ._getCreateServiceOptions(itemTemplate, userSession, templateDictionary)
+        .then(options => {
+          expect(options).toEqual({
+            item: {
+              name: "A",
+              title: undefined,
+              preserveLayerIds: true,
+              owner: "LocationTrackingServiceOwner",
+              isView: true
+            },
+            params: {
+              isView: true,
+              outputType: "locationTrackingService"
+            },
+            owner: "LocationTrackingServiceOwner",
+            authentication: userSession
+          });
+          done();
+        }, done.fail);
+    });
+
     it("can get options for PORTAL service with values and unsupported capabilities", done => {
       const userSession: interfaces.UserSession = new interfaces.UserSession({
         username: "jsmith",
@@ -4444,6 +4558,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
 
       const updatedItem: any = restHelpers._setItemProperties(
         item,
+        itemTemplate,
         serviceInfo,
         params,
         false

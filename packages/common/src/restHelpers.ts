@@ -882,7 +882,7 @@ export function createUniqueGroup(
           reject(err);
         }
       });
-    });
+    }, e => reject(e));
   });
 }
 
@@ -1426,7 +1426,6 @@ export function searchAllGroups(
   };
 
   let finalResults: IGroup[] = groups ? groups : [];
-
   return new Promise<IGroup[]>((resolve, reject) => {
     searchGroups(
       searchString,

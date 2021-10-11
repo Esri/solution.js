@@ -205,6 +205,7 @@ export function createItemFromTemplate(
               } else {
                 if (common.isTrackingViewGroup(newItemTemplate)) {
                   const owner: string = templateDictionary.locationTracking.owner;
+                  // eslint-disable-next-line @typescript-eslint/no-floating-promises
                   common.reassignGroup(
                     createResponse.group.id,
                     owner,
@@ -236,6 +237,7 @@ export function createItemFromTemplate(
                               resolve(common.generateEmptyCreationResponse(template.type))
                           );
                       } else {
+                        // eslint-disable-next-line @typescript-eslint/no-floating-promises
                         common.removeUsers(
                           createResponse.group.id,
                           [destinationAuthentication.username],

@@ -52,6 +52,7 @@ export function shareTemplatesToGroups(
       if (isTrackingViewTemplate(tmpl) && !getProp(templateDictionary, "locationTracking.userIsOwner")) {
         const trackingGroupId = getProp(tmpl, "item.properties.trackViewGroup");
         const owner = getProp(templateDictionary, "locationTracking.owner");
+        /* istanbul ignore else */
         if (trackingGroupId && owner) {
           const trackerGroupIds = groupIds.filter(id => {
             return id === replaceInTemplate(trackingGroupId, templateDictionary);

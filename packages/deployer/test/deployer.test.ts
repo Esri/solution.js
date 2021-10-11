@@ -224,8 +224,7 @@ describe("Module `deployer`", () => {
       groupTemplate.itemId = groupId;
       groupTemplate.item.id = "{{" + groupId + ".itemId}}";
 
-      const user: any = testUtils.getContentUser();
-      user.groups = [];
+      const user: any = testUtils.getUserResponse();
 
       // get templates
       const featureServiceTemplate: any = templates.getItemTemplate(
@@ -251,7 +250,8 @@ describe("Module `deployer`", () => {
           testProperty: "ABC"
         },
         thumbnailurl:
-          "https://myorg.maps.arcgis.com/sharing/rest/content/items/sln1234567890/info/thumbnail/ago_downloaded.png"
+          "https://myorg.maps.arcgis.com/sharing/rest/content/items/sln1234567890/info/thumbnail/ago_downloaded.png",
+        locationTrackingEnabled: true
       };
       const featureServerAdminUrl: string =
         "https://services123.arcgis.com/org1234567890/arcgis/rest/admin/services/ROWPermits_publiccomment/FeatureServer";
@@ -310,6 +310,12 @@ describe("Module `deployer`", () => {
 
       const communitySelfResponse: any = testUtils.getUserResponse();
       const portalsSelfResponse: any = testUtils.getPortalsSelfResponse();
+      portalsSelfResponse.helperServices.locationTracking = {
+        id: "aaa2c6105dc243a2ad1377245722e312",
+        url: "https://locationtracking.arcgis.com/arcgis/rest/services/LocationTracking/FeatureServer",
+        owner: "LocationTrackingServiceOwner",
+        userIsOwner: false
+      };
       const geometryServer: string =
         portalsSelfResponse.helperServices.geometry.url;
 
@@ -483,6 +489,10 @@ describe("Module `deployer`", () => {
         .post(
           "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/items/map1234567890/protect",
           { success: true }
+        )
+        .get(
+          "https://myorg.maps.arcgis.com/sharing/rest/content/items/aaa2c6105dc243a2ad1377245722e312?f=json&token=fake-token",
+          { owner: "LocationTrackingServiceOwner", id: "aaa2c6105dc243a2ad1377245722e312" }
         );
       spyOn(console, "log").and.callFake(() => {});
 
@@ -627,7 +637,18 @@ describe("Module `deployer`", () => {
         params: {
           testProperty: "ABC"
         },
-        locationTrackingEnabled: false
+        locationTrackingEnabled: true,
+        locationTracking: {
+          id: "aaa2c6105dc243a2ad1377245722e312",
+          url: "https://locationtracking.arcgis.com/arcgis/rest/services/LocationTracking/FeatureServer",
+          owner: "LocationTrackingServiceOwner",
+          userIsOwner: false
+        },
+        allGroups: user.groups,
+        "aaa2c6105dc243a2ad1377245722e312": {
+          itemId: "aaa2c6105dc243a2ad1377245722e312"
+        },
+
       };
       expectedTemplate[groupId] = {
         itemId: newGroupId
@@ -675,7 +696,9 @@ describe("Module `deployer`", () => {
 
             // Repeat with progress callback
             options.progressCallback = testUtils.SOLUTION_PROGRESS_CALLBACK;
-            options.templateDictionary = {};
+            options.templateDictionary = {
+              locationTrackingEnabled: true
+            };
             deployer
               .deploySolution(itemInfo.item.id, MOCK_USER_SESSION, options)
               .then(done, e => {
