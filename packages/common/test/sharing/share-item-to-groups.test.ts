@@ -54,4 +54,12 @@ describe("shareItemToGroups", () => {
       }
     );
   });
+  it("it sets owner when provided", () => {
+    const shareSpy = spyOn(portal, "shareItemWithGroup").and.resolveTo({
+      itemId: "3ef"
+    });
+    return shareItemToGroups(["bc1"], "3ef", MOCK_USER_SESSION, "LocationTrackingServiceOwner").then(() => {
+      expect(shareSpy.calls.count()).toBe(1, "call shareItemToGroups once");
+    });
+  });
 });

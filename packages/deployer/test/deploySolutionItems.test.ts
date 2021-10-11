@@ -1625,7 +1625,11 @@ describe("Module `deploySolutionItems`", () => {
 
     it("should handle error on copy group resources", done => {
       const itemId: string = "abc9cab401af4828a25cc6eaeb59fb69";
-      const templateDictionary: any = {};
+      const templateDictionary: any = {
+        user: {
+          groups: []
+        }
+      };
       const newItemID: string = "abc8cab401af4828a25cc6eaeb59fb69";
 
       const itemTemplate: common.IItemTemplate = templates.getItemTemplateSkeleton();
@@ -1847,6 +1851,33 @@ describe("Module `deploySolutionItems`", () => {
         expect(shareSpy.calls.argsFor(0)[1]).toBe("3ef");
         expect(shareSpy.calls.argsFor(1)[0]).toBe("bc7");
         expect(shareSpy.calls.argsFor(1)[1]).toBe("3ef");
+      });
+    });
+    it("makes sharing calls for tracking groups", () => {
+      const shareSpy = spyOn(common, "shareItem").and.resolveTo();
+      const tmpl = {
+        groups: ["bc4"],
+        itemId: "3ef",
+        item: {
+          typeKeywords: ["Location Tracking View"],
+          properties: {
+            trackViewGroup: "abc"
+          }
+        }
+      } as common.IItemTemplate;
+      const td = {
+        bc4: {
+          itemId: "bc6"
+        },
+        locationTracking: {
+          owner: "LocationTrackingServiceOwner"
+        }
+      };
+      return Promise.all(
+        deploySolution._getGroupUpdates(tmpl, MOCK_USER_SESSION, td)
+      ).then(() => {
+        expect(shareSpy.calls.argsFor(0)[0]).toBe("bc6");
+        expect(shareSpy.calls.argsFor(0)[1]).toBe("3ef");
       });
     });
   });

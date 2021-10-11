@@ -20,6 +20,7 @@ import { getWithDefault } from "@esri/hub-common";
 import * as portal from "@esri/arcgis-rest-portal";
 import { postProcess } from "./helpers/post-process";
 import { sortTemplates } from "./helpers/sortTemplates";
+import { setCreateProp } from "@esri/solution-common";
 
 // NOTE: Moved to separate file to allow stubbing in main deploySolution tests
 
@@ -152,6 +153,10 @@ export function deploySolutionFromTemplate(
           templateDictionary,
           solutionTemplateData.templates
         );
+        const trackingOwnerPromise = common.getTackingServiceOwner(
+          templateDictionary,
+          authentication
+        )
 
         // Create a folder to hold the deployed solution. We use the solution name, appending a sequential
         // suffix if the folder exists, e.g.,
@@ -175,10 +180,10 @@ export function deploySolutionFromTemplate(
         );
 
         // Await completion of async actions: folder creation & extents conversion
-        return Promise.all([folderPromise, extentsPromise]);
+        return Promise.all([folderPromise, extentsPromise, trackingOwnerPromise]);
       })
       .then(responses => {
-        const [folderResponse, wgs84Extent] = responses;
+        const [folderResponse, wgs84Extent, trackingOwnerResponse] = responses;
         deployedFolderId = folderResponse.folder.id;
         templateDictionary.folderId = deployedFolderId;
         templateDictionary.solutionItemExtent =
@@ -194,6 +199,18 @@ export function deploySolutionFromTemplate(
           [wgs84Extent.xmin, wgs84Extent.ymin],
           [wgs84Extent.xmax, wgs84Extent.ymax]
         ];
+
+        // update templateDictionary to indicate if the user owns the tracking service
+        // this will affect how we handle group sharing
+        /* istanbul ignore else */
+        if (templateDictionary.locationTrackingEnabled) {
+          setCreateProp(
+            templateDictionary,
+            "locationTracking.userIsOwner",
+            trackingOwnerResponse
+          );
+        }
+
         // Create a deployed Solution item
         const createSolutionItemBase = {
           ...common.sanitizeJSONAndReportChanges(solutionTemplateBase),

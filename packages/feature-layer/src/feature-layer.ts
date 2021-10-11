@@ -218,7 +218,9 @@ export function createItemFromTemplate(
                         },
                         newItemTemplate.data,
                         destinationAuthentication,
-                        template.item.thumbnail
+                        template.item.thumbnail,
+                        undefined,
+                        templateDictionary
                       )
                       .then(
                         () => {

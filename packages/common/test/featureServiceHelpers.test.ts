@@ -32,6 +32,7 @@ import {
   deTemplatizeFieldInfos,
   getLayersAndTables,
   getExistingLayersAndTables,
+  addFeatureServiceDefinition,
   addFeatureServiceLayersAndTables,
   updateLayerFieldReferences,
   postProcessFields,
@@ -3518,6 +3519,65 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
         () => done.fail(),
         () => done()
       );
+    });
+
+    it("should skip tracking view", done => {
+      const expectedUrl: string =
+        "https://services123.arcgis.com/org1234567890/arcgis/rest/services/ROWPermits_publiccomment/FeatureServer";
+
+      itemTemplate = templates.getItemTemplate(
+        "Feature Service",
+        [],
+        expectedUrl
+      );
+      itemTemplate.item.typeKeywords = ["Location Tracking View"];
+      itemTemplate.item.properties = {
+        "trackViewGroup": "grp123"
+      };
+
+      addFeatureServiceLayersAndTables(
+        itemTemplate,
+        {},
+        {
+          layers: [],
+          tables: []
+        },
+        MOCK_USER_SESSION
+      ).then((response) => {
+        expect(response).toBeNull();
+        done();
+      }, done.fail);
+    });
+  });
+
+  describe("addFeatureServiceDefinition", () => {
+    it("should skip tracking view", done => {
+      const expectedUrl: string =
+        "https://services123.arcgis.com/org1234567890/arcgis/rest/services/ROWPermits_publiccomment/FeatureServer";
+
+      itemTemplate = templates.getItemTemplate(
+        "Feature Service",
+        [],
+        expectedUrl
+      );
+      itemTemplate.item.typeKeywords = ["Location Tracking View"];
+      itemTemplate.item.properties = {
+        "trackViewGroup": "grp123"
+      };
+
+      addFeatureServiceDefinition(
+        expectedUrl,
+        [],
+        {},
+        MOCK_USER_SESSION,
+        "",
+        {},
+        {},
+        itemTemplate
+      ).then(actual => {
+        expect(actual).toBeNull();
+        done();
+      }, done.fail)
     });
   });
 
