@@ -32,8 +32,10 @@ describe("_postProcessSite :: ", () => {
           chk: "{{bc66.itemId}}"
         }
       },
-      data: {}
-    } as hubCommon.IModel;
+      data: {
+        values: {}
+      }
+    } as unknown as hubCommon.IModel;
     infos = [
       { id: "ef1", type: "Web Map" },
       { id: "ef2", type: "Web Mapping Application" },
