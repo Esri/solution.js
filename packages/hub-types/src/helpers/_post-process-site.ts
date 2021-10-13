@@ -13,9 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { IModel, IHubUserRequestOptions } from "@esri/hub-common";
+import { IModel, IHubUserRequestOptions, interpolate } from "@esri/hub-common";
 
-import { _shareItemsToSiteGroups, updateSite, interpolateSite } from "@esri/hub-sites";
+import { _shareItemsToSiteGroups, updateSite } from "@esri/hub-sites";
 
 import { _updateSitePages } from "./_update-site-pages";
 
@@ -73,7 +73,7 @@ export function _postProcessSite(
   siteModel.item.properties.children = childItemIds;
 
   // re-interpolate the siteModel using the itemInfos
-  siteModel = interpolateSite(siteModel, templateDictionary, {});
+  siteModel = interpolate(siteModel, templateDictionary, {});
   // and update the model
   secondPassPromises.push(
     updateSite(siteModel, {
