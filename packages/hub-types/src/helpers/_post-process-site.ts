@@ -40,16 +40,31 @@ export function _postProcessSite(
     info => info.id !== siteModel.item.id
   );
 
+  // get a list all form ids and form dependency (feature service) ids
+  const formIdsAndDependencies = infosWithoutSite.reduce(
+    (acc, itemInfo) => itemInfo.type === 'Form'
+      ? [...acc, itemInfo.id, ...itemInfo.item.dependencies]
+      : acc,
+    []
+  );
+    
   // convert the itemInfo's into things that look enough like a model
-  // that we can call _shareItemsToSiteGroups
-  const pseudoModels = infosWithoutSite.map(e => {
-    return {
-      item: {
-        id: e.id,
-        type: e.type
-      }
-    };
-  });
+  // that we can call _shareItemsToSiteGroups, excluding forms and any
+  // of their feature services
+  const pseudoModels = infosWithoutSite.reduce(
+    (acc, itemInfo) => formIdsAndDependencies.includes(itemInfo.id)
+      ? acc
+      : [
+          ...acc,
+          {
+            item: {
+              id: itemInfo.id,
+              type: itemInfo.type
+            }
+          }
+        ],
+    []
+  );
 
   let secondPassPromises: Array<Promise<any>> = [];
 

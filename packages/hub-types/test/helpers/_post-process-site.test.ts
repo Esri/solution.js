@@ -37,10 +37,13 @@ describe("_postProcessSite :: ", () => {
       }
     } as unknown as hubCommon.IModel;
     infos = [
-      { id: "ef1", type: "Web Map" },
-      { id: "ef2", type: "Web Mapping Application" },
-      { id: "ef3", type: "Hub Page" },
-      { id: "3ef", type: "Hub Site" }
+      { id: "ef1", type: "Web Map", item: { dependencies: [] } },
+      { id: "ef2", type: "Web Mapping Application", item: { dependencies: [] } },
+      { id: "ef3", type: "Hub Page", item: { dependencies: [] } },
+      { id: "3ef", type: "Hub Site", item: { dependencies: [] } },
+      { id: "4ef", type: "Form", item: { dependencies: ["5ef", "6ef"] } },
+      { id: "5ef", type: "Feature Service", item: { dependencies: [] } },
+      { id: "6ef", type: "Feature Service", item: { dependencies: [] } }
     ];
   });
   it("shared items to site teams", () => {
@@ -106,7 +109,7 @@ describe("_postProcessSite :: ", () => {
         expect(updateSiteSpy.calls.count()).toBe(1, "should update the site");
         const updateModel = updateSiteSpy.calls.argsFor(0)[0];
         expect(updateModel.item.properties.children).toEqual(
-          ["ef1", "ef2", "ef3"],
+          ["ef1", "ef2", "ef3", "4ef", "5ef", "6ef"],
           "it should populate children array and exclude site"
         );
         expect(updateSiteSpy.calls.argsFor(0)[1]).toEqual({
