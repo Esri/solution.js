@@ -15,13 +15,15 @@
  */
 import * as hubCommon from "@esri/hub-common";
 import * as hubSites from "@esri/hub-sites";
+import * as hubSurveys from "@esri/hub-surveys";
 import * as postProcessSiteModule from "../../src/helpers/_post-process-site";
 import * as updateSitePagesModule from "../../src/helpers/_update-site-pages";
-import { IUpdateItemResponse } from "@esri/arcgis-rest-portal";
+import { IUpdateItemResponse, IItem } from "@esri/arcgis-rest-portal";
 
 describe("_postProcessSite :: ", () => {
   let model: hubCommon.IModel;
   let infos: any[];
+  let surveyCompositeModel: IGetSurveyModelsResponse;
   beforeEach(() => {
     model = {
       item: {
@@ -41,10 +43,15 @@ describe("_postProcessSite :: ", () => {
       { id: "ef2", type: "Web Mapping Application", item: { dependencies: [] } },
       { id: "ef3", type: "Hub Page", item: { dependencies: [] } },
       { id: "3ef", type: "Hub Site", item: { dependencies: [] } },
-      { id: "4ef", type: "Form", item: { dependencies: ["5ef", "6ef"] } },
-      { id: "5ef", type: "Feature Service", item: { dependencies: [] } },
-      { id: "6ef", type: "Feature Service", item: { dependencies: [] } }
+      { id: "ef5", type: "Form", item: { dependencies: ["of6"] } },
+      { id: "ef6", type: "Feature Service", item: { dependencies: [] } }
     ];
+    surveyCompositeModel = {
+      form: { item: { id: "ef5" } },
+      featureService: { item: { id: "ef6" } },
+      fieldworker: null,
+      stakeholder: null
+    } as hubCommon.IGetSurveyModelsResponse;
   });
   it("shared items to site teams", () => {
     const fakeRo = {} as hubCommon.IHubUserRequestOptions;
@@ -64,6 +71,7 @@ describe("_postProcessSite :: ", () => {
     const updateSiteSpy = spyOn(hubSites, "updateSite").and.resolveTo(
       {} as IUpdateItemResponse
     );
+    const getSurveyModelsSpy = spyOn(hubSurveys, "getSurveyModels").and.callFake(() => Promise.resolve(surveyCompositeModel));
     return postProcessSiteModule
       ._postProcessSite(model, infos, { bc66: { itemId: "ef66" } }, fakeRo)
       .then(result => {
@@ -87,6 +95,8 @@ describe("_postProcessSite :: ", () => {
           ...fakeRo,
           allowList: null
         });
+        expect(getSurveyModelsSpy.calls.count()).toBe(1, "should fetch survey composite model");
+        expect(getSurveyModelsSpy.calls.argsFor(0)[0]).toBe("ef5", "should fetch survey composite model by expected id");
       });
   });
 
@@ -103,19 +113,22 @@ describe("_postProcessSite :: ", () => {
     const updateSiteSpy = spyOn(hubSites, "updateSite").and.resolveTo(
       {} as IUpdateItemResponse
     );
+    const getSurveyModelsSpy = spyOn(hubSurveys, "getSurveyModels").and.callFake(() => Promise.resolve(surveyCompositeModel));
     return postProcessSiteModule
       ._postProcessSite(model, infos, { bc66: { itemId: "ef66" } }, fakeRo)
       .then(_ => {
         expect(updateSiteSpy.calls.count()).toBe(1, "should update the site");
         const updateModel = updateSiteSpy.calls.argsFor(0)[0];
         expect(updateModel.item.properties.children).toEqual(
-          ["ef1", "ef2", "ef3", "4ef", "5ef", "6ef"],
+          ["ef1", "ef2", "ef3", "ef5", "ef6"],
           "it should populate children array and exclude site"
         );
         expect(updateSiteSpy.calls.argsFor(0)[1]).toEqual({
           ...fakeRo,
           allowList: null
         });
+        expect(getSurveyModelsSpy.calls.count()).toBe(1, "should fetch survey composite model");
+        expect(getSurveyModelsSpy.calls.argsFor(0)[0]).toBe("ef5", "should fetch survey composite model by expected id");
       });
   });
 });

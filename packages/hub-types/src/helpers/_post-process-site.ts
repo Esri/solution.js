@@ -13,11 +13,35 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { IModel, IHubUserRequestOptions } from "@esri/hub-common";
+import { IModel, IHubUserRequestOptions, IGetSurveyModelsResponse } from "@esri/hub-common";
 
 import { _shareItemsToSiteGroups, updateSite, interpolateSite } from "@esri/hub-sites";
 
+import { getSurveyModels } from '@esri/hub-surveys';
+
 import { _updateSitePages } from "./_update-site-pages";
+
+function getFormAndFormDependencyIds (itemInfos: any[], hubRequestOptions: IHubUserRequestOptions) {
+  // fetch all form & form dependencies by relationship
+  const formCompositePromises: Array<Promise<IGetSurveyModelsResponse>> = itemInfos.reduce(
+    (acc, info) => info.type === 'Form' ? [...acc, getSurveyModels(info.id, hubRequestOptions)] : acc,
+    []
+  );
+
+  return Promise.all(formCompositePromises)
+    // reduce to a flattened collection of form and form dependency ids
+    .then(formComposites =>
+      formComposites.reduce(
+        (acc, formComposite) => [
+          ...acc,
+          ...Object.values(formComposite).reduce(
+            (memo, model: IModel) => model ? [...memo, model.item.id] : memo,
+            []
+          )
+        ],
+        []
+      ))
+}
 
 /**
  * Post Process a Site
@@ -40,64 +64,59 @@ export function _postProcessSite(
     info => info.id !== siteModel.item.id
   );
 
-  // get a list all form ids and form dependency (feature service) ids
-  const formIdsAndDependencies = infosWithoutSite.reduce(
-    (acc, itemInfo) => itemInfo.type === 'Form'
-      ? [...acc, itemInfo.id, ...itemInfo.item.dependencies]
-      : acc,
-    []
-  );
-    
-  // convert the itemInfo's into things that look enough like a model
-  // that we can call _shareItemsToSiteGroups, excluding forms and any
-  // of their feature services
-  const pseudoModels = infosWithoutSite.reduce(
-    (acc, itemInfo) => formIdsAndDependencies.includes(itemInfo.id)
-      ? acc
-      : [
-          ...acc,
-          {
-            item: {
-              id: itemInfo.id,
-              type: itemInfo.type
-            }
-          }
-        ],
-    []
-  );
+  return getFormAndFormDependencyIds(infosWithoutSite, hubRequestOptions)
+    .then((formAndDependencyIds) => {
+      // convert the itemInfo's into things that look enough like a model
+      // that we can call _shareItemsToSiteGroups, excluding forms and any
+      // of their feature services
+      const pseudoModels = infosWithoutSite.reduce(
+        (acc, itemInfo) => formAndDependencyIds.includes(itemInfo.id)
+          ? acc
+          : [
+              ...acc,
+              {
+                item: {
+                  id: itemInfo.id,
+                  type: itemInfo.type
+                }
+              }
+            ],
+        []
+      );
 
-  let secondPassPromises: Array<Promise<any>> = [];
+      let secondPassPromises: Array<Promise<any>> = [];
 
-  secondPassPromises = secondPassPromises.concat(
-    _shareItemsToSiteGroups(
-      siteModel,
-      (pseudoModels as unknown) as IModel[],
-      hubRequestOptions
-    )
-  );
+      secondPassPromises = secondPassPromises.concat(
+        _shareItemsToSiteGroups(
+          siteModel,
+          (pseudoModels as unknown) as IModel[],
+          hubRequestOptions
+        )
+      );
 
-  // we can't use that same trick w/ the page sharing
-  // because we really need the models themselves
-  // so we delegate to a local function
-  secondPassPromises = secondPassPromises.concat(
-    _updateSitePages(siteModel, infosWithoutSite, hubRequestOptions)
-  );
-  // need to get all the child items and add into site.item.properties.children
-  const childItemIds = infosWithoutSite.map(i => i.id);
+      // we can't use that same trick w/ the page sharing
+      // because we really need the models themselves
+      // so we delegate to a local function
+      secondPassPromises = secondPassPromises.concat(
+        _updateSitePages(siteModel, infosWithoutSite, hubRequestOptions)
+      );
+      // need to get all the child items and add into site.item.properties.children
+      const childItemIds = infosWithoutSite.map(i => i.id);
 
-  siteModel.item.properties.children = childItemIds;
+      siteModel.item.properties.children = childItemIds;
 
-  // re-interpolate the siteModel using the itemInfos
-  siteModel = interpolateSite(siteModel, templateDictionary, {});
-  // and update the model
-  secondPassPromises.push(
-    updateSite(siteModel, {
-      ...hubRequestOptions,
-      allowList: null
-    })
-  );
+      // re-interpolate the siteModel using the itemInfos
+      siteModel = interpolateSite(siteModel, templateDictionary, {});
+      // and update the model
+      secondPassPromises.push(
+        updateSite(siteModel, {
+          ...hubRequestOptions,
+          allowList: null
+        })
+      );
 
-  return Promise.all(secondPassPromises).then(() => {
-    return true;
-  });
+      return Promise.all(secondPassPromises).then(() => {
+        return true;
+      });
+    });
 }

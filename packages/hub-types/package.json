@@ -22,6 +22,7 @@
     "@esri/hub-initiatives": "9.1.1",
     "@esri/hub-sites": "9.1.1",
     "@esri/hub-teams": "9.1.1",
+    "@esri/hub-surveys": "9.1.1",
     "rollup": "^1.22.0",
     "typescript": "^4.3.4"
   },
@@ -34,7 +35,8 @@
     "@esri/hub-common": "9.1.1",
     "@esri/hub-initiatives": "9.1.1",
     "@esri/hub-sites": "9.1.1",
-    "@esri/hub-teams": "9.1.1"
+    "@esri/hub-teams": "9.1.1",
+    "@esri/hub-surveys": "9.1.1"
   },
   "dependencies": {
     "@esri/solution-common": "^1.1.2",
