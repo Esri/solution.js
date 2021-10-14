@@ -2061,15 +2061,18 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
         "https://services123.arcgis.com/org1234567890/arcgis/rest/admin/services/ROWPermits_publiccomment";
 
       itemTemplate.item.url = url;
+      itemTemplate.properties.layers = [{
+        id: 0
+      }];
 
-      const relationships: any[] = [{ relationshipMock: "A" }];
+      const relationships: any[] = [{ relationshipMock: "A", id: 0 }];
 
       const objects: any = {
         0: {
           a: "a",
           type: "A",
           id: 0,
-          relationships: relationships,
+          relationships,
           deleteFields: ["A", "B"]
         }
       };
