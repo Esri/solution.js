@@ -23,7 +23,7 @@ import { IUpdateItemResponse, IItem } from "@esri/arcgis-rest-portal";
 describe("_postProcessSite :: ", () => {
   let model: hubCommon.IModel;
   let infos: any[];
-  let surveyCompositeModel: IGetSurveyModelsResponse;
+  let surveyCompositeModel: hubCommon.IGetSurveyModelsResponse;
   beforeEach(() => {
     model = {
       item: {
