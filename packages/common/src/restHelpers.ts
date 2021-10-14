@@ -1024,6 +1024,14 @@ export function getLayerUpdates(
       itemTemplate: args.itemTemplate,
       authentication: args.authentication
     });
+    // issue: #724
+    // In portal the order the relationships are added needs to follow the layer order
+    // otherwise the relationship IDs will be reset
+    relUpdates.layers = _sortRelationships(
+      args.itemTemplate.properties.layers,
+      args.itemTemplate.properties.tables,
+      relUpdates
+    );
     /* istanbul ignore else */
     if (relUpdates.layers.length > 0) {
       updates.push(_getUpdate(adminUrl, null, relUpdates, args, "add"));
@@ -1031,6 +1039,40 @@ export function getLayerUpdates(
     }
   }
   return updates;
+}
+
+/**
+ * Sorts relationships based on order of supporting layers and tables in the service definition
+ *
+ * @param layers the layers from the service
+ * @param tables the tables from the service
+ * @param relUpdates the relationships to add for the service
+ * 
+ * @return An array with relationships that have been sorted
+ */
+export function _sortRelationships(
+  layers: any[],
+  tables: any[],
+  relUpdates: any
+): any[] {
+  const ids: number[] = [].concat(
+    layers.map((l: any) => l.id),
+    tables.map((t: any) => t.id)
+  );
+  // In portal the order the relationships are added needs to follow the layer order
+  // otherwise the relationship IDs will be reset
+  const _relUpdateLayers: any[] = [];
+  ids.forEach(id => {
+    relUpdates.layers.some((relUpdate: any) => {
+      if (id === relUpdate.id) {
+        _relUpdateLayers.push(relUpdate);
+        return true;
+      } else {
+        return false;
+      }
+    });
+  });
+  return _relUpdateLayers;
 }
 
 /**
