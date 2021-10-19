@@ -523,12 +523,27 @@ export function cleanDataSourcesAndFeeds(template: IItemTemplate): void {
   );
 
   _removeIdProps(
+    getProp(template, "data.source") ? [template.data.source] : [],
+    dependencies
+  );
+
+  _removeIdProps(
     getProp(template, "data.feeds") ? template.data.feeds : [],
+    dependencies
+  );
+
+  _removeIdProps(
+    getProp(template, "data.feed") ? [template.data.feed] : [],
     dependencies
   );
 
   _removeIdPropsAndSetName(
     getProp(template, "data.outputs") ? template.data.outputs : [],
+    dependencies
+  );
+
+  _removeIdPropsAndSetName(
+    getProp(template, "data.output") ? [template.data.output] : [],
     dependencies
   );
 }
@@ -574,16 +589,16 @@ export function _removeIdPropsAndSetName(
   outputs.forEach(output => {
     /* istanbul ignore else */
     if (output.properties) {
-      _removeProp(
-        output.properties,
+      [
+        "feat-lyr-existing.portal.featureServicePortalItemID",
+        "feat-lyr-existing.portal.mapServicePortalItemID",
         "feat-lyr-new.portal.featureServicePortalItemID",
-        dependencies
-      );
-      _removeProp(
-        output.properties,
         "feat-lyr-new.portal.mapServicePortalItemID",
-        dependencies
-      );
+        "stream-lyr-new.portal.mapServicePortalItemID",
+        "stream-lyr-new.portal.featureServicePortalItemID",
+        "stream-lyr-new.portal.streamServicePortalItemID",
+        "simulator.url"
+      ].forEach(p => _removeProp(output.properties, p, dependencies));
       _updateName(output.properties);
     }
   });

@@ -47,6 +47,11 @@ export function getVelocityDependencies(
     dependencies
   );
 
+  _getFeedDependencies(
+    getProp(template, "data.feed") ? [template.data.feed] : [],
+    dependencies
+  );
+
   _getDependencies(
     getProp(template, "data.outputs") ? template.data.outputs : [],
     dependencies,
@@ -54,9 +59,21 @@ export function getVelocityDependencies(
   );
 
   _getDependencies(
+    getProp(template, "data.output") ? [template.data.outputs] : [],
+    dependencies,
+    "feat-lyr-new.portal.featureServicePortalItemID"
+  );
+
+  _getDependencies(
     getProp(template, "data.outputs") ? template.data.outputs : [],
     dependencies,
-    "feat-lyr-new.portal.mapServicePortalItemID"
+    "feat-lyr-existing.portalItemId"
+  );
+
+  _getDependencies(
+    getProp(template, "data.output") ? [template.data.outputs] : [],
+    dependencies,
+    "feat-lyr-existing.portalItemId"
   );
 
   return _validateDependencies(dependencies, authentication);
