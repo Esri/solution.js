@@ -46,7 +46,7 @@ export function checkSolution(
     common
       .getCompleteItem(itemId, authentication)
 
-      // ---------- Is it a Template or Deployed Solution? ---------------------------------------------------------------//
+      // ---------- Is it a Template or Deployed Solution? -----------------------------------------------------------//
       .then((results: common.ICompleteItem) => {
         currentAction = "";
         item = results;
@@ -76,7 +76,7 @@ export function checkSolution(
         return common.blobToJson(item.data);
       })
 
-      // ---------- Check the Solution2Item relationship from a Deployed Solution to each deployed item ------------------//
+      // ---------- Check the Solution2Item relationship from a Deployed Solution to each deployed item --------------//
       .then(itemDataJson => {
         templateItems = itemDataJson?.templates;
         /* istanbul ignore else */
@@ -127,7 +127,7 @@ export function checkSolution(
         return resultsHtml;
       })
 
-      // ---------- Check that all dependency references are items in Solution -------------------------------------------//
+      // ---------- Check that all dependency references are items in Solution ---------------------------------------//
       .then(() => {
         const dependencyIds = templateItems
           .reduce(
@@ -157,12 +157,12 @@ export function checkSolution(
         return resultsHtml;
       })
 
-      // ---------- Done -------------------------------------------------------------------------------------------------//
+      // ---------- Done ---------------------------------------------------------------------------------------------//
       .then(() => {
         return resultsHtml;
       })
 
-      // ---------- Fatal error ------------------------------------------------------------------------------------------//
+      // ---------- Fatal error --------------------------------------------------------------------------------------//
       .catch(error => {
         resultsHtml.push(`&#x2716; error${currentAction}: ${error.message}`);
         return resultsHtml;
@@ -226,3 +226,80 @@ export function compareItems(
     );
   });
 }
+
+/**
+ * Creates a hierarchy of the items in a Solution template.
+ *
+ * @param templates Array of templates from a Solution
+ * @return List of top-level items, each containing a recursive list of its dependencies
+ */
+export function getItemHierarchy(
+  templates: common.IItemTemplate[]
+): common.IHierarchyElement[] {
+    const hierarchy = [] as common.IHierarchyElement[];
+
+    function getTemplateInSolution(templates: common.IItemTemplate[], id: string) {
+        const baseId = deTemplatize(id);
+        const childId = templates.findIndex(function (template) { return baseId === deTemplatize(template.itemId); });
+        return childId >= 0 ? templates[childId] : null;
+    }
+
+    function deTemplatize(id: string) {
+        return id.startsWith("{{") ? id.substring(2, id.indexOf(".")) : id;
+    }
+
+    // Hierarchically list the children of specified nodes
+    function itemChildren(children: string[], accumulatedHierarchy: common.IHierarchyElement[]) {
+        // Visit each child
+        children.forEach(function (id) {
+          const child: common.IHierarchyElement = {
+                id: id,
+                dependencies: []
+            };
+            // Fill in the child's dependencies array with its children
+            const template = getTemplateInSolution(templates, id);
+            if (template) {
+              const dependencyIds = template.dependencies;
+                if (Array.isArray(dependencyIds) && dependencyIds.length > 0) {
+                    itemChildren(dependencyIds, child.dependencies);
+                }
+                accumulatedHierarchy.push(child);
+            }
+        });
+    }
+
+    // Find the top-level nodes. Start with all nodes, then remove those that other nodes depend on
+    const topLevelItemIds = _getTopLevelItemIds(templates);
+
+    // Start the recursive search with the top-level items
+    itemChildren(topLevelItemIds, hierarchy);
+    return hierarchy;
+};
+
+// ------------------------------------------------------------------------------------------------------------------ //
+
+/**
+ * Finds the top-level items in a Solution template--the items that are not dependencies of any other item
+ *
+ * @param templates Array of templates from a Solution
+ * @return List of top-level item ids
+ */
+function _getTopLevelItemIds(
+  templates: common.IItemTemplate[]
+): string[] {
+    // Find the top-level nodes. Start with all nodes, then remove those that other nodes depend on
+    const topLevelItemCandidateIds = templates.map(function (template) { return template.itemId; });
+
+    templates.forEach(function (template) {
+        (template.dependencies || []).forEach(function (dependencyId) {
+          const iNode = topLevelItemCandidateIds.indexOf(dependencyId);
+            if (iNode >= 0) {
+                // Node is somebody's dependency, so remove the node from the list of top-level nodes
+                // If iNode == -1, then it's a shared dependency and it has already been removed
+                topLevelItemCandidateIds.splice(iNode, 1);
+            }
+        });
+    });
+
+    return topLevelItemCandidateIds;
+};

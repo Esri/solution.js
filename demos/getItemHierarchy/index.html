@@ -2,9 +2,9 @@
 <html lang="en" dir="ltr">
 <head>
   <meta http-equiv="content-type" content="text/html; charset=utf-8" />
-  <title>@esri/solution-common getItemInfo example</title>
+  <title>@esri/solution-common getItemHierarchy example</title>
   <!--
-   | Copyright 2019 Esri
+   | Copyright 2021 Esri
    |
    | Licensed under the Apache License, Version 2.0 (the "License");
    | you may not use this file except in compliance with the License.
@@ -67,44 +67,38 @@
         "@esri/hub-sites": "../node_modules/@esri/hub-sites/dist/umd/sites.umd.min",
         "@esri/hub-teams": "../node_modules/@esri/hub-teams/dist/umd/teams.umd.min",
         "@esri/solution-common": "../node_modules/@esri/solution-common/dist/umd/common.umd",
+        "@esri/solution-viewer": "../node_modules/@esri/solution-viewer/dist/umd/viewer.umd",
         "adlib": "../node_modules/adlib/dist/adlib",
         "tslib": "../node_modules/tslib/tslib"
       }
     });
 
-    require(["@esri/arcgis-rest-auth", "../dist/getFormattedItemInfo", "../dist/raphael_2.2.1.min"],
-      function (auth, getFormattedItemInfo, Raphael) {
-        window.Raphael = Raphael;
-        require(["../dist/dracula_1.2.1.min"],
-          function (Dracula) {
-            "use strict";
-            goFcn = go;
-            document.getElementById("input").style.display = "block";
+    require(["@esri/arcgis-rest-auth", "../dist/getFormattedItemHierarchy"],
+      function (auth, getFormattedItemHierarchy) {
+        "use strict";
+        goFcn = go;
+        document.getElementById("input").style.display = "block";
 
-            function go () {
-              document.getElementById("input").style.display = "none";
-              document.getElementById("output").style.display = "block";
+        function go () {
+          document.getElementById("input").style.display = "none";
+          document.getElementById("output").style.display = "block";
 
-              getFormattedItemInfo.getFormattedItemInfo(
-                document.getElementById("id").value.trim(),
-                new auth.UserSession({
-                  username: document.getElementById("username").value,
-                  password: document.getElementById("password").value,
-                  portal: document.getElementById("srcPortal").value + "/sharing/rest"
-                }),
-                Raphael,
-                Dracula
-              ).then(
-                html => {
-                  document.getElementById("output").innerHTML = html;
-                },
-                error => {
-                  document.getElementById("output").innerHTML = "<span style=\"color:red\">" + error + "</span>";
-                }
-              );
+          getFormattedItemHierarchy.getFormattedItemHierarchy(
+            document.getElementById("id").value.trim(),
+            new auth.UserSession({
+              username: document.getElementById("username").value,
+              password: document.getElementById("password").value,
+              portal: document.getElementById("srcPortal").value + "/sharing/rest"
+            })
+          ).then(
+            html => {
+              document.getElementById("output").innerHTML = html;
+            },
+            error => {
+              document.getElementById("output").innerHTML = "<span style=\"color:red\">" + error + "</span>";
             }
-          }
-        );
+          );
+        }
       }
     );
   </script>
