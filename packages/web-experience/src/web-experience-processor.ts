@@ -26,7 +26,9 @@ import {
   IItemProgressCallback,
   IItemTemplate,
   ICreateItemFromTemplateResponse,
-  generateEmptyCreationResponse
+  IUpdateItemResponse,
+  generateEmptyCreationResponse,
+  updateItemTemplateFromDictionary
 } from "@esri/solution-common";
 import { IModel, failSafe } from "@esri/hub-common";
 import { getItemData, removeItem } from "@esri/arcgis-rest-portal";
@@ -143,4 +145,30 @@ export function createItemFromTemplate(
         return response;
       }
     });
+}
+
+/**
+ * Post-Process an Experience
+ *
+ * @param {string} itemId The item ID
+ * @param {string} type The template type
+ * @param {any[]} itemInfos Array of {id: 'ef3', type: 'Web Map'} objects
+ * @param {any} templateDictionary The template dictionary
+ * @param {UserSession} authentication The destination session info
+ * @returns Promise resolving to successfulness of update
+ */
+export function postProcess(
+  itemId: string,
+  type: string,
+  itemInfos: any[],
+  template: IItemTemplate,
+  templates: IItemTemplate[],
+  templateDictionary: any,
+  authentication: UserSession
+): Promise<IUpdateItemResponse> {
+  return updateItemTemplateFromDictionary(
+    itemId,
+    templateDictionary,
+    authentication
+  );
 }
