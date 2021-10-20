@@ -21,12 +21,14 @@ import {
 } from "./get-subscription-info";
 import { getProp } from "./generalHelpers";
 
+// Known base names if output, source, or feed name is missing
 export const BASE_NAMES: string[] = [
   "feat-lyr-new",
   "feat-lyr-existing",
   "stream-lyr-new"
 ];
 
+// Known prop paths that can contain item Ids
 export const PROP_NAMES: string [] = [
   ".portal.mapServicePortalItemID",
   ".portal.featureServicePortalItemID",
