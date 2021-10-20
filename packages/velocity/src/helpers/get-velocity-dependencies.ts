@@ -18,7 +18,9 @@ import {
   getProp,
   getItemBase,
   IItemTemplate,
-  UserSession
+  UserSession,
+  BASE_NAMES,
+  PROP_NAMES
 } from "@esri/solution-common";
 
 /**
@@ -36,45 +38,17 @@ export function getVelocityDependencies(
 ): Promise<string[]> {
   const dependencies: string[] = [];
 
-  _getDependencies(
-    getProp(template, "data.sources") ? template.data.sources : [],
-    dependencies,
-    "feature-layer.portalItemId"
-  );
-
-  _getFeedDependencies(
+  [
     getProp(template, "data.feeds") ? template.data.feeds : [],
-    dependencies
-  );
+    getProp(template, "data.feed") ? [template.data.feed] : []
+  ].forEach(f => _getFeedDependencies(f, dependencies));
 
-  _getFeedDependencies(
-    getProp(template, "data.feed") ? [template.data.feed] : [],
-    dependencies
-  );
-
-  _getDependencies(
+  [
+    getProp(template, "data.sources") ? template.data.sources : [],
+    getProp(template, "data.source") ? [template.data.source] : [],
     getProp(template, "data.outputs") ? template.data.outputs : [],
-    dependencies,
-    "feat-lyr-new.portal.featureServicePortalItemID"
-  );
-
-  _getDependencies(
-    getProp(template, "data.output") ? [template.data.outputs] : [],
-    dependencies,
-    "feat-lyr-new.portal.featureServicePortalItemID"
-  );
-
-  _getDependencies(
-    getProp(template, "data.outputs") ? template.data.outputs : [],
-    dependencies,
-    "feat-lyr-existing.portalItemId"
-  );
-
-  _getDependencies(
-    getProp(template, "data.output") ? [template.data.outputs] : [],
-    dependencies,
-    "feat-lyr-existing.portalItemId"
-  );
+    getProp(template, "data.output") ? [template.data.output] : []
+  ].forEach(d => _getDependencies(d, dependencies));
 
   return _validateDependencies(dependencies, authentication);
 }
@@ -139,14 +113,22 @@ export function _getFeedDependencies(
  */
 export function _getDependencies(
   outputs: any[],
-  dependencies: string[],
-  prop: string
+  dependencies: string[]
 ): void {
   outputs.reduce((prev: any, cur: any) => {
-    const id: string = cur.properties ? cur.properties[prop] : undefined;
-    if (id && prev.indexOf(id) < 0) {
-      prev.push(id);
-    }
+    const names: string[] = getProp(cur, "name") ? [cur.name] : BASE_NAMES;
+    names.forEach(n => {
+      PROP_NAMES.forEach(p => {
+        // skip map service and stream service ids
+        /* istanbul ignore else */
+        if (p.indexOf("mapServicePortalItemID") < 0 && p.indexOf("streamServicePortalItemID") < 0) {
+          const id: string = cur.properties ? cur.properties[n + p] : undefined;
+          if (id && prev.indexOf(id) < 0) {
+            prev.push(id);
+          }
+        }
+      });
+    });
     return prev;
   }, dependencies);
 }

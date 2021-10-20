@@ -21,6 +21,19 @@ import {
 } from "./get-subscription-info";
 import { getProp } from "./generalHelpers";
 
+export const BASE_NAMES: string[] = [
+  "feat-lyr-new",
+  "feat-lyr-existing",
+  "stream-lyr-new"
+];
+
+export const PROP_NAMES: string [] = [
+  ".portal.mapServicePortalItemID",
+  ".portal.featureServicePortalItemID",
+  ".portal.streamServicePortalItemID",
+  ".portalItemId"
+];
+
 /**
  * Get the base velocity url from the current orgs subscription info
  *
