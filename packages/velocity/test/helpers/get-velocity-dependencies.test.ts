@@ -22,6 +22,7 @@ import * as interfaces from "../../../common/src/interfaces";
 import * as fetchMock from "fetch-mock";
 import * as templates from "../../../common/test/mocks/templates";
 import * as utils from "../../../common/test/mocks/utils";
+import * as agolItems from "../../../common/test/mocks/agolItems";
 
 let MOCK_USER_SESSION: interfaces.UserSession;
 
@@ -36,6 +37,45 @@ afterEach(() => {
 jasmine.DEFAULT_TIMEOUT_INTERVAL = 20000; // default is 5000 ms
 
 describe("getVelocityDependencies", () => {
+  it("handles standalone source, feed, and output", done => {
+    const type = "Real Time Analytic";
+    const template = templates.getItemTemplate(type, []);
+
+    template.data.source = template.data.sources[0];
+    const sourceId: string = "aaa9398bcf8c4dc5a50cceaa59baf513";
+    template.data.source.properties["feature-layer.portalItemId"] = sourceId;
+    delete template.data.sources;
+
+    template.data.feed = template.data.feeds[0];
+    const feedId: string = "bbb9398bcf8c4dc5a50cceaa59baf513";
+    template.data.feed.id = feedId;
+    delete template.data.feeds;
+
+    template.data.output = template.data.outputs[0];
+    const outputId: string = "ccc9398bcf8c4dc5a50cceaa59baf513";
+    template.data.output.properties["feat-lyr-new.portal.featureServicePortalItemID"] = outputId;
+    delete template.data.outputs;
+
+    fetchMock
+      .get(
+        `https://myorg.maps.arcgis.com/sharing/rest/content/items/${feedId}?f=json&token=fake-token`,
+        agolItems.getAGOLItem(type, feedId)
+      )
+      .get(
+        `https://myorg.maps.arcgis.com/sharing/rest/content/items/${sourceId}?f=json&token=fake-token`,
+        agolItems.getAGOLItem(type, sourceId)
+      )
+      .get(
+        `https://myorg.maps.arcgis.com/sharing/rest/content/items/${outputId}?f=json&token=fake-token`,
+        agolItems.getAGOLItem(type, outputId)
+      );
+
+    getVelocityDependencies(template, MOCK_USER_SESSION).then(actual => {
+      expect(actual.length).toEqual(3);
+      done();
+    }, done.fail);
+  });
+
   it("handles misssing sources and feeds", done => {
     const type = "Real Time Analytic";
     const template = templates.getItemTemplate(type, []);
@@ -84,7 +124,22 @@ describe("_getDependencies", () => {
     const dataSources = template.data.sources;
     delete dataSources[0].properties;
     const deps: string[] = [];
-    _getDependencies(dataSources, deps, "feature-layer.portalItemId");
+    _getDependencies(dataSources, deps);
     expect(deps.length).toEqual(0);
+  });
+
+  it("handles missing name", () => {
+    const type = "Real Time Analytic";
+    const template = templates.getItemTemplate(type, []);
+    const dataSources = template.data.sources;
+    delete(dataSources[0].name);
+    dataSources[0].properties = {
+      "feat-lyr-new.portalItemId":
+        "aaaaf0cf8bdc4fb19749cc1cbad1651b",
+      "feature-layer.outSR": "4326"
+    }
+    const deps: string[] = [];
+    _getDependencies(dataSources, deps);
+    expect(deps.length).toEqual(1);
   });
 });

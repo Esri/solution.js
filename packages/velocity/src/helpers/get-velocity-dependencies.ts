@@ -73,7 +73,7 @@ export function _validateDependencies(
   return Promise.all(defs).then(itemInfos => {
     return Promise.resolve(
       itemInfos.reduce((prev, cur) => {
-        if (cur.typeKeywords.indexOf("IoTFeatureLayer") < 0) {
+        if (cur.typeKeywords.indexOf("IoTFeatureLayer") < 0 || cur.typeKeywords.indexOf("IoTFeatureLayer") < 0) {
           prev.push(cur.id);
         }
         return prev;

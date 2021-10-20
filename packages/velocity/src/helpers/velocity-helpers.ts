@@ -619,7 +619,7 @@ export function _updateName(props: any): void {
     "stream-lyr-new.name",
     "feat-lyr-existing.name"
   ].forEach(n => {
-    let name: string = props[n];
+    const name: string = props[n];
     /* istanbul ignore else */
     if (name && name.indexOf("{{solutionItemId}}") < 0) {
       props[n] = `${name}_{{solutionItemId}}`;
