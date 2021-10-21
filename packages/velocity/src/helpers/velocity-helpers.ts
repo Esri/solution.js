@@ -580,8 +580,6 @@ export function _removeIdPropsAndSetName(
         PROP_NAMES.forEach(p => _removeProp(output.properties, n + p, dependencies));
       });
 
-      _removeProp(output.properties, "simulator.url", dependencies)
-
       _updateName(output.properties);
     }
   });
