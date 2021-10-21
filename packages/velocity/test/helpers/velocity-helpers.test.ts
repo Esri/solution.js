@@ -346,9 +346,9 @@ describe("cleanDataSourcesAndFeeds", () => {
     template.data.output.properties["feat-lyr-new.portal.featureServicePortalItemID"] = outputId;
     delete template.data.outputs;
 
-    const veloccityUrl: string = "http://velocityUrl";
+    const velocityUrl: string = "http://velocityUrl";
 
-    cleanDataSourcesAndFeeds(template, veloccityUrl);
+    cleanDataSourcesAndFeeds(template, velocityUrl);
     expect(template.data.source.properties["feature-layer.portalItemId"]).toBeUndefined();
     expect(template.data.output.properties["feat-lyr-new.portal.featureServicePortalItemID"]).toBeUndefined();
   });

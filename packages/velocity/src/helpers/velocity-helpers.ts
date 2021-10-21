@@ -545,7 +545,7 @@ export function cleanDataSourcesAndFeeds(
 export function _removeIdProps(
   sourcesOrFeeds: any[],
   dependencies: string[],
-  veloccityUrl: string
+  velocityUrl: string
 ): void {
   sourcesOrFeeds.forEach(dataSource => {
     const idProp: string = "feature-layer.portalItemId";
@@ -567,7 +567,7 @@ export function _removeIdProps(
       // only remove velocity based simulator urls
       // otherwise we will leave as is with no templatization
       /* istanbul ignore else */
-      if (url && url.indexOf(veloccityUrl) > -1) {
+      if (url && url.indexOf(velocityUrl) > -1) {
         delete dataSource.properties[urlProp]
       }
     }
