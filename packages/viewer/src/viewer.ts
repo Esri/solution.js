@@ -238,33 +238,36 @@ export function getItemHierarchy(
 ): common.IHierarchyElement[] {
     const hierarchy = [] as common.IHierarchyElement[];
 
+    // Get the template specified by id out of a list of templates
     function getTemplateInSolution(templates: common.IItemTemplate[], id: string) {
-        const baseId = deTemplatize(id);
-        const childId = templates.findIndex(function (template) { return baseId === deTemplatize(template.itemId); });
+        const childId = templates.findIndex(function (template) { return id === template.itemId; });
         return childId >= 0 ? templates[childId] : null;
     }
 
-    function deTemplatize(id: string) {
-        return id.startsWith("{{") ? id.substring(2, id.indexOf(".")) : id;
-    }
-
     // Hierarchically list the children of specified nodes
-    function itemChildren(children: string[], accumulatedHierarchy: common.IHierarchyElement[]) {
+    function itemChildren(children: string[], accumulatedHierarchy: common.IHierarchyElement[], ancestors: string[] = []) {
         // Visit each child
         children.forEach(function (id) {
           const child: common.IHierarchyElement = {
-                id: id,
-                dependencies: []
-            };
-            // Fill in the child's dependencies array with its children
-            const template = getTemplateInSolution(templates, id);
-            if (template) {
+            id: id,
+            dependencies: []
+          };
+
+          // Fill in the child's dependencies array with its children
+          const template = getTemplateInSolution(templates, id);
+          if (template) {
+              // Only continue with this child's dependencies if it's not in the ancestors list to avoid infinite loops
+            if (ancestors.indexOf(id) < 0) {
+              // Add child to ancestors list
+              ancestors.push(id);
+
               const dependencyIds = template.dependencies;
-                if (Array.isArray(dependencyIds) && dependencyIds.length > 0) {
-                    itemChildren(dependencyIds, child.dependencies);
-                }
-                accumulatedHierarchy.push(child);
+              if (Array.isArray(dependencyIds) && dependencyIds.length > 0) {
+                  itemChildren(dependencyIds, child.dependencies, ancestors);
+              }
             }
+          }
+          accumulatedHierarchy.push(child);
         });
     }
 
@@ -279,10 +282,11 @@ export function getItemHierarchy(
 // ------------------------------------------------------------------------------------------------------------------ //
 
 /**
- * Finds the top-level items in a Solution template--the items that are not dependencies of any other item
+ * Finds the top-level items in a Solution template--the items that are not dependencies of any other item.
  *
  * @param templates Array of templates from a Solution
- * @return List of top-level item ids
+ * @return List of top-level item ids; note that the first item in the templates array is returned in the case
+ * where there are no top-level items due to a circular dependency
  */
 function _getTopLevelItemIds(
   templates: common.IItemTemplate[]
@@ -300,6 +304,11 @@ function _getTopLevelItemIds(
             }
         });
     });
+
+    // If no node is top level because of a circular dependency, choose the first template in the list
+    if (topLevelItemCandidateIds.length === 0 && templates.length > 0) {
+        topLevelItemCandidateIds.push(templates[0].itemId);
+    }
 
     return topLevelItemCandidateIds;
 };
