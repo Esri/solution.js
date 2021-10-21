@@ -77,7 +77,7 @@ export function convertItemToTemplate(
             return getVelocityDependencies(template, authentication).then(
               deps => {
                 template.dependencies = deps;
-                cleanDataSourcesAndFeeds(template);
+                cleanDataSourcesAndFeeds(template, templateDictionary.velocityUrl);
                 templatizeVelocity(template);
                 template.item = updateVelocityReferences(template.item, template.type, templateDictionary);
                 return Promise.resolve(template);

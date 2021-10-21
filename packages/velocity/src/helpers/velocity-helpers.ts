@@ -516,7 +516,10 @@ export function _fetch(
  * @param template The template that for the velocity item
  *
  */
-export function cleanDataSourcesAndFeeds(template: IItemTemplate): void {
+export function cleanDataSourcesAndFeeds(
+  template: IItemTemplate,
+  velocityUrl: string
+): void {
   const dependencies: string[] = template.dependencies;
 
   [
@@ -524,7 +527,7 @@ export function cleanDataSourcesAndFeeds(template: IItemTemplate): void {
     getProp(template, "data.source") ? [template.data.source] : [],
     getProp(template, "data.feeds") ? template.data.feeds : [],
     getProp(template, "data.feed") ? [template.data.feed] : []
-  ].forEach(d => _removeIdProps(d, dependencies));
+  ].forEach(d => _removeIdProps(d, dependencies, velocityUrl));
 
   [
     getProp(template, "data.outputs") ? template.data.outputs : [],
@@ -541,21 +544,31 @@ export function cleanDataSourcesAndFeeds(template: IItemTemplate): void {
  */
 export function _removeIdProps(
   sourcesOrFeeds: any[],
-  dependencies: string[]
+  dependencies: string[],
+  veloccityUrl: string
 ): void {
   sourcesOrFeeds.forEach(dataSource => {
     const idProp: string = "feature-layer.portalItemId";
     const layerIdProp: string = "feature-layer.layerId"
     /* istanbul ignore else */
-    if (
-      dataSource.properties &&
-      dataSource.properties[idProp]
-    ) {
-      const id: string = dataSource.properties[idProp];
+    if (dataSource.properties) {
       /* istanbul ignore else */
-      if (id && dependencies.indexOf(id) < 0) {
-        delete dataSource.properties[idProp];
-        delete dataSource.properties[layerIdProp];
+      if (dataSource.properties[idProp]) {
+        const id: string = dataSource.properties[idProp];
+        /* istanbul ignore else */
+        if (id && dependencies.indexOf(id) < 0) {
+          delete dataSource.properties[idProp];
+          delete dataSource.properties[layerIdProp];
+        }
+      }
+
+      const urlProp: string = "simulator.url";
+      const url: any = dataSource.properties[urlProp];
+      // only remove velocity based simulator urls
+      // otherwise we will leave as is with no templatization
+      /* istanbul ignore else */
+      if (url && url.indexOf(veloccityUrl) > -1) {
+        delete dataSource.properties[urlProp]
       }
     }
   });
