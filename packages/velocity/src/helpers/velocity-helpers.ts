@@ -20,7 +20,9 @@ import {
   replaceInTemplate,
   UserSession,
   getProp,
-  fail
+  fail,
+  BASE_NAMES,
+  PROP_NAMES
 } from "@esri/solution-common";
 
 /**
@@ -517,20 +519,17 @@ export function _fetch(
 export function cleanDataSourcesAndFeeds(template: IItemTemplate): void {
   const dependencies: string[] = template.dependencies;
 
-  _removeIdProps(
+  [
     getProp(template, "data.sources") ? template.data.sources : [],
-    dependencies
-  );
-
-  _removeIdProps(
+    getProp(template, "data.source") ? [template.data.source] : [],
     getProp(template, "data.feeds") ? template.data.feeds : [],
-    dependencies
-  );
+    getProp(template, "data.feed") ? [template.data.feed] : []
+  ].forEach(d => _removeIdProps(d, dependencies));
 
-  _removeIdPropsAndSetName(
+  [
     getProp(template, "data.outputs") ? template.data.outputs : [],
-    dependencies
-  );
+    getProp(template, "data.output") ? [template.data.output] : []
+  ].forEach(outputs => _removeIdPropsAndSetName(outputs, dependencies));
 }
 
 /**
@@ -545,16 +544,18 @@ export function _removeIdProps(
   dependencies: string[]
 ): void {
   sourcesOrFeeds.forEach(dataSource => {
+    const idProp: string = "feature-layer.portalItemId";
+    const layerIdProp: string = "feature-layer.layerId"
     /* istanbul ignore else */
     if (
       dataSource.properties &&
-      dataSource.properties["feature-layer.portalItemId"]
+      dataSource.properties[idProp]
     ) {
-      const id: string = dataSource.properties["feature-layer.portalItemId"];
+      const id: string = dataSource.properties[idProp];
       /* istanbul ignore else */
-      if (dependencies.indexOf(id) < 0) {
-        delete dataSource.properties["feature-layer.portalItemId"];
-        delete dataSource.properties["feature-layer.layerId"];
+      if (id && dependencies.indexOf(id) < 0) {
+        delete dataSource.properties[idProp];
+        delete dataSource.properties[layerIdProp];
       }
     }
   });
@@ -574,16 +575,11 @@ export function _removeIdPropsAndSetName(
   outputs.forEach(output => {
     /* istanbul ignore else */
     if (output.properties) {
-      _removeProp(
-        output.properties,
-        "feat-lyr-new.portal.featureServicePortalItemID",
-        dependencies
-      );
-      _removeProp(
-        output.properties,
-        "feat-lyr-new.portal.mapServicePortalItemID",
-        dependencies
-      );
+      const names: string[] = getProp(output, "name") ? [output.name] : BASE_NAMES;
+      names.forEach(n => {
+        PROP_NAMES.forEach(p => _removeProp(output.properties, n + p, dependencies));
+      });
+
       _updateName(output.properties);
     }
   });
@@ -616,15 +612,15 @@ export function _removeProp(
  *
  */
 export function _updateName(props: any): void {
-  let name: string = props["feat-lyr-new.name"];
-  /* istanbul ignore else */
-  if (name && name.indexOf("{{solutionItemId}}") < 0) {
-    props["feat-lyr-new.name"] = `${name}_{{solutionItemId}}`;
-  }
-
-  name = props["stream-lyr-new.name"];
-  /* istanbul ignore else */
-  if (name && name.indexOf("{{solutionItemId}}") < 0) {
-    props["stream-lyr-new.name"] = `${name}_{{solutionItemId}}`;
-  }
+  [
+    "feat-lyr-new.name",
+    "stream-lyr-new.name",
+    "feat-lyr-existing.name"
+  ].forEach(n => {
+    const name: string = props[n];
+    /* istanbul ignore else */
+    if (name && name.indexOf("{{solutionItemId}}") < 0) {
+      props[n] = `${name}_{{solutionItemId}}`;
+    }
+  });
 }
