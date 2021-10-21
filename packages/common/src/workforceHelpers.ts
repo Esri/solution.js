@@ -310,6 +310,7 @@ export function getWorkforceServiceInfo(
         ).then(
           results => {
             properties.workforceInfos["assignmentIntegrationInfos"] = results;
+            _updateGlobalIds(properties.workforceInfos);
             resolve(properties);
           },
           e => reject(fail(e))
@@ -318,6 +319,36 @@ export function getWorkforceServiceInfo(
       e => reject(fail(e))
     );
   });
+}
+
+export function _updateGlobalIds(
+  workforceInfos: any
+): void {
+  // wrap the global id in {}
+  const updateId = (i: any) => {
+    if (i["GlobalID"]) {
+      i["GlobalID"] = `{${i["GlobalID"]}}`;
+    }
+    return i;
+  };
+
+  const assignmentIntegrationInfos: any = getProp(workforceInfos, "assignmentIntegrationInfos");
+  if (assignmentIntegrationInfos && Array.isArray(assignmentIntegrationInfos)) {
+    setProp(
+      workforceInfos,
+      "assignmentIntegrationInfos",
+      assignmentIntegrationInfos.map(updateId)
+    );
+  }
+
+  const assignmentTypeInfos: any = getProp(workforceInfos, "assignmentTypeInfos");
+  if (assignmentTypeInfos && Array.isArray(assignmentTypeInfos)) {
+    setProp(
+      workforceInfos,
+      "assignmentTypeInfos",
+      assignmentTypeInfos.map(updateId)
+    );
+  }
 }
 
 export function _getAssignmentTypeInfos(assignmentTypes: any): any[] {
