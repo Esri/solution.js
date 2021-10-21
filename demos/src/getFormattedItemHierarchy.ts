@@ -55,18 +55,38 @@ export function getFormattedItemHierarchy(
       const hierarchy = viewer.getItemHierarchy(data.templates);
 
       // Handle an item in the hierarchy
-      function displayItem(item: common.IHierarchyElement): string {
-        return "<li>" + item.id + displayItems(item.dependencies) + "</li>";
+      async function displayItem(item: common.IHierarchyElement): Promise<string> {
+        const [title, childrenDisplays] = await Promise.all([
+          getItemTitle(item.id, authentication),
+          displayItems(item.dependencies)
+        ]);
+        return "<li>" + title + childrenDisplays + "</li>";
       }
 
       // Handle a list of hierarchy items at the same level
-      function displayItems(itemList: common.IHierarchyElement[]): string {
-        return "<ul>" + itemList.reduce((accum, item) => accum + displayItem(item), "") + "</ul>";
+      async function displayItems(itemList: common.IHierarchyElement[]): Promise<string> {
+        const itemDisplays = await Promise.all(itemList.map(
+          async (item) => await displayItem(item)
+        ));
+        return itemDisplays.reduce(
+          (htmlAccum, itemLine) => htmlAccum + itemLine,
+          "<ul>"
+        ) + "</ul>";
       }
 
-      const heading = "<b>Solution Template " + solutionTitle + ":</b><br/>";
-      return resolve(heading + displayItems(hierarchy));
+      // Get an item's title
+      function getItemTitle(id: string, authentication: common.UserSession): Promise<string> {
+        return common.getItemBase(id, authentication)
+        .then(
+          item => item.title,
+          () => id
+        );
+      }
 
+      return displayItems(hierarchy);
+    })
+    .then((html: string) => {
+      resolve("<b>Solution Template " + solutionTitle + ":</b><br/><br/>" + html);
     });
   });
 }
