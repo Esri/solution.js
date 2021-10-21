@@ -322,4 +322,29 @@ describe("cleanDataSourcesAndFeeds", () => {
     cleanDataSourcesAndFeeds(template);
     expect(template.dependencies.length).toEqual(0);
   });
+
+  it("can handle missing dataSources, feeds, and outputs", () => {
+    const type = "Real Time Analytic";
+    const template = templates.getItemTemplate(type, []);
+
+    template.data.source = template.data.sources[0];
+    const sourceId: string = "aaa9398bcf8c4dc5a50cceaa59baf513";
+    template.data.source.properties["feature-layer.portalItemId"] = sourceId;
+    delete template.data.sources;
+
+    template.data.feed = template.data.feeds[0];
+    const feedId: string = "bbb9398bcf8c4dc5a50cceaa59baf513";
+    template.data.feed.id = feedId;
+    delete template.data.feeds;
+
+    template.data.output = template.data.outputs[0];
+    const outputId: string = "ccc9398bcf8c4dc5a50cceaa59baf513";
+    delete(template.data.output.name);
+    template.data.output.properties["feat-lyr-new.portal.featureServicePortalItemID"] = outputId;
+    delete template.data.outputs;
+
+    cleanDataSourcesAndFeeds(template);
+    expect(template.data.source.properties["feature-layer.portalItemId"]).toBeUndefined();
+    expect(template.data.output.properties["feat-lyr-new.portal.featureServicePortalItemID"]).toBeUndefined();
+  });
 });
