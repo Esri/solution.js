@@ -335,6 +335,7 @@ export function _updateGlobalIds(
   workforceInfos: any
 ): void {
   const updateId = (i: any) => {
+    /* istanbul ignore else */
     if (i["GlobalID"]) {
       i["GlobalID"] = `{${i["GlobalID"]}}`;
     }
@@ -342,6 +343,7 @@ export function _updateGlobalIds(
   };
 
   const assignmentIntegrationInfos: any = getProp(workforceInfos, "assignmentIntegrationInfos");
+  /* istanbul ignore else */
   if (assignmentIntegrationInfos && Array.isArray(assignmentIntegrationInfos)) {
     setProp(
       workforceInfos,
@@ -351,6 +353,7 @@ export function _updateGlobalIds(
   }
 
   const assignmentTypeInfos: any = getProp(workforceInfos, "assignmentTypeInfos");
+  /* istanbul ignore else */
   if (assignmentTypeInfos && Array.isArray(assignmentTypeInfos)) {
     setProp(
       workforceInfos,
