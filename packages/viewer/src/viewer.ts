@@ -236,47 +236,49 @@ export function compareItems(
 export function getItemHierarchy(
   templates: common.IItemTemplate[]
 ): common.IHierarchyElement[] {
-    const hierarchy = [] as common.IHierarchyElement[];
+  const hierarchy = [] as common.IHierarchyElement[];
 
-    // Get the template specified by id out of a list of templates
-    function getTemplateInSolution(templates: common.IItemTemplate[], id: string) {
-        const childId = templates.findIndex(function (template) { return id === template.itemId; });
-        return childId >= 0 ? templates[childId] : null;
-    }
+  // Get the template specified by id out of a list of templates
+  function getTemplateInSolution(templates: common.IItemTemplate[], id: string): common.IItemTemplate {
+    const childId = templates.findIndex(function (template) { return id === template.itemId; });
+    return childId >= 0 ? templates[childId] : null;
+  }
 
-    // Hierarchically list the children of specified nodes
-    function itemChildren(children: string[], accumulatedHierarchy: common.IHierarchyElement[], ancestors: string[] = []) {
-        // Visit each child
-        children.forEach(function (id) {
-          const child: common.IHierarchyElement = {
-            id: id,
-            dependencies: []
-          };
+  // Hierarchically list the children of specified nodes
+  function itemChildren(children: string[], accumulatedHierarchy: common.IHierarchyElement[], ancestors: string[] = []) {
+    // Visit each child
+    children.forEach(function (id) {
+      const child: common.IHierarchyElement = {
+        id: id,
+        dependencies: [] as common.IHierarchyElement[]
+      };
 
-          // Fill in the child's dependencies array with its children
-          const template = getTemplateInSolution(templates, id);
-          if (template) {
-              // Only continue with this child's dependencies if it's not in the ancestors list to avoid infinite loops
-            if (ancestors.indexOf(id) < 0) {
-              // Add child to ancestors list
-              ancestors.push(id);
+      // Fill in the child's dependencies array with its children
+      const template = getTemplateInSolution(templates, id);
+      /* istanbul ignore else */
+      if (template) {
+        // Only continue with this child's dependencies if it's not in the ancestors list to avoid infinite loops
+        /* istanbul ignore else */
+        if (ancestors.indexOf(id) < 0) {
+          // Add child to ancestors list
+          ancestors.push(id);
 
-              const dependencyIds = template.dependencies;
-              if (Array.isArray(dependencyIds) && dependencyIds.length > 0) {
-                  itemChildren(dependencyIds, child.dependencies, ancestors);
-              }
-            }
+          const dependencyIds = template.dependencies;
+          if (Array.isArray(dependencyIds) && dependencyIds.length > 0) {
+            itemChildren(dependencyIds, child.dependencies, ancestors);
           }
-          accumulatedHierarchy.push(child);
-        });
-    }
+        }
+      }
+      accumulatedHierarchy.push(child);
+    });
+  }
 
-    // Find the top-level nodes. Start with all nodes, then remove those that other nodes depend on
-    const topLevelItemIds = _getTopLevelItemIds(templates);
+  // Find the top-level nodes. Start with all nodes, then remove those that other nodes depend on
+  const topLevelItemIds = _getTopLevelItemIds(templates);
 
-    // Start the recursive search with the top-level items
-    itemChildren(topLevelItemIds, hierarchy);
-    return hierarchy;
+  // Start the recursive search with the top-level items
+  itemChildren(topLevelItemIds, hierarchy);
+  return hierarchy;
 };
 
 // ------------------------------------------------------------------------------------------------------------------ //
@@ -288,27 +290,29 @@ export function getItemHierarchy(
  * @return List of top-level item ids; note that the first item in the templates array is returned in the case
  * where there are no top-level items due to a circular dependency
  */
-function _getTopLevelItemIds(
+export function _getTopLevelItemIds(
   templates: common.IItemTemplate[]
 ): string[] {
-    // Find the top-level nodes. Start with all nodes, then remove those that other nodes depend on
-    const topLevelItemCandidateIds = templates.map(function (template) { return template.itemId; });
+  // Find the top-level nodes. Start with all nodes, then remove those that other nodes depend on
+  const topLevelItemCandidateIds = templates.map(function (template) { return template.itemId; });
 
-    templates.forEach(function (template) {
-        (template.dependencies || []).forEach(function (dependencyId) {
-          const iNode = topLevelItemCandidateIds.indexOf(dependencyId);
-            if (iNode >= 0) {
-                // Node is somebody's dependency, so remove the node from the list of top-level nodes
-                // If iNode == -1, then it's a shared dependency and it has already been removed
-                topLevelItemCandidateIds.splice(iNode, 1);
-            }
-        });
+  templates.forEach(function (template) {
+    (template.dependencies || []).forEach(function (dependencyId) {
+      const iNode = topLevelItemCandidateIds.indexOf(dependencyId);
+
+      /* istanbul ignore else */
+      if (iNode >= 0) {
+        // Node is somebody's dependency, so remove the node from the list of top-level nodes
+        // If iNode == -1, then it's a shared dependency and it has already been removed
+        topLevelItemCandidateIds.splice(iNode, 1);
+      }
     });
+  });
 
-    // If no node is top level because of a circular dependency, choose the first template in the list
-    if (topLevelItemCandidateIds.length === 0 && templates.length > 0) {
-        topLevelItemCandidateIds.push(templates[0].itemId);
-    }
+  // If no node is top level because of a circular dependency, choose the first template in the list
+  if (topLevelItemCandidateIds.length === 0 && templates.length > 0) {
+    topLevelItemCandidateIds.push(templates[0].itemId);
+  }
 
-    return topLevelItemCandidateIds;
+  return topLevelItemCandidateIds;
 };
