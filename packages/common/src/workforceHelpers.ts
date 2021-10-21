@@ -321,10 +321,19 @@ export function getWorkforceServiceInfo(
   });
 }
 
+/**
+ * Wrap global id values in curly braces
+ * 
+ * Added for issue #734
+ * 
+ * This function will update the provided workforceInfos object
+ *
+ * @param workforceInfos the object that stores the integration and type info with global ids
+ *
+ */
 export function _updateGlobalIds(
   workforceInfos: any
 ): void {
-  // wrap the global id in {}
   const updateId = (i: any) => {
     if (i["GlobalID"]) {
       i["GlobalID"] = `{${i["GlobalID"]}}`;
