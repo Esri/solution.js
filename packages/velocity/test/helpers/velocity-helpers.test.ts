@@ -319,11 +319,11 @@ describe("cleanDataSourcesAndFeeds", () => {
     delete template.data.sources;
     delete template.data.feeds;
     delete template.data.outputs;
-    cleanDataSourcesAndFeeds(template);
+    cleanDataSourcesAndFeeds(template, "");
     expect(template.dependencies.length).toEqual(0);
   });
 
-  it("can handle missing dataSources, feeds, and outputs", () => {
+  it("can handle single dataSource, feed, and output", () => {
     const type = "Real Time Analytic";
     const template = templates.getItemTemplate(type, []);
 
@@ -335,6 +335,9 @@ describe("cleanDataSourcesAndFeeds", () => {
     template.data.feed = template.data.feeds[0];
     const feedId: string = "bbb9398bcf8c4dc5a50cceaa59baf513";
     template.data.feed.id = feedId;
+    template.data.feed.properties = {
+      "simulator.url": "http://velocityUrl/someservice"
+    };
     delete template.data.feeds;
 
     template.data.output = template.data.outputs[0];
@@ -343,7 +346,9 @@ describe("cleanDataSourcesAndFeeds", () => {
     template.data.output.properties["feat-lyr-new.portal.featureServicePortalItemID"] = outputId;
     delete template.data.outputs;
 
-    cleanDataSourcesAndFeeds(template);
+    const veloccityUrl: string = "http://velocityUrl";
+
+    cleanDataSourcesAndFeeds(template, veloccityUrl);
     expect(template.data.source.properties["feature-layer.portalItemId"]).toBeUndefined();
     expect(template.data.output.properties["feat-lyr-new.portal.featureServicePortalItemID"]).toBeUndefined();
   });
