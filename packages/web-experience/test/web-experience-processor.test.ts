@@ -207,4 +207,34 @@ describe("Module `web-experience`: ", () => {
       });
     });
   });
+
+  describe("postProcess :: ", () => {
+    it("should call updateItemTemplateFromDictionary", () => {
+      const td = {
+        organization: {
+          id: "somePortalId",
+          portalHostname: "www.arcgis.com"
+        },
+        user: {
+          username: "vader"
+        },
+        solutionItemExtent: "10,10,20,20",
+        solution: {
+          title: "Some Title"
+        }
+      };
+      const returnValue: common.IUpdateItemResponse = {
+        success: true,
+        id: "abc"
+      }
+      spyOn(common, "updateItemTemplateFromDictionary").and.resolveTo(returnValue);
+
+      return WebExperienceProcessor.postProcess(
+        "abc", "Web Experience", [], null, [], td, MOCK_USER_SESSION
+      ).then(result => {
+        expect(result.success).toBeTruthy();
+        expect(result.id).toBe("abc");
+      });
+    });
+  });
 });
