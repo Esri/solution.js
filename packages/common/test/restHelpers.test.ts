@@ -2708,17 +2708,17 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
           assignmentTypeInfos: [
             {
               description: "Verify Address",
-              GlobalID: "72832e11-2f1c-42c2-809b-b1108b5c625d"
+              GlobalID: "{72832e11-2f1c-42c2-809b-b1108b5c625d}"
             },
             {
               description: "Collect New Address",
-              GlobalID: "0db1c114-7221-4cf1-9df9-a37801fb2896"
+              GlobalID: "{0db1c114-7221-4cf1-9df9-a37801fb2896}"
             }
           ],
           assignmentIntegrationInfos: [
             {
               appid: "arcgis-navigator",
-              GlobalID: "5dc678db-9115-49de-b7e2-6efb80d032c1",
+              GlobalID: "{5dc678db-9115-49de-b7e2-6efb80d032c1}",
               prompt: "Navigate to Assignment",
               urltemplate:
                 "https://navigator.arcgis.app?stop=${assignment.latitude},${assignment.longitude}&stopname=${assignment.location}&callback=arcgis-workforce://&callbackprompt=Workforce",
@@ -2727,7 +2727,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
             },
             {
               appid: "arcgis-collector",
-              GlobalID: "b2eabaf6-9c4d-4cd2-88f2-84eb2e1e94d7",
+              GlobalID: "{b2eabaf6-9c4d-4cd2-88f2-84eb2e1e94d7}",
               prompt: "Collect at Assignment",
               urltemplate:
                 "https://collector.arcgis.app?itemID={{79625fd36f30420a8b961df47dae8bbf.itemId}}&center=${assignment.latitude},${assignment.longitude}",
@@ -2736,7 +2736,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
             },
             {
               appid: "arcgis-collector",
-              GlobalID: "c7889194-b3a7-47d3-899b-a3f72017f845",
+              GlobalID: "{c7889194-b3a7-47d3-899b-a3f72017f845}",
               prompt: "Collect at Assignment",
               urltemplate:
                 "https://collector.arcgis.app?itemID={{79625fd36f30420a8b961df47dae8bbf.itemId}}&center=${assignment.latitude},${assignment.longitude}&featureSourceURL={{8e1397c8f8ec45f69ff13b2fbf6b58a7.layer0.url}}&featureAttributes=%7B%22placename%22:%22${assignment.location}%22%7D",

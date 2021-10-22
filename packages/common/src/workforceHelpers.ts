@@ -310,6 +310,7 @@ export function getWorkforceServiceInfo(
         ).then(
           results => {
             properties.workforceInfos["assignmentIntegrationInfos"] = results;
+            _updateGlobalIds(properties.workforceInfos);
             resolve(properties);
           },
           e => reject(fail(e))
@@ -318,6 +319,48 @@ export function getWorkforceServiceInfo(
       e => reject(fail(e))
     );
   });
+}
+
+/**
+ * Wrap global id values in curly braces
+ * 
+ * Added for issue #734
+ * 
+ * This function will update the provided workforceInfos object
+ *
+ * @param workforceInfos the object that stores the integration and type info with global ids
+ *
+ */
+export function _updateGlobalIds(
+  workforceInfos: any
+): void {
+  const updateId = (i: any) => {
+    /* istanbul ignore else */
+    if (i["GlobalID"]) {
+      i["GlobalID"] = `{${i["GlobalID"]}}`;
+    }
+    return i;
+  };
+
+  const assignmentIntegrationInfos: any = getProp(workforceInfos, "assignmentIntegrationInfos");
+  /* istanbul ignore else */
+  if (assignmentIntegrationInfos && Array.isArray(assignmentIntegrationInfos)) {
+    setProp(
+      workforceInfos,
+      "assignmentIntegrationInfos",
+      assignmentIntegrationInfos.map(updateId)
+    );
+  }
+
+  const assignmentTypeInfos: any = getProp(workforceInfos, "assignmentTypeInfos");
+  /* istanbul ignore else */
+  if (assignmentTypeInfos && Array.isArray(assignmentTypeInfos)) {
+    setProp(
+      workforceInfos,
+      "assignmentTypeInfos",
+      assignmentTypeInfos.map(updateId)
+    );
+  }
 }
 
 export function _getAssignmentTypeInfos(assignmentTypes: any): any[] {
