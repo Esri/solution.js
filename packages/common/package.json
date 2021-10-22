@@ -37,7 +37,7 @@
     "@esri/hub-teams": "9.1.4"
   },
   "dependencies": {
-    "@esri/arcgis-html-sanitizer": "~2.5.0",
+    "@esri/arcgis-html-sanitizer": "2.8.0",
     "@types/lodash.isplainobject": "^4.0.6",
     "adlib": "3.0.7",
     "jszip": "3.7.0",

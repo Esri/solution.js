@@ -12,7 +12,7 @@
     "typescript": "^4.3.4"
   },
   "dependencies": {
-    "@esri/arcgis-html-sanitizer": "^2.5.0",
+    "@esri/arcgis-html-sanitizer": "2.8.0",
     "@esri/arcgis-rest-auth": "3.4.1",
     "@esri/arcgis-rest-feature-layer": "3.4.1",
     "@esri/arcgis-rest-portal": "3.4.1",
