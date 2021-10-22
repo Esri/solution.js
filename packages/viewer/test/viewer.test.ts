@@ -395,4 +395,173 @@ describe("Module `viewer`", () => {
         );
     });
   });
+
+  describe("getItemHierarchy", () => {
+    it("handles case where templates are top-level", () => {
+      const templates: any = [{
+        itemId: "abc",
+        dependencies: []
+      }, {
+         itemId: "def",
+         dependencies: []
+      }, {
+         itemId: "ghi"
+      }];
+      const hierarchy = viewer.getItemHierarchy(templates);
+      expect(hierarchy).toEqual([
+        { id: "abc", dependencies: [] },
+        { id: "def", dependencies: [] },
+        { id: "ghi", dependencies: [] }
+      ]);
+    });
+
+    it("handles a single top-level template", () => {
+      const templates: any = [{
+        itemId: "abc",
+        dependencies: ["def"]
+      }, {
+         itemId: "def",
+         dependencies: ["ghi"]
+      }, {
+         itemId: "ghi",
+         dependencies: []
+      }];
+      const hierarchy = viewer.getItemHierarchy(templates);
+      expect(hierarchy).toEqual([
+        { id: "abc", dependencies: [
+          { id: "def", dependencies: [
+            { id: "ghi", dependencies: [] }
+          ]}
+        ]}
+      ] as common.IHierarchyElement[]);
+    });
+
+    it("handles a circular dependency at the top level", () => {
+      const templates: any = [{
+        itemId: "abc",
+        dependencies: ["def"]
+      }, {
+         itemId: "def",
+         dependencies: ["abc", "ghi"]
+      }, {
+         itemId: "ghi",
+         dependencies: []
+      }];
+      const hierarchy = viewer.getItemHierarchy(templates);
+      expect(hierarchy).toEqual([
+        { id: "abc", dependencies: [
+          { id: "def", dependencies: [
+            { id: "abc", dependencies: [] },
+            { id: "ghi", dependencies: [] }
+          ]}
+        ]}
+      ] as common.IHierarchyElement[]);
+    });
+
+    it("handles a deeper circular dependency", () => {
+      const templates: any = [{
+        itemId: "abc",
+        dependencies: ["def"]
+      }, {
+         itemId: "def",
+         dependencies: ["ghi"]
+      }, {
+         itemId: "ghi",
+         dependencies: ["def"]
+      }];
+      const hierarchy = viewer.getItemHierarchy(templates);
+      expect(hierarchy).toEqual([
+        { id: "abc", dependencies: [
+          { id: "def", dependencies: [
+            { id: "ghi", dependencies: [
+              { id: "def", dependencies: [] }
+            ]}
+          ]}
+        ]}
+      ] as common.IHierarchyElement[]);
+    });
+
+    it("is missing a template", () => {
+      const templates: any = [{
+        itemId: "abc",
+        dependencies: ["def"]
+      }, {
+         itemId: "def",
+         dependencies: ["ghi"]
+      }];
+      const hierarchy = viewer.getItemHierarchy(templates);
+      expect(hierarchy).toEqual([
+        { id: "abc", dependencies: [
+          { id: "def", dependencies: [
+            { id: "ghi", dependencies: [] }
+          ]}
+        ]}
+      ] as common.IHierarchyElement[]);
+    });
+  });
+
+  describe("_getTopLevelItemIds", () => {
+    it("handles case where templates are top-level", () => {
+      const templates: any = [{
+        itemId: "abc",
+        dependencies: []
+      }, {
+         itemId: "def",
+         dependencies: []
+      }, {
+         itemId: "ghi"
+      }];
+      const ids = viewer._getTopLevelItemIds(templates);
+      expect(ids.length).toBe(3);
+      expect(ids).toEqual(["abc", "def", "ghi"]);
+    });
+
+    it("handles a single top-level template", () => {
+      const templates: any = [{
+        itemId: "abc",
+        dependencies: ["def"]
+      }, {
+         itemId: "def",
+         dependencies: ["ghi"]
+      }, {
+         itemId: "ghi",
+         dependencies: []
+      }];
+      const ids = viewer._getTopLevelItemIds(templates);
+      expect(ids.length).toBe(1);
+      expect(ids).toEqual(["abc"]);
+    });
+
+    it("handles a circular dependency at the top level", () => {
+      const templates: any = [{
+        itemId: "abc",
+        dependencies: ["def"]
+      }, {
+         itemId: "def",
+         dependencies: ["abc", "ghi"]
+      }, {
+         itemId: "ghi",
+         dependencies: []
+      }];
+      const ids = viewer._getTopLevelItemIds(templates);
+      expect(ids.length).toBe(1);
+      expect(ids).toEqual(["abc"]);
+    });
+
+    it("handles a deeper circular dependency", () => {
+      const templates: any = [{
+        itemId: "abc",
+        dependencies: ["def"]
+      }, {
+         itemId: "def",
+         dependencies: ["ghi"]
+      }, {
+         itemId: "ghi",
+         dependencies: ["def"]
+      }];
+      const ids = viewer._getTopLevelItemIds(templates);
+      expect(ids.length).toBe(1);
+      expect(ids).toEqual(["abc"]);
+    });
+  });
 });
