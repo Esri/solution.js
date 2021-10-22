@@ -247,9 +247,9 @@ export function getItemHierarchy(
   // Hierarchically list the children of specified nodes
   function itemChildren(children: string[], accumulatedHierarchy: common.IHierarchyElement[], ancestors: string[] = []) {
     // Visit each child
-    children.forEach(function (id) {
-      const child: common.IHierarchyElement = {
-        id: id,
+    children.forEach((id) => {
+      const child = {
+        id,
         dependencies: [] as common.IHierarchyElement[]
       };
 
@@ -263,7 +263,7 @@ export function getItemHierarchy(
           // Add child to ancestors list
           ancestors.push(id);
 
-          const dependencyIds = template.dependencies;
+          const dependencyIds: string[] = template.dependencies;
           if (Array.isArray(dependencyIds) && dependencyIds.length > 0) {
             itemChildren(dependencyIds, child.dependencies, ancestors);
           }
@@ -279,7 +279,7 @@ export function getItemHierarchy(
   // Start the recursive search with the top-level items
   itemChildren(topLevelItemIds, hierarchy);
   return hierarchy;
-};
+}
 
 // ------------------------------------------------------------------------------------------------------------------ //
 
