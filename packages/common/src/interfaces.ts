@@ -145,7 +145,7 @@ export interface IAdditionalSearchOptions {
  */
 export interface IAssociatedFileCopyResults
   extends IAssociatedFileInfo,
-    ICopyResults {}
+  ICopyResults { }
 
 /**
  *  Information for working with a file associated with an item.
@@ -454,6 +454,14 @@ export interface IGroupCategory {
   title: string;
   description?: string;
   categories?: IGroupCategory[];
+}
+
+/**
+ * Hierarchical arrangement of items and their dependencies.
+ */
+export interface IHierarchyElement {
+  id: string;
+  dependencies: IHierarchyElement[];
 }
 
 /**
@@ -983,7 +991,7 @@ export interface ISurvey123CreateResult {
 /**
  * Results of sending a zip to an item.
  */
-export interface IZipCopyResults extends IZipInfo, ICopyResults {}
+export interface IZipCopyResults extends IZipInfo, ICopyResults { }
 
 export interface IZipInfo {
   /**
