@@ -2732,7 +2732,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
               urltemplate:
                 "https://collector.arcgis.app?itemID={{79625fd36f30420a8b961df47dae8bbf.itemId}}&center=${assignment.latitude},${assignment.longitude}",
               dependencies: ["79625fd36f30420a8b961df47dae8bbf"],
-              assignmenttype: "72832e11-2f1c-42c2-809b-b1108b5c625d"
+              assignmenttype: "{72832e11-2f1c-42c2-809b-b1108b5c625d}"
             },
             {
               appid: "arcgis-collector",
@@ -2744,7 +2744,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
                 "79625fd36f30420a8b961df47dae8bbf",
                 "8e1397c8f8ec45f69ff13b2fbf6b58a7"
               ],
-              assignmenttype: "0db1c114-7221-4cf1-9df9-a37801fb2896"
+              assignmenttype: "{0db1c114-7221-4cf1-9df9-a37801fb2896}"
             }
           ]
         }
