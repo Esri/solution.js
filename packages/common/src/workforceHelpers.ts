@@ -310,7 +310,7 @@ export function getWorkforceServiceInfo(
         ).then(
           results => {
             properties.workforceInfos["assignmentIntegrationInfos"] = results;
-            _updateGlobalIds(properties.workforceInfos);
+            _updateGlobalIdAndAssignmentType(properties.workforceInfos);
             resolve(properties);
           },
           e => reject(fail(e))
@@ -322,7 +322,7 @@ export function getWorkforceServiceInfo(
 }
 
 /**
- * Wrap global id values in curly braces
+ * Wrap global id and assignmenttype values in curly braces
  * 
  * Added for issue #734
  * 
@@ -331,13 +331,17 @@ export function getWorkforceServiceInfo(
  * @param workforceInfos the object that stores the integration and type info with global ids
  *
  */
-export function _updateGlobalIds(
+export function _updateGlobalIdAndAssignmentType(
   workforceInfos: any
 ): void {
   const updateId = (i: any) => {
     /* istanbul ignore else */
     if (i["GlobalID"]) {
       i["GlobalID"] = `{${i["GlobalID"]}}`;
+    }
+    /* istanbul ignore else */
+    if (i["assignmenttype"]) {
+      i["assignmenttype"] = `{${i["assignmenttype"]}}`;
     }
     return i;
   };
