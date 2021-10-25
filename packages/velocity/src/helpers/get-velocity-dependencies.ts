@@ -101,6 +101,10 @@ export function _getFeedDependencies(
     }
     return prev;
   }, dependencies);
+  // run through standard dependency check as well
+  // in some cases the feed does not have the id property but will have
+  // a portalItemId value in the properties
+  _getDependencies(feeds, dependencies);
 }
 
 /**
