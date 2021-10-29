@@ -206,7 +206,9 @@ export function getTitle(
  * @param templateDictionary Hash of facts: folder id, org URL, adlib replacements
  * @param type The type of velocity item
  * @param data The data used to construct the velocity item
- * @param dataOutputs The velocity items output objects.
+ * @param titles The list of know titles that exist in the org
+ * @param dataOutputs The velocity items output objects
+ * @param feeds The velocity items feed objects
  *
  * @return a promise that will resolve the data object passed in with any necessary changes.
  *
@@ -225,9 +227,11 @@ export function _validateOutputs(
       (validateResults: any) => {
         let names: string[] = _validateMessages(validateResults);
         if (names.length > 0) {
+          /* istanbul ignore else */
           if (dataOutputs.length > 0) {
             _updateDataOutput(dataOutputs, data, names);
           }
+          /* istanbul ignore else */
           if (feeds.length > 0) {
             _updateFeed(feeds, data, names.concat(titles));
           }
@@ -250,6 +254,14 @@ export function _validateOutputs(
   }
 }
 
+/**
+ * Check the validate results for any name conflicts and store the conflicting names.
+ *
+ * @param validateResults The results object to check for name conflict errors
+ *
+ * @return a list of names that already exist in the org
+ *
+ */
 export function _validateMessages(
   validateResults: any
 ): string[] {
@@ -289,6 +301,14 @@ export function _validateMessages(
   return names;
 }
 
+/**
+ * Updates the feed object with a new name when validation fails.
+ *
+ * @param feeds The feed objects from the velocity item.
+ * @param data The full data object used for deploying the velocity item.
+ * @param names The names that failed due to duplicate error in validation.
+ *
+ */
 export function _updateFeed(
   feeds: any[],
   data: any,
