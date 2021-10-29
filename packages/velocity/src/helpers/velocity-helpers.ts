@@ -225,7 +225,7 @@ export function _validateOutputs(
   if (dataOutputs.length > 0 || feeds.length > 0) {
     return validate(authentication, templateDictionary, type, "", data).then(
       (validateResults: any) => {
-        let names: string[] = _validateMessages(validateResults);
+        const names: string[] = _validateMessages(validateResults);
         if (names.length > 0) {
           /* istanbul ignore else */
           if (dataOutputs.length > 0) {
@@ -316,8 +316,11 @@ export function _updateFeed(
 ): void {
   feeds.forEach(f => {
     const update = _getOutputLabel(names, f);
-    data.label = update.label;
-    f.name = update.label;
+    /* istanbul ignore else */
+    if (update) {
+      data.label = update.label;
+      f.name = update.label;
+    }
   });
 }
 
@@ -339,7 +342,7 @@ export function _updateDataOutput(
     const update = _getOutputLabel(names, dataOutput);
     /* istanbul ignore else */
     if (update) {
-      const _outputs = data.outputs.map((_dataOutput: any) => {
+      const _outputs = (data.outputs ? data.outputs : data.output ? [data.output] : []).map((_dataOutput: any) => {
         /* istanbul ignore else */
         if (_dataOutput.id === update.id) {
           /* istanbul ignore else */
