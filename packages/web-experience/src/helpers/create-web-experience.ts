@@ -19,7 +19,8 @@ import {
   failSafe,
   serializeModel,
   interpolateItemId,
-  stringToBlob
+  stringToBlob,
+  objectToJsonBlob
 } from "@esri/hub-common";
 
 import { UserSession } from "@esri/solution-common";
@@ -78,11 +79,12 @@ export function createWebExperience(
 
         // Experiences store draft data in a resource attached to the item
         // We'll just use the published data for the first "draft"
+        // changed from stringToBlob to objectToJsonBlob for issue #742
         const draftResourceModel = cloneObject(model.data);
         resources.push({
           name: "config.json",
           prefix: "config",
-          file: stringToBlob(JSON.stringify(draftResourceModel))
+          file: objectToJsonBlob(draftResourceModel)
         });
         // there may also be this image resources list
         const imageListModel = cloneObject(model.properties.imageResourcesList);
