@@ -556,7 +556,7 @@ describe("createItemFromTemplate", () => {
 
 describe("postProcess", () => {
   it("will move velocity items to the deployment folder", done => {
-    const itemId: string = "thisismyitemid";
+    const id: string = "thisismyitemid";
     const templateDictionary: any = {
       folderId: "thisisafolderid"
     };
@@ -566,15 +566,32 @@ describe("postProcess", () => {
       []
     );
 
+    const itemInfos: any[] = [{
+      id,
+      item: {
+        item: {
+          url: "http://abc123",
+          origUrl: "http://123abc",
+          id
+        }
+      }
+    }];
+
+    const url: string = "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/items/thisismyitemid/"
+
     fetchMock.post(
-      "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/items/thisismyitemid/move", 
+      `${url}move`, 
+      {success: true}
+    )
+    .post(
+      `${url}update`,
       {success: true}
     );
 
     postProcess(
-      itemId,
+      id,
       type,
-      [],
+      itemInfos,
       template,
       [template],
       templateDictionary,
