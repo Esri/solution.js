@@ -30,7 +30,8 @@ import {
   createInitializedItemTemplate,
   fail,
   removeItem,
-  updateVelocityReferences
+  updateVelocityReferences,
+  updateItem
 } from "@esri/solution-common";
 import { templatizeVelocity } from "./helpers/velocity-templatize";
 import { getVelocityDependencies } from "./helpers/get-velocity-dependencies";
@@ -183,10 +184,16 @@ export function createItemFromTemplate(
   templateDictionary: any,
   authentication: UserSession
 ): Promise<any> {
-  return moveItem({
-    owner: authentication.username,
-    itemId,
-    folderId: templateDictionary.folderId,
-    authentication
-  });
+  const itemUpdate = itemInfos.filter(ii => ii.id === itemId);
+  const item: any = itemUpdate[0].item.item;
+  delete item.url;
+  delete item.origUrl;
+   return updateItem(item, authentication).then(() => {
+     return moveItem({
+       owner: authentication.username,
+       itemId,
+       folderId: templateDictionary.folderId,
+       authentication
+     });
+   });
 }
