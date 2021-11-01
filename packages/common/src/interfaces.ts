@@ -1010,4 +1010,16 @@ export interface IZipInfo {
   filelist: any[];
 }
 
+export interface IVelocityTitle {
+  /**
+   * The current label for the object
+   */
+  label: string;
+  /**
+   * Existing titles that have been used in the org
+   */
+  titles: string[];
+}
+
+
 //#endregion ---------------------------------------------------------------------------------------------------------//

@@ -18,7 +18,9 @@ import {
   cleanDataSourcesAndFeeds,
   getVelocityUrl,
   postVelocityData,
+  _updateFeed,
   _updateDataOutput,
+  _validateOutputs,
   _getOutputLabel,
   getUniqueTitle
 } from "../../src/helpers/velocity-helpers";
@@ -67,7 +69,8 @@ describe("postVelocityData", () => {
     const velocityUrl: string =
       "https://us-iot.arcgis.com/usadvanced00/aaaatfmrv9d1divn";
     const realtimeUrl: string =
-      "https://us-iot.arcgis.com/usadvanced00/aaaatfmrv9d1divn/iot/analytics/realtime";
+      `${velocityUrl}/iot/analytics/realtime`;
+
     const type: string = "Real Time Analytic";
     const id: string = "aaabbbccc123";
     const template: interfaces.IItemTemplate = templates.getItemTemplate(
@@ -76,6 +79,13 @@ describe("postVelocityData", () => {
     );
     const data: any = template.data;
     delete data.outputs;
+    const feeds: any = data.feeds;
+    delete data.feeds;
+    data.feed = feeds[0];
+    data.feed.properties["simulator.portalItemId"] = data.feed.id;
+    delete data.feed.id;
+    delete data.feed.label;
+
     const templateDictionary: any = {
       velocityUrl
     };
@@ -83,24 +93,30 @@ describe("postVelocityData", () => {
 
     const startUrl: string = `${realtimeUrl}/${id}/start/?f=json&token=fake-token`;
 
+    const validateResults: any = {
+      id: "",
+      validation: {
+        messages: []
+      },
+      nodes: [],
+      executable: false
+    };
+
     fetchMock
-      .get(realtimeUrl + "StatusList?view=admin", {})
-      .post(realtimeUrl + `/validate/${id}/?f=json&token=fake-token`, {
-        executable: true,
-        validation: {
-          messages: []
-        },
-        nodes: [
-          {
-            validation: {
-              messages: []
-            }
-          }
-        ]
-      })
-      .post(realtimeUrl, {
-        id
-      })
+      .get(
+        `${realtimeUrl}StatusList?view=admin`,
+        {}
+      )
+      .post(
+        `${realtimeUrl}/validate/${id}/?f=json&token=fake-token`,
+        validateResults
+      )
+      .post(realtimeUrl, { id }
+      )
+      .post(
+        `${realtimeUrl}/validate/?f=json&token=fake-token`,
+        validateResults
+      )
       .get(startUrl, {});
 
     postVelocityData(
@@ -127,6 +143,8 @@ describe("postVelocityData", () => {
     );
     const data: any = template.data;
     delete data.outputs;
+    delete data.feeds[0].id;
+    delete data.feeds[1].id;
     const templateDictionary: any = {
       velocityUrl
     };
@@ -134,21 +152,25 @@ describe("postVelocityData", () => {
 
     const startUrl: string = `${realtimeUrl}/${id}/start/?f=json&token=fake-token`;
 
+    const validateResults: any = {
+      id: "",
+      validation: {
+        messages: []
+      },
+      nodes: [],
+      executable: false
+    };
+
     fetchMock
-      .get(realtimeUrl + "StatusList?view=admin", ["A"])
-      .post(realtimeUrl + `/validate/${id}/?f=json&token=fake-token`, {
-        executable: false,
-        validation: {
-          messages: []
-        },
-        nodes: [
-          {
-            validation: {
-              messages: []
-            }
-          }
-        ]
-      })
+      .get(`${realtimeUrl}StatusList?view=admin`, ["A"])
+      .post(
+        `${realtimeUrl}/validate/${id}/?f=json&token=fake-token`,
+        validateResults
+      )
+      .post(
+        `${realtimeUrl}/validate/?f=json&token=fake-token`,
+        validateResults
+      )
       .post(realtimeUrl, {
         id
       })
@@ -177,6 +199,10 @@ describe("postVelocityData", () => {
       []
     );
     const data: any = template.data;
+    const outputs = data.outputs;
+    delete(data.outputs);
+    data.output = outputs[0];
+    delete(data.feeds);
     const templateDictionary: any = {
       velocityUrl
     };
@@ -260,6 +286,136 @@ describe("postVelocityData", () => {
       done();
     }, done.fail);
   });
+
+  it("name errors on feeds", done => {
+    const velocityUrl: string =
+      "https://us-iot.arcgis.com/usadvanced00/aaaatfmrv9d1divn";
+    const realtimeUrl: string =
+      "https://us-iot.arcgis.com/usadvanced00/aaaatfmrv9d1divn/iot/analytics/realtime";
+    const type: string = "Real Time Analytic";
+    const id: string = "aaabbbccc123";
+    const template: interfaces.IItemTemplate = templates.getItemTemplate(
+      type,
+      []
+    );
+    const data: any = template.data;
+    //const outputs = data.outputs;
+    delete(data.outputs);
+    //data.output = outputs[0];
+    //delete(data.feeds);
+    const templateDictionary: any = {
+      velocityUrl
+    };
+    templateDictionary[template.itemId] = {};
+
+    const startUrl: string = `${realtimeUrl}/${id}/start/?f=json&token=fake-token`;
+
+    const statusList = [
+      {
+        "label": type,
+        "id": "b1f40dfb69d94a96ac5127dc6d4b01cc",
+        "status": "stopped",
+        "avgRateIn": 0,
+        "executionMode": "direct",
+        "executable": true,
+        "startTime": 1634932075739,
+        "lastStartTime": 1634928915641
+      }
+    ];
+
+    fetchMock
+      .get(realtimeUrl + "StatusList?view=admin", statusList)
+      .post(realtimeUrl + `/validate/${id}/?f=json&token=fake-token`, {
+        executable: true,
+        validation: {
+          messages: [
+            {
+              key:
+                "VALIDATION_ANALYTICS__MULTIPLE_CREATE_FEATURE_LAYER_OUTPUTS_REFERENCE_SAME_LAYER_NAME",
+              args: [type]
+            }
+          ]
+        },
+        nodes: [
+          {
+            validation: {
+              messages: []
+            }
+          }
+        ]
+      })
+      .postOnce(
+        "https://us-iot.arcgis.com/usadvanced00/aaaatfmrv9d1divn/iot/analytics/realtime/validate/?f=json&token=fake-token",
+        {
+          executable: true,
+          validation: {
+            messages: [
+              {
+                key:
+                  "VALIDATION_ANALYTICS__MULTIPLE_CREATE_FEATURE_LAYER_OUTPUTS_REFERENCE_SAME_LAYER_NAME",
+                args: [type]
+              }
+            ]
+          },
+          nodes: [
+            {
+              validation: {
+                messages: []
+              }
+            }
+          ]
+        },
+        { overwriteRoutes: false }
+      )
+      .postOnce(
+        "https://us-iot.arcgis.com/usadvanced00/aaaatfmrv9d1divn/iot/analytics/realtime/validate/?f=json&token=fake-token",
+        {
+          executable: true,
+          validation: {
+            messages: []
+          },
+          nodes: [
+            {
+              validation: {
+                messages: []
+              }
+            }
+          ]
+        },
+        { overwriteRoutes: false }
+      )
+      .post(realtimeUrl, {
+        id
+      })
+      .get(startUrl, {});
+
+    postVelocityData(
+      MOCK_USER_SESSION,
+      template,
+      data,
+      templateDictionary,
+      true
+    ).then(() => {
+      done();
+    }, done.fail);
+  });
+});
+
+describe("_validateOutputs", () => {
+  it("can handle no data outputs or feeds", done => {
+    const expected: any = { asIs: "asIs" };
+    const type: string = "Real Time Analytic";
+    _validateOutputs(
+      MOCK_USER_SESSION,
+      {},
+      type,
+      expected,
+      []
+    ).then(actual => {
+      expect(actual).toEqual(expected);
+      done();
+    }, done.fail);
+  });
 });
 
 describe("_updateDataOutput", () => {
@@ -285,6 +441,71 @@ describe("_updateDataOutput", () => {
     _updateDataOutput(dataOutputs, data, names);
 
     expect(data.outputs[0].properties["A.name"]).toEqual("A 1");
+  });
+
+  it("supports single output", () => {
+    const dataOutputs: any[] = [
+      {
+        name: "A",
+        label: "A",
+        id: "ABC123"
+      }
+    ];
+    const data: any = {
+      output: {
+        name: "A",
+        label: "A",
+        id: "ABC123",
+        properties: { "A.name": "A" }
+      }
+    };
+    const names: string[] = ["A"];
+    _updateDataOutput(dataOutputs, data, names);
+
+    expect(data.output.properties["A.name"]).toEqual("A 1");
+  });
+
+  it("supports missing data options", () => {
+    const dataOutputs: any[] = [
+      {
+        name: "A",
+        label: "A",
+        id: "ABC123"
+      }
+    ];
+    const data: any = {
+      label: "AB"
+    };
+    const names: string[] = ["A"];
+    _updateDataOutput(dataOutputs, data, names);
+
+    expect(data.label).toEqual("AB");
+  });
+});
+
+describe("_updateFeed", () => {
+  it("will update the label", () => {
+    const feeds: any[] = [
+      {
+        name: "AB",
+        label: "AB",
+        id: "ABC123"
+      }
+    ];
+    const data: any = {
+      feeds: [
+        {
+          name: "AB",
+          label: "AB",
+          id: "ABC123",
+          properties: { "AB.name": "AB" }
+        }
+      ]
+    };
+    const names: string[] = ["AB"];
+    _updateFeed(feeds, data, names);
+
+    expect(feeds[0].name).toEqual("AB 1");
   });
 });
 
