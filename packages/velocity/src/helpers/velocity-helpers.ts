@@ -16,6 +16,7 @@
 
 import {
   IItemTemplate,
+  IVelocityTitle,
   getVelocityUrlBase,
   replaceInTemplate,
   UserSession,
@@ -101,7 +102,7 @@ export function postVelocityData(
     true
   ).then(url => {
     if (url) {
-      return getTitle(authentication, data.label, url).then(titleInfo => {
+      return getTitle(authentication, data.label, url).then((titleInfo: IVelocityTitle) => {
         const titles: any[] = titleInfo.titles;
         data.label = titleInfo.label;
         data.id = "";
@@ -182,7 +183,7 @@ export function getTitle(
   authentication: UserSession,
   label: string,
   url: string
-): Promise<any> {
+): Promise<IVelocityTitle> {
   return _fetch(authentication, `${url}StatusList?view=admin`, "GET").then(
     items => {
       const titles: any[] =
