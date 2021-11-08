@@ -65,7 +65,7 @@ export function convertItemToTemplate(
 ): Promise<IItemTemplate> {
   const template = createInitializedItemTemplate(itemInfo);
   return getVelocityUrl(
-    destAuthentication,
+    srcAuthentication,
     templateDictionary,
     itemInfo.type,
     itemInfo.id

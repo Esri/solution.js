@@ -56,7 +56,7 @@ export function convertItemToTemplate(
     );
     if (hasInvalidDesignations) {
       common
-        .updateTemplateForInvalidDesignations(template, destAuthentication)
+        .updateTemplateForInvalidDesignations(template, srcAuthentication)
         .then(
           _template => resolve(_template),
           e => reject(common.fail(e))
