@@ -557,7 +557,8 @@ export interface IItemTemplateConversions {
   convertItemToTemplate(
     solutionItemId: string,
     itemInfo: any,
-    authentication: UserSession,
+    destAuthentication: UserSession,
+    srcAuthentication: UserSession,
     templateDictionary?: any
   ): Promise<IItemTemplate>;
   createItemFromTemplate(

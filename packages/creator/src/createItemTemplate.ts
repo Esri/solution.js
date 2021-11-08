@@ -170,6 +170,7 @@ export function createItemTemplate(
                   solutionItemId,
                   itemInfo,
                   destAuthentication,
+                  srcAuthentication,
                   templateDictionary
                 )
                 .then(

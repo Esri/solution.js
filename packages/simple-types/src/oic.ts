@@ -27,11 +27,12 @@ import * as common from "@esri/solution-common";
  */
 export function convertItemToTemplate(
   itemTemplate: common.IItemTemplate,
-  authentication: common.UserSession
+  destAuthentication: common.UserSession,
+  srcAuthentication: common.UserSession
 ): Promise<common.IItemTemplate> {
   return new Promise<common.IItemTemplate>((resolve, reject) => {
     // Extract dependencies
-    _extractDependencies(itemTemplate, authentication).then(
+    _extractDependencies(itemTemplate, srcAuthentication).then(
       (results: any) => {
         itemTemplate.dependencies = results.dependencies;
 

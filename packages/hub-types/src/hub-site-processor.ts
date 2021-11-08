@@ -196,11 +196,12 @@ export function createItemFromTemplate(
 export function convertItemToTemplate(
   solutionItemId: string,
   itemInfo: any,
-  authentication: UserSession
+  destAuthentication: UserSession,
+  srcAuthentication: UserSession
 ): Promise<IItemTemplate> {
   let hubRo: IHubUserRequestOptions;
   // get hubRequestOptions
-  return createHubRequestOptions(authentication)
+  return createHubRequestOptions(destAuthentication)
     .then(ro => {
       hubRo = ro;
       return getSiteById(itemInfo.id, hubRo);

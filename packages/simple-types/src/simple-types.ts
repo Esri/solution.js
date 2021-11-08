@@ -49,13 +49,15 @@ import * as simpleTypeHelpers from "./helpers/simple-type-helpers";
 export function convertItemToTemplate(
   solutionItemId: string,
   itemInfo: any,
-  authentication: UserSession,
+  destAuthentication: UserSession,
+  srcAuthentication: UserSession,
   templateDictionary: any
 ): Promise<IItemTemplate> {
   return simpleTypeHelpers.convertItemToTemplate(
     solutionItemId,
     itemInfo,
-    authentication,
+    destAuthentication,
+    srcAuthentication,
     templateDictionary
   );
 }

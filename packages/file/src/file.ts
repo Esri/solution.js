@@ -35,7 +35,8 @@ import * as common from "@esri/solution-common";
 export function convertItemToTemplate(
   solutionItemId: string,
   itemInfo: any,
-  authentication: common.UserSession
+  destAuthentication: common.UserSession,
+  srcAuthentication: common.UserSession
 ): Promise<common.IItemTemplate> {
   return new Promise<common.IItemTemplate>(resolve => {
     // Init template
@@ -57,7 +58,7 @@ export function convertItemToTemplate(
         .getItemDataAsFile(
           itemTemplate.itemId,
           itemTemplate.item.name,
-          authentication
+          srcAuthentication
         )
         .then(response => {
           if (!response || response.size === 0) {
@@ -99,7 +100,7 @@ export function convertItemToTemplate(
             solutionItemId,
             storageName.folder,
             storageName.filename,
-            authentication
+            destAuthentication
           )
           .then(
             () => {

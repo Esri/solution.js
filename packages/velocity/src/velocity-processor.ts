@@ -58,12 +58,13 @@ import {
 export function convertItemToTemplate(
   solutionItemId: string,
   itemInfo: any,
-  authentication: UserSession,
+  destAuthentication: UserSession,
+  srcAuthentication: UserSession,
   templateDictionary: any
 ): Promise<IItemTemplate> {
   const template = createInitializedItemTemplate(itemInfo);
   return getVelocityUrl(
-    authentication,
+    destAuthentication,
     templateDictionary,
     itemInfo.type,
     itemInfo.id
@@ -75,7 +76,7 @@ export function convertItemToTemplate(
           .then(data_json => {
             template.item.title = data_json.label;
             template.data = data_json;
-            return getVelocityDependencies(template, authentication).then(
+            return getVelocityDependencies(template, srcAuthentication).then(
               deps => {
                 template.dependencies = deps;
                 cleanDataSourcesAndFeeds(template, templateDictionary.velocityUrl);

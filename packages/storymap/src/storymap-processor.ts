@@ -44,14 +44,15 @@ import { createStoryMap } from "./helpers/create-storymap";
 export function convertItemToTemplate(
   solutionItemId: string,
   itemInfo: any,
-  authentication: UserSession
+  destAuthentication: UserSession,
+  srcAuthentication: UserSession
 ): Promise<IItemTemplate> {
   const model = {
     item: itemInfo,
     data: {}
   } as IModel;
   // fetch the data.json
-  return getItemData(itemInfo.id, { authentication })
+  return getItemData(itemInfo.id, { authentication: srcAuthentication })
     .then(data => {
       // append into the model
       model.data = data;

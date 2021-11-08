@@ -31,7 +31,8 @@ import * as quickcaptureHelpers from "./helpers/quickcapture-helpers";
 export function convertItemToTemplate(
   solutionItemId: string,
   itemInfo: any,
-  authentication: common.UserSession,
+  destAuthentication: common.UserSession,
+  srcAuthentication: common.UserSession,
   templateDictionary: any
 ): Promise<common.IItemTemplate> {
   // Delegate back to simple-types, which will in-turn delegate
@@ -40,7 +41,8 @@ export function convertItemToTemplate(
   return quickcaptureHelpers.convertItemToTemplate(
     solutionItemId,
     itemInfo,
-    authentication,
+    destAuthentication,
+    srcAuthentication,
     templateDictionary
   );
 }

@@ -25,9 +25,10 @@ import * as common from "@esri/solution-common";
  */
 export function convertItemToTemplate(
   itemTemplate: common.IItemTemplate,
-  authentication: common.UserSession
+  destAuthentication: common.UserSession,
+  srcAuthentication: common.UserSession
 ): Promise<common.IItemTemplate> {
-  return common.convertWorkforceItemToTemplate(itemTemplate, authentication);
+  return common.convertWorkforceItemToTemplate(itemTemplate, srcAuthentication);
 }
 
 /**

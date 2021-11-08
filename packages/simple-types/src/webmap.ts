@@ -34,7 +34,8 @@ const WEBMAP_APP_URL_PART: string = "home/webmap/viewer.html?webmap=";
  */
 export function convertItemToTemplate(
   itemTemplate: common.IItemTemplate,
-  authentication: common.UserSession
+  destAuthentication: common.UserSession,
+  srcAuthentication: common.UserSession
 ): Promise<common.IItemTemplate> {
   return new Promise<common.IItemTemplate>((resolve, reject) => {
     // Templatize the app URL
@@ -44,7 +45,7 @@ export function convertItemToTemplate(
       itemTemplate.item.id; // templatized id
 
     // Extract dependencies
-    _extractDependencies(itemTemplate, authentication).then(
+    _extractDependencies(itemTemplate, srcAuthentication).then(
       (results: any) => {
         itemTemplate.dependencies = results.dependencies;
 

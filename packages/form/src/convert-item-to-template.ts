@@ -35,14 +35,16 @@ import { simpleTypes } from "@esri/solution-simple-types";
 export function convertItemToTemplate(
   solutionItemId: string,
   itemInfo: any,
-  authentication: UserSession,
+  destAuthentication: UserSession,
+  srcAuthentication: UserSession,
   templateDictionary: any
 ): Promise<IItemTemplate> {
   // Delegate to simple types
   return simpleTypes.convertItemToTemplate(
     solutionItemId,
     itemInfo,
-    authentication,
+    destAuthentication,
+    srcAuthentication,
     templateDictionary
   );
 }

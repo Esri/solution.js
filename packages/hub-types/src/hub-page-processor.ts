@@ -61,12 +61,13 @@ import { moveModelToFolder } from "./helpers/move-model-to-folder";
 export function convertItemToTemplate(
   solutionItemId: string,
   itemInfo: any,
-  authentication: UserSession
+  destAuthentication: UserSession,
+  srcAuthentication: UserSession
 ): Promise<IItemTemplate> {
   // get the page model and hubRequestOptions
   return Promise.all([
-    getModel(itemInfo.id, { authentication }),
-    createHubRequestOptions(authentication)
+    getModel(itemInfo.id, { authentication: destAuthentication }),
+    createHubRequestOptions(destAuthentication)
   ])
     .then(([pageModel, ro]) => {
       return convertPageToTemplate(pageModel, ro);

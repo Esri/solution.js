@@ -47,7 +47,8 @@ import { convertWebExperienceToTemplate } from "./helpers/convert-web-experience
 export function convertItemToTemplate(
   solutionItemId: string,
   itemInfo: any,
-  authentication: UserSession
+  destAuthentication: UserSession,
+  srcAuthentication: UserSession
 ): Promise<IItemTemplate> {
   // use the itemInfo to setup a model
   const model = {
@@ -55,7 +56,7 @@ export function convertItemToTemplate(
     data: {}
   } as IModel;
   // fetch the data.json
-  return getItemData(itemInfo.id, { authentication }).then(data => {
+  return getItemData(itemInfo.id, { authentication: srcAuthentication }).then(data => {
     // append into the model
     model.data = data;
     // and use that to create a template

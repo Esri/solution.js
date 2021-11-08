@@ -40,7 +40,8 @@ import * as common from "@esri/solution-common";
 export function convertItemToTemplate(
   solutionItemId: string,
   itemInfo: any,
-  authentication: common.UserSession,
+  destAuthentication: common.UserSession,
+  srcAuthentication: common.UserSession,
   templateDictionary?: any
 ): Promise<common.IItemTemplate> {
   return new Promise<common.IItemTemplate>((resolve, reject) => {
@@ -54,7 +55,7 @@ export function convertItemToTemplate(
     );
     if (hasInvalidDesignations) {
       common
-        .updateTemplateForInvalidDesignations(template, authentication)
+        .updateTemplateForInvalidDesignations(template, destAuthentication)
         .then(
           _template => resolve(_template),
           e => reject(common.fail(e))
@@ -64,12 +65,12 @@ export function convertItemToTemplate(
       template.estimatedDeploymentCostFactor = 10;
 
       // eslint-disable-next-line @typescript-eslint/no-floating-promises
-      common.getItemDataAsJson(template.item.id, authentication).then(data => {
+      common.getItemDataAsJson(template.item.id, srcAuthentication).then(data => {
         template.data = data;
-        common.getServiceLayersAndTables(template, authentication).then(
+        common.getServiceLayersAndTables(template, srcAuthentication).then(
           itemTemplate => {
             // Extract dependencies
-            common.extractDependencies(itemTemplate, authentication).then(
+            common.extractDependencies(itemTemplate, srcAuthentication).then(
               (dependencies: common.IDependency[]) => {
                 // set the dependencies as an array of IDs from the array of IDependency
                 itemTemplate.dependencies = dependencies.map(
