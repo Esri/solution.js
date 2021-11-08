@@ -51,7 +51,8 @@ describe("Module `storymap`: ", () => {
           type: "StoryMap",
           id: "bcfake23"
         },
-        MOCK_USER_SESSION
+        MOCK_USER_SESSION,
+        MOCK_USER_SESSION,
       ).then(resp => {
         expect(resp).toBe(tmpl, "should return the template");
         expect(getDataSpy.calls.count()).toBe(1, "should get the data");
