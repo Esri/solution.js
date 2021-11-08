@@ -29,7 +29,8 @@ const WEBMAP_APP_URL_PART: string = "home/webmap/viewer.html?webmap=";
  * Converts an AGOL webmap item to a template.
  *
  * @param itemTemplate Template for the webmap item
- * @param authentication credentials for the request
+ * @param destAuthentication Credentials for requests to the destination organization
+ * @param srcAuthentication Credentials for requests to source items
  * @return Template for the solution item that contains key details for item reconstruction
  */
 export function convertItemToTemplate(

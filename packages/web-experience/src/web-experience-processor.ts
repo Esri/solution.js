@@ -41,7 +41,8 @@ import { convertWebExperienceToTemplate } from "./helpers/convert-web-experience
  *
  * @param solutionItemId
  * @param itemInfo
- * @param authentication
+ * @param destAuthentication Credentials for requests to the destination organization
+ * @param srcAuthentication Credentials for requests to source items
  * @param isGroup
  */
 export function convertItemToTemplate(

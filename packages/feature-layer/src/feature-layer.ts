@@ -33,7 +33,8 @@ import * as common from "@esri/solution-common";
  *
  * @param solutionItemId
  * @param itemInfo Feature service item
- * @param userSession The session used to interact with the service the template is based on
+ * @param destAuthentication Credentials for requests to the destination organization
+ * @param srcAuthentication Credentials for requests to source items
  * @param templateDictionary Hash mapping property names to replacement values
  * @return A promise that will resolve when fullItem has been updated
  */

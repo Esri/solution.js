@@ -39,7 +39,8 @@ import { createStoryMap } from "./helpers/create-storymap";
  *
  * @param solutionItemId
  * @param itemInfo
- * @param authentication
+ * @param destAuthentication Credentials for requests to the destination organization
+ * @param srcAuthentication Credentials for requests to source items
  */
 export function convertItemToTemplate(
   solutionItemId: string,

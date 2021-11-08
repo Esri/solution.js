@@ -28,7 +28,8 @@ import { simpleTypes } from "@esri/solution-simple-types";
  *
  * @param {string} solutionItemId The solution item ID
  * @param {any} itemInfo: The base item info
- * @param {UserSession} authentication The source user session information
+ * @param {UserSession} destAuthentication Credentials for requests to the destination organization
+ * @param {UserSession} srcAuthentication Credentials for requests to source items
  * @param {any} templateDictionary Hash of facts: folder id, org URL, adlib replacements
  * @returns {Promise<IItemTemplate>}
  */

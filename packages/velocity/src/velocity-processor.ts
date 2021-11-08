@@ -49,7 +49,8 @@ import {
  *
  * @param solutionItemId The solution to contain the item
  * @param itemInfo The basic item info
- * @param authentication The credentials for requests
+ * @param destAuthentication Credentials for requests to the destination organization
+ * @param srcAuthentication Credentials for requests to source items
  * @param templateDictionary Hash of facts: folder id, org URL, adlib replacements
  *
  * @return a promise that will resolve the constructed IItemTemplate from the input itemInfo

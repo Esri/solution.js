@@ -22,7 +22,8 @@ import * as common from "@esri/solution-common";
  * Converts an AGOL OIC (Oriented Imagery Catalog) item to a template.
  *
  * @param itemTemplate Template for the OIC (Oriented Imagery Catalog) item
- * @param authentication credentials for the request
+ * @param destAuthentication Credentials for requests to the destination organization
+ * @param srcAuthentication Credentials for requests to source items
  * @return Template for the solution item that contains key details for item reconstruction
  */
 export function convertItemToTemplate(

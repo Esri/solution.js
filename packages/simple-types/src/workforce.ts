@@ -20,7 +20,8 @@ import * as common from "@esri/solution-common";
  * Converts an workforce item to a template.
  *
  * @param itemTemplate template for the workforce project item
- * @param authentication credentials for any requests
+ * @param destAuthentication Credentials for requests to the destination organization
+ * @param srcAuthentication Credentials for requests to source items
  * @return templatized itemTemplate
  */
 export function convertItemToTemplate(
