@@ -322,5 +322,16 @@ describe("Module `webmap`: manages the creation and deployment of OIC (Oriented 
         )
       ).toEqual("{{svc1234567890a.layer1.url}}");
     });
+
+    it("will add portalBaseUrl var and templatize the itemId in service url", () => {
+      expect(
+        oic._templatizeOicLayerUrl(
+          "https://www.arcgis.com/home/item.html?id=aaa7c44e3f504a20a4c9f37b6c91e213&sublayer=0",
+          {}
+        )
+      ).toEqual(
+        "{{portalBaseUrl}}/home/item.html?id={{aaa7c44e3f504a20a4c9f37b6c91e213.itemId}}&sublayer=0"
+      );
+    });
   });
 });

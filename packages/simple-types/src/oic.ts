@@ -194,6 +194,11 @@ export function _templatizeOicLayerUrl(layerURL: string, urlHash: any): string {
         ".layer" + layerId + ".url"
       );
     }
+    
+    // replace everything up until /home with portalBaseUrl var and templatize the itemId
+    templatizedURL = common.templatizeIds(
+      templatizedURL.replace(/.+?(?=\/home)/, "{{portalBaseUrl}}")
+    );
   }
   return templatizedURL;
 }
