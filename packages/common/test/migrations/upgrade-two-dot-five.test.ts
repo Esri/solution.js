@@ -143,6 +143,24 @@ describe("Upgrade 2.5 ::", () => {
     expect(results).toEqual(expected);
   });
 
+  it("it upgrades the Form template's form config schema when it's < 3.8 with pages", () => {
+    const model = cloneObject(defaultModel);
+    model.data.templates[0].properties.form.questions = [{
+      questions: model.data.templates[0].properties.form.questions
+    }];
+    const results = _upgradeTwoDotFive(model);
+    const expected = cloneObject(model);
+    expected.data.templates[0].properties.form.portalUrl = "{{portalBaseUrl}}";
+    expected.data.templates[0].properties.form.layerName = "survey";
+    expected.data.templates[0].properties.form.themes = [theme];
+    delete expected.data.templates[0].properties.form.theme;
+    expected.data.templates[0].properties.form.questions[0].questions[0].appearance.layout =
+      "vertical";
+    expected.data.templates[0].properties.form.version = 3.8;
+    expected.item.properties.schemaVersion = 2.5;
+    expect(results).toEqual(expected);
+  });
+
   it("it doesn't wrap the theme in an array when it's missing", () => {
     const model = cloneObject(defaultModel);
     delete model.data.templates[0].properties.form.theme;

@@ -73,6 +73,32 @@ describe("encodeSurveyForm", () => {
     );
   });
 
+  it("should encode pages", () => {
+    form.questions = [{ questions: form.questions }];
+    const checks = [
+      { contentPath: "header.content", verifyPath: "header.encoded" },
+      { contentPath: "subHeader.content", verifyPath: "subHeader.encoded" },
+      { contentPath: "footer.content", verifyPath: "footer.encoded" },
+      {
+        contentPath: "settings.thankYouScreenContent",
+        verifyPath: "settings.encoded"
+      }
+    ];
+    const results = encodeSurveyForm(form);
+    expect(form).not.toEqual(results, "should not mutate the passed in form");
+    checks.forEach(e => {
+      expect(getProp(results, e.contentPath)).toEqual(
+        getProp(results, e.verifyPath),
+        `${e.contentPath} should be encoded`
+      );
+    });
+    const question = results.questions[0].questions[0];
+    expect(question.description).toEqual(
+      question.encoded,
+      "Question descriptions should be encoded"
+    );
+  });
+
   it("should set questions to an empty array when the property is missing", () => {
     delete form.questions;
     const results = encodeSurveyForm(form);

@@ -50,9 +50,16 @@ export const encodeSurveyForm = function encodeForm(form: any) {
   // encode props from array above
   props.forEach(([objKey, propKey]) => encode(clone[objKey], propKey));
 
+  const encodeQuestion = (question: any) => encode(question, "description");
+
   // encode question descriptions
   clone.questions = (clone.questions || []).map((question: any) =>
-    encode(question, "description")
+    !question.questions
+      ? encodeQuestion(question)
+      : {
+        ...question,
+        questions: question.questions.map(encodeQuestion)
+      }
   );
 
   return clone;
