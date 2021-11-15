@@ -60,7 +60,7 @@ describe("Module `workforce`: manages the creation and deployment of workforce p
       ];
 
       workforce
-        .convertItemToTemplate(itemTemplate, MOCK_USER_SESSION)
+        .convertItemToTemplate(itemTemplate, MOCK_USER_SESSION, MOCK_USER_SESSION)
         .then(newItemTemplate => {
           const newDependencies: string[] = newItemTemplate.dependencies;
           expect(newDependencies.length).toEqual(expectedDependencies.length);
@@ -162,7 +162,7 @@ describe("Module `workforce`: manages the creation and deployment of workforce p
       );
 
       workforce
-        .convertItemToTemplate(itemTemplate, MOCK_USER_SESSION)
+        .convertItemToTemplate(itemTemplate, MOCK_USER_SESSION, MOCK_USER_SESSION)
         .then(newItemTemplate => {
           expect(newItemTemplate.data).toEqual(expectedTemplateData);
           done();
@@ -189,7 +189,7 @@ describe("Module `workforce`: manages the creation and deployment of workforce p
       ];
 
       workforce
-        .convertItemToTemplate(itemTemplate, MOCK_USER_SESSION)
+        .convertItemToTemplate(itemTemplate, MOCK_USER_SESSION, MOCK_USER_SESSION)
         .then(newItemTemplate => {
           const newDependencies: string[] = newItemTemplate.dependencies;
           expect(newDependencies.length).toEqual(expectedDependencies.length);
@@ -207,7 +207,7 @@ describe("Module `workforce`: manages the creation and deployment of workforce p
       );
 
       workforce
-        .convertItemToTemplate(itemTemplate, MOCK_USER_SESSION)
+        .convertItemToTemplate(itemTemplate, MOCK_USER_SESSION, MOCK_USER_SESSION)
         .then(newItemTemplate => {
           expect(newItemTemplate.data).not.toBeDefined();
           done();
@@ -244,7 +244,7 @@ describe("Module `workforce`: manages the creation and deployment of workforce p
       );
 
       workforce
-        .convertItemToTemplate(itemTemplate, MOCK_USER_SESSION)
+        .convertItemToTemplate(itemTemplate, MOCK_USER_SESSION, MOCK_USER_SESSION)
         .then(() => {
           done.fail();
         }, done);
@@ -320,7 +320,7 @@ describe("Module `workforce`: manages the creation and deployment of workforce p
       );
 
       workforce
-        .convertItemToTemplate(itemTemplate, MOCK_USER_SESSION)
+        .convertItemToTemplate(itemTemplate, MOCK_USER_SESSION, MOCK_USER_SESSION)
         .then(newItemTemplate => {
           expect(newItemTemplate.data).toEqual(expectedTemplateData);
           done();

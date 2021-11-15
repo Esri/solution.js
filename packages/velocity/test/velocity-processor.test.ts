@@ -105,7 +105,7 @@ describe("convertItemToTemplate", () => {
         }
       );
 
-    convertItemToTemplate(solutionItemId, itemInfo, MOCK_USER_SESSION, {}).then(
+    convertItemToTemplate(solutionItemId, itemInfo, MOCK_USER_SESSION, MOCK_USER_SESSION, {}).then(
       actual => {
         expect(actual.data.outputs[0].properties["feat-lyr-new.name"]).toEqual(
           "Custom Velocity Update_{{solutionItemId}}"
@@ -192,7 +192,7 @@ describe("convertItemToTemplate", () => {
         }
       );
 
-    convertItemToTemplate(solutionItemId, itemInfo, MOCK_USER_SESSION, {}).then(
+    convertItemToTemplate(solutionItemId, itemInfo, MOCK_USER_SESSION, MOCK_USER_SESSION, {}).then(
       actual => {
         expect(actual.dependencies).toContain(
           "ad6893904c4d4191b5c2312e60e8def7"
@@ -253,7 +253,7 @@ describe("convertItemToTemplate", () => {
         }
       );
 
-    convertItemToTemplate(solutionItemId, itemInfo, MOCK_USER_SESSION, {}).then(
+    convertItemToTemplate(solutionItemId, itemInfo, MOCK_USER_SESSION, MOCK_USER_SESSION, {}).then(
       actual => {
         expect(actual.dependencies.length).toEqual(1);
 
@@ -276,7 +276,7 @@ describe("convertItemToTemplate", () => {
       agolItems.get500Failure()
     );
 
-    convertItemToTemplate(solutionItemId, itemInfo, MOCK_USER_SESSION, {}).then(
+    convertItemToTemplate(solutionItemId, itemInfo, MOCK_USER_SESSION, MOCK_USER_SESSION, {}).then(
       () => {
         done.fail();
       },
@@ -298,7 +298,7 @@ describe("convertItemToTemplate", () => {
       }
     );
 
-    convertItemToTemplate(solutionItemId, itemInfo, MOCK_USER_SESSION, {}).then(
+    convertItemToTemplate(solutionItemId, itemInfo, MOCK_USER_SESSION, MOCK_USER_SESSION, {}).then(
       () => {
         done.fail();
       },

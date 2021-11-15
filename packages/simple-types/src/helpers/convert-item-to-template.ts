@@ -28,7 +28,8 @@ import * as workforce from "../workforce";
  *
  * @param solutionItemId The solution to contain the template
  * @param itemInfo Info about the item
- * @param authentication Credentials for working with AGO
+ * @param destAuthentication Credentials for requests to the destination organization
+ * @param srcAuthentication Credentials for requests to source items
  * @param templateDictionary Hash of facts: folder id, org URL, adlib replacements
  *
  * @return A promise that will resolve when the template has been created
@@ -36,7 +37,8 @@ import * as workforce from "../workforce";
 export function convertItemToTemplate(
   solutionItemId: string,
   itemInfo: any,
-  authentication: common.UserSession,
+  destAuthentication: common.UserSession,
+  srcAuthentication: common.UserSession,
   templateDictionary: any
 ): Promise<common.IItemTemplate> {
   return new Promise<common.IItemTemplate>((resolve, reject) => {
@@ -56,7 +58,7 @@ export function convertItemToTemplate(
     const relatedPromise = common.getItemRelatedItemsInSameDirection(
       itemTemplate.itemId,
       "forward",
-      authentication
+      srcAuthentication
     );
 
     // Perform type-specific handling
@@ -79,7 +81,7 @@ export function convertItemToTemplate(
         dataPromise = new Promise(resolveJSON => {
           // eslint-disable-next-line @typescript-eslint/no-floating-promises
           common
-            .getItemDataAsJson(itemTemplate.itemId, authentication)
+            .getItemDataAsJson(itemTemplate.itemId, srcAuthentication)
             .then(json => resolveJSON(json));
         });
         break;
@@ -87,13 +89,13 @@ export function convertItemToTemplate(
         dataPromise = common.getItemDataAsFile(
           itemTemplate.itemId,
           itemTemplate.item.name,
-          authentication
+          srcAuthentication
         );
         break;
       case "QuickCapture Project":
         dataPromise = common.getItemResourcesFiles(
           itemTemplate.itemId,
-          authentication
+          srcAuthentication
         );
         break;
     }
@@ -159,7 +161,7 @@ export function convertItemToTemplate(
                     solutionItemId,
                     storageName.folder,
                     filename,
-                    authentication
+                    destAuthentication
                   )
                   .then(() => {
                     // Update the template's resources
@@ -178,28 +180,32 @@ export function convertItemToTemplate(
         case "Oriented Imagery Catalog":
           templateModifyingPromise = oic.convertItemToTemplate(
             itemTemplate,
-            authentication
+            destAuthentication,
+            srcAuthentication
           );
           break;
         case "Web Map":
         case "Web Scene":
           templateModifyingPromise = webmap.convertItemToTemplate(
             itemTemplate,
-            authentication
+            destAuthentication,
+            srcAuthentication
           );
           break;
         case "Web Mapping Application":
           if (itemDataResponse) {
             templateModifyingPromise = webmappingapplication.convertItemToTemplate(
               itemTemplate,
-              authentication
+              destAuthentication,
+              srcAuthentication
             );
           }
           break;
         case "Workforce Project":
           templateModifyingPromise = workforce.convertItemToTemplate(
             itemTemplate,
-            authentication
+            destAuthentication,
+            srcAuthentication
           );
           break;
         case "QuickCapture Project":

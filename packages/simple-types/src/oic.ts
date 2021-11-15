@@ -22,16 +22,18 @@ import * as common from "@esri/solution-common";
  * Converts an AGOL OIC (Oriented Imagery Catalog) item to a template.
  *
  * @param itemTemplate Template for the OIC (Oriented Imagery Catalog) item
- * @param authentication credentials for the request
+ * @param destAuthentication Credentials for requests to the destination organization
+ * @param srcAuthentication Credentials for requests to source items
  * @return Template for the solution item that contains key details for item reconstruction
  */
 export function convertItemToTemplate(
   itemTemplate: common.IItemTemplate,
-  authentication: common.UserSession
+  destAuthentication: common.UserSession,
+  srcAuthentication: common.UserSession
 ): Promise<common.IItemTemplate> {
   return new Promise<common.IItemTemplate>((resolve, reject) => {
     // Extract dependencies
-    _extractDependencies(itemTemplate, authentication).then(
+    _extractDependencies(itemTemplate, srcAuthentication).then(
       (results: any) => {
         itemTemplate.dependencies = results.dependencies;
 

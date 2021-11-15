@@ -67,7 +67,7 @@ describe("Module `webmap`: manages the creation and deployment of OIC (Oriented 
           { serviceItemId: "svc1234567890b", id: 2 }
         );
 
-      oic.convertItemToTemplate(itemTemplate, MOCK_USER_SESSION).then(
+      oic.convertItemToTemplate(itemTemplate, MOCK_USER_SESSION, MOCK_USER_SESSION).then(
         () => done.fail(),
         () => done()
       );
@@ -83,7 +83,7 @@ describe("Module `webmap`: manages the creation and deployment of OIC (Oriented 
       expected.data = null;
 
       oic
-        .convertItemToTemplate(itemTemplate, MOCK_USER_SESSION)
+        .convertItemToTemplate(itemTemplate, MOCK_USER_SESSION, MOCK_USER_SESSION)
         .then(actual => {
           expect(actual).toEqual(expected);
           done();
