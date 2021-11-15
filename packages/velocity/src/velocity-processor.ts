@@ -49,7 +49,8 @@ import {
  *
  * @param solutionItemId The solution to contain the item
  * @param itemInfo The basic item info
- * @param authentication The credentials for requests
+ * @param destAuthentication Credentials for requests to the destination organization
+ * @param srcAuthentication Credentials for requests to source items
  * @param templateDictionary Hash of facts: folder id, org URL, adlib replacements
  *
  * @return a promise that will resolve the constructed IItemTemplate from the input itemInfo
@@ -58,12 +59,13 @@ import {
 export function convertItemToTemplate(
   solutionItemId: string,
   itemInfo: any,
-  authentication: UserSession,
+  destAuthentication: UserSession,
+  srcAuthentication: UserSession,
   templateDictionary: any
 ): Promise<IItemTemplate> {
   const template = createInitializedItemTemplate(itemInfo);
   return getVelocityUrl(
-    authentication,
+    srcAuthentication,
     templateDictionary,
     itemInfo.type,
     itemInfo.id
@@ -75,7 +77,7 @@ export function convertItemToTemplate(
           .then(data_json => {
             template.item.title = data_json.label;
             template.data = data_json;
-            return getVelocityDependencies(template, authentication).then(
+            return getVelocityDependencies(template, srcAuthentication).then(
               deps => {
                 template.dependencies = deps;
                 cleanDataSourcesAndFeeds(template, templateDictionary.velocityUrl);

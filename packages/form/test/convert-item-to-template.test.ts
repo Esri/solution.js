@@ -40,6 +40,7 @@ describe("convertItemToTemplate", () => {
         "2c36d3679e7f4934ac599051df22daf6",
         formBase,
         MOCK_USER_SESSION,
+        MOCK_USER_SESSION,
         {}
       )
       .then(
@@ -48,6 +49,7 @@ describe("convertItemToTemplate", () => {
           expect(simpleTypesSpy.calls.first().args).toEqual([
             "2c36d3679e7f4934ac599051df22daf6",
             formBase,
+            MOCK_USER_SESSION,
             MOCK_USER_SESSION,
             {}
           ]);
