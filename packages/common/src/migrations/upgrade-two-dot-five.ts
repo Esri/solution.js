@@ -50,11 +50,20 @@ export function _upgradeTwoDotFive(model: ISolutionItem): ISolutionItem {
           template.properties.form.themes = [template.properties.form.theme];
           delete template.properties.form.theme;
         }
-        // replace whatever layout on all questions with vertical
-        template.properties.form.questions.forEach((q: any) => {
-          if (q.appearance && q.appearance.layout) {
-            q.appearance.layout = "vertical";
+        const updateLayout = (question: any) => {
+          if (question.appearance && question.appearance.layout) {
+            question.appearance.layout = "vertical";
           }
+          return question;
+        }
+        // replace whatever layout on all questions with vertical
+        template.properties.form.questions = template.properties.form.questions.map((question: any) => {
+          return !question.questions
+            ? updateLayout(question)
+            : {
+              ...question,
+              questions: question.questions.map(updateLayout)
+            };
         });
         template.properties.form.version = 3.8;
       }
