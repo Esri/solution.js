@@ -29,13 +29,15 @@ import * as common from "@esri/solution-common";
  *
  * @param solutionItemId The solution to contain the template
  * @param itemInfo Info about the item
- * @param authentication Credentials for working with AGO
+ * @param destAuthentication Credentials for requests to the destination organization
+ * @param srcAuthentication Credentials for requests to source items
  * @return A promise that will resolve when the template has been created
  */
 export function convertItemToTemplate(
   solutionItemId: string,
   itemInfo: any,
-  authentication: common.UserSession
+  destAuthentication: common.UserSession,
+  srcAuthentication: common.UserSession
 ): Promise<common.IItemTemplate> {
   return new Promise<common.IItemTemplate>(resolve => {
     // Init template
@@ -57,7 +59,7 @@ export function convertItemToTemplate(
         .getItemDataAsFile(
           itemTemplate.itemId,
           itemTemplate.item.name,
-          authentication
+          srcAuthentication
         )
         .then(response => {
           if (!response || response.size === 0) {
@@ -99,7 +101,7 @@ export function convertItemToTemplate(
             solutionItemId,
             storageName.folder,
             storageName.filename,
-            authentication
+            destAuthentication
           )
           .then(
             () => {

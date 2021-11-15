@@ -24,14 +24,16 @@ import * as quickcaptureHelpers from "./helpers/quickcapture-helpers";
  *
  * @param solutionItemId The solution to contain the template
  * @param itemInfo Info about the item
- * @param authentication Credentials for working with AGO
+ * @param destAuthentication Credentials for requests to the destination organization
+ * @param srcAuthentication Credentials for requests to source items
  * @param templateDictionary Hash of facts: folder id, org URL, adlib replacements
  * @return A promise that will resolve when the template has been created
  */
 export function convertItemToTemplate(
   solutionItemId: string,
   itemInfo: any,
-  authentication: common.UserSession,
+  destAuthentication: common.UserSession,
+  srcAuthentication: common.UserSession,
   templateDictionary: any
 ): Promise<common.IItemTemplate> {
   // Delegate back to simple-types, which will in-turn delegate
@@ -40,7 +42,8 @@ export function convertItemToTemplate(
   return quickcaptureHelpers.convertItemToTemplate(
     solutionItemId,
     itemInfo,
-    authentication,
+    destAuthentication,
+    srcAuthentication,
     templateDictionary
   );
 }
