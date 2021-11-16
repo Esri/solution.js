@@ -240,44 +240,58 @@ export function getItemHierarchy(
 
   // Get the template specified by id out of a list of templates
   function getTemplateInSolution(templates: common.IItemTemplate[], id: string): common.IItemTemplate {
-    const childId = templates.findIndex(function (template) { return id === template.itemId; });
-    return childId >= 0 ? templates[childId] : null;
+    const iTemplate = templates.findIndex(function (template) { return id === template.itemId; });
+    return iTemplate >= 0 ? templates[iTemplate] : null;
   }
 
-  // Hierarchically list the children of specified nodes
-  function itemChildren(children: string[], accumulatedHierarchy: common.IHierarchyElement[], ancestors: string[] = []) {
-    // Visit each child
-    children.forEach((id) => {
-      const child = {
+  // Hierarchically list the dependencies of specified node
+  function traceItemId(id: string, accumulatedHierarchy: common.IHierarchyElement[], alreadyVisitedIds: string[] = []) {
+    // Get the dependencies of the node
+    const template = getTemplateInSolution(templates, id);
+    /* istanbul ignore else */
+    if (template) {
+      const templateEntry = {
         id,
         dependencies: [] as common.IHierarchyElement[]
       };
 
-      // Fill in the child's dependencies array with its children
-      const template = getTemplateInSolution(templates, id);
-      /* istanbul ignore else */
-      if (template) {
-        // Only continue with this child's dependencies if it's not in the ancestors list to avoid infinite loops
-        /* istanbul ignore else */
-        if (ancestors.indexOf(id) < 0) {
-          // Add child to ancestors list
-          ancestors.push(id);
+      // Visit each dependency, but only if this template is not in the alreadyVisitedIds list to avoid infinite loops
+      if (alreadyVisitedIds.indexOf(id) < 0) {
+        // Add dependency to alreadyVisitedIds list
+        alreadyVisitedIds.push(id);
 
-          const dependencyIds: string[] = template.dependencies;
-          if (Array.isArray(dependencyIds) && dependencyIds.length > 0) {
-            itemChildren(dependencyIds, child.dependencies, ancestors);
+        template.dependencies.forEach(
+          dependencyId => {
+            // Remove dependency from list of templates to visit in the top-level loop
+            const iDependencyTemplate = templateItemIds.indexOf(dependencyId);
+            if (iDependencyTemplate >= 0) {
+              templateItemIds.splice(iDependencyTemplate, 1);
+            }
+
+            traceItemId(dependencyId, templateEntry.dependencies, alreadyVisitedIds);
           }
-        }
+        );
       }
-      accumulatedHierarchy.push(child);
-    });
+      accumulatedHierarchy.push(templateEntry);
+    }
   }
 
-  // Find the top-level nodes. Start with all nodes, then remove those that other nodes depend on
-  const topLevelItemIds = _getTopLevelItemIds(templates);
+  // Start with top-level nodes and add in the rest of the nodes to catch cycles without top-level nodes
+  let templateItemIds: string[] = _getTopLevelItemIds(templates);
 
-  // Start the recursive search with the top-level items
-  itemChildren(topLevelItemIds, hierarchy);
+  const otherItems: common.IItemTemplate[] = templates
+    .filter(template => templateItemIds.indexOf(template.itemId) < 0)  // only keep non-top-level nodes
+    .sort((a, b) => b.dependencies.length - a.dependencies.length);  // sort so that nodes with more dependencies come first--reduces stubs
+
+  templateItemIds = templateItemIds.concat(otherItems.map(template => template.itemId));
+
+  // Step through the list of nodes; we'll also remove nodes as we visit them
+  let itemId = templateItemIds.shift();
+  while (typeof itemId !== "undefined") {
+    traceItemId(itemId, hierarchy);
+    itemId = templateItemIds.shift();
+  }
+
   return hierarchy;
 }
 
@@ -287,8 +301,7 @@ export function getItemHierarchy(
  * Finds the top-level items in a Solution template--the items that are not dependencies of any other item.
  *
  * @param templates Array of templates from a Solution
- * @return List of top-level item ids; note that the first item in the templates array is returned in the case
- * where there are no top-level items due to a circular dependency
+ * @return List of top-level item ids
  */
 export function _getTopLevelItemIds(
   templates: common.IItemTemplate[]
@@ -308,11 +321,6 @@ export function _getTopLevelItemIds(
       }
     });
   });
-
-  // If no node is top level because of a circular dependency, choose the first template in the list
-  if (topLevelItemCandidateIds.length === 0 && templates.length > 0) {
-    topLevelItemCandidateIds.push(templates[0].itemId);
-  }
 
   return topLevelItemCandidateIds;
 };
