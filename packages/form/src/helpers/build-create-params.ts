@@ -72,7 +72,7 @@ export function buildCreateParams(
     ).replace(folderPrefix, "");
     // set any map question's basemaps to default org basemap
     if (unencodedForm.questions) {
-      unencodedForm.questions = unencodedForm.questions.map((question: any) => {
+      const updateBasemap = (question: any) => {
         if (question.maps) {
           question.maps = question.maps.map((map: any) => ({
             ...map,
@@ -80,7 +80,15 @@ export function buildCreateParams(
           }));
         }
         return question;
-      });
+      };
+      unencodedForm.questions = unencodedForm.questions.map((question: any) =>
+        !question.questions
+          ? updateBasemap(question)
+          : {
+            ...question,
+            questions: question.questions.map(updateBasemap)
+          }
+      );
     }
     const form = encodeSurveyForm(unencodedForm);
     // intentionally undefined, handled downstream by core logic now
