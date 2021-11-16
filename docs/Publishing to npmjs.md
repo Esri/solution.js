@@ -88,7 +88,7 @@ If the `versions` array is empty (e.g.,
 
 11. Publish the release. 
   * `npm run release:publish-git` (git-bash) commits the release, bundles it into a zip file, and sends it to GitHub
-  * `npm run release:publish-npm` (Windows) sends the release's packages to npm. You should be prompted for a two-factor code (e.g., from Okta Verify) when prompted. Because codes expire after around 30 seconds, use the freshest possible code: pick it right after it updates in the two-factor app.
+  * `npm run release:publish-npm` (Windows) sends the release's packages to npm. Once the command is ready to send the packages to npm, you should see "? This operation requires a one-time password:". The "password" is an Okta Verify two-factor code. Because codes expire after around 30 seconds, use the freshest possible code: pick it right after it updates in the two-factor app.
 
 
  Note that you won't see the new version in your GitHub client until the next time that you refresh the repository.
