@@ -240,7 +240,7 @@ export function getItemHierarchy(
 
   // Get the template specified by id out of a list of templates
   function getTemplateInSolution(templates: common.IItemTemplate[], id: string): common.IItemTemplate {
-    const iTemplate = templates.findIndex(function (template) { return id === template.itemId; });
+    const iTemplate = templates.findIndex((template) => id === template.itemId);
     return iTemplate >= 0 ? templates[iTemplate] : null;
   }
 
