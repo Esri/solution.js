@@ -13,20 +13,20 @@
     "dist/**"
   ],
   "devDependencies": {
-    "@esri/arcgis-rest-auth": "3.4.2",
-    "@esri/arcgis-rest-feature-layer": "3.4.2",
-    "@esri/arcgis-rest-portal": "3.4.2",
-    "@esri/arcgis-rest-request": "3.4.2",
-    "@esri/arcgis-rest-service-admin": "3.4.2",
+    "@esri/arcgis-rest-auth": "3.4.3",
+    "@esri/arcgis-rest-feature-layer": "3.4.3",
+    "@esri/arcgis-rest-portal": "3.4.3",
+    "@esri/arcgis-rest-request": "3.4.3",
+    "@esri/arcgis-rest-service-admin": "3.4.3",
     "rollup": "^1.22.0",
     "typescript": "^4.3.4"
   },
   "peerDependencies": {
-    "@esri/arcgis-rest-auth": "3.4.2",
-    "@esri/arcgis-rest-feature-layer": "3.4.2",
-    "@esri/arcgis-rest-portal": "3.4.2",
-    "@esri/arcgis-rest-request": "3.4.2",
-    "@esri/arcgis-rest-service-admin": "3.4.2"
+    "@esri/arcgis-rest-auth": "3.4.3",
+    "@esri/arcgis-rest-feature-layer": "3.4.3",
+    "@esri/arcgis-rest-portal": "3.4.3",
+    "@esri/arcgis-rest-request": "3.4.3",
+    "@esri/arcgis-rest-service-admin": "3.4.3"
   },
   "dependencies": {
     "@esri/solution-common": "^1.1.5",
