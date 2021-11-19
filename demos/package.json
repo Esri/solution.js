@@ -9,7 +9,7 @@
   "devDependencies": {
     "http-server": "*",
     "rollup": "^2.31.0",
-    "typescript": "^4.3.4"
+    "typescript": "^4.4.4"
   },
   "dependencies": {
     "@esri/arcgis-html-sanitizer": "2.8.0",
@@ -18,10 +18,10 @@
     "@esri/arcgis-rest-portal": "3.4.3",
     "@esri/arcgis-rest-request": "3.4.3",
     "@esri/arcgis-rest-service-admin": "3.4.3",
-    "@esri/hub-common": "9.7.1",
-    "@esri/hub-initiatives": "9.7.1",
-    "@esri/hub-sites": "9.7.1",
-    "@esri/hub-teams": "9.7.1",
+    "@esri/hub-common": "9.7.2",
+    "@esri/hub-initiatives": "9.7.2",
+    "@esri/hub-sites": "9.7.2",
+    "@esri/hub-teams": "9.7.2",
     "@esri/solution-common": "^1.1.5",
     "@esri/solution-creator": "^1.1.5",
     "@esri/solution-deployer": "^1.1.5",
@@ -35,7 +35,8 @@
     "@esri/solution-velocity": "^1.1.5",
     "@esri/solution-viewer": "^1.1.5",
     "@esri/solution-web-experience": "^1.1.5",
-    "adlib": "3.0.7"
+    "adlib": "3.0.7",
+    "tslib": "^1.13.0"
   },
   "scripts": {
     "build": "tsc -p ./tsconfig.json --outDir ./dist && start cmd.exe /q/c \"copy .\\src\\*.min.js .\\dist\"",
