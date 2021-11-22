@@ -26,7 +26,6 @@ module.exports = function(config) {
             functions: 100,
             lines: 100,
             excludes: [
-              'packages/*/examples/**/*.ts',
               'packages/*/test/**/*.ts'
             ]
           }

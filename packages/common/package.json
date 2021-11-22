@@ -18,12 +18,12 @@
     "@esri/arcgis-rest-portal": "3.4.3",
     "@esri/arcgis-rest-request": "3.4.3",
     "@esri/arcgis-rest-service-admin": "3.4.3",
-    "@esri/hub-common": "9.7.1",
-    "@esri/hub-initiatives": "9.7.1",
-    "@esri/hub-sites": "9.7.1",
-    "@esri/hub-teams": "9.7.1",
+    "@esri/hub-common": "9.7.2",
+    "@esri/hub-initiatives": "9.7.2",
+    "@esri/hub-sites": "9.7.2",
+    "@esri/hub-teams": "9.7.2",
     "@types/adlib": "^3.0.1",
-    "rollup": "^1.22.0"
+    "rollup": "^2.60.0"
   },
   "peerDependencies": {
     "@esri/arcgis-rest-auth": "3.4.3",
@@ -31,18 +31,18 @@
     "@esri/arcgis-rest-portal": "3.4.3",
     "@esri/arcgis-rest-request": "3.4.3",
     "@esri/arcgis-rest-service-admin": "3.4.3",
-    "@esri/hub-common": "9.7.1",
-    "@esri/hub-initiatives": "9.7.1",
-    "@esri/hub-sites": "9.7.1",
-    "@esri/hub-teams": "9.7.1"
+    "@esri/hub-common": "9.7.2",
+    "@esri/hub-initiatives": "9.7.2",
+    "@esri/hub-sites": "9.7.2",
+    "@esri/hub-teams": "9.7.2"
   },
   "dependencies": {
     "@esri/arcgis-html-sanitizer": "2.8.0",
     "@types/lodash.isplainobject": "^4.0.6",
     "adlib": "3.0.7",
-    "jszip": "3.7.0",
+    "jszip": "3.7.1",
     "lodash.isplainobject": "^4.0.6",
-    "tslib": "^1.13.0",
+    "tslib": "1.13.0",
     "xss": "^1.0.6"
   },
   "scripts": {
