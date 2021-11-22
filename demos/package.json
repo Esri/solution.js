@@ -8,7 +8,7 @@
   "license": "Apache-2.0",
   "devDependencies": {
     "http-server": "*",
-    "rollup": "^2.31.0",
+    "rollup": "^2.60.0",
     "typescript": "^4.4.4"
   },
   "dependencies": {
@@ -36,7 +36,7 @@
     "@esri/solution-viewer": "^1.1.5",
     "@esri/solution-web-experience": "^1.1.5",
     "adlib": "3.0.7",
-    "tslib": "^1.13.0"
+    "tslib": "1.13.0"
   },
   "scripts": {
     "build": "tsc -p ./tsconfig.json --outDir ./dist && start cmd.exe /q/c \"copy .\\src\\*.min.js .\\dist\"",
