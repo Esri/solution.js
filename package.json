@@ -76,7 +76,7 @@
     "slug": "^5.1.0",
     "sri-toolbox": "0.2.0",
     "ts-node": "^10.4.0",
-    "typedoc": "^0.22.9",
+    "typedoc": "^0.22.10",
     "typescript": "^4.4.4",
     "uuid": "^8.0.0"
   },
@@ -126,7 +126,7 @@
     "coveralls:win": "start cmd.exe /c \"type coverage\\lcov\\lcov.info | node node_modules/coveralls/bin/coveralls.js\"",
     "docs:build": "rimraf docs/build && npm run docs:typedoc && npm run docs:build:acetate && npm run docs:build:sass && npm run docs:build:images && npm run docs:build:js",
     "docs:typedoc": "node docs/build-typedoc.js",
-    "docs:build:acetate": "ENV=prod acetate build --config docs/acetate.config.js",
+    "docs:build:acetate": "acetate build --config docs/acetate.config.js",
     "docs:build:sass": "node-sass --output docs/build/solution.js/css --source-map true --source-map-contents docs/src/sass",
     "docs:build:images": "cpx \"docs/src/**/*.{png,jpg,jpeg,gif,svg,webm,ogg}\" docs/build/solution.js",
     "docs:build:js": "cpx \"docs/src/**/{api-search,nav-toggle}.js\" docs/build/solution.js",

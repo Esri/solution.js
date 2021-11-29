@@ -19,11 +19,21 @@ const md = new MarkdownIt();
         OUTPUT,
         "--exclude",
         "**/*test.ts",
-        "--ignoreCompilerErrors",
-        "--module",
-        "es6",
         "--tsconfig",
-        "./tsconfig.json"
+        "./tsconfig.json",
+        "packages/common/src/index.ts",
+        "packages/creator/src/index.ts",
+        "packages/deployer/src/index.ts",
+        "packages/feature-layer/src/index.ts",
+        "packages/file/src/index.ts",
+        "packages/form/src/index.ts",
+        "packages/group/src/index.ts",
+        "packages/hub-types/src/index.ts",
+        "packages/simple-types/src/index.ts",
+        "packages/storymap/src/index.ts",
+        "packages/velocity/src/index.ts",
+        "packages/viewer/src/index.ts",
+        "packages/web-experience/src/index.ts"
       ],
       {
         stdio: "inherit"
