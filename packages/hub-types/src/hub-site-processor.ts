@@ -200,6 +200,9 @@ export function convertItemToTemplate(
   destAuthentication: UserSession,
   srcAuthentication: UserSession
 ): Promise<IItemTemplate> {
+  let created: number = 0;
+  let modified: number = 0;
+
   let hubRo: IHubUserRequestOptions;
   // get hubRequestOptions
   return createHubRequestOptions(destAuthentication)
@@ -208,10 +211,15 @@ export function convertItemToTemplate(
       return getSiteById(itemInfo.id, hubRo);
     })
     .then(siteModel => {
+      // We need to save these properties in order to restore them after hub.js deletes them
+      created = siteModel.item.created;
+      modified = siteModel.item.modified;
       return convertSiteToTemplate(siteModel, hubRo);
     })
     .then(tmpl => {
       // add in some stuff Hub.js does not yet add
+      tmpl.item.created = created;
+      tmpl.item.modified = modified;
       tmpl.item.typeKeywords = without(tmpl.item.typeKeywords, "doNotDelete");
       tmpl.groups = [];
       tmpl.estimatedDeploymentCostFactor = 2;
