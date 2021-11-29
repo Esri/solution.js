@@ -179,7 +179,9 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
           typeKeywords: ["JavaScript"],
           origUrl: undefined,
           url:
-            "{{portalBaseUrl}}/home/webmap/viewer.html?webmap={{map1234567890.itemId}}"
+            "{{portalBaseUrl}}/home/webmap/viewer.html?webmap={{map1234567890.itemId}}",
+          created: 1520968147000,
+          modified: 1522178539000
         },
         data: null,
         resources: [],
@@ -809,7 +811,8 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
               "ago_downloaded.png&extent=%7B%7BsolutionItemExtent%7D%7D&categories=&accessInformation=Esri%2C%20" +
               "Inc.&origUrl=%7B%7BportalBaseUrl%7D%7D%2Fhome%2Fwebmap%2Fviewer.html%3Fwebmap%3D%7B%7B" +
               "map1234567890.itemId%7D%7D&culture=en-us&url=%7B%7BportalBaseUrl%7D%7D%2Fhome%2Fwebmap%2F" +
-              "viewer.html%3Fwebmap%3D%7B%7Bmap1234567890.itemId%7D%7D&token=fake-token"
+              "viewer.html%3Fwebmap%3D%7B%7Bmap1234567890.itemId%7D%7D&created=1520968147000&modified=1522178539000" +
+              "&token=fake-token"
           );
         });
     });

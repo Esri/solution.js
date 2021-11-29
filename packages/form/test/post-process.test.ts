@@ -130,7 +130,7 @@ describe("postProcess", () => {
             "snippet=Snippet%20of%20an%20AGOL%20item&thumbnail=https%3A%2F%2Fmyorg.maps.arcgis.com%2F" +
             "sharing%2Frest%2Fcontent%2Fitems%2Ffrm1234567890%2Finfo%2Fthumbnail%2Fago_downloaded.png&" +
             "extent=%7B%7BsolutionItemExtent%7D%7D&categories=&accessInformation=Esri%2C%20Inc.&" +
-            "culture=en-us&url=&token=fake-token"
+            "culture=en-us&url=&created=1520968147000&modified=1522178539000&token=fake-token"
         );
       });
   });
