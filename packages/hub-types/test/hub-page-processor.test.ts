@@ -35,7 +35,12 @@ describe("HubPageProcessor: ", () => {
     });
     it("should fetch the model, convert it, and swap ids", () => {
       // we are not testing the conversion, so the model can be empty
-      const model = {} as hubCommon.IModel;
+      const model = {
+        item: {
+          created: 1520968147000,
+          modified: 1522178539000
+        }
+      } as hubCommon.IModel;
       // we are testing some post-templating logic, so the rawTmpl needs to have some props
       const rawTmpl = {
         item: {
@@ -83,7 +88,12 @@ describe("HubPageProcessor: ", () => {
     });
     it("appends properties to template if missing", () => {
       // we are not testing the conversion, so the model can be empty
-      const model = {} as hubCommon.IModel;
+      const model = {
+        item: {
+          created: 1520968147000,
+          modified: 1522178539000
+        }
+      } as hubCommon.IModel;
       // we are testing some post-templating logic, so the rawTmpl needs to have some props
       const rawTmpl = {
         item: {

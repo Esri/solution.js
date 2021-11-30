@@ -76,7 +76,9 @@ describe("simpleTypeConvertItemToTemplate", () => {
           thumbnail: null,
           title: "An AGOL item",
           typeKeywords: ["JavaScript"],
-          url: ""
+          url: "",
+          created: 1520968147000,
+          modified: 1522178539000
         },
         data: ["abc", "def", "ghi"],
         resources: [],
@@ -169,7 +171,9 @@ describe("simpleTypeConvertItemToTemplate", () => {
           thumbnail: null,
           title: "An AGOL item",
           typeKeywords: ["JavaScript"],
-          url: ""
+          url: "",
+          created: 1520968147000,
+          modified: 1522178539000
         },
         data: null, // forms don't store info here
         resources: ["frm1234567890_info_data/frm1234567890.zip"],
@@ -482,7 +486,9 @@ describe("simpleTypeConvertItemToTemplate", () => {
           thumbnail: "thumbnail/ago_downloaded.png",
           title: "An AGOL item",
           typeKeywords: ["JavaScript"],
-          url: ""
+          url: "",
+          created: 1520968147000,
+          modified: 1522178539000
         },
         properties: {},
         estimatedDeploymentCostFactor: 2
@@ -512,7 +518,9 @@ describe("simpleTypeConvertItemToTemplate", () => {
         title: "Voting Centers",
         contentStatus: null,
         url:
-          "https://myOrg.arcgis.com/home/item.html?id=abc123da3c304dd0bf46dee75ac31aae"
+          "https://myOrg.arcgis.com/home/item.html?id=abc123da3c304dd0bf46dee75ac31aae",
+        created: 1520968147000,
+        modified: 1522178539000
       };
       itemTemplate.itemId = "abc0cab401af4828a25cc6eaeb59fb69";
       itemTemplate.data = {
@@ -548,6 +556,8 @@ describe("simpleTypeConvertItemToTemplate", () => {
           typeKeywords: undefined,
           url:
             "{{portalBaseUrl}}/home/item.html?id={{abc0cab401af4828a25cc6eaeb59fb69.itemId}}",
+          created: 1520968147000,
+          modified: 1522178539000,
           licenseInfo: undefined,
           origUrl: undefined,
           properties: undefined,
@@ -629,7 +639,9 @@ describe("simpleTypeConvertItemToTemplate", () => {
         type: "Web Mapping Application",
         title: "Voting Centers",
         url:
-          "https://myOrg.arcgis.com/home/item.html?id=abc123da3c304dd0bf46dee75ac31aae"
+          "https://myOrg.arcgis.com/home/item.html?id=abc123da3c304dd0bf46dee75ac31aae",
+        created: 1520968147000,
+        modified: 1522178539000
       };
       itemTemplate.itemId = "abc0cab401af4828a25cc6eaeb59fb69";
 
@@ -678,7 +690,9 @@ describe("simpleTypeConvertItemToTemplate", () => {
         type: "Web Mapping Application",
         title: "Voting Centers",
         url:
-          "https://myOrg.arcgis.com/home/item.html?id=abc123da3c304dd0bf46dee75ac31aae"
+          "https://myOrg.arcgis.com/home/item.html?id=abc123da3c304dd0bf46dee75ac31aae",
+        created: 1520968147000,
+        modified: 1522178539000
       };
       itemTemplate.itemId = "abc0cab401af4828a25cc6eaeb59fb69";
 
@@ -788,7 +802,9 @@ describe("simpleTypeConvertItemToTemplate", () => {
           title: "An AGOL item",
           typeKeywords: ["JavaScript"],
           url:
-            "http://statelocaltryit.maps.arcgis.com/apps/CrowdsourcePolling/index.html?appid=wma1234567890"
+            "http://statelocaltryit.maps.arcgis.com/apps/CrowdsourcePolling/index.html?appid=wma1234567890",
+          created: 1520968147000,
+          modified: 1522178539000
         },
         data: null,
         resources: [],
