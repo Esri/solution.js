@@ -26,14 +26,6 @@ Note: This file cannot be in UTF-8*
 
 
 
-## [1.1.1] - August 30th 2021
-
-
-
-## [1.1.0] - August 30th 2021
-
-
-
 ## [1.0.0] - July 14th 2021
 
 
@@ -187,4 +179,4 @@ Note: This file cannot be in UTF-8*
 [1.1.3]: https://github.com/Esri/solution.js/compare/v1.1.2...v1.1.3 "v1.1.3"
 [1.1.4]: https://github.com/Esri/solution.js/compare/v1.1.3...v1.1.4 "v1.1.4"
 [1.1.5]: https://github.com/Esri/solution.js/compare/v1.1.4...v1.1.5 "v1.1.5"
-[HEAD]: https://github.com/Esri/solution.js/compare/v1.1.5...HEAD "Unreleased Changes"
+[Unreleased]: https://github.com/Esri/solution.js/compare/v1.1.5...HEAD "Unreleased Changes"
