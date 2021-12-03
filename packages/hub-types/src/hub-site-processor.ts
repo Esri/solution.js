@@ -50,6 +50,59 @@ import {
 import { moveModelToFolder } from "./helpers/move-model-to-folder";
 import { _postProcessSite } from "./helpers/_post-process-site";
 import { replaceItemIds } from "./helpers/replace-item-ids";
+
+/**
+ * Converts a Site item into a template.
+ *
+ * @param solutionItemId The solution to contain the template
+ * @param itemInfo Info about the item
+ * @param destAuthentication Credentials for requests to the destination organization
+ * @param srcAuthentication Credentials for requests to source items (placeholder--not used)
+ * @return A promise that will resolve when the template has been created
+ */
+export function convertItemToTemplate(
+  solutionItemId: string,
+  itemInfo: any,
+  destAuthentication: UserSession,
+  srcAuthentication: UserSession = null // eslint-disable-line @typescript-eslint/no-unused-vars
+): Promise<IItemTemplate> {
+  let created: number = 0;
+  let modified: number = 0;
+
+  let hubRo: IHubUserRequestOptions;
+  // get hubRequestOptions
+  return createHubRequestOptions(destAuthentication)
+    .then(ro => {
+      hubRo = ro;
+      return getSiteById(itemInfo.id, hubRo);
+    })
+    .then(siteModel => {
+      // We need to save these properties in order to restore them after hub.js deletes them
+      created = siteModel.item.created;
+      modified = siteModel.item.modified;
+      return convertSiteToTemplate(siteModel, hubRo);
+    })
+    .then(tmpl => {
+      // add in some stuff Hub.js does not yet add
+      tmpl.item.created = created;
+      tmpl.item.modified = modified;
+      tmpl.item.typeKeywords = without(tmpl.item.typeKeywords, "doNotDelete");
+      tmpl.groups = [];
+      tmpl.estimatedDeploymentCostFactor = 2;
+      tmpl.resources = [];
+      if (!getProp(tmpl, "properties")) {
+        tmpl.properties = {};
+      }
+      // swap out dependency id's to {{<depid>.itemId}}
+      // so it will be re-interpolated
+      tmpl.dependencies = dedupe(tmpl.dependencies);
+      tmpl = replaceItemIds(tmpl);
+
+      // and return it
+      return tmpl as IItemTemplate;
+    });
+}
+
 /**
  * Handle deployment of Site item templates
  *
@@ -182,58 +235,6 @@ export function createItemFromTemplate(
     .catch(ex => {
       itemProgressCallback(template.itemId, EItemProgressStatus.Failed, 0);
       throw ex;
-    });
-}
-
-/**
- * Converts a Site item into a template.
- *
- * @param solutionItemId The solution to contain the template
- * @param itemInfo Info about the item
- * @param destAuthentication Credentials for requests to the destination organization
- * @param srcAuthentication Credentials for requests to source items
- * @return A promise that will resolve when the template has been created
- */
-export function convertItemToTemplate(
-  solutionItemId: string,
-  itemInfo: any,
-  destAuthentication: UserSession,
-  srcAuthentication: UserSession
-): Promise<IItemTemplate> {
-  let created: number = 0;
-  let modified: number = 0;
-
-  let hubRo: IHubUserRequestOptions;
-  // get hubRequestOptions
-  return createHubRequestOptions(destAuthentication)
-    .then(ro => {
-      hubRo = ro;
-      return getSiteById(itemInfo.id, hubRo);
-    })
-    .then(siteModel => {
-      // We need to save these properties in order to restore them after hub.js deletes them
-      created = siteModel.item.created;
-      modified = siteModel.item.modified;
-      return convertSiteToTemplate(siteModel, hubRo);
-    })
-    .then(tmpl => {
-      // add in some stuff Hub.js does not yet add
-      tmpl.item.created = created;
-      tmpl.item.modified = modified;
-      tmpl.item.typeKeywords = without(tmpl.item.typeKeywords, "doNotDelete");
-      tmpl.groups = [];
-      tmpl.estimatedDeploymentCostFactor = 2;
-      tmpl.resources = [];
-      if (!getProp(tmpl, "properties")) {
-        tmpl.properties = {};
-      }
-      // swap out dependency id's to {{<depid>.itemId}}
-      // so it will be re-interpolated
-      tmpl.dependencies = dedupe(tmpl.dependencies);
-      tmpl = replaceItemIds(tmpl);
-
-      // and return it
-      return tmpl as IItemTemplate;
     });
 }
 
