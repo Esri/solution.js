@@ -116,6 +116,29 @@ const solutionItemExtent: any = [
 ];
 
 describe("Module `restHelpers`: common REST utility functions shared across packages", () => {
+
+  describe("UserSession constructor-by-function", () => {
+    it("handles defaulting all options", () => {
+      const userSession = restHelpers.getUserSession();
+      const expectedUserSession = new interfaces.UserSession({});
+      expect(userSession.username).toEqual(expectedUserSession.username);
+      expect(userSession.password).toEqual(expectedUserSession.password);
+      expect(userSession.portal).toEqual(expectedUserSession.portal);
+    });
+
+    it("handles username & password options", () => {
+      const options = {
+        username: "Fred",
+        password: "Astaire"
+      };
+      const userSession = restHelpers.getUserSession(options);
+      const expectedUserSession = new interfaces.UserSession(options);
+      expect(userSession.username).toEqual(expectedUserSession.username);
+      expect(userSession.password).toEqual(expectedUserSession.password);
+      expect(userSession.portal).toEqual(expectedUserSession.portal);
+    });
+  });
+
   describe("searchItems passthru", () => {
     it("can handle simple search", done => {
       fetchMock.get(

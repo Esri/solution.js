@@ -7,105 +7,99 @@ group: 0-introduction
 
 # Why `@esri/solution.js`?
 
-`@esri/solution.js` simplifies making requests to ArcGIS Online and Enterprise in both browsers and Node.js.
+`@esri/solution.js` simplifies making requests about Solutions to ArcGIS Online and Enterprise in browsers.
 
-There's no better way to explain what that means than comparing an `@esri/solution.js` call to the same web request made using plain old JavaScript.
+There's no better way to explain what that means than comparing an `@esri/solution.js` call to the same web request made using the [@esri/arcgis-rest-js library](https://esri.github.io/arcgis-rest-js/), which is an ever bigger simplification over plain old JavaScript.
 
-### @esri/arcgis-rest
+### @esri/solution.js
 
-```js
-import { getUser } from "@esri/arcgis-rest-portal";
+```html
+<!-- require supporting arcgis-rest-js libraries from https://unpkg.com; available via arcgisRest global -->
+<script src="https://unpkg.com/@esri/arcgis-rest-auth/dist/umd/auth.umd.min.js"></script>
+<script src="https://unpkg.com/@esri/arcgis-rest-portal/dist/umd/portal.umd.min.js"></script>
+<script src="https://unpkg.com/@esri/arcgis-rest-request/dist/umd/request.umd.min.js"></script>
 
-// pass in a username and get back information about the user
-getUser(`jgravois`)
-  .then(response) // { firstName: "john", description: "open source geodev" ... }
+<!-- require Solution.js `common` library from https://unpkg.com; available via arcgisSolution global -->
+<script src="https://unpkg.com/@esri/solution-common/dist/umd/common.umd.min.js"></script>
+<script>
+// Pass in an item id and get back information about the item and its data, thumbnail, metadata,
+// resources, and related item ids
+arcgisSolution.getCompleteItem("a67c8d5e25b644419316efcb1f70c291", arcgisSolution.getUserSession())
+.then(response => {
+  // response contains the properties (with their MIME types)
+  //   (base: IItem)  text/plain JSON
+  //   (data: File)  */*
+  //   (thumbnail: File)  image/*
+  //   (metadata: File)  application/xml
+  //   (resources: File[])  list of */*
+  //   (fwdRelatedItems: IRelatedItems[])  list of forward relationshipType/relatedItems[] pairs
+  //   (revRelatedItems: IRelatedItems[])  list of reverse relationshipType/relatedItems[] pairs
+  });
+</script>
 ```
 
-### vs. Vanilla JavaScript
+### vs. @esri/arcgis-rest-js
 
-```js
-// construct the url yourself and don't forget to tack on f=json
-const url = "https://www.arcgis.com/sharing/rest/community/users/jgravois?f=json";
+```html
+<!-- require supporting arcgis-rest-js libraries from https://unpkg.com; available via arcgisRest global -->
+<script src="https://unpkg.com/@esri/arcgis-rest-auth/dist/umd/auth.umd.min.js"></script>
+<script src="https://unpkg.com/@esri/arcgis-rest-portal/dist/umd/portal.umd.min.js"></script>
+<script src="https://unpkg.com/@esri/arcgis-rest-request/dist/umd/request.umd.min.js"></script>
 
-var xhr = new XMLHttpRequest();
-xhr.onreadystatechange = function() {
-  if (xhr.readyState == XMLHttpRequest.DONE) {
-    xhr.responseText; // { firstName: "john", description: "open source geodev" ... }
-  }
-}
-xhr.open('GET', url, true);
-xhr.send(null);
+<!-- require Solution.js `common` library from https://unpkg.com; available via arcgisSolution global -->
+<script src="https://unpkg.com/@esri/solution-common/dist/umd/common.umd.min.js"></script>
+<script>
+  // Pass in an item id and get back information about the item and its data, thumbnail, metadata,
+  // resources, and related item ids
+  Promise.all([
+    arcgisRest.getItem("a67c8d5e25b644419316efcb1f70c291", {}),  // item
+    arcgisRest.request("https://www.arcgis.com/sharing/rest/content/items/a67c8d5e25b644419316efcb1f70c291/data", {}),  // data
+    arcgisRest.request("https://www.arcgis.com/sharing/rest/content/items/a67c8d5e25b644419316efcb1f70c291/info/thumbnail/ago_downloaded.jpg", {rawResponse: true}),  // thumbnail
+    arcgisRest.request("https://www.arcgis.com/sharing/rest/content/items/a67c8d5e25b644419316efcb1f70c291/resources", {rawResponse: true}),  // resources
+    arcgisRest.request("https://www.arcgis.com/sharing/rest/content/items/a67c8d5e25b644419316efcb1f70c291/relatedItems?f=json&direction=forward&relationshipType=APIKey2Item", {}),  // related items in forward direction
+              // Repeat previous call for additional 25 relationship types
+    arcgisRest.request("https://www.arcgis.com/sharing/rest/content/items/a67c8d5e25b644419316efcb1f70c291/relatedItems?f=json&direction=reverse&relationshipType=APIKey2Item", {})  // related items in reverse direction
+              // Repeat previous call for additional 25 relationship types
+  ])
+  .then(responses => {
+    // responses array contains (with their MIME types)
+    //   (base: IItem)  text/plain JSON
+    //   (data: File)  */*
+    //   (thumbnail: File)  image/*
+    //   (metadata: File)  application/xml
+    //   (resources: File[])  list of * /*
+    //   (fwdRelatedItems: IRelatedItems)  forward relationshipType/relatedItems[] pairs for APIKey2Item
+    //   (revRelatedItems: IRelatedItems)  reverse relationshipType/relatedItems[] pairs for APIKey2Item
+
+    // Metadata must be requested separately because if the item doesn't contain metadata, an ignorable error might be thrown
+    arcgisRest.request("https://www.arcgis.com/sharing/rest/content/items/a67c8d5e25b644419316efcb1f70c291/info/metadata/metadata.xml", {rawResponse: true})
+    .then(
+      metadata => {
+        // Check that `metadata` isn't a JSON error structure
+      },
+      noMetadata => {}
+    );
+  });
+</script>
 ```
-
-wow, thats a lot easier! `@esri/solution.js` is able to intuit the actual url (by default it assumes you're interacting with ArcGIS Online) prior to making the request and internalizes a lot of tedious logic for handling the response.
-
-Our packages tap into a new JavaScript spec called [`fetch()`](https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API/Using_Fetch) under the hood though, so lets compare 🍎s to 🍎s.
-
-```js
-import { deleteFeatures } from "@esri/arcgis-rest-feature-layer";
-
-const url = `http://sampleserver6.arcgisonline.com/arcgis/rest/services/SF311/FeatureServer/1/`
-
-// https://esri.github.io/solution.js/api/feature-service/deleteFeatures/
-deleteFeatures({
-  url,
-  objectIds: [ 2360245 ]
-})
-  .then(response)
-```
-
-```js
-// append operation name to url
-url += `deleteFeatures`;
-
-fetch(url, {
-  // set the request type
-  method: "POST",
-  // append appropriate headers
-  headers: {
-    "Content-Type": "application/x-www-form-urlencoded"
-  },
-  // concatentate and encode each parameter manually
-  // and remember to append f=json
-  body: `objectIds=${encodeURIComponent(2360245)}&f=json`
-})
-  .then(response => {
-    // cast the response as JSON
-    if (response.ok) {
-      return response.json()
-    }
-  })
-  .then(response => {
-    // trap for ArcGIS error objects in 200 responses
-    if (!response.error) {
-      console.log(response);
-    }
-  })
-```
-
-As you can see, `@esri/solution.js` is still handling a _lot_ of the details internally.
-
-* the operation name is appended to urls
-* a `"POST"` is made automatically (when appropriate)
-* query string parameters are encoded
-* appropriate `headers` are appended
-* `FormData` is created internally (when necessary)
-* `200` responses that contain an error are trapped for
-* the generic `f=json` parameter is appended
 
 And we haven't even begun to discuss [authentication](../browser-authentication/).
 
-Whether you're trying to automate interacting with premium services in Node.js or creating a website that will allow users to sign into [ArcGIS Online](https://www.arcgis.com) safely and manage their own content, `@esri/solution.js` has you covered.
 
 # Package Overview
 
-The library is a collection of _very_ small mix and match packages that are framework agnostic and make a variety of ArcGIS tasks more convenient.
+The library is a collection of packages that are framework agnostic and make a variety of ArcGIS Solution-related tasks more convenient.
 
-* [`@esri/arcgis-rest-request`](./packages/arcgis-rest-request/) - Underpins other packages and supports making low-level requests.
-* [`@esri/arcgis-rest-auth`](./packages/arcgis-rest-auth) - Provides methods for authenticating named users and applications.
-* [`@esri/arcgis-rest-portal`](./packages/arcgis-rest-portal) - Methods for working with ArcGIS Online/Enterprise content and users.
-* [`@esri/arcgis-rest-feature-layer`](./packages/arcgis-rest-feature-layer) - Functions for querying and editing features inside of hosted feature layers.
-* [`@esri/arcgis-rest-service-admin`](./packages/arcgis-rest-feature-service-admin) - Functions for administering hosted services.
-* [`@esri/arcgis-rest-geocoding`](./packages/arcgis-rest-geocoding) - Geocoding wrapper for `@esri/solution.js`
-* [`@esri/arcgis-rest-routing`](./packages/arcgis-rest-routing) - Routing and directions wrapper for `@esri/solution.js`.
-* [`@esri/arcgis-rest-types`](./packages/arcgis-rest-request/) - Common Typings for TypeScript developers.
+* [`@esri/solution-common`](https://github.com/Esri/solution.js/tree/master/packages/common): Provides general helper functions for @esri/solution.js.
+* [`@esri/solution-creator`](https://github.com/Esri/solution.js/tree/master/packages/creator): Manages the creation of a Solution item for @esri/solution.js.
+* [`@esri/solution-deployer`](https://github.com/Esri/solution.js/tree/master/packages/deployer): Manages the deployment of a Solution for @esri/solution.js.
+* [`@esri/solution-feature-layer`](https://github.com/Esri/solution.js/tree/master/packages/feature-layer): Manages the creation and deployment of feature layers and services for @esri/solution.js.
+* [`@esri/solution-file`](https://github.com/Esri/solution.js/tree/master/packages/file): Manages the creation and deployment of item types that contain files for @esri/solution.js.
+* [`@esri/solution-form`](https://github.com/Esri/solution.js/tree/master/packages/form): Manages the creation and deployment of form item types for @esri/solution.js.
+* [`@esri/solution-group`](https://github.com/Esri/solution.js/tree/master/packages/group): Manages the creation and deployment of group item types for @esri/solution.js.
+* [`@esri/solution-hub-types`](https://github.com/Esri/solution.js/tree/master/packages/hub-types): Manages the creation and deployment of Hub Site and Hub Page item types for @esri/solution.js.
+* [`@esri/solution-simple-types`](https://github.com/Esri/solution.js/tree/master/packages/simple-types): Manages the creation and deployment of simple item types for @esri/solution.js.
+* [`@esri/solution-storymap`](https://github.com/Esri/solution.js/tree/master/packages/storymap): Manages the creation and deployment of Story Map item types for @esri/solution.js.
+* [`@esri/solution-velocity`](https://github.com/Esri/solution.js/tree/master/packages/velocity): Manages the creation and deployment of Velocity item types for @esri/solution.js.
+* [`@esri/solution-viewer`](https://github.com/Esri/solution.js/tree/master/packages/viewer): Simplifies access to @esri/solution.js.
+* [`@esri/solution-web-experience`](https://github.com/Esri/solution.js/tree/master/packages/web-experience): Manages the creation and deployment of Web Experience item types for @esri/solution.js.

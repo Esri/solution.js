@@ -63,6 +63,7 @@ import {
 } from "./interfaces";
 import { createZip } from "./libConnectors";
 import { getItemBase, getItemDataAsJson } from "./restHelpersGet";
+import { IUserSessionOptions } from "@esri/arcgis-rest-auth";
 import {
   addItemData as portalAddItemData,
   addItemRelationship,
@@ -121,6 +122,18 @@ import {
 export { request as rest_request } from "@esri/arcgis-rest-request";
 
 // ------------------------------------------------------------------------------------------------------------------ //
+
+/**
+ * Creates a UserSession via a function so that the global arcgisSolution variable can access authentication.
+ *
+ * @param options See https://esri.github.io/arcgis-rest-js/api/auth/IUserSessionOptions/
+ * @return UserSession
+ */
+export function getUserSession(
+  options: IUserSessionOptions = {}
+): UserSession {
+  return new UserSession(options);
+}
 
 /**
  * Searches for items matching a query and that the caller has access to.
@@ -978,7 +991,7 @@ export function getLayers(
  *
  * @param args The IPostProcessArgs for the request(s)
  * @param isPortal boolean to indicate if we are deploying to portal
- * 
+ *
  * @return An array of update instructions
  * @private
  */
@@ -1047,7 +1060,7 @@ export function getLayerUpdates(
  * @param layers the layers from the service
  * @param tables the tables from the service
  * @param relUpdates the relationships to add for the service
- * 
+ *
  * @return An array with relationships that have been sorted
  */
 export function _sortRelationships(
@@ -1448,7 +1461,7 @@ export function searchGroups(
  * @param authentication Credentials for the request to AGO
  * @param groups List of groups that have been found from previous requests
  * @param inPagingParams The paging params for the recurisve searching
- * 
+ *
  * @return A promise that will resolve with all groups that meet the search criteria
  */
 export function searchAllGroups(
@@ -1537,7 +1550,7 @@ export function searchGroupContents(
  * @param groupId Group to remove users from
  * @param userName The new owner for the group
  * @param authentication Credentials for the request to
- * 
+ *
  * @return A promise that will resolve after the group ownership has been assigned
  *
  */
@@ -1564,7 +1577,7 @@ export function reassignGroup(
  * @param groupId Group to remove users from
  * @param users List of users to remove from the group
  * @param authentication Credentials for the request to
- * 
+ *
  * @return A promise that will resolve after the users have been removed
  *
  */
@@ -1587,7 +1600,7 @@ export function removeUsers(
  * @param id the item id to share with the group
  * @param destinationAuthentication Credentials for the request to AGO
  * @param owner owner of the group when sharing tracking items (can be different from the deploying user)
- * 
+ *
  * @return A promise that will resolve after the item has been shared
  *
  */
@@ -1896,7 +1909,7 @@ export function _getCreateServiceOptions(
       authentication: authentication
     };
 
-    createOptions.item = !isTrackingViewTemplate(newItemTemplate) ? 
+    createOptions.item = !isTrackingViewTemplate(newItemTemplate) ?
       _setItemProperties(
         createOptions.item,
         newItemTemplate,
