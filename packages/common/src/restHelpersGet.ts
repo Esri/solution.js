@@ -767,7 +767,7 @@ export function getPortalSharingUrlFromAuth(
   authentication: UserSession
 ): string {
   // If auth was passed, use that portal
-  return getProp(authentication, "portal");
+  return getProp(authentication, "portal") || "https://www.arcgis.com/sharing/rest";
 }
 
 /**

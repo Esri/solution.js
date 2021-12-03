@@ -1114,6 +1114,12 @@ describe("Module `restHelpersGet`: common REST fetch functions shared across pac
   });
 
   describe("getPortalSharingUrlFromAuth", () => {
+    it("gets a default portal sharing url when there's no authentication", () => {
+      expect(
+        restHelpersGet.getPortalSharingUrlFromAuth(undefined)
+      ).toEqual("https://www.arcgis.com/sharing/rest");
+    });
+
     it("gets a default portal sharing url with authentication but no portal", () => {
       const mockUserSession = new interfaces.UserSession({
         clientId: "clientId",
