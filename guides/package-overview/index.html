@@ -102,91 +102,91 @@
     <div class="column-18">
       <div class="panel">
         <h1>Why <code>@esri/solution.js</code>?</h1>
-<p><code>@esri/solution.js</code> simplifies making requests to ArcGIS Online and Enterprise in both browsers and Node.js.</p>
-<p>There's no better way to explain what that means than comparing an <code>@esri/solution.js</code> call to the same web request made using plain old JavaScript.</p>
-<h3>@esri/arcgis-rest</h3>
-<pre><code class="js"><span class="hljs-keyword">import</span> { getUser } <span class="hljs-keyword">from</span> <span class="hljs-string">"@esri/arcgis-rest-portal"</span>;
+<p><code>@esri/solution.js</code> simplifies making requests about Solutions to ArcGIS Online and Enterprise in browsers.</p>
+<p>There's no better way to explain what that means than comparing an <code>@esri/solution.js</code> call to the same web request made using the <a href="https://esri.github.io/arcgis-rest-js/">@esri/arcgis-rest-js library</a>, which is an ever bigger simplification over plain old JavaScript.</p>
+<h3>@esri/solution.js</h3>
+<pre><code class="html"><span class="hljs-comment">&lt;!-- require supporting arcgis-rest-js libraries from https://unpkg.com; available via arcgisRest global --&gt;</span>
+<span class="hljs-tag">&lt;<span class="hljs-name">script</span> <span class="hljs-attr">src</span>=<span class="hljs-string">"https://unpkg.com/@esri/arcgis-rest-auth/dist/umd/auth.umd.min.js"</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span>
+<span class="hljs-tag">&lt;<span class="hljs-name">script</span> <span class="hljs-attr">src</span>=<span class="hljs-string">"https://unpkg.com/@esri/arcgis-rest-portal/dist/umd/portal.umd.min.js"</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span>
+<span class="hljs-tag">&lt;<span class="hljs-name">script</span> <span class="hljs-attr">src</span>=<span class="hljs-string">"https://unpkg.com/@esri/arcgis-rest-request/dist/umd/request.umd.min.js"</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span>
 
-<span class="hljs-comment">// pass in a username and get back information about the user</span>
-getUser(<span class="hljs-string">`jgravois`</span>)
-  .then(response) <span class="hljs-comment">// { firstName: "john", description: "open source geodev" ... }</span>
+<span class="hljs-comment">&lt;!-- require Solution.js `common` library from https://unpkg.com; available via arcgisSolution global --&gt;</span>
+<span class="hljs-tag">&lt;<span class="hljs-name">script</span> <span class="hljs-attr">src</span>=<span class="hljs-string">"https://unpkg.com/@esri/solution-common/dist/umd/common.umd.min.js"</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span>
+<span class="hljs-tag">&lt;<span class="hljs-name">script</span>&gt;</span><span class="javascript">
+<span class="hljs-comment">// Pass in an item id and get back information about the item and its data, thumbnail, metadata,</span>
+<span class="hljs-comment">// resources, and related item ids</span>
+arcgisSolution.getCompleteItem(<span class="hljs-string">"a67c8d5e25b644419316efcb1f70c291"</span>, arcgisSolution.getUserSession())
+.then(<span class="hljs-function"><span class="hljs-params">response</span> =&gt;</span> {
+  <span class="hljs-comment">// response contains the properties (with their MIME types)</span>
+  <span class="hljs-comment">//   (base: IItem)  text/plain JSON</span>
+  <span class="hljs-comment">//   (data: File)  */*</span>
+  <span class="hljs-comment">//   (thumbnail: File)  image/*</span>
+  <span class="hljs-comment">//   (metadata: File)  application/xml</span>
+  <span class="hljs-comment">//   (resources: File[])  list of */*</span>
+  <span class="hljs-comment">//   (fwdRelatedItems: IRelatedItems[])  list of forward relationshipType/relatedItems[] pairs</span>
+  <span class="hljs-comment">//   (revRelatedItems: IRelatedItems[])  list of reverse relationshipType/relatedItems[] pairs</span>
+  });
+</span><span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span>
 </code></pre>
-<h3>vs. Vanilla JavaScript</h3>
-<pre><code class="js"><span class="hljs-comment">// construct the url yourself and don't forget to tack on f=json</span>
-<span class="hljs-keyword">const</span> url = <span class="hljs-string">"https://www.arcgis.com/sharing/rest/community/users/jgravois?f=json"</span>;
+<h3>vs. @esri/arcgis-rest-js</h3>
+<pre><code class="html"><span class="hljs-comment">&lt;!-- require supporting arcgis-rest-js libraries from https://unpkg.com; available via arcgisRest global --&gt;</span>
+<span class="hljs-tag">&lt;<span class="hljs-name">script</span> <span class="hljs-attr">src</span>=<span class="hljs-string">"https://unpkg.com/@esri/arcgis-rest-auth/dist/umd/auth.umd.min.js"</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span>
+<span class="hljs-tag">&lt;<span class="hljs-name">script</span> <span class="hljs-attr">src</span>=<span class="hljs-string">"https://unpkg.com/@esri/arcgis-rest-portal/dist/umd/portal.umd.min.js"</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span>
+<span class="hljs-tag">&lt;<span class="hljs-name">script</span> <span class="hljs-attr">src</span>=<span class="hljs-string">"https://unpkg.com/@esri/arcgis-rest-request/dist/umd/request.umd.min.js"</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span>
 
-<span class="hljs-keyword">var</span> xhr = <span class="hljs-keyword">new</span> XMLHttpRequest();
-xhr.onreadystatechange = <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params"></span>) </span>{
-  <span class="hljs-keyword">if</span> (xhr.readyState == XMLHttpRequest.DONE) {
-    xhr.responseText; <span class="hljs-comment">// { firstName: "john", description: "open source geodev" ... }</span>
-  }
-}
-xhr.open(<span class="hljs-string">'GET'</span>, url, <span class="hljs-literal">true</span>);
-xhr.send(<span class="hljs-literal">null</span>);
+<span class="hljs-comment">&lt;!-- require Solution.js `common` library from https://unpkg.com; available via arcgisSolution global --&gt;</span>
+<span class="hljs-tag">&lt;<span class="hljs-name">script</span> <span class="hljs-attr">src</span>=<span class="hljs-string">"https://unpkg.com/@esri/solution-common/dist/umd/common.umd.min.js"</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span>
+<span class="hljs-tag">&lt;<span class="hljs-name">script</span>&gt;</span><span class="javascript">
+  <span class="hljs-comment">// Pass in an item id and get back information about the item and its data, thumbnail, metadata,</span>
+  <span class="hljs-comment">// resources, and related item ids</span>
+  <span class="hljs-built_in">Promise</span>.all([
+    arcgisRest.getItem(<span class="hljs-string">"a67c8d5e25b644419316efcb1f70c291"</span>, {}),  <span class="hljs-comment">// item</span>
+    arcgisRest.request(<span class="hljs-string">"https://www.arcgis.com/sharing/rest/content/items/a67c8d5e25b644419316efcb1f70c291/data"</span>, {}),  <span class="hljs-comment">// data</span>
+    arcgisRest.request(<span class="hljs-string">"https://www.arcgis.com/sharing/rest/content/items/a67c8d5e25b644419316efcb1f70c291/info/thumbnail/ago_downloaded.jpg"</span>, {<span class="hljs-attr">rawResponse</span>: <span class="hljs-literal">true</span>}),  <span class="hljs-comment">// thumbnail</span>
+    arcgisRest.request(<span class="hljs-string">"https://www.arcgis.com/sharing/rest/content/items/a67c8d5e25b644419316efcb1f70c291/resources"</span>, {<span class="hljs-attr">rawResponse</span>: <span class="hljs-literal">true</span>}),  <span class="hljs-comment">// resources</span>
+    arcgisRest.request(<span class="hljs-string">"https://www.arcgis.com/sharing/rest/content/items/a67c8d5e25b644419316efcb1f70c291/relatedItems?f=json&amp;direction=forward&amp;relationshipType=APIKey2Item"</span>, {}),  <span class="hljs-comment">// related items in forward direction</span>
+              <span class="hljs-comment">// Repeat previous call for additional 25 relationship types</span>
+    arcgisRest.request(<span class="hljs-string">"https://www.arcgis.com/sharing/rest/content/items/a67c8d5e25b644419316efcb1f70c291/relatedItems?f=json&amp;direction=reverse&amp;relationshipType=APIKey2Item"</span>, {})  <span class="hljs-comment">// related items in reverse direction</span>
+              <span class="hljs-comment">// Repeat previous call for additional 25 relationship types</span>
+  ])
+  .then(<span class="hljs-function"><span class="hljs-params">responses</span> =&gt;</span> {
+    <span class="hljs-comment">// responses array contains (with their MIME types)</span>
+    <span class="hljs-comment">//   (base: IItem)  text/plain JSON</span>
+    <span class="hljs-comment">//   (data: File)  */*</span>
+    <span class="hljs-comment">//   (thumbnail: File)  image/*</span>
+    <span class="hljs-comment">//   (metadata: File)  application/xml</span>
+    <span class="hljs-comment">//   (resources: File[])  list of * /*</span>
+    <span class="hljs-comment">//   (fwdRelatedItems: IRelatedItems)  forward relationshipType/relatedItems[] pairs for APIKey2Item</span>
+    <span class="hljs-comment">//   (revRelatedItems: IRelatedItems)  reverse relationshipType/relatedItems[] pairs for APIKey2Item</span>
+
+    <span class="hljs-comment">// Metadata must be requested separately because if the item doesn't contain metadata, an ignorable error might be thrown</span>
+    arcgisRest.request(<span class="hljs-string">"https://www.arcgis.com/sharing/rest/content/items/a67c8d5e25b644419316efcb1f70c291/info/metadata/metadata.xml"</span>, {<span class="hljs-attr">rawResponse</span>: <span class="hljs-literal">true</span>})
+    .then(
+      <span class="hljs-function"><span class="hljs-params">metadata</span> =&gt;</span> {
+        <span class="hljs-comment">// Check that `metadata` isn't a JSON error structure</span>
+      },
+      noMetadata =&gt; {}
+    );
+  });
+</span><span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span>
 </code></pre>
-<p>wow, thats a lot easier! <code>@esri/solution.js</code> is able to intuit the actual url (by default it assumes you're interacting with ArcGIS Online) prior to making the request and internalizes a lot of tedious logic for handling the response.</p>
-<p>Our packages tap into a new JavaScript spec called <a href="https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API/Using_Fetch"><code>fetch()</code></a> under the hood though, so lets compare 🍎s to 🍎s.</p>
-<pre><code class="js"><span class="hljs-keyword">import</span> { deleteFeatures } <span class="hljs-keyword">from</span> <span class="hljs-string">"@esri/arcgis-rest-feature-layer"</span>;
-
-<span class="hljs-keyword">const</span> url = <span class="hljs-string">`http://sampleserver6.arcgisonline.com/arcgis/rest/services/SF311/FeatureServer/1/`</span>
-
-<span class="hljs-comment">// https://esri.github.io/solution.js/api/feature-service/deleteFeatures/</span>
-deleteFeatures({
-  url,
-  <span class="hljs-attr">objectIds</span>: [ <span class="hljs-number">2360245</span> ]
-})
-  .then(response)
-</code></pre>
-<pre><code class="js"><span class="hljs-comment">// append operation name to url</span>
-url += <span class="hljs-string">`deleteFeatures`</span>;
-
-fetch(url, {
-  <span class="hljs-comment">// set the request type</span>
-  <span class="hljs-attr">method</span>: <span class="hljs-string">"POST"</span>,
-  <span class="hljs-comment">// append appropriate headers</span>
-  <span class="hljs-attr">headers</span>: {
-    <span class="hljs-string">"Content-Type"</span>: <span class="hljs-string">"application/x-www-form-urlencoded"</span>
-  },
-  <span class="hljs-comment">// concatentate and encode each parameter manually</span>
-  <span class="hljs-comment">// and remember to append f=json</span>
-  <span class="hljs-attr">body</span>: <span class="hljs-string">`objectIds=<span class="hljs-subst">${<span class="hljs-built_in">encodeURIComponent</span>(<span class="hljs-number">2360245</span>)}</span>&amp;f=json`</span>
-})
-  .then(<span class="hljs-function"><span class="hljs-params">response</span> =&gt;</span> {
-    <span class="hljs-comment">// cast the response as JSON</span>
-    <span class="hljs-keyword">if</span> (response.ok) {
-      <span class="hljs-keyword">return</span> response.json()
-    }
-  })
-  .then(<span class="hljs-function"><span class="hljs-params">response</span> =&gt;</span> {
-    <span class="hljs-comment">// trap for ArcGIS error objects in 200 responses</span>
-    <span class="hljs-keyword">if</span> (!response.error) {
-      <span class="hljs-built_in">console</span>.log(response);
-    }
-  })
-</code></pre>
-<p>As you can see, <code>@esri/solution.js</code> is still handling a <em>lot</em> of the details internally.</p>
-<ul>
-<li>the operation name is appended to urls</li>
-<li>a <code>&quot;POST&quot;</code> is made automatically (when appropriate)</li>
-<li>query string parameters are encoded</li>
-<li>appropriate <code>headers</code> are appended</li>
-<li><code>FormData</code> is created internally (when necessary)</li>
-<li><code>200</code> responses that contain an error are trapped for</li>
-<li>the generic <code>f=json</code> parameter is appended</li>
-</ul>
 <p>And we haven't even begun to discuss <a href="../browser-authentication/">authentication</a>.</p>
-<p>Whether you're trying to automate interacting with premium services in Node.js or creating a website that will allow users to sign into <a href="https://www.arcgis.com">ArcGIS Online</a> safely and manage their own content, <code>@esri/solution.js</code> has you covered.</p>
 <h1>Package Overview</h1>
-<p>The library is a collection of <em>very</em> small mix and match packages that are framework agnostic and make a variety of ArcGIS tasks more convenient.</p>
+<p>The library is a collection of packages that are framework agnostic and make a variety of ArcGIS Solution-related tasks more convenient.</p>
 <ul>
-<li><a href="./packages/arcgis-rest-request/"><code>@esri/arcgis-rest-request</code></a> - Underpins other packages and supports making low-level requests.</li>
-<li><a href="./packages/arcgis-rest-auth"><code>@esri/arcgis-rest-auth</code></a> - Provides methods for authenticating named users and applications.</li>
-<li><a href="./packages/arcgis-rest-portal"><code>@esri/arcgis-rest-portal</code></a> - Methods for working with ArcGIS Online/Enterprise content and users.</li>
-<li><a href="./packages/arcgis-rest-feature-layer"><code>@esri/arcgis-rest-feature-layer</code></a> - Functions for querying and editing features inside of hosted feature layers.</li>
-<li><a href="./packages/arcgis-rest-feature-service-admin"><code>@esri/arcgis-rest-service-admin</code></a> - Functions for administering hosted services.</li>
-<li><a href="./packages/arcgis-rest-geocoding"><code>@esri/arcgis-rest-geocoding</code></a> - Geocoding wrapper for <code>@esri/solution.js</code></li>
-<li><a href="./packages/arcgis-rest-routing"><code>@esri/arcgis-rest-routing</code></a> - Routing and directions wrapper for <code>@esri/solution.js</code>.</li>
-<li><a href="./packages/arcgis-rest-request/"><code>@esri/arcgis-rest-types</code></a> - Common Typings for TypeScript developers.</li>
+<li><a href="https://github.com/Esri/solution.js/tree/master/packages/common"><code>@esri/solution-common</code></a>: Provides general helper functions for @esri/solution.js.</li>
+<li><a href="https://github.com/Esri/solution.js/tree/master/packages/creator"><code>@esri/solution-creator</code></a>: Manages the creation of a Solution item for @esri/solution.js.</li>
+<li><a href="https://github.com/Esri/solution.js/tree/master/packages/deployer"><code>@esri/solution-deployer</code></a>: Manages the deployment of a Solution for @esri/solution.js.</li>
+<li><a href="https://github.com/Esri/solution.js/tree/master/packages/feature-layer"><code>@esri/solution-feature-layer</code></a>: Manages the creation and deployment of feature layers and services for @esri/solution.js.</li>
+<li><a href="https://github.com/Esri/solution.js/tree/master/packages/file"><code>@esri/solution-file</code></a>: Manages the creation and deployment of item types that contain files for @esri/solution.js.</li>
+<li><a href="https://github.com/Esri/solution.js/tree/master/packages/form"><code>@esri/solution-form</code></a>: Manages the creation and deployment of form item types for @esri/solution.js.</li>
+<li><a href="https://github.com/Esri/solution.js/tree/master/packages/group"><code>@esri/solution-group</code></a>: Manages the creation and deployment of group item types for @esri/solution.js.</li>
+<li><a href="https://github.com/Esri/solution.js/tree/master/packages/hub-types"><code>@esri/solution-hub-types</code></a>: Manages the creation and deployment of Hub Site and Hub Page item types for @esri/solution.js.</li>
+<li><a href="https://github.com/Esri/solution.js/tree/master/packages/simple-types"><code>@esri/solution-simple-types</code></a>: Manages the creation and deployment of simple item types for @esri/solution.js.</li>
+<li><a href="https://github.com/Esri/solution.js/tree/master/packages/storymap"><code>@esri/solution-storymap</code></a>: Manages the creation and deployment of Story Map item types for @esri/solution.js.</li>
+<li><a href="https://github.com/Esri/solution.js/tree/master/packages/velocity"><code>@esri/solution-velocity</code></a>: Manages the creation and deployment of Velocity item types for @esri/solution.js.</li>
+<li><a href="https://github.com/Esri/solution.js/tree/master/packages/viewer"><code>@esri/solution-viewer</code></a>: Simplifies access to @esri/solution.js.</li>
+<li><a href="https://github.com/Esri/solution.js/tree/master/packages/web-experience"><code>@esri/solution-web-experience</code></a>: Manages the creation and deployment of Web Experience item types for @esri/solution.js.</li>
 </ul>
       </div>
     </div>
