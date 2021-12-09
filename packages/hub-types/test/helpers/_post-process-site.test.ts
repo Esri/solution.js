@@ -32,8 +32,10 @@ describe("_postProcessSite :: ", () => {
           chk: "{{bc66.itemId}}"
         }
       },
-      data: {}
-    } as hubCommon.IModel;
+      data: {
+        values: {}
+      }
+    } as unknown as hubCommon.IModel;
     infos = [
       { id: "ef1", type: "Web Map" },
       { id: "ef2", type: "Web Mapping Application" },
@@ -42,7 +44,7 @@ describe("_postProcessSite :: ", () => {
     ];
   });
   it("shared items to site teams", () => {
-    const fakeRo = {} as hubCommon.IHubRequestOptions;
+    const fakeRo = {} as hubCommon.IHubUserRequestOptions;
     const shareSpy = spyOn(hubSites, "_shareItemsToSiteGroups").and.callFake(
       (m, nfos, ro) => {
         return Promise.all(
@@ -86,7 +88,7 @@ describe("_postProcessSite :: ", () => {
   });
 
   it("excludes site id from children array", () => {
-    const fakeRo = {} as hubCommon.IHubRequestOptions;
+    const fakeRo = {} as hubCommon.IHubUserRequestOptions;
     spyOn(hubSites, "_shareItemsToSiteGroups").and.callFake((m, nfos, ro) => {
       return Promise.all(
         nfos.map(i => {

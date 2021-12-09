@@ -177,6 +177,62 @@ describe("buildCreateParams", () => {
       });
   });
 
+  it("should support pages", done => {
+    unencodedForm.questions = [{ questions: unencodedForm.questions }];
+    encodedForm.questions = [{ questions: encodedForm.questions }];
+    const toCredentialSpy = spyOn(
+      MOCK_USER_SESSION,
+      "toCredential"
+    ).and.returnValue(credential);
+    const getUniqueTitleSpy = spyOn(common, "getUniqueTitle").and.returnValue(
+      "Survey-" + template.item.title
+    );
+    const encodeSurveyFormSpy = spyOn(
+      surveyEncodingUtils,
+      "encodeSurveyForm"
+    ).and.returnValue(encodedForm);
+    const getPortalDefaultBasemapSpy = spyOn(
+      common,
+      "getPortalDefaultBasemap"
+    ).and.resolveTo(defaultBasemap);
+    buildCreateParams(template, templateDictionary, MOCK_USER_SESSION)
+      .then(results => {
+        const expectedUnencodedForm = common.cloneObject(unencodedForm);
+        expectedUnencodedForm.questions[0].questions[0].maps[0].itemId = defaultBasemap.id;
+        expect(toCredentialSpy.calls.count()).toEqual(1);
+        expect(getPortalDefaultBasemapSpy.calls.count()).toEqual(1);
+        expect(getPortalDefaultBasemapSpy.calls.first().args).toEqual([
+          templateDictionary.organization.basemapGalleryGroupQuery,
+          templateDictionary.organization.defaultBasemap.title,
+          MOCK_USER_SESSION
+        ]);
+        expect(getUniqueTitleSpy.calls.count()).toEqual(1);
+        expect(getUniqueTitleSpy.calls.first().args).toEqual([
+          "Survey-An AGOL item",
+          templateDictionary,
+          "user.folders"
+        ]);
+        expect(encodeSurveyFormSpy.calls.count()).toEqual(1);
+        expect(encodeSurveyFormSpy.calls.first().args).toEqual([
+          expectedUnencodedForm
+        ]);
+        expect(results).toEqual({
+          description: "Description of an AGOL item",
+          form: encodedForm,
+          portalUrl: "https://myorg.maps.arcgis.com",
+          tags: ["test"],
+          title: "An AGOL item",
+          token: "my-token",
+          typeKeywords: ["JavaScript"],
+          username: "myUser"
+        });
+        done();
+      })
+      .catch(e => {
+        done.fail(e);
+      });
+  });
+
   it("should support questions being absent", done => {
     delete unencodedForm.questions;
     const toCredentialSpy = spyOn(

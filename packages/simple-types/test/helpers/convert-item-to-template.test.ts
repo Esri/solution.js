@@ -76,7 +76,9 @@ describe("simpleTypeConvertItemToTemplate", () => {
           thumbnail: null,
           title: "An AGOL item",
           typeKeywords: ["JavaScript"],
-          url: ""
+          url: "",
+          created: 1520968147000,
+          modified: 1522178539000
         },
         data: ["abc", "def", "ghi"],
         resources: [],
@@ -124,6 +126,7 @@ describe("simpleTypeConvertItemToTemplate", () => {
           solutionItemId,
           itemTemplate.item,
           MOCK_USER_SESSION,
+          MOCK_USER_SESSION,
           {}
         )
         .then(newItemTemplate => {
@@ -168,7 +171,9 @@ describe("simpleTypeConvertItemToTemplate", () => {
           thumbnail: null,
           title: "An AGOL item",
           typeKeywords: ["JavaScript"],
-          url: ""
+          url: "",
+          created: 1520968147000,
+          modified: 1522178539000
         },
         data: null, // forms don't store info here
         resources: ["frm1234567890_info_data/frm1234567890.zip"],
@@ -278,6 +283,7 @@ describe("simpleTypeConvertItemToTemplate", () => {
           solutionItemId,
           itemTemplate.item,
           MOCK_USER_SESSION,
+          MOCK_USER_SESSION,
           {}
         )
         .then(verifyFormTemplate(done), done.fail);
@@ -290,6 +296,7 @@ describe("simpleTypeConvertItemToTemplate", () => {
         .convertItemToTemplate(
           solutionItemId,
           itemTemplate.item,
+          MOCK_USER_SESSION,
           MOCK_USER_SESSION,
           {}
         )
@@ -335,7 +342,7 @@ describe("simpleTypeConvertItemToTemplate", () => {
       );
 
       simpleTypes
-        .convertItemToTemplate(solutionItemId, item, MOCK_USER_SESSION, {})
+        .convertItemToTemplate(solutionItemId, item, MOCK_USER_SESSION, MOCK_USER_SESSION, {})
         .then(newItemTemplate => {
           expect(newItemTemplate.data).toEqual(
             templates.getItemTemplateData("Notebook")
@@ -367,7 +374,7 @@ describe("simpleTypeConvertItemToTemplate", () => {
       });
 
       simpleTypes
-        .convertItemToTemplate(solutionItemId, item, MOCK_USER_SESSION, {})
+        .convertItemToTemplate(solutionItemId, item, MOCK_USER_SESSION, MOCK_USER_SESSION, {})
         .then(newItemTemplate => {
           const expectedTemplate = templates.getItemTemplate(
             "Oriented Imagery Catalog",
@@ -479,14 +486,16 @@ describe("simpleTypeConvertItemToTemplate", () => {
           thumbnail: "thumbnail/ago_downloaded.png",
           title: "An AGOL item",
           typeKeywords: ["JavaScript"],
-          url: ""
+          url: "",
+          created: 1520968147000,
+          modified: 1522178539000
         },
         properties: {},
         estimatedDeploymentCostFactor: 2
       };
 
       simpleTypes
-        .convertItemToTemplate(solutionItemId, itemInfo, MOCK_USER_SESSION, {})
+        .convertItemToTemplate(solutionItemId, itemInfo, MOCK_USER_SESSION, MOCK_USER_SESSION, {})
         .then(actual => {
           actual.key = expected.key;
           expect(actual).toEqual(expected);
@@ -509,7 +518,9 @@ describe("simpleTypeConvertItemToTemplate", () => {
         title: "Voting Centers",
         contentStatus: null,
         url:
-          "https://myOrg.arcgis.com/home/item.html?id=abc123da3c304dd0bf46dee75ac31aae"
+          "https://myOrg.arcgis.com/home/item.html?id=abc123da3c304dd0bf46dee75ac31aae",
+        created: 1520968147000,
+        modified: 1522178539000
       };
       itemTemplate.itemId = "abc0cab401af4828a25cc6eaeb59fb69";
       itemTemplate.data = {
@@ -545,6 +556,8 @@ describe("simpleTypeConvertItemToTemplate", () => {
           typeKeywords: undefined,
           url:
             "{{portalBaseUrl}}/home/item.html?id={{abc0cab401af4828a25cc6eaeb59fb69.itemId}}",
+          created: 1520968147000,
+          modified: 1522178539000,
           licenseInfo: undefined,
           origUrl: undefined,
           properties: undefined,
@@ -601,6 +614,7 @@ describe("simpleTypeConvertItemToTemplate", () => {
           solutionItemId,
           itemTemplate.item,
           MOCK_USER_SESSION,
+          MOCK_USER_SESSION,
           {}
         )
         .then(
@@ -625,7 +639,9 @@ describe("simpleTypeConvertItemToTemplate", () => {
         type: "Web Mapping Application",
         title: "Voting Centers",
         url:
-          "https://myOrg.arcgis.com/home/item.html?id=abc123da3c304dd0bf46dee75ac31aae"
+          "https://myOrg.arcgis.com/home/item.html?id=abc123da3c304dd0bf46dee75ac31aae",
+        created: 1520968147000,
+        modified: 1522178539000
       };
       itemTemplate.itemId = "abc0cab401af4828a25cc6eaeb59fb69";
 
@@ -656,6 +672,7 @@ describe("simpleTypeConvertItemToTemplate", () => {
           solutionItemId,
           itemTemplate.item,
           MOCK_USER_SESSION,
+          MOCK_USER_SESSION,
           {}
         )
         .then(() => done());
@@ -673,7 +690,9 @@ describe("simpleTypeConvertItemToTemplate", () => {
         type: "Web Mapping Application",
         title: "Voting Centers",
         url:
-          "https://myOrg.arcgis.com/home/item.html?id=abc123da3c304dd0bf46dee75ac31aae"
+          "https://myOrg.arcgis.com/home/item.html?id=abc123da3c304dd0bf46dee75ac31aae",
+        created: 1520968147000,
+        modified: 1522178539000
       };
       itemTemplate.itemId = "abc0cab401af4828a25cc6eaeb59fb69";
 
@@ -738,6 +757,7 @@ describe("simpleTypeConvertItemToTemplate", () => {
           solutionItemId,
           itemTemplate.item,
           MOCK_USER_SESSION,
+          MOCK_USER_SESSION,
           {}
         )
         .then(
@@ -782,7 +802,9 @@ describe("simpleTypeConvertItemToTemplate", () => {
           title: "An AGOL item",
           typeKeywords: ["JavaScript"],
           url:
-            "http://statelocaltryit.maps.arcgis.com/apps/CrowdsourcePolling/index.html?appid=wma1234567890"
+            "http://statelocaltryit.maps.arcgis.com/apps/CrowdsourcePolling/index.html?appid=wma1234567890",
+          created: 1520968147000,
+          modified: 1522178539000
         },
         data: null,
         resources: [],
@@ -831,6 +853,7 @@ describe("simpleTypeConvertItemToTemplate", () => {
         .convertItemToTemplate(
           solutionItemId,
           itemTemplate.item,
+          MOCK_USER_SESSION,
           MOCK_USER_SESSION,
           {}
         )
@@ -927,7 +950,7 @@ describe("simpleTypeConvertItemToTemplate", () => {
       );
 
       simpleTypes
-        .convertItemToTemplate(solutionItemId, item, MOCK_USER_SESSION, {})
+        .convertItemToTemplate(solutionItemId, item, MOCK_USER_SESSION, MOCK_USER_SESSION, {})
         .then(newItemTemplate => {
           expect(newItemTemplate.data).toEqual(expectedTemplateData);
           done();

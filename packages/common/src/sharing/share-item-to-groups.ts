@@ -15,7 +15,7 @@
  */
 
 import { UserSession } from "../";
-import { shareItemWithGroup } from "@esri/arcgis-rest-portal";
+import { IGroupSharingOptions, shareItemWithGroup } from "@esri/arcgis-rest-portal";
 
 /**
  * Share an item to one or more groups
@@ -24,19 +24,26 @@ import { shareItemWithGroup } from "@esri/arcgis-rest-portal";
  * @param groups Array of Group Ids
  * @param itemId Item Id
  * @param authentication UserSession
+ * @param owner owner of the group when sharing tracking items (can be different from the deploying user)
  */
 export function shareItemToGroups(
   groupIds: string[],
   itemId: string,
-  authentication: UserSession
+  authentication: UserSession,
+  owner?: string
 ): Promise<any> {
   return Promise.all(
     groupIds.map(groupId => {
-      return shareItemWithGroup({
+      const requestOptions: IGroupSharingOptions = {
         id: itemId,
         groupId,
         authentication
-      });
+      };
+      /* istanbul ignore else */
+      if (owner) {
+        requestOptions.owner = owner;
+      }
+      return shareItemWithGroup(requestOptions);
     })
   );
 }

@@ -85,7 +85,8 @@ export function topologicallySortItems(
       template.item?.typeKeywords &&
       template.item.typeKeywords.includes("View Service")
         ? "View Service"
-        : template.type;
+        : template.item?.tags && template.item.tags.includes("Location Tracking Group")
+        ? "Location Tracking Group" : template.type;
   });
 
   // Algorithm visits each vertex once. Don't need to record times or "from' nodes ("π" in pseudocode)
@@ -133,15 +134,22 @@ export function topologicallySortItems(
     buildOrder.push(vertexId); // add to end of list of ordered vertices because we want dependents first
   }
 
-  // Move all of the feature services to the beginning of the build order while maintaining their relative ordering
-  // Distinguish between base feature services and view feature services
+  // Two special circumstances to deal with
+  // 1) Location Tracking Group needs to be created before its associated view because the groupId is used in the view name
+  //    - Move tracking groups to the front of the list
+  // 2) Feature Services need to be created before views that rely on them
+  //    - Move all of the feature services to the beginning of the build order while maintaining their relative ordering
+  //    - Distinguish between base feature services and view feature services
+  const trackerGroupIds: string[] = [];
   const fsIds: string[] = [];
   const fsViewIds: string[] = [];
   const otherIds: string[] = [];
   do {
     const id = buildOrder.shift();
     if (id) {
-      if (vertexType[id] === "Feature Service") {
+      if (vertexType[id] === "Location Tracking Group") {
+        trackerGroupIds.push(id);
+      } else if (vertexType[id] === "Feature Service") {
         fsIds.push(id);
       } else if (vertexType[id] === "View Service") {
         fsViewIds.push(id);
@@ -150,7 +158,7 @@ export function topologicallySortItems(
       }
     }
   } while (buildOrder.length > 0);
-  buildOrder = fsIds.concat(fsViewIds, otherIds);
+  buildOrder = trackerGroupIds.concat(fsIds, fsViewIds, otherIds);
 
   const orderingResults: IBuildOrdering = {
     buildOrder: buildOrder,

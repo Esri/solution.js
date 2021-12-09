@@ -27,9 +27,11 @@ import {
   ICreateItemFromTemplateResponse,
   EItemProgressStatus,
   generateEmptyCreationResponse,
-  createPlaceholderTemplate,
+  createInitializedItemTemplate,
   fail,
-  removeItem
+  removeItem,
+  updateVelocityReferences,
+  updateItem
 } from "@esri/solution-common";
 import { templatizeVelocity } from "./helpers/velocity-templatize";
 import { getVelocityDependencies } from "./helpers/get-velocity-dependencies";
@@ -38,13 +40,17 @@ import {
   getVelocityUrl,
   postVelocityData
 } from "./helpers/velocity-helpers";
+import {
+  moveItem
+} from "@esri/arcgis-rest-portal";
 
 /**
  * Convert a Velocity item into a Template
  *
  * @param solutionItemId The solution to contain the item
  * @param itemInfo The basic item info
- * @param authentication The credentials for requests
+ * @param destAuthentication Credentials for requests to the destination organization
+ * @param srcAuthentication Credentials for requests to source items
  * @param templateDictionary Hash of facts: folder id, org URL, adlib replacements
  *
  * @return a promise that will resolve the constructed IItemTemplate from the input itemInfo
@@ -53,12 +59,13 @@ import {
 export function convertItemToTemplate(
   solutionItemId: string,
   itemInfo: any,
-  authentication: UserSession,
+  destAuthentication: UserSession,
+  srcAuthentication: UserSession,
   templateDictionary: any
 ): Promise<IItemTemplate> {
-  const template = createPlaceholderTemplate(itemInfo.id, itemInfo.type);
+  const template = createInitializedItemTemplate(itemInfo);
   return getVelocityUrl(
-    authentication,
+    srcAuthentication,
     templateDictionary,
     itemInfo.type,
     itemInfo.id
@@ -70,11 +77,12 @@ export function convertItemToTemplate(
           .then(data_json => {
             template.item.title = data_json.label;
             template.data = data_json;
-            return getVelocityDependencies(template, authentication).then(
+            return getVelocityDependencies(template, srcAuthentication).then(
               deps => {
                 template.dependencies = deps;
-                cleanDataSourcesAndFeeds(template);
+                cleanDataSourcesAndFeeds(template, templateDictionary.velocityUrl);
                 templatizeVelocity(template);
+                template.item = updateVelocityReferences(template.item, template.type, templateDictionary);
                 return Promise.resolve(template);
               }
             );
@@ -146,10 +154,48 @@ export function createItemFromTemplate(
         },
         id: result.item.id,
         type: template.type,
-        postProcess: false
+        postProcess: true
       };
       response.item.itemId = result.item.id;
       return response;
     }
   });
+}
+
+
+/**
+ * Velocity post-processing actions
+ * 
+ * Move all velocity items to the deployment folder.
+ *
+ * @param {string} itemId The item ID
+ * @param {string} type The template type
+ * @param {any[]} itemInfos Array of {id: 'ef3', type: 'Web Map'} objects
+ * @param {IItemTemplate} template The item template
+ * @param {IItemTemplate[]} templates The full collection of item templates
+ * @param {any} templateDictionary Hash of facts such as the folder id for the deployment
+ * @param {UserSession} authentication The destination session info
+ * @returns Promise resolving to successfulness of update
+ */
+ export function postProcess(
+  itemId: string,
+  type: string,
+  itemInfos: any[],
+  template: IItemTemplate,
+  templates: IItemTemplate[],
+  templateDictionary: any,
+  authentication: UserSession
+): Promise<any> {
+  const itemUpdate = itemInfos.filter(ii => ii.id === itemId);
+  const item: any = itemUpdate[0].item.item;
+  delete item.url;
+  delete item.origUrl;
+   return updateItem(item, authentication).then(() => {
+     return moveItem({
+       owner: authentication.username,
+       itemId,
+       folderId: templateDictionary.folderId,
+       authentication
+     });
+   });
 }

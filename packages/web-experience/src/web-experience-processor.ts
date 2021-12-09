@@ -26,7 +26,9 @@ import {
   IItemProgressCallback,
   IItemTemplate,
   ICreateItemFromTemplateResponse,
-  generateEmptyCreationResponse
+  IUpdateItemResponse,
+  generateEmptyCreationResponse,
+  updateItemTemplateFromDictionary
 } from "@esri/solution-common";
 import { IModel, failSafe } from "@esri/hub-common";
 import { getItemData, removeItem } from "@esri/arcgis-rest-portal";
@@ -39,13 +41,15 @@ import { convertWebExperienceToTemplate } from "./helpers/convert-web-experience
  *
  * @param solutionItemId
  * @param itemInfo
- * @param authentication
+ * @param destAuthentication Credentials for requests to the destination organization
+ * @param srcAuthentication Credentials for requests to source items
  * @param isGroup
  */
 export function convertItemToTemplate(
   solutionItemId: string,
   itemInfo: any,
-  authentication: UserSession
+  destAuthentication: UserSession,
+  srcAuthentication: UserSession
 ): Promise<IItemTemplate> {
   // use the itemInfo to setup a model
   const model = {
@@ -53,7 +57,7 @@ export function convertItemToTemplate(
     data: {}
   } as IModel;
   // fetch the data.json
-  return getItemData(itemInfo.id, { authentication }).then(data => {
+  return getItemData(itemInfo.id, { authentication: srcAuthentication }).then(data => {
     // append into the model
     model.data = data;
     // and use that to create a template
@@ -143,4 +147,30 @@ export function createItemFromTemplate(
         return response;
       }
     });
+}
+
+/**
+ * Post-Process an Experience
+ *
+ * @param {string} itemId The item ID
+ * @param {string} type The template type
+ * @param {any[]} itemInfos Array of {id: 'ef3', type: 'Web Map'} objects
+ * @param {any} templateDictionary The template dictionary
+ * @param {UserSession} authentication The destination session info
+ * @returns Promise resolving to successfulness of update
+ */
+export function postProcess(
+  itemId: string,
+  type: string,
+  itemInfos: any[],
+  template: IItemTemplate,
+  templates: IItemTemplate[],
+  templateDictionary: any,
+  authentication: UserSession
+): Promise<IUpdateItemResponse> {
+  return updateItemTemplateFromDictionary(
+    itemId,
+    templateDictionary,
+    authentication
+  );
 }

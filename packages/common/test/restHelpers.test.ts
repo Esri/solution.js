@@ -116,6 +116,29 @@ const solutionItemExtent: any = [
 ];
 
 describe("Module `restHelpers`: common REST utility functions shared across packages", () => {
+
+  describe("UserSession constructor-by-function", () => {
+    it("handles defaulting all options", () => {
+      const userSession = restHelpers.getUserSession();
+      const expectedUserSession = new interfaces.UserSession({});
+      expect(userSession.username).toEqual(expectedUserSession.username);
+      expect(userSession.password).toEqual(expectedUserSession.password);
+      expect(userSession.portal).toEqual(expectedUserSession.portal);
+    });
+
+    it("handles username & password options", () => {
+      const options = {
+        username: "Fred",
+        password: "Astaire"
+      };
+      const userSession = restHelpers.getUserSession(options);
+      const expectedUserSession = new interfaces.UserSession(options);
+      expect(userSession.username).toEqual(expectedUserSession.username);
+      expect(userSession.password).toEqual(expectedUserSession.password);
+      expect(userSession.portal).toEqual(expectedUserSession.portal);
+    });
+  });
+
   describe("searchItems passthru", () => {
     it("can handle simple search", done => {
       fetchMock.get(
@@ -2061,15 +2084,18 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
         "https://services123.arcgis.com/org1234567890/arcgis/rest/admin/services/ROWPermits_publiccomment";
 
       itemTemplate.item.url = url;
+      itemTemplate.properties.layers = [{
+        id: 0
+      }];
 
-      const relationships: any[] = [{ relationshipMock: "A" }];
+      const relationships: any[] = [{ relationshipMock: "A", id: 0 }];
 
       const objects: any = {
         0: {
           a: "a",
           type: "A",
           id: 0,
-          relationships: relationships,
+          relationships,
           deleteFields: ["A", "B"]
         }
       };
@@ -2705,17 +2731,17 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
           assignmentTypeInfos: [
             {
               description: "Verify Address",
-              GlobalID: "72832e11-2f1c-42c2-809b-b1108b5c625d"
+              GlobalID: "{72832e11-2f1c-42c2-809b-b1108b5c625d}"
             },
             {
               description: "Collect New Address",
-              GlobalID: "0db1c114-7221-4cf1-9df9-a37801fb2896"
+              GlobalID: "{0db1c114-7221-4cf1-9df9-a37801fb2896}"
             }
           ],
           assignmentIntegrationInfos: [
             {
               appid: "arcgis-navigator",
-              GlobalID: "5dc678db-9115-49de-b7e2-6efb80d032c1",
+              GlobalID: "{5dc678db-9115-49de-b7e2-6efb80d032c1}",
               prompt: "Navigate to Assignment",
               urltemplate:
                 "https://navigator.arcgis.app?stop=${assignment.latitude},${assignment.longitude}&stopname=${assignment.location}&callback=arcgis-workforce://&callbackprompt=Workforce",
@@ -2724,16 +2750,16 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
             },
             {
               appid: "arcgis-collector",
-              GlobalID: "b2eabaf6-9c4d-4cd2-88f2-84eb2e1e94d7",
+              GlobalID: "{b2eabaf6-9c4d-4cd2-88f2-84eb2e1e94d7}",
               prompt: "Collect at Assignment",
               urltemplate:
                 "https://collector.arcgis.app?itemID={{79625fd36f30420a8b961df47dae8bbf.itemId}}&center=${assignment.latitude},${assignment.longitude}",
               dependencies: ["79625fd36f30420a8b961df47dae8bbf"],
-              assignmenttype: "72832e11-2f1c-42c2-809b-b1108b5c625d"
+              assignmenttype: "{72832e11-2f1c-42c2-809b-b1108b5c625d}"
             },
             {
               appid: "arcgis-collector",
-              GlobalID: "c7889194-b3a7-47d3-899b-a3f72017f845",
+              GlobalID: "{c7889194-b3a7-47d3-899b-a3f72017f845}",
               prompt: "Collect at Assignment",
               urltemplate:
                 "https://collector.arcgis.app?itemID={{79625fd36f30420a8b961df47dae8bbf.itemId}}&center=${assignment.latitude},${assignment.longitude}&featureSourceURL={{8e1397c8f8ec45f69ff13b2fbf6b58a7.layer0.url}}&featureAttributes=%7B%22placename%22:%22${assignment.location}%22%7D",
@@ -2741,7 +2767,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
                 "79625fd36f30420a8b961df47dae8bbf",
                 "8e1397c8f8ec45f69ff13b2fbf6b58a7"
               ],
-              assignmenttype: "0db1c114-7221-4cf1-9df9-a37801fb2896"
+              assignmenttype: "{0db1c114-7221-4cf1-9df9-a37801fb2896}"
             }
           ]
         }
@@ -3094,6 +3120,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
 
       const actual = restHelpers._setItemProperties(
         item,
+        itemTemplate,
         serviceInfo,
         {},
         true
@@ -3138,7 +3165,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
           }
         );
       restHelpers
-        .shareItem(groupId, id, MOCK_USER_SESSION)
+        .shareItem(groupId, id, MOCK_USER_SESSION, MOCK_USER_SESSION.username)
         .then(() => done())
         .catch(ex => {
           done.fail();
@@ -3309,6 +3336,39 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
           MOCK_USER_SESSION,
           null,
           "public"
+        )
+        .then(
+          () => {
+            done();
+          },
+          () => done.fail()
+        );
+    });
+
+    it("with tracker share", done => {
+      itemTemplate.item.id = "itm1234567890";
+      itemTemplate.item.typeKeywords = ["Location Tracking View"];
+      itemTemplate.item.properties = {
+        trackViewGroup: "grp123"
+      };
+      fetchMock.post(
+        utils.PORTAL_SUBSET.restUrl +
+          "/content/users/LocationTrackingServiceOwner/items/itm1234567890/update",
+        '{"success":true}'
+      );
+      fetchMock.post(
+        utils.PORTAL_SUBSET.restUrl +
+          "/content/users/casey/items/itm1234567890/share",
+        '{"success":true}'
+      );
+      restHelpers
+        .updateItemExtended(
+          itemTemplate.item,
+          itemTemplate.data,
+          MOCK_USER_SESSION,
+          null,
+          "public",
+          { locationTracking: { owner: "LocationTrackingServiceOwner"} }
         )
         .then(
           () => {
@@ -4023,6 +4083,86 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
         }, done.fail);
     });
 
+    it("can get tracker options for HOSTED service with values", done => {
+      const userSession: interfaces.UserSession = new interfaces.UserSession({
+        username: "jsmith",
+        password: "123456"
+      });
+
+      itemTemplate = {
+        itemId: "ab766cba0dd44ec080420acc10990282",
+        key: "",
+        properties: {
+          service: {
+            somePropNotInItem: true, // should be added to item and params
+            hasViews: true, // should be skipped
+            capabilities: ["Query"], // should be added to item and params
+            spatialReference: {
+              wkid: 102100
+            }
+          },
+          layers: [
+            {
+              fields: []
+            }
+          ],
+          tables: []
+        },
+        type: "",
+        item: {
+          id: "",
+          type: "",
+          name: "A",
+          typeKeywords: ["Location Tracking View"],
+          properties: {
+            trackViewGroup: "grp123"
+          }
+        },
+        data: {},
+        resources: [],
+        estimatedDeploymentCostFactor: 0,
+        dependencies: [],
+        groups: []
+      };
+
+      const templateDictionary: any = {
+        folderId: "aabb123456",
+        isPortal: false,
+        solutionItemId: "sol1234567890",
+        ab766cba0dd44ec080420acc10990282: {},
+        organization: organization,
+        solutionItemExtent: solutionItemExtent,
+        locationTracking: {
+          owner: "LocationTrackingServiceOwner"
+        }
+      };
+
+      fetchMock.post(
+        "http://utility/geomServer/findTransformations/rest/info",
+        '{"error":{"code":403,"message":"Access not allowed request","details":[]}}'
+      );
+      restHelpers
+        ._getCreateServiceOptions(itemTemplate, userSession, templateDictionary)
+        .then(options => {
+          expect(options).toEqual({
+            item: {
+              name: "A",
+              title: undefined,
+              preserveLayerIds: true,
+              owner: "LocationTrackingServiceOwner",
+              isView: true
+            },
+            params: {
+              isView: true,
+              outputType: "locationTrackingService"
+            },
+            owner: "LocationTrackingServiceOwner",
+            authentication: userSession
+          });
+          done();
+        }, done.fail);
+    });
+
     it("can get options for PORTAL service with values and unsupported capabilities", done => {
       const userSession: interfaces.UserSession = new interfaces.UserSession({
         username: "jsmith",
@@ -4444,6 +4584,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
 
       const updatedItem: any = restHelpers._setItemProperties(
         item,
+        itemTemplate,
         serviceInfo,
         params,
         false

@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { IModel, IHubRequestOptions, getModel } from "@esri/hub-common";
+import { IModel, IHubUserRequestOptions, getModel } from "@esri/hub-common";
 import { _updatePages } from "@esri/hub-sites";
 /**
  *
@@ -24,7 +24,7 @@ import { _updatePages } from "@esri/hub-sites";
 export function _updateSitePages(
   siteModel: IModel,
   itemInfos: any[],
-  hubRequestOptions: IHubRequestOptions
+  hubRequestOptions: IHubUserRequestOptions
 ): Promise<any> {
   const pageIds = itemInfos
     .filter(e => {

@@ -80,7 +80,7 @@ describe("Module `file`: manages the creation and deployment of item types that 
         );
 
       file
-        .convertItemToTemplate(solutionItemId, agolItem, MOCK_USER_SESSION)
+        .convertItemToTemplate(solutionItemId, agolItem, MOCK_USER_SESSION, MOCK_USER_SESSION)
         .then(
           response => {
             expect(response.itemId).toEqual("jsn1234567890");
@@ -123,7 +123,7 @@ describe("Module `file`: manages the creation and deployment of item types that 
         );
 
       file
-        .convertItemToTemplate(solutionItemId, agolItem, MOCK_USER_SESSION)
+        .convertItemToTemplate(solutionItemId, agolItem, MOCK_USER_SESSION, MOCK_USER_SESSION)
         .then(
           response => {
             expect(response.itemId).toEqual("jsn1234567890");
@@ -161,7 +161,7 @@ describe("Module `file`: manages the creation and deployment of item types that 
         );
 
       file
-        .convertItemToTemplate(solutionItemId, agolItem, MOCK_USER_SESSION)
+        .convertItemToTemplate(solutionItemId, agolItem, MOCK_USER_SESSION, MOCK_USER_SESSION)
         .then(
           response => {
             expect(response.itemId).toEqual("cod1234567890");
@@ -203,7 +203,7 @@ describe("Module `file`: manages the creation and deployment of item types that 
         );
 
       file
-        .convertItemToTemplate(solutionItemId, agolItem, MOCK_USER_SESSION)
+        .convertItemToTemplate(solutionItemId, agolItem, MOCK_USER_SESSION, MOCK_USER_SESSION)
         .then(
           response => {
             expect(response.itemId).toEqual("ppk1234567890");
@@ -244,7 +244,7 @@ describe("Module `file`: manages the creation and deployment of item types that 
         );
 
       file
-        .convertItemToTemplate(solutionItemId, agolItem, MOCK_USER_SESSION)
+        .convertItemToTemplate(solutionItemId, agolItem, MOCK_USER_SESSION, MOCK_USER_SESSION)
         .then(
           response => {
             expect(response.itemId).toEqual("cod1234567890");
@@ -289,7 +289,7 @@ describe("Module `file`: manages the creation and deployment of item types that 
         );
 
       file
-        .convertItemToTemplate(solutionItemId, agolItem, MOCK_USER_SESSION)
+        .convertItemToTemplate(solutionItemId, agolItem, MOCK_USER_SESSION, MOCK_USER_SESSION)
         .then(
           response => {
             expect(response.itemId).toEqual("jsn1234567890");
@@ -335,7 +335,7 @@ describe("Module `file`: manages the creation and deployment of item types that 
         );
 
       file
-        .convertItemToTemplate(solutionItemId, agolItem, MOCK_USER_SESSION)
+        .convertItemToTemplate(solutionItemId, agolItem, MOCK_USER_SESSION, MOCK_USER_SESSION)
         .then(
           response => {
             expect(response.itemId).toEqual("jsn1234567890");

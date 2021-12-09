@@ -15,7 +15,8 @@
  */
 import {
   convertItemToTemplate,
-  createItemFromTemplate
+  createItemFromTemplate,
+  postProcess
 } from "../src/velocity-processor";
 import * as fetchMock from "fetch-mock";
 import * as interfaces from "../../common/src/interfaces";
@@ -104,10 +105,14 @@ describe("convertItemToTemplate", () => {
         }
       );
 
-    convertItemToTemplate(solutionItemId, itemInfo, MOCK_USER_SESSION, {}).then(
+    convertItemToTemplate(solutionItemId, itemInfo, MOCK_USER_SESSION, MOCK_USER_SESSION, {}).then(
       actual => {
         expect(actual.data.outputs[0].properties["feat-lyr-new.name"]).toEqual(
           "Custom Velocity Update_{{solutionItemId}}"
+        );
+
+        expect(actual.data.outputs[1].properties["stream-lyr-new.name"]).toEqual(
+          "Custom Stream_{{solutionItemId}}"
         );
 
         expect(
@@ -187,7 +192,7 @@ describe("convertItemToTemplate", () => {
         }
       );
 
-    convertItemToTemplate(solutionItemId, itemInfo, MOCK_USER_SESSION, {}).then(
+    convertItemToTemplate(solutionItemId, itemInfo, MOCK_USER_SESSION, MOCK_USER_SESSION, {}).then(
       actual => {
         expect(actual.dependencies).toContain(
           "ad6893904c4d4191b5c2312e60e8def7"
@@ -248,7 +253,7 @@ describe("convertItemToTemplate", () => {
         }
       );
 
-    convertItemToTemplate(solutionItemId, itemInfo, MOCK_USER_SESSION, {}).then(
+    convertItemToTemplate(solutionItemId, itemInfo, MOCK_USER_SESSION, MOCK_USER_SESSION, {}).then(
       actual => {
         expect(actual.dependencies.length).toEqual(1);
 
@@ -271,7 +276,7 @@ describe("convertItemToTemplate", () => {
       agolItems.get500Failure()
     );
 
-    convertItemToTemplate(solutionItemId, itemInfo, MOCK_USER_SESSION, {}).then(
+    convertItemToTemplate(solutionItemId, itemInfo, MOCK_USER_SESSION, MOCK_USER_SESSION, {}).then(
       () => {
         done.fail();
       },
@@ -293,7 +298,7 @@ describe("convertItemToTemplate", () => {
       }
     );
 
-    convertItemToTemplate(solutionItemId, itemInfo, MOCK_USER_SESSION, {}).then(
+    convertItemToTemplate(solutionItemId, itemInfo, MOCK_USER_SESSION, MOCK_USER_SESSION, {}).then(
       () => {
         done.fail();
       },
@@ -546,5 +551,54 @@ describe("createItemFromTemplate", () => {
       destinationAuthentication,
       utils.ITEM_PROGRESS_CALLBACK
     ).then(() => done.fail, done);
+  });
+});
+
+describe("postProcess", () => {
+  it("will move velocity items to the deployment folder", done => {
+    const id: string = "thisismyitemid";
+    const templateDictionary: any = {
+      folderId: "thisisafolderid"
+    };
+    const type: string = "Real Time Analytic";
+    const template: interfaces.IItemTemplate = templates.getItemTemplate(
+      type,
+      []
+    );
+
+    const itemInfos: any[] = [{
+      id,
+      item: {
+        item: {
+          url: "http://abc123",
+          origUrl: "http://123abc",
+          id
+        }
+      }
+    }];
+
+    const url: string = "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/items/thisismyitemid/"
+
+    fetchMock.post(
+      `${url}move`, 
+      {success: true}
+    )
+    .post(
+      `${url}update`,
+      {success: true}
+    );
+
+    postProcess(
+      id,
+      type,
+      itemInfos,
+      template,
+      [template],
+      templateDictionary,
+      MOCK_USER_SESSION
+    ).then(result => {
+      expect(result.success).toEqual(true);
+      done();
+    }, done.fail);
   });
 });

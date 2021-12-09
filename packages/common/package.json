@@ -1,6 +1,6 @@
 {
   "name": "@esri/solution-common",
-  "version": "1.1.2",
+  "version": "1.2.0",
   "description": "Provides general helper functions for @esri/solution.js.",
   "main": "dist/node/index.js",
   "unpkg": "dist/umd/common.umd.min.js",
@@ -13,36 +13,36 @@
     "dist/**"
   ],
   "devDependencies": {
-    "@esri/arcgis-rest-auth": "^3.3.0",
-    "@esri/arcgis-rest-feature-layer": "^3.3.0",
-    "@esri/arcgis-rest-portal": "^3.3.0",
-    "@esri/arcgis-rest-request": "^3.3.0",
-    "@esri/arcgis-rest-service-admin": "^3.3.0",
-    "@esri/hub-common": "^8.16.0",
-    "@esri/hub-initiatives": "^8.16.0",
-    "@esri/hub-sites": "^8.16.0",
-    "@esri/hub-teams": "^8.16.0",
+    "@esri/arcgis-rest-auth": "3.4.3",
+    "@esri/arcgis-rest-feature-layer": "3.4.3",
+    "@esri/arcgis-rest-portal": "3.4.3",
+    "@esri/arcgis-rest-request": "3.4.3",
+    "@esri/arcgis-rest-service-admin": "3.4.3",
+    "@esri/hub-common": "9.7.2",
+    "@esri/hub-initiatives": "9.7.2",
+    "@esri/hub-sites": "9.7.2",
+    "@esri/hub-teams": "9.7.2",
     "@types/adlib": "^3.0.1",
-    "rollup": "^1.22.0"
+    "rollup": "^2.60.0"
   },
   "peerDependencies": {
-    "@esri/arcgis-rest-auth": "^3.3.0",
-    "@esri/arcgis-rest-feature-layer": "^3.3.0",
-    "@esri/arcgis-rest-portal": "^3.3.0",
-    "@esri/arcgis-rest-request": "^3.3.0",
-    "@esri/arcgis-rest-service-admin": "^3.3.0",
-    "@esri/hub-common": "^8.16.0",
-    "@esri/hub-initiatives": "^8.16.0",
-    "@esri/hub-sites": "^8.16.0",
-    "@esri/hub-teams": "^8.16.0"
+    "@esri/arcgis-rest-auth": "3.4.3",
+    "@esri/arcgis-rest-feature-layer": "3.4.3",
+    "@esri/arcgis-rest-portal": "3.4.3",
+    "@esri/arcgis-rest-request": "3.4.3",
+    "@esri/arcgis-rest-service-admin": "3.4.3",
+    "@esri/hub-common": "9.7.2",
+    "@esri/hub-initiatives": "9.7.2",
+    "@esri/hub-sites": "9.7.2",
+    "@esri/hub-teams": "9.7.2"
   },
   "dependencies": {
-    "@esri/arcgis-html-sanitizer": "~2.5.0",
+    "@esri/arcgis-html-sanitizer": "2.8.0",
     "@types/lodash.isplainobject": "^4.0.6",
     "adlib": "3.0.7",
-    "jszip": "3.7.0",
+    "jszip": "3.7.1",
     "lodash.isplainobject": "^4.0.6",
-    "tslib": "^1.13.0",
+    "tslib": "1.13.0",
     "xss": "^1.0.6"
   },
   "scripts": {
@@ -95,5 +95,5 @@
     "esri",
     "ES6"
   ],
-  "gitHead": "4b9ac585a8cd4c132850aa1e67af67d89c546771"
+  "gitHead": "5eded4ac0bb6b2230ab572d602b38c69c8d6578f"
 }

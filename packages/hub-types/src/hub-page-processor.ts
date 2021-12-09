@@ -35,7 +35,7 @@ import {
   IModelTemplate,
   failSafe,
   getModel,
-  IHubRequestOptions,
+  IHubUserRequestOptions,
   getProp,
   without
 } from "@esri/hub-common";
@@ -55,24 +55,34 @@ import { moveModelToFolder } from "./helpers/move-model-to-folder";
  *
  * @param solutionItemId The solution to contain the template
  * @param itemInfo Info about the item
- * @param authentication Credentials for working with AGO
+ * @param destAuthentication Credentials for requests to the destination organization
+ * @param srcAuthentication Credentials for requests to source items (placeholder--not used)
  * @return A promise that will resolve when the template has been created
  */
 export function convertItemToTemplate(
   solutionItemId: string,
   itemInfo: any,
-  authentication: UserSession
+  destAuthentication: UserSession,
+  srcAuthentication: UserSession = null // eslint-disable-line @typescript-eslint/no-unused-vars
 ): Promise<IItemTemplate> {
+  let created: number = 0;
+  let modified: number = 0;
+
   // get the page model and hubRequestOptions
   return Promise.all([
-    getModel(itemInfo.id, { authentication }),
-    createHubRequestOptions(authentication)
+    getModel(itemInfo.id, { authentication: destAuthentication }),
+    createHubRequestOptions(destAuthentication)
   ])
     .then(([pageModel, ro]) => {
+      // We need to save these properties in order to restore them after hub.js deletes them
+      created = pageModel.item.created;
+      modified = pageModel.item.modified;
       return convertPageToTemplate(pageModel, ro);
     })
     .then(tmpl => {
       // add in some stuff Hub.js does not yet add
+      tmpl.item.created = created;
+      tmpl.item.modified = modified;
       tmpl.item.typeKeywords = without(tmpl.item.typeKeywords, "doNotDelete");
       tmpl.groups = [];
       tmpl.estimatedDeploymentCostFactor = 2;
@@ -137,7 +147,7 @@ export function createItemFromTemplate(
   // subsequent promise calls
   let pageModel: IModel;
 
-  let hubRo: IHubRequestOptions;
+  let hubRo: IHubUserRequestOptions;
   const thumbnail: File = template.item.thumbnail; // createPageModelFromTemplate trashes thumbnail
   return createHubRequestOptions(destinationAuthentication, templateDictionary)
     .then(ro => {
@@ -248,7 +258,7 @@ export function postProcess(
   authentication: UserSession
 ): Promise<boolean> {
   // create the requestOptions
-  let hubRo: IHubRequestOptions;
+  let hubRo: IHubUserRequestOptions;
   // get hubRequestOptions
   return createHubRequestOptions(authentication)
     .then(ro => {

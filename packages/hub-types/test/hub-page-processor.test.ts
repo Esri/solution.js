@@ -35,7 +35,12 @@ describe("HubPageProcessor: ", () => {
     });
     it("should fetch the model, convert it, and swap ids", () => {
       // we are not testing the conversion, so the model can be empty
-      const model = {} as hubCommon.IModel;
+      const model = {
+        item: {
+          created: 1520968147000,
+          modified: 1522178539000
+        }
+      } as hubCommon.IModel;
       // we are testing some post-templating logic, so the rawTmpl needs to have some props
       const rawTmpl = {
         item: {
@@ -49,7 +54,7 @@ describe("HubPageProcessor: ", () => {
       } as hubCommon.IModelTemplate;
       const getModelSpy = spyOn(hubCommon, "getModel").and.resolveTo(model);
       const hubRoSpy = spyOn(common, "createHubRequestOptions").and.resolveTo(
-        {} as hubCommon.IHubRequestOptions
+        {} as hubCommon.IHubUserRequestOptions
       );
       const convertSpy = spyOn(
         sitesPackage,
@@ -82,7 +87,12 @@ describe("HubPageProcessor: ", () => {
     });
     it("appends properties to template if missing", () => {
       // we are not testing the conversion, so the model can be empty
-      const model = {} as hubCommon.IModel;
+      const model = {
+        item: {
+          created: 1520968147000,
+          modified: 1522178539000
+        }
+      } as hubCommon.IModel;
       // we are testing some post-templating logic, so the rawTmpl needs to have some props
       const rawTmpl = {
         item: {
@@ -95,7 +105,7 @@ describe("HubPageProcessor: ", () => {
       } as hubCommon.IModelTemplate;
       const getModelSpy = spyOn(hubCommon, "getModel").and.resolveTo(model);
       const hubRoSpy = spyOn(common, "createHubRequestOptions").and.resolveTo(
-        {} as hubCommon.IHubRequestOptions
+        {} as hubCommon.IHubUserRequestOptions
       );
       const convertSpy = spyOn(
         sitesPackage,
@@ -108,6 +118,7 @@ describe("HubPageProcessor: ", () => {
       return HubPageProcessor.convertItemToTemplate(
         "bc3",
         { id: "ef4" },
+        MOCK_USER_SESSION,
         MOCK_USER_SESSION
       ).then(tmpl => {
         expect(tmpl.item.typeKeywords.length).toBe(
@@ -169,7 +180,7 @@ describe("HubPageProcessor: ", () => {
         id: "fred"
       });
       const hubRoSpy = spyOn(common, "createHubRequestOptions").and.resolveTo(
-        {} as hubCommon.IHubRequestOptions
+        {} as hubCommon.IHubUserRequestOptions
       );
       const td = {
         organization: {
@@ -205,7 +216,7 @@ describe("HubPageProcessor: ", () => {
 
     it("asset and resource juggling", () => {
       const hubRoSpy = spyOn(common, "createHubRequestOptions").and.resolveTo(
-        {} as hubCommon.IHubRequestOptions
+        {} as hubCommon.IHubUserRequestOptions
       );
       const createFromTmplSpy = spyOn(
         sitesPackage,
@@ -263,7 +274,7 @@ describe("HubPageProcessor: ", () => {
         "Whoa thats bad"
       );
       const hubRoSpy = spyOn(common, "createHubRequestOptions").and.resolveTo(
-        {} as hubCommon.IHubRequestOptions
+        {} as hubCommon.IHubUserRequestOptions
       );
       const td = {
         organization: {
@@ -286,7 +297,7 @@ describe("HubPageProcessor: ", () => {
     });
     it("it early-exits correctly", () => {
       const hubRoSpy = spyOn(common, "createHubRequestOptions").and.resolveTo(
-        {} as hubCommon.IHubRequestOptions
+        {} as hubCommon.IHubUserRequestOptions
       );
       const td = {};
       const cb = () => false;
@@ -305,7 +316,7 @@ describe("HubPageProcessor: ", () => {
     });
     it("cleans up if job is cancelled late", () => {
       const hubRoSpy = spyOn(common, "createHubRequestOptions").and.resolveTo(
-        {} as hubCommon.IHubRequestOptions
+        {} as hubCommon.IHubUserRequestOptions
       );
       const createFromTmplSpy = spyOn(
         sitesPackage,
@@ -372,7 +383,7 @@ describe("HubPageProcessor: ", () => {
       const model = {} as hubCommon.IModel;
       const getModelSpy = spyOn(hubCommon, "getModel").and.resolveTo(model);
       const hubRoSpy = spyOn(common, "createHubRequestOptions").and.resolveTo(
-        {} as hubCommon.IHubRequestOptions
+        {} as hubCommon.IHubUserRequestOptions
       );
       const postProcessSpy = spyOn(
         postProcessModule,

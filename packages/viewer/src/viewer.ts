@@ -46,7 +46,7 @@ export function checkSolution(
     common
       .getCompleteItem(itemId, authentication)
 
-      // ---------- Is it a Template or Deployed Solution? ---------------------------------------------------------------//
+      // ---------- Is it a Template or Deployed Solution? -----------------------------------------------------------//
       .then((results: common.ICompleteItem) => {
         currentAction = "";
         item = results;
@@ -76,7 +76,7 @@ export function checkSolution(
         return common.blobToJson(item.data);
       })
 
-      // ---------- Check the Solution2Item relationship from a Deployed Solution to each deployed item ------------------//
+      // ---------- Check the Solution2Item relationship from a Deployed Solution to each deployed item --------------//
       .then(itemDataJson => {
         templateItems = itemDataJson?.templates;
         /* istanbul ignore else */
@@ -127,7 +127,7 @@ export function checkSolution(
         return resultsHtml;
       })
 
-      // ---------- Check that all dependency references are items in Solution -------------------------------------------//
+      // ---------- Check that all dependency references are items in Solution ---------------------------------------//
       .then(() => {
         const dependencyIds = templateItems
           .reduce(
@@ -157,12 +157,12 @@ export function checkSolution(
         return resultsHtml;
       })
 
-      // ---------- Done -------------------------------------------------------------------------------------------------//
+      // ---------- Done ---------------------------------------------------------------------------------------------//
       .then(() => {
         return resultsHtml;
       })
 
-      // ---------- Fatal error ------------------------------------------------------------------------------------------//
+      // ---------- Fatal error --------------------------------------------------------------------------------------//
       .catch(error => {
         resultsHtml.push(`&#x2716; error${currentAction}: ${error.message}`);
         return resultsHtml;
@@ -226,3 +226,101 @@ export function compareItems(
     );
   });
 }
+
+/**
+ * Creates a hierarchy of the items in a Solution template.
+ *
+ * @param templates Array of templates from a Solution
+ * @return List of top-level items, each containing a recursive list of its dependencies
+ */
+export function getItemHierarchy(
+  templates: common.IItemTemplate[]
+): common.IHierarchyElement[] {
+  const hierarchy = [] as common.IHierarchyElement[];
+
+  // Get the template specified by id out of a list of templates
+  function getTemplateInSolution(templates: common.IItemTemplate[], id: string): common.IItemTemplate {
+    const iTemplate = templates.findIndex((template) => id === template.itemId);
+    return iTemplate >= 0 ? templates[iTemplate] : null;
+  }
+
+  // Hierarchically list the dependencies of specified node
+  function traceItemId(id: string, accumulatedHierarchy: common.IHierarchyElement[], alreadyVisitedIds: string[] = []) {
+    // Get the dependencies of the node
+    const template = getTemplateInSolution(templates, id);
+    /* istanbul ignore else */
+    if (template) {
+      const templateEntry = {
+        id,
+        dependencies: [] as common.IHierarchyElement[]
+      };
+
+      // Visit each dependency, but only if this template is not in the alreadyVisitedIds list to avoid infinite loops
+      if (alreadyVisitedIds.indexOf(id) < 0) {
+        // Add dependency to alreadyVisitedIds list
+        alreadyVisitedIds.push(id);
+
+        template.dependencies.forEach(
+          dependencyId => {
+            // Remove dependency from list of templates to visit in the top-level loop
+            const iDependencyTemplate = templateItemIds.indexOf(dependencyId);
+            if (iDependencyTemplate >= 0) {
+              templateItemIds.splice(iDependencyTemplate, 1);
+            }
+
+            traceItemId(dependencyId, templateEntry.dependencies, alreadyVisitedIds);
+          }
+        );
+      }
+      accumulatedHierarchy.push(templateEntry);
+    }
+  }
+
+  // Start with top-level nodes and add in the rest of the nodes to catch cycles without top-level nodes
+  let templateItemIds: string[] = _getTopLevelItemIds(templates);
+
+  const otherItems: common.IItemTemplate[] = templates
+    .filter(template => templateItemIds.indexOf(template.itemId) < 0)  // only keep non-top-level nodes
+    .sort((a, b) => b.dependencies.length - a.dependencies.length);  // sort so that nodes with more dependencies come first--reduces stubs
+
+  templateItemIds = templateItemIds.concat(otherItems.map(template => template.itemId));
+
+  // Step through the list of nodes; we'll also remove nodes as we visit them
+  let itemId = templateItemIds.shift();
+  while (typeof itemId !== "undefined") {
+    traceItemId(itemId, hierarchy);
+    itemId = templateItemIds.shift();
+  }
+
+  return hierarchy;
+}
+
+// ------------------------------------------------------------------------------------------------------------------ //
+
+/**
+ * Finds the top-level items in a Solution template--the items that are not dependencies of any other item.
+ *
+ * @param templates Array of templates from a Solution
+ * @return List of top-level item ids
+ */
+export function _getTopLevelItemIds(
+  templates: common.IItemTemplate[]
+): string[] {
+  // Find the top-level nodes. Start with all nodes, then remove those that other nodes depend on
+  const topLevelItemCandidateIds = templates.map(function (template) { return template.itemId; });
+
+  templates.forEach(function (template) {
+    (template.dependencies || []).forEach(function (dependencyId) {
+      const iNode = topLevelItemCandidateIds.indexOf(dependencyId);
+
+      /* istanbul ignore else */
+      if (iNode >= 0) {
+        // Node is somebody's dependency, so remove the node from the list of top-level nodes
+        // If iNode == -1, then it's a shared dependency and it has already been removed
+        topLevelItemCandidateIds.splice(iNode, 1);
+      }
+    });
+  });
+
+  return topLevelItemCandidateIds;
+};

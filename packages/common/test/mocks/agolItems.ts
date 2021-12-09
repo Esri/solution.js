@@ -823,6 +823,17 @@ export function getAGOLItemData(type?: string, itemId?: string): any {
               "feat-lyr-new.portal.mapServicePortalItemID":
                 "d17c3732ceb04e62917d9444863a6c28"
             }
+          },
+          {
+            id: "02aacfd0-754d-3ac0-bb8d-aa3814b32fbf",
+            name: "feat-lyr-new",
+            label: "Custom Stream",
+            properties: {
+              "feat-lyr-new.editorTrackingEnabled": false,
+              "feat-lyr-new.updateExistingFeatures": true,
+              "stream-lyr-new.name": "Custom Stream",
+              "feat-lyr-new.useSpatiotemporal": false
+            }
           }
         ]
       };

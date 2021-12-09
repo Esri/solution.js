@@ -44,7 +44,14 @@ export function convertStoryMapToTemplate(
 
   const clone = cloneObject(model);
   tmpl.data = clone.data;
+
+  // We need to save these properties in order to restore them after hub.js deletes them
+  const created = clone.item.created;
+  const modified = clone.item.modified;
   tmpl.item = normalizeSolutionTemplateItem(clone.item) as IItem;
+  tmpl.item.created = created;
+  tmpl.item.modified = modified;
+
   // templatize the url
   tmpl.item.url = "{{storyMapTemplateUrl}}";
 

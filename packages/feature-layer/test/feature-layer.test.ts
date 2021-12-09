@@ -134,7 +134,7 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
         );
 
       featureLayer
-        .convertItemToTemplate("A", itemTemplate.item, MOCK_USER_SESSION)
+        .convertItemToTemplate("A", itemTemplate.item, MOCK_USER_SESSION, MOCK_USER_SESSION)
         .then(r => {
           // verify the state up front
           expect(r.item.id).toEqual(expectedId);
@@ -209,7 +209,7 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
       };
 
       featureLayer
-        .convertItemToTemplate("A", itemTemplate.item, MOCK_USER_SESSION)
+        .convertItemToTemplate("A", itemTemplate.item, MOCK_USER_SESSION, MOCK_USER_SESSION)
         .then(r => {
           // verify the state after
           expect(r.item.id).toEqual(id);
@@ -235,7 +235,7 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
       fetchMock.post(url + "?f=json", mockItems.get400Failure());
 
       featureLayer
-        .convertItemToTemplate("A", itemTemplate.item, MOCK_USER_SESSION, true)
+        .convertItemToTemplate("A", itemTemplate.item, MOCK_USER_SESSION, MOCK_USER_SESSION, true)
         .then(
           () => done.fail(),
           () => done()
@@ -251,7 +251,7 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
       delete itemTemplate.item.url;
 
       featureLayer
-        .convertItemToTemplate("A", itemTemplate.item, MOCK_USER_SESSION)
+        .convertItemToTemplate("A", itemTemplate.item, MOCK_USER_SESSION, MOCK_USER_SESSION)
         .then(r => {
           // verify the state after
           expect(r.item.id).toEqual(id);
@@ -277,7 +277,7 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
       fetchMock.post(url + "?f=json", serviceResponse);
 
       featureLayer
-        .convertItemToTemplate("A", itemTemplate.item, MOCK_USER_SESSION)
+        .convertItemToTemplate("A", itemTemplate.item, MOCK_USER_SESSION, MOCK_USER_SESSION)
         .then(r => {
           // verify the state after
           expect(r.item.id).toEqual(id);
@@ -334,6 +334,7 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
           "A",
           itemTemplate.item,
           MOCK_USER_SESSION,
+          MOCK_USER_SESSION,
           templateDictionary
         )
         .then(r => {
@@ -380,6 +381,7 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
           "A",
           itemTemplate.item,
           MOCK_USER_SESSION,
+          MOCK_USER_SESSION,
           templateDictionary
         )
         .then(done, done.fail);
@@ -420,6 +422,7 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
         .convertItemToTemplate(
           "A",
           itemTemplate.item,
+          MOCK_USER_SESSION,
           MOCK_USER_SESSION,
           templateDictionary
         )

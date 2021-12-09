@@ -29,12 +29,14 @@ const WEBMAP_APP_URL_PART: string = "home/webmap/viewer.html?webmap=";
  * Converts an AGOL webmap item to a template.
  *
  * @param itemTemplate Template for the webmap item
- * @param authentication credentials for the request
+ * @param destAuthentication Credentials for requests to the destination organization
+ * @param srcAuthentication Credentials for requests to source items
  * @return Template for the solution item that contains key details for item reconstruction
  */
 export function convertItemToTemplate(
   itemTemplate: common.IItemTemplate,
-  authentication: common.UserSession
+  destAuthentication: common.UserSession,
+  srcAuthentication: common.UserSession
 ): Promise<common.IItemTemplate> {
   return new Promise<common.IItemTemplate>((resolve, reject) => {
     // Templatize the app URL
@@ -44,7 +46,7 @@ export function convertItemToTemplate(
       itemTemplate.item.id; // templatized id
 
     // Extract dependencies
-    _extractDependencies(itemTemplate, authentication).then(
+    _extractDependencies(itemTemplate, srcAuthentication).then(
       (results: any) => {
         itemTemplate.dependencies = results.dependencies;
 

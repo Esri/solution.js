@@ -17,7 +17,9 @@ import {
   IItemTemplate,
   UserSession,
   getProp,
-  shareItemToGroups
+  shareItemToGroups,
+  isTrackingViewTemplate,
+  replaceInTemplate
 } from "@esri/solution-common";
 import { maybePush } from "@esri/hub-common";
 
@@ -46,7 +48,28 @@ export function shareTemplatesToGroups(
           acc
         );
       }, []);
-      return shareItemToGroups(groupIds, tmpl.itemId, authentication);
+      // need to pass the tracking owner when sharing to tracking group
+      if (isTrackingViewTemplate(tmpl) && !getProp(templateDictionary, "locationTracking.userIsOwner")) {
+        const trackingGroupId = getProp(tmpl, "item.properties.trackViewGroup");
+        const owner = getProp(templateDictionary, "locationTracking.owner");
+        /* istanbul ignore else */
+        if (trackingGroupId && owner) {
+          const trackerGroupIds = groupIds.filter(id => {
+            return id === replaceInTemplate(trackingGroupId, templateDictionary);
+          });
+          if (trackerGroupIds.length !== groupIds.length) {
+            const nonTrackerGroupIds = groupIds.filter(id => id !== trackingGroupId)
+            return Promise.all([
+              shareItemToGroups(trackerGroupIds, tmpl.itemId, authentication, owner),
+              shareItemToGroups(nonTrackerGroupIds, tmpl.itemId, authentication)
+            ])
+          } else {
+            return shareItemToGroups(groupIds, tmpl.itemId, authentication, owner);
+          }
+        }
+      } else {
+        return shareItemToGroups(groupIds, tmpl.itemId, authentication);
+      }
     })
   );
 }

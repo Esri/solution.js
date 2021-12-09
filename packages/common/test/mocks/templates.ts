@@ -1288,7 +1288,9 @@ function getItemTemplateFundamentals(
       origUrl: url && url.length > 0 ? url : undefined,
       properties: null,
       culture: "en-us",
-      url: url
+      url: url,
+      created: 1520968147000,
+      modified: 1522178539000
     },
     data: undefined,
     resources: [],

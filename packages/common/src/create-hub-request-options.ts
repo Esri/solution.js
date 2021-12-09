@@ -16,12 +16,12 @@
 
 import { UserSession } from "./interfaces";
 
-import { IHubRequestOptions, getHubUrlFromPortal } from "@esri/hub-common";
+import { IHubUserRequestOptions, getHubUrlFromPortal } from "@esri/hub-common";
 
 import { getSelf, getUser } from "@esri/arcgis-rest-portal";
 
 /**
- * Create a IHubRequestOptions object from
+ * Create a IHubUserRequestOptions object from
  * the UserSession
  * If passed, it will use `templateDictionary`
  * values instead of making additional requests
@@ -29,12 +29,12 @@ import { getSelf, getUser } from "@esri/arcgis-rest-portal";
  * @export
  * @param {UserSession} authentication
  * @param {*} templateDictionary
- * @returns {IHubRequestOptions}
+ * @returns {IHubUserRequestOptions}
  */
 export function createHubRequestOptions(
   authentication: UserSession,
   templateDictionary: any = {}
-): Promise<IHubRequestOptions> {
+): Promise<IHubUserRequestOptions> {
   // We used to pull the user
   // the template dictionary, but ran into issues
   // with the user.groups being filtered to groups
@@ -59,7 +59,7 @@ export function createHubRequestOptions(
       authentication,
       portalSelf: pSelf,
       isPortal: pSelf.isPortal
-    } as IHubRequestOptions;
+    } as IHubUserRequestOptions;
 
     if (!pSelf.isPortal) {
       ro.hubApiUrl = getHubUrlFromPortal(pSelf);

@@ -1,6 +1,6 @@
 {
   "name": "@esri/solution-creator",
-  "version": "1.1.2",
+  "version": "1.2.0",
   "description": "Manages the creation of a Solution item for @esri/solution.js.",
   "main": "dist/node/index.js",
   "unpkg": "dist/umd/creator.umd.min.js",
@@ -13,41 +13,41 @@
     "dist/**"
   ],
   "devDependencies": {
-    "@esri/arcgis-rest-auth": "^3.3.0",
-    "@esri/arcgis-rest-feature-layer": "^3.3.0",
-    "@esri/arcgis-rest-portal": "^3.3.0",
-    "@esri/arcgis-rest-request": "^3.3.0",
-    "@esri/arcgis-rest-service-admin": "^3.3.0",
-    "@esri/hub-common": "^8.16.0",
-    "@esri/hub-initiatives": "^8.16.0",
-    "@esri/hub-sites": "^8.16.0",
-    "@esri/hub-teams": "^8.16.0",
-    "rollup": "^1.22.0",
-    "typescript": "^4.3.4"
+    "@esri/arcgis-rest-auth": "3.4.3",
+    "@esri/arcgis-rest-feature-layer": "3.4.3",
+    "@esri/arcgis-rest-portal": "3.4.3",
+    "@esri/arcgis-rest-request": "3.4.3",
+    "@esri/arcgis-rest-service-admin": "3.4.3",
+    "@esri/hub-common": "9.7.2",
+    "@esri/hub-initiatives": "9.7.2",
+    "@esri/hub-sites": "9.7.2",
+    "@esri/hub-teams": "9.7.2",
+    "rollup": "^2.60.0",
+    "typescript": "^4.4.4"
   },
   "peerDependencies": {
-    "@esri/arcgis-rest-auth": "^3.3.0",
-    "@esri/arcgis-rest-feature-layer": "^3.3.0",
-    "@esri/arcgis-rest-portal": "^3.3.0",
-    "@esri/arcgis-rest-request": "^3.3.0",
-    "@esri/arcgis-rest-service-admin": "^3.3.0",
-    "@esri/hub-common": "^8.16.0",
-    "@esri/hub-initiatives": "^8.16.0",
-    "@esri/hub-sites": "^8.16.0",
-    "@esri/hub-teams": "^8.16.0"
+    "@esri/arcgis-rest-auth": "3.4.3",
+    "@esri/arcgis-rest-feature-layer": "3.4.3",
+    "@esri/arcgis-rest-portal": "3.4.3",
+    "@esri/arcgis-rest-request": "3.4.3",
+    "@esri/arcgis-rest-service-admin": "3.4.3",
+    "@esri/hub-common": "9.7.2",
+    "@esri/hub-initiatives": "9.7.2",
+    "@esri/hub-sites": "9.7.2",
+    "@esri/hub-teams": "9.7.2"
   },
   "dependencies": {
-    "@esri/solution-common": "^1.1.2",
-    "@esri/solution-feature-layer": "^1.1.2",
-    "@esri/solution-file": "^1.1.2",
-    "@esri/solution-form": "^1.1.2",
-    "@esri/solution-group": "^1.1.2",
-    "@esri/solution-hub-types": "^1.1.2",
-    "@esri/solution-simple-types": "^1.1.2",
-    "@esri/solution-storymap": "^1.1.2",
-    "@esri/solution-velocity": "^1.1.2",
-    "@esri/solution-web-experience": "^1.1.2",
-    "tslib": "^1.13.0"
+    "@esri/solution-common": "^1.2.0",
+    "@esri/solution-feature-layer": "^1.2.0",
+    "@esri/solution-file": "^1.2.0",
+    "@esri/solution-form": "^1.2.0",
+    "@esri/solution-group": "^1.2.0",
+    "@esri/solution-hub-types": "^1.2.0",
+    "@esri/solution-simple-types": "^1.2.0",
+    "@esri/solution-storymap": "^1.2.0",
+    "@esri/solution-velocity": "^1.2.0",
+    "@esri/solution-web-experience": "^1.2.0",
+    "tslib": "1.13.0"
   },
   "scripts": {
     "prepare": "npm run build",
@@ -99,5 +99,5 @@
     "esri",
     "ES6"
   ],
-  "gitHead": "4b9ac585a8cd4c132850aa1e67af67d89c546771"
+  "gitHead": "5eded4ac0bb6b2230ab572d602b38c69c8d6578f"
 }

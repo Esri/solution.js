@@ -29,13 +29,15 @@ import * as common from "@esri/solution-common";
  *
  * @param solutionItemId The solution to contain the template
  * @param itemInfo Info about the item
- * @param authentication Credentials for working with AGO
+ * @param destAuthentication Credentials for requests to the destination organization
+ * @param srcAuthentication Credentials for requests to source items
  * @return A promise that will resolve when the template has been created
  */
 export function convertItemToTemplate(
   solutionItemId: string,
   itemInfo: any,
-  authentication: common.UserSession
+  destAuthentication: common.UserSession,
+  srcAuthentication: common.UserSession
 ): Promise<common.IItemTemplate> {
   return new Promise<common.IItemTemplate>(resolve => {
     // Init template
@@ -51,11 +53,11 @@ export function convertItemToTemplate(
     );
 
     // Get the group's items--its dependencies
-    common.getGroupContents(itemInfo.id, authentication).then(
+    common.getGroupContents(itemInfo.id, srcAuthentication).then(
       groupContents => {
         itemTemplate.type = "Group";
         itemTemplate.dependencies = groupContents;
-        common.getGroupBase(itemInfo.id, authentication).then(
+        common.getGroupBase(itemInfo.id, srcAuthentication).then(
           groupResponse => {
             groupResponse.id = itemTemplate.item.id;
             itemTemplate.item = {
@@ -125,7 +127,8 @@ export function createItemFromTemplate(
         newGroup.title,
         newGroup,
         templateDictionary,
-        destinationAuthentication
+        destinationAuthentication,
+        common.isTrackingViewGroup(newItemTemplate) ? templateDictionary.locationTracking.owner : undefined
       )
       .then(
         (createResponse: common.IAddGroupResponse) => {
@@ -202,12 +205,106 @@ export function createItemFromTemplate(
                       )
                   );
               } else {
-                resolve({
-                  item: newItemTemplate,
-                  id: createResponse.group.id,
-                  type: newItemTemplate.type,
-                  postProcess: false
-                });
+                if (common.isTrackingViewGroup(newItemTemplate)) {
+                  const owner: string = templateDictionary.locationTracking.owner;
+                  // eslint-disable-next-line @typescript-eslint/no-floating-promises
+                  common.reassignGroup(
+                    createResponse.group.id,
+                    owner,
+                    destinationAuthentication
+                  ).then(assignResults => {
+                    if (assignResults.success) {
+                      if (
+                        !itemProgressCallback(
+                          template.itemId,
+                          common.EItemProgressStatus.Created,
+                          template.estimatedDeploymentCostFactor / 2,
+                          createResponse.group.id
+                        )
+                      ) {
+                        itemProgressCallback(
+                          template.itemId,
+                          common.EItemProgressStatus.Cancelled,
+                          0
+                        );
+                        // eslint-disable-next-line @typescript-eslint/no-floating-promises
+                        common
+                          .removeGroup(createResponse.group.id, destinationAuthentication)
+                          .then(
+                            () =>
+                              resolve(
+                                common.generateEmptyCreationResponse(template.type)
+                              ),
+                            () =>
+                              resolve(common.generateEmptyCreationResponse(template.type))
+                          );
+                      } else {
+                        // eslint-disable-next-line @typescript-eslint/no-floating-promises
+                        common.removeUsers(
+                          createResponse.group.id,
+                          [destinationAuthentication.username],
+                          destinationAuthentication
+                        ).then(removeResults => {
+                          if (Array.isArray(removeResults.notRemoved) && removeResults.notRemoved.length === 0) {
+                            if (
+                              !itemProgressCallback(
+                                template.itemId,
+                                common.EItemProgressStatus.Created,
+                                template.estimatedDeploymentCostFactor / 2,
+                                createResponse.group.id
+                              )
+                            ) {
+                              itemProgressCallback(
+                                template.itemId,
+                                common.EItemProgressStatus.Cancelled,
+                                0
+                              );
+                              // eslint-disable-next-line @typescript-eslint/no-floating-promises
+                              common
+                                .removeGroup(createResponse.group.id, destinationAuthentication)
+                                .then(
+                                  () =>
+                                    resolve(
+                                      common.generateEmptyCreationResponse(template.type)
+                                    ),
+                                  () =>
+                                    resolve(common.generateEmptyCreationResponse(template.type))
+                                );
+                            } else {
+                              resolve({
+                                item: newItemTemplate,
+                                id: createResponse.group.id,
+                                type: newItemTemplate.type,
+                                postProcess: false
+                              });
+                            }
+                          } else {
+                            itemProgressCallback(
+                              template.itemId,
+                              common.EItemProgressStatus.Failed,
+                              0
+                            );
+                            resolve(common.generateEmptyCreationResponse(template.type)); // fails to create item
+                          }
+                        });
+                      }
+                    } else {
+                      itemProgressCallback(
+                        template.itemId,
+                        common.EItemProgressStatus.Failed,
+                        0
+                      );
+                      resolve(common.generateEmptyCreationResponse(template.type)); // fails to create item
+                    }
+                  })
+                } else {
+                  resolve({
+                    item: newItemTemplate,
+                    id: createResponse.group.id,
+                    type: newItemTemplate.type,
+                    postProcess: false
+                  });
+                }
               }
             }
           } else {

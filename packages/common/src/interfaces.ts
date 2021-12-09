@@ -145,7 +145,7 @@ export interface IAdditionalSearchOptions {
  */
 export interface IAssociatedFileCopyResults
   extends IAssociatedFileInfo,
-    ICopyResults {}
+  ICopyResults { }
 
 /**
  *  Information for working with a file associated with an item.
@@ -457,6 +457,14 @@ export interface IGroupCategory {
 }
 
 /**
+ * Hierarchical arrangement of items and their dependencies.
+ */
+export interface IHierarchyElement {
+  id: string;
+  dependencies: IHierarchyElement[];
+}
+
+/**
  * Subset of portal.IItem containing just the properties that are stored in a template--the item's "base" section.
  */
 export interface IItemGeneralized {
@@ -549,7 +557,8 @@ export interface IItemTemplateConversions {
   convertItemToTemplate(
     solutionItemId: string,
     itemInfo: any,
-    authentication: UserSession,
+    destAuthentication: UserSession,
+    srcAuthentication: UserSession,
     templateDictionary?: any
   ): Promise<IItemTemplate>;
   createItemFromTemplate(
@@ -570,6 +579,10 @@ export interface IItemTemplateConversions {
  * Structure for mapping from item type to module with type-specific template-handling code
  */
 export type moduleHandler = IItemTemplateConversions | undefined | null;
+
+/**
+ * Mapping from an AGO item type to the code handling that type.
+ */
 export interface IItemTypeModuleMap {
   [itemType: string]: moduleHandler;
 }
@@ -583,10 +596,16 @@ export interface IItemUpdate {
   [key: string]: any;
 }
 
+/**
+ * Type with key access to lists of strings
+ */
 export interface IKeyedListsOfStrings {
   [key: string]: string[];
 }
 
+/**
+ * Type with key access to strings
+ */
 export interface IMimeTypes {
   [key: string]: string;
 }
@@ -653,11 +672,17 @@ export interface IQuickCaptureDatasource {
   url: number;
 }
 
+/**
+ * A mapping between a relationship type and the list of item ids using that relationship.
+ */
 export interface IRelatedItems {
   relationshipType: string;
   relatedItemIds: string[];
 }
 
+/**
+ * Summary of a resource.
+ */
 export interface IResource {
   resource: string;
   created: number;
@@ -737,6 +762,9 @@ export interface ISolutionProgressEvent {
   data?: any;
 }
 
+/**
+ * Information about a resource to be copied into an item.
+ */
 export interface ISourceFile {
   /**
    * The portal item id, e.g., "4efe5f693de34620934787ead6693f19", that supplies the resource
@@ -983,8 +1011,11 @@ export interface ISurvey123CreateResult {
 /**
  * Results of sending a zip to an item.
  */
-export interface IZipCopyResults extends IZipInfo, ICopyResults {}
+export interface IZipCopyResults extends IZipInfo, ICopyResults { }
 
+/**
+ * Information about a zipped file.
+ */
 export interface IZipInfo {
   /**
    * Zip's filename
@@ -1001,5 +1032,17 @@ export interface IZipInfo {
    */
   filelist: any[];
 }
+
+export interface IVelocityTitle {
+  /**
+   * The current label for the object
+   */
+  label: string;
+  /**
+   * Existing titles that have been used in the org
+   */
+  titles: string[];
+}
+
 
 //#endregion ---------------------------------------------------------------------------------------------------------//

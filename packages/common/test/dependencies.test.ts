@@ -214,6 +214,43 @@ describe("Module `dependencies`: functions for determining deployment order", ()
         ]);
     });
 
+    it("sorts tracking group", () => {
+      const templatesList: interfaces.IItemTemplate[] = [
+        templates.getItemTemplate("Hub Site Application"), // hsa1234567890
+        templates.getItemTemplate("Form"), // frm1234567890
+        templates.getItemTemplate("Feature Service"), // stakeholder
+        templates.getItemTemplate("Feature Service"), // fieldworker
+        templates.getItemTemplate("Feature Service"), // svc1234567890
+        templates.getItemTemplate("Group") // grp1234567890
+      ];
+      templatesList[0].dependencies = ["stakeholder", "frm1234567890"]; // hsa1234567890
+      templatesList[1].dependencies = ["stakeholder", "fieldworker"]; // frm1234567890
+      templatesList[2].itemId = templatesList[2].item.id = "stakeholder";
+      templatesList[2].item.typeKeywords.push("View Service");
+      templatesList[2].dependencies = ["svc1234567890", "frm1234567890"]; // stakeholder
+      templatesList[3].itemId = templatesList[3].item.id = "fieldworker";
+      templatesList[3].item.typeKeywords.push("View Service");
+      templatesList[3].dependencies = ["svc1234567890", "frm1234567890"]; // fieldworker
+      templatesList[4].dependencies = ["frm1234567890"]; // svc1234567890
+      templatesList[5].item.tags = ["Location Tracking Group"]; // grp1234567890
+
+      const {
+        buildOrder,
+        missingDependencies,
+        itemsToBePatched
+      } = dependencies.topologicallySortItems(templatesList);
+      expect(buildOrder)
+        .withContext("buildOrder")
+        .toEqual([
+          "grp1234567890",
+          "svc1234567890",
+          "fieldworker",
+          "stakeholder",
+          "frm1234567890",
+          "hsa1234567890"
+        ]);
+    });
+
     it("handles deployed template list", () => {
       const templatesList = [
         templates.getDeployedItemTemplate("map1234567890", "Web Map"),

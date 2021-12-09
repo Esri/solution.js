@@ -13,9 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { IModel, IHubRequestOptions, interpolate } from "@esri/hub-common";
+import { IModel, IHubUserRequestOptions } from "@esri/hub-common";
 
-import { _shareItemsToSiteGroups, updateSite } from "@esri/hub-sites";
+import { _shareItemsToSiteGroups, updateSite, interpolateSite } from "@esri/hub-sites";
 
 import { _updateSitePages } from "./_update-site-pages";
 
@@ -34,7 +34,7 @@ export function _postProcessSite(
   siteModel: IModel,
   itemInfos: any[],
   templateDictionary: any,
-  hubRequestOptions: IHubRequestOptions
+  hubRequestOptions: IHubUserRequestOptions
 ): Promise<boolean> {
   const infosWithoutSite = itemInfos.filter(
     info => info.id !== siteModel.item.id
@@ -73,7 +73,7 @@ export function _postProcessSite(
   siteModel.item.properties.children = childItemIds;
 
   // re-interpolate the siteModel using the itemInfos
-  siteModel = interpolate(siteModel, templateDictionary, {});
+  siteModel = interpolateSite(siteModel, templateDictionary, {});
   // and update the model
   secondPassPromises.push(
     updateSite(siteModel, {

@@ -88,7 +88,7 @@ function getCommitData(from, to) {
           ? from.replace("v", "")
           : from,
         version: to === "HEAD" ? getPackageVersion() : to.replace("v", ""),
-        date: format(today, "MMMM Do YYYY"),
+        date: format(today, "MMMM Do yyyy"),
         commits
       });
     });

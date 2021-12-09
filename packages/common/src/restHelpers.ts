@@ -63,6 +63,7 @@ import {
 } from "./interfaces";
 import { createZip } from "./libConnectors";
 import { getItemBase, getItemDataAsJson } from "./restHelpersGet";
+import { IUserSessionOptions } from "@esri/arcgis-rest-auth";
 import {
   addItemData as portalAddItemData,
   addItemRelationship,
@@ -78,6 +79,7 @@ import {
   IItemResourceOptions,
   IItemResourceResponse,
   IManageItemRelationshipOptions,
+  IPagingParams,
   ISearchGroupContentOptions,
   ISearchOptions,
   ISearchResult,
@@ -88,6 +90,7 @@ import {
   IUserItemOptions,
   removeFolder as portalRemoveFolder,
   removeGroup as portalRemoveGroup,
+  removeGroupUsers as portalRemoveGroupUsers,
   removeItem as portalRemoveItem,
   searchGroupContent,
   searchGroups as portalSearchGroups,
@@ -109,12 +112,28 @@ import {
   getWorkforceServiceInfo
 } from "./workforceHelpers";
 import { hasUnresolvedVariables, replaceInTemplate } from "./templatization";
+import {
+  isTrackingViewTemplate,
+  setTrackingOptions
+} from "./trackingHelpers";
 
 // ------------------------------------------------------------------------------------------------------------------ //
 
 export { request as rest_request } from "@esri/arcgis-rest-request";
 
 // ------------------------------------------------------------------------------------------------------------------ //
+
+/**
+ * Creates a UserSession via a function so that the global arcgisSolution variable can access authentication.
+ *
+ * @param options See https://esri.github.io/arcgis-rest-js/api/auth/IUserSessionOptions/
+ * @return UserSession
+ */
+export function getUserSession(
+  options: IUserSessionOptions = {}
+): UserSession {
+  return new UserSession(options);
+}
 
 /**
  * Searches for items matching a query and that the caller has access to.
@@ -816,47 +835,67 @@ export function createUniqueFolder(
  * @param title Group title, used as-is if possible and with suffix otherwise
  * @param templateDictionary Hash of facts: org URL, adlib replacements, user
  * @param authentication Credentials for creating group
+ * @param owner Optional arg for the Tracking owner
+ *              If the tracking owner is not the one deploying the solution
+ *              tracker groups will be created under the deployment user but
+ *              will be reassigned to the tracking owner.
  * @return Information about created group
  */
 export function createUniqueGroup(
   title: string,
   groupItem: IGroupAdd,
   templateDictionary: any,
-  authentication: UserSession
+  authentication: UserSession,
+  owner?: string
 ): Promise<IAddGroupResponse> {
   return new Promise<IAddGroupResponse>((resolve, reject) => {
-    // Get a title that is not already in use
-    groupItem.title = getUniqueTitle(title, templateDictionary, "user.groups");
-    const groupCreationParam = {
-      group: groupItem,
-      authentication: authentication
-    };
-    createGroup(groupCreationParam).then(resolve, err => {
-      // If the name already exists, we'll try again
-      const errorDetails = getProp(err, "response.error.details") as string[];
-      if (Array.isArray(errorDetails) && errorDetails.length > 0) {
-        const nameNotAvailMsg =
-          "You already have a group named '" +
-          groupItem.title +
-          "'. Try a different name.";
-        if (errorDetails.indexOf(nameNotAvailMsg) >= 0) {
-          templateDictionary.user.groups.push({
-            title: groupItem.title
-          });
-          createUniqueGroup(
-            title,
-            groupItem,
-            templateDictionary,
-            authentication
-          ).then(resolve, reject);
+    let groupsPromise: Promise<any>;
+    // when working with tracker we need to consider the groups of the deploying user as well as the groups
+    // of the tracking user...must be unique for both
+    if (owner && owner !== authentication.username) {
+      groupsPromise = searchAllGroups(`(owner:${owner}) orgid:${templateDictionary.organization.id}`, authentication);
+    } else {
+      groupsPromise = Promise.resolve([]);
+    }
+
+    // first get the tracker owner groups
+    groupsPromise.then(groups => {
+      templateDictionary["allGroups"] =
+        groups.concat(getProp(templateDictionary, "user.groups"));
+
+      // Get a title that is not already in use
+      groupItem.title = getUniqueTitle(title, templateDictionary, "allGroups");
+      const groupCreationParam = {
+        group: groupItem,
+        authentication: authentication
+      };
+      createGroup(groupCreationParam).then(resolve, err => {
+        // If the name already exists, we'll try again
+        const errorDetails = getProp(err, "response.error.details") as string[];
+        if (Array.isArray(errorDetails) && errorDetails.length > 0) {
+          const nameNotAvailMsg =
+            "You already have a group named '" +
+            groupItem.title +
+            "'. Try a different name.";
+          if (errorDetails.indexOf(nameNotAvailMsg) >= 0) {
+            templateDictionary.user.groups.push({
+              title: groupItem.title
+            });
+            createUniqueGroup(
+              title,
+              groupItem,
+              templateDictionary,
+              authentication
+            ).then(resolve, reject);
+          } else {
+            reject(err);
+          }
         } else {
+          // Otherwise, error out
           reject(err);
         }
-      } else {
-        // Otherwise, error out
-        reject(err);
-      }
-    });
+      });
+    }, e => reject(e));
   });
 }
 
@@ -875,7 +914,8 @@ export function extractDependencies(
   const dependencies: any[] = [];
   return new Promise((resolve, reject) => {
     // Get service dependencies when the item is a view
-    if (itemTemplate.properties.service.isView && itemTemplate.item.url) {
+    // This step is skipped for tracker views as they will already have a source service in the org
+    if (itemTemplate.properties.service.isView && itemTemplate.item.url && !isTrackingViewTemplate(itemTemplate)) {
       request(
         checkUrlPathTermination(itemTemplate.item.url) + "sources?f=json",
         {
@@ -950,6 +990,8 @@ export function getLayers(
  * Add additional options to a layers definition.
  *
  * @param args The IPostProcessArgs for the request(s)
+ * @param isPortal boolean to indicate if we are deploying to portal
+ *
  * @return An array of update instructions
  * @private
  */
@@ -985,6 +1027,9 @@ export function getLayerUpdates(
       updates.push(refresh);
     }
   });
+  // issue: #706
+  // Add source service relationships
+  // views will now always add all layers in a single call and will inherit the relationships from the source service
   if (!args.itemTemplate.properties.service.isView) {
     const relUpdates: any = _getRelationshipUpdates({
       message: "updated layer relationships",
@@ -992,6 +1037,14 @@ export function getLayerUpdates(
       itemTemplate: args.itemTemplate,
       authentication: args.authentication
     });
+    // issue: #724
+    // In portal the order the relationships are added needs to follow the layer order
+    // otherwise the relationship IDs will be reset
+    relUpdates.layers = _sortRelationships(
+      args.itemTemplate.properties.layers,
+      args.itemTemplate.properties.tables,
+      relUpdates
+    );
     /* istanbul ignore else */
     if (relUpdates.layers.length > 0) {
       updates.push(_getUpdate(adminUrl, null, relUpdates, args, "add"));
@@ -999,6 +1052,40 @@ export function getLayerUpdates(
     }
   }
   return updates;
+}
+
+/**
+ * Sorts relationships based on order of supporting layers and tables in the service definition
+ *
+ * @param layers the layers from the service
+ * @param tables the tables from the service
+ * @param relUpdates the relationships to add for the service
+ *
+ * @return An array with relationships that have been sorted
+ */
+export function _sortRelationships(
+  layers: any[],
+  tables: any[],
+  relUpdates: any
+): any[] {
+  const ids: number[] = [].concat(
+    layers.map((l: any) => l.id),
+    tables.map((t: any) => t.id)
+  );
+  // In portal the order the relationships are added needs to follow the layer order
+  // otherwise the relationship IDs will be reset
+  const _relUpdateLayers: any[] = [];
+  ids.forEach(id => {
+    relUpdates.layers.some((relUpdate: any) => {
+      if (id === relUpdate.id) {
+        _relUpdateLayers.push(relUpdate);
+        return true;
+      } else {
+        return false;
+      }
+    });
+  });
+  return _relUpdateLayers;
 }
 
 /**
@@ -1368,6 +1455,51 @@ export function searchGroups(
 }
 
 /**
+ * Searches for groups matching criteria recurusively.
+ *
+ * @param searchString Text for which to search, e.g., 'redlands+map', 'type:"Web Map" -type:"Web Mapping Application"'
+ * @param authentication Credentials for the request to AGO
+ * @param groups List of groups that have been found from previous requests
+ * @param inPagingParams The paging params for the recurisve searching
+ *
+ * @return A promise that will resolve with all groups that meet the search criteria
+ */
+export function searchAllGroups(
+  searchString: string,
+  authentication: UserSession,
+  groups?: IGroup[],
+  inPagingParams? : IPagingParams
+) {
+  const pagingParams: IPagingParams = inPagingParams ? inPagingParams : {
+    start: 0,
+    num: 24
+  };
+  const additionalSearchOptions = {
+    sortField: "title",
+    sortOrder: "asc",
+    ...pagingParams
+  };
+
+  let finalResults: IGroup[] = groups ? groups : [];
+  return new Promise<IGroup[]>((resolve, reject) => {
+    searchGroups(
+      searchString,
+      authentication,
+      additionalSearchOptions
+    ).then(response => {
+      finalResults = finalResults.concat(response.results);
+      if (response.nextStart > 0){
+        pagingParams.start = response.nextStart;
+        resolve(searchAllGroups(searchString, authentication, finalResults, pagingParams));
+      }
+      else{
+        resolve(finalResults);
+      }
+    }, e => reject(e));
+  });
+}
+
+/**
  * Searches for group contents matching criteria.
  *
  * @param groupId Group whose contents are to be searched
@@ -1413,18 +1545,70 @@ export function searchGroupContents(
 }
 
 /**
+ * Reassign ownership of a group
+ *
+ * @param groupId Group to remove users from
+ * @param userName The new owner for the group
+ * @param authentication Credentials for the request to
+ *
+ * @return A promise that will resolve after the group ownership has been assigned
+ *
+ */
+export function reassignGroup(
+  groupId: string,
+  userName: string,
+  authentication: UserSession
+): Promise<any> {
+  const requestOptions: IRequestOptions = {
+    authentication: authentication,
+    params: {
+      targetUsername: userName
+    }
+  };
+  return request(
+    `${authentication.portal}/community/groups/${groupId}/reassign`,
+    requestOptions
+  );
+}
+
+/**
+ * Remove users from a group
+ *
+ * @param groupId Group to remove users from
+ * @param users List of users to remove from the group
+ * @param authentication Credentials for the request to
+ *
+ * @return A promise that will resolve after the users have been removed
+ *
+ */
+export function removeUsers(
+  groupId: string,
+  users: string[],
+  authentication: UserSession
+): Promise<any> {
+  return portalRemoveGroupUsers({
+    id: groupId,
+    users,
+    authentication
+  });
+}
+
+/**
  * Shares an item to the defined group
  *
  * @param groupId Group to share with
  * @param id the item id to share with the group
  * @param destinationAuthentication Credentials for the request to AGO
+ * @param owner owner of the group when sharing tracking items (can be different from the deploying user)
+ *
  * @return A promise that will resolve after the item has been shared
  *
  */
 export function shareItem(
   groupId: string,
   id: string,
-  destinationAuthentication: UserSession
+  destinationAuthentication: UserSession,
+  owner?: string
 ): Promise<void> {
   return new Promise((resolve, reject) => {
     const shareOptions: IGroupSharingOptions = {
@@ -1432,6 +1616,11 @@ export function shareItem(
       id,
       authentication: destinationAuthentication
     };
+
+    /* istanbul ignore else */
+    if (owner) {
+      shareOptions.owner = owner;
+    }
 
     shareItemWithGroup(shareOptions).then(
       () => resolve(null),
@@ -1487,7 +1676,8 @@ export function updateItemExtended(
   data: any,
   authentication: UserSession,
   thumbnail?: File,
-  access?: string | undefined
+  access?: string | undefined,
+  templateDictionary?: any
 ): Promise<IUpdateItemResponse> {
   return new Promise<IUpdateItemResponse>((resolve, reject) => {
     const updateOptions: IUpdateItemOptions = {
@@ -1500,7 +1690,9 @@ export function updateItemExtended(
     if (thumbnail) {
       updateOptions.params.thumbnail = thumbnail;
     }
-
+    if (isTrackingViewTemplate(undefined, itemInfo) && templateDictionary) {
+      updateOptions.owner = templateDictionary.locationTracking.owner;
+    }
     portalUpdateItem(updateOptions).then(
       result => {
         if (access && access !== "private") {
@@ -1717,12 +1909,15 @@ export function _getCreateServiceOptions(
       authentication: authentication
     };
 
-    createOptions.item = _setItemProperties(
-      createOptions.item,
-      serviceInfo,
-      params,
-      isPortal
-    );
+    createOptions.item = !isTrackingViewTemplate(newItemTemplate) ?
+      _setItemProperties(
+        createOptions.item,
+        newItemTemplate,
+        serviceInfo,
+        params,
+        isPortal
+      ) :
+      setTrackingOptions(newItemTemplate, createOptions, templateDictionary);
 
     // project the portals extent to match that of the service
     convertExtentWithFallback(
@@ -1917,6 +2112,7 @@ export function _reportVariablesInItem(
  * Updates a feature service item.
  *
  * @param item Item to update
+ * @param itemTemplate item template for the new item
  * @param serviceInfo Service information
  * @param params arcgis-rest-js params to update
  * @param isPortal Is the service hosted in a portal?
@@ -1924,6 +2120,7 @@ export function _reportVariablesInItem(
  */
 export function _setItemProperties(
   item: any,
+  itemTemplate: IItemTemplate,
   serviceInfo: any,
   params: IParams,
   isPortal: boolean

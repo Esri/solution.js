@@ -66,7 +66,7 @@ describe("Module `notebook`: manages the creation and deployment of notebook pro
         "convertItemToTemplate"
       ).and.resolveTo();
       return notebookProcessor
-        .convertItemToTemplate("3ef", {}, MOCK_USER_SESSION, {})
+        .convertItemToTemplate("3ef", {}, MOCK_USER_SESSION, MOCK_USER_SESSION, {})
         .then(() => {
           expect(convertSpy.calls.count()).toBe(1, "should delegate");
         });
@@ -124,7 +124,7 @@ describe("Module `notebook`: manages the creation and deployment of notebook pro
               "%20item&tags=test&snippet=Snippet%20of%20an%20AGOL%20item&thumbnail=https%3A%2F%2F" +
               "myorg.maps.arcgis.com%2Fsharing%2Frest%2Fcontent%2Fitems%2Fnbk1234567890%2Finfo%2Fthumbnail" +
               "%2Fago_downloaded.png&extent=%7B%7BsolutionItemExtent%7D%7D&categories=&accessInformation=" +
-              "Esri%2C%20Inc.&culture=en-us&url=&token=fake-token"
+              "Esri%2C%20Inc.&culture=en-us&url=&created=1520968147000&modified=1522178539000&token=fake-token"
           );
         });
     });

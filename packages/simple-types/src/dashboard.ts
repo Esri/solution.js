@@ -77,7 +77,6 @@ interface IDashboardDatasource {
  * Converts a dashboard item to a template.
  *
  * @param itemTemplate Template for the dashboard item
- * @param authentication Credentials for any requests
  * @return templatized itemTemplate
  */
 export function convertItemToTemplate(

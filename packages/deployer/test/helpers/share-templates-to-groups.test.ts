@@ -45,6 +45,68 @@ describe("shareItemsToGroups", () => {
     );
   });
 
+  it("shares tracking template to tracking group", () => {
+    const shareSpy = spyOn(common, "shareItemToGroups").and.resolveTo();
+    const tmpl = {
+      itemId: "3ef",
+      groups: ["newAb4"],
+      item: {
+        typeKeywords: ["Location Tracking View"],
+        properties: {
+          trackViewGroup: "{{ab4.itemId}}"
+        }
+      }
+    } as common.IItemTemplate;
+    const tmplDict = {
+      bc3: {
+        itemId: "newBc3"
+      },
+      ab4: {
+        itemId: "newAb4"
+      },
+      locationTracking: {
+        userIsOwner: false,
+        owner: "LocationTrackingServiceOwner"
+      }
+    };
+    return shareTemplatesToGroups([tmpl], tmplDict, MOCK_USER_SESSION).then(
+      () => {
+        expect(shareSpy.calls.count()).toBe(1, "call shareItemToGroups once");
+      }
+    );
+  });
+
+  it("shares tracking template to groups", () => {
+    const shareSpy = spyOn(common, "shareItemToGroups").and.resolveTo();
+    const tmpl = {
+      itemId: "3ef",
+      groups: ["ab4", "bc3"],
+      item: {
+        typeKeywords: ["Location Tracking View"],
+        properties: {
+          trackViewGroup: "{{ab4.itemId}}"
+        }
+      }
+    } as common.IItemTemplate;
+    const tmplDict = {
+      bc3: {
+        itemId: "newBc3"
+      },
+      ab4: {
+        itemId: "newAb4"
+      },
+      locationTracking: {
+        userIsOwner: false,
+        owner: "LocationTrackingServiceOwner"
+      }
+    };
+    return shareTemplatesToGroups([tmpl], tmplDict, MOCK_USER_SESSION).then(
+      () => {
+        expect(shareSpy.calls.count()).toBe(2, "call shareItemToGroups once");
+      }
+    );
+  });
+
   it("shares templates to groups", () => {
     const shareSpy = spyOn(common, "shareItemToGroups").and.resolveTo();
     const tmpls = [

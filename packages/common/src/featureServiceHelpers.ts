@@ -58,6 +58,10 @@ import {
   getRequest,
   rest_request
 } from "./restHelpers";
+import {
+  isTrackingViewTemplate,
+  templatizeTracker
+} from "./trackingHelpers";
 
 //#endregion ------------------------------------------------------------------------------------------------------------//
 
@@ -91,6 +95,9 @@ export function templatize(
     url: _templatize(id, "url"),
     typeKeywords: templatizeIds(itemTemplate.item.typeKeywords)
   };
+
+  // special handeling if we are dealing with a tracker view
+  templatizeTracker(itemTemplate);
 
   const jsonLayers: any[] = itemTemplate.properties.layers || [];
   const jsonTables: any[] = itemTemplate.properties.tables || [];
@@ -443,27 +450,31 @@ export function setNamesAndTitles(
 ): IItemTemplate[] {
   const names: string[] = [];
   return templates.map(t => {
+    /* istanbul ignore else */
     if (t.item.type === "Feature Service") {
       // Retain the existing title but swap with name if it's missing
       t.item.title = t.item.title || t.item.name;
 
-      // Need to set the service name: name + "_" + newItemId
-      let baseName: string = t.item.name || t.item.title;
+      /* istanbul ignore else */
+      if (!isTrackingViewTemplate(t)) {
+        // Need to set the service name: name + "_" + newItemId
+        let baseName: string = t.item.name || t.item.title;
 
-      // If the name already contains a GUID remove it
-      baseName = baseName.replace(/_[0-9A-F]{32}/gi, "");
+        // If the name already contains a GUID remove it
+        baseName = baseName.replace(/_[0-9A-F]{32}/gi, "");
 
-      // The name length limit is 98
-      // Limit the baseName to 50 characters before the _<guid>
-      const name: string = baseName.substring(0, 50) + "_" + solutionItemId;
+        // The name length limit is 98
+        // Limit the baseName to 50 characters before the _<guid>
+        const name: string = baseName.substring(0, 50) + "_" + solutionItemId;
 
-      // If the name + GUID already exists then append "_occurrenceCount"
-      t.item.name =
-        names.indexOf(name) === -1
-          ? name
-          : `${name}_${names.filter(n => n === name).length}`;
+        // If the name + GUID already exists then append "_occurrenceCount"
+        t.item.name =
+          names.indexOf(name) === -1
+            ? name
+            : `${name}_${names.filter(n => n === name).length}`;
 
-      names.push(name);
+        names.push(name);
+      }
     }
     return t;
   });
@@ -678,68 +689,72 @@ export function addFeatureServiceLayersAndTables(
   authentication: UserSession
 ): Promise<void> {
   return new Promise((resolve, reject) => {
-    // Create a hash of various properties that contain field references
-    const fieldInfos: any = {};
-    const adminLayerInfos: any = {};
-    // Add the service's layers and tables to it
-    const layersAndTables: any[] = getLayersAndTables(itemTemplate);
-    if (layersAndTables.length > 0) {
-      addFeatureServiceDefinition(
-        itemTemplate.item.url || "",
-        layersAndTables,
-        templateDictionary,
-        authentication,
-        itemTemplate.key,
-        adminLayerInfos,
-        fieldInfos,
-        itemTemplate
-      ).then(
-        () => {
-          // Detemplatize field references and update the layer properties
-          // Only failure path is handled by addFeatureServiceDefinition
-          // eslint-disable-next-line @typescript-eslint/no-floating-promises
-          updateLayerFieldReferences(
-            itemTemplate,
-            fieldInfos,
-            popupInfos,
-            adminLayerInfos,
-            templateDictionary
-          ).then(r => {
-            // Update relationships and layer definitions
-            let updates: IUpdate[] = getLayerUpdates(
-              {
-                message: "updated layer definition",
-                objects: r.layerInfos.fieldInfos,
-                itemTemplate: r.itemTemplate,
-                authentication
-              } as IPostProcessArgs,
-              templateDictionary.isPortal
-            );
-            // Get any updates for the service that should be performed after updates to the layers
-            if (templateDictionary.isPortal) {
-              updates = getFinalServiceUpdates(
-                r.itemTemplate,
-                authentication,
-                updates
-              );
-            }
-            // Process the updates sequentially
-            updates
-              .reduce((prev, update) => {
-                return prev.then(() => {
-                  return getRequest(update);
-                });
-              }, Promise.resolve(null))
-              .then(
-                () => resolve(null),
-                (e: any) => reject(fail(e)) // getRequest
-              );
-          });
-        },
-        e => reject(fail(e)) // addFeatureServiceDefinition
-      );
-    } else {
+    if (isTrackingViewTemplate(itemTemplate)) {
       resolve(null);
+    } else {
+      // Create a hash of various properties that contain field references
+      const fieldInfos: any = {};
+      const adminLayerInfos: any = {};
+      // Add the service's layers and tables to it
+      const layersAndTables: any[] = getLayersAndTables(itemTemplate);
+      if (layersAndTables.length > 0) {
+        addFeatureServiceDefinition(
+          itemTemplate.item.url || "",
+          layersAndTables,
+          templateDictionary,
+          authentication,
+          itemTemplate.key,
+          adminLayerInfos,
+          fieldInfos,
+          itemTemplate
+        ).then(
+          () => {
+            // Detemplatize field references and update the layer properties
+            // Only failure path is handled by addFeatureServiceDefinition
+            // eslint-disable-next-line @typescript-eslint/no-floating-promises
+            updateLayerFieldReferences(
+              itemTemplate,
+              fieldInfos,
+              popupInfos,
+              adminLayerInfos,
+              templateDictionary
+            ).then(r => {
+              // Update relationships and layer definitions
+              let updates: IUpdate[] = getLayerUpdates(
+                {
+                  message: "updated layer definition",
+                  objects: r.layerInfos.fieldInfos,
+                  itemTemplate: r.itemTemplate,
+                  authentication
+                } as IPostProcessArgs,
+                templateDictionary.isPortal
+              );
+              // Get any updates for the service that should be performed after updates to the layers
+              if (templateDictionary.isPortal) {
+                updates = getFinalServiceUpdates(
+                  r.itemTemplate,
+                  authentication,
+                  updates
+                );
+              }
+              // Process the updates sequentially
+              updates
+                .reduce((prev, update) => {
+                  return prev.then(() => {
+                    return getRequest(update);
+                  });
+                }, Promise.resolve(null))
+                .then(
+                  () => resolve(null),
+                  (e: any) => reject(fail(e)) // getRequest
+                );
+            });
+          },
+          e => reject(fail(e)) // addFeatureServiceDefinition
+        );
+      } else {
+        resolve(null);
+      }
     }
   });
 }
@@ -770,111 +785,125 @@ export function addFeatureServiceDefinition(
   itemTemplate: IItemTemplate
 ): Promise<void> {
   return new Promise((resolve, reject) => {
-    let options: any = {
-      layers: [],
-      tables: [],
-      authentication
-    };
+    if (isTrackingViewTemplate(itemTemplate)) {
+      resolve(null);
+    } else {
+      let options: any = {
+        layers: [],
+        tables: [],
+        authentication
+      };
 
-    // if the service has veiws keep track of the fields so we can use them to
-    // compare with the view fields
-    /* istanbul ignore else */
-    if (getProp(itemTemplate, "properties.service.hasViews")) {
-      _updateTemplateDictionaryFields(itemTemplate, templateDictionary);
-    }
-
-    const layerChunks: any[] = [];
-    listToAdd.forEach((toAdd, i) => {
-      let item = toAdd.item;
-      const originalId = item.id;
-      fieldInfos = cacheFieldInfos(
-        item,
-        fieldInfos,
-        templateDictionary.isPortal
-      );
-
+      // if the service has veiws keep track of the fields so we can use them to
+      // compare with the view fields
       /* istanbul ignore else */
-      if (item.isView) {
-        deleteViewProps(item);
+      if (getProp(itemTemplate, "properties.service.hasViews")) {
+        _updateTemplateDictionaryFields(itemTemplate, templateDictionary);
       }
-      // when the item is a view we need to grab the supporting fieldInfos
-      /* istanbul ignore else */
-      if (itemTemplate.properties.service.isView) {
-        _updateGeomFieldName(item.adminLayerInfo, templateDictionary);
 
-        adminLayerInfos[originalId] = item.adminLayerInfo;
-        // need to update adminLayerInfo before adding to the service def
-        // bring over the fieldInfos from the source layer
-        updateSettingsFieldInfos(itemTemplate, templateDictionary);
-        // update adminLayerInfo before add to definition with view source fieldInfo settings
-        item.adminLayerInfo = replaceInTemplate(
-          item.adminLayerInfo,
-          templateDictionary
+      const chunkSize: number = _getLayerChunkSize();
+      const layerChunks: any[] = [];
+      listToAdd.forEach((toAdd, i) => {
+        let item = toAdd.item;
+        const originalId = item.id;
+        fieldInfos = cacheFieldInfos(
+          item,
+          fieldInfos,
+          templateDictionary.isPortal
         );
 
         /* istanbul ignore else */
-        if (
-          !templateDictionary.isPortal &&
-          fieldInfos &&
-          fieldInfos.hasOwnProperty(item.id)
-        ) {
-          Object.keys(templateDictionary).some(k => {
-            if (templateDictionary[k].itemId === itemTemplate.itemId) {
-              fieldInfos[item.id]["sourceServiceFields"] =
-                templateDictionary[k].sourceServiceFields;
-              return true;
-            } else {
-              return false;
-            }
-          });
-
-          // view field domain and alias can contain different values than the source field
-          // we need to set isViewOverride when added fields that differ from the source field
-          _validateViewDomainsAndAlias(fieldInfos[item.id], item);
+        if (item.isView) {
+          deleteViewProps(item);
         }
-      }
-      /* istanbul ignore else */
-      if (templateDictionary.isPortal) {
-        item = _updateForPortal(item, itemTemplate, templateDictionary);
-      }
+        // when the item is a view we need to grab the supporting fieldInfos
+        /* istanbul ignore else */
+        if (itemTemplate.properties.service.isView) {
+          _updateGeomFieldName(item.adminLayerInfo, templateDictionary);
 
-      removeLayerOptimization(item);
+          adminLayerInfos[originalId] = item.adminLayerInfo;
+          // need to update adminLayerInfo before adding to the service def
+          // bring over the fieldInfos from the source layer
+          updateSettingsFieldInfos(itemTemplate, templateDictionary);
+          // update adminLayerInfo before add to definition with view source fieldInfo settings
+          item.adminLayerInfo = replaceInTemplate(
+            item.adminLayerInfo,
+            templateDictionary
+          );
 
-      options = _updateAddOptions(
-        itemTemplate,
-        item,
-        options,
-        layerChunks,
-        authentication
-      );
+          /* istanbul ignore else */
+          if (
+            !templateDictionary.isPortal &&
+            fieldInfos &&
+            fieldInfos.hasOwnProperty(item.id)
+          ) {
+            Object.keys(templateDictionary).some(k => {
+              if (templateDictionary[k].itemId === itemTemplate.itemId) {
+                fieldInfos[item.id]["sourceServiceFields"] =
+                  templateDictionary[k].sourceServiceFields;
+                return true;
+              } else {
+                return false;
+              }
+            });
 
-      if (item.type === "Feature Layer") {
-        options.layers.push(item);
-      } else {
-        options.tables.push(item);
-      }
+            // view field domain and alias can contain different values than the source field
+            // we need to set isViewOverride when added fields that differ from the source field
+            _validateViewDomainsAndAlias(fieldInfos[item.id], item);
+          }
+        }
+        /* istanbul ignore else */
+        if (templateDictionary.isPortal) {
+          item = _updateForPortal(item, itemTemplate, templateDictionary);
+        }
 
-      /* istanbul ignore else */
-      if ((i + 1) % 20 === 0 || i + 1 === listToAdd.length) {
-        layerChunks.push(Object.assign({}, options));
-        options = {
-          layers: [],
-          tables: [],
+        removeLayerOptimization(item);
+
+        // this can still chunk layers
+        options = _updateAddOptions(
+          itemTemplate,
+          item,
+          options,
+          layerChunks,
           authentication
-        };
-      }
-    });
+        );
 
-    layerChunks
-      .reduce(
-        (prev, curr) =>
-          prev.then(() => addToServiceDefinition(serviceUrl, curr)),
-        Promise.resolve(null)
-      )
-      .then(
-        () => resolve(null),
-        (e: any) => reject(fail(e))
-      );
+        if (item.type === "Feature Layer") {
+          options.layers.push(item);
+        } else {
+          options.tables.push(item);
+        }
+
+        // In general we are switching to not use chunking. Rather if we exceed the defined chunk size
+        // we will use an async request.
+        // Currently the only case that should chunk the requests is when we have a multisource view
+        //  handled in _updateAddOptions above
+        /* istanbul ignore else */
+        if (i + 1 === listToAdd.length) {
+          layerChunks.push(Object.assign({}, options));
+          options = {
+            layers: [],
+            tables: [],
+            authentication
+          };
+        }
+      });
+
+      // will use async by default rather than chunk the layer requests when we have more layers
+      // than the defined chunk size
+      const useAsync: boolean = listToAdd.length > chunkSize;
+
+      layerChunks
+        .reduce(
+          (prev, curr) =>
+            prev.then(() => addToServiceDefinition(serviceUrl, curr, false, useAsync)),
+          Promise.resolve(null)
+        )
+        .then(
+          () => resolve(null),
+          (e: any) => reject(fail(e))
+        );
+    }
   });
 }
 
@@ -3148,4 +3177,13 @@ export function _getNameMapping(fieldInfos: any, id: string): any {
 export interface IPopupInfos {
   layers: INumberValuePair;
   tables: INumberValuePair;
+}
+
+/**
+ * Helper function to ensure same chunk size value is used in multiple locations
+ *
+ * @return a number that represents how many layers should be included per addToDef call
+ */
+export function _getLayerChunkSize() {
+  return 20;
 }

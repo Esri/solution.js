@@ -124,6 +124,15 @@ describe("Module `creator`", () => {
       fetchMock
         .get(
           utils.PORTAL_SUBSET.restUrl +
+            "/community/self?f=json&token=fake-token",
+          utils.getUserResponse()
+        )
+        .get(
+          utils.PORTAL_SUBSET.restUrl + "/portals/self?f=json&token=fake-token",
+          utils.getPortalsSelfResponse()
+        )
+        .get(
+          utils.PORTAL_SUBSET.restUrl +
             "/portals/self/subscriptioninfo?f=json&token=fake-token",
           mockItems.getAGOLSubscriptionInfo(false)
         )
@@ -192,6 +201,15 @@ describe("Module `creator`", () => {
       const expectedSolutionId = "sln1234567890";
 
       fetchMock
+        .get(
+          utils.PORTAL_SUBSET.restUrl +
+            "/community/self?f=json&token=fake-token",
+          utils.getUserResponse()
+        )
+        .get(
+          utils.PORTAL_SUBSET.restUrl + "/portals/self?f=json&token=fake-token",
+          utils.getPortalsSelfResponse()
+        )
         .get(
           utils.PORTAL_SUBSET.restUrl +
             "/portals/self/subscriptioninfo?f=json&token=fake-token",
@@ -264,6 +282,11 @@ describe("Module `creator`", () => {
       const expectedImage = utils.getSampleImageAsBlob();
 
       fetchMock
+        .get(
+          utils.PORTAL_SUBSET.restUrl +
+            "/community/self?f=json&token=fake-token",
+          utils.getUserResponse()
+        )
         .get(
           utils.PORTAL_SUBSET.restUrl +
             "/portals/self/subscriptioninfo?f=json&token=fake-token",
@@ -394,6 +417,11 @@ describe("Module `creator`", () => {
       const expectedImage = utils.getSampleImageAsBlob();
 
       fetchMock
+        .get(
+          utils.PORTAL_SUBSET.restUrl +
+            "/community/self?f=json&token=fake-token",
+          utils.getUserResponse()
+        )
         .get(
           utils.PORTAL_SUBSET.restUrl +
             "/portals/self/subscriptioninfo?f=json&token=fake-token",
@@ -546,6 +574,15 @@ describe("Module `creator`", () => {
       fetchMock
         .get(
           utils.PORTAL_SUBSET.restUrl +
+            "/community/self?f=json&token=fake-token",
+          utils.getUserResponse()
+        )
+        .get(
+          utils.PORTAL_SUBSET.restUrl + "/portals/self?f=json&token=fake-token",
+          utils.getPortalsSelfResponse()
+        )
+        .get(
+          utils.PORTAL_SUBSET.restUrl +
             "/portals/self/subscriptioninfo?f=json&token=fake-token",
           mockItems.getAGOLSubscriptionInfo(false)
         )
@@ -619,6 +656,15 @@ describe("Module `creator`", () => {
       const expectedImage = utils.getSampleImageAsBlob();
 
       fetchMock
+        .get(
+          utils.PORTAL_SUBSET.restUrl +
+            "/community/self?f=json&token=fake-token",
+          utils.getUserResponse()
+        )
+        .get(
+          utils.PORTAL_SUBSET.restUrl + "/portals/self?f=json&token=fake-token",
+          utils.getPortalsSelfResponse()
+        )
         .get(
           utils.PORTAL_SUBSET.restUrl +
             "/portals/self/subscriptioninfo?f=json&token=fake-token",
@@ -705,6 +751,15 @@ describe("Module `creator`", () => {
       fetchMock
         .get(
           utils.PORTAL_SUBSET.restUrl +
+            "/community/self?f=json&token=fake-token",
+          utils.getUserResponse()
+        )
+        .get(
+          utils.PORTAL_SUBSET.restUrl + "/portals/self?f=json&token=fake-token",
+          utils.getPortalsSelfResponse()
+        )
+        .get(
+          utils.PORTAL_SUBSET.restUrl +
             "/portals/self/subscriptioninfo?f=json&token=fake-token",
           mockItems.getAGOLSubscriptionInfo(false)
         )
@@ -789,6 +844,15 @@ describe("Module `creator`", () => {
       fetchMock
         .get(
           utils.PORTAL_SUBSET.restUrl +
+            "/community/self?f=json&token=fake-token",
+          utils.getUserResponse()
+        )
+        .get(
+          utils.PORTAL_SUBSET.restUrl + "/portals/self?f=json&token=fake-token",
+          utils.getPortalsSelfResponse()
+        )
+        .get(
+          utils.PORTAL_SUBSET.restUrl +
             "/portals/self/subscriptioninfo?f=json&token=fake-token",
           mockItems.getAGOLSubscriptionInfo(false)
         )
@@ -845,6 +909,11 @@ describe("Module `creator`", () => {
       const expectedItem = mockItems.getAGOLItem("Web Map");
 
       fetchMock
+        .get(
+          utils.PORTAL_SUBSET.restUrl +
+            "/community/self?f=json&token=fake-token",
+          utils.getUserResponse()
+        )
         .get(
           utils.PORTAL_SUBSET.restUrl +
             "/portals/self/subscriptioninfo?f=json&token=fake-token",

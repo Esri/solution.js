@@ -26,7 +26,6 @@ module.exports = function(config) {
             functions: 100,
             lines: 100,
             excludes: [
-              'packages/*/examples/**/*.ts',
               'packages/*/test/**/*.ts'
             ]
           }
@@ -98,10 +97,13 @@ module.exports = function(config) {
     // start these browsers
     // available browser launchers: https://npmjs.org/browse/keyword/karma-launcher
     browsers: [
-      'Chrome',
+      'Chrome', 'ChromeHeadless', 'ChromeHeadlessCI',
       'Edge',
       'Firefox'
     ],
+    browserNoActivityTimeout: 120000,
+    captureTimeout: 120000,
+    browserDisconnectTimeout: 120000,
     plugins: [
       require('@chiragrupani/karma-chromium-edge-launcher'),
       require('karma-chrome-launcher'),
@@ -125,7 +127,7 @@ module.exports = function(config) {
     customLaunchers: {
       ChromeHeadlessCI: {
         base: 'ChromeHeadless',
-        flags: ['--no-sandbox']
+        flags: ['--no-sandbox', '--headless', '--disable-translate', '--disable-extensions']
       }
     },
   });

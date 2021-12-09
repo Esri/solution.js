@@ -67,7 +67,7 @@ describe("Module `webmap`: manages the creation and deployment of OIC (Oriented 
           { serviceItemId: "svc1234567890b", id: 2 }
         );
 
-      oic.convertItemToTemplate(itemTemplate, MOCK_USER_SESSION).then(
+      oic.convertItemToTemplate(itemTemplate, MOCK_USER_SESSION, MOCK_USER_SESSION).then(
         () => done.fail(),
         () => done()
       );
@@ -83,7 +83,7 @@ describe("Module `webmap`: manages the creation and deployment of OIC (Oriented 
       expected.data = null;
 
       oic
-        .convertItemToTemplate(itemTemplate, MOCK_USER_SESSION)
+        .convertItemToTemplate(itemTemplate, MOCK_USER_SESSION, MOCK_USER_SESSION)
         .then(actual => {
           expect(actual).toEqual(expected);
           done();
@@ -321,6 +321,17 @@ describe("Module `webmap`: manages the creation and deployment of OIC (Oriented 
           urlHash
         )
       ).toEqual("{{svc1234567890a.layer1.url}}");
+    });
+
+    it("will add portalBaseUrl var and templatize the itemId in service url", () => {
+      expect(
+        oic._templatizeOicLayerUrl(
+          "https://www.arcgis.com/home/item.html?id=aaa7c44e3f504a20a4c9f37b6c91e213&sublayer=0",
+          {}
+        )
+      ).toEqual(
+        "{{portalBaseUrl}}/home/item.html?id={{aaa7c44e3f504a20a4c9f37b6c91e213.itemId}}&sublayer=0"
+      );
     });
   });
 });

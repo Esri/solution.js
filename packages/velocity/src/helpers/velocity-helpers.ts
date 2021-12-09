@@ -16,11 +16,14 @@
 
 import {
   IItemTemplate,
+  IVelocityTitle,
   getVelocityUrlBase,
   replaceInTemplate,
   UserSession,
   getProp,
-  fail
+  fail,
+  BASE_NAMES,
+  PROP_NAMES
 } from "@esri/solution-common";
 
 /**
@@ -99,15 +102,23 @@ export function postVelocityData(
     true
   ).then(url => {
     if (url) {
-      return getTitle(authentication, data.label, url).then(title => {
-        data.label = title;
+      return getTitle(authentication, data.label, url).then((titleInfo: IVelocityTitle) => {
+        const titles: any[] = titleInfo.titles;
+        data.label = titleInfo.label;
         data.id = "";
         const body: any = replaceInTemplate(data, templateDictionary);
 
-        const dataOutputs: any[] = (data.outputs || []).map((o: any) => {
+        const dataOutputs: any[] = (data.outputs ? data.outputs : data.output ? [data.output] : []).map((o: any) => {
           return {
             id: o.id,
             name: o.properties[`${o.name}.name`]
+          };
+        });
+
+        const feeds = (body.feeds ? body.feeds : body.feed ? [body.feed] : []).map((o:any) => {
+          return {
+            id: o.id ? o.id : o.properties[`${o.name}.portalItemId`] || "",
+            name: o.label ? o.label : data.label
           };
         });
 
@@ -116,7 +127,9 @@ export function postVelocityData(
           templateDictionary,
           template.type,
           body,
-          dataOutputs
+          titles,
+          dataOutputs,
+          feeds
         ).then(updatedBody => {
           return _fetch(authentication, url, "POST", updatedBody).then(rr => {
             template.item.url = `${url}/${rr.id}`;
@@ -170,7 +183,7 @@ export function getTitle(
   authentication: UserSession,
   label: string,
   url: string
-): Promise<string> {
+): Promise<IVelocityTitle> {
   return _fetch(authentication, `${url}StatusList?view=admin`, "GET").then(
     items => {
       const titles: any[] =
@@ -179,7 +192,7 @@ export function getTitle(
               return { title: item.label };
             })
           : [];
-      return Promise.resolve(getUniqueTitle(label, { titles }, "titles"));
+      return Promise.resolve({label: getUniqueTitle(label, { titles }, "titles"), titles: titles.map(t => t.title)});
     }
   );
 }
@@ -194,7 +207,9 @@ export function getTitle(
  * @param templateDictionary Hash of facts: folder id, org URL, adlib replacements
  * @param type The type of velocity item
  * @param data The data used to construct the velocity item
- * @param dataOutputs The velocity items output objects.
+ * @param titles The list of know titles that exist in the org
+ * @param dataOutputs The velocity items output objects
+ * @param feeds The velocity items feed objects
  *
  * @return a promise that will resolve the data object passed in with any necessary changes.
  *
@@ -204,49 +219,31 @@ export function _validateOutputs(
   templateDictionary: any,
   type: string,
   data: any,
-  dataOutputs: any[]
+  titles: any[],
+  dataOutputs: any[] = [],
+  feeds: any[] = []
 ): Promise<any> {
-  if (dataOutputs.length > 0) {
+  if (dataOutputs.length > 0 || feeds.length > 0) {
     return validate(authentication, templateDictionary, type, "", data).then(
       (validateResults: any) => {
-        let messages: any[] = getProp(validateResults, "validation.messages");
-
-        const nodes: any[] = getProp(validateResults, "nodes");
-        /* istanbul ignore else */
-        if (nodes && Array.isArray(nodes)) {
-          nodes.forEach(node => {
-            messages = messages.concat(
-              getProp(node, "validation.messages") || []
-            );
-          });
-        }
-
-        let names: string[] = [];
-        /* istanbul ignore else */
-        if (messages && Array.isArray(messages)) {
-          messages.forEach(message => {
-            // I don't see a way to ask for all output names that exist
-            // velocityUrl + /outputs/ just gives you generic defaults not what currently exists
-            const nameErrors = [
-              "VALIDATION_ANALYTICS__MULTIPLE_CREATE_FEATURE_LAYER_OUTPUTS_REFERENCE_SAME_LAYER_NAME",
-              "ITEM_MANAGER__CREATE_ANALYTIC_FAILED_DUPLICATE_OUTPUT_NAMES_IN_ORGANIZATION_NOT_ALLOWED"
-            ];
-            // The names returned here seem to replace " " with "_" so they do not match exactly
-            /* istanbul ignore else */
-            if (nameErrors.indexOf(message.key) > -1) {
-              names = names.concat(message.args);
-            }
-          });
-        }
-
+        const names: string[] = _validateMessages(validateResults);
         if (names.length > 0) {
-          _updateDataOutput(dataOutputs, data, names);
+          /* istanbul ignore else */
+          if (dataOutputs.length > 0) {
+            _updateDataOutput(dataOutputs, data, names);
+          }
+          /* istanbul ignore else */
+          if (feeds.length > 0) {
+            _updateFeed(feeds, data, names.concat(titles));
+          }
           return _validateOutputs(
             authentication,
             templateDictionary,
             type,
             data,
-            dataOutputs
+            titles,
+            dataOutputs,
+            feeds
           );
         } else {
           return Promise.resolve(data);
@@ -256,6 +253,76 @@ export function _validateOutputs(
   } else {
     return Promise.resolve(data);
   }
+}
+
+/**
+ * Check the validate results for any name conflicts and store the conflicting names.
+ *
+ * @param validateResults The results object to check for name conflict errors
+ *
+ * @return a list of names that already exist in the org
+ *
+ */
+export function _validateMessages(
+  validateResults: any
+): string[] {
+  let messages: any[] = getProp(validateResults, "validation.messages");
+
+  const nodes: any[] = getProp(validateResults, "nodes");
+  /* istanbul ignore else */
+  if (nodes && Array.isArray(nodes)) {
+    nodes.forEach(node => {
+      messages = messages.concat(
+        getProp(node, "validation.messages") || []
+      );
+    });
+  }
+
+  let names: string[] = [];
+  /* istanbul ignore else */
+  if (messages && Array.isArray(messages)) {
+    messages.forEach(message => {
+      // I don't see a way to ask for all output names that exist
+      // velocityUrl + /outputs/ just gives you generic defaults not what currently exists
+      const nameErrors = [
+        "VALIDATION_ANALYTICS__MULTIPLE_CREATE_FEATURE_LAYER_OUTPUTS_REFERENCE_SAME_LAYER_NAME",
+        "VALIDATION_ANALYTICS__MULTIPLE_CREATE_STREAM_LAYER_OUTPUTS_REFERENCE_SAME_LAYER_NAME",
+        "ITEM_MANAGER__CREATE_ANALYTIC_FAILED_DUPLICATE_OUTPUT_NAMES_IN_ORGANIZATION_NOT_ALLOWED",
+        "ITEM_MANAGER__CREATE_BIG_DATA_ANALYTIC_FAILED_DUPLICATE_NAMES_NOT_ALLOWED",
+        "ITEM_MANAGER__CREATE_REAL_TIME_ANALYTIC_FAILED_DUPLICATE_NAMES_NOT_ALLOWED",
+        "ITEM_MANAGER__CREATE_FEED_FAILED_DUPLICATE_NAME"
+      ];
+      // The names returned here seem to replace " " with "_" so they do not match exactly
+      /* istanbul ignore else */
+      if (nameErrors.indexOf(message.key) > -1) {
+        names = names.concat(message.args);
+      }
+    });
+  }
+  return names;
+}
+
+/**
+ * Updates the feed object with a new name when validation fails.
+ *
+ * @param feeds The feed objects from the velocity item.
+ * @param data The full data object used for deploying the velocity item.
+ * @param names The names that failed due to duplicate error in validation.
+ *
+ */
+export function _updateFeed(
+  feeds: any[],
+  data: any,
+  names: string[]
+): void {
+  feeds.forEach(f => {
+    const update = _getOutputLabel(names, f);
+    /* istanbul ignore else */
+    if (update) {
+      data.label = update.label;
+      f.name = update.label;
+    }
+  });
 }
 
 /**
@@ -276,7 +343,7 @@ export function _updateDataOutput(
     const update = _getOutputLabel(names, dataOutput);
     /* istanbul ignore else */
     if (update) {
-      data.outputs = data.outputs.map((_dataOutput: any) => {
+      const _outputs = (data.outputs ? data.outputs : data.output ? [data.output] : []).map((_dataOutput: any) => {
         /* istanbul ignore else */
         if (_dataOutput.id === update.id) {
           /* istanbul ignore else */
@@ -290,6 +357,14 @@ export function _updateDataOutput(
         }
         return _dataOutput;
       });
+      /* istanbul ignore else */
+      if (data.outputs) {
+        data.outputs = _outputs;
+      }
+      /* istanbul ignore else */
+      if (data.output) {
+        data.output = _outputs[0];
+      }
     }
   });
 }
@@ -514,23 +589,23 @@ export function _fetch(
  * @param template The template that for the velocity item
  *
  */
-export function cleanDataSourcesAndFeeds(template: IItemTemplate): void {
+export function cleanDataSourcesAndFeeds(
+  template: IItemTemplate,
+  velocityUrl: string
+): void {
   const dependencies: string[] = template.dependencies;
 
-  _removeIdProps(
+  [
     getProp(template, "data.sources") ? template.data.sources : [],
-    dependencies
-  );
-
-  _removeIdProps(
+    getProp(template, "data.source") ? [template.data.source] : [],
     getProp(template, "data.feeds") ? template.data.feeds : [],
-    dependencies
-  );
+    getProp(template, "data.feed") ? [template.data.feed] : []
+  ].forEach(d => _removeIdProps(d, dependencies, velocityUrl));
 
-  _removeIdPropsAndSetName(
+  [
     getProp(template, "data.outputs") ? template.data.outputs : [],
-    dependencies
-  );
+    getProp(template, "data.output") ? [template.data.output] : []
+  ].forEach(outputs => _removeIdPropsAndSetName(outputs, dependencies));
 }
 
 /**
@@ -542,19 +617,31 @@ export function cleanDataSourcesAndFeeds(template: IItemTemplate): void {
  */
 export function _removeIdProps(
   sourcesOrFeeds: any[],
-  dependencies: string[]
+  dependencies: string[],
+  velocityUrl: string
 ): void {
   sourcesOrFeeds.forEach(dataSource => {
+    const idProp: string = "feature-layer.portalItemId";
+    const layerIdProp: string = "feature-layer.layerId"
     /* istanbul ignore else */
-    if (
-      dataSource.properties &&
-      dataSource.properties["feature-layer.portalItemId"]
-    ) {
-      const id: string = dataSource.properties["feature-layer.portalItemId"];
+    if (dataSource.properties) {
       /* istanbul ignore else */
-      if (dependencies.indexOf(id) < 0) {
-        delete dataSource.properties["feature-layer.portalItemId"];
-        delete dataSource.properties["feature-layer.layerId"];
+      if (dataSource.properties[idProp]) {
+        const id: string = dataSource.properties[idProp];
+        /* istanbul ignore else */
+        if (id && dependencies.indexOf(id) < 0) {
+          delete dataSource.properties[idProp];
+          delete dataSource.properties[layerIdProp];
+        }
+      }
+
+      const urlProp: string = "simulator.url";
+      const url: any = dataSource.properties[urlProp];
+      // only remove velocity based simulator urls
+      // otherwise we will leave as is with no templatization
+      /* istanbul ignore else */
+      if (url && url.indexOf(velocityUrl) > -1) {
+        delete dataSource.properties[urlProp]
       }
     }
   });
@@ -574,16 +661,12 @@ export function _removeIdPropsAndSetName(
   outputs.forEach(output => {
     /* istanbul ignore else */
     if (output.properties) {
-      _removeProp(
-        output.properties,
-        "feat-lyr-new.portal.featureServicePortalItemID",
-        dependencies
-      );
-      _removeProp(
-        output.properties,
-        "feat-lyr-new.portal.mapServicePortalItemID",
-        dependencies
-      );
+      const names: string[] = getProp(output, "name") ? [output.name] : BASE_NAMES;
+      names.forEach(n => {
+        PROP_NAMES.forEach(p => _removeProp(output.properties, n + p, dependencies));
+      });
+
+      _updateName(output.properties);
     }
   });
 }
@@ -605,7 +688,6 @@ export function _removeProp(
   /* istanbul ignore else */
   if (id && dependencies.indexOf(id) < 0) {
     delete props[prop];
-    _updateName(props);
   }
 }
 
@@ -616,9 +698,15 @@ export function _removeProp(
  *
  */
 export function _updateName(props: any): void {
-  const name: string = props["feat-lyr-new.name"];
-  /* istanbul ignore else */
-  if (name && name.indexOf("{{solutionItemId}}") < 0) {
-    props["feat-lyr-new.name"] = `${name}_{{solutionItemId}}`;
-  }
+  [
+    "feat-lyr-new.name",
+    "stream-lyr-new.name",
+    "feat-lyr-existing.name"
+  ].forEach(n => {
+    const name: string = props[n];
+    /* istanbul ignore else */
+    if (name && name.indexOf("{{solutionItemId}}") < 0) {
+      props[n] = `${name}_{{solutionItemId}}`;
+    }
+  });
 }
