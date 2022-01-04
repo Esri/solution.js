@@ -72,6 +72,53 @@ describe("Module `notebook`: manages the creation and deployment of notebook pro
         });
     });
   });
+  describe("deleteProps :: ", () => {
+    it("removes interpreter and papermill props", () => {
+      const data: any = {
+        metadata: {
+          p: "",
+          interpreter: {},
+          papermill: {}
+        },
+        cells: [{
+          metadata: {
+            p: "",
+            interpreter: {},
+            papermill: {}
+          }
+        }]
+      };
+      const expected: any = {
+        metadata: {
+          p: ""
+        },
+        cells: [{
+          metadata: {
+            p: ""
+          }
+        }]
+      }
+      notebookProcessor.deleteProps(data);
+      expect(data).toEqual(expected);
+    });
+
+    it("handles missing cells", () => {
+      const data: any = {
+        metadata: {
+          p: "",
+          interpreter: {},
+          papermill: {}
+        }
+      };
+      const expected: any = {
+        metadata: {
+          p: ""
+        }
+      }
+      notebookProcessor.deleteProps(data);
+      expect(data).toEqual(expected);
+    });
+  });
   describe("_updateNotebookData :: ", () => {
     it("handles update error", done => {
       const data = {};

@@ -113,11 +113,14 @@ export function convertNotebookToTemplate(
 export function deleteProps(
   data:any
 ): void {
-  const props: string[] = ["metadata.interpreter", "metadata.papermill"];
-  common.deleteProps(data, props);
-  (data.cells || []).forEach((cell: any) => {
-    common.deleteProps(cell, props);
-  });
+  /* istanbul ignore else */
+  if (data) {
+    const props: string[] = ["metadata.interpreter", "metadata.papermill"];
+    common.deleteProps(data, props);
+    (data.cells || []).forEach((cell: any) => {
+      common.deleteProps(cell, props);
+    });
+  }
 }
 
 /**
