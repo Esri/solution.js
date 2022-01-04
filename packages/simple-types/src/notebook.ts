@@ -74,6 +74,7 @@ export function convertNotebookToTemplate(
 ): common.IItemTemplate {
   // The templates data to process
   const data: any = itemTemplate.data;
+  deleteProps(data);
   let dataString: string = JSON.stringify(data);
 
   const idTest: RegExp = /[0-9A-F]{32}/gim;
@@ -99,6 +100,24 @@ export function convertNotebookToTemplate(
   }
 
   return itemTemplate;
+}
+
+/**
+ * Remove interpreter and papermill props
+ * 
+ * This function will update the data passed in by removing key props
+ *
+ * @param data The notebooks data object
+ *
+ */
+export function deleteProps(
+  data:any
+): void {
+  const props: string[] = ["metadata.interpreter", "metadata.papermill"];
+  common.deleteProps(data, props);
+  (data.cells || []).forEach((cell: any) => {
+    common.deleteProps(cell, props);
+  });
 }
 
 /**
