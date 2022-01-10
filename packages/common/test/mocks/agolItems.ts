@@ -1184,6 +1184,7 @@ export function getAGOLGroup(id?: string, owner?: string): any {
     description: "Description of an AGOL group",
     snippet: "Snippet of an AGOL group",
     tags: ["JavaScript"],
+    typeKeywords: [],
     phone: null,
     sortField: "title",
     sortOrder: "asc",
