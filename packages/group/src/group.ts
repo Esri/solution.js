@@ -113,6 +113,7 @@ export function createItemFromTemplate(
       access: "private",
       owner: newItemTemplate.item.owner,
       tags: newItemTemplate.item.tags,
+      typeKeywords: newItemTemplate.item.typeKeywords,
       description: newItemTemplate.item.description,
       thumbnail: newItemTemplate.item.thumbnail,
       snippet: newItemTemplate.item.snippet
