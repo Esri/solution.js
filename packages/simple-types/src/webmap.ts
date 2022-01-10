@@ -40,10 +40,10 @@ export function convertItemToTemplate(
 ): Promise<common.IItemTemplate> {
   return new Promise<common.IItemTemplate>((resolve, reject) => {
     // Templatize the app URL
-    itemTemplate.item.url =
+    itemTemplate.item.url = itemTemplate.item.url ?
       common.checkUrlPathTermination(common.placeholder(common.SERVER_NAME)) +
       WEBMAP_APP_URL_PART +
-      itemTemplate.item.id; // templatized id
+      itemTemplate.item.id : itemTemplate.item.url; // templatized id
 
     // Extract dependencies
     _extractDependencies(itemTemplate, srcAuthentication).then(
