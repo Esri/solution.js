@@ -16,6 +16,7 @@
 
 import {
   deploySolutionFromTemplate,
+  _addSourceId,
   _applySourceToDeployOptions,
   _checkedReplaceAll,
   _getPortalBaseUrl,
@@ -399,6 +400,15 @@ describe("Module `deploySolutionFromTemplate`", () => {
           done.fail();
         }
       );
+    });
+  });
+
+  describe("_addSourceId", () => {
+    it("will add typeKeywords for groups", () => {
+      const grpTemplate = mockTemplates.getItemTemplate("Group");
+      delete(grpTemplate.item.typeKeywords);
+      const actual = _addSourceId([grpTemplate]);
+      expect(actual[0].item.typeKeywords).toContain("source-grp1234567890");
     });
   });
 

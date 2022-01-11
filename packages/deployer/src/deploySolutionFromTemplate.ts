@@ -103,23 +103,7 @@ export function deploySolutionFromTemplate(
         }
 
         // update template items with source-itemId type keyword
-        solutionTemplateData.templates = solutionTemplateData.templates.map(
-          (template: any) => {
-            const sourceId: string = "source-" + template.itemId;
-            /* istanbul ignore else */
-            if (template.item) {
-              /* istanbul ignore else */
-              if (template.item!.typeKeywords) {
-                template.item!.typeKeywords!.push(sourceId);
-              } else if (common.getProp(template, "item.type") === "Group") {
-                // older group templates will not have typeKeywords array defined
-                // we will now add so they can support find existing workflows
-                template.item.typeKeywords = [sourceId];
-              }
-            }
-            return template;
-          }
-        );
+        solutionTemplateData.templates = _addSourceId(solutionTemplateData.templates);
 
         templateDictionary.isPortal = portalResponse.isPortal;
         templateDictionary.organization = Object.assign(
@@ -349,6 +333,33 @@ export function deploySolutionFromTemplate(
       })
       .then(() => resolve(solutionTemplateBase.id), reject);
   });
+}
+
+/**
+ * Add source-id to items/groups typeKeywords
+ *
+ * @param template the array of solution data templates
+ * @internal
+ */
+export function _addSourceId(
+  templates: common.IItemTemplate[]
+): common.IItemTemplate[] {
+  return templates.map(
+    (template: any) => {
+      const sourceId: string = "source-" + template.itemId;
+      /* istanbul ignore else */
+      if (template.item) {
+        if (template.item!.typeKeywords) {
+          template.item!.typeKeywords!.push(sourceId);
+        } else /* istanbul ignore else */ if (common.getProp(template, "item.type") === "Group") {
+          // older group templates will not have typeKeywords array defined
+          // we will now add so they can support find existing workflows
+          template.item.typeKeywords = [sourceId];
+        }
+      }
+      return template;
+    }
+  );
 }
 
 /**
