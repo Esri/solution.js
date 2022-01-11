@@ -111,6 +111,10 @@ export function deploySolutionFromTemplate(
               /* istanbul ignore else */
               if (template.item!.typeKeywords) {
                 template.item!.typeKeywords!.push(sourceId);
+              } else if (common.getProp(template, "item.type") === "Group") {
+                // older group templates will not have typeKeywords array defined
+                // we will now add so they can support find existing workflows
+                template.item.typeKeywords = [sourceId];
               }
             }
             return template;
