@@ -150,7 +150,7 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
     it("should handle item resource", done => {
       const solutionItemId = "sln1234567890";
       const itemTemplate: common.IItemTemplate = templates.getItemTemplateSkeleton();
-      itemTemplate.item = mockItems.getAGOLItem("Web Map", null);
+      itemTemplate.item = mockItems.getAGOLItem("Web Map", "https://myorg.arcgis.com/home/webmap/viewer.html?webmap=map1234567890");
       itemTemplate.item.item = itemTemplate.itemId = itemTemplate.item.id;
       itemTemplate.item.thumbnail = "thumbnail/banner.png";
 

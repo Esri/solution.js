@@ -658,6 +658,65 @@ describe("Module `deploySolutionItems`", () => {
         }, done.fail);
     });
 
+    it("reuse items can find groups by typeKeyword", done => {
+      const id: string = "aa4a6047326243b290f625e80ebe6531";
+      const foundItemID: string = "ba4a6047326243b290f625e80ebe6531";
+      const type: string = "Group";
+
+      const itemTemplate: common.IItemTemplate = templates.getGroupTemplatePart();
+      itemTemplate.item.thumbnail = null;
+      itemTemplate.itemId = id;
+      itemTemplate.item.id = "{{" + id + ".itemId}}";
+
+      const group: any = mockItems.getAGOLGroup();
+      group.id = foundItemID;
+      group.typeKeywords.push("source-" + id);
+      const user: any = mockItems.getAGOLUser("casey");
+      user.groups = [group];
+      const templateDictionary: any = {
+        user: user
+      };
+
+      const expected: common.ICreateItemFromTemplateResponse[] = [
+        {
+          item: null as common.IItemTemplate,
+          id: foundItemID,
+          type: type,
+          postProcess: false
+        }
+      ];
+      const expectedTemplateDictionary: any = {
+        user: user
+      };
+      expectedTemplateDictionary[id] = {
+        itemId: group.id,
+        name: group.name,
+        title: group.title,
+        url: group.url
+      };
+
+      deploySolution
+        .deploySolutionItems(
+          utils.PORTAL_URL,
+          "sln1234567890",
+          [itemTemplate],
+          MOCK_USER_SESSION,
+          templateDictionary,
+          "",
+          MOCK_USER_SESSION,
+          {
+            enableItemReuse: true,
+            progressCallback: utils.SOLUTION_PROGRESS_CALLBACK
+          }
+        )
+        .then(actual => {
+          delete templateDictionary[id].def;
+          expect(templateDictionary).toEqual(expectedTemplateDictionary);
+          expect(actual).toEqual(expected);
+          done();
+        }, done.fail);
+    });
+
     it("can handle error on find items by typeKeyword", done => {
       const id: string = "aa4a6047326243b290f625e80ebe6531";
       const foundItemID: string = "ba4a6047326243b290f625e80ebe6531";

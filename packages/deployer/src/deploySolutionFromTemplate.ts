@@ -112,13 +112,6 @@ export function deploySolutionFromTemplate(
               if (template.item!.typeKeywords) {
                 template.item!.typeKeywords!.push(sourceId);
               }
-              /* istanbul ignore else */
-              if (
-                template.item!.tags &&
-                common.getProp(template, "item.type") === "Group"
-              ) {
-                template.item!.tags!.push(sourceId);
-              }
             }
             return template;
           }

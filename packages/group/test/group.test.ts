@@ -68,7 +68,8 @@ describe("Module `group`: manages the creation and deployment of groups", () => 
           snippet: "Snippet of an AGOL group",
           title: "An AGOL group",
           tags: [],
-          thumbnail: "ROWPermitManager.png"
+          thumbnail: "ROWPermitManager.png",
+          typeKeywords: []
         },
         data: {},
         resources: [],
@@ -197,7 +198,8 @@ describe("Module `group`: manages the creation and deployment of groups", () => 
           snippet: "Snippet of an AGOL group",
           title: "An AGOL group",
           tags: [],
-          thumbnail: "ROWPermitManager.png"
+          thumbnail: "ROWPermitManager.png",
+          typeKeywords: []
         },
         data: {},
         resources: [],
