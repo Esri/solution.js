@@ -346,16 +346,11 @@ export function _addSourceId(
 ): common.IItemTemplate[] {
   return templates.map(
     (template: any) => {
-      const sourceId: string = "source-" + template.itemId;
       /* istanbul ignore else */
       if (template.item) {
-        if (template.item!.typeKeywords) {
-          template.item!.typeKeywords!.push(sourceId);
-        } else /* istanbul ignore else */ if (common.getProp(template, "item.type") === "Group") {
-          // older group templates will not have typeKeywords array defined
-          // we will now add so they can support find existing workflows
-          template.item.typeKeywords = [sourceId];
-        }
+        const typeKeywords = template.item!.typeKeywords || [];
+        typeKeywords.push("source-" + template.itemId);
+        template.item.typeKeywords = typeKeywords;
       }
       return template;
     }
