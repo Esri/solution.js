@@ -70,8 +70,7 @@ describe("Module `webmap`: manages the creation and deployment of web map item t
         item: {
           id: "{{itm1234567890.itemId}}",
           title: "Voting Centers",
-          url:
-            "{{portalBaseUrl}}/home/webmap/viewer.html?webmap={{itm1234567890.itemId}}"
+          url: undefined
         } as any,
         data: null as any,
         resources: [] as any[],
@@ -112,8 +111,7 @@ describe("Module `webmap`: manages the creation and deployment of web map item t
         item: {
           id: "{{itm1234567890.itemId}}",
           title: "Voting Centers",
-          url:
-            "{{portalBaseUrl}}/home/webmap/viewer.html?webmap={{itm1234567890.itemId}}"
+          url: undefined
         } as any,
         data: {} as any,
         resources: [] as any[],
@@ -138,7 +136,8 @@ describe("Module `webmap`: manages the creation and deployment of web map item t
         key: "abcdefgh",
         item: {
           id: "{{A14a9ef8efa7448fa8ddf7b13cef0240.itemId}}",
-          title: "Voting Centers"
+          title: "Voting Centers",
+          url: null
         } as any,
         data: {
           operationalLayers: [
@@ -176,8 +175,7 @@ describe("Module `webmap`: manages the creation and deployment of web map item t
         item: {
           id: "{{A14a9ef8efa7448fa8ddf7b13cef0240.itemId}}",
           title: "Voting Centers",
-          url:
-            "{{portalBaseUrl}}/home/webmap/viewer.html?webmap={{A14a9ef8efa7448fa8ddf7b13cef0240.itemId}}"
+          url: null
         } as any,
         data: {
           operationalLayers: [
@@ -240,7 +238,8 @@ describe("Module `webmap`: manages the creation and deployment of web map item t
         key: "abcdefgh",
         item: {
           id: "{{A14a9ef8efa7448fa8ddf7b13cef0240.itemId}}",
-          title: "Voting Centers"
+          title: "Voting Centers",
+          url: "https://myorg.arcgis.com/home/webmap/viewer.html?webmap=A14a9ef8efa7448fa8ddf7b13cef0240"
         } as any,
         data: {
           operationalLayers: [],
@@ -334,7 +333,8 @@ describe("Module `webmap`: manages the creation and deployment of web map item t
         key: "abcdefgh",
         item: {
           id: "{{A14a9ef8efa7448fa8ddf7b13cef0240.itemId}}",
-          title: "Voting Centers"
+          title: "Voting Centers",
+          url: null
         } as any,
         data: {
           operationalLayers: [
@@ -387,8 +387,7 @@ describe("Module `webmap`: manages the creation and deployment of web map item t
         item: {
           id: "{{A14a9ef8efa7448fa8ddf7b13cef0240.itemId}}",
           title: "Voting Centers",
-          url:
-            "{{portalBaseUrl}}/home/webmap/viewer.html?webmap={{A14a9ef8efa7448fa8ddf7b13cef0240.itemId}}"
+          url: null
         } as any,
         data: {
           operationalLayers: [
@@ -535,7 +534,8 @@ describe("Module `webmap`: manages the creation and deployment of web map item t
         key: "abcdefgh",
         item: {
           id: "{{A14a9ef8efa7448fa8ddf7b13cef0240.itemId}}",
-          title: "Voting Centers"
+          title: "Voting Centers",
+          url: "https://myorg.arcgis.com/home/webmap/viewer.html?webmap=A14a9ef8efa7448fa8ddf7b13cef0240"
         } as any,
         data: {
           operationalLayers: [
@@ -641,7 +641,8 @@ describe("Module `webmap`: manages the creation and deployment of web map item t
         key: "abcdefgh",
         item: {
           id: "{{A14a9ef8efa7448fa8ddf7b13cef0240.itemId}}",
-          title: "Voting Centers"
+          title: "Voting Centers",
+          url: null
         } as any,
         data: {
           operationalLayers: [
@@ -680,8 +681,7 @@ describe("Module `webmap`: manages the creation and deployment of web map item t
         item: {
           id: "{{A14a9ef8efa7448fa8ddf7b13cef0240.itemId}}",
           title: "Voting Centers",
-          url:
-            "{{portalBaseUrl}}/home/webmap/viewer.html?webmap={{A14a9ef8efa7448fa8ddf7b13cef0240.itemId}}"
+          url: null
         } as any,
         data: {
           operationalLayers: [
@@ -745,7 +745,8 @@ describe("Module `webmap`: manages the creation and deployment of web map item t
         key: "abcdefgh",
         item: {
           id: "{{A14a9ef8efa7448fa8ddf7b13cef0240.itemId}}",
-          title: "Voting Centers"
+          title: "Voting Centers",
+          url: "https://myorg.arcgis.com/home/webmap/viewer.html?webmap=map1234567890"
         } as any,
         data: {
           operationalLayers: [
