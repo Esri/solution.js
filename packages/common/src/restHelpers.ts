@@ -441,7 +441,7 @@ export function convertExtent(
   geometryServiceUrl: string,
   authentication: UserSession
 ): Promise<any> {
-  const _requestOptions: any = Object.assign({}, authentication);
+  const _requestOptions: any = { authentication };
   return new Promise<any>((resolve, reject) => {
     // tslint:disable-next-line:no-unnecessary-type-assertion
     if (extent.spatialReference.wkid === outSR?.wkid || !outSR) {
