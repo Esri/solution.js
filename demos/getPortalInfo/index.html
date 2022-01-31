@@ -95,11 +95,7 @@
               html += toPre(JSON.stringify(selfInfo, null, 2));
               html += "</pre><br />";
 
-              if (selfInfo.id) {
-                return common.getJson(portal + "/portals/self/" + selfInfo.id + "/settings");
-              } else {
-                return Promise.resolve(null);
-              }
+              return common.getJson(portal + "/portals/self/settings");
             }
           )
           .then(
