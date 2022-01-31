@@ -43,6 +43,9 @@ afterEach(() => {
   fetchMock.restore();
 });
 
+const geometryServiceUrl: string =
+  "https://utility.arcgisonline.com/arcgis/rest/services/Geometry/GeometryServer";
+
 const projectedGeometries: any[] = [
   {
     x: -131,
@@ -1658,13 +1661,6 @@ describe("Module `deployer`", () => {
 
       const consoleSpy = spyOn(console, "log");
       fetchMock
-        .get(
-          testUtils.PORTAL_SUBSET.restUrl +
-            "/content/items/" +
-            itemInfo.item.id +
-            "?f=json&token=fake-token",
-          itemInfo.item
-        )
         .post(
           testUtils.PORTAL_SUBSET.restUrl +
             "/content/items/" +
@@ -1780,6 +1776,10 @@ describe("Module `deployer`", () => {
             }
           })
         )
+        .get(
+          "https://myorg.maps.arcgis.com/sharing/rest/content/items/sln1234567890?f=json&token=fake-token",
+          mockItems.get400Failure()
+        )
         .post(
           testUtils.PORTAL_SUBSET.restUrl +
             "/content/users/casey/items/map1234567890/delete",
@@ -1832,6 +1832,14 @@ describe("Module `deployer`", () => {
       const portalsSelfResponse: any = testUtils.getPortalsSelfResponse();
       const geometryServer: string =
         portalsSelfResponse.helperServices.geometry.url;
+
+      // Test currently reports that the following URL is not mocked
+      expect(
+        geometryServer + "/findTransformations"
+      ).toEqual(
+        "https://utility.arcgisonline.com/arcgis/rest/services/Geometry/GeometryServer/findTransformations",
+        "findTransformations"
+      );
 
       fetchMock
         .get(
