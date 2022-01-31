@@ -565,6 +565,32 @@ export function getProps(obj: any, props: string[]): any {
 }
 
 /**
+ * Get a property out of a deeply nested object
+ * Does not handle anything but nested object graph
+ *
+ * @param obj Object to retrieve value from
+ * @param path Path into an object, e.g., "data.values.webmap", where "data" is a top-level property
+ *             in obj
+ * @param defaultV Optional value to use if any part of path--including final value--is undefined
+ * @return Value at end of path
+ */
+export function getPropWithDefault(
+  obj: { [index: string]: any },
+  path: string,
+  defaultV?: any
+): any {
+  const value = path.split(".").reduce(function (prev, curr) {
+    /* istanbul ignore next no need to test undefined scenario */
+    return prev ? prev[curr] : undefined;
+  }, obj);
+  if (typeof value === "undefined") {
+    return defaultV;
+  } else {
+    return value;
+  }
+}
+
+/**
  * Updates a list of the items dependencies if more are found in the
  * provided value.
  *

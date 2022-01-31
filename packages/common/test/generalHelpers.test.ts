@@ -1022,6 +1022,41 @@ describe("Module `generalHelpers`: common utility functions shared across packag
     });
   });
 
+  describe("getPropWithDefault", () => {
+    it("should return a property given a path", () => {
+      expect(generalHelpers.getPropWithDefault({ color: "red" }, "color")).toEqual(
+        "red",
+        "should return the prop"
+      );
+    });
+
+    it("should return a deep property given a path", () => {
+      expect(
+        generalHelpers.getPropWithDefault(
+          { color: { r: "ff", g: "00", b: "ff" } },
+          "color.r"
+        )
+      ).toEqual("ff", "should return the prop");
+    });
+
+    it("should return a default property given a path", () => {
+      expect(generalHelpers.getPropWithDefault({ size: "15" }, "color", "blue")).toEqual(
+        "blue",
+        "should return the prop default"
+      );
+    });
+
+    it("should return a deep default property given a path", () => {
+      expect(
+        generalHelpers.getPropWithDefault(
+          { size: { width: "15", height: "15" } },
+          "color.r",
+          "77"
+        )
+      ).toEqual("77", "should return the prop default");
+    });
+  });
+
   describe("getTemplateById", () => {
     it("return template that matches id", () => {
       const item0 = mockItems.getAGOLItemWithId("Feature Service", 0);
