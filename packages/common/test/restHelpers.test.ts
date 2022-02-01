@@ -65,6 +65,15 @@ beforeEach(() => {
   };
 });
 
+const SERVER_INFO = {
+  currentVersion: 10.1,
+  fullVersion: "10.1",
+  soapUrl: "http://server/arcgis/services",
+  secureSoapUrl: "https://server/arcgis/services",
+  owningSystemUrl: "https://myorg.maps.arcgis.com",
+  authInfo: {}
+};
+
 afterEach(() => {
   fetchMock.restore();
 });
@@ -543,6 +552,11 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
   describe("createFeatureService", () => {
     it("can handle failure to get service options due to failure to convert extent", done => {
       fetchMock
+        .get(
+          "https://myorg.maps.arcgis.com/sharing/rest/portals/self?f=json&token=fake-token",
+          utils.getPortalsSelfResponse()
+        )
+        .post("https://utility.arcgisonline.com/arcgis/rest/info", SERVER_INFO)
         .post(
           utils.PORTAL_SUBSET.restUrl +
             "/content/users/casey/aabb123456/createService",
@@ -1734,6 +1748,11 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
 
     it("can handle unmatched wkid", done => {
       fetchMock
+        .get(
+          "https://myorg.maps.arcgis.com/sharing/rest/portals/self?f=json&token=fake-token",
+          utils.getPortalsSelfResponse()
+        )
+        .post("https://utility.arcgisonline.com/arcgis/rest/info", utils.getPortalsSelfResponse())
         .post(geometryServiceUrl + "/findTransformations", {
           transformations: [
             {
@@ -1757,6 +1776,11 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
 
     it("can handle unmatched wkid and geoTransforms", done => {
       fetchMock
+        .get(
+          "https://myorg.maps.arcgis.com/sharing/rest/portals/self?f=json&token=fake-token",
+          utils.getPortalsSelfResponse()
+        )
+        .post("https://utility.arcgisonline.com/arcgis/rest/info", utils.getPortalsSelfResponse())
         .post(geometryServiceUrl + "/findTransformations", {
           transformations: [
             {
@@ -1780,6 +1804,11 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
 
     it("can handle unmatched wkid and no transformations", done => {
       fetchMock
+        .get(
+          "https://myorg.maps.arcgis.com/sharing/rest/portals/self?f=json&token=fake-token",
+          utils.getPortalsSelfResponse()
+        )
+        .post("https://utility.arcgisonline.com/arcgis/rest/info", utils.getPortalsSelfResponse())
         .post(geometryServiceUrl + "/findTransformations", {})
         .post(geometryServiceUrl + "/project", {
           geometries: projectedGeometries
@@ -1797,6 +1826,11 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
 
     it("can handle unmatched wkid and unexpected transformations", done => {
       fetchMock
+        .get(
+          "https://myorg.maps.arcgis.com/sharing/rest/portals/self?f=json&token=fake-token",
+          utils.getPortalsSelfResponse()
+        )
+        .post("https://utility.arcgisonline.com/arcgis/rest/info", utils.getPortalsSelfResponse())
         .post(geometryServiceUrl + "/findTransformations", {
           transformations: [{}]
         })
@@ -1816,6 +1850,11 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
 
     it("can handle unmatched wkid and no geom in response", done => {
       fetchMock
+        .get(
+          "https://myorg.maps.arcgis.com/sharing/rest/portals/self?f=json&token=fake-token",
+          utils.getPortalsSelfResponse()
+        )
+        .post("https://utility.arcgisonline.com/arcgis/rest/info", utils.getPortalsSelfResponse())
         .post(geometryServiceUrl + "/findTransformations", {
           transformations: [
             {
@@ -1841,6 +1880,11 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
 
     it("can handle unmatched wkid and failure on project", done => {
       fetchMock
+        .get(
+          "https://myorg.maps.arcgis.com/sharing/rest/portals/self?f=json&token=fake-token",
+          utils.getPortalsSelfResponse()
+        )
+        .post("https://utility.arcgisonline.com/arcgis/rest/info", utils.getPortalsSelfResponse())
         .post(geometryServiceUrl + "/findTransformations", {
           transformations: [
             {
@@ -1861,6 +1905,11 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
 
     it("can handle unmatched wkid and failure on findTransformations", done => {
       fetchMock
+        .get(
+          "https://myorg.maps.arcgis.com/sharing/rest/portals/self?f=json&token=fake-token",
+          utils.getPortalsSelfResponse()
+        )
+        .post("https://utility.arcgisonline.com/arcgis/rest/info", utils.getPortalsSelfResponse())
         .post(
           geometryServiceUrl + "/findTransformations",
           mockItems.get400Failure()
@@ -1901,6 +1950,11 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
       ];
 
       fetchMock
+        .get(
+          "https://myorg.maps.arcgis.com/sharing/rest/portals/self?f=json&token=fake-token",
+          utils.getPortalsSelfResponse()
+        )
+        .post("https://utility.arcgisonline.com/arcgis/rest/info", SERVER_INFO)
         .post(geometryServiceUrl + "/findTransformations", {})
         .postOnce(
           geometryServiceUrl + "/project",
@@ -1954,13 +2008,20 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
         }
       ];
 
-      fetchMock.post(geometryServiceUrl + "/findTransformations", {}).postOnce(
-        geometryServiceUrl + "/project",
-        {
-          geometries: NaNGeoms
-        },
-        { overwriteRoutes: false }
-      );
+      fetchMock
+        .get(
+          "https://myorg.maps.arcgis.com/sharing/rest/portals/self?f=json&token=fake-token",
+          utils.getPortalsSelfResponse()
+        )
+        .post("https://utility.arcgisonline.com/arcgis/rest/info", SERVER_INFO)
+        .post(geometryServiceUrl + "/findTransformations", {})
+        .postOnce(
+          geometryServiceUrl + "/project",
+          {
+            geometries: NaNGeoms
+          },
+          { overwriteRoutes: false }
+        );
 
       restHelpers
         .convertExtentWithFallback(
@@ -1999,6 +2060,11 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
       ];
 
       fetchMock
+        .get(
+          "https://myorg.maps.arcgis.com/sharing/rest/portals/self?f=json&token=fake-token",
+          utils.getPortalsSelfResponse()
+        )
+        .post("https://utility.arcgisonline.com/arcgis/rest/info", SERVER_INFO)
         .post(geometryServiceUrl + "/findTransformations", {})
         .postOnce(
           geometryServiceUrl + "/project",
@@ -4361,10 +4427,17 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
       };
 
       fetchMock
-        .post(
-          geometryServiceUrl + "/findTransformations",
-          mockItems.get400Failure()
+        .post("https://www.arcgis.com/sharing/rest/generateToken", mockItems.get400Failure())
+        .get(
+          "https://www.arcgis.com/sharing/rest/portals/self?f=json",
+          utils.getPortalsSelfResponse()
         )
+        .get(
+          "https://myorg.maps.arcgis.com/sharing/rest/portals/self?f=json&token=fake-token",
+          utils.getPortalsSelfResponse()
+        )
+        .post("https://utility.arcgisonline.com/arcgis/rest/info", utils.getPortalsSelfResponse())
+        .post(geometryServiceUrl + "/findTransformations", mockItems.get400Failure())
         .post(
           "http://utility/geomServer/findTransformations/rest/info",
           '{"error":{"code":403,"message":"Access not allowed request","details":[]}}'

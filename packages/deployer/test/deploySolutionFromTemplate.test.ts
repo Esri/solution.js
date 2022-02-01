@@ -188,6 +188,7 @@ describe("Module `deploySolutionFromTemplate`", () => {
         .resolves();
 
       fetchMock
+        .post("https://utility.arcgisonline.com/arcgis/rest/info", testUtils.getPortalsSelfResponse())
         .get(
           testUtils.PORTAL_SUBSET.restUrl +
             "/portals/self?f=json&token=fake-token",
@@ -310,6 +311,7 @@ describe("Module `deploySolutionFromTemplate`", () => {
         .resolves();
 
       fetchMock
+        .post("https://utility.arcgisonline.com/arcgis/rest/info", testUtils.getPortalsSelfResponse())
         .get(
           "https://myorg.maps.arcgis.com/sharing/rest/portals/self?f=json&token=fake-token",
           portalsSelfResponse

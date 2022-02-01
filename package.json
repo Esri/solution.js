@@ -104,7 +104,7 @@
     "clean": "npm run clean:src && npm run clean:dist",
     "clean:src": "rm -rf packages/*/{src,test}/*.{d.ts,js,js.map} && rm -rf packages/*/{src,test}/**/*.{d.ts,js,js.map} &&  rm -rf demos/dist/*.{d.ts,js,js.map}",
     "clean:dist": "rm -rf packages/*/dist/ && rm -rf packages/*/.rpt2_cache",
-    "deepclean": "rm -rf ./node_modules && rm -rf packages/*/node_modules && npm run clean",
+    "deepclean": "rm -rf ./node_modules && rm -rf ./demos/node_modules && rm -rf packages/*/node_modules && npm run clean",
     "lint": "eslint . --ext .ts",
     "lint:fix": "eslint . --ext .ts --fix",
     "lint:staged": "npx lint-staged",
