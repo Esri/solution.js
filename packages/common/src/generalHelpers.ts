@@ -24,7 +24,8 @@ import { createId } from "@esri/hub-common";
 import {
   ICreateItemFromTemplateResponse,
   IDatasourceInfo,
-  IItemTemplate
+  IItemTemplate,
+  IStringValuePair
 } from "./interfaces";
 import { Sanitizer, sanitizeJSON } from "./libConnectors";
 import { new_File } from "./polyfills";
@@ -575,7 +576,7 @@ export function getProps(obj: any, props: string[]): any {
  * @return Value at end of path
  */
 export function getPropWithDefault(
-  obj: { [index: string]: any },
+  obj: IStringValuePair,
   path: string,
   defaultV?: any
 ): any {
