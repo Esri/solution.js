@@ -119,6 +119,16 @@ export function createItemFromTemplate(
       snippet: newItemTemplate.item.snippet
     };
 
+    const props: string[] = [
+      "isInvitationOnly", "autoJoin", "membershipAccess", "isViewOnly", "sortField", "sortOrder", "isOpenData", "displaySettings"
+    ];
+    props.forEach(p => {
+      /* istanbul ignore else */
+      if (newItemTemplate.item.hasOwnProperty(p)) {
+        newGroup[p] = newItemTemplate.item[p];
+      }
+    })
+
     // Create a group, appending a sequential suffix to its name if the group exists, e.g.,
     //  * Manage Right of Way Activities
     //  * Manage Right of Way Activities 1
