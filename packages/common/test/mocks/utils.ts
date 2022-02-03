@@ -1198,6 +1198,25 @@ export function getGroupResponse(query: string, hasResult: boolean) {
   };
 }
 
+
+export function getGroupSearchResponse(
+  query: string,
+  start: number,
+  num: number,
+  nextStart: number,
+  total: number,
+  numOfResults: number
+) {
+  return {
+    query,
+    start,
+    num,
+    nextStart,
+    total,
+    results: Array(numOfResults).fill({ id: "1", title: "a" })
+  };
+}
+
 export function getCreateServiceResponse(
   url: string = "https://services123.arcgis.com/org1234567890/arcgis/rest/services/ROWPermits_publiccomment/FeatureServer",
   id: string = "svc1234567890",

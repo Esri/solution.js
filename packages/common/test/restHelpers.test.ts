@@ -31,6 +31,8 @@ import * as restHelpersGet from "../src/restHelpersGet";
 import * as templates from "../test/mocks/templates";
 import * as utils from "./mocks/utils";
 import * as sinon from "sinon";
+import { IPagingParams } from "@esri/arcgis-rest-portal";
+
 
 // ------------------------------------------------------------------------------------------------------------------ //
 
@@ -3057,6 +3059,120 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
           done();
         },
         () => done.fail()
+      );
+    });
+  });
+
+  describe("searchAllGroups", () => {
+    it("can fetch more than one tranche", done => {
+      const query: string = "Fred";
+      const pagingParams: IPagingParams = { start: 1, num: 5 };
+
+      fetchMock
+        .get(
+          utils.PORTAL_SUBSET.restUrl +
+            "/community/groups?f=json&sortField=title&sortOrder=asc&start=1&num=5&q=Fred&token=fake-token",
+          utils.getGroupSearchResponse(query, 1, 5, 6, 9, 5)
+        )
+        .get(
+          utils.PORTAL_SUBSET.restUrl +
+            "/community/groups?f=json&sortField=title&sortOrder=asc&start=6&num=5&q=Fred&token=fake-token",
+          utils.getGroupSearchResponse(query, 6, 5, -1, 9, 4)
+        );
+
+      restHelpers.searchAllGroups(query, MOCK_USER_SESSION, null, pagingParams).then(
+        response => {
+          expect(response.length).toEqual(9);
+          done();
+        },
+        () => done.fail()
+      );
+    });
+  });
+
+  describe("searchGroupAllContents", () => {
+    it("can handle no results from searching group contents", done => {
+      const groupId: string = "grp1234567890";
+      const query: string = "Fred";
+
+      fetchMock.get(
+        utils.PORTAL_SUBSET.restUrl +
+          `/content/groups/${groupId}/search?f=json&num=100&q=${query}&token=fake-token`,
+        utils.getGroupSearchResponse(query, 1, 100, -1, 0, 0)
+      );
+
+      restHelpers.searchGroupAllContents(groupId, query, MOCK_USER_SESSION).then(
+        response => {
+          expect(response.results.length).toEqual(0);
+          done();
+        },
+        () => done.fail()
+      );
+    });
+
+    it("can fetch a single tranche", done => {
+      const groupId: string = "grp1234567890";
+      const query: string = "Fred";
+      const additionalSearchOptions: interfaces.IAdditionalSearchOptions = { num: 5 };
+
+      fetchMock.get(
+        utils.PORTAL_SUBSET.restUrl +
+          `/content/groups/${groupId}/search?f=json&num=5&q=${query}&token=fake-token`,
+        utils.getGroupSearchResponse(query, 1, 5, -1, 4, 4)
+      );
+
+      restHelpers.searchGroupAllContents(groupId, query, MOCK_USER_SESSION, additionalSearchOptions).then(
+        response => {
+          expect(response.results.length).toEqual(4);
+          done();
+        },
+        () => done.fail()
+      );
+    });
+
+    it("can fetch more than one tranche", done => {
+      const groupId: string = "grp1234567890";
+      const query: string = "Fred";
+      const additionalSearchOptions: interfaces.IAdditionalSearchOptions = { num: 5 };
+
+      fetchMock
+        .get(
+          utils.PORTAL_SUBSET.restUrl +
+            `/content/groups/${groupId}/search?f=json&num=5&q=${query}&token=fake-token`,
+          utils.getGroupSearchResponse(query, 1, 5, 6, 9, 5)
+        )
+        .get(
+          utils.PORTAL_SUBSET.restUrl +
+            `/content/groups/${groupId}/search?f=json&num=5&start=6&q=${query}&token=fake-token`,
+          utils.getGroupSearchResponse(query, 6, 5, -1, 9, 4)
+        );
+
+      restHelpers.searchGroupAllContents(groupId, query, MOCK_USER_SESSION, additionalSearchOptions).then(
+        response => {
+          expect(response.results.length).toEqual(9);
+          done();
+        },
+        () => done.fail()
+      );
+    });
+
+    it("can handle a failure", done => {
+      const groupId: string = "grp1234567890";
+      const query: string = "Fred";
+      const additionalSearchOptions: interfaces.IAdditionalSearchOptions = { num: 5 };
+
+      fetchMock.get(
+        utils.PORTAL_SUBSET.restUrl +
+          `/content/groups/${groupId}/search?f=json&num=5&q=${query}&token=fake-token`,
+        mockItems.get400Failure()
+      );
+
+      restHelpers.searchGroupAllContents(groupId, query, MOCK_USER_SESSION, additionalSearchOptions).then(
+        () => done.fail(),
+        response => {
+          expect(response.message).toEqual("CONT_0001: Item does not exist or is inaccessible.");
+          done();
+        }
       );
     });
   });
