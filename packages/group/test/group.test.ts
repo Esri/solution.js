@@ -719,11 +719,8 @@ describe("Module `group`: manages the creation and deployment of groups", () => 
         success: true,
         group: { id: newItemID }
       })
-      .get(`${utils.PORTAL_SUBSET.restUrl}/community/groups?f=json&sortField=title&sortOrder=asc&start=0&num=24&q=(owner%3A${owner})%20orgid%3A${organization.id}&token=fake-token`,
-        { results: [], nextStart: 1 }
-      )
-      .get("https://myorg.maps.arcgis.com/sharing/rest/community/groups?f=json&sortField=title&sortOrder=asc&start=1&num=24&q=(owner%3ATrackingServiceOwner)%20orgid%3Aorgid&token=fake-token",
-        { results: [], nextStart: 0 }
+      .get(`${utils.PORTAL_SUBSET.restUrl}/community/groups?f=json&sortField=title&sortOrder=asc&start=1&num=24&q=(owner%3A${owner})%20orgid%3A${organization.id}&token=fake-token`,
+        { results: [], nextStart: -1 }
       )
       .post(
         "https://myorg.maps.arcgis.com/sharing/rest/community/groups/abc8cab401af4828a25cc6eaeb59fb69/reassign",
@@ -788,7 +785,7 @@ describe("Module `group`: manages the creation and deployment of groups", () => 
         success: true,
         group: { id: newItemID }
       })
-      .get(`${utils.PORTAL_SUBSET.restUrl}/community/groups?f=json&sortField=title&sortOrder=asc&start=0&num=24&q=(owner%3A${owner})%20orgid%3A${organization.id}&token=fake-token`,
+      .get(`${utils.PORTAL_SUBSET.restUrl}/community/groups?f=json&sortField=title&sortOrder=asc&start=1&num=24&q=(owner%3A${owner})%20orgid%3A${organization.id}&token=fake-token`,
         mockItems.get400Failure()
       )
       .post(
@@ -847,7 +844,7 @@ describe("Module `group`: manages the creation and deployment of groups", () => 
         success: true,
         group: { id: newItemID }
       })
-      .get(`${utils.PORTAL_SUBSET.restUrl}/community/groups?f=json&sortField=title&sortOrder=asc&start=0&num=24&q=(owner%3A${owner})%20orgid%3A${organization.id}&token=fake-token`,
+      .get(`${utils.PORTAL_SUBSET.restUrl}/community/groups?f=json&sortField=title&sortOrder=asc&start=1&num=24&q=(owner%3A${owner})%20orgid%3A${organization.id}&token=fake-token`,
         { results: [], nextStart: 0 }
       )
       .post(
@@ -903,7 +900,7 @@ describe("Module `group`: manages the creation and deployment of groups", () => 
         success: true,
         group: { id: newItemID }
       })
-      .get(`${utils.PORTAL_SUBSET.restUrl}/community/groups?f=json&sortField=title&sortOrder=asc&start=0&num=24&q=(owner%3A${owner})%20orgid%3A${organization.id}&token=fake-token`,
+      .get(`${utils.PORTAL_SUBSET.restUrl}/community/groups?f=json&sortField=title&sortOrder=asc&start=1&num=24&q=(owner%3A${owner})%20orgid%3A${organization.id}&token=fake-token`,
         { results: [], nextStart: 0 }
       )
       .post(
@@ -962,7 +959,7 @@ describe("Module `group`: manages the creation and deployment of groups", () => 
         success: true,
         group: { id: newItemID }
       })
-      .get(`${utils.PORTAL_SUBSET.restUrl}/community/groups?f=json&sortField=title&sortOrder=asc&start=0&num=24&q=(owner%3A${owner})%20orgid%3A${organization.id}&token=fake-token`,
+      .get(`${utils.PORTAL_SUBSET.restUrl}/community/groups?f=json&sortField=title&sortOrder=asc&start=1&num=24&q=(owner%3A${owner})%20orgid%3A${organization.id}&token=fake-token`,
         { results: [], nextStart: 0 }
       )
       .post(
@@ -1021,7 +1018,7 @@ describe("Module `group`: manages the creation and deployment of groups", () => 
         success: true,
         group: { id: newItemID }
       })
-      .get(`${utils.PORTAL_SUBSET.restUrl}/community/groups?f=json&sortField=title&sortOrder=asc&start=0&num=24&q=(owner%3A${owner})%20orgid%3A${organization.id}&token=fake-token`,
+      .get(`${utils.PORTAL_SUBSET.restUrl}/community/groups?f=json&sortField=title&sortOrder=asc&start=1&num=24&q=(owner%3A${owner})%20orgid%3A${organization.id}&token=fake-token`,
         { results: [], nextStart: 0 }
       )
       .post(
@@ -1081,7 +1078,7 @@ describe("Module `group`: manages the creation and deployment of groups", () => 
         success: true,
         group: { id: newItemID }
       })
-      .get(`${utils.PORTAL_SUBSET.restUrl}/community/groups?f=json&sortField=title&sortOrder=asc&start=0&num=24&q=(owner%3A${owner})%20orgid%3A${organization.id}&token=fake-token`,
+      .get(`${utils.PORTAL_SUBSET.restUrl}/community/groups?f=json&sortField=title&sortOrder=asc&start=1&num=24&q=(owner%3A${owner})%20orgid%3A${organization.id}&token=fake-token`,
         { results: [], nextStart: 0 }
       )
       .post(
@@ -1145,7 +1142,7 @@ describe("Module `group`: manages the creation and deployment of groups", () => 
         success: true,
         group: { id: newItemID }
       })
-      .get(`${utils.PORTAL_SUBSET.restUrl}/community/groups?f=json&sortField=title&sortOrder=asc&start=0&num=24&q=(owner%3A${owner})%20orgid%3A${organization.id}&token=fake-token`,
+      .get(`${utils.PORTAL_SUBSET.restUrl}/community/groups?f=json&sortField=title&sortOrder=asc&start=1&num=24&q=(owner%3A${owner})%20orgid%3A${organization.id}&token=fake-token`,
         { results: [], nextStart: 0 }
       )
       .post(
@@ -1357,7 +1354,7 @@ describe("Module `group`: manages the creation and deployment of groups", () => 
       const templateDictionary: any = {
         user: {
           groups: []
-        } 
+        }
       };
 
       fetchMock

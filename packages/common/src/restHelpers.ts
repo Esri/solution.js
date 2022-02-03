@@ -1471,7 +1471,7 @@ export function searchAllGroups(
   inPagingParams? : IPagingParams
 ): Promise<IGroup[]> {
   const pagingParams: IPagingParams = inPagingParams ? inPagingParams : {
-    start: 0,
+    start: 1,
     num: 24
   };
   const additionalSearchOptions = {

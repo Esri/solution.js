@@ -31,6 +31,8 @@ import * as restHelpersGet from "../src/restHelpersGet";
 import * as templates from "../test/mocks/templates";
 import * as utils from "./mocks/utils";
 import * as sinon from "sinon";
+import { IPagingParams } from "@esri/arcgis-rest-portal";
+
 
 // ------------------------------------------------------------------------------------------------------------------ //
 
@@ -3061,6 +3063,33 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
     });
   });
 
+  describe("searchAllGroups", () => {
+    it("can fetch more than one tranche", done => {
+      const query: string = "Fred";
+      const pagingParams: IPagingParams = { start: 1, num: 5 };
+
+      fetchMock
+        .get(
+          utils.PORTAL_SUBSET.restUrl +
+            "/community/groups?f=json&sortField=title&sortOrder=asc&start=1&num=5&q=Fred&token=fake-token",
+          utils.getGroupSearchResponse(query, 1, 5, 6, 9, 5)
+        )
+        .get(
+          utils.PORTAL_SUBSET.restUrl +
+            "/community/groups?f=json&sortField=title&sortOrder=asc&start=6&num=5&q=Fred&token=fake-token",
+          utils.getGroupSearchResponse(query, 6, 5, -1, 9, 4)
+        );
+
+      restHelpers.searchAllGroups(query, MOCK_USER_SESSION, null, pagingParams).then(
+        response => {
+          expect(response.length).toEqual(9);
+          done();
+        },
+        () => done.fail()
+      );
+    });
+  });
+
   describe("searchGroupAllContents", () => {
     it("can handle no results from searching group contents", done => {
       const groupId: string = "grp1234567890";
@@ -3084,13 +3113,12 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
     it("can fetch a single tranche", done => {
       const groupId: string = "grp1234567890";
       const query: string = "Fred";
-      const requestedResponseSize = 5;
-      const additionalSearchOptions: interfaces.IAdditionalSearchOptions = { num: requestedResponseSize };
+      const additionalSearchOptions: interfaces.IAdditionalSearchOptions = { num: 5 };
 
       fetchMock.get(
         utils.PORTAL_SUBSET.restUrl +
-          `/content/groups/${groupId}/search?f=json&num=${requestedResponseSize}&q=${query}&token=fake-token`,
-        utils.getGroupSearchResponse(query, 1, requestedResponseSize, -1, 4, 4)
+          `/content/groups/${groupId}/search?f=json&num=5&q=${query}&token=fake-token`,
+        utils.getGroupSearchResponse(query, 1, 5, -1, 4, 4)
       );
 
       restHelpers.searchGroupAllContents(groupId, query, MOCK_USER_SESSION, additionalSearchOptions).then(
@@ -3105,19 +3133,18 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
     it("can fetch more than one tranche", done => {
       const groupId: string = "grp1234567890";
       const query: string = "Fred";
-      const requestedResponseSize = 5;
-      const additionalSearchOptions: interfaces.IAdditionalSearchOptions = { num: requestedResponseSize };
+      const additionalSearchOptions: interfaces.IAdditionalSearchOptions = { num: 5 };
 
       fetchMock
         .get(
           utils.PORTAL_SUBSET.restUrl +
-            `/content/groups/${groupId}/search?f=json&num=${requestedResponseSize}&q=${query}&token=fake-token`,
-          utils.getGroupSearchResponse(query, 1, requestedResponseSize, 6, 9, 5)
+            `/content/groups/${groupId}/search?f=json&num=5&q=${query}&token=fake-token`,
+          utils.getGroupSearchResponse(query, 1, 5, 6, 9, 5)
         )
         .get(
           utils.PORTAL_SUBSET.restUrl +
-            `/content/groups/${groupId}/search?f=json&num=${requestedResponseSize}&start=6&q=${query}&token=fake-token`,
-          utils.getGroupSearchResponse(query, 6, requestedResponseSize, -1, 9, 4)
+            `/content/groups/${groupId}/search?f=json&num=5&start=6&q=${query}&token=fake-token`,
+          utils.getGroupSearchResponse(query, 6, 5, -1, 9, 4)
         );
 
       restHelpers.searchGroupAllContents(groupId, query, MOCK_USER_SESSION, additionalSearchOptions).then(
@@ -3132,12 +3159,11 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
     it("can handle a failure", done => {
       const groupId: string = "grp1234567890";
       const query: string = "Fred";
-      const requestedResponseSize = 5;
-      const additionalSearchOptions: interfaces.IAdditionalSearchOptions = { num: requestedResponseSize };
+      const additionalSearchOptions: interfaces.IAdditionalSearchOptions = { num: 5 };
 
       fetchMock.get(
         utils.PORTAL_SUBSET.restUrl +
-          `/content/groups/${groupId}/search?f=json&num=${requestedResponseSize}&q=${query}&token=fake-token`,
+          `/content/groups/${groupId}/search?f=json&num=5&q=${query}&token=fake-token`,
         mockItems.get400Failure()
       );
 
