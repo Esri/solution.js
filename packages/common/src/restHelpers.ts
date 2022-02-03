@@ -98,7 +98,9 @@ import {
   SearchQueryBuilder,
   setItemAccess,
   shareItemWithGroup,
-  updateItem as portalUpdateItem
+  updateItem as portalUpdateItem,
+  updateGroup as portalUpdateGroup,
+  IUpdateGroupOptions
 } from "@esri/arcgis-rest-portal";
 import { IParams, IRequestOptions, request } from "@esri/arcgis-rest-request";
 import {
@@ -1713,6 +1715,36 @@ export function updateItem(
       }
     };
     portalUpdateItem(updateOptions).then(
+      response => (response.success ? resolve(response) : reject(response)),
+      err => reject(err)
+    );
+  });
+}
+
+/**
+ * Updates a group.
+ *
+ * @param groupInfo The base info of a group; note that this content will be serialized, which doesn't work
+ * for binary content
+ * @param authentication Credentials for request
+ * @param additionalParams Updates that are put under the `params` property, which is not serialized
+ * @return
+ */
+ export function updateGroup(
+  groupInfo: IGroup,
+  authentication: UserSession,
+  additionalParams?: any
+): Promise<any> {
+  return new Promise((resolve, reject) => {
+    const updateOptions: IUpdateGroupOptions = {
+      group: groupInfo,
+      authentication,
+      params: {
+        ...(additionalParams ?? {})
+      }
+    };
+
+    portalUpdateGroup(updateOptions).then(
       response => (response.success ? resolve(response) : reject(response)),
       err => reject(err)
     );
