@@ -1469,7 +1469,7 @@ export function searchAllGroups(
   authentication: UserSession,
   groups?: IGroup[],
   inPagingParams? : IPagingParams
-) {
+): Promise<IGroup[]> {
   const pagingParams: IPagingParams = inPagingParams ? inPagingParams : {
     start: 0,
     num: 24
@@ -1486,16 +1486,74 @@ export function searchAllGroups(
       searchString,
       authentication,
       additionalSearchOptions
-    ).then(response => {
-      finalResults = finalResults.concat(response.results);
-      if (response.nextStart > 0){
-        pagingParams.start = response.nextStart;
-        resolve(searchAllGroups(searchString, authentication, finalResults, pagingParams));
-      }
-      else{
-        resolve(finalResults);
-      }
-    }, e => reject(e));
+    ).then(
+      response => {
+        finalResults = finalResults.concat(response.results);
+        if (response.nextStart > 0){
+          pagingParams.start = response.nextStart;
+          resolve(searchAllGroups(searchString, authentication, finalResults, pagingParams));
+        } else {
+          resolve(finalResults);
+        }
+      }, e => reject(e)
+    );
+  });
+}
+
+/**
+ * Searches for group contents matching criteria recursively.
+ *
+ * @param groupId Group whose contents are to be searched
+ * @param searchString Text for which to search, e.g., 'redlands+map', 'type:"Web Map" -type:"Web Mapping Application"'
+ * @param authentication Credentials for the request to AGO
+ * @param additionalSearchOptions Adjustments to search, such as tranche size and categories of interest; categories
+ * are supplied as an array: each array element consists of one or more categories to be ORed; array elements are ANDed
+ * @param portalUrl Rest Url of the portal to perform the search
+ * @param accumulatedResponse Response built from previous requests
+ * @return A promise that will resolve with a structure with a tranche of results and
+ * describing how many items are available
+ * @see https://developers.arcgis.com/rest/users-groups-and-items/group-content-search.htm
+ * @see https://developers.arcgis.com/rest/users-groups-and-items/search-reference.htm
+ */
+export function searchGroupAllContents(
+  groupId: string,
+  searchString: string,
+  authentication: UserSession,
+  additionalSearchOptions?: IAdditionalSearchOptions,
+  portalUrl?: string,
+  accumulatedResponse?: ISearchResult<IItem>
+): Promise<ISearchResult<IItem>> {
+  additionalSearchOptions = additionalSearchOptions ? additionalSearchOptions : {};
+
+  const completeResponse: ISearchResult<IItem> = accumulatedResponse ? accumulatedResponse : {
+    query: searchString,
+    start: 1,
+    num: (typeof additionalSearchOptions?.num !== "undefined" ? additionalSearchOptions.num : 100),
+    nextStart: -1,
+    total: 0,
+    results: [] as IItem[]
+  } as ISearchResult<IItem>;
+  return new Promise<ISearchResult<IItem>>((resolve, reject) => {
+    searchGroupContents(
+      groupId,
+      searchString,
+      authentication,
+      additionalSearchOptions,
+      portalUrl
+    ).then(
+      response => {
+        completeResponse.num = completeResponse.total = response.total;
+        completeResponse.results = completeResponse.results.concat(response.results);
+        if (response.nextStart > 0){
+          additionalSearchOptions.start = response.nextStart;
+          resolve(searchGroupAllContents(groupId, searchString, authentication, additionalSearchOptions,
+            portalUrl, completeResponse));
+        } else {
+          resolve(completeResponse);
+        }
+      },
+      e => reject(e)
+    );
   });
 }
 
