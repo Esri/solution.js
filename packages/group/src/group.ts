@@ -366,8 +366,10 @@ export function postProcess(
 ): Promise<any> {
   let promise = Promise.resolve({success: true});
   itemInfos.some(t => {
+    /* istanbul ignore else */
     if (t.id === id) {
       let group = t.item.item;
+      /* istanbul ignore else */
       if (common.hasUnresolvedVariables(group)) {
         group = common.replaceInTemplate(group, templateDictionary);
         // update the group

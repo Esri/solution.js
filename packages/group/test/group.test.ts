@@ -1447,5 +1447,62 @@ describe("Module `group`: manages the creation and deployment of groups", () => 
           done();
         });
     });
+
+    it("should handle post process of group", done => {
+      const itemId: string = "abc9cab401af4828a25cc6eaeb59fb69";
+      const templateDictionary: any = { "bbb9cab401af4828a25cc6eaeb59fb69": { url: "http://correct"} };
+
+      const itemTemplate: common.IItemTemplate = templates.getItemTemplateSkeleton();
+      itemTemplate.itemId = itemId;
+      itemTemplate.type = "Group";
+      itemTemplate.item.title = "Dam Inspection Assignments";
+      itemTemplate.item.description = "A path {{bbb9cab401af4828a25cc6eaeb59fb69.url}}";
+      itemTemplate.item.id = itemId;
+      const itemInfos = [{id: itemId, item: itemTemplate}];
+
+      fetchMock.post(`${utils.PORTAL_SUBSET.restUrl}/community/groups/${itemId}/update`, {
+        success: true,
+        group: { id: itemId }
+      });
+
+      group.postProcess(
+        itemId,
+        "Group",
+        itemInfos,
+        itemTemplate,
+        [itemTemplate],
+        templateDictionary,
+        MOCK_USER_SESSION
+      ).then(() => {
+        done();
+      }, done.fail)
+    });
+
+    it("should handle failure to post process group", done => {
+      const itemId: string = "abc9cab401af4828a25cc6eaeb59fb69";
+      const templateDictionary: any = { "bbb9cab401af4828a25cc6eaeb59fb69": { url: "http://correct"} };
+
+      const itemTemplate: common.IItemTemplate = templates.getItemTemplateSkeleton();
+      itemTemplate.itemId = itemId;
+      itemTemplate.type = "Group";
+      itemTemplate.item.title = "Dam Inspection Assignments";
+      itemTemplate.item.description = "A path {{bbb9cab401af4828a25cc6eaeb59fb69.url}}";
+      itemTemplate.item.id = itemId;
+      const itemInfos = [{id: itemId, item: itemTemplate}];
+
+      fetchMock.post(`${utils.PORTAL_SUBSET.restUrl}/community/groups/${itemId}/update`, {
+        success: false
+      });
+
+      group.postProcess(
+        itemId,
+        "Group",
+        itemInfos,
+        itemTemplate,
+        [itemTemplate],
+        templateDictionary,
+        MOCK_USER_SESSION
+      ).then(() => done.fail, done)
+    });
   });
 });
