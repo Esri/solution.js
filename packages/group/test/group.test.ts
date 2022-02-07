@@ -1491,7 +1491,8 @@ describe("Module `group`: manages the creation and deployment of groups", () => 
       const itemInfos = [{id: itemId, item: itemTemplate}];
 
       fetchMock.post(`${utils.PORTAL_SUBSET.restUrl}/community/groups/${itemId}/update`, {
-        success: false
+        success: false,
+        groupId: itemId
       });
 
       group.postProcess(
@@ -1502,7 +1503,10 @@ describe("Module `group`: manages the creation and deployment of groups", () => 
         [itemTemplate],
         templateDictionary,
         MOCK_USER_SESSION
-      ).then(() => done.fail, done)
+      ).then(() => done.fail, e => {
+        expect(e.success).toEqual(false);
+        done();
+      })
     });
   });
 });

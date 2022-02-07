@@ -3442,7 +3442,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
 
       restHelpers
         .updateGroup(grp, MOCK_USER_SESSION)
-        .then(done.fail, done);
+        .then(() => done.fail, done);
     });
   });
 

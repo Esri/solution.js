@@ -1728,13 +1728,13 @@ export function updateItem(
  * for binary content
  * @param authentication Credentials for request
  * @param additionalParams Updates that are put under the `params` property, which is not serialized
- * @return
+ * @return A Promise that will resolve with the success/failure status of the request
  */
  export function updateGroup(
   groupInfo: IGroup,
   authentication: UserSession,
   additionalParams?: any
-): Promise<any> {
+): Promise<{ success: boolean; groupId: string }> {
   return new Promise((resolve, reject) => {
     const updateOptions: IUpdateGroupOptions = {
       group: groupInfo,
