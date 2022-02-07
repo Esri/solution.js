@@ -138,19 +138,6 @@ export function getUserSession(
 }
 
 /**
- * Searches for items matching a query and that the caller has access to.
- *
- * @param search Search string (e.g., "q=redlands+map")
- * @return Promise resolving with search results
- * @see https://developers.arcgis.com/rest/users-groups-and-items/search.htm
- */
-export function searchItems(
-  search: string | ISearchOptions | SearchQueryBuilder
-): Promise<ISearchResult<IItem>> {
-  return portalSearchItems(search);
-}
-
-/**
  * Adds a forward relationship between two items.
  *
  * @param originItemId Origin of relationship
@@ -335,6 +322,35 @@ export function checkRequestStatus(
       resolve();
     }
   });
+}
+
+/**
+ * Converts a general search into an ISearchOptions structure.
+ *
+ * @param search Search specified in one of three ways
+ * @return Recast search
+ */
+export function convertToISearchOptions(
+  search: string | ISearchOptions | SearchQueryBuilder
+): ISearchOptions {
+  // Convert the search into an ISearchOptions
+  let searchOptions: ISearchOptions = {
+    q: "",
+    start: 1,
+    num: 100
+  };
+
+  if (typeof search === "string") {
+    searchOptions.q = search;
+
+  } else if (search instanceof SearchQueryBuilder) {
+    searchOptions.q = search.toParam();
+
+  } else { // search is ISearchOptions
+    searchOptions = search;
+  }
+
+  return searchOptions;
 }
 
 /**
@@ -1431,6 +1447,62 @@ export function removeItemOrGroup(
 }
 
 /**
+ * Searches for items matching a query and that the caller has access to.
+ *
+ * @param search Search string (e.g., "q=redlands+map") or a more detailed structure that can include authentication
+ * @return Promise resolving with search results
+ * @see https://developers.arcgis.com/rest/users-groups-and-items/search.htm
+ */
+export function searchItems(
+  search: string | ISearchOptions | SearchQueryBuilder
+): Promise<ISearchResult<IItem>> {
+  return portalSearchItems(search);
+}
+
+/**
+ * Searches for items matching a query and that the caller has access to, continuing recursively until done.
+ *
+ * @param search Search string (e.g., "q=redlands+map") or a more detailed structure that can include authentication
+ * @param accumulatedResponse Response built from previous requests
+ * @return Promise resolving with search results
+ * @see https://developers.arcgis.com/rest/users-groups-and-items/search.htm
+ */
+export function searchAllItems(
+  search: string | ISearchOptions | SearchQueryBuilder,
+  accumulatedResponse?: ISearchResult<IItem>
+): Promise<ISearchResult<IItem>> {
+  // Convert the search into an ISearchOptions
+  const searchOptions = convertToISearchOptions(search);
+
+  // Provide a base into which results can be concatenated
+  const completeResponse: ISearchResult<IItem> = accumulatedResponse ? accumulatedResponse : {
+    query: searchOptions.q,
+    start: 1,
+    num: 100,
+    nextStart: -1,
+    total: 0,
+    results: [] as IItem[]
+  } as ISearchResult<IItem>;
+
+  return new Promise<ISearchResult<IItem>>((resolve, reject) => {
+    searchItems(search).then(
+      response => {
+        completeResponse.results = completeResponse.results.concat(response.results);
+        completeResponse.num = completeResponse.total = completeResponse.results.length;
+        if (response.nextStart > 0) {
+          // Insert nextStart into next query
+          searchOptions.start = response.nextStart;
+          resolve(searchAllItems(searchOptions, completeResponse));
+        } else {
+          resolve(completeResponse);
+        }
+      },
+      e => reject(e)
+    );
+  });
+}
+
+/**
  * Searches for groups matching criteria.
  *
  * @param searchString Text for which to search, e.g., 'redlands+map', 'type:"Web Map" -type:"Web Mapping Application"'
@@ -1482,7 +1554,9 @@ export function searchAllGroups(
     ...pagingParams
   };
 
+  // Provide a base onto which results can be concatenated
   let finalResults: IGroup[] = groups ? groups : [];
+
   return new Promise<IGroup[]>((resolve, reject) => {
     searchGroups(
       searchString,
@@ -1527,14 +1601,16 @@ export function searchGroupAllContents(
 ): Promise<ISearchResult<IItem>> {
   additionalSearchOptions = additionalSearchOptions ? additionalSearchOptions : {};
 
+  // Provide a base into which results can be concatenated
   const completeResponse: ISearchResult<IItem> = accumulatedResponse ? accumulatedResponse : {
     query: searchString,
     start: 1,
-    num: (typeof additionalSearchOptions?.num !== "undefined" ? additionalSearchOptions.num : 100),
+    num: 100,
     nextStart: -1,
     total: 0,
     results: [] as IItem[]
   } as ISearchResult<IItem>;
+
   return new Promise<ISearchResult<IItem>>((resolve, reject) => {
     searchGroupContents(
       groupId,
@@ -1544,9 +1620,9 @@ export function searchGroupAllContents(
       portalUrl
     ).then(
       response => {
-        completeResponse.num = completeResponse.total = response.total;
         completeResponse.results = completeResponse.results.concat(response.results);
-        if (response.nextStart > 0){
+        completeResponse.num = completeResponse.total = completeResponse.results.length;
+        if (response.nextStart > 0) {
           additionalSearchOptions.start = response.nextStart;
           resolve(searchGroupAllContents(groupId, searchString, authentication, additionalSearchOptions,
             portalUrl, completeResponse));

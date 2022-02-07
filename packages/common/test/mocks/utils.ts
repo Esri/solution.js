@@ -1199,21 +1199,21 @@ export function getGroupResponse(query: string, hasResult: boolean) {
 }
 
 
-export function getGroupSearchResponse(
+export function getSearchResponse<T extends interfaces.IItem | interfaces.IGroup | interfaces.IUser>(
   query: string,
   start: number,
   num: number,
   nextStart: number,
   total: number,
   numOfResults: number
-) {
+): interfaces.ISearchResult<T> {
   return {
     query,
     start,
     num,
     nextStart,
     total,
-    results: Array(numOfResults).fill({ id: "1", title: "a" })
+    results: Array(numOfResults).fill({ id: "1", title: "a" }) as T[]
   };
 }
 
