@@ -3567,6 +3567,24 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
     });
   });
 
+  describe("updateGroup", () => {
+    afterEach(() => {
+      sinon.restore();
+    });
+
+    it("handles failure", done => {
+      const grp = templates.getGroupTemplatePart().item;
+
+      sinon
+        .stub(portal, "updateGroup")
+        .rejects(utils.getFailureResponse());
+
+      restHelpers
+        .updateGroup(grp, MOCK_USER_SESSION)
+        .then(() => done.fail, done);
+    });
+  });
+
   describe("updateItemExtended", () => {
     it("can handle failure", done => {
       itemTemplate.item.id = "itm1234567890";
