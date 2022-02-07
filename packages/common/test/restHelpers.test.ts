@@ -551,6 +551,47 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
     });
   });
 
+  describe("convertToISearchOptions", () => {
+    it("can convert a search string", () => {
+      const search = "my search";
+      const expectedOptions = {
+        q: search,
+        start: 1,
+        num: 100
+      } as portal.ISearchOptions;
+      const constructedOptions = restHelpers.convertToISearchOptions(search);
+      expect(constructedOptions).toEqual(expectedOptions);
+    });
+
+    it("can handle an ISearchOptions", () => {
+      const q = "my search";
+      const search = {
+        q,
+        start: 1,
+        num: 50
+      } as portal.ISearchOptions;
+      const expectedOptions = {
+        q,
+        start: 1,
+        num: 50
+      } as portal.ISearchOptions;
+      const constructedOptions = restHelpers.convertToISearchOptions(search);
+      expect(constructedOptions).toEqual(expectedOptions);
+    });
+
+    it("can handle a SearchQueryBuilder", () => {
+      const q = "my search";
+      const search = new portal.SearchQueryBuilder().match(q)
+      const expectedOptions = {
+        q: `"${q}"`, // SearchQueryBuilder returns this query in double quotes
+        start: 1,
+        num: 100
+      } as portal.ISearchOptions;
+      const constructedOptions = restHelpers.convertToISearchOptions(search);
+      expect(constructedOptions).toEqual(expectedOptions);
+    });
+  });
+
   describe("createFeatureService", () => {
     it("can handle failure to get service options due to failure to convert extent", done => {
       fetchMock
@@ -3025,6 +3066,85 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
     });
   });
 
+  describe("searchAllItems", () => {
+    it("can handle no results from searching for items", done => {
+      const query: string = "My Item";
+
+      fetchMock.get(
+        "https://www.arcgis.com/sharing/rest/search?f=json&q=My%20Item",
+        //                        q    s   #    x  t  r
+        utils.getSearchResponse(query, 1, 100, -1, 0, 0)
+      );
+
+      restHelpers.searchAllItems(query).then(
+        itemResponse => {
+          expect(itemResponse.results.length).toEqual(0);
+          done();
+        },
+        () => done.fail()
+      );
+    });
+
+    it("can fetch a single tranche", done => {
+      const query: string = "My Item";
+
+      fetchMock.get(
+        "https://www.arcgis.com/sharing/rest/search?f=json&q=My%20Item",
+        //                        q    s   #    x  t  r
+        utils.getSearchResponse(query, 1, 100, -1, 4, 4)
+      );
+
+      restHelpers.searchAllItems(query).then(
+        itemResponse => {
+          expect(itemResponse.results.length).toEqual(4);
+          done();
+        },
+        () => done.fail()
+      );
+    });
+
+    it("can fetch more than one tranche", done => {
+      const query: string = "My Item";
+
+      fetchMock
+        .get(
+          "https://www.arcgis.com/sharing/rest/search?f=json&q=My%20Item",
+          //                        q    s   #    x    t    r
+          utils.getSearchResponse(query, 1, 100, 101, 120, 100)
+        )
+        .get(
+          "https://www.arcgis.com/sharing/rest/search?f=json&q=My%20Item&num=100&start=101",
+          //                        q     s    #    x   t    r
+          utils.getSearchResponse(query, 101, 100, -1, 120, 20)
+        );
+
+      restHelpers.searchAllItems(query).then(
+        itemResponse => {
+          expect(itemResponse.results.length).toEqual(120);
+          done();
+        },
+        () => done.fail()
+      );
+    });
+
+    it("can handle a failure", done => {
+      const query: string = "My Item";
+
+      fetchMock.get(
+        "https://www.arcgis.com/sharing/rest/search?f=json&q=My%20Item",
+        mockItems.get400Failure()
+      );
+
+      restHelpers.searchAllItems(query).then(
+        () => done.fail(),
+        response => {
+          expect(response.message).toEqual("CONT_0001: Item does not exist or is inaccessible.");
+          done();
+        }
+      );
+    });
+  });
+
   describe("searchGroups", () => {
     it("can handle no results from searching groups", done => {
       const query: string = "My Group";
@@ -3072,12 +3192,12 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
         .get(
           utils.PORTAL_SUBSET.restUrl +
             "/community/groups?f=json&sortField=title&sortOrder=asc&start=1&num=5&q=Fred&token=fake-token",
-          utils.getGroupSearchResponse(query, 1, 5, 6, 9, 5)
+          utils.getSearchResponse(query, 1, 5, 6, 9, 5)
         )
         .get(
           utils.PORTAL_SUBSET.restUrl +
             "/community/groups?f=json&sortField=title&sortOrder=asc&start=6&num=5&q=Fred&token=fake-token",
-          utils.getGroupSearchResponse(query, 6, 5, -1, 9, 4)
+          utils.getSearchResponse(query, 6, 5, -1, 9, 4)
         );
 
       restHelpers.searchAllGroups(query, MOCK_USER_SESSION, null, pagingParams).then(
@@ -3098,12 +3218,18 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
       fetchMock.get(
         utils.PORTAL_SUBSET.restUrl +
           `/content/groups/${groupId}/search?f=json&num=100&q=${query}&token=fake-token`,
-        utils.getGroupSearchResponse(query, 1, 100, -1, 0, 0)
+        //                        q    s   #    x  t  r
+        utils.getSearchResponse(query, 1, 100, -1, 0, 0)
       );
 
       restHelpers.searchGroupAllContents(groupId, query, MOCK_USER_SESSION).then(
         response => {
-          expect(response.results.length).toEqual(0);
+          expect(response.query).withContext("query").toEqual(query);
+          expect(response.start).withContext("start").toEqual(1);
+          expect(response.num).withContext("num").toEqual(0);
+          expect(response.nextStart).withContext("nextStart").toEqual(-1);
+          expect(response.total).withContext("total").toEqual(0);
+          expect(response.results.length).withContext("results.length").toEqual(0);
           done();
         },
         () => done.fail()
@@ -3118,12 +3244,18 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
       fetchMock.get(
         utils.PORTAL_SUBSET.restUrl +
           `/content/groups/${groupId}/search?f=json&num=5&q=${query}&token=fake-token`,
-        utils.getGroupSearchResponse(query, 1, 5, -1, 4, 4)
+        //                        q    s  #   x  t  r
+        utils.getSearchResponse(query, 1, 5, -1, 4, 4)
       );
 
       restHelpers.searchGroupAllContents(groupId, query, MOCK_USER_SESSION, additionalSearchOptions).then(
         response => {
-          expect(response.results.length).toEqual(4);
+          expect(response.query).withContext("query").toEqual(query);
+          expect(response.start).withContext("start").toEqual(1);
+          expect(response.num).withContext("num").toEqual(4);
+          expect(response.nextStart).withContext("nextStart").toEqual(-1);
+          expect(response.total).withContext("total").toEqual(4);
+          expect(response.results.length).withContext("results.length").toEqual(4);
           done();
         },
         () => done.fail()
@@ -3139,17 +3271,24 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
         .get(
           utils.PORTAL_SUBSET.restUrl +
             `/content/groups/${groupId}/search?f=json&num=5&q=${query}&token=fake-token`,
-          utils.getGroupSearchResponse(query, 1, 5, 6, 9, 5)
+          //                        q    s  #  x  t  r
+          utils.getSearchResponse(query, 1, 5, 6, 9, 5)
         )
         .get(
           utils.PORTAL_SUBSET.restUrl +
             `/content/groups/${groupId}/search?f=json&num=5&start=6&q=${query}&token=fake-token`,
-          utils.getGroupSearchResponse(query, 6, 5, -1, 9, 4)
+            //                        q    s  #   x  t  r
+            utils.getSearchResponse(query, 1, 5, -1, 9, 4)
         );
 
       restHelpers.searchGroupAllContents(groupId, query, MOCK_USER_SESSION, additionalSearchOptions).then(
         response => {
-          expect(response.results.length).toEqual(9);
+          expect(response.query).withContext("query").toEqual(query);
+          expect(response.start).withContext("start").toEqual(1);
+          expect(response.num).withContext("num").toEqual(9);
+          expect(response.nextStart).withContext("nextStart").toEqual(-1);
+          expect(response.total).withContext("total").toEqual(9);
+          expect(response.results.length).withContext("results.length").toEqual(9);
           done();
         },
         () => done.fail()
