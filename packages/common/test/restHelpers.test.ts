@@ -579,6 +579,20 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
       expect(constructedOptions).toEqual(expectedOptions);
     });
 
+    it("can handle an ISearchOptions with defaults", () => {
+      const q = "my search";
+      const search = {
+        q
+      } as portal.ISearchOptions;
+      const expectedOptions = {
+        q,
+        start: 1,
+        num: 100
+      } as portal.ISearchOptions;
+      const constructedOptions = restHelpers.convertToISearchOptions(search);
+      expect(constructedOptions).toEqual(expectedOptions);
+    });
+
     it("can handle a SearchQueryBuilder", () => {
       const q = "my search";
       const search = new portal.SearchQueryBuilder().match(q)

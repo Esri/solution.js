@@ -341,14 +341,20 @@ export function convertToISearchOptions(
   };
 
   if (typeof search === "string") {
+    // Insert query into defaults
     searchOptions.q = search;
 
   } else if (search instanceof SearchQueryBuilder) {
+    // Insert query into defaults
     searchOptions.q = search.toParam();
 
   } else { // search is ISearchOptions
-    searchOptions = search;
+    searchOptions = {
+      ...searchOptions, // defaults
+      ...search // request
+    }
   }
+
 
   return searchOptions;
 }
