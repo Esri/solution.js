@@ -200,11 +200,12 @@
 
 
         // Populate solution picklist
-        const groupId = appConfig.solutionsGroupId;
         const solutionsSelect = document.getElementById("solutionPicklist");
         solutionsSelect.add(document.createElement("option"));
 
-        main.getTemplates(groupId).then((solutions) => {
+        main.getTemplates(
+          appConfig.primarySolutionsGroupId, appConfig.agoBasedEnterpriseSolutionsGroupId
+        ).then((solutions) => {
           solutions.forEach((solution) => {
             var option = document.createElement("option");
             option.value = solution.id
