@@ -40,8 +40,7 @@ module.exports = function(config) {
       },
       compilerOptions: {
         module: "commonjs",
-        lib: ["dom", "es2015"],
-        "esModuleInterop": false
+        lib: ["dom", "es2015"]
       },
       tsconfig: "./tsconfig.json",
       bundlerOptions: {
