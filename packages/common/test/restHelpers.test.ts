@@ -1955,9 +1955,14 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
 
       restHelpers
         .convertExtent(extent, serviceSR, geometryServiceUrl, MOCK_USER_SESSION)
-        .then(_extent => {
-          done.fail();
-        }, done);
+        .then(
+          () => {
+            done.fail();
+          },
+          () => {
+            done();
+          }
+        );
     });
 
     it("can handle unmatched wkid and failure on findTransformations", done => {
@@ -1976,9 +1981,14 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
 
       restHelpers
         .convertExtent(extent, serviceSR, geometryServiceUrl, MOCK_USER_SESSION)
-        .then(_extent => {
-          done.fail();
-        }, done);
+        .then(
+          () => {
+            done.fail();
+          },
+          () => {
+            done();
+          }
+        );
     });
   });
 
@@ -2142,7 +2152,14 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
           geometryServiceUrl,
           MOCK_USER_SESSION
         )
-        .then(done.fail, done);
+        .then(
+          () => {
+            done.fail();
+          },
+          () => {
+            done();
+          }
+        );
     });
   });
 
@@ -3595,7 +3612,14 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
 
       restHelpers
         .updateGroup(grp, MOCK_USER_SESSION)
-        .then(() => done.fail, done);
+        .then(
+          () => {
+            done.fail();
+          },
+          () => {
+            done();
+          }
+        );
     });
   });
 
@@ -4731,7 +4755,14 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
         );
       restHelpers
         ._getCreateServiceOptions(itemTemplate, userSession, templateDictionary)
-        .then(done.fail, done);
+        .then(
+          () => {
+            done.fail();
+          },
+          () => {
+            done();
+          }
+        );
     });
   });
 

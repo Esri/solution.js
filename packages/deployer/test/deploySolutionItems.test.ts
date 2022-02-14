@@ -780,7 +780,14 @@ describe("Module `deploySolutionItems`", () => {
             progressCallback: utils.SOLUTION_PROGRESS_CALLBACK
           }
         )
-        .then(() => done.fail(), done);
+        .then(
+          () => {
+            done.fail();
+          },
+          () => {
+            done();
+          }
+        );
     });
 
     it("can handle error on find items by tag", done => {
@@ -857,7 +864,14 @@ describe("Module `deploySolutionItems`", () => {
             progressCallback: utils.SOLUTION_PROGRESS_CALLBACK
           }
         )
-        .then(() => done.fail(), done);
+        .then(
+          () => {
+            done.fail();
+          },
+          () => {
+            done();
+          }
+        );
     });
 
     it("handles failure to delete all items when unwinding after failure to deploy", done => {
@@ -1152,7 +1166,14 @@ describe("Module `deploySolutionItems`", () => {
             progressCallback: utils.SOLUTION_PROGRESS_CALLBACK
           }
         )
-        .then(() => done.fail(), done);
+        .then(
+          () => {
+            done.fail();
+          },
+          () => {
+            done();
+          }
+        );
     });
 
     it("handle failure to use existing items", done => {
@@ -1231,7 +1252,14 @@ describe("Module `deploySolutionItems`", () => {
             progressCallback: utils.SOLUTION_PROGRESS_CALLBACK
           }
         )
-        .then(() => done.fail(), done);
+        .then(
+          () => {
+            done.fail();
+          },
+          () => {
+            done();
+          }
+        );
     });
   });
 
@@ -2616,7 +2644,14 @@ describe("Module `deploySolutionItems`", () => {
     it("will handle no custom item id requests", done => {
       deploySolution
         ._setTypekeywordForExisting([], {}, MOCK_USER_SESSION)
-        .then(done);
+        .then(
+          () => {
+            done();
+          },
+          () => {
+            done.fail();
+          }
+        );
     });
   });
 });
