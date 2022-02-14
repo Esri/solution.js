@@ -38,11 +38,11 @@ module.exports = function(config) {
         },
         "html": "coverage"
       },
+      tsconfig: "./tsconfig.json",
       compilerOptions: {
-        module: "commonjs",
+        module: "commonjs", // ES not supported until experimental node12/nodenext moduleResolution
         lib: ["dom", "es2015"]
       },
-      tsconfig: "./tsconfig.json",
       bundlerOptions: {
         transforms: [require("karma-typescript-es6-transform")()],
         exclude: ["@esri/arcgis-rest-types"],
