@@ -704,9 +704,14 @@ describe("Module `deployer`", () => {
             };
             deployer
               .deploySolution(itemInfo.item.id, MOCK_USER_SESSION, options)
-              .then(done, e => {
-                done.fail(e);
-              });
+              .then(
+                () => {
+                  done();
+                },
+                e => {
+                  done.fail(e);
+                }
+              );
           },
           e => {
             done.fail(e);
@@ -1028,9 +1033,14 @@ describe("Module `deployer`", () => {
 
       deployer
         .deploySolution(itemInfoCard.id, MOCK_USER_SESSION, options)
-        .then(() => {
-          done.fail();
-        }, done);
+        .then(
+          () => {
+            done.fail();
+          },
+          () => {
+            done();
+          }
+        );
     });
 
     it("can handle error on createItemWithData", done => {

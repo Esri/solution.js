@@ -337,9 +337,14 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
           MOCK_USER_SESSION,
           templateDictionary
         )
-        .then(r => {
-          done.fail();
-        }, done);
+        .then(
+          () => {
+            done.fail();
+          },
+          () => {
+            done();
+          }
+        );
     });
 
     it("should handle error on getItemData", done => {
@@ -384,7 +389,14 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
           MOCK_USER_SESSION,
           templateDictionary
         )
-        .then(done, done.fail);
+        .then(
+          () => {
+            done();
+          },
+          e => {
+            done.fail(e);
+          }
+        );
     });
 
     it("should handle error on getServiceLayersAndTables", done => {
@@ -426,9 +438,14 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
           MOCK_USER_SESSION,
           templateDictionary
         )
-        .then(r => {
-          done.fail();
-        }, done);
+        .then(
+          () => {
+            done.fail();
+          },
+          () => {
+            done();
+          }
+        );
     });
   });
 
@@ -2749,7 +2766,14 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
 
       featureLayer
         .postProcess("", "", [], template, [], {}, MOCK_USER_SESSION)
-        .then(done, done.fail);
+        .then(
+          () => {
+            done();
+          },
+          e => {
+            done.fail(e);
+          }
+        );
     });
   });
 });

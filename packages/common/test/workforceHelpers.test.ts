@@ -44,7 +44,14 @@ describe("Module `workforceHelpers`: manages the creation and deployment of work
     it("will handle no edits", done => {
       workforceHelpers
         ._applyEdits("http://url", [], MOCK_USER_SESSION)
-        .then(done, done.fail);
+        .then(
+          () => {
+            done();
+          },
+          () => {
+            done.fail();
+          }
+        );
     });
   });
   describe("_extractDependencies", () => {
@@ -361,7 +368,14 @@ describe("Module `workforceHelpers`: manages the creation and deployment of work
 
       workforceHelpers
         .getWorkforceServiceInfo(props, url, MOCK_USER_SESSION)
-        .then(() => done.fail, done);
+        .then(
+          () => {
+            done.fail();
+          },
+          () => {
+            done();
+          }
+        );
     });
 
     it("can handle _getAssignmentIntegrationInfos failure", done => {
