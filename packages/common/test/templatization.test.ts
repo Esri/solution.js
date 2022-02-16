@@ -27,6 +27,41 @@ import * as utils from "./mocks/utils";
 // ------------------------------------------------------------------------------------------------------------------ //
 
 describe("Module `templatization`: common functions involving the adlib library", () => {
+  describe("createInitializedGroupTemplate", () => {
+    it("handles missing typeKeywords", () => {
+      const template: interfaces.IItemTemplate = templatization.createInitializedGroupTemplate({ id: "fred" });
+      template.key = "";
+
+      const expectedTemplate = templatization.createPlaceholderTemplate("fred");
+      expectedTemplate.key = "";
+      expectedTemplate.item.description = undefined;
+      expectedTemplate.item.snippet = undefined;
+      expectedTemplate.item.tags = undefined;
+      expectedTemplate.item.typeKeywords = undefined;
+      expectedTemplate.item.title = undefined;
+      expectedTemplate.item.thumbnail = undefined;
+
+      expect(template).toEqual(expectedTemplate);
+    });
+
+    it("inserts typeKeywords", () => {
+      const template: interfaces.IItemTemplate =
+        templatization.createInitializedGroupTemplate({ id: "fred", typeKeywords: [ "a", "b" ] });
+      template.key = "";
+
+      const expectedTemplate = templatization.createPlaceholderTemplate("fred");
+      expectedTemplate.key = "";
+      expectedTemplate.item.description = undefined;
+      expectedTemplate.item.snippet = undefined;
+      expectedTemplate.item.tags = undefined;
+      expectedTemplate.item.typeKeywords = [ "a", "b" ];
+      expectedTemplate.item.title = undefined;
+      expectedTemplate.item.thumbnail = undefined;
+
+      expect(template).toEqual(expectedTemplate);
+    });
+  }),
+
   describe("extractSolutionVersion", () => {
     it("defaults to a version 0 solution", () => {
       const itemData: interfaces.ISolutionItemData = mockItems.getAGOLItemData(

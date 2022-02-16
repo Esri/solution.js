@@ -1,13 +1,15 @@
 {
   "compilerOptions": {
-    "allowSyntheticDefaultImports": true,
+    "alwaysStrict": true,
     "declaration": true,
     "downlevelIteration": true,
+    "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,
     "importHelpers": true,
     "lib": ["dom", "es2020"],
     "module": "esnext",
     "moduleResolution": "node",
+    "noImplicitAny": false,
     "skipLibCheck": true,
     "sourceMap": true,
     "strict": true,
