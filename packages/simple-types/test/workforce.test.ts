@@ -40,7 +40,7 @@ afterEach(() => {
 
 describe("Module `workforce`: manages the creation and deployment of workforce project item types", () => {
   describe("convertItemToTemplate", () => {
-    it("should extract dependencies", done => {
+    it("should extract dependencies 1", done => {
       const itemTemplate: common.IItemTemplate = mockItems.getAGOLItem(
         "Workforce Project",
         null
@@ -67,8 +67,40 @@ describe("Module `workforce`: manages the creation and deployment of workforce p
 
           expectedDependencies.forEach(d => {
             expect(newDependencies.indexOf(d)).toBeGreaterThan(-1);
-            done();
           });
+          done();
+        }, done.fail);
+    });
+
+    it("should extract dependencies 2", done => {
+      const itemTemplate: common.IItemTemplate = mockItems.getAGOLItem(
+        "Workforce Project",
+        null
+      );
+      itemTemplate.data = mockItems.getAGOLItemData("Workforce Project");
+
+      const expectedDependencies: string[] = [
+        "abc116555b16437f8435e079033128d0",
+        "abc26a244163430590151395821fb845",
+        "abc302ec12b74d2f9f2b3cc549420086",
+        "abc4494043c3459faabcfd0e1ab557fc",
+        "abc5dd4bdd18437f8d5ff1aa2d25fd7c",
+        "abc64329e69144c59f69f3f3e0d45269",
+        "abc715c2df2b466da05577776e82d044",
+        "cad3483e025c47338d43df308c117308",
+        "bad3483e025c47338d43df308c117308"
+      ];
+
+      workforce
+        .convertItemToTemplate(itemTemplate, MOCK_USER_SESSION, MOCK_USER_SESSION)
+        .then(newItemTemplate => {
+          const newDependencies: string[] = newItemTemplate.dependencies;
+          expect(newDependencies.length).toEqual(expectedDependencies.length);
+
+          expectedDependencies.forEach(d => {
+            expect(newDependencies.indexOf(d)).toBeGreaterThan(-1);
+          });
+          done();
         }, done.fail);
     });
 
@@ -169,38 +201,6 @@ describe("Module `workforce`: manages the creation and deployment of workforce p
         }, done.fail);
     });
 
-    it("should extract dependencies", done => {
-      const itemTemplate: common.IItemTemplate = mockItems.getAGOLItem(
-        "Workforce Project",
-        null
-      );
-      itemTemplate.data = mockItems.getAGOLItemData("Workforce Project");
-
-      const expectedDependencies: string[] = [
-        "abc116555b16437f8435e079033128d0",
-        "abc26a244163430590151395821fb845",
-        "abc302ec12b74d2f9f2b3cc549420086",
-        "abc4494043c3459faabcfd0e1ab557fc",
-        "abc5dd4bdd18437f8d5ff1aa2d25fd7c",
-        "abc64329e69144c59f69f3f3e0d45269",
-        "abc715c2df2b466da05577776e82d044",
-        "cad3483e025c47338d43df308c117308",
-        "bad3483e025c47338d43df308c117308"
-      ];
-
-      workforce
-        .convertItemToTemplate(itemTemplate, MOCK_USER_SESSION, MOCK_USER_SESSION)
-        .then(newItemTemplate => {
-          const newDependencies: string[] = newItemTemplate.dependencies;
-          expect(newDependencies.length).toEqual(expectedDependencies.length);
-
-          expectedDependencies.forEach(d => {
-            expect(newDependencies.indexOf(d)).toBeGreaterThan(-1);
-            done();
-          });
-        }, done.fail);
-    });
-
     it("should handle workforce projects without data", done => {
       const itemTemplate: common.IItemTemplate = mockItems.getAGOLItem(
         "Workforce Project"
@@ -245,9 +245,14 @@ describe("Module `workforce`: manages the creation and deployment of workforce p
 
       workforce
         .convertItemToTemplate(itemTemplate, MOCK_USER_SESSION, MOCK_USER_SESSION)
-        .then(() => {
-          done.fail();
-        }, done);
+        .then(
+          () => {
+            done.fail();
+          },
+          () => {
+            done();
+          }
+        );
     });
 
     it("should handle url without layer id", done => {
@@ -426,7 +431,14 @@ describe("Module `workforce`: manages the creation and deployment of workforce p
 
       workforce
         .fineTuneCreatedItem(itemTemplate, MOCK_USER_SESSION, {})
-        .then(done.fail, done);
+        .then(
+          () => {
+            done.fail();
+          },
+          () => {
+            done();
+          }
+        );
     });
 
     it("should handle error on getUser", done => {
@@ -447,7 +459,14 @@ describe("Module `workforce`: manages the creation and deployment of workforce p
 
       workforce
         .fineTuneCreatedItem(itemTemplate, MOCK_USER_SESSION, {})
-        .then(done.fail, done);
+        .then(
+          () => {
+            done.fail();
+          },
+          () => {
+            done();
+          }
+        );
     });
 
     it("should not update dispatchers service if it contains records", done => {

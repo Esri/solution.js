@@ -3,5 +3,6 @@
   "spec_files": ["*/test/**/*.test.ts"],
   "helpers": ["../support/test-helpers.js"],
   "stopSpecOnExpectationFailure": false,
-  "random": false
+  "random": true,
+  "verboseDeprecations": true
 }

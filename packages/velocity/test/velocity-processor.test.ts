@@ -276,11 +276,14 @@ describe("convertItemToTemplate", () => {
       agolItems.get500Failure()
     );
 
-    convertItemToTemplate(solutionItemId, itemInfo, MOCK_USER_SESSION, MOCK_USER_SESSION, {}).then(
+    convertItemToTemplate(solutionItemId, itemInfo, MOCK_USER_SESSION, MOCK_USER_SESSION, {})
+    .then(
       () => {
         done.fail();
       },
-      done
+      () => {
+        done();
+      }
     );
   });
 
@@ -298,11 +301,14 @@ describe("convertItemToTemplate", () => {
       }
     );
 
-    convertItemToTemplate(solutionItemId, itemInfo, MOCK_USER_SESSION, MOCK_USER_SESSION, {}).then(
+    convertItemToTemplate(solutionItemId, itemInfo, MOCK_USER_SESSION, MOCK_USER_SESSION, {})
+    .then(
       () => {
         done.fail();
       },
-      done
+      () => {
+        done();
+      }
     );
   });
 });
@@ -550,7 +556,14 @@ describe("createItemFromTemplate", () => {
       templateDictionary,
       destinationAuthentication,
       utils.ITEM_PROGRESS_CALLBACK
-    ).then(() => done.fail, done);
+    ).then(
+      () => {
+        done.fail();
+      },
+      () => {
+        done();
+      }
+    );
   });
 });
 
@@ -580,7 +593,7 @@ describe("postProcess", () => {
     const url: string = "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/items/thisismyitemid/"
 
     fetchMock.post(
-      `${url}move`, 
+      `${url}move`,
       {success: true}
     )
     .post(
