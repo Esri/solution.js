@@ -3621,6 +3621,28 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
           }
         );
     });
+
+    it("uses supplied additional parameters", done => {
+      const grp = templates.getGroupTemplatePart().item;
+      const additionalParams = { extra: "value" };
+
+      const updateStub = sinon
+        .stub(portal, "updateGroup")
+        .resolves(utils.getSuccessResponse());
+
+      restHelpers
+        .updateGroup(grp, MOCK_USER_SESSION, additionalParams)
+        .then(
+          () => {
+            const updateFnCall = updateStub.getCall(0);
+            expect(updateFnCall.args[0].params).toEqual(additionalParams);
+            done();
+          },
+          () => {
+            done.fail();
+          }
+        );
+    });
   });
 
   describe("updateItemExtended", () => {
