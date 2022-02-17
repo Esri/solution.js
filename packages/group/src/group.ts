@@ -113,10 +113,21 @@ export function createItemFromTemplate(
       access: "private",
       owner: newItemTemplate.item.owner,
       tags: newItemTemplate.item.tags,
+      typeKeywords: newItemTemplate.item.typeKeywords,
       description: newItemTemplate.item.description,
       thumbnail: newItemTemplate.item.thumbnail,
       snippet: newItemTemplate.item.snippet
     };
+
+    const props: string[] = [
+      "isInvitationOnly", "autoJoin", "membershipAccess", "isViewOnly", "sortField", "sortOrder", "isOpenData", "displaySettings"
+    ];
+    props.forEach(p => {
+      /* istanbul ignore else */
+      if (newItemTemplate.item.hasOwnProperty(p)) {
+        newGroup[p] = newItemTemplate.item[p];
+      }
+    })
 
     // Create a group, appending a sequential suffix to its name if the group exists, e.g.,
     //  * Manage Right of Way Activities
@@ -275,7 +286,9 @@ export function createItemFromTemplate(
                                 item: newItemTemplate,
                                 id: createResponse.group.id,
                                 type: newItemTemplate.type,
-                                postProcess: false
+                                postProcess: common.hasUnresolvedVariables(
+                                  newItemTemplate
+                                )
                               });
                             }
                           } else {
@@ -302,7 +315,9 @@ export function createItemFromTemplate(
                     item: newItemTemplate,
                     id: createResponse.group.id,
                     type: newItemTemplate.type,
-                    postProcess: false
+                    postProcess: common.hasUnresolvedVariables(
+                      newItemTemplate
+                    )
                   });
                 }
               }
@@ -326,4 +341,42 @@ export function createItemFromTemplate(
         }
       );
   });
+}
+
+/**
+ * Group post-processing actions
+ *
+ * @param {string} id The item ID
+ * @param {string} type The template type
+ * @param {any[]} itemInfos Array of {id: 'ef3', type: 'Web Map'} objects
+ * @param {common.IItemTemplate} template The original template
+ * @param {common.IItemTemplate[]} templates The original templates
+ * @param {any} templateDictionary The template dictionary
+ * @param {UserSession} authentication The destination session info
+ * @returns Promise resolving to successfulness of update
+ */
+export function postProcess(
+  id: string,
+  type: string,
+  itemInfos: any[],
+  template: common.IItemTemplate,
+  templates: common.IItemTemplate[],
+  templateDictionary: any,
+  authentication: any
+): Promise<any> {
+  let promise = Promise.resolve({success: true});
+  itemInfos.some(t => {
+    /* istanbul ignore else */
+    if (t.id === id) {
+      let group = t.item.item;
+      /* istanbul ignore else */
+      if (common.hasUnresolvedVariables(group)) {
+        group = common.replaceInTemplate(group, templateDictionary);
+        // update the group
+        promise = common.updateGroup(group, authentication);
+      }
+      return true;
+    }
+  });
+  return promise;
 }

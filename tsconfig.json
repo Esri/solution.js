@@ -1,38 +1,23 @@
 {
   "compilerOptions": {
-    /* Basic Options */
-    "target": "es2020",                          /* Specify ECMAScript target version: 'ES3' (default), 'ES5', 'ES2015', 'ES2016', 'ES2017', or 'ESNEXT'. */
-    "module": "esnext",                     /* Specify module code generation: 'commonjs', 'amd', 'system', 'umd', 'es2015', or 'ESNext'. */
-    "lib": ["dom", "es2020"],                             /* Specify library files to be included in the compilation:  */
-    "declaration": true,                   /* Generates corresponding '.d.ts' file. */
-    "sourceMap": true,                     /* Generates corresponding '.map' file. */
-    "importHelpers": true,                 /* Import emit helpers from 'tslib'. */
-    "downlevelIteration": true,            /* Provide full support for iterables in 'for-of', spread, and destructuring when targeting 'ES5' or 'ES3'. */
-    "forceConsistentCasingInFileNames": true,   /* To reduce issues when working with different OSes */
-
-    /* Strict Type-Checking Options */
-    "strict": true,                            /* Enable all strict type-checking options. */
-    "strictNullChecks": false,              /* Enable strict null checks. */
-
-    /* Additional Checks */
-
-    /* Module Resolution Options */
-    "moduleResolution": "node",               /* Specify module resolution strategy: 'node' (Node.js) or 'classic' (TypeScript pre-1.6). */
-    "typeRoots": [
-      "./node_modules/@types"
-    ],                                        /* List of folders to include type definitions from. */
+    "alwaysStrict": true,
+    "declaration": true,
+    "downlevelIteration": true,
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+    "importHelpers": true,
+    "lib": ["dom", "es2020"],
+    "module": "esnext",
+    "moduleResolution": "node",
+    "noImplicitAny": false,
     "skipLibCheck": true,
-    "types": [
-      "node",
-      "jasmine"
-    ],
-    "allowSyntheticDefaultImports": true,  /* Allow default imports from modules with no default export. This does not affect code emit, just typechecking. */
-    //"esModuleInterop": true,
-    "suppressImplicitAnyIndexErrors": true
-
-    /* Source Map Options */
-
-    /* Experimental Options */
+    "sourceMap": true,
+    "strict": true,
+    "strictNullChecks": false,
+    "suppressImplicitAnyIndexErrors": true,
+    "target": "es2020",
+    "typeRoots": ["./node_modules/@types"],
+    "types": ["node", "jasmine"]
   },
   "exclude": [
     "node_modules"

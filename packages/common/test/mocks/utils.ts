@@ -1198,6 +1198,25 @@ export function getGroupResponse(query: string, hasResult: boolean) {
   };
 }
 
+
+export function getSearchResponse<T extends interfaces.IItem | interfaces.IGroup | interfaces.IUser>(
+  query: string,
+  start: number,
+  num: number,
+  nextStart: number,
+  total: number,
+  numOfResults: number
+): interfaces.ISearchResult<T> {
+  return {
+    query,
+    start,
+    num,
+    nextStart,
+    total,
+    results: Array(numOfResults).fill({ id: "1", title: "a" }) as T[]
+  };
+}
+
 export function getCreateServiceResponse(
   url: string = "https://services123.arcgis.com/org1234567890/arcgis/rest/services/ROWPermits_publiccomment/FeatureServer",
   id: string = "svc1234567890",

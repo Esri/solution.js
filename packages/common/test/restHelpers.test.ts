@@ -31,6 +31,8 @@ import * as restHelpersGet from "../src/restHelpersGet";
 import * as templates from "../test/mocks/templates";
 import * as utils from "./mocks/utils";
 import * as sinon from "sinon";
+import { IPagingParams } from "@esri/arcgis-rest-portal";
+
 
 // ------------------------------------------------------------------------------------------------------------------ //
 
@@ -64,6 +66,15 @@ beforeEach(() => {
     groups: []
   };
 });
+
+const SERVER_INFO = {
+  currentVersion: 10.1,
+  fullVersion: "10.1",
+  soapUrl: "http://server/arcgis/services",
+  secureSoapUrl: "https://server/arcgis/services",
+  owningSystemUrl: "https://myorg.maps.arcgis.com",
+  authInfo: {}
+};
 
 afterEach(() => {
   fetchMock.restore();
@@ -540,9 +551,69 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
     });
   });
 
+  describe("convertToISearchOptions", () => {
+    it("can convert a search string", () => {
+      const search = "my search";
+      const expectedOptions = {
+        q: search,
+        start: 1,
+        num: 100
+      } as portal.ISearchOptions;
+      const constructedOptions = restHelpers.convertToISearchOptions(search);
+      expect(constructedOptions).toEqual(expectedOptions);
+    });
+
+    it("can handle an ISearchOptions", () => {
+      const q = "my search";
+      const search = {
+        q,
+        start: 1,
+        num: 50
+      } as portal.ISearchOptions;
+      const expectedOptions = {
+        q,
+        start: 1,
+        num: 50
+      } as portal.ISearchOptions;
+      const constructedOptions = restHelpers.convertToISearchOptions(search);
+      expect(constructedOptions).toEqual(expectedOptions);
+    });
+
+    it("can handle an ISearchOptions with defaults", () => {
+      const q = "my search";
+      const search = {
+        q
+      } as portal.ISearchOptions;
+      const expectedOptions = {
+        q,
+        start: 1,
+        num: 100
+      } as portal.ISearchOptions;
+      const constructedOptions = restHelpers.convertToISearchOptions(search);
+      expect(constructedOptions).toEqual(expectedOptions);
+    });
+
+    it("can handle a SearchQueryBuilder", () => {
+      const q = "my search";
+      const search = new portal.SearchQueryBuilder().match(q)
+      const expectedOptions = {
+        q: `"${q}"`, // SearchQueryBuilder returns this query in double quotes
+        start: 1,
+        num: 100
+      } as portal.ISearchOptions;
+      const constructedOptions = restHelpers.convertToISearchOptions(search);
+      expect(constructedOptions).toEqual(expectedOptions);
+    });
+  });
+
   describe("createFeatureService", () => {
     it("can handle failure to get service options due to failure to convert extent", done => {
       fetchMock
+        .get(
+          "https://myorg.maps.arcgis.com/sharing/rest/portals/self?f=json&token=fake-token",
+          utils.getPortalsSelfResponse()
+        )
+        .post("https://utility.arcgisonline.com/arcgis/rest/info", SERVER_INFO)
         .post(
           utils.PORTAL_SUBSET.restUrl +
             "/content/users/casey/aabb123456/createService",
@@ -1734,6 +1805,11 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
 
     it("can handle unmatched wkid", done => {
       fetchMock
+        .get(
+          "https://myorg.maps.arcgis.com/sharing/rest/portals/self?f=json&token=fake-token",
+          utils.getPortalsSelfResponse()
+        )
+        .post("https://utility.arcgisonline.com/arcgis/rest/info", utils.getPortalsSelfResponse())
         .post(geometryServiceUrl + "/findTransformations", {
           transformations: [
             {
@@ -1757,6 +1833,11 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
 
     it("can handle unmatched wkid and geoTransforms", done => {
       fetchMock
+        .get(
+          "https://myorg.maps.arcgis.com/sharing/rest/portals/self?f=json&token=fake-token",
+          utils.getPortalsSelfResponse()
+        )
+        .post("https://utility.arcgisonline.com/arcgis/rest/info", utils.getPortalsSelfResponse())
         .post(geometryServiceUrl + "/findTransformations", {
           transformations: [
             {
@@ -1780,6 +1861,11 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
 
     it("can handle unmatched wkid and no transformations", done => {
       fetchMock
+        .get(
+          "https://myorg.maps.arcgis.com/sharing/rest/portals/self?f=json&token=fake-token",
+          utils.getPortalsSelfResponse()
+        )
+        .post("https://utility.arcgisonline.com/arcgis/rest/info", utils.getPortalsSelfResponse())
         .post(geometryServiceUrl + "/findTransformations", {})
         .post(geometryServiceUrl + "/project", {
           geometries: projectedGeometries
@@ -1797,6 +1883,11 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
 
     it("can handle unmatched wkid and unexpected transformations", done => {
       fetchMock
+        .get(
+          "https://myorg.maps.arcgis.com/sharing/rest/portals/self?f=json&token=fake-token",
+          utils.getPortalsSelfResponse()
+        )
+        .post("https://utility.arcgisonline.com/arcgis/rest/info", utils.getPortalsSelfResponse())
         .post(geometryServiceUrl + "/findTransformations", {
           transformations: [{}]
         })
@@ -1816,6 +1907,11 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
 
     it("can handle unmatched wkid and no geom in response", done => {
       fetchMock
+        .get(
+          "https://myorg.maps.arcgis.com/sharing/rest/portals/self?f=json&token=fake-token",
+          utils.getPortalsSelfResponse()
+        )
+        .post("https://utility.arcgisonline.com/arcgis/rest/info", utils.getPortalsSelfResponse())
         .post(geometryServiceUrl + "/findTransformations", {
           transformations: [
             {
@@ -1841,6 +1937,11 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
 
     it("can handle unmatched wkid and failure on project", done => {
       fetchMock
+        .get(
+          "https://myorg.maps.arcgis.com/sharing/rest/portals/self?f=json&token=fake-token",
+          utils.getPortalsSelfResponse()
+        )
+        .post("https://utility.arcgisonline.com/arcgis/rest/info", utils.getPortalsSelfResponse())
         .post(geometryServiceUrl + "/findTransformations", {
           transformations: [
             {
@@ -1854,13 +1955,23 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
 
       restHelpers
         .convertExtent(extent, serviceSR, geometryServiceUrl, MOCK_USER_SESSION)
-        .then(_extent => {
-          done.fail();
-        }, done);
+        .then(
+          () => {
+            done.fail();
+          },
+          () => {
+            done();
+          }
+        );
     });
 
     it("can handle unmatched wkid and failure on findTransformations", done => {
       fetchMock
+        .get(
+          "https://myorg.maps.arcgis.com/sharing/rest/portals/self?f=json&token=fake-token",
+          utils.getPortalsSelfResponse()
+        )
+        .post("https://utility.arcgisonline.com/arcgis/rest/info", utils.getPortalsSelfResponse())
         .post(
           geometryServiceUrl + "/findTransformations",
           mockItems.get400Failure()
@@ -1870,9 +1981,14 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
 
       restHelpers
         .convertExtent(extent, serviceSR, geometryServiceUrl, MOCK_USER_SESSION)
-        .then(_extent => {
-          done.fail();
-        }, done);
+        .then(
+          () => {
+            done.fail();
+          },
+          () => {
+            done();
+          }
+        );
     });
   });
 
@@ -1901,6 +2017,11 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
       ];
 
       fetchMock
+        .get(
+          "https://myorg.maps.arcgis.com/sharing/rest/portals/self?f=json&token=fake-token",
+          utils.getPortalsSelfResponse()
+        )
+        .post("https://utility.arcgisonline.com/arcgis/rest/info", SERVER_INFO)
         .post(geometryServiceUrl + "/findTransformations", {})
         .postOnce(
           geometryServiceUrl + "/project",
@@ -1954,13 +2075,20 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
         }
       ];
 
-      fetchMock.post(geometryServiceUrl + "/findTransformations", {}).postOnce(
-        geometryServiceUrl + "/project",
-        {
-          geometries: NaNGeoms
-        },
-        { overwriteRoutes: false }
-      );
+      fetchMock
+        .get(
+          "https://myorg.maps.arcgis.com/sharing/rest/portals/self?f=json&token=fake-token",
+          utils.getPortalsSelfResponse()
+        )
+        .post("https://utility.arcgisonline.com/arcgis/rest/info", SERVER_INFO)
+        .post(geometryServiceUrl + "/findTransformations", {})
+        .postOnce(
+          geometryServiceUrl + "/project",
+          {
+            geometries: NaNGeoms
+          },
+          { overwriteRoutes: false }
+        );
 
       restHelpers
         .convertExtentWithFallback(
@@ -1999,6 +2127,11 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
       ];
 
       fetchMock
+        .get(
+          "https://myorg.maps.arcgis.com/sharing/rest/portals/self?f=json&token=fake-token",
+          utils.getPortalsSelfResponse()
+        )
+        .post("https://utility.arcgisonline.com/arcgis/rest/info", SERVER_INFO)
         .post(geometryServiceUrl + "/findTransformations", {})
         .postOnce(
           geometryServiceUrl + "/project",
@@ -2019,7 +2152,14 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
           geometryServiceUrl,
           MOCK_USER_SESSION
         )
-        .then(done.fail, done);
+        .then(
+          () => {
+            done.fail();
+          },
+          () => {
+            done();
+          }
+        );
     });
   });
 
@@ -2957,6 +3097,85 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
     });
   });
 
+  describe("searchAllItems", () => {
+    it("can handle no results from searching for items", done => {
+      const query: string = "My Item";
+
+      fetchMock.get(
+        "https://www.arcgis.com/sharing/rest/search?f=json&q=My%20Item",
+        //                        q    s   #    x  t  r
+        utils.getSearchResponse(query, 1, 100, -1, 0, 0)
+      );
+
+      restHelpers.searchAllItems(query).then(
+        itemResponse => {
+          expect(itemResponse.results.length).toEqual(0);
+          done();
+        },
+        () => done.fail()
+      );
+    });
+
+    it("can fetch a single tranche", done => {
+      const query: string = "My Item";
+
+      fetchMock.get(
+        "https://www.arcgis.com/sharing/rest/search?f=json&q=My%20Item",
+        //                        q    s   #    x  t  r
+        utils.getSearchResponse(query, 1, 100, -1, 4, 4)
+      );
+
+      restHelpers.searchAllItems(query).then(
+        itemResponse => {
+          expect(itemResponse.results.length).toEqual(4);
+          done();
+        },
+        () => done.fail()
+      );
+    });
+
+    it("can fetch more than one tranche", done => {
+      const query: string = "My Item";
+
+      fetchMock
+        .get(
+          "https://www.arcgis.com/sharing/rest/search?f=json&q=My%20Item",
+          //                        q    s   #    x    t    r
+          utils.getSearchResponse(query, 1, 100, 101, 120, 100)
+        )
+        .get(
+          "https://www.arcgis.com/sharing/rest/search?f=json&q=My%20Item&num=100&start=101",
+          //                        q     s    #    x   t    r
+          utils.getSearchResponse(query, 101, 100, -1, 120, 20)
+        );
+
+      restHelpers.searchAllItems(query).then(
+        itemResponse => {
+          expect(itemResponse.results.length).toEqual(120);
+          done();
+        },
+        () => done.fail()
+      );
+    });
+
+    it("can handle a failure", done => {
+      const query: string = "My Item";
+
+      fetchMock.get(
+        "https://www.arcgis.com/sharing/rest/search?f=json&q=My%20Item",
+        mockItems.get400Failure()
+      );
+
+      restHelpers.searchAllItems(query).then(
+        () => done.fail(),
+        response => {
+          expect(response.message).toEqual("CONT_0001: Item does not exist or is inaccessible.");
+          done();
+        }
+      );
+    });
+  });
+
   describe("searchGroups", () => {
     it("can handle no results from searching groups", done => {
       const query: string = "My Group";
@@ -2991,6 +3210,139 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
           done();
         },
         () => done.fail()
+      );
+    });
+  });
+
+  describe("searchAllGroups", () => {
+    it("can fetch more than one tranche", done => {
+      const query: string = "Fred";
+      const pagingParams: IPagingParams = { start: 1, num: 5 };
+
+      fetchMock
+        .get(
+          utils.PORTAL_SUBSET.restUrl +
+            "/community/groups?f=json&sortField=title&sortOrder=asc&start=1&num=5&q=Fred&token=fake-token",
+          utils.getSearchResponse(query, 1, 5, 6, 9, 5)
+        )
+        .get(
+          utils.PORTAL_SUBSET.restUrl +
+            "/community/groups?f=json&sortField=title&sortOrder=asc&start=6&num=5&q=Fred&token=fake-token",
+          utils.getSearchResponse(query, 6, 5, -1, 9, 4)
+        );
+
+      restHelpers.searchAllGroups(query, MOCK_USER_SESSION, null, pagingParams).then(
+        response => {
+          expect(response.length).toEqual(9);
+          done();
+        },
+        () => done.fail()
+      );
+    });
+  });
+
+  describe("searchGroupAllContents", () => {
+    it("can handle no results from searching group contents", done => {
+      const groupId: string = "grp1234567890";
+      const query: string = "Fred";
+
+      fetchMock.get(
+        utils.PORTAL_SUBSET.restUrl +
+          `/content/groups/${groupId}/search?f=json&num=100&q=${query}&token=fake-token`,
+        //                        q    s   #    x  t  r
+        utils.getSearchResponse(query, 1, 100, -1, 0, 0)
+      );
+
+      restHelpers.searchGroupAllContents(groupId, query, MOCK_USER_SESSION).then(
+        response => {
+          expect(response.query).withContext("query").toEqual(query);
+          expect(response.start).withContext("start").toEqual(1);
+          expect(response.num).withContext("num").toEqual(0);
+          expect(response.nextStart).withContext("nextStart").toEqual(-1);
+          expect(response.total).withContext("total").toEqual(0);
+          expect(response.results.length).withContext("results.length").toEqual(0);
+          done();
+        },
+        () => done.fail()
+      );
+    });
+
+    it("can fetch a single tranche", done => {
+      const groupId: string = "grp1234567890";
+      const query: string = "Fred";
+      const additionalSearchOptions: interfaces.IAdditionalSearchOptions = { num: 5 };
+
+      fetchMock.get(
+        utils.PORTAL_SUBSET.restUrl +
+          `/content/groups/${groupId}/search?f=json&num=5&q=${query}&token=fake-token`,
+        //                        q    s  #   x  t  r
+        utils.getSearchResponse(query, 1, 5, -1, 4, 4)
+      );
+
+      restHelpers.searchGroupAllContents(groupId, query, MOCK_USER_SESSION, additionalSearchOptions).then(
+        response => {
+          expect(response.query).withContext("query").toEqual(query);
+          expect(response.start).withContext("start").toEqual(1);
+          expect(response.num).withContext("num").toEqual(4);
+          expect(response.nextStart).withContext("nextStart").toEqual(-1);
+          expect(response.total).withContext("total").toEqual(4);
+          expect(response.results.length).withContext("results.length").toEqual(4);
+          done();
+        },
+        () => done.fail()
+      );
+    });
+
+    it("can fetch more than one tranche", done => {
+      const groupId: string = "grp1234567890";
+      const query: string = "Fred";
+      const additionalSearchOptions: interfaces.IAdditionalSearchOptions = { num: 5 };
+
+      fetchMock
+        .get(
+          utils.PORTAL_SUBSET.restUrl +
+            `/content/groups/${groupId}/search?f=json&num=5&q=${query}&token=fake-token`,
+          //                        q    s  #  x  t  r
+          utils.getSearchResponse(query, 1, 5, 6, 9, 5)
+        )
+        .get(
+          utils.PORTAL_SUBSET.restUrl +
+            `/content/groups/${groupId}/search?f=json&num=5&start=6&q=${query}&token=fake-token`,
+            //                        q    s  #   x  t  r
+            utils.getSearchResponse(query, 1, 5, -1, 9, 4)
+        );
+
+      restHelpers.searchGroupAllContents(groupId, query, MOCK_USER_SESSION, additionalSearchOptions).then(
+        response => {
+          expect(response.query).withContext("query").toEqual(query);
+          expect(response.start).withContext("start").toEqual(1);
+          expect(response.num).withContext("num").toEqual(9);
+          expect(response.nextStart).withContext("nextStart").toEqual(-1);
+          expect(response.total).withContext("total").toEqual(9);
+          expect(response.results.length).withContext("results.length").toEqual(9);
+          done();
+        },
+        () => done.fail()
+      );
+    });
+
+    it("can handle a failure", done => {
+      const groupId: string = "grp1234567890";
+      const query: string = "Fred";
+      const additionalSearchOptions: interfaces.IAdditionalSearchOptions = { num: 5 };
+
+      fetchMock.get(
+        utils.PORTAL_SUBSET.restUrl +
+          `/content/groups/${groupId}/search?f=json&num=5&q=${query}&token=fake-token`,
+        mockItems.get400Failure()
+      );
+
+      restHelpers.searchGroupAllContents(groupId, query, MOCK_USER_SESSION, additionalSearchOptions).then(
+        () => done.fail(),
+        response => {
+          expect(response.message).toEqual("CONT_0001: Item does not exist or is inaccessible.");
+          done();
+        }
       );
     });
   });
@@ -3243,6 +3595,53 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
           });
           done();
         }, done.fail);
+    });
+  });
+
+  describe("updateGroup", () => {
+    afterEach(() => {
+      sinon.restore();
+    });
+
+    it("handles failure", done => {
+      const grp = templates.getGroupTemplatePart().item;
+
+      sinon
+        .stub(portal, "updateGroup")
+        .rejects(utils.getFailureResponse());
+
+      restHelpers
+        .updateGroup(grp, MOCK_USER_SESSION)
+        .then(
+          () => {
+            done.fail();
+          },
+          () => {
+            done();
+          }
+        );
+    });
+
+    it("uses supplied additional parameters", done => {
+      const grp = templates.getGroupTemplatePart().item;
+      const additionalParams = { extra: "value" };
+
+      const updateStub = sinon
+        .stub(portal, "updateGroup")
+        .resolves(utils.getSuccessResponse());
+
+      restHelpers
+        .updateGroup(grp, MOCK_USER_SESSION, additionalParams)
+        .then(
+          () => {
+            const updateFnCall = updateStub.getCall(0);
+            expect(updateFnCall.args[0].params).toEqual(additionalParams);
+            done();
+          },
+          () => {
+            done.fail();
+          }
+        );
     });
   });
 
@@ -4361,17 +4760,31 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
       };
 
       fetchMock
-        .post(
-          geometryServiceUrl + "/findTransformations",
-          mockItems.get400Failure()
+        .post("https://www.arcgis.com/sharing/rest/generateToken", mockItems.get400Failure())
+        .get(
+          "https://www.arcgis.com/sharing/rest/portals/self?f=json",
+          utils.getPortalsSelfResponse()
         )
+        .get(
+          "https://myorg.maps.arcgis.com/sharing/rest/portals/self?f=json&token=fake-token",
+          utils.getPortalsSelfResponse()
+        )
+        .post("https://utility.arcgisonline.com/arcgis/rest/info", utils.getPortalsSelfResponse())
+        .post(geometryServiceUrl + "/findTransformations", mockItems.get400Failure())
         .post(
           "http://utility/geomServer/findTransformations/rest/info",
           '{"error":{"code":403,"message":"Access not allowed request","details":[]}}'
         );
       restHelpers
         ._getCreateServiceOptions(itemTemplate, userSession, templateDictionary)
-        .then(done.fail, done);
+        .then(
+          () => {
+            done.fail();
+          },
+          () => {
+            done();
+          }
+        );
     });
   });
 

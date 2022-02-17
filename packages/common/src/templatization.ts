@@ -92,6 +92,7 @@ export function createInitializedGroupTemplate(itemInfo: any): IItemTemplate {
     description: itemInfo.description,
     snippet: itemInfo.snippet,
     tags: itemInfo.tags,
+    typeKeywords: itemInfo.typeKeywords,
     title: itemInfo.title,
     thumbnail: itemInfo.thumbnail
   };

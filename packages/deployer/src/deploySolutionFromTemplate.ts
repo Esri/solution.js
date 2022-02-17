@@ -103,26 +103,7 @@ export function deploySolutionFromTemplate(
         }
 
         // update template items with source-itemId type keyword
-        solutionTemplateData.templates = solutionTemplateData.templates.map(
-          (template: any) => {
-            const sourceId: string = "source-" + template.itemId;
-            /* istanbul ignore else */
-            if (template.item) {
-              /* istanbul ignore else */
-              if (template.item!.typeKeywords) {
-                template.item!.typeKeywords!.push(sourceId);
-              }
-              /* istanbul ignore else */
-              if (
-                template.item!.tags &&
-                common.getProp(template, "item.type") === "Group"
-              ) {
-                template.item!.tags!.push(sourceId);
-              }
-            }
-            return template;
-          }
-        );
+        solutionTemplateData.templates = _addSourceId(solutionTemplateData.templates);
 
         templateDictionary.isPortal = portalResponse.isPortal;
         templateDictionary.organization = Object.assign(
@@ -352,6 +333,28 @@ export function deploySolutionFromTemplate(
       })
       .then(() => resolve(solutionTemplateBase.id), reject);
   });
+}
+
+/**
+ * Add source-id to items/groups typeKeywords
+ *
+ * @param template the array of solution data templates
+ * @internal
+ */
+export function _addSourceId(
+  templates: common.IItemTemplate[]
+): common.IItemTemplate[] {
+  return templates.map(
+    (template: any) => {
+      /* istanbul ignore else */
+      if (template.item) {
+        const typeKeywords = template.item!.typeKeywords || [];
+        typeKeywords.push("source-" + template.itemId);
+        template.item.typeKeywords = typeKeywords;
+      }
+      return template;
+    }
+  );
 }
 
 /**

@@ -16,6 +16,7 @@
 
 import {
   deploySolutionFromTemplate,
+  _addSourceId,
   _applySourceToDeployOptions,
   _checkedReplaceAll,
   _getPortalBaseUrl,
@@ -187,6 +188,7 @@ describe("Module `deploySolutionFromTemplate`", () => {
         .resolves();
 
       fetchMock
+        .post("https://utility.arcgisonline.com/arcgis/rest/info", testUtils.getPortalsSelfResponse())
         .get(
           testUtils.PORTAL_SUBSET.restUrl +
             "/portals/self?f=json&token=fake-token",
@@ -309,6 +311,7 @@ describe("Module `deploySolutionFromTemplate`", () => {
         .resolves();
 
       fetchMock
+        .post("https://utility.arcgisonline.com/arcgis/rest/info", testUtils.getPortalsSelfResponse())
         .get(
           "https://myorg.maps.arcgis.com/sharing/rest/portals/self?f=json&token=fake-token",
           portalsSelfResponse
@@ -399,6 +402,15 @@ describe("Module `deploySolutionFromTemplate`", () => {
           done.fail();
         }
       );
+    });
+  });
+
+  describe("_addSourceId", () => {
+    it("will add typeKeywords for groups", () => {
+      const grpTemplate = mockTemplates.getItemTemplate("Group");
+      delete(grpTemplate.item.typeKeywords);
+      const actual = _addSourceId([grpTemplate]);
+      expect(actual[0].item.typeKeywords).toContain("source-grp1234567890");
     });
   });
 

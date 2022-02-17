@@ -917,7 +917,7 @@ export function _findExistingItemByKeyword(
         existingItemsDefs.push(
           Promise.resolve({
             results: userGroups
-              .filter(g => g.tags.indexOf(`source-${template.itemId}`) > -1)
+              .filter(g => g.tags.indexOf(`source-${template.itemId}`) > -1 || g.typeKeywords.indexOf(`source-${template.itemId}`) > -1)
               .map(g => {
                 g.type = "Group";
                 return g;

@@ -53,8 +53,10 @@ The API is divided into packages to make it easier to use just the parts that yo
 * `file`, which contains functions for items that contain files
 * `form`, which contains functions for form items
 * `group`, which contains functions for Groups
+* `hub-types`, which contains functions for Hub Sites and Hub Pages
 * `simple-types`, which contains functions for the simpler item types Dashboard, Form, Web Map, Web Mapping Application, and Workforce Project
 * `storymap`, which contains functions for Storymap items
+* `velocity`, which contains functions for Velocity items
 * `viewer`, which contains functions to support displaying Solution items
 * `web-experience`, which contains functions for Experience Builder items
 

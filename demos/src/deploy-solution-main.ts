@@ -177,48 +177,51 @@ export function getFolders(
 }
 
 export function getTemplates(
-  groupId: string,
-  currentCards? : ISolutionInfoCard[],
-  inPagingParams? : portal.IPagingParams
+  primarySolutionsGroupId: string,
+  agoBasedEnterpriseSolutionsGroupId: string
 ) : Promise<ISolutionInfoCard[]>{
   const query = "type: Solution typekeywords:Solution,Template"
-  const pagingParams: portal.IPagingParams = inPagingParams ? inPagingParams : {
-    start: 0,
-    num: 24
-  };
-  const cardList = currentCards ? currentCards : [];
+  const anonUS = new common.UserSession({portal:"https://www.arcgis.com/sharing/rest"});
   const additionalSearchOptions = {
     sortField: "title",
-    sortOrder: "asc",
-    ...pagingParams
+    sortOrder: "asc"
   }
 
-  return new Promise<ISolutionInfoCard[]>((resolve,reject) => {
-    const anonUS = new common.UserSession({portal:"https://www.arcgis.com/sharing/rest"});
-    common.searchGroupContents(groupId, query, anonUS, additionalSearchOptions)
-    .then((response: portal.ISearchResult<portal.IItem>) => {
-      const cleanResults = common.sanitizeJSON(response.results);
-      cleanResults.forEach((result:any) => {
-        const card: ISolutionInfoCard = {
-          id: result.id,
-          title: result.title
-        }
-        cardList.push(card)
-      });
-      if (response.nextStart > 0){
-        pagingParams.start = response.nextStart;
-        resolve(getTemplates(groupId,cardList,pagingParams));
-      }
-      else{
-        resolve(cardList);
-      }
-    },(error:any) => {
-      reject(error)
-      console.log(error);
-    }
-    );
-  });
+  const searches: Array<Promise<common.ISearchResult<portal.IItem>>> = [];
+  if (primarySolutionsGroupId) {
+    searches.push(common.searchGroupAllContents(primarySolutionsGroupId, query, anonUS, additionalSearchOptions));
+  }
+  if (agoBasedEnterpriseSolutionsGroupId) {
+    searches.push(common.searchGroupAllContents(agoBasedEnterpriseSolutionsGroupId, query, anonUS, additionalSearchOptions));
+  }
 
+  return Promise.all(searches)
+  .then(responseSet => {
+    let items: portal.IItem[] = [];
+
+    // Bundle the results
+    if (responseSet.length === 1) {
+      items = responseSet[0].results;
+    } else if (responseSet.length === 2) {
+      items = responseSet[0].results.concat(responseSet[1].results);
+    }
+
+    // Screen the results
+    const cleanResults = common.sanitizeJSON(items);
+
+    // Construct the results
+    const cardList: ISolutionInfoCard[] = [];
+    cleanResults.forEach((result:any) => {
+      const card: ISolutionInfoCard = {
+        id: result.id,
+        title: result.title
+      }
+      cardList.push(card)
+    });
+
+    // And return them
+    return Promise.resolve(cardList);
+  });
 }
 
 export function isJsonStr(

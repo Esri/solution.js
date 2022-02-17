@@ -68,7 +68,8 @@ describe("Module `group`: manages the creation and deployment of groups", () => 
           snippet: "Snippet of an AGOL group",
           title: "An AGOL group",
           tags: [],
-          thumbnail: "ROWPermitManager.png"
+          thumbnail: "ROWPermitManager.png",
+          typeKeywords: []
         },
         data: {},
         resources: [],
@@ -197,7 +198,8 @@ describe("Module `group`: manages the creation and deployment of groups", () => 
           snippet: "Snippet of an AGOL group",
           title: "An AGOL group",
           tags: [],
-          thumbnail: "ROWPermitManager.png"
+          thumbnail: "ROWPermitManager.png",
+          typeKeywords: []
         },
         data: {},
         resources: [],
@@ -717,11 +719,8 @@ describe("Module `group`: manages the creation and deployment of groups", () => 
         success: true,
         group: { id: newItemID }
       })
-      .get(`${utils.PORTAL_SUBSET.restUrl}/community/groups?f=json&sortField=title&sortOrder=asc&start=0&num=24&q=(owner%3A${owner})%20orgid%3A${organization.id}&token=fake-token`,
-        { results: [], nextStart: 1 }
-      )
-      .get("https://myorg.maps.arcgis.com/sharing/rest/community/groups?f=json&sortField=title&sortOrder=asc&start=1&num=24&q=(owner%3ATrackingServiceOwner)%20orgid%3Aorgid&token=fake-token",
-        { results: [], nextStart: 0 }
+      .get(`${utils.PORTAL_SUBSET.restUrl}/community/groups?f=json&sortField=title&sortOrder=asc&start=1&num=24&q=(owner%3A${owner})%20orgid%3A${organization.id}&token=fake-token`,
+        { results: [], nextStart: -1 }
       )
       .post(
         "https://myorg.maps.arcgis.com/sharing/rest/community/groups/abc8cab401af4828a25cc6eaeb59fb69/reassign",
@@ -786,7 +785,7 @@ describe("Module `group`: manages the creation and deployment of groups", () => 
         success: true,
         group: { id: newItemID }
       })
-      .get(`${utils.PORTAL_SUBSET.restUrl}/community/groups?f=json&sortField=title&sortOrder=asc&start=0&num=24&q=(owner%3A${owner})%20orgid%3A${organization.id}&token=fake-token`,
+      .get(`${utils.PORTAL_SUBSET.restUrl}/community/groups?f=json&sortField=title&sortOrder=asc&start=1&num=24&q=(owner%3A${owner})%20orgid%3A${organization.id}&token=fake-token`,
         mockItems.get400Failure()
       )
       .post(
@@ -845,7 +844,7 @@ describe("Module `group`: manages the creation and deployment of groups", () => 
         success: true,
         group: { id: newItemID }
       })
-      .get(`${utils.PORTAL_SUBSET.restUrl}/community/groups?f=json&sortField=title&sortOrder=asc&start=0&num=24&q=(owner%3A${owner})%20orgid%3A${organization.id}&token=fake-token`,
+      .get(`${utils.PORTAL_SUBSET.restUrl}/community/groups?f=json&sortField=title&sortOrder=asc&start=1&num=24&q=(owner%3A${owner})%20orgid%3A${organization.id}&token=fake-token`,
         { results: [], nextStart: 0 }
       )
       .post(
@@ -901,7 +900,7 @@ describe("Module `group`: manages the creation and deployment of groups", () => 
         success: true,
         group: { id: newItemID }
       })
-      .get(`${utils.PORTAL_SUBSET.restUrl}/community/groups?f=json&sortField=title&sortOrder=asc&start=0&num=24&q=(owner%3A${owner})%20orgid%3A${organization.id}&token=fake-token`,
+      .get(`${utils.PORTAL_SUBSET.restUrl}/community/groups?f=json&sortField=title&sortOrder=asc&start=1&num=24&q=(owner%3A${owner})%20orgid%3A${organization.id}&token=fake-token`,
         { results: [], nextStart: 0 }
       )
       .post(
@@ -960,7 +959,7 @@ describe("Module `group`: manages the creation and deployment of groups", () => 
         success: true,
         group: { id: newItemID }
       })
-      .get(`${utils.PORTAL_SUBSET.restUrl}/community/groups?f=json&sortField=title&sortOrder=asc&start=0&num=24&q=(owner%3A${owner})%20orgid%3A${organization.id}&token=fake-token`,
+      .get(`${utils.PORTAL_SUBSET.restUrl}/community/groups?f=json&sortField=title&sortOrder=asc&start=1&num=24&q=(owner%3A${owner})%20orgid%3A${organization.id}&token=fake-token`,
         { results: [], nextStart: 0 }
       )
       .post(
@@ -1019,7 +1018,7 @@ describe("Module `group`: manages the creation and deployment of groups", () => 
         success: true,
         group: { id: newItemID }
       })
-      .get(`${utils.PORTAL_SUBSET.restUrl}/community/groups?f=json&sortField=title&sortOrder=asc&start=0&num=24&q=(owner%3A${owner})%20orgid%3A${organization.id}&token=fake-token`,
+      .get(`${utils.PORTAL_SUBSET.restUrl}/community/groups?f=json&sortField=title&sortOrder=asc&start=1&num=24&q=(owner%3A${owner})%20orgid%3A${organization.id}&token=fake-token`,
         { results: [], nextStart: 0 }
       )
       .post(
@@ -1079,7 +1078,7 @@ describe("Module `group`: manages the creation and deployment of groups", () => 
         success: true,
         group: { id: newItemID }
       })
-      .get(`${utils.PORTAL_SUBSET.restUrl}/community/groups?f=json&sortField=title&sortOrder=asc&start=0&num=24&q=(owner%3A${owner})%20orgid%3A${organization.id}&token=fake-token`,
+      .get(`${utils.PORTAL_SUBSET.restUrl}/community/groups?f=json&sortField=title&sortOrder=asc&start=1&num=24&q=(owner%3A${owner})%20orgid%3A${organization.id}&token=fake-token`,
         { results: [], nextStart: 0 }
       )
       .post(
@@ -1143,7 +1142,7 @@ describe("Module `group`: manages the creation and deployment of groups", () => 
         success: true,
         group: { id: newItemID }
       })
-      .get(`${utils.PORTAL_SUBSET.restUrl}/community/groups?f=json&sortField=title&sortOrder=asc&start=0&num=24&q=(owner%3A${owner})%20orgid%3A${organization.id}&token=fake-token`,
+      .get(`${utils.PORTAL_SUBSET.restUrl}/community/groups?f=json&sortField=title&sortOrder=asc&start=1&num=24&q=(owner%3A${owner})%20orgid%3A${organization.id}&token=fake-token`,
         { results: [], nextStart: 0 }
       )
       .post(
@@ -1355,7 +1354,7 @@ describe("Module `group`: manages the creation and deployment of groups", () => 
       const templateDictionary: any = {
         user: {
           groups: []
-        } 
+        }
       };
 
       fetchMock
@@ -1447,6 +1446,67 @@ describe("Module `group`: manages the creation and deployment of groups", () => 
           expect(response).toEqual(templates.getFailedItem(itemTemplate.type));
           done();
         });
+    });
+
+    it("should handle post process of group", done => {
+      const itemId: string = "abc9cab401af4828a25cc6eaeb59fb69";
+      const templateDictionary: any = { "bbb9cab401af4828a25cc6eaeb59fb69": { url: "http://correct"} };
+
+      const itemTemplate: common.IItemTemplate = templates.getItemTemplateSkeleton();
+      itemTemplate.itemId = itemId;
+      itemTemplate.type = "Group";
+      itemTemplate.item.title = "Dam Inspection Assignments";
+      itemTemplate.item.description = "A path {{bbb9cab401af4828a25cc6eaeb59fb69.url}}";
+      itemTemplate.item.id = itemId;
+      const itemInfos = [{id: itemId, item: itemTemplate}];
+
+      fetchMock.post(`${utils.PORTAL_SUBSET.restUrl}/community/groups/${itemId}/update`, {
+        success: true,
+        group: { id: itemId }
+      });
+
+      group.postProcess(
+        itemId,
+        "Group",
+        itemInfos,
+        itemTemplate,
+        [itemTemplate],
+        templateDictionary,
+        MOCK_USER_SESSION
+      ).then(() => {
+        done();
+      }, done.fail)
+    });
+
+    it("should handle failure to post process group", done => {
+      const itemId: string = "abc9cab401af4828a25cc6eaeb59fb69";
+      const templateDictionary: any = { "bbb9cab401af4828a25cc6eaeb59fb69": { url: "http://correct"} };
+
+      const itemTemplate: common.IItemTemplate = templates.getItemTemplateSkeleton();
+      itemTemplate.itemId = itemId;
+      itemTemplate.type = "Group";
+      itemTemplate.item.title = "Dam Inspection Assignments";
+      itemTemplate.item.description = "A path {{bbb9cab401af4828a25cc6eaeb59fb69.url}}";
+      itemTemplate.item.id = itemId;
+      const itemInfos = [{id: itemId, item: itemTemplate}];
+
+      fetchMock.post(`${utils.PORTAL_SUBSET.restUrl}/community/groups/${itemId}/update`, {
+        success: false,
+        groupId: itemId
+      });
+
+      group.postProcess(
+        itemId,
+        "Group",
+        itemInfos,
+        itemTemplate,
+        [itemTemplate],
+        templateDictionary,
+        MOCK_USER_SESSION
+      ).then(() => done.fail, e => {
+        expect(e.success).toEqual(false);
+        done();
+      })
     });
   });
 });

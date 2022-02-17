@@ -1143,9 +1143,14 @@ describe("Module `webmappingapplication`: manages the creation and deployment of
 
       webmappingapplication
         .convertItemToTemplate(infoLookupTemplate, MOCK_USER_SESSION, MOCK_USER_SESSION)
-        .then(template => {
-          done.fail();
-        }, done);
+        .then(
+          () => {
+            done.fail();
+          },
+          () => {
+            done();
+          }
+        );
     });
   });
 

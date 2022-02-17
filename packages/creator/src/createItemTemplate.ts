@@ -103,6 +103,7 @@ export function createItemTemplate(
 
             const idTest: RegExp = /^source-[0-9A-F]{32}/i;
             // Remove any source-itemId type keywords
+            /* istanbul ignore else */
             if (Array.isArray(itemInfo.typeKeywords)) {
               itemInfo.typeKeywords = itemInfo.typeKeywords.filter(v =>
                 idTest.test(v) ? false : true

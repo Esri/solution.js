@@ -92,33 +92,36 @@ describe("Module `webmap`: manages the creation and deployment of OIC (Oriented 
   });
 
   describe("_extractDependencies", () => {
-    it("handles missing data or properties", done => {
+    it("handles missing data or properties", () => {
       const expectedDependencies = {
         dependencies: [] as string[],
         urlHash: {} as any
       };
+      let itemTemplate: common.IItemTemplate;
 
-      oic
-        ._extractDependencies(templates.getItemTemplateSkeleton(), null)
-        .then(actual => {
-          expect(actual).toEqual(expectedDependencies);
-          done();
-        }, done.fail);
-
-      const itemTemplate = templates.getItemTemplate(
-        "Oriented Imagery Catalog"
-      );
-      itemTemplate.data.properties = null;
-      oic._extractDependencies(itemTemplate, null).then(actual => {
+      return oic._extractDependencies(templates.getItemTemplateSkeleton(), null)
+      .then(actual => {
         expect(actual).toEqual(expectedDependencies);
-        done();
-      }, done.fail);
 
-      itemTemplate.data = null;
-      oic._extractDependencies(itemTemplate, null).then(actual => {
+        itemTemplate = templates.getItemTemplate(
+          "Oriented Imagery Catalog"
+        );
+        itemTemplate.data.properties = null;
+        return oic._extractDependencies(itemTemplate, null);
+      })
+      .then(actual => {
         expect(actual).toEqual(expectedDependencies);
-        done();
-      }, done.fail);
+
+        itemTemplate.data = null;
+        return oic._extractDependencies(itemTemplate, null);
+      })
+      .then(actual => {
+        expect(actual).toEqual(expectedDependencies);
+        return Promise.resolve();
+      })
+      .catch(error => {
+        return Promise.reject(error);
+      });
     });
 
     it("handles both of the URL properties", done => {
