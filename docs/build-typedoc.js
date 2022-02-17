@@ -11,6 +11,7 @@ const MarkdownIt = require("markdown-it");
 const md = new MarkdownIt();
 
 (function generateTypeDoc() {
+
   return new Promise((resolve, reject) => {
     const typedoc = spawn(
       "typedoc",
@@ -19,21 +20,11 @@ const md = new MarkdownIt();
         OUTPUT,
         "--exclude",
         "**/*test.ts",
+        "--ignoreCompilerErrors",
+        "--module",
+        "common",
         "--tsconfig",
-        "./tsconfig.json",
-        "packages/common/src/index.ts",
-        "packages/creator/src/index.ts",
-        "packages/deployer/src/index.ts",
-        "packages/feature-layer/src/index.ts",
-        "packages/file/src/index.ts",
-        "packages/form/src/index.ts",
-        "packages/group/src/index.ts",
-        "packages/hub-types/src/index.ts",
-        "packages/simple-types/src/index.ts",
-        "packages/storymap/src/index.ts",
-        "packages/velocity/src/index.ts",
-        "packages/viewer/src/index.ts",
-        "packages/web-experience/src/index.ts"
+        "./tsconfig.json"
       ],
       {
         stdio: "inherit"
@@ -110,7 +101,13 @@ const md = new MarkdownIt();
        * its name.
        */
       return children.map(child => {
-        child.name = _.first(child.name.split("/"));
+        const parts = child.name.split("/");
+        const first = _.first(parts);
+        // as of https://github.com/Esri/hub.js/pull/381/commits/19e8c603f5c3ea639166ff6a24394158e2dd3217
+        // the name seems to include "packages", as if it were run one folder up
+        child.name = first === "packages"
+          ? parts[1]
+          : first;
         child.package = child.name;
         return child;
       });
@@ -123,6 +120,10 @@ const md = new MarkdownIt();
        * into a giant array of all declarations in all packages.
        */
       return children.reduce((allChildren, child) => {
+        if (!child.children) {
+          console.log(child);
+          return allChildren;
+        }
         return allChildren.concat(
           child.children.map(c => {
             c.package = child.package;
@@ -131,11 +132,13 @@ const md = new MarkdownIt();
         );
       }, []);
     })
-    .then(children => {
+    .then(declarations => {
       /**
        * Next we remove all children that are not exported out of their files.
        */
-      return children.filter(c => c.flags && c.flags.isExported);
+      return declarations.filter(
+        declaration => declaration.flags && declaration.flags.isExported
+      );
     })
     .then(declarations => {
       /**
@@ -151,6 +154,19 @@ const md = new MarkdownIt();
       });
     })
     .then(declarations => {
+      const excludeList = ['encodeAgoQuery', 'downloadableAgg', 'downloadableFilter', 'collectionAgg',
+      'collectionFilter', 'createAggs', 'format', 'hasApiAgg', 'buildFilter', 'createFilters',
+      'encodeFilters', 'groupIds', 'handleFilter', 'hasApiFilter', 'computeItemsFacets',
+      'formatItem', 'calcHighlights', 'getSortField', 'isFilterable', 'generateFilter',
+      'agoFormatItemCollection', 'encodeParams', 'getPaths', 'getItems'];
+      /**
+       * Next we remove any declarations we want to excludeList from the API ref
+       */
+      return declarations.filter(
+        declaration => !excludeList.includes(declaration.name)
+      );
+    })
+    .then(declarations => {
       /**
        * Now that we have a list of all declarations across the entire project
        * we can begin to generate additional information about each declaration.
@@ -162,7 +178,7 @@ const md = new MarkdownIt();
        * and `titleSegments` to each page which are used in the template for SEO.
        */
       return declarations.map(declaration => {
-        const abbreviatedPackageName = declaration.package.replace("solutions-", "")
+        const abbreviatedPackageName = declaration.package;
         const src = `solution.js/api/${abbreviatedPackageName}/${declaration.name}.html`;
         let children;
 
@@ -225,14 +241,18 @@ const md = new MarkdownIt();
        * also adds a `title`, `description` and `titleSegments` to each page
        * which are used in the template for SEO.
        */
+      const packagesToExclude = ['members', 'initiatives'];
       return {
         declarations,
         packages: _(declarations)
           .map(d => d.package)
           .uniq()
+          .filter((pkg) => {
+            return !packagesToExclude.includes(pkg);
+          })
           .reduce((packages, package) => {
 
-            const abbreviatedPackageName = package.replace("solutions-", "")
+            const abbreviatedPackageName = package;
             const src = `solution.js/api/${abbreviatedPackageName}.html`;
             const pkg = require(`${process.cwd()}/packages/${package}/package.json`);
 
@@ -332,6 +352,55 @@ const md = new MarkdownIt();
     })
     .then(api => {
       /**
+       * Next we can sort the children of each declaration to sort by required/optional/inherited
+       */
+      api.declarations = api.declarations.map(declaration => {
+        if (declaration.children) {
+          declaration.children.sort((ca, cb) => {
+            const aIndex = rankChild(ca);
+            const bIndex = rankChild(cb);
+
+            if (aIndex > bIndex) {
+              return 1; // sort a below b
+            } else if (aIndex < bIndex) {
+              return -1; // sort a above b
+            } else {
+              return 0;
+            }
+            return 0;
+          });
+        }
+
+        if (declaration.groups) {
+          declaration.groups.forEach(group => {
+            if (group.children) {
+              group.children.sort((ca, cb) => {
+                const childA = declaration.children.find(c => c.id === ca);
+                const childB = declaration.children.find(c => c.id === cb);
+
+                const aIndex = rankChild(childA);
+                const bIndex = rankChild(childB);
+
+                if (aIndex > bIndex) {
+                  return 1;
+                } else if (aIndex < bIndex) {
+                  return -1;
+                } else {
+                  return 0;
+                }
+                return 0;
+              });
+            }
+          });
+        }
+
+        return declaration;
+      });
+
+      return api;
+    })
+    .then(api => {
+      /**
        * Our final object looks like this:
        *
        * {
@@ -357,3 +426,27 @@ const md = new MarkdownIt();
       console.error(e);
     });
 })();
+
+function rankChild(child) {
+  const { isPrivate, isPublic, isOptional, isStatic } = child
+    ? child.flags
+    : {};
+
+  const isInherited = child.inheritedFrom ? true : false;
+
+  let score = 0;
+
+  if (isPrivate) {
+    score += 30;
+  }
+  if (isStatic) {
+    score -= 15;
+  }
+  if (!isInherited) {
+    score -= 5;
+  }
+  if (!isOptional) {
+    score -= 15;
+  }
+  return score;
+}
