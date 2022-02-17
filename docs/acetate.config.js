@@ -151,11 +151,11 @@ module.exports = function(acetate) {
         });
 
         const searchIndex = createPage.fromTemplateString(
-          "solution.js/js/api-search.js",
-          `const ESRI_REST_API_REF_INDEX = ${JSON.stringify(
+          "solution.js/js/index.js",
+          `const ESRI_SOLUTION_JS_REF_INDEX = ${JSON.stringify(
             typedoc.quickSearchIndex
           )}`,
-          path.join(acetate.sourceDir, "js", "api-search.js"),
+          path.join(acetate.sourceDir, "js", "index.js"),
           { layout: false, prettyUrl: false }
         );
 
