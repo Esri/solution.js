@@ -9,11 +9,16 @@ Note: This file cannot be in UTF-8*
 ## [Unreleased]
 
 
-## [1.3.0] - February 48th 2022
+
+## [1.3.1] - February 17th 2022
 
 
 
-## [1.2.0] - December 343rd 2021
+## [1.3.0] - February 17th 2022
+
+
+
+## [1.2.0] - December 9th 2021
 
 
 
@@ -187,4 +192,5 @@ Note: This file cannot be in UTF-8*
 [1.1.5]: https://github.com/Esri/solution.js/compare/v1.1.4...v1.1.5 "v1.1.5"
 [1.2.0]: https://github.com/Esri/solution.js/compare/v1.1.5...v1.2.0 "v1.2.0"
 [1.3.0]: https://github.com/Esri/solution.js/compare/v1.2.0...v1.3.0 "v1.3.0"
-[HEAD]: https://github.com/Esri/solution.js/compare/v1.3.0...HEAD "Unreleased Changes"
+[1.3.1]: https://github.com/Esri/solution.js/compare/v1.3.0...v1.3.1 "v1.3.1"
+[HEAD]: https://github.com/Esri/solution.js/compare/v1.3.1...HEAD "Unreleased Changes"
