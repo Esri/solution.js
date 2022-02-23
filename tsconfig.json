@@ -1,9 +1,7 @@
 {
   "compilerOptions": {
-    "allowSyntheticDefaultImports": true,
     "declaration": true,
-    "downlevelIteration": true,
-    "forceConsistentCasingInFileNames": true,
+    "esModuleInterop": true,
     "importHelpers": true,
     "lib": ["dom", "es2020"],
     "module": "esnext",
@@ -14,14 +12,12 @@
     "strictNullChecks": false,
     "suppressImplicitAnyIndexErrors": true,
     "target": "es2020",
-    "typeRoots": ["./node_modules/@types"],
     "types": ["node", "jasmine"]
   },
   "exclude": [
     "node_modules"
   ],
   "include": [
-    "./node_modules/@types",
     "packages",
     "support"
   ],
