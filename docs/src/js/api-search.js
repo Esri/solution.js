@@ -97,7 +97,7 @@ Vue.component("api-search", {
     }
   },
   created: function() {
-    this.index = new Fuse(ESRI_REST_API_REF_INDEX, {
+    this.index = new Fuse(ESRI_SOLUTION_JS_REF_INDEX, {
       shouldSort: true,
       threshold: 0.25,
       location: 0,
