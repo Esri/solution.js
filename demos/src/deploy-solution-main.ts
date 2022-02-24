@@ -71,11 +71,12 @@ function deployBatchOfSolutions(
   customParams: any
 ): Promise<string> {
   // Deploy the first item in the list
-  let solution: ISolutionInfoCard = null;
   let solutionHtml = "";
   let deployPromise = Promise.resolve("");
   if (solutionsToDeploy.length > 0) {
-    solution = solutionsToDeploy.shift();
+    // Casting result because shift() returns ISolutionInfoCard | undefined
+    // but we know that solutionsToDeploy has at least one item to shift
+    const solution: ISolutionInfoCard = solutionsToDeploy.shift() as ISolutionInfoCard ;
     const index = totalNumberOfSolutions - solutionsToDeploy.length;
     deployPromise = deploySolution(
       solution,

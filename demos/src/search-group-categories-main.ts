@@ -96,68 +96,72 @@ export function searchGroupCategories(
 }
 
 export function runQuery(): void {
-  const queryCategories = [];
+  const resultsDiv = document.getElementById("queryResults");
+  // If we can't find the output div, no point in generating its contents
+  if (resultsDiv) {
+    const queryCategories = [];
 
-  let currentORset = "";
-  let currentCategoryORGroup = "";
-  gQueryItems.forEach(queryItem => {
-    const queryItemParts = queryItem.split("|");
-    if (currentORset !== queryItemParts[0]) {
-      if (currentCategoryORGroup) {
-        queryCategories.push(currentCategoryORGroup);
-        currentCategoryORGroup = "";
-      }
-      currentORset = queryItemParts[0];
-    } else {
-      currentCategoryORGroup += ",";
-    }
-    currentCategoryORGroup += queryItemParts[1];
-  });
-  if (currentCategoryORGroup) {
-    queryCategories.push(currentCategoryORGroup);
-  }
-
-  const searchString = "";
-  const additionalSearchOptions: common.IAdditionalSearchOptions = {
-    categories: queryCategories,
-    num: 100
-  };
-  common
-    .searchGroupContents(
-      gGroupId,
-      searchString,
-      gAuthentication,
-      additionalSearchOptions
-    )
-    .then(
-      (response: common.ISearchResult<common.IItem>) => {
-        const results = response.results;
-        let html = "";
-        if (results.length === 0) {
-          html += "<i>nothing found</i>";
-        } else {
-          html += '<ol style="padding-inline-start:1em;">';
-          results.forEach((result: any) => {
-            html +=
-              "<li>" +
-              result.title +
-              " (" +
-              result.id +
-              ")<br>" +
-              JSON.stringify(result.groupCategories) +
-              "</li>";
-          });
-          html += "</0l>";
+    let currentORset = "";
+    let currentCategoryORGroup = "";
+    gQueryItems.forEach(queryItem => {
+      const queryItemParts = queryItem.split("|");
+      if (currentORset !== queryItemParts[0]) {
+        if (currentCategoryORGroup) {
+          queryCategories.push(currentCategoryORGroup);
+          currentCategoryORGroup = "";
         }
-        document.getElementById("queryResults").innerHTML = html;
-      },
-      err => {
-        document.getElementById("queryResults").innerHTML = colorize(
-          "red",
-          textAreaHtmlFromJSON(err)
-        );
+        currentORset = queryItemParts[0];
+      } else {
+        currentCategoryORGroup += ",";
       }
-    );
+      currentCategoryORGroup += queryItemParts[1];
+    });
+    if (currentCategoryORGroup) {
+      queryCategories.push(currentCategoryORGroup);
+    }
+
+    const searchString = "";
+    const additionalSearchOptions: common.IAdditionalSearchOptions = {
+      categories: queryCategories,
+      num: 100
+    };
+    common
+      .searchGroupContents(
+        gGroupId,
+        searchString,
+        gAuthentication,
+        additionalSearchOptions
+      )
+      .then(
+        (response: common.ISearchResult<common.IItem>) => {
+          const results = response.results;
+          let html = "";
+          if (results.length === 0) {
+            html += "<i>nothing found</i>";
+          } else {
+            html += '<ol style="padding-inline-start:1em;">';
+            results.forEach((result: any) => {
+              html +=
+                "<li>" +
+                result.title +
+                " (" +
+                result.id +
+                ")<br>" +
+                JSON.stringify(result.groupCategories) +
+                "</li>";
+            });
+            html += "</0l>";
+          }
+          resultsDiv.innerHTML = html;
+        },
+        err => {
+          resultsDiv.innerHTML = colorize(
+            "red",
+            textAreaHtmlFromJSON(err)
+          );
+        }
+      );
+  }
 }
 
 export function updateQuery(event: any): void {
@@ -192,7 +196,10 @@ export function updateQuery(event: any): void {
       '<div id="queryResults" style="font-size:small"></div>';
   }
 
-  document.getElementById("query").innerHTML = html;
+  const queryDiv = document.getElementById("query");
+  if (queryDiv) {
+    queryDiv.innerHTML = html;
+  }
 }
 
 //#endregion ---------------------------------------------------------------------------------------------------------//

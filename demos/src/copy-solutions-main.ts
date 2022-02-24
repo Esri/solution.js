@@ -156,7 +156,7 @@ export function getTemplates(
   getAllOrgSolutions?: boolean
 ): Promise<common.ISearchResult<common.IItem>> {
   return new Promise((resolve, reject) => {
-    common.getPortal(null, authentication).then(
+    common.getPortal("self", authentication).then(
       portalResponse => {
         if (!portalResponse.user) {
           reject("Unable to log in");
@@ -188,7 +188,13 @@ export function getTemplates(
       }
     )
     .then(
-      searchTrancheResponse => resolve(accumulateSearchResults(searchTrancheResponse))
+      searchTrancheResponse => {
+        if (searchTrancheResponse) {
+          resolve(accumulateSearchResults(searchTrancheResponse));
+        } else {
+          reject("Unable to fetch items");
+        }
+      }
     )
     .catch(
       error => reject(error)
@@ -206,12 +212,15 @@ function accumulateSearchResults (
   searchTrancheResponse: common.ISearchResult<common.IItem>
 ): Promise<common.ISearchResult<common.IItem>> {
   // No more items to fetch
-  if (!searchTrancheResponse.nextPage) {
+  if (typeof searchTrancheResponse.nextPage === "undefined") {
     return Promise.resolve(searchTrancheResponse);
   }
 
   return new Promise((resolve, reject) => {
-    searchTrancheResponse.nextPage().then(
+    // Casting nextPage() because it is defined as
+    // (() => Promise<common.ISearchResult<common.IItem>>) | undefined
+    // but we know that nextPage is defined at this point
+    (searchTrancheResponse.nextPage as (() => Promise<common.ISearchResult<common.IItem>>))().then(
       searchTrancheResponse2 => {
         searchTrancheResponse2.results = searchTrancheResponse.results.concat(searchTrancheResponse2.results);
         searchTrancheResponse2.start = 1;

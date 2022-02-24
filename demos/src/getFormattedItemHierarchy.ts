@@ -42,7 +42,7 @@ export function getFormattedItemHierarchy(
     common.getItemBase(itemId, authentication)
     .then((item: common.IItem) => {
       // Item must be a Solution template
-      if (item.type !== "Solution" || !item.typeKeywords.includes("Template")) {
+      if (item.type !== "Solution" || !item.typeKeywords || !item.typeKeywords.includes("Template")) {
         return reject("This app is for Solution Templates");
       }
       solutionTitle = '"' + item.title + '"';

@@ -41,7 +41,12 @@ export function addBusySymbol (containerElementId: string): HTMLElement {
  * @param itemClasses Space-separated HTML class names to include in new item
  * @return Created HTML item
  */
-export function addItem (containerElementId: string, itemType: string, itemId?: string, itemClasses?: string): HTMLElement {
+export function addItem (
+  containerElementId: string,
+  itemType: string,
+  itemId?: string,
+  itemClasses?: string
+): HTMLElement {
   const item = document.createElement(itemType);
   if (itemId) {
     item.id = itemId;
@@ -53,7 +58,9 @@ export function addItem (containerElementId: string, itemType: string, itemId?: 
   }
 
   const containerItem = document.getElementById(containerElementId);
-  containerItem.appendChild(item);
+  if (containerItem) {
+    containerItem.appendChild(item);
+  }
   return item;
 }
 

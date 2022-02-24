@@ -301,11 +301,15 @@ function showTopologicalSortGraph(
   collection.map(template => template.itemId)
   .forEach((id: string) => {
     const template = collection.find(entry => entry.itemId === id);
-    const dependencies = template.dependencies || [];
-    dependencies.forEach(function (dependencyId: string) {
-      const dependencyTemplate = collection.find(entry => entry.itemId === dependencyId);
-      g.addEdge(createGraphTag(template), createGraphTag(dependencyTemplate), { directed : true });
-    });
+    if (template) {
+      const dependencies = template.dependencies || [ ];
+      dependencies.forEach(function (dependencyId: string) {
+        const dependencyTemplate = collection.find(entry => entry.itemId === dependencyId);
+        if (dependencyTemplate) {
+          g.addEdge(createGraphTag(template), createGraphTag(dependencyTemplate), { directed: true });
+        }
+      });
+    }
   });
   (new Dracula.Layout.Spring(g)).layout();
   (new Dracula.Renderer.Raphael(canvas, g, width, height)).draw();
