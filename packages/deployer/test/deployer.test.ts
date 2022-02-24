@@ -1840,17 +1840,8 @@ describe("Module `deployer`", () => {
 
       const communitySelfResponse: any = testUtils.getUserResponse();
       const portalsSelfResponse: any = testUtils.getPortalsSelfResponse();
-      const geometryServer: string =
-        portalsSelfResponse.helperServices.geometry.url;
-
-      // Test currently reports that the following URL is not mocked
-      expect(
-        geometryServer + "/findTransformations"
-      ).toEqual(
-        "https://utility.arcgisonline.com/arcgis/rest/services/Geometry/GeometryServer/findTransformations",
-        "findTransformations"
-      );
-
+      portalsSelfResponse.defaultExtent.spatialReference.wkid = 4326;
+        
       fetchMock
         .get(
           testUtils.PORTAL_SUBSET.restUrl +
@@ -1866,14 +1857,6 @@ describe("Module `deployer`", () => {
             "/data",
           itemInfo.data
         )
-        .post(geometryServer + "/findTransformations/rest/info", "{}")
-        .post(
-          geometryServer + "/findTransformations",
-          testUtils.getTransformationsResponse()
-        )
-        .post(geometryServer + "/project", {
-          geometries: projectedGeometries
-        })
         .get(
           testUtils.PORTAL_SUBSET.restUrl +
             "/community/self?f=json&token=fake-token",
