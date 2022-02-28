@@ -98,4 +98,10 @@ describe("convertItemResourceToStorageResource, file types", () => {
     expect(chk.folder).toBe("3ef_info_thumbnail");
     expect(chk.filename).toBe("happy.png");
   });
+
+  it("handles undefined", () => {
+    const chk = convertItemResourceToStorageResource("3ef", "happy.png", 1);
+    expect(chk.folder).toBe("3ef");
+    expect(chk.filename).toBe("happy.png");
+  });
 });
