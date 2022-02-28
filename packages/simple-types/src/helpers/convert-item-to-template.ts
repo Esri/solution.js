@@ -149,9 +149,10 @@ export function convertItemToTemplate(
                 : `${itemTemplate.itemId}.zip`;
             itemTemplate.item.name = filename;
             const storageName = common.convertItemResourceToStorageResource(
-              itemTemplate.itemId + "_info_data",
+              itemTemplate.itemId,
               filename,
-              common.SolutionTemplateFormatVersion
+              common.SolutionTemplateFormatVersion,
+              common.SolutionResourceType.data
             );
             wrapupPromise = new Promise<void>(
               (resolveDataStorage, rejectDataStorage) => {

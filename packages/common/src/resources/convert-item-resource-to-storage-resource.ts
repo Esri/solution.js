@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { SolutionResourceType } from "./solution-resource";
+
 /**
  * Generates a folder and filename for storing a copy of an item's resource in a storage item.
  *
@@ -28,11 +30,38 @@
 export function convertItemResourceToStorageResource(
   prefix: string,
   sourceResourceFilename: string,
-  storageVersion = 0
+  storageVersion = 0,
+  storageFileType?: SolutionResourceType
 ): {
   folder: string;
   filename: string;
 } {
+  if (storageFileType) {
+    switch (+storageFileType) {
+      case SolutionResourceType.data:
+        prefix = `${prefix}_info_data`;
+        break;
+      case SolutionResourceType.fakezip:
+        prefix = `${prefix}_info_dataz`;
+        break;
+      case SolutionResourceType.info:
+        prefix = `${prefix}_info`;
+        break;
+      case SolutionResourceType.metadata:
+        prefix = `${prefix}_info_metadata`;
+        break;
+      // Do not see this being used
+      // case SolutionResourceType.resource:
+      //   prefix = `${prefix}`;
+      //   break;
+      case SolutionResourceType.thumbnail:
+        prefix = `${prefix}_info_thumbnail`;
+        break;
+      default:
+        break;
+    }
+  }
+
   let folder = prefix;
   let filename = sourceResourceFilename;
   const iLastSlash = filename.lastIndexOf("/");
