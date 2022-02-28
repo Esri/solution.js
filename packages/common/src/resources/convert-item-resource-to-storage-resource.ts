@@ -20,8 +20,9 @@ import { SolutionResourceType } from "./solution-resource";
  * Generates a folder and filename for storing a copy of an item's resource in a storage item.
  *
  * @param prefix Base prefix for resource
- * @param storageVersion Version of the Solution template
  * @param sourceResourceFilename Either filename or folder/filename to resource
+ * @param storageVersion Version of the Solution template
+ * @param storageFileType Optional argument that when supplied will control the how the prefix is created
  * @return Folder and filename for storage; folder is the itemID plus ("_" + storageFolder) if storageFolder
  * exists plus ("_" + part of sourceResourceFilename before "/" if that separator exists);
  * file is sourceResourceFilename
@@ -36,8 +37,9 @@ export function convertItemResourceToStorageResource(
   folder: string;
   filename: string;
 } {
-  if (storageFileType) {
-    switch (+storageFileType) {
+  /* istanbul ignore else */
+  if (storageFileType !== undefined) {
+    switch (storageFileType) {
       case SolutionResourceType.data:
         prefix = `${prefix}_info_data`;
         break;
@@ -50,14 +52,8 @@ export function convertItemResourceToStorageResource(
       case SolutionResourceType.metadata:
         prefix = `${prefix}_info_metadata`;
         break;
-      // Do not see this being used
-      // case SolutionResourceType.resource:
-      //   prefix = `${prefix}`;
-      //   break;
       case SolutionResourceType.thumbnail:
         prefix = `${prefix}_info_thumbnail`;
-        break;
-      default:
         break;
     }
   }
