@@ -183,9 +183,9 @@ export function implementedTypes(): string {
     "Workflow Manager Package"
   ];
 
-  html += getImplementedTypes("Layer types", layerTypes);
-  html += getImplementedTypes("Map types", mapTypes);
   html += getImplementedTypes("App types", appTypes);
+  html += getImplementedTypes("Map types", mapTypes);
+  html += getImplementedTypes("Layer types", layerTypes);
   html += getImplementedTypes("File types", fileTypes);
 
   return html;
