@@ -4,12 +4,24 @@ All notable changes to this project will be documented in this file.
 
 This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-
 Note: This file cannot be in UTF-8*
 
 ## [Unreleased]
 
-## [1.2.0] - December 343rd 2021
+
+## [1.3.2] - March 62nd 2022
+
+
+
+## [1.3.1] - February 17th 2022
+
+
+
+## [1.3.0] - February 17th 2022
+
+
+
+## [1.2.0] - December 9th 2021
 
 
 
@@ -182,4 +194,6 @@ Note: This file cannot be in UTF-8*
 [1.1.4]: https://github.com/Esri/solution.js/compare/v1.1.3...v1.1.4 "v1.1.4"
 [1.1.5]: https://github.com/Esri/solution.js/compare/v1.1.4...v1.1.5 "v1.1.5"
 [1.2.0]: https://github.com/Esri/solution.js/compare/v1.1.5...v1.2.0 "v1.2.0"
-[HEAD]: https://github.com/Esri/solution.js/compare/v1.2.0...HEAD "Unreleased Changes"
+[1.3.1]: https://github.com/Esri/solution.js/compare/v1.2.0...v1.3.1 "v1.3.1"
+[1.3.2]: https://github.com/Esri/solution.js/compare/v1.3.1...v1.3.2 "v1.3.2"
+[HEAD]: https://github.com/Esri/solution.js/compare/v1.3.2...HEAD "Unreleased Changes"

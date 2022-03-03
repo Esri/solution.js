@@ -1,6 +1,6 @@
 {
   "name": "@esri/solution-viewer",
-  "version": "1.2.0",
+  "version": "1.3.2",
   "description": "Simplifies access to @esri/solution.js.",
   "main": "dist/node/index.js",
   "unpkg": "dist/umd/viewer.umd.min.js",
@@ -18,12 +18,11 @@
     "@esri/arcgis-rest-portal": "3.4.3",
     "@esri/arcgis-rest-request": "3.4.3",
     "@esri/arcgis-rest-service-admin": "3.4.3",
-    "@esri/hub-common": "9.7.2",
-    "@esri/hub-initiatives": "9.7.2",
-    "@esri/hub-sites": "9.7.2",
-    "@esri/hub-teams": "9.7.2",
-    "rollup": "^2.60.0",
-    "typescript": "^4.4.4"
+    "@esri/hub-common": "9.15.0",
+    "@esri/hub-initiatives": "9.15.0",
+    "@esri/hub-sites": "9.15.0",
+    "@esri/hub-teams": "9.15.0",
+    "rollup": "^2.60.0"
   },
   "peerDependencies": {
     "@esri/arcgis-rest-auth": "3.4.3",
@@ -31,13 +30,13 @@
     "@esri/arcgis-rest-portal": "3.4.3",
     "@esri/arcgis-rest-request": "3.4.3",
     "@esri/arcgis-rest-service-admin": "3.4.3",
-    "@esri/hub-common": "9.7.2",
-    "@esri/hub-initiatives": "9.7.2",
-    "@esri/hub-sites": "9.7.2",
-    "@esri/hub-teams": "9.7.2"
+    "@esri/hub-common": "9.15.0",
+    "@esri/hub-initiatives": "9.15.0",
+    "@esri/hub-sites": "9.15.0",
+    "@esri/hub-teams": "9.15.0"
   },
   "dependencies": {
-    "@esri/solution-common": "^1.2.0",
+    "@esri/solution-common": "^1.3.2",
     "tslib": "1.13.0"
   },
   "scripts": {
@@ -90,5 +89,5 @@
     "esri",
     "ES6"
   ],
-  "gitHead": "70f706fb28a50db0b9b13030f263f8e9e270b98d"
+  "gitHead": "08334d19a46a19455c798c89c325f50b9305d8b3"
 }
