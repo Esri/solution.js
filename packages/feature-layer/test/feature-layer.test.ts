@@ -98,6 +98,7 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
       // verify the state up front
       expect(itemTemplate.item.id).toEqual(id);
       expect(itemTemplate.item.url).toEqual(url);
+      expect(itemTemplate.item.modified).toEqual(1522178539000);  // feature service's modified date
       expect(itemTemplate.dependencies.length).toEqual(0);
       expect(itemTemplate.data.layers).toBeDefined();
       expect(itemTemplate.data.tables).toBeDefined();
@@ -139,6 +140,7 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
           // verify the state up front
           expect(r.item.id).toEqual(expectedId);
           expect(r.item.url).toEqual(expectedUrl);
+          expect(r.item.modified).toEqual(1538579807130);  // from layer or table, later than item's modified date
           expect(r.dependencies.length).toEqual(1);
           expect(r.data).toBeNull();
           expect(r.properties.service.serviceItemId).toEqual(expectedId);
@@ -446,6 +448,36 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
             done();
           }
         );
+    });
+
+    it("gets the most recently-edited layer/table", () => {
+      const layers = [{
+        editingInfo: { lastEditDate: 12345 }
+      }, {
+        editingInfo: { lastEditDate: 1234 }
+      }];
+      expect(featureLayer._mostRecentlyEditedLayer(layers)).toEqual(12345);
+    });
+
+    it("handles missing editingInfo for most recently-edited check", () => {
+      const layers = [{
+      }, {
+      }];
+      expect(featureLayer._mostRecentlyEditedLayer(layers)).toEqual(0);
+    });
+
+    it("handles missing lastEditDate for most recently-edited check", () => {
+      const layers = [{
+        editingInfo: {}
+      }, {
+        editingInfo: {}
+      }];
+      expect(featureLayer._mostRecentlyEditedLayer(layers)).toEqual(0);
+    });
+
+    it("handles an empty layer/table for most recently-edited check", () => {
+      const layers = [];
+      expect(featureLayer._mostRecentlyEditedLayer(layers)).toEqual(0);
     });
   });
 
