@@ -6,6 +6,7 @@
 * \[ \] Switch to `master` branch
 * \[ \] Merge in--but don't commit--the current `release/X.X.X` branch
 * \[ \] Remove node_modules and run `npm install`
+* \[ \] Run `npm run clean` in a bash shell
 * \[ \] Run `npm run release:prepare1` in a bash shell
 * \[ \] Run `npm run release:prepare2` in a Windows shell and pick new version number
 * \[ \] Run `npm run release:review`

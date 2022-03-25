@@ -140,7 +140,7 @@
     "docs:serve": "rimraf docs/build && npm run docs:build && concurrently \"npm run docs:dev:js\" \"npm run docs:dev:images\" \"npm run docs:dev:acetate\" \"npm run docs:dev:sass\" \"npm run docs:dev:typedoc\"",
     "docs:deploy": "npm run docs:build && node support/deploy-doc-site.js",
     "docs:srihash": "node docs/generate-srihashes.js",
-    "release:prepare1": "git fetch --all && npm run clean && lerna bootstrap && npm run clean:src && npm test",
+    "release:prepare1": "git fetch --all && lerna bootstrap && npm test",
     "release:prepare2": "lerna publish --no-git-tag-version --no-push --skip-npm --yes && node ./support/changelog.js",
     "release:review": "git --no-pager diff --word-diff",
     "release:publish-git": "bash ./support/publish.sh",
