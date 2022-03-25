@@ -1,6 +1,6 @@
 {
   "name": "@esri/solution-deployer",
-  "version": "1.2.0",
+  "version": "1.3.6",
   "description": "Manages the deployment of a Solution for @esri/solution.js.",
   "main": "dist/node/index.js",
   "unpkg": "dist/umd/deployer.umd.min.js",
@@ -36,16 +36,16 @@
     "@esri/hub-teams": "9.15.0"
   },
   "dependencies": {
-    "@esri/solution-common": "^1.2.0",
-    "@esri/solution-feature-layer": "^1.2.0",
-    "@esri/solution-file": "^1.2.0",
-    "@esri/solution-form": "^1.2.0",
-    "@esri/solution-group": "^1.2.0",
-    "@esri/solution-hub-types": "^1.2.0",
-    "@esri/solution-simple-types": "^1.2.0",
-    "@esri/solution-storymap": "^1.2.0",
-    "@esri/solution-velocity": "^1.2.0",
-    "@esri/solution-web-experience": "^1.2.0",
+    "@esri/solution-common": "^1.3.6",
+    "@esri/solution-feature-layer": "^1.3.6",
+    "@esri/solution-file": "^1.3.6",
+    "@esri/solution-form": "^1.3.6",
+    "@esri/solution-group": "^1.3.6",
+    "@esri/solution-hub-types": "^1.3.6",
+    "@esri/solution-simple-types": "^1.3.6",
+    "@esri/solution-storymap": "^1.3.6",
+    "@esri/solution-velocity": "^1.3.6",
+    "@esri/solution-web-experience": "^1.3.6",
     "tslib": "1.13.0"
   },
   "scripts": {
