@@ -17,7 +17,9 @@
     <i class="no-wrap">{{ @type(type.elementType) }}<span class="text-light-gray">{{ '[]' }}</span></i>
   {%- endif -%}
 
-  {%- if type.type === 'array'  -%}
+
+  {%- if type.type === 'array' and true === false  -%}
+    This removes the extra `| type` on array types
     <span class="text-light-gray">{{ ' | ' }}</span>{{ @type(type.elementType) }}
   {%- endif -%}
 
@@ -526,7 +528,7 @@
 {% endif %}
 
 {% if type %}
-  Value(s):
+  Value(s):<br>
   <pre style="display: inline;">{{@type(type)}}</pre>
 {% endif %}
 

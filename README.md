@@ -53,8 +53,10 @@ The API is divided into packages to make it easier to use just the parts that yo
 * `file`, which contains functions for items that contain files
 * `form`, which contains functions for form items
 * `group`, which contains functions for Groups
+* `hub-types`, which contains functions supporting ArcGIS Hub Sites and Initiatives
 * `simple-types`, which contains functions for the simpler item types Dashboard, Form, Web Map, Web Mapping Application, and Workforce Project
 * `storymap`, which contains functions for Storymap items
+* `velocity`, which contains functions to support ArcGIS Velocity items
 * `viewer`, which contains functions to support displaying Solution items
 * `web-experience`, which contains functions for Experience Builder items
 
@@ -64,57 +66,44 @@ The API documentation is published at https://esri.github.io/solution.js/ ([sour
 
 #### Supported ArcGIS Online Item Types
 
-Currently, the item types that can be converted into a template are:
+Currently, the ArcGIS Online item types that can be converted into a template are:
 
-* ArcGIS Pro Add In
-* Code Sample
-* Dashboard
-* Desktop Add In
-* Desktop Application Template
-* Document Link
-* Feature Collection
-* Feature Service
-* Feature Service (Hosted only and Hosted Feature Layer Views)
-* Form
-* Geoprocessing Package
-* Geoprocessing Sample
-* Group
-* Hub Page
-* Hub Site Application
-* Insights Model
-* Layer Package
-* Map Service
-* Map Template
-* Notebook
-* Operation View
-* Oriented Imagery Catalog
-* Pro Map
-* Project Package
-* Project Template
-* QuickCapture Project
-* Site Application
-* Site Page
-* StoryMap
-* Web Experience
-* Web Map
-* Web Mapping Application
-* Workforce Project
-* various file types, such as images and documents
+* **App types:** Dashboard, Form, Hub Initiative, Hub Page, Hub Site Application, Insights Model, Notebook, Oriented Imagery Catalog, QuickCapture Project, Site Application, Site Page, StoryMap, Web Experience, Web Mapping Application, Workforce Project
+
+* **Map types:** Web Map, Web Scene
+
+* **Layer types:** Big Data Analytic, Feature Collection, Feature Service, Feed, Map Service, Real Time Analytic
+
+* **File types:** 360 VR Experience, AppBuilder Extension, AppBuilder Widget Package, Application Configuration, ArcGIS Pro Add In, ArcGIS Pro Configuration, ArcPad Package, Basemap Package, CAD Drawing, CityEngine Web Scene, Code Attachment, Code Sample, Color Set, Compact Tile Package, CSV Collection, CSV, Deep Learning Package, Desktop Add In, Desktop Application Template, Desktop Style, Document Link, Explorer Add In, Explorer Layer, Explorer Map, Feature Collection Template, File Geodatabase, GeoJson, GeoPackage, Geoprocessing Package, Geoprocessing Sample, Globe Document, Image Collection, Image, iWork Keynote, iWork Numbers, iWork Pages, KML Collection, Layer Package, Layer Template, Layer, Layout, Locator Package, Map Document, Map Package, Map Template, Microsoft Excel, Microsoft Powerpoint, Microsoft Word, Mobile Basemap Package, Mobile Map Package, Mobile Scene Package, Native Application, Native Application Installer, Native Application Template, netCDF, Operation View, Operations Dashboard Add In, Operations Dashboard Extension, PDF, Pro Layer Package, Pro Layer, Pro Map Package, Pro Map, Pro Report, Project Package, Project Template, Published Map, Raster function template, Report Template, Rule Package, Scene Document, Scene Package, Service Definition, Shapefile, Statistical Data Collection, Style, Survey123 Add In, Symbol Set, Task File, Tile Package, Toolbox Package, Vector Tile Package, Viewer Configuration, Visio Document, Window Mobile Package, Windows Mobile Package, Windows Viewer Add In, Windows Viewer Configuration, Workflow Manager Package
+
+*The `implemented-types` demo generates its list from the source code.*
 
 
 ### Instructions
 
-The repository is set up to use [Volta](https://docs.volta.sh/guide/getting-started) for standardizing the versions of NodeJS and npm. Please install and use this app to get the supported versions.
+#### Setup
 
-You can install dependencies by cloning the repository and running:
+The repository uses [Volta](https://docs.volta.sh/guide/getting-started) to standardize the versions of NodeJS and npm. Please install and use this app to get the supported versions.
 
-```
-npm install
-```
+Once Volta is installed, turn on [Windows "Developer Mode"](https://docs.microsoft.com/en-us/gaming/game-bar/guide/developer-mode) so that Volta can install symlinks.
 
-Afterward, for a list of all available commands run `npm run`.
+The following steps will build the repository:
+1. `volta install node@16.14.0`
+1. `volta install npm@bundled`
+1. `volta install typescript@4.5.5`
+1. `npm install`
+1. `pushd demos`
+1. `npm run build`
+1. `popd`
+1. `npm run test:chrome:ci`
 
-Some useful commands include:
+These steps are in the file `build.bat` for Windows computers.
+
+#### npm commands
+
+For a list of all available commands run `npm run`.
+
+These commands are
 
 * building
   * `npm run build` creates symlinks among packages and creates node, umd, and esm outputs for each package
