@@ -1,6 +1,6 @@
 {
   "name": "@esri/solution.js",
-  "version": "1.3.5",
+  "version": "1.2.0",
   "description": "A library running in Node.js and modern browsers for transferring ArcGIS Online items from one organization to another.",
   "devDependencies": {
     "@chiragrupani/karma-chromium-edge-launcher": "^2.0.0",
@@ -103,7 +103,7 @@
     "build": "lerna run build",
     "build:umd": "lerna run build:umd",
     "clean": "npm run clean:src && npm run clean:dist",
-    "clean:src": "rm -rf packages/*/{src,test}/*.{d.ts,js,js.map} && rm -rf packages/*/{src,test}/**/*.{d.ts,js,js.map} &&  rm -rf demos/dist/*.{d.ts,js,js.map}",
+    "clean:src": "rm -rf packages/*/{src,test}/*.{d.ts,js,js.map} && rm -rf packages/*/{src,test}/**/*.{d.ts,js,js.map} && find demos/{src,dist}/*.{d.ts,js,js.map} -type f -not -wholename 'demos/src/*.min.js' -delete",
     "clean:dist": "rm -rf packages/*/dist/ && rm -rf packages/*/.rpt2_cache",
     "deepclean": "rm -rf ./node_modules && rm -rf ./demos/node_modules && rm -rf packages/*/node_modules && npm run clean",
     "lint": "eslint . --ext .ts",
