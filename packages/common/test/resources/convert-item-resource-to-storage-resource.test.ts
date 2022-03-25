@@ -15,6 +15,7 @@
  */
 
 import { convertItemResourceToStorageResource } from "../../src/resources/convert-item-resource-to-storage-resource";
+import { SolutionResourceType } from "../../src/resources/solution-resource";
 
 describe("convertItemResourceToStorageResource, template version 0", () => {
   it("handles files", () => {
@@ -63,6 +64,44 @@ describe("convertItemResourceToStorageResource, template version 1", () => {
       1
     );
     expect(chk.folder).toBe("3ef/images/widget_12");
+    expect(chk.filename).toBe("happy.png");
+  });
+});
+
+describe("convertItemResourceToStorageResource, file types", () => {
+  it("handles data", () => {
+    const chk = convertItemResourceToStorageResource("3ef", "happy.png", 1, SolutionResourceType.data);
+    expect(chk.folder).toBe("3ef_info_data");
+    expect(chk.filename).toBe("happy.png");
+  });
+
+  it("handles fakezip", () => {
+    const chk = convertItemResourceToStorageResource("3ef", "happy.png", 1, SolutionResourceType.fakezip);
+    expect(chk.folder).toBe("3ef_info_dataz");
+    expect(chk.filename).toBe("happy.png");
+  });
+
+  it("handles info", () => {
+    const chk = convertItemResourceToStorageResource("3ef", "happy.png", 1, SolutionResourceType.info);
+    expect(chk.folder).toBe("3ef_info");
+    expect(chk.filename).toBe("happy.png");
+  });
+
+  it("handles metadata", () => {
+    const chk = convertItemResourceToStorageResource("3ef", "happy.png", 1, SolutionResourceType.metadata);
+    expect(chk.folder).toBe("3ef_info_metadata");
+    expect(chk.filename).toBe("happy.png");
+  });
+  
+  it("handles thumbnail", () => {
+    const chk = convertItemResourceToStorageResource("3ef", "happy.png", 1, SolutionResourceType.thumbnail);
+    expect(chk.folder).toBe("3ef_info_thumbnail");
+    expect(chk.filename).toBe("happy.png");
+  });
+
+  it("handles undefined", () => {
+    const chk = convertItemResourceToStorageResource("3ef", "happy.png", 1);
+    expect(chk.folder).toBe("3ef");
     expect(chk.filename).toBe("happy.png");
   });
 });

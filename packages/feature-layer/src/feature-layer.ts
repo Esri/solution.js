@@ -70,6 +70,14 @@ export function convertItemToTemplate(
         template.data = data;
         common.getServiceLayersAndTables(template, srcAuthentication).then(
           itemTemplate => {
+            // Update item's modified date to the latest of its modified date and the last edit date
+            // of each of its layers or tables
+            itemTemplate.item.modified =
+              Math.max(itemTemplate.item.modified,
+                _mostRecentlyEditedLayer(template.properties.layers),
+                _mostRecentlyEditedLayer(template.properties.tables)
+              );
+
             // Extract dependencies
             common.extractDependencies(itemTemplate, srcAuthentication).then(
               (dependencies: common.IDependency[]) => {
@@ -436,6 +444,25 @@ export function postProcess(
         }
       }, reject);
   });
+}
+
+//#endregion
+
+//#region Internal functions -----------------------------------------------------------------------------------------//
+
+export function _mostRecentlyEditedLayer(
+  layerOrTableList: any[]
+): any {
+  let mostRecentlyEdited = 0;
+  layerOrTableList.forEach(
+    (layer) => {
+      mostRecentlyEdited =
+        layer.editingInfo?.lastEditDate ?
+        Math.max(mostRecentlyEdited, layer.editingInfo.lastEditDate) :
+        mostRecentlyEdited;
+    }
+  );
+  return mostRecentlyEdited;
 }
 
 //#endregion
