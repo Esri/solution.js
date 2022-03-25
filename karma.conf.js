@@ -12,7 +12,10 @@ module.exports = function(config) {
     frameworks: ["jasmine", "karma-typescript"],
 
     // list of files / patterns to load in the browser
-    files: ["packages/*/{src,test}/**/*.ts"],
+    files: [
+      "node_modules/regenerator-runtime/runtime.js",
+      "packages/*/{src,test}/**/*.ts"
+    ],
 
     // list of files to exclude
     exclude: ["packages/*/{src,test}/**/*.d.ts"],
@@ -38,11 +41,12 @@ module.exports = function(config) {
         },
         "html": "coverage"
       },
-      compilerOptions: {
-        module: "commonjs",
-        lib: ["dom", "es2015"]
-      },
       tsconfig: "./tsconfig.json",
+      compilerOptions: {
+        lib: ["dom", "es2017"],
+        module: "commonjs", // ES not supported until experimental node12/nodenext moduleResolution
+        target: "es2017"
+      },
       bundlerOptions: {
         transforms: [require("karma-typescript-es6-transform")()],
         exclude: ["@esri/arcgis-rest-types"],
