@@ -4,10 +4,12 @@ All notable changes to this project will be documented in this file.
 
 This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-
-ote: This file cannot be in UTF-8*
+te: This file cannot be in UTF-8*
 
 ## [Unreleased]
+
+
+## [1.3.8] - March 25th 2022
 
 
 ## [1.3.7] - March 25th 2022
@@ -178,6 +180,51 @@ ote: This file cannot be in UTF-8*
 
 
 
+[0.19.3]: https://github.com/Esri/solution.js/compare/a41f3b856898e7fbac679ffb44de1c38f55260e3...v0.19.3 &amp;quot;v0.19.3&amp;quot;
+[0.20.1]: https://github.com/Esri/solution.js/compare/v0.19.3...v0.20.1 &amp;quot;v0.20.1&amp;quot;
+[0.20.18]: https://github.com/Esri/solution.js/compare/v0.20.1...v0.20.18 &amp;quot;v0.20.18&amp;quot;
+[0.21.0]: https://github.com/Esri/solution.js/compare/v0.20.18...v0.21.0 &amp;quot;v0.21.0&amp;quot;
+[0.21.1]: https://github.com/Esri/solution.js/compare/v0.21.0...v0.21.1 &amp;quot;v0.21.1&amp;quot;
+[0.21.2]: https://github.com/Esri/solution.js/compare/v0.21.1...v0.21.2 &amp;quot;v0.21.2&amp;quot;
+[0.21.3]: https://github.com/Esri/solution.js/compare/v0.21.2...v0.21.3 &amp;quot;v0.21.3&amp;quot;
+[0.21.4]: https://github.com/Esri/solution.js/compare/v0.21.3...v0.21.4 &amp;quot;v0.21.4&amp;quot;
+[0.21.5]: https://github.com/Esri/solution.js/compare/v0.21.4...v0.21.5 &amp;quot;v0.21.5&amp;quot;
+[0.21.6]: https://github.com/Esri/solution.js/compare/v0.21.5...v0.21.6 &amp;quot;v0.21.6&amp;quot;
+[0.21.7]: https://github.com/Esri/solution.js/compare/v0.21.6...v0.21.7 &amp;quot;v0.21.7&amp;quot;
+[0.22.0]: https://github.com/Esri/solution.js/compare/v0.21.7...v0.22.0 &amp;quot;v0.22.0&amp;quot;
+[0.22.1]: https://github.com/Esri/solution.js/compare/v0.22.0...v0.22.1 &amp;quot;v0.22.1&amp;quot;
+[0.22.2]: https://github.com/Esri/solution.js/compare/v0.22.1...v0.22.2 &amp;quot;v0.22.2&amp;quot;
+[0.22.3]: https://github.com/Esri/solution.js/compare/v0.22.2...v0.22.3 &amp;quot;v0.22.3&amp;quot;
+[0.22.4]: https://github.com/Esri/solution.js/compare/v0.22.3...v0.22.4 &amp;quot;v0.22.4&amp;quot;
+[0.22.5]: https://github.com/Esri/solution.js/compare/v0.22.4...v0.22.5 &amp;quot;v0.22.5&amp;quot;
+[0.22.6]: https://github.com/Esri/solution.js/compare/v0.22.5...v0.22.6 &amp;quot;v0.22.6&amp;quot;
+[0.22.7]: https://github.com/Esri/solution.js/compare/v0.22.6...v0.22.7 &amp;quot;v0.22.7&amp;quot;
+[0.22.8]: https://github.com/Esri/solution.js/compare/v0.22.7...v0.22.8 &amp;quot;v0.22.8&amp;quot;
+[0.22.9]: https://github.com/Esri/solution.js/compare/v0.22.8...v0.22.9 &amp;quot;v0.22.9&amp;quot;
+[0.22.10]: https://github.com/Esri/solution.js/compare/v0.22.9...v0.22.10 &amp;quot;v0.22.10&amp;quot;
+[0.22.11]: https://github.com/Esri/solution.js/compare/v0.22.10...v0.22.11 &amp;quot;v0.22.11&amp;quot;
+[0.22.12]: https://github.com/Esri/solution.js/compare/v0.22.11...v0.22.12 &amp;quot;v0.22.12&amp;quot;
+[0.22.13]: https://github.com/Esri/solution.js/compare/v0.22.12...v0.22.13 &amp;quot;v0.22.13&amp;quot;
+[0.22.14]: https://github.com/Esri/solution.js/compare/v0.22.13...v0.22.14 &amp;quot;v0.22.14&amp;quot;
+[0.22.15]: https://github.com/Esri/solution.js/compare/v0.22.14...v0.22.15 &amp;quot;v0.22.15&amp;quot;
+[0.22.16]: https://github.com/Esri/solution.js/compare/v0.22.15...v0.22.16 &amp;quot;v0.22.16&amp;quot;
+[0.23.0]: https://github.com/Esri/solution.js/compare/v0.22.16...v0.23.0 &amp;quot;v0.23.0&amp;quot;
+[0.23.1]: https://github.com/Esri/solution.js/compare/v0.23.0...v0.23.1 &amp;quot;v0.23.1&amp;quot;
+[0.24.0]: https://github.com/Esri/solution.js/compare/v0.23.1...v0.24.0 &amp;quot;v0.24.0&amp;quot;
+[1.0.0]: https://github.com/Esri/solution.js/compare/v0.24.0...v1.0.0 &amp;quot;v1.0.0&amp;quot;
+[1.1.2]: https://github.com/Esri/solution.js/compare/v1.0.0...v1.1.2 &amp;quot;v1.1.2&amp;quot;
+[1.1.3]: https://github.com/Esri/solution.js/compare/v1.1.2...v1.1.3 &amp;quot;v1.1.3&amp;quot;
+[1.1.4]: https://github.com/Esri/solution.js/compare/v1.1.3...v1.1.4 &amp;quot;v1.1.4&amp;quot;
+[1.1.5]: https://github.com/Esri/solution.js/compare/v1.1.4...v1.1.5 &amp;quot;v1.1.5&amp;quot;
+[1.2.0]: https://github.com/Esri/solution.js/compare/v1.1.5...v1.2.0 &amp;quot;v1.2.0&amp;quot;
+[1.3.1]: https://github.com/Esri/solution.js/compare/v1.2.0...v1.3.1 &amp;quot;v1.3.1&amp;quot;
+[1.3.4]: https://github.com/Esri/solution.js/compare/v1.3.1...v1.3.4 &amp;quot;v1.3.4&amp;quot;
+[1.3.5]: https://github.com/Esri/solution.js/compare/v1.3.4...v1.3.5 &amp;quot;v1.3.5&amp;quot;
+[1.3.6]: https://github.com/Esri/solution.js/compare/v1.3.5...v1.3.6 &amp;quot;v1.3.6&amp;quot;
+[HEAD]: https://github.com/Esri/solution.js/compare/v1.3.6...HEAD &amp;quot;Unreleased Changes&amp;quot;
+
+## [1.3.7] - March 84th 2022
+
 [0.19.3]: https://github.com/Esri/solution.js/compare/a41f3b856898e7fbac679ffb44de1c38f55260e3...v0.19.3 &quot;v0.19.3&quot;
 [0.20.1]: https://github.com/Esri/solution.js/compare/v0.19.3...v0.20.1 &quot;v0.20.1&quot;
 [0.20.18]: https://github.com/Esri/solution.js/compare/v0.20.1...v0.20.18 &quot;v0.20.18&quot;
@@ -219,9 +266,10 @@ ote: This file cannot be in UTF-8*
 [1.3.4]: https://github.com/Esri/solution.js/compare/v1.3.1...v1.3.4 &quot;v1.3.4&quot;
 [1.3.5]: https://github.com/Esri/solution.js/compare/v1.3.4...v1.3.5 &quot;v1.3.5&quot;
 [1.3.6]: https://github.com/Esri/solution.js/compare/v1.3.5...v1.3.6 &quot;v1.3.6&quot;
-[HEAD]: https://github.com/Esri/solution.js/compare/v1.3.6...HEAD &quot;Unreleased Changes&quot;
+[1.3.7]: https://github.com/Esri/solution.js/compare/v1.3.6...v1.3.7 &quot;v1.3.7&quot;
+[HEAD]: https://github.com/Esri/solution.js/compare/v1.3.7...HEAD &quot;Unreleased Changes&quot;
 
-## [1.3.7] - March 84th 2022
+## [1.3.8] - March 84th 2022
 
 [0.19.3]: https://github.com/Esri/solution.js/compare/a41f3b856898e7fbac679ffb44de1c38f55260e3...v0.19.3 "v0.19.3"
 [0.20.1]: https://github.com/Esri/solution.js/compare/v0.19.3...v0.20.1 "v0.20.1"
@@ -263,6 +311,5 @@ ote: This file cannot be in UTF-8*
 [1.3.1]: https://github.com/Esri/solution.js/compare/v1.2.0...v1.3.1 "v1.3.1"
 [1.3.4]: https://github.com/Esri/solution.js/compare/v1.3.1...v1.3.4 "v1.3.4"
 [1.3.5]: https://github.com/Esri/solution.js/compare/v1.3.4...v1.3.5 "v1.3.5"
-[1.3.6]: https://github.com/Esri/solution.js/compare/v1.3.5...v1.3.6 "v1.3.6"
-[1.3.7]: https://github.com/Esri/solution.js/compare/v1.3.6...v1.3.7 "v1.3.7"
-[HEAD]: https://github.com/Esri/solution.js/compare/v1.3.7...HEAD "Unreleased Changes"
+[1.3.8]: https://github.com/Esri/solution.js/compare/v1.3.5...v1.3.8 "v1.3.8"
+[HEAD]: https://github.com/Esri/solution.js/compare/v1.3.8...HEAD "Unreleased Changes"
