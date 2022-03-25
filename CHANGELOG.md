@@ -8,6 +8,23 @@ Note: This file cannot be in UTF-8*
 
 ## [Unreleased]
 
+
+## [1.3.9] - March 84th 2022
+
+
+
+## [1.3.8] - March 25th 2022
+
+
+
+## [1.3.7] - March 25th 2022
+
+
+
+## [1.3.6] - March 25th 2022
+
+
+
 ## [1.3.5] - March 63rd 2022
 
 
@@ -168,6 +185,14 @@ Note: This file cannot be in UTF-8*
 
 
 
+## [1.3.7] - March 84th 2022
+
+
+
+## [1.3.8] - March 84th 2022
+
+
+
 [0.19.3]: https://github.com/Esri/solution.js/compare/a41f3b856898e7fbac679ffb44de1c38f55260e3...v0.19.3 "v0.19.3"
 [0.20.1]: https://github.com/Esri/solution.js/compare/v0.19.3...v0.20.1 "v0.20.1"
 [0.20.18]: https://github.com/Esri/solution.js/compare/v0.20.1...v0.20.18 "v0.20.18"
@@ -208,4 +233,6 @@ Note: This file cannot be in UTF-8*
 [1.3.1]: https://github.com/Esri/solution.js/compare/v1.2.0...v1.3.1 "v1.3.1"
 [1.3.4]: https://github.com/Esri/solution.js/compare/v1.3.1...v1.3.4 "v1.3.4"
 [1.3.5]: https://github.com/Esri/solution.js/compare/v1.3.4...v1.3.5 "v1.3.5"
-[HEAD]: https://github.com/Esri/solution.js/compare/v1.3.5...HEAD "Unreleased Changes"
+[1.3.8]: https://github.com/Esri/solution.js/compare/v1.3.5...v1.3.8 "v1.3.8"
+[1.3.9]: https://github.com/Esri/solution.js/compare/v1.3.8...v1.3.9 "v1.3.9"
+[HEAD]: https://github.com/Esri/solution.js/compare/v1.3.9...HEAD "Unreleased Changes"
