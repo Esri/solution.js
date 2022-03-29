@@ -9,6 +9,10 @@ Note: This file cannot be in UTF-8*
 ## [Unreleased]
 
 
+## [1.3.10] - March 88th 2022
+
+
+
 ## [1.3.9] - March 84th 2022
 
 
@@ -233,6 +237,6 @@ Note: This file cannot be in UTF-8*
 [1.3.1]: https://github.com/Esri/solution.js/compare/v1.2.0...v1.3.1 "v1.3.1"
 [1.3.4]: https://github.com/Esri/solution.js/compare/v1.3.1...v1.3.4 "v1.3.4"
 [1.3.5]: https://github.com/Esri/solution.js/compare/v1.3.4...v1.3.5 "v1.3.5"
-[1.3.8]: https://github.com/Esri/solution.js/compare/v1.3.5...v1.3.8 "v1.3.8"
-[1.3.9]: https://github.com/Esri/solution.js/compare/v1.3.8...v1.3.9 "v1.3.9"
-[HEAD]: https://github.com/Esri/solution.js/compare/v1.3.9...HEAD "Unreleased Changes"
+[1.3.9]: https://github.com/Esri/solution.js/compare/v1.3.5...v1.3.9 "v1.3.9"
+[1.3.10]: https://github.com/Esri/solution.js/compare/v1.3.9...v1.3.10 "v1.3.10"
+[HEAD]: https://github.com/Esri/solution.js/compare/v1.3.10...HEAD "Unreleased Changes"
