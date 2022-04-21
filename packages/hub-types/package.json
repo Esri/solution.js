@@ -48,6 +48,7 @@
     "dev:esm": "tsc -w --module esnext --outDir ./dist/esm --declaration",
     "dev:umd": "rollup -w -c ../../umd-base-profile.js",
     "dev:node": "tsc -w --module commonjs --outDir ./dist/node",
+    "getupdates": "npm-check-updates --upgrade",
     "test:chrome": "karma start --single-run --browsers=Chrome",
     "test:node": "jasmine --config=../../jasmine.json",
     "y:link:hub": "yalc link @esri/hub-common && yalc link @esri/hub-sites",

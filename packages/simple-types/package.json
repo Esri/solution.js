@@ -47,6 +47,7 @@
     "dev:esm": "tsc -w --module esnext --outDir ./dist/esm --declaration",
     "dev:umd": "rollup -w -c ../../umd-base-profile.js",
     "dev:node": "tsc -w --module commonjs --outDir ./dist/node",
+    "getupdates": "npm-check-updates --upgrade",
     "tsc:v": "tsc -v"
   },
   "publishConfig": {

@@ -37,7 +37,8 @@
     "build:node": "tsc -p ./tsconfig.json --module commonjs --outDir ./dist/node",
     "dev:esm": "tsc -w --module esnext --outDir ./dist/esm --declaration",
     "dev:umd": "rollup -w -c ../../umd-base-profile.js",
-    "dev:node": "tsc -w --module commonjs --outDir ./dist/node"
+    "dev:node": "tsc -w --module commonjs --outDir ./dist/node",
+    "getupdates": "npm-check-updates --upgrade"
   },
   "publishConfig": {
     "access": "public"

@@ -111,6 +111,7 @@
     "lint:staged": "npx lint-staged",
     "prettify": "prettier --write \"packages/**/+(src|test)/**/*.ts\"",
     "dev": "support/dev.sh",
+    "getupdates": "npm-check-updates --upgrade",
     "test": "npm run lint && npm run test:chrome",
     "test:browsers": "karma start --single-run --browsers Chrome,Firefox,Edge",
     "test:chrome": "karma start --single-run --browsers=Chrome",

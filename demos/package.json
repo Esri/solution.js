@@ -40,6 +40,7 @@
   },
   "scripts": {
     "build": "tsc -p ./tsconfig.json --outDir ./dist && start cmd.exe /q/c \"copy .\\src\\*.min.js .\\dist\"",
+    "getupdates": "npm-check-updates --upgrade",
     "start": "http-server ."
   }
 }
