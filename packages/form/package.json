@@ -42,7 +42,7 @@
     "@esri/solution-group": "^1.3.10",
     "@esri/solution-simple-types": "^1.3.10",
     "@esri/solution-storymap": "^1.3.10",
-    "tslib": "1.13.0"
+    "tslib": "1.14.1"
   },
   "scripts": {
     "prepare": "npm run build",
