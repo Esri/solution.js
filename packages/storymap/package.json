@@ -17,7 +17,7 @@
     "@esri/arcgis-rest-portal": "3.4.3",
     "@esri/arcgis-rest-request": "3.4.3",
     "@esri/hub-common": "9.29.0",
-    "rollup": "2.60.0"
+    "rollup": "2.70.2"
   },
   "peerDependencies": {
     "@esri/arcgis-rest-auth": "3.4.3",
