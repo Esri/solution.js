@@ -27,7 +27,7 @@ import * as common from "@esri/solution-common";
 export function sanitizeGroupItems(
   groupId: string,
   searchString: string,
-  additionalSearchOptions: common.IAdditionalSearchOptions,
+  additionalSearchOptions: common.IAdditionalGroupSearchOptions,
   authentication: common.UserSession
 ): Promise<common.IItem[]> {
   return new Promise<common.IItem[]>((resolve, reject) => {

@@ -40,7 +40,7 @@ import {
 import {
   IAddFolderResponse,
   IAddGroupResponse,
-  IAdditionalSearchOptions,
+  IAdditionalGroupSearchOptions,
   ICreateItemResponse,
   ICreateServiceResult,
   IDependency,
@@ -1522,7 +1522,7 @@ export function searchAllItems(
 export function searchGroups(
   searchString: string,
   authentication: UserSession,
-  additionalSearchOptions?: IAdditionalSearchOptions
+  additionalSearchOptions?: IAdditionalGroupSearchOptions
 ): Promise<ISearchResult<IGroup>> {
   const searchOptions: ISearchOptions = {
     q: searchString,
@@ -1601,7 +1601,7 @@ export function searchGroupAllContents(
   groupId: string,
   searchString: string,
   authentication: UserSession,
-  additionalSearchOptions?: IAdditionalSearchOptions,
+  additionalSearchOptions?: IAdditionalGroupSearchOptions,
   portalUrl?: string,
   accumulatedResponse?: ISearchResult<IItem>
 ): Promise<ISearchResult<IItem>> {
@@ -1659,7 +1659,7 @@ export function searchGroupContents(
   groupId: string,
   searchString: string,
   authentication: UserSession,
-  additionalSearchOptions?: IAdditionalSearchOptions,
+  additionalSearchOptions?: IAdditionalGroupSearchOptions,
   portalUrl?: string
 ): Promise<ISearchResult<IItem>> {
   const searchOptions: ISearchGroupContentOptions = {

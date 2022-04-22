@@ -61,7 +61,7 @@ export const DeployedSolutionFormatVersion = 1;
 //#region Enums ------------------------------------------------------------------------------------------------------//
 
 /**
- * Flag for storing an item's binary resources.
+ * Flags for storing an item's binary resources.
  */
 export enum EFileType {
   Data,
@@ -71,6 +71,9 @@ export enum EFileType {
   Thumbnail
 }
 
+/**
+ * Text versions of flags for storing an item's binary resources.
+ */
 export enum SFileType {
   "Data",
   "Info",
@@ -92,6 +95,9 @@ export enum EItemProgressStatus {
   Unknown
 }
 
+/**
+ * Text versions of flags for reporting the status of creating or deploying an item.
+ */
 export const SItemProgressStatus = [
   "1 Started",
   "2 Created",
@@ -106,16 +112,50 @@ export const SItemProgressStatus = [
 
 //#region Types ------------------------------------------------------------------------------------------------------//
 
+/**
+ * Function signature describing internal item-level progress to enable cancellation and rollback in case of failure
+ *
+ */
 export type IItemProgressCallback = (
+  /**
+   * Id of item
+   */
   itemId: string,
+
+  /**
+   * Progress status code (e.g., Started, Created,...)
+   */
   status: EItemProgressStatus,
+
+  /**
+   * Accumulated "costs" of task, which can be divided by the total estimated cost to get percent done
+   */
   costUsed: number,
-  createdItemId?: string // supplied when status is EItemProgressStatus.Created or .Finished
+
+  /**
+   * Id of created item, which is supplied when status is EItemProgressStatus.Created or .Finished
+   */
+  createdItemId?: string
 ) => boolean;
 
+/**
+ * Function signature describing progress to calling programs
+ */
 export type ISolutionProgressCallback = (
+  /**
+   * Percent of total work done
+   */
   percentDone: number,
+
+  /**
+   * Calling-program-supplied id, perhaps used to distinguish between concurrent deployments or deletions
+   */
   jobId?: string,
+
+  /**
+   * Packet of supplemental information provided from certain progress states, e.g., Finished deleting an item
+   * or deploying a Solution item
+   */
   progressEvent?: ISolutionProgressEvent
 ) => void;
 
@@ -125,18 +165,61 @@ export type INoArgFunction = () => any;
 
 //#region Interfaces -------------------------------------------------------------------------------------------------//
 
+/**
+ * Result of creating a unique group
+ */
 export interface IAddGroupResponse {
+  /**
+   * Success or failure
+   */
   success: boolean;
+
+  /**
+   * Id of created group
+   */
   group: IGroup;
 }
 
-export interface IAdditionalSearchOptions {
+/**
+ * Additional info to be used when searching the contents of a group
+ */
+export interface IAdditionalGroupSearchOptions {
+  /**
+   * The number of the first entry requested. The index number is 1-based.
+   */
   start?: number;
+
+  /**
+   * The number of results requested.
+   */
   num?: number;
+
+  /**
+   * Sets sort field for group items. Values: title | owner | avgrating | numviews | created | modified
+   */
   sortField?: string;
+
+  /**
+   * Sets sort order for group items. Values: asc | desc
+   */
   sortOrder?: string;
-  bbox?: string; // e.g., "-118,32,-116,34"
-  categories?: string[]; // maximum of 8
+
+  /**
+   * The bounding box for a spatial search defined as minx, miny, maxx, or maxy. Spatial search is an
+   * overlaps/intersects function of the query bbox and the extent of the document. Documents that have
+   * no extent (for example, mxds, 3dds, lyr) will not be found when doing a bbox search. Document extent
+   * is assumed to be in the WGS84 geographic coordinate system. E.g.: "-118,32,-116,34"
+   */
+  bbox?: string;
+
+  /**
+   * A list of desired categories; maximum of 8
+   */
+  categories?: string[];
+
+  /**
+   * Generically definines remaining/unused properties
+   */
   [key: string]: any;
 }
 
@@ -182,37 +265,69 @@ export interface IAssociatedFileInfo {
   file?: File;
 }
 
+/**
+ * Describes the results of topologically sorting items to be deployed so that dependencies are created before
+ * the items that depend on them.
+ */
 export interface IBuildOrdering {
   /**
    * Item ids in order in which items are to be built.
    */
   buildOrder: string[];
+
   /**
    * Item ids of dependencies that were not supplied to ordering algorithm.
    */
   missingDependencies: string[];
+
   /**
    * Dictionary of item ids that need dependency patching; each id has a list of the ids of the dependencies to be patched.
    */
   itemsToBePatched: IKeyedListsOfStrings;
 }
 
+/**
+ * Holds a complete AGO item.
+ */
 export interface ICompleteItem {
-  // text/plain JSON
+  /**
+   * The "base" information of an item as MIME format text/plain JSON
+   */
   base: IItem;
-  // */*
+
+  /**
+   * The data section of an item as a file even though it may be JSON
+   */
   data: File;
-  // image/*
+
+  /**
+   * The item's thumbnail as MIME format image/*
+   */
   thumbnail: File;
-  // application/xml
+
+  /**
+   * The item's metadata as MIME format application/xml
+   */
   metadata: File;
-  // list of */*
+
+  /**
+   * The item's resource files
+   */
   resources: File[];
-  // list of forward relationshipType/relatedItems[] pairs
+
+  /**
+   * list of forward relationshipType/relatedItems[] pairs
+   */
   fwdRelatedItems: IRelatedItems[];
-  // list of reverse relationshipType/relatedItems[] pairs
+
+  /**
+   * list of reverse relationshipType/relatedItems[] pairs
+   */
   revRelatedItems: IRelatedItems[];
-  //
+
+  /**
+   * Additional feature-service-only info
+   */
   featureServiceProperties?: IFeatureServiceProperties;
 }
 
@@ -236,14 +351,17 @@ export interface ICreateItemFromTemplateResponse {
    * Created item
    */
   item?: IItemTemplate;
+
   /**
    * Item's AGO id
    */
   id: string;
+
   /**
    * AGO item type name
    */
   type: string;
+
   /**
    * Does the item need post processing to handle unresolved variables
    */
@@ -254,30 +372,103 @@ export interface ICreateItemFromTemplateResponse {
  * Options for creating a solution item.
  */
 export interface ICreateSolutionOptions {
-  jobId?: string; // default: group id
-  title?: string; // defaults: for a group, group title; for an item, random string from common.createShortId()
-  snippet?: string; // defaults: for a group, group snippet; for an item, ""
-  description?: string; // defaults: for a group, group description; for an item, ""
-  tags?: string[]; // defaults: for a group, group tags; for an item, []
-  thumbnailurl?: string; // default: ""
-  thumbnail?: File; // default: null; has priority over thumbnailurl
-  folderId?: string; // default is top level
-  templateDictionary?: any; // default: {}
-  templatizeFields?: boolean; // default: false
-  additionalTypeKeywords?: string[]; // default: []; supplements ["Solution", "Template"]
+  /**
+   * Calling-program-supplied id, perhaps used to distinguish between concurrent deployments or deletions;
+   * default: id of group used to create Solution
+   */
+  jobId?: string;
+
+  /**
+   * Title to be given to created Solution item; defaults: for a group, group title;
+   * for an item, random string from common.createShortId()
+   */
+  title?: string;
+
+  /**
+   * Snippet to be given to created Solution item; defaults: for a group, group snippet; for an item, ""
+   */
+  snippet?: string;
+
+  /**
+   * Description to be given to created Solution item; defaults: for a group, group description; for an item, ""
+   */
+  description?: string;
+
+  /**
+   * Tags to be given to created Solution item; defaults: for a group, group tags; for an item, []
+   */
+  tags?: string[];
+
+  /**
+   * URL to thumbnail to be given to created Solution item, but see `thumbnail` property; default: ""
+   */
+  thumbnailurl?: string;
+
+  /**
+   * Thumbnail file to be given to created Solution item; default: null; has priority over `thumbnailurl`
+   */
+  thumbnail?: File;
+
+  /**
+   * Folder in which o place created Solution item; default is top level
+   */
+  folderId?: string;
+
+  /**
+   * Facts to be used for creating the Solution item; default: {}
+   */
+  templateDictionary?: any;
+
+  /**
+   * Should fields be templatized; default: false
+   */
+  templatizeFields?: boolean;
+
+  /**
+   * Additional typeKeywords (beyond always-added ["Solution", "Template"]) to be added to Solution item; default: []
+   */
+  additionalTypeKeywords?: string[];
+
+  /**
+   * Packet of supplemental information provided from certain progress states, e.g., Finished deleting an item
+   * or deploying a Solution item
+   */
   progressCallback?: ISolutionProgressCallback;
-  consoleProgress?: boolean; // default: false
+
+  /**
+   * Should progress be echoed to the debugging console? default: false
+   */
+  consoleProgress?: boolean;
+
+  /**
+   * Placeholder for ids of items to be placed into Solution. DO NOT USE--it is overwritten by function createSolution
+   */
   itemIds?: string[];
-  sourceItemAuthentication?: UserSession; // default: solution item authentication
+
+  /**
+   * Credentials for the organization with the source items; default: solution item authentication
+   */
+  sourceItemAuthentication?: UserSession;
 }
 
 /**
  * Result of creating a solution item.
  */
 export interface ICreateSolutionResult {
+  /**
+   * Success or failure
+   */
   success: boolean;
+
+  /**
+   * Id of created Solution template
+   */
   solutionTemplateItemId: string;
-  enableItemReuse?: boolean; // when true items with source-itemId type keyword will be reused
+
+  /**
+   * When true items with source-itemId type keyword will be reused; default: false
+   */
+  enableItemReuse?: boolean;
 }
 
 /**
@@ -288,39 +479,48 @@ export interface IDatasourceInfo {
    * Calculated pattern used for templatization eg. "{{itemId.fields.layerId.fieldname}}"
    */
   basePath: string;
+
   /**
    * The portal item id eg. "4efe5f693de34620934787ead6693f19"
    */
   itemId: string;
+
   /**
    * The id for the layer from the service eg. 0
    */
   layerId: number;
+
   /**
    * The webmap layer id eg. "TestLayerForDashBoardMap_632"
    */
   id?: string;
+
   /**
    * The id for the layer from a map could be referenced by more than one map for a solution
    */
   ids: string[];
+
   /**
    * The url used for fields lookup
    */
   url?: string;
+
   /**
    * The fields this datasource contains
    */
   fields: any[];
+
   /**
    * The ralative ids for references to a datasource
    * Application types like dashboard can reference datasources via realtive widget reference ids
    */
   references?: any[];
+
   /**
    * The details on any relationships that the datasource is involved in
    */
   relationships: any[];
+
   /**
    * The layers adminLayerInfo
    * Used to fetch relationship info in some cases
@@ -332,9 +532,22 @@ export interface IDatasourceInfo {
  * Options for deleting a deployed solution item and all of the items that were created as part of that deployment
  */
 export interface IDeleteSolutionOptions {
-  jobId?: string; // default: solution id
+  /**
+   * Calling-program-supplied id, perhaps used to distinguish between concurrent deployments or deletions;
+   * default: id of solution being deleted
+   */
+  jobId?: string;
+
+  /**
+   * Packet of supplemental information provided from certain progress states, e.g., Finished deleting an item
+   * or deploying a Solution item
+   */
   progressCallback?: ISolutionProgressCallback;
-  consoleProgress?: boolean; // default: false
+
+  /**
+   * Should progress be echoed to the debugging console? default: false
+   */
+  consoleProgress?: boolean;
 }
 
 /**
@@ -373,31 +586,98 @@ export interface IDeployFilename {
  * Options for deploying a solution item and for creating the solution index item representing the deployment
  */
 export interface IDeploySolutionOptions {
-  jobId?: string; // default: solution id
-  title?: string; // default: copied from solution item
-  snippet?: string; // default: copied from solution item
-  description?: string; // default: copied from solution item
-  tags?: string[]; // default: copied from solution item
-  thumbnailurl?: string; // default: copied from solution item
-  thumbnail?: File; // default: null; has priority over thumbnailurl
-  templateDictionary?: any; // default: {}
-  additionalTypeKeywords?: string[]; // default: []; supplements ["Solution", "Deployed"]
-  enableItemReuse?: boolean; // when true items with source-itemId type keyword will be reused
+  /**
+   * Calling-program-supplied id, perhaps used to distinguish between concurrent deployments or deletions;
+   * default: id of solution being deployed
+   */
+  jobId?: string;
+
+  /**
+   * Title to be given to deployed Solution item; default: copied from solution item
+   */
+  title?: string;
+
+  /**
+   * Snippet to be given to created Solution item; default: copied from solution item
+   */
+  snippet?: string;
+
+  /**
+   * Description to be given to created Solution item; default: copied from solution item
+   */
+  description?: string;
+
+  /**
+   * Tags to be given to created Solution item; default: copied from solution item
+   */
+  tags?: string[];
+
+  /**
+   * URL to thumbnail to be given to created Solution item, but see `thumbnail` property; default: copied from
+   * solution item
+   */
+  thumbnailurl?: string;
+
+  /**
+   * Thumbnail file to be given to created Solution item; default: null; has priority over `thumbnailurl`
+   */
+  thumbnail?: File;
+
+  /**
+   * Facts to be used for creating the Solution item; default: {}
+   */
+  templateDictionary?: any;
+
+  /**
+   * Additional typeKeywords (beyond always-added ["Solution", "Deployed"]) to be added to Solution item; default: []
+   */
+  additionalTypeKeywords?: string[];
+
+  /**
+   * When true items with source-itemId type keyword will be reused; default: false
+   */
+  enableItemReuse?: boolean;
+
+  /**
+   * Packet of supplemental information provided from certain progress states, e.g., Finished deleting an item
+   * or deploying a Solution item
+   */
   progressCallback?: ISolutionProgressCallback;
-  consoleProgress?: boolean; // default: false
-  storageAuthentication?: UserSession; // credentials for the organization with the source items; default: use
-  // authentication supplied for deployment destination
-  storageVersion?: number; // default: 0
+
+  /**
+   * Should progress be echoed to the debugging console? default: false
+   */
+  consoleProgress?: boolean;
+
+  /**
+   * Credentials for the organization with the source items; default: authentication supplied for deployment destination
+   */
+  storageAuthentication?: UserSession;
+
+  /**
+   * Version of storage read from Solution item. DO NOT USE--it is overwritten by function deploySolutionFromTemplate
+   */
+  storageVersion?: number;
 }
 
 /**
  * Result of deploying a solution item.
  */
 export interface IDeploySolutionResult {
+  /**
+   * Success or failure
+   */
   success: boolean;
+
+  /**
+   * Id of deployed Solution
+   */
   deployedSolutionItemId: string;
 }
 
+/**
+ * Contains feature-service-specific properties.
+ */
 export interface IFeatureServiceProperties {
   service: any;
   layers: any[];
@@ -414,14 +694,24 @@ export interface IFile {
   blob: Blob;
 }
 
+/**
+ * Filename, MIME type, and data.
+ */
 export interface IFileMimeTyped {
-  blob: Blob;
   filename: string;
   mimeType: string;
+  blob: Blob;
 }
 
+/**
+ * Response from removing a folder.
+ */
 export interface IFolderStatusResponse {
+  /**
+   * Success or failure
+   */
   success: boolean;
+
   folder: {
     username: string;
     id: string;
@@ -429,30 +719,95 @@ export interface IFolderStatusResponse {
   };
 }
 
+/**
+ * Response from getting the items related to a specified item, extended with paging properties
+ */
 export interface IGetRelatedItemsResponse
   extends IPortalGetRelatedItemsResponse {
+  /**
+   * Total number of responses (from IPortalGetRelatedItemsResponse)
+   */
   total: number;
-  start: number;
-  num: number;
-  nextStart: number;
+
+  /**
+   * Related items (from IPortalGetRelatedItemsResponse)
+   */
   relatedItems: IItem[];
-}
 
-export interface IGetResourcesResponse {
-  total: number;
+  /**
+   * The number of the first entry requested. The index number is 1-based.
+   */
   start: number;
+
+  /**
+   * The number of results requested.
+   */
   num: number;
+
+  /**
+   *  The 1-based index of the start of the next batch of results; value is -1 if there are no more results
+   *  to be fetched
+   */
   nextStart: number;
-  resources: IResource[];
 }
 
+/**
+ * Response from getting the resources of a specified item, extended with paging properties
+ */
+export interface IGetResourcesResponse {
+  /**
+   * Total number of responses
+   */
+  total: number;
+
+  /**
+   * Resources
+   */
+  resources: IResource[];
+
+  /**
+   * The number of the first entry requested. The index number is 1-based.
+   */
+  start: number;
+
+  /**
+   * The number of results requested.
+   */
+  num: number;
+
+  /**
+   *  The 1-based index of the start of the next batch of results; value is -1 if there are no more results
+   *  to be fetched
+   */
+  nextStart: number;
+}
+
+/**
+ * Response from getting the category schema set on a group.
+ * @see https://developers.arcgis.com/rest/users-groups-and-items/group-category-schema.htm
+ */
 export interface IGroupCategorySchema {
   categorySchema: IGroupCategory[];
 }
 
+/**
+ * Nestable category schema descripion set on a group.
+ * @see https://developers.arcgis.com/rest/users-groups-and-items/group-category-schema.htm
+ */
 export interface IGroupCategory {
+  /**
+   * Category title
+   */
   title: string;
+
+  /**
+   * Category description
+   */
   description?: string;
+
+  /**
+   * Child categories of this category
+   */
   categories?: IGroupCategory[];
 }
 
@@ -460,7 +815,14 @@ export interface IGroupCategory {
  * Hierarchical arrangement of items and their dependencies.
  */
 export interface IHierarchyElement {
+  /**
+   * Item id
+   */
   id: string;
+
+  /**
+   * Items that this item depends on
+   */
   dependencies: IHierarchyElement[];
 }
 
@@ -468,20 +830,83 @@ export interface IHierarchyElement {
  * Subset of portal.IItem containing just the properties that are stored in a template--the item's "base" section.
  */
 export interface IItemGeneralized {
+  /**
+   * Item categories
+   */
   categories?: string[];
+
+  /**
+   * Specifies the locale for which content is returned.
+   */
   culture?: string;
+
+  /**
+   * Item description
+   */
   description?: string;
+
+  /**
+   * _Undocumented AGO item property_
+   */
   documentation?: string;
+
+  /**
+   * An array that defines the bounding rectangle of the item as [[minx, miny], [maxx, maxy]]. Should always be in WGS84.
+   */
   extent?: number[][] | string;
+
+  /**
+   * The unique ID for this item.
+   */
   id: string;
+
+  /**
+   * A JSON object that primarily applies to system requirements, Terms and Conditions, version, supported platforms,
+   * YouTube video ID, etc., associated with the application.
+   */
   properties?: any;
+
+  /**
+   *  A short summary description of the item.
+   */
   snippet?: string;
+
+  /**
+   * The coordinate system of the item.
+   */
   spatialReference?: ISpatialReference;
+
+  /**
+   * An array of user defined tags that describe the item.
+   */
   tags?: string[];
+
+  /**
+   * The title of the item. This is the name that's displayed to users and by which they refer to the item.
+   */
   title?: string;
+
+  /**
+   * The GIS content type of this item. Example types include Web Map, Map Service, Shapefile, and
+   * Web Mapping Application.
+   */
   type: string;
+
+  /**
+   * An array of keywords that further describes the type of this item. Each item is tagged with a set of
+   * type keywords that are derived based on its primary type.
+   */
   typeKeywords?: string[];
+
+  /**
+   * The URL for the resource represented by the item. Applies only to items that represent web-accessible
+   * resources such as map services.
+   */
   url?: string;
+
+  /**
+   * Generically definines remaining/unused properties
+   */
   [key: string]: any;
 }
 
@@ -544,6 +969,7 @@ export interface IItemTemplate {
    * function calls made during while deploying it
    */
   estimatedDeploymentCostFactor: number;
+
   /**
    * Allow for adhoc properties
    */
@@ -554,6 +980,9 @@ export interface IItemTemplate {
  * Function signatures for use in a function lookup array.
  */
 export interface IItemTemplateConversions {
+  /**
+   * Converts an item into a template for use in a Solution.
+   */
   convertItemToTemplate(
     solutionItemId: string,
     itemInfo: any,
@@ -561,18 +990,16 @@ export interface IItemTemplateConversions {
     srcAuthentication: UserSession,
     templateDictionary?: any
   ): Promise<IItemTemplate>;
+
+  /**
+   * Creates an item using templatized info in a Solution.
+   */
   createItemFromTemplate(
     template: IItemTemplate,
     templateDictionary: any,
     destinationAuthentication: UserSession,
     itemProgressCallback: IItemProgressCallback
   ): Promise<ICreateItemFromTemplateResponse>;
-  postProcessDependencies?(
-    templates: IItemTemplate[],
-    clonedSolutionsResponse: ICreateItemFromTemplateResponse[],
-    authentication: UserSession,
-    templateDictionary: any
-  ): Promise<any>;
 }
 
 /**
@@ -621,10 +1048,31 @@ export interface INumberValuePair {
  * Subset of a esri/portal/Portal used by this library.
  */
 export interface IPortalSubset {
+  /**
+   * Name of the organization.
+   */
   name: string;
+
+  /**
+   * The id of the organization that owns this portal. If null then this is the default portal
+   * for anonymous and non-organizational users.
+   */
   id: string;
+
+  /**
+   * The REST URL for the portal, for example "https://www.arcgis.com/sharing/rest" for ArcGIS Online
+   * and "https://www.example.com/arcgis/sharing/rest" for your in-house portal.
+   */
   restUrl: string;
+
+  /**
+   * The URL to the portal instance.
+   */
   portalUrl: string;
+
+  /**
+   * The prefix selected by the organization's administrator to be used with the custom base URL for the portal.
+   */
   urlKey: string;
 }
 
@@ -662,10 +1110,12 @@ export interface IQuickCaptureDatasource {
    * The portal item id for the datasource eg. "4efe5f693de34620934787ead6693f19"
    */
   featureServiceItemId: string;
+
   /**
    * The application item id for the datasource eg. "1d4de1e4-ef58-4e02-9159-7a6e6701cada"
    */
   dataSourceId: string;
+
   /**
    * The url used for the datasource
    */
@@ -676,7 +1126,15 @@ export interface IQuickCaptureDatasource {
  * A mapping between a relationship type and the list of item ids using that relationship.
  */
 export interface IRelatedItems {
+  /**
+   * The type of relationship between the two items.
+   * @see https://developers.arcgis.com/rest/users-groups-and-items/relationship-types.htm
+   */
   relationshipType: string;
+
+  /**
+   * Ids of related items
+   */
   relatedItemIds: string[];
 }
 
@@ -684,8 +1142,19 @@ export interface IRelatedItems {
  * Summary of a resource.
  */
 export interface IResource {
+  /**
+   * Name of resource
+   */
   resource: string;
+
+  /**
+   * The date the resource was created. Shown in UNIX time in milliseconds.
+   */
   created: number;
+
+  /**
+   * The size of the resource in bytes.
+   */
   size: number;
 }
 
@@ -707,6 +1176,10 @@ export interface ISolutionItem {
    * Supplemental information
    */
   properties?: IStringValuePair;
+
+  /**
+   * Generically definines remaining/unused properties
+   */
   [key: string]: any;
 }
 
@@ -726,24 +1199,63 @@ export interface ISolutionItemData {
 }
 
 /**
- * A brief form of an item in a solution.
+ * A brief form of an item in a deployed Solution item.
  */
 export interface ISolutionItemPrecis {
+  /**
+   * The unique ID for this item.
+   */
   id: string;
+
+  /**
+   * The GIS content type of this item. Example types include Web Map, Map Service, Shapefile, and
+   * Web Mapping Application.
+   */
   type: string;
+
+  /**
+   * The title of the item. This is the name that's displayed to users and by which they refer to the item.
+   */
   title: string;
+
+  /**
+   * The date the item was last modified. Shown in UNIX time in milliseconds.
+   */
   modified: number;
+
+  /**
+   * The username of the user who owns this item.
+   */
   owner: string;
 }
 
 /**
- * A brief form of a solution item.
+ * A brief form of a deployed Solution item.
  */
 export interface ISolutionPrecis {
+  /**
+   * The unique ID for this Solution item.
+   */
   id: string;
+
+  /**
+   * The title of the item. This is the name that's displayed to users and by which they refer to the item.
+   */
   title: string;
+
+  /**
+   * Folder containing the deployed Solution
+   */
   folder: string;
+
+  /**
+   * Items contained in this solution
+   */
   items: ISolutionItemPrecis[];
+
+  /**
+   * Ids of groups affiliated with this solution
+   */
   groups: string[];
 }
 
@@ -827,6 +1339,7 @@ export interface IStatusResponse {
    * Success or failure of request
    */
   success: boolean;
+
   /**
    * AGO id of item for which request was made
    */
@@ -1033,11 +1546,15 @@ export interface IZipInfo {
   filelist: any[];
 }
 
+/**
+ * Title information for Velocity data.
+ */
 export interface IVelocityTitle {
   /**
    * The current label for the object
    */
   label: string;
+
   /**
    * Existing titles that have been used in the org
    */

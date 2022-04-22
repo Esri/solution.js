@@ -118,7 +118,7 @@ export function runQuery(): void {
   }
 
   const searchString = "";
-  const additionalSearchOptions: common.IAdditionalSearchOptions = {
+  const additionalSearchOptions: common.IAdditionalGroupSearchOptions = {
     categories: queryCategories,
     num: 100
   };

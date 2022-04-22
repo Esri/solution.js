@@ -3270,7 +3270,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
     it("can fetch a single tranche", done => {
       const groupId: string = "grp1234567890";
       const query: string = "Fred";
-      const additionalSearchOptions: interfaces.IAdditionalSearchOptions = { num: 5 };
+      const additionalSearchOptions: interfaces.IAdditionalGroupSearchOptions = { num: 5 };
 
       fetchMock.get(
         utils.PORTAL_SUBSET.restUrl +
@@ -3296,7 +3296,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
     it("can fetch more than one tranche", done => {
       const groupId: string = "grp1234567890";
       const query: string = "Fred";
-      const additionalSearchOptions: interfaces.IAdditionalSearchOptions = { num: 5 };
+      const additionalSearchOptions: interfaces.IAdditionalGroupSearchOptions = { num: 5 };
 
       fetchMock
         .get(
@@ -3329,7 +3329,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
     it("can handle a failure", done => {
       const groupId: string = "grp1234567890";
       const query: string = "Fred";
-      const additionalSearchOptions: interfaces.IAdditionalSearchOptions = { num: 5 };
+      const additionalSearchOptions: interfaces.IAdditionalGroupSearchOptions = { num: 5 };
 
       fetchMock.get(
         utils.PORTAL_SUBSET.restUrl +
@@ -3388,7 +3388,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
 
     it("can handle a categories search", done => {
       const groupId: string = "grp1234567890";
-      const additionalSearchOptions: interfaces.IAdditionalSearchOptions = {
+      const additionalSearchOptions: interfaces.IAdditionalGroupSearchOptions = {
         categories: [
           "a,b", // a or b
           // and
@@ -3422,7 +3422,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
 
     it("will not override the num passed in additionalSearchOptions", done => {
       const groupId: string = "grp1234567890";
-      const additionalSearchOptions: interfaces.IAdditionalSearchOptions = {
+      const additionalSearchOptions: interfaces.IAdditionalGroupSearchOptions = {
         categories: [
           "a,b", // a or b
           // and
