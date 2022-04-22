@@ -784,6 +784,7 @@ export interface IGetResourcesResponse {
 
 /**
  * Response from getting the category schema set on a group.
+ *
  * @see https://developers.arcgis.com/rest/users-groups-and-items/group-category-schema.htm
  */
 export interface IGroupCategorySchema {
@@ -792,6 +793,7 @@ export interface IGroupCategorySchema {
 
 /**
  * Nestable category schema descripion set on a group.
+ *
  * @see https://developers.arcgis.com/rest/users-groups-and-items/group-category-schema.htm
  */
 export interface IGroupCategory {
@@ -1128,6 +1130,7 @@ export interface IQuickCaptureDatasource {
 export interface IRelatedItems {
   /**
    * The type of relationship between the two items.
+   *
    * @see https://developers.arcgis.com/rest/users-groups-and-items/relationship-types.htm
    */
   relationshipType: string;
