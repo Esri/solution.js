@@ -122,7 +122,7 @@ export function convertBlobToSupportableResource(
  * @param destinationItemId Id of item to receive copy of resource/metadata
  * @param destinationAuthentication Credentials for the request to the destination
  * @param template Template for using its itemId and properties for fine-tuning the filename for Hub
- * @return A promise which resolves to a boolean indicating if the copies were successful
+ * @returns A promise which resolves to a boolean indicating if the copies were successful
  */
 export function copyFilesFromStorageItem(
   storageAuthentication: UserSession,
@@ -200,7 +200,7 @@ export function copyFilesFromStorageItem(
  * @param files List of item files and paths for storing the files
  * @param storageItemId Id of item to receive copy of resource/metadata
  * @param storageAuthentication Credentials for the request to the storage
- * @return A promise which resolves to a list of the filenames under which the resource/metadata are stored
+ * @returns A promise which resolves to a list of the filenames under which the resource/metadata are stored
  */
 export function copyFilesToStorageItem(
   files: ISourceFile[],
@@ -233,7 +233,7 @@ export function copyFilesToStorageItem(
  * Generates a folder and filename for storing a copy of an item's metadata in a storage item.
  *
  * @param itemId Id of item
- * @return Folder and filename for storage; folder is the itemID suffixed with "_info_metadata"
+ * @returns Folder and filename for storage; folder is the itemID suffixed with "_info_metadata"
  * @see convertStorageResourceToItemResource
  */
 export function generateMetadataStorageFilename(
@@ -258,7 +258,7 @@ export function generateMetadataStorageFilename(
  * @param resourceFilenames List of resource filenames for an item, e.g., ["file1", "myFolder/file2"]
  * @param isGroup Boolean to indicate if the files are associated with a group or item
  * @param storageVersion Version of the Solution template
- * @return List of item files' URLs and folder/filenames for storing the files
+ * @returns List of item files' URLs and folder/filenames for storing the files
  */
 export function generateSourceFilePaths(
   portalSharingUrl: string,
@@ -317,7 +317,7 @@ export function generateSourceFilePaths(
  * @param sourcePortalSharingUrl Server/sharing
  * @param itemId Id of item
  * @param isGroup Boolean to indicate if the files are associated with a group or item
- * @return URL string
+ * @returns URL string
  */
 export function generateSourceMetadataUrl(
   sourcePortalSharingUrl: string,
@@ -338,7 +338,7 @@ export function generateSourceMetadataUrl(
  * @param sourcePortalSharingUrl Server/sharing
  * @param itemId Id of item
  * @param sourceResourceFilename Either filename or folder/filename to resource
- * @return URL string
+ * @returns URL string
  */
 export function generateSourceResourceUrl(
   sourcePortalSharingUrl: string,
@@ -361,7 +361,7 @@ export function generateSourceResourceUrl(
  * @param itemId Id of item
  * @param thumbnailUrlPart Partial path to the thumbnail held in an item's JSON
  * @param isGroup Boolean to indicate if the files are associated with a group or item
- * @return URL string
+ * @returns URL string
  */
 export function generateSourceThumbnailUrl(
   sourcePortalSharingUrl: string,
@@ -386,7 +386,7 @@ export function generateSourceThumbnailUrl(
  * @param storageItemId Id of storage item
  * @param resourceFilenames List of resource filenames for an item, e.g., ["file1", "myFolder/file2"]
  * @param storageVersion Version of the Solution template
- * @return List of item files' URLs and folder/filenames for storing the files
+ * @returns List of item files' URLs and folder/filenames for storing the files
  */
 export function generateStorageFilePaths(
   portalSharingUrl: string,
@@ -411,7 +411,7 @@ export function generateStorageFilePaths(
  *
  * @param itemId Id of item
  * @param thumbnailUrlPart Partial path to the thumbnail held in an item's JSON
- * @return Folder and filename for storage; folder is the itemID suffixed with "_info_thumbnail";
+ * @returns Folder and filename for storage; folder is the itemID suffixed with "_info_thumbnail";
  * file is URI-encoded thumbnailUrlPart
  * @see convertStorageResourceToItemResource
  */
@@ -448,7 +448,7 @@ export function isSupportedFileType(filename: string): boolean {
  *
  * @param authentication Credentials for the request to the storage
  * @param filePaths List of item files' URLs and folder/filenames for storing the files
- * @return A promise which resolves to a boolean indicating if the copies were successful
+ * @returns A promise which resolves to a boolean indicating if the copies were successful
  */
 export function getThumbnailFromStorageItem(
   authentication: UserSession,
@@ -477,7 +477,7 @@ export function getThumbnailFromStorageItem(
  * @param filename Name of the resource file to update
  * @param content The new content to update the resource with
  * @param authentication Credentials for the request to the storage
- * @return A promise which resolves with a success true/false response
+ * @returns A promise which resolves with a success true/false response
  */
 export function updateItemResourceText(
   itemId: string,

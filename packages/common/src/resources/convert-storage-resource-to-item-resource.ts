@@ -21,7 +21,7 @@ import { IDeployFilename, EFileType } from "../interfaces";
  *
  * @param storageResourceFilename Filename used to store the resource, metadata, or thumbnail of an item
  * @param storageVersion Version of the Solution template
- * @return Folder and filename for storing information in an item, as well as the type (resource, metadata,
+ * @returns Folder and filename for storing information in an item, as well as the type (resource, metadata,
  * or thumbnail) of the information; the folder property is only meaningful for the resource type
  * @see generateResourceStorageFilename
  * @see generateMetadataStorageFilename

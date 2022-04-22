@@ -29,6 +29,7 @@ import { _updateSitePages } from "./_update-site-pages";
  * @param itemInfos
  * @param templateDictionary
  * @param hubRequestOptions
+ * @private
  */
 export function _postProcessSite(
   siteModel: IModel,

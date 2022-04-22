@@ -16,6 +16,13 @@
 
 import { getProp, createId } from "@esri/hub-common";
 
+/**
+ * Updates schema to 2.7.
+ *
+ * @param model Model to be updated
+ * @returns Updated model
+ * @private
+ */
 export function _upgradeTwoDotSeven(model: any): any {
   if (getProp(model, "item.properties.schemaVersion") >= 2.7) {
     return model;

@@ -38,7 +38,7 @@ import {
  * @param urlPrefix Optional prefix args necessary for some url construction
  * @param urlSuffix Optional suffix args necessary for some url construction
  *
- * @return a promise that will resolve the constructed url
+ * @returns a promise that will resolve the constructed url
  *
  */
 export function getVelocityUrl(
@@ -84,7 +84,7 @@ export function getVelocityUrl(
  * @param templateDictionary Hash of facts: folder id, org URL, adlib replacements
  * @param autoStart This can be leveraged to start certain velocity items after they are created.
  *
- * @return a promise that will resolve an object containing the item, id, type, and post process flag
+ * @returns a promise that will resolve an object containing the item, id, type, and post process flag
  *
  */
 export function postVelocityData(
@@ -176,7 +176,7 @@ export function postVelocityData(
  * @param label The current label of the item from the solution template
  * @param url The base velocity url for checking status
  *
- * @return a promise that will resolve a unique title
+ * @returns a promise that will resolve a unique title
  *
  */
 export function getTitle(
@@ -211,8 +211,9 @@ export function getTitle(
  * @param dataOutputs The velocity items output objects
  * @param feeds The velocity items feed objects
  *
- * @return a promise that will resolve the data object passed in with any necessary changes.
+ * @returns a promise that will resolve the data object passed in with any necessary changes.
  *
+ * @private
  */
 export function _validateOutputs(
   authentication: UserSession,
@@ -260,8 +261,9 @@ export function _validateOutputs(
  *
  * @param validateResults The results object to check for name conflict errors
  *
- * @return a list of names that already exist in the org
+ * @returns a list of names that already exist in the org
  *
+ * @private
  */
 export function _validateMessages(
   validateResults: any
@@ -309,6 +311,7 @@ export function _validateMessages(
  * @param data The full data object used for deploying the velocity item.
  * @param names The names that failed due to duplicate error in validation.
  *
+ * @private
  */
 export function _updateFeed(
   feeds: any[],
@@ -332,7 +335,7 @@ export function _updateFeed(
  * @param data The full data object used for deploying the velocity item.
  * @param names The names that failed due to duplicate error in validation.
  *
- *
+ * @private
  */
 export function _updateDataOutput(
   dataOutputs: any[],
@@ -375,9 +378,10 @@ export function _updateDataOutput(
  * @param names The names that failed due to duplicate error in validation.
  * @param dataOutput The current data output that is being evaluated.
  *
- * @return an object with a unique label and the outputs id when a name
+ * @returns an object with a unique label and the outputs id when a name
  * conflict is found...otherwise returns undefined
  *
+ * @private
  */
 export function _getOutputLabel(names: any[], dataOutput: any): any {
   const titles: any[] = names.map((name: any) => {
@@ -406,7 +410,7 @@ export function _getOutputLabel(names: any[], dataOutput: any): any {
  * @param templateDictionary Hash of the facts
  * @param path to the objects to evaluate for potantial name clashes
  *
- * @return string The unique title to use
+ * @returns string The unique title to use
  *
  */
 export function getUniqueTitle(
@@ -441,9 +445,10 @@ export function getUniqueTitle(
  * @param template the item template that has the details for deployment
  * @param id the new id for the velocity item that was deployed
  *
- * @return a promise that will resolve with the validation results
+ * @returns a promise that will resolve with the validation results
  * or the start results when validation indicates the item is executable
  *
+ * @private
  */
 export function _validateAndStart(
   authentication: UserSession,
@@ -472,7 +477,7 @@ export function _validateAndStart(
  * @param id? Optional The id of the velocity item we are constructing a url for
  * @param body? Optional the request body to validate.
  *
- * @return a promise that will resolve with an object containing messages
+ * @returns a promise that will resolve with an object containing messages
  * indicating any issues found when validating such as name conflict errors
  *
  */
@@ -508,7 +513,7 @@ export function validate(
  * @param type The type of velocity item we are constructing a url for
  * @param id? Optional The id of the velocity item we are constructing a url for
  *
- * @return a promise that will resolve with the result of the start call
+ * @returns a promise that will resolve with the result of the start call
  *
  */
 export function start(
@@ -540,8 +545,9 @@ export function start(
  * @param authentication Credentials for the requests
  * @param method Indicate if "GET" or "POST"
  *
- * @return generic request options used for various calls to velocity api
+ * @returns generic request options used for various calls to velocity api
  *
+ * @private
  */
 export function _getRequestOpts(
   authentication: UserSession,
@@ -565,8 +571,9 @@ export function _getRequestOpts(
  * @param method The method for the request "GET" or "POST"
  * @param body The body for POST requests
  *
- * @return a promise that will resolve with the result of the fetch call
+ * @returns a promise that will resolve with the result of the fetch call
  *
+ * @private
  */
 export function _fetch(
   authentication: UserSession,
@@ -614,6 +621,7 @@ export function cleanDataSourcesAndFeeds(
  * @param sourcesOrFeeds The list of dataSources or feeds
  * @param dependencies The list of dependencies
  *
+ * @private
  */
 export function _removeIdProps(
   sourcesOrFeeds: any[],
@@ -653,6 +661,7 @@ export function _removeIdProps(
  * @param outputs The list of outputs
  * @param dependencies The list of dependencies
  *
+ * @private
  */
 export function _removeIdPropsAndSetName(
   outputs: any[],
@@ -678,6 +687,7 @@ export function _removeIdPropsAndSetName(
  * @param prop the individual prop to remove
  * @param dependencies The list of dependencies
  *
+ * @private
  */
 export function _removeProp(
   props: any,
@@ -696,6 +706,7 @@ export function _removeProp(
  *
  * @param props the list of props to update
  *
+ * @private
  */
 export function _updateName(props: any): void {
   [

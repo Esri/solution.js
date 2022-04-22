@@ -29,7 +29,7 @@ import * as common from "@esri/solution-common";
  *
  * @param item Solution id
  * @param authentication Credentials for the request to AGO
- * @return List of results of checks of Solution
+ * @returns List of results of checks of Solution
  */
 export function checkSolution(
   itemId: string,
@@ -176,7 +176,7 @@ export function checkSolution(
  * @param item1 First item or its AGO id
  * @param item2 Second item or its AGO id
  * @param authentication Credentials for the request to AGO
- * @return True if objects are the same
+ * @returns True if objects are the same
  * @see Only comparable properties are compared; see deleteItemProps() in the `common` package
  */
 export function compareItems(
@@ -231,7 +231,7 @@ export function compareItems(
  * Creates a hierarchy of the items in a Solution template.
  *
  * @param templates Array of templates from a Solution
- * @return List of top-level items, each containing a recursive list of its dependencies
+ * @returns List of top-level items, each containing a recursive list of its dependencies
  */
 export function getItemHierarchy(
   templates: common.IItemTemplate[]
@@ -301,7 +301,8 @@ export function getItemHierarchy(
  * Finds the top-level items in a Solution template--the items that are not dependencies of any other item.
  *
  * @param templates Array of templates from a Solution
- * @return List of top-level item ids
+ * @returns List of top-level item ids
+ * @private
  */
 export function _getTopLevelItemIds(
   templates: common.IItemTemplate[]

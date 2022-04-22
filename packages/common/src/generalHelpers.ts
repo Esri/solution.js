@@ -37,7 +37,7 @@ import { new_File } from "./polyfills";
  *
  * @param url URL to append to
  * @param parameter Query parameter to append, prefixed with "?" or "&" as appropriate to what url already has
- * @return New URL combining url and parameter
+ * @returns New URL combining url and parameter
  */
 export function appendQueryParam(url: string, parameter: string): string {
   return url + (url.indexOf("?") === -1 ? "?" : "&") + parameter;
@@ -47,7 +47,7 @@ export function appendQueryParam(url: string, parameter: string): string {
  * Extracts JSON from a Blob.
  *
  * @param blob Blob to use as source
- * @return A promise that will resolve with JSON or null
+ * @returns A promise that will resolve with JSON or null
  */
 export function blobToJson(blob: Blob): Promise<any> {
   return new Promise<any>(resolve => {
@@ -70,7 +70,7 @@ export function blobToJson(blob: Blob): Promise<any> {
  * @param blob Blob to use as source
  * @param filename Name to use for file
  * @param mimeType MIME type to override blob's MIME type
- * @return File created out of Blob and filename
+ * @returns File created out of Blob and filename
  */
 export function blobToFile(
   blob: Blob,
@@ -88,7 +88,7 @@ export function blobToFile(
  * Extracts text from a Blob.
  *
  * @param blob Blob to use as source
- * @return A promise that will resolve with text read from blob
+ * @returns A promise that will resolve with text read from blob
  */
 export function blobToText(blob: Blob): Promise<string> {
   return new Promise<string>(resolve => {
@@ -107,7 +107,7 @@ export function blobToText(blob: Blob): Promise<string> {
  * Checks that a URL path ends with a slash.
  *
  * @param url URL to check
- * @return URL, appended with slash if missing
+ * @returns URL, appended with slash if missing
  */
 export function checkUrlPathTermination(url: string): string {
   return url ? (url.endsWith("/") ? url : url + "/") : url;
@@ -116,7 +116,7 @@ export function checkUrlPathTermination(url: string): string {
 /**
  * Creates a random 32-character alphanumeric string.
  *
- * @return A lowercase 32-char alphanumeric string
+ * @returns A lowercase 32-char alphanumeric string
  * @internal
  */
 export function createLongId(): string {
@@ -127,7 +127,7 @@ export function createLongId(): string {
 /**
  * Creates a random 8-character alphanumeric string that begins with an alphabetic character.
  *
- * @return An alphanumeric string in the range [a0000000..zzzzzzzz]
+ * @returns An alphanumeric string in the range [a0000000..zzzzzzzz]
  */
 export function createShortId(): string {
   // Return a random number, but beginning with an alphabetic character so that it can be used as a valid
@@ -162,7 +162,7 @@ export function dedupe(input: string[] = []): string[] {
  *
  * @param itemType The AGO item type
  * @param id Item id to include in response
- * @return Empty creation response
+ * @returns Empty creation response
  */
 export function generateEmptyCreationResponse(
   itemType: string,
@@ -180,7 +180,7 @@ export function generateEmptyCreationResponse(
  * Converts JSON to a Blob.
  *
  * @param json JSON to use as source
- * @return A blob from the source JSON
+ * @returns A blob from the source JSON
  */
 export function jsonToBlob(json: any): Blob {
   const _json = JSON.stringify(json);
@@ -200,7 +200,7 @@ export function jsonToBlob(json: any): Blob {
  * @param json JSON to use as source
  * @param filename Name to use for file
  * @param mimeType MIME type to override blob's MIME type
- * @return File created out of JSON and filename
+ * @returns File created out of JSON and filename
  */
 export function jsonToFile(
   json: any,
@@ -215,7 +215,7 @@ export function jsonToFile(
  *
  * @param filename Name to give file
  * @param blob Blob to save
- * @return Promise resolving when operation is complete
+ * @returns Promise resolving when operation is complete
  */
 // Function is only used for live testing, so excluding it from coverage for now
 /* istanbul ignore next */
@@ -240,7 +240,7 @@ export function saveBlobAsFile(filename: string, blob: Blob): Promise<void> {
  * Makes a deep clone, including arrays but not functions.
  *
  * @param obj Object to be cloned
- * @return Clone of obj
+ * @returns Clone of obj
  * @example
  * ```js
  * import { cloneObject } from "utils/object-helpers";
@@ -279,7 +279,7 @@ export function cloneObject(obj: { [index: string]: any }): any {
  *
  * @param json1 First object
  * @param json2 Second object
- * @return True if objects are the same
+ * @returns True if objects are the same
  */
 export function compareJSON(json1: any, json2: any): boolean {
   return JSON.stringify(json1) === JSON.stringify(json2);
@@ -290,7 +290,7 @@ export function compareJSON(json1: any, json2: any): boolean {
  *
  * @param json1 First object
  * @param json2 Second object
- * @return True if objects are the same
+ * @returns True if objects are the same
  */
 export function compareJSONNoEmptyStrings(json1: any, json2: any): boolean {
   const jsonStr1 = JSON.stringify(json1).replace(/":""/g, '":null');
@@ -303,7 +303,7 @@ export function compareJSONNoEmptyStrings(json1: any, json2: any): boolean {
  *
  * @param json1 First object
  * @param json2 Second object
- * @return A list of mismatch report strings
+ * @returns A list of mismatch report strings
  */
 export function compareJSONProperties(json1: any, json2: any): string[] {
   let mismatches = [] as string[];
@@ -381,7 +381,7 @@ export function compareJSONProperties(json1: any, json2: any): string[] {
  *
  * @param json JSON to sanitize
  * @param sanitizer Instance of Sanitizer class
- * @return Sanitized version of `json`
+ * @returns Sanitized version of `json`
  * @see https://github.com/esri/arcgis-html-sanitizer#sanitize-json
  */
 export function sanitizeJSONAndReportChanges(
@@ -478,7 +478,7 @@ export function deleteProps(obj: any, props: string[]): void {
  * Creates an AGO-style JSON failure response with success property.
  *
  * @param e Optional error information
- * @return JSON structure with property success set to false and optionally including `e`
+ * @returns JSON structure with property success set to false and optionally including `e`
  */
 export function fail(e?: any): any {
   if (e) {
@@ -493,7 +493,7 @@ export function fail(e?: any): any {
  *
  * @param ids List of ids
  * @param e Optional error information
- * @return JSON structure with property success set to false and optionally including `e`
+ * @returns JSON structure with property success set to false and optionally including `e`
  */
 export function failWithIds(itemIds: string[], e?: any): any {
   if (e) {
@@ -507,7 +507,7 @@ export function failWithIds(itemIds: string[], e?: any): any {
  * Extracts the ids from a string
  *
  * @param v String to examine
- * @return List of id strings found
+ * @returns List of id strings found
  * @example
  * get id from
  *   bad3483e025c47338d43df308c117308
@@ -539,7 +539,7 @@ export function getIDs(v: string): string[] {
  * @param obj Object to retrieve value from
  * @param path Path into an object, e.g., "data.values.webmap", where "data" is a top-level property
  *             in obj
- * @return Value at end of path
+ * @returns Value at end of path
  */
 export function getProp(obj: { [index: string]: any }, path: string): any {
   return path.split(".").reduce(function(prev, curr) {
@@ -553,7 +553,7 @@ export function getProp(obj: { [index: string]: any }, path: string): any {
  *
  * @param obj Object to retrieve values from
  * @param props Array of paths into the object e.g., "data.values.webmap", where "data" is a top-level property
- * @return Array of the values plucked from the object; only defined values are returned
+ * @returns Array of the values plucked from the object; only defined values are returned
  */
 export function getProps(obj: any, props: string[]): any {
   return props.reduce((a, p) => {
@@ -573,7 +573,7 @@ export function getProps(obj: any, props: string[]): any {
  * @param path Path into an object, e.g., "data.values.webmap", where "data" is a top-level property
  *             in obj
  * @param defaultV Optional value to use if any part of path--including final value--is undefined
- * @return Value at end of path
+ * @returns Value at end of path
  */
 export function getPropWithDefault(
   obj: IStringValuePair,
@@ -656,9 +656,9 @@ export function setProp(obj: any, path: string, value: any) {
 /**
  * Creates a timestamp string using the current UTC date and time.
  *
- * @return Timestamp formatted as YYYYMMDD_hhmm_ssmmm, with month one-based and all values padded with zeroes on the
+ * @returns Timestamp formatted as YYYYMMDD_hhmm_ssmmm, with month one-based and all values padded with zeroes on the
  * left as needed (`ssmmm` stands for seconds from 0..59 and milliseconds from 0..999)
- * @protected
+ * @private
  */
 export function getUTCTimestamp(): string {
   const now = new Date();
@@ -680,7 +680,7 @@ export function getUTCTimestamp(): string {
  *
  * @param jsonObj Object to test
  * @param keywords List of keywords to look for in jsonObj
- * @return Boolean indicating result
+ * @returns Boolean indicating result
  */
 export function hasAnyKeyword(jsonObj: any, keywords: string[]): boolean {
   const typeKeywords =
@@ -698,7 +698,7 @@ export function hasAnyKeyword(jsonObj: any, keywords: string[]): boolean {
  *
  * @param jsonObj Object to test
  * @param keyword Keyword to look for in jsonObj
- * @return Boolean indicating result
+ * @returns Boolean indicating result
  */
 export function hasTypeKeyword(jsonObj: any, keyword: string): boolean {
   const typeKeywords =
@@ -714,7 +714,7 @@ export function hasTypeKeyword(jsonObj: any, keyword: string): boolean {
  * @param title The root title to test
  * @param templateDictionary Hash of the facts
  * @param path to the objects to evaluate for potantial name clashes
- * @return string The unique title to use
+ * @returns string The unique title to use
  */
 export function getUniqueTitle(
   title: string,
@@ -741,7 +741,7 @@ export function getUniqueTitle(
  * @param obj Object to scan and to modify
  * @param pattern Search pattern in each string
  * @param replacement Replacement for matches to search pattern
- * @return Modified obj is returned
+ * @returns Modified obj is returned
  */
 export function globalStringReplace(
   obj: any,
@@ -770,7 +770,7 @@ export function globalStringReplace(
  * @param datasourceInfos Array of DatasourceInfos to evaluate
  * @param itemId The items id to check for
  * @param layerId The layers id to check for
- * @return Boolean indicating result
+ * @returns Boolean indicating result
  */
 export function hasDatasource(
   datasourceInfos: IDatasourceInfo[],
@@ -828,7 +828,7 @@ export function cleanLayerId(id: any) {
  * @param templates Array of item templates to search
  * @param id of template we are searching for
  *
- * @return Template associated with the user provided id argument
+ * @returns Template associated with the user provided id argument
  */
 export function getTemplateById(templates: IItemTemplate[], id: string): any {
   let template;
@@ -847,7 +847,7 @@ export function getTemplateById(templates: IItemTemplate[], id: string): any {
  *
  * @param v a string value to test with the expression
  * @param ex the regular expresion to test with
- * @return an array of matches
+ * @returns an array of matches
  */
 export function regExTest(v: any, ex: RegExp): any[] {
   return v && ex.test(v) ? v.match(ex) : [];
@@ -860,7 +860,7 @@ export function regExTest(v: any, ex: RegExp): any[] {
  *
  * @param min Inclusive minimum desired value
  * @param max Non-inclusive maximum desired value
- * @return Random number in the range [min, max)
+ * @returns Random number in the range [min, max)
  */
 export function _getRandomNumberInRange(min: number, max: number): number {
   // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Math/random#Getting_a_random_number_between_two_values
@@ -874,8 +874,8 @@ export function _getRandomNumberInRange(min: number, max: number): number {
  *
  * @param n Number to pad
  * @param totalSize Desired *minimum* width of number after padding with zeroes
- * @return Number converted to string and padded on the left as needed
- * @protected
+ * @returns Number converted to string and padded on the left as needed
+ * @private
  */
 export function _padPositiveNum(n: number, totalSize: number): string {
   let numStr = n.toString();
@@ -890,9 +890,9 @@ export function _padPositiveNum(n: number, totalSize: number): string {
  * Implements rejected ECMA proposal to change `typeof null` from "object" to "null".
  *
  * @param value Value whose type is sought
- * @return "null" if `value` is null; `typeof value` otherwise
+ * @returns "null" if `value` is null; `typeof value` otherwise
  * @see https://web.archive.org/web/20160331031419/http://wiki.ecmascript.org:80/doku.php?id=harmony:typeof_null
- * @protected
+ * @private
  */
 function _typeof_null(value: any): string {
   return value === null ? "null" : typeof value;

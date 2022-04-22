@@ -339,7 +339,7 @@ export function deploySolutionFromTemplate(
  * Add source-id to items/groups typeKeywords
  *
  * @param template the array of solution data templates
- * @internal
+ * @private
  */
 export function _addSourceId(
   templates: common.IItemTemplate[]
@@ -364,7 +364,7 @@ export function _addSourceId(
  * @param sourceInfo
  * @param authentication
  * @param isGroup Boolean to indicate if the files are associated with a group or item
- * @internal
+ * @private
  */
 export function _applySourceToDeployOptions(
   deployOptions: common.IDeploySolutionOptions,
@@ -396,6 +396,7 @@ export function _applySourceToDeployOptions(
   return deployOptions;
 }
 
+//???
 export function _replaceParamVariables(
   solutionTemplateData: any,
   templateDictionary: any
@@ -435,6 +436,7 @@ export function _replaceParamVariables(
   );
 }
 
+//???
 export function _updateProp(
   template: common.IItemTemplate,
   path: string,
@@ -453,6 +455,7 @@ export function _updateProp(
   return template;
 }
 
+//???
 export function _checkedReplaceAll(
   template: string,
   oldValue: string,
@@ -468,6 +471,7 @@ export function _checkedReplaceAll(
   return newTemplate;
 }
 
+//???
 export function _getPortalBaseUrl(
   portalResponse: common.IPortal,
   authentication: common.UserSession
@@ -486,6 +490,7 @@ export function _getPortalBaseUrl(
     : authentication.portal.replace("/sharing/rest", "");
 }
 
+//???
 export function _updateGroupReferences(
   itemTemplates: any[],
   templateDictionary: any
@@ -511,6 +516,7 @@ export function _updateGroupReferences(
   return itemTemplates;
 }
 
+//???
 export function _purgeTemplateProperties(itemTemplate: any): any {
   const retainProps: string[] = ["itemId", "type", "dependencies", "groups"];
   const deleteProps: string[] = Object.keys(itemTemplate).filter(
@@ -525,7 +531,7 @@ export function _purgeTemplateProperties(itemTemplate: any): any {
  *
  * @param id Id to look for
  * @param templateDictionary Hash mapping property names to replacement values
- * @return Match in template dictionary or original id
+ * @returns Match in template dictionary or original id
  */
 export function _getNewItemId(id: string, templateDictionary: any): string {
   return common.getProp(templateDictionary, id + ".itemId") ?? id;

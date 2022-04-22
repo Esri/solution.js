@@ -34,7 +34,7 @@ import { ICreateServiceParams } from "@esri/arcgis-rest-service-admin";
  * @param templateDictionary Hash of facts: org URL, adlib replacements, deferreds for dependencies
  * @param templates the list of IItemTemplates from the solution
  *
- * @protected
+ * @private
  */
 export function setLocationTrackingEnabled(
   portalResponse: any,
@@ -70,7 +70,7 @@ export function setLocationTrackingEnabled(
  * @param templates the list of IItemTemplates from the solution
  * @param templateDictionary Hash of facts: org URL, adlib replacements, deferreds for dependencies
  *
- * @protected
+ * @private
  */
 export function _validateTrackingTemplates(
   templates: IItemTemplate[],
@@ -100,7 +100,7 @@ export function _validateTrackingTemplates(
  * @param templateDictionary Hash of facts: org URL, adlib replacements, deferreds for dependencies
  * @param authentication Credentials for the requests
  *
- * @protected
+ * @private
  */
 export function getTackingServiceOwner(
   templateDictionary: any,
@@ -126,7 +126,7 @@ export function getTackingServiceOwner(
  * @param itemTemplate the template to evaluate
  * @param itemUpdate the item update to evaluate
  *
- * @protected
+ * @private
  */
 export function isTrackingViewTemplate(
   itemTemplate?: IItemTemplate,
@@ -146,7 +146,7 @@ export function isTrackingViewTemplate(
  *
  * @param itemTemplate the template to evaluate
  *
- * @protected
+ * @private
  */
 export function isTrackingViewGroup(
   itemTemplate: IItemTemplate
@@ -161,7 +161,7 @@ export function isTrackingViewGroup(
  *
  * @param itemTemplate Template for feature service item
  * 
- * @protected
+ * @private
  */
  export function templatizeTracker(
   itemTemplate: IItemTemplate
@@ -196,7 +196,7 @@ export function isTrackingViewGroup(
  * @param groupId the id of the associated tracker group
  * @param groupIdVar the variable to replace the existing name with
  * 
- * @protected
+ * @private
  */
 export function _setName(
   itemTemplate: IItemTemplate,
@@ -223,7 +223,7 @@ export function _setName(
  * @param obj the object that stores the serviceItemId
  * @param path the path to the property that stores the serviceItemId
  * 
- * @protected
+ * @private
  */
 export function templatizeServiceItemId(
   obj: any,
@@ -247,7 +247,7 @@ export function templatizeServiceItemId(
  * @param options the current request options to update
  * @param templateDictionary Hash of facts: org URL, adlib replacements, deferreds for dependencies
  * 
- * @protected
+ * @private
  */
 export function setTrackingOptions(
   itemTemplate: IItemTemplate,

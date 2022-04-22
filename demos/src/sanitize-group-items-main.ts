@@ -22,7 +22,7 @@ import * as common from "@esri/solution-common";
  *
  * @param groupId Group to search
  * @param authentication Credentials for the request
- * @return Promise resolving to a list of screened group items
+ * @returns Promise resolving to a list of screened group items
  */
 export function sanitizeGroupItems(
   groupId: string,

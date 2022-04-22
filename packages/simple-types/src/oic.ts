@@ -24,7 +24,7 @@ import * as common from "@esri/solution-common";
  * @param itemTemplate Template for the OIC (Oriented Imagery Catalog) item
  * @param destAuthentication Credentials for requests to the destination organization
  * @param srcAuthentication Credentials for requests to source items
- * @return Template for the solution item that contains key details for item reconstruction
+ * @returns Template for the solution item that contains key details for item reconstruction
  */
 export function convertItemToTemplate(
   itemTemplate: common.IItemTemplate,
@@ -62,8 +62,8 @@ export function convertItemToTemplate(
  *
  * @param itemTemplate A OIC (Oriented Imagery Catalog) item whose dependencies are sought
  * @param authentication Credentials for any requests
- * @return List of dependencies ids and url/itemId hash
- * @protected
+ * @returns List of dependencies ids and url/itemId hash
+ * @private
  */
 export function _extractDependencies(
   itemTemplate: common.IItemTemplate,
@@ -106,8 +106,8 @@ export function _extractDependencies(
  * @param layerURLs List of OIC layer URLs
  * @param dependencies Current list of dependencies
  * @param authentication Credentials for any requests
- * @return List of dependencies ids and url/itemId hash
- * @protected
+ * @returns List of dependencies ids and url/itemId hash
+ * @private
  */
 export function _getLayerIds(
   layerURLs: string[],
@@ -179,8 +179,8 @@ export function _getLayerIds(
  *
  * @param layerURL OIC layer URL
  * @param urlHash Lookup object for analysis layers
- * @return Templatized URL if layerURL is in the urlHash
- * @protected
+ * @returns Templatized URL if layerURL is in the urlHash
+ * @private
  */
 export function _templatizeOicLayerUrl(layerURL: string, urlHash: any): string {
   let templatizedURL = layerURL;

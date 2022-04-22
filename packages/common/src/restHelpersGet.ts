@@ -125,7 +125,7 @@ export function getFoldersAndGroups(authentication: UserSession): Promise<any> {
  * @param url Address of Blob
  * @param filename Name to use for file
  * @param authentication Credentials for the request
- * @return Promise that will resolve with a File, undefined if the Blob is null, or an AGO-style JSON failure response
+ * @returns Promise that will resolve with a File, undefined if the Blob is null, or an AGO-style JSON failure response
  */
 export function getBlobAsFile(
   url: string,
@@ -150,7 +150,7 @@ export function getBlobAsFile(
  * @param url Address of Blob
  * @param authentication Credentials for the request
  * @param ignoreErrors List of HTTP error codes that should be ignored
- * @return Promise that will resolve with Blob or an AGO-REST JSON failure response
+ * @returns Promise that will resolve with Blob or an AGO-REST JSON failure response
  */
 export function getBlobCheckForError(
   url: string,
@@ -190,7 +190,7 @@ export function getBlobCheckForError(
  * Extracts the text in a url between the last forward slash and the beginning of the url's parameters.
  *
  * @param url URL to work with
- * @return Text extracted; empty if url ends with a forward slash or has a "?" immediately after the last
+ * @returns Text extracted; empty if url ends with a forward slash or has a "?" immediately after the last
  * forward slash
  */
 export function getFilenameFromUrl(url: string): string {
@@ -215,7 +215,7 @@ export function getFilenameFromUrl(url: string): string {
  *
  * @param groupId Id of an group whose primary information is sought
  * @param authentication Credentials for the request to AGO
- * @return A promise that will resolve with group's JSON or error JSON or throws ArcGISRequestError in case of HTTP error
+ * @returns A promise that will resolve with group's JSON or error JSON or throws ArcGISRequestError in case of HTTP error
  *         or response error code
  */
 export function getGroupBase(
@@ -233,7 +233,7 @@ export function getGroupBase(
  *
  * @param groupId Id of an group whose category schema information is sought
  * @param authentication Credentials for the request to AGO
- * @return A promise that will resolve with JSON of group's category schema
+ * @returns A promise that will resolve with JSON of group's category schema
  * @see https://developers.arcgis.com/rest/users-groups-and-items/group-category-schema.htm
  */
 export function getGroupCategorySchema(
@@ -251,7 +251,7 @@ export function getGroupCategorySchema(
  *
  * @param groupId Id of a group whose contents are sought
  * @param authentication Credentials for the request to AGO
- * @return A promise that will resolve with list of dependent ids or an empty list
+ * @returns A promise that will resolve with list of dependent ids or an empty list
  */
 export function getGroupContents(
   groupId: string,
@@ -278,7 +278,7 @@ export function getGroupContents(
  *
  * @param itemId Id of an item whose primary information is sought
  * @param authentication Credentials for the request to AGO
- * @return A promise that will resolve with item's JSON or error JSON or throws ArcGISRequestError in case of HTTP error
+ * @returns A promise that will resolve with item's JSON or error JSON or throws ArcGISRequestError in case of HTTP error
  *         or response error code
  */
 export function getItemBase(
@@ -297,7 +297,7 @@ export function getItemBase(
  * @param itemId Id of an item whose data information is sought
  * @param filename Name to use for file
  * @param authentication Credentials for the request to AGO
- * @return Promise that will resolve with a File, undefined if the Blob is null, or an AGO-style JSON failure response
+ * @returns Promise that will resolve with a File, undefined if the Blob is null, or an AGO-style JSON failure response
  */
 export function getItemDataAsFile(
   itemId: string,
@@ -318,7 +318,7 @@ export function getItemDataAsFile(
  * @param itemId Id of an item whose data information is sought
  * @param filename Name to use for file
  * @param authentication Credentials for the request to AGO
- * @return Promise that will resolve with JSON, or an AGO-style JSON failure response
+ * @returns Promise that will resolve with JSON, or an AGO-style JSON failure response
  */
 export function getItemDataAsJson(
   itemId: string,
@@ -337,7 +337,7 @@ export function getItemDataAsJson(
  *
  * @param itemId Id of an item whose data information is sought
  * @param authentication Credentials for the request to AGO
- * @return A promise that will resolve with the data Blob or null if the item doesn't have a data section
+ * @returns A promise that will resolve with the data Blob or null if the item doesn't have a data section
  */
 export function getItemDataBlob(
   itemId: string,
@@ -357,7 +357,7 @@ export function getItemDataBlob(
  *
  * @param itemId Id of an item whose data information is sought
  * @param authentication Credentials for the request to AGO
- * @return URL string
+ * @returns URL string
  */
 export function getItemDataBlobUrl(
   itemId: string,
@@ -373,7 +373,7 @@ export function getItemDataBlobUrl(
  *
  * @param itemId Id of an item whose data information is sought
  * @param authentication Credentials for the request to AGO
- * @return URL string
+ * @returns URL string
  */
 export function getItemInfoFileUrlPrefix(
   itemId: string,
@@ -389,7 +389,7 @@ export function getItemInfoFileUrlPrefix(
  *
  * @param itemId Id of an item whose data information is sought
  * @param authentication Credentials for the request to AGO
- * @return Promise that will resolve with `undefined` or a File containing the metadata
+ * @returns Promise that will resolve with `undefined` or a File containing the metadata
  */
 export function getItemMetadataAsFile(
   itemId: string,
@@ -414,7 +414,7 @@ export function getItemMetadataAsFile(
  *
  * @param itemId Id of an item whose data information is sought
  * @param authentication Credentials for the request to AGO
- * @return A promise that will resolve with the metadata Blob or null if the item doesn't have a metadata file
+ * @returns A promise that will resolve with the metadata Blob or null if the item doesn't have a metadata file
  */
 export function getItemMetadataBlob(
   itemId: string,
@@ -432,7 +432,7 @@ export function getItemMetadataBlob(
  *
  * @param itemId Id of an item whose data information is sought
  * @param authentication Credentials for the request to AGO
- * @return URL string
+ * @returns URL string
  */
 export function getItemMetadataBlobUrl(
   itemId: string,
@@ -450,7 +450,7 @@ export function getItemMetadataBlobUrl(
  * @param relationshipType
  * @param direction
  * @param authentication Credentials for the request to AGO
- * @return A promise that will resolve with an arcgis-rest-js `IGetRelatedItemsResponse` structure
+ * @returns A promise that will resolve with an arcgis-rest-js `IGetRelatedItemsResponse` structure
  */
 export function getItemRelatedItems(
   itemId: string,
@@ -488,7 +488,7 @@ export function getItemRelatedItems(
  * @param itemId Id of an item whose related items are sought
  * @param direction
  * @param authentication Credentials for the request to AGO
- * @return A promise that will resolve with a list of IRelatedItems
+ * @returns A promise that will resolve with a list of IRelatedItems
  */
 export function getItemRelatedItemsInSameDirection(
   itemId: string,
@@ -583,7 +583,7 @@ export function getItemResources(
  *
  * @param itemId Id of an item whose resources are sought
  * @param authentication Credentials for the request to AGO
- * @return Promise that will resolve with a list of Files or an AGO-style JSON failure response
+ * @returns Promise that will resolve with a list of Files or an AGO-style JSON failure response
  */
 export function getItemResourcesFiles(
   itemId: string,
@@ -610,7 +610,7 @@ export function getItemResourcesFiles(
  *
  * @param solutionItemId Id of a deployed Solution
  * @param authentication Credentials for the request
- * @return Promise resolving to a list of detailed item information
+ * @returns Promise resolving to a list of detailed item information
  */
 export function getItemsRelatedToASolution(
   solutionItemId: string,
@@ -635,7 +635,7 @@ export function getItemsRelatedToASolution(
  * in the item's base section
  * @param isGroup Switch indicating if the item is a group
  * @param authentication Credentials for the request to AGO
- * @return Promise that will resolve with an image Blob or an AGO-style JSON failure response
+ * @returns Promise that will resolve with an image Blob or an AGO-style JSON failure response
  */
 export function getItemThumbnail(
   itemId: string,
@@ -671,7 +671,7 @@ export function getItemThumbnail(
  * in the item's base section
  * @param isGroup Switch indicating if the item is a group
  * @param authentication Credentials for the request to AGO
- * @return Promise that will resolve with an image Blob or an AGO-style JSON failure response
+ * @returns Promise that will resolve with an image Blob or an AGO-style JSON failure response
  */
 export function getItemThumbnailAsFile(
   itemId: string,
@@ -711,7 +711,7 @@ export function getItemThumbnailAsFile(
  * in the item's base section
  * @param isGroup Switch indicating if the item is a group
  * @param authentication Credentials for the request to AGO
- * @return URL string
+ * @returns URL string
  */
 export function getItemThumbnailUrl(
   itemId: string,
@@ -733,7 +733,7 @@ export function getItemThumbnailUrl(
  *
  * @param url Address of JSON
  * @param authentication Credentials for the request
- * @return Promise that will resolve with JSON
+ * @returns Promise that will resolve with JSON
  */
 export function getJson(
   url: string,
@@ -788,7 +788,7 @@ export function getPortalUrlFromAuth(authentication: UserSession): string {
  *
  * @param itemId Id of an AGO item to query
  * @param authentication Credentials for the request
- * @return Promise resolving to a list of Solution item ids
+ * @returns Promise resolving to a list of Solution item ids
  */
 export function getSolutionsRelatedToAnItem(
   itemId: string,
@@ -823,9 +823,9 @@ export function getThumbnailFile(
  * Fixes the types of Blobs incorrectly typed as text/plain.
  *
  * @param blob Blob to check
- * @return Promise resolving to original Blob, unless it's originally typed as text/plain but is
+ * @returns Promise resolving to original Blob, unless it's originally typed as text/plain but is
  * really JSON, ZIP, or XML
- * @protected
+ * @private
  */
 export function _fixTextBlobType(blob: Blob): Promise<Blob> {
   return new Promise<Blob>((resolve, reject) => {
@@ -880,8 +880,8 @@ export function _fixTextBlobType(blob: Blob): Promise<Blob> {
  * @param groupId Id of a group whose contents are sought
  * @param pagingParams Structure with start and num properties for the tranche to fetch
  * @param authentication Credentials for the request to AGO
- * @return A promise that will resolve with list of dependent ids or an empty list
- * @protected
+ * @returns A promise that will resolve with list of dependent ids or an empty list
+ * @private
  */
 export function _getGroupContentsTranche(
   groupId: string,
@@ -926,8 +926,8 @@ export function _getGroupContentsTranche(
  * @param itemId Id of an item whose resources are sought
  * @param pagingParams Structure with start and num properties for the tranche to fetch
  * @param authentication Credentials for the request to AGO
- * @return Promise that will resolve with a list of File promises or an AGO-style JSON failure response
- * @protected
+ * @returns Promise that will resolve with a list of File promises or an AGO-style JSON failure response
+ * @private
  */
 export function _getItemResourcesTranche(
   itemId: string,

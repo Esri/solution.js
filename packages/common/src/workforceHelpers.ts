@@ -44,7 +44,7 @@ import { templatizeTerm, replaceInTemplate } from "./templatization";
  *
  * @param itemTemplate template for the workforce project item
  * @param authentication credentials for any requests
- * @return templatized itemTemplate
+ * @returns templatized itemTemplate
  */
 export function convertWorkforceItemToTemplate(
   itemTemplate: IItemTemplate,
@@ -85,7 +85,7 @@ export function convertWorkforceItemToTemplate(
  * @param data itemTemplate data
  * @param keyProperties workforce project properties that contain references to dependencies
  * @param authentication credentials for any requests
- * @return List of dependencies ids
+ * @returns List of dependencies ids
  */
 export function extractWorkforceDependencies(
   data: any,
@@ -176,7 +176,7 @@ export function extractWorkforceDependencies(
  * @param data itemTemplate data
  * @param keyProperties workforce project properties that should be templatized
  * @param urlHash a key value pair of url and itemId
- * @return an updated data object to be stored in the template
+ * @returns an updated data object to be stored in the template
  */
 export function templatizeWorkforce(
   data: any,
@@ -323,13 +323,13 @@ export function getWorkforceServiceInfo(
 
 /**
  * Wrap global id and assignmenttype values in curly braces
- * 
+ *
  * Added for issue #734
- * 
+ *
  * This function will update the provided workforceInfos object
  *
  * @param workforceInfos the object that stores the integration and type info with global ids
- *
+ * @private
  */
 export function _updateGlobalIdAndAssignmentType(
   workforceInfos: any
@@ -367,6 +367,7 @@ export function _updateGlobalIdAndAssignmentType(
   }
 }
 
+//???
 export function _getAssignmentTypeInfos(assignmentTypes: any): any[] {
   // Assignment Types
   const assignmentTypeInfos: any[] = [];
@@ -384,6 +385,7 @@ export function _getAssignmentTypeInfos(assignmentTypes: any): any[] {
   return assignmentTypeInfos;
 }
 
+//???
 export function _getAssignmentIntegrationInfos(
   assignmentIntegrations: any,
   authentication: UserSession
@@ -480,6 +482,7 @@ export function getUrlDependencies(
  *
  * @param item the object that may contain a urlTemplate
  * @param urlHash a key value pair of url and itemId
+ * @private
  */
 export function _templatizeUrlTemplate(item: any, urlHash: any): void {
   // v1 uses urlTemplate
@@ -555,6 +558,7 @@ export function postProcessWorkforceTemplates(
   });
 }
 
+//???
 export function _templatizeWorkforceProject(
   t: IItemTemplate,
   groupUpdates: any
@@ -618,6 +622,7 @@ export function _templatizeWorkforceProject(
   return t;
 }
 
+//???
 export function _templatizeWorkforceDispatcherOrWorker(
   t: IItemTemplate,
   type: string
@@ -686,6 +691,7 @@ export function urlTest(v: any, authentication: UserSession): any {
   };
 }
 
+//???
 export function _getURLs(v: string): string[] {
   return regExTest(v, /=(http.*?FeatureServer.*?(?=&|$))/gi).map(_v =>
     _v.replace("=", "")
@@ -699,7 +705,7 @@ export function _getURLs(v: string): string[] {
  *
  * @param newlyCreatedItem Item to be created; n.b.: this item is modified
  * @param destinationAuthentication The session used to create the new item(s)
- * @return A promise that will resolve with { "success" === true || false }
+ * @returns A promise that will resolve with { "success" === true || false }
  */
 export function fineTuneCreatedWorkforceItem(
   newlyCreatedItem: IItemTemplate,
@@ -788,6 +794,7 @@ export function fineTuneCreatedWorkforceItem(
   });
 }
 
+//???
 export function _getFields(
   url: string,
   ids: number[],
@@ -817,11 +824,13 @@ export function _getFields(
   });
 }
 
+//???
 export function _updateUrl(url: string): string {
   url += url.endsWith("/") ? "" : "/";
   return url;
 }
 
+//???
 export function _getAddFeatures(updateInfos: any, fields: any[]): any {
   const features: any[] = [];
   updateInfos.forEach((update: any) => {
@@ -835,6 +844,7 @@ export function _getAddFeatures(updateInfos: any, fields: any[]): any {
   return features;
 }
 
+//???
 export function _getField(name: string, fields: string[]): string {
   return fields.filter(f => f.toLowerCase() === name.toLowerCase())[0];
 }
@@ -846,8 +856,8 @@ export function _getField(name: string, fields: string[]): string {
  * @param name Current users name
  * @param fullName Current users full name
  * @param destinationAuthentication The session used to create the new item(s)
- * @return A promise that will resolve with true || false
- * @protected
+ * @returns A promise that will resolve with true || false
+ * @private
  */
 export function _updateDispatchers(
   url: any,
@@ -891,6 +901,7 @@ export function _updateDispatchers(
   });
 }
 
+//???
 export function _applyEdits(
   url: string,
   adds: any[],

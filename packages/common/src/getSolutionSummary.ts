@@ -38,7 +38,7 @@ import * as templatization from "./templatization";
  *
  * @param solutionItemId Id of a deployed Solution
  * @param authentication Credentials for the request
- * @return Promise resolving to a summary of the deployed Solution
+ * @returns Promise resolving to a summary of the deployed Solution
  */
 export function getSolutionSummary(
   solutionItemId: string,

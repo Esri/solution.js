@@ -25,7 +25,7 @@ import * as viewer from "@esri/solution-viewer";
  *
  * @param itemId Id of a solution template
  * @param authentication Credentials for the request to AGO
- * @return HTML showing hierarchy
+ * @returns HTML showing hierarchy
  */
 export function getFormattedItemHierarchy(
   itemId: string,

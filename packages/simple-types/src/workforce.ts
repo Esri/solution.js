@@ -22,7 +22,7 @@ import * as common from "@esri/solution-common";
  * @param itemTemplate template for the workforce project item
  * @param destAuthentication Credentials for requests to the destination organization
  * @param srcAuthentication Credentials for requests to source items
- * @return templatized itemTemplate
+ * @returns templatized itemTemplate
  */
 export function convertItemToTemplate(
   itemTemplate: common.IItemTemplate,
@@ -37,7 +37,7 @@ export function convertItemToTemplate(
  *
  * @param newlyCreatedItem Item to be created; n.b.: this item is modified
  * @param destinationAuthentication The session used to create the new item(s)
- * @return A promise that will resolve with { "success" === true || false }
+ * @returns A promise that will resolve with { "success" === true || false }
  */
 export function fineTuneCreatedItem(
   newlyCreatedItem: common.IItemTemplate,

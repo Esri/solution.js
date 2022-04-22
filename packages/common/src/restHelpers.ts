@@ -129,7 +129,7 @@ export { request as rest_request } from "@esri/arcgis-rest-request";
  * Creates a UserSession via a function so that the global arcgisSolution variable can access authentication.
  *
  * @param options See https://esri.github.io/arcgis-rest-js/api/auth/IUserSessionOptions/
- * @return UserSession
+ * @returns UserSession
  */
 export function getUserSession(
   options: IUserSessionOptions = {}
@@ -144,7 +144,7 @@ export function getUserSession(
  * @param destinationItemId Destination of relationship
  * @param relationshipType Type of relationship
  * @param authentication Credentials for the request
- * @return A Promise to add item resources.
+ * @returns A Promise to add item resources.
  */
 export function addForwardItemRelationship(
   originItemId: string,
@@ -182,7 +182,7 @@ export function addForwardItemRelationship(
  * @param originItemId Origin of relationship
  * @param destinationRelationships Destinations
  * @param authentication Credentials for the request
- * @return A Promise to add item resources.
+ * @returns A Promise to add item resources.
  */
 export function addForwardItemRelationships(
   originItemId: string,
@@ -216,7 +216,7 @@ export function addForwardItemRelationships(
  *
  * @param url URL to use as base
  * @param authentication Credentials to be used to generate token for URL
- * @return A promise that will resolve with the supplied URL with `token=&lt;token&gt;` added to its query params
+ * @returns A promise that will resolve with the supplied URL with `token=&lt;token&gt;` added to its query params
  * unless either the URL doesn't exist or the token can't be generated
  */
 export function addTokenToUrl(
@@ -252,7 +252,7 @@ export function addTokenToUrl(
  * @param options the info to add to the services definition
  * @param skipRetry a boolean to control if retry logic will be used. Defaults to false.
  * @param useAsync a boolean to control if we will use an async request
- * @return A promise that will resolve when the request has completed
+ * @returns A promise that will resolve when the request has completed
  */
 export function addToServiceDefinition(
   url: string,
@@ -292,7 +292,7 @@ export function addToServiceDefinition(
  * @param result the result returned from the addToDefinition request.
  * This will contain a status url or the standard sync result.
  * @param authentication Credentials to be used to generate token for URL
- * @return A promise that will resolve when the request has completed
+ * @returns A promise that will resolve when the request has completed
  */
 export function checkRequestStatus(
   result: any,
@@ -328,7 +328,7 @@ export function checkRequestStatus(
  * Converts a general search into an ISearchOptions structure.
  *
  * @param search Search specified in one of three ways
- * @return Recast search
+ * @returns Recast search
  */
 export function convertToISearchOptions(
   search: string | ISearchOptions | SearchQueryBuilder
@@ -364,7 +364,7 @@ export function convertToISearchOptions(
  * In some cases orgs can have null or undefined coordinate values associated with the org extent
  *
  * @param extent the extent to validate
- * @return the provided extent or a default global extent if some coordinates are not numbers
+ * @returns the provided extent or a default global extent if some coordinates are not numbers
  * @private
  */
 export function _validateExtent(extent: IExtent): IExtent {
@@ -396,7 +396,7 @@ export function _validateExtent(extent: IExtent): IExtent {
  * @param outSR the spatial reference to project to
  * @param geometryServiceUrl the service url for the geometry service to use
  * @param authentication the credentials for the requests
- * @return the extent projected to the provided spatial reference
+ * @returns the extent projected to the provided spatial reference
  * or the world extent projected to the provided spatial reference
  * @private
  */
@@ -457,7 +457,7 @@ export function convertExtentWithFallback(
  * @param outSR Desired spatial reference
  * @param geometryServiceUrl Path to geometry service providing `findTransformations` and `project` services
  * @param authentication Credentials for the request
- * @return Original extent if it's already using outSR or the extents projected into the outSR
+ * @returns Original extent if it's already using outSR or the extents projected into the outSR
  */
 export function convertExtent(
   extent: IExtent,
@@ -547,7 +547,7 @@ export function convertExtent(
  * @param newItemTemplate Template of item to be created
  * @param authentication Credentials for the request
  * @param templateDictionary Hash of facts: org URL, adlib replacements, user; .user.folders property contains a list
- * @return A promise that will resolve with an object reporting success and the Solution id
+ * @returns A promise that will resolve with an object reporting success and the Solution id
  */
 export function createFeatureService(
   newItemTemplate: IItemTemplate,
@@ -587,7 +587,7 @@ export function createFeatureService(
  * @param metadataFile Item's metadata file
  * @param resourcesFiles Item's resources
  * @param access Access to set for item: "public", "org", "private"
- * @return A promise that will resolve with an object reporting success or failure and the Solution id
+ * @returns A promise that will resolve with an object reporting success or failure and the Solution id
  */
 export function createFullItem(
   itemInfo: any,
@@ -728,7 +728,7 @@ export function createFullItem(
  * @param folderId Id of folder to receive item; null indicates that the item goes into the root
  *                 folder; ignored for Group item type
  * @param access Access to set for item: "public", "org", "private"
- * @return A promise that will resolve with an object reporting success and the Solution id
+ * @returns A promise that will resolve with an object reporting success and the Solution id
  */
 export function createItemWithData(
   itemInfo: any,
@@ -802,7 +802,7 @@ export function createItemWithData(
  * of known folder names; function updates list with existing names not yet known, and creates .user.folders if it
  * doesn't exist in the dictionary
  * @param authentication Credentials for creating folder
- * @return Id of created folder
+ * @returns Id of created folder
  */
 export function createUniqueFolder(
   title: string,
@@ -863,7 +863,7 @@ export function createUniqueFolder(
  *              If the tracking owner is not the one deploying the solution
  *              tracker groups will be created under the deployment user but
  *              will be reassigned to the tracking owner.
- * @return Information about created group
+ * @returns Information about created group
  */
 export function createUniqueGroup(
   title: string,
@@ -929,7 +929,7 @@ export function createUniqueGroup(
  *
  * @param itemTemplate Template of item to be created
  * @param authentication Credentials for the request
- * @return A promise that will resolve a list of dependencies
+ * @returns A promise that will resolve a list of dependencies
  */
 export function extractDependencies(
   itemTemplate: IItemTemplate,
@@ -974,7 +974,7 @@ export function extractDependencies(
  * @param serviceUrl the url for the service
  * @param layerList list of base layer info
  * @param authentication Credentials for the request
- * @return A promise that will resolve a list of dependencies
+ * @returns A promise that will resolve a list of dependencies
  */
 export function getLayers(
   serviceUrl: string,
@@ -1016,7 +1016,7 @@ export function getLayers(
  * @param args The IPostProcessArgs for the request(s)
  * @param isPortal boolean to indicate if we are deploying to portal
  *
- * @return An array of update instructions
+ * @returns An array of update instructions
  * @private
  */
 export function getLayerUpdates(
@@ -1085,7 +1085,8 @@ export function getLayerUpdates(
  * @param tables the tables from the service
  * @param relUpdates the relationships to add for the service
  *
- * @return An array with relationships that have been sorted
+ * @returns An array with relationships that have been sorted
+ * @private
  */
 export function _sortRelationships(
   layers: any[],
@@ -1121,7 +1122,7 @@ export function _sortRelationships(
  * @param itemTemplate Template of item being deployed
  * @param authentication Credentials for the request
  * @param updates An array of update instructions
- * @return An array of update instructions
+ * @returns An array of update instructions
  */
 export function getFinalServiceUpdates(
   itemTemplate: IItemTemplate,
@@ -1159,7 +1160,7 @@ export function getFinalServiceUpdates(
  *
  * @param Update will contain either add, update, or delete from service definition call
  * @param skipRetry defaults to false. when true the retry logic will be ignored
- * @return A promise that will resolve when service definition call has completed
+ * @returns A promise that will resolve when service definition call has completed
  * @private
  */
 /* istanbul ignore else */
@@ -1207,7 +1208,7 @@ export function getRequest(
  *
  * @param itemTemplate Feature service item, data, dependencies definition to be modified
  * @param authentication Credentials for the request to AGOL
- * @return A promise that will resolve when fullItem has been updated
+ * @returns A promise that will resolve when fullItem has been updated
  * @private
  */
 export function getServiceLayersAndTables(
@@ -1247,7 +1248,7 @@ export function getServiceLayersAndTables(
  * @param serviceUrl the feature service url
  * @param authentication Credentials for the request to AGOL
  * @param workforceService boolean to indicate if extra workforce service steps should be handled
- * @return A promise that will resolve with the service properties
+ * @returns A promise that will resolve with the service properties
  * @private
  */
 export function getFeatureServiceProperties(
@@ -1329,7 +1330,8 @@ export function getFeatureServiceProperties(
  * Layers and Tables are both returned in the layers array when we access a feature service from the admin api.
  *
  * @param adminData The data of the feature service
- * @return A mutated version of the provided adminData
+ * @returns A mutated version of the provided adminData
+ * @private
  */
 export function _parseAdminServiceData(adminData: any): any {
   const layers: any[] = adminData.layers || [];
@@ -1354,7 +1356,7 @@ export function _parseAdminServiceData(adminData: any): any {
  * These layers should not be templatized or depolyed
  *
  * @param groupDesignations the items group designations to evaluate
- * @return A boolean indicating if the invalid designation is found in the item info
+ * @returns A boolean indicating if the invalid designation is found in the item info
  */
 export function hasInvalidGroupDesignations(
   groupDesignations: string
@@ -1370,7 +1372,7 @@ export function hasInvalidGroupDesignations(
  *
  * @param folderId Id of a folder to delete
  * @param authentication Credentials for the request to AGO
- * @return A promise that will resolve with the result of the request
+ * @returns A promise that will resolve with the result of the request
  */
 export function removeFolder(
   folderId: string,
@@ -1393,7 +1395,7 @@ export function removeFolder(
  *
  * @param groupId Id of a group to delete
  * @param authentication Credentials for the request to AGO
- * @return A promise that will resolve with the result of the request
+ * @returns A promise that will resolve with the result of the request
  */
 export function removeGroup(
   groupId: string,
@@ -1416,7 +1418,7 @@ export function removeGroup(
  *
  * @param itemId Id of an item to delete
  * @param authentication Credentials for the request to AGO
- * @return A promise that will resolve with the result of the request
+ * @returns A promise that will resolve with the result of the request
  */
 export function removeItem(
   itemId: string,
@@ -1439,7 +1441,7 @@ export function removeItem(
  *
  * @param itemId Id of an item or group to delete
  * @param authentication Credentials for the request to AGO
- * @return A promise that will resolve with the result of the request
+ * @returns A promise that will resolve with the result of the request
  */
 export function removeItemOrGroup(
   itemId: string,
@@ -1456,7 +1458,7 @@ export function removeItemOrGroup(
  * Searches for items matching a query and that the caller has access to.
  *
  * @param search Search string (e.g., "q=redlands+map") or a more detailed structure that can include authentication
- * @return Promise resolving with search results
+ * @returns Promise resolving with search results
  * @see https://developers.arcgis.com/rest/users-groups-and-items/search.htm
  */
 export function searchItems(
@@ -1470,7 +1472,7 @@ export function searchItems(
  *
  * @param search Search string (e.g., "q=redlands+map") or a more detailed structure that can include authentication
  * @param accumulatedResponse Response built from previous requests
- * @return Promise resolving with search results
+ * @returns Promise resolving with search results
  * @see https://developers.arcgis.com/rest/users-groups-and-items/search.htm
  */
 export function searchAllItems(
@@ -1514,7 +1516,7 @@ export function searchAllItems(
  * @param searchString Text for which to search, e.g., 'redlands+map', 'type:"Web Map" -type:"Web Mapping Application"'
  * @param authentication Credentials for the request to AGO
  * @param additionalSearchOptions Adjustments to search, such as tranche size
- * @return A promise that will resolve with a structure with a tranche of results and
+ * @returns A promise that will resolve with a structure with a tranche of results and
  * describing how many items are available
  * @see https://developers.arcgis.com/rest/users-groups-and-items/group-search.htm
  * @see https://developers.arcgis.com/rest/users-groups-and-items/search-reference.htm
@@ -1542,7 +1544,7 @@ export function searchGroups(
  * @param groups List of groups that have been found from previous requests
  * @param inPagingParams The paging params for the recurisve searching
  *
- * @return A promise that will resolve with all groups that meet the search criteria
+ * @returns A promise that will resolve with all groups that meet the search criteria
  */
 export function searchAllGroups(
   searchString: string,
@@ -1592,7 +1594,7 @@ export function searchAllGroups(
  * are supplied as an array: each array element consists of one or more categories to be ORed; array elements are ANDed
  * @param portalUrl Rest Url of the portal to perform the search
  * @param accumulatedResponse Response built from previous requests
- * @return A promise that will resolve with a structure with a tranche of results and
+ * @returns A promise that will resolve with a structure with a tranche of results and
  * describing how many items are available
  * @see https://developers.arcgis.com/rest/users-groups-and-items/group-content-search.htm
  * @see https://developers.arcgis.com/rest/users-groups-and-items/search-reference.htm
@@ -1650,7 +1652,7 @@ export function searchGroupAllContents(
  * @param additionalSearchOptions Adjustments to search, such as tranche size and categories of interest; categories
  * are supplied as an array: each array element consists of one or more categories to be ORed; array elements are ANDed
  * @param portalUrl Rest Url of the portal to perform the search
- * @return A promise that will resolve with a structure with a tranche of results and
+ * @returns A promise that will resolve with a structure with a tranche of results and
  * describing how many items are available
  * @see https://developers.arcgis.com/rest/users-groups-and-items/group-content-search.htm
  * @see https://developers.arcgis.com/rest/users-groups-and-items/search-reference.htm
@@ -1693,7 +1695,7 @@ export function searchGroupContents(
  * @param userName The new owner for the group
  * @param authentication Credentials for the request to
  *
- * @return A promise that will resolve after the group ownership has been assigned
+ * @returns A promise that will resolve after the group ownership has been assigned
  *
  */
 export function reassignGroup(
@@ -1720,7 +1722,7 @@ export function reassignGroup(
  * @param users List of users to remove from the group
  * @param authentication Credentials for the request to
  *
- * @return A promise that will resolve after the users have been removed
+ * @returns A promise that will resolve after the users have been removed
  *
  */
 export function removeUsers(
@@ -1743,7 +1745,7 @@ export function removeUsers(
  * @param destinationAuthentication Credentials for the request to AGO
  * @param owner owner of the group when sharing tracking items (can be different from the deploying user)
  *
- * @return A promise that will resolve after the item has been shared
+ * @returns A promise that will resolve after the item has been shared
  *
  */
 export function shareItem(
@@ -1810,7 +1812,7 @@ export function updateItem(
  * for binary content
  * @param authentication Credentials for request
  * @param additionalParams Updates that are put under the `params` property, which is not serialized
- * @return A Promise that will resolve with the success/failure status of the request
+ * @returns A Promise that will resolve with the success/failure status of the request
  */
  export function updateGroup(
   groupInfo: IGroup,
@@ -1937,7 +1939,7 @@ export function updateItemTemplateFromDictionary(
  * @param id AGOL id of item to update
  * @param url URL to assign to item's base section
  * @param authentication Credentials for the request
- * @return A promise that will resolve with the item id when the item has been updated or an AGO-style JSON failure
+ * @returns A promise that will resolve with the item id when the item has been updated or an AGO-style JSON failure
  *         response
  */
 export function updateItemURL(
@@ -1957,7 +1959,7 @@ export function updateItemURL(
  * @param itemId Id of item to receive data file
  * @param dataFile Data to be added
  * @param authentication Credentials for the request
- * @return Promise reporting success or failure
+ * @returns Promise reporting success or failure
  * @private
  */
 export function _addItemDataFile(
@@ -1992,7 +1994,7 @@ export function _addItemDataFile(
  * @param itemId Id of item to receive data file
  * @param metadataFile Metadata to be added
  * @param authentication Credentials for the request
- * @return Promise reporting success or failure
+ * @returns Promise reporting success or failure
  * @private
  */
 export function _addItemMetadataFile(
@@ -2020,7 +2022,7 @@ export function _addItemMetadataFile(
  * Accumulates the number of relationships in a collection of layers.
  *
  * @param List of layers to examine
- * @return The number of relationships
+ * @returns The number of relationships
  * @private
  */
 export function _countRelationships(layers: any[]): number {
@@ -2037,7 +2039,7 @@ export function _countRelationships(layers: any[]): number {
  * @param serviceUrl URL to hosted service
  * @param layerList List of layers at that service...must contain id
  * @param authentication Credentials for the request
- * @return A promise that will resolve with a list of the layers from the admin api
+ * @returns A promise that will resolve with a list of the layers from the admin api
  * @private
  */
 export function _getCreateServiceOptions(
@@ -2136,7 +2138,7 @@ export function _getCreateServiceOptions(
  *
  * @param serviceInfo the object that contains the spatial reference to evaluate
  * @param templateDictionary the template dictionary
- * @return the extent to use as the fallback
+ * @returns the extent to use as the fallback
  * @private
  */
 export function _getFallbackExtent(
@@ -2163,7 +2165,7 @@ export function _getFallbackExtent(
  * Add relationships to all layers in one call to retain fully functioning composite relationships
  *
  * @param args The IPostProcessArgs for the request(s)
- * @return Any relationships that should be updated for the service
+ * @returns Any relationships that should be updated for the service
  * @private
  */
 export function _getRelationshipUpdates(args: IPostProcessArgs): any {
@@ -2192,7 +2194,7 @@ export function _getRelationshipUpdates(args: IPostProcessArgs): any {
  * @param obj parameters for the request
  * @param args various arguments to help support the request
  * @param type type of update the request will handle
- * @return IUpdate that has the request url and arguments
+ * @returns IUpdate that has the request url and arguments
  * @private
  */
 export function _getUpdate(
@@ -2246,6 +2248,7 @@ export function _getUpdate(
  *
  * @param base Item's base section
  * @param data Item's data section
+ * @private
  */
 export function _reportVariablesInItem(
   itemId: string,
@@ -2288,7 +2291,8 @@ export function _reportVariablesInItem(
  * @param serviceInfo Service information
  * @param params arcgis-rest-js params to update
  * @param isPortal Is the service hosted in a portal?
- * @return Updated item
+ * @returns Updated item
+ * @private
  */
 export function _setItemProperties(
   item: any,
@@ -2385,7 +2389,7 @@ export function _setItemProperties(
  * Set isUnique as true for indexes that reference origin relationship keyFields.
  *
  * @param serviceInfo Service information
- * @protected
+ * @private
  */
 export function _updateIndexesForRelationshipKeyFields(serviceInfo: any): void {
   const layersAndTables: any[] = (serviceInfo.layers || []).concat(
@@ -2435,8 +2439,9 @@ export function _updateIndexesForRelationshipKeyFields(serviceInfo: any): void {
  * @param url URL to assign to item's base section
  * @param authentication Credentials for the request
  * @param numAttempts Number of times to try to set the URL if AGO says that it updated the URL, but really didn't
- * @return A promise that will resolve with the item id when the item has been updated or an AGO-style JSON failure
+ * @returns A promise that will resolve with the item id when the item has been updated or an AGO-style JSON failure
  *         response
+ * @private
  */
 export function _updateItemURL(
   id: string,

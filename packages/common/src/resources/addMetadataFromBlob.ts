@@ -25,7 +25,7 @@ import { updateItem } from "@esri/arcgis-rest-portal";
  * @param blob Blob containing metadata
  * @param itemId Item to receive metadata
  * @param authentication Credentials for the request
- * @return Promise resolving to JSON containing success boolean
+ * @returns Promise resolving to JSON containing success boolean
  */
 export function addMetadataFromBlob(
   blob: Blob,

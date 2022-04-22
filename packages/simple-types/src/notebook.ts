@@ -26,7 +26,7 @@ import * as notebookHelpers from "./helpers/notebook-helpers";
  * @param destAuthentication Credentials for requests to the destination organization
  * @param srcAuthentication Credentials for requests to source items
  * @param templateDictionary Hash of facts: folder id, org URL, adlib replacements
- * @return A promise that will resolve when the template has been created
+ * @returns A promise that will resolve when the template has been created
  */
 export function convertItemToTemplate(
   solutionItemId: string,
@@ -67,7 +67,7 @@ export function createItemFromTemplate(
  * Converts a Python Notebook item to a template.
  *
  * @param itemTemplate template for the Python Notebook
- * @return templatized itemTemplate
+ * @returns templatized itemTemplate
  */
 export function convertNotebookToTemplate(
   itemTemplate: common.IItemTemplate
@@ -131,7 +131,7 @@ export function deleteProps(
  * @param templateDictionary Hash of facts: org URL, adlib replacements, deferreds for dependencies
  * @param authentication Credentials for the requests to the destination
  *
- * @return A promise that will resolve once any updates have been made
+ * @returns A promise that will resolve once any updates have been made
  */
 export function fineTuneCreatedItem(
   originalTemplate: common.IItemTemplate,

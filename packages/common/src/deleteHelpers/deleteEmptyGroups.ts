@@ -28,7 +28,7 @@ import { UserSession } from "../interfaces";
  *
  * @param groups Ids of the groups to be deleted
  * @param authentication Credentials for the request
- * @return Promise that will resolve with the list of successfully deleted groups
+ * @returns Promise that will resolve with the list of successfully deleted groups
  */
 export function deleteEmptyGroups(
   groups: string[],

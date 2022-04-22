@@ -35,7 +35,7 @@ import * as restHelpersGet from "./restHelpersGet";
  *
  * @param itemId Id of an item whose information is sought
  * @param authentication Credentials for the request
- * @return Promise that will resolve with everything known about the item
+ * @returns Promise that will resolve with everything known about the item
  */
 export function getCompleteItem(
   itemId: string,

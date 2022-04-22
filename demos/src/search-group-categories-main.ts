@@ -276,7 +276,7 @@ function colorize(color: string, text: string): string {
  * Creates the HTML for a textarea using the supplied JSON.
  *
  * @param json JSON to insert into textarea
- * @return textarea HTML
+ * @returns textarea HTML
  */
 function textAreaHtmlFromJSON(json: any): string {
   return textAreaHtmlFromText(
@@ -291,7 +291,7 @@ function textAreaHtmlFromJSON(json: any): string {
  * Creates the HTML for a textarea using the supplied text.
  *
  * @param text Text to insert into textarea
- * @return textarea HTML
+ * @returns textarea HTML
  */
 function textAreaHtmlFromText(text: string): string {
   return (

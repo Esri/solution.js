@@ -35,7 +35,7 @@ import * as restHelpersGet from "./restHelpersGet";
  *
  * @param solutionItemId Id of a deployed Solution
  * @param authentication Credentials for the request
- * @return Promise resolving to the list of items in the solution that would be deleted.
+ * @returns Promise resolving to the list of items in the solution that would be deleted.
  */
 export function getDeletableSolutionInfo(
   solutionItemId: string,

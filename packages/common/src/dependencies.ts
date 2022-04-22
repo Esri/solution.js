@@ -34,7 +34,7 @@ import { findTemplateInList } from "./templatization";
  * Topologically sorts a list of items into a build list.
  *
  * @param templates A collection of AGO item templates
- * @return An object containing three parts: a list of ids of items in the order in which they need to be built
+ * @returns An object containing three parts: a list of ids of items in the order in which they need to be built
  * so that dependencies are built before items that require those dependencies, a list of item ids found in a
  * template's dependencies but not present in the supplied list of templates, and a dictionary containing items
  * that need to be post-processed due to dependency cycles.
@@ -173,7 +173,7 @@ export function topologicallySortItems(
 /**
  * A vertex used in the topological sort algorithm.
  *
- * @protected
+ * @private
  */
 interface ISortVertex {
   /**
@@ -185,7 +185,7 @@ interface ISortVertex {
 /**
  * The item type of a vertex used in the topological sort algorithm.
  *
- * @protected
+ * @private
  */
 interface IVertexType {
   /**
@@ -197,7 +197,7 @@ interface IVertexType {
 /**
  * A visit flag used in the topological sort algorithm.
  *
- * @protected
+ * @private
  */
 enum ESortVisitState {
   /** not yet visited */

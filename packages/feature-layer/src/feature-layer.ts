@@ -36,7 +36,7 @@ import * as common from "@esri/solution-common";
  * @param destAuthentication Credentials for requests to the destination organization
  * @param srcAuthentication Credentials for requests to source items
  * @param templateDictionary Hash mapping property names to replacement values
- * @return A promise that will resolve when fullItem has been updated
+ * @returns A promise that will resolve when fullItem has been updated
  */
 export function convertItemToTemplate(
   solutionItemId: string,
@@ -118,8 +118,8 @@ export function convertItemToTemplate(
  *                 folder; ignored for Group item type
  * @param settings Hash mapping property names to replacement values
  * @param authentication Credentials for the request
- * @return A promise that will resolve with the id of the created item
- * @protected
+ * @returns A promise that will resolve with the id of the created item
+ * @private
  */
 export function createItemFromTemplate(
   template: common.IItemTemplate,
@@ -450,6 +450,7 @@ export function postProcess(
 
 //#region Internal functions -----------------------------------------------------------------------------------------//
 
+//???
 export function _mostRecentlyEditedLayer(
   layerOrTableList: any[]
 ): any {
