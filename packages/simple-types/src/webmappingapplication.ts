@@ -24,7 +24,7 @@ import * as common from "@esri/solution-common";
  * @param itemInfo Info about the item
  * @param destAuthentication Credentials for requests to the destination organization
  * @param srcAuthentication Credentials for requests to source items
- * @return A promise that will resolve when the template has been created
+ * @returns A promise that will resolve when the template has been created
  */
 export function convertItemToTemplate(
   itemTemplate: common.IItemTemplate,
@@ -487,8 +487,8 @@ export function fineTuneCreatedItem(
  * Gets the ids of the dependencies of an AGOL webapp item.
  *
  * @param fullItem A webapp item whose dependencies are sought
- * @return A promise that will resolve with list of dependent ids
- * @protected
+ * @returns A promise that will resolve with list of dependent ids
+ * @private
  */
 export function _extractDependencies(model: any): string[] {
   let processor = _getGenericWebAppDependencies;
@@ -508,12 +508,15 @@ export function _extractDependencies(model: any): string[] {
 
 /**
  * Generic Web App Dependencies
+ *
+ * @private
  */
 export function _getGenericWebAppDependencies(model: any): any {
   const props = ["data.values.webmap", "data.values.group"];
   return common.getProps(model, props);
 }
 
+//???
 export function _getWABDependencies(model: any): string[] {
   const deps = [] as string[];
   const v = common.getProp(model, "data.map.itemId");
@@ -537,7 +540,7 @@ export function _getWABDependencies(model: any): string[] {
  *
  * @param itemTemplate The solution item template
  * @param paths A list of property paths that contain ids
- * @protected
+ * @private
  */
 export function _templatizeIdPaths(
   itemTemplate: common.IItemTemplate,
@@ -555,7 +558,7 @@ export function _templatizeIdPaths(
  * @param itemTemplate The solution item template
  * @param path A path to an id property
  * @param id The base id to use when templatizing
- * @protected
+ * @private
  */
 export function _templatizeIdPath(
   itemTemplate: common.IItemTemplate,
@@ -628,6 +631,7 @@ export function postProcessFieldReferences(
  * @param obj The dataSource or widget object from the web application.
  * @param datasourceInfos A list of datasource info objects that contain key values to templatize field references
  * @returns The dataSource with templatized field references
+ * @private
  */
 export function _templatizeObject(
   obj: any,
@@ -656,6 +660,7 @@ export function _templatizeObject(
  * @param objects A list of widgets or objects from the web application that may contain field references.
  * @param datasourceInfos A list of datasource info objects that contain key values to templatize field references
  * @returns The widgets with templatized field references
+ * @private
  */
 export function _templatizeObjectArray(
   objects: any[],
@@ -684,6 +689,7 @@ export function _templatizeObjectArray(
  * @param obj The dataSource or widget object from the web application.
  * @param datasourceInfos A list of datasource info objects that contain key values to templatize field references
  * @returns A list of datasourceInfo objects sorted based on the presence of a layers url or id
+ * @private
  */
 export function _getReplaceOrder(
   obj: any,
@@ -707,6 +713,7 @@ export function _getReplaceOrder(
  * @param datasourceInfo The datasource object with key properties about the service.
  * @param testString A stringified version of a widget or dataSource
  * @returns The prioritized order for testing
+ * @private
  */
 export function _getSortOrder(
   datasourceInfo: common.IDatasourceInfo,
@@ -765,6 +772,7 @@ export function _getSortOrder(
  * @param obj The dataSource or widget object from the application
  * @param datasourceInfos A list of datasource info objects that contain key values to templatize field references
  * @returns An updated instance of the dataSource or widget with as many field references templatized as possible.
+ * @private
  */
 export function _prioritizedTests(
   obj: any,
@@ -816,6 +824,7 @@ export function _prioritizedTests(
  * @param obj The dataSource or widget object from the application
  * @param ds A datasourceInfo object to use for testing against the current dataSource or widget
  * @returns The updated instance of the object with as many field references templatized as possible
+ * @private
  */
 export function _templatizeParentByURL(
   obj: { [index: string]: any },
@@ -866,6 +875,7 @@ export function _templatizeParentByURL(
  * @param ds A datasourceInfo object to use for testing against the current dataSource or widget
  * @param id A webmap layer id to test with.
  * @returns The updated instance of the object with as many field references templatized as possible
+ * @private
  */
 export function _templatizeParentByWebMapLayerId(
   obj: { [index: string]: any },

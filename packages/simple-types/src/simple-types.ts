@@ -45,7 +45,7 @@ import * as simpleTypeHelpers from "./helpers/simple-type-helpers";
  * @param destAuthentication Credentials for requests to the destination organization
  * @param srcAuthentication Credentials for requests to source items
  * @param templateDictionary Hash of facts: folder id, org URL, adlib replacements
- * @return A promise that will resolve when the template has been created
+ * @returns A promise that will resolve when the template has been created
  */
 export function convertItemToTemplate(
   solutionItemId: string,
@@ -92,7 +92,7 @@ export function createItemFromTemplate(
  * @param template A solution template
  * @param datasourceInfos A list of objects that store key datasource info used to templatizing field references
  * @param type The item type
- * @return The updated solution template
+ * @returns The updated solution template
  */
 export function postProcessFieldReferences(
   solutionTemplate: IItemTemplate,

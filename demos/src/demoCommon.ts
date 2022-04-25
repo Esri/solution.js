@@ -24,7 +24,7 @@ import * as portal from "@esri/arcgis-rest-portal";
  * Adds a loading GIF to a container.
  *
  * @param containerElementId Id of HTML container to receive image element
- * @return Created HTML item
+ * @returns Created HTML item
  */
 export function addBusySymbol (containerElementId: string): HTMLElement {
   const busySymbol = addItem(containerElementId, "IMG", containerElementId + "_busySymbol");
@@ -39,7 +39,7 @@ export function addBusySymbol (containerElementId: string): HTMLElement {
  * @param itemType Type of HTML element to create
  * @param itemId Id to assign to created HTML element
  * @param itemClasses Space-separated HTML class names to include in new item
- * @return Created HTML item
+ * @returns Created HTML item
  */
 export function addItem (containerElementId: string, itemType: string, itemId?: string, itemClasses?: string): HTMLElement {
   const item = document.createElement(itemType);
@@ -67,7 +67,7 @@ export function addItem (containerElementId: string, itemType: string, itemId?: 
  * @param itemId ID to assign to created unordered list element
  * @param includeCustom Indicates if a fill-in-the blank checkbox entry should be added to the end of the list
  * @param onChange Text to provide to each checklist element's `onChange` attribute, e.g., "myCallback(this)"
- * @return Generated HTML
+ * @returns Generated HTML
  */
 export function createChecklist (
   searchResults: portal.IItem[],
@@ -116,7 +116,7 @@ export function createChecklist (
  * @param portal Portal containing items, e.g., https://www.arcgis.com; if provided, the item's id will be a link
  * to the item in AGO
  * @param itemId ID to assign to created unordered list element
- * @return Generated HTML
+ * @returns Generated HTML
  */
 export function createSimpleList (searchResults: portal.IItem[], portal: string, itemId: string) {
   let html = '<ul';
@@ -170,7 +170,7 @@ export function fadeItemOut (elementId: string) {
  * @param password
  * @param portalUrl Base url for the portal you want to make the request to; defaults
  *        to 'https://www.arcgis.com/sharing/rest'
- * @return solutionCommon.UserSession object
+ * @returns solutionCommon.UserSession object
  * @see @esri/arcgis-rest-auth
  * @see @esri/arcgis-rest-request
  */

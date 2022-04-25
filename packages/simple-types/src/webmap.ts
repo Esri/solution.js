@@ -19,7 +19,7 @@ import * as common from "@esri/solution-common";
 /**
  * The portion of a Webmap URL between the server and the map id.
  *
- * @protected
+ * @private
  */
 const WEBMAP_APP_URL_PART: string = "home/webmap/viewer.html?webmap=";
 
@@ -31,7 +31,7 @@ const WEBMAP_APP_URL_PART: string = "home/webmap/viewer.html?webmap=";
  * @param itemTemplate Template for the webmap item
  * @param destAuthentication Credentials for requests to the destination organization
  * @param srcAuthentication Credentials for requests to source items
- * @return Template for the solution item that contains key details for item reconstruction
+ * @returns Template for the solution item that contains key details for item reconstruction
  */
 export function convertItemToTemplate(
   itemTemplate: common.IItemTemplate,
@@ -77,8 +77,8 @@ export function convertItemToTemplate(
  *
  * @param itemTemplate A webmap item whose dependencies are sought
  * @param authentication Credentials for any requests
- * @return List of dependencies ids and url/itemId hash
- * @protected
+ * @returns List of dependencies ids and url/itemId hash
+ * @private
  */
 export function _extractDependencies(
   itemTemplate: common.IItemTemplate,
@@ -112,8 +112,8 @@ export function _extractDependencies(
  * Added for issue #662
  *
  * @param data the data for the web maps item template
- * @return void
- * @protected
+ * @returns void
+ * @private
  */
 export function _excludeInitialState(data: any): void {
   common.deleteProp(data, "initialState");
@@ -125,8 +125,8 @@ export function _excludeInitialState(data: any): void {
  * @param layerList List of map layers or tables
  * @param dependencies Current list of dependencies
  * @param authentication Credentials for any requests
- * @return List of dependencies ids and url/itemId hash
- * @protected
+ * @returns List of dependencies ids and url/itemId hash
+ * @private
  */
 export function _getLayerIds(
   layerList: any[],
@@ -195,8 +195,8 @@ export function _getLayerIds(
  *
  * @param layerList List of map layers or tables
  * @param urlHash Lookup object for analysis layers
- * @return void
- * @protected
+ * @returns void
+ * @private
  */
 export function _templatizeWebmapLayerIdsAndUrls(
   layerList = [] as any[],
@@ -249,6 +249,7 @@ export function postProcessFieldReferences(
  * @param solutionTemplate The solution item template
  * @param datasourceInfos A list of datasource info objects that contain key values to templatize field references
  * @param path A string path to the object property to templatize
+ * @private
  */
 export function _templatizeProperty(
   solutionTemplate: common.IItemTemplate,
@@ -267,6 +268,7 @@ export function _templatizeProperty(
  * @param objs Can be operationalLayers or tables or appProperties search layers
  * @param datasourceInfos A list of datasource info objects that contain key values to templatize field references
  * @returns updated instances of the objects
+ * @private
  */
 export function _templatize(
   objs: any[],
@@ -316,6 +318,7 @@ export function _templatize(
  * @param obj Can be operationalLayer or table or appProperties search layer
  * @param datasourceInfos A list of datasource info objects that contain key values to templatize field references
  * @returns datasourceInfo for the given object id
+ * @private
  */
 export function _getDatasourceInfo(
   obj: any,

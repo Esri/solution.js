@@ -26,7 +26,7 @@
  * Supplies Blob.text for Microsoft Legacy Edge
  *
  * @param blob Blob to read
- * @return Promise resolving to blob's text
+ * @returns Promise resolving to blob's text
  * @see https://developer.mozilla.org/en-US/docs/Web/API/Blob/Blob
  * @see https://developer.mozilla.org/en-US/docs/Web/API/FileReader
  */
@@ -66,7 +66,7 @@ export function getBlobText(blob: Blob): Promise<string> {
  * @param fileBits Contents for file
  * @param fileName Name for file
  * @param options Bucket of options, euch as `type` for the MIME type; defaults to empty string for `type`
- * @return File or, for Microsoft Legacy Edge, Blob
+ * @returns File or, for Microsoft Legacy Edge, Blob
  * @see https://developer.mozilla.org/en-US/docs/Web/API/File/File
  * @see https://developer.mozilla.org/en-US/docs/Web/API/Blob/Blob
  */

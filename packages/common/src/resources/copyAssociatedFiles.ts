@@ -48,7 +48,7 @@ import JSZip from "jszip";
  * @param destinationItemId Id of item to receive copy of resource/metadata/thumbnail
  * @param destinationAuthentication Credentials for the request to the storage
  * @param filesPerZip Number of files to include per zip file; AGO limits zips to 50 files
- * @return A promise which resolves to a list of the result of the copies
+ * @returns A promise which resolves to a list of the result of the copies
  */
 export function copyFilesAsResources(
   files: ISourceFile[],
@@ -128,7 +128,7 @@ export function copyFilesAsResources(
  * @param sourceAuthentication Credentials for the request to the source
  * @param destinationItemId Id of item to receive copy of resource/metadata/thumbnail
  * @param destinationAuthentication Credentials for the request to the storage
- * @return A promise which resolves to a list of the result of the copies
+ * @returns A promise which resolves to a list of the result of the copies
  */
 export function copyAssociatedFilesByType(
   fileInfos: IAssociatedFileInfo[],
@@ -249,7 +249,8 @@ export function copyAssociatedFilesByType(
  * @param zipInfos List of zip files containing files to store
  * @param destinationItemId Id of item to receive copy of resource/metadata/thumbnail
  * @param destinationAuthentication Credentials for the request to the storage
- * @return A promise which resolves to a list of the result of the copies
+ * @returns A promise which resolves to a list of the result of the copies
+ * @private
  */
 export function _copyAssociatedFileZips(
   zipInfos: IZipInfo[],
@@ -287,7 +288,7 @@ export function _copyAssociatedFileZips(
  * @param zipInfos List of zip files containing files to store
  * @param destinationItemId Id of item to receive copy of resource/metadata/thumbnail
  * @param destinationAuthentication Credentials for the request to the storage
- * @return A promise which resolves to a list of the result of the copies
+ * @returns A promise which resolves to a list of the result of the copies
  */
 function _sendZipsSeriallyToItem(
   zipInfos: IZipInfo[],

@@ -27,7 +27,7 @@ import * as quickcaptureHelpers from "./helpers/quickcapture-helpers";
  * @param destAuthentication Credentials for requests to the destination organization
  * @param srcAuthentication Credentials for requests to source items
  * @param templateDictionary Hash of facts: folder id, org URL, adlib replacements
- * @return A promise that will resolve when the template has been created
+ * @returns A promise that will resolve when the template has been created
  */
 export function convertItemToTemplate(
   solutionItemId: string,
@@ -52,7 +52,7 @@ export function convertItemToTemplate(
  * Converts an quick capture item to a template.
  *
  * @param itemTemplate template for the quick capture project item
- * @return templatized itemTemplate
+ * @returns templatized itemTemplate
  */
 export function convertQuickCaptureToTemplate(
   itemTemplate: common.IItemTemplate
@@ -95,7 +95,8 @@ export function convertQuickCaptureToTemplate(
  *
  * @param data the projects json
  * @param itemTemplate template for the quick capture project item
- * @return templatized itemTemplate
+ * @returns templatized itemTemplate
+ * @private
  */
 export function _templatizeApplication(
   data: any,
@@ -126,6 +127,7 @@ export function _templatizeApplication(
  * Templatize the email property
  *
  * @param data the quick capture application
+ * @private
  */
 export function _templatizeAdminEmail(data: any): void {
   if (common.getProp(data, "preferences.adminEmail")) {
@@ -138,7 +140,7 @@ export function _templatizeAdminEmail(data: any): void {
  *
  * @param id the item id of the dependency
  * @param itemTemplate template for the quick capture project item
- * @return templatized itemTemplate
+ * @returns templatized itemTemplate
  */
 export function _updateDependencies(
   id: string,
@@ -155,6 +157,7 @@ export function _updateDependencies(
  * @param obj the datasource object
  * @param idPath the path to the id property
  * @param urlPath the path to the url property
+ * @private
  */
 export function _templatizeUrl(
   obj: any,
@@ -178,6 +181,7 @@ export function _templatizeUrl(
  *
  * @param obj the datasource or object that contains the item id property
  * @param path the path to the id property
+ * @private
  */
 export function _templatizeId(obj: any, path: string): void {
   const id: any = common.getProp(obj, path);

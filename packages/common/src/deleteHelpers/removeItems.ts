@@ -43,7 +43,7 @@ import { createHubRequestOptions } from "../create-hub-request-options";
  * @param solutionDeletedSummary Solution summary containing items successfully deleted
  * @param solutionFailureSummary Solution summary containing items that could not be deleted
  * @param deleteOptions Reporting options
- * @return Promise that will resolve with a list of two solution summaries: successful deletions
+ * @returns Promise that will resolve with a list of two solution summaries: successful deletions
  * and failed deletions. Ignored items (e.g., already deleted) will not be in either list.
  */
 export function removeItems(

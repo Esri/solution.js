@@ -49,6 +49,7 @@ export function transformResourcePathToSolutionResource(
  * Convert a resource path to a SolutionResourceType
  *
  * @param resourcePath String
+ * @private
  */
 export function _getSolutionResourceTypeFromResourcePath(
   resourcePath: string

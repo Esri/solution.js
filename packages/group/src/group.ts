@@ -31,7 +31,7 @@ import * as common from "@esri/solution-common";
  * @param itemInfo Info about the item
  * @param destAuthentication Credentials for requests to the destination organization
  * @param srcAuthentication Credentials for requests to source items
- * @return A promise that will resolve when the template has been created
+ * @returns A promise that will resolve when the template has been created
  */
 export function convertItemToTemplate(
   solutionItemId: string,

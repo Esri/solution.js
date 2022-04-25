@@ -26,7 +26,7 @@ import * as dependencies from "../dependencies";
  * Reconstructs the build order of a set of templates.
  *
  * @param templates A collection of AGO item templates
- * @return The ids of the source templates in build order, which is not necessarily the same
+ * @returns The ids of the source templates in build order, which is not necessarily the same
  * as the build order used to create the template Solution
  */
 export function reconstructBuildOrderIds(templates: IItemTemplate[]): string[] {

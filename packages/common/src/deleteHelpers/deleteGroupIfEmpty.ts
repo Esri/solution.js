@@ -28,7 +28,7 @@ import * as portal from "@esri/arcgis-rest-portal";
  *
  * @param groupId Id of the group to be deleted
  * @param authentication Credentials for the request
- * @return Promise indicating if group was deleted
+ * @returns Promise indicating if group was deleted
  */
 export function deleteGroupIfEmpty(
   groupId: string,

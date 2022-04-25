@@ -21,7 +21,7 @@ import { request, IRequestOptions } from "@esri/arcgis-rest-request";
  * @param url Address of Blob
  * @param authentication Credentials for the request
  * @param requestOptions - Options for the request, including parameters relevant to the endpoint.
- * @return Promise that will resolve with Blob or an AGO-style JSON failure response
+ * @returns Promise that will resolve with Blob or an AGO-style JSON failure response
  */
 export function getBlob(
   url: string,

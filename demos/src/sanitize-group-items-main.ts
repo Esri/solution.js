@@ -22,12 +22,12 @@ import * as common from "@esri/solution-common";
  *
  * @param groupId Group to search
  * @param authentication Credentials for the request
- * @return Promise resolving to a list of screened group items
+ * @returns Promise resolving to a list of screened group items
  */
 export function sanitizeGroupItems(
   groupId: string,
   searchString: string,
-  additionalSearchOptions: common.IAdditionalSearchOptions,
+  additionalSearchOptions: common.IAdditionalGroupSearchOptions,
   authentication: common.UserSession
 ): Promise<common.IItem[]> {
   return new Promise<common.IItem[]>((resolve, reject) => {

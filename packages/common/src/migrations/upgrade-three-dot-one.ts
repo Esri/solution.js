@@ -26,6 +26,7 @@ import { transformResourcePathsToSolutionResources } from "../resources/transfor
  *
  * @param model ISolutionItem
  * @param authentication UserSession
+ * @private
  */
 export function _upgradeThreeDotOne(model: ISolutionItem): ISolutionItem {
   if (getProp(model, "item.properties.schemaVersion") >= 3.1) {

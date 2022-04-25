@@ -30,7 +30,7 @@ import {
  * @param template The template that for the velocity item
  * @param authentication The credentials for any requests
  *
- * @return a list of dependency ids
+ * @returns a list of dependency ids
  */
 export function getVelocityDependencies(
   template: IItemTemplate,
@@ -61,7 +61,8 @@ export function getVelocityDependencies(
  * @param dependencies Any dependencies that have been found for this item
  * @param authentication The credentials for any requests
  *
- * @return a list of dependency ids
+ * @returns a list of dependency ids
+ * @private
  */
 export function _validateDependencies(
   dependencies: string[],
@@ -88,6 +89,7 @@ export function _validateDependencies(
  *
  * @param feeds The list of feeds from the velocity template
  * @param dependencies The current list of dependencies
+ * @private
  */
 export function _getFeedDependencies(
   feeds: any[],
@@ -114,6 +116,7 @@ export function _getFeedDependencies(
  * @param outputs The list of outputs from the velocity item
  * @param dependencies The current list of dependencies
  * @param prop The individual prop to evaluate
+ * @private
  */
 export function _getDependencies(
   outputs: any[],

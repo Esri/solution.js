@@ -35,7 +35,7 @@ import { updateItem as helpersUpdateItem } from "../restHelpers";
  * @param sourceAuthentication Credentials for the request to the source
  * @param destinationItemId Id of item to receive copy of resource/metadata/thumbnail
  * @param destinationAuthentication Credentials for the request to the storage
- * @return A promise which resolves to the result of the copy
+ * @returns A promise which resolves to the result of the copy
  */
 export function copyDataIntoItem(
   fileInfo: IAssociatedFileInfo,
@@ -90,7 +90,7 @@ export function copyDataIntoItem(
  * Creates a file with a specified mime type.
  *
  * @param fileDescription Structure containing a file and the desired mime type
- * @return Created file
+ * @returns Created file
  */
 export function createMimeTypedFile(fileDescription: IFileMimeTyped): File {
   return new_File([fileDescription.blob], fileDescription.filename, {

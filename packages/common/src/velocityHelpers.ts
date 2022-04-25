@@ -46,7 +46,7 @@ export const PROP_NAMES: string [] = [
  * @param authentication Credentials for the requests
  * @param templateDictionary Hash of facts: folder id, org URL, adlib replacements
  *
- * @return a promise that will resolve with the velocity url or an empty string when the org does not support velocity
+ * @returns a promise that will resolve with the velocity url or an empty string when the org does not support velocity
  *
  */
 export function getVelocityUrlBase(
@@ -91,7 +91,7 @@ export function getVelocityUrlBase(
  * @param type The item type
  * @param templateDictionary Hash of facts: folder id, org URL, adlib replacements
  *
- * @return an updated instance of the data object that was supplied.
+ * @returns an updated instance of the data object that was supplied.
  *
  */
 export function updateVelocityReferences(
@@ -118,8 +118,8 @@ export function updateVelocityReferences(
  * @param data The data object of the item
  * @param velocityUrl The velocity url from the current organization
  *
- * @return an updated instance of the data object that was supplied.
- *
+ * @returns an updated instance of the data object that was supplied.
+ * @private
  */
 export function _replaceVelocityUrls(data: any, velocityUrl: string): any {
   let dataString: string = JSON.stringify(data);

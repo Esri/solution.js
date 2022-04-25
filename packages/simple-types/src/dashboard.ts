@@ -19,7 +19,7 @@ import * as common from "@esri/solution-common";
 /**
  * The relevant elements of a Dashboard widget.
  *
- * @protected
+ * @private
  */
 interface IDashboardWidget {
   /**
@@ -40,7 +40,7 @@ interface IDashboardWidget {
 /**
  * The relevant elements of a dashboards dataset
  *
- * @protected
+ * @private
  */
 interface IDashboardDataset {
   /**
@@ -56,7 +56,7 @@ interface IDashboardDataset {
 /**
  * The relevant datasource properties that describe a dataset
  *
- * @protected
+ * @private
  */
 interface IDashboardDatasource {
   /**
@@ -77,7 +77,7 @@ interface IDashboardDatasource {
  * Converts a dashboard item to a template.
  *
  * @param itemTemplate Template for the dashboard item
- * @return templatized itemTemplate
+ * @returns templatized itemTemplate
  */
 export function convertItemToTemplate(
   itemTemplate: common.IItemTemplate
@@ -89,8 +89,9 @@ export function convertItemToTemplate(
  * Templatizes all itemIds and updates the dependency array
  *
  * @param itemTemplate Template for the dashboard item
- * @return The updated itemTemplate
- * @protected
+ * @returns The updated itemTemplate
+ * @private
+ * @private
  */
 export function _extractDependencies(
   itemTemplate: common.IItemTemplate
@@ -131,6 +132,7 @@ export function _extractDependencies(
  *
  * @param obj A widget, selector, or urlParameter that contains a datasets collection
  * @param itemTemplate Template for the dashboard item
+ * @private
  */
 export function _getDatasourceDependencies(
   obj: any,
@@ -199,7 +201,7 @@ export function postProcessFieldReferences(
  *
  * @param objs Thes can be widgets, selectors, or urlParameters
  * @param datasourceInfos A list of objects that contain key details about the datasources from the application
- * @protected
+ * @private
  */
 export function _updateDatasourceReferences(
   objs: any,
@@ -255,7 +257,7 @@ export function _updateDatasourceReferences(
  * @param itemTemplate Template for the dashboard item
  * @param path A property path to an array of objects that could contain datasets or events
  * @param datasourceInfos A list of objects that contain key details about the datasources from the application
- * @protected
+ * @private
  */
 export function _templatize(
   itemTemplate: common.IItemTemplate,
@@ -278,8 +280,8 @@ export function _templatize(
  *
  * @param objs A list of objects that can contain field references
  * @param datasourceInfos A list of objects that contain key details about the datasources from the application
- * @return An updated list of objects with templatized field references
- * @protected
+ * @returns An updated list of objects with templatized field references
+ * @private
  */
 export function _templatizeByDatasource(
   objs: any[],
@@ -375,8 +377,8 @@ export function _templatizeByDatasource(
  *
  * @param obj Can be a Dataset or an event
  * @param datasourceInfos A list of objects that contain key details about the datasources from the application
- * @return The supporting datasource info for the given object
- * @protected
+ * @returns The supporting datasource info for the given object
+ * @private
  */
 export function _getDatasourceInfo(
   obj: any,
@@ -430,7 +432,7 @@ export function _getDatasourceInfo(
  *
  * @param ds The datasource info to add the reference to
  * @param id The id from dashboard object, commonly another widget
- * @protected
+ * @private
  */
 export function _updateReferences(
   ds: common.IDatasourceInfo,
