@@ -27,7 +27,9 @@ import { fail } from "@esri/solution-common/src/generalHelpers";
 import * as fetchMock from "fetch-mock";
 
 describe("HubSiteProcessor: ", () => {
-  afterEach(fetchMock.restore);
+  afterEach(() => {
+    fetchMock.restore();
+  });
 
   describe("convertItemToTemplate: ", () => {
     it("exists", () => {
