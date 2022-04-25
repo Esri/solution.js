@@ -74,8 +74,8 @@ import {
  * @param dependencies Array of IDependency for name mapping
  * @param templatizeFieldReferences Templatize all field references within a layer
  * @param templateDictionary Hash mapping property names to replacement values
- * @return A promise that will resolve when template has been updated
- * @protected
+ * @returns A promise that will resolve when template has been updated
+ * @private
  */
 export function templatize(
   itemTemplate: IItemTemplate,
@@ -223,7 +223,7 @@ export function deleteViewProps(layer: any) {
  * @param layer The data layer instance with field name references within
  * @param fieldInfos the object that stores the cached field infos
  * @param isPortal Controls what properties should be removed.
- * @return An updated instance of the fieldInfos
+ * @returns An updated instance of the fieldInfos
  */
 export function cacheFieldInfos(
   layer: any,
@@ -266,6 +266,7 @@ export function cacheFieldInfos(
  * @param layer the data layer being cloned
  * @param prop the property name used to cache
  * @param fieldInfos the object that will store the cached property
+ * @private
  */
 export function _cacheFieldInfo(
   layer: any,
@@ -294,7 +295,7 @@ export function _cacheFieldInfo(
  * Cache popup info that can contain field references
  *
  * @param data The items data property
- * @return An updated instance of the popupInfos
+ * @returns An updated instance of the popupInfos
  */
 export function cachePopupInfos(data: any): any {
   // store any popupInfo so we can update after any potential name changes
@@ -320,6 +321,7 @@ export function cachePopupInfos(data: any): any {
  * @param popupInfos object to store the cahced popupInfo
  * @param type is it a layer or table
  * @param _items list or either layers or tables
+ * @private
  */
 export function _cachePopupInfo(
   popupInfos: IPopupInfos,
@@ -340,8 +342,8 @@ export function _cachePopupInfo(
  * @param itemTemplate Item to be created; n.b.: this item is modified
  * @param templateDictionary Hash mapping property names to replacement values
  * @param createResponse Response from create service
- * @return An updated instance of the template
- * @protected
+ * @returns An updated instance of the template
+ * @private
  */
 export function updateTemplate(
   itemTemplate: IItemTemplate,
@@ -372,8 +374,8 @@ export function updateTemplate(
  *
  * @param itemTemplate Item to be created; n.b.: this item is modified
  * @param createResponse Response from create service
- * @return An updated instance of the template
- * @protected
+ * @returns An updated instance of the template
+ * @private
  */
 export function _updateTypeKeywords(
   itemTemplate: IItemTemplate,
@@ -403,7 +405,7 @@ export function _updateTypeKeywords(
  * Example... { layer0: { fields: { lowerCaseSourceFieldName: newFieldNameAfterDeployment } } }
  *
  * @param layerInfos The object that stores the cached layer properties and name mapping
- * @return The settings object that will be used to de-templatize the field references.
+ * @returns The settings object that will be used to de-templatize the field references.
  */
 export function getLayerSettings(
   layerInfos: any,
@@ -442,7 +444,7 @@ export function getLayerSettings(
  *
  * @param templates A collection of AGO item templates.
  * @param solutionItemId The item id for the deployed solution item.
- * @return An updated collection of AGO templates with unique feature service names.
+ * @returns An updated collection of AGO templates with unique feature service names.
  */
 export function setNamesAndTitles(
   templates: IItemTemplate[],
@@ -530,8 +532,8 @@ export function updateSettingsFieldInfos(
  *
  * @param template Template for feature service item
  * @param authentication Credentials for the request
- * @return A promise that will resolve when template has been updated
- * @protected
+ * @returns A promise that will resolve when template has been updated
+ * @private
  */
 export function updateTemplateForInvalidDesignations(
   template: IItemTemplate,
@@ -580,7 +582,7 @@ export function updateTemplateForInvalidDesignations(
  * @param popupInfos The object from the popupInfo property for the layer
  * @param adminLayerInfos The object from the adminLayerInfo property for the layer
  * @param settings The settings object that has all of the mappings for de-templatizing.
- * @return An object that contains updated instances of popupInfos, fieldInfos, and adminLayerInfos
+ * @returns An object that contains updated instances of popupInfos, fieldInfos, and adminLayerInfos
  */
 export function deTemplatizeFieldInfos(
   fieldInfos: any,
@@ -623,7 +625,7 @@ export function deTemplatizeFieldInfos(
  * to the item settings for the view.
  *
  * @param itemTemplate The current itemTemplate being processed.
- * @return array of layers and tables
+ * @returns array of layers and tables
  */
 export function getLayersAndTables(itemTemplate: IItemTemplate): any[] {
   const properties: any = itemTemplate.properties;
@@ -651,8 +653,8 @@ export function getLayersAndTables(itemTemplate: IItemTemplate): any[] {
  * @param url Feature service endpoint
  * @param ids layer and table ids
  * @param authentication Credentials for the request
- * @return A promise that will resolve an array of promises with either a failure or the data
- * @protected
+ * @returns A promise that will resolve an array of promises with either a failure or the data
+ * @private
  */
 export function getExistingLayersAndTables(
   url: string,
@@ -679,8 +681,8 @@ export function getExistingLayersAndTables(
  *            service)
  * @param popupInfos the cached popup info from the layers
  * @param authentication Credentials for the request
- * @return A promise that will resolve when all layers and tables have been added
- * @protected
+ * @returns A promise that will resolve when all layers and tables have been added
+ * @private
  */
 export function addFeatureServiceLayersAndTables(
   itemTemplate: IItemTemplate,
@@ -771,8 +773,8 @@ export function addFeatureServiceLayersAndTables(
  * @param adminLayerInfos Hash map of a layers adminLayerInfo
  * @param fieldInfos Hash map of properties that contain field references
  * @param itemTemplate
- * @return A promise that will resolve when the feature service has been updated
- * @protected
+ * @returns A promise that will resolve when the feature service has been updated
+ * @private
  */
 export function addFeatureServiceDefinition(
   serviceUrl: string,
@@ -917,8 +919,8 @@ export function addFeatureServiceDefinition(
  * @param layerChunks Groups of layers or tables to add to the service
  * @param authentication Credentials for the request
  *
- * @return Add to service definition options
- * @protected
+ * @returns Add to service definition options
+ * @private
  */
 export function _updateAddOptions(
   itemTemplate: IItemTemplate,
@@ -964,7 +966,7 @@ export function _updateAddOptions(
  * Remove "multiScaleGeometryInfo" for issue #526 to prevent invalid enablement of layer optimization
  *
  * @param layer the layer to evaluate
- * @protected
+ * @private
  */
 export function removeLayerOptimization(layer: any): void {
   /* istanbul ignore else */
@@ -980,8 +982,8 @@ export function removeLayerOptimization(layer: any): void {
  * @param itemTemplate the item template
  * @param templateDictionary Hash mapping Solution source id to id of its clone
  *
- * @return the updated item
- * @protected
+ * @returns the updated item
+ * @private
  */
 export function _updateForPortal(
   item: any,
@@ -1071,8 +1073,8 @@ export function _updateForPortal(
  * @param itemTemplate the item template
  * @param templateDictionary Hash mapping Solution source id to id of its clone
  *
- * @return an array of the source layers fields
- * @protected
+ * @returns an array of the source layers fields
+ * @private
  */
 export function _getFieldNames(
   table: any,
@@ -1114,8 +1116,8 @@ export function _getFieldNames(
  * @param item Layer or table
  * @param templateDictionary Hash mapping Solution source id to id of its clone
  *
- * @return updated layer or table
- * @protected
+ * @returns updated layer or table
+ * @private
  */
 export function _updateItemFields(item: any, fieldNames: string[]): any {
   /* istanbul ignore else */
@@ -1141,8 +1143,8 @@ export function _updateItemFields(item: any, fieldNames: string[]): any {
  *
  * @param table the table instance to evaluate
  * @param sourceLayerFields array of fields from the source service
- * @return Updated instance of the table
- * @protected
+ * @returns Updated instance of the table
+ * @private
  */
 export function _updateSourceLayerFields(
   table: any,
@@ -1174,7 +1176,7 @@ export function _updateSourceLayerFields(
  *
  * @param item the item details from the current template
  * @param templateDictionary Hash mapping property names to replacement values
- * @protected
+ * @private
  */
 export function _updateGeomFieldName(
   adminLayerInfo: any,
@@ -1208,7 +1210,7 @@ export function _updateGeomFieldName(
  *
  * @param itemTemplate
  * @param templateDictionary Hash mapping Solution source id to id of its clone (and name & URL for feature service)
- * @protected
+ * @private
  */
 export function _updateTemplateDictionaryFields(
   itemTemplate: IItemTemplate,
@@ -1244,7 +1246,7 @@ export function _updateTemplateDictionaryFields(
  * @param templateDictionary Hash mapping Solution source id to id of its clone (and name & URL for feature service)
  * @param itemId The source id for the item
  * @param spatialReference { wkid: 102100 } for example
- * @protected
+ * @private
  */
 export function setDefaultSpatialReference(
   templateDictionary: any,
@@ -1269,7 +1271,7 @@ export function setDefaultSpatialReference(
  * @param serviceInfo Basic service information
  * @param itemTemplate The current template to process
  * @param templateDictionary Hash mapping Solution source id to id of its clone (and name & URL for feature service)
- * @protected
+ * @private
  */
 export function validateSpatialReferenceAndExtent(
   serviceInfo: any,
@@ -1329,8 +1331,8 @@ export function validateSpatialReferenceAndExtent(
  * @param adminLayerInfos Hash map of a layers adminLayerInfo
  * @param templateDictionary Hash mapping Solution source id to id of its clone (and name & URL for feature service)
  * @param authentication Credentials for the request
- * @return A promise that will resolve when the feature service has been updated
- * @protected
+ * @returns A promise that will resolve when the feature service has been updated
+ * @private
  */
 export function updateLayerFieldReferences(
   itemTemplate: IItemTemplate,
@@ -1372,8 +1374,8 @@ export function updateLayerFieldReferences(
  * @param adminLayerInfos Hash map of a layers adminLayerInfo
  * @param templateDictionary
  * @param authentication Credentials for the request
- * @return An object with detemplatized field references
- * @protected
+ * @returns An object with detemplatized field references
+ * @private
  */
 export function postProcessFields(
   itemTemplate: IItemTemplate,
@@ -1487,8 +1489,8 @@ export function postProcessFields(
  *  we need to pass it via an updateDef call or it will be set as the typeIdField of the source service
  *
  * @param item current layer or table
- * @return name of field to set for typeIdField in the update call
- * @protected
+ * @returns name of field to set for typeIdField in the update call
+ * @private
  */
 export function _getTypeIdField(item: any): string {
   const typeIdFields = item.fields.filter((f: any) => {
@@ -1510,8 +1512,8 @@ export function _getTypeIdField(item: any): string {
  *  visible true when added with the layer definition
  *
  * @param fieldInfo current layers or tables fieldInfo
- * @return Array of fields that should not be visible in the view
- * @protected
+ * @returns Array of fields that should not be visible in the view
+ * @private
  */
 export function _getFieldVisibilityUpdates(fieldInfo: any): any[] {
   const visibilityUpdates: any[] = [];
@@ -1544,8 +1546,8 @@ export function _getFieldVisibilityUpdates(fieldInfo: any): any[] {
  *
  * @param fieldInfo current view layer or table fieldInfo
  * @param fieldUpdates any existing field updates
- * @return Array of fields to be updated
- * @protected
+ * @returns Array of fields to be updated
+ * @private
  */
 export function _validateDomains(fieldInfo: any, fieldUpdates: any[]) {
   const domainAliasInfos = _getDomainAndAliasInfos(fieldInfo);
@@ -1586,7 +1588,7 @@ export function _validateDomains(fieldInfo: any, fieldUpdates: any[]) {
  * @param fields the alias or domain fields
  * @param key the field key to evaluate
  * @param fieldUpdates any existing field updates
- * @protected
+ * @private
  */
 export function _getPortalViewFieldUpdates(
   field: any,
@@ -1624,8 +1626,8 @@ export function _getPortalViewFieldUpdates(
  *
  * @param fieldInfo current view layer or table fieldInfo
  * @param fieldUpdates any existing field updates
- * @return Array of fields to be updated
- * @protected
+ * @returns Array of fields to be updated
+ * @private
  */
 export function _validateViewDomainsAndAlias(fieldInfo: any, item: any): void {
   const domainAliasInfos = _getDomainAndAliasInfos(fieldInfo);
@@ -1649,7 +1651,7 @@ export function _validateViewDomainsAndAlias(fieldInfo: any, item: any): void {
  *  Get array of domain fields and names and alias fields and names
  *
  * @param fieldInfo current view layer or table fieldInfo
- *
+ * @private
  */
 export function _getDomainAndAliasInfos(fieldInfo: any): any {
   const domainFields: any[] = [];
@@ -1695,7 +1697,7 @@ export function _getDomainAndAliasInfos(fieldInfo: any): any {
  * @param names array of field names
  * @param fields array of fields
  * @param key the field key to compare
- * @protected
+ * @private
  */
 export function _isViewFieldOverride(
   field: any,
@@ -1720,7 +1722,7 @@ export function _isViewFieldOverride(
  *
  * @param itemTemplate
  * @param popupInfos popup info to be added back to the layer
- * @protected
+ * @private
  */
 export function updatePopupInfo(
   itemTemplate: IItemTemplate,
@@ -1746,6 +1748,7 @@ export function updatePopupInfo(
  *
  * @param basePath path used to de-templatize while deploying
  * @param value to be converted to lower case for lookup while deploying
+ * @private
  */
 export function _templatize(
   basePath: string,
@@ -1771,6 +1774,7 @@ export function _templatize(
  * @param object the object with the property to templatize
  * @param property the property of the object to templatize
  * @param basePath path used to de-templatize while deploying
+ * @private
  */
 export function _templatizeProperty(
   object: any,
@@ -1791,8 +1795,8 @@ export function _templatizeProperty(
  * @param itemTemplate Template for feature service item
  * @param dependencies Array of IDependency for name mapping
  * @param templatizeFieldReferences Templatize all field references within a layer
- * @return A promise that will resolve when template has been updated
- * @protected
+ * @returns A promise that will resolve when template has been updated
+ * @private
  */
 export function _templatizeLayer(
   dataItem: any,
@@ -1886,6 +1890,7 @@ export function _validateFields(adminItem: any): void {
  *
  * @param adminItem layer or table from the service
  * @param fieldNames string list of fields names
+ * @private
  */
 export function _validateDisplayField(
   adminItem: any,
@@ -1932,6 +1937,7 @@ export function _validateDisplayField(
  *
  * @param adminItem layer or table from the service
  * @param fieldNames string list of fields names
+ * @private
  */
 export function _validateIndexes(adminItem: any, fieldNames: string[]): void {
   const indexes: any[] = adminItem.indexes;
@@ -1968,6 +1974,7 @@ export function _validateIndexes(adminItem: any, fieldNames: string[]): void {
  *
  * @param adminItem layer or table from the service
  * @param fieldNames string list of fields names
+ * @private
  */
 export function _validateTemplatesFields(
   adminItem: any,
@@ -1998,6 +2005,7 @@ export function _validateTemplatesFields(
  *
  * @param adminItem layer or table from the service
  * @param fieldNames string list of fields names
+ * @private
  */
 export function _validateTypesTemplates(
   adminItem: any,
@@ -2018,6 +2026,7 @@ export function _validateTypesTemplates(
  *
  * @param adminItem layer or table from the service
  * @param fieldNames string list of fields names
+ * @private
  */
 export function _validateEditFieldsInfo(
   adminItem: any,
@@ -2056,7 +2065,8 @@ export function _validateEditFieldsInfo(
  * @param itemID The id for the item that contains this layer.
  * @param layer JSON return from the layer being templatized.
  * @param dependencies
- * @return An updated instance of the layer
+ * @returns An updated instance of the layer
+ * @private
  */
 export function _templatizeLayerFieldReferences(
   dataItem: any,
@@ -2094,8 +2104,8 @@ export function _templatizeLayerFieldReferences(
  *
  * @param layer The layer to be modified
  * @param dependencies Array of service dependencies
- * @return A new copy of the modified adminLayerInfo for the given layer
- * @protected
+ * @returns A new copy of the modified adminLayerInfo for the given layer
+ * @private
  */
 export function _templatizeAdminLayerInfo(
   layer: any,
@@ -2138,7 +2148,7 @@ export function _templatizeAdminLayerInfo(
  *
  * @param object The layer to be modified
  * @param dependencies Array of service dependencies
- * @protected
+ * @private
  */
 export function _processAdminObject(
   object: any,
@@ -2158,8 +2168,8 @@ export function _processAdminObject(
  *
  * @param lookupName The current name from the source service
  * @param dependencies Array of IDependency for name mapping
- * @return The templatized name || undefined when no matching dependency is found
- * @protected
+ * @returns The templatized name || undefined when no matching dependency is found
+ * @private
  */
 export function _templatizeSourceServiceName(
   lookupName: string,
@@ -2177,6 +2187,7 @@ export function _templatizeSourceServiceName(
  * @param layer the layer object with the adminLayerInfo property to templatize
  * @param basePath path used to de-templatize while deploying
  * @param itemID the id for the item that contains this layer
+ * @private
  */
 export function _templatizeAdminLayerInfoFields(
   layer: any,
@@ -2229,6 +2240,7 @@ export function _templatizeAdminLayerInfoFields(
  *
  * @param lookupName name of dependency we want to find the id of
  * @param dependencies array of item dependencies
+ * @private
  */
 export function _getDependantItemId(
   lookupName: string,
@@ -2245,6 +2257,7 @@ export function _getDependantItemId(
  *
  * @param fields array of sourceLayerFields to templatize
  * @param basePath path used to de-templatize while deploying
+ * @private
  */
 export function _templatizeAdminSourceLayerFields(
   fields: any[],
@@ -2258,6 +2271,7 @@ export function _templatizeAdminSourceLayerFields(
  *
  * @param topFilter the topFilter object to templatize
  * @param basePath path used to de-templatize while deploying
+ * @private
  */
 export function _templatizeTopFilter(topFilter: any, basePath: string): void {
   /* istanbul ignore else */
@@ -2293,6 +2307,7 @@ export function _templatizeTopFilter(topFilter: any, basePath: string): void {
  *
  * @param layer the layer that has the relationships to templatize
  * @param itemID the id of the item that contains the related table
+ * @private
  */
 export function _templatizeRelationshipFields(
   layer: any,
@@ -2318,6 +2333,7 @@ export function _templatizeRelationshipFields(
  * @param basePath path used to de-templatize while deploying
  * @param itemID the id for the item that contains this layer
  * @param fieldNames array of fieldNames
+ * @private
  */
 export function _templatizePopupInfo(
   layerDefinition: any,
@@ -2361,6 +2377,7 @@ export function _templatizePopupInfo(
  * @param property that could have a field name referenced
  * @param fieldNames array for field names for the layer
  * @param basePath path used to de-templatize while deploying
+ * @private
  */
 export function _templatizeName(
   object: any,
@@ -2391,6 +2408,7 @@ export function _templatizeName(
  * @param layer json of layer being cloned
  * @param itemID id of the item that contains the current layer
  * @param basePath path used to de-templatize while deploying
+ * @private
  */
 export function _templatizePopupInfoFieldInfos(
   fieldInfos: any[],
@@ -2411,6 +2429,7 @@ export function _templatizePopupInfoFieldInfos(
  * @param layer json of layer being cloned
  * @param itemID id of the item that contains the current layer
  * @param basePath path used to de-templatize while deploying
+ * @private
  */
 export function _templatizeFieldName(
   name: string,
@@ -2458,6 +2477,7 @@ export function _templatizeFieldName(
  * @param expressionInfos the popups expressionInfos to check
  * @param fieldNames array of the layers field names
  * @param basePath path used to de-templatize while deploying
+ * @private
  */
 export function _templatizeExpressionInfos(
   expressionInfos: any[],
@@ -2480,6 +2500,7 @@ export function _templatizeExpressionInfos(
  * @param layer json of layer being cloned
  * @param itemID id of the item that contains the current layer
  * @param fieldNames array of field names
+ * @private
  */
 export function _templatizePopupElements(
   popupElelments: any[],
@@ -2507,6 +2528,7 @@ export function _templatizePopupElements(
  * @param basePath path used to de-templatize while deploying
  * @param layer json of layer being cloned
  * @param itemID id of the item that contains the current layer
+ * @private
  */
 export function _templatizeMediaInfos(
   mediaInfos: any,
@@ -2552,6 +2574,7 @@ export function _templatizeMediaInfos(
  * @param layer the layer with the definition editor
  * @param basePath path used to de-templatize while deploying
  * @param fieldNames json of layer being cloned
+ * @private
  */
 export function _templatizeDefinitionEditor(
   layer: any,
@@ -2592,6 +2615,7 @@ export function _templatizeDefinitionEditor(
  * @param layer the layer with the definition editor
  * @param basePath path used to de-templatize while deploying
  * @param fieldNames array of field names
+ * @private
  */
 export function _templatizeDefinitionExpression(
   layer: any,
@@ -2614,6 +2638,7 @@ export function _templatizeDefinitionExpression(
  * @param expression the expression to test for field name references
  * @param basePath path used to de-templatize while deploying
  * @param fieldNames array of the layers field names
+ * @private
  */
 export function _templatizeSimpleName(
   expression: string,
@@ -2640,6 +2665,7 @@ export function _templatizeSimpleName(
  * @param layer the data layer
  * @param basePath path used to de-templatize while deploying
  * @param fieldNames array of the layers field names
+ * @private
  */
 export function _templatizeDrawingInfo(
   layer: any,
@@ -2667,6 +2693,7 @@ export function _templatizeDrawingInfo(
  * @param renderer the layers renderer
  * @param basePath path used to de-templatize while deploying
  * @param fieldNames array of the layers field names
+ * @private
  */
 export function _templatizeRenderer(
   renderer: any,
@@ -2695,6 +2722,7 @@ export function _templatizeRenderer(
  * @param renderer the renderer object to check for field references
  * @param basePath path used to de-templatize while deploying
  * @param fieldNames array of field names that will be used to search expressions
+ * @private
  */
 export function _templatizeGenRenderer(
   renderer: any,
@@ -2767,6 +2795,7 @@ export function _templatizeGenRenderer(
  * @param renderer the renderer object to check for field references
  * @param basePath path used to de-templatize while deploying
  * @param fieldNames array of field names that will be used to search expressions
+ * @private
  */
 export function _templatizeTemporalRenderer(
   renderer: any,
@@ -2790,6 +2819,7 @@ export function _templatizeTemporalRenderer(
  * @param authoringInfo  object containing metadata about the authoring process
  * @param basePath path used to de-templatize while deploying
  * @param fieldNames the name of fields from the layer
+ * @private
  */
 export function _templatizeAuthoringInfo(
   authoringInfo: any,
@@ -2830,6 +2860,7 @@ export function _templatizeAuthoringInfo(
  * @param text the text that contains the expression
  * @param fieldName name of the field to test for
  * @param basePath path used to de-templatize while deploying
+ * @private
  */
 export function _templatizeArcadeExpressions(
   text: string,
@@ -2889,6 +2920,7 @@ export function _templatizeArcadeExpressions(
  * @param labelingInfo the object that contains the labelingInfo
  * @param basePath path used to de-templatize while deploying
  * @param fieldNames array of the layers field names
+ * @private
  */
 export function _templatizeLabelingInfo(
   labelingInfo: any,
@@ -2948,6 +2980,7 @@ export function _templatizeLabelingInfo(
  *
  * @param layer the data layer being cloned
  * @param basePath path used to de-templatize while deploying
+ * @private
  */
 export function _templatizeTemplates(layer: any, basePath: string): void {
   const templates: any[] = layer.templates || [];
@@ -2966,6 +2999,7 @@ export function _templatizeTemplates(layer: any, basePath: string): void {
  *
  * @param layer the data layer being cloned
  * @param basePath path used to de-templatize while deploying
+ * @private
  */
 export function _templatizeTypeTemplates(layer: any, basePath: string): void {
   const types: any[] = layer.types;
@@ -3003,6 +3037,7 @@ export function _templatizeTypeTemplates(layer: any, basePath: string): void {
  * @param obj the object to templatize
  * @param basePath path used to de-templatize while deploying
  * @param suffix expected suffix for template variable
+ * @private
  */
 export function _templatizeKeys(
   obj: any,
@@ -3030,6 +3065,7 @@ export function _templatizeKeys(
  *
  * @param layer the data layer being cloned
  * @param basePath path used to de-templatize while deploying
+ * @private
  */
 export function _templatizeTimeInfo(layer: any, basePath: string): void {
   if (layer.timeInfo) {
@@ -3055,6 +3091,7 @@ export function _templatizeTimeInfo(layer: any, basePath: string): void {
  * @param layer the data layer being cloned
  * @param basePath path used to de-templatize while deploying
  * @param fieldNames array of the layers field names
+ * @private
  */
 export function _templatizeDefinitionQuery(
   layer: any,
@@ -3086,6 +3123,7 @@ export function _templatizeDefinitionQuery(
  *
  * @param fieldInfos the object that stores the cached information
  * @param id the id for the current layer being processed
+ * @private
  */
 export function _getNameMapping(fieldInfos: any, id: string): any {
   // create name mapping
@@ -3182,7 +3220,8 @@ export interface IPopupInfos {
 /**
  * Helper function to ensure same chunk size value is used in multiple locations
  *
- * @return a number that represents how many layers should be included per addToDef call
+ * @returns a number that represents how many layers should be included per addToDef call
+ * @private
  */
 export function _getLayerChunkSize() {
   return 20;

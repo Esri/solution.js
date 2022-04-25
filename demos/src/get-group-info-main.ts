@@ -128,7 +128,7 @@ export function getGroupInfo(
  * Creates the HTML for a textarea using the supplied text.
  *
  * @param text Text to insert into textarea
- * @return textarea HTML
+ * @returns textarea HTML
  */
 function textAreaHtml(text: any): string {
   return (
@@ -142,7 +142,7 @@ function textAreaHtml(text: any): string {
  * Creates the HTML for a blob.
  *
  * @param blob Blob or File to display
- * @return Promise resolving to a string of HTML
+ * @returns Promise resolving to a string of HTML
  */
 function showBlob(blob: Blob): Promise<string> {
   // tslint:disable-next-line: no-floating-promises

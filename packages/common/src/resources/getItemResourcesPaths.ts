@@ -27,7 +27,7 @@ import { IItemTemplate, ISourceFileCopyPath, UserSession } from "../interfaces";
  * @param solutionItemId item id for the solution
  * @param authentication Credentials for the request to the storage
  * @param storageVersion Version of the Solution template
- * @return A promise which resolves with an array of paths to resources for the item
+ * @returns A promise which resolves with an array of paths to resources for the item
  */
 export function getItemResourcesPaths(
   itemTemplate: IItemTemplate,

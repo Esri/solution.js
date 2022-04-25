@@ -36,7 +36,7 @@ import * as common from "@esri/solution-common";
  * @param destAuthentication Credentials for requests to the destination organization
  * @param srcAuthentication Credentials for requests to source items
  * @param templateDictionary Hash mapping property names to replacement values
- * @return A promise that will resolve when fullItem has been updated
+ * @returns A promise that will resolve when fullItem has been updated
  */
 export function convertItemToTemplate(
   solutionItemId: string,
@@ -70,6 +70,14 @@ export function convertItemToTemplate(
         template.data = data;
         common.getServiceLayersAndTables(template, srcAuthentication).then(
           itemTemplate => {
+            // Update item's modified date to the latest of its modified date and the last edit date
+            // of each of its layers or tables
+            itemTemplate.item.modified =
+              Math.max(itemTemplate.item.modified,
+                _mostRecentlyEditedLayer(template.properties.layers),
+                _mostRecentlyEditedLayer(template.properties.tables)
+              );
+
             // Extract dependencies
             common.extractDependencies(itemTemplate, srcAuthentication).then(
               (dependencies: common.IDependency[]) => {
@@ -110,8 +118,8 @@ export function convertItemToTemplate(
  *                 folder; ignored for Group item type
  * @param settings Hash mapping property names to replacement values
  * @param authentication Credentials for the request
- * @return A promise that will resolve with the id of the created item
- * @protected
+ * @returns A promise that will resolve with the id of the created item
+ * @private
  */
 export function createItemFromTemplate(
   template: common.IItemTemplate,
@@ -436,6 +444,26 @@ export function postProcess(
         }
       }, reject);
   });
+}
+
+//#endregion
+
+//#region Internal functions -----------------------------------------------------------------------------------------//
+
+//???
+export function _mostRecentlyEditedLayer(
+  layerOrTableList: any[]
+): any {
+  let mostRecentlyEdited = 0;
+  layerOrTableList.forEach(
+    (layer) => {
+      mostRecentlyEdited =
+        layer.editingInfo?.lastEditDate ?
+        Math.max(mostRecentlyEdited, layer.editingInfo.lastEditDate) :
+        mostRecentlyEdited;
+    }
+  );
+  return mostRecentlyEdited;
 }
 
 //#endregion

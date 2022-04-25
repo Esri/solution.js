@@ -32,14 +32,14 @@ import { IItemTemplate, ISolutionItemData } from "./interfaces";
  * itself; name has to be acceptable to AGOL, otherwise it discards the URL, so substitution must be
  * made before attempting to create the item.
  *
- * @protected
+ * @private
  */
 export const SERVER_NAME: string = "portalBaseUrl";
 
 /**
  * A parameterized geometry server name
  *
- * @protected
+ * @private
  */
 export const GEOMETRY_SERVER_NAME: string =
   "organization.helperServices.geometry.url";
@@ -47,7 +47,7 @@ export const GEOMETRY_SERVER_NAME: string =
 /**
  * A parameterized geocode server name
  *
- * @protected
+ * @private
  */
 export const GEOCODE_SERVER_NAME: string =
   "organization.helperServices.geocode:getDefaultLocatorURL";
@@ -55,14 +55,14 @@ export const GEOCODE_SERVER_NAME: string =
 /**
  * A parameterized network analyst server name
  *
- * @protected
+ * @private
  */
 export const NA_SERVER_NAME: string = "organization.helperServices.route.url";
 
 /**
  * A parameterized network analyst server name
  *
- * @protected
+ * @private
  */
 export const PRINT_SERVER_NAME: string =
   "organization.helperServices.printTask.url";
@@ -79,7 +79,7 @@ export const TRANSFORMS: any = {
  * Wraps double brackets around the supplied term.
  *
  * @param term Term to be wrapped, e.g., SERVER_NAME's "portalBaseUrl"
- * @return Wrapped term, e.g., "{{portalBaseUrl}}"
+ * @returns Wrapped term, e.g., "{{portalBaseUrl}}"
  */
 export function placeholder(term: string): string {
   return "{{" + term + "}}";
@@ -131,7 +131,7 @@ export function createInitializedItemTemplate(itemInfo: any): IItemTemplate {
  *
  * @param id AGO id of item
  * @param type AGO item type; defaults to ""
- * @return Empty template containing supplied id, optional type, and a key created using the function createShortId()
+ * @returns Empty template containing supplied id, optional type, and a key created using the function createShortId()
  */
 export function createPlaceholderTemplate(
   id: string,
@@ -158,7 +158,7 @@ export function createPlaceholderTemplate(
  * Extracts the version of a solution from its data section.
  *
  * @param itemData Data section of the solution as JSON
- * @return Zero-based version number
+ * @returns Zero-based version number
  */
 export function extractSolutionVersion(itemData: ISolutionItemData): number {
   let version = getProp(itemData, "metadata.version");
@@ -177,8 +177,8 @@ export function extractSolutionVersion(itemData: ISolutionItemData): number {
  *
  * @param templates A collection of AGO item templates to search
  * @param id AGO id of template to find
- * @return Offset of of matching template or -1 if not found
- * @protected
+ * @returns Offset of of matching template or -1 if not found
+ * @private
  */
 export function findTemplateIndexInList(
   templates: IItemTemplate[],
@@ -195,7 +195,7 @@ export function findTemplateIndexInList(
  *
  * @param templates A collection of AGO item templates to search
  * @param id AGO id of template to find
- * @return Matching template or null
+ * @returns Matching template or null
  */
 export function findTemplateInList(
   templates: IItemTemplate[],
@@ -228,7 +228,7 @@ export function getDefaultExtent(itemInfo: any): any {
  *
  * @param templates A collection of AGO item templates
  * @param id Id of item in templates list to find; if not found, no replacement is done
- * @protected
+ * @private
  */
 export function removeTemplate(templates: IItemTemplate[], id: string): void {
   const i = findTemplateIndexInList(templates, id);
@@ -242,7 +242,7 @@ export function removeTemplate(templates: IItemTemplate[], id: string): void {
  *
  * @param template Template to check for replacements; template is modified by this function
  * @param replacements Hash of facts: org URL, adlib replacements, deferreds for dependencies
- * @return template is returned after updating it
+ * @returns template is returned after updating it
  */
 export function replaceInTemplate(template: any, replacements: any): any {
   return adlib(template, replacements, TRANSFORMS);
@@ -254,8 +254,8 @@ export function replaceInTemplate(template: any, replacements: any): any {
  * @param templates A collection of AGO item templates
  * @param id Id of item in templates list to find; if not found, no replacement is done
  * @param template Replacement template
- * @return True if replacement was made
- * @protected
+ * @returns True if replacement was made
+ * @private
  */
 export function replaceTemplate(
   templates: IItemTemplate[],

@@ -32,7 +32,7 @@ import * as restHelpers from "../restHelpers";
  *
  * @param solutionItemId Id of a deployed Solution
  * @param authentication Credentials for the request
- * @return Promise that will resolve with the status of deleting the item
+ * @returns Promise that will resolve with the status of deleting the item
  */
 export function deleteSolutionItem(
   solutionItemId: string,

@@ -84,6 +84,7 @@ export function updateDeployOptions(
  * Check if an object is an Model
  *
  * @param obj any object
+ * @private
  */
 export function _isModel(obj: any): boolean {
   let result = false as boolean;

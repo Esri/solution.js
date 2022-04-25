@@ -22,7 +22,7 @@ import { IItemTemplate, getProp, setProp } from "@esri/solution-common";
  *
  * @param template velocity item info that should be templatized
  *
- * @return void
+ * @returns void
  *
  */
 export function templatizeVelocity(template: IItemTemplate): void {
@@ -39,8 +39,9 @@ export function templatizeVelocity(template: IItemTemplate): void {
  * @param prop the prop path to evaluate and set with a templatized variable
  * @param fn the templatize function that should be called for this prop
  *
- * @return void
+ * @returns void
  *
+ * @private
  */
 export function _templatize(
   template: IItemTemplate,
@@ -60,8 +61,9 @@ export function _templatize(
  *
  * @param feeds array of velocity feeds that should be templatized
  *
- * @return The updated list of feed objects with templatized id and label
+ * @returns The updated list of feed objects with templatized id and label
  *
+ * @private
  */
 export function _templatizeFeeds(feeds: any[]): any {
   return feeds.map((feed: any) => {
@@ -76,8 +78,9 @@ export function _templatizeFeeds(feeds: any[]): any {
  *
  * @param feed the feed object from the item
  *
- * @return the updated feed object with templatized portalItemId and layer id
+ * @returns the updated feed object with templatized portalItemId and layer id
  *
+ * @private
  */
 export function _templatizeFeed(feed: any): any {
   let id = getProp(feed, "properties.feature-layer.portalItemId");
@@ -105,8 +108,9 @@ export function _templatizeFeed(feed: any): any {
  *
  * @param dataSources array of data sources from the item
  *
- * @return the updated dataSources object with templatized ids and labels
+ * @returns the updated dataSources object with templatized ids and labels
  *
+ * @private
  */
 export function _templatizeDatasources(dataSources: any[]): any {
   return dataSources.map((ds: any) => _templatizeFeed(ds));

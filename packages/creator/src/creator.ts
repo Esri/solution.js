@@ -57,7 +57,7 @@ const noOp = () => {};
  * @param srcAuthentication Credentials for requests to source items
  * @param destAuthentication Credentials for the requests to destination solution
  * @param options Customizations for creating the solution
- * @return A promise that resolves with the AGO id of the new solution
+ * @returns A promise that resolves with the AGO id of the new solution
  */
 export function createSolution(
   sourceId: string,
@@ -182,7 +182,7 @@ export function createSolution(
  * @param sourceInfo
  * @param authentication
  * @param isGroup Boolean to indicate if the files are associated with a group or item
- * @internal
+ * @private
  */
 export function _applySourceToCreateOptions(
   createOptions: ICreateSolutionOptions,
@@ -215,7 +215,7 @@ export function _applySourceToCreateOptions(
  *
  * @param createOptions
  * @param srcAuthentication
- * @internal
+ * @private
  */
 export function _addThumbnailFileToCreateOptions(
   createOptions: ICreateSolutionOptions,
@@ -254,9 +254,9 @@ export function _addThumbnailFileToCreateOptions(
  * @param options Customizations for creating the solution
  * @param srcAuthentication Credentials for requests to source items
  * @param destAuthentication Credentials for the requests to destination solution
- * @return A promise that resolves with the AGO id of the new solution; solution item is deleted if its
+ * @returns A promise that resolves with the AGO id of the new solution; solution item is deleted if its
  * there is a problem updating it
- * @internal
+ * @private
  */
 export function _createSolutionFromItemIds(
   options: ICreateSolutionOptions,
@@ -294,9 +294,9 @@ export function _createSolutionFromItemIds(
  *
  * @param authentication Credentials for the request
  * @param options Customizations for creating the solution
- * @return A promise that resolves with the AGO id of the new solution; solution item is deleted if its
+ * @returns A promise that resolves with the AGO id of the new solution; solution item is deleted if its
  * there is a problem updating its thumbnail
- * @internal
+ * @private
  */
 export function _createSolutionItem(
   authentication: UserSession,
@@ -322,7 +322,7 @@ export function _createSolutionItem(
  * the Solution Item itself
  *
  * @param options
- * @internal
+ * @private
  */
 export function _createSolutionItemModel(options: any): IModel {
   // Solution uses all supplied tags but for deploy.* tags; that information goes into properties
@@ -366,9 +366,9 @@ export function _createSolutionItemModel(options: any): IModel {
  * Gets the deploy.id and deploy.version tag values.
  *
  * @param tags A list of item tags
- * @return A list containing the two values found in the tags, or defaulting to a new GUID and "1.0", respectively,
+ * @returns A list containing the two values found in the tags, or defaulting to a new GUID and "1.0", respectively,
  * as needed
- * @internal
+ * @private
  */
 export function _getDeploymentProperties(tags: string[]): string[] {
   return [
@@ -384,8 +384,8 @@ export function _getDeploymentProperties(tags: string[]): string[] {
  *
  * @param desiredTagPrefix Tag prefix to look for
  * @param tags A list of item tags
- * @return The extracted value of the first matching tag or null if a tag with the specified prefix is not found
- * @internal
+ * @returns The extracted value of the first matching tag or null if a tag with the specified prefix is not found
+ * @private
  */
 export function _getDeploymentProperty(
   desiredTagPrefix: string,

@@ -53,7 +53,6 @@
   <script>
     var goFcn;
     document.getElementById("srcPortal").value = "https://www.arcgis.com";
-    var package_path = window.location.href.substring(0, window.location.href.lastIndexOf('/'));
     require.config({
       paths: {
         "@esri/arcgis-rest-auth": "../node_modules/@esri/arcgis-rest-auth/dist/umd/auth.umd.min",
@@ -62,7 +61,6 @@
         "@esri/arcgis-rest-request": "../node_modules/@esri/arcgis-rest-request/dist/umd/request.umd.min",
         "@esri/arcgis-rest-service-admin": "../node_modules/@esri/arcgis-rest-service-admin/dist/umd/service-admin.umd.min",
         "@esri/hub-common": "../node_modules/@esri/hub-common/dist/umd/common.umd.min",
-        "@esri/hub-sites": "../node_modules/@esri/hub-sites/dist/umd/sites.umd.min",
         "@esri/hub-initiatives": "../node_modules/@esri/hub-initiatives/dist/umd/initiatives.umd.min",
         "@esri/hub-sites": "../node_modules/@esri/hub-sites/dist/umd/sites.umd.min",
         "@esri/hub-teams": "../node_modules/@esri/hub-teams/dist/umd/teams.umd.min",

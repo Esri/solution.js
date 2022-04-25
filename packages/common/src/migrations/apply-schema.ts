@@ -21,6 +21,7 @@ import { getProp, cloneObject } from "@esri/hub-common";
  *
  * @param model
  * @param authentication
+ * @private
  */
 export function _applySchema(model: ISolutionItem): ISolutionItem {
   if (getProp(model, "item.properties.schemaVersion") >= 1) {

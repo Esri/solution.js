@@ -50,7 +50,7 @@ import {
  * @param options Customizations for creating the solution
  * @param srcAuthentication Credentials for requests to source items
  * @param destAuthentication Credentials for the requests to destination solution
- * @return A promise that resolves with the AGO id of the updated solution
+ * @returns A promise that resolves with the AGO id of the updated solution
  * @internal
  */
 export function addContentToSolution(
@@ -245,7 +245,7 @@ export function addContentToSolution(
  * Gets the dependencies of an item by merging its dependencies list with item references in template variables.
  *
  * @param template Template to examine
- * @return List of dependency ids
+ * @returns List of dependency ids
  * @private
  */
 export function _getDependencies(template: IItemTemplate): string[] {
@@ -275,7 +275,7 @@ export function _getDependencies(template: IItemTemplate): string[] {
  * Extracts AGO ids out of template variables.
  *
  * @param variables List of template variables to examine
- * @return List of AGO ids referenced in `variables`
+ * @returns List of AGO ids referenced in `variables`
  * @private
  */
 export function _getIdsOutOfTemplateVariables(variables: string[]): string[] {
@@ -295,7 +295,7 @@ export function _getIdsOutOfTemplateVariables(variables: string[]): string[] {
  * Creates a list of item URLs.
  *
  * @param templates Templates to check for URLs
- * @return List of URLs
+ * @returns List of URLs
  * @private
  */
 export function _getSolutionItemUrls(templates: IItemTemplate[]): string[][] {
@@ -313,7 +313,7 @@ export function _getSolutionItemUrls(templates: IItemTemplate[]): string[][] {
  * Extracts template variables out of a string.
  *
  * @param text String to examine
- * @return List of template variables found in string
+ * @returns List of template variables found in string
  * @private
  */
 export function _getTemplateVariables(text: string): string[] {
@@ -325,7 +325,7 @@ export function _getTemplateVariables(text: string): string[] {
  * Update the items dependencies and groups arrays
  *
  * @param templates The array of templates to evaluate
- * @return Updated version of the templates
+ * @returns Updated version of the templates
  * @private
  */
 export function _postProcessGroupDependencies(
@@ -379,7 +379,7 @@ export function _postProcessGroupDependencies(
  * Clean up any references to items with invalid designations in the other templates.
  *
  * @param templates The array of templates to evaluate
- * @return Updated version of the templates
+ * @returns Updated version of the templates
  * @private
  */
 export function _postProcessIgnoredItems(
@@ -455,7 +455,7 @@ export function _replaceRemainingIdsInObject(ids: string[], obj: any): any {
  *
  * @param ids Ids to be replaced in source string
  * @param str Source string to be examined
- * @return A copy of the source string with any templatization changes
+ * @returns A copy of the source string with any templatization changes
  * @private
  */
 export function _replaceRemainingIdsInString(
@@ -518,7 +518,7 @@ export function _simplifyUrlsInItemDescriptions(
  *
  * @param templates The array of templates to evaluate; templates is modified in place
  * @param destAuthentication Credentials for request organization info
- * @return Promise resolving with `templates`
+ * @returns Promise resolving with `templates`
  * @private
  */
 export function _templatizeOrgUrl(

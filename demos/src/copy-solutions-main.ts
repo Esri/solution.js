@@ -121,7 +121,7 @@ export function copyItemInfo(
  * Extracts the properties of an item that can be copied.
  *
  * @param sourceItem Item from which to copy properties
- * @return Object containing copyable properties from sourceItem
+ * @returns Object containing copyable properties from sourceItem
  */
 export function getCopyableItemBaseProperties(sourceItem: any): any {
   const copyableItem: any = {
@@ -149,7 +149,7 @@ export function getCopyableItemBaseProperties(sourceItem: any): any {
  *
  * @param authentication Authentication for server to query
  * @param getAllOrgSolutions If true, gets all Solution templates in organization regardless of owner
- * @return Solution templates
+ * @returns Solution templates
  */
 export function getTemplates(
   authentication: common.UserSession,
@@ -200,7 +200,7 @@ export function getTemplates(
  * Uses the response from arcgis-rest-js' searchItems to accumulate results from paged queries
  *
  * @param searchTrancheResponse Response from a call to arcgis-rest-js' searchItems
- * @return Solution templates from searchTrancheResponse with subsequent pages appended
+ * @returns Solution templates from searchTrancheResponse with subsequent pages appended
  */
 function accumulateSearchResults (
   searchTrancheResponse: common.ISearchResult<common.IItem>

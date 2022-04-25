@@ -31,7 +31,7 @@ import { getBlobAsFile } from "../restHelpersGet";
  *
  * @param file Information about the source and destination of the file such as its URL, folder, filename
  * @param zipInfo Information about a zipfile such as its name and its zip object
- * @return The result of the copy
+ * @returns The result of the copy
  */
 export function copyResourceIntoZip(
   file: ISourceFile,
@@ -55,7 +55,7 @@ export function copyResourceIntoZip(
  * @param fileInfo Information about the source and destination of the file such as its URL, folder, filename
  * @param sourceAuthentication Credentials for the request to the source
  * @param zipInfo Information about a zipfile such as its name and its zip object
- * @return A promise which resolves to the result of the copy
+ * @returns A promise which resolves to the result of the copy
  */
 export function copyResourceIntoZipFromInfo(
   fileInfo: IAssociatedFileInfo,

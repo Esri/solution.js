@@ -38,7 +38,7 @@ const UNSUPPORTED: common.moduleHandler = null;
  * @param deployedSolutionId Id of deployed Solution item
  * @param destinationAuthentication Credentials for the destination organization
  * @param options Options to tune deployment
- * @return A promise that will resolve with the list of information about the created items
+ * @returns A promise that will resolve with the list of information about the created items
  */
 export function deploySolutionItems(
   portalSharingUrl: string,
@@ -224,6 +224,7 @@ export function deploySolutionItems(
  * @param itemsToBePatched List of items that need to have their dependencies patched
  * @param templateDictionary Hash of facts: org URL, adlib replacements
  * @param templates A collection of AGO item templates
+ * @private
  */
 export function _flagPatchItemsForPostProcessing(
   itemsToBePatched: common.IKeyedListsOfStrings,
@@ -257,7 +258,7 @@ export function _flagPatchItemsForPostProcessing(
  * @param templates a collection of AGO item templates
  *
  * @returns An updated array of item templates
- *
+ * @private
  */
 export function _evaluateSharedViewSources(
   templates: common.IItemTemplate[]
@@ -317,7 +318,7 @@ export function _evaluateSharedViewSources(
  * @param views an array of view template details
  *
  * @returns An updated array of item templates
- *
+ * @private
  */
 export function _updateViewTemplates(
   templates: common.IItemTemplate[],
@@ -356,7 +357,7 @@ export function _updateViewTemplates(
  * @returns an array of objects with the source FS id as the key and a list of views that are
  * dependant upon it
  *
- * @protected
+ * @private
  */
 export function _getViewHash(views: any[]): any {
   const viewHash: any = {};
@@ -380,7 +381,7 @@ export function _getViewHash(views: any[]): any {
  *
  * @returns an array with the view id and its dependencies
  *
- * @protected
+ * @private
  */
 export function _getViews(templates: common.IItemTemplate[]): any[] {
   return templates.reduce((acc, v) => {
@@ -405,7 +406,7 @@ export function _getViews(templates: common.IItemTemplate[]): any[] {
  *
  * @returns A Promise that will resolve once existing items have been evaluated
  *
- * @protected
+ * @private
  */
 export function _reuseDeployedItems(
   templates: common.IItemTemplate[],
@@ -476,7 +477,7 @@ export function _reuseDeployedItems(
  *
  * @returns A Promise that will resolve once existing items have been evaluated
  *
- * @protected
+ * @private
  */
 export function _useExistingItems(
   templates: common.IItemTemplate[],
@@ -532,7 +533,8 @@ export function _useExistingItems(
  * @param sourceIdHash key value pairs..actual itemId is the key and the source itemId is the value
  * @param authentication credentials for the requests
  *
- * @return a promise to indicate when the requests are complete
+ * @returns a promise to indicate when the requests are complete
+ * @private
  */
 export function _setTypekeywordForExisting(
   itemDefs: Array<Promise<any>>,
@@ -582,7 +584,7 @@ export function _setTypekeywordForExisting(
  * @param templates A collection of AGO item templates
  * @param templateDictionary Hash of facts: org URL, adlib replacements, deferreds for dependencies
  *
- * @protected
+ * @private
  */
 export function _updateTemplateDictionary(
   templates: common.IItemTemplate[],
@@ -761,7 +763,7 @@ export function _updateTemplateDictionary(
  * @param layerId the id for the layer
  * @param fields the fields to transfer
  *
- * @protected
+ * @private
  */
 export function _setFields(
   templateDictionary: any,
@@ -789,7 +791,7 @@ export function _setFields(
  * @param result the service request result
  * @param templateDictionary Hash of facts: org URL, adlib replacements, deferreds for dependencies
  *
- * @protected
+ * @private
  */
 export function _updateTemplateDictionaryForError(
   templateDictionary: any,
@@ -820,8 +822,8 @@ export function _updateTemplateDictionaryForError(
  * @param templateDictionary Hash of facts: org URL, adlib replacements, deferreds for dependencies
  * @param authentication Credentials for the request
  * @param addTagQuery Boolean to indicate if a search by tag should happen
- * @return A promise that will resolve with an array of results
- * @protected
+ * @returns A promise that will resolve with an array of results
+ * @private
  */
 export function _handleExistingItems(
   existingItemsResponse: any[],
@@ -875,6 +877,7 @@ export function _handleExistingItems(
   return existingItemsByTag;
 }
 
+//???
 export function _updateTemplateDictionaryById(
   templateDictionary: any,
   sourceId: string,
@@ -900,8 +903,8 @@ export function _updateTemplateDictionaryById(
  *
  * @param query Query string to use
  * @param authentication Credentials for the request
- * @return A promise that will resolve with an array of results
- * @protected
+ * @returns A promise that will resolve with an array of results
+ * @private
  */
 export function _findExistingItemByKeyword(
   templates: common.IItemTemplate[],
@@ -943,8 +946,8 @@ export function _findExistingItemByKeyword(
  *
  * @param query Query string to use
  * @param authentication Credentials for the request
- * @return A promise that will resolve with an array of results
- * @protected
+ * @returns A promise that will resolve with an array of results
+ * @private
  */
 export function _findExistingItem(
   query: string,
@@ -966,9 +969,9 @@ export function _findExistingItem(
  * @param templateDictionary Hash of facts: org URL, adlib replacements, deferreds for dependencies
  * @param userSession Options for the request
  * @param itemProgressCallback Function for reporting progress updates from type-specific template handlers
- * @return A promise that will resolve with the id of the deployed item (which is simply returned if it's
+ * @returns A promise that will resolve with the id of the deployed item (which is simply returned if it's
  *         already in the templates list
- * @protected
+ * @private
  */
 export function _createItemFromTemplateWhenReady(
   template: common.IItemTemplate,
@@ -1118,8 +1121,8 @@ export function _createItemFromTemplateWhenReady(
  * Accumulates the estimated deployment cost of a set of templates.
  *
  * @param templates Templates to examine
- * @return Sum of estimated deployment costs
- * @protected
+ * @returns Sum of estimated deployment costs
+ * @private
  */
 export function _estimateDeploymentCost(
   templates: common.IItemTemplate[]
@@ -1134,6 +1137,7 @@ export function _estimateDeploymentCost(
   );
 }
 
+//???
 // TODO: Return a Promise vs array of promises
 export function _getGroupUpdates(
   template: common.IItemTemplate,

@@ -24,7 +24,7 @@ import { IAssociatedFileCopyResults, IZipCopyResults } from "../interfaces";
  * @param fileInfo Info about item that was to be copied
  * @param fetchedFromSource Status of fetching item from source
  * @param copiedToDestination Status of copying item to destination
- * @return IAssociatedFileCopyResults object
+ * @returns IAssociatedFileCopyResults object
  */
 export function createCopyResults(
   fileInfo: any,

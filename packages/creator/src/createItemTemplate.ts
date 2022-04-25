@@ -56,8 +56,8 @@ import { moduleMap, UNSUPPORTED } from "./module-map";
  * @param srcAuthentication Credentials for requests to source items
  * @param destAuthentication Authentication for requesting information from AGO about items to be included in solution item
  * @param existingTemplates A collection of AGO item templates that can be referenced by newly-created templates
- * @return A promise which resolves with an array of resources for the item and its dependencies
- * @protected
+ * @returns A promise which resolves with an array of resources for the item and its dependencies
+ * @private
  */
 export function createItemTemplate(
   solutionItemId: string,
@@ -285,7 +285,7 @@ export function createItemTemplate(
  * Currently only handles web applications
  *
  * @param templates List of solution templates
- * @return A list of templates that have templatized field references
+ * @returns A list of templates that have templatized field references
  */
 export function postProcessFieldReferences(
   templates: IItemTemplate[]
@@ -340,7 +340,8 @@ export function postProcessFieldReferences(
  * Get common properties that will support the templatization of field references
  *
  * @param templates List of solution templates
- * @return A list of IDataSourceInfo objects with key properties
+ * @returns A list of IDataSourceInfo objects with key properties
+ * @private
  */
 export function _getDatasourceInfos(
   templates: IItemTemplate[]
@@ -376,7 +377,8 @@ export function _getDatasourceInfos(
  * and associated web map layer ids based on itemId
  *
  * @param templates List of solution templates
- * @return The lookup object with type, dependencies, and webmap layer info
+ * @returns The lookup object with type, dependencies, and webmap layer info
+ * @private
  */
 export function _getTemplateTypeHash(templates: IItemTemplate[]): any {
   const templateTypeHash: any = {};
@@ -397,7 +399,8 @@ export function _getTemplateTypeHash(templates: IItemTemplate[]): any {
  * so we can know the id used within a map for a given feature service
  *
  * @param template A webmap solution template
- * @return The lookup object with webmap layer info added
+ * @returns The lookup object with webmap layer info added
+ * @private
  */
 export function _updateWebMapHashInfo(template: IItemTemplate, hashItem: any) {
   const operationalLayers: any[] =
@@ -431,7 +434,8 @@ export function _updateWebMapHashInfo(template: IItemTemplate, hashItem: any) {
  *
  * @param dataSourceUrl Templatized datasource URL
  * @param layerId Layer id
- * @return string Amended datasource URL
+ * @returns string Amended datasource URL
+ * @private
  */
 export function _addLayerIdToDatasourceUrl(
   datasourceUrl?: string,
@@ -448,7 +452,8 @@ export function _addLayerIdToDatasourceUrl(
  *
  * @param datasourceInfos A webmap solution template
  * @param templateTypeHash A simple lookup object populated with key item info
- * @return The updated datasource infos
+ * @returns The updated datasource infos
+ * @private
  */
 export function _addMapLayerIds(
   datasourceInfos: IDatasourceInfo[],
@@ -484,7 +489,8 @@ export function _addMapLayerIds(
  *
  * @param template A webmap solution template
  * @param templateTypeHash A simple lookup object populated with key item info
- * @return A lsit of feature service item IDs
+ * @returns A lsit of feature service item IDs
+ * @private
  */
 export function _getWebMapFSDependencies(
   template: IItemTemplate,

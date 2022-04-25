@@ -53,7 +53,7 @@ import {
  * @param srcAuthentication Credentials for requests to source items
  * @param templateDictionary Hash of facts: folder id, org URL, adlib replacements
  *
- * @return a promise that will resolve the constructed IItemTemplate from the input itemInfo
+ * @returns a promise that will resolve the constructed IItemTemplate from the input itemInfo
  *
  */
 export function convertItemToTemplate(
@@ -104,7 +104,7 @@ export function convertItemToTemplate(
  * @param destinationAuthentication Credentials for the deployment requests
  * @param itemProgressCallback Function for reporting progress updates from type-specific template handlers
  *
- * @return a promise that will resolve with the new item info, id, type, and postProcess flag
+ * @returns a promise that will resolve with the new item info, id, type, and postProcess flag
  *
  */
 export function createItemFromTemplate(

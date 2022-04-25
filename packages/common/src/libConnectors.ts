@@ -30,7 +30,7 @@ export { Sanitizer } from "@esri/arcgis-html-sanitizer";
  * @param zipFilename Name to use for zip File
  * @param files List of files to add to zip File
  * @param folder Folder to contain the files
- * @return Promise resolving to a zip File
+ * @returns Promise resolving to a zip File
  */
 export function createZip(
   zipFilename: string,
@@ -81,7 +81,7 @@ export interface IValidationResult {
  *
  * @param HTML Text to sanitize
  * @param sanitizer Instance of Sanitizer class
- * @return Sanitized version of `html`
+ * @returns Sanitized version of `html`
  * @see https://github.com/esri/arcgis-html-sanitizer#basic-usage
  */
 export function sanitizeHTML(html: string, sanitizer?: Sanitizer): string {
@@ -97,7 +97,7 @@ export function sanitizeHTML(html: string, sanitizer?: Sanitizer): string {
  *
  * @param json JSON to sanitize
  * @param sanitizer Instance of Sanitizer class
- * @return Sanitized version of `json`
+ * @returns Sanitized version of `json`
  * @see https://github.com/esri/arcgis-html-sanitizer#sanitize-json
  */
 export function sanitizeJSON(json: any, sanitizer?: Sanitizer): any {
@@ -113,7 +113,7 @@ export function sanitizeJSON(json: any, sanitizer?: Sanitizer): any {
  *
  * @param url URL to sanitize
  * @param sanitizer Instance of Sanitizer class
- * @return Sanitized version of `url`
+ * @returns Sanitized version of `url`
  * @see https://github.com/esri/arcgis-html-sanitizer#sanitize-urls
  */
 export function sanitizeURLProtocol(
@@ -132,7 +132,7 @@ export function sanitizeURLProtocol(
  *
  * @param html HTML to check
  * @param sanitizer Instance of Sanitizer class
- * @return An object containing a flag indicating if `html` is valid (i.e., contains no invalid HTML)
+ * @returns An object containing a flag indicating if `html` is valid (i.e., contains no invalid HTML)
  * as well as the sanitized version of `html`
  * @see https://github.com/esri/arcgis-html-sanitizer#basic-usage
  */

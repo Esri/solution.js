@@ -20,6 +20,7 @@ import { _updatePages } from "@esri/hub-sites";
  * @param siteModel
  * @param itemInfos
  * @param hubRequestOptions
+ * @private
  */
 export function _updateSitePages(
   siteModel: IModel,

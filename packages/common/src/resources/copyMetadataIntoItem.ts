@@ -32,7 +32,7 @@ import { getBlob } from "./get-blob";
  * @param sourceAuthentication Credentials for the request to the source
  * @param destinationItemId Id of item to receive copy of resource/metadata/thumbnail
  * @param destinationAuthentication Credentials for the request to the storage
- * @return A promise which resolves to the result of the copy
+ * @returns A promise which resolves to the result of the copy
  */
 export function copyMetadataIntoItem(
   fileInfo: IAssociatedFileInfo,

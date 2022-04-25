@@ -29,7 +29,7 @@ import * as portal from "@esri/arcgis-rest-portal";
  * @param solutionFolderId Id of the folder of a deployed Solution
  * @param deletedItemIds Ids in the Solution, including the Solution item; used to deal with lagging folder deletion
  * @param authentication Credentials for the request
- * @return Promise that will resolve if deletion was successful and fail if any part of it failed;
+ * @returns Promise that will resolve if deletion was successful and fail if any part of it failed;
  * if the folder has a non-Solution item, it will not be deleted, but the function will return true
  */
 export function deleteSolutionFolder(

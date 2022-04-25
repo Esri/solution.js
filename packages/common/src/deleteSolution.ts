@@ -40,7 +40,7 @@ import * as getDeletableSolutionInfo from "./getDeletableSolutionInfo";
  * @param solutionItemId Id of a deployed Solution
  * @param authentication Credentials for the request
  * @param options Progress reporting options
- * @return Promise that will resolve with a list of two solution summaries: successful deletions
+ * @returns Promise that will resolve with a list of two solution summaries: successful deletions
  * and failed deletions. Ignored items (e.g., already deleted) and items shared with more than
  * one Solution will not be in either list.
  * Note that Solution item and its deployment folder will only be deleted if all of its deployed
@@ -77,7 +77,7 @@ export function deleteSolution(
  * @param templateDictionary Hash of facts: folder id, org URL, adlib replacements
  * @param authentication Credentials for the request
  * @param options Progress reporting options
- * @return Promise that will resolve with a list of two solution summaries: successful deletions
+ * @returns Promise that will resolve with a list of two solution summaries: successful deletions
  * and failed deletions. Ignored items (e.g., already deleted) and items shared with more than
  * one Solution will not be in either list.
  * Note that Solution item and its deployment folder will only be deleted if all of its deployed

@@ -23,7 +23,7 @@ import { SolutionResourceType } from "./solution-resource";
  * @param sourceResourceFilename Either filename or folder/filename to resource
  * @param storageVersion Version of the Solution template
  * @param storageFileType Optional argument that when supplied will control the how the prefix is created
- * @return Folder and filename for storage; folder is the itemID plus ("_" + storageFolder) if storageFolder
+ * @returns Folder and filename for storage; folder is the itemID plus ("_" + storageFolder) if storageFolder
  * exists plus ("_" + part of sourceResourceFilename before "/" if that separator exists);
  * file is sourceResourceFilename
  * @see convertStorageResourceToItemResource

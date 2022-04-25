@@ -30,7 +30,7 @@ import { createCopyResults } from "./createCopyResults";
  * @param zipInfo Information about a zipfile such as its name and its zip object
  * @param destinationItemId Id of item to receive copy of resource/metadata/thumbnail
  * @param destinationAuthentication Credentials for the request to the storage
- * @return A promise which resolves to the result of the copy
+ * @returns A promise which resolves to the result of the copy
  */
 export function copyZipIntoItem(
   zipInfo: IZipInfo,

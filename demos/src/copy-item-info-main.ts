@@ -112,7 +112,7 @@ export function copyItemInfo(
  * Extracts the properties of an item that can be copied.
  *
  * @param sourceItem Item from which to copy properties
- * @return Object containing copyable properties from sourceItem
+ * @returns Object containing copyable properties from sourceItem
  */
 export function getCopyableItemBaseProperties(sourceItem: any): any {
   const copyableItem: any = {
