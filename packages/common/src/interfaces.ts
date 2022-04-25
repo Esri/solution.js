@@ -410,7 +410,7 @@ export interface ICreateSolutionOptions {
   thumbnail?: File;
 
   /**
-   * Folder in which o place created Solution item; default is top level
+   * Folder in which to place created Solution item; default is top level
    */
   folderId?: string;
 
