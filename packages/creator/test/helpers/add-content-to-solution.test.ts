@@ -80,7 +80,7 @@ describe("addContentToSolution", () => {
     });
   });
 
-  it("addContentToSolution item progress callback with ignored item", done => {
+  it("addContentToSolution item progress callback with ignored item", () => {
     const solutionId = "sln1234567890";
     const options: common.ICreateSolutionOptions = {
       itemIds: ["map1234567890", "wma1234567890"]
@@ -115,10 +115,10 @@ describe("addContentToSolution", () => {
       options,
       MOCK_USER_SESSION,
       MOCK_USER_SESSION
-    ).then(() => done());
+    );
   });
 
-  it("addContentToSolution item progress callback with failed item", done => {
+  it("addContentToSolution item progress callback with failed item", () => {
     const solutionId = "sln1234567890";
     const options: common.ICreateSolutionOptions = {
       itemIds: ["map1234567890"]
@@ -151,13 +151,15 @@ describe("addContentToSolution", () => {
       MOCK_USER_SESSION,
       MOCK_USER_SESSION
     ).then(
-      () => done.fail(),
+      () => {
+        return Promise.reject();
+      },
       e => {
         expect(e.success).toBeFalse();
         expect(e.error).toEqual(
           "One or more items cannot be converted into templates"
         );
-        done();
+        return Promise.resolve();
       }
     );
   });
