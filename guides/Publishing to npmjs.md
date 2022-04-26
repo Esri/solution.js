@@ -15,6 +15,7 @@
 * \[ \] Check that publishing worked using `check_npm_package_versions.html` in a browser
 * \[ \] Push `master` branch to GitHub
 * \[ \] Merge `master` into the `develop` branch and push it to GitHub
+* \[ \[ Create as release from the build's tag in GitHub
 * \[ \] Update documentation via `npm run docs:build`
 * \[ \] Deploy documentation via `npm run docs:deploy`
 *
@@ -83,7 +84,9 @@ Copyright (c) 1990-2008 Info-ZIP...
 
 11. Merge `release/X.X.X` into `develop` and push the latter to GitHub.
 
-12. Update the repository's API documentation (see "Publishing API documentation to GitHub" section below).
+12. Create as release from the build's tag in GitHub (the push to GitHub task only creates a tagged entry).
+
+13. Update the repository's API documentation (see "Publishing API documentation to GitHub" section below).
 
 ---
 
