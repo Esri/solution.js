@@ -1,10 +1,3 @@
----
-title: Package Overview
-description: Overview of packages provided by Solution.js.
-order: 10
-group: 0-introduction
----
-
 # Why `@esri/solution.js`?
 
 `@esri/solution.js` simplifies making requests about Solutions to ArcGIS Online and Enterprise in browsers.
@@ -82,8 +75,6 @@ arcgisSolution.getCompleteItem("a67c8d5e25b644419316efcb1f70c291", arcgisSolutio
   });
 </script>
 ```
-
-And we haven't even begun to discuss [authentication](../browser-authentication/).
 
 
 # Package Overview

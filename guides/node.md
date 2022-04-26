@@ -1,11 +1,3 @@
----
-title: Using Solution.js in Node.js
-navTitle: Node.js
-description: Learn how to integrate the Solution.js library into a Node.js app.
-order: 50
-group: 1-get-started
----
-
 # Get Started with Node.js
 
 Make sure you have polyfills for [`fetch`](https://github.com/lquixada/cross-fetch) and [`FormData`](https://github.com/form-data/isomorphic-form-data) installed before using any Solution.js library. You can find `npm install` commands for all packages in the [API reference](/solution.js/api).
@@ -84,4 +76,3 @@ const authentication = new UserSession({
   password: "123456"
 })
 ```
-See the [Browser Authentication](../browser-authentication/) for more information about implementing OAuth 2.0.

@@ -6,7 +6,7 @@
 [npm-img]: https://img.shields.io/npm/v/@esri/solution-common.svg?style=round-square&color=blue
 [npm-url]: https://www.npmjs.com/package/@esri/solution-common
 [travis-img]: https://img.shields.io/travis/com/Esri/solution.js/develop.svg
-[travis-url]: https://travis-ci.com/Esri/solution.js
+[travis-url]: https://app.travis-ci.com/github/Esri/solution.js
 [coverage-img]: https://coveralls.io/repos/github/Esri/solution.js/badge.svg
 [coverage-url]: https://coveralls.io/github/Esri/solution.js
 [license-img]: https://img.shields.io/badge/license-Apache%202.0-blue.svg
@@ -20,6 +20,7 @@
 - [API Overview](#api-overview)
 - [Instructions](#instructions)
 - [Frequently Asked Questions](#frequently-asked-questions)
+- [Guides](#guides)
 - [Issues](#issues)
 - [Versioning](#versioning)
 - [Contributing](#contributing)
@@ -62,7 +63,7 @@ The API is divided into packages to make it easier to use just the parts that yo
 
 #### Additional information
 
-The API documentation is published at https://esri.github.io/solution.js/ ([source code](./docs/src)).
+The API documentation is published at https://esri.github.io/solution.js/
 
 #### Supported ArcGIS Online Item Types
 
@@ -88,9 +89,9 @@ The repository uses [Volta](https://docs.volta.sh/guide/getting-started) to stan
 Once Volta is installed, turn on [Windows "Developer Mode"](https://docs.microsoft.com/en-us/gaming/game-bar/guide/developer-mode) so that Volta can install symlinks.
 
 The following steps will build the repository:
-1. `volta install node@16.14.0`
+1. `volta install node@16.14.2`
 1. `volta install npm@bundled`
-1. `volta install typescript@4.5.5`
+1. `volta install typescript@4.6.3`
 1. `npm install`
 1. `pushd demos`
 1. `npm run build`
@@ -129,21 +130,8 @@ These commands are
   * `npm run coveralls:win` updates code coverage info from a Windows window
 
 * publishing doc
-  * `npm run docs:build` _(requires bash console)_
-    * `npm run docs:typedoc`
-    * `npm run docs:build:acetate`
-    * `npm run docs:build:sass`
-    * `npm run docs:build:images`
-    * `npm run docs:build:js`
-  * `npm run docs:build:dev` _(requires bash console)_
-    * `npm run docs:dev:typedoc`
-    * `npm run docs:dev:acetate`
-    * `npm run docs:dev:sass`
-    * `npm run docs:dev:images`
-    * `npm run docs:dev:js`
-  * `npm run docs:serve` runs `docs:build` and hosts the documentation website on localhost:3000 _(requires bash console)_
-  * `npm run docs:deploy` runs `docs:build` and pushes the documentation to the repository's gh-pages
-  * `npm run docs:srihash`
+  * `npm run docs:build` builds the documentation ___(note that this script creates a `docs` folder, deleting any existing one)___
+  * `npm run docs:deploy` pushes the documentation to the repository's gh-pages
 
 * publishing code _(requires bash window)_
   * `npm run prerelease:prepare` fetch, clean, link packages, and test
@@ -157,31 +145,42 @@ These commands are
   * precommit
 
 
-
 ### Frequently Asked Questions
 
-* [Is this a supported Esri product?](docs/FAQ.md#is-this-a-supported-esri-product)
-* [What browsers are supported?](docs/FAQ.md#what-browsers-are-supported)
-* [What is the development workflow?](docs/FAQ.md#what-is-the-development-workflow)
+* [Is this a supported Esri product?](https://github.com/Esri/solution.js/blob/master/guides/FAQ.md#is-this-a-supported-esri-product)
+* [What browsers are supported?](https://github.com/Esri/solution.js/blob/master/guides/FAQ.md#what-browsers-are-supported)
+* [What is the development workflow?](https://github.com/Esri/solution.js/blob/master/guides/FAQ.md#what-is-the-development-workflow)
+
+
+### Guides
+
+* [Package overview](https://github.com/Esri/solution.js/blob/master/guides/package-overview.md)
+* [Deploying with the repository](https://github.com/Esri/solution.js/blob/master/guides/deployment.md)
+* [Authentication in Browser-based Apps](https://github.com/Esri/solution.js/blob/master/guides/)
+* [Publishing to npmjs](https://github.com/Esri/solution.js/blob/master/guides/Publishing%29to%20npmjs.md)
 
 ### Issues
 
 Found a bug or want to request a new feature? Please take a look at [previously logged issues](https://github.com/Esri/solution.js/issues);
 if you don't see your concern, please let us know by [submitting an issue](https://github.com/Esri/solution.js/issues/new).
 
-### [Changelog](https://github.com/Esri/solution.js/blob/develop/CHANGELOG.md)
+
+### [Changelog](https://github.com/Esri/solution.js/blob/master/CHANGELOG.md)
+
 
 ##### Versioning
 
 For transparency into the release cycle and in striving to maintain backward compatibility, @esri/solution.js is maintained under Semantic Versioning guidelines and will adhere to these rules whenever possible. For more information on SemVer, please visit <http://semver.org/>.
 
+
 ## Contributing
 
-Esri welcomes contributions from anyone and everyone. Please see our [guidelines for contributing](CONTRIBUTING.md).
+Esri welcomes contributions from anyone and everyone. Please see our [guidelines for contributing](https://github.com/Esri/solution.js/blob/master/CONTRIBUTING.md).
+
 
 ### License
 
-Copyright &copy; 2018-2021 Esri
+Copyright &copy; 2018-2022 Esri
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -195,6 +194,6 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 
-A copy of the license is available in the repository's [LICENSE](./LICENSE) file.
+A copy of the license is available in the repository's [LICENSE](https://github.com/Esri/solution.js/blob/master/LICENSE) file.
 
-__[Third-Party Licenses](docs/Third-Party%20Licenses.md)__
+__[Third-Party Licenses](https://github.com/Esri/solution.js/blob/master/Third-Party%20Licenses.md)__
