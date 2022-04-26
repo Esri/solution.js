@@ -6,7 +6,7 @@
 [npm-img]: https://img.shields.io/npm/v/@esri/solution-common.svg?style=round-square&color=blue
 [npm-url]: https://www.npmjs.com/package/@esri/solution-common
 [travis-img]: https://img.shields.io/travis/com/Esri/solution.js/develop.svg
-[travis-url]: https://travis-ci.com/Esri/solution.js
+[travis-url]: https://app.travis-ci.com/github/Esri/solution.js
 [coverage-img]: https://coveralls.io/repos/github/Esri/solution.js/badge.svg
 [coverage-url]: https://coveralls.io/github/Esri/solution.js
 [license-img]: https://img.shields.io/badge/license-Apache%202.0-blue.svg
