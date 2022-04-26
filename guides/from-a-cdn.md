@@ -1,11 +1,3 @@
----
-title: Using Solution.js from a CDN
-navTitle: From a CDN
-description: Learn how to use Solution.js from a CDN.
-order: 20
-group: 1-get-started
----
-
 # Get Started using a CDN
 
 Solution.js is hosted on [unpkg](https://unpkg.com/). You can find URLs for individual packages in the [API reference](../../api).

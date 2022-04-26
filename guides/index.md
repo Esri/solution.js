@@ -1,8 +1,3 @@
----
-title: Get Started
-description: Get started with Solution.js.
----
-
 # Get Started
 
 Solutions.js can be deployed with a variety of build tools, including:
@@ -32,7 +27,7 @@ Solution.js is supported in
 
 ## Node.js Support
 
-Solution.js is supported in Node.js 8.x, 10.x, and 12.x. It requires additional packages to polyfill `Fetch` and `FormData`.
+Solution.js is supported in Node.js 16.x. It requires additional packages to polyfill `Fetch` and `FormData`.
 
 We recommend the ones below:
 

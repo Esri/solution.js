@@ -1,11 +1,3 @@
----
-title: Browser-based authentication with Solution.js
-navTitle: Browser-based OAuth 2.0
-description: Learn how to authenticate users with Solution.js and OAuth 2.0 in a browser.
-order: 1
-group: 2-authentication
----
-
 # Authentication in Browser-based Apps
 
 In the [Node.js](/solution.js/guides/node/) guide we explained how to instantiate an [`ApplicationSession`](/solution.js/api/auth/ApplicationSession/) with hardcoded credentials. In the browser, you need to use [OAuth 2.0](https://developers.arcgis.com/documentation/core-concepts/security-and-authentication/signing-in-arcgis-online-users/) and have users sign directly into [ArcGIS Online](https://www.arcgis.com) or ArcGIS Enterprise.
