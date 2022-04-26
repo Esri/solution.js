@@ -1,7 +1,7 @@
 const ghpages = require("gh-pages");
 
 ghpages.publish(
-  "docs/build/solution.js",
+  "docs",
   {
     branch: "gh-pages",
     repo: "https://github.com/Esri/solution.js.git"

@@ -62,7 +62,7 @@ The API is divided into packages to make it easier to use just the parts that yo
 
 #### Additional information
 
-The API documentation is published at https://esri.github.io/solution.js/ ([source code](./docs/src)).
+The API documentation is published at https://esri.github.io/solution.js/
 
 #### Supported ArcGIS Online Item Types
 
@@ -88,9 +88,9 @@ The repository uses [Volta](https://docs.volta.sh/guide/getting-started) to stan
 Once Volta is installed, turn on [Windows "Developer Mode"](https://docs.microsoft.com/en-us/gaming/game-bar/guide/developer-mode) so that Volta can install symlinks.
 
 The following steps will build the repository:
-1. `volta install node@16.14.0`
+1. `volta install node@16.14.2`
 1. `volta install npm@bundled`
-1. `volta install typescript@4.5.5`
+1. `volta install typescript@4.6.3`
 1. `npm install`
 1. `pushd demos`
 1. `npm run build`
@@ -129,21 +129,8 @@ These commands are
   * `npm run coveralls:win` updates code coverage info from a Windows window
 
 * publishing doc
-  * `npm run docs:build` _(requires bash console)_
-    * `npm run docs:typedoc`
-    * `npm run docs:build:acetate`
-    * `npm run docs:build:sass`
-    * `npm run docs:build:images`
-    * `npm run docs:build:js`
-  * `npm run docs:build:dev` _(requires bash console)_
-    * `npm run docs:dev:typedoc`
-    * `npm run docs:dev:acetate`
-    * `npm run docs:dev:sass`
-    * `npm run docs:dev:images`
-    * `npm run docs:dev:js`
-  * `npm run docs:serve` runs `docs:build` and hosts the documentation website on localhost:3000 _(requires bash console)_
-  * `npm run docs:deploy` runs `docs:build` and pushes the documentation to the repository's gh-pages
-  * `npm run docs:srihash`
+  * `npm run docs:build` builds the documentation
+  * `npm run docs:deploy` pushes the documentation to the repository's gh-pages
 
 * publishing code _(requires bash window)_
   * `npm run prerelease:prepare` fetch, clean, link packages, and test
@@ -160,9 +147,9 @@ These commands are
 
 ### Frequently Asked Questions
 
-* [Is this a supported Esri product?](docs/FAQ.md#is-this-a-supported-esri-product)
-* [What browsers are supported?](docs/FAQ.md#what-browsers-are-supported)
-* [What is the development workflow?](docs/FAQ.md#what-is-the-development-workflow)
+* [Is this a supported Esri product?](guides/FAQ.md#is-this-a-supported-esri-product)
+* [What browsers are supported?](guides/FAQ.md#what-browsers-are-supported)
+* [What is the development workflow?](guides/FAQ.md#what-is-the-development-workflow)
 
 ### Issues
 
@@ -197,4 +184,4 @@ limitations under the License.
 
 A copy of the license is available in the repository's [LICENSE](./LICENSE) file.
 
-__[Third-Party Licenses](docs/Third-Party%20Licenses.md)__
+__[Third-Party Licenses](Third-Party%20Licenses.md)__
