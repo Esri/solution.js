@@ -2,9 +2,9 @@
 
 Solutions.js can be deployed with a variety of build tools, including:
 
-* [From a CDN](./from-a-cdn/)
-* [AMD (Require.js or Dojo)](./amd-requirejs-dojo/)
-* [Node.js](./node/)
+* [From a CDN](https://github.com/Esri/solution.js/blob/master/guides/from-a-cdn.md)
+* [AMD (Require.js or Dojo)](https://github.com/Esri/solution.js/blob/master/guides/amd-requirejs-dojo.md)
+* [Node.js](https://github.com/Esri/solution.js/blob/master/guides/node.md)
 
 ## Requirements
 

@@ -16,8 +16,9 @@
 * \[ \] Check that publishing worked using `check_npm_package_versions.html` in a browser
 * \[ \] Push `master` branch to GitHub
 * \[ \] Merge `master` into the `develop` branch and push it to GitHub
-* \[ \] Update documentation via `npm run docs:deploy`
-
+* \[ \] Update documentation via `npm run docs:build`
+* \[ \] Deploy documentation via `npm run docs:deploy`
+* 
 #### Versioning
 
 "...increment the:
@@ -132,10 +133,7 @@ $ npm publish --access public --otp=<2-factor-code>
 npm run docs:build
 ```
 
-4. Test with a local server
-```
-npm run docs:serve
-```
+4. Test generated HTML with a local server
 
 5. Publish to GitHub site https://esri.github.io/solution.js/
 ```
