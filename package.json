@@ -124,7 +124,7 @@
     "docs:build": "typedoc",
     "docs:deploy": "node support/deploy-doc-site.js",
     "release:prepare1": "git fetch --all && lerna bootstrap && npm test",
-    "release:prepare2": "lerna publish --no-git-tag-version --no-push --skip-npm --yes && node ./support/changelog.js",
+    "release:prepare2": "lerna publish --no-git-tag-version --no-push --skip-npm --yes",
     "release:review": "git --no-pager diff --word-diff",
     "release:publish-git": "bash ./support/publish.sh",
     "release:publish-npm": "lerna publish from-package --force-publish=* --no-git-tag-version --no-push --yes --no-git-reset",
