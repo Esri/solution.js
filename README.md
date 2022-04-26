@@ -130,7 +130,7 @@ These commands are
   * `npm run coveralls:win` updates code coverage info from a Windows window
 
 * publishing doc
-  * `npm run docs:build` builds the documentation
+  * `npm run docs:build` builds the documentation ___(note that this script creates a `docs` folder, deleting any existing one)___
   * `npm run docs:deploy` pushes the documentation to the repository's gh-pages
 
 * publishing code _(requires bash window)_
