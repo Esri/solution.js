@@ -1,94 +1,210 @@
-<!DOCTYPE html>
-<html>
-  <head>
-    <meta charset="utf-8">
-    <meta content="IE=edge" http-equiv="X-UA-Compatible">
-    <meta name="viewport" content="width=device-width, user-scalable=no">
-    <title>2esri/solution.js library</title>
-    
-    <link rel="icon" type="image/png" href="./img/favicon.png">
-    <link rel="stylesheet" href="https://s3-us-west-1.amazonaws.com/patterns.esri.com/files/calcite-web/1.2.5/css/calcite-web.min.css">
-    <link rel="stylesheet" href="/solution.js/css/style.css">
-    
-  </head>
-  <body>
-  <!-- Drawer -->
-    <div class="drawer drawer-left js-drawer" data-drawer="top-nav" tabindex="0">
-      <nav class="drawer-nav" role="navigation">
-        <aside class="side-nav">
-          <h2 class="side-nav-title">@esri/solution.js library</h2>
-          <a href="/solution.js/guides/" class="side-nav-link">Guides</a>
-          <a href="/solution.js/api/" class="side-nav-link">API Reference</a>
-        </aside>
-      </nav>
-    </div>
+<!DOCTYPE html><html class="default"><head><meta charSet="utf-8"/><meta http-equiv="x-ua-compatible" content="IE=edge"/><title>@esri/solution.js</title><meta name="description" content="Documentation for @esri/solution.js"/><meta name="viewport" content="width=device-width, initial-scale=1"/><link rel="stylesheet" href="assets/style.css"/><link rel="stylesheet" href="assets/highlight.css"/><script async src="assets/search.js" id="search-script"></script></head><body><script>document.body.classList.add(localStorage.getItem("tsd-theme") || "os")</script><header><div class="tsd-page-toolbar"><div class="container"><div class="table-wrap"><div class="table-cell" id="tsd-search" data-base="."><div class="field"><label for="tsd-search-field" class="tsd-widget search no-caption">Search</label><input type="text" id="tsd-search-field"/></div><ul class="results"><li class="state loading">Preparing search index...</li><li class="state failure">The search index is not available</li></ul><a href="index.html" class="title">@esri/solution.js</a></div><div class="table-cell" id="tsd-widgets"><div id="tsd-filter"><a href="#" class="tsd-widget options no-caption" data-toggle="options">Options</a><div class="tsd-filter-group"><div class="tsd-select" id="tsd-filter-visibility"><span class="tsd-select-label">All</span><ul class="tsd-select-list"><li data-value="public">Public</li><li data-value="protected">Public/Protected</li><li data-value="private" class="selected">All</li></ul></div> <input type="checkbox" id="tsd-filter-inherited" checked/><label class="tsd-widget" for="tsd-filter-inherited">Inherited</label><input type="checkbox" id="tsd-filter-externals" checked/><label class="tsd-widget" for="tsd-filter-externals">Externals</label></div></div><a href="#" class="tsd-widget menu no-caption" data-toggle="menu">Menu</a></div></div></div></div><div class="tsd-page-title"><div class="container"><h1> @esri/solution.js </h1></div></div></header><div class="container container-main"><div class="row"><div class="col-8 col-content"><div class="tsd-panel tsd-typography"><p><a href="https://www.npmjs.com/package/@esri/solution-common"><img src="https://img.shields.io/npm/v/@esri/solution-common.svg?style=round-square&color=blue" alt="npm status"></a>
+<a href="https://travis-ci.com/Esri/solution.js"><img src="https://img.shields.io/travis/com/Esri/solution.js/develop.svg" alt="Build status"></a>
+<a href="https://coveralls.io/github/Esri/solution.js"><img src="https://coveralls.io/repos/github/Esri/solution.js/badge.svg" alt="Coverage status"></a>
+<a href="#license"><img src="https://img.shields.io/badge/license-Apache%202.0-blue.svg" alt="Apache 2.0 licensed"></a></p>
 
-    <div id="page" class="wrapper">
-      <!-- Sample HTML -->
-      <header class="top-nav">
-        <div class="grid-container">
-          <div class="column-24">
-            <!-- desktop sized navigation -->
-            <div class="tablet-hide">
-              <!-- logo / home -->
-              <a href="/solution.js/" class="top-nav-title">@esri/solution.js library</a>
-              <!-- primary navigation sections -->
-              <nav class="top-nav-list" role="navigation" aria-labelledby="topnav">
-                <a href="/solution.js/guides/" class="top-nav-link">Guides</a>
-                <a href="/solution.js/api/" class="top-nav-link">API Reference</a>
-                <a href="https://github.com/Esri/solution.js" class="top-nav-link">GitHub</a>
-              </nav>
-            </div>
+<a href="#solutionjs" id="solutionjs" style="color: inherit; text-decoration: none;">
+  <h2>Solution.js</h2>
+</a>
+<blockquote>
+<p>TypeScript wrappers running in Node.js and modern browsers for transferring ArcGIS Online items from one organization to another. <a href="https://youtu.be/esmUmIf3hcI">Video introduction</a> from the 2020 Developer Summit.</p>
+</blockquote>
 
-            <!-- tablet and mobile sized navigation -->
-            <div class="tablet-show top-nav-flex">
-              <!-- open primary navigation drawer -->
-              <nav class="top-nav-flex-list" role="navigation" aria-labelledby="topnav">
-                <a href="/solution.js/" class="icon-ui-menu top-nav-link js-drawer-toggle" data-drawer="top-nav"><span class="phone-hide">Menu</span></a>
-              </nav>
-              <!-- logo / home -->
-              <header class="top-nav-flex-title">
-                <a href="/solution.js/" class="top-nav-link">@esri/solution.js</a>
-              </header>
-            </div>
-          </div>
+<a href="#table-of-contents" id="table-of-contents" style="color: inherit; text-decoration: none;">
+  <h3>Table of Contents</h3>
+</a>
+<ul>
+<li><a href="#api-overview">API Overview</a></li>
+<li><a href="#instructions">Instructions</a></li>
+<li><a href="#frequently-asked-questions">Frequently Asked Questions</a></li>
+<li><a href="#issues">Issues</a></li>
+<li><a href="#versioning">Versioning</a></li>
+<li><a href="#contributing">Contributing</a></li>
+<li><a href="#license">License</a></li>
+</ul>
+<hr>
 
-        </div>
-      </header>
+<a href="#api-overview" id="api-overview" style="color: inherit; text-decoration: none;">
+  <h3>API Overview</h3>
+</a>
 
+<a href="#common-terms" id="common-terms" style="color: inherit; text-decoration: none;">
+  <h4>Common terms</h4>
+</a>
+<p>An ArcGIS Online (AGO) <code>item</code> is transformed into a <code>template</code> that contains all of its defining information. If the item depends on other items, those items are also transformed into templates.</p>
+<p>A <code>Solution Item</code> can contain either</p>
+<ul>
+<li>a list of Item Templates</li>
+<li>a list of references to deployed items</li>
+</ul>
+<p>When it contains Item Templates, it can be used for organizing and distributing Solutions, e.g., for displaying in a gallery of Solutions.</p>
+<p>When a Solution is deployed into an organization, a new Solution is created that contains references to the items deployed into the organization; it serves as a table of contents for the deployment.</p>
 
-      <main id="#skip-to-content">
-        <header class="sub-nav" role="banner">
-  <div class="grid-container">
-    <div class="column-24 text-center leader-4 trailer-5">
-      <h1 class="font-size-7 text-white">@esri/solution.js library</h1>
-      <p class="text-white font-size-2">Compact, modular JavaScript wrappers for creating and deploying solutions in ArcGIS Online organizations.</p>
-      <a href="/solution.js/guides/" class="btn btn-large btn-clear-white">Get Started</a>
-      <a href="/solution.js/api/" class="btn btn-large btn-clear-white">API Reference</a>
-    </div>
-  </div>
-</header>
-</div>
-      </main>
-    </div>
+<a href="#packages" id="packages" style="color: inherit; text-decoration: none;">
+  <h4>Packages</h4>
+</a>
+<p>The API is divided into packages to make it easier to use just the parts that you want:</p>
+<ul>
+<li><code>common</code>, which contains common helper functions for the other packages</li>
+<li><code>creator</code>, which contains functions for transforming items into templates</li>
+<li><code>deployer</code>, which contains functions for deploying item templates into items in a destination organization</li>
+<li><code>feature-layer</code>, which contains functions for Feature Service items</li>
+<li><code>file</code>, which contains functions for items that contain files</li>
+<li><code>form</code>, which contains functions for form items</li>
+<li><code>group</code>, which contains functions for Groups</li>
+<li><code>hub-types</code>, which contains functions supporting ArcGIS Hub Sites and Initiatives</li>
+<li><code>simple-types</code>, which contains functions for the simpler item types Dashboard, Form, Web Map, Web Mapping Application, and Workforce Project</li>
+<li><code>storymap</code>, which contains functions for Storymap items</li>
+<li><code>velocity</code>, which contains functions to support ArcGIS Velocity items</li>
+<li><code>viewer</code>, which contains functions to support displaying Solution items</li>
+<li><code>web-experience</code>, which contains functions for Experience Builder items</li>
+</ul>
 
-    <footer class="footer">
-      
-      <div class="panel panel-white">
-        <div class="grid-container">
-          <div class="column-24">
-            <a href="https://github.com/Esri/solution.js" class="font-size--2">Fork this project on GitHub</a>
-          </div>
-        </div>
-      </div>
-    </footer>
+<a href="#additional-information" id="additional-information" style="color: inherit; text-decoration: none;">
+  <h4>Additional information</h4>
+</a>
+<p>The API documentation is published at <a href="https://esri.github.io/solution.js/">https://esri.github.io/solution.js/</a></p>
 
-    <script src="https://s3-us-west-1.amazonaws.com/patterns.esri.com/files/calcite-web/1.2.5/js/calcite-web.min.js"></script>
+<a href="#supported-arcgis-online-item-types" id="supported-arcgis-online-item-types" style="color: inherit; text-decoration: none;">
+  <h4>Supported ArcGIS Online Item Types</h4>
+</a>
+<p>Currently, the ArcGIS Online item types that can be converted into a template are:</p>
+<ul>
+<li><p><strong>App types:</strong> Dashboard, Form, Hub Initiative, Hub Page, Hub Site Application, Insights Model, Notebook, Oriented Imagery Catalog, QuickCapture Project, Site Application, Site Page, StoryMap, Web Experience, Web Mapping Application, Workforce Project</p>
+</li>
+<li><p><strong>Map types:</strong> Web Map, Web Scene</p>
+</li>
+<li><p><strong>Layer types:</strong> Big Data Analytic, Feature Collection, Feature Service, Feed, Map Service, Real Time Analytic</p>
+</li>
+<li><p><strong>File types:</strong> 360 VR Experience, AppBuilder Extension, AppBuilder Widget Package, Application Configuration, ArcGIS Pro Add In, ArcGIS Pro Configuration, ArcPad Package, Basemap Package, CAD Drawing, CityEngine Web Scene, Code Attachment, Code Sample, Color Set, Compact Tile Package, CSV Collection, CSV, Deep Learning Package, Desktop Add In, Desktop Application Template, Desktop Style, Document Link, Explorer Add In, Explorer Layer, Explorer Map, Feature Collection Template, File Geodatabase, GeoJson, GeoPackage, Geoprocessing Package, Geoprocessing Sample, Globe Document, Image Collection, Image, iWork Keynote, iWork Numbers, iWork Pages, KML Collection, Layer Package, Layer Template, Layer, Layout, Locator Package, Map Document, Map Package, Map Template, Microsoft Excel, Microsoft Powerpoint, Microsoft Word, Mobile Basemap Package, Mobile Map Package, Mobile Scene Package, Native Application, Native Application Installer, Native Application Template, netCDF, Operation View, Operations Dashboard Add In, Operations Dashboard Extension, PDF, Pro Layer Package, Pro Layer, Pro Map Package, Pro Map, Pro Report, Project Package, Project Template, Published Map, Raster function template, Report Template, Rule Package, Scene Document, Scene Package, Service Definition, Shapefile, Statistical Data Collection, Style, Survey123 Add In, Symbol Set, Task File, Tile Package, Toolbox Package, Vector Tile Package, Viewer Configuration, Visio Document, Window Mobile Package, Windows Mobile Package, Windows Viewer Add In, Windows Viewer Configuration, Workflow Manager Package</p>
+</li>
+</ul>
+<p><em>The <code>implemented-types</code> demo generates its list from the source code.</em></p>
 
-    <script>
-       calcite.init()
-    </script>
+<a href="#instructions" id="instructions" style="color: inherit; text-decoration: none;">
+  <h3>Instructions</h3>
+</a>
 
-    
-  </body>
-</html>
+<a href="#setup" id="setup" style="color: inherit; text-decoration: none;">
+  <h4>Setup</h4>
+</a>
+<p>The repository uses <a href="https://docs.volta.sh/guide/getting-started">Volta</a> to standardize the versions of NodeJS and npm. Please install and use this app to get the supported versions.</p>
+<p>Once Volta is installed, turn on <a href="https://docs.microsoft.com/en-us/gaming/game-bar/guide/developer-mode">Windows &quot;Developer Mode&quot;</a> so that Volta can install symlinks.</p>
+<p>The following steps will build the repository:</p>
+<ol>
+<li><code>volta install node@16.14.2</code></li>
+<li><code>volta install npm@bundled</code></li>
+<li><code>volta install typescript@4.6.3</code></li>
+<li><code>npm install</code></li>
+<li><code>pushd demos</code></li>
+<li><code>npm run build</code></li>
+<li><code>popd</code></li>
+<li><code>npm run test:chrome:ci</code></li>
+</ol>
+<p>These steps are in the file <code>build.bat</code> for Windows computers.</p>
+
+<a href="#npm-commands" id="npm-commands" style="color: inherit; text-decoration: none;">
+  <h4>npm commands</h4>
+</a>
+<p>For a list of all available commands run <code>npm run</code>.</p>
+<p>These commands are</p>
+<ul>
+<li><p>building</p>
+<ul>
+<li><code>npm run build</code> creates symlinks among packages and creates node, umd, and esm outputs for each package</li>
+<li><code>npm run clean</code> runs <code>clean:src</code> and <code>clean:dist</code> <em>(requires bash console)</em><ul>
+<li><code>npm run clean:src</code> deletes <code>.d.ts</code>, <code>.js</code>, and <code>.js.map</code> files</li>
+<li><code>npm run clean:dist</code> deletes <code>.rpt2_cache</code> and <code>dist</code> folders</li>
+</ul>
+</li>
+<li><code>npm run lint</code> lints the TypeScript files</li>
+<li><code>npm run lint:fix</code> lints the TypeScript files and fixes</li>
+<li><code>npm run prettify</code> beautifies TypeScript files</li>
+</ul>
+</li>
+<li><p>testing</p>
+<ul>
+<li><code>npm run test</code> lints, then runs <code>test:chrome</code> tests to confirm that the API is functioning as expected</li>
+<li><code>npm run test:browsers</code> runs karma in the Chrome, Firefox, and Chromium Edge browsers</li>
+<li><code>npm run test:chrome</code> runs karma in the Chrome browser</li>
+<li><code>npm run test:chrome:ci</code> runs karma in the ChromeHeadlessCI browser</li>
+<li><code>npm run test:chrome:debug</code> runs karma in the Chrome browser and leaves the browser open for debugging tests</li>
+<li><code>npm run test:edge</code> runs karma in the Edge (Chromium) browser</li>
+<li><code>npm run test:firefox</code> runs karma in the Firefox browser</li>
+<li><code>npm run test:ci</code> lints, then runs <code>test:chrome:ci</code>, <code>test:firefox</code>, and <code>coveralls</code> from a bash window</li>
+<li><code>npm run test:ci:win</code> lints, then runs <code>test:chrome:ci</code>, <code>test:firefox</code>, and <code>coveralls:win</code> from a Windows window</li>
+<li><code>npm run test:all</code> runs <code>test:chrome</code> and <code>test:edge</code> and <code>test:firefox</code></li>
+<li><code>npm run coveralls</code> updates code coverage info from a bash window</li>
+<li><code>npm run coveralls:win</code> updates code coverage info from a Windows window</li>
+</ul>
+</li>
+<li><p>publishing doc</p>
+<ul>
+<li><code>npm run docs:build</code> builds the documentation</li>
+<li><code>npm run docs:deploy</code> pushes the documentation to the repository&#39;s gh-pages</li>
+</ul>
+</li>
+<li><p>publishing code <em>(requires bash window)</em></p>
+<ul>
+<li><code>npm run prerelease:prepare</code> fetch, clean, link packages, and test</li>
+<li><code>npm run release:prepare</code> prepares for publication and creates a changelog</li>
+<li><code>npm run release:review</code> assembles git changes <em>(use arrow keys to put cursor on line</em> above <em>desired version)</em></li>
+<li><code>npm run release:publish</code> publishes a version</li>
+</ul>
+</li>
+<li><p>lifecycle</p>
+<ul>
+<li>postinstall runs <code>bootstrap</code></li>
+<li>bootstrap</li>
+<li>precommit</li>
+</ul>
+</li>
+</ul>
+
+<a href="#frequently-asked-questions" id="frequently-asked-questions" style="color: inherit; text-decoration: none;">
+  <h3>Frequently Asked Questions</h3>
+</a>
+<ul>
+<li><a href="guides/FAQ.md#is-this-a-supported-esri-product">Is this a supported Esri product?</a></li>
+<li><a href="guides/FAQ.md#what-browsers-are-supported">What browsers are supported?</a></li>
+<li><a href="guides/FAQ.md#what-is-the-development-workflow">What is the development workflow?</a></li>
+</ul>
+
+<a href="#issues" id="issues" style="color: inherit; text-decoration: none;">
+  <h3>Issues</h3>
+</a>
+<p>Found a bug or want to request a new feature? Please take a look at <a href="https://github.com/Esri/solution.js/issues">previously logged issues</a>;
+if you don&#39;t see your concern, please let us know by <a href="https://github.com/Esri/solution.js/issues/new">submitting an issue</a>.</p>
+
+<a href="#changelog" id="changelog" style="color: inherit; text-decoration: none;">
+  <h3><a href="https://github.com/Esri/solution.js/blob/develop/CHANGELOG.md">Changelog</a></h3>
+</a>
+
+<a href="#versioning" id="versioning" style="color: inherit; text-decoration: none;">
+  <h5>Versioning</h5>
+</a>
+<p>For transparency into the release cycle and in striving to maintain backward compatibility, @esri/solution.js is maintained under Semantic Versioning guidelines and will adhere to these rules whenever possible. For more information on SemVer, please visit <a href="http://semver.org/">http://semver.org/</a>.</p>
+
+<a href="#contributing" id="contributing" style="color: inherit; text-decoration: none;">
+  <h2>Contributing</h2>
+</a>
+<p>Esri welcomes contributions from anyone and everyone. Please see our <a href="CONTRIBUTING.md">guidelines for contributing</a>.</p>
+
+<a href="#license" id="license" style="color: inherit; text-decoration: none;">
+  <h3>License</h3>
+</a>
+<p>Copyright &copy; 2018-2021 Esri</p>
+<p>Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at</p>
+<blockquote>
+<p><a href="http://www.apache.org/licenses/LICENSE-2.0">http://www.apache.org/licenses/LICENSE-2.0</a></p>
+</blockquote>
+<p>Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.</p>
+<p>A copy of the license is available in the repository&#39;s <a href="./LICENSE">LICENSE</a> file.</p>
+<p><strong><a href="Third-Party%20Licenses.md">Third-Party Licenses</a></strong></p>
+</div></div><div class="col-4 col-menu menu-sticky-wrap menu-highlight"><nav class="tsd-navigation primary"><ul><li class="current"><a href="modules.html">Modules</a></li><li class=" tsd-kind-module"><a href="modules/common.html">common</a></li><li class=" tsd-kind-module"><a href="modules/creator.html">creator</a></li><li class=" tsd-kind-module"><a href="modules/deployer.html">deployer</a></li><li class=" tsd-kind-module"><a href="modules/feature_layer.html">feature-<wbr/>layer</a></li><li class=" tsd-kind-module"><a href="modules/file.html">file</a></li><li class=" tsd-kind-module"><a href="modules/hubTypes.html">hub<wbr/>Types</a></li><li class=" tsd-kind-module"><a href="modules/simple_types.html">simple-<wbr/>types</a></li><li class=" tsd-kind-module"><a href="modules/simple_types.html">simple-<wbr/>types</a></li><li class=" tsd-kind-module"><a href="modules/solution_form.html">solution-<wbr/>form</a></li><li class=" tsd-kind-module"><a href="modules/storymap.html">storymap</a></li><li class=" tsd-kind-module"><a href="modules/velocity_src.html">velocity/src</a></li><li class=" tsd-kind-module"><a href="modules/viewer.html">viewer</a></li><li class=" tsd-kind-module"><a href="modules/web_experience_src.html">web-<wbr/>experience/src</a></li></ul></nav></div></div></div><footer class="with-border-bottom"><div class="container"><h2>Legend</h2><div class="tsd-legend-group"><ul class="tsd-legend"><li class="tsd-kind-namespace"><span class="tsd-kind-icon">Namespace</span></li><li class="tsd-kind-variable"><span class="tsd-kind-icon">Variable</span></li><li class="tsd-kind-function"><span class="tsd-kind-icon">Function</span></li><li class="tsd-kind-type-alias"><span class="tsd-kind-icon">Type alias</span></li></ul><ul class="tsd-legend"><li class="tsd-kind-enum"><span class="tsd-kind-icon">Enumeration</span></li></ul><ul class="tsd-legend"><li class="tsd-kind-interface"><span class="tsd-kind-icon">Interface</span></li></ul></div><h2>Settings</h2><p>Theme <select id="theme"><option value="os">OS</option><option value="light">Light</option><option value="dark">Dark</option></select></p></div></footer><div class="container tsd-generator"><p>Generated using <a href="https://typedoc.org/" target="_blank">TypeDoc</a></p></div><div class="overlay"></div><script src="assets/main.js"></script></body></html>
