@@ -159,16 +159,14 @@ These commands are
 * [Authentication in Browser-based Apps](https://github.com/Esri/solution.js/blob/master/guides/)
 * [Publishing to npmjs](https://github.com/Esri/solution.js/blob/master/guides/Publishing%29to%20npmjs.md)
 
+
 ### Issues
 
 Found a bug or want to request a new feature? Please take a look at [previously logged issues](https://github.com/Esri/solution.js/issues);
 if you don't see your concern, please let us know by [submitting an issue](https://github.com/Esri/solution.js/issues/new).
 
 
-### [Changelog](https://github.com/Esri/solution.js/blob/master/CHANGELOG.md)
-
-
-##### Versioning
+### Versioning
 
 For transparency into the release cycle and in striving to maintain backward compatibility, @esri/solution.js is maintained under Semantic Versioning guidelines and will adhere to these rules whenever possible. For more information on SemVer, please visit <http://semver.org/>.
 
