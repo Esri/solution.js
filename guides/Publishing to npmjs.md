@@ -18,7 +18,7 @@
 * \[ \[ Create as release from the build's tag in GitHub
 * \[ \] Update documentation via `npm run docs:build`
 * \[ \] Deploy documentation via `npm run docs:deploy`
-*
+
 #### Versioning
 
 "...increment the:

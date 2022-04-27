@@ -133,11 +133,12 @@ These commands are
   * `npm run docs:build` builds the documentation ___(note that this script creates a `docs` folder, deleting any existing one)___
   * `npm run docs:deploy` pushes the documentation to the repository's gh-pages
 
-* publishing code _(requires bash window)_
-  * `npm run prerelease:prepare` fetch, clean, link packages, and test
-  * `npm run release:prepare` prepares for publication and creates a changelog
-  * `npm run release:review` assembles git changes _(use arrow keys to put cursor on line_ above _desired version)_
-  * `npm run release:publish` publishes a version
+* publishing code
+  * `npm run release:prepare1` fetch, compile, and test _(requires bash shell)_
+  * `npm run release:prepare2` bundles packages and asks you for the new version number _(use arrow keys to put cursor on line_ above _desired version)_ _(requires Windows shell)_
+  * `npm run release:review` shows summary of git changes
+  * `npm run release:publish-git` publishes a version to GitHub _(requires bash shell)_
+  * `npm run release:publish-npm` publishes a version to npm _(requires Windows shell)_
 
 * lifecycle
   * postinstall runs `bootstrap`
