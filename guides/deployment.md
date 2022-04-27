@@ -1,15 +1,10 @@
----
-title: Get Started
-description: Get started with Solution.js.
----
-
 # Get Started
 
 Solutions.js can be deployed with a variety of build tools, including:
 
-* [From a CDN](./from-a-cdn/)
-* [AMD (Require.js or Dojo)](./amd-requirejs-dojo/)
-* [Node.js](./node/)
+* [From a CDN](https://github.com/Esri/solution.js/blob/master/guides/from-a-cdn.md)
+* [AMD (Require.js or Dojo)](https://github.com/Esri/solution.js/blob/master/guides/amd-requirejs-dojo.md)
+* [Node.js](https://github.com/Esri/solution.js/blob/master/guides/node.md)
 
 ## Requirements
 
@@ -32,7 +27,7 @@ Solution.js is supported in
 
 ## Node.js Support
 
-Solution.js is supported in Node.js 8.x, 10.x, and 12.x. It requires additional packages to polyfill `Fetch` and `FormData`.
+Solution.js is supported in Node.js 16.x. It requires additional packages to polyfill `Fetch` and `FormData`.
 
 We recommend the ones below:
 

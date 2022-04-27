@@ -10,14 +10,15 @@
 * \[ \] Run `npm run release:prepare1` in a bash shell
 * \[ \] Run `npm run release:prepare2` in a Windows shell and pick new version number
 * \[ \] Run `npm run release:review`
-* \[ \] Check and fix CHANGELOG.md
 * \[ \] Run `npm run release:publish-git` in a bash shell
 * \[ \] Run `npm run release:publish-npm` in a Windows shell
 * \[ \] Check that publishing worked using `check_npm_package_versions.html` in a browser
 * \[ \] Push `master` branch to GitHub
 * \[ \] Merge `master` into the `develop` branch and push it to GitHub
-* \[ \] Update documentation via `npm run docs:deploy`
-
+* \[ \[ Create as release from the build's tag in GitHub
+* \[ \] Update documentation via `npm run docs:build`
+* \[ \] Deploy documentation via `npm run docs:deploy`
+*
 #### Versioning
 
 "...increment the:
@@ -71,36 +72,21 @@ Copyright (c) 1990-2008 Info-ZIP...
   * `release:prepare2` (Windows) gives you the opportunity to select the new version number. The default choice increments the patch version (i.e., the third number in the [*major.minor.patch* version numbering scheme](https://semver.org/)). If a different version is desired, use the keyboard arrow keys to select the desired version. There doesn't seem to be a way to type in a custom version.
   * `npm run release:review` shows the list of changes in the release
 
-9. Check, and fix if necessary, CHANGELOG.md by removing any link lines (the ones that begin with, e.g., `[0.5.0]: https://github.com`) except the set at the end of the file. (The set at the end is a full set; if there are any under the previous version(s), they are redundant and don't display properly because their definitions are overwritten by the set at the end.) Also, for some reason, in CHANGELOG.md, the unreleased section appears below the new release. So please move it to the top.
-*Note: To confirm the expected set at the end of this file visit the repos webpage and navigate to releases > tags. If you see additional tags in the CHANGELOG.md you can remove them. To remove them permanently from your local repo use:*
-```
-git tag -d tagName
-```
-
-10. Test the CHANGELOG.md file using `npx changelog-parser CHANGELOG.md`. You should see a result beginning with
-```
-{"versions":[{"version":null,"title":"[Unreleased]"
-```
-If the `versions` array is empty (e.g.,
-```
-{"versions":[],"title":"Changelog
-```
-), then CHANGELOG.md needs to be re-saved as an ASCII file: the GitHub publishing tool cannot read UTF-8 files.
-
-11. Publish the release. 
+9. Publish the release.
   * `npm run release:publish-git` (git-bash) commits the release, bundles it into a zip file, and sends it to GitHub
   * `npm run release:publish-npm` (Windows) sends the release's packages to npm. Once the command is ready to send the packages to npm, you should see "? This operation requires a one-time password:". The "password" is an Okta Verify two-factor code. Because codes expire after around 30 seconds, use the freshest possible code: pick it right after it updates in the two-factor app.
-
 
  Note that you won't see the new version in your GitHub client until the next time that you refresh the repository.
 
  It's OK to push the version to GitHub even if not all packages appear to have been published. "Publishing" is sending them to npm and is a separate process that we can patch below.
 
-12. Check that publishing worked using the repository's web page `check_npm_package_versions.html`; sometimes, only some of the packages show up in npm. It may take ten or more minutes for a general request such as `https://unpkg.com/@esri/solution-simple-types/dist/umd/simple-types.umd.js` to 302 resolve to the latest version.
+10. Check that publishing worked using the repository's web page `check_npm_package_versions.html`; sometimes, only some of the packages show up in npm. It may take ten or more minutes for a general request such as `https://unpkg.com/@esri/solution-simple-types/dist/umd/simple-types.umd.js` to 302 resolve to the latest version.
 
-13. Merge `release/X.X.X` into `develop` and push the latter to GitHub.
+11. Merge `release/X.X.X` into `develop` and push the latter to GitHub.
 
-17. Update the repository's API documentation (see "Publishing API documentation to GitHub" section below).
+12. Create as release from the build's tag in GitHub (the push to GitHub task only creates a tagged entry).
+
+13. Update the repository's API documentation (see "Publishing API documentation to GitHub" section below).
 
 ---
 
@@ -132,10 +118,7 @@ $ npm publish --access public --otp=<2-factor-code>
 npm run docs:build
 ```
 
-4. Test with a local server
-```
-npm run docs:serve
-```
+4. Test generated HTML with a local server
 
 5. Publish to GitHub site https://esri.github.io/solution.js/
 ```
@@ -187,4 +170,3 @@ call npm deprecate "@esri/solution-web-experience@%obsoleteVersion%" "obsolete" 
 * Use `npm whoami` to verify that you're logged in
 
 A token is created in your npm account.
- 

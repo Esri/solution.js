@@ -84,6 +84,7 @@ __*
 demos/**/*.js
 demos/**/*.map
 demos/**/*.d.ts
+docs/
 packages/**/src/**/*.d.ts
 packages/**/src/**/*.js
 packages/**/src/**/*.map
