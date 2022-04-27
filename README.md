@@ -156,8 +156,8 @@ These commands are
 
 * [Package overview](https://github.com/Esri/solution.js/blob/master/guides/package-overview.md)
 * [Deploying with the repository](https://github.com/Esri/solution.js/blob/master/guides/deployment.md)
-* [Authentication in Browser-based Apps](https://github.com/Esri/solution.js/blob/master/guides/)
-* [Publishing to npmjs](https://github.com/Esri/solution.js/blob/master/guides/Publishing%29to%20npmjs.md)
+* [Authentication in Browser-based Apps](https://github.com/Esri/solution.js/blob/master/guides/browser-authentication.md)
+* [Publishing to npmjs](https://github.com/Esri/solution.js/blob/master/guides/Publishing%20to%20npmjs.md)
 
 
 ### Issues
