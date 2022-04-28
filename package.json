@@ -173,10 +173,5 @@
     "commitizen": {
       "path": "./node_modules/cz-lerna-changelog"
     }
-  },
-  "volta": {
-    "node": "14.17.6",
-    "npm": "6.14.15",
-    "typescript": "4.6.3"
   }
 }
