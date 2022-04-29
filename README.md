@@ -84,14 +84,8 @@ Currently, the ArcGIS Online item types that can be converted into a template ar
 
 #### Setup
 
-The repository uses [Volta](https://docs.volta.sh/guide/getting-started) to standardize the versions of NodeJS and npm. Please install and use this app to get the supported versions.
-
-Once Volta is installed, turn on [Windows "Developer Mode"](https://docs.microsoft.com/en-us/gaming/game-bar/guide/developer-mode) so that Volta can install symlinks.
-
 The following steps will build the repository:
-1. `volta install node@16.14.2`
-1. `volta install npm@bundled`
-1. `volta install typescript@4.6.3`
+
 1. `npm install`
 1. `pushd demos`
 1. `npm run build`
