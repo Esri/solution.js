@@ -2261,6 +2261,7 @@ export function _lowercaseDomain(
     return url;
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [_, protocol, domainAndPath ] = url.match(/(https?:\/\/)(.+)/);
   const [domain, ...path] = domainAndPath.split("/");
 
