@@ -49,7 +49,7 @@ import {
   _templatizeSourceServiceName,
   _templatizeAdminLayerInfoFields,
   _getDependantItemId,
-  _getDomainAndAliasInfos,
+  _getViewFieldInfos,
   _getTypeIdField,
   _isViewFieldOverride,
   _templatizeAdminSourceLayerFields,
@@ -4385,7 +4385,7 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
     });
   });
 
-  describe("_getDomainAndAliasInfos", () => {
+  describe("_getViewFieldInfos", () => {
     it("gets domain and alias infos", () => {
       const fieldInfo = {
         sourceServiceFields: {
@@ -4393,7 +4393,9 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
             "0": [
               {
                 name: "A",
-                domain: {}
+                domain: {},
+                editable: true,
+                visible: false
               },
               {
                 name: "B"
@@ -4401,6 +4403,14 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
               {
                 name: "C",
                 alias: "c123"
+              },
+              {
+                name: "D",
+                editable: false
+              },
+              {
+                name: "E",
+                visible: true
               }
             ]
           }
@@ -4410,10 +4420,14 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
         aliasFields: ["c123"],
         aliasNames: ["c"],
         domainFields: [{}],
-        domainNames: ["a"]
+        domainNames: ["a"],
+        visibleFields: [false, true],
+        visibleNames: ["a", "e"],
+        editableFields: [true, false],
+        editableNames: ["a", "d"]
       };
 
-      const actual = _getDomainAndAliasInfos(fieldInfo);
+      const actual = _getViewFieldInfos(fieldInfo);
       expect(actual).toEqual(expected);
     });
   });
@@ -4440,7 +4454,7 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
   });
 
   describe("_isViewFieldOverride", () => {
-    it("", () => {
+    it("will set isViewOverride true when they differ", () => {
       const field = {
         alias: "a123",
         name: "A"
@@ -4450,7 +4464,61 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
         name: "A",
         isViewOverride: true
       };
-      _isViewFieldOverride(field, ["a"], ["a"], "alias");
+      _isViewFieldOverride(field, ["a"], ["A123"], "alias");
+      expect(field).toEqual(expected);
+    });
+
+    it("will set isViewOverride false when they don't differ", () => {
+      const sourceField = {
+        alias: "A123",
+        name: "a"
+      };
+      const field = {
+        alias: "A123",
+        name: "a"
+      };
+      const expected = {
+        alias: "A123",
+        name: "a",
+        isViewOverride: false
+      };
+      _isViewFieldOverride(field, [sourceField.name], [sourceField.alias], "alias");
+      expect(field).toEqual(expected);
+    });
+
+    it("will set isViewOverride false when boolean don't differ", () => {
+      const sourceField = {
+        editable: true,
+        name: "a"
+      };
+      const field = {
+        editable: true,
+        name: "a"
+      };
+      const expected = {
+        editable: true,
+        name: "a",
+        isViewOverride: false
+      };
+      _isViewFieldOverride(field, [sourceField.name], [sourceField.editable], "editable");
+      expect(field).toEqual(expected);
+    });
+
+    it("will set isViewOverride true when boolean do differ", () => {
+      const sourceField = {
+        editable: false,
+        name: "a"
+      };
+      const field = {
+        editable: true,
+        name: "a"
+      };
+      const expected = {
+        editable: true,
+        name: "a",
+        isViewOverride: true
+      };
+      _isViewFieldOverride(field, [sourceField.name], [sourceField.editable], "editable");
       expect(field).toEqual(expected);
     });
   });
