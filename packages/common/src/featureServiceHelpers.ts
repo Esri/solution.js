@@ -851,7 +851,7 @@ export function addFeatureServiceDefinition(
 
             // view field domain and alias can contain different values than the source field
             // we need to set isViewOverride when added fields that differ from the source field
-            _validateViewDomainsAndAlias(fieldInfos[item.id], item);
+            _validateViewFieldInfos(fieldInfos[item.id], item);
           }
         }
         /* istanbul ignore else */
@@ -1550,13 +1550,13 @@ export function _getFieldVisibilityUpdates(fieldInfo: any): any[] {
  * @private
  */
 export function _validateDomains(fieldInfo: any, fieldUpdates: any[]) {
-  const domainAliasInfos = _getDomainAndAliasInfos(fieldInfo);
+  const fieldInfos = _getViewFieldInfos(fieldInfo);
 
-  const domainFields: any[] = domainAliasInfos.domainFields;
-  const domainNames: string[] = domainAliasInfos.domainNames;
+  const domainFields: any[] = fieldInfos.domainFields;
+  const domainNames: string[] = fieldInfos.domainNames;
 
-  const aliasFields: any[] = domainAliasInfos.aliasFields;
-  const aliasNames: string[] = domainAliasInfos.aliasNames;
+  const aliasFields: any[] = fieldInfos.aliasFields;
+  const aliasNames: string[] = fieldInfos.aliasNames;
 
   // loop through the fields from the new view service
   // add an update when the domains don't match
@@ -1621,44 +1621,61 @@ export function _getPortalViewFieldUpdates(
 }
 
 /**
- *  view field domains can contain different values than the source feature service field domains
- *  use the cached domain when it differs from the source view field domain
+ * View field domain, alias, editable, and visible props can contain
+ * different values from the source.
+ * 
+ * We need to check and set isFieldOverride to true when this occurs and false when it does not
  *
  * @param fieldInfo current view layer or table fieldInfo
- * @param fieldUpdates any existing field updates
- * @returns Array of fields to be updated
+ * @param item that stores the view fields
+ * 
+ * This function will update the item that is provided
  * @private
  */
-export function _validateViewDomainsAndAlias(fieldInfo: any, item: any): void {
-  const domainAliasInfos = _getDomainAndAliasInfos(fieldInfo);
+export function _validateViewFieldInfos(fieldInfo: any, item: any): void {
+  const fieldInfos = _getViewFieldInfos(fieldInfo);
 
-  const domainFields: any[] = domainAliasInfos.domainFields;
-  const domainNames: string[] = domainAliasInfos.domainNames;
+  const domainFields: any[] = fieldInfos.domainFields;
+  const domainNames: string[] = fieldInfos.domainNames;
 
-  const aliasFields: any[] = domainAliasInfos.aliasFields;
-  const aliasNames: string[] = domainAliasInfos.aliasNames;
+  const aliasFields: any[] = fieldInfos.aliasFields;
+  const aliasNames: string[] = fieldInfos.aliasNames;
+
+  const editableFields: any[] = fieldInfos.editableFields;
+  const editableNames: string[] = fieldInfos.editableNames;
+
+  const visibleFields: any[] = fieldInfos.visibleFields;
+  const visibleNames: string[] = fieldInfos.visibleNames;
 
   // loop through the fields from the item
-  // add isViewOverride when the domains or alias don't match
+  // add isViewOverride when the domain, alias, editable, or visible don't match
   item.fields.map((field: any) => {
     _isViewFieldOverride(field, domainNames, domainFields, "domain");
     _isViewFieldOverride(field, aliasNames, aliasFields, "alias");
+    _isViewFieldOverride(field, editableNames, editableFields, "editable");
+    _isViewFieldOverride(field, visibleNames, visibleFields, "visible");
     return field;
   });
 }
 
 /**
- *  Get array of domain fields and names and alias fields and names
+ *  Get arrays of fields and names for domain, alias, editable, and visible props
  *
  * @param fieldInfo current view layer or table fieldInfo
  * @private
  */
-export function _getDomainAndAliasInfos(fieldInfo: any): any {
+export function _getViewFieldInfos(fieldInfo: any): any {
   const domainFields: any[] = [];
   const domainNames: string[] = [];
 
   const aliasFields: any[] = [];
   const aliasNames: string[] = [];
+
+  const visibleFields: any[] = [];
+  const visibleNames: string[] = [];
+
+  const editableFields: any[] = [];
+  const editableNames: string[] = [];
 
   /* istanbul ignore else */
   if (fieldInfo.sourceServiceFields) {
@@ -1677,6 +1694,16 @@ export function _getDomainAndAliasInfos(fieldInfo: any): any {
               aliasFields.push(field.alias);
               aliasNames.push(String(field.name).toLocaleLowerCase());
             }
+            /* istanbul ignore else */
+            if (field.hasOwnProperty("visible")) {
+              visibleFields.push(field.visible);
+              visibleNames.push(String(field.name).toLocaleLowerCase());
+            }
+            /* istanbul ignore else */
+            if (field.hasOwnProperty("editable")) {
+              editableFields.push(field.editable);
+              editableNames.push(String(field.name).toLocaleLowerCase());
+            }
           });
         });
       }
@@ -1686,7 +1713,11 @@ export function _getDomainAndAliasInfos(fieldInfo: any): any {
     aliasFields,
     aliasNames,
     domainFields,
-    domainNames
+    domainNames,
+    visibleFields,
+    visibleNames,
+    editableFields,
+    editableNames
   };
 }
 
@@ -1708,12 +1739,7 @@ export function _isViewFieldOverride(
   /* istanbul ignore else */
   if (field.hasOwnProperty(key) && field[key]) {
     const i: number = names.indexOf(String(field.name).toLocaleLowerCase());
-    /* istanbul ignore else */
-    if (
-      JSON.stringify(field[key]) !== (i > -1 ? JSON.stringify(fields[i]) : "")
-    ) {
-      field.isViewOverride = true;
-    }
+    field.isViewOverride = JSON.stringify(field[key]) !== (i > -1 ? JSON.stringify(fields[i]) : "");
   }
 }
 
