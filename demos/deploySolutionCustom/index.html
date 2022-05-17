@@ -1,0 +1,314 @@
+<!doctype html>
+<html lang="en" dir="ltr">
+<head>
+  <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+  <title>@esri/solution-deployer deploySolution example</title>
+  <!--
+   | Copyright 2022 Esri
+   |
+   | Licensed under the Apache License, Version 2.0 (the "License");
+   | you may not use this file except in compliance with the License.
+   | You may obtain a copy of the License at
+   |
+   |    http://www.apache.org/licenses/LICENSE-2.0
+   |
+   | Unless required by applicable law or agreed to in writing, software
+   | distributed under the License is distributed on an "AS IS" BASIS,
+   | WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   | See the License for the specific language governing permissions and
+   | limitations under the License.
+  -->
+  <link rel="stylesheet" href="https://js.arcgis.com/4.23/esri/themes/light/main.css">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://esri.github.io/calcite-bootstrap/styles/calcite-bootstrap.min.css">
+  <style>
+  html {
+    font-family: Arial;
+    color: #4c4c4c;
+  }
+  body {
+    padding: 8px;
+  }
+  button {
+    cursor: pointer;
+  }
+  td {
+    border: none;
+  }
+  li {
+    margin-bottom: 12px;
+  }
+  .labeledItem {
+    display: inline-block;
+    margin: 0 8px 8px 0;
+  }
+  .display-none {
+    display: none;
+  }
+  label {
+    margin-top: 5px;
+  }
+  </style>
+</head>
+<body>
+  <h3 id="appTitle">Deploy a Solution</h3>
+
+  <div id="container" style="display:none">
+    <div id="input">
+
+      <label for="solutionPicklist">Pick a Solution from the list below:</label>
+      <select name="Solution Item" id="solutionPicklist" class="form-control"></select>
+
+      <br /><br />
+
+      <div class="section-title">Credentials in destination organization</div>
+
+      <div class="labeledItem">
+        <label for="destAuthType">Use OAuth:&nbsp;</label>
+        <input type="checkbox" id="destAuthType" value="OAuth" onclick="updateDestAuth(this)">
+      </div>
+
+      <div id="destCredentials">
+        <div class="labeledItem">
+          <label for="destUsername">Username:&nbsp;</label>
+          <input type="text" id="destUsername">
+        </div>
+        <div class="labeledItem">
+          <label for="destPassword">Password:&nbsp;</label>
+          <input type="password" id="destPassword">
+        </div>
+        <div class="labeledItem">
+          <label for="destPortal">Portal:&nbsp;</label>
+          <input type="text" id="destPortal" style="width:256px" placeholder="https://www.arcgis.com">
+        </div>
+      </div>
+
+      <br /><br />
+
+      <div id="clientIdParent" class="display-none">
+        <label for="clientId">Client ID&nbsp;</label>
+        <input type="text" id="clientId">
+        <div>
+          <span class="labeledItem">To work with client ID:</span>
+          <ol>
+            <li>cd to the demos directory</li>
+            <li>run "npm start"</li>
+            <li>Create an application on the <a target="_blank" href="https://developers.arcgis.com/documentation/mapping-apis-and-services/security/arcgis-identity/serverless-web-apps/">ArcGIS for Developers</a> website.</li>
+            <li>Add one of the urls listed from "npm start" as a redirect uri for your application.</li>
+            <li>Open the deploySolutionCustom demo using the url from above and Copy/Paste clientId</li>
+          </ol>
+        </div>
+        <br /><br />
+      </div>
+
+      <button class="btn btn-default" onclick="goFcn()">Deploy Solution</button>
+    </div>
+
+  </div>
+
+  <br />
+  <div id="output" style="display:none">Deploying...</div>
+
+  <script crossorigin="anonymous" src="https://polyfill.io/v3/polyfill.min.js?features=fetch%2Ces2015"></script>
+  <script src="https://requirejs.org/docs/release/2.3.6/minified/require.js"></script>
+  <script src="data/appConfig.js"></script>
+  <script>
+    if (appConfig.appTitle) {
+      document.getElementById("appTitle").innerHTML = appConfig.appTitle;
+    }
+
+    function updateDestAuth(a) {
+      var destCredentials = document.getElementById("destCredentials");
+      var clientIdParent = document.getElementById("clientIdParent");
+
+      if (a.checked) {
+        clientIdParent.classList.remove("display-none");
+        destCredentials.classList.add("display-none");
+      } else {
+        clientIdParent.classList.add("display-none");
+        destCredentials.classList.remove("display-none");
+      }
+    }
+
+    var fetchFoldersFcn, goFcn;
+
+    require.config({
+      paths: {
+        "esri": "https://js.arcgis.com/4.18/esri",
+        "@esri/arcgis-rest-auth": "../node_modules/@esri/arcgis-rest-auth/dist/umd/auth.umd.min",
+        "@esri/arcgis-rest-feature-layer": "../node_modules/@esri/arcgis-rest-feature-layer/dist/umd/feature-layer.umd.min",
+        "@esri/arcgis-rest-portal": "../node_modules/@esri/arcgis-rest-portal/dist/umd/portal.umd.min",
+        "@esri/arcgis-rest-request": "../node_modules/@esri/arcgis-rest-request/dist/umd/request.umd.min",
+        "@esri/arcgis-rest-service-admin": "../node_modules/@esri/arcgis-rest-service-admin/dist/umd/service-admin.umd.min",
+        "@esri/hub-common": "../node_modules/@esri/hub-common/dist/umd/common.umd",
+        "@esri/hub-initiatives": "../node_modules/@esri/hub-initiatives/dist/umd/initiatives.umd",
+        "@esri/hub-sites": "../node_modules/@esri/hub-sites/dist/umd/sites.umd",
+        "@esri/hub-teams": "../node_modules/@esri/hub-teams/dist/umd/teams.umd",
+        "@esri/solution-common": "../node_modules/@esri/solution-common/dist/umd/common.umd",
+        "@esri/solution-deployer": "../node_modules/@esri/solution-deployer/dist/umd/deployer.umd",
+        "@esri/solution-feature-layer": "../node_modules/@esri/solution-feature-layer/dist/umd/feature-layer.umd",
+        "@esri/solution-file": "../node_modules/@esri/solution-file/dist/umd/file.umd",
+        "@esri/solution-form": "../node_modules/@esri/solution-form/dist/umd/form.umd",
+        "@esri/solution-group": "../node_modules/@esri/solution-group/dist/umd/group.umd",
+        "@esri/solution-hub-types": "../node_modules/@esri/solution-hub-types/dist/umd/hub-types.umd",
+        "@esri/solution-simple-types": "../node_modules/@esri/solution-simple-types/dist/umd/simple-types.umd",
+        "@esri/solution-storymap": "../node_modules/@esri/solution-storymap/dist/umd/storymap.umd",
+        "@esri/solution-velocity": "../node_modules/@esri/solution-velocity/dist/umd/velocity.umd",
+        "@esri/solution-web-experience": "../node_modules/@esri/solution-web-experience/dist/umd/web-experience.umd",
+        "adlib": "../node_modules/adlib/dist/adlib",
+        "tslib": "../node_modules/tslib/tslib",
+        "dist": "../dist"
+      }
+    });
+
+    require(["@esri/arcgis-rest-auth", "dist/deploy-solution-main", "esri/identity/IdentityManager"],
+      function (auth, main, esriId) {
+        "use strict";
+
+        // Get credentials for source
+        esriId.getCredential("https://www.arcgis.com/sharing")
+        .then(
+          (credential) => {
+            const srcCreds = auth.UserSession.fromCredential(credential);
+
+            // Populate solution picklist
+            const solutionsSelect = document.getElementById("solutionPicklist");
+            solutionsSelect.add(document.createElement("option"));
+
+            main.getTemplates(
+              appConfig.solutionsGroupId, null, srcCreds
+            ).then(
+              (solutions) => {
+                solutions.forEach((solution) => {
+                  var option = document.createElement("option");
+                  option.value = solution.id
+                    if (solution.version) {
+                      option.text = solution.title + " (v" + solution.version + ")";
+                    } else {
+                      option.text = solution.title;
+                    }
+                    solutionsSelect.add(option);
+                });
+
+                // Ready for solution selection
+                goFcn = go;
+                document.getElementById("container").style.display = "block";
+              },
+              (error) => {
+                document.getElementById("output").innerHTML =
+                  "<span style=\"color:red\">" + error.originalMessage + "</span>";
+                output.style.display = "block";
+              }
+            );
+
+            // Define a global session variable.
+            let session = null;
+
+            // Check to see if there is a serialized session in local storage.
+            const serializedSession = localStorage.getItem('__SOLUTION_JS_USER_SESSION__');
+            if (serializedSession !== null && serializedSession !== "undefined") {
+              // If there is a serialized session, parse it and create a new session object.
+              let parsed = JSON.parse(serializedSession);
+              // Cast the tokenExpires property back into a date.
+              parsed.tokenExpires = new Date(parsed.tokenExpires);
+              // Create the new session object.
+              session = new auth.UserSession(parsed);
+
+              // Clear the previous session.
+              localStorage.removeItem('__SOLUTION_JS_USER_SESSION__');
+            }
+
+            // Function to update the UI with session info.
+            function updateSessionInfo(session) {
+              if (session) {
+                localStorage.setItem('__SOLUTION_JS_USER_SESSION__', session.serialize());
+              }
+            }
+
+            // Call the function on page load to set current state.
+            updateSessionInfo(session);
+
+            function go () {
+              document.getElementById("input").style.display = "none";
+              document.getElementById("output").style.display = "block";
+
+              const solutionId = document.getElementById("solutionPicklist").value;
+
+              // Dest credentials
+              const destPortal = (document.getElementById("destPortal").value || "https://www.arcgis.com") + "/sharing/rest";
+              let destCreds;
+              if (!document.getElementById("destAuthType").checked) {
+                destCreds = new auth.UserSession({
+                  username: document.getElementById("destUsername").value,
+                  password: document.getElementById("destPassword").value,
+                  portal: destPortal,
+                  clientId: document.getElementById("clientId").value
+                });
+                deploySolution(solutionId, srcCreds, destCreds);
+              } else {
+                const redirect_uri = window.location.origin + window.location.pathname;
+                const clientId = document.getElementById("clientId").value;
+                auth.UserSession.beginOAuth2({
+                  clientId: clientId,
+                  redirectUri: redirect_uri + 'authenticate.html?clientID=' + clientId,
+                  popup: true,
+                }).then(function (newSession) {
+                  // Upon a successful login, update the session with the new session.
+                  session = newSession;
+                  updateSessionInfo(session);
+                  deploySolution(solutionId, srcCreds, session);
+                }).catch(function (error) {
+                  console.log(error);
+                });
+              }
+            }
+
+            // Deploy!
+            function deploySolution(solutionId, srcCreds, destCreds) {
+              const startTime = Date.now();
+              const createdItems = [];
+
+              let deployPromise = Promise.resolve("<i>No Solution(s) provided</i>");
+              const progressFcn =
+                function (percentDone, jobId, progressEvent) {
+                  if (progressEvent) {
+                    createdItems.push(progressEvent.data);
+                  }
+                  let html = "Deploying " + jobId + "..." + percentDone.toFixed().toString() + "%" + "<br><br>Finished items:<ol>";
+                  createdItems.forEach(function (item) { return html += "<li>" + item + "</li>" });
+                  html += "</ol>";
+                  document.getElementById("output").innerHTML = html;
+                };
+              deployPromise = main.deployAndDisplaySolution(
+                solutionId,
+                srcCreds,
+                destCreds,
+                progressFcn,
+                false,
+                {}
+              );
+
+              deployPromise.then(
+                function (html){
+                  reportElapsedTime(startTime);
+                  document.getElementById("output").innerHTML = html;
+                },
+                function (error) {
+                  document.getElementById("output").innerHTML = "<span style=\"color:red\">" + error.message + "</span>";
+                  output.style.display = "block";
+                }
+              );
+            }
+
+            function reportElapsedTime (startTime) {
+              const endTime = Date.now();
+              console.log("Elapsed time: " + ((endTime - startTime) / 1000).toFixed(1) + " seconds");
+            }
+
+          }
+        );
+      }
+    );
+  </script>
+</body>
+</html>

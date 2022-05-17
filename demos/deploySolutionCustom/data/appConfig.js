@@ -1,0 +1,4 @@
+const appConfig = {
+  "appTitle" : "",
+  "solutionsGroupId": ""
+}
