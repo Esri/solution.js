@@ -24,6 +24,7 @@ import * as getFormattedItemInfo from "./getFormattedItemInfo";
 export interface ISolutionInfoCard {
   id: string;
   title: string;
+  version: string;
 }
 
 
@@ -178,7 +179,8 @@ export function getFolders(
 
 export function getTemplates(
   primarySolutionsGroupId: string,
-  agoBasedEnterpriseSolutionsGroupId: string
+  agoBasedEnterpriseSolutionsGroupId: string,
+  authentication?: common.UserSession
 ) : Promise<ISolutionInfoCard[]>{
   const query = "type: Solution typekeywords:Solution,Template"
   const anonUS = new common.UserSession({portal:"https://www.arcgis.com/sharing/rest"});
@@ -189,10 +191,12 @@ export function getTemplates(
 
   const searches: Array<Promise<common.ISearchResult<portal.IItem>>> = [];
   if (primarySolutionsGroupId) {
-    searches.push(common.searchGroupAllContents(primarySolutionsGroupId, query, anonUS, additionalSearchOptions));
+    searches.push(common.searchGroupAllContents(
+      primarySolutionsGroupId, query, authentication || anonUS, additionalSearchOptions));
   }
   if (agoBasedEnterpriseSolutionsGroupId) {
-    searches.push(common.searchGroupAllContents(agoBasedEnterpriseSolutionsGroupId, query, anonUS, additionalSearchOptions));
+    searches.push(common.searchGroupAllContents(
+      agoBasedEnterpriseSolutionsGroupId, query, authentication || anonUS, additionalSearchOptions));
   }
 
   return Promise.all(searches)
@@ -212,9 +216,23 @@ export function getTemplates(
     // Construct the results
     const cardList: ISolutionInfoCard[] = [];
     cleanResults.forEach((result:any) => {
+      // Extract version for this item
+      let version = "";
+      (result.typeKeywords || []).some(
+        (element: string) => {
+          if (element.startsWith("solutionversion-")) {
+            version = element.substring("solutionversion-".length);
+            return true;
+          }
+          return false;
+        }
+      );
+
+      // Add item to results list
       const card: ISolutionInfoCard = {
         id: result.id,
-        title: result.title
+        title: result.title,
+        version
       }
       cardList.push(card)
     });
