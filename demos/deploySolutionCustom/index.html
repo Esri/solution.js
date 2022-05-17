@@ -183,9 +183,9 @@
                   var option = document.createElement("option");
                   option.value = solution.id
                     if (solution.version) {
-                      option.text = solution.title + " ( " + solution.id + "; v" + solution.version + ")";
+                      option.text = solution.title + " (v" + solution.version + ")";
                     } else {
-                      option.text = solution.title + " ( " + solution.id + ")";
+                      option.text = solution.title;
                     }
                     solutionsSelect.add(option);
                 });
