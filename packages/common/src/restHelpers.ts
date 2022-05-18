@@ -564,6 +564,9 @@ export function createFeatureService(
       createOptions => {
         svcAdminCreateFeatureService(createOptions).then(
           createResponse => {
+            // Federated servers may have inconsistent casing, so lowerCase it
+            createResponse.encodedServiceURL = _lowercaseDomain(createResponse.encodedServiceURL);
+            createResponse.serviceurl = _lowercaseDomain(createResponse.serviceurl);
             resolve(createResponse);
           },
           e => reject(fail(e))
@@ -2196,6 +2199,30 @@ export function _getUpdate(
     params: ops[type].params,
     args: args
   };
+}
+
+/**
+ * Changes just the domain part of a URL to lowercase.
+ *
+ * @param url URL to modify
+ * @return Adjusted URL
+ * @see From `getServerRootUrl` in arcgis-rest-js' ArcGISIdentityManager.ts
+ * @private
+ */
+export function _lowercaseDomain(
+  url: string
+): string {
+  if (!url) {
+    return url;
+  }
+
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const [_, protocol, domainAndPath ] = url.match(/(https?:\/\/)(.+)/);
+  const [domain, ...path] = domainAndPath.split("/");
+
+  // Only the domain is lowercased because in some cases an org id might be
+  // in the path which cannot be lowercased.
+  return `${protocol}${domain.toLowerCase()}/${path.join("/")}`;
 }
 
 /**
