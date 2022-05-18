@@ -597,11 +597,20 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
         ],
         displayField: "DisplayField",
         editFieldsInfo: ["CreateDate"],
-        templates: null,
+        templates: [
+          {
+            A: null,
+            B: null
+          }
+        ],
         relationships: null,
-        drawingInfo: null,
+        drawingInfo: {
+          renderer: {
+            type: "simple"
+          }
+        },
         type: "layer",
-        viewDefinitionQuery: null
+        viewDefinitionQuery: "viewDefinitionQuery"
       };
 
       const expectedFieldInfos: any = {

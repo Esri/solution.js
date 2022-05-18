@@ -242,13 +242,13 @@ export function cacheFieldInfos(
   // and will have associated updateDefinition calls when deploying to portal
   // as well as online for relationships...as relationships added with addToDef will cause failure
   const props = {
-    editFieldsInfo: isPortal,
-    types: isPortal,
-    templates: isPortal,
+    editFieldsInfo: false,
+    types: false,
+    templates: false,
     relationships: true,
-    drawingInfo: isPortal,
-    timeInfo: isPortal,
-    viewDefinitionQuery: isPortal
+    drawingInfo: false,
+    timeInfo: false,
+    viewDefinitionQuery: false
   };
 
   Object.keys(props).forEach(k => {
@@ -284,7 +284,7 @@ export function _cacheFieldInfo(
     // editFieldsInfo does not come through unless its with the layer
     // when it's being added
     /* istanbul ignore else */
-    if (removeProp && prop !== "editFieldsInfo") {
+    if (removeProp) {
       layer[prop] = null;
     }
   }
