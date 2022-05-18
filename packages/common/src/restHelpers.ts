@@ -1069,7 +1069,7 @@ export function getLayerUpdates(
       updates.push(refresh);
     }
   }
-  return updates;
+  return updates.length === 1 ? [] : updates;
 }
 
 /**

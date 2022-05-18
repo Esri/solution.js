@@ -92,6 +92,8 @@ import {
   IPopupInfos
 } from "../src/featureServiceHelpers";
 
+import * as restHelpers from '../../common/src/restHelpers';
+
 import * as interfaces from "../src/interfaces";
 import * as utils from "../../common/test/mocks/utils";
 
@@ -3427,11 +3429,18 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
       fetchMock
         .post(adminUrl + "/0?f=json", itemTemplate.properties.layers[0])
         .post(adminUrl + "/1?f=json", itemTemplate.properties.tables[0])
-        .post(adminUrl + "/refresh", mockItems.get400Failure())
+        .post(adminUrl + "/deleteFromDefinition", mockItems.get400Failure())
         .post(
           "https://services123.arcgis.com/org1234567890/arcgis/rest/admin/services/ROWPermits_publiccomment/FeatureServer/addToDefinition",
           '{"success": "true"}'
         );
+
+      spyOn(
+        restHelpers,
+        "getLayerUpdates"
+      ).and.returnValue([
+        { url: adminUrl + "/deleteFromDefinition", params: {}, args: {} }
+      ] as interfaces.IUpdate[]);
 
       addFeatureServiceLayersAndTables(
         itemTemplate,
@@ -4449,6 +4458,28 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
         isViewOverride: true
       };
       _isViewFieldOverride(field, [], [sourceField.editable], "editable");
+      expect(field).toEqual(expected);
+    });
+
+    it("will not override if already true", () => {
+      const sourceField = {
+        editable: false,
+        alias: "ABC",
+        name: "a"
+      };
+      const field = {
+        editable: true,
+        alias: "ABC",
+        name: "a"
+      };
+      const expected = {
+        editable: true,
+        alias: "ABC",
+        name: "a",
+        isViewOverride: true
+      };
+      _isViewFieldOverride(field, [sourceField.name], [sourceField.editable], "editable");
+      _isViewFieldOverride(field, [sourceField.name], [sourceField.alias], "alias");
       expect(field).toEqual(expected);
     });
   });
