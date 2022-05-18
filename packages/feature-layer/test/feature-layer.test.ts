@@ -1295,7 +1295,6 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
       expectedClone.properties.service.serviceItemId = "svc1234567890";
       expectedClone.properties.layers[0].serviceItemId = "svc1234567890";
       expectedClone.properties.layers[0].relationships = null;
-      // SHould this be NULL??
       expectedClone.properties.layers[0].viewDefinitionQuery = null;
       expectedClone.properties.layers[0].adminLayerInfo = undefined;
       expectedClone.properties.layers[0].uniqueIdField.name = "objectid";
