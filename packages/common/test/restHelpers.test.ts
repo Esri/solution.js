@@ -4935,6 +4935,19 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
     });
   });
 
+  describe("_lowercaseDomain", () => {
+    it("handles empty or undefined URL", () => {
+      expect(restHelpers._lowercaseDomain("")).toEqual("");
+      expect(restHelpers._lowercaseDomain(undefined)).toEqual(undefined);
+    });
+
+    it("lowercases a domain", () => {
+      const origUrl = "https://2AF1D56F411C4DDFAE10A992656FC86D.Esri.com/gis/rest/services?a=BCDefg&H=IJKlmn";
+      const expectedUrl = "https://2af1d56f411c4ddfae10a992656fc86d.esri.com/gis/rest/services?a=BCDefg&H=IJKlmn";
+      expect(restHelpers._lowercaseDomain(origUrl)).toEqual(expectedUrl);
+    });
+  });
+
   describe("_reportVariablesInItem", () => {
     it("is silent when there are no unresolved variables", () => {
       const messages = [] as string[];
