@@ -37,8 +37,6 @@ import {
   updateLayerFieldReferences,
   postProcessFields,
   removeLayerOptimization,
-  _getFieldVisibilityUpdates,
-  _validateDomains,
   updatePopupInfo,
   _templatize,
   _templatizeProperty,
@@ -50,7 +48,6 @@ import {
   _templatizeAdminLayerInfoFields,
   _getDependantItemId,
   _getViewFieldInfos,
-  _getTypeIdField,
   _isViewFieldOverride,
   _templatizeAdminSourceLayerFields,
   _templatizeTopFilter,
@@ -3768,65 +3765,6 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
     });
   });
 
-  describe("_getFieldVisibilityUpdates", () => {
-    it("should not fail with undefined", () => {
-      const fieldInfo: any = {};
-      const fieldUpdates: any[] = _getFieldVisibilityUpdates(fieldInfo);
-      expect(fieldUpdates).toEqual([]);
-    });
-
-    it("should not fail with empty fields", () => {
-      const fieldInfo: any = {
-        sourceFields: [],
-        newFields: []
-      };
-      const fieldUpdates: any[] = _getFieldVisibilityUpdates(fieldInfo);
-      expect(fieldUpdates).toEqual([]);
-    });
-
-    it("should find and difference in field visibility settings", () => {
-      const fieldInfo: any = {
-        sourceFields: [
-          {
-            name: "A",
-            visible: true
-          },
-          {
-            name: "B",
-            visible: false
-          },
-          {
-            name: "C",
-            visible: true
-          }
-        ],
-        newFields: [
-          {
-            name: "A",
-            visible: true
-          },
-          {
-            name: "B",
-            visible: true
-          },
-          {
-            name: "C",
-            visible: true
-          }
-        ]
-      };
-
-      const expected: any[] = [
-        {
-          name: "B",
-          visible: false
-        }
-      ];
-      const fieldUpdates: any[] = _getFieldVisibilityUpdates(fieldInfo);
-      expect(fieldUpdates).toEqual(expected);
-    });
-  });
-
   describe("updatePopupInfo", () => {
     it("should update popup with cached info", () => {
       const dataWithProp: any = {
@@ -4417,38 +4355,12 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
         }
       };
       const expected = {
-        aliasFields: ["c123"],
-        aliasNames: ["c"],
-        domainFields: [{}],
-        domainNames: ["a"],
-        visibleFields: [false, true],
-        visibleNames: ["a", "e"],
-        editableFields: [true, false],
-        editableNames: ["a", "d"]
+        alias:{vals:["c123"],names: ["c"]},
+        domain:{vals:[{}],names: ["a"]},
+        editable:{vals:[true, false],names: ["a", "d"]}
       };
 
       const actual = _getViewFieldInfos(fieldInfo);
-      expect(actual).toEqual(expected);
-    });
-  });
-
-  describe("_getTypeIdField", () => {
-    it("will get the typeId field", () => {
-      const item: any = {
-        fields: [
-          {
-            name: "a"
-          },
-          {
-            name: "b"
-          }
-        ],
-        typeIdField: "B"
-      };
-
-      const actual = _getTypeIdField(item);
-
-      const expected: string = "b";
       expect(actual).toEqual(expected);
     });
   });
@@ -4519,6 +4431,24 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
         isViewOverride: true
       };
       _isViewFieldOverride(field, [sourceField.name], [sourceField.editable], "editable");
+      expect(field).toEqual(expected);
+    });
+
+    it("will set isViewOverride can handle missing name", () => {
+      const sourceField = {
+        editable: false,
+        name: "a"
+      };
+      const field = {
+        editable: true,
+        name: "a"
+      };
+      const expected = {
+        editable: true,
+        name: "a",
+        isViewOverride: true
+      };
+      _isViewFieldOverride(field, [], [sourceField.editable], "editable");
       expect(field).toEqual(expected);
     });
   });
@@ -6406,7 +6336,8 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
       };
       const expected = {
         id: "",
-        type: ""
+        type: "",
+        sourceSchemaChangesAllowed: true
       };
       const _itemTemplate: interfaces.IItemTemplate = templates.getItemTemplateSkeleton();
       const actual = _updateForPortal(item, _itemTemplate, {});
@@ -6458,6 +6389,7 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
       const expected = {
         id: "",
         type: "",
+        sourceSchemaChangesAllowed: true,
         adminLayerInfo: {
           viewLayerDefinition: {
             table: {
@@ -6534,6 +6466,7 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
       const expected = {
         id: 0,
         type: "",
+        sourceSchemaChangesAllowed: true,
         adminLayerInfo: {},
         serviceItemId: "55507dff46f54656a74032ac12acd977",
         fields: [
@@ -6586,6 +6519,7 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
       const expected = {
         id: 0,
         type: "",
+        sourceSchemaChangesAllowed: true,
         adminLayerInfo: {},
         serviceItemId: "55507dff46f54656a74032ac12acd977",
         fields: [
@@ -7056,188 +6990,6 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
       };
       const fieldNames: string[] = ["a", "b"];
       _validateEditFieldsInfo(actual, fieldNames);
-
-      expect(actual).toEqual(expected);
-    });
-  });
-
-  describe("_validateDomains", () => {
-    it("should not update field when domains match", () => {
-      const fieldInfos: any = {
-        sourceServiceFields: {
-          svc123: {
-            "0": [
-              {
-                name: "A"
-              },
-              {
-                name: "B",
-                domain: null
-              },
-              {
-                name: "C",
-                domain: {
-                  codedValues: [
-                    {
-                      name: "C_1",
-                      value: "C_2"
-                    }
-                  ]
-                }
-              }
-            ]
-          }
-        },
-        newFields: [
-          {
-            name: "a"
-          },
-          {
-            name: "b",
-            domain: null
-          },
-          {
-            name: "c",
-            domain: {
-              codedValues: [
-                {
-                  name: "C_1",
-                  value: "C_2"
-                }
-              ]
-            }
-          }
-        ]
-      };
-
-      const fieldUpdates: any[] = [];
-      const expected: any[] = [];
-
-      const actual: any[] = _validateDomains(fieldInfos, fieldUpdates);
-
-      expect(actual).toEqual(expected);
-    });
-
-    it("should update field when domains don't match", () => {
-      const fieldInfos: any = {
-        sourceServiceFields: {
-          svc123: {
-            "0": [
-              {
-                name: "A"
-              },
-              {
-                name: "B",
-                domain: null
-              },
-              {
-                name: "C",
-                unrelatedProp: true,
-                domain: {
-                  codedValues: [
-                    {
-                      name: "C_1",
-                      value: "C_2"
-                    }
-                  ]
-                }
-              },
-              {
-                name: "D",
-                domain: null
-              },
-              {
-                name: "E",
-                domain: {
-                  codedValues: [
-                    {
-                      name: "EEE_1",
-                      value: "EEE_2"
-                    }
-                  ]
-                }
-              }
-            ]
-          }
-        },
-        newFields: [
-          {
-            name: "a"
-          },
-          {
-            name: "b",
-            domain: null
-          },
-          {
-            name: "c",
-            unrelatedProp: false,
-            domain: {
-              codedValues: [
-                {
-                  name: "C_1",
-                  value: "C_2"
-                }
-              ]
-            }
-          },
-          {
-            name: "d",
-            domain: {
-              codedValues: [
-                {
-                  name: "D_1",
-                  value: "D_2"
-                }
-              ]
-            }
-          },
-          {
-            name: "e",
-            domain: {
-              codedValues: [
-                {
-                  name: "E_1",
-                  value: "E_2"
-                }
-              ]
-            }
-          }
-        ]
-      };
-
-      const fieldUpdates: any[] = [
-        {
-          name: "d",
-          visible: true
-        }
-      ];
-      const expected: any[] = [
-        {
-          name: "d",
-          visible: true,
-          domain: {
-            codedValues: [
-              {
-                name: "D_1",
-                value: "D_2"
-              }
-            ]
-          }
-        },
-        {
-          name: "e",
-          domain: {
-            codedValues: [
-              {
-                name: "E_1",
-                value: "E_2"
-              }
-            ]
-          }
-        }
-      ];
-
-      const actual: any[] = _validateDomains(fieldInfos, fieldUpdates);
 
       expect(actual).toEqual(expected);
     });

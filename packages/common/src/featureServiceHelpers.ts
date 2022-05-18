@@ -1515,20 +1515,26 @@ export function _getViewFieldInfos(fieldInfo: any): any {
  *
  * @param field the field instance we are testing
  * @param names array of field names
- * @param fields array of fields
+ * @param vals array of values
  * @param key the field key to compare
  * @private
  */
 export function _isViewFieldOverride(
   field: any,
   names: string[],
-  fields: any[],
+  vals: any[],
   key: string
 ): void {
   /* istanbul ignore else */
-  if (field.hasOwnProperty(key) && field[key]) {
+  if (field.hasOwnProperty(key)) {
     const i: number = names.indexOf(String(field.name).toLocaleLowerCase());
-    field.isViewOverride = JSON.stringify(field[key]) !== (i > -1 ? JSON.stringify(fields[i]) : "");
+    const isOverride = JSON.stringify(field[key]) !== (i > -1 ? JSON.stringify(vals[i]) : "");
+    const overrideSet = field.hasOwnProperty('isViewOverride');
+    // need to skip this check if isViewOverride has already been set to true
+    /* istanbul ignore else */
+    if (((overrideSet && !field.isViewOverride) || !overrideSet)) {
+      field.isViewOverride = isOverride;
+    }
   }
 }
 

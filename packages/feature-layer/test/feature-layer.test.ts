@@ -569,7 +569,6 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
       expectedClone.properties.layers[0].uniqueIdField.name = "objectid";
       delete expectedClone.properties.layers[0].definitionQuery;
       delete expectedClone.properties.layers[0].isView;
-      delete expectedClone.properties.layers[0].sourceSchemaChangesAllowed;
       expectedClone.properties.tables[0].serviceItemId = "svc1234567890";
       expectedClone.properties.tables[0].relationships = null;
       expectedClone.properties.tables[0].viewDefinitionQuery = null;
@@ -577,7 +576,6 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
       expectedClone.properties.tables[0].uniqueIdField.name = "objectid";
       delete expectedClone.properties.tables[0].definitionQuery;
       delete expectedClone.properties.tables[0].isView;
-      delete expectedClone.properties.tables[0].sourceSchemaChangesAllowed;
       expectedClone.item.thumbnail = "thumbnail/ago_downloaded.png";
       delete expectedClone.item.spatialReference;
 
@@ -1297,12 +1295,12 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
       expectedClone.properties.service.serviceItemId = "svc1234567890";
       expectedClone.properties.layers[0].serviceItemId = "svc1234567890";
       expectedClone.properties.layers[0].relationships = null;
+      // SHould this be NULL??
       expectedClone.properties.layers[0].viewDefinitionQuery = null;
       expectedClone.properties.layers[0].adminLayerInfo = undefined;
       expectedClone.properties.layers[0].uniqueIdField.name = "objectid";
       delete expectedClone.properties.layers[0].definitionQuery;
       delete expectedClone.properties.layers[0].isView;
-      delete expectedClone.properties.layers[0].sourceSchemaChangesAllowed;
       expectedClone.properties.tables[0].serviceItemId = "svc1234567890";
       expectedClone.properties.tables[0].relationships = null;
       expectedClone.properties.tables[0].viewDefinitionQuery = null;
@@ -1310,7 +1308,6 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
       expectedClone.properties.tables[0].uniqueIdField.name = "objectid";
       delete expectedClone.properties.tables[0].definitionQuery;
       delete expectedClone.properties.tables[0].isView;
-      delete expectedClone.properties.tables[0].sourceSchemaChangesAllowed;
       expectedClone.item.thumbnail = "thumbnail/ago_downloaded.png";
       delete expectedClone.item.spatialReference;
 
