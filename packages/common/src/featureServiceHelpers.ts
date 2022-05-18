@@ -221,13 +221,11 @@ export function deleteViewProps(layer: any) {
  *
  * @param layer The data layer instance with field name references within
  * @param fieldInfos the object that stores the cached field infos
- * @param isPortal Controls what properties should be removed.
  * @returns An updated instance of the fieldInfos
  */
 export function cacheFieldInfos(
   layer: any,
-  fieldInfos: any,
-  isPortal: boolean
+  fieldInfos: any
 ): any {
   // cache the source fields as they are in the original source
   if (layer && layer.fields) {
@@ -801,8 +799,7 @@ export function addFeatureServiceDefinition(
         const originalId = item.id;
         fieldInfos = cacheFieldInfos(
           item,
-          fieldInfos,
-          templateDictionary.isPortal
+          fieldInfos
         );
 
         /* istanbul ignore else */

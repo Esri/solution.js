@@ -534,7 +534,7 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
     it("should not fail with undefined", () => {
       let fieldInfos: any = {};
       const layer: any = undefined;
-      fieldInfos = cacheFieldInfos(layer, fieldInfos, true);
+      fieldInfos = cacheFieldInfos(layer, fieldInfos);
       expect(layer).toBeUndefined();
       expect(fieldInfos).toEqual({});
     });
@@ -542,12 +542,12 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
     it("should not fail without key properties on the layer", () => {
       let fieldInfos: any = {};
       const layer: any = {};
-      fieldInfos = cacheFieldInfos(layer, fieldInfos, true);
+      fieldInfos = cacheFieldInfos(layer, fieldInfos);
       expect(layer).toEqual({});
       expect(fieldInfos).toEqual({});
     });
 
-    it("should cache the key properties for fieldInfos and set certain properties to null", () => {
+    it("should cache the key properties for fieldInfos", () => {
       let fieldInfos: any = {};
       const layer: any = {
         id: "23",
@@ -648,7 +648,7 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
         }
       };
 
-      fieldInfos = cacheFieldInfos(layer, fieldInfos, true);
+      fieldInfos = cacheFieldInfos(layer, fieldInfos);
       expect(layer).toEqual(expectedLayer);
       expect(fieldInfos).toEqual(expectedFieldInfos);
     });
@@ -3643,8 +3643,7 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
       );
       const fieldInfos = cacheFieldInfos(
         layer1,
-        cacheFieldInfos(layer0, {}, true),
-        true
+        cacheFieldInfos(layer0, {}),
       );
 
       Object.keys(fieldInfos).forEach(k => {
