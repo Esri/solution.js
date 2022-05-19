@@ -182,11 +182,7 @@
                 solutions.forEach((solution) => {
                   var option = document.createElement("option");
                   option.value = solution.id
-                    if (solution.version) {
-                      option.text = solution.title + " (v" + solution.version + ")";
-                    } else {
-                      option.text = solution.title;
-                    }
+                    option.text = solution.title;
                     solutionsSelect.add(option);
                 });
 
