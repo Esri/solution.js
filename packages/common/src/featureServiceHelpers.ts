@@ -258,14 +258,22 @@ export function cacheFieldInfos(
   return fieldInfos;
 }
 
-export function contingentValues(
-  layer: any,
+/**
+ * Cache the stored contingent values so we can add them in subsequent addToDef calls
+ *
+ * @param id The layer id for the associated values to be stored with
+ * @param fieldInfos The object that stores the cached field infos
+ * @param itemTemplate The current itemTemplate being processed
+ * @returns An updated instance of the fieldInfos
+ */
+export function cacheContingentValues(
+  id: string,
   fieldInfos: any,
   itemTemplate: IItemTemplate
 ): any {
   const contingentValues = getProp(itemTemplate, 'properties.contingentValues');
-  if (contingentValues && contingentValues[layer.id]) {
-    fieldInfos[layer.id]['contingentValues'] = contingentValues[layer.id];
+  if (contingentValues && contingentValues[id]) {
+    fieldInfos[id]['contingentValues'] = contingentValues[id];
   }
   return fieldInfos;
 }
@@ -586,6 +594,17 @@ export function updateTemplateForInvalidDesignations(
   });
 }
 
+/**
+ * Get the contingent values for each layer in the service.
+ * Remove key props that cannot be included with the addToDef call on deploy.
+ * Store the values alongside other key feature service properties in the template
+ *
+ * @param properties the current feature services properties 
+ * @param serviceUrl the current feature service url
+ * @param authentication Credentials for the request to AGOL
+ * @returns A promise that will resolve when the contingent values have been fetched.
+ * This function will update the provided properties argument when contingent values are found.
+ */
 export function processContingentValues(
   properties: IFeatureServiceProperties,
   serviceUrl: string,
@@ -866,8 +885,9 @@ export function addFeatureServiceDefinition(
           fieldInfos
         );
 
-        fieldInfos = contingentValues(
-          item,
+        // cache the values to be added in seperate addToDef calls
+        fieldInfos = cacheContingentValues(
+          item.id,
           fieldInfos,
           itemTemplate
         );

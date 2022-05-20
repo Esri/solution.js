@@ -2164,6 +2164,13 @@ export function _getRelationshipUpdates(args: IPostProcessArgs): any {
   return rels;
 }
 
+/**
+ * Get the stored contingent values and structure them to be added to the services layers.
+ *
+ * @param args The IPostProcessArgs for the request(s)
+ * @returns Any contingent values that should be added to the service.
+ * @private
+ */
  export function _getContingentValuesUpdates(args: IPostProcessArgs): any {
   const contingentValues: any[] = [];
   Object.keys(args.objects).forEach((k: any) => {
