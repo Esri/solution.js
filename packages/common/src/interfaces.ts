@@ -683,6 +683,7 @@ export interface IFeatureServiceProperties {
   layers: any[];
   tables: any[];
   workforceInfos?: any;
+  contingentValues?: any;
 }
 
 /**

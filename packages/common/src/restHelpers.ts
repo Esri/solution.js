@@ -23,7 +23,8 @@
 import {
   removeLayerOptimization,
   setDefaultSpatialReference,
-  validateSpatialReferenceAndExtent
+  validateSpatialReferenceAndExtent,
+  processContingentValues
 } from "./featureServiceHelpers";
 import {
   appendQueryParam,
@@ -1269,14 +1270,18 @@ export function getFeatureServiceProperties(
         // Ensure solution items have unique indexes on relationship key fields
         _updateIndexesForRelationshipKeyFields(properties);
 
-        if (workforceService) {
-          getWorkforceServiceInfo(properties, serviceUrl, authentication).then(
-            resolve,
-            reject
-          );
-        } else {
-          resolve(properties);
-        }
+        processContingentValues(properties, serviceUrl, authentication).then(() => {
+          if (workforceService) {
+            getWorkforceServiceInfo(properties, serviceUrl, authentication).then(
+              resolve,
+              reject
+            );
+          } else {
+            resolve(properties);
+          }
+        },
+          (e: any) => reject(fail(e))
+        );
       },
       (e: any) => reject(fail(e))
     );

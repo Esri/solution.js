@@ -31,6 +31,7 @@ export {
 
 import {
   IDependency,
+  IFeatureServiceProperties,
   IItemTemplate,
   INumberValuePair,
   IPostProcessArgs,
@@ -41,6 +42,7 @@ import {
 import {
   checkUrlPathTermination,
   deleteProp,
+  deleteProps,
   fail,
   getProp,
   setCreateProp,
@@ -568,6 +570,56 @@ export function updateTemplateForInvalidDesignations(
       );
     } else {
       resolve(template);
+    }
+  });
+}
+
+export function processContingentValues(
+  properties: IFeatureServiceProperties, 
+  serviceUrl: string,
+  authentication: UserSession
+): Promise<void> {
+  return new Promise<void>((resolve, reject) => {
+    if (getProp(properties, 'service.isView')) {
+      // views will inherit from the source service
+      resolve();
+    } else {
+      const layersAndTables: any[] = (properties.layers || []).concat(
+        properties.tables || []
+      );
+      const layerIds = [];
+      const contingentValuePromises: Array<Promise<any>> = layersAndTables.reduce((prev, cur) => {
+        /* istanbul ignore else */
+        if (cur.hasContingentValuesDefinition) {
+          prev.push(
+            rest_request(
+              `${serviceUrl}/${cur['id']}/contingentValues?f=json`, { authentication }
+            )
+          );
+          layerIds.push(cur['id']);
+        }
+        return prev;
+      }, []);
+
+      if (contingentValuePromises.length > 0) {
+        Promise.all(contingentValuePromises).then((results) => {
+          const contingentValues = {};
+          results.forEach((r, i) => {
+            deleteProp(r, 'typeCodes');
+            /* istanbul ignore else */
+            if (r?.stringDicts && r?.contingentValuesDefinition?.fieldGroups) {
+              r.contingentValuesDefinition.fieldGroups[0]['stringDicts'] = r.stringDicts;
+              deleteProp(r, 'stringDicts');
+            }
+            deleteProps(r?.contingentValuesDefinition, ['layerId', 'layerName', 'geometryType', 'hasSubType']);
+            contingentValues[layerIds[i]] = r;
+          });
+          properties.contingentValues = contingentValues;
+          resolve();
+        }).catch(error => reject(error));
+      } else {
+        resolve();
+      }
     }
   });
 }
