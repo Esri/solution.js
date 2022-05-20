@@ -258,6 +258,18 @@ export function cacheFieldInfos(
   return fieldInfos;
 }
 
+export function contingentValues(
+  layer: any,
+  fieldInfos: any,
+  itemTemplate: IItemTemplate
+): any {
+  const contingentValues = getProp(itemTemplate, 'properties.contingentValues');
+  if (contingentValues && contingentValues[layer.id]) {
+    fieldInfos[layer.id]['contingentValues'] = contingentValues[layer.id];
+  }
+  return fieldInfos;
+}
+
 /**
  * Helper function to cache a single property into the fieldInfos object
  * This property will be removed from the layer instance.
@@ -575,7 +587,7 @@ export function updateTemplateForInvalidDesignations(
 }
 
 export function processContingentValues(
-  properties: IFeatureServiceProperties, 
+  properties: IFeatureServiceProperties,
   serviceUrl: string,
   authentication: UserSession
 ): Promise<void> {
@@ -852,6 +864,12 @@ export function addFeatureServiceDefinition(
         fieldInfos = cacheFieldInfos(
           item,
           fieldInfos
+        );
+
+        fieldInfos = contingentValues(
+          item,
+          fieldInfos,
+          itemTemplate
         );
 
         /* istanbul ignore else */

@@ -1072,6 +1072,21 @@ export function getLayerUpdates(
       updates.push(_getUpdate(adminUrl, null, relUpdates, args, "add"));
       updates.push(refresh);
     }
+
+    // handle contingent values
+    const contingentValuesUpdates = _getContingentValuesUpdates({
+      message: "updated layer relationships",
+      objects: args.objects,
+      itemTemplate: args.itemTemplate,
+      authentication: args.authentication
+    });
+
+    /* istanbul ignore else */
+    if (contingentValuesUpdates.length > 0) {
+      contingentValuesUpdates.forEach(conUpdate => {
+        updates.push(_getUpdate(adminUrl + conUpdate.id, null, conUpdate.contingentValues, args, "add"));
+      });
+    }
   }
   return updates.length === 1 ? [] : updates;
 }
@@ -2147,6 +2162,22 @@ export function _getRelationshipUpdates(args: IPostProcessArgs): any {
     deleteProp(obj, "relationships");
   });
   return rels;
+}
+
+ export function _getContingentValuesUpdates(args: IPostProcessArgs): any {
+  const contingentValues: any[] = [];
+  Object.keys(args.objects).forEach((k: any) => {
+    const obj: any = args.objects[k];
+    /* istanbul ignore else */
+    if (obj.contingentValues) {
+      contingentValues.push({
+        id: obj.id,
+        contingentValues: obj.contingentValues
+      });
+    }
+    deleteProp(obj, "contingentValues");
+  });
+  return contingentValues;
 }
 
 /**
