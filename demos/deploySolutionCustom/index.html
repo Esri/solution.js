@@ -53,7 +53,7 @@
 <body>
   <h3 id="appTitle">Deploy a Solution</h3>
 
-  <div id="container" style="display:none">
+  <div id="container" class="display-none">
     <div id="input">
 
       <label for="solutionPicklist">Pick a Solution from the list below:</label>
@@ -62,12 +62,6 @@
       <br /><br />
 
       <div class="section-title">Credentials in destination organization</div>
-
-      <div class="labeledItem">
-        <label for="destAuthType">Use OAuth:&nbsp;</label>
-        <input type="checkbox" id="destAuthType" value="OAuth" onclick="updateDestAuth(this)">
-      </div>
-
       <div id="destCredentials">
         <div class="labeledItem">
           <label for="destUsername">Username:&nbsp;</label>
@@ -77,29 +71,9 @@
           <label for="destPassword">Password:&nbsp;</label>
           <input type="password" id="destPassword">
         </div>
-        <div class="labeledItem">
-          <label for="destPortal">Portal:&nbsp;</label>
-          <input type="text" id="destPortal" style="width:256px" placeholder="https://www.arcgis.com">
-        </div>
       </div>
 
       <br /><br />
-
-      <div id="clientIdParent" class="display-none">
-        <label for="clientId">Client ID&nbsp;</label>
-        <input type="text" id="clientId">
-        <div>
-          <span class="labeledItem">To work with client ID:</span>
-          <ol>
-            <li>cd to the demos directory</li>
-            <li>run "npm start"</li>
-            <li>Create an application on the <a target="_blank" href="https://developers.arcgis.com/documentation/mapping-apis-and-services/security/arcgis-identity/serverless-web-apps/">ArcGIS for Developers</a> website.</li>
-            <li>Add one of the urls listed from "npm start" as a redirect uri for your application.</li>
-            <li>Open the deploySolutionCustom demo using the url from above and Copy/Paste clientId</li>
-          </ol>
-        </div>
-        <br /><br />
-      </div>
 
       <button class="btn btn-default" onclick="goFcn()">Deploy Solution</button>
     </div>
@@ -107,7 +81,7 @@
   </div>
 
   <br />
-  <div id="output" style="display:none">Deploying...</div>
+  <div id="output" class="display-none">Deploying...</div>
 
   <script crossorigin="anonymous" src="https://polyfill.io/v3/polyfill.min.js?features=fetch%2Ces2015"></script>
   <script src="https://requirejs.org/docs/release/2.3.6/minified/require.js"></script>
@@ -115,19 +89,6 @@
   <script>
     if (appConfig.appTitle) {
       document.getElementById("appTitle").innerHTML = appConfig.appTitle;
-    }
-
-    function updateDestAuth(a) {
-      var destCredentials = document.getElementById("destCredentials");
-      var clientIdParent = document.getElementById("clientIdParent");
-
-      if (a.checked) {
-        clientIdParent.classList.remove("display-none");
-        destCredentials.classList.add("display-none");
-      } else {
-        clientIdParent.classList.add("display-none");
-        destCredentials.classList.remove("display-none");
-      }
     }
 
     var fetchFoldersFcn, goFcn;
@@ -161,12 +122,37 @@
       }
     });
 
-    require(["@esri/arcgis-rest-auth", "dist/deploy-solution-main", "esri/identity/IdentityManager"],
-      function (auth, main, esriId) {
+    require([
+      "@esri/arcgis-rest-auth",
+      "dist/deploy-solution-main",
+      "esri/portal/Portal",
+      "esri/identity/OAuthInfo",
+      "esri/identity/IdentityManager"
+    ],
+      function (auth, main, Portal, OAuthInfo, esriId) {
         "use strict";
 
-        // Get credentials for source
-        esriId.getCredential("https://www.arcgis.com/sharing")
+        // Register the app
+        const portalUrl = "https://arcgisarchive.maps.arcgis.com";
+        const info = new OAuthInfo({
+          appId: "1FkANlN0tcGOcYIY",
+          popup: false, // inline redirects don't require any additional app configuration
+          portalUrl,
+          preserveUrlHash: true
+        });
+        esriId.registerOAuthInfos([info]);
+
+        esriId.checkSignInStatus(info.portalUrl + "/sharing")
+        .then(
+          (credential) => {
+            // We're already signed in
+            return Promise.resolve(credential);
+          },
+          () => {
+            // We need to sign in
+            return esriId.getCredential(info.portalUrl + "/sharing");
+          }
+        )
         .then(
           (credential) => {
             const srcCreds = auth.UserSession.fromCredential(credential);
@@ -182,11 +168,7 @@
                 solutions.forEach((solution) => {
                   var option = document.createElement("option");
                   option.value = solution.id
-                    if (solution.version) {
-                      option.text = solution.title + " (v" + solution.version + ")";
-                    } else {
-                      option.text = solution.title;
-                    }
+                    option.text = solution.title;
                     solutionsSelect.add(option);
                 });
 
@@ -235,32 +217,13 @@
               const solutionId = document.getElementById("solutionPicklist").value;
 
               // Dest credentials
-              const destPortal = (document.getElementById("destPortal").value || "https://www.arcgis.com") + "/sharing/rest";
-              let destCreds;
-              if (!document.getElementById("destAuthType").checked) {
-                destCreds = new auth.UserSession({
-                  username: document.getElementById("destUsername").value,
-                  password: document.getElementById("destPassword").value,
-                  portal: destPortal,
-                  clientId: document.getElementById("clientId").value
-                });
-                deploySolution(solutionId, srcCreds, destCreds);
-              } else {
-                const redirect_uri = window.location.origin + window.location.pathname;
-                const clientId = document.getElementById("clientId").value;
-                auth.UserSession.beginOAuth2({
-                  clientId: clientId,
-                  redirectUri: redirect_uri + 'authenticate.html?clientID=' + clientId,
-                  popup: true,
-                }).then(function (newSession) {
-                  // Upon a successful login, update the session with the new session.
-                  session = newSession;
-                  updateSessionInfo(session);
-                  deploySolution(solutionId, srcCreds, session);
-                }).catch(function (error) {
-                  console.log(error);
-                });
-              }
+              const destPortal = "https://www.arcgis.com/sharing/rest";
+              let destCreds = new auth.UserSession({
+                username: document.getElementById("destUsername").value,
+                password: document.getElementById("destPassword").value,
+                portal: destPortal
+              });
+              deploySolution(solutionId, srcCreds, destCreds);
             }
 
             // Deploy!
