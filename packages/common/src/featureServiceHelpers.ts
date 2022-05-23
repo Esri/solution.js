@@ -600,14 +600,14 @@ export function updateTemplateForInvalidDesignations(
  * Store the values alongside other key feature service properties in the template
  *
  * @param properties the current feature services properties 
- * @param serviceUrl the current feature service url
+ * @param adminUrl the current feature service url
  * @param authentication Credentials for the request to AGOL
  * @returns A promise that will resolve when the contingent values have been fetched.
  * This function will update the provided properties argument when contingent values are found.
  */
 export function processContingentValues(
   properties: IFeatureServiceProperties,
-  serviceUrl: string,
+  adminUrl: string,
   authentication: UserSession
 ): Promise<void> {
   return new Promise<void>((resolve, reject) => {
@@ -624,7 +624,7 @@ export function processContingentValues(
         if (cur.hasContingentValuesDefinition) {
           prev.push(
             rest_request(
-              `${serviceUrl}/${cur['id']}/contingentValues?f=json`, { authentication }
+              `${adminUrl}/${cur['id']}/contingentValues?f=json`, { authentication }
             )
           );
           layerIds.push(cur['id']);
@@ -638,16 +638,19 @@ export function processContingentValues(
           results.forEach((r, i) => {
             deleteProp(r, 'typeCodes');
             /* istanbul ignore else */
-            if (r?.stringDicts && r?.contingentValuesDefinition?.fieldGroups) {
+            if (getProp(r, 'stringDicts') && getProp(r, 'contingentValuesDefinition.fieldGroups')) {
               r.contingentValuesDefinition.fieldGroups[0]['stringDicts'] = r.stringDicts;
               deleteProp(r, 'stringDicts');
             }
-            deleteProps(r?.contingentValuesDefinition, ['layerId', 'layerName', 'geometryType', 'hasSubType']);
+            deleteProps(
+              getProp(r, 'contingentValuesDefinition'), 
+              ['layerID', 'layerName', 'geometryType', 'hasSubType']
+            );
             contingentValues[layerIds[i]] = r;
           });
           properties.contingentValues = contingentValues;
           resolve();
-        }).catch(error => reject(error));
+        }, reject);
       } else {
         resolve();
       }

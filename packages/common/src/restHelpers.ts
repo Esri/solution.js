@@ -1075,7 +1075,7 @@ export function getLayerUpdates(
 
     // handle contingent values
     const contingentValuesUpdates = _getContingentValuesUpdates({
-      message: "updated layer relationships",
+      message: "add layer contingent values",
       objects: args.objects,
       itemTemplate: args.itemTemplate,
       authentication: args.authentication
