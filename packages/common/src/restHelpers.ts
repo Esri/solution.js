@@ -23,7 +23,8 @@
 import {
   removeLayerOptimization,
   setDefaultSpatialReference,
-  validateSpatialReferenceAndExtent
+  validateSpatialReferenceAndExtent,
+  processContingentValues
 } from "./featureServiceHelpers";
 import {
   appendQueryParam,
@@ -1071,6 +1072,21 @@ export function getLayerUpdates(
       updates.push(_getUpdate(adminUrl, null, relUpdates, args, "add"));
       updates.push(refresh);
     }
+
+    // handle contingent values
+    const contingentValuesUpdates = _getContingentValuesUpdates({
+      message: "add layer contingent values",
+      objects: args.objects,
+      itemTemplate: args.itemTemplate,
+      authentication: args.authentication
+    });
+
+    /* istanbul ignore else */
+    if (contingentValuesUpdates.length > 0) {
+      contingentValuesUpdates.forEach(conUpdate => {
+        updates.push(_getUpdate(adminUrl + conUpdate.id, null, conUpdate.contingentValues, args, "add"));
+      });
+    }
   }
   return updates.length === 1 ? [] : updates;
 }
@@ -1269,14 +1285,18 @@ export function getFeatureServiceProperties(
         // Ensure solution items have unique indexes on relationship key fields
         _updateIndexesForRelationshipKeyFields(properties);
 
-        if (workforceService) {
-          getWorkforceServiceInfo(properties, serviceUrl, authentication).then(
-            resolve,
-            reject
-          );
-        } else {
-          resolve(properties);
-        }
+        processContingentValues(properties, serviceUrl, authentication).then(() => {
+          if (workforceService) {
+            getWorkforceServiceInfo(properties, serviceUrl, authentication).then(
+              resolve,
+              reject
+            );
+          } else {
+            resolve(properties);
+          }
+        },
+          (e: any) => reject(fail(e))
+        );
       },
       (e: any) => reject(fail(e))
     );
@@ -2142,6 +2162,29 @@ export function _getRelationshipUpdates(args: IPostProcessArgs): any {
     deleteProp(obj, "relationships");
   });
   return rels;
+}
+
+/**
+ * Get the stored contingent values and structure them to be added to the services layers.
+ *
+ * @param args The IPostProcessArgs for the request(s)
+ * @returns Any contingent values that should be added to the service.
+ * @private
+ */
+ export function _getContingentValuesUpdates(args: IPostProcessArgs): any {
+  const contingentValues: any[] = [];
+  Object.keys(args.objects).forEach((k: any) => {
+    const obj: any = args.objects[k];
+    /* istanbul ignore else */
+    if (obj.contingentValues) {
+      contingentValues.push({
+        id: obj.id,
+        contingentValues: obj.contingentValues
+      });
+    }
+    deleteProp(obj, "contingentValues");
+  });
+  return contingentValues;
 }
 
 /**

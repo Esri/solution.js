@@ -31,6 +31,7 @@ export {
 
 import {
   IDependency,
+  IFeatureServiceProperties,
   IItemTemplate,
   INumberValuePair,
   IPostProcessArgs,
@@ -41,6 +42,7 @@ import {
 import {
   checkUrlPathTermination,
   deleteProp,
+  deleteProps,
   fail,
   getProp,
   setCreateProp,
@@ -253,6 +255,26 @@ export function cacheFieldInfos(
     _cacheFieldInfo(layer, k, fieldInfos, props[k]);
   });
 
+  return fieldInfos;
+}
+
+/**
+ * Cache the stored contingent values so we can add them in subsequent addToDef calls
+ *
+ * @param id The layer id for the associated values to be stored with
+ * @param fieldInfos The object that stores the cached field infos
+ * @param itemTemplate The current itemTemplate being processed
+ * @returns An updated instance of the fieldInfos
+ */
+export function cacheContingentValues(
+  id: string,
+  fieldInfos: any,
+  itemTemplate: IItemTemplate
+): any {
+  const contingentValues = getProp(itemTemplate, 'properties.contingentValues');
+  if (contingentValues && contingentValues[id]) {
+    fieldInfos[id]['contingentValues'] = contingentValues[id];
+  }
   return fieldInfos;
 }
 
@@ -573,6 +595,70 @@ export function updateTemplateForInvalidDesignations(
 }
 
 /**
+ * Get the contingent values for each layer in the service.
+ * Remove key props that cannot be included with the addToDef call on deploy.
+ * Store the values alongside other key feature service properties in the template
+ *
+ * @param properties the current feature services properties 
+ * @param adminUrl the current feature service url
+ * @param authentication Credentials for the request to AGOL
+ * @returns A promise that will resolve when the contingent values have been fetched.
+ * This function will update the provided properties argument when contingent values are found.
+ */
+export function processContingentValues(
+  properties: IFeatureServiceProperties,
+  adminUrl: string,
+  authentication: UserSession
+): Promise<void> {
+  return new Promise<void>((resolve, reject) => {
+    if (getProp(properties, 'service.isView')) {
+      // views will inherit from the source service
+      resolve();
+    } else {
+      const layersAndTables: any[] = (properties.layers || []).concat(
+        properties.tables || []
+      );
+      const layerIds = [];
+      const contingentValuePromises: Array<Promise<any>> = layersAndTables.reduce((prev, cur) => {
+        /* istanbul ignore else */
+        if (cur.hasContingentValuesDefinition) {
+          prev.push(
+            rest_request(
+              `${adminUrl}/${cur['id']}/contingentValues?f=json`, { authentication }
+            )
+          );
+          layerIds.push(cur['id']);
+        }
+        return prev;
+      }, []);
+
+      if (contingentValuePromises.length > 0) {
+        Promise.all(contingentValuePromises).then((results) => {
+          const contingentValues = {};
+          results.forEach((r, i) => {
+            deleteProp(r, 'typeCodes');
+            /* istanbul ignore else */
+            if (getProp(r, 'stringDicts') && getProp(r, 'contingentValuesDefinition.fieldGroups')) {
+              r.contingentValuesDefinition.fieldGroups[0]['stringDicts'] = r.stringDicts;
+              deleteProp(r, 'stringDicts');
+            }
+            deleteProps(
+              getProp(r, 'contingentValuesDefinition'), 
+              ['layerID', 'layerName', 'geometryType', 'hasSubType']
+            );
+            contingentValues[layerIds[i]] = r;
+          });
+          properties.contingentValues = contingentValues;
+          resolve();
+        }, reject);
+      } else {
+        resolve();
+      }
+    }
+  });
+}
+
+/**
  * Replace the field name reference templates with the new field names after deployment.
  *
  * @param fieldInfos The object that stores the cached layer properties and name mapping
@@ -800,6 +886,13 @@ export function addFeatureServiceDefinition(
         fieldInfos = cacheFieldInfos(
           item,
           fieldInfos
+        );
+
+        // cache the values to be added in seperate addToDef calls
+        fieldInfos = cacheContingentValues(
+          item.id,
+          fieldInfos,
+          itemTemplate
         );
 
         /* istanbul ignore else */

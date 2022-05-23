@@ -21,6 +21,7 @@
 import {
   templatize,
   deleteViewProps,
+  cacheContingentValues,
   cacheFieldInfos,
   _cacheFieldInfo,
   cachePopupInfos,
@@ -36,6 +37,7 @@ import {
   addFeatureServiceLayersAndTables,
   updateLayerFieldReferences,
   postProcessFields,
+  processContingentValues,
   removeLayerOptimization,
   updatePopupInfo,
   _templatize,
@@ -651,6 +653,22 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
       fieldInfos = cacheFieldInfos(layer, fieldInfos);
       expect(layer).toEqual(expectedLayer);
       expect(fieldInfos).toEqual(expectedFieldInfos);
+    });
+  });
+
+  describe("cacheContingentValues", () => {
+    it("should get contingent values from feature service properties", () => {
+      const id = "0";
+      let fieldInfos: any = {};
+      fieldInfos[id] = {};
+      itemTemplate.properties.contingentValues = {};
+      itemTemplate.properties.contingentValues[id] = {
+        "contingentValuesDefinition": {
+          "fieldGroups": []
+        }
+      };
+      fieldInfos = cacheContingentValues(id, fieldInfos, itemTemplate);
+      expect(fieldInfos[id].contingentValues).toEqual(itemTemplate.properties.contingentValues[id]);
     });
   });
 
@@ -3761,6 +3779,153 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
           fieldInfos: {},
           adminLayerInfos: {}
         });
+        done();
+      }, done.fail);
+    });
+  });
+
+  describe("processContingentValues", () => {
+    it("restructure and store fetched contingent values", done => {
+      const contingentValues = {
+        "typeCodes": [
+          "Unknown", "Any", "Null", "Code", "Range"
+        ],
+        "stringDicts": [{
+          "domain": "CommonName",
+          "entries": ["Norway Maple"]
+        }], 
+        "contingentValuesDefinition": {
+          "layerID": 0,
+          "layerName": "Trees",
+          "geometryType": "esriGeometryPoint",
+          "hasSubType": false,
+          "fieldGroups": [{
+            "name": "Tree Type",
+            "restrictive": false,
+            "fields": [{
+              "id": 0,
+              "name": "commonname",
+              "fieldType": "esriFieldTypeString"
+            }],
+            "domains": { "commonname": "CommonName", "genus": "Genus", "species": "Species" },
+            "contingentValues": [{
+              "id": 1, "types": [3, 3, 3], 
+              "values": [0, 0, 0]
+            }]
+          }, {
+            "name": "Space Info",
+            "restrictive": false,
+            "fields": [{
+              "id": 0, "name": "spacestatus", "fieldType": "esriFieldTypeString"
+            }],
+            "domains": {
+              "spacestatus": "SpaceStatus", "spacetype": "SpaceType"
+            },
+            "contingentValues": [{
+              "id": 9, "types": [3, 3, 3], "values": [0, 0, 0]
+            }]
+          }]
+        }
+      };
+      const properties: interfaces.IFeatureServiceProperties = {
+        service: {},
+        layers: [{
+          id: "0",
+          hasContingentValuesDefinition: true
+        }],
+        tables: [{
+          id: "1",
+          hasContingentValuesDefinition: true
+        },{
+          id: "2",
+          hasContingentValuesDefinition: false
+        }]
+      };
+      const adminUrl = "https://test.arcgis.com/org1234567890/arcgis/rest/admin/services/R/FeatureServer";
+      const authentication = MOCK_USER_SESSION;
+
+      const expectedContingentValues = {
+        "contingentValuesDefinition": {
+          "fieldGroups": [{
+            "name": "Tree Type",
+            "restrictive": false,
+            "fields": [{
+              "id": 0,
+              "name": "commonname",
+              "fieldType": "esriFieldTypeString"
+            }],
+            "domains": { "commonname": "CommonName", "genus": "Genus", "species": "Species" },
+            "contingentValues": [{
+              "id": 1, "types": [3, 3, 3], 
+              "values": [0, 0, 0]
+            }],
+            "stringDicts": [{
+              "domain": "CommonName",
+              "entries": ["Norway Maple"]
+            }]
+          }, {
+            "name": "Space Info",
+            "restrictive": false,
+            "fields": [{
+              "id": 0, "name": "spacestatus", "fieldType": "esriFieldTypeString"
+            }],
+            "domains": {
+              "spacestatus": "SpaceStatus", "spacetype": "SpaceType"
+            },
+            "contingentValues": [{
+              "id": 9, "types": [3, 3, 3], "values": [0, 0, 0]
+            }]
+          }]
+        }
+      };
+
+      const expected = {
+        "0": expectedContingentValues,
+        "1": expectedContingentValues
+      }
+
+      fetchMock
+        .post(adminUrl + "/0/contingentValues?f=json", contingentValues)
+        .post(adminUrl + "/1/contingentValues?f=json", contingentValues);
+
+      processContingentValues(properties, adminUrl, authentication).then(() => {
+        expect(properties.contingentValues).toEqual(expected);
+        done();
+      }, done.fail);
+    });
+
+    it("handles error fetching contingent values", done => {
+      const properties: interfaces.IFeatureServiceProperties = {
+        service: {},
+        layers: [{
+          id: "0",
+          hasContingentValuesDefinition: true
+        }],
+        tables: []
+      };
+      const adminUrl = "https://test.arcgis.com/org1234567890/arcgis/rest/admin/services/R/FeatureServer";
+      const authentication = MOCK_USER_SESSION;
+
+      fetchMock
+        .post(adminUrl + "/0/contingentValues?f=json", mockItems.get400Failure());
+
+      processContingentValues(properties, adminUrl, authentication)
+      .then(
+        () => done.fail(),
+        () => done()
+      );
+    });
+
+    it("handles undefined layers and tables", done => {
+      const properties = {
+        service: {},
+        layers: undefined,
+        tables: undefined
+      };
+      const adminUrl = "https://test.arcgis.com/org1234567890/arcgis/rest/admin/services/R/FeatureServer";
+      const authentication = MOCK_USER_SESSION;
+
+      processContingentValues(properties, adminUrl, authentication).then(() => {
         done();
       }, done.fail);
     });
