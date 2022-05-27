@@ -638,8 +638,8 @@ export function processContingentValues(
           results.forEach((r, i) => {
             deleteProp(r, 'typeCodes');
             /* istanbul ignore else */
-            if (getProp(r, 'stringDicts') && getProp(r, 'contingentValuesDefinition.fieldGroups')) {
-              r.contingentValuesDefinition.fieldGroups[0]['stringDicts'] = r.stringDicts;
+            if (getProp(r, 'stringDicts') && getProp(r, 'contingentValuesDefinition')) {
+              r.contingentValuesDefinition['stringDicts'] = r.stringDicts;
               deleteProp(r, 'stringDicts');
             }
             deleteProps(

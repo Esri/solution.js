@@ -3858,10 +3858,6 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
             "contingentValues": [{
               "id": 1, "types": [3, 3, 3], 
               "values": [0, 0, 0]
-            }],
-            "stringDicts": [{
-              "domain": "CommonName",
-              "entries": ["Norway Maple"]
             }]
           }, {
             "name": "Space Info",
@@ -3875,6 +3871,10 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
             "contingentValues": [{
               "id": 9, "types": [3, 3, 3], "values": [0, 0, 0]
             }]
+          }],
+          "stringDicts": [{
+            "domain": "CommonName",
+            "entries": ["Norway Maple"]
           }]
         }
       };
