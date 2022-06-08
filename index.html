@@ -89,13 +89,8 @@
 <a href="#setup" id="setup" style="color: inherit; text-decoration: none;">
   <h4>Setup</h4>
 </a>
-<p>The repository uses <a href="https://docs.volta.sh/guide/getting-started">Volta</a> to standardize the versions of NodeJS and npm. Please install and use this app to get the supported versions.</p>
-<p>Once Volta is installed, turn on <a href="https://docs.microsoft.com/en-us/gaming/game-bar/guide/developer-mode">Windows &quot;Developer Mode&quot;</a> so that Volta can install symlinks.</p>
 <p>The following steps will build the repository:</p>
 <ol>
-<li><code>volta install node@16.14.2</code></li>
-<li><code>volta install npm@bundled</code></li>
-<li><code>volta install typescript@4.6.3</code></li>
 <li><code>npm install</code></li>
 <li><code>pushd demos</code></li>
 <li><code>npm run build</code></li>
@@ -145,12 +140,13 @@
 <li><code>npm run docs:deploy</code> pushes the documentation to the repository&#39;s gh-pages</li>
 </ul>
 </li>
-<li><p>publishing code <em>(requires bash window)</em></p>
+<li><p>publishing code</p>
 <ul>
-<li><code>npm run prerelease:prepare</code> fetch, clean, link packages, and test</li>
-<li><code>npm run release:prepare</code> prepares for publication and creates a changelog</li>
-<li><code>npm run release:review</code> assembles git changes <em>(use arrow keys to put cursor on line</em> above <em>desired version)</em></li>
-<li><code>npm run release:publish</code> publishes a version</li>
+<li><code>npm run release:prepare1</code> fetch, compile, and test <em>(requires bash shell)</em></li>
+<li><code>npm run release:prepare2</code> bundles packages and asks you for the new version number <em>(use arrow keys to put cursor on line</em> above <em>desired version)</em> <em>(requires Windows shell)</em></li>
+<li><code>npm run release:review</code> shows summary of git changes</li>
+<li><code>npm run release:publish-git</code> publishes a version to GitHub <em>(requires bash shell)</em></li>
+<li><code>npm run release:publish-npm</code> publishes a version to npm <em>(requires Windows shell)</em></li>
 </ul>
 </li>
 <li><p>lifecycle</p>
