@@ -1544,6 +1544,23 @@ describe("Module `deploySolutionItems`", () => {
     });
 
     it("handles View FS", done => {
+      const sourceItemTemplate: common.IItemTemplate = templates.getItemTemplate(
+        "Feature Service",
+        [],
+        "https://services123.arcgis.com/org1234567890/arcgis/rest/services/ROWPermits_publiccomment_source/FeatureServer/"
+      );
+      sourceItemTemplate.itemId = "cc4a6047326243b290f625e80ebe6531";
+      sourceItemTemplate.properties.layers = [
+        mockItems.getAGOLLayerOrTable(0, "A", "Feature Layer")
+      ];
+      sourceItemTemplate.properties.tables = [];
+      sourceItemTemplate.properties.layers[0].fields = sourceItemTemplate.properties.layers[0].fields.map(
+        (f: any) => {
+          f.editable = !f.editable;
+          return f;
+        }
+      );
+
       const itemTemplate: common.IItemTemplate = templates.getItemTemplate(
         "Feature Service",
         [],
@@ -1552,11 +1569,20 @@ describe("Module `deploySolutionItems`", () => {
       itemTemplate.properties.service.isView = true;
       itemTemplate.itemId = "dd4a6047326243b290f625e80ebe6531";
       itemTemplate.properties.syncViews = ["aa4a6047326243b290f625e80ebe6531"];
+      itemTemplate.dependencies = [sourceItemTemplate.itemId];
       const resourceFilePaths: common.IDeployFileCopyPath[] = [];
       const templateDictionary: any = {
         aa4a6047326243b290f625e80ebe6531: {
           def: function() {
             return Promise.resolve(null);
+          }
+        },
+        cc4a6047326243b290f625e80ebe6531: {
+          def: function() {
+            return Promise.resolve(null);
+          },
+          fieldInfos: {
+            "0": sourceItemTemplate.properties.layers[0].fields
           }
         },
         organization: utils.getPortalsSelfResponse()

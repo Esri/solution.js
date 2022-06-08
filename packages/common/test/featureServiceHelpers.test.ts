@@ -21,6 +21,7 @@
 import {
   templatize,
   deleteViewProps,
+  cacheContingentValues,
   cacheFieldInfos,
   _cacheFieldInfo,
   cachePopupInfos,
@@ -36,9 +37,8 @@ import {
   addFeatureServiceLayersAndTables,
   updateLayerFieldReferences,
   postProcessFields,
+  processContingentValues,
   removeLayerOptimization,
-  _getFieldVisibilityUpdates,
-  _validateDomains,
   updatePopupInfo,
   _templatize,
   _templatizeProperty,
@@ -49,8 +49,7 @@ import {
   _templatizeSourceServiceName,
   _templatizeAdminLayerInfoFields,
   _getDependantItemId,
-  _getDomainAndAliasInfos,
-  _getTypeIdField,
+  _getViewFieldInfos,
   _isViewFieldOverride,
   _templatizeAdminSourceLayerFields,
   _templatizeTopFilter,
@@ -94,6 +93,8 @@ import {
   _validateEditFieldsInfo,
   IPopupInfos
 } from "../src/featureServiceHelpers";
+
+import * as restHelpers from '../../common/src/restHelpers';
 
 import * as interfaces from "../src/interfaces";
 import * as utils from "../../common/test/mocks/utils";
@@ -535,7 +536,7 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
     it("should not fail with undefined", () => {
       let fieldInfos: any = {};
       const layer: any = undefined;
-      fieldInfos = cacheFieldInfos(layer, fieldInfos, true);
+      fieldInfos = cacheFieldInfos(layer, fieldInfos);
       expect(layer).toBeUndefined();
       expect(fieldInfos).toEqual({});
     });
@@ -543,12 +544,12 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
     it("should not fail without key properties on the layer", () => {
       let fieldInfos: any = {};
       const layer: any = {};
-      fieldInfos = cacheFieldInfos(layer, fieldInfos, true);
+      fieldInfos = cacheFieldInfos(layer, fieldInfos);
       expect(layer).toEqual({});
       expect(fieldInfos).toEqual({});
     });
 
-    it("should cache the key properties for fieldInfos and set certain properties to null", () => {
+    it("should cache the key properties for fieldInfos", () => {
       let fieldInfos: any = {};
       const layer: any = {
         id: "23",
@@ -598,11 +599,20 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
         ],
         displayField: "DisplayField",
         editFieldsInfo: ["CreateDate"],
-        templates: null,
+        templates: [
+          {
+            A: null,
+            B: null
+          }
+        ],
         relationships: null,
-        drawingInfo: null,
+        drawingInfo: {
+          renderer: {
+            type: "simple"
+          }
+        },
         type: "layer",
-        viewDefinitionQuery: null
+        viewDefinitionQuery: "viewDefinitionQuery"
       };
 
       const expectedFieldInfos: any = {
@@ -640,9 +650,25 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
         }
       };
 
-      fieldInfos = cacheFieldInfos(layer, fieldInfos, true);
+      fieldInfos = cacheFieldInfos(layer, fieldInfos);
       expect(layer).toEqual(expectedLayer);
       expect(fieldInfos).toEqual(expectedFieldInfos);
+    });
+  });
+
+  describe("cacheContingentValues", () => {
+    it("should get contingent values from feature service properties", () => {
+      const id = "0";
+      let fieldInfos: any = {};
+      fieldInfos[id] = {};
+      itemTemplate.properties.contingentValues = {};
+      itemTemplate.properties.contingentValues[id] = {
+        "contingentValuesDefinition": {
+          "fieldGroups": []
+        }
+      };
+      fieldInfos = cacheContingentValues(id, fieldInfos, itemTemplate);
+      expect(fieldInfos[id].contingentValues).toEqual(itemTemplate.properties.contingentValues[id]);
     });
   });
 
@@ -3430,11 +3456,18 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
       fetchMock
         .post(adminUrl + "/0?f=json", itemTemplate.properties.layers[0])
         .post(adminUrl + "/1?f=json", itemTemplate.properties.tables[0])
-        .post(adminUrl + "/refresh", mockItems.get400Failure())
+        .post(adminUrl + "/deleteFromDefinition", mockItems.get400Failure())
         .post(
           "https://services123.arcgis.com/org1234567890/arcgis/rest/admin/services/ROWPermits_publiccomment/FeatureServer/addToDefinition",
           '{"success": "true"}'
         );
+
+      spyOn(
+        restHelpers,
+        "getLayerUpdates"
+      ).and.returnValue([
+        { url: adminUrl + "/deleteFromDefinition", params: {}, args: {} }
+      ] as interfaces.IUpdate[]);
 
       addFeatureServiceLayersAndTables(
         itemTemplate,
@@ -3628,8 +3661,7 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
       );
       const fieldInfos = cacheFieldInfos(
         layer1,
-        cacheFieldInfos(layer0, {}, true),
-        true
+        cacheFieldInfos(layer0, {}),
       );
 
       Object.keys(fieldInfos).forEach(k => {
@@ -3752,6 +3784,153 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
     });
   });
 
+  describe("processContingentValues", () => {
+    it("restructure and store fetched contingent values", done => {
+      const contingentValues = {
+        "typeCodes": [
+          "Unknown", "Any", "Null", "Code", "Range"
+        ],
+        "stringDicts": [{
+          "domain": "CommonName",
+          "entries": ["Norway Maple"]
+        }], 
+        "contingentValuesDefinition": {
+          "layerID": 0,
+          "layerName": "Trees",
+          "geometryType": "esriGeometryPoint",
+          "hasSubType": false,
+          "fieldGroups": [{
+            "name": "Tree Type",
+            "restrictive": false,
+            "fields": [{
+              "id": 0,
+              "name": "commonname",
+              "fieldType": "esriFieldTypeString"
+            }],
+            "domains": { "commonname": "CommonName", "genus": "Genus", "species": "Species" },
+            "contingentValues": [{
+              "id": 1, "types": [3, 3, 3], 
+              "values": [0, 0, 0]
+            }]
+          }, {
+            "name": "Space Info",
+            "restrictive": false,
+            "fields": [{
+              "id": 0, "name": "spacestatus", "fieldType": "esriFieldTypeString"
+            }],
+            "domains": {
+              "spacestatus": "SpaceStatus", "spacetype": "SpaceType"
+            },
+            "contingentValues": [{
+              "id": 9, "types": [3, 3, 3], "values": [0, 0, 0]
+            }]
+          }]
+        }
+      };
+      const properties: interfaces.IFeatureServiceProperties = {
+        service: {},
+        layers: [{
+          id: "0",
+          hasContingentValuesDefinition: true
+        }],
+        tables: [{
+          id: "1",
+          hasContingentValuesDefinition: true
+        },{
+          id: "2",
+          hasContingentValuesDefinition: false
+        }]
+      };
+      const adminUrl = "https://test.arcgis.com/org1234567890/arcgis/rest/admin/services/R/FeatureServer";
+      const authentication = MOCK_USER_SESSION;
+
+      const expectedContingentValues = {
+        "contingentValuesDefinition": {
+          "fieldGroups": [{
+            "name": "Tree Type",
+            "restrictive": false,
+            "fields": [{
+              "id": 0,
+              "name": "commonname",
+              "fieldType": "esriFieldTypeString"
+            }],
+            "domains": { "commonname": "CommonName", "genus": "Genus", "species": "Species" },
+            "contingentValues": [{
+              "id": 1, "types": [3, 3, 3], 
+              "values": [0, 0, 0]
+            }]
+          }, {
+            "name": "Space Info",
+            "restrictive": false,
+            "fields": [{
+              "id": 0, "name": "spacestatus", "fieldType": "esriFieldTypeString"
+            }],
+            "domains": {
+              "spacestatus": "SpaceStatus", "spacetype": "SpaceType"
+            },
+            "contingentValues": [{
+              "id": 9, "types": [3, 3, 3], "values": [0, 0, 0]
+            }]
+          }],
+          "stringDicts": [{
+            "domain": "CommonName",
+            "entries": ["Norway Maple"]
+          }]
+        }
+      };
+
+      const expected = {
+        "0": expectedContingentValues,
+        "1": expectedContingentValues
+      }
+
+      fetchMock
+        .post(adminUrl + "/0/contingentValues?f=json", contingentValues)
+        .post(adminUrl + "/1/contingentValues?f=json", contingentValues);
+
+      processContingentValues(properties, adminUrl, authentication).then(() => {
+        expect(properties.contingentValues).toEqual(expected);
+        done();
+      }, done.fail);
+    });
+
+    it("handles error fetching contingent values", done => {
+      const properties: interfaces.IFeatureServiceProperties = {
+        service: {},
+        layers: [{
+          id: "0",
+          hasContingentValuesDefinition: true
+        }],
+        tables: []
+      };
+      const adminUrl = "https://test.arcgis.com/org1234567890/arcgis/rest/admin/services/R/FeatureServer";
+      const authentication = MOCK_USER_SESSION;
+
+      fetchMock
+        .post(adminUrl + "/0/contingentValues?f=json", mockItems.get400Failure());
+
+      processContingentValues(properties, adminUrl, authentication)
+      .then(
+        () => done.fail(),
+        () => done()
+      );
+    });
+
+    it("handles undefined layers and tables", done => {
+      const properties = {
+        service: {},
+        layers: undefined,
+        tables: undefined
+      };
+      const adminUrl = "https://test.arcgis.com/org1234567890/arcgis/rest/admin/services/R/FeatureServer";
+      const authentication = MOCK_USER_SESSION;
+
+      processContingentValues(properties, adminUrl, authentication).then(() => {
+        done();
+      }, done.fail);
+    });
+  });
+
   describe("removeLayerOptimization", () => {
     it("will remove multiScaleGeometryInfo", () => {
       const actual: any = {
@@ -3765,65 +3944,6 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
 
       removeLayerOptimization(actual);
       expect(actual).toEqual(expected);
-    });
-  });
-
-  describe("_getFieldVisibilityUpdates", () => {
-    it("should not fail with undefined", () => {
-      const fieldInfo: any = {};
-      const fieldUpdates: any[] = _getFieldVisibilityUpdates(fieldInfo);
-      expect(fieldUpdates).toEqual([]);
-    });
-
-    it("should not fail with empty fields", () => {
-      const fieldInfo: any = {
-        sourceFields: [],
-        newFields: []
-      };
-      const fieldUpdates: any[] = _getFieldVisibilityUpdates(fieldInfo);
-      expect(fieldUpdates).toEqual([]);
-    });
-
-    it("should find and difference in field visibility settings", () => {
-      const fieldInfo: any = {
-        sourceFields: [
-          {
-            name: "A",
-            visible: true
-          },
-          {
-            name: "B",
-            visible: false
-          },
-          {
-            name: "C",
-            visible: true
-          }
-        ],
-        newFields: [
-          {
-            name: "A",
-            visible: true
-          },
-          {
-            name: "B",
-            visible: true
-          },
-          {
-            name: "C",
-            visible: true
-          }
-        ]
-      };
-
-      const expected: any[] = [
-        {
-          name: "B",
-          visible: false
-        }
-      ];
-      const fieldUpdates: any[] = _getFieldVisibilityUpdates(fieldInfo);
-      expect(fieldUpdates).toEqual(expected);
     });
   });
 
@@ -4385,7 +4505,7 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
     });
   });
 
-  describe("_getDomainAndAliasInfos", () => {
+  describe("_getViewFieldInfos", () => {
     it("gets domain and alias infos", () => {
       const fieldInfo = {
         sourceServiceFields: {
@@ -4393,7 +4513,9 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
             "0": [
               {
                 name: "A",
-                domain: {}
+                domain: {},
+                editable: true,
+                visible: false
               },
               {
                 name: "B"
@@ -4401,46 +4523,32 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
               {
                 name: "C",
                 alias: "c123"
+              },
+              {
+                name: "D",
+                editable: false
+              },
+              {
+                name: "E",
+                visible: true
               }
             ]
           }
         }
       };
       const expected = {
-        aliasFields: ["c123"],
-        aliasNames: ["c"],
-        domainFields: [{}],
-        domainNames: ["a"]
+        alias:{vals:["c123"],names: ["c"]},
+        domain:{vals:[{}],names: ["a"]},
+        editable:{vals:[true, false],names: ["a", "d"]}
       };
 
-      const actual = _getDomainAndAliasInfos(fieldInfo);
-      expect(actual).toEqual(expected);
-    });
-  });
-
-  describe("_getTypeIdField", () => {
-    it("will get the typeId field", () => {
-      const item: any = {
-        fields: [
-          {
-            name: "a"
-          },
-          {
-            name: "b"
-          }
-        ],
-        typeIdField: "B"
-      };
-
-      const actual = _getTypeIdField(item);
-
-      const expected: string = "b";
+      const actual = _getViewFieldInfos(fieldInfo);
       expect(actual).toEqual(expected);
     });
   });
 
   describe("_isViewFieldOverride", () => {
-    it("", () => {
+    it("will set isViewOverride true when they differ", () => {
       const field = {
         alias: "a123",
         name: "A"
@@ -4450,7 +4558,101 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
         name: "A",
         isViewOverride: true
       };
-      _isViewFieldOverride(field, ["a"], ["a"], "alias");
+      _isViewFieldOverride(field, ["a"], ["A123"], "alias");
+      expect(field).toEqual(expected);
+    });
+
+    it("will set isViewOverride false when they don't differ", () => {
+      const sourceField = {
+        alias: "A123",
+        name: "a"
+      };
+      const field = {
+        alias: "A123",
+        name: "a"
+      };
+      const expected = {
+        alias: "A123",
+        name: "a",
+        isViewOverride: false
+      };
+      _isViewFieldOverride(field, [sourceField.name], [sourceField.alias], "alias");
+      expect(field).toEqual(expected);
+    });
+
+    it("will set isViewOverride false when boolean don't differ", () => {
+      const sourceField = {
+        editable: true,
+        name: "a"
+      };
+      const field = {
+        editable: true,
+        name: "a"
+      };
+      const expected = {
+        editable: true,
+        name: "a",
+        isViewOverride: false
+      };
+      _isViewFieldOverride(field, [sourceField.name], [sourceField.editable], "editable");
+      expect(field).toEqual(expected);
+    });
+
+    it("will set isViewOverride true when boolean do differ", () => {
+      const sourceField = {
+        editable: false,
+        name: "a"
+      };
+      const field = {
+        editable: true,
+        name: "a"
+      };
+      const expected = {
+        editable: true,
+        name: "a",
+        isViewOverride: true
+      };
+      _isViewFieldOverride(field, [sourceField.name], [sourceField.editable], "editable");
+      expect(field).toEqual(expected);
+    });
+
+    it("will set isViewOverride can handle missing name", () => {
+      const sourceField = {
+        editable: false,
+        name: "a"
+      };
+      const field = {
+        editable: true,
+        name: "a"
+      };
+      const expected = {
+        editable: true,
+        name: "a",
+        isViewOverride: true
+      };
+      _isViewFieldOverride(field, [], [sourceField.editable], "editable");
+      expect(field).toEqual(expected);
+    });
+
+    it("will not override if already true", () => {
+      const sourceField = {
+        editable: false,
+        alias: "ABC",
+        name: "a"
+      };
+      const field = {
+        editable: true,
+        alias: "ABC",
+        name: "a"
+      };
+      const expected = {
+        editable: true,
+        alias: "ABC",
+        name: "a",
+        isViewOverride: true
+      };
+      _isViewFieldOverride(field, [sourceField.name], [sourceField.editable], "editable");
+      _isViewFieldOverride(field, [sourceField.name], [sourceField.alias], "alias");
       expect(field).toEqual(expected);
     });
   });
@@ -6338,7 +6540,8 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
       };
       const expected = {
         id: "",
-        type: ""
+        type: "",
+        sourceSchemaChangesAllowed: true
       };
       const _itemTemplate: interfaces.IItemTemplate = templates.getItemTemplateSkeleton();
       const actual = _updateForPortal(item, _itemTemplate, {});
@@ -6390,6 +6593,7 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
       const expected = {
         id: "",
         type: "",
+        sourceSchemaChangesAllowed: true,
         adminLayerInfo: {
           viewLayerDefinition: {
             table: {
@@ -6466,6 +6670,7 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
       const expected = {
         id: 0,
         type: "",
+        sourceSchemaChangesAllowed: true,
         adminLayerInfo: {},
         serviceItemId: "55507dff46f54656a74032ac12acd977",
         fields: [
@@ -6518,6 +6723,7 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
       const expected = {
         id: 0,
         type: "",
+        sourceSchemaChangesAllowed: true,
         adminLayerInfo: {},
         serviceItemId: "55507dff46f54656a74032ac12acd977",
         fields: [
@@ -6988,188 +7194,6 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
       };
       const fieldNames: string[] = ["a", "b"];
       _validateEditFieldsInfo(actual, fieldNames);
-
-      expect(actual).toEqual(expected);
-    });
-  });
-
-  describe("_validateDomains", () => {
-    it("should not update field when domains match", () => {
-      const fieldInfos: any = {
-        sourceServiceFields: {
-          svc123: {
-            "0": [
-              {
-                name: "A"
-              },
-              {
-                name: "B",
-                domain: null
-              },
-              {
-                name: "C",
-                domain: {
-                  codedValues: [
-                    {
-                      name: "C_1",
-                      value: "C_2"
-                    }
-                  ]
-                }
-              }
-            ]
-          }
-        },
-        newFields: [
-          {
-            name: "a"
-          },
-          {
-            name: "b",
-            domain: null
-          },
-          {
-            name: "c",
-            domain: {
-              codedValues: [
-                {
-                  name: "C_1",
-                  value: "C_2"
-                }
-              ]
-            }
-          }
-        ]
-      };
-
-      const fieldUpdates: any[] = [];
-      const expected: any[] = [];
-
-      const actual: any[] = _validateDomains(fieldInfos, fieldUpdates);
-
-      expect(actual).toEqual(expected);
-    });
-
-    it("should update field when domains don't match", () => {
-      const fieldInfos: any = {
-        sourceServiceFields: {
-          svc123: {
-            "0": [
-              {
-                name: "A"
-              },
-              {
-                name: "B",
-                domain: null
-              },
-              {
-                name: "C",
-                unrelatedProp: true,
-                domain: {
-                  codedValues: [
-                    {
-                      name: "C_1",
-                      value: "C_2"
-                    }
-                  ]
-                }
-              },
-              {
-                name: "D",
-                domain: null
-              },
-              {
-                name: "E",
-                domain: {
-                  codedValues: [
-                    {
-                      name: "EEE_1",
-                      value: "EEE_2"
-                    }
-                  ]
-                }
-              }
-            ]
-          }
-        },
-        newFields: [
-          {
-            name: "a"
-          },
-          {
-            name: "b",
-            domain: null
-          },
-          {
-            name: "c",
-            unrelatedProp: false,
-            domain: {
-              codedValues: [
-                {
-                  name: "C_1",
-                  value: "C_2"
-                }
-              ]
-            }
-          },
-          {
-            name: "d",
-            domain: {
-              codedValues: [
-                {
-                  name: "D_1",
-                  value: "D_2"
-                }
-              ]
-            }
-          },
-          {
-            name: "e",
-            domain: {
-              codedValues: [
-                {
-                  name: "E_1",
-                  value: "E_2"
-                }
-              ]
-            }
-          }
-        ]
-      };
-
-      const fieldUpdates: any[] = [
-        {
-          name: "d",
-          visible: true
-        }
-      ];
-      const expected: any[] = [
-        {
-          name: "d",
-          visible: true,
-          domain: {
-            codedValues: [
-              {
-                name: "D_1",
-                value: "D_2"
-              }
-            ]
-          }
-        },
-        {
-          name: "e",
-          domain: {
-            codedValues: [
-              {
-                name: "E_1",
-                value: "E_2"
-              }
-            ]
-          }
-        }
-      ];
-
-      const actual: any[] = _validateDomains(fieldInfos, fieldUpdates);
 
       expect(actual).toEqual(expected);
     });

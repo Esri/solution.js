@@ -2218,10 +2218,10 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
   describe("getLayerUpdates", () => {
     it("can get updates", () => {
       const url: string =
-        "https://services123.arcgis.com/org1234567890/arcgis/rest/services/ROWPermits_publiccomment";
+        "https://services123.arcgis.com/org1234567890/arcgis/rest/services/ROWPermits_publiccomment/";
 
       const adminUrl: string =
-        "https://services123.arcgis.com/org1234567890/arcgis/rest/admin/services/ROWPermits_publiccomment";
+        "https://services123.arcgis.com/org1234567890/arcgis/rest/admin/services/ROWPermits_publiccomment/";
 
       itemTemplate.item.url = url;
       itemTemplate.properties.layers = [{
@@ -2230,13 +2230,49 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
 
       const relationships: any[] = [{ relationshipMock: "A", id: 0 }];
 
+      const contingentValues = {
+        "contingentValuesDefinition": {
+          "fieldGroups": [{
+            "name": "Tree Type",
+            "restrictive": false,
+            "fields": [{
+              "id": 0,
+              "name": "commonname",
+              "fieldType": "esriFieldTypeString"
+            }],
+            "domains": { "commonname": "CommonName", "genus": "Genus", "species": "Species" },
+            "contingentValues": [{
+              "id": 1, "types": [3, 3, 3],
+              "values": [0, 0, 0]
+            }],
+            "stringDicts": [{
+              "domain": "CommonName",
+              "entries": ["Norway Maple"]
+            }]
+          }, {
+            "name": "Space Info",
+            "restrictive": false,
+            "fields": [{
+              "id": 0, "name": "spacestatus", "fieldType": "esriFieldTypeString"
+            }],
+            "domains": {
+              "spacestatus": "SpaceStatus", "spacetype": "SpaceType"
+            },
+            "contingentValues": [{
+              "id": 9, "types": [3, 3, 3], "values": [0, 0, 0]
+            }]
+          }]
+        }
+      };
+
       const objects: any = {
         0: {
           a: "a",
           type: "A",
           id: 0,
           relationships,
-          deleteFields: ["A", "B"]
+          deleteFields: ["A", "B"],
+          contingentValues
         }
       };
 
@@ -2257,14 +2293,14 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
 
       const expected: any[] = [
         {
-          url: adminUrl + "/refresh",
+          url: adminUrl + "refresh",
           params: {
             f: "json"
           },
           args
         },
         {
-          url: adminUrl + "/0/deleteFromDefinition",
+          url: adminUrl + "0/deleteFromDefinition",
           params: {
             deleteFromDefinition: {
               fields: objects[0].deleteFields
@@ -2273,28 +2309,14 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
           args: args
         },
         {
-          url: adminUrl + "/refresh",
+          url: adminUrl + "refresh",
           params: {
             f: "json"
           },
           args
         },
-        // {
-        //   url: adminUrl + "/0/updateDefinition",
-        //   params: {
-        //     updateDefinition: _object
-        //   },
-        //   args: args
-        // },
-        // {
-        //   url: adminUrl + "/refresh",
-        //   params: {
-        //     f: "json"
-        //   },
-        //   args
-        // },
         {
-          url: adminUrl + "/addToDefinition",
+          url: adminUrl + "addToDefinition",
           params: {
             addToDefinition: {
               layers: [
@@ -2308,9 +2330,18 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
           args
         },
         {
-          url: adminUrl + "/refresh",
+          url: adminUrl + "refresh",
           params: {
             f: "json"
+          },
+          args
+        },
+        {
+          url: adminUrl + "0/addToDefinition",
+          params: {
+            addToDefinition: {
+              contingentValuesDefinition: contingentValues.contingentValuesDefinition
+            }
           },
           args
         }
@@ -2687,6 +2718,29 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
           expect(response.service.cacheMaxAge).toEqual(90);
           done();
         }, done.fail);
+    });
+
+    it("handles error on getting contingent values", done => {
+      const url =
+        "https://services123.arcgis.com/org1234567890/arcgis/rest/services/ROWPermits_publiccomment/FeatureServer";
+      const adminUrl =
+        "https://services123.arcgis.com/org1234567890/arcgis/rest/admin/services/ROWPermits_publiccomment/FeatureServer";
+      const lyr = mockItems.getAGOLLayerOrTable(0, "A", "Feature Layer", [{}], false);
+      lyr.hasContingentValuesDefinition = true;
+      const serviceResponse = mockItems.getAGOLService([
+        lyr
+      ], [], false);
+      serviceResponse.cacheMaxAge = 90;
+      fetchMock
+        .post(adminUrl + "?f=json", serviceResponse)
+        .post(adminUrl + '/0/contingentValues?f=json', mockItems.get400Failure());
+
+      restHelpers
+        .getFeatureServiceProperties(url, MOCK_USER_SESSION)
+        .then(
+          () => done.fail(),
+          () => done()
+        );
     });
 
     it("handles workforce project service", done => {
@@ -4932,6 +4986,19 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
       };
       const actual: any = restHelpers._parseAdminServiceData(adminData);
       expect(actual).toEqual(expected);
+    });
+  });
+
+  describe("_lowercaseDomain", () => {
+    it("handles empty or undefined URL", () => {
+      expect(restHelpers._lowercaseDomain("")).toEqual("");
+      expect(restHelpers._lowercaseDomain(undefined)).toEqual(undefined);
+    });
+
+    it("lowercases a domain", () => {
+      const origUrl = "https://2AF1D56F411C4DDFAE10A992656FC86D.Esri.com/gis/rest/services?a=BCDefg&H=IJKlmn";
+      const expectedUrl = "https://2af1d56f411c4ddfae10a992656fc86d.esri.com/gis/rest/services?a=BCDefg&H=IJKlmn";
+      expect(restHelpers._lowercaseDomain(origUrl)).toEqual(expectedUrl);
     });
   });
 

@@ -84,14 +84,8 @@ Currently, the ArcGIS Online item types that can be converted into a template ar
 
 #### Setup
 
-The repository uses [Volta](https://docs.volta.sh/guide/getting-started) to standardize the versions of NodeJS and npm. Please install and use this app to get the supported versions.
-
-Once Volta is installed, turn on [Windows "Developer Mode"](https://docs.microsoft.com/en-us/gaming/game-bar/guide/developer-mode) so that Volta can install symlinks.
-
 The following steps will build the repository:
-1. `volta install node@16.14.2`
-1. `volta install npm@bundled`
-1. `volta install typescript@4.6.3`
+
 1. `npm install`
 1. `pushd demos`
 1. `npm run build`
@@ -133,11 +127,12 @@ These commands are
   * `npm run docs:build` builds the documentation ___(note that this script creates a `docs` folder, deleting any existing one)___
   * `npm run docs:deploy` pushes the documentation to the repository's gh-pages
 
-* publishing code _(requires bash window)_
-  * `npm run prerelease:prepare` fetch, clean, link packages, and test
-  * `npm run release:prepare` prepares for publication and creates a changelog
-  * `npm run release:review` assembles git changes _(use arrow keys to put cursor on line_ above _desired version)_
-  * `npm run release:publish` publishes a version
+* publishing code
+  * `npm run release:prepare1` fetch, compile, and test _(requires bash shell)_
+  * `npm run release:prepare2` bundles packages and asks you for the new version number _(use arrow keys to put cursor on line_ above _desired version)_ _(requires Windows shell)_
+  * `npm run release:review` shows summary of git changes
+  * `npm run release:publish-git` publishes a version to GitHub _(requires bash shell)_
+  * `npm run release:publish-npm` publishes a version to npm _(requires Windows shell)_
 
 * lifecycle
   * postinstall runs `bootstrap`

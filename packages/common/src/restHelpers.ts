@@ -23,7 +23,8 @@
 import {
   removeLayerOptimization,
   setDefaultSpatialReference,
-  validateSpatialReferenceAndExtent
+  validateSpatialReferenceAndExtent,
+  processContingentValues
 } from "./featureServiceHelpers";
 import {
   appendQueryParam,
@@ -564,6 +565,9 @@ export function createFeatureService(
       createOptions => {
         svcAdminCreateFeatureService(createOptions).then(
           createResponse => {
+            // Federated servers may have inconsistent casing, so lowerCase it
+            createResponse.encodedServiceURL = _lowercaseDomain(createResponse.encodedServiceURL);
+            createResponse.serviceurl = _lowercaseDomain(createResponse.serviceurl);
             resolve(createResponse);
           },
           e => reject(fail(e))
@@ -1044,12 +1048,6 @@ export function getLayerUpdates(
       deleteProp(obj, "deleteFields");
       updates.push(_getUpdate(adminUrl, null, null, args, "refresh"));
     }
-    // handle definition updates
-    // for portal only as online will now all be handled in addToDef
-    if (isPortal) {
-      updates.push(_getUpdate(adminUrl, id, obj, args, "update"));
-      updates.push(refresh);
-    }
   });
   // issue: #706
   // Add source service relationships
@@ -1074,8 +1072,23 @@ export function getLayerUpdates(
       updates.push(_getUpdate(adminUrl, null, relUpdates, args, "add"));
       updates.push(refresh);
     }
+
+    // handle contingent values
+    const contingentValuesUpdates = _getContingentValuesUpdates({
+      message: "add layer contingent values",
+      objects: args.objects,
+      itemTemplate: args.itemTemplate,
+      authentication: args.authentication
+    });
+
+    /* istanbul ignore else */
+    if (contingentValuesUpdates.length > 0) {
+      contingentValuesUpdates.forEach(conUpdate => {
+        updates.push(_getUpdate(adminUrl + conUpdate.id, null, conUpdate.contingentValues, args, "add"));
+      });
+    }
   }
-  return updates;
+  return updates.length === 1 ? [] : updates;
 }
 
 /**
@@ -1111,45 +1124,6 @@ export function _sortRelationships(
     });
   });
   return _relUpdateLayers;
-}
-
-/**
- * Update view service when sourceSchemaChangesAllowed is true.
- *
- * This property needs to be set after the fact when deploying to portal as it does not honor
- *  when set during service creation.
- *
- * @param itemTemplate Template of item being deployed
- * @param authentication Credentials for the request
- * @param updates An array of update instructions
- * @returns An array of update instructions
- */
-export function getFinalServiceUpdates(
-  itemTemplate: IItemTemplate,
-  authentication: UserSession,
-  updates: IUpdate[]
-): IUpdate[] {
-  const sourceSchemaChangesAllowed: boolean = getProp(
-    itemTemplate,
-    "properties.service.sourceSchemaChangesAllowed"
-  );
-  const isView: boolean = getProp(itemTemplate, "properties.service.isView");
-
-  /* istanbul ignore else */
-  if (sourceSchemaChangesAllowed && isView) {
-    const adminUrl: string = itemTemplate.item.url.replace(
-      "rest/services",
-      "rest/admin/services"
-    );
-    const args: any = {
-      authentication,
-      message: "final service update"
-    };
-    const serviceUpdates: any = { sourceSchemaChangesAllowed };
-    updates.push(_getUpdate(adminUrl, null, serviceUpdates, args, "update"));
-  }
-
-  return updates;
 }
 
 /**
@@ -1311,14 +1285,18 @@ export function getFeatureServiceProperties(
         // Ensure solution items have unique indexes on relationship key fields
         _updateIndexesForRelationshipKeyFields(properties);
 
-        if (workforceService) {
-          getWorkforceServiceInfo(properties, serviceUrl, authentication).then(
-            resolve,
-            reject
-          );
-        } else {
-          resolve(properties);
-        }
+        processContingentValues(properties, serviceUrl, authentication).then(() => {
+          if (workforceService) {
+            getWorkforceServiceInfo(properties, serviceUrl, authentication).then(
+              resolve,
+              reject
+            );
+          } else {
+            resolve(properties);
+          }
+        },
+          (e: any) => reject(fail(e))
+        );
       },
       (e: any) => reject(fail(e))
     );
@@ -2187,6 +2165,29 @@ export function _getRelationshipUpdates(args: IPostProcessArgs): any {
 }
 
 /**
+ * Get the stored contingent values and structure them to be added to the services layers.
+ *
+ * @param args The IPostProcessArgs for the request(s)
+ * @returns Any contingent values that should be added to the service.
+ * @private
+ */
+ export function _getContingentValuesUpdates(args: IPostProcessArgs): any {
+  const contingentValues: any[] = [];
+  Object.keys(args.objects).forEach((k: any) => {
+    const obj: any = args.objects[k];
+    /* istanbul ignore else */
+    if (obj.contingentValues) {
+      contingentValues.push({
+        id: obj.id,
+        contingentValues: obj.contingentValues
+      });
+    }
+    deleteProp(obj, "contingentValues");
+  });
+  return contingentValues;
+}
+
+/**
  * Get refresh, add, update, or delete definition info
  *
  * @param url the base admin url for the service
@@ -2241,6 +2242,30 @@ export function _getUpdate(
     params: ops[type].params,
     args: args
   };
+}
+
+/**
+ * Changes just the domain part of a URL to lowercase.
+ *
+ * @param url URL to modify
+ * @return Adjusted URL
+ * @see From `getServerRootUrl` in arcgis-rest-js' ArcGISIdentityManager.ts
+ * @private
+ */
+export function _lowercaseDomain(
+  url: string
+): string {
+  if (!url) {
+    return url;
+  }
+
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const [_, protocol, domainAndPath ] = url.match(/(https?:\/\/)(.+)/);
+  const [domain, ...path] = domainAndPath.split("/");
+
+  // Only the domain is lowercased because in some cases an org id might be
+  // in the path which cannot be lowercased.
+  return `${protocol}${domain.toLowerCase()}/${path.join("/")}`;
 }
 
 /**
