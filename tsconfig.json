@@ -14,8 +14,7 @@
     "sourceMap": true,
     "strict": true,
     "strictNullChecks": false,
-    "target": "es2020",
-    "types": ["node", "jasmine"]
+    "target": "es2020"
   },
   "exclude": [
     "node_modules"

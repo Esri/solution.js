@@ -45,7 +45,8 @@ module.exports = function(config) {
       compilerOptions: {
         lib: ["dom", "es2017"],
         module: "commonjs", // ES not supported until experimental node12/nodenext moduleResolution
-        target: "es2017"
+        target: "es2017",
+        types: ["node", "jasmine"]
       },
       bundlerOptions: {
         transforms: [require("karma-typescript-es6-transform")()],
