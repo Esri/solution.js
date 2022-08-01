@@ -8,7 +8,7 @@
   "license": "Apache-2.0",
   "devDependencies": {
     "http-server": "*",
-    "rollup": "2.66.1",
+    "rollup": "2.77.2",
     "typescript": "^4.6.3"
   },
   "dependencies": {

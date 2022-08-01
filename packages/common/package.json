@@ -23,7 +23,7 @@
     "@esri/hub-sites": "9.29.0",
     "@esri/hub-teams": "9.29.0",
     "@types/adlib": "^3.0.1",
-    "rollup": "2.66.1"
+    "rollup": "2.77.2"
   },
   "peerDependencies": {
     "@esri/arcgis-rest-auth": "3.4.3",
