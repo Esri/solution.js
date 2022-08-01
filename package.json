@@ -1,6 +1,6 @@
 {
   "name": "@esri/solution.js",
-  "version": "1.4.0",
+  "version": "1.4.1",
   "description": "A library running in Node.js and modern browsers for transferring ArcGIS Online items from one organization to another.",
   "devDependencies": {
     "@chiragrupani/karma-chromium-edge-launcher": "^2.2.2",
@@ -12,7 +12,7 @@
     "@semantic-release/commit-analyzer": "^9.0.2",
     "@types/fetch-mock": "^7.3.5",
     "@types/jasmine": "^4.0.3",
-    "@types/node": "^18.6.1",
+    "@types/node": "^18.6.3",
     "@types/sinon": "^10.0.13",
     "@typescript-eslint/eslint-plugin": "^5.31.0",
     "@typescript-eslint/eslint-plugin-tslint": "^5.31.0",
@@ -61,7 +61,7 @@
     "prettier": "^2.7.1",
     "regenerator-runtime": "^0.13.9",
     "resolve": "^1.22.1",
-    "rollup": "2.77.1",
+    "rollup": "2.77.2",
     "rollup-plugin-filesize": "^9.1.2",
     "rollup-plugin-terser": "^7.0.2",
     "rollup-plugin-typescript2": "^0.32.1",
@@ -71,11 +71,12 @@
     "slug": "^5.3.0",
     "sri-toolbox": "0.2.0",
     "ts-node": "^10.9.1",
-    "typedoc": "^0.23.9",
+    "typedoc": "^0.23.10",
     "typescript": "^4.7.4",
     "uuid": "^8.3.2"
   },
   "dependencies": {
+    "jszip": "^3.10.0",
     "rollup-plugin-node-builtins": "^2.1.2",
     "rollup-plugin-node-globals": "^1.4.0",
     "tslib": "2.4.0"

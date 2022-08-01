@@ -1,6 +1,6 @@
 {
   "name": "@esri/solution-group",
-  "version": "1.4.0",
+  "version": "1.4.1",
   "description": "Manages the creation and deployment of group item types for @esri/solution.js.",
   "main": "dist/node/index.js",
   "unpkg": "dist/umd/group.umd.min.js",
@@ -36,7 +36,7 @@
     "@esri/hub-teams": "^10.0.0-next.3"
   },
   "dependencies": {
-    "@esri/solution-common": "^1.4.0",
+    "@esri/solution-common": "^1.4.1",
     "tslib": "1.14.1"
   },
   "scripts": {
