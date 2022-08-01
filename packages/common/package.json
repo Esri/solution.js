@@ -18,10 +18,10 @@
     "@esri/arcgis-rest-portal": "3.4.3",
     "@esri/arcgis-rest-request": "3.4.3",
     "@esri/arcgis-rest-service-admin": "3.4.3",
-    "@esri/hub-common": "9.29.0",
-    "@esri/hub-initiatives": "9.29.0",
-    "@esri/hub-sites": "9.29.0",
-    "@esri/hub-teams": "9.29.0",
+    "@esri/hub-common": "^10.0.0-next.3",
+    "@esri/hub-initiatives": "^10.0.0-next.3",
+    "@esri/hub-sites": "^10.0.0-next.3",
+    "@esri/hub-teams": "^10.0.0-next.3",
     "@types/adlib": "^3.0.1",
     "rollup": "2.66.1"
   },
@@ -31,10 +31,10 @@
     "@esri/arcgis-rest-portal": "3.4.3",
     "@esri/arcgis-rest-request": "3.4.3",
     "@esri/arcgis-rest-service-admin": "3.4.3",
-    "@esri/hub-common": "9.29.0",
-    "@esri/hub-initiatives": "9.29.0",
-    "@esri/hub-sites": "9.29.0",
-    "@esri/hub-teams": "9.29.0"
+    "@esri/hub-common": "^10.0.0-next.3",
+    "@esri/hub-initiatives": "^10.0.0-next.3",
+    "@esri/hub-sites": "^10.0.0-next.3",
+    "@esri/hub-teams": "^10.0.0-next.3"
   },
   "dependencies": {
     "@esri/arcgis-html-sanitizer": "2.10.0",
