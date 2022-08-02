@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import { getPortalEnv } from "../../src/helpers/get-portal-env";
-import { UserSession } from "@esri/solution-common";
+import { ArcGISIdentityManager } from "@esri/solution-common";
 
 describe("getPortalEnv", () => {
   it("works", () => {
@@ -30,7 +30,7 @@ describe("getPortalEnv", () => {
     ];
 
     data.forEach(entry => {
-      const us = { portal: entry.portal } as UserSession;
+      const us = { portal: entry.portal } as ArcGISIdentityManager;
       expect(getPortalEnv(us)).toBe(
         entry.expected,
         `Should convert ${entry.portal} to ${entry.expected}`

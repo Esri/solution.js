@@ -30,8 +30,8 @@ export interface ISolutionInfoCard {
 
 export function deploySolutionsInFolder(
   folderId: string,
-  srcAuthentication: common.UserSession,
-  destAuthentication: common.UserSession,
+  srcAuthentication: common.ArcGISIdentityManager,
+  destAuthentication: common.ArcGISIdentityManager,
   progressCallback: common.ISolutionProgressCallback,
   enableItemReuse: boolean,
   customParams: any
@@ -65,8 +65,8 @@ export function deploySolutionsInFolder(
 function deployBatchOfSolutions(
   solutionsToDeploy: ISolutionInfoCard[],
   totalNumberOfSolutions: number,
-  srcAuthentication: common.UserSession,
-  destAuthentication: common.UserSession,
+  srcAuthentication: common.ArcGISIdentityManager,
+  destAuthentication: common.ArcGISIdentityManager,
   progressCallback: common.ISolutionProgressCallback,
   enableItemReuse: boolean,
   customParams: any
@@ -108,8 +108,8 @@ function deployBatchOfSolutions(
 export function deploySolution(
   templateSolution: ISolutionInfoCard,
   jobId: string,
-  srcAuthentication: common.UserSession,
-  destAuthentication: common.UserSession,
+  srcAuthentication: common.ArcGISIdentityManager,
+  destAuthentication: common.ArcGISIdentityManager,
   progressCallback: common.ISolutionProgressCallback,
   enableItemReuse: boolean,
   customParams: any
@@ -136,8 +136,8 @@ export function deploySolution(
 
 export function deployAndDisplaySolution(
   templateSolutionId: string,
-  srcAuthentication: common.UserSession,
-  destAuthentication: common.UserSession,
+  srcAuthentication: common.ArcGISIdentityManager,
+  destAuthentication: common.ArcGISIdentityManager,
   progressCallback: common.ISolutionProgressCallback,
   enableItemReuse: boolean,
   customParams: any
@@ -162,7 +162,7 @@ export function deployAndDisplaySolution(
 }
 
 export function getFolders(
-  authentication: common.UserSession,
+  authentication: common.ArcGISIdentityManager,
 ) : Promise<ISolutionInfoCard[]>{
   return portal.getUserContent({ authentication })
   .then((response: portal.IUserContentResponse) => {
@@ -180,10 +180,10 @@ export function getFolders(
 export function getTemplates(
   primarySolutionsGroupId: string,
   agoBasedEnterpriseSolutionsGroupId: string,
-  authentication?: common.UserSession
+  authentication?: common.ArcGISIdentityManager
 ) : Promise<ISolutionInfoCard[]>{
   const query = "type: Solution typekeywords:Solution,Template"
-  const anonUS = new common.UserSession({portal:"https://www.arcgis.com/sharing/rest"});
+  const anonUS = new common.ArcGISIdentityManager({portal:"https://www.arcgis.com/sharing/rest"});
   const additionalSearchOptions = {
     sortField: "title",
     sortOrder: "asc"

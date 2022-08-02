@@ -40,7 +40,7 @@ import {
   replaceTemplate,
   sanitizeJSONAndReportChanges,
   fail,
-  UserSession
+  ArcGISIdentityManager
 } from "@esri/solution-common";
 import { getProp } from "@esri/hub-common";
 import { moduleMap, UNSUPPORTED } from "./module-map";
@@ -63,8 +63,8 @@ export function createItemTemplate(
   solutionItemId: string,
   itemId: string,
   templateDictionary: any,
-  srcAuthentication: UserSession,
-  destAuthentication: UserSession,
+  srcAuthentication: ArcGISIdentityManager,
+  destAuthentication: ArcGISIdentityManager,
   existingTemplates: IItemTemplate[],
   itemProgressCallback: IItemProgressCallback
 ): Promise<ISourceFile[]> {

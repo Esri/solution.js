@@ -15,14 +15,14 @@
  */
 import * as getSubdomainModule from "../../src/helpers/get-experience-subdomain";
 import { getWebExperiencepUrlTemplate } from "../../src/helpers/get-web-experience-url-template";
-import { UserSession } from "@esri/solution-common";
+import { ArcGISIdentityManager } from "@esri/solution-common";
 describe("getWebExperiencepUrlTemplate ::", () => {
   it("for ago returns templated url", () => {
     const subdomainSpy = spyOn(
       getSubdomainModule,
       "getExperienceSubdomain"
     ).and.returnValue("experienceqa");
-    const url = getWebExperiencepUrlTemplate({} as UserSession);
+    const url = getWebExperiencepUrlTemplate({} as ArcGISIdentityManager);
     expect(url).toBe(
       "https://experienceqa.arcgis.com/experience/{{appid}}",
       "should construct the ago url"
@@ -37,7 +37,7 @@ describe("getWebExperiencepUrlTemplate ::", () => {
     ).and.returnValue(null);
     const url = getWebExperiencepUrlTemplate({
       portal: "https://dev0004025.esri.com/portal/sharing/rest"
-    } as UserSession);
+    } as ArcGISIdentityManager);
     expect(url).toBe(
       "https://dev0004025.esri.com/portal/apps/experiencebuilder/?id={{appid}}",
       "should construct the portal url"

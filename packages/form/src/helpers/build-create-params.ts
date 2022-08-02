@@ -16,7 +16,7 @@
 
 import {
   IItemTemplate,
-  UserSession,
+  ArcGISIdentityManager,
   getUniqueTitle,
   ISurvey123CreateParams,
   getPortalDefaultBasemap
@@ -34,13 +34,13 @@ import { encodeSurveyForm } from "./encode-survey-form";
  *
  * @param {IItemTemplate} template The template
  * @param {any} templateDictionary The template dictionary
- * @param {UserSession} destinationAuthentication The destination session info
+ * @param {ArcGISIdentityManager} destinationAuthentication The destination session info
  * @returns {Promise<ISurvey123CreateParams>}
  */
 export function buildCreateParams(
   template: IItemTemplate,
   templateDictionary: any,
-  destinationAuthentication: UserSession
+  destinationAuthentication: ArcGISIdentityManager
 ): Promise<ISurvey123CreateParams> {
   const {
     item: { title: originalTitle, description, tags, typeKeywords },

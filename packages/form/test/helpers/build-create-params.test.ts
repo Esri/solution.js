@@ -20,7 +20,7 @@ import * as surveyEncodingUtils from "../../src/helpers/encode-survey-form";
 import * as templates from "../../../common/test/mocks/templates";
 import * as utils from "../../../common/test/mocks/utils";
 import * as items from "../../../common/test/mocks/agolItems";
-import { ICredential } from "@esri/arcgis-rest-auth";
+import { ICredential } from "@esri/arcgis-rest-request";
 
 // ------------------------------------------------------------------------------------------------------------------ //
 

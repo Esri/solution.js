@@ -19,7 +19,7 @@ import * as utils from "../mocks/utils";
 import * as interfaces from "../../src/interfaces";
 import { getBlob } from "../../src/resources/get-blob";
 
-let MOCK_USER_SESSION: interfaces.UserSession;
+let MOCK_USER_SESSION: interfaces.ArcGISIdentityManager;
 
 beforeEach(() => {
   MOCK_USER_SESSION = utils.createRuntimeMockUserSession();

@@ -35,7 +35,7 @@ import {
   copyFilesToStorageItem,
   postProcessWorkforceTemplates,
   updateItem,
-  UserSession
+  ArcGISIdentityManager
 } from "@esri/solution-common";
 import { getProp, getWithDefault } from "@esri/hub-common";
 import {
@@ -56,8 +56,8 @@ import {
 export function addContentToSolution(
   solutionItemId: string,
   options: ICreateSolutionOptions,
-  srcAuthentication: UserSession,
-  destAuthentication: UserSession
+  srcAuthentication: ArcGISIdentityManager,
+  destAuthentication: ArcGISIdentityManager
 ): Promise<string> {
   return new Promise((resolve, reject) => {
     if (!options.itemIds || options.itemIds.length === 0) {
@@ -523,7 +523,7 @@ export function _simplifyUrlsInItemDescriptions(
  */
 export function _templatizeOrgUrl(
   templates: IItemTemplate[],
-  destAuthentication: UserSession
+  destAuthentication: ArcGISIdentityManager
 ): Promise<IItemTemplate[]> {
   return new Promise((resolve, reject) => {
     // Get the org's URL

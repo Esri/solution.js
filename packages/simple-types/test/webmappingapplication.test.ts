@@ -29,7 +29,7 @@ jasmine.DEFAULT_TIMEOUT_INTERVAL = 20000; // default is 5000 ms
 
 // ------------------------------------------------------------------------------------------------------------------ //
 
-let MOCK_USER_SESSION: common.UserSession;
+let MOCK_USER_SESSION: common.ArcGISIdentityManager;
 
 beforeEach(() => {
   MOCK_USER_SESSION = utils.createRuntimeMockUserSession();

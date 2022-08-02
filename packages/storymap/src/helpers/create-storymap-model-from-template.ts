@@ -19,7 +19,7 @@
  */
 
 import { interpolate, IModelTemplate } from "@esri/hub-common";
-import { UserSession } from "@esri/solution-common";
+import { ArcGISIdentityManager } from "@esri/solution-common";
 import { getPortalEnv } from "./get-portal-env";
 import { getStoryMapBaseUrl } from "./get-storymap-base-url";
 import { getStoryMapSubdomain } from "./get-storymap-subdomain";
@@ -28,7 +28,7 @@ export function createStoryMapModelFromTemplate(
   templateModel: IModelTemplate,
   settings: any,
   transforms: any,
-  authentication: UserSession
+  authentication: ArcGISIdentityManager
 ): Promise<any> {
   const timestamp = new Date().getTime();
   // Keep these around in case we encounter some old templates

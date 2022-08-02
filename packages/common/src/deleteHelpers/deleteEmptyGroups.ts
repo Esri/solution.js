@@ -19,7 +19,7 @@
  */
 
 import { deleteGroupIfEmpty } from "./deleteGroupIfEmpty";
-import { UserSession } from "../interfaces";
+import { ArcGISIdentityManager } from "../interfaces";
 
 // ------------------------------------------------------------------------------------------------------------------ //
 
@@ -32,7 +32,7 @@ import { UserSession } from "../interfaces";
  */
 export function deleteEmptyGroups(
   groups: string[],
-  authentication: UserSession
+  authentication: ArcGISIdentityManager
 ): Promise<string[]> {
   if (groups.length === 0) {
     return Promise.resolve([]);

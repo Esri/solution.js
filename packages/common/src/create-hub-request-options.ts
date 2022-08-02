@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { UserSession } from "./interfaces";
+import { ArcGISIdentityManager } from "./interfaces";
 
 import { IHubUserRequestOptions, getHubUrlFromPortal } from "@esri/hub-common";
 
@@ -22,17 +22,17 @@ import { getSelf, getUser } from "@esri/arcgis-rest-portal";
 
 /**
  * Create a IHubUserRequestOptions object from
- * the UserSession
+ * the ArcGISIdentityManager
  * If passed, it will use `templateDictionary`
  * values instead of making additional requests
  *
  * @export
- * @param {UserSession} authentication
+ * @param {ArcGISIdentityManager} authentication
  * @param {*} templateDictionary
  * @returns {IHubUserRequestOptions}
  */
 export function createHubRequestOptions(
-  authentication: UserSession,
+  authentication: ArcGISIdentityManager,
   templateDictionary: any = {}
 ): Promise<IHubUserRequestOptions> {
   // We used to pull the user

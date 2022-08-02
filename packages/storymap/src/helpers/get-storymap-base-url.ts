@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { UserSession } from "@esri/solution-common";
+import { ArcGISIdentityManager } from "@esri/solution-common";
 import { getStoryMapSubdomain } from "./get-storymap-subdomain";
 /**
  * For a given environment Prod/qa/dev/portal
@@ -21,7 +21,7 @@ import { getStoryMapSubdomain } from "./get-storymap-subdomain";
  *
  * @param authentication
  */
-export function getStoryMapBaseUrl(authentication: UserSession): string {
+export function getStoryMapBaseUrl(authentication: ArcGISIdentityManager): string {
   let baseUrl = "";
 
   const subdomain = getStoryMapSubdomain(authentication);

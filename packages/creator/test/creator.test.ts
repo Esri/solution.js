@@ -26,7 +26,7 @@ import * as mockItems from "../../common/test/mocks/agolItems";
 import * as staticRelatedItemsMocks from "../../common/test/mocks/staticRelatedItemsMocks";
 import * as utils from "../../common/test/mocks/utils";
 
-// Set up a UserSession to use in all these tests
+// Set up a ArcGISIdentityManager to use in all these tests
 const MOCK_USER_SESSION = utils.createRuntimeMockUserSession();
 
 const noDataResponse: any = {};
@@ -56,7 +56,7 @@ describe("Module `creator`", () => {
   describe("createSolution", () => {
     it("createSolution fails to get group or item", done => {
       const solutionGroupId: string = "grp1234567890";
-      const authentication: common.UserSession = MOCK_USER_SESSION;
+      const authentication: common.ArcGISIdentityManager = MOCK_USER_SESSION;
 
       const options: common.ICreateSolutionOptions = {
         progressCallback: utils.SOLUTION_PROGRESS_CALLBACK
@@ -117,7 +117,7 @@ describe("Module `creator`", () => {
 
     it("createSolution fails to get item in group", done => {
       const solutionGroupId: string = "grp1234567890";
-      const authentication: common.UserSession = MOCK_USER_SESSION;
+      const authentication: common.ArcGISIdentityManager = MOCK_USER_SESSION;
       const expectedSolutionId = "sln1234567890";
       const expectedImage = utils.getSampleImageAsBlob();
 
@@ -197,7 +197,7 @@ describe("Module `creator`", () => {
 
     it("createSolution fails to update solution item", done => {
       const solutionGroupId: string = "grp1234567890";
-      const authentication: common.UserSession = MOCK_USER_SESSION;
+      const authentication: common.ArcGISIdentityManager = MOCK_USER_SESSION;
       const expectedSolutionId = "sln1234567890";
 
       fetchMock
@@ -276,7 +276,7 @@ describe("Module `creator`", () => {
 
     it("createSolution with default name", done => {
       const solutionGroupId: string = "grp1234567890";
-      const authentication: common.UserSession = MOCK_USER_SESSION;
+      const authentication: common.ArcGISIdentityManager = MOCK_USER_SESSION;
 
       const expectedSolutionId = "sln1234567890";
       const expectedImage = utils.getSampleImageAsBlob();
@@ -410,7 +410,7 @@ describe("Module `creator`", () => {
     it("createSolution with specified name", done => {
       const solutionName: string = "scratch_" + common.getUTCTimestamp();
       const solutionGroupId: string = "grp1234567890";
-      const authentication: common.UserSession = MOCK_USER_SESSION;
+      const authentication: common.ArcGISIdentityManager = MOCK_USER_SESSION;
 
       const expectedSolutionId = "sln1234567890";
 
@@ -566,7 +566,7 @@ describe("Module `creator`", () => {
 
     it("createSolution with empty group with defaults without progress callback", done => {
       const solutionGroupId: string = "grp1234567890";
-      const authentication: common.UserSession = MOCK_USER_SESSION;
+      const authentication: common.ArcGISIdentityManager = MOCK_USER_SESSION;
 
       const expectedSolutionId = "sln1234567890";
       const expectedImage = utils.getSampleImageAsBlob();
@@ -649,7 +649,7 @@ describe("Module `creator`", () => {
     it("createSolution with empty group without progress callback", done => {
       const solutionName: string = "scratch_" + common.getUTCTimestamp();
       const solutionGroupId: string = "grp1234567890";
-      const authentication: common.UserSession = MOCK_USER_SESSION;
+      const authentication: common.ArcGISIdentityManager = MOCK_USER_SESSION;
 
       const expectedSolutionId = "sln1234567890";
 
@@ -742,7 +742,7 @@ describe("Module `creator`", () => {
     it("createSolution with empty group and progress callback", done => {
       const solutionName: string = "scratch_" + common.getUTCTimestamp();
       const solutionGroupId: string = "grp1234567890";
-      const authentication: common.UserSession = MOCK_USER_SESSION;
+      const authentication: common.ArcGISIdentityManager = MOCK_USER_SESSION;
 
       const expectedSolutionId = "sln1234567890";
 
@@ -837,7 +837,7 @@ describe("Module `creator`", () => {
 
     it("createSolution fails to get item or group", done => {
       const itemIds: string = "itm1234567890";
-      const authentication: common.UserSession = MOCK_USER_SESSION;
+      const authentication: common.ArcGISIdentityManager = MOCK_USER_SESSION;
       const expectedSolutionId = "sln1234567890";
       const expectedImage = utils.getSampleImageAsBlob();
 
@@ -904,7 +904,7 @@ describe("Module `creator`", () => {
 
     it("createSolution fails to add items to solution item", done => {
       const itemIds: string = "itm1234567890";
-      const authentication: common.UserSession = MOCK_USER_SESSION;
+      const authentication: common.ArcGISIdentityManager = MOCK_USER_SESSION;
       const expectedSolutionId = "sln1234567890";
       const expectedItem = mockItems.getAGOLItem("Web Map");
 
@@ -1161,7 +1161,7 @@ describe("Module `creator`", () => {
 
   describe("_createSolutionItem", () => {
     it("creates a solution item with defaults", done => {
-      const authentication: common.UserSession = MOCK_USER_SESSION;
+      const authentication: common.ArcGISIdentityManager = MOCK_USER_SESSION;
       const url = utils.PORTAL_SUBSET.restUrl + "/content/users/casey/addItem";
       const expectedSolutionId = "sln1234567890";
       const expectedFetchBody =
@@ -1200,7 +1200,7 @@ describe("Module `creator`", () => {
         templatizeFields: true,
         additionalTypeKeywords: ["Esri", "Government Solutions"]
       };
-      const authentication: common.UserSession = MOCK_USER_SESSION;
+      const authentication: common.ArcGISIdentityManager = MOCK_USER_SESSION;
       const url = utils.PORTAL_SUBSET.restUrl + "/content/users/casey/addItem";
       const expectedSolutionId = "sln1234567890";
 
@@ -1258,7 +1258,7 @@ describe("Module `creator`", () => {
     });
 
     it("handles failure to create the solution item", done => {
-      const authentication: common.UserSession = MOCK_USER_SESSION;
+      const authentication: common.ArcGISIdentityManager = MOCK_USER_SESSION;
       const url = utils.PORTAL_SUBSET.restUrl + "/content/users/casey/addItem";
       const expectedFetchBody =
         "f=json&title=xfakeidx&type=Solution&snippet=&description=&properties=" +

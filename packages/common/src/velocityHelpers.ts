@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { UserSession } from "./interfaces";
+import { ArcGISIdentityManager } from "./interfaces";
 import {
   getSubscriptionInfo,
   ISubscriptionInfo
@@ -50,7 +50,7 @@ export const PROP_NAMES: string [] = [
  *
  */
 export function getVelocityUrlBase(
-  authentication: UserSession,
+  authentication: ArcGISIdentityManager,
   templateDictionary: any
 ): Promise<string> {
   // if we already have the base url no need to make any additional requests

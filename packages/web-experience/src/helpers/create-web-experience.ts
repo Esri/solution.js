@@ -23,7 +23,7 @@ import {
   objectToJsonBlob
 } from "@esri/hub-common";
 
-import { UserSession } from "@esri/solution-common";
+import { ArcGISIdentityManager } from "@esri/solution-common";
 
 import {
   createItem,
@@ -46,7 +46,7 @@ export function createWebExperience(
   model: IModel,
   folderId: string,
   options: any,
-  authentication: UserSession
+  authentication: ArcGISIdentityManager
 ): Promise<IModel> {
   const resources: any[] = [];
 

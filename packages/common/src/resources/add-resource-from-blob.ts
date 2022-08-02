@@ -16,7 +16,7 @@
 
 import { addItemResource } from "@esri/arcgis-rest-portal";
 import { ArcGISAuthError } from "@esri/arcgis-rest-request";
-import { UserSession } from "../interfaces";
+import { ArcGISIdentityManager } from "../interfaces";
 /**
  * Add a resource from a blob
  *
@@ -31,7 +31,7 @@ export function addResourceFromBlob(
   itemId: string,
   folder: string,
   filename: string,
-  authentication: UserSession
+  authentication: ArcGISIdentityManager
 ): Promise<any> {
   // Check that the filename has an extension because it is required by the addResources call
   if (filename && filename.indexOf(".") < 0) {

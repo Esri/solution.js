@@ -24,7 +24,7 @@ import { getProp, cloneObject } from "../generalHelpers";
  * If it is a legacy hub solution, it will apply the transforms
  *
  * @param model ISolutionItem
- * @param authentication UserSession
+ * @param authentication ArcGISIdentityManager
  * @private
  */
 export function _upgradeThreeDotZero(model: ISolutionItem): ISolutionItem {

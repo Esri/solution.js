@@ -19,7 +19,7 @@ import {
   IAssociatedFileInfo,
   ISourceFile,
   IZipInfo,
-  UserSession
+  ArcGISIdentityManager
 } from "../interfaces";
 import { createCopyResults } from "./createCopyResults";
 import { getBlobAsFile } from "../restHelpersGet";
@@ -59,7 +59,7 @@ export function copyResourceIntoZip(
  */
 export function copyResourceIntoZipFromInfo(
   fileInfo: IAssociatedFileInfo,
-  sourceAuthentication: UserSession,
+  sourceAuthentication: ArcGISIdentityManager,
   zipInfo: IZipInfo
 ): Promise<IAssociatedFileCopyResults> {
   return new Promise<IAssociatedFileCopyResults>(resolve => {

@@ -21,7 +21,7 @@
 import {
   ISolutionItemPrecis,
   ISolutionPrecis,
-  UserSession
+  ArcGISIdentityManager
 } from "./interfaces";
 import * as getSolutionSummary from "./getSolutionSummary";
 import * as restHelpersGet from "./restHelpersGet";
@@ -39,7 +39,7 @@ import * as restHelpersGet from "./restHelpersGet";
  */
 export function getDeletableSolutionInfo(
   solutionItemId: string,
-  authentication: UserSession
+  authentication: ArcGISIdentityManager
 ): Promise<ISolutionPrecis> {
   let solutionSummary: ISolutionPrecis;
 

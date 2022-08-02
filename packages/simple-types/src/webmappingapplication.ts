@@ -28,8 +28,8 @@ import * as common from "@esri/solution-common";
  */
 export function convertItemToTemplate(
   itemTemplate: common.IItemTemplate,
-  destAuthentication: common.UserSession,
-  srcAuthentication: common.UserSession
+  destAuthentication: common.ArcGISIdentityManager,
+  srcAuthentication: common.ArcGISIdentityManager
 ): Promise<common.IItemTemplate> {
   return new Promise<common.IItemTemplate>((resolve, reject) => {
     // Remove org base URL and app id, e.g.,
@@ -131,7 +131,7 @@ export function convertItemToTemplate(
 
 export function templatizeDatasources(
   itemTemplate: common.IItemTemplate,
-  authentication: common.UserSession,
+  authentication: common.ArcGISIdentityManager,
   portalUrl: string
 ): Promise<common.IItemTemplate> {
   return new Promise<common.IItemTemplate>((resolve, reject) => {
@@ -196,7 +196,7 @@ export function templatizeDatasources(
 
 export function templatizeWidgets(
   itemTemplate: common.IItemTemplate,
-  authentication: common.UserSession,
+  authentication: common.ArcGISIdentityManager,
   portalUrl: string,
   widgetPath: string,
   isOnScreen = false
@@ -246,7 +246,7 @@ export function templatizeWidgets(
 
 export function templatizeValues(
   itemTemplate: common.IItemTemplate,
-  authentication: common.UserSession,
+  authentication: common.ArcGISIdentityManager,
   portalUrl: string,
   widgetPath: string
 ): Promise<common.IItemTemplate> {
@@ -333,7 +333,7 @@ export function findUrls(
   portalUrl: string,
   requestUrls: string[],
   serviceRequests: any[],
-  authentication: common.UserSession
+  authentication: common.ArcGISIdentityManager
 ) {
   const options: any = {
     f: "json",
@@ -422,7 +422,7 @@ export function fineTuneCreatedItem(
   originalTemplate: common.IItemTemplate,
   newlyCreatedItem: common.IItemTemplate,
   templateDictionary: any,
-  destinationAuthentication: common.UserSession
+  destinationAuthentication: common.ArcGISIdentityManager
 ): Promise<void> {
   return new Promise<void>(resolve => {
     // If this is a Web AppBuilder application, we will create a Code Attachment for downloading

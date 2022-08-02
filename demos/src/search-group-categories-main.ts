@@ -21,7 +21,7 @@ import * as common from "@esri/solution-common";
 
 export function searchGroupCategories(
   groupId: string,
-  authentication: common.UserSession
+  authentication: common.ArcGISIdentityManager
 ): Promise<string> {
   return new Promise<string>((resolve, reject) => {
     gGroupId = groupId;
@@ -201,7 +201,7 @@ export function updateQuery(event: any): void {
 
 const gQueryItems: string[] = [];
 let gGroupId = "";
-let gAuthentication: common.UserSession;
+let gAuthentication: common.ArcGISIdentityManager;
 
 function convertSchemaToMenu(
   groupCategorySchema: common.IGroupCategorySchema,

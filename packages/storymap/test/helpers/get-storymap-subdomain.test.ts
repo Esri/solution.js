@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import { getStoryMapSubdomain } from "../../src/helpers/get-storymap-subdomain";
-import { UserSession } from "@esri/solution-common";
+import { ArcGISIdentityManager } from "@esri/solution-common";
 
 describe("getStoryMapSubdomain :: ", () => {
   it("works", () => {
@@ -30,7 +30,7 @@ describe("getStoryMapSubdomain :: ", () => {
     ];
 
     data.forEach(entry => {
-      const us = { portal: entry.portal } as UserSession;
+      const us = { portal: entry.portal } as ArcGISIdentityManager;
       expect(getStoryMapSubdomain(us)).toBe(
         entry.expected,
         `Should convert ${entry.portal} to ${entry.expected}`

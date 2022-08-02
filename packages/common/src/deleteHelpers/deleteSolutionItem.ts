@@ -20,7 +20,7 @@
  * @module deleteSolutionItem
  */
 
-import { IStatusResponse, UserSession } from "../interfaces";
+import { IStatusResponse, ArcGISIdentityManager } from "../interfaces";
 import * as portal from "@esri/arcgis-rest-portal";
 import * as restHelpers from "../restHelpers";
 
@@ -36,7 +36,7 @@ import * as restHelpers from "../restHelpers";
  */
 export function deleteSolutionItem(
   solutionItemId: string,
-  authentication: UserSession
+  authentication: ArcGISIdentityManager
 ): Promise<IStatusResponse> {
   const protectOptions: portal.IUserItemOptions = {
     id: solutionItemId,

@@ -21,7 +21,7 @@ import * as common from "@esri/solution-common";
 
 export function getFormattedItemInfo(
   itemId: string,
-  authentication: common.UserSession,
+  authentication: common.ArcGISIdentityManager,
   Raphael?: any,
   Dracula?: any
 ): Promise<string> {

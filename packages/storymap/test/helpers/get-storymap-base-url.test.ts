@@ -15,7 +15,7 @@
  */
 import { getStoryMapBaseUrl } from "../../src/helpers/get-storymap-base-url";
 import * as getSubdomainModule from "../../src/helpers/get-storymap-subdomain";
-import { UserSession } from "@esri/solution-common";
+import { ArcGISIdentityManager } from "@esri/solution-common";
 
 describe("getStoryMapBaseUrl :: ", () => {
   it("for ago, returns the env specific base url", () => {
@@ -23,7 +23,7 @@ describe("getStoryMapBaseUrl :: ", () => {
       getSubdomainModule,
       "getStoryMapSubdomain"
     ).and.returnValue("storymapsqa");
-    const url = getStoryMapBaseUrl({} as UserSession);
+    const url = getStoryMapBaseUrl({} as ArcGISIdentityManager);
     expect(url).toBe(
       "https://storymapsqa.arcgis.com",
       "should construct the ago url"
@@ -38,7 +38,7 @@ describe("getStoryMapBaseUrl :: ", () => {
     ).and.returnValue(null);
     const url = getStoryMapBaseUrl({
       portal: "https://dev0004025.esri.com/portal/sharing/rest"
-    } as UserSession);
+    } as ArcGISIdentityManager);
     expect(url).toBe(
       "https://dev0004025.esri.com/portal/apps/storymaps",
       "should construct the portal url"

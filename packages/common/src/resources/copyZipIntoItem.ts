@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { IZipCopyResults, IZipInfo, UserSession } from "../interfaces";
+import { IZipCopyResults, IZipInfo, ArcGISIdentityManager } from "../interfaces";
 import {
   IItemResourceOptions,
   addItemResource
@@ -35,7 +35,7 @@ import { createCopyResults } from "./createCopyResults";
 export function copyZipIntoItem(
   zipInfo: IZipInfo,
   destinationItemId: string,
-  destinationAuthentication: UserSession
+  destinationAuthentication: ArcGISIdentityManager
 ): Promise<IZipCopyResults> {
   return new Promise<IZipCopyResults>(resolve => {
     zipInfo.zip

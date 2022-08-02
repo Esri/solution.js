@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import {
-  UserSession,
+  ArcGISIdentityManager,
   IItemUpdate,
   jsonToBlob,
   updateItem
@@ -23,7 +23,7 @@ import {
 export function updateNotebookData(
   itemId: string,
   data: any,
-  authentication: UserSession
+  authentication: ArcGISIdentityManager
 ): Promise<any> {
   const updateOptions: IItemUpdate = {
     id: itemId,

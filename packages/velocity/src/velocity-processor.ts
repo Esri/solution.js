@@ -21,7 +21,7 @@
  */
 
 import {
-  UserSession,
+  ArcGISIdentityManager,
   IItemProgressCallback,
   IItemTemplate,
   ICreateItemFromTemplateResponse,
@@ -59,8 +59,8 @@ import {
 export function convertItemToTemplate(
   solutionItemId: string,
   itemInfo: any,
-  destAuthentication: UserSession,
-  srcAuthentication: UserSession,
+  destAuthentication: ArcGISIdentityManager,
+  srcAuthentication: ArcGISIdentityManager,
   templateDictionary: any
 ): Promise<IItemTemplate> {
   const template = createInitializedItemTemplate(itemInfo);
@@ -110,7 +110,7 @@ export function convertItemToTemplate(
 export function createItemFromTemplate(
   template: IItemTemplate,
   templateDictionary: any,
-  destinationAuthentication: UserSession,
+  destinationAuthentication: ArcGISIdentityManager,
   itemProgressCallback: IItemProgressCallback
 ): Promise<ICreateItemFromTemplateResponse> {
   // let the progress system know we've started...
@@ -174,7 +174,7 @@ export function createItemFromTemplate(
  * @param {IItemTemplate} template The item template
  * @param {IItemTemplate[]} templates The full collection of item templates
  * @param {any} templateDictionary Hash of facts such as the folder id for the deployment
- * @param {UserSession} authentication The destination session info
+ * @param {ArcGISIdentityManager} authentication The destination session info
  * @returns Promise resolving to successfulness of update
  */
  export function postProcess(
@@ -184,7 +184,7 @@ export function createItemFromTemplate(
   template: IItemTemplate,
   templates: IItemTemplate[],
   templateDictionary: any,
-  authentication: UserSession
+  authentication: ArcGISIdentityManager
 ): Promise<any> {
   const itemUpdate = itemInfos.filter(ii => ii.id === itemId);
   const item: any = itemUpdate[0].item.item;

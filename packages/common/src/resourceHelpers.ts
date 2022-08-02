@@ -55,7 +55,7 @@ import {
   IFileMimeTyped,
   ISourceFile,
   ISourceFileCopyPath,
-  UserSession
+  ArcGISIdentityManager
 } from "./interfaces";
 import { new_File } from "./polyfills";
 import {
@@ -78,7 +78,7 @@ import {
 export function addThumbnailFromBlob(
   blob: any,
   itemId: string,
-  authentication: UserSession,
+  authentication: ArcGISIdentityManager,
   isGroup: boolean = false
 ): Promise<any> {
   const updateOptions: any = {
@@ -125,11 +125,11 @@ export function convertBlobToSupportableResource(
  * @returns A promise which resolves to a boolean indicating if the copies were successful
  */
 export function copyFilesFromStorageItem(
-  storageAuthentication: UserSession,
+  storageAuthentication: ArcGISIdentityManager,
   filePaths: IDeployFileCopyPath[],
   destinationFolderId: string,
   destinationItemId: string,
-  destinationAuthentication: UserSession,
+  destinationAuthentication: ArcGISIdentityManager,
   template: any = {}
 ): Promise<boolean> {
   // TODO: This is only used in deployer, so move there
@@ -205,7 +205,7 @@ export function copyFilesFromStorageItem(
 export function copyFilesToStorageItem(
   files: ISourceFile[],
   storageItemId: string,
-  storageAuthentication: UserSession
+  storageAuthentication: ArcGISIdentityManager
 ): Promise<string[]> {
   return new Promise<string[]>(resolve => {
     // tslint:disable-next-line: no-floating-promises
@@ -451,7 +451,7 @@ export function isSupportedFileType(filename: string): boolean {
  * @returns A promise which resolves to a boolean indicating if the copies were successful
  */
 export function getThumbnailFromStorageItem(
-  authentication: UserSession,
+  authentication: ArcGISIdentityManager,
   filePaths: IDeployFileCopyPath[]
 ): Promise<File> {
   let thumbnailUrl: string;
@@ -483,7 +483,7 @@ export function updateItemResourceText(
   itemId: string,
   filename: string,
   content: string,
-  authentication: UserSession
+  authentication: ArcGISIdentityManager
 ): Promise<IItemResourceResponse> {
   return updateItemResource({
     id: itemId,

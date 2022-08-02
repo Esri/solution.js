@@ -17,9 +17,9 @@
 import { shareItemToGroups } from "../../src/sharing/index";
 import * as portal from "@esri/arcgis-rest-portal";
 import * as testUtils from "../mocks/utils";
-import { UserSession } from "../../src";
+import { ArcGISIdentityManager } from "../../src";
 
-let MOCK_USER_SESSION: UserSession;
+let MOCK_USER_SESSION: ArcGISIdentityManager;
 
 describe("shareItemToGroups", () => {
   beforeEach(() => {

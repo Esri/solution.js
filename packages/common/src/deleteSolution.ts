@@ -26,7 +26,7 @@ import {
   IItemTemplate,
   ISolutionItemPrecis,
   ISolutionPrecis,
-  UserSession
+  ArcGISIdentityManager
 } from "./interfaces";
 import * as deleteSolutionContents from "./deleteHelpers/deleteSolutionContents";
 import * as getDeletableSolutionInfo from "./getDeletableSolutionInfo";
@@ -49,7 +49,7 @@ import * as getDeletableSolutionInfo from "./getDeletableSolutionInfo";
  */
 export function deleteSolution(
   solutionItemId: string,
-  authentication: UserSession,
+  authentication: ArcGISIdentityManager,
   options?: IDeleteSolutionOptions
 ): Promise<ISolutionPrecis[]> {
   return getDeletableSolutionInfo
@@ -89,7 +89,7 @@ export function deleteSolutionByComponents(
   itemIds: string[],
   templates: IItemTemplate[],
   templateDictionary: any,
-  authentication: UserSession,
+  authentication: ArcGISIdentityManager,
   options?: IDeleteSolutionOptions
 ): Promise<ISolutionPrecis[]> {
   // Construct a description of the solution from its id and the itemIds using the templateDictionary to fill in details

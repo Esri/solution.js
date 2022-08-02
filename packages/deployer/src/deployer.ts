@@ -43,7 +43,7 @@ import { IModel } from "@esri/hub-common";
  */
 export function deploySolution(
   maybeModel: string | IModel,
-  authentication: common.UserSession,
+  authentication: common.ArcGISIdentityManager,
   options?: common.IDeploySolutionOptions
 ): Promise<string> {
   // if we are not passed the maybeModel, reject
@@ -57,7 +57,7 @@ export function deploySolution(
   }
 
   // It is possible to provide a separate authentication for the source
-  const storageAuthentication: common.UserSession = deployOptions.storageAuthentication
+  const storageAuthentication: common.ArcGISIdentityManager = deployOptions.storageAuthentication
     ? deployOptions.storageAuthentication
     : authentication;
 

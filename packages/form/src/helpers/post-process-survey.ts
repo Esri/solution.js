@@ -15,7 +15,7 @@
  */
 
 import {
-  UserSession,
+  ArcGISIdentityManager,
   IItemTemplate,
   updateItem,
   replaceInTemplate,
@@ -40,7 +40,7 @@ import { moveItem } from "@esri/arcgis-rest-portal";
  * @param {any[]} itemInfos An Array of item details
  * @param {IItemTemplate} template The template
  * @param {any} templateDictionary The template dictionary
- * @param {UserSession} authentication The destination session info
+ * @param {ArcGISIdentityManager} authentication The destination session info
  * @returns {Promise<any>}
  */
 export function postProcessHubSurvey(
@@ -50,7 +50,7 @@ export function postProcessHubSurvey(
   template: IItemTemplate,
   templates: IItemTemplate[],
   templateDictionary: any,
-  authentication: UserSession
+  authentication: ArcGISIdentityManager
 ): Promise<any> {
   const featureServiceSourceId = template.properties.info.serviceInfo.itemId;
   const { itemId: featureServiceResultId } = templateDictionary[

@@ -18,7 +18,7 @@
  * @module deleteSolutionFolder
  */
 
-import { UserSession } from "../interfaces";
+import { ArcGISIdentityManager } from "../interfaces";
 import * as portal from "@esri/arcgis-rest-portal";
 
 // ------------------------------------------------------------------------------------------------------------------ //
@@ -35,7 +35,7 @@ import * as portal from "@esri/arcgis-rest-portal";
 export function deleteSolutionFolder(
   solutionIds: string[],
   folderId: string,
-  authentication: UserSession
+  authentication: ArcGISIdentityManager
 ): Promise<boolean> {
   // See if the deployment folder is empty and can be deleted; first, we need info about user
   // eslint-disable-next-line @typescript-eslint/no-floating-promises

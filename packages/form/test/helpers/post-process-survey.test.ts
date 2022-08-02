@@ -22,7 +22,7 @@ import * as agolItems from "../../../common/test/mocks/agolItems";
 import * as mockTemplates from "../../../common/test/mocks/templates";
 
 describe("postProcessHubSurvey", () => {
-  let MOCK_USER_SESSION: common.UserSession;
+  let MOCK_USER_SESSION: common.ArcGISIdentityManager;
   let template: common.IItemTemplate;
   let interpolatedTemplate: common.IItemTemplate;
   let templateDictionary: any;

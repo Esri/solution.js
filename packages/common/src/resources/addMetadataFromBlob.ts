@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { UserSession } from "../interfaces";
+import { ArcGISIdentityManager } from "../interfaces";
 import { updateItem } from "@esri/arcgis-rest-portal";
 
 // ------------------------------------------------------------------------------------------------------------------ //
@@ -30,7 +30,7 @@ import { updateItem } from "@esri/arcgis-rest-portal";
 export function addMetadataFromBlob(
   blob: Blob,
   itemId: string,
-  authentication: UserSession
+  authentication: ArcGISIdentityManager
 ): Promise<any> {
   const updateOptions: any = {
     item: {

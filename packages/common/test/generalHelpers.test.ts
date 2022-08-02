@@ -21,7 +21,7 @@
 import * as generalHelpers from "../src/generalHelpers";
 import * as interfaces from "../src/interfaces";
 import * as mockItems from "../test/mocks/agolItems";
-import * as serviceAdmin from "@esri/arcgis-rest-service-admin";
+import * as serviceAdmin from "@esri/arcgis-rest-feature-service";
 import * as utils from "../test/mocks/utils";
 
 describe("Module `generalHelpers`: common utility functions shared across packages", () => {

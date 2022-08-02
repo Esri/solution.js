@@ -36,7 +36,7 @@ import {
   IRelatedItems,
   ItemRelationshipType,
   IUser,
-  UserSession
+  ArcGISIdentityManager
 } from "./interfaces";
 import {
   IGetGroupContentOptions,
@@ -65,7 +65,7 @@ export function checkJsonForError(json: any): boolean {
 
 export function getPortal(
   id: string,
-  authentication: UserSession
+  authentication: ArcGISIdentityManager
 ): Promise<IPortal> {
   const requestOptions = {
     authentication: authentication
@@ -73,11 +73,11 @@ export function getPortal(
   return portalGetPortal(id, requestOptions);
 }
 
-export function getUser(authentication: UserSession): Promise<IUser> {
+export function getUser(authentication: ArcGISIdentityManager): Promise<IUser> {
   return authentication.getUser();
 }
 
-export function getUsername(authentication: UserSession): Promise<string> {
+export function getUsername(authentication: ArcGISIdentityManager): Promise<string> {
   return new Promise<string>((resolve, reject) => {
     getUser(authentication).then(
       (user: IUser) => resolve(user.username),
@@ -86,7 +86,7 @@ export function getUsername(authentication: UserSession): Promise<string> {
   });
 }
 
-export function getFoldersAndGroups(authentication: UserSession): Promise<any> {
+export function getFoldersAndGroups(authentication: ArcGISIdentityManager): Promise<any> {
   return new Promise<any>((resolve, reject) => {
     const requestOptions = {
       httpMethod: "GET",
@@ -130,7 +130,7 @@ export function getFoldersAndGroups(authentication: UserSession): Promise<any> {
 export function getBlobAsFile(
   url: string,
   filename: string,
-  authentication: UserSession,
+  authentication: ArcGISIdentityManager,
   ignoreErrors: number[] = [],
   mimeType?: string
 ): Promise<File> {
@@ -154,7 +154,7 @@ export function getBlobAsFile(
  */
 export function getBlobCheckForError(
   url: string,
-  authentication: UserSession,
+  authentication: ArcGISIdentityManager,
   ignoreErrors: number[] = []
 ): Promise<Blob> {
   return new Promise<Blob>((resolve, reject) => {
@@ -220,7 +220,7 @@ export function getFilenameFromUrl(url: string): string {
  */
 export function getGroupBase(
   groupId: string,
-  authentication: UserSession
+  authentication: ArcGISIdentityManager
 ): Promise<IGroup> {
   const requestOptions = {
     authentication: authentication
@@ -238,7 +238,7 @@ export function getGroupBase(
  */
 export function getGroupCategorySchema(
   groupId: string,
-  authentication: UserSession
+  authentication: ArcGISIdentityManager
 ): Promise<IGroupCategorySchema> {
   const requestOptions = {
     authentication: authentication
@@ -255,7 +255,7 @@ export function getGroupCategorySchema(
  */
 export function getGroupContents(
   groupId: string,
-  authentication: UserSession
+  authentication: ArcGISIdentityManager
 ): Promise<string[]> {
   return new Promise((resolve, reject) => {
     const pagingParams: IPagingParams = {
@@ -283,7 +283,7 @@ export function getGroupContents(
  */
 export function getItemBase(
   itemId: string,
-  authentication: UserSession
+  authentication: ArcGISIdentityManager
 ): Promise<IItem> {
   const itemParam: IRequestOptions = {
     authentication: authentication
@@ -302,7 +302,7 @@ export function getItemBase(
 export function getItemDataAsFile(
   itemId: string,
   filename: string,
-  authentication: UserSession
+  authentication: ArcGISIdentityManager
 ): Promise<File> {
   return new Promise<File>(resolve => {
     getItemDataBlob(itemId, authentication).then(
@@ -322,7 +322,7 @@ export function getItemDataAsFile(
  */
 export function getItemDataAsJson(
   itemId: string,
-  authentication: UserSession
+  authentication: ArcGISIdentityManager
 ): Promise<any> {
   return new Promise<any>(resolve => {
     getItemDataBlob(itemId, authentication).then(
@@ -341,7 +341,7 @@ export function getItemDataAsJson(
  */
 export function getItemDataBlob(
   itemId: string,
-  authentication: UserSession
+  authentication: ArcGISIdentityManager
 ): Promise<Blob> {
   return new Promise<Blob>(resolve => {
     const url = getItemDataBlobUrl(itemId, authentication);
@@ -361,7 +361,7 @@ export function getItemDataBlob(
  */
 export function getItemDataBlobUrl(
   itemId: string,
-  authentication: UserSession
+  authentication: ArcGISIdentityManager
 ): string {
   return `${getPortalSharingUrlFromAuth(
     authentication
@@ -377,7 +377,7 @@ export function getItemDataBlobUrl(
  */
 export function getItemInfoFileUrlPrefix(
   itemId: string,
-  authentication: UserSession
+  authentication: ArcGISIdentityManager
 ): string {
   return `${getPortalSharingUrlFromAuth(
     authentication
@@ -393,7 +393,7 @@ export function getItemInfoFileUrlPrefix(
  */
 export function getItemMetadataAsFile(
   itemId: string,
-  authentication: UserSession
+  authentication: ArcGISIdentityManager
 ): Promise<File> {
   return new Promise<File>(resolve => {
     getItemMetadataBlob(itemId, authentication).then(
@@ -418,7 +418,7 @@ export function getItemMetadataAsFile(
  */
 export function getItemMetadataBlob(
   itemId: string,
-  authentication: UserSession
+  authentication: ArcGISIdentityManager
 ): Promise<Blob> {
   return new Promise<Blob>((resolve, reject) => {
     const url = getItemMetadataBlobUrl(itemId, authentication);
@@ -436,7 +436,7 @@ export function getItemMetadataBlob(
  */
 export function getItemMetadataBlobUrl(
   itemId: string,
-  authentication: UserSession
+  authentication: ArcGISIdentityManager
 ): string {
   return (
     getItemInfoFileUrlPrefix(itemId, authentication) + "metadata/metadata.xml"
@@ -456,7 +456,7 @@ export function getItemRelatedItems(
   itemId: string,
   relationshipType: ItemRelationshipType | ItemRelationshipType[],
   direction: "forward" | "reverse",
-  authentication: UserSession
+  authentication: ArcGISIdentityManager
 ): Promise<IGetRelatedItemsResponse> {
   return new Promise<IGetRelatedItemsResponse>(resolve => {
     const itemRelatedItemsParam: IItemRelationshipOptions = {
@@ -493,7 +493,7 @@ export function getItemRelatedItems(
 export function getItemRelatedItemsInSameDirection(
   itemId: string,
   direction: "forward" | "reverse",
-  authentication: UserSession
+  authentication: ArcGISIdentityManager
 ): Promise<IRelatedItems[]> {
   return new Promise<IRelatedItems[]>(resolve => {
     const relationshipTypes = [
@@ -560,7 +560,7 @@ export function getItemRelatedItemsInSameDirection(
 
 export function getItemResources(
   id: string,
-  authentication: UserSession
+  authentication: ArcGISIdentityManager
 ): Promise<any> {
   return new Promise<any>(resolve => {
     const requestOptions = {
@@ -587,7 +587,7 @@ export function getItemResources(
  */
 export function getItemResourcesFiles(
   itemId: string,
-  authentication: UserSession
+  authentication: ArcGISIdentityManager
 ): Promise<File[]> {
   return new Promise<File[]>((resolve, reject) => {
     const pagingParams: IPagingParams = {
@@ -614,7 +614,7 @@ export function getItemResourcesFiles(
  */
 export function getItemsRelatedToASolution(
   solutionItemId: string,
-  authentication: UserSession
+  authentication: ArcGISIdentityManager
 ): Promise<IItem[]> {
   // eslint-disable-next-line @typescript-eslint/no-floating-promises
   return getItemRelatedItems(
@@ -641,7 +641,7 @@ export function getItemThumbnail(
   itemId: string,
   thumbnailUrlPart: string,
   isGroup: boolean,
-  authentication: UserSession
+  authentication: ArcGISIdentityManager
 ): Promise<Blob> {
   return new Promise<Blob>((resolve, reject) => {
     if (!thumbnailUrlPart) {
@@ -677,7 +677,7 @@ export function getItemThumbnailAsFile(
   itemId: string,
   thumbnailUrlPart: string,
   isGroup: boolean,
-  authentication: UserSession
+  authentication: ArcGISIdentityManager
 ): Promise<File> {
   return new Promise<File>((resolve, reject) => {
     /* istanbul ignore else */
@@ -717,7 +717,7 @@ export function getItemThumbnailUrl(
   itemId: string,
   thumbnailUrlPart: string,
   isGroup: boolean,
-  authentication: UserSession
+  authentication: ArcGISIdentityManager
 ): string {
   return (
     checkUrlPathTermination(getPortalSharingUrlFromAuth(authentication)) +
@@ -737,7 +737,7 @@ export function getItemThumbnailUrl(
  */
 export function getJson(
   url: string,
-  authentication?: UserSession
+  authentication?: ArcGISIdentityManager
 ): Promise<any> {
   // Get the blob from the URL
   const requestOptions: IRequestOptions = { httpMethod: "GET" };
@@ -764,7 +764,7 @@ export function getJson(
  * @returns Portal sharing url to be used in API requests, defaulting to `https://www.arcgis.com/sharing/rest`
  */
 export function getPortalSharingUrlFromAuth(
-  authentication: UserSession
+  authentication: ArcGISIdentityManager
 ): string {
   // If auth was passed, use that portal
   return getProp(authentication, "portal") || "https://www.arcgis.com/sharing/rest";
@@ -776,7 +776,7 @@ export function getPortalSharingUrlFromAuth(
  * @param authentication Credentials for the request to AGO
  * @returns Portal url to be used in API requests, defaulting to `https://www.arcgis.com`
  */
-export function getPortalUrlFromAuth(authentication: UserSession): string {
+export function getPortalUrlFromAuth(authentication: ArcGISIdentityManager): string {
   return getPortalSharingUrlFromAuth(authentication).replace(
     "/sharing/rest",
     ""
@@ -792,7 +792,7 @@ export function getPortalUrlFromAuth(authentication: UserSession): string {
  */
 export function getSolutionsRelatedToAnItem(
   itemId: string,
-  authentication: UserSession
+  authentication: ArcGISIdentityManager
 ): Promise<string[]> {
   // eslint-disable-next-line @typescript-eslint/no-floating-promises
   return getItemRelatedItems(
@@ -808,7 +808,7 @@ export function getSolutionsRelatedToAnItem(
 export function getThumbnailFile(
   url: string,
   filename: string,
-  authentication: UserSession
+  authentication: ArcGISIdentityManager
 ): Promise<File> {
   return new Promise<File>(resolve => {
     getBlobAsFile(url, filename, authentication, [500]).then(resolve, () =>
@@ -886,7 +886,7 @@ export function _fixTextBlobType(blob: Blob): Promise<Blob> {
 export function _getGroupContentsTranche(
   groupId: string,
   pagingParams: IPagingParams,
-  authentication: UserSession
+  authentication: ArcGISIdentityManager
 ): Promise<string[]> {
   return new Promise((resolve, reject) => {
     // Fetch group items
@@ -932,7 +932,7 @@ export function _getGroupContentsTranche(
 export function _getItemResourcesTranche(
   itemId: string,
   pagingParams: IPagingParams,
-  authentication: UserSession
+  authentication: ArcGISIdentityManager
 ): Promise<Array<Promise<File>>> {
   return new Promise<Array<Promise<File>>>((resolve, reject) => {
     // Fetch resources
@@ -982,13 +982,13 @@ export function _getItemResourcesTranche(
  *
  * @param {string} basemapGalleryGroupQuery The default basemap group query
  * @param {string} basemapTitle The default basemap title
- * @param {UserSession} authentication The session info
+ * @param {ArcGISIdentityManager} authentication The session info
  * @returns {IItem}
  */
 export function getPortalDefaultBasemap(
   basemapGalleryGroupQuery: string,
   basemapTitle: string,
-  authentication: UserSession
+  authentication: ArcGISIdentityManager
 ) {
   return searchGroups(basemapGalleryGroupQuery, authentication, { num: 1 })
     .then(({ results: [basemapGroup] }) => {

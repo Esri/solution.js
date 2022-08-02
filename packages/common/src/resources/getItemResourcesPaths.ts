@@ -16,7 +16,7 @@
 
 import { getItemResources } from "../restHelpersGet";
 import { generateSourceFilePaths } from "../resourceHelpers";
-import { IItemTemplate, ISourceFileCopyPath, UserSession } from "../interfaces";
+import { IItemTemplate, ISourceFileCopyPath, ArcGISIdentityManager } from "../interfaces";
 
 // ------------------------------------------------------------------------------------------------------------------ //
 
@@ -32,7 +32,7 @@ import { IItemTemplate, ISourceFileCopyPath, UserSession } from "../interfaces";
 export function getItemResourcesPaths(
   itemTemplate: IItemTemplate,
   solutionItemId: string,
-  authentication: UserSession,
+  authentication: ArcGISIdentityManager,
   storageVersion = 0
 ): Promise<ISourceFileCopyPath[]> {
   // get the resources for the item

@@ -17,13 +17,13 @@
 import { IItemTemplate, cloneObject } from "@esri/hub-common";
 import { _upgradeTwoDotSix } from "../../src/migrations/upgrade-two-dot-six";
 import * as utils from "../../../common/test/mocks/utils";
-import { ISolutionItem, UserSession } from "../../src/interfaces";
+import { ISolutionItem, ArcGISIdentityManager } from "../../src/interfaces";
 
 describe("Upgrade 2.6 ::", () => {
   let mapQuestion: any;
   let otherQuestion: any;
   let defaultModel: ISolutionItem;
-  let MOCK_USER_SESSION: UserSession;
+  let MOCK_USER_SESSION: ArcGISIdentityManager;
 
   beforeEach(() => {
     mapQuestion = {

@@ -93,7 +93,7 @@ describe("Module `deploySolutionFromTemplate`", () => {
   });
 
   describe("_getPortalBaseUrl", () => {
-    let MOCK_USER_SESSION: common.UserSession;
+    let MOCK_USER_SESSION: common.ArcGISIdentityManager;
 
     beforeEach(() => {
       MOCK_USER_SESSION = testUtils.createRuntimeMockUserSession();
@@ -135,8 +135,8 @@ describe("Module `deploySolutionFromTemplate`", () => {
   });
 
   describe("deploySolutionFromTemplate", () => {
-    let MOCK_USER_SESSION: common.UserSession;
-    let MOCK_USER_SESSION_ALT: common.UserSession;
+    let MOCK_USER_SESSION: common.ArcGISIdentityManager;
+    let MOCK_USER_SESSION_ALT: common.ArcGISIdentityManager;
     const communitySelfResponse: any = testUtils.getUserResponse();
     const portalsSelfResponse: any = testUtils.getPortalsSelfResponse();
     const alternatePortalRestUrl =
@@ -165,7 +165,7 @@ describe("Module `deploySolutionFromTemplate`", () => {
       const templateSolutionId: string = "sln1234567890";
       const solutionTemplateBase: any = solution.item;
       const solutionTemplateData: any = solution.data;
-      const authentication: common.UserSession = MOCK_USER_SESSION;
+      const authentication: common.ArcGISIdentityManager = MOCK_USER_SESSION;
       const options: common.IDeploySolutionOptions = {
         templateDictionary: {
           map1234567890: { itemId: "dpl1234567890" }
@@ -286,7 +286,7 @@ describe("Module `deploySolutionFromTemplate`", () => {
       const templateSolutionId: string = "sln1234567890";
       const solutionTemplateBase: any = solution.item;
       const solutionTemplateData: any = solution.data;
-      const authentication: common.UserSession = MOCK_USER_SESSION;
+      const authentication: common.ArcGISIdentityManager = MOCK_USER_SESSION;
       const options: common.IDeploySolutionOptions = {
         storageAuthentication: MOCK_USER_SESSION_ALT,
         thumbnailurl: "https://www.arcgis.com/sln1234567890/thumbnail/",
@@ -415,7 +415,7 @@ describe("Module `deploySolutionFromTemplate`", () => {
   });
 
   describe("_applySourceToDeployOptions", () => {
-    let MOCK_USER_SESSION: common.UserSession;
+    let MOCK_USER_SESSION: common.ArcGISIdentityManager;
 
     beforeEach(() => {
       MOCK_USER_SESSION = testUtils.createRuntimeMockUserSession();

@@ -26,7 +26,7 @@ import {
   IDeleteSolutionOptions,
   ISolutionPrecis,
   IStatusResponse,
-  UserSession
+  ArcGISIdentityManager
 } from "../interfaces";
 import * as deleteEmptyGroups from "./deleteEmptyGroups";
 import * as deleteSolutionFolder from "./deleteSolutionFolder";
@@ -54,7 +54,7 @@ import * as reportProgress from "./reportProgress";
 export function deleteSolutionContents(
   solutionItemId: string,
   solutionSummary: ISolutionPrecis,
-  authentication: UserSession,
+  authentication: ArcGISIdentityManager,
   options?: IDeleteSolutionOptions
 ): Promise<ISolutionPrecis[]> {
   const deleteOptions: IDeleteSolutionOptions = options || {};

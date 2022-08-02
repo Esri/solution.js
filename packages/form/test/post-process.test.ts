@@ -24,7 +24,7 @@ import * as hubFormTemplateHelpers from "../src/helpers/is-hub-form-template";
 import * as hubFormProcessingHelpers from "../src/helpers/post-process-survey";
 
 describe("postProcess", () => {
-  let MOCK_USER_SESSION: common.UserSession;
+  let MOCK_USER_SESSION: common.ArcGISIdentityManager;
   let template: common.IItemTemplate;
   let templateDictionary: any;
   let itemInfos: any[];

@@ -29,7 +29,7 @@ import * as viewer from "@esri/solution-viewer";
  */
 export function getFormattedItemHierarchy(
   itemId: string,
-  authentication: common.UserSession
+  authentication: common.ArcGISIdentityManager
 ): Promise<string> {
   return new Promise<string>((resolve, reject) => {
     if (!itemId) {
@@ -75,7 +75,7 @@ export function getFormattedItemHierarchy(
       }
 
       // Get an item's title
-      function getItemTitle(id: string, authentication: common.UserSession): Promise<string> {
+      function getItemTitle(id: string, authentication: common.ArcGISIdentityManager): Promise<string> {
         return common.getItemBase(id, authentication)
         .then(
           item => item.title,

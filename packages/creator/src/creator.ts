@@ -42,7 +42,7 @@ import {
   removeItem,
   sanitizeJSONAndReportChanges,
   setLocationTrackingEnabled,
-  UserSession
+  ArcGISIdentityManager
 } from "@esri/solution-common";
 import { failSafe, IModel } from "@esri/hub-common";
 import { addContentToSolution } from "./helpers/add-content-to-solution";
@@ -61,8 +61,8 @@ const noOp = () => {};
  */
 export function createSolution(
   sourceId: string,
-  srcAuthentication: UserSession,
-  destAuthentication: UserSession,
+  srcAuthentication: ArcGISIdentityManager,
+  destAuthentication: ArcGISIdentityManager,
   options?: ICreateSolutionOptions
 ): Promise<string> {
   const createOptions: ICreateSolutionOptions = options || {};
@@ -187,7 +187,7 @@ export function createSolution(
 export function _applySourceToCreateOptions(
   createOptions: ICreateSolutionOptions,
   sourceInfo: IGroup | IItem,
-  srcAuthentication: UserSession,
+  srcAuthentication: ArcGISIdentityManager,
   isGroup = false
 ): ICreateSolutionOptions {
   // Create a solution from the group's or item's contents,
@@ -219,7 +219,7 @@ export function _applySourceToCreateOptions(
  */
 export function _addThumbnailFileToCreateOptions(
   createOptions: ICreateSolutionOptions,
-  srcAuthentication: UserSession
+  srcAuthentication: ArcGISIdentityManager
 ): Promise<ICreateSolutionOptions> {
   return new Promise<ICreateSolutionOptions>(resolve => {
     if (!createOptions.thumbnail && createOptions.thumbnailurl) {
@@ -260,8 +260,8 @@ export function _addThumbnailFileToCreateOptions(
  */
 export function _createSolutionFromItemIds(
   options: ICreateSolutionOptions,
-  srcAuthentication: UserSession,
-  destAuthentication: UserSession
+  srcAuthentication: ArcGISIdentityManager,
+  destAuthentication: ArcGISIdentityManager
 ): Promise<string> {
   let solutionId = "";
   // Create a solution from the list of items
@@ -299,7 +299,7 @@ export function _createSolutionFromItemIds(
  * @private
  */
 export function _createSolutionItem(
-  authentication: UserSession,
+  authentication: ArcGISIdentityManager,
   options?: ICreateSolutionOptions
 ): Promise<string> {
   const model = _createSolutionItemModel(options);

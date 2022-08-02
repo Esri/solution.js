@@ -19,7 +19,7 @@ import {
   IVelocityTitle,
   getVelocityUrlBase,
   replaceInTemplate,
-  UserSession,
+  ArcGISIdentityManager,
   getProp,
   fail,
   BASE_NAMES,
@@ -42,7 +42,7 @@ import {
  *
  */
 export function getVelocityUrl(
-  authentication: UserSession,
+  authentication: ArcGISIdentityManager,
   templateDictionary: any,
   type: string,
   id: string = "",
@@ -88,7 +88,7 @@ export function getVelocityUrl(
  *
  */
 export function postVelocityData(
-  authentication: UserSession,
+  authentication: ArcGISIdentityManager,
   template: IItemTemplate,
   data: any,
   templateDictionary: any,
@@ -180,7 +180,7 @@ export function postVelocityData(
  *
  */
 export function getTitle(
-  authentication: UserSession,
+  authentication: ArcGISIdentityManager,
   label: string,
   url: string
 ): Promise<IVelocityTitle> {
@@ -216,7 +216,7 @@ export function getTitle(
  * @private
  */
 export function _validateOutputs(
-  authentication: UserSession,
+  authentication: ArcGISIdentityManager,
   templateDictionary: any,
   type: string,
   data: any,
@@ -451,7 +451,7 @@ export function getUniqueTitle(
  * @private
  */
 export function _validateAndStart(
-  authentication: UserSession,
+  authentication: ArcGISIdentityManager,
   templateDictionary: any,
   template: IItemTemplate,
   id: string
@@ -482,7 +482,7 @@ export function _validateAndStart(
  *
  */
 export function validate(
-  authentication: UserSession,
+  authentication: ArcGISIdentityManager,
   templateDictionary: any,
   type: string,
   id?: string,
@@ -517,7 +517,7 @@ export function validate(
  *
  */
 export function start(
-  authentication: UserSession,
+  authentication: ArcGISIdentityManager,
   templateDictionary: any,
   type: string,
   id?: string
@@ -550,7 +550,7 @@ export function start(
  * @private
  */
 export function _getRequestOpts(
-  authentication: UserSession,
+  authentication: ArcGISIdentityManager,
   method: string
 ): RequestInit {
   return {
@@ -576,7 +576,7 @@ export function _getRequestOpts(
  * @private
  */
 export function _fetch(
-  authentication: UserSession,
+  authentication: ArcGISIdentityManager,
   url: string,
   method: string, // GET or POST
   body?: any

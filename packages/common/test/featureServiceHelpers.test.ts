@@ -99,7 +99,7 @@ import * as restHelpers from '../../common/src/restHelpers';
 import * as interfaces from "../src/interfaces";
 import * as utils from "../../common/test/mocks/utils";
 
-import { IUserRequestOptions } from "@esri/arcgis-rest-auth";
+import { IUserRequestOptions } from "@esri/arcgis-rest-request";
 
 import * as fetchMock from "fetch-mock";
 import * as mockItems from "../../common/test/mocks/agolItems";
@@ -124,7 +124,7 @@ const _organization: any = {
   }
 };
 
-let MOCK_USER_SESSION: interfaces.UserSession;
+let MOCK_USER_SESSION: interfaces.ArcGISIdentityManager;
 let MOCK_USER_REQOPTS: IUserRequestOptions;
 
 beforeEach(() => {

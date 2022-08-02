@@ -35,8 +35,8 @@ const WEBMAP_APP_URL_PART: string = "home/webmap/viewer.html?webmap=";
  */
 export function convertItemToTemplate(
   itemTemplate: common.IItemTemplate,
-  destAuthentication: common.UserSession,
-  srcAuthentication: common.UserSession
+  destAuthentication: common.ArcGISIdentityManager,
+  srcAuthentication: common.ArcGISIdentityManager
 ): Promise<common.IItemTemplate> {
   return new Promise<common.IItemTemplate>((resolve, reject) => {
     // Templatize the app URL
@@ -82,7 +82,7 @@ export function convertItemToTemplate(
  */
 export function _extractDependencies(
   itemTemplate: common.IItemTemplate,
-  authentication: common.UserSession
+  authentication: common.ArcGISIdentityManager
 ): Promise<any> {
   return new Promise<any>((resolve, reject) => {
     const dependencies: string[] = [];
@@ -131,7 +131,7 @@ export function _excludeInitialState(data: any): void {
 export function _getLayerIds(
   layerList: any[],
   dependencies: string[],
-  authentication: common.UserSession
+  authentication: common.ArcGISIdentityManager
 ): Promise<any> {
   return new Promise<any>((resolve, reject) => {
     const urlHash: any = {};

@@ -23,7 +23,7 @@ import * as sinon from "sinon";
 import * as common from "@esri/solution-common";
 import * as testUtils from "@esri/solution-common/test/mocks/utils";
 
-let MOCK_USER_SESSION: common.UserSession;
+let MOCK_USER_SESSION: common.ArcGISIdentityManager;
 
 beforeEach(() => {
   MOCK_USER_SESSION = testUtils.createRuntimeMockUserSession();
@@ -103,7 +103,7 @@ describe("Module: `_deployerUtils`", () => {
       const getItemSpy = sinon.stub(common, "getItemBase").callsFake(
         (
           itemId: string,
-          authentication: common.UserSession
+          authentication: common.ArcGISIdentityManager
         ): Promise<common.IItem> => {
           return Promise.resolve({
             id: "bc3"
@@ -111,7 +111,7 @@ describe("Module: `_deployerUtils`", () => {
         }
       );
       const getItemDataSpy = sinon.stub(common, "getItemDataAsJson").callsFake(
-        (itemId: string, authentication: common.UserSession): Promise<any> => {
+        (itemId: string, authentication: common.ArcGISIdentityManager): Promise<any> => {
           return Promise.resolve({
             templates: []
           });

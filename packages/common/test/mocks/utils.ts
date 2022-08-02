@@ -382,12 +382,12 @@ export function createMockSettings(
 export function createRuntimeMockUserSession(
   now?: number,
   portalUrl?: string
-): interfaces.UserSession {
+): interfaces.ArcGISIdentityManager {
   if (now === undefined) {
     now = Date.now();
   }
   const tomorrow = new Date(now + 86400000);
-  return new interfaces.UserSession({
+  return new interfaces.ArcGISIdentityManager({
     clientId: "clientId",
     redirectUri: "https://example-app.com/redirect-uri",
     token: "fake-token",

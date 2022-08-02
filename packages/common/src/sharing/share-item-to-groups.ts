@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { UserSession } from "../";
+import { ArcGISIdentityManager } from "../";
 import { IGroupSharingOptions, shareItemWithGroup } from "@esri/arcgis-rest-portal";
 
 /**
@@ -23,13 +23,13 @@ import { IGroupSharingOptions, shareItemWithGroup } from "@esri/arcgis-rest-port
  *
  * @param groups Array of Group Ids
  * @param itemId Item Id
- * @param authentication UserSession
+ * @param authentication ArcGISIdentityManager
  * @param owner owner of the group when sharing tracking items (can be different from the deploying user)
  */
 export function shareItemToGroups(
   groupIds: string[],
   itemId: string,
-  authentication: UserSession,
+  authentication: ArcGISIdentityManager,
   owner?: string
 ): Promise<any> {
   return Promise.all(

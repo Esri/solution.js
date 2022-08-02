@@ -31,7 +31,7 @@ import * as addResourceFromBlobModule from "../src/resources/add-resource-from-b
 
 // ------------------------------------------------------------------------------------------------------------------ //
 
-let MOCK_USER_SESSION: interfaces.UserSession;
+let MOCK_USER_SESSION: interfaces.ArcGISIdentityManager;
 
 beforeEach(() => {
   MOCK_USER_SESSION = utils.createRuntimeMockUserSession();

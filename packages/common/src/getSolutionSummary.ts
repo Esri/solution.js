@@ -24,7 +24,7 @@ import {
   IItemTemplate,
   ISolutionItemData,
   ISolutionPrecis,
-  UserSession
+  ArcGISIdentityManager
 } from "./interfaces";
 import * as reconstructBuildOrderIds from "./deleteHelpers/reconstructBuildOrderIds";
 import * as portal from "@esri/arcgis-rest-portal";
@@ -42,7 +42,7 @@ import * as templatization from "./templatization";
  */
 export function getSolutionSummary(
   solutionItemId: string,
-  authentication: UserSession
+  authentication: ArcGISIdentityManager
 ): Promise<ISolutionPrecis> {
   const solutionSummary: ISolutionPrecis = {
     id: solutionItemId,

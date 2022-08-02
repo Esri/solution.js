@@ -15,7 +15,7 @@
  */
 
 import { IModel, getProp, failSafe } from "@esri/hub-common";
-import { UserSession } from "@esri/solution-common";
+import { ArcGISIdentityManager } from "@esri/solution-common";
 import { moveItem } from "@esri/arcgis-rest-portal";
 
 /**
@@ -29,7 +29,7 @@ import { moveItem } from "@esri/arcgis-rest-portal";
 export function moveModelToFolder(
   siteModel: IModel,
   folderId: string,
-  authentication: UserSession
+  authentication: ArcGISIdentityManager
 ): Promise<any> {
   // Fail-Safe the move call as it's not critical if it fails
   const failSafeMove = failSafe(moveItem, { success: true });

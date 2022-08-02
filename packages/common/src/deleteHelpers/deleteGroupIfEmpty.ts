@@ -18,7 +18,7 @@
  * @module deleteGroupIfEmpty
  */
 
-import { UserSession } from "../interfaces";
+import { ArcGISIdentityManager } from "../interfaces";
 import * as portal from "@esri/arcgis-rest-portal";
 
 // ------------------------------------------------------------------------------------------------------------------ //
@@ -32,7 +32,7 @@ import * as portal from "@esri/arcgis-rest-portal";
  */
 export function deleteGroupIfEmpty(
   groupId: string,
-  authentication: UserSession
+  authentication: ArcGISIdentityManager
 ): Promise<boolean> {
   let username: string;
   let isGroupProtected: boolean;

@@ -31,8 +31,8 @@ import * as notebookHelpers from "./helpers/notebook-helpers";
 export function convertItemToTemplate(
   solutionItemId: string,
   itemInfo: any,
-  destAuthentication: common.UserSession,
-  srcAuthentication: common.UserSession,
+  destAuthentication: common.ArcGISIdentityManager,
+  srcAuthentication: common.ArcGISIdentityManager,
   templateDictionary: any
 ): Promise<common.IItemTemplate> {
   // Delegate back to simple-types, which will in-turn delegate
@@ -52,7 +52,7 @@ export function convertItemToTemplate(
 export function createItemFromTemplate(
   template: common.IItemTemplate,
   templateDictionary: any,
-  destinationAuthentication: common.UserSession,
+  destinationAuthentication: common.ArcGISIdentityManager,
   itemProgressCallback: common.IItemProgressCallback
 ): Promise<common.ICreateItemFromTemplateResponse> {
   return notebookHelpers.createItemFromTemplate(
@@ -137,7 +137,7 @@ export function fineTuneCreatedItem(
   originalTemplate: common.IItemTemplate,
   newlyCreatedItem: common.IItemTemplate,
   templateDictionary: any,
-  authentication: common.UserSession
+  authentication: common.ArcGISIdentityManager
 ): Promise<void> {
   return new Promise<void>((resolve, reject) => {
     const updateOptions: common.IItemUpdate = {
@@ -161,7 +161,7 @@ export function fineTuneCreatedItem(
  * @param {string} type The template type
  * @param {any[]} itemInfos Array of {id: 'ef3', type: 'Web Map'} objects
  * @param {any} templateDictionary The template dictionary
- * @param {UserSession} authentication The destination session info
+ * @param {ArcGISIdentityManager} authentication The destination session info
  * @returns {Promise<any>}
  */
 export function postProcess(
@@ -171,7 +171,7 @@ export function postProcess(
   template: common.IItemTemplate,
   templates: common.IItemTemplate[],
   templateDictionary: any,
-  authentication: common.UserSession
+  authentication: common.ArcGISIdentityManager
 ): Promise<any> {
   return common.updateItemTemplateFromDictionary(
     itemId,

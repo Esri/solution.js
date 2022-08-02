@@ -32,8 +32,8 @@ import * as quickcaptureHelpers from "./helpers/quickcapture-helpers";
 export function convertItemToTemplate(
   solutionItemId: string,
   itemInfo: any,
-  destAuthentication: common.UserSession,
-  srcAuthentication: common.UserSession,
+  destAuthentication: common.ArcGISIdentityManager,
+  srcAuthentication: common.ArcGISIdentityManager,
   templateDictionary: any
 ): Promise<common.IItemTemplate> {
   // Delegate back to simple-types, which will in-turn delegate
@@ -199,7 +199,7 @@ export function _templatizeId(obj: any, path: string): void {
 export function createItemFromTemplate(
   template: common.IItemTemplate,
   templateDictionary: any,
-  destinationAuthentication: common.UserSession,
+  destinationAuthentication: common.ArcGISIdentityManager,
   itemProgressCallback: common.IItemProgressCallback
 ): Promise<common.ICreateItemFromTemplateResponse> {
   return quickcaptureHelpers.createItemFromTemplate(
@@ -217,7 +217,7 @@ export function createItemFromTemplate(
  * @param {string} type The template type
  * @param {any[]} itemInfos Array of {id: 'ef3', type: 'Web Map'} objects
  * @param {any} templateDictionary The template dictionary
- * @param {UserSession} authentication The destination session info
+ * @param {ArcGISIdentityManager} authentication The destination session info
  * @returns Promise resolving to successfulness of update
  */
 export function postProcess(
@@ -227,7 +227,7 @@ export function postProcess(
   template: common.IItemTemplate,
   templates: common.IItemTemplate[],
   templateDictionary: any,
-  authentication: common.UserSession
+  authentication: common.ArcGISIdentityManager
 ): Promise<any> {
   return new Promise<any>((resolve, reject) => {
     template.data = common.replaceInTemplate(template.data, templateDictionary);

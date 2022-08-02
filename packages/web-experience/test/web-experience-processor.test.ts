@@ -28,7 +28,7 @@ import * as convertToTmplModule from "../src/helpers/convert-web-experience-to-t
 import * as createFromTemplateModule from "../src/helpers/create-web-experience-model-from-template";
 import * as createExperienceModule from "../src/helpers/create-web-experience";
 
-let MOCK_USER_SESSION: common.UserSession;
+let MOCK_USER_SESSION: common.ArcGISIdentityManager;
 
 beforeEach(() => {
   MOCK_USER_SESSION = utils.createRuntimeMockUserSession();

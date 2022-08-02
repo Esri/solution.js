@@ -28,14 +28,14 @@ export function deploySolutionFromTemplate(
   templateSolutionId: string,
   solutionTemplateBase: any,
   solutionTemplateData: any,
-  authentication: common.UserSession,
+  authentication: common.ArcGISIdentityManager,
   options: common.IDeploySolutionOptions
 ): Promise<string> {
   options.storageVersion = common.extractSolutionVersion(solutionTemplateData);
 
   return new Promise((resolve, reject) => {
     // It is possible to provide a separate authentication for the source
-    const storageAuthentication: common.UserSession = options.storageAuthentication
+    const storageAuthentication: common.ArcGISIdentityManager = options.storageAuthentication
       ? options.storageAuthentication
       : authentication;
 
@@ -370,7 +370,7 @@ export function _applySourceToDeployOptions(
   deployOptions: common.IDeploySolutionOptions,
   solutionTemplateBase: any,
   templateDictionary: any,
-  authentication: common.UserSession
+  authentication: common.ArcGISIdentityManager
 ): common.IDeploySolutionOptions {
   // Deploy a solution from the template's contents,
   // using the template's information as defaults for the deployed solution item
@@ -474,7 +474,7 @@ export function _checkedReplaceAll(
 //???
 export function _getPortalBaseUrl(
   portalResponse: common.IPortal,
-  authentication: common.UserSession
+  authentication: common.ArcGISIdentityManager
 ): string {
   // As of Spring 2020, only HTTPS (see
   // https://www.esri.com/arcgis-blog/products/product/administration/2019-arcgis-transport-security-improvements/)

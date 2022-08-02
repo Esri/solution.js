@@ -44,7 +44,7 @@ const noMetadataResponse: any = {
   }
 };
 
-let MOCK_USER_SESSION: common.UserSession;
+let MOCK_USER_SESSION: common.ArcGISIdentityManager;
 
 beforeEach(() => {
   MOCK_USER_SESSION = utils.createRuntimeMockUserSession();
@@ -62,7 +62,7 @@ describe("Module `createItemTemplate`", () => {
       const solutionItemId: string = "sln1234567890";
       const itemId: string = "map12345678900";
       const templateDictionary: any = {};
-      const authentication: common.UserSession = MOCK_USER_SESSION;
+      const authentication: common.ArcGISIdentityManager = MOCK_USER_SESSION;
       const existingTemplates: common.IItemTemplate[] = [];
 
       fetchMock
@@ -122,7 +122,7 @@ describe("Module `createItemTemplate`", () => {
       const solutionItemId: string = "sln1234567890";
       const itemId: string = "map12345678900";
       const templateDictionary: any = {};
-      const authentication: common.UserSession = MOCK_USER_SESSION;
+      const authentication: common.ArcGISIdentityManager = MOCK_USER_SESSION;
       const existingTemplates: common.IItemTemplate[] = [];
 
       fetchMock
@@ -181,7 +181,7 @@ describe("Module `createItemTemplate`", () => {
       const solutionItemId: string = "sln1234567890";
       const itemId: string = "map1234567890";
       const templateDictionary: any = {};
-      const authentication: common.UserSession = MOCK_USER_SESSION;
+      const authentication: common.ArcGISIdentityManager = MOCK_USER_SESSION;
       const existingTemplates: common.IItemTemplate[] = [
         templates.getItemTemplate("Web Map")
       ];
@@ -208,7 +208,7 @@ describe("Module `createItemTemplate`", () => {
       const solutionItemId: string = "sln1234567890";
       const itemId: string = "wma1234567890";
       const templateDictionary: any = {};
-      const authentication: common.UserSession = MOCK_USER_SESSION;
+      const authentication: common.ArcGISIdentityManager = MOCK_USER_SESSION;
       const existingTemplates: common.IItemTemplate[] = [];
       const wmaData = mockItems.getAGOLItemData("Web Mapping Application");
       common.setCreateProp(
@@ -310,7 +310,7 @@ describe("Module `createItemTemplate`", () => {
       const solutionItemId: string = "sln1234567890";
       const itemId: string = "grp1234567890";
       const templateDictionary: any = {};
-      const authentication: common.UserSession = MOCK_USER_SESSION;
+      const authentication: common.ArcGISIdentityManager = MOCK_USER_SESSION;
       const existingTemplates: common.IItemTemplate[] = [];
 
       fetchMock
@@ -372,7 +372,7 @@ describe("Module `createItemTemplate`", () => {
       const solutionItemId: string = "sln1234567890";
       const itemId: string = "grp1234567890";
       const templateDictionary: any = {};
-      const authentication: common.UserSession = MOCK_USER_SESSION;
+      const authentication: common.ArcGISIdentityManager = MOCK_USER_SESSION;
       const existingTemplates: common.IItemTemplate[] = [];
 
       fetchMock
@@ -498,7 +498,7 @@ describe("Module `createItemTemplate`", () => {
       const solutionItemId: string = "sln1234567890";
       const itemId: string = "grp1234567890";
       const templateDictionary: any = {};
-      const authentication: common.UserSession = MOCK_USER_SESSION;
+      const authentication: common.ArcGISIdentityManager = MOCK_USER_SESSION;
       const existingTemplates: common.IItemTemplate[] = [];
       const groupContents = mockItems.getAGOLGroupContentsList(2, "Web Map");
       groupContents.items[0].id = groupContents.items[0].item = groupContents.items[1].id = groupContents.items[1].item =
@@ -594,7 +594,7 @@ describe("Module `createItemTemplate`", () => {
       const solutionItemId: string = "sln1234567890";
       const itemId: string = "grp1234567890";
       const templateDictionary: any = {};
-      const authentication: common.UserSession = MOCK_USER_SESSION;
+      const authentication: common.ArcGISIdentityManager = MOCK_USER_SESSION;
       const existingTemplates: common.IItemTemplate[] = [];
 
       fetchMock
@@ -667,7 +667,7 @@ describe("Module `createItemTemplate`", () => {
       const solutionItemId: string = "sln1234567890";
       const itemId: string = "xxx1234567890";
       const templateDictionary: any = {};
-      const authentication: common.UserSession = MOCK_USER_SESSION;
+      const authentication: common.ArcGISIdentityManager = MOCK_USER_SESSION;
       const existingTemplates: common.IItemTemplate[] = [];
 
       fetchMock
@@ -704,7 +704,7 @@ describe("Module `createItemTemplate`", () => {
       const solutionItemId: string = "sln1234567890";
       const itemId: string = "xxx1234567890";
       const templateDictionary: any = {};
-      const authentication: common.UserSession = MOCK_USER_SESSION;
+      const authentication: common.ArcGISIdentityManager = MOCK_USER_SESSION;
       const existingTemplates: common.IItemTemplate[] = [];
 
       fetchMock.get(
@@ -735,7 +735,7 @@ describe("Module `createItemTemplate`", () => {
       const solutionItemId: string = "sln1234567890";
       const itemId: string = "map12345678900";
       const templateDictionary: any = {};
-      const authentication: common.UserSession = MOCK_USER_SESSION;
+      const authentication: common.ArcGISIdentityManager = MOCK_USER_SESSION;
       const existingTemplates: common.IItemTemplate[] = [];
       const preExpectedTags: string[] = [
         "test",

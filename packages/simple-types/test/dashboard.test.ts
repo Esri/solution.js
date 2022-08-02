@@ -33,7 +33,7 @@ let initialDashboardTemplate: any;
 let expectedTemplate: any;
 let datasourceInfos: common.IDatasourceInfo[];
 
-let MOCK_USER_SESSION: common.UserSession;
+let MOCK_USER_SESSION: common.ArcGISIdentityManager;
 
 beforeEach(() => {
   MOCK_USER_SESSION = utils.createRuntimeMockUserSession();

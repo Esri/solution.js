@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import {
-  UserSession,
+  ArcGISIdentityManager,
   IItemTemplate,
   ICreateItemFromTemplateResponse,
   getTemplateById
@@ -39,7 +39,7 @@ export function postProcess(
   deployedSolutionId: string,
   templates: IItemTemplate[],
   clonedSolutions: ICreateItemFromTemplateResponse[],
-  authentication: UserSession,
+  authentication: ArcGISIdentityManager,
   templateDictionary: any
 ): Promise<any> {
   // connect the solution with its items; groups cannot be connected

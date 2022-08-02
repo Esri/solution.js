@@ -23,7 +23,7 @@
 import {
   ICompleteItem,
   IFeatureServiceProperties,
-  UserSession
+  ArcGISIdentityManager
 } from "./interfaces";
 import * as restHelpers from "./restHelpers";
 import * as restHelpersGet from "./restHelpersGet";
@@ -39,7 +39,7 @@ import * as restHelpersGet from "./restHelpersGet";
  */
 export function getCompleteItem(
   itemId: string,
-  authentication: UserSession
+  authentication: ArcGISIdentityManager
 ): Promise<ICompleteItem> {
   let itemBase: any;
   let completeItem: any;

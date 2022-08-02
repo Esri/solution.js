@@ -23,16 +23,16 @@ import {
   IGetRelatedItemsResponse as IPortalGetRelatedItemsResponse,
   IItem
 } from "@esri/arcgis-rest-portal";
-import { ISpatialReference } from "@esri/arcgis-rest-service-admin";
-import { UserSession } from "@esri/arcgis-rest-auth";
+import { ISpatialReference } from "@esri/arcgis-rest-feature-service";
+import { ArcGISIdentityManager } from "@esri/arcgis-rest-request";
 
 //#region Re-exports -------------------------------------------------------------------------------------------------//
 
 export {
   IUserRequestOptions,
   IUserSessionOptions,
-  UserSession
-} from "@esri/arcgis-rest-auth";
+  ArcGISIdentityManager
+} from "@esri/arcgis-rest-request";
 export {
   IAddFolderResponse,
   ICreateItemResponse,
@@ -50,7 +50,7 @@ export {
   ICreateServiceResult,
   IExtent,
   ISpatialReference
-} from "@esri/arcgis-rest-service-admin";
+} from "@esri/arcgis-rest-feature-service";
 import JSZip from "jszip";
 
 //#endregion ---------------------------------------------------------------------------------------------------------//
@@ -448,7 +448,7 @@ export interface ICreateSolutionOptions {
   /**
    * Credentials for the organization with the source items; default: solution item authentication
    */
-  sourceItemAuthentication?: UserSession;
+  sourceItemAuthentication?: ArcGISIdentityManager;
 }
 
 /**
@@ -652,7 +652,7 @@ export interface IDeploySolutionOptions {
   /**
    * Credentials for the organization with the source items; default: authentication supplied for deployment destination
    */
-  storageAuthentication?: UserSession;
+  storageAuthentication?: ArcGISIdentityManager;
 
   /**
    * Version of storage read from Solution item. DO NOT USE--it is overwritten by function deploySolutionFromTemplate
@@ -989,8 +989,8 @@ export interface IItemTemplateConversions {
   convertItemToTemplate(
     solutionItemId: string,
     itemInfo: any,
-    destAuthentication: UserSession,
-    srcAuthentication: UserSession,
+    destAuthentication: ArcGISIdentityManager,
+    srcAuthentication: ArcGISIdentityManager,
     templateDictionary?: any
   ): Promise<IItemTemplate>;
 
@@ -1000,7 +1000,7 @@ export interface IItemTemplateConversions {
   createItemFromTemplate(
     template: IItemTemplate,
     templateDictionary: any,
-    destinationAuthentication: UserSession,
+    destinationAuthentication: ArcGISIdentityManager,
     itemProgressCallback: IItemProgressCallback
   ): Promise<ICreateItemFromTemplateResponse>;
 }
@@ -1102,7 +1102,7 @@ export interface IPostProcessArgs {
   /**
    * Credentials for the request
    */
-  authentication: UserSession;
+  authentication: ArcGISIdentityManager;
 }
 
 /**

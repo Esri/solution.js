@@ -31,7 +31,7 @@ import {
   IItemTemplate,
   IUpdateItemResponse,
   updateItemTemplateFromDictionary,
-  UserSession
+  ArcGISIdentityManager
 } from "@esri/solution-common";
 
 // Need to import collectively to enable spying
@@ -50,8 +50,8 @@ import * as simpleTypeHelpers from "./helpers/simple-type-helpers";
 export function convertItemToTemplate(
   solutionItemId: string,
   itemInfo: any,
-  destAuthentication: UserSession,
-  srcAuthentication: UserSession,
+  destAuthentication: ArcGISIdentityManager,
+  srcAuthentication: ArcGISIdentityManager,
   templateDictionary: any
 ): Promise<IItemTemplate> {
   return simpleTypeHelpers.convertItemToTemplate(
@@ -74,7 +74,7 @@ export function convertItemToTemplate(
 export function createItemFromTemplate(
   template: IItemTemplate,
   templateDictionary: any,
-  destinationAuthentication: UserSession,
+  destinationAuthentication: ArcGISIdentityManager,
   itemProgressCallback: IItemProgressCallback
 ): Promise<ICreateItemFromTemplateResponse> {
   return simpleTypeHelpers.createItemFromTemplate(
@@ -123,7 +123,7 @@ export function postProcessFieldReferences(
  * @param {string} type The template type
  * @param {any[]} itemInfos Array of {id: 'ef3', type: 'Web Map'} objects
  * @param {any} templateDictionary The template dictionary
- * @param {UserSession} authentication The destination session info
+ * @param {ArcGISIdentityManager} authentication The destination session info
  * @returns Promise resolving to successfulness of update
  */
 export function postProcess(
@@ -133,7 +133,7 @@ export function postProcess(
   template: IItemTemplate,
   templates: IItemTemplate[],
   templateDictionary: any,
-  authentication: UserSession
+  authentication: ArcGISIdentityManager
 ): Promise<IUpdateItemResponse> {
   return updateItemTemplateFromDictionary(
     itemId,

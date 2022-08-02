@@ -25,7 +25,7 @@ import {
   IItemProgressCallback,
   ICreateItemFromTemplateResponse,
   EItemProgressStatus,
-  UserSession,
+  ArcGISIdentityManager,
   generateEmptyCreationResponse
 } from "@esri/solution-common";
 import { IModel, failSafe } from "@esri/hub-common";
@@ -45,8 +45,8 @@ import { createStoryMap } from "./helpers/create-storymap";
 export function convertItemToTemplate(
   solutionItemId: string,
   itemInfo: any,
-  destAuthentication: UserSession,
-  srcAuthentication: UserSession
+  destAuthentication: ArcGISIdentityManager,
+  srcAuthentication: ArcGISIdentityManager
 ): Promise<IItemTemplate> {
   const model = {
     item: itemInfo,
@@ -76,7 +76,7 @@ export function convertItemToTemplate(
 export function createItemFromTemplate(
   template: IItemTemplate,
   templateDictionary: any,
-  destinationAuthentication: UserSession,
+  destinationAuthentication: ArcGISIdentityManager,
   itemProgressCallback: IItemProgressCallback
 ): Promise<ICreateItemFromTemplateResponse> {
   // let the progress system know we've started...

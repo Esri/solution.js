@@ -28,8 +28,8 @@ import * as common from "@esri/solution-common";
  */
 export function convertItemToTemplate(
   itemTemplate: common.IItemTemplate,
-  destAuthentication: common.UserSession,
-  srcAuthentication: common.UserSession
+  destAuthentication: common.ArcGISIdentityManager,
+  srcAuthentication: common.ArcGISIdentityManager
 ): Promise<common.IItemTemplate> {
   return new Promise<common.IItemTemplate>((resolve, reject) => {
     // Extract dependencies
@@ -67,7 +67,7 @@ export function convertItemToTemplate(
  */
 export function _extractDependencies(
   itemTemplate: common.IItemTemplate,
-  authentication: common.UserSession
+  authentication: common.ArcGISIdentityManager
 ): Promise<any> {
   return new Promise<any>((resolve, reject) => {
     const dependencies: string[] = [];
@@ -112,7 +112,7 @@ export function _extractDependencies(
 export function _getLayerIds(
   layerURLs: string[],
   dependencies: string[],
-  authentication: common.UserSession
+  authentication: common.ArcGISIdentityManager
 ): Promise<any> {
   return new Promise<any>((resolve, reject) => {
     const urlHash: any = {};

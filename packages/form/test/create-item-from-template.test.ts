@@ -23,7 +23,7 @@ import * as hubFormTemplateHelpers from "../src/helpers/is-hub-form-template";
 import * as hubFormCreateHelpers from "../src/helpers/create-item-from-hub-template";
 
 describe("createItemFromTemplate", () => {
-  let MOCK_USER_SESSION: common.UserSession;
+  let MOCK_USER_SESSION: common.ArcGISIdentityManager;
   let template: common.IItemTemplate;
   let templateDictionary: any;
 

@@ -20,7 +20,7 @@
  * @module workforceHelpers
  */
 
-import { applyEdits, queryFeatures } from "@esri/arcgis-rest-feature-layer";
+import { applyEdits, queryFeatures } from "@esri/arcgis-rest-feature-service";
 import {
   getIDs,
   getProp,
@@ -32,7 +32,7 @@ import {
 import {
   IItemTemplate,
   IFeatureServiceProperties,
-  UserSession
+  ArcGISIdentityManager
 } from "./interfaces";
 import { rest_request } from "./restHelpers";
 import { templatizeTerm, replaceInTemplate } from "./templatization";
@@ -48,7 +48,7 @@ import { templatizeTerm, replaceInTemplate } from "./templatization";
  */
 export function convertWorkforceItemToTemplate(
   itemTemplate: IItemTemplate,
-  authentication: UserSession
+  authentication: ArcGISIdentityManager
 ): Promise<IItemTemplate> {
   return new Promise<IItemTemplate>((resolve, reject) => {
     // This function is specific to workforce v1 project structure
@@ -90,7 +90,7 @@ export function convertWorkforceItemToTemplate(
 export function extractWorkforceDependencies(
   data: any,
   keyProperties: string[],
-  authentication: UserSession
+  authentication: ArcGISIdentityManager
 ): Promise<any> {
   return new Promise<any>((resolve, reject) => {
     const deps: string[] = [];
@@ -278,7 +278,7 @@ export function getWorkforceDependencies(
 export function getWorkforceServiceInfo(
   properties: IFeatureServiceProperties,
   url: string,
-  authentication: UserSession
+  authentication: ArcGISIdentityManager
 ): Promise<IFeatureServiceProperties> {
   return new Promise<IFeatureServiceProperties>((resolve, reject) => {
     url = url.replace("/rest/admin/services", "/rest/services");
@@ -388,7 +388,7 @@ export function _getAssignmentTypeInfos(assignmentTypes: any): any[] {
 //???
 export function _getAssignmentIntegrationInfos(
   assignmentIntegrations: any,
-  authentication: UserSession
+  authentication: ArcGISIdentityManager
 ): Promise<any> {
   return new Promise<any>((resolve, reject) => {
     let requests: Array<Promise<any>> = [];
@@ -675,7 +675,7 @@ export function getKeyWorkforceProperties(version: number): string[] {
  * @param authentication credentials for the requests
  * @returns an object with any pending requests and the urls that requests were made to
  */
-export function urlTest(v: any, authentication: UserSession): any {
+export function urlTest(v: any, authentication: ArcGISIdentityManager): any {
   const urls: any[] = _getURLs(v);
   const requests: Array<Promise<any>> = [];
   urls.forEach(url => {
@@ -709,7 +709,7 @@ export function _getURLs(v: string): string[] {
  */
 export function fineTuneCreatedWorkforceItem(
   newlyCreatedItem: IItemTemplate,
-  destinationAuthentication: UserSession,
+  destinationAuthentication: ArcGISIdentityManager,
   url: string,
   templateDictionary: any
 ): Promise<any> {
@@ -798,7 +798,7 @@ export function fineTuneCreatedWorkforceItem(
 export function _getFields(
   url: string,
   ids: number[],
-  authentication: UserSession
+  authentication: ArcGISIdentityManager
 ): Promise<any> {
   return new Promise<any>((resolve, reject) => {
     const options: any = {
@@ -863,7 +863,7 @@ export function _updateDispatchers(
   url: any,
   name: string,
   fullName: string,
-  authentication: UserSession,
+  authentication: ArcGISIdentityManager,
   isPortal: boolean
 ): Promise<boolean> {
   return new Promise<boolean>((resolve, reject) => {
@@ -905,7 +905,7 @@ export function _updateDispatchers(
 export function _applyEdits(
   url: string,
   adds: any[],
-  authentication: UserSession,
+  authentication: ArcGISIdentityManager,
   useGlobalIds: boolean = false // only set when contains a globalid
 ): any {
   return new Promise<boolean>((resolve, reject) => {

@@ -27,7 +27,7 @@ import * as templates from "../../common/test/mocks/templates";
 
 jasmine.DEFAULT_TIMEOUT_INTERVAL = 20000; // default is 5000 ms
 
-let MOCK_USER_SESSION: interfaces.UserSession;
+let MOCK_USER_SESSION: interfaces.ArcGISIdentityManager;
 
 beforeEach(() => {
   MOCK_USER_SESSION = utils.createRuntimeMockUserSession();

@@ -44,10 +44,10 @@ export function deploySolutionItems(
   portalSharingUrl: string,
   storageItemId: string,
   templates: common.IItemTemplate[],
-  storageAuthentication: common.UserSession,
+  storageAuthentication: common.ArcGISIdentityManager,
   templateDictionary: any,
   deployedSolutionId: string,
-  destinationAuthentication: common.UserSession,
+  destinationAuthentication: common.ArcGISIdentityManager,
   options: common.IDeploySolutionOptions
 ): Promise<common.ICreateItemFromTemplateResponse[]> {
   return new Promise((resolve, reject) => {
@@ -412,7 +412,7 @@ export function _reuseDeployedItems(
   templates: common.IItemTemplate[],
   reuseItems: boolean,
   templateDictionary: any,
-  authentication: common.UserSession
+  authentication: common.ArcGISIdentityManager
 ): Promise<any> {
   return new Promise((resolve, reject) => {
     if (reuseItems) {
@@ -483,7 +483,7 @@ export function _useExistingItems(
   templates: common.IItemTemplate[],
   useExisting: boolean,
   templateDictionary: any,
-  authentication: common.UserSession
+  authentication: common.ArcGISIdentityManager
 ): Promise<any> {
   return new Promise(resolve => {
     if (useExisting) {
@@ -539,7 +539,7 @@ export function _useExistingItems(
 export function _setTypekeywordForExisting(
   itemDefs: Array<Promise<any>>,
   sourceIdHash: any,
-  authentication: common.UserSession
+  authentication: common.ArcGISIdentityManager
 ): Promise<any> {
   return new Promise(resolve => {
     if (itemDefs.length > 0) {
@@ -589,7 +589,7 @@ export function _setTypekeywordForExisting(
 export function _updateTemplateDictionary(
   templates: common.IItemTemplate[],
   templateDictionary: any,
-  authentication: common.UserSession
+  authentication: common.ArcGISIdentityManager
 ): Promise<any> {
   return new Promise(resolve => {
     const defs: Array<Promise<any>> = [];
@@ -828,7 +828,7 @@ export function _updateTemplateDictionaryForError(
 export function _handleExistingItems(
   existingItemsResponse: any[],
   templateDictionary: any,
-  authentication: common.UserSession,
+  authentication: common.ArcGISIdentityManager,
   addTagQuery: boolean
 ): Array<Promise<any>> {
   // if items are not found by type keyword search by tag
@@ -909,7 +909,7 @@ export function _updateTemplateDictionaryById(
 export function _findExistingItemByKeyword(
   templates: common.IItemTemplate[],
   templateDictionary: any,
-  authentication: common.UserSession
+  authentication: common.ArcGISIdentityManager
 ): Array<Promise<any>> {
   const existingItemsDefs: Array<Promise<any>> = [];
   templates.forEach(template => {
@@ -951,7 +951,7 @@ export function _findExistingItemByKeyword(
  */
 export function _findExistingItem(
   query: string,
-  authentication: common.UserSession
+  authentication: common.ArcGISIdentityManager
 ): Promise<any> {
   const searchOptions = {
     q: query,
@@ -976,9 +976,9 @@ export function _findExistingItem(
 export function _createItemFromTemplateWhenReady(
   template: common.IItemTemplate,
   resourceFilePaths: common.IDeployFileCopyPath[],
-  storageAuthentication: common.UserSession,
+  storageAuthentication: common.ArcGISIdentityManager,
   templateDictionary: any,
-  destinationAuthentication: common.UserSession,
+  destinationAuthentication: common.ArcGISIdentityManager,
   itemProgressCallback: common.IItemProgressCallback
 ): Promise<common.ICreateItemFromTemplateResponse> {
   // ensure this is present
@@ -1141,7 +1141,7 @@ export function _estimateDeploymentCost(
 // TODO: Return a Promise vs array of promises
 export function _getGroupUpdates(
   template: common.IItemTemplate,
-  authentication: common.UserSession,
+  authentication: common.ArcGISIdentityManager,
   templateDictionary: any
 ): Array<Promise<any>> {
   const groups = template.groups || [];

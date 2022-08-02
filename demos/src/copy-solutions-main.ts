@@ -27,8 +27,8 @@ import * as common from "@esri/solution-common";
  */
 export function copyItemInfo(
   itemId: string,
-  sourceAuthentication: common.UserSession,
-  destinationAuthentication: common.UserSession
+  sourceAuthentication: common.ArcGISIdentityManager,
+  destinationAuthentication: common.ArcGISIdentityManager
 ): Promise<string> {
   return new Promise<string>((resolve, reject) => {
     if (!itemId) {
@@ -152,7 +152,7 @@ export function getCopyableItemBaseProperties(sourceItem: any): any {
  * @returns Solution templates
  */
 export function getTemplates(
-  authentication: common.UserSession,
+  authentication: common.ArcGISIdentityManager,
   getAllOrgSolutions?: boolean
 ): Promise<common.ISearchResult<common.IItem>> {
   return new Promise((resolve, reject) => {

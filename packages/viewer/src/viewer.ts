@@ -33,7 +33,7 @@ import * as common from "@esri/solution-common";
  */
 export function checkSolution(
   itemId: string,
-  authentication: common.UserSession = null
+  authentication: common.ArcGISIdentityManager = null
 ): Promise<string[]> {
   const resultsHtml: string[] = [`Item ${itemId}`];
   let item: common.ICompleteItem;
@@ -182,7 +182,7 @@ export function checkSolution(
 export function compareItems(
   item1: string | any,
   item2: string | any,
-  authentication: common.UserSession = null
+  authentication: common.ArcGISIdentityManager = null
 ): Promise<boolean> {
   return new Promise<boolean>((resolve, reject) => {
     // If an input is a string, fetch the item; otherwise, clone the input because we will modify the

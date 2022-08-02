@@ -25,7 +25,7 @@ import {
   IItemProgressCallback,
   ICreateItemFromTemplateResponse,
   EItemProgressStatus,
-  UserSession,
+  ArcGISIdentityManager,
   createHubRequestOptions,
   generateEmptyCreationResponse
 } from "@esri/solution-common";
@@ -62,8 +62,8 @@ import { moveModelToFolder } from "./helpers/move-model-to-folder";
 export function convertItemToTemplate(
   solutionItemId: string,
   itemInfo: any,
-  destAuthentication: UserSession,
-  srcAuthentication: UserSession = null // eslint-disable-line @typescript-eslint/no-unused-vars
+  destAuthentication: ArcGISIdentityManager,
+  srcAuthentication: ArcGISIdentityManager = null // eslint-disable-line @typescript-eslint/no-unused-vars
 ): Promise<IItemTemplate> {
   let created: number = 0;
   let modified: number = 0;
@@ -103,14 +103,14 @@ export function convertItemToTemplate(
  * @export
  * @param {IItemTemplate} template
  * @param {*} templateDictionary
- * @param {UserSession} destinationAuthentication
+ * @param {ArcGISIdentityManager} destinationAuthentication
  * @param {IItemProgressCallback} itemProgressCallback
  * @returns {Promise<ICreateItemFromTemplateResponse>}
  */
 export function createItemFromTemplate(
   template: IItemTemplate,
   templateDictionary: any,
-  destinationAuthentication: UserSession,
+  destinationAuthentication: ArcGISIdentityManager,
   itemProgressCallback: IItemProgressCallback
 ): Promise<ICreateItemFromTemplateResponse> {
   // let the progress system know we've started...
@@ -255,7 +255,7 @@ export function postProcess(
   template: any,
   templates: IItemTemplate[],
   templateDictionary: any,
-  authentication: UserSession
+  authentication: ArcGISIdentityManager
 ): Promise<boolean> {
   // create the requestOptions
   let hubRo: IHubUserRequestOptions;

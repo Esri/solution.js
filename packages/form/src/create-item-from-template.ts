@@ -21,7 +21,7 @@
  */
 
 import {
-  UserSession,
+  ArcGISIdentityManager,
   IItemTemplate,
   IItemProgressCallback,
   ICreateItemFromTemplateResponse
@@ -35,14 +35,14 @@ import { createItemFromHubTemplate } from "./helpers/create-item-from-hub-templa
  *
  * @param {IItemTemplate} template The template
  * @param {any} templateDictionary The template dictionary
- * @param {UserSession} destinationAuthentication The destination user session info
+ * @param {ArcGISIdentityManager} destinationAuthentication The destination user session info
  * @param itemProgressCallback An item progress callback
  * @returns {Promise<ICreateItemFromTemplateResponse>}
  */
 export function createItemFromTemplate(
   template: IItemTemplate,
   templateDictionary: any,
-  destinationAuthentication: UserSession,
+  destinationAuthentication: ArcGISIdentityManager,
   itemProgressCallback: IItemProgressCallback
 ): Promise<ICreateItemFromTemplateResponse> {
   // Hub Form template custom processing

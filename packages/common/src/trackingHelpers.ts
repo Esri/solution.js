@@ -16,12 +16,11 @@
 
 // Helper functions shared across deploy and create
 
-import { IItemTemplate, UserSession } from "./interfaces";
+import { IItemTemplate, IItemUpdate, ArcGISIdentityManager } from "./interfaces";
 import { getProp, setCreateProp, setProp } from "./generalHelpers";
 import { getItemBase } from "./restHelpersGet";
 import { templatizeTerm } from "./templatization";
-import { IItemUpdate } from "@esri/arcgis-rest-types";
-import { ICreateServiceParams } from "@esri/arcgis-rest-service-admin";
+import { ICreateServiceParams } from "@esri/arcgis-rest-feature-service";
 
 /**
  * Used by deploy to evaluate if we have everything we need to deploy tracking views.
@@ -48,7 +47,7 @@ export function setLocationTrackingEnabled(
   if (locationTracking) {
     templateDictionary.locationTracking = locationTracking;
   }
-  
+
   // verify we have location tracking service and the user is an admin
   templateDictionary.locationTrackingEnabled =
     templateDictionary.locationTracking &&
@@ -104,7 +103,7 @@ export function _validateTrackingTemplates(
  */
 export function getTackingServiceOwner(
   templateDictionary: any,
-  authentication: UserSession
+  authentication: ArcGISIdentityManager
 ): Promise<boolean> {
   if (templateDictionary.locationTrackingEnabled) {
     const locationTrackingId: string = templateDictionary.locationTracking.id;
@@ -160,7 +159,7 @@ export function isTrackingViewGroup(
  * This function will update the itemTemplate that is passed in when it's a tracking view.
  *
  * @param itemTemplate Template for feature service item
- * 
+ *
  * @private
  */
  export function templatizeTracker(
@@ -173,8 +172,8 @@ export function isTrackingViewGroup(
     itemTemplate.dependencies.push(trackViewGroup);
     const groupIdVar: string = templatizeTerm(trackViewGroup, trackViewGroup, ".itemId");
     setProp(
-      itemTemplate, 
-      "item.properties.trackViewGroup", 
+      itemTemplate,
+      "item.properties.trackViewGroup",
       groupIdVar
     );
     _setName(itemTemplate, "item.name", trackViewGroup, groupIdVar);
@@ -195,7 +194,7 @@ export function isTrackingViewGroup(
  * @param path the path to the property that stores the current name
  * @param groupId the id of the associated tracker group
  * @param groupIdVar the variable to replace the existing name with
- * 
+ *
  * @private
  */
 export function _setName(
@@ -217,12 +216,12 @@ export function _setName(
 
 /**
  * Templatize the tracker view serviceItemId
- * 
+ *
  * This function will update the input obj with the templatized variable
  *
  * @param obj the object that stores the serviceItemId
  * @param path the path to the property that stores the serviceItemId
- * 
+ *
  * @private
  */
 export function templatizeServiceItemId(
@@ -246,7 +245,7 @@ export function templatizeServiceItemId(
  * @param itemTemplate Template for feature service item
  * @param options the current request options to update
  * @param templateDictionary Hash of facts: org URL, adlib replacements, deferreds for dependencies
- * 
+ *
  * @private
  */
 export function setTrackingOptions(

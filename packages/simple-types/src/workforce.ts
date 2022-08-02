@@ -26,8 +26,8 @@ import * as common from "@esri/solution-common";
  */
 export function convertItemToTemplate(
   itemTemplate: common.IItemTemplate,
-  destAuthentication: common.UserSession,
-  srcAuthentication: common.UserSession
+  destAuthentication: common.ArcGISIdentityManager,
+  srcAuthentication: common.ArcGISIdentityManager
 ): Promise<common.IItemTemplate> {
   return common.convertWorkforceItemToTemplate(itemTemplate, srcAuthentication);
 }
@@ -41,7 +41,7 @@ export function convertItemToTemplate(
  */
 export function fineTuneCreatedItem(
   newlyCreatedItem: common.IItemTemplate,
-  destinationAuthentication: common.UserSession,
+  destinationAuthentication: common.ArcGISIdentityManager,
   templateDictionary: any
 ): Promise<any> {
   return common.fineTuneCreatedWorkforceItem(

@@ -60,11 +60,11 @@ import {
   ItemRelationshipType,
   IUpdate,
   IUpdateItemResponse,
-  UserSession
+  ArcGISIdentityManager
 } from "./interfaces";
 import { createZip } from "./libConnectors";
 import { getItemBase, getItemDataAsJson } from "./restHelpersGet";
-import { IUserSessionOptions } from "@esri/arcgis-rest-auth";
+import { IUserSessionOptions } from "@esri/arcgis-rest-request";
 import {
   addItemData as portalAddItemData,
   addItemRelationship,
@@ -108,7 +108,7 @@ import {
   ICreateServiceParams,
   addToServiceDefinition as svcAdminAddToServiceDefinition,
   createFeatureService as svcAdminCreateFeatureService
-} from "@esri/arcgis-rest-service-admin";
+} from "@esri/arcgis-rest-feature-service";
 import {
   getWorkforceDependencies,
   isWorkforceProject,
@@ -127,15 +127,15 @@ export { request as rest_request } from "@esri/arcgis-rest-request";
 // ------------------------------------------------------------------------------------------------------------------ //
 
 /**
- * Creates a UserSession via a function so that the global arcgisSolution variable can access authentication.
+ * Creates a ArcGISIdentityManager via a function so that the global arcgisSolution variable can access authentication.
  *
  * @param options See https://esri.github.io/arcgis-rest-js/api/auth/IUserSessionOptions/
- * @returns UserSession
+ * @returns ArcGISIdentityManager
  */
 export function getUserSession(
   options: IUserSessionOptions = {}
-): UserSession {
-  return new UserSession(options);
+): ArcGISIdentityManager {
+  return new ArcGISIdentityManager(options);
 }
 
 /**
@@ -151,7 +151,7 @@ export function addForwardItemRelationship(
   originItemId: string,
   destinationItemId: string,
   relationshipType: ItemRelationshipType,
-  authentication: UserSession
+  authentication: ArcGISIdentityManager
 ): Promise<IStatusResponse> {
   return new Promise<IStatusResponse>(resolve => {
     const requestOptions: IManageItemRelationshipOptions = {
@@ -188,7 +188,7 @@ export function addForwardItemRelationship(
 export function addForwardItemRelationships(
   originItemId: string,
   destinationRelationships: IRelatedItems[],
-  authentication: UserSession
+  authentication: ArcGISIdentityManager
 ): Promise<IStatusResponse[]> {
   return new Promise<IStatusResponse[]>(resolve => {
     // Set up relationships using updated relationship information
@@ -222,7 +222,7 @@ export function addForwardItemRelationships(
  */
 export function addTokenToUrl(
   url: string,
-  authentication: UserSession
+  authentication: ArcGISIdentityManager
 ): Promise<string> {
   return new Promise<string>(resolve => {
     if (!url || !authentication) {
@@ -406,7 +406,7 @@ export function convertExtentWithFallback(
   fallbackExtent: any,
   outSR: ISpatialReference,
   geometryServiceUrl: string,
-  authentication: UserSession
+  authentication: ArcGISIdentityManager
 ): Promise<any> {
   return new Promise((resolve, reject) => {
     const defaultExtent = {
@@ -464,7 +464,7 @@ export function convertExtent(
   extent: IExtent,
   outSR: ISpatialReference,
   geometryServiceUrl: string,
-  authentication: UserSession
+  authentication: ArcGISIdentityManager
 ): Promise<any> {
   const _requestOptions: any = { authentication };
   return new Promise<any>((resolve, reject) => {
@@ -552,7 +552,7 @@ export function convertExtent(
  */
 export function createFeatureService(
   newItemTemplate: IItemTemplate,
-  authentication: UserSession,
+  authentication: ArcGISIdentityManager,
   templateDictionary: any
 ): Promise<ICreateServiceResult> {
   return new Promise((resolve, reject) => {
@@ -596,9 +596,9 @@ export function createFeatureService(
 export function createFullItem(
   itemInfo: any,
   folderId: string | undefined,
-  destinationAuthentication: UserSession,
+  destinationAuthentication: ArcGISIdentityManager,
   itemThumbnailUrl?: string,
-  itemThumbnailAuthentication?: UserSession,
+  itemThumbnailAuthentication?: ArcGISIdentityManager,
   dataFile?: File,
   metadataFile?: File,
   resourcesFiles?: File[],
@@ -737,7 +737,7 @@ export function createFullItem(
 export function createItemWithData(
   itemInfo: any,
   dataInfo: any,
-  authentication: UserSession,
+  authentication: ArcGISIdentityManager,
   folderId: string | undefined,
   access = "private"
 ): Promise<ICreateItemResponse> {
@@ -811,7 +811,7 @@ export function createItemWithData(
 export function createUniqueFolder(
   title: string,
   templateDictionary: any,
-  authentication: UserSession
+  authentication: ArcGISIdentityManager
 ): Promise<IAddFolderResponse> {
   return new Promise<IAddFolderResponse>((resolve, reject) => {
     // Get a title that is not already in use
@@ -873,7 +873,7 @@ export function createUniqueGroup(
   title: string,
   groupItem: IGroupAdd,
   templateDictionary: any,
-  authentication: UserSession,
+  authentication: ArcGISIdentityManager,
   owner?: string
 ): Promise<IAddGroupResponse> {
   return new Promise<IAddGroupResponse>((resolve, reject) => {
@@ -937,7 +937,7 @@ export function createUniqueGroup(
  */
 export function extractDependencies(
   itemTemplate: IItemTemplate,
-  authentication?: UserSession
+  authentication?: ArcGISIdentityManager
 ): Promise<IDependency[]> {
   const dependencies: any[] = [];
   return new Promise((resolve, reject) => {
@@ -983,7 +983,7 @@ export function extractDependencies(
 export function getLayers(
   serviceUrl: string,
   layerList: any[],
-  authentication: UserSession
+  authentication: ArcGISIdentityManager
 ): Promise<any[]> {
   return new Promise<any[]>((resolve, reject) => {
     if (layerList.length === 0) {
@@ -1187,7 +1187,7 @@ export function getRequest(
  */
 export function getServiceLayersAndTables(
   itemTemplate: IItemTemplate,
-  authentication: UserSession
+  authentication: ArcGISIdentityManager
 ): Promise<IItemTemplate> {
   return new Promise<IItemTemplate>((resolve, reject) => {
     // To have enough information for reconstructing the service, we'll supplement
@@ -1227,7 +1227,7 @@ export function getServiceLayersAndTables(
  */
 export function getFeatureServiceProperties(
   serviceUrl: string,
-  authentication: UserSession,
+  authentication: ArcGISIdentityManager,
   workforceService: boolean = false
 ): Promise<IFeatureServiceProperties> {
   return new Promise<IFeatureServiceProperties>((resolve, reject) => {
@@ -1354,7 +1354,7 @@ export function hasInvalidGroupDesignations(
  */
 export function removeFolder(
   folderId: string,
-  authentication: UserSession
+  authentication: ArcGISIdentityManager
 ): Promise<IFolderStatusResponse> {
   return new Promise<IFolderStatusResponse>((resolve, reject) => {
     const requestOptions: IFolderIdOptions = {
@@ -1377,7 +1377,7 @@ export function removeFolder(
  */
 export function removeGroup(
   groupId: string,
-  authentication: UserSession
+  authentication: ArcGISIdentityManager
 ): Promise<IStatusResponse> {
   return new Promise<IStatusResponse>((resolve, reject) => {
     const requestOptions: IUserGroupOptions = {
@@ -1400,7 +1400,7 @@ export function removeGroup(
  */
 export function removeItem(
   itemId: string,
-  authentication: UserSession
+  authentication: ArcGISIdentityManager
 ): Promise<IStatusResponse> {
   return new Promise<IStatusResponse>((resolve, reject) => {
     const requestOptions: IUserItemOptions = {
@@ -1423,7 +1423,7 @@ export function removeItem(
  */
 export function removeItemOrGroup(
   itemId: string,
-  authentication: UserSession
+  authentication: ArcGISIdentityManager
 ): Promise<IStatusResponse> {
   return new Promise<IStatusResponse>((resolve, reject) => {
     removeItem(itemId, authentication).then(resolve, error => {
@@ -1501,7 +1501,7 @@ export function searchAllItems(
  */
 export function searchGroups(
   searchString: string,
-  authentication: UserSession,
+  authentication: ArcGISIdentityManager,
   additionalSearchOptions?: IAdditionalGroupSearchOptions
 ): Promise<ISearchResult<IGroup>> {
   const searchOptions: ISearchOptions = {
@@ -1526,7 +1526,7 @@ export function searchGroups(
  */
 export function searchAllGroups(
   searchString: string,
-  authentication: UserSession,
+  authentication: ArcGISIdentityManager,
   groups?: IGroup[],
   inPagingParams? : IPagingParams
 ): Promise<IGroup[]> {
@@ -1580,7 +1580,7 @@ export function searchAllGroups(
 export function searchGroupAllContents(
   groupId: string,
   searchString: string,
-  authentication: UserSession,
+  authentication: ArcGISIdentityManager,
   additionalSearchOptions?: IAdditionalGroupSearchOptions,
   portalUrl?: string,
   accumulatedResponse?: ISearchResult<IItem>
@@ -1638,7 +1638,7 @@ export function searchGroupAllContents(
 export function searchGroupContents(
   groupId: string,
   searchString: string,
-  authentication: UserSession,
+  authentication: ArcGISIdentityManager,
   additionalSearchOptions?: IAdditionalGroupSearchOptions,
   portalUrl?: string
 ): Promise<ISearchResult<IItem>> {
@@ -1679,7 +1679,7 @@ export function searchGroupContents(
 export function reassignGroup(
   groupId: string,
   userName: string,
-  authentication: UserSession
+  authentication: ArcGISIdentityManager
 ): Promise<any> {
   const requestOptions: IRequestOptions = {
     authentication: authentication,
@@ -1706,7 +1706,7 @@ export function reassignGroup(
 export function removeUsers(
   groupId: string,
   users: string[],
-  authentication: UserSession
+  authentication: ArcGISIdentityManager
 ): Promise<any> {
   return portalRemoveGroupUsers({
     id: groupId,
@@ -1729,7 +1729,7 @@ export function removeUsers(
 export function shareItem(
   groupId: string,
   id: string,
-  destinationAuthentication: UserSession,
+  destinationAuthentication: ArcGISIdentityManager,
   owner?: string
 ): Promise<void> {
   return new Promise((resolve, reject) => {
@@ -1763,7 +1763,7 @@ export function shareItem(
  */
 export function updateItem(
   itemInfo: IItemUpdate,
-  authentication: UserSession,
+  authentication: ArcGISIdentityManager,
   folderId?: string,
   additionalParams?: any
 ): Promise<IUpdateItemResponse> {
@@ -1794,7 +1794,7 @@ export function updateItem(
  */
  export function updateGroup(
   groupInfo: IGroup,
-  authentication: UserSession,
+  authentication: ArcGISIdentityManager,
   additionalParams?: any
 ): Promise<{ success: boolean; groupId: string }> {
   return new Promise((resolve, reject) => {
@@ -1826,7 +1826,7 @@ export function updateItem(
 export function updateItemExtended(
   itemInfo: IItemUpdate,
   data: any,
-  authentication: UserSession,
+  authentication: ArcGISIdentityManager,
   thumbnail?: File,
   access?: string | undefined,
   templateDictionary?: any
@@ -1873,13 +1873,13 @@ export function updateItemExtended(
  *
  * @param {string} itemId The item ID
  * @param {any} templateDictionary The template dictionary
- * @param {UserSession} authentication The destination session info
+ * @param {ArcGISIdentityManager} authentication The destination session info
  * @returns Promise resolving to successfulness of update
  */
 export function updateItemTemplateFromDictionary(
   itemId: string,
   templateDictionary: any,
-  authentication: UserSession
+  authentication: ArcGISIdentityManager
 ): Promise<IUpdateItemResponse> {
   return new Promise<IUpdateItemResponse>((resolve, reject) => {
     // Fetch the items as stored in AGO
@@ -1923,7 +1923,7 @@ export function updateItemTemplateFromDictionary(
 export function updateItemURL(
   id: string,
   url: string,
-  authentication: UserSession
+  authentication: ArcGISIdentityManager
 ): Promise<string> {
   const numAttempts = 3;
   return _updateItemURL(id, url, authentication, numAttempts);
@@ -1943,7 +1943,7 @@ export function updateItemURL(
 export function _addItemDataFile(
   itemId: string,
   dataFile: File,
-  authentication: UserSession
+  authentication: ArcGISIdentityManager
 ): Promise<IUpdateItemResponse> {
   return new Promise<IUpdateItemResponse>((resolve, reject) => {
     const addItemData: (data: any) => void = (data: any) => {
@@ -1978,7 +1978,7 @@ export function _addItemDataFile(
 export function _addItemMetadataFile(
   itemId: string,
   metadataFile: File,
-  authentication: UserSession
+  authentication: ArcGISIdentityManager
 ): Promise<IUpdateItemResponse> {
   return new Promise<IUpdateItemResponse>((resolve, reject) => {
     const addMetadataOptions: IUpdateItemOptions = {
@@ -2022,7 +2022,7 @@ export function _countRelationships(layers: any[]): number {
  */
 export function _getCreateServiceOptions(
   newItemTemplate: IItemTemplate,
-  authentication: UserSession,
+  authentication: ArcGISIdentityManager,
   templateDictionary: any
 ): Promise<any> {
   return new Promise((resolve, reject) => {
@@ -2249,7 +2249,7 @@ export function _getUpdate(
  *
  * @param url URL to modify
  * @return Adjusted URL
- * @see From `getServerRootUrl` in arcgis-rest-js' ArcGISIdentityManager.ts
+ * @see From `getServerRootUrl` in arcgis-rest-js' ApplicationCredentialsManager .ts
  * @private
  */
 export function _lowercaseDomain(
@@ -2471,7 +2471,7 @@ export function _updateIndexesForRelationshipKeyFields(serviceInfo: any): void {
 export function _updateItemURL(
   id: string,
   url: string,
-  authentication: UserSession,
+  authentication: ArcGISIdentityManager,
   numAttempts = 1
 ): Promise<string> {
   // Introduce a lag because AGO update appears to choke with rapid subsequent calls

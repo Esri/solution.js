@@ -15,7 +15,7 @@
  */
 import {
   IItemTemplate,
-  UserSession,
+  ArcGISIdentityManager,
   getProp,
   shareItemToGroups,
   isTrackingViewTemplate,
@@ -33,7 +33,7 @@ import { maybePush } from "@esri/hub-common";
 export function shareTemplatesToGroups(
   templates: IItemTemplate[],
   templateDictionary: any,
-  authentication: UserSession
+  authentication: ArcGISIdentityManager
 ): Promise<any> {
   // Filter to entries with groups to share to
   const templatesWithGroups = templates.filter(e => {

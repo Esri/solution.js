@@ -19,7 +19,7 @@ import {
   IAssociatedFileInfo,
   IFileMimeTyped,
   IItemUpdate,
-  UserSession
+  ArcGISIdentityManager
 } from "../interfaces";
 import { createCopyResults } from "./createCopyResults";
 import { getBlob } from "./get-blob";
@@ -39,9 +39,9 @@ import { updateItem as helpersUpdateItem } from "../restHelpers";
  */
 export function copyDataIntoItem(
   fileInfo: IAssociatedFileInfo,
-  sourceAuthentication: UserSession,
+  sourceAuthentication: ArcGISIdentityManager,
   destinationItemId: string,
-  destinationAuthentication: UserSession
+  destinationAuthentication: ArcGISIdentityManager
 ): Promise<IAssociatedFileCopyResults> {
   return new Promise<IAssociatedFileCopyResults>(resolve => {
     getBlob(fileInfo.url, sourceAuthentication).then(

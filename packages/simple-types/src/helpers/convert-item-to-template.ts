@@ -37,8 +37,8 @@ import * as workforce from "../workforce";
 export function convertItemToTemplate(
   solutionItemId: string,
   itemInfo: any,
-  destAuthentication: common.UserSession,
-  srcAuthentication: common.UserSession,
+  destAuthentication: common.ArcGISIdentityManager,
+  srcAuthentication: common.ArcGISIdentityManager,
   templateDictionary: any
 ): Promise<common.IItemTemplate> {
   return new Promise<common.IItemTemplate>((resolve, reject) => {

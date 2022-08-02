@@ -21,7 +21,7 @@
  */
 
 import {
-  UserSession,
+  ArcGISIdentityManager,
   IItemTemplate,
   updateItemTemplateFromDictionary
 } from "@esri/solution-common";
@@ -35,7 +35,7 @@ import { postProcessHubSurvey } from "./helpers/post-process-survey";
  * @param {string} type The template type
  * @param {any[]} itemInfos Array of {id: 'ef3', type: 'Web Map'} objects
  * @param {any} templateDictionary The template dictionary
- * @param {UserSession} authentication The destination session info
+ * @param {ArcGISIdentityManager} authentication The destination session info
  * @returns Promise resolving to successfulness of update
  */
 export function postProcess(
@@ -45,7 +45,7 @@ export function postProcess(
   template: IItemTemplate,
   templates: IItemTemplate[],
   templateDictionary: any,
-  authentication: UserSession
+  authentication: ArcGISIdentityManager
 ): Promise<any> {
   if (isHubFormTemplate(template)) {
     return postProcessHubSurvey(

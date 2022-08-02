@@ -29,7 +29,7 @@ import * as fetchMock from "fetch-mock";
 import * as templates from "../../../common/test/mocks/templates";
 import * as utils from "../../../common/test/mocks/utils";
 
-let MOCK_USER_SESSION: interfaces.UserSession;
+let MOCK_USER_SESSION: interfaces.ArcGISIdentityManager;
 
 beforeEach(() => {
   MOCK_USER_SESSION = utils.createRuntimeMockUserSession();

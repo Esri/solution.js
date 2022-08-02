@@ -18,7 +18,7 @@ import {
   getProp,
   getItemBase,
   IItemTemplate,
-  UserSession,
+  ArcGISIdentityManager,
   BASE_NAMES,
   PROP_NAMES
 } from "@esri/solution-common";
@@ -34,7 +34,7 @@ import {
  */
 export function getVelocityDependencies(
   template: IItemTemplate,
-  authentication: UserSession
+  authentication: ArcGISIdentityManager
 ): Promise<string[]> {
   const dependencies: string[] = [];
 
@@ -66,7 +66,7 @@ export function getVelocityDependencies(
  */
 export function _validateDependencies(
   dependencies: string[],
-  authentication: UserSession
+  authentication: ArcGISIdentityManager
 ): Promise<string[]> {
   const defs: Array<Promise<any>> = dependencies.map(d => {
     return getItemBase(d, authentication);

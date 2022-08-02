@@ -37,7 +37,7 @@ import * as templates from "../../../common/test/mocks/templates";
 import * as sinon from "sinon";
 import * as staticRelatedItemsMocks from "../../../common/test/mocks/staticRelatedItemsMocks";
 import { findBy } from "@esri/hub-common";
-// Set up a UserSession to use in all these tests
+// Set up a ArcGISIdentityManager to use in all these tests
 const MOCK_USER_SESSION = utils.createRuntimeMockUserSession();
 
 describe("addContentToSolution", () => {
@@ -53,8 +53,8 @@ describe("addContentToSolution", () => {
         solutionItemId: string,
         itemId: string,
         templateDictionary: any,
-        srcAuthentication: common.UserSession,
-        destAuthentication: common.UserSession,
+        srcAuthentication: common.ArcGISIdentityManager,
+        destAuthentication: common.ArcGISIdentityManager,
         existingTemplates: common.IItemTemplate[],
         itemProgressCallback: common.IItemProgressCallback
       ) => {
@@ -92,8 +92,8 @@ describe("addContentToSolution", () => {
         solutionItemId: string,
         itemId: string,
         templateDictionary: any,
-        srcAuthentication: common.UserSession,
-        destAuthentication: common.UserSession,
+        srcAuthentication: common.ArcGISIdentityManager,
+        destAuthentication: common.ArcGISIdentityManager,
         existingTemplates: common.IItemTemplate[],
         itemProgressCallback: common.IItemProgressCallback
       ) => {

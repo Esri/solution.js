@@ -38,7 +38,7 @@ import * as removeItems from "../src/deleteHelpers/removeItems";
 import * as reportProgress from "../src/deleteHelpers/reportProgress";
 import * as reconstructBuildOrderIds from "../src/deleteHelpers/reconstructBuildOrderIds";
 
-let MOCK_USER_SESSION: interfaces.UserSession;
+let MOCK_USER_SESSION: interfaces.ArcGISIdentityManager;
 
 beforeEach(() => {
   MOCK_USER_SESSION = utils.createRuntimeMockUserSession();

@@ -18,7 +18,7 @@ import { shareTemplatesToGroups } from "../../src/helpers/share-templates-to-gro
 import * as common from "@esri/solution-common";
 import * as testUtils from "@esri/solution-common/test/mocks/utils";
 
-let MOCK_USER_SESSION: common.UserSession;
+let MOCK_USER_SESSION: common.ArcGISIdentityManager;
 
 describe("shareItemsToGroups", () => {
   beforeEach(() => {

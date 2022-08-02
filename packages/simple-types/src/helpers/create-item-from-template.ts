@@ -21,7 +21,7 @@ import * as workforce from "../workforce";
 export function createItemFromTemplate(
   template: common.IItemTemplate,
   templateDictionary: any,
-  destinationAuthentication: common.UserSession,
+  destinationAuthentication: common.ArcGISIdentityManager,
   itemProgressCallback: common.IItemProgressCallback
 ): Promise<common.ICreateItemFromTemplateResponse> {
   return new Promise<common.ICreateItemFromTemplateResponse>(resolve => {

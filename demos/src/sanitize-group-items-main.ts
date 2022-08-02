@@ -28,7 +28,7 @@ export function sanitizeGroupItems(
   groupId: string,
   searchString: string,
   additionalSearchOptions: common.IAdditionalGroupSearchOptions,
-  authentication: common.UserSession
+  authentication: common.ArcGISIdentityManager
 ): Promise<common.IItem[]> {
   return new Promise<common.IItem[]>((resolve, reject) => {
     if (!groupId) {

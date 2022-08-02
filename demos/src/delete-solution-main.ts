@@ -20,7 +20,7 @@ import * as portal from "@esri/arcgis-rest-portal";
 
 
 export function getDeployedSolutions(
-  authentication: common.UserSession
+  authentication: common.ArcGISIdentityManager
 ): Promise<portal.ISearchResult<portal.IItem>> {
   const query = new portal.SearchQueryBuilder()
   .match(authentication.username).in("owner").and()
@@ -48,7 +48,7 @@ export function getDeployedSolutions(
 
 export function checkDeleteSolution(
   solutionItemId: string,
-  authentication: common.UserSession
+  authentication: common.ArcGISIdentityManager
 ): Promise<string> {
   return new Promise<string>((resolve, reject) => {
     if (!solutionItemId) {
@@ -81,7 +81,7 @@ export function checkDeleteSolution(
 
 export function deleteSolution(
   solutionItemId: string,
-  authentication: common.UserSession,
+  authentication: common.ArcGISIdentityManager,
   progressCallback: common.ISolutionProgressCallback
 ): Promise<string> {
   return new Promise<string>((resolve, reject) => {

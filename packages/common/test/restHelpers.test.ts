@@ -18,7 +18,7 @@
  * Provides tests for functions involving the arcgis-rest-js library.
  */
 
-import * as admin from "@esri/arcgis-rest-service-admin";
+import * as admin from "@esri/arcgis-rest-feature-service";
 import * as fetchMock from "fetch-mock";
 import * as generalHelpers from "../src/generalHelpers";
 import * as interfaces from "../src/interfaces";
@@ -36,7 +36,7 @@ import { IPagingParams } from "@esri/arcgis-rest-portal";
 
 // ------------------------------------------------------------------------------------------------------------------ //
 
-let MOCK_USER_SESSION: interfaces.UserSession;
+let MOCK_USER_SESSION: interfaces.ArcGISIdentityManager;
 let itemTemplate: interfaces.IItemTemplate;
 
 beforeEach(() => {
@@ -128,10 +128,10 @@ const solutionItemExtent: any = [
 
 describe("Module `restHelpers`: common REST utility functions shared across packages", () => {
 
-  describe("UserSession constructor-by-function", () => {
+  describe("ArcGISIdentityManager constructor-by-function", () => {
     it("handles defaulting all options", () => {
       const userSession = restHelpers.getUserSession();
-      const expectedUserSession = new interfaces.UserSession({});
+      const expectedUserSession = new interfaces.ArcGISIdentityManager({});
       expect(userSession.username).toEqual(expectedUserSession.username);
       expect(userSession.password).toEqual(expectedUserSession.password);
       expect(userSession.portal).toEqual(expectedUserSession.portal);
@@ -143,7 +143,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
         password: "Astaire"
       };
       const userSession = restHelpers.getUserSession(options);
-      const expectedUserSession = new interfaces.UserSession(options);
+      const expectedUserSession = new interfaces.ArcGISIdentityManager(options);
       expect(userSession.username).toEqual(expectedUserSession.username);
       expect(userSession.password).toEqual(expectedUserSession.password);
       expect(userSession.portal).toEqual(expectedUserSession.portal);
@@ -736,7 +736,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
       // with known results
       const date = new Date(Date.UTC(2019, 2, 4, 5, 6, 7)); // 0-based month
       const now = date.getTime();
-      const sessionWithMockedTime: interfaces.UserSession = utils.createRuntimeMockUserSession(
+      const sessionWithMockedTime: interfaces.ArcGISIdentityManager = utils.createRuntimeMockUserSession(
         utils.setMockDateTime(now)
       );
 
@@ -4373,7 +4373,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
 
   describe("_getCreateServiceOptions", () => {
     it("can get options for HOSTED empty service", done => {
-      const userSession: interfaces.UserSession = new interfaces.UserSession({
+      const userSession: interfaces.ArcGISIdentityManager = new interfaces.ArcGISIdentityManager({
         username: "jsmith",
         password: "123456"
       });
@@ -4419,7 +4419,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
     });
 
     it("can get options for PORTAL empty service", done => {
-      const userSession: interfaces.UserSession = new interfaces.UserSession({
+      const userSession: interfaces.ArcGISIdentityManager = new interfaces.ArcGISIdentityManager({
         username: "jsmith",
         password: "123456"
       });
@@ -4463,7 +4463,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
     });
 
     it("can get options for HOSTED service with values", done => {
-      const userSession: interfaces.UserSession = new interfaces.UserSession({
+      const userSession: interfaces.ArcGISIdentityManager = new interfaces.ArcGISIdentityManager({
         username: "jsmith",
         password: "123456"
       });
@@ -4537,7 +4537,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
     });
 
     it("can get tracker options for HOSTED service with values", done => {
-      const userSession: interfaces.UserSession = new interfaces.UserSession({
+      const userSession: interfaces.ArcGISIdentityManager = new interfaces.ArcGISIdentityManager({
         username: "jsmith",
         password: "123456"
       });
@@ -4617,7 +4617,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
     });
 
     it("can get options for PORTAL service with values and unsupported capabilities", done => {
-      const userSession: interfaces.UserSession = new interfaces.UserSession({
+      const userSession: interfaces.ArcGISIdentityManager = new interfaces.ArcGISIdentityManager({
         username: "jsmith",
         password: "123456"
       });
@@ -4692,7 +4692,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
     });
 
     it("can get options for HOSTED service with values when name contains guid", done => {
-      const userSession: interfaces.UserSession = new interfaces.UserSession({
+      const userSession: interfaces.ArcGISIdentityManager = new interfaces.ArcGISIdentityManager({
         username: "jsmith",
         password: "123456"
       });
@@ -4767,7 +4767,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
     });
 
     it("can get options for HOSTED service with values and handle error on convertExtent", done => {
-      const userSession: interfaces.UserSession = new interfaces.UserSession({
+      const userSession: interfaces.ArcGISIdentityManager = new interfaces.ArcGISIdentityManager({
         username: "jsmith",
         password: "123456"
       });

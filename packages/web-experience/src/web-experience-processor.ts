@@ -21,7 +21,7 @@
  */
 
 import {
-  UserSession,
+  ArcGISIdentityManager,
   EItemProgressStatus,
   IItemProgressCallback,
   IItemTemplate,
@@ -48,8 +48,8 @@ import { convertWebExperienceToTemplate } from "./helpers/convert-web-experience
 export function convertItemToTemplate(
   solutionItemId: string,
   itemInfo: any,
-  destAuthentication: UserSession,
-  srcAuthentication: UserSession
+  destAuthentication: ArcGISIdentityManager,
+  srcAuthentication: ArcGISIdentityManager
 ): Promise<IItemTemplate> {
   // use the itemInfo to setup a model
   const model = {
@@ -76,7 +76,7 @@ export function convertItemToTemplate(
 export function createItemFromTemplate(
   template: IItemTemplate,
   templateDictionary: any,
-  destinationAuthentication: UserSession,
+  destinationAuthentication: ArcGISIdentityManager,
   itemProgressCallback: IItemProgressCallback
 ): Promise<ICreateItemFromTemplateResponse> {
   // let the progress system know we've started...
@@ -156,7 +156,7 @@ export function createItemFromTemplate(
  * @param {string} type The template type
  * @param {any[]} itemInfos Array of {id: 'ef3', type: 'Web Map'} objects
  * @param {any} templateDictionary The template dictionary
- * @param {UserSession} authentication The destination session info
+ * @param {ArcGISIdentityManager} authentication The destination session info
  * @returns Promise resolving to successfulness of update
  */
 export function postProcess(
@@ -166,7 +166,7 @@ export function postProcess(
   template: IItemTemplate,
   templates: IItemTemplate[],
   templateDictionary: any,
-  authentication: UserSession
+  authentication: ArcGISIdentityManager
 ): Promise<IUpdateItemResponse> {
   return updateItemTemplateFromDictionary(
     itemId,

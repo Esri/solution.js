@@ -24,7 +24,7 @@ import * as utils from "../../common/test/mocks/utils";
 import * as templates from "../../common/test/mocks/templates";
 import * as agolItems from "../../common/test/mocks/agolItems";
 
-let MOCK_USER_SESSION: interfaces.UserSession;
+let MOCK_USER_SESSION: interfaces.ArcGISIdentityManager;
 
 beforeEach(() => {
   MOCK_USER_SESSION = utils.createRuntimeMockUserSession();
@@ -322,7 +322,7 @@ describe("createItemFromTemplate", () => {
     );
     const templateDictionary = {};
     templateDictionary[template.itemId] = {};
-    const destinationAuthentication: interfaces.UserSession = MOCK_USER_SESSION;
+    const destinationAuthentication: interfaces.ArcGISIdentityManager = MOCK_USER_SESSION;
     const realtimeUrl: string =
       "https://us-iot.arcgis.com/usadvanced00/fliptfmrv9d1divn/iot/analytics/realtime";
     const id: string = "aaabbbccc123";
@@ -384,7 +384,7 @@ describe("createItemFromTemplate", () => {
     );
     const templateDictionary = {};
     templateDictionary[template.itemId] = {};
-    const destinationAuthentication: interfaces.UserSession = MOCK_USER_SESSION;
+    const destinationAuthentication: interfaces.ArcGISIdentityManager = MOCK_USER_SESSION;
 
     createItemFromTemplate(
       template,
@@ -405,7 +405,7 @@ describe("createItemFromTemplate", () => {
     template.estimatedDeploymentCostFactor = undefined;
     const templateDictionary = {};
     templateDictionary[template.itemId] = {};
-    const destinationAuthentication: interfaces.UserSession = MOCK_USER_SESSION;
+    const destinationAuthentication: interfaces.ArcGISIdentityManager = MOCK_USER_SESSION;
     const realtimeUrl: string =
       "https://us-iot.arcgis.com/usadvanced00/fliptfmrv9d1divn/iot/analytics/realtime";
     const id: string = "aaabbbccc123";
@@ -472,7 +472,7 @@ describe("createItemFromTemplate", () => {
     template.estimatedDeploymentCostFactor = undefined;
     const templateDictionary = {};
     templateDictionary[template.itemId] = {};
-    const destinationAuthentication: interfaces.UserSession = MOCK_USER_SESSION;
+    const destinationAuthentication: interfaces.ArcGISIdentityManager = MOCK_USER_SESSION;
     const realtimeUrl: string =
       "https://us-iot.arcgis.com/usadvanced00/fliptfmrv9d1divn/iot/analytics/realtime";
     const id: string = "aaabbbccc123";
@@ -538,7 +538,7 @@ describe("createItemFromTemplate", () => {
     );
     const templateDictionary = {};
     templateDictionary[template.itemId] = {};
-    const destinationAuthentication: interfaces.UserSession = MOCK_USER_SESSION;
+    const destinationAuthentication: interfaces.ArcGISIdentityManager = MOCK_USER_SESSION;
     const realtimeUrl: string =
       "https://us-iot.arcgis.com/usadvanced00/fliptfmrv9d1divn/iot/analytics/realtime";
     const id: string = "aaabbbccc123";

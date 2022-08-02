@@ -13,9 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { UserSession } from "@esri/solution-common";
+import { ArcGISIdentityManager } from "@esri/solution-common";
 
-export function getStoryMapSubdomain(authentication: UserSession): string {
+export function getStoryMapSubdomain(authentication: ArcGISIdentityManager): string {
   const portalUrl =
     authentication.portal || "https://www.arcgis.com/sharing/rest";
   // TODO: Sort out how we locate storymaps on portal?

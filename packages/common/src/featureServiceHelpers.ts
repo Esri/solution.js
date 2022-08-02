@@ -25,7 +25,7 @@
 export {
   queryFeatures as rest_queryFeatures,
   addFeatures as rest_addFeatures
-} from "@esri/arcgis-rest-feature-layer";
+} from "@esri/arcgis-rest-feature-service";
 
 //#region Imports -------------------------------------------------------------------------------------------------------//
 
@@ -37,7 +37,7 @@ import {
   IPostProcessArgs,
   IStringValuePair,
   IUpdate,
-  UserSession
+  ArcGISIdentityManager
 } from "./interfaces";
 import {
   checkUrlPathTermination,
@@ -556,7 +556,7 @@ export function updateSettingsFieldInfos(
  */
 export function updateTemplateForInvalidDesignations(
   template: IItemTemplate,
-  authentication: UserSession
+  authentication: ArcGISIdentityManager
 ): Promise<IItemTemplate> {
   return new Promise<IItemTemplate>((resolve, reject) => {
     template.properties.hasInvalidDesignations = true;
@@ -608,7 +608,7 @@ export function updateTemplateForInvalidDesignations(
 export function processContingentValues(
   properties: IFeatureServiceProperties,
   adminUrl: string,
-  authentication: UserSession
+  authentication: ArcGISIdentityManager
 ): Promise<void> {
   return new Promise<void>((resolve, reject) => {
     if (getProp(properties, 'service.isView')) {
@@ -742,7 +742,7 @@ export function getLayersAndTables(itemTemplate: IItemTemplate): any[] {
 export function getExistingLayersAndTables(
   url: string,
   ids: number[],
-  authentication: UserSession
+  authentication: ArcGISIdentityManager
 ): Promise<any> {
   // eslint-disable-next-line @typescript-eslint/no-floating-promises
   return new Promise(resolve => {
@@ -771,7 +771,7 @@ export function addFeatureServiceLayersAndTables(
   itemTemplate: IItemTemplate,
   templateDictionary: any,
   popupInfos: IPopupInfos,
-  authentication: UserSession
+  authentication: ArcGISIdentityManager
 ): Promise<void> {
   return new Promise((resolve, reject) => {
     if (isTrackingViewTemplate(itemTemplate)) {
@@ -855,7 +855,7 @@ export function addFeatureServiceDefinition(
   serviceUrl: string,
   listToAdd: any[],
   templateDictionary: any,
-  authentication: UserSession,
+  authentication: ArcGISIdentityManager,
   key: string,
   adminLayerInfos: any,
   fieldInfos: any,
@@ -1004,7 +1004,7 @@ export function _updateAddOptions(
   item: any,
   options: any,
   layerChunks: any[],
-  authentication: UserSession
+  authentication: ArcGISIdentityManager
 ): any {
   const isMsView: boolean =
     getProp(itemTemplate, "properties.service.isMultiServicesView") || false;

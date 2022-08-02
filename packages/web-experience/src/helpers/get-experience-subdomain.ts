@@ -13,15 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { UserSession } from "@esri/solution-common";
+import { ArcGISIdentityManager } from "@esri/solution-common";
 
 /**
  * Returns the subdomain for an experience based on the  api the session is
  * authenticated against
  *
- * @param authentication UserSession
+ * @param authentication ArcGISIdentityManager
  */
-export function getExperienceSubdomain(authentication: UserSession): string {
+export function getExperienceSubdomain(authentication: ArcGISIdentityManager): string {
   const portalUrl =
     authentication.portal || "https://www.arcgis.com/sharing/rest";
   // TODO: Sort out how we locate experiences on portal?

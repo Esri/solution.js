@@ -22,7 +22,7 @@ import * as mockItems from "../../common/test/mocks/agolItems";
 import * as templates from "../../common/test/mocks/templates";
 
 describe("convertItemToTemplate", () => {
-  let MOCK_USER_SESSION: common.UserSession;
+  let MOCK_USER_SESSION: common.ArcGISIdentityManager;
   let template: common.IItemTemplate;
 
   beforeEach(() => {

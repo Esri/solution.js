@@ -19,7 +19,7 @@ import * as common from "@esri/solution-common";
 
 export function getGroupInfo(
   groupId: string,
-  authentication: common.UserSession
+  authentication: common.ArcGISIdentityManager
 ): Promise<string> {
   return new Promise<string>((resolve, reject) => {
     if (!groupId) {

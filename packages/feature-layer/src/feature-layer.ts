@@ -41,8 +41,8 @@ import * as common from "@esri/solution-common";
 export function convertItemToTemplate(
   solutionItemId: string,
   itemInfo: any,
-  destAuthentication: common.UserSession,
-  srcAuthentication: common.UserSession,
+  destAuthentication: common.ArcGISIdentityManager,
+  srcAuthentication: common.ArcGISIdentityManager,
   templateDictionary?: any
 ): Promise<common.IItemTemplate> {
   return new Promise<common.IItemTemplate>((resolve, reject) => {
@@ -124,7 +124,7 @@ export function convertItemToTemplate(
 export function createItemFromTemplate(
   template: common.IItemTemplate,
   templateDictionary: any,
-  destinationAuthentication: common.UserSession,
+  destinationAuthentication: common.ArcGISIdentityManager,
   itemProgressCallback: common.IItemProgressCallback
 ): Promise<common.ICreateItemFromTemplateResponse> {
   return new Promise<common.ICreateItemFromTemplateResponse>(resolve => {
@@ -409,7 +409,7 @@ export function createItemFromTemplate(
  * @param {string} type The template type
  * @param {any[]} itemInfos Array of {id: 'ef3', type: 'Web Map'} objects
  * @param {any} templateDictionary The template dictionary
- * @param {UserSession} authentication The destination session info
+ * @param {ArcGISIdentityManager} authentication The destination session info
  * @returns Promise resolving to successfulness of update
  */
 export function postProcess(
@@ -419,7 +419,7 @@ export function postProcess(
   template: common.IItemTemplate,
   templates: common.IItemTemplate[],
   templateDictionary: any,
-  authentication: common.UserSession
+  authentication: common.ArcGISIdentityManager
 ): Promise<common.IUpdateItemResponse> {
   return new Promise<common.IUpdateItemResponse>((resolve, reject) => {
     common

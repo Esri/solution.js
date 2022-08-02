@@ -21,11 +21,11 @@ import * as common from "@esri/solution-common";
  * resolve using the object, if it is structured as expected
  *
  * @param idOrObject string || object like `{item:{...}, data: {...}}`
- * @param authentication UserSession
+ * @param authentication ArcGISIdentityManager
  */
 export function getSolutionTemplateItem(
   idOrObject: any,
-  authentication: common.UserSession
+  authentication: common.ArcGISIdentityManager
 ): Promise<any> {
   if (typeof idOrObject === "string") {
     // get the item + data
@@ -65,7 +65,7 @@ export function getSolutionTemplateItem(
 export function updateDeployOptions(
   deployOptions: any,
   item: common.IItem,
-  authentication: common.UserSession
+  authentication: common.ArcGISIdentityManager
 ): any {
   deployOptions.jobId = deployOptions.jobId ?? item.id;
   deployOptions.title = deployOptions.title ?? item.title;

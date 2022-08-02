@@ -31,7 +31,7 @@ describe("createItemFromHubTemplate", () => {
   let interpolatedTemplate: common.IItemTemplate;
   let paramResults: common.ISurvey123CreateParams;
   let createResult: common.ISurvey123CreateResult;
-  let MOCK_USER_SESSION: common.UserSession;
+  let MOCK_USER_SESSION: common.ArcGISIdentityManager;
   let getItemBaseResult: common.IItem;
 
   beforeEach(() => {

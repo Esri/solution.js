@@ -17,12 +17,11 @@
 
 import * as common from "@esri/solution-common";
 import * as portal from "@esri/arcgis-rest-portal";
-import * as restTypes from "@esri/arcgis-rest-types";
 
 export function convertPortalExtents(portalId: string): Promise<string> {
   return new Promise<string>((resolve, reject) => {
     const usOptions: common.IUserSessionOptions = {};
-    const authorization: common.UserSession = new common.UserSession(usOptions);
+    const authorization: common.ArcGISIdentityManager = new common.ArcGISIdentityManager(usOptions);
 
     // Get the extents of a portal
     // tslint:disable-next-line: no-floating-promises
@@ -38,7 +37,7 @@ export function convertPortalExtents(portalId: string): Promise<string> {
         html += "<pre>" + JSON.stringify(portalExtent, null, 4) + "</pre>";
 
         // Convert the extents
-        const outSR: restTypes.ISpatialReference = { wkid: 4326 };
+        const outSR: common.ISpatialReference = { wkid: 4326 };
         const geometryServiceUrl: string =
           "http://sampleserver6.arcgisonline.com/arcgis/rest/services/Utilities/Geometry/GeometryServer";
         // tslint:disable-next-line: no-floating-promises

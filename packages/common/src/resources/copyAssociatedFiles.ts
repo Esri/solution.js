@@ -25,7 +25,7 @@ import {
   ISourceFile,
   IZipCopyResults,
   IZipInfo,
-  UserSession
+  ArcGISIdentityManager
 } from "../interfaces";
 import { chunkArray } from "@esri/hub-common";
 import { copyDataIntoItem } from "./copyDataIntoItem";
@@ -53,7 +53,7 @@ import JSZip from "jszip";
 export function copyFilesAsResources(
   files: ISourceFile[],
   destinationItemId: string,
-  destinationAuthentication: UserSession,
+  destinationAuthentication: ArcGISIdentityManager,
   filesPerZip = 40
 ): Promise<IAssociatedFileCopyResults[]> {
   return new Promise<IAssociatedFileCopyResults[]>(resolve => {
@@ -132,9 +132,9 @@ export function copyFilesAsResources(
  */
 export function copyAssociatedFilesByType(
   fileInfos: IAssociatedFileInfo[],
-  sourceAuthentication: UserSession,
+  sourceAuthentication: ArcGISIdentityManager,
   destinationItemId: string,
-  destinationAuthentication: UserSession
+  destinationAuthentication: ArcGISIdentityManager
 ): Promise<IAssociatedFileCopyResults[]> {
   return new Promise<IAssociatedFileCopyResults[]>(resolve => {
     let awaitAllItems: Array<Promise<IAssociatedFileCopyResults>> = [];
@@ -255,7 +255,7 @@ export function copyAssociatedFilesByType(
 export function _copyAssociatedFileZips(
   zipInfos: IZipInfo[],
   destinationItemId: string,
-  destinationAuthentication: UserSession
+  destinationAuthentication: ArcGISIdentityManager
 ): Promise<IAssociatedFileCopyResults[]> {
   return new Promise<IAssociatedFileCopyResults[]>(resolve => {
     const results: IAssociatedFileCopyResults[] = [];
@@ -293,7 +293,7 @@ export function _copyAssociatedFileZips(
 function _sendZipsSeriallyToItem(
   zipInfos: IZipInfo[],
   destinationItemId: string,
-  destinationAuthentication: UserSession
+  destinationAuthentication: ArcGISIdentityManager
 ): Promise<IAssociatedFileCopyResults[]> {
   return new Promise<IAssociatedFileCopyResults[]>(resolve => {
     let allResults: IAssociatedFileCopyResults[] = [];

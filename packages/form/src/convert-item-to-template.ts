@@ -20,7 +20,7 @@
  * @module convert-item-to-template
  */
 
-import { UserSession, IItemTemplate } from "@esri/solution-common";
+import { ArcGISIdentityManager, IItemTemplate } from "@esri/solution-common";
 import { simpleTypes } from "@esri/solution-simple-types";
 
 /**
@@ -28,16 +28,16 @@ import { simpleTypes } from "@esri/solution-simple-types";
  *
  * @param {string} solutionItemId The solution item ID
  * @param {any} itemInfo: The base item info
- * @param {UserSession} destAuthentication Credentials for requests to the destination organization
- * @param {UserSession} srcAuthentication Credentials for requests to source items
+ * @param {ArcGISIdentityManager} destAuthentication Credentials for requests to the destination organization
+ * @param {ArcGISIdentityManager} srcAuthentication Credentials for requests to source items
  * @param {any} templateDictionary Hash of facts: folder id, org URL, adlib replacements
  * @returns {Promise<IItemTemplate>}
  */
 export function convertItemToTemplate(
   solutionItemId: string,
   itemInfo: any,
-  destAuthentication: UserSession,
-  srcAuthentication: UserSession,
+  destAuthentication: ArcGISIdentityManager,
+  srcAuthentication: ArcGISIdentityManager,
   templateDictionary: any
 ): Promise<IItemTemplate> {
   // Delegate to simple types

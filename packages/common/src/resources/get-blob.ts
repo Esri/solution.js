@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { UserSession } from "../interfaces";
+import { ArcGISIdentityManager } from "../interfaces";
 import { request, IRequestOptions } from "@esri/arcgis-rest-request";
 /**
  * Gets a Blob from a web site.
@@ -25,7 +25,7 @@ import { request, IRequestOptions } from "@esri/arcgis-rest-request";
  */
 export function getBlob(
   url: string,
-  authentication: UserSession,
+  authentication: ArcGISIdentityManager,
   requestOptions: IRequestOptions = {}
 ): Promise<Blob> {
   if (!url) {

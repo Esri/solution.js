@@ -17,7 +17,7 @@
 import {
   IAssociatedFileCopyResults,
   IAssociatedFileInfo,
-  UserSession
+  ArcGISIdentityManager
 } from "../interfaces";
 import { addMetadataFromBlob } from "./addMetadataFromBlob";
 import { createCopyResults } from "./createCopyResults";
@@ -36,9 +36,9 @@ import { getBlob } from "./get-blob";
  */
 export function copyMetadataIntoItem(
   fileInfo: IAssociatedFileInfo,
-  sourceAuthentication: UserSession,
+  sourceAuthentication: ArcGISIdentityManager,
   destinationItemId: string,
-  destinationAuthentication: UserSession
+  destinationAuthentication: ArcGISIdentityManager
 ): Promise<IAssociatedFileCopyResults> {
   return new Promise<IAssociatedFileCopyResults>(resolve => {
     getBlob(fileInfo.url, sourceAuthentication).then(

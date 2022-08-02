@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { ISourceFile, ISourceFileCopyPath, UserSession } from "../interfaces";
+import { ISourceFile, ISourceFileCopyPath, ArcGISIdentityManager } from "../interfaces";
 import { getBlobAsFile } from "../restHelpersGet";
 
 // ------------------------------------------------------------------------------------------------------------------ //
@@ -28,7 +28,7 @@ import { getBlobAsFile } from "../restHelpersGet";
  */
 export function getItemResourcesFilesFromPaths(
   resourceItemFilePaths: ISourceFileCopyPath[],
-  authentication: UserSession
+  authentication: ArcGISIdentityManager
 ): Promise<ISourceFile[]> {
   // eslint-disable-next-line @typescript-eslint/no-floating-promises
   return Promise.all(

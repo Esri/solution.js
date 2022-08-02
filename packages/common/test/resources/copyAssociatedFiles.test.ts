@@ -41,7 +41,7 @@ import * as utils from "../mocks/utils";
 
 // ------------------------------------------------------------------------------------------------------------------ //
 
-let MOCK_USER_SESSION: interfaces.UserSession;
+let MOCK_USER_SESSION: interfaces.ArcGISIdentityManager;
 
 beforeEach(() => {
   MOCK_USER_SESSION = utils.createRuntimeMockUserSession();

@@ -24,7 +24,7 @@ import * as mockItems from "../../common/test/mocks/agolItems";
 import * as utils from "../../common/test/mocks/utils";
 import * as viewer from "../src/viewer";
 
-let MOCK_USER_SESSION: common.UserSession;
+let MOCK_USER_SESSION: common.ArcGISIdentityManager;
 
 let sampleItemTemplate: any;
 beforeEach(() => {

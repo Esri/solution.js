@@ -19,12 +19,12 @@ import * as portalHelper from "@esri/arcgis-rest-portal";
 import * as shareHelper from "../../src/helpers/share-templates-to-groups";
 import * as testUtils from "@esri/solution-common/test/mocks/utils";
 import {
-  UserSession,
+  ArcGISIdentityManager,
   IItemTemplate,
   ICreateItemFromTemplateResponse
 } from "@esri/solution-common";
 
-let MOCK_USER_SESSION: UserSession;
+let MOCK_USER_SESSION: ArcGISIdentityManager;
 describe("postProcess Module", () => {
   const tmpls = [] as IItemTemplate[];
   const tmplDict = {};

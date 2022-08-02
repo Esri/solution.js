@@ -27,7 +27,7 @@ import * as createHelper from "../src/helpers/create-item-from-template";
 import * as convertHelper from "../src/helpers/convert-item-to-template";
 import * as notebookProcessor from "../src/notebook";
 
-let MOCK_USER_SESSION: common.UserSession;
+let MOCK_USER_SESSION: common.ArcGISIdentityManager;
 let template: common.IItemTemplate;
 
 beforeEach(() => {

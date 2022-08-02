@@ -25,7 +25,7 @@ import * as fetchMock from "fetch-mock";
 import * as mockItems from "../../common/test/mocks/agolItems";
 import * as mockSolutions from "../../common/test/mocks/templates";
 
-let MOCK_USER_SESSION: common.UserSession;
+let MOCK_USER_SESSION: common.ArcGISIdentityManager;
 let itemTemplate: common.IItemTemplate;
 
 beforeEach(() => {

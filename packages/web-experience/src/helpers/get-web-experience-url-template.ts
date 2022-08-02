@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { UserSession } from "@esri/solution-common";
+import { ArcGISIdentityManager } from "@esri/solution-common";
 import { getExperienceSubdomain } from "./get-experience-subdomain";
 /**
  * For a given environment Prod/qa/dev/portal
@@ -22,7 +22,7 @@ import { getExperienceSubdomain } from "./get-experience-subdomain";
  * @param authentication
  */
 export function getWebExperiencepUrlTemplate(
-  authentication: UserSession
+  authentication: ArcGISIdentityManager
 ): string {
   let baseUrl = "";
 

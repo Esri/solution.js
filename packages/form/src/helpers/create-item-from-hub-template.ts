@@ -16,7 +16,7 @@
 
 import {
   IItemTemplate,
-  UserSession,
+  ArcGISIdentityManager,
   IItemProgressCallback,
   ICreateItemFromTemplateResponse,
   EItemProgressStatus,
@@ -41,14 +41,14 @@ import { buildCreateParams } from "./build-create-params";
  *
  * @param {IItemTemplate} template The template
  * @param {any} templateDictionary The template dictionary
- * @param {UserSession} destinationAuthentication The destination session info
+ * @param {ArcGISIdentityManager} destinationAuthentication The destination session info
  * @param {Function} itemProgressCallback A progress callback
  * @returns {Promise<ICreateItemFromTemplateResponse>}
  */
 export function createItemFromHubTemplate(
   template: IItemTemplate,
   templateDictionary: any,
-  destinationAuthentication: UserSession,
+  destinationAuthentication: ArcGISIdentityManager,
   itemProgressCallback: IItemProgressCallback
 ): Promise<ICreateItemFromTemplateResponse> {
   const interpolatedTemplate = replaceInTemplate(template, templateDictionary);

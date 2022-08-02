@@ -22,7 +22,7 @@ import {
   EItemProgressStatus,
   IDeleteSolutionOptions,
   ISolutionPrecis,
-  UserSession
+  ArcGISIdentityManager
 } from "../interfaces";
 import * as reportProgress from "./reportProgress";
 import * as hubSites from "@esri/hub-sites";
@@ -49,7 +49,7 @@ import { createHubRequestOptions } from "../create-hub-request-options";
 export function removeItems(
   solutionSummary: ISolutionPrecis,
   hubSiteItemIds: string[],
-  authentication: UserSession,
+  authentication: ArcGISIdentityManager,
   percentDone: number,
   progressPercentStep: number,
   deleteOptions: IDeleteSolutionOptions = {}

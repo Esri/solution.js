@@ -23,7 +23,7 @@ import {
   stringToBlob
 } from "@esri/hub-common";
 
-import { UserSession } from "@esri/solution-common";
+import { ArcGISIdentityManager } from "@esri/solution-common";
 
 import {
   createItem,
@@ -45,7 +45,7 @@ export function createStoryMap(
   model: IModel,
   folderId: string,
   options: any,
-  authentication: UserSession
+  authentication: ArcGISIdentityManager
 ): Promise<IModel> {
   // create an array to hold well-known resources
   // that we have to generate from the passed in model

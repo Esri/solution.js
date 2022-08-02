@@ -22,8 +22,8 @@ import * as getFormattedItemInfo from "./getFormattedItemInfo";
 
 export function createSolution(
   sourceId: string,
-  srcAuthentication: common.UserSession,
-  destAuthentication: common.UserSession,
+  srcAuthentication: common.ArcGISIdentityManager,
+  destAuthentication: common.ArcGISIdentityManager,
   progressCallback: common.ISolutionProgressCallback
 ): Promise<string> {
   return new Promise<string>((resolve, reject) => {
