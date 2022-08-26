@@ -705,7 +705,7 @@ export function _getURLs(v: string): string[] {
  *
  * @param newlyCreatedItem Item to be created; n.b.: this item is modified
  * @param destinationAuthentication The session used to create the new item(s)
- * @returns A promise that will resolve with { "success" === true || false }
+ * @returns A promise that will resolve with \{ "success" === true || false \}
  */
 export function fineTuneCreatedWorkforceItem(
   newlyCreatedItem: IItemTemplate,

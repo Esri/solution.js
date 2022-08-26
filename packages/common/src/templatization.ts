@@ -79,7 +79,7 @@ export const TRANSFORMS: any = {
  * Wraps double brackets around the supplied term.
  *
  * @param term Term to be wrapped, e.g., SERVER_NAME's "portalBaseUrl"
- * @returns Wrapped term, e.g., "{{portalBaseUrl}}"
+ * @returns Wrapped term, e.g., "\{\{portalBaseUrl\}\}"
  */
 export function placeholder(term: string): string {
   return "{{" + term + "}}";
@@ -305,7 +305,7 @@ export function templatizeToLowerCase(basePath: string, value: string): string {
  * "NAME"
  * "NAME NAME2"
  * "NAME ASC"
- * "{NAME}"
+ * "\{NAME\}"
  * "(NAME = value AND NAME2 = someOtherValue)"
  */
 export function templatizeFieldReferences(
