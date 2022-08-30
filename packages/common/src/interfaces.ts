@@ -415,7 +415,7 @@ export interface ICreateSolutionOptions {
   folderId?: string;
 
   /**
-   * Facts to be used for creating the Solution item; default: {}
+   * Facts to be used for creating the Solution item; default: \{\}
    */
   templateDictionary?: any;
 
@@ -476,7 +476,7 @@ export interface ICreateSolutionResult {
  */
 export interface IDatasourceInfo {
   /**
-   * Calculated pattern used for templatization eg. "{{itemId.fields.layerId.fieldname}}"
+   * Calculated pattern used for templatization eg. "\{\{itemId.fields.layerId.fieldname\}\}"
    */
   basePath: string;
 
@@ -624,7 +624,7 @@ export interface IDeploySolutionOptions {
   thumbnail?: File;
 
   /**
-   * Facts to be used for creating the Solution item; default: {}
+   * Facts to be used for creating the Solution item; default: \{\}
    */
   templateDictionary?: any;
 

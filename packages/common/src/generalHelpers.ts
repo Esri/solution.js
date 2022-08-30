@@ -785,7 +785,8 @@ export function hasDatasource(
 /**
  * remove templatization from item id to compare
  *
- * eg {{934a9ef8efa7448fa8ddf7b13cef0240.itemId}}
+ * @example
+ * \{\{934a9ef8efa7448fa8ddf7b13cef0240.itemId\}\}
  * returns 934a9ef8efa7448fa8ddf7b13cef0240
  */
 export function cleanItemId(id: any): any {
@@ -794,7 +795,9 @@ export function cleanItemId(id: any): any {
 
 /**
  * remove templatization from layer based item id to compare
- * eg {{934a9ef8efa7448fa8ddf7b13cef0240.layer0.itemId}}
+ *
+ * @example
+ * \{\{934a9ef8efa7448fa8ddf7b13cef0240.layer0.itemId\}\}
  * returns 934a9ef8efa7448fa8ddf7b13cef0240
  */
 export function cleanLayerBasedItemId(id: any): any {
@@ -807,7 +810,9 @@ export function cleanLayerBasedItemId(id: any): any {
 
 /**
  * remove templatization from layer id to compare
- * eg {{934a9ef8efa7448fa8ddf7b13cef0240.layer0.layerId}}
+ *
+ * @example
+ * \{\{934a9ef8efa7448fa8ddf7b13cef0240.layer0.layerId\}\}
  * returns 0
  */
 export function cleanLayerId(id: any) {

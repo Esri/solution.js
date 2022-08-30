@@ -165,12 +165,12 @@ export function createItemFromTemplate(
 
 /**
  * Velocity post-processing actions
- * 
+ *
  * Move all velocity items to the deployment folder.
  *
  * @param {string} itemId The item ID
  * @param {string} type The template type
- * @param {any[]} itemInfos Array of {id: 'ef3', type: 'Web Map'} objects
+ * @param {any[]} itemInfos Array of \{id: 'ef3', type: 'Web Map'\} objects
  * @param {IItemTemplate} template The item template
  * @param {IItemTemplate[]} templates The full collection of item templates
  * @param {any} templateDictionary Hash of facts such as the folder id for the deployment

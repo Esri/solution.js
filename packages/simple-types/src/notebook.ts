@@ -104,7 +104,7 @@ export function convertNotebookToTemplate(
 
 /**
  * Remove interpreter and papermill props
- * 
+ *
  * This function will update the data passed in by removing key props
  *
  * @param data The notebooks data object
@@ -159,7 +159,7 @@ export function fineTuneCreatedItem(
  *
  * @param {string} itemId The item ID
  * @param {string} type The template type
- * @param {any[]} itemInfos Array of {id: 'ef3', type: 'Web Map'} objects
+ * @param {any[]} itemInfos Array of \{id: 'ef3', type: 'Web Map'\} objects
  * @param {any} templateDictionary The template dictionary
  * @param {UserSession} authentication The destination session info
  * @returns {Promise<any>}
