@@ -68,7 +68,7 @@
     "semantic-release": "^19.0.5",
     "shelljs": "^0.8.5",
     "sinon": "^14.0.0",
-    "slug": "^6.0.0",
+    "slug": "^8.0.0",
     "sri-toolbox": "0.2.0",
     "ts-node": "^10.9.1",
     "typedoc": "^0.23.11",
