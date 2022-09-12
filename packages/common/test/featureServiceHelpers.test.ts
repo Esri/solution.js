@@ -6473,7 +6473,6 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
 
       const actual: any = _updateAddOptions(
         itemTemplate,
-        item,
         startOptions,
         layerChunks,
         MOCK_USER_SESSION
@@ -6519,7 +6518,6 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
 
       const actual: any = _updateAddOptions(
         itemTemplate,
-        item,
         startOptions,
         layerChunks,
         MOCK_USER_SESSION
