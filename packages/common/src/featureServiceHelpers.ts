@@ -942,7 +942,6 @@ export function addFeatureServiceDefinition(
         // this can still chunk layers
         options = _updateAddOptions(
           itemTemplate,
-          item,
           options,
           layerChunks,
           authentication
@@ -988,11 +987,10 @@ export function addFeatureServiceDefinition(
 }
 
 /**
- * When a viewLayerDefinition table references other layers within itself
- * we need to make sure that it is added in a separate call after the table that supports it
+ * When a view is a multi service view add each layer separately
+ * https://github.com/Esri/solution.js/issues/871
  *
  * @param itemTemplate
- * @param item Layer or table from the service
  * @param options Add to service definition options
  * @param layerChunks Groups of layers or tables to add to the service
  * @param authentication Credentials for the request
@@ -1002,39 +1000,23 @@ export function addFeatureServiceDefinition(
  */
 export function _updateAddOptions(
   itemTemplate: IItemTemplate,
-  item: any,
   options: any,
   layerChunks: any[],
   authentication: UserSession
 ): any {
   const isMsView: boolean =
     getProp(itemTemplate, "properties.service.isMultiServicesView") || false;
-  const serviceName: string = getProp(itemTemplate, "item.name");
   /* istanbul ignore else */
   if (isMsView) {
-    const table: any = getProp(
-      item,
-      "adminLayerInfo.viewLayerDefinition.table"
-    );
+    // if we already have some layers or tables add them first
     /* istanbul ignore else */
-    if (table) {
-      const tableNames: string[] = (table.relatedTables || []).map(
-        (t: any) => t.sourceServiceName
-      );
-      tableNames.push(table.sourceServiceName);
-      /* istanbul ignore else */
-      if (tableNames.some(n => n === serviceName)) {
-        // if we already have some layers or tables add them first
-        /* istanbul ignore else */
-        if (options.layers.length > 0 || options.tables.length > 0) {
-          layerChunks.push(Object.assign({}, options));
-          options = {
-            layers: [],
-            tables: [],
-            authentication
-          };
-        }
-      }
+    if (options.layers.length > 0 || options.tables.length > 0) {
+      layerChunks.push(Object.assign({}, options));
+      options = {
+        layers: [],
+        tables: [],
+        authentication
+      };
     }
   }
   return options;
