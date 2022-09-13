@@ -6442,7 +6442,35 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
   });
 
   describe("_updateAddOptions", () => {
-    it("will split layer adds", () => {
+    it("will not create new array when isMultiServicesView is false", () => {
+      const startOptions: any = {
+        layers: [{
+          props: []
+        }],
+        tables: [{
+            props: []
+        }],
+        MOCK_USER_SESSION
+      };
+
+      itemTemplate.properties.service = {
+        isMultiServicesView: false
+      };
+
+      const layerChunks: any[] = [];
+
+      const actual: any = _updateAddOptions(
+        itemTemplate,
+        startOptions,
+        layerChunks,
+        MOCK_USER_SESSION
+      );
+      expect(actual.layers).toEqual(startOptions.layers);
+      expect(actual.tables).toEqual(startOptions.tables);
+      expect(layerChunks).toEqual([]);
+    });
+
+    it("will create new layers array when isMultiServicesView is true", () => {
       const startOptions: any = {
         layers: [
           {
@@ -6457,18 +6485,6 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
         isMultiServicesView: true
       };
 
-      itemTemplate.item.name = "A";
-
-      const item: any = {
-        adminLayerInfo: {
-          viewLayerDefinition: {
-            table: {
-              sourceServiceName: "A"
-            }
-          }
-        }
-      };
-
       const layerChunks: any[] = [];
 
       const actual: any = _updateAddOptions(
@@ -6477,19 +6493,19 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
         layerChunks,
         MOCK_USER_SESSION
       );
+
       expect(actual.layers).toEqual([]);
       expect(actual.tables).toEqual([]);
       expect(layerChunks).toEqual([startOptions]);
     });
 
-    it("will split table adds", () => {
+    
+    it("will create new tables array when isMultiServicesView is true", () => {
       const startOptions: any = {
         layers: [],
-        tables: [
-          {
-            props: []
-          }
-        ],
+        tables: [{
+          props: []
+        }],
         MOCK_USER_SESSION
       };
 
@@ -6497,23 +6513,6 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
         isMultiServicesView: true
       };
 
-      itemTemplate.item.name = "A";
-
-      const item: any = {
-        adminLayerInfo: {
-          viewLayerDefinition: {
-            table: {
-              sourceServiceName: "B",
-              relatedTables: [
-                {
-                  sourceServiceName: "A"
-                }
-              ]
-            }
-          }
-        }
-      };
-
       const layerChunks: any[] = [];
 
       const actual: any = _updateAddOptions(
@@ -6522,6 +6521,7 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
         layerChunks,
         MOCK_USER_SESSION
       );
+
       expect(actual.layers).toEqual([]);
       expect(actual.tables).toEqual([]);
       expect(layerChunks).toEqual([startOptions]);
