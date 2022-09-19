@@ -19,7 +19,7 @@
     "@esri/arcgis-rest-request": "3.4.3",
     "@esri/arcgis-rest-service-admin": "3.4.3",
     "@esri/hub-common": "9.29.0",
-    "@esri/hub-initiatives": "9.29.0",
+    "@esri/hub-initiatives": "11.5.0",
     "@esri/hub-sites": "9.29.0",
     "@esri/hub-teams": "9.29.0",
     "@esri/solution-common": "1.3.16",
