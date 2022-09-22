@@ -421,7 +421,8 @@ export function _updateTypeKeywords(
  * references to be de-templatized.
  * This also removes the stored sourceFields and newFields arrays from fieldInfos.
  *
- * Example... { layer0: { fields: { lowerCaseSourceFieldName: newFieldNameAfterDeployment } } }
+ * @example
+ * \{ layer0: \{ fields: \{ lowerCaseSourceFieldName: newFieldNameAfterDeployment \} \} \}
  *
  * @param layerInfos The object that stores the cached layer properties and name mapping
  * @returns The settings object that will be used to de-templatize the field references.
@@ -599,7 +600,7 @@ export function updateTemplateForInvalidDesignations(
  * Remove key props that cannot be included with the addToDef call on deploy.
  * Store the values alongside other key feature service properties in the template
  *
- * @param properties the current feature services properties 
+ * @param properties the current feature services properties
  * @param adminUrl the current feature service url
  * @param authentication Credentials for the request to AGOL
  * @returns A promise that will resolve when the contingent values have been fetched.
@@ -643,7 +644,7 @@ export function processContingentValues(
               deleteProp(r, 'stringDicts');
             }
             deleteProps(
-              getProp(r, 'contingentValuesDefinition'), 
+              getProp(r, 'contingentValuesDefinition'),
               ['layerID', 'layerName', 'geometryType', 'hasSubType']
             );
             contingentValues[layerIds[i]] = r;
@@ -941,7 +942,6 @@ export function addFeatureServiceDefinition(
         // this can still chunk layers
         options = _updateAddOptions(
           itemTemplate,
-          item,
           options,
           layerChunks,
           authentication
@@ -987,11 +987,10 @@ export function addFeatureServiceDefinition(
 }
 
 /**
- * When a viewLayerDefinition table references other layers within itself
- * we need to make sure that it is added in a separate call after the table that supports it
+ * When a view is a multi service view add each layer separately
+ * https://github.com/Esri/solution.js/issues/871
  *
  * @param itemTemplate
- * @param item Layer or table from the service
  * @param options Add to service definition options
  * @param layerChunks Groups of layers or tables to add to the service
  * @param authentication Credentials for the request
@@ -1001,39 +1000,23 @@ export function addFeatureServiceDefinition(
  */
 export function _updateAddOptions(
   itemTemplate: IItemTemplate,
-  item: any,
   options: any,
   layerChunks: any[],
   authentication: UserSession
 ): any {
   const isMsView: boolean =
     getProp(itemTemplate, "properties.service.isMultiServicesView") || false;
-  const serviceName: string = getProp(itemTemplate, "item.name");
   /* istanbul ignore else */
   if (isMsView) {
-    const table: any = getProp(
-      item,
-      "adminLayerInfo.viewLayerDefinition.table"
-    );
+    // if we already have some layers or tables add them first
     /* istanbul ignore else */
-    if (table) {
-      const tableNames: string[] = (table.relatedTables || []).map(
-        (t: any) => t.sourceServiceName
-      );
-      tableNames.push(table.sourceServiceName);
-      /* istanbul ignore else */
-      if (tableNames.some(n => n === serviceName)) {
-        // if we already have some layers or tables add them first
-        /* istanbul ignore else */
-        if (options.layers.length > 0 || options.tables.length > 0) {
-          layerChunks.push(Object.assign({}, options));
-          options = {
-            layers: [],
-            tables: [],
-            authentication
-          };
-        }
-      }
+    if (options.layers.length > 0 || options.tables.length > 0) {
+      layerChunks.push(Object.assign({}, options));
+      options = {
+        layers: [],
+        tables: [],
+        authentication
+      };
     }
   }
   return options;
@@ -1321,7 +1304,7 @@ export function _updateTemplateDictionaryFields(
  *
  * @param templateDictionary Hash mapping Solution source id to id of its clone (and name & URL for feature service)
  * @param itemId The source id for the item
- * @param spatialReference { wkid: 102100 } for example
+ * @param spatialReference \{ wkid: 102100 \} for example
  * @private
  */
 export function setDefaultSpatialReference(
@@ -1541,12 +1524,12 @@ export function postProcessFields(
 /**
  * View field domain, alias, editable, and visible props can contain
  * different values from the source.
- * 
+ *
  * We need to check and set isFieldOverride to true when this occurs and false when it does not
  *
  * @param fieldInfo current view layer or table fieldInfo
  * @param item that stores the view fields
- * 
+ *
  * This function will update the item that is provided
  * @private
  */
@@ -1585,8 +1568,8 @@ export function _getViewFieldInfos(fieldInfo: any): any {
                   fieldInfos[o_k].names.push(name);
                   fieldInfos[o_k].vals.push(v);
                 } else {
-                  fieldInfos[o_k] = { 
-                    names: [name], 
+                  fieldInfos[o_k] = {
+                    names: [name],
                     vals: [v]
                   };
                 }
@@ -2281,7 +2264,7 @@ export function _templatizePopupInfo(
 }
 
 /**
- * templatize field name when referenced like this: {{fieldName}}
+ * templatize field name when referenced like this: \{\{fieldName\}\}
  * checks each field name from the layer
  *
  * @param object with the property to test for a field name
@@ -2312,7 +2295,7 @@ export function _templatizeName(
 }
 
 /**
- * templatize field name when referenced like this: {{fieldName}}
+ * templatize field name when referenced like this: \{\{fieldName\}\}
  * checks each field name from the layer
  *
  * @param fieldInfos object that contains the popups fieldInfos
@@ -2333,7 +2316,7 @@ export function _templatizePopupInfoFieldInfos(
 }
 
 /**
- * templatize field name when referenced like this: {{fieldName}}
+ * templatize field name when referenced like this: \{\{fieldName\}\}
  * checks each field name from the layer
  *
  * @param name the field name to templatize

@@ -15,7 +15,7 @@
 * \[ \] Check that publishing worked using `check_npm_package_versions.html` in a browser
 * \[ \] Push `master` branch to GitHub
 * \[ \] Merge `master` into the `develop` branch and push it to GitHub
-* \[ \[ Create as release from the build's tag in GitHub
+* \[ \] Create as release from the build's tag in GitHub
 * \[ \] Update documentation via `npm run docs:build`
 * \[ \] Deploy documentation via `npm run docs:deploy`
 
