@@ -271,8 +271,8 @@ export function createItemTemplate(
           },
           // Id not found or item is not accessible
           () => {
-            itemProgressCallback(itemId, EItemProgressStatus.Failed, 1);
-            itemProgressCallback(itemId, EItemProgressStatus.Failed, 1);
+            // removed itemProgressCallback Failed per issue #859
+            // Skip items that we cannot fetch
             resolve([]);
           }
         );
