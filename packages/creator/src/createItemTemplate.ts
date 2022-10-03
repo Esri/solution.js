@@ -37,6 +37,7 @@ import {
   ISourceFileCopyPath,
   getItemResourcesFilesFromPaths,
   getItemResourcesPaths,
+  removeTemplate,
   replaceTemplate,
   sanitizeJSONAndReportChanges,
   fail,
@@ -273,6 +274,8 @@ export function createItemTemplate(
           () => {
             // removed itemProgressCallback Failed per issue #859
             // Skip items that we cannot fetch
+            // remove group placeholder if it was added
+            removeTemplate(existingTemplates, itemId);
             resolve([]);
           }
         );
