@@ -61,7 +61,7 @@
     "@chiragrupani/karma-chromium-edge-launcher": "^2.2.2",
     "@khanacademy/tota11y": "^0.2.0",
     "@octokit/rest": "^19.0.4",
-    "@rollup/plugin-commonjs": "^21.1.0",
+    "@rollup/plugin-commonjs": "^22.0.2",
     "@rollup/plugin-json": "^4.1.0",
     "@rollup/plugin-node-resolve": "^14.1.0",
     "@semantic-release/commit-analyzer": "^9.0.2",
