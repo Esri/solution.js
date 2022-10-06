@@ -77,24 +77,27 @@ interface IDashboardDatasource {
  * Converts a dashboard item to a template.
  *
  * @param itemTemplate Template for the dashboard item
+ * @param templateDictionary Hash of key details used for variable replacement
  * @returns templatized itemTemplate
  */
 export function convertItemToTemplate(
-  itemTemplate: common.IItemTemplate
+  itemTemplate: common.IItemTemplate,
+  templateDictionary: any
 ): common.IItemTemplate {
-  return _extractDependencies(itemTemplate);
+  return _extractDependencies(itemTemplate, templateDictionary);
 }
 
 /**
  * Templatizes all itemIds and updates the dependency array
  *
  * @param itemTemplate Template for the dashboard item
+ * @param templateDictionary Hash of key details used for variable replacement
  * @returns The updated itemTemplate
- * @private
  * @private
  */
 export function _extractDependencies(
-  itemTemplate: common.IItemTemplate
+  itemTemplate: common.IItemTemplate,
+  templateDictionary: any
 ): common.IItemTemplate {
   // get dependencies from any
   const updatePaths: string[] = [
@@ -118,7 +121,7 @@ export function _extractDependencies(
         }
         /* istanbul ignore else */
         if (Array.isArray(obj.datasets)) {
-          _getDatasourceDependencies(obj, itemTemplate);
+          _getDatasourceDependencies(obj, itemTemplate, templateDictionary);
         }
       });
     }
@@ -132,11 +135,13 @@ export function _extractDependencies(
  *
  * @param obj A widget, selector, or urlParameter that contains a datasets collection
  * @param itemTemplate Template for the dashboard item
+ * @param templateDictionary Hash of key details used for variable replacement
  * @private
  */
 export function _getDatasourceDependencies(
   obj: any,
-  itemTemplate: common.IItemTemplate
+  itemTemplate: common.IItemTemplate,
+  templateDictionary: any
 ): void {
   obj.datasets.forEach((dataset: IDashboardDataset) => {
     // when the datasource has an itemId is an external datasource
@@ -146,6 +151,7 @@ export function _getDatasourceDependencies(
         itemTemplate.dependencies.push(itemId);
       }
       const layerId: number = common.getProp(dataset, "dataSource.layerId");
+      common.cacheLayerInfo(layerId.toString(), itemId, "", templateDictionary);
       dataset.dataSource.itemId = common.templatizeTerm(
         itemId,
         itemId,

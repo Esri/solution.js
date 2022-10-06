@@ -36,6 +36,7 @@ import {
 } from "./interfaces";
 import { rest_request } from "./restHelpers";
 import { templatizeTerm, replaceInTemplate } from "./templatization";
+import { cacheLayerInfo } from "./featureServiceHelpers";
 
 //#region workforce v1
 
@@ -44,11 +45,13 @@ import { templatizeTerm, replaceInTemplate } from "./templatization";
  *
  * @param itemTemplate template for the workforce project item
  * @param authentication credentials for any requests
+ * @param templateDictionary Hash of key details used for variable replacement
  * @returns templatized itemTemplate
  */
 export function convertWorkforceItemToTemplate(
   itemTemplate: IItemTemplate,
-  authentication: UserSession
+  authentication: UserSession,
+  templateDictionary: any
 ): Promise<IItemTemplate> {
   return new Promise<IItemTemplate>((resolve, reject) => {
     // This function is specific to workforce v1 project structure
@@ -67,7 +70,8 @@ export function convertWorkforceItemToTemplate(
           itemTemplate.data = templatizeWorkforce(
             data,
             keyProperties,
-            results.urlHash
+            results.urlHash,
+            templateDictionary
           );
           resolve(itemTemplate);
         },
@@ -176,12 +180,14 @@ export function extractWorkforceDependencies(
  * @param data itemTemplate data
  * @param keyProperties workforce project properties that should be templatized
  * @param urlHash a key value pair of url and itemId
+ * @param templateDictionary Hash of key details used for variable replacement
  * @returns an updated data object to be stored in the template
  */
 export function templatizeWorkforce(
   data: any,
   keyProperties: string[],
-  urlHash: any
+  urlHash: any,
+  templateDictionary: any
 ): any {
   keyProperties.forEach(p => {
     /* istanbul ignore else */
@@ -194,6 +200,7 @@ export function templatizeWorkforce(
         /* istanbul ignore else */
         if (getProp(data[p], "url")) {
           const layerId = getLayerId(data[p].url);
+          cacheLayerInfo(layerId, id, data[p].url, templateDictionary);
           data[p].url = templatizeTerm(
             id,
             id,
