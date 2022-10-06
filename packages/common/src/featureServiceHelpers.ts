@@ -172,6 +172,10 @@ export function templatize(
   // enableZDefaults and zDefault to deploy to enterprise
   let hasZ: boolean = false;
 
+  // if the service has preferredTimeReference store it in props
+  // issue #897
+  let hasTimeZone: boolean = false;
+
   jsonItems.forEach((jsonItem: any) => {
     // get the source service json for the given data item
     const matchingItems = _items.filter(item => {
@@ -181,6 +185,10 @@ export function templatize(
     // templatize the source service json
     const _item: any =
       matchingItems.length === 1 ? matchingItems[0] : undefined;
+
+    hasTimeZone = jsonItem.hasOwnProperty("preferredTimeReference") ||
+      _item.hasOwnProperty("preferredTimeReference") ? true : hasTimeZone;
+
     _templatizeLayer(
       _item,
       jsonItem,
@@ -196,6 +204,10 @@ export function templatize(
   if (hasZ) {
     itemTemplate.properties.service.enableZDefaults = true;
     itemTemplate.properties.service.zDefault = 0;
+  }
+
+  if (hasTimeZone) {
+    itemTemplate.properties.preferredTimeReference = "{{localTimeZone}}";
   }
 
   return itemTemplate;
@@ -1750,6 +1762,10 @@ export function _templatizeLayer(
         dependencies,
         templateDictionary
       );
+    }
+
+    if (update.hasOwnProperty("preferredTimeReference")) {
+      deleteProp(update, "preferredTimeReference");
     }
   });
 }
