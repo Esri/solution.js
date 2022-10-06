@@ -372,30 +372,31 @@ export function cacheLayerInfo(
   url: string,
   templateDictionary: any
 ): void {
-  const layerIdVar = `layer${layerId}`;
-  
-  // need to structure these differently so they are not used for standard replacement calls
-  // this now adds additional vars that are not needing replacement unless we fail to fetch the service
-  const newVars = {
-    itemId
-  };
-  newVars[layerIdVar] = {
-    fields: {},
-    layerId,
-    itemId
-  };
+  if (layerId) {
+    const layerIdVar = `layer${layerId}`;
 
-  if (url !== "") {
-    newVars[layerIdVar]["url"] = url;
+    // need to structure these differently so they are not used for standard replacement calls
+    // this now adds additional vars that are not needing replacement unless we fail to fetch the service
+    const newVars = getProp(templateDictionary, `${UNREACHABLE}.${itemId}`) || {
+      itemId
+    };
+    newVars[layerIdVar] = getProp(newVars, layerIdVar) || {
+      layerId,
+      itemId
+    };
+
+    if (url !== "") {
+      newVars[layerIdVar]["url"] = url;
+    }
+
+    const unreachableVars = {};
+    unreachableVars[itemId] = newVars;
+
+    templateDictionary[UNREACHABLE] = {
+      ...templateDictionary[UNREACHABLE],
+      ...unreachableVars
+    };
   }
-
-  const unreachableVars = {};
-  unreachableVars[itemId] = newVars;
-
-  templateDictionary[UNREACHABLE] = {
-    ...templateDictionary[UNREACHABLE],
-    ...unreachableVars
-  };
 }
 
 /**

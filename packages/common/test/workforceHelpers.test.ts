@@ -260,7 +260,7 @@ describe("Module `workforceHelpers`: manages the creation and deployment of work
       delete expected.assignmentIntegrations;
       expected["folderId"] = "{{folderId}}";
 
-      const actual = workforceHelpers.templatizeWorkforce(data, [], {});
+      const actual = workforceHelpers.templatizeWorkforce(data, [], {}, {});
       expect(actual).toEqual(expected);
     });
 
@@ -272,7 +272,7 @@ describe("Module `workforceHelpers`: manages the creation and deployment of work
       delete expected.assignmentIntegrations;
       expected["folderId"] = "{{folderId}}";
 
-      const actual = workforceHelpers.templatizeWorkforce(data, ["fake"], {});
+      const actual = workforceHelpers.templatizeWorkforce(data, ["fake"], {}, {});
       expect(actual).toEqual(expected);
     });
 
@@ -294,6 +294,7 @@ describe("Module `workforceHelpers`: manages the creation and deployment of work
       const actual = workforceHelpers.templatizeWorkforce(
         data,
         ["dispatchers", "assignments"],
+        {},
         {}
       );
       expect(actual).toEqual(expected);
@@ -309,7 +310,7 @@ describe("Module `workforceHelpers`: manages the creation and deployment of work
       delete expected["assignmentIntegrations"][0].urlTemplate;
       delete expected["assignmentIntegrations"][0].assignmentTypes;
 
-      const actual = workforceHelpers.templatizeWorkforce(data, [], {});
+      const actual = workforceHelpers.templatizeWorkforce(data, [], {}, {});
       expect(actual).toEqual(expected);
     });
 
@@ -324,7 +325,7 @@ describe("Module `workforceHelpers`: manages the creation and deployment of work
         "ABC123";
       expected["folderId"] = "{{folderId}}";
 
-      const actual = workforceHelpers.templatizeWorkforce(data, [], {});
+      const actual = workforceHelpers.templatizeWorkforce(data, [], {}, {});
       expect(actual).toEqual(expected);
     });
   });
@@ -1086,7 +1087,7 @@ describe("Module `workforceHelpers`: manages the creation and deployment of work
           accessInformation: null,
           categories: [],
           culture: "",
-          description: null,
+          description: undefined,
           extent: "{{solutionItemExtent}}",
           licenseInfo: null,
           name: "workforce_7b1c2d1841df41dabbeb4a6ca46d026a",
@@ -1674,7 +1675,7 @@ describe("Module `workforceHelpers`: manages the creation and deployment of work
           accessInformation: null,
           categories: [],
           culture: "",
-          description: null,
+          description: undefined,
           extent: "{{solutionItemExtent}}",
           licenseInfo: null,
           name: "workforce_7b1c2d1841df41dabbeb4a6ca46d026a",

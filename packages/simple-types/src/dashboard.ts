@@ -151,7 +151,7 @@ export function _getDatasourceDependencies(
         itemTemplate.dependencies.push(itemId);
       }
       const layerId: number = common.getProp(dataset, "dataSource.layerId");
-      common.cacheLayerInfo(layerId.toString(), itemId, "", templateDictionary);
+      common.cacheLayerInfo(layerId?.toString(), itemId, "", templateDictionary);
       dataset.dataSource.itemId = common.templatizeTerm(
         itemId,
         itemId,
