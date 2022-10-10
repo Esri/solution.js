@@ -24,12 +24,14 @@ import * as common from "@esri/solution-common";
  * @param itemInfo Info about the item
  * @param destAuthentication Credentials for requests to the destination organization
  * @param srcAuthentication Credentials for requests to source items
+ * @param templateDictionary Hash of key details used for variable replacement
  * @returns A promise that will resolve when the template has been created
  */
 export function convertItemToTemplate(
   itemTemplate: common.IItemTemplate,
   destAuthentication: common.UserSession,
-  srcAuthentication: common.UserSession
+  srcAuthentication: common.UserSession,
+  templateDictionary: any
 ): Promise<common.IItemTemplate> {
   return new Promise<common.IItemTemplate>((resolve, reject) => {
     // Remove org base URL and app id, e.g.,
@@ -89,7 +91,7 @@ export function convertItemToTemplate(
       common.placeholder(common.GEOMETRY_SERVER_NAME)
     );
 
-    templatizeDatasources(itemTemplate, srcAuthentication, portalUrl).then(
+    templatizeDatasources(itemTemplate, srcAuthentication, portalUrl, templateDictionary).then(
       () => {
         templatizeWidgets(
           itemTemplate,
@@ -129,10 +131,20 @@ export function convertItemToTemplate(
   });
 }
 
+/**
+ * Converts web mapping application datasources to variables for deployment
+ *
+ * @param itemTemplate The solution item template
+ * @param authentication Credentials for requests
+ * @param portalUrl Rest Url of the portal to perform the search
+ * @param templateDictionary Hash of key details used for variable replacement
+ * @returns A promise that will resolve with the created template
+ */
 export function templatizeDatasources(
   itemTemplate: common.IItemTemplate,
   authentication: common.UserSession,
-  portalUrl: string
+  portalUrl: string,
+  templateDictionary: any
 ): Promise<common.IItemTemplate> {
   return new Promise<common.IItemTemplate>((resolve, reject) => {
     const dataSources: any = common.getProp(
@@ -150,6 +162,7 @@ export function templatizeDatasources(
             const layerId = ds.url.substr(
               (ds.url as string).lastIndexOf("/") + 1
             );
+            common.cacheLayerInfo(layerId.toString(), itemId, ds.url, templateDictionary);
             ds.itemId = common.templatizeTerm(
               itemId,
               itemId,

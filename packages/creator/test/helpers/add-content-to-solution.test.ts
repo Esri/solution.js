@@ -37,6 +37,7 @@ import * as templates from "../../../common/test/mocks/templates";
 import * as sinon from "sinon";
 import * as staticRelatedItemsMocks from "../../../common/test/mocks/staticRelatedItemsMocks";
 import { findBy } from "@esri/hub-common";
+import { IItemTemplate } from "@esri/solution-common";
 // Set up a UserSession to use in all these tests
 const MOCK_USER_SESSION = utils.createRuntimeMockUserSession();
 
@@ -526,13 +527,59 @@ describe("_postProcessIgnoredItems", () => {
     ];
 
     const actualTemplates: common.IItemTemplate[] = _postProcessIgnoredItems(
-      itemTemplates
+      itemTemplates,
+      {}
     );
     const actualWebMapTemplate: common.IItemTemplate = actualTemplates[1];
 
     expect(actualTemplates).toEqual(expectedTemplates);
     expect(actualWebMapTemplate.data).toEqual(expectedMapData);
     expect(actualWebMapTemplate.dependencies).toEqual(expectedMapDependencies);
+  });
+});
+
+describe("_postProcessIgnoredItems", () => {
+  it("uses cached info for mocked invalid designations", () => {
+    const _templates: IItemTemplate[] = [
+      templates.getItemTemplateSkeleton(),
+      templates.getItemTemplateSkeleton(),
+      templates.getItemTemplateSkeleton()
+    ];
+    _templates[0].itemId = "dd59d3b4a8c44100914458dd722f054f";
+    _templates[0].properties.hasInvalidDesignations = true;
+    _templates[1].data.operationalLayers = {
+      layer0: {
+        url: "{{dd59d3b4a8c44100914458dd722f054f.layer0.url}}",
+        itemId: "{{dd59d3b4a8c44100914458dd722f054f.layer0.itemId}}"
+      }
+    }
+    _templates[2].data.other = {
+      itemId: "{{dd59d3b4a8c44100914458dd722f054f.itemId}}"
+    }
+    const templateDictionary = {
+      "unreachable": {
+        "dd59d3b4a8c44100914458dd722f054f": {
+          "itemId": "dd59d3b4a8c44100914458dd722f054f",
+          "layer0": {
+            "itemId": "dd59d3b4a8c44100914458dd722f054f",
+            "layerId": "0",
+            "url": "https://myserver.arcgis.com/abc123/arcgis/rest/services/World_GHCND_Mly_Clim_Means_1981_2010/FeatureServer/0"
+          }
+        }
+      }
+    };
+
+    const expectedLayer0 = {
+      url: templateDictionary.unreachable.dd59d3b4a8c44100914458dd722f054f.layer0.url,
+      itemId: templateDictionary.unreachable.dd59d3b4a8c44100914458dd722f054f.layer0.itemId
+    };
+
+    const expectedItemId = "dd59d3b4a8c44100914458dd722f054f"
+
+    const actual = _postProcessIgnoredItems(_templates, templateDictionary);
+    expect(actual).toHaveSize(2);
+    expect(actual[0].data.operationalLayers.layer0).toEqual(expectedLayer0);
+    expect(actual[1].data.other.itemId).toEqual(expectedItemId);
   });
 });
 
