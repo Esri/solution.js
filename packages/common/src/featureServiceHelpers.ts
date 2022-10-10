@@ -57,12 +57,16 @@ import {
   addToServiceDefinition,
   getLayerUpdates,
   getRequest,
-  rest_request
+  rest_request,
+  _getUpdate
 } from "./restHelpers";
 import {
   isTrackingViewTemplate,
   templatizeTracker
 } from "./trackingHelpers";
+import {
+  getPreferredTimeReference
+} from "./timeHelpers";
 
 //#endregion ------------------------------------------------------------------------------------------------------------//
 
@@ -994,6 +998,39 @@ export function addFeatureServiceDefinition(
           () => resolve(null),
           (e: any) => reject(fail(e))
         );
+    }
+  });
+}
+
+export function updatePreferredTimeReference(
+  template: IItemTemplate,
+  authentication: UserSession
+): Promise<void> {
+  return new Promise((resolve, reject) => {
+    if (template.properties.preferredTimeReference) {
+
+      const adminUrl: string = template.item.url.replace(
+        "rest/services",
+        "rest/admin/services"
+      );
+
+      const update = getPreferredTimeReference();
+    
+      const updateDefinition: IUpdate = _getUpdate(adminUrl, null, update, null, "update");
+      
+      const options: any = {
+        f: "json",
+        authentication,
+        async: false,
+        ...updateDefinition
+      };
+
+      const url = checkUrlPathTermination(adminUrl) + "updateDefinition"
+      rest_request(url, options).then((r) => {
+        resolve();
+      }, reject)
+    } else {
+      resolve();
     }
   });
 }
