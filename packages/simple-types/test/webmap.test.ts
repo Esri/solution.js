@@ -79,7 +79,7 @@ describe("Module `webmap`: manages the creation and deployment of web map item t
         properties: {} as any,
         estimatedDeploymentCostFactor: 0
       };
-      webmap.convertItemToTemplate(model, MOCK_USER_SESSION, MOCK_USER_SESSION).then(
+      webmap.convertItemToTemplate(model, MOCK_USER_SESSION, MOCK_USER_SESSION, {}).then(
         actual => {
           expect(actual).toEqual(expected);
           done();
@@ -120,7 +120,7 @@ describe("Module `webmap`: manages the creation and deployment of web map item t
         properties: {} as any,
         estimatedDeploymentCostFactor: 0
       };
-      webmap.convertItemToTemplate(model, MOCK_USER_SESSION, MOCK_USER_SESSION).then(
+      webmap.convertItemToTemplate(model, MOCK_USER_SESSION, MOCK_USER_SESSION, {}).then(
         actual => {
           expect(actual).toEqual(expected);
           done();
@@ -222,7 +222,7 @@ describe("Module `webmap`: manages the creation and deployment of web map item t
           { serviceItemId: "abcc9ef8efa7448fa8ddf7b13cef0240" }
         );
 
-      webmap.convertItemToTemplate(model, MOCK_USER_SESSION, MOCK_USER_SESSION).then(
+      webmap.convertItemToTemplate(model, MOCK_USER_SESSION, MOCK_USER_SESSION, {}).then(
         actual => {
           expect(actual).toEqual(expected);
           done();
@@ -317,7 +317,7 @@ describe("Module `webmap`: manages the creation and deployment of web map item t
           { serviceItemId: "abc39ef8efa7448fa8ddf7b13cef0240" }
         );
 
-      webmap.convertItemToTemplate(model, MOCK_USER_SESSION, MOCK_USER_SESSION).then(
+      webmap.convertItemToTemplate(model, MOCK_USER_SESSION, MOCK_USER_SESSION, {}).then(
         actual => {
           expect(actual).toEqual(expected);
           done();
@@ -453,7 +453,7 @@ describe("Module `webmap`: manages the creation and deployment of web map item t
           { serviceItemId: "abc49ef8efa7448fa8ddf7b13cef0240" }
         );
 
-      webmap.convertItemToTemplate(model, MOCK_USER_SESSION, MOCK_USER_SESSION).then(
+      webmap.convertItemToTemplate(model, MOCK_USER_SESSION, MOCK_USER_SESSION, {}).then(
         actual => {
           expect(actual).toEqual(expected);
           done();
@@ -519,7 +519,7 @@ describe("Module `webmap`: manages the creation and deployment of web map item t
           { serviceItemId: "abc49ef8efa7448fa8ddf7b13cef0240" }
         );
 
-      webmap.convertItemToTemplate(model, MOCK_USER_SESSION, MOCK_USER_SESSION).then(
+      webmap.convertItemToTemplate(model, MOCK_USER_SESSION, MOCK_USER_SESSION, {}).then(
         () => {
           done.fail();
         },
@@ -625,7 +625,7 @@ describe("Module `webmap`: manages the creation and deployment of web map item t
           { serviceItemId: "abc49ef8efa7448fa8ddf7b13cef0240" }
         );
 
-      webmap.convertItemToTemplate(model, MOCK_USER_SESSION, MOCK_USER_SESSION).then(
+      webmap.convertItemToTemplate(model, MOCK_USER_SESSION, MOCK_USER_SESSION, {}).then(
         actual => {
           expect(actual).toEqual(expected);
           done();
@@ -729,7 +729,7 @@ describe("Module `webmap`: manages the creation and deployment of web map item t
           { serviceItemId: "abc39ef8efa7448fa8ddf7b13cef0240" }
         );
 
-      webmap.convertItemToTemplate(model, MOCK_USER_SESSION, MOCK_USER_SESSION).then(
+      webmap.convertItemToTemplate(model, MOCK_USER_SESSION, MOCK_USER_SESSION, {}).then(
         actual => {
           expect(actual).toEqual(expected);
           done();
@@ -844,7 +844,7 @@ describe("Module `webmap`: manages the creation and deployment of web map item t
           { serviceItemId: "abc49ef8efa7448fa8ddf7b13cef0240" }
         );
 
-      webmap.convertItemToTemplate(model, MOCK_USER_SESSION, MOCK_USER_SESSION).then(
+      webmap.convertItemToTemplate(model, MOCK_USER_SESSION, MOCK_USER_SESSION, {}).then(
         actual => {
           expect(actual).toEqual(expected);
           done();
@@ -939,7 +939,7 @@ describe("Module `webmap`: manages the creation and deployment of web map item t
       ];
       const urlHash = {};
 
-      webmap._templatizeWebmapLayerIdsAndUrls(layerList, urlHash);
+      webmap._templatizeWebmapLayerIdsAndUrls(layerList, urlHash, {});
 
       const expectedLayerListTemplate = [
         {
@@ -987,7 +987,7 @@ describe("Module `webmap`: manages the creation and deployment of web map item t
           "layer3"
       };
 
-      webmap._templatizeWebmapLayerIdsAndUrls(layerList, urlHash);
+      webmap._templatizeWebmapLayerIdsAndUrls(layerList, urlHash, {});
 
       const expectedLayerListTemplate = [
         {
@@ -1026,7 +1026,7 @@ describe("Module `webmap`: manages the creation and deployment of web map item t
       ];
       const urlHash = {};
 
-      webmap._templatizeWebmapLayerIdsAndUrls(layerList, urlHash);
+      webmap._templatizeWebmapLayerIdsAndUrls(layerList, urlHash, {});
 
       const expectedLayerListTemplate = [
         {

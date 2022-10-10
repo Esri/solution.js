@@ -51,7 +51,8 @@ describe("Module `dashboard`: manages the creation and deployment of dashboard i
   describe("convertItemToTemplate", () => {
     it("should templatize webmap ids and external datasource ids", () => {
       const actualTemplate = dashboard.convertItemToTemplate(
-        initialDashboardTemplate
+        initialDashboardTemplate,
+        {}
       );
 
       const actualHS: any = common.getProp(
@@ -113,7 +114,7 @@ describe("Module `dashboard`: manages the creation and deployment of dashboard i
 
   describe("_extractDependencies", () => {
     it("should extract dependencies", () => {
-      const actual = dashboard._extractDependencies(initialDashboardTemplate);
+      const actual = dashboard._extractDependencies(initialDashboardTemplate, {});
       expect(actual.dependencies).toEqual(expectedTemplate.dependencies);
     });
   });
@@ -145,7 +146,7 @@ describe("Module `dashboard`: manages the creation and deployment of dashboard i
       );
 
       expect(itemTemplate.dependencies).toEqual([]);
-      dashboard._getDatasourceDependencies(obj, itemTemplate);
+      dashboard._getDatasourceDependencies(obj, itemTemplate, {});
       expect(itemTemplate.dependencies).toEqual(["AAABBBCCC123"]);
     });
   });
@@ -153,7 +154,7 @@ describe("Module `dashboard`: manages the creation and deployment of dashboard i
   describe("postProcessFieldReferences", () => {
     it("should templatize field references", () => {
       // need to the dependencies
-      const actual = dashboard.convertItemToTemplate(initialDashboardTemplate);
+      const actual = dashboard.convertItemToTemplate(initialDashboardTemplate, {});
       const actualTemplate: common.IItemTemplate = dashboard.postProcessFieldReferences(
         actual,
         datasourceInfos

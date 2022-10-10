@@ -95,7 +95,7 @@ describe("Module `webmappingapplication`: manages the creation and deployment of
         estimatedDeploymentCostFactor: 0
       };
       webmappingapplication
-        .convertItemToTemplate(model, MOCK_USER_SESSION, MOCK_USER_SESSION)
+        .convertItemToTemplate(model, MOCK_USER_SESSION, MOCK_USER_SESSION, {})
         .then(
           actual => {
             expect(actual).toEqual(expected);
@@ -131,7 +131,7 @@ describe("Module `webmappingapplication`: manages the creation and deployment of
         estimatedDeploymentCostFactor: 0
       };
       webmappingapplication
-        .convertItemToTemplate(model, MOCK_USER_SESSION, MOCK_USER_SESSION)
+        .convertItemToTemplate(model, MOCK_USER_SESSION, MOCK_USER_SESSION, {})
         .then(
           actual => {
             expect(actual).toEqual(expected);
@@ -181,7 +181,7 @@ describe("Module `webmappingapplication`: manages the creation and deployment of
         estimatedDeploymentCostFactor: 0
       };
       webmappingapplication
-        .convertItemToTemplate(model, MOCK_USER_SESSION, MOCK_USER_SESSION)
+        .convertItemToTemplate(model, MOCK_USER_SESSION, MOCK_USER_SESSION, {})
         .then(
           actual => {
             expect(actual).toEqual(expected);
@@ -285,7 +285,7 @@ describe("Module `webmappingapplication`: manages the creation and deployment of
         );
 
       webmappingapplication
-        .convertItemToTemplate(model, MOCK_USER_SESSION, MOCK_USER_SESSION)
+        .convertItemToTemplate(model, MOCK_USER_SESSION, MOCK_USER_SESSION, {})
         .then(
           actual => {
             expect(actual).toEqual(expected);
@@ -345,7 +345,7 @@ describe("Module `webmappingapplication`: manages the creation and deployment of
         );
 
       webmappingapplication
-        .convertItemToTemplate(model, MOCK_USER_SESSION, MOCK_USER_SESSION)
+        .convertItemToTemplate(model, MOCK_USER_SESSION, MOCK_USER_SESSION, {})
         .then(
           actual => {
             done.fail();
@@ -427,7 +427,7 @@ describe("Module `webmappingapplication`: manages the creation and deployment of
       };
 
       webmappingapplication
-        .convertItemToTemplate(model, MOCK_USER_SESSION, MOCK_USER_SESSION)
+        .convertItemToTemplate(model, MOCK_USER_SESSION, MOCK_USER_SESSION, {})
         .then(
           actual => {
             expect(actual).toEqual(expected);
@@ -572,7 +572,7 @@ describe("Module `webmappingapplication`: manages the creation and deployment of
         .post("http://path/FeatureServer/1", layer1);
 
       webmappingapplication
-        .convertItemToTemplate(model, MOCK_USER_SESSION, MOCK_USER_SESSION)
+        .convertItemToTemplate(model, MOCK_USER_SESSION, MOCK_USER_SESSION, {})
         .then(
           actual => {
             expect(actual).toEqual(expected);
@@ -756,7 +756,7 @@ describe("Module `webmappingapplication`: manages the creation and deployment of
         .post("http://path/FeatureServer/1", layer1);
 
       webmappingapplication
-        .convertItemToTemplate(model, MOCK_USER_SESSION, MOCK_USER_SESSION)
+        .convertItemToTemplate(model, MOCK_USER_SESSION, MOCK_USER_SESSION, {})
         .then(
           actual => {
             expect(actual).toEqual(expected);
@@ -837,7 +837,7 @@ describe("Module `webmappingapplication`: manages the creation and deployment of
         .post("http://path/FeatureServer/1", mockItems.get400Failure());
 
       webmappingapplication
-        .convertItemToTemplate(model, MOCK_USER_SESSION, MOCK_USER_SESSION)
+        .convertItemToTemplate(model, MOCK_USER_SESSION, MOCK_USER_SESSION, {})
         .then(
           () => {
             done.fail();
@@ -917,7 +917,7 @@ describe("Module `webmappingapplication`: manages the creation and deployment of
         .post("http://path/FeatureServer/1", mockItems.get400Failure());
 
       webmappingapplication
-        .convertItemToTemplate(model, MOCK_USER_SESSION, MOCK_USER_SESSION)
+        .convertItemToTemplate(model, MOCK_USER_SESSION, MOCK_USER_SESSION, {})
         .then(
           () => {
             done.fail();
@@ -1075,7 +1075,7 @@ describe("Module `webmappingapplication`: manages the creation and deployment of
         );
 
       webmappingapplication
-        .convertItemToTemplate(infoLookupTemplate, MOCK_USER_SESSION, MOCK_USER_SESSION)
+        .convertItemToTemplate(infoLookupTemplate, MOCK_USER_SESSION, MOCK_USER_SESSION, {})
         .then(
           template => {
             const actual = webmappingapplication.postProcessFieldReferences(
@@ -1142,7 +1142,7 @@ describe("Module `webmappingapplication`: manages the creation and deployment of
         );
 
       webmappingapplication
-        .convertItemToTemplate(infoLookupTemplate, MOCK_USER_SESSION, MOCK_USER_SESSION)
+        .convertItemToTemplate(infoLookupTemplate, MOCK_USER_SESSION, MOCK_USER_SESSION, {})
         .then(
           () => {
             done.fail();
@@ -1254,7 +1254,7 @@ describe("Module `webmappingapplication`: manages the creation and deployment of
         });
 
       webmappingapplication
-        .templatizeDatasources(itemTemplate, MOCK_USER_SESSION, portalUrl)
+        .templatizeDatasources(itemTemplate, MOCK_USER_SESSION, portalUrl, {})
         .then(
           (updatedItemTemplate: common.IItemTemplate) => {
             expect(updatedItemTemplate).toEqual(expectedItemTemplate);

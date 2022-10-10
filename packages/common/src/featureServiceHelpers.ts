@@ -37,6 +37,7 @@ import {
   IPostProcessArgs,
   IStringValuePair,
   IUpdate,
+  UNREACHABLE,
   UserSession
 } from "./interfaces";
 import {
@@ -353,6 +354,49 @@ export function _cachePopupInfo(
       item.popupInfo = {};
     }
   });
+}
+
+/**
+ * Store basic layer information for potential replacement if we are unable to access a given service
+ * added for issue #859
+ *
+ * @param layerId the id for the layer
+ * @param itemId the id for the item
+ * @param url the url for the layer
+ * @param templateDictionary Hash of key details used for variable replacement
+ * @returns templatized itemTemplate
+ */
+export function cacheLayerInfo(
+  layerId: string,
+  itemId: string,
+  url: string,
+  templateDictionary: any
+): void {
+  if (layerId) {
+    const layerIdVar = `layer${layerId}`;
+
+    // need to structure these differently so they are not used for standard replacement calls
+    // this now adds additional vars that are not needing replacement unless we fail to fetch the service
+    const newVars = getProp(templateDictionary, `${UNREACHABLE}.${itemId}`) || {
+      itemId
+    };
+    newVars[layerIdVar] = getProp(newVars, layerIdVar) || {
+      layerId,
+      itemId
+    };
+
+    if (url !== "") {
+      newVars[layerIdVar]["url"] = url;
+    }
+
+    const unreachableVars = {};
+    unreachableVars[itemId] = newVars;
+
+    templateDictionary[UNREACHABLE] = {
+      ...templateDictionary[UNREACHABLE],
+      ...unreachableVars
+    };
+  }
 }
 
 /**
