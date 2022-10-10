@@ -1002,6 +1002,14 @@ export function addFeatureServiceDefinition(
   });
 }
 
+/**
+ * Updates a feature service with a Preferred Time Reference based on browser locale
+ * https://github.com/Esri/solution.js/issues/897
+ *
+ * @param template Template for feature service item
+ * @param authentication Credentials for the request
+ * @returns A promise that will resolve immediately or when the feature service has been updated if preferredTimeReference exists
+ */
 export function updatePreferredTimeReference(
   template: IItemTemplate,
   authentication: UserSession
