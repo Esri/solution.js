@@ -242,12 +242,12 @@ function _dojoFunc(/*Date*/dateObject){
 	//		http://www.twinsun.com/tz/tz-link.htm Note: results may be
 	//		inconsistent across browsers.
 
-	var str = dateObject.toString(); // Start looking in toString
-	var tz = ''; // The result -- return empty string if nothing found
-	var match;
+	let str = dateObject.toString(); // Start looking in toString
+	let tz = ''; // The result -- return empty string if nothing found
+	let match;
 
 	// First look for something in parentheses -- fast lookup, no regex
-	var pos = str.indexOf('(');
+	let pos = str.indexOf('(');
 	if(pos > -1){
 		tz = str.substring(++pos, str.indexOf(')'));
 	}else{
@@ -255,7 +255,7 @@ function _dojoFunc(/*Date*/dateObject){
 		// If IE knows about the TZ, it appears before the year
 		// Capital letters or slash before a 4-digit year
 		// at the end of string
-		var pat = /([A-Z\/]+) \d{4}$/;
+		let pat = /([A-Z/]+) \d{4}$/;
 		if((match = str.match(pat))){
 			tz = match[1];
 		}else{
@@ -264,7 +264,7 @@ function _dojoFunc(/*Date*/dateObject){
 			str = dateObject.toLocaleString('en-US', { timeZone: 'America/Chicago' });
 			// Capital letters or slash -- end of string,
 			// after space
-			pat = / ([A-Z\/]+)$/;
+			pat = / ([A-Z/]+)$/;
 			if((match = str.match(pat))){
 				tz = match[1];
 			}
@@ -272,5 +272,5 @@ function _dojoFunc(/*Date*/dateObject){
 	}
 
 	// Make sure it doesn't somehow end up return AM or PM
-	return (tz == 'AM' || tz == 'PM') ? '' : supportedTimeZoneNames.indexOf(tz) > -1 ? tz : ''; // String
+	return (tz === 'AM' || tz === 'PM') ? '' : supportedTimeZoneNames.indexOf(tz) > -1 ? tz : ''; // String
 };

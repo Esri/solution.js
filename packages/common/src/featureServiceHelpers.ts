@@ -190,8 +190,8 @@ export function templatize(
     const _item: any =
       matchingItems.length === 1 ? matchingItems[0] : undefined;
 
-    hasTimeZone = jsonItem.hasOwnProperty("preferredTimeReference") ||
-      _item.hasOwnProperty("preferredTimeReference") ? true : hasTimeZone;
+    hasTimeZone = jsonItem && jsonItem.hasOwnProperty("preferredTimeReference") ||
+      _item && _item.hasOwnProperty("preferredTimeReference") ? true : hasTimeZone;
 
     _templatizeLayer(
       _item,
