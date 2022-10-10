@@ -391,9 +391,9 @@ export function _postProcessIgnoredItems(
   // replace in template
   const updateDictionary: any = templates.reduce((result, template) => {
     const invalidDes = template.properties.hasInvalidDesignations;
-    const u = getProp(templateDictionary, `${UNREACHABLE}.${template.itemId}`);
-    if (invalidDes && u && Object.keys(template.data).length < 1) {
-      template.data[template.itemId] = u;
+    const unreachableVal = getProp(templateDictionary, `${UNREACHABLE}.${template.itemId}`);
+    if (invalidDes && unreachableVal && Object.keys(template.data).length < 1) {
+      template.data[template.itemId] = unreachableVal;
     }
     return invalidDes ? Object.assign(result, template.data) : result;
   }, {});
