@@ -40,7 +40,7 @@
     "@esri/solution-velocity": "^1.5.1",
     "@esri/solution-viewer": "^1.5.1",
     "@esri/solution-web-experience": "^1.5.1",
-    "adlib": "3.0.7",
+    "adlib": "3.0.8",
     "tslib": "1.14.1"
   },
   "scripts": {
