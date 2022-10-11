@@ -1033,8 +1033,8 @@ export function updatePreferredTimeReference(
         ...updateDefinition
       };
 
-      const url = checkUrlPathTermination(adminUrl) + "updateDefinition"
-      rest_request(url, options).then((r) => {
+      const url = checkUrlPathTermination(adminUrl) + "updateDefinition";
+      rest_request(url, options).then(() => {
         resolve();
       }, reject)
     } else {

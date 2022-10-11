@@ -294,7 +294,11 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
                 {
                   name: "A"
                 }
-              ]
+              ],
+              preferredTimeReference: {
+                timeZone: "Pacific Standard Time",
+                respectsDaylightSaving: true
+              }
             }
           ],
           tables: [
@@ -304,7 +308,11 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
                 {
                   name: "B"
                 }
-              ]
+              ],
+              preferredTimeReference: {
+                timeZone: "Pacific Standard Time",
+                respectsDaylightSaving: true
+              }
             }
           ]
         },
@@ -317,6 +325,7 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
         itemId: "ab766cba0dd44ec080420acc10990282",
         key: "ABC123",
         properties: {
+          preferredTimeReference: '{{localTimeZone}}',
           service: {
             serviceItemId: "{{ab766cba0dd44ec080420acc10990282.itemId}}",
             fullExtent: "{{ab766cba0dd44ec080420acc10990282.solutionExtent}}",

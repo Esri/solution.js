@@ -172,12 +172,16 @@ const supportedTimeZoneNames = [
 
 /**
  * Get the Preferred Time Reference object to be used when updating the definition of the service
- *
+ * Default value of Jan.1 <current year> is used to avoid using a time that would fall within daylight savings
+ * 
+ * @param ianaTimeZone Optional: The IANA time zone value to use. When not provided the value will be determined from the browser.
+ * 
  * @returns Preferred Time Reference object
  */
-export function getPreferredTimeReference() {
-  const date = new Date(new Date().getFullYear(), 0, 1);
-  const timeZone = _dojoFunc(date) || _getTimeZoneName() || "Pacific Standard Time";
+export function getPreferredTimeReference(
+  ianaTimeZone?: string
+) {
+  const timeZone =  _getTimeZoneName(ianaTimeZone);
   const respectsDaylightSaving = _getRespectsDaylightSaving();
   return {
     preferredTimeReference: {
@@ -190,87 +194,63 @@ export function getPreferredTimeReference() {
 /**
  * Check if the local time honors daylight savings
  *
+ * @param timeZone Optional: The IANA time zone value to use. When not provided the value will be determined from the browser.
+ * 
  * @returns boolean True if daylight savings should be observed
+ * @private
  */
-function _getRespectsDaylightSaving() {
-  const janTimeOffset = _getTimeZone(0, 1);
-  const octTimeOffset = _getTimeZone(9, 1);
+export function _getRespectsDaylightSaving(
+  timeZone?: string
+) {
+  const janTimeOffset = _getTimeZone(0, 1, timeZone);
+  const octTimeOffset = _getTimeZone(9, 1, timeZone);
   return janTimeOffset !== octTimeOffset;
 }
 
 /**
- * Check if the local time honors daylight savings
+ * Get the IANA time zone name
  *
  * @param month number 0 based index of month
  * @param day number day of the month
+ * @param timeZone Optional: The IANA time zone value to use. When not provided the value will be determined from the browser.
+ * 
  * @returns IANA time zone name
+ * @private
  */
-function _getTimeZone(
+export function _getTimeZone(
   month: number,
-  day: number
+  day: number,
+  timeZone?: string
 ) {
-  const dateTimeFormat = new Intl.DateTimeFormat("en", {
-    timeZoneName: "longOffset"
-  });
-  return dateTimeFormat.formatToParts(
-    new Date(new Date().getFullYear(), month, day)
-  ).find(formatted => formatted.type === "timeZoneName").value;
-}
-
-function _getTimeZoneName() {
-  const timeZone = _getTimeZone(0, 1);
-  return timeZones.hasOwnProperty(timeZone) ? timeZones[timeZone] : "";
+  try {
+    const formatOpts: Intl.DateTimeFormatOptions = {
+      timeZoneName: "longOffset"
+    };
+    if (timeZone) {
+      formatOpts.timeZone = timeZone;
+    }
+    const dateTimeFormat = new Intl.DateTimeFormat("en", formatOpts);
+  
+    return dateTimeFormat.formatToParts(
+      new Date(2022, month, day)
+    ).find(formatted => formatted.type === "timeZoneName").value;
+  } catch (error) {
+    console.error(error);
+    return "Pacific Standard Time";
+  }
 }
 
 /**
- * Dojo function leveraged within AGOL
- * 
- * Modified to check if the name found exists within the time zone name subset list supported by ArcGIS Pro
- * https://learn.microsoft.com/en-us/previous-versions/windows/embedded/ms912391(v=winembedded.11)
+ * Get the simple time zone name as is needed by ArcGIS Pro
  *
- * @param dateObject the date used to determine the time zone from
- * @returns time zone name
+ * @param timeZone Optional: The IANA time zone value to use. When not provided the value will be determined from the browser.
+ * 
+ * @returns IANA time zone name
+ * @private
  */
-function _dojoFunc(/*Date*/dateObject){
-	// summary:
-	//		Get the user's time zone as provided by the browser
-	// dateObject:
-	//		Needed because the timezone may vary with time (daylight savings)
-	// description:
-	//		Try to get time zone info from toString or toLocaleString method of
-	//		the Date object -- UTC offset is not a time zone.  See
-	//		http://www.twinsun.com/tz/tz-link.htm Note: results may be
-	//		inconsistent across browsers.
-
-	let str = dateObject.toString(); // Start looking in toString
-	let tz = ''; // The result -- return empty string if nothing found
-	let match;
-
-	// First look for something in parentheses -- fast lookup, no regex
-	let pos = str.indexOf('(');
-	if(pos > -1){
-		tz = str.substring(++pos, str.indexOf(')'));
-	}else{
-		// If at first you don't succeed ...
-		// If IE knows about the TZ, it appears before the year
-		// Capital letters or slash before a 4-digit year
-		// at the end of string
-		let pat = /([A-Z/]+) \d{4}$/;
-		if((match = str.match(pat))){
-			tz = match[1];
-		}else{
-		// Some browsers (e.g. Safari) glue the TZ on the end
-		// of toLocaleString instead of putting it in toString
-			str = dateObject.toLocaleString('en-US', { timeZone: 'America/Chicago' });
-			// Capital letters or slash -- end of string,
-			// after space
-			pat = / ([A-Z/]+)$/;
-			if((match = str.match(pat))){
-				tz = match[1];
-			}
-		}
-	}
-
-	// Make sure it doesn't somehow end up return AM or PM
-	return (tz === 'AM' || tz === 'PM') ? '' : supportedTimeZoneNames.indexOf(tz) > -1 ? tz : ''; // String
-};
+export function _getTimeZoneName(
+  timeZone?: string
+) {
+  const timeZoneName = _getTimeZone(0, 1, timeZone);
+  return timeZones.hasOwnProperty(timeZoneName) ? timeZones[timeZoneName] : "";
+}
