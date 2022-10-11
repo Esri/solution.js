@@ -133,7 +133,7 @@ export function convertItemToTemplate(
       let templateModifyingPromise = Promise.resolve(itemTemplate);
       switch (itemInfo.type) {
         case "Dashboard":
-          dashboard.convertItemToTemplate(itemTemplate);
+          dashboard.convertItemToTemplate(itemTemplate, templateDictionary);
           break;
         case "Form":
           // Store the form's data in the solution resources, not in template
@@ -190,7 +190,8 @@ export function convertItemToTemplate(
           templateModifyingPromise = webmap.convertItemToTemplate(
             itemTemplate,
             destAuthentication,
-            srcAuthentication
+            srcAuthentication,
+            templateDictionary
           );
           break;
         case "Web Mapping Application":
@@ -198,7 +199,8 @@ export function convertItemToTemplate(
             templateModifyingPromise = webmappingapplication.convertItemToTemplate(
               itemTemplate,
               destAuthentication,
-              srcAuthentication
+              srcAuthentication,
+              templateDictionary
             );
           }
           break;
@@ -206,7 +208,8 @@ export function convertItemToTemplate(
           templateModifyingPromise = workforce.convertItemToTemplate(
             itemTemplate,
             destAuthentication,
-            srcAuthentication
+            srcAuthentication,
+            templateDictionary
           );
           break;
         case "QuickCapture Project":

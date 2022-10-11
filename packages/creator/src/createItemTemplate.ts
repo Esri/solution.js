@@ -271,8 +271,18 @@ export function createItemTemplate(
           },
           // Id not found or item is not accessible
           () => {
-            // removed itemProgressCallback Failed per issue #859
-            // Skip items that we cannot fetch
+            // mock hasInvalidDesignations so this will be processed at the end
+            // as we do with living atlas layers
+            const t = findTemplateInList(existingTemplates, itemId);
+            t.properties.hasInvalidDesignations = true;
+            // Skip items that we cannot fetch per issue #859
+            // Use finished rather than ignored
+            // ignored will cause the template to be removed before we can check for hasInvalidDesignations
+            itemProgressCallback(
+              itemId,
+              EItemProgressStatus.Finished,
+              0
+            );
             resolve([]);
           }
         );
