@@ -44,6 +44,14 @@ describe("Module `timeHelpers`: functions for determining key properties of the 
           respectsDaylightSaving: true
         }
       });
+
+      actual = getPreferredTimeReference("N/A");
+      expect(actual).toEqual({
+        preferredTimeReference: {
+          timeZone:"Pacific Standard Time",
+          respectsDaylightSaving: true
+        }
+      });
     });
   });
 

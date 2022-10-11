@@ -103,7 +103,7 @@ const timeZones = {
 export function getPreferredTimeReference(
   ianaTimeZone?: string
 ) {
-  const timeZone =  _getTimeZoneName(ianaTimeZone);
+  const timeZone =  _getTimeZoneName(ianaTimeZone) || "Pacific Standard Time";
   const respectsDaylightSaving = _getRespectsDaylightSaving();
   return {
     preferredTimeReference: {
@@ -156,9 +156,8 @@ export function _getTimeZone(
     return dateTimeFormat.formatToParts(
       new Date(2022, month, day)
     ).find(formatted => formatted.type === "timeZoneName").value;
-  } catch (error) {
-    console.error(error);
-    return "Pacific Standard Time";
+  } catch {
+    return "";
   }
 }
 
