@@ -182,7 +182,6 @@ export function addContentToSolution(
             solutionTemplates.forEach(
               (template: IItemTemplate) => {
                 if (template.dataFile) {
-                  console.log("adding datafile to queue " + template.dataFile.folder + "|" + template.dataFile.filename);//???
                   resourceItemFiles.push(template.dataFile);
                 }
               }
@@ -208,9 +207,6 @@ export function addContentToSolution(
               templateIds.includes(file.itemId)
             );
 
-            console.log("copyFilesToStorageItem");//???
-            resourceItemFiles.forEach( (file: ISourceFile) => { console.log("  * " + file.folder + "|" + file.filename) } );//???
-
             // Send the accumulated resources to the solution item
             // eslint-disable-next-line @typescript-eslint/no-floating-promises
             copyFilesToStorageItem(
@@ -226,9 +222,6 @@ export function addContentToSolution(
                   }
                 }
               );
-
-              //???
-              solutionTemplates.forEach((template: IItemTemplate) => { if (template.dataFile) { console.log("Undeleted datafile " + template.dataFile.folder + "|" + template.dataFile.filename); } });  //???
 
               _templatizeSolutionIds(solutionTemplates);
               _simplifyUrlsInItemDescriptions(solutionTemplates);

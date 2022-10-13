@@ -44,7 +44,6 @@ export function getItemResourcesFilesFromPaths(
             } as ISourceFile);
           },
           () => {
-            if (fileInfo.filename !== "metadata.xml") console.log("failed fetch " + fileInfo.folder + "/" + fileInfo.filename);//???
             resolve(null);
           }
         );

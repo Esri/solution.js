@@ -155,10 +155,8 @@ export function convertItemToTemplate(
               common.SolutionResourceType.data
             );
             wrapupPromise = new Promise<void>(
-              (resolveDataStorage, rejectDataStorage) => {
-
+              () => {
                 // Add the data file to the template so that it can be uploaded with the other resources in the solution
-                console.log(storageName.folder + "/" + storageName.filename + " add form as resource....");//???
                 const dataFile: common.ISourceFile = {
                   itemId: itemTemplate.itemId,
                   file: itemDataResponse as File,

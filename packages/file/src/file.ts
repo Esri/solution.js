@@ -97,7 +97,6 @@ export function convertItemToTemplate(
         );
 
         // Add the data file to the template so that it can be uploaded with the other resources in the solution
-        console.log(storageName.folder + "/" + storageName.filename + " add file as resource....");//???
         const dataFile: common.ISourceFile = {
           itemId: itemTemplate.itemId,
           file: resource.blob as File,

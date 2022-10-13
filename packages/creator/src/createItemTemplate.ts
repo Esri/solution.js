@@ -176,7 +176,6 @@ export function createItemTemplate(
                 )
                 .then(
                   itemTemplate => {
-                    console.log("Have template for " + itemInfo.id + " (" + itemInfo.type + ")");//???
                     // eslint-disable-next-line @typescript-eslint/no-floating-promises
                     getItemResourcesPaths(
                       itemTemplate,
