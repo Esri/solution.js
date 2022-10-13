@@ -156,21 +156,23 @@ export function convertItemToTemplate(
             );
             wrapupPromise = new Promise<void>(
               (resolveDataStorage, rejectDataStorage) => {
-                common
-                  .addResourceFromBlob(
-                    itemDataResponse,
-                    solutionItemId,
-                    storageName.folder,
-                    filename,
-                    destAuthentication
-                  )
-                  .then(() => {
-                    // Update the template's resources
-                    itemTemplate.resources.push(
-                      storageName.folder + "/" + storageName.filename
-                    );
-                    resolveDataStorage();
-                  }, rejectDataStorage);
+
+                // Add the data file to the template so that it can be uploaded with the other resources in the solution
+                console.log(storageName.folder + "/" + storageName.filename + " add form as resource....");//???
+                const dataFile: common.ISourceFile = {
+                  itemId: itemTemplate.itemId,
+                  file: itemDataResponse as File,
+                  folder: storageName.folder,
+                  filename: filename
+                }
+                itemTemplate.dataFile = dataFile;
+
+                // Update the template's resources
+                itemTemplate.resources.push(
+                  storageName.folder + "/" + storageName.filename
+                );
+
+                resolve(itemTemplate);
               }
             );
           }

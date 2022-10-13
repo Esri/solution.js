@@ -178,6 +178,16 @@ export function addContentToSolution(
               [] as ISourceFile[]
             );
 
+            // Extract data files from templates
+            solutionTemplates.forEach(
+              (template: IItemTemplate) => {
+                if (template.dataFile) {
+                  console.log("adding datafile to queue " + template.dataFile.folder + "|" + template.dataFile.filename);//???
+                  resourceItemFiles.push(template.dataFile);
+                }
+              }
+            );
+
             // test for and update group dependencies and other post-processing
             solutionTemplates = _postProcessGroupDependencies(
               solutionTemplates
@@ -198,6 +208,9 @@ export function addContentToSolution(
               templateIds.includes(file.itemId)
             );
 
+            console.log("copyFilesToStorageItem");//???
+            resourceItemFiles.forEach( (file: ISourceFile) => { console.log("  * " + file.folder + "|" + file.filename) } );//???
+
             // Send the accumulated resources to the solution item
             // eslint-disable-next-line @typescript-eslint/no-floating-promises
             copyFilesToStorageItem(
@@ -205,6 +218,18 @@ export function addContentToSolution(
               solutionItemId,
               destAuthentication
             ).then(() => {
+              // Remove data files from templates--no longer needed
+              solutionTemplates.forEach(
+                (template: IItemTemplate) => {
+                  if (template.dataFile) {
+                    delete template.dataFile;
+                  }
+                }
+              );
+
+              //???
+              solutionTemplates.forEach((template: IItemTemplate) => { if (template.dataFile) { console.log("Undeleted datafile " + template.dataFile.folder + "|" + template.dataFile.filename); } });  //???
+
               _templatizeSolutionIds(solutionTemplates);
               _simplifyUrlsInItemDescriptions(solutionTemplates);
               _replaceDictionaryItemsInObject(
