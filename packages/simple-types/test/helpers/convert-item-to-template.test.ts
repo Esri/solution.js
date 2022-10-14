@@ -15,6 +15,7 @@
  */
 
 import * as simpleTypes from "../../src/simple-types";
+import * as simpleTypeHelpers from "../../src/helpers/convert-item-to-template";
 import * as utils from "../../../common/test/mocks/utils";
 import * as staticRelatedItemsMocks from "../../../common/test/mocks/staticRelatedItemsMocks";
 import * as fetchMock from "fetch-mock";
@@ -190,7 +191,12 @@ describe("simpleTypeConvertItemToTemplate", () => {
         dependencies: ["srv1234567890", "abc1234567890"],
         groups: [],
         properties: {},
-        estimatedDeploymentCostFactor: 2
+        estimatedDeploymentCostFactor: 2,
+        dataFile: {
+          itemId: 'frm1234567890',
+          folder: 'frm1234567890_info_data',
+          filename: 'frm1234567890.zip'
+        }
       };
 
       fetchMock
@@ -270,6 +276,7 @@ describe("simpleTypeConvertItemToTemplate", () => {
     const verifyFormTemplate = (done: DoneFn) => {
       return (newItemTemplate: common.IItemTemplate) => {
         delete newItemTemplate.key; // key is randomly generated, and so is not testable
+        delete newItemTemplate.dataFile.file; // don't want to test File object
         expect(newItemTemplate).toEqual(expectedTemplate);
         done();
       };
@@ -301,6 +308,38 @@ describe("simpleTypeConvertItemToTemplate", () => {
           {}
         )
         .then(verifyFormTemplate(done), done.fail);
+    });
+
+    it("should use the template's item name for the form data name", () => {
+      const itemName = "itemName";
+      const dataFilename = "dataFilename";
+      const itemIdAsName = "itemIdAsName";
+      const formDataName = simpleTypeHelpers._getFormDataFilename(itemName, dataFilename, itemIdAsName);
+      expect(formDataName).toEqual(itemName);
+    });
+
+    it("should use the template's file data name for the form data name", () => {
+      const itemName = "";
+      const dataFilename = "dataFilename";
+      const itemIdAsName = "itemIdAsName";
+      const formDataName = simpleTypeHelpers._getFormDataFilename(itemName, dataFilename, itemIdAsName);
+      expect(formDataName).toEqual(dataFilename);
+    });
+
+    it("should use the template's id to create a name for the form data name--'undefined' file name", () => {
+      const itemName = "";
+      const dataFilename = "undefined";
+      const itemIdAsName = "itemIdAsName";
+      const formDataName = simpleTypeHelpers._getFormDataFilename(itemName, dataFilename, itemIdAsName);
+      expect(itemIdAsName).toEqual(itemIdAsName);
+    });
+
+    it("should use the template's id to create a name for the form data name", () => {
+      const itemName = "";
+      const dataFilename = "";
+      const itemIdAsName = "itemIdAsName";
+      const formDataName = simpleTypeHelpers._getFormDataFilename(itemName, dataFilename, itemIdAsName);
+      expect(itemIdAsName).toEqual(itemIdAsName);
     });
   });
 

@@ -129,7 +129,6 @@ export function convertItemToTemplate(
         }
       });
 
-      let wrapupPromise = Promise.resolve(null);
       let templateModifyingPromise = Promise.resolve(itemTemplate);
       switch (itemInfo.type) {
         case "Dashboard":
@@ -139,39 +138,30 @@ export function convertItemToTemplate(
           // Store the form's data in the solution resources, not in template
           itemTemplate.data = null;
 
-          // Store form data
+          // Add the form data to the template for a post-process resource upload
           if (itemDataResponse) {
-            const originalFilename =
-              itemTemplate.item.name || (itemDataResponse as File).name;
-            const filename =
-              originalFilename && originalFilename !== "undefined"
-                ? originalFilename
-                : `${itemTemplate.itemId}.zip`;
-            itemTemplate.item.name = filename;
+            itemTemplate.item.name = _getFormDataFilename(
+              itemTemplate.item.name, (itemDataResponse as File).name, `${itemTemplate.itemId}.zip`
+            );
             const storageName = common.convertItemResourceToStorageResource(
               itemTemplate.itemId,
-              filename,
+              itemTemplate.item.name,
               common.SolutionTemplateFormatVersion,
               common.SolutionResourceType.data
             );
-            wrapupPromise = new Promise<void>(
-              (resolveDataStorage, rejectDataStorage) => {
-                common
-                  .addResourceFromBlob(
-                    itemDataResponse,
-                    solutionItemId,
-                    storageName.folder,
-                    filename,
-                    destAuthentication
-                  )
-                  .then(() => {
-                    // Update the template's resources
-                    itemTemplate.resources.push(
-                      storageName.folder + "/" + storageName.filename
-                    );
-                    resolveDataStorage();
-                  }, rejectDataStorage);
-              }
+
+            // Add the data file to the template so that it can be uploaded with the other resources in the solution
+            const dataFile: common.ISourceFile = {
+              itemId: itemTemplate.itemId,
+              file: itemDataResponse as File,
+              folder: storageName.folder,
+              filename: itemTemplate.item.name
+            }
+            itemTemplate.dataFile = dataFile;
+
+            // Update the template's resources
+            itemTemplate.resources.push(
+              storageName.folder + "/" + storageName.filename
             );
           }
           break;
@@ -219,14 +209,32 @@ export function convertItemToTemplate(
           break;
       }
 
-      wrapupPromise.then(
-        () => {
-          templateModifyingPromise.then(resolve, err =>
-            reject(common.fail(err))
-          );
-        },
-        err => reject(common.fail(err))
+      templateModifyingPromise.then(resolve, err =>
+        reject(common.fail(err))
       );
     });
   });
+}
+
+/**
+ * Encapsulates the rules for naming a form's data file.
+ * Chooses the first parameter that's defined and is not the string "undefined".
+ *
+ * @param itemName Template's item name
+ * @param dataFilename The data file name
+ * @param itemIdAsName A name constructed from the template's id suffixed with ".zip"
+ *
+ * @return A name for the data file
+ */
+export function _getFormDataFilename(
+  itemName: string,
+  dataFilename: string,
+  itemIdAsName: string
+): string {
+  const originalFilename = itemName || dataFilename;
+  const filename =
+    originalFilename && originalFilename !== "undefined"
+      ? originalFilename
+      : itemIdAsName;
+  return filename;
 }
