@@ -43,6 +43,10 @@ import {
   createItemTemplate,
   postProcessFieldReferences
 } from "../createItemTemplate";
+import {
+  getDataFilesFromTemplates,
+  removeDataFilesFromTemplates
+} from "./template";
 
 /**
  * Adds a list of AGO item ids to a solution item.
@@ -178,14 +182,8 @@ export function addContentToSolution(
               [] as ISourceFile[]
             );
 
-            // Extract data files from templates
-            solutionTemplates.forEach(
-              (template: IItemTemplate) => {
-                if (template.dataFile) {
-                  resourceItemFiles.push(template.dataFile);
-                }
-              }
-            );
+            // Extract resource data files from templates
+            resourceItemFiles = resourceItemFiles.concat(getDataFilesFromTemplates(solutionTemplates));
 
             // test for and update group dependencies and other post-processing
             solutionTemplates = _postProcessGroupDependencies(
@@ -215,13 +213,7 @@ export function addContentToSolution(
               destAuthentication
             ).then(() => {
               // Remove data files from templates--no longer needed
-              solutionTemplates.forEach(
-                (template: IItemTemplate) => {
-                  if (template.dataFile) {
-                    delete template.dataFile;
-                  }
-                }
-              );
+              removeDataFilesFromTemplates(solutionTemplates);
 
               _templatizeSolutionIds(solutionTemplates);
               _simplifyUrlsInItemDescriptions(solutionTemplates);
