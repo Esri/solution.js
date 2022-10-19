@@ -1,6 +1,6 @@
 {
   "name": "@esri/solution-velocity",
-  "version": "1.5.1",
+  "version": "1.5.2",
   "description": "Manages the creation and deployment of Velocity item types for @esri/solution.js.",
   "main": "dist/node/index.js",
   "unpkg": "dist/umd/velocity.umd.min.js",
@@ -28,8 +28,8 @@
     "@esri/arcgis-rest-service-admin": "3.5.0"
   },
   "dependencies": {
-    "@esri/solution-common": "^1.5.1",
-    "@esri/solution-simple-types": "^1.5.1",
+    "@esri/solution-common": "^1.5.2",
+    "@esri/solution-simple-types": "^1.5.2",
     "tslib": "1.14.1"
   },
   "scripts": {
