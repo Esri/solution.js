@@ -19,6 +19,7 @@
  */
 
 import * as interfaces from "../src/interfaces";
+import * as portal from "@esri/arcgis-rest-portal";
 import * as request from "@esri/arcgis-rest-request";
 import * as resourceHelpers from "../src/resourceHelpers";
 
@@ -1480,6 +1481,62 @@ describe("Module `resourceHelpers`: common functions involving the management of
         expect(resourceHelpers.isSupportedFileType(fileType))
           .withContext(fileType + "is supported")
           .toBeFalsy()
+      );
+    });
+  });
+
+  describe("removeItemResourceFile", () => {
+    it("correctly maps call", done => {
+      const itemId = "abcde";
+      const filename = "fghij";
+
+      const resourceHelpersSpy = spyOn(
+        portal,
+        "removeItemResource"
+      ).and.resolveTo({ success: true });
+      resourceHelpers.removeItemResourceFile(itemId, filename, MOCK_USER_SESSION)
+      .then(
+        () => {
+          const restjsArg = resourceHelpersSpy.calls.argsFor(0)[0];
+          expect(restjsArg).toEqual({
+            id: itemId,
+            resource: filename,
+            authentication: MOCK_USER_SESSION
+          });
+          done();
+        },
+        done.fail
+      );
+    });
+  });
+
+  describe("updateItemResourceFile", () => {
+    it("correctly maps call", done => {
+      const itemId = "abcde";
+      const filename = "fghij";
+
+      const resourceHelpersSpy = spyOn(
+        portal,
+        "updateItemResource"
+      ).and.resolveTo({
+        success: true,
+        itemId,
+        owner: "Fred",
+        folder: "MGM"
+      } as portal.IItemResourceResponse);
+      resourceHelpers.updateItemResourceFile(itemId, filename, utils.getSampleImageAsFile(), MOCK_USER_SESSION)
+      .then(
+        () => {
+          const restjsArg = resourceHelpersSpy.calls.argsFor(0)[0];
+          expect(restjsArg).toEqual({
+            id: itemId,
+            name: filename,
+            resource: utils.getSampleImageAsFile(),
+            authentication: MOCK_USER_SESSION
+          });
+          done();
+        },
+        done.fail
       );
     });
   });

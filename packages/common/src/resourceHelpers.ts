@@ -59,7 +59,10 @@ import {
 } from "./interfaces";
 import { new_File } from "./polyfills";
 import {
+  IRemoveItemResourceOptions,
+  IItemResourceOptions,
   IItemResourceResponse,
+  removeItemResource,
   updateGroup,
   updateItem,
   updateItemResource
@@ -410,7 +413,7 @@ export function generateStorageFilePaths(
  * Generates a folder and filename for storing a copy of an item's thumbnail in a storage item.
  *
  * @param itemId Id of item
- * @param thumbnailUrlPart Partial path to the thumbnail held in an item's JSON
+ * @param thumbnailUrlPart Partial path to the thumbnail held in an item's JSON; can also be a filename
  * @returns Folder and filename for storage; folder is the itemID suffixed with "_info_thumbnail";
  * file is URI-encoded thumbnailUrlPart
  * @see convertStorageResourceToItemResource
@@ -471,7 +474,50 @@ export function getThumbnailFromStorageItem(
 }
 
 /**
- * Updates the items resource that matches the filename with new content
+ * Removes the item's resource that matches the filename with new content
+ *
+ * @param itemId Id of the item to remove
+ * @param filename Name of the resource file to remove
+ * @param authentication Credentials for the request to the storage
+ * @returns A promise which resolves with a success true/false response
+ */
+export function removeItemResourceFile(
+  itemId: string,
+  filename: string,
+  authentication: UserSession
+): Promise<{ success: boolean }> {
+  return removeItemResource({
+    id: itemId,
+    resource: filename,
+    authentication: authentication
+  } as IRemoveItemResourceOptions);
+}
+
+/**
+ * Updates the item's resource that matches the filename with new content
+ *
+ * @param itemId Id of the item to update
+ * @param filename Name of the resource file to update
+ * @param resource The new content to update the resource with
+ * @param authentication Credentials for the request to the storage
+ * @returns A promise which resolves with a success true/false response
+ */
+export function updateItemResourceFile(
+  itemId: string,
+  filename: string,
+  resource: File,
+  authentication: UserSession
+): Promise<IItemResourceResponse> {
+  return updateItemResource({
+    id: itemId,
+    name: filename,
+    resource,
+    authentication: authentication
+  } as IItemResourceOptions);
+}
+
+/**
+ * Updates the item's resource that matches the filename with new content
  *
  * @param itemId Id of the item to update
  * @param filename Name of the resource file to update
@@ -490,5 +536,5 @@ export function updateItemResourceText(
     name: filename,
     content: content,
     authentication: authentication
-  });
+  } as IItemResourceOptions);
 }
