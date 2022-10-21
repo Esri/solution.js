@@ -11,17 +11,18 @@ jobs:
   steps:
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@v1
+
+      - uses: actions/setup-node@v1
+        with:
+          node-version: "16.x"
+
+      - name: NPM Install
+        run: npm install
+
       - name: Checkout
-        uses: actions/checkout@v1
-        with:
-          fetch-depth: 100
-      - name: Set up Node.js
-        uses: actions/setup-node@v1
-        with:
-          node-version: 16.17.1
-      - name: Install Node.js dependencies
-        run: npm ci --ignore-scripts
-      - name: lint
+
+      - name: Lint
         shell: bash
         run: |
           npx eslint . --ext .ts
