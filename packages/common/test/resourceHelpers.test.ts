@@ -1530,7 +1530,38 @@ describe("Module `resourceHelpers`: common functions involving the management of
           const restjsArg = resourceHelpersSpy.calls.argsFor(0)[0];
           expect(restjsArg).toEqual({
             id: itemId,
+            prefix: undefined,
             name: filename,
+            resource: utils.getSampleImageAsFile(),
+            authentication: MOCK_USER_SESSION
+          });
+          done();
+        },
+        done.fail
+      );
+    });
+
+    it("correctly maps call with prefixed filename", done => {
+      const itemId = "abcde";
+      const filename = "fghij/folder/myfile";
+
+      const resourceHelpersSpy = spyOn(
+        portal,
+        "updateItemResource"
+      ).and.resolveTo({
+        success: true,
+        itemId,
+        owner: "Fred",
+        folder: "MGM"
+      } as portal.IItemResourceResponse);
+      resourceHelpers.updateItemResourceFile(itemId, filename, utils.getSampleImageAsFile(), MOCK_USER_SESSION)
+      .then(
+        () => {
+          const restjsArg = resourceHelpersSpy.calls.argsFor(0)[0];
+          expect(restjsArg).toEqual({
+            id: itemId,
+            prefix: "fghij/folder",
+            name: "myfile",
             resource: utils.getSampleImageAsFile(),
             authentication: MOCK_USER_SESSION
           });
