@@ -497,7 +497,7 @@ export function removeItemResourceFile(
  * Updates the item's resource that matches the filename with new content
  *
  * @param itemId Id of the item to update
- * @param filename Name of the resource file to update
+ * @param filename Name of the resource file to update; prefix optional (e.g., a/b/file.txt)
  * @param resource The new content to update the resource with
  * @param authentication Credentials for the request to the storage
  * @returns A promise which resolves with a success true/false response
@@ -508,9 +508,15 @@ export function updateItemResourceFile(
   resource: File,
   authentication: UserSession
 ): Promise<IItemResourceResponse> {
+  // Prefix has to be specified separately
+  const prefixedFilenameParts = filename.split("/");
+  const prefix = prefixedFilenameParts.length > 1 ? prefixedFilenameParts.slice(0, prefixedFilenameParts.length - 1).join("/") : undefined;
+  const suffix = prefixedFilenameParts[prefixedFilenameParts.length - 1];
+
   return updateItemResource({
     id: itemId,
-    name: filename,
+    prefix: prefix,
+    name: suffix,
     resource,
     authentication: authentication
   } as IItemResourceOptions);
