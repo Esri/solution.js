@@ -1,4 +1,4 @@
-## Publishing solution.js to npmjs
+## Publishing solution.js to npmjs & GitHub
 
 #### Checklist
 
