@@ -101,6 +101,9 @@ export function templatize(
   // special handeling if we are dealing with a tracker view
   templatizeTracker(itemTemplate);
 
+  // added for issue #928
+  deleteProp(itemTemplate, "properties.service.size");
+
   const jsonLayers: any[] = itemTemplate.properties.layers || [];
   const jsonTables: any[] = itemTemplate.properties.tables || [];
   const jsonItems: any[] = jsonLayers.concat(jsonTables);
