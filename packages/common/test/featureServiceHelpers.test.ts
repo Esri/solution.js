@@ -234,6 +234,7 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
         properties: {
           service: {
             serviceItemId: "ab766cba0dd44ec080420acc10990282",
+            size: 1009,
             fullExtent: {},
             initialExtent: {},
             layers: [
@@ -697,7 +698,7 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
               url
             }
           }
-        } 
+        }
       };
       const _templateDictionary = {
         unreachable: {
@@ -709,7 +710,7 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
               url
             }
           }
-        } 
+        }
       };
 
       cacheLayerInfo("0", itemId, "", templateDictionary);
@@ -731,7 +732,7 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
               url2
             }
           }
-        } 
+        }
       };
       const _templateDictionary = {
         unreachable: {
@@ -751,7 +752,7 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
               url2
             }
           }
-        } 
+        }
       };
 
       cacheLayerInfo("0", itemId, url, templateDictionary);
@@ -3880,7 +3881,7 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
         "stringDicts": [{
           "domain": "CommonName",
           "entries": ["Norway Maple"]
-        }], 
+        }],
         "contingentValuesDefinition": {
           "layerID": 0,
           "layerName": "Trees",
@@ -3896,7 +3897,7 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
             }],
             "domains": { "commonname": "CommonName", "genus": "Genus", "species": "Species" },
             "contingentValues": [{
-              "id": 1, "types": [3, 3, 3], 
+              "id": 1, "types": [3, 3, 3],
               "values": [0, 0, 0]
             }]
           }, {
@@ -3943,7 +3944,7 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
             }],
             "domains": { "commonname": "CommonName", "genus": "Genus", "species": "Species" },
             "contingentValues": [{
-              "id": 1, "types": [3, 3, 3], 
+              "id": 1, "types": [3, 3, 3],
               "values": [0, 0, 0]
             }]
           }, {
@@ -6586,7 +6587,7 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
       expect(layerChunks).toEqual([startOptions]);
     });
 
-    
+
     it("will create new tables array when isMultiServicesView is true", () => {
       const startOptions: any = {
         layers: [],
