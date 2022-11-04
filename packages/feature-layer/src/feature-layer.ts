@@ -155,6 +155,9 @@ export function createItemFromTemplate(
     // Thumbnail has to be updated separately; doesn't work in create service call
     delete newItemTemplate.item.thumbnail;
 
+    // added for issue #928
+    common.deleteProp(newItemTemplate, "properties.service.size");
+
     // cache the popup info to be added later
     const popupInfos: common.IPopupInfos = common.cachePopupInfos(
       newItemTemplate.data
