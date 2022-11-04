@@ -662,6 +662,7 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
         "status = '{{" + expectedId + ".layer1.fields.boardreview.name}}'";
 
       itemTemplate.properties.service.isView = false;
+      itemTemplate.properties.service.size = 1009;
 
       itemTemplate.properties.layers[0].definitionQuery = layerDefQuery;
       itemTemplate.properties.layers[0].viewDefinitionQuery = layerDefQuery;
@@ -727,6 +728,7 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
       delete expectedClone.properties.tables[0].definitionQuery;
       expectedClone.item.thumbnail = "thumbnail/ago_downloaded.png";
       delete expectedClone.item.spatialReference;
+      delete expectedClone.properties.service.size;
 
       fetchMock
         .post(url + "?f=json", itemTemplate.properties.service)
