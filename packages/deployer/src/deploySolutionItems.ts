@@ -21,6 +21,7 @@
  */
 
 import * as common from "@esri/solution-common";
+import { IFindExistingItemsResponse } from "@esri/solution-common";
 import { moduleMap } from "./module-map";
 
 const UNSUPPORTED: common.moduleHandler = null;
@@ -416,27 +417,37 @@ export function _reuseDeployedItems(
 ): Promise<any> {
   return new Promise((resolve, reject) => {
     if (reuseItems) {
-      const existingItemsByKeyword: Array<Promise<
-        any
-      >> = _findExistingItemByKeyword(
+      const findItemsByKeywordResponse: IFindExistingItemsResponse = _findExistingItemByKeyword(
         templates,
         templateDictionary,
         authentication
       );
 
+      const existingItemsByKeyword: Array<Promise<
+        any
+      >> = findItemsByKeywordResponse.existingItemsDefs;
+      const existingItemIds: string[] = findItemsByKeywordResponse.existingItemIds;
+
       Promise.all(existingItemsByKeyword).then(
         (existingItemsByKeywordResponse: any) => {
-          const existingItemsByTag = _handleExistingItems(
+          const findExistingItemsByTag = _handleExistingItems(
             existingItemsByKeywordResponse,
+            existingItemIds,
             templateDictionary,
             authentication,
             true
           );
 
+          const existingItemsByTag: Array<Promise<
+            any
+          >> = findExistingItemsByTag.existingItemsDefs;
+          const existingItemIdsByTag: string[] = findExistingItemsByTag.existingItemIds;
+
           Promise.all(existingItemsByTag).then(
             existingItemsByTagResponse => {
               _handleExistingItems(
                 existingItemsByTagResponse,
+                existingItemIdsByTag,
                 templateDictionary,
                 authentication,
                 false
@@ -827,15 +838,17 @@ export function _updateTemplateDictionaryForError(
  */
 export function _handleExistingItems(
   existingItemsResponse: any[],
+  existingItemIds: string[],
   templateDictionary: any,
   authentication: common.UserSession,
   addTagQuery: boolean
-): Array<Promise<any>> {
+): common.IFindExistingItemsResponse {
   // if items are not found by type keyword search by tag
   const existingItemsByTag: Array<Promise<any>> = [Promise.resolve(null)];
+  const existingItemIdsByTag: string[] = [];
   /* istanbul ignore else */
   if (existingItemsResponse && Array.isArray(existingItemsResponse)) {
-    existingItemsResponse.forEach(existingItem => {
+    existingItemsResponse.forEach((existingItem, i) => {
       /* istanbul ignore else */
       if (Array.isArray(existingItem?.results)) {
         let result: any;
@@ -855,12 +868,11 @@ export function _handleExistingItems(
             existingItemsByTag.push(
               _findExistingItem(tagQuery, authentication)
             );
+            existingItemIdsByTag.push(existingItemIds[i]);
           }
         }
         if (result) {
-          const sourceId: any = existingItem.query
-            ? existingItem.query.match(/[0-9A-F]{32}/i)[0]
-            : existingItem.sourceId;
+          const sourceId: any = existingItemIds[i];
           /* istanbul ignore else */
           if (sourceId) {
             _updateTemplateDictionaryById(
@@ -874,7 +886,10 @@ export function _handleExistingItems(
       }
     });
   }
-  return existingItemsByTag;
+  return {
+    existingItemsDefs: existingItemsByTag,
+    existingItemIds: existingItemIdsByTag
+  };
 }
 
 //???
@@ -910,8 +925,9 @@ export function _findExistingItemByKeyword(
   templates: common.IItemTemplate[],
   templateDictionary: any,
   authentication: common.UserSession
-): Array<Promise<any>> {
+): common.IFindExistingItemsResponse {
   const existingItemsDefs: Array<Promise<any>> = [];
+  const existingItemIds: string[] = [];
   templates.forEach(template => {
     if (template.item.type === "Group") {
       const userGroups: any = templateDictionary.user?.groups;
@@ -937,8 +953,12 @@ export function _findExistingItemByKeyword(
         )
       );
     }
+    existingItemIds.push(template.itemId);
   });
-  return existingItemsDefs;
+  return {
+    existingItemsDefs,
+    existingItemIds
+  };
 }
 
 /**

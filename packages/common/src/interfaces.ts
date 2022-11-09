@@ -705,6 +705,11 @@ export interface IFileMimeTyped {
   blob: Blob;
 }
 
+export interface IFindExistingItemsResponse {
+  existingItemsDefs: Array<Promise<any>>;
+  existingItemIds: string[];
+}
+
 /**
  * Response from removing a folder.
  */
