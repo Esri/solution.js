@@ -706,11 +706,19 @@ export interface IFileMimeTyped {
 }
 
 /**
- * Existing Items promises, associated item Ids
+ * Existing Items promises, associated item Ids and types
  */
 export interface IFindExistingItemsResponse {
   existingItemsDefs: Array<Promise<any>>;
-  existingItemIds: string[];
+  existingItemInfos: IFindExistingItemInfos[];
+}
+
+/**
+ * Item Id and item type
+ */
+export interface IFindExistingItemInfos {
+  itemId: string;
+  type: string;
 }
 
 /**

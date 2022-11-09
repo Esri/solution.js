@@ -426,13 +426,13 @@ export function _reuseDeployedItems(
       const existingItemsByKeyword: Array<Promise<
         any
       >> = findItemsByKeywordResponse.existingItemsDefs;
-      const existingItemIds: string[] = findItemsByKeywordResponse.existingItemIds;
+      const existingItemInfos: common.IFindExistingItemInfos[] = findItemsByKeywordResponse.existingItemInfos;
 
       Promise.all(existingItemsByKeyword).then(
         (existingItemsByKeywordResponse: any) => {
           const findExistingItemsByTag = _handleExistingItems(
             existingItemsByKeywordResponse,
-            existingItemIds,
+            existingItemInfos,
             templateDictionary,
             authentication,
             true
@@ -441,7 +441,7 @@ export function _reuseDeployedItems(
           const existingItemsByTag: Array<Promise<
             any
           >> = findExistingItemsByTag.existingItemsDefs;
-          const existingItemIdsByTag: string[] = findExistingItemsByTag.existingItemIds;
+          const existingItemIdsByTag: common.IFindExistingItemInfos[] = findExistingItemsByTag.existingItemInfos;
 
           Promise.all(existingItemsByTag).then(
             existingItemsByTagResponse => {
@@ -840,14 +840,14 @@ export function _updateTemplateDictionaryForError(
  */
 export function _handleExistingItems(
   existingItemsResponse: any[],
-  existingItemIds: string[],
+  existingItemInfos: common.IFindExistingItemInfos[],
   templateDictionary: any,
   authentication: common.UserSession,
   addTagQuery: boolean
 ): common.IFindExistingItemsResponse {
   // if items are not found by type keyword search by tag
   const existingItemsByTag: Array<Promise<any>> = [Promise.resolve(null)];
-  const existingItemIdsByTag: string[] = [];
+  const existingItemInfosByTag: common.IFindExistingItemInfos[] = [];
   /* istanbul ignore else */
   if (existingItemsResponse && Array.isArray(existingItemsResponse)) {
     existingItemsResponse.forEach((existingItem, i) => {
@@ -862,19 +862,17 @@ export function _handleExistingItems(
             a.created > b.created ? a : b
           );
         } else {
-          if (addTagQuery && existingItem.query) {
-            const tagQuery: string = existingItem.query.replace(
-              "typekeywords",
-              "tags"
-            );
+          if (addTagQuery && existingItemInfos[i]) {
+            const itemInfo: common.IFindExistingItemInfos = existingItemInfos[i];
+            const tagQuery: string = `tags:source-${itemInfo.itemId} type:${itemInfo.type} owner:${templateDictionary.user.username}`;
             existingItemsByTag.push(
               _findExistingItem(tagQuery, authentication)
             );
-            existingItemIdsByTag.push(existingItemIds[i]);
+            existingItemInfosByTag.push(existingItemInfos[i]);
           }
         }
         if (result) {
-          const sourceId: any = existingItemIds[i];
+          const sourceId: any = existingItemInfos[i].itemId;
           /* istanbul ignore else */
           if (sourceId) {
             _updateTemplateDictionaryById(
@@ -890,7 +888,7 @@ export function _handleExistingItems(
   }
   return {
     existingItemsDefs: existingItemsByTag,
-    existingItemIds: existingItemIdsByTag
+    existingItemInfos: existingItemInfosByTag
   };
 }
 
@@ -931,7 +929,7 @@ export function _findExistingItemByKeyword(
   authentication: common.UserSession
 ): common.IFindExistingItemsResponse {
   const existingItemsDefs: Array<Promise<any>> = [];
-  const existingItemIds: string[] = [];
+  const existingItemInfos: any[] = [];
   templates.forEach(template => {
     if (template.item.type === "Group") {
       const userGroups: any = templateDictionary.user?.groups;
@@ -957,11 +955,14 @@ export function _findExistingItemByKeyword(
         )
       );
     }
-    existingItemIds.push(template.itemId);
+    existingItemInfos.push({
+      itemId: template.itemId,
+      type: template.item.type
+    });
   });
   return {
     existingItemsDefs,
-    existingItemIds
+    existingItemInfos
   };
 }
 
