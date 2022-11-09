@@ -830,10 +830,12 @@ export function _updateTemplateDictionaryForError(
  * Optionally search by tags and then update the templateDictionary based on the search results
  *
  * @param existingItemsResponse response object from search by typeKeyword and type
+ * @param existingItemIds list of the template ids we have queried
  * @param templateDictionary Hash of facts: org URL, adlib replacements, deferreds for dependencies
  * @param authentication Credentials for the request
  * @param addTagQuery Boolean to indicate if a search by tag should happen
- * @returns A promise that will resolve with an array of results
+ * @returns IFindExistingItemsResponse object with  promise that will resolve with an array of results
+ * and an array of item ids
  * @private
  */
 export function _handleExistingItems(
@@ -916,9 +918,11 @@ export function _updateTemplateDictionaryById(
 /**
  * Search items based on user query
  *
- * @param query Query string to use
+ * @param templates Templates to examine
+ * @param templateDictionary Hash of facts: org URL, adlib replacements, deferreds for dependencies
  * @param authentication Credentials for the request
- * @returns A promise that will resolve with an array of results
+ * @returns IFindExistingItemsResponse object with  promise that will resolve with an array of results
+ * and an array of item ids
  * @private
  */
 export function _findExistingItemByKeyword(

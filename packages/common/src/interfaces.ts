@@ -705,6 +705,9 @@ export interface IFileMimeTyped {
   blob: Blob;
 }
 
+/**
+ * Existing Items promises, associated item Ids
+ */
 export interface IFindExistingItemsResponse {
   existingItemsDefs: Array<Promise<any>>;
   existingItemIds: string[];
