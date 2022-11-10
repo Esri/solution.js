@@ -16,11 +16,12 @@
 <h1>Function _handleExistingItems<code class="tsd-tag ts-flagPrivate">Private</code> </h1></div>
 <section class="tsd-panel">
 <ul class="tsd-signatures tsd-kind-function tsd-parent-kind-module tsd-is-private">
-<li class="tsd-signature tsd-anchor-link" id="_handleExistingItems">_handle<wbr/>Existing<wbr/>Items<span class="tsd-signature-symbol">(</span>existingItemsResponse<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">[]</span>, templateDictionary<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span>, authentication<span class="tsd-signature-symbol">: </span><a href="../classes/common_src.UserSession.html" class="tsd-signature-type" data-tsd-kind="Class">UserSession</a>, addTagQuery<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">[]</span><a href="#_handleExistingItems" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none" id="icon-anchor-a"></path><path d="M10 14a3.5 3.5 0 0 0 5 0l4 -4a3.5 3.5 0 0 0 -5 -5l-.5 .5" id="icon-anchor-b"></path><path d="M14 10a3.5 3.5 0 0 0 -5 0l-4 4a3.5 3.5 0 0 0 5 5l.5 -.5" id="icon-anchor-c"></path></svg></a></li>
+<li class="tsd-signature tsd-anchor-link" id="_handleExistingItems">_handle<wbr/>Existing<wbr/>Items<span class="tsd-signature-symbol">(</span>existingItemsResponse<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">[]</span>, existingItemInfos<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">IFindExistingItemInfos</span><span class="tsd-signature-symbol">[]</span>, templateDictionary<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span>, authentication<span class="tsd-signature-symbol">: </span><a href="../classes/common_src.UserSession.html" class="tsd-signature-type" data-tsd-kind="Class">UserSession</a>, addTagQuery<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">common.IFindExistingItemsResponse</span><a href="#_handleExistingItems" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none" id="icon-anchor-a"></path><path d="M10 14a3.5 3.5 0 0 0 5 0l4 -4a3.5 3.5 0 0 0 -5 -5l-.5 .5" id="icon-anchor-b"></path><path d="M14 10a3.5 3.5 0 0 0 -5 0l-4 4a3.5 3.5 0 0 0 5 5l.5 -.5" id="icon-anchor-c"></path></svg></a></li>
 <li class="tsd-description"><code class="tsd-tag ts-flagPrivate">Private</code> 
 <div class="tsd-comment tsd-typography"><p>Optionally search by tags and then update the templateDictionary based on the search results</p>
 
-<h3>Returns</h3><p>A promise that will resolve with an array of results</p>
+<h3>Returns</h3><p>IFindExistingItemsResponse object with  promise that will resolve with an array of results
+and an array of item ids</p>
 </div>
 <div class="tsd-parameters">
 <h4 class="tsd-parameters-title">Parameters</h4>
@@ -29,6 +30,8 @@
 <h5>existingItemsResponse: <span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">[]</span></h5>
 <div class="tsd-comment tsd-typography"><p>response object from search by typeKeyword and type</p>
 </div></li>
+<li>
+<h5>existingItemInfos: <span class="tsd-signature-type">IFindExistingItemInfos</span><span class="tsd-signature-symbol">[]</span></h5></li>
 <li>
 <h5>templateDictionary: <span class="tsd-signature-type">any</span></h5>
 <div class="tsd-comment tsd-typography"><p>Hash of facts: org URL, adlib replacements, deferreds for dependencies</p>
@@ -41,9 +44,9 @@
 <h5>addTagQuery: <span class="tsd-signature-type">boolean</span></h5>
 <div class="tsd-comment tsd-typography"><p>Boolean to indicate if a search by tag should happen</p>
 </div></li></ul></div>
-<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">[]</span></h4><aside class="tsd-sources">
+<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">common.IFindExistingItemsResponse</span></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/Esri/solution.js/blob/9404a2750/packages/deployer/src/deploySolutionItems.ts#L828">deployer/src/deploySolutionItems.ts:828</a></li></ul></aside></li></ul></section></div>
+<li>Defined in <a href="https://github.com/Esri/solution.js/blob/7ccd27f45/packages/deployer/src/deploySolutionItems.ts#L840">deployer/src/deploySolutionItems.ts:840</a></li></ul></aside></li></ul></section></div>
 <div class="col-4 col-menu menu-sticky-wrap menu-highlight">
 <div class="tsd-navigation settings">
 <details class="tsd-index-accordion"><summary class="tsd-accordion-summary">
