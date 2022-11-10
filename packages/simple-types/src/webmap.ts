@@ -31,12 +31,14 @@ const WEBMAP_APP_URL_PART: string = "home/webmap/viewer.html?webmap=";
  * @param itemTemplate Template for the webmap item
  * @param destAuthentication Credentials for requests to the destination organization
  * @param srcAuthentication Credentials for requests to source items
+ * @param templateDictionary Hash of key details used for variable replacement
  * @returns Template for the solution item that contains key details for item reconstruction
  */
 export function convertItemToTemplate(
   itemTemplate: common.IItemTemplate,
   destAuthentication: common.UserSession,
-  srcAuthentication: common.UserSession
+  srcAuthentication: common.UserSession,
+  templateDictionary: any
 ): Promise<common.IItemTemplate> {
   return new Promise<common.IItemTemplate>((resolve, reject) => {
     // Templatize the app URL
@@ -54,11 +56,13 @@ export function convertItemToTemplate(
         if (itemTemplate.data) {
           _templatizeWebmapLayerIdsAndUrls(
             itemTemplate.data.operationalLayers,
-            results.urlHash
+            results.urlHash,
+            templateDictionary
           );
           _templatizeWebmapLayerIdsAndUrls(
             itemTemplate.data.tables,
-            results.urlHash
+            results.urlHash,
+            templateDictionary
           );
 
           // Exclude intialState
@@ -195,12 +199,14 @@ export function _getLayerIds(
  *
  * @param layerList List of map layers or tables
  * @param urlHash Lookup object for analysis layers
+ * @param templateDictionary Hash of key details used for variable replacement
  * @returns void
  * @private
  */
 export function _templatizeWebmapLayerIdsAndUrls(
   layerList = [] as any[],
-  urlHash: any
+  urlHash: any,
+  templateDictionary: any
 ): void {
   layerList.forEach((layer: any) => {
     if (layer.url) {
@@ -212,6 +218,7 @@ export function _templatizeWebmapLayerIdsAndUrls(
           ? urlHash[layer.url]
           : undefined;
       if (id) {
+        common.cacheLayerInfo(layerId, id, layer.url, templateDictionary);
         layer.url = common.templatizeTerm(id, id, ".layer" + layerId + ".url");
         layer.itemId = common.templatizeTerm(
           id,

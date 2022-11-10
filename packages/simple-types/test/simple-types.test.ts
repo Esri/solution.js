@@ -324,66 +324,6 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
           () => done.fail()
         );
     });
-
-    it("should catch wrapup errors", done => {
-      const solutionItemId = "sln1234567890";
-      const itemTemplate: common.IItemTemplate = templates.getItemTemplateSkeleton();
-      itemTemplate.item = mockItems.getAGOLItem("Form", null);
-      itemTemplate.itemId = itemTemplate.item.id;
-      itemTemplate.item.thumbnail = null;
-      itemTemplate.item.name = "form.zip";
-
-      fetchMock
-        .post(
-          utils.PORTAL_SUBSET.restUrl +
-            "/content/items/" +
-            itemTemplate.itemId +
-            "/data",
-          utils.getSampleZip(),
-          { sendAsJson: false }
-        )
-        .post(
-          utils.PORTAL_SUBSET.restUrl +
-            "/content/items/" +
-            itemTemplate.itemId +
-            "/resources",
-          noResourcesResponse
-        )
-        .post(
-          utils.PORTAL_SUBSET.restUrl +
-            "/content/items/" +
-            itemTemplate.itemId +
-            "/info/metadata/metadata.xml",
-          mockItems.get400Failure()
-        )
-        .post(
-          utils.PORTAL_SUBSET.restUrl +
-            "/content/users/" +
-            MOCK_USER_SESSION.username +
-            "/items/" +
-            solutionItemId +
-            "/addResources",
-          mockItems.get400Failure()
-        );
-
-      staticRelatedItemsMocks.fetchMockRelatedItems(
-        "frm1234567890",
-        mockItems.get500Failure()
-      );
-
-      simpleTypes
-        .convertItemToTemplate(
-          solutionItemId,
-          itemTemplate.item,
-          MOCK_USER_SESSION,
-          MOCK_USER_SESSION,
-          {}
-        )
-        .then(
-          () => done.fail(),
-          () => done()
-        );
-    });
   });
 
   describe("createItemFromTemplate", () => {

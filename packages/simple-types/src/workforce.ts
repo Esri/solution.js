@@ -22,14 +22,16 @@ import * as common from "@esri/solution-common";
  * @param itemTemplate template for the workforce project item
  * @param destAuthentication Credentials for requests to the destination organization
  * @param srcAuthentication Credentials for requests to source items
+ * @param templateDictionary Hash of key details used for variable replacement
  * @returns templatized itemTemplate
  */
 export function convertItemToTemplate(
   itemTemplate: common.IItemTemplate,
   destAuthentication: common.UserSession,
-  srcAuthentication: common.UserSession
+  srcAuthentication: common.UserSession,
+  templateDictionary: any
 ): Promise<common.IItemTemplate> {
-  return common.convertWorkforceItemToTemplate(itemTemplate, srcAuthentication);
+  return common.convertWorkforceItemToTemplate(itemTemplate, srcAuthentication, templateDictionary);
 }
 
 /**

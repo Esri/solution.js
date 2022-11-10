@@ -416,27 +416,37 @@ export function _reuseDeployedItems(
 ): Promise<any> {
   return new Promise((resolve, reject) => {
     if (reuseItems) {
-      const existingItemsByKeyword: Array<Promise<
-        any
-      >> = _findExistingItemByKeyword(
+      const findItemsByKeywordResponse: common.IFindExistingItemsResponse = _findExistingItemByKeyword(
         templates,
         templateDictionary,
         authentication
       );
 
+      const existingItemsByKeyword: Array<Promise<
+        any
+      >> = findItemsByKeywordResponse.existingItemsDefs;
+      const existingItemInfos: common.IFindExistingItemInfos[] = findItemsByKeywordResponse.existingItemInfos;
+
       Promise.all(existingItemsByKeyword).then(
         (existingItemsByKeywordResponse: any) => {
-          const existingItemsByTag = _handleExistingItems(
+          const findExistingItemsByTag = _handleExistingItems(
             existingItemsByKeywordResponse,
+            existingItemInfos,
             templateDictionary,
             authentication,
             true
           );
 
+          const existingItemsByTag: Array<Promise<
+            any
+          >> = findExistingItemsByTag.existingItemsDefs;
+          const existingItemInfosByTag: common.IFindExistingItemInfos[] = findExistingItemsByTag.existingItemInfos;
+
           Promise.all(existingItemsByTag).then(
             existingItemsByTagResponse => {
               _handleExistingItems(
                 existingItemsByTagResponse,
+                existingItemInfosByTag,
                 templateDictionary,
                 authentication,
                 false
@@ -819,23 +829,27 @@ export function _updateTemplateDictionaryForError(
  * Optionally search by tags and then update the templateDictionary based on the search results
  *
  * @param existingItemsResponse response object from search by typeKeyword and type
+ * @param existingItemIds list of the template ids we have queried
  * @param templateDictionary Hash of facts: org URL, adlib replacements, deferreds for dependencies
  * @param authentication Credentials for the request
  * @param addTagQuery Boolean to indicate if a search by tag should happen
- * @returns A promise that will resolve with an array of results
+ * @returns IFindExistingItemsResponse object with  promise that will resolve with an array of results
+ * and an array of item ids
  * @private
  */
 export function _handleExistingItems(
   existingItemsResponse: any[],
+  existingItemInfos: common.IFindExistingItemInfos[],
   templateDictionary: any,
   authentication: common.UserSession,
   addTagQuery: boolean
-): Array<Promise<any>> {
+): common.IFindExistingItemsResponse {
   // if items are not found by type keyword search by tag
   const existingItemsByTag: Array<Promise<any>> = [Promise.resolve(null)];
+  const existingItemInfosByTag: common.IFindExistingItemInfos[] = [undefined];
   /* istanbul ignore else */
   if (existingItemsResponse && Array.isArray(existingItemsResponse)) {
-    existingItemsResponse.forEach(existingItem => {
+    existingItemsResponse.forEach((existingItem, i) => {
       /* istanbul ignore else */
       if (Array.isArray(existingItem?.results)) {
         let result: any;
@@ -847,20 +861,17 @@ export function _handleExistingItems(
             a.created > b.created ? a : b
           );
         } else {
-          if (addTagQuery && existingItem.query) {
-            const tagQuery: string = existingItem.query.replace(
-              "typekeywords",
-              "tags"
-            );
+          if (addTagQuery && existingItemInfos[i]) {
+            const itemInfo: common.IFindExistingItemInfos = existingItemInfos[i];
+            const tagQuery: string = `tags:source-${itemInfo.itemId} type:${itemInfo.type} owner:${templateDictionary.user.username}`;
             existingItemsByTag.push(
               _findExistingItem(tagQuery, authentication)
             );
+            existingItemInfosByTag.push(existingItemInfos[i]);
           }
         }
         if (result) {
-          const sourceId: any = existingItem.query
-            ? existingItem.query.match(/[0-9A-F]{32}/i)[0]
-            : existingItem.sourceId;
+          const sourceId: any = existingItemInfos[i].itemId;
           /* istanbul ignore else */
           if (sourceId) {
             _updateTemplateDictionaryById(
@@ -874,7 +885,10 @@ export function _handleExistingItems(
       }
     });
   }
-  return existingItemsByTag;
+  return {
+    existingItemsDefs: existingItemsByTag,
+    existingItemInfos: existingItemInfosByTag
+  };
 }
 
 //???
@@ -901,17 +915,20 @@ export function _updateTemplateDictionaryById(
 /**
  * Search items based on user query
  *
- * @param query Query string to use
+ * @param templates Templates to examine
+ * @param templateDictionary Hash of facts: org URL, adlib replacements, deferreds for dependencies
  * @param authentication Credentials for the request
- * @returns A promise that will resolve with an array of results
+ * @returns IFindExistingItemsResponse object with  promise that will resolve with an array of results
+ * and an array of item ids
  * @private
  */
 export function _findExistingItemByKeyword(
   templates: common.IItemTemplate[],
   templateDictionary: any,
   authentication: common.UserSession
-): Array<Promise<any>> {
+): common.IFindExistingItemsResponse {
   const existingItemsDefs: Array<Promise<any>> = [];
+  const existingItemInfos: any[] = [];
   templates.forEach(template => {
     if (template.item.type === "Group") {
       const userGroups: any = templateDictionary.user?.groups;
@@ -937,8 +954,15 @@ export function _findExistingItemByKeyword(
         )
       );
     }
+    existingItemInfos.push({
+      itemId: template.itemId,
+      type: template.item.type
+    });
   });
-  return existingItemsDefs;
+  return {
+    existingItemsDefs,
+    existingItemInfos
+  };
 }
 
 /**

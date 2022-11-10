@@ -1,0 +1,27 @@
+name: Linting
+
+on:
+  push:
+    branches: [ develop, master ]
+  pull_request:
+    # The branches below must be a subset of the branches above
+    branches: [ develop, master ]
+
+jobs:
+  steps:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v1
+
+      - uses: actions/setup-node@v1
+        with:
+          node-version: "16.x"
+
+      - name: Install Node.js dependencies
+        run: npm ci --ignore-scripts
+
+      - name: Lint
+        shell: bash
+        run: |
+          npx eslint . --ext .ts
+

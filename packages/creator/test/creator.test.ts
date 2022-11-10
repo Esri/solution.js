@@ -115,7 +115,7 @@ describe("Module `creator`", () => {
         );
     });
 
-    it("createSolution fails to get item in group", done => {
+    it("createSolution skips missing item from group", done => {
       const solutionGroupId: string = "grp1234567890";
       const authentication: common.UserSession = MOCK_USER_SESSION;
       const expectedSolutionId = "sln1234567890";
@@ -188,14 +188,14 @@ describe("Module `creator`", () => {
       creator
         .createSolution(solutionGroupId, authentication, authentication)
         .then(
-          () => done.fail(),
-          response => {
-            done();
+          () => done(),
+          () => {
+            done.fail();
           }
         );
     });
 
-    it("createSolution fails to update solution item", done => {
+    it("createSolution skips failure to update solution item", done => {
       const solutionGroupId: string = "grp1234567890";
       const authentication: common.UserSession = MOCK_USER_SESSION;
       const expectedSolutionId = "sln1234567890";
@@ -267,9 +267,9 @@ describe("Module `creator`", () => {
       creator
         .createSolution(solutionGroupId, authentication, authentication)
         .then(
-          () => done.fail(),
-          response => {
-            done();
+          () => done(),
+          () => {
+            done.fail();
           }
         );
     });
@@ -1118,6 +1118,10 @@ describe("Module `creator`", () => {
       };
 
       fetchMock
+        .get(
+          utils.PORTAL_SUBSET.restUrl + "/portals/self?f=json&token=fake-token",
+          utils.getPortalsSelfResponse()
+        )
         .post(
           utils.PORTAL_SUBSET.restUrl + "/content/users/casey/addItem",
           utils.getSuccessResponse({ id: solutionId, folder: null })
@@ -1151,9 +1155,9 @@ describe("Module `creator`", () => {
           MOCK_USER_SESSION
         )
         .then(
-          () => done.fail(),
+          () => done(),
           response => {
-            done();
+            done.fail();
           }
         );
     });

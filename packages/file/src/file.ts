@@ -95,26 +95,22 @@ export function convertItemToTemplate(
               ? common.SolutionResourceType.data
               : common.SolutionResourceType.fakezip)
         );
-        common
-          .addResourceFromBlob(
-            resource.blob,
-            solutionItemId,
-            storageName.folder,
-            storageName.filename,
-            destAuthentication
-          )
-          .then(
-            () => {
-              itemTemplate.resources.push(
-                storageName.folder + "/" + storageName.filename
-              );
-              resolve(itemTemplate);
-            },
-            error => {
-              itemTemplate.properties["error"] = JSON.stringify(error);
-              resolve(itemTemplate);
-            }
-          );
+
+        // Add the data file to the template so that it can be uploaded with the other resources in the solution
+        const dataFile: common.ISourceFile = {
+          itemId: itemTemplate.itemId,
+          file: resource.blob as File,
+          folder: storageName.folder,
+          filename: storageName.filename
+        }
+        itemTemplate.dataFile = dataFile;
+
+        // Update the template's resources
+        itemTemplate.resources.push(
+          storageName.folder + "/" + storageName.filename
+        );
+
+        resolve(itemTemplate);
       } else {
         resolve(itemTemplate);
       }

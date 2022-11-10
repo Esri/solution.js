@@ -34,6 +34,7 @@ import {
   SItemProgressStatus,
   copyFilesToStorageItem,
   postProcessWorkforceTemplates,
+  UNREACHABLE,
   updateItem,
   UserSession
 } from "@esri/solution-common";
@@ -42,6 +43,10 @@ import {
   createItemTemplate,
   postProcessFieldReferences
 } from "../createItemTemplate";
+import {
+  getDataFilesFromTemplates,
+  removeDataFilesFromTemplates
+} from "./template";
 
 /**
  * Adds a list of AGO item ids to a solution item.
@@ -177,6 +182,9 @@ export function addContentToSolution(
               [] as ISourceFile[]
             );
 
+            // Extract resource data files from templates
+            resourceItemFiles = resourceItemFiles.concat(getDataFilesFromTemplates(solutionTemplates));
+
             // test for and update group dependencies and other post-processing
             solutionTemplates = _postProcessGroupDependencies(
               solutionTemplates
@@ -187,7 +195,7 @@ export function addContentToSolution(
 
             // Filter out any resources from items that have been removed from the templates, such as
             // Living Atlas layers
-            solutionTemplates = _postProcessIgnoredItems(solutionTemplates);
+            solutionTemplates = _postProcessIgnoredItems(solutionTemplates, templateDictionary);
             const templateIds = solutionTemplates.map(
               template => template.itemId
             );
@@ -204,6 +212,9 @@ export function addContentToSolution(
               solutionItemId,
               destAuthentication
             ).then(() => {
+              // Remove data files from templates--no longer needed
+              removeDataFilesFromTemplates(solutionTemplates);
+
               _templatizeSolutionIds(solutionTemplates);
               _simplifyUrlsInItemDescriptions(solutionTemplates);
               _replaceDictionaryItemsInObject(
@@ -379,17 +390,22 @@ export function _postProcessGroupDependencies(
  * Clean up any references to items with invalid designations in the other templates.
  *
  * @param templates The array of templates to evaluate
+ * @param templateDictionary Hash of key details used for variable replacement
  * @returns Updated version of the templates
  * @private
  */
 export function _postProcessIgnoredItems(
-  templates: IItemTemplate[]
+  templates: IItemTemplate[],
+  templateDictionary: any
 ): IItemTemplate[] {
   // replace in template
   const updateDictionary: any = templates.reduce((result, template) => {
-    return template.properties.hasInvalidDesignations
-      ? Object.assign(result, template.data)
-      : result;
+    const invalidDes = template.properties.hasInvalidDesignations;
+    const unreachableVal = getProp(templateDictionary, `${UNREACHABLE}.${template.itemId}`);
+    if (invalidDes && unreachableVal && Object.keys(template.data).length < 1) {
+      template.data[template.itemId] = unreachableVal;
+    }
+    return invalidDes ? Object.assign(result, template.data) : result;
   }, {});
   Object.keys(updateDictionary).forEach(k => {
     removeTemplate(templates, k);

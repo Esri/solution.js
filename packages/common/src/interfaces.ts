@@ -57,6 +57,7 @@ import JSZip from "jszip";
 
 export const SolutionTemplateFormatVersion = 1;
 export const DeployedSolutionFormatVersion = 1;
+export const UNREACHABLE = "unreachable";
 
 //#region Enums ------------------------------------------------------------------------------------------------------//
 
@@ -702,6 +703,22 @@ export interface IFileMimeTyped {
   filename: string;
   mimeType: string;
   blob: Blob;
+}
+
+/**
+ * Existing Items promises, associated item Ids and types
+ */
+export interface IFindExistingItemsResponse {
+  existingItemsDefs: Array<Promise<any>>;
+  existingItemInfos: IFindExistingItemInfos[];
+}
+
+/**
+ * Item Id and item type
+ */
+export interface IFindExistingItemInfos {
+  itemId: string;
+  type: string;
 }
 
 /**

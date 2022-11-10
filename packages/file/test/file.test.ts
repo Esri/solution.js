@@ -217,48 +217,6 @@ describe("Module `file`: manages the creation and deployment of item types that 
         );
     });
 
-    it("handles Code Attachment where save fails", done => {
-      const solutionItemId: string = "sln1234567890";
-      const agolItem = mockItems.getAGOLItem("Code Attachment");
-      agolItem.thumbnail = null;
-
-      fetchMock
-        .post(
-          utils.PORTAL_SUBSET.restUrl + "/content/items/cod1234567890/data",
-          utils.getSampleZipFile("myZipFile.zip")
-        )
-        .post(
-          utils.PORTAL_SUBSET.restUrl +
-            "/content/items/cod1234567890/resources",
-          mockItems.get500Failure()
-        )
-        .post(
-          utils.PORTAL_SUBSET.restUrl +
-            "/content/items/cod1234567890/info/metadata/metadata.xml",
-          mockItems.get400Failure()
-        )
-        .post(
-          utils.PORTAL_SUBSET.restUrl +
-            "/content/users/casey/items/sln1234567890/addResources",
-          mockItems.get400Failure()
-        );
-
-      file
-        .convertItemToTemplate(solutionItemId, agolItem, MOCK_USER_SESSION, MOCK_USER_SESSION)
-        .then(
-          response => {
-            expect(response.itemId).toEqual("cod1234567890");
-            expect(response.type).toEqual("Code Attachment");
-            expect(response.resources).toEqual([]);
-            expect(
-              JSON.parse(response.properties.error).originalMessage
-            ).toEqual("Item does not exist or is inaccessible.");
-            done();
-          },
-          () => done.fail()
-        );
-    });
-
     it("handles GeoJson with inaccessible bad JSON data", done => {
       const solutionItemId: string = "sln1234567890";
       const agolItem = mockItems.getAGOLItem("GeoJson");

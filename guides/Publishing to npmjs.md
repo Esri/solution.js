@@ -1,17 +1,16 @@
-## Publishing solution.js to npmjs
+## Publishing solution.js to npmjs & GitHub
 
 #### Checklist
 
 * \[ \] Stop automatic recompilation software
 * \[ \] Switch to `master` branch
 * \[ \] Merge in--but don't commit--the current `release/X.X.X` branch
-* \[ \] Remove node_modules and run `npm install`
 * \[ \] Run `npm run clean` in a bash shell
 * \[ \] Run `npm run release:prepare1` in a bash shell
 * \[ \] Run `npm run release:prepare2` in a Windows shell and pick new version number
 * \[ \] Run `npm run release:review`
 * \[ \] Run `npm run release:publish-git` in a bash shell
-* \[ \] Run `npm run release:publish-npm` in a Windows shell
+* \[ \] Run `npm run release:publish-npm` in a Windows shell (if the rebuild appears to be stalled while building `@esri/solution-deployer`, try Enter to see if you'll get a complaint about the need for the npm 2-factor code; for some reason, the prompt for the code hasn't been appearing lately)
 * \[ \] Check that publishing worked using `check_npm_package_versions.html` in a browser
 * \[ \] Push `master` branch to GitHub
 * \[ \] Merge `master` into the `develop` branch and push it to GitHub
@@ -35,13 +34,9 @@
 
 2. Create a branch off of `develop` called `release/X.X.X`, where "X.X.X" is the version to be created. (For hotfixes off of an existing release, one works in a branch `hotfix/X.X.Y` off of the major version to be patched.)
 
-3. Remove the node_modules directories.
+3. Launch a Windows command-prompt window and a git-bash window (e.g., C:\Program Files\Git\git-bash.exe on a Windows computer or using the "Git bash" icon in the Git Extensions program). The current state of the npm tools appear to require us to use both of these windows to create a build: the command prompt window for selecting the build version and for entering the OTP for pushing the build to npm; the git-bash window for pre-publish cleaning and for running a useful script. When a step does not specify the window to use, either is OK.
 
-4. Launch a Windows command-prompt window and a git-bash window (e.g., C:\Program Files\Git\git-bash.exe on a Windows computer or using the "Git bash" icon in the Git Extensions program). The current state of the npm tools appear to require us to use both of these windows to create a build: the command prompt window for selecting the build version and for entering the OTP for pushing the build to npm; the git-bash window for pre-publish cleaning and for running a useful script. When a step does not specify the window to use, either is OK.
-
-5. From the repo's root folder install a fresh copy of the node modules using npm install.
-
-5. Log in to npmjs.
+4. Log in to npmjs.
 *Note: the computer remembers for a long time that you're logged in; you can check that you are logged in by typing `npm whoami`*
 ```
 npm login
@@ -52,7 +47,7 @@ Enter one-time password from your authenticator app: <e.g., from Okta Verify>
 Logged in as <npm username> on https://registry.npmjs.org/
 ```
 
-7. Ensure you have access to the zip command.
+5. Ensure you have access to the zip command.
 ```
 zip -?
 Copyright (c) 1990-2008 Info-ZIP...
@@ -68,12 +63,12 @@ Copyright (c) 1990-2008 Info-ZIP...
  Copy\paste the bzip2.dll from .\bin to your "mingw64" bin folder
  ```
 
-8. Prepare the release.
+6. Prepare the release.
   * `release:prepare1` (git-bash) removes build products and creates a fresh build
   * `release:prepare2` (Windows) gives you the opportunity to select the new version number. The default choice increments the patch version (i.e., the third number in the [*major.minor.patch* version numbering scheme](https://semver.org/)). If a different version is desired, use the keyboard arrow keys to select the desired version. There doesn't seem to be a way to type in a custom version.
   * `npm run release:review` shows the list of changes in the release
 
-9. Publish the release.
+7. Publish the release.
   * `npm run release:publish-git` (git-bash) commits the release, bundles it into a zip file, and sends it to GitHub
   * `npm run release:publish-npm` (Windows) sends the release's packages to npm. Once the command is ready to send the packages to npm, you should see "? This operation requires a one-time password:". The "password" is an Okta Verify two-factor code. Because codes expire after around 30 seconds, use the freshest possible code: pick it right after it updates in the two-factor app.
 
@@ -81,13 +76,13 @@ Copyright (c) 1990-2008 Info-ZIP...
 
  It's OK to push the version to GitHub even if not all packages appear to have been published. "Publishing" is sending them to npm and is a separate process that we can patch below.
 
-10. Check that publishing worked using the repository's web page `check_npm_package_versions.html`; sometimes, only some of the packages show up in npm. It may take ten or more minutes for a general request such as `https://unpkg.com/@esri/solution-simple-types/dist/umd/simple-types.umd.js` to 302 resolve to the latest version.
+8. Check that publishing worked using the repository's web page `check_npm_package_versions.html`; sometimes, only some of the packages show up in npm. It may take ten or more minutes for a general request such as `https://unpkg.com/@esri/solution-simple-types/dist/umd/simple-types.umd.js` to 302 resolve to the latest version.
 
-11. Merge `release/X.X.X` into `develop` and push the latter to GitHub.
+9. Merge `release/X.X.X` into `develop` and push the latter to GitHub.
 
-12. Create as release from the build's tag in GitHub (the push to GitHub task only creates a tagged entry).
+10. Create as release from the build's tag in GitHub (the push to GitHub task only creates a tagged entry).
 
-13. Update the repository's API documentation (see "Publishing API documentation to GitHub" section below).
+11. Update the repository's API documentation (see "Publishing API documentation to GitHub" section below).
 
 ---
 

@@ -24,6 +24,7 @@ import {
   cacheContingentValues,
   cacheFieldInfos,
   _cacheFieldInfo,
+  cacheLayerInfo,
   cachePopupInfos,
   _cachePopupInfo,
   updateTemplate,
@@ -233,6 +234,7 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
         properties: {
           service: {
             serviceItemId: "ab766cba0dd44ec080420acc10990282",
+            size: 1009,
             fullExtent: {},
             initialExtent: {},
             layers: [
@@ -669,6 +671,92 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
       };
       fieldInfos = cacheContingentValues(id, fieldInfos, itemTemplate);
       expect(fieldInfos[id].contingentValues).toEqual(itemTemplate.properties.contingentValues[id]);
+    });
+  });
+
+  describe("cacheLayerInfo", () => {
+    it("should skip id layer id is missing", () => {
+      const itemId = "dd59d3b4a8c44100914458dd722f054f";
+      const url = "https://myserver.arcgis.com/abc123/arcgis/rest/services/NOAA_METAR_current_wind_speed_direction_v1/FeatureServer";
+      const templateDictionary = {};
+
+      cacheLayerInfo("", itemId, url, templateDictionary);
+      expect(templateDictionary).toEqual({});
+    });
+
+    it("should not overwrite with missing url", () => {
+      const layerId = "0";
+      const itemId = "dd59d3b4a8c44100914458dd722f054f";
+      const url = "https://myserver.arcgis.com/abc123/arcgis/rest/services/NOAA_METAR_current_wind_speed_direction_v1/FeatureServer/0";
+      const templateDictionary = {
+        unreachable: {
+          dd59d3b4a8c44100914458dd722f054f: {
+            itemId: "dd59d3b4a8c44100914458dd722f054f",
+            layer0: {
+              itemId,
+              layerId,
+              url
+            }
+          }
+        }
+      };
+      const _templateDictionary = {
+        unreachable: {
+          dd59d3b4a8c44100914458dd722f054f: {
+            itemId: "dd59d3b4a8c44100914458dd722f054f",
+            layer0: {
+              itemId,
+              layerId,
+              url
+            }
+          }
+        }
+      };
+
+      cacheLayerInfo("0", itemId, "", templateDictionary);
+      expect(templateDictionary).toEqual(_templateDictionary);
+    });
+
+    it("should not overwrite existing unreachable", () => {
+      const layerId = "0";
+      const itemId = "dd59d3b4a8c44100914458dd722f054f";
+      const url = "https://myserver.arcgis.com/abc123/arcgis/rest/services/NOAA_METAR_current_wind_speed_direction_v1/FeatureServer/0";
+      const url2 = "https://myserver.arcgis.com/abc123/arcgis/rest/services/NOAA_METAR_current_wind_speed_direction_v2/FeatureServer/0";
+      const templateDictionary = {
+        unreachable: {
+          cc59d3b4a8c44100914458dd722f054f: {
+            itemId: "cc59d3b4a8c44100914458dd722f054f",
+            layer0: {
+              itemId,
+              layerId,
+              url2
+            }
+          }
+        }
+      };
+      const _templateDictionary = {
+        unreachable: {
+          dd59d3b4a8c44100914458dd722f054f: {
+            itemId: "dd59d3b4a8c44100914458dd722f054f",
+            layer0: {
+              itemId,
+              layerId,
+              url
+            }
+          },
+          cc59d3b4a8c44100914458dd722f054f: {
+            itemId: "cc59d3b4a8c44100914458dd722f054f",
+            layer0: {
+              itemId,
+              layerId,
+              url2
+            }
+          }
+        }
+      };
+
+      cacheLayerInfo("0", itemId, url, templateDictionary);
+      expect(templateDictionary).toEqual(_templateDictionary);
     });
   });
 
@@ -3793,7 +3881,7 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
         "stringDicts": [{
           "domain": "CommonName",
           "entries": ["Norway Maple"]
-        }], 
+        }],
         "contingentValuesDefinition": {
           "layerID": 0,
           "layerName": "Trees",
@@ -3809,7 +3897,7 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
             }],
             "domains": { "commonname": "CommonName", "genus": "Genus", "species": "Species" },
             "contingentValues": [{
-              "id": 1, "types": [3, 3, 3], 
+              "id": 1, "types": [3, 3, 3],
               "values": [0, 0, 0]
             }]
           }, {
@@ -3856,7 +3944,7 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
             }],
             "domains": { "commonname": "CommonName", "genus": "Genus", "species": "Species" },
             "contingentValues": [{
-              "id": 1, "types": [3, 3, 3], 
+              "id": 1, "types": [3, 3, 3],
               "values": [0, 0, 0]
             }]
           }, {
@@ -6499,7 +6587,7 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
       expect(layerChunks).toEqual([startOptions]);
     });
 
-    
+
     it("will create new tables array when isMultiServicesView is true", () => {
       const startOptions: any = {
         layers: [],

@@ -1,96 +1,16 @@
 {
   "name": "@esri/solution.js",
-  "version": "1.5.0",
+  "version": "1.6.0",
   "description": "A library running in Node.js and modern browsers for transferring ArcGIS Online items from one organization to another.",
-  "devDependencies": {
-    "@chiragrupani/karma-chromium-edge-launcher": "^2.2.2",
-    "@khanacademy/tota11y": "^0.2.0",
-    "@octokit/rest": "^19.0.4",
-    "@rollup/plugin-commonjs": "^21.1.0",
-    "@rollup/plugin-json": "^4.1.0",
-    "@rollup/plugin-node-resolve": "^14.1.0",
-    "@semantic-release/commit-analyzer": "^9.0.2",
-    "@types/fetch-mock": "^7.3.5",
-    "@types/jasmine": "^4.3.0",
-    "@types/node": "^18.7.18",
-    "@types/sinon": "^10.0.13",
-    "@typescript-eslint/eslint-plugin": "^5.35.1",
-    "@typescript-eslint/eslint-plugin-tslint": "^5.35.1",
-    "@typescript-eslint/parser": "^5.35.1",
-    "acorn": "^8.8.0",
-    "acorn-walk": "^8.2.0",
-    "changelog-parser": "^2.8.1",
-    "cheerio": "^1.0.0-rc.12",
-    "codecov": "^3.8.2",
-    "concurrently": "^7.3.0",
-    "core-js": "^3.25.2",
-    "coveralls": "^3.1.1",
-    "cpx": "^1.5.0",
-    "cross-spawn": "^7.0.3",
-    "date-fns": "^2.29.2",
-    "es6-promise": "^4.2.8",
-    "eslint": "^8.23.0",
-    "eslint-config-prettier": "^8.5.0",
-    "eslint-plugin-import": "^2.26.0",
-    "eslint-plugin-jsdoc": "^39.3.6",
-    "eslint-plugin-prefer-arrow": "^1.2.3",
-    "event-stream": "^4.0.1",
-    "fetch-mock": "^7.7.3",
-    "gh-pages": "^4.0.0",
-    "gh-release": "^6.0.4",
-    "handlebars": "^4.7.7",
-    "inspect-process": "^0.5.0",
-    "isomorphic-fetch": "^3.0.0",
-    "isomorphic-form-data": "^2.0.0",
-    "jasmine": "^4.3.0",
-    "jasmine-core": "^4.4.0",
-    "karma": "^6.4.0",
-    "karma-chrome-launcher": "^3.1.1",
-    "karma-coverage": "^2.2.0",
-    "karma-firefox-launcher": "^2.1.2",
-    "karma-jasmine": "^5.1.0",
-    "karma-jasmine-diff-reporter": "^3.0.0",
-    "karma-safari-launcher": "^1.0.0",
-    "karma-spec-reporter": "0.0.34",
-    "karma-typescript": "^5.5.3",
-    "karma-typescript-es6-transform": "^5.5.3",
-    "lerna": "^5.5.1",
-    "lint-staged": "^13.0.3",
-    "marked": "^4.0.19",
-    "minimatch": "^5.1.0",
-    "prettier": "^2.7.1",
-    "regenerator-runtime": "^0.13.9",
-    "resolve": "^1.22.1",
-    "rollup": "2.79.0",
-    "rollup-plugin-filesize": "^9.1.2",
-    "rollup-plugin-terser": "^7.0.2",
-    "rollup-plugin-typescript2": "^0.34.0",
-    "semantic-release": "^19.0.5",
-    "shelljs": "^0.8.5",
-    "sinon": "^14.0.0",
-    "slug": "^8.0.0",
-    "sri-toolbox": "0.2.0",
-    "ts-node": "^10.9.1",
-    "typedoc": "^0.23.15",
-    "typescript": "^4.8.3",
-    "uuid": "^9.0.0"
+  "author": "Esri",
+  "license": "Apache-2.0",
+  "homepage": "https://github.com/Esri/solution.js#readme",
+  "bugs": {
+    "url": "https://github.com/Esri/solution.js/issues"
   },
-  "dependencies": {
-    "rollup-plugin-node-builtins": "^2.1.2",
-    "rollup-plugin-node-globals": "^1.4.0",
-    "tslib": "1.14.1"
-  },
-  "lint-staged": {
-    "packages/**/*.ts": [
-      "prettier --write",
-      "eslint . --ext .ts --fix",
-      "git add"
-    ]
-  },
-  "prettier": {
-    "parser": "typescript",
-    "tabWidth": 2,
-    "useTabs": false
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Esri/solution.js.git"
   },
   "scripts": {
     "start:deployer": "lerna run build && http-server ./demos/deploySolution",
@@ -137,9 +57,96 @@
   "publishConfig": {
     "access": "public"
   },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/Esri/solution.js.git"
+  "devDependencies": {
+    "@chiragrupani/karma-chromium-edge-launcher": "^2.2.2",
+    "@khanacademy/tota11y": "^0.2.0",
+    "@octokit/rest": "^19.0.4",
+    "@rollup/plugin-commonjs": "^23.0.2",
+    "@rollup/plugin-json": "^5.0.1",
+    "@rollup/plugin-node-resolve": "^15.0.1",
+    "@semantic-release/commit-analyzer": "^9.0.2",
+    "@types/fetch-mock": "^7.3.5",
+    "@types/jasmine": "^4.3.0",
+    "@types/node": "^18.11.9",
+    "@types/sinon": "^10.0.13",
+    "@typescript-eslint/eslint-plugin": "^5.35.1",
+    "@typescript-eslint/eslint-plugin-tslint": "^5.41.0",
+    "@typescript-eslint/parser": "^5.40.1",
+    "acorn": "^8.8.1",
+    "acorn-walk": "^8.2.0",
+    "adlib": "^3.0.8",
+    "changelog-parser": "^2.8.1",
+    "cheerio": "^1.0.0-rc.12",
+    "codecov": "^3.8.2",
+    "concurrently": "^7.5.0",
+    "core-js": "^3.25.5",
+    "coveralls": "^3.1.1",
+    "cpx": "^1.5.0",
+    "cross-spawn": "^7.0.3",
+    "date-fns": "^2.29.2",
+    "es6-promise": "^4.2.8",
+    "eslint": "^8.27.0",
+    "eslint-config-prettier": "^8.5.0",
+    "eslint-plugin-import": "^2.26.0",
+    "eslint-plugin-jsdoc": "^39.4.0",
+    "eslint-plugin-prefer-arrow": "^1.2.3",
+    "event-stream": "^4.0.1",
+    "fetch-mock": "^7.7.3",
+    "gh-pages": "^4.0.0",
+    "gh-release": "^6.0.4",
+    "handlebars": "^4.7.7",
+    "inspect-process": "^0.5.0",
+    "isomorphic-fetch": "^3.0.0",
+    "isomorphic-form-data": "^2.0.0",
+    "jasmine": "^4.3.0",
+    "jasmine-core": "^4.5.0",
+    "karma": "^6.4.1",
+    "karma-chrome-launcher": "^3.1.1",
+    "karma-coverage": "^2.2.0",
+    "karma-firefox-launcher": "^2.1.2",
+    "karma-jasmine": "^5.1.0",
+    "karma-jasmine-diff-reporter": "^3.0.0",
+    "karma-safari-launcher": "^1.0.0",
+    "karma-spec-reporter": "0.0.34",
+    "karma-typescript": "^5.5.3",
+    "karma-typescript-es6-transform": "^5.5.3",
+    "lerna": "^5.6.2",
+    "lint-staged": "^13.0.3",
+    "marked": "^4.0.19",
+    "minimatch": "^5.1.0",
+    "prettier": "^2.7.1",
+    "regenerator-runtime": "^0.13.10",
+    "resolve": "^1.22.1",
+    "rollup": "2.79.0",
+    "rollup-plugin-filesize": "^9.1.2",
+    "rollup-plugin-terser": "^7.0.2",
+    "rollup-plugin-typescript2": "^0.34.1",
+    "semantic-release": "^19.0.5",
+    "shelljs": "^0.8.5",
+    "sinon": "^14.0.0",
+    "slug": "^8.0.0",
+    "sri-toolbox": "0.2.0",
+    "ts-node": "^10.9.1",
+    "typedoc": "^0.23.16",
+    "typescript": "^4.8.4",
+    "uuid": "^9.0.0"
+  },
+  "dependencies": {
+    "rollup-plugin-node-builtins": "^2.1.2",
+    "rollup-plugin-node-globals": "^1.4.0",
+    "tslib": "1.14.1"
+  },
+  "lint-staged": {
+    "packages/**/*.ts": [
+      "prettier --write",
+      "eslint . --ext .ts --fix",
+      "git add"
+    ]
+  },
+  "prettier": {
+    "parser": "typescript",
+    "tabWidth": 2,
+    "useTabs": false
   },
   "contributors": [
     {
@@ -161,11 +168,5 @@
     {
       "name": "John Gravois"
     }
-  ],
-  "author": "Esri",
-  "license": "Apache-2.0",
-  "bugs": {
-    "url": "https://github.com/Esri/solution.js/issues"
-  },
-  "homepage": "https://github.com/Esri/solution.js#readme"
+  ]
 }
