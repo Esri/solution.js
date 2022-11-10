@@ -108,17 +108,15 @@ describe("Module `deploySolutionItems`", () => {
             id +
             "%20type%3AWeb%20Mapping%20Application%20owner%3Acasey&token=fake-token",
           {
-            query: "typekeywords='source-" + id + "'",
             results: []
           }
         )
         .get(
           utils.PORTAL_SUBSET.restUrl +
-            "/search?f=json&q=tags%3D%27source-" +
+            "/search?f=json&q=tags%3Asource-" +
             id +
-            "%27&token=fake-token",
+            "%20type%3AWeb%20Mapping%20Application%20owner%3Acasey&token=fake-token",
           {
-            query: "typekeywords='source-" + id + "'",
             results: []
           }
         )
@@ -308,17 +306,15 @@ describe("Module `deploySolutionItems`", () => {
             id +
             "%20type%3AWeb%20Mapping%20Application%20owner%3Acasey&token=fake-token",
           {
-            query: "typekeywords='source-" + id + "'",
             results: []
           }
         )
         .get(
           utils.PORTAL_SUBSET.restUrl +
-            "/search?f=json&q=tags%3D%27source-" +
+            "/search?f=json&q=tags%3Asource-" +
             id +
-            "%27&token=fake-token",
+            "%20type%3AWeb%20Mapping%20Application%20owner%3Acasey&token=fake-token",
           {
-            query: "tags='source-" + id + "'",
             results: [
               {
                 id: foundItemID,
@@ -818,15 +814,14 @@ describe("Module `deploySolutionItems`", () => {
             id +
             "%20type%3AWeb%20Mapping%20Application%20owner%3Acasey&token=fake-token",
           {
-            query: "typekeywords='source-" + id + "'",
             results: []
           }
         )
         .get(
           utils.PORTAL_SUBSET.restUrl +
-            "/search?f=json&q=tags%3D%27source-" +
+            "/search?f=json&q=tags%3Asource-" +
             id +
-            "%27&token=fake-token",
+            "%20type%3AWeb%20Mapping%20Application%20owner%3Acasey&token=fake-token",
           mockItems.get400Failure()
         );
 
@@ -905,17 +900,15 @@ describe("Module `deploySolutionItems`", () => {
             id +
             "%20type%3AWeb%20Mapping%20Application%20owner%3Acasey&token=fake-token",
           {
-            query: "typekeywords='source-" + id + "'",
             results: []
           }
         )
         .get(
           utils.PORTAL_SUBSET.restUrl +
-            "/search?f=json&q=tags%3D%27source-" +
+            "/search?f=json&q=tags%3Asource-" +
             id +
-            "%27&token=fake-token",
+            "%20type%3AWeb%20Mapping%20Application%20owner%3Acasey&token=fake-token",
           {
-            query: "typekeywords='source-" + id + "'",
             results: []
           }
         )
@@ -1922,7 +1915,8 @@ describe("Module `deploySolutionItems`", () => {
         {},
         MOCK_USER_SESSION
       );
-      expect(actual.length).toEqual(0);
+      expect(actual.existingItemsDefs.length).toEqual(0);
+      expect(actual.existingItemInfos.length).toEqual(1);
     });
   });
 

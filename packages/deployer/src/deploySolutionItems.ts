@@ -441,13 +441,13 @@ export function _reuseDeployedItems(
           const existingItemsByTag: Array<Promise<
             any
           >> = findExistingItemsByTag.existingItemsDefs;
-          const existingItemIdsByTag: common.IFindExistingItemInfos[] = findExistingItemsByTag.existingItemInfos;
+          const existingItemInfosByTag: common.IFindExistingItemInfos[] = findExistingItemsByTag.existingItemInfos;
 
           Promise.all(existingItemsByTag).then(
             existingItemsByTagResponse => {
               _handleExistingItems(
                 existingItemsByTagResponse,
-                existingItemIdsByTag,
+                existingItemInfosByTag,
                 templateDictionary,
                 authentication,
                 false
@@ -847,7 +847,7 @@ export function _handleExistingItems(
 ): common.IFindExistingItemsResponse {
   // if items are not found by type keyword search by tag
   const existingItemsByTag: Array<Promise<any>> = [Promise.resolve(null)];
-  const existingItemInfosByTag: common.IFindExistingItemInfos[] = [];
+  const existingItemInfosByTag: common.IFindExistingItemInfos[] = [undefined];
   /* istanbul ignore else */
   if (existingItemsResponse && Array.isArray(existingItemsResponse)) {
     existingItemsResponse.forEach((existingItem, i) => {
