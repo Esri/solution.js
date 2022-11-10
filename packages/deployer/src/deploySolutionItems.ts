@@ -21,7 +21,6 @@
  */
 
 import * as common from "@esri/solution-common";
-import { IFindExistingItemsResponse } from "@esri/solution-common";
 import { moduleMap } from "./module-map";
 
 const UNSUPPORTED: common.moduleHandler = null;
@@ -417,7 +416,7 @@ export function _reuseDeployedItems(
 ): Promise<any> {
   return new Promise((resolve, reject) => {
     if (reuseItems) {
-      const findItemsByKeywordResponse: IFindExistingItemsResponse = _findExistingItemByKeyword(
+      const findItemsByKeywordResponse: common.IFindExistingItemsResponse = _findExistingItemByKeyword(
         templates,
         templateDictionary,
         authentication
