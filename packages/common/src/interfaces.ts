@@ -706,6 +706,22 @@ export interface IFileMimeTyped {
 }
 
 /**
+ * Existing Items promises, associated item Ids and types
+ */
+export interface IFindExistingItemsResponse {
+  existingItemsDefs: Array<Promise<any>>;
+  existingItemInfos: IFindExistingItemInfos[];
+}
+
+/**
+ * Item Id and item type
+ */
+export interface IFindExistingItemInfos {
+  itemId: string;
+  type: string;
+}
+
+/**
  * Response from removing a folder.
  */
 export interface IFolderStatusResponse {
