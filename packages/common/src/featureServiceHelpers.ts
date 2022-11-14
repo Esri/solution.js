@@ -1583,9 +1583,12 @@ export function postProcessFields(
 export function _validateViewFieldInfos(fieldInfo: any, item: any): void {
   const fieldInfos = _getViewFieldInfos(fieldInfo);
   item.fields.map((field: any) => {
-    Object.keys(fieldInfos).forEach(fi => {
-      _isViewFieldOverride(field, fieldInfos[fi].names, fieldInfos[fi].vals, fi);
-    });
+    const layerFieldInfo = getProp(fieldInfos, item.id.toString());
+    if (layerFieldInfo) {
+      Object.keys(layerFieldInfo).forEach(fi => {
+        _isViewFieldOverride(field, layerFieldInfo[fi].names, layerFieldInfo[fi].vals, fi);
+      });
+    }
     return field;
   });
 }
@@ -1609,17 +1612,14 @@ export function _getViewFieldInfos(fieldInfo: any): any {
             fieldOverrideKeys.forEach(o_k => {
               /* istanbul ignore else */
               if (field.hasOwnProperty(o_k)) {
+                // need to store names and values relative to the individual sub layer/table
                 const name = String(field.name).toLocaleLowerCase();
+                const names = getProp(fieldInfos, `${_k}.${o_k}.names`) || [];
+                setCreateProp(fieldInfos, `${_k}.${o_k}.names`, [...names, name]);
+
                 const v = field[o_k];
-                if (getProp(fieldInfos, o_k)) {
-                  fieldInfos[o_k].names.push(name);
-                  fieldInfos[o_k].vals.push(v);
-                } else {
-                  fieldInfos[o_k] = {
-                    names: [name],
-                    vals: [v]
-                  };
-                }
+                const vals = getProp(fieldInfos, `${_k}.${o_k}.vals`) || [];
+                setCreateProp(fieldInfos, `${_k}.${o_k}.vals`, [...vals, v]);
               }
             });
           });
