@@ -41,7 +41,7 @@
     "@esri/solution-viewer": "^1.6.0",
     "@esri/solution-web-experience": "^1.6.0",
     "adlib": "3.0.7",
-    "tslib": "1.14.1"
+    "tslib": "2.4.1"
   },
   "scripts": {
     "build": "tsc -p ./tsconfig.json --outDir ./dist && start cmd.exe /q/c \"copy .\\src\\*.min.js .\\dist\"",
