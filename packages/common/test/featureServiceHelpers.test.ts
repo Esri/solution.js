@@ -4625,9 +4625,11 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
         }
       };
       const expected = {
-        alias:{vals:["c123"],names: ["c"]},
-        domain:{vals:[{}],names: ["a"]},
-        editable:{vals:[true, false],names: ["a", "d"]}
+        "0": {
+          alias: { vals: ["c123"], names: ["c"] },
+          domain: { vals: [{}], names: ["a"] },
+          editable: { vals: [true, false], names: ["a", "d"] }
+        }
       };
 
       const actual = _getViewFieldInfos(fieldInfo);
