@@ -1581,6 +1581,7 @@ export function postProcessFields(
  * @private
  */
 export function _validateViewFieldInfos(fieldInfo: any, item: any): void {
+  _clearIsViewFieldOverride(item);
   const fieldInfos = _getViewFieldInfos(fieldInfo);
   item.fields.map((field: any) => {
     const layerFieldInfo = getProp(fieldInfos, item.id.toString());
@@ -1589,6 +1590,27 @@ export function _validateViewFieldInfos(fieldInfo: any, item: any): void {
         _isViewFieldOverride(field, layerFieldInfo[fi].names, layerFieldInfo[fi].vals, fi);
       });
     }
+    return field;
+  });
+}
+
+/**
+ * Clear previous isViewOverride settings
+ * Due to a previous bug isViewOverride was being set on many fields incorrectly.
+ * This function is used to clear the previously set value so we can make the proper determination.
+ *
+ * https://github.com/Esri/solution.js/issues/944
+ *
+ * @param item that stores the view fields
+ *
+ * This function will update the item that is provided
+ * @private
+ */
+export function _clearIsViewFieldOverride(
+  item: any
+): void {
+  item.fields = item.fields.map(field => {
+    deleteProp(field, "isViewOverride");
     return field;
   });
 }
