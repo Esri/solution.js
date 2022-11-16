@@ -51,6 +51,7 @@ import {
   _templatizeAdminLayerInfoFields,
   _getDependantItemId,
   _getViewFieldInfos,
+  _clearIsViewFieldOverride,
   _isViewFieldOverride,
   _templatizeAdminSourceLayerFields,
   _templatizeTopFilter,
@@ -4590,6 +4591,27 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
       const dependencies: interfaces.IDependency[] = [];
       const actual = _getDependantItemId(lookupName, dependencies);
       expect(actual).toEqual("");
+    });
+  });
+
+  describe("_clearIsViewFieldOverride", () => {
+    it("will clear previous isViewOverride", () => {
+      const item = {
+        fields: [{
+          alias: "A",
+          isViewOverride: true
+        }, {
+          alias: "B"
+        }]
+      }
+
+      const expected = [{
+        alias: "A"
+      }, {
+        alias: "B"
+      }];
+      _clearIsViewFieldOverride(item);
+      expect(item.fields).toEqual(expected);
     });
   });
 
