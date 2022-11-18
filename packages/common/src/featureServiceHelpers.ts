@@ -1581,11 +1581,36 @@ export function postProcessFields(
  * @private
  */
 export function _validateViewFieldInfos(fieldInfo: any, item: any): void {
+  _clearIsViewFieldOverride(item);
   const fieldInfos = _getViewFieldInfos(fieldInfo);
   item.fields.map((field: any) => {
-    Object.keys(fieldInfos).forEach(fi => {
-      _isViewFieldOverride(field, fieldInfos[fi].names, fieldInfos[fi].vals, fi);
-    });
+    const layerFieldInfo = getProp(fieldInfos, item.id.toString());
+    if (layerFieldInfo) {
+      Object.keys(layerFieldInfo).forEach(fi => {
+        _isViewFieldOverride(field, layerFieldInfo[fi].names, layerFieldInfo[fi].vals, fi);
+      });
+    }
+    return field;
+  });
+}
+
+/**
+ * Clear previous isViewOverride settings
+ * Due to a previous bug isViewOverride was being set on many fields incorrectly.
+ * This function is used to clear the previously set value so we can make the proper determination.
+ *
+ * https://github.com/Esri/solution.js/issues/944
+ *
+ * @param item that stores the view fields
+ *
+ * This function will update the item that is provided
+ * @private
+ */
+export function _clearIsViewFieldOverride(
+  item: any
+): void {
+  item.fields = item.fields.map(field => {
+    deleteProp(field, "isViewOverride");
     return field;
   });
 }
@@ -1609,17 +1634,14 @@ export function _getViewFieldInfos(fieldInfo: any): any {
             fieldOverrideKeys.forEach(o_k => {
               /* istanbul ignore else */
               if (field.hasOwnProperty(o_k)) {
+                // need to store names and values relative to the individual sub layer/table
                 const name = String(field.name).toLocaleLowerCase();
+                const names = getProp(fieldInfos, `${_k}.${o_k}.names`) || [];
+                setCreateProp(fieldInfos, `${_k}.${o_k}.names`, [...names, name]);
+
                 const v = field[o_k];
-                if (getProp(fieldInfos, o_k)) {
-                  fieldInfos[o_k].names.push(name);
-                  fieldInfos[o_k].vals.push(v);
-                } else {
-                  fieldInfos[o_k] = {
-                    names: [name],
-                    vals: [v]
-                  };
-                }
+                const vals = getProp(fieldInfos, `${_k}.${o_k}.vals`) || [];
+                setCreateProp(fieldInfos, `${_k}.${o_k}.vals`, [...vals, v]);
               }
             });
           });

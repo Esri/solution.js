@@ -51,6 +51,7 @@ import {
   _templatizeAdminLayerInfoFields,
   _getDependantItemId,
   _getViewFieldInfos,
+  _clearIsViewFieldOverride,
   _isViewFieldOverride,
   _templatizeAdminSourceLayerFields,
   _templatizeTopFilter,
@@ -4593,6 +4594,27 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
     });
   });
 
+  describe("_clearIsViewFieldOverride", () => {
+    it("will clear previous isViewOverride", () => {
+      const item = {
+        fields: [{
+          alias: "A",
+          isViewOverride: true
+        }, {
+          alias: "B"
+        }]
+      }
+
+      const expected = [{
+        alias: "A"
+      }, {
+        alias: "B"
+      }];
+      _clearIsViewFieldOverride(item);
+      expect(item.fields).toEqual(expected);
+    });
+  });
+
   describe("_getViewFieldInfos", () => {
     it("gets domain and alias infos", () => {
       const fieldInfo = {
@@ -4625,9 +4647,11 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
         }
       };
       const expected = {
-        alias:{vals:["c123"],names: ["c"]},
-        domain:{vals:[{}],names: ["a"]},
-        editable:{vals:[true, false],names: ["a", "d"]}
+        "0": {
+          alias: { vals: ["c123"], names: ["c"] },
+          domain: { vals: [{}], names: ["a"] },
+          editable: { vals: [true, false], names: ["a", "d"] }
+        }
       };
 
       const actual = _getViewFieldInfos(fieldInfo);

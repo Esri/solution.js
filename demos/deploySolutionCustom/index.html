@@ -2,7 +2,7 @@
 <html lang="en" dir="ltr">
 <head>
   <meta http-equiv="content-type" content="text/html; charset=utf-8" />
-  <title>@esri/solution-deployer deploySolution example</title>
+  <title>Deploy a Previous Version</title>
   <!--
    | Copyright 2022 Esri
    |
@@ -21,6 +21,7 @@
   <link rel="stylesheet" href="https://js.arcgis.com/4.23/esri/themes/light/main.css">
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
   <link rel="stylesheet" href="https://esri.github.io/calcite-bootstrap/styles/calcite-bootstrap.min.css">
+  <link rel="icon" type="image/png" href="./solutions-icon.svg">
   <style>
   html {
     font-family: Arial;
@@ -51,7 +52,7 @@
   </style>
 </head>
 <body>
-  <h3 id="appTitle">Deploy a Solution</h3>
+  <h3>Deploy a Previous Version</h3>
 
   <div id="container" class="display-none">
     <div id="input">
@@ -85,12 +86,7 @@
 
   <script crossorigin="anonymous" src="https://polyfill.io/v3/polyfill.min.js?features=fetch%2Ces2015"></script>
   <script src="https://requirejs.org/docs/release/2.3.6/minified/require.js"></script>
-  <script src="data/appConfig.js"></script>
   <script>
-    if (appConfig.appTitle) {
-      document.getElementById("appTitle").innerHTML = appConfig.appTitle;
-    }
-
     var fetchFoldersFcn, goFcn;
 
     require.config({
@@ -161,9 +157,8 @@
             const solutionsSelect = document.getElementById("solutionPicklist");
             solutionsSelect.add(document.createElement("option"));
 
-            main.getTemplates(
-              appConfig.solutionsGroupId, null, srcCreds
-            ).then(
+            main.getTemplates("e3ebb9ed9ce046308207893a9e9ac065", null, srcCreds)
+            .then(
               (solutions) => {
                 solutions.forEach((solution) => {
                   var option = document.createElement("option");
