@@ -1614,12 +1614,6 @@ describe("Module `deploySolutionItems`", () => {
       expectedClone.properties.layers[0].relationships = null;
       expectedClone.properties.layers[0].adminLayerInfo = undefined;
       delete expectedClone.item.spatialReference;
-      expectedClone.properties.layers[0].fields = expectedClone.properties.layers[0].fields.map(
-        (f: any) => {
-          f.isViewOverride = true;
-          return f;
-        }
-      );
 
       fetchMock
         .post(
