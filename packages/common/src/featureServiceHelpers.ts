@@ -973,10 +973,6 @@ export function addFeatureServiceDefinition(
                 return false;
               }
             });
-
-            // view field domain and alias can contain different values than the source field
-            // we need to set isViewOverride when added fields that differ from the source field
-            _validateViewFieldInfos(fieldInfos[item.id], item);
           }
         }
         /* istanbul ignore else */
@@ -1566,118 +1562,6 @@ export function postProcessFields(
       );
     }
   });
-}
-
-/**
- * View field domain, alias, editable, and visible props can contain
- * different values from the source.
- *
- * We need to check and set isFieldOverride to true when this occurs and false when it does not
- *
- * @param fieldInfo current view layer or table fieldInfo
- * @param item that stores the view fields
- *
- * This function will update the item that is provided
- * @private
- */
-export function _validateViewFieldInfos(fieldInfo: any, item: any): void {
-  _clearIsViewFieldOverride(item);
-  const fieldInfos = _getViewFieldInfos(fieldInfo);
-  item.fields.map((field: any) => {
-    const layerFieldInfo = getProp(fieldInfos, item.id.toString());
-    if (layerFieldInfo) {
-      Object.keys(layerFieldInfo).forEach(fi => {
-        _isViewFieldOverride(field, layerFieldInfo[fi].names, layerFieldInfo[fi].vals, fi);
-      });
-    }
-    return field;
-  });
-}
-
-/**
- * Clear previous isViewOverride settings
- * Due to a previous bug isViewOverride was being set on many fields incorrectly.
- * This function is used to clear the previously set value so we can make the proper determination.
- *
- * https://github.com/Esri/solution.js/issues/944
- *
- * @param item that stores the view fields
- *
- * This function will update the item that is provided
- * @private
- */
-export function _clearIsViewFieldOverride(
-  item: any
-): void {
-  item.fields = item.fields.map(field => {
-    deleteProp(field, "isViewOverride");
-    return field;
-  });
-}
-
-/**
- *  Get arrays of fields and names for domain, alias, and editable props
- *
- * @param fieldInfo current view layer or table fieldInfo
- * @private
- */
-export function _getViewFieldInfos(fieldInfo: any): any {
-  const fieldInfos = {};
-  const fieldOverrideKeys = ["domain", "alias", "editable"];
-  /* istanbul ignore else */
-  if (fieldInfo.sourceServiceFields) {
-    Object.keys(fieldInfo.sourceServiceFields).forEach(k => {
-      /* istanbul ignore else */
-      if (fieldInfo.sourceServiceFields[k]) {
-        Object.keys(fieldInfo.sourceServiceFields[k]).forEach(_k => {
-          fieldInfo.sourceServiceFields[k][_k].forEach((field: any) => {
-            fieldOverrideKeys.forEach(o_k => {
-              /* istanbul ignore else */
-              if (field.hasOwnProperty(o_k)) {
-                // need to store names and values relative to the individual sub layer/table
-                const name = String(field.name).toLocaleLowerCase();
-                const names = getProp(fieldInfos, `${_k}.${o_k}.names`) || [];
-                setCreateProp(fieldInfos, `${_k}.${o_k}.names`, [...names, name]);
-
-                const v = field[o_k];
-                const vals = getProp(fieldInfos, `${_k}.${o_k}.vals`) || [];
-                setCreateProp(fieldInfos, `${_k}.${o_k}.vals`, [...vals, v]);
-              }
-            });
-          });
-        });
-      }
-    });
-  }
-  return fieldInfos;
-}
-
-/**
- * Set isViewOverride for view fields when they have differences from the source FS field
- *
- * @param field the field instance we are testing
- * @param names array of field names
- * @param vals array of values
- * @param key the field key to compare
- * @private
- */
-export function _isViewFieldOverride(
-  field: any,
-  names: string[],
-  vals: any[],
-  key: string
-): void {
-  /* istanbul ignore else */
-  if (field.hasOwnProperty(key)) {
-    const i: number = names.indexOf(String(field.name).toLocaleLowerCase());
-    const isOverride = JSON.stringify(field[key]) !== (i > -1 ? JSON.stringify(vals[i]) : "");
-    const overrideSet = field.hasOwnProperty('isViewOverride');
-    // need to skip this check if isViewOverride has already been set to true
-    /* istanbul ignore else */
-    if (((overrideSet && !field.isViewOverride) || !overrideSet)) {
-      field.isViewOverride = isOverride;
-    }
-  }
 }
 
 /**
