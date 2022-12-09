@@ -2,6 +2,9 @@
   "compilerOptions": {
     "alwaysStrict": true,
     "declaration": true,
+    "downlevelIteration": true,
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
     "importHelpers": true,
     "lib": ["dom", "es2020"],
     "module": "amd",
@@ -11,10 +14,11 @@
     "sourceMap": true,
     "strict": true,
     "strictNullChecks": false,
-    "target": "es2020",
-    "types": []
+    "target": "es2020"
   },
-  "exclude": [],
+  "exclude": [
+    "node_modules"
+  ],
   "include": [
     "src"
   ]

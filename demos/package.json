@@ -6,13 +6,34 @@
   "main": "main.js",
   "author": "",
   "license": "Apache-2.0",
+  "scripts": {
+    "build": "tsc -p ./tsconfig.json --outDir ./dist && start cmd.exe /q/c \"copy .\\src\\*.min.js .\\dist\"",
+    "getupdates": "npm-check-updates --upgrade",
+    "start": "http-server .",
+    "test:chrome": "karma start --single-run --browsers=Chrome"
+  },
   "devDependencies": {
+    "@chiragrupani/karma-chromium-edge-launcher": "^2.2.2",
     "@rollup/plugin-commonjs": "^22.0.2",
+    "@types/jasmine": "^4.3.0",
     "@types/node": "^18.11.10",
     "@typescript-eslint/eslint-plugin": "^5.44.0",
     "http-server": "*",
+    "jasmine": "^4.5.0",
+    "jasmine-core": "^4.5.0",
+    "karma": "^6.4.1",
+    "karma-chrome-launcher": "^3.1.1",
+    "karma-coverage": "^2.2.0",
+    "karma-firefox-launcher": "^2.1.2",
+    "karma-jasmine": "^5.1.0",
+    "karma-jasmine-diff-reporter": "^3.0.0",
+    "karma-safari-launcher": "^1.0.0",
+    "karma-spec-reporter": "0.0.34",
+    "karma-typescript": "^5.5.3",
+    "karma-typescript-es6-transform": "^5.5.3",
     "marked": "^4.2.3",
     "rollup": "2.79.0",
+    "rollup-plugin-typescript2": "^0.34.1",
     "slug": "^8.2.2",
     "typescript": "^4.9.3"
   },
@@ -42,10 +63,5 @@
     "@esri/solution-web-experience": "^1.7.0",
     "adlib": "3.0.7",
     "tslib": "1.14.1"
-  },
-  "scripts": {
-    "build": "tsc -p ./tsconfig.json --outDir ./dist && start cmd.exe /q/c \"copy .\\src\\*.min.js .\\dist\"",
-    "getupdates": "npm-check-updates --upgrade",
-    "start": "http-server ."
   }
 }
