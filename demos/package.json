@@ -7,9 +7,9 @@
   "author": "",
   "license": "Apache-2.0",
   "devDependencies": {
-    "@rollup/plugin-commonjs": "^22.0.2",
-    "@types/node": "^18.11.10",
-    "@typescript-eslint/eslint-plugin": "^5.44.0",
+    "@rollup/plugin-commonjs": "^23.0.4",
+    "@types/node": "^18.11.13",
+    "@typescript-eslint/eslint-plugin": "^5.46.0",
     "http-server": "*",
     "marked": "^4.2.3",
     "rollup": "2.79.0",
