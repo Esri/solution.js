@@ -94,9 +94,7 @@ async function formatItemInfo(
     '<div style="width:48%;display:inline-block;">' +
     textAreaHtmlFromJSON(item.base) +
     '</div><div style="width:2%;display:inline-block;"></div>' +
-    '<div style="width:48%;display:inline-block;vertical-align:top;">';
-  html += await showBlob(item.data);
-  html += "</div>";
+    '<div style="width:48%;display:inline-block;vertical-align:top;" id="dataSection"><span style="font-style:italic">Rendering</span></div>';
 
   // Show thumbnail section
   html += "<p>Thumbnail<br/><div>";
@@ -194,14 +192,45 @@ async function formatItemInfo(
             showTopologicalSortGraph(itemData.templates, topologicalSortGraphicDiv, 1400, 1600, Raphael, Dracula);
           });
         }
-      }, 2000
+      }, 3000
     );
 
-    return html;
-
-  } else {
-    return html;
   }
+
+  // Because the data section can be enormous, we'll add it separately to the page
+  const dataHtml = await showBlob(item.data, 1000000, ["drawingInfo"]);
+
+  setTimeout(
+    () => {
+      const dataDiv = document.getElementById("dataSection") as HTMLCanvasElement;
+      if (dataDiv && dataHtml) {
+        dataDiv.innerHTML = dataHtml;
+      }
+    }, 2000
+  );
+
+  return html;
+}
+
+function findAndPruneProperties(
+  object: any,
+  propertiesToPrune: string[]
+): any {
+  if (object == null || typeof object !== "object") {
+    return object;
+  }
+
+  const updatedJson: any = {};
+  Object.keys(object).forEach(
+    (key: string) => {
+      if (propertiesToPrune.includes(key)) {
+        updatedJson[key] = "...";
+      } else {
+        updatedJson[key] = findAndPruneProperties(object[key], propertiesToPrune);
+      }
+    }
+  );
+  return updatedJson;
 }
 
 /**
@@ -210,7 +239,11 @@ async function formatItemInfo(
  * @param blob Blob or File to display
  * @returns Promise resolving to a string of HTML
  */
-function showBlob(blob: Blob): Promise<string> {
+function showBlob(
+  blob: Blob,
+  jsonMaxSize = 0,
+  jsonPropertiesToPrune = [] as string[]
+): Promise<string> {
   // tslint:disable-next-line: no-floating-promises
   return new Promise<string>(resolve => {
     if (!blob || blob.size === 0) {
@@ -231,10 +264,15 @@ function showBlob(blob: Blob): Promise<string> {
 
     if (blob.type === "application/json") {
       common.blobToJson(blob).then(
-        text =>
+        json => {
+          if (jsonMaxSize && blob.size > jsonMaxSize && jsonPropertiesToPrune.length > 0) {
+            // Attempt to reduce size of JSON by removing specified properties
+            json = findAndPruneProperties(json, jsonPropertiesToPrune);
+          }
           resolve(
-            textAreaHtmlFromJSON(text) + addFilename(filename)
-          ),
+            textAreaHtmlFromJSON(json) + addFilename(filename)
+          );
+        },
         error => resolve("<i>problem extracting JSON: " + error + "</i>")
       );
     } else if (
