@@ -123,7 +123,7 @@
     "rollup-plugin-typescript2": "^0.34.1",
     "semantic-release": "^20.0.2",
     "shelljs": "^0.8.5",
-    "sinon": "^14.0.2",
+    "sinon": "^15.0.1",
     "slug": "^8.0.0",
     "sri-toolbox": "0.2.0",
     "ts-node": "^10.9.1",
