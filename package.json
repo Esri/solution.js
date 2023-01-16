@@ -113,7 +113,7 @@
     "lerna": "^6.1.0",
     "lint-staged": "^13.0.4",
     "marked": "^4.2.5",
-    "minimatch": "^5.1.1",
+    "minimatch": "^6.0.4",
     "prettier": "^2.8.1",
     "regenerator-runtime": "^0.13.10",
     "resolve": "^1.22.1",
