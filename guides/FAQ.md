@@ -1,7 +1,3 @@
-## Is this a supported Esri product?
-
-**Yes**, starting with version 1.0.0.
-
 ## What browsers are supported?
 
 Supported browsers are the latest versions of Google Chrome, Apple Safari, Mozilla Firefox, and Microsoft Edge (Chromium).
