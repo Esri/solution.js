@@ -142,7 +142,6 @@ These commands are
 
 ### Frequently Asked Questions
 
-* [Is this a supported Esri product?](https://github.com/Esri/solution.js/blob/master/guides/FAQ.md#is-this-a-supported-esri-product)
 * [What browsers are supported?](https://github.com/Esri/solution.js/blob/master/guides/FAQ.md#what-browsers-are-supported)
 * [What is the development workflow?](https://github.com/Esri/solution.js/blob/master/guides/FAQ.md#what-is-the-development-workflow)
 
