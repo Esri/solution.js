@@ -63,6 +63,6 @@
     "@esri/solution-viewer": "^1.7.0",
     "@esri/solution-web-experience": "^1.7.0",
     "adlib": "3.0.7",
-    "tslib": "1.14.1"
+    "tslib": "2.5.0"
   }
 }

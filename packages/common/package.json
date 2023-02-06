@@ -42,7 +42,7 @@
     "adlib": "3.0.7",
     "jszip": "3.10.1",
     "lodash.isplainobject": "^4.0.6",
-    "tslib": "1.14.1",
+    "tslib": "2.5.0",
     "xss": "^1.0.14"
   },
   "scripts": {

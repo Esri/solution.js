@@ -46,7 +46,7 @@
     "@esri/solution-storymap": "^1.7.0",
     "@esri/solution-velocity": "^1.7.0",
     "@esri/solution-web-experience": "^1.7.0",
-    "tslib": "1.14.1"
+    "tslib": "2.5.0"
   },
   "scripts": {
     "prepare": "npm run build",
