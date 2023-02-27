@@ -28,7 +28,7 @@
     "karma-jasmine": "^5.1.0",
     "karma-jasmine-diff-reporter": "^3.0.0",
     "karma-safari-launcher": "^1.0.0",
-    "karma-spec-reporter": "0.0.34",
+    "karma-spec-reporter": "0.0.36",
     "karma-typescript": "^5.5.3",
     "karma-typescript-es6-transform": "^5.5.3",
     "marked": "^4.2.12",
