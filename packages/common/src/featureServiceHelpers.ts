@@ -1122,10 +1122,14 @@ export function _updateForPortal(
         templateDictionary
       );
       fieldNames = fieldNames.concat(tableFieldNames);
+
+      const dynamicFieldNames = _getDynamicFieldNames(viewLayerDefTable);
+      fieldNames = fieldNames.concat(dynamicFieldNames);
+
       setProp(
         item,
         "adminLayerInfo.viewLayerDefinition.table",
-        _updateSourceLayerFields(viewLayerDefTable, tableFieldNames)
+        _updateSourceLayerFields(viewLayerDefTable, fieldNames)
       );
 
       // Handle related also
@@ -1138,7 +1142,14 @@ export function _updateForPortal(
             templateDictionary
           );
           fieldNames = fieldNames.concat(relatedTableFieldNames);
-          return _updateSourceLayerFields(relatedTable, relatedTableFieldNames);
+
+          const dynamicRelatedFieldNames = _getDynamicFieldNames(relatedTable);
+          fieldNames = fieldNames.concat(dynamicRelatedFieldNames);
+
+          return _updateSourceLayerFields(
+            relatedTable,
+            [...relatedTableFieldNames, ...dynamicRelatedFieldNames]
+          );
         });
       }
     } else {
@@ -1210,6 +1221,56 @@ export function _getFieldNames(
     });
     return sourceLayerFields;
   }
+}
+
+/**
+ * Get a list of any dynamically calculated fields
+ * These fields are still valid but will not exist in the source service
+ *
+ * @param table the table instance to compare
+ *
+ * @returns an array of field
+ * @private
+ */
+export function _getDynamicFieldNames(
+  table: any
+): string[] {
+  const sourceFieldInfos = {};
+  const fields = [];
+  // get all the expressions as we will need to check if any of the fields are referenced
+  // also store any fields that share a source and have an expression
+  const expressions = table.sourceLayerFields.reduce((prev,cur) => {
+    if (cur.source) {
+      const hasExpression = cur.expression ? true : false;
+      if (Object.keys(sourceFieldInfos).indexOf(cur.source) > -1) {
+        const source = sourceFieldInfos[cur.source];
+        // not sure if this could have more than two so will keep storing just in case
+        source.hasExpression = source.hasExpression || hasExpression;
+        source.names.push(cur.name);
+        if (source.hasExpression || hasExpression) {
+          fields.concat(source.names);
+        }
+      } else {
+        sourceFieldInfos[cur.source] = {
+          names: [cur.name],
+          hasExpression
+        }
+      }
+
+      if (hasExpression) {
+        prev.push(cur.expression);
+      }
+    }
+    return prev;
+  }, []);
+
+  const fieldNames: string[] = table.sourceLayerFields.reduce((prev, cur) => {
+    if (cur.statisticType || expressions.some(e => e.indexOf(cur.name) > -1)) {
+      prev.push(cur.name);
+    }
+    return prev;
+  }, fields);
+  return [...new Set(fieldNames)];
 }
 
 /**
