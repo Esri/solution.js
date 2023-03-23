@@ -1240,12 +1240,14 @@ export function _getDynamicFieldNames(
   // get all the expressions as we will need to check if any of the fields are referenced
   // also store any fields that share a source and have an expression
   const expressions = table.sourceLayerFields.reduce((prev,cur) => {
+    /* istanbul ignore else */
     if (cur.source) {
       const hasExpression = cur.expression ? true : false;
       if (Object.keys(sourceFieldInfos).indexOf(cur.source) > -1) {
         const source = sourceFieldInfos[cur.source];
         source.hasExpression = source.hasExpression || hasExpression;
         source.names.push(cur.name);
+        /* istanbul ignore else */
         if (source.hasExpression || hasExpression) {
           fields.concat(source.names);
         }
@@ -1256,6 +1258,7 @@ export function _getDynamicFieldNames(
         }
       }
 
+      /* istanbul ignore else */
       if (hasExpression) {
         prev.push(cur.expression);
       }

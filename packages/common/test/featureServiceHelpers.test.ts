@@ -79,6 +79,7 @@ import {
   _updateAddOptions,
   _updateForPortal,
   _getFieldNames,
+  _getDynamicFieldNames,
   _updateItemFields,
   _updateGeomFieldName,
   _updateTemplateDictionaryFields,
@@ -6741,6 +6742,64 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
         template,
         templateDictionary
       );
+      expect(actual).toEqual(expected);
+    });
+  });
+
+  describe("_getDynamicFieldNames", () => {
+    it("will keep expression fields", () => {
+      const table = {
+        "name": "Cemeteries_1678394615385_StatsTable",
+        "sourceServiceName": "Cemeteries_9eb657cfc34545038ee388071b3f730f",
+        "sourceLayerId": 5,
+        "sourceLayerFields": [
+          {
+            "name": "burialcount",
+            "alias": "Burial Count",
+            "source": "parentglobalid",
+            "statisticType": "COUNT"
+          },
+          {
+            "name": "fullname1",
+            "alias": "Full Name 1",
+            "source": "fullname",
+            "statisticType": "MIN"
+          },
+          {
+            "name": "fullname2",
+            "alias": "Full Name 2",
+            "source": "fullname",
+            "statisticType": "MAX"
+          },
+          {
+            "name": "parentglobalid",
+            "alias": "Parent Global ID",
+            "source": "parentglobalid"
+          },
+          {
+            "name": "population",
+            "alias": "Population",
+            "source": "population"
+          },
+          {
+            "name": "area",
+            "alias": "Area",
+            "source": "area"
+          }, {
+            "name": "density",
+            "alias": "Density",
+            "expression": "population / area",
+            "type": "esriFieldTypeDouble",
+            "source": "population"
+          }
+        ],
+        "groupBy": "parentglobalid",
+        "materialized": false
+      };
+
+      const actual = _getDynamicFieldNames(table);
+
+      const expected = ["burialcount", "fullname1", "fullname2", "population", "area"];
       expect(actual).toEqual(expected);
     });
   });
