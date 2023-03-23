@@ -1122,10 +1122,14 @@ export function _updateForPortal(
         templateDictionary
       );
       fieldNames = fieldNames.concat(tableFieldNames);
+
+      const dynamicFieldNames = _getDynamicFieldNames(viewLayerDefTable);
+      fieldNames = fieldNames.concat(dynamicFieldNames);
+
       setProp(
         item,
         "adminLayerInfo.viewLayerDefinition.table",
-        _updateSourceLayerFields(viewLayerDefTable, tableFieldNames)
+        _updateSourceLayerFields(viewLayerDefTable, fieldNames)
       );
 
       // Handle related also
@@ -1138,7 +1142,14 @@ export function _updateForPortal(
             templateDictionary
           );
           fieldNames = fieldNames.concat(relatedTableFieldNames);
-          return _updateSourceLayerFields(relatedTable, relatedTableFieldNames);
+
+          const dynamicRelatedFieldNames = _getDynamicFieldNames(relatedTable);
+          fieldNames = fieldNames.concat(dynamicRelatedFieldNames);
+
+          return _updateSourceLayerFields(
+            relatedTable,
+            [...relatedTableFieldNames, ...dynamicRelatedFieldNames]
+          );
         });
       }
     } else {
@@ -1210,6 +1221,27 @@ export function _getFieldNames(
     });
     return sourceLayerFields;
   }
+}
+
+/**
+ * Get a list of any dynamically calculated fields
+ * These fields are still valid but will not exist in the source service
+ *
+ * @param table the table instance to compare
+ *
+ * @returns an array of field names
+ * @private
+ */
+export function _getDynamicFieldNames(
+  table: any
+): string[] {
+  const fieldNames: string[] = table.sourceLayerFields.reduce((prev, cur) => {
+    if (cur.statisticType) {
+      prev.push(cur.name);
+    }
+    return prev;
+  }, []);
+  return [...new Set(fieldNames)];
 }
 
 /**
