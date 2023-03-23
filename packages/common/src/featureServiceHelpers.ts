@@ -1229,7 +1229,7 @@ export function _getFieldNames(
  *
  * @param table the table instance to compare
  *
- * @returns an array of field
+ * @returns an array of field names
  * @private
  */
 export function _getDynamicFieldNames(
@@ -1244,7 +1244,6 @@ export function _getDynamicFieldNames(
       const hasExpression = cur.expression ? true : false;
       if (Object.keys(sourceFieldInfos).indexOf(cur.source) > -1) {
         const source = sourceFieldInfos[cur.source];
-        // not sure if this could have more than two so will keep storing just in case
         source.hasExpression = source.hasExpression || hasExpression;
         source.names.push(cur.name);
         if (source.hasExpression || hasExpression) {
