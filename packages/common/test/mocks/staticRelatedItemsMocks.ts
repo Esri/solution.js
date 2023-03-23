@@ -26,11 +26,12 @@
  */
 
 import * as fetchMock from "fetch-mock";
+import * as interfaces from "../../src/interfaces";
 import * as utils from "./utils";
 
 export function fetchMockRelatedItems(
   itemId: string,
-  desiredResponse: any,
+  desiredResponse: interfaces.IGetRelatedItemsResponse,
   excludedTypes?: string[]
 ): void {
   const relationshipTypes = [
@@ -73,16 +74,22 @@ export function fetchMockRelatedItems(
     });
   }
 
+  // Add the new properties returned by portal function `getRelatedItems`
+  const desiredResponseSupplemented: interfaces.IGetRelatedItemsResponseFull = {
+    aggregations: { total: { count: 0, name: "total" } },
+    nextkey: null, num: 100, ...desiredResponse
+  }
+
   // Set up fetches
   relationshipTypes.forEach(relationshipType => {
     fetchMock.get(
       utils.PORTAL_SUBSET.restUrl +
         "/content/items/" +
         itemId +
-        "/relatedItems?f=json&direction=forward&relationshipType=" +
+        "/relatedItems?f=json&direction=forward&start=1&num=100&relationshipType=" +
         relationshipType +
         "&token=fake-token",
-      desiredResponse
+      desiredResponseSupplemented
     );
   });
 }
