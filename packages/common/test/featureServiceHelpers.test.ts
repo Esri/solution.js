@@ -6772,11 +6772,6 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
             "statisticType": "MAX"
           },
           {
-            "name": "parentglobalid",
-            "alias": "Parent Global ID",
-            "source": "parentglobalid"
-          },
-          {
             "name": "population",
             "alias": "Population",
             "source": "population"
@@ -6799,7 +6794,7 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
 
       const actual = _getDynamicFieldNames(table);
 
-      const expected = ["burialcount", "fullname1", "fullname2", "population", "area"];
+      const expected = ["burialcount", "fullname1", "fullname2"];
       expect(actual).toEqual(expected);
     });
   });
