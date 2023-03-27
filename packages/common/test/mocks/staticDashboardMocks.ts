@@ -4992,8 +4992,8 @@ export const expectedTemplate: any = {
     "eff3f22d41ad42dcb6fe9015f26d40f4_info_thumbnail/ago_downloaded.png"
   ],
   dependencies: [
-    "7e6c41c72d4548d9a312329e0c5a984f",
-    "934a9ef8efa7448fa8ddf7b13cef0240"
+    "934a9ef8efa7448fa8ddf7b13cef0240",
+    "7e6c41c72d4548d9a312329e0c5a984f"
   ],
   properties: {},
   estimatedDeploymentCostFactor: 2
