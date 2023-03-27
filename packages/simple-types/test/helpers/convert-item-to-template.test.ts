@@ -14,15 +14,15 @@
  * limitations under the License.
  */
 
-import * as simpleTypes from "../../src/simple-types";
-import * as simpleTypeHelpers from "../../src/helpers/convert-item-to-template";
-import * as utils from "../../../common/test/mocks/utils";
-import * as staticRelatedItemsMocks from "../../../common/test/mocks/staticRelatedItemsMocks";
+import * as common from "@esri/solution-common";
 import * as fetchMock from "fetch-mock";
 import * as mockItems from "../../../common/test/mocks/agolItems";
 import * as notebook from "../../src/notebook";
+import * as simpleTypeHelpers from "../../src/helpers/convert-item-to-template";
+import * as simpleTypes from "../../src/simple-types";
+import * as staticRelatedItemsMocks from "../../../common/test/mocks/staticRelatedItemsMocks";
 import * as templates from "../../../common/test/mocks/templates";
-import * as common from "@esri/solution-common";
+import * as utils from "../../../common/test/mocks/utils";
 
 jasmine.DEFAULT_TIMEOUT_INTERVAL = 20000; // default is 5000 ms
 
@@ -47,6 +47,7 @@ afterEach(() => {
 // ------------------------------------------------------------------------------------------------------------------ //
 
 describe("simpleTypeConvertItemToTemplate", () => {
+
   describe("dashboard", () => {
     it("should handle dashboard et al. item types", done => {
       const solutionItemId = "sln1234567890";
@@ -537,7 +538,7 @@ describe("simpleTypeConvertItemToTemplate", () => {
           },
           name: "qc.project.json"
         }),
-        resources: [],
+        resources: [utils.getSampleJsonAsFile("qc.project.json")],
         dependencies: ["3899c47412024f5cb3278e531bfbbf20"],
         relatedItems: [],
         groups: [],
@@ -652,7 +653,7 @@ describe("simpleTypeConvertItemToTemplate", () => {
         itemId: "qck1234567890",
         key: "vx3ubyx3",
         data: null,
-        resources: [],
+        resources: [utils.getSampleJsonAsFile("qc.project.json")],
         dependencies: [],
         relatedItems: [],
         groups: [],
@@ -766,7 +767,7 @@ describe("simpleTypeConvertItemToTemplate", () => {
         itemId: "qck1234567890",
         key: "vx3ubyx3",
         data: Object({}),
-        resources: [],
+        resources: [utils.getSampleJsonAsFile("qc.project.json")],
         dependencies: [],
         relatedItems: [],
         groups: [],
@@ -886,7 +887,7 @@ describe("simpleTypeConvertItemToTemplate", () => {
           application: {},
           name: "qc.project.json"
         }),
-        resources: [],
+        resources: [utils.getSampleJsonAsFile("qc.project.json")],
         dependencies: [],
         relatedItems: [],
         groups: [],
