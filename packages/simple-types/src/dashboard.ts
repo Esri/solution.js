@@ -101,10 +101,24 @@ export function _extractDependencies(
 ): common.IItemTemplate {
   // get dependencies from any
   const updatePaths: string[] = [
-    "data.widgets",
+    "data.desktopView.header",
+    "data.desktopView.headerPanel.selectors",
+    "data.desktopView.leftPanel.selectors",
+    "data.desktopView.sidebar",
+    "data.desktopView.urlParameters",
+    "data.desktopView.widgets",
+    "data.header",
     "data.headerPanel.selectors",
     "data.leftPanel.selectors",
-    "data.urlParameters"
+    "data.mobileView.header",
+    "data.mobileView.headerPanel.selectors",
+    "data.mobileView.leftPanel.selectors",
+    "data.mobileView.sidebar",
+    "data.mobileView.urlParameters",
+    "data.mobileView.widgets",
+    "data.sidebar",
+    "data.urlParameters",
+    "data.widgets"
   ];
 
   updatePaths.forEach(path => {
@@ -181,10 +195,24 @@ export function postProcessFieldReferences(
   datasourceInfos: common.IDatasourceInfo[]
 ): common.IItemTemplate {
   const updatePaths: string[] = [
-    "data.widgets",
+    "data.desktopView.header",
+    "data.desktopView.headerPanel.selectors",
+    "data.desktopView.leftPanel.selectors",
+    "data.desktopView.sidebar",
+    "data.desktopView.urlParameters",
+    "data.desktopView.widgets",
+    "data.header",
     "data.headerPanel.selectors",
     "data.leftPanel.selectors",
-    "data.urlParameters"
+    "data.mobileView.header",
+    "data.mobileView.headerPanel.selectors",
+    "data.mobileView.leftPanel.selectors",
+    "data.mobileView.sidebar",
+    "data.mobileView.urlParameters",
+    "data.mobileView.widgets",
+    "data.sidebar",
+    "data.urlParameters",
+    "data.widgets"
   ];
 
   // dashboards reference datasets from other widgets
