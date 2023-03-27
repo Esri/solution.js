@@ -285,6 +285,11 @@ describe("simpleTypeConvertItemToTemplate", () => {
     it("should handle form item type with default filename for falsy item name", done => {
       itemTemplate.item.name = null;
 
+      spyOn(common, "getItemRelatedItemsInSameDirection").and.resolveTo([
+        { relationshipType: "Survey2Data", relatedItemIds: ["srv1234567890", "abc1234567890"] },
+        { relationshipType: "Survey2Service", relatedItemIds: ["srv1234567890"] }
+      ] as common.IRelatedItems[]);
+
       simpleTypes
         .convertItemToTemplate(
           solutionItemId,
@@ -298,6 +303,11 @@ describe("simpleTypeConvertItemToTemplate", () => {
 
     it('should handle form item type with default filename for "undefined" string literal item name', done => {
       itemTemplate.item.name = "undefined";
+
+      spyOn(common, "getItemRelatedItemsInSameDirection").and.resolveTo([
+        { relationshipType: "Survey2Data", relatedItemIds: ["srv1234567890", "abc1234567890"] },
+        { relationshipType: "Survey2Service", relatedItemIds: ["srv1234567890"] }
+      ] as common.IRelatedItems[]);
 
       simpleTypes
         .convertItemToTemplate(

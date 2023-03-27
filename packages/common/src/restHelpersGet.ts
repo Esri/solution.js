@@ -29,8 +29,10 @@ import {
 } from "./generalHelpers";
 import {
   IGetResourcesResponse,
+  IGetRelatedItemsResponseFull,
   IGroup,
   IItem,
+  IItemRelationshipOptionsPaging,
   IPagingParams,
   IPortal,
   IRelatedItems,
@@ -42,7 +44,6 @@ import {
   IGetGroupContentOptions,
   IGetRelatedItemsResponse,
   IGroupCategorySchema,
-  IItemRelationshipOptions,
   getGroup,
   getGroupCategorySchema as portalGetGroupCategorySchema,
   getGroupContent,
@@ -447,36 +448,36 @@ export function getItemMetadataBlobUrl(
  * Gets the related items of an AGO item.
  *
  * @param itemId Id of an item whose related items are sought
- * @param relationshipType
- * @param direction
+ * @param relationshipType Tag for relationship type, e.g., "Solution2Item"
+ * @param direction Relationship direction
  * @param authentication Credentials for the request to AGO
- * @returns A promise that will resolve with an arcgis-rest-js `IGetRelatedItemsResponse` structure
+ * @param num Number of related items to request per batch; maximum is 100
+ * @returns A promise that will resolve with the list of related items
  */
 export function getItemRelatedItems(
   itemId: string,
   relationshipType: ItemRelationshipType | ItemRelationshipType[],
   direction: "forward" | "reverse",
-  authentication: UserSession
+  authentication: UserSession,
+  num = 100
 ): Promise<IGetRelatedItemsResponse> {
   return new Promise<IGetRelatedItemsResponse>(resolve => {
-    const itemRelatedItemsParam: IItemRelationshipOptions = {
+    const itemRelatedItemsParam: IItemRelationshipOptionsPaging = {
       id: itemId,
       relationshipType,
-      direction,
-      authentication: authentication
-    };
-    getRelatedItems(itemRelatedItemsParam).then(
-      (response: IGetRelatedItemsResponse) => {
+      authentication: authentication,
+      params: {
+        direction,
+        start: 1,
+        num
+      }
+    }
+
+    // Fetch related items
+    // eslint-disable-next-line @typescript-eslint/no-floating-promises
+    _getItemRelatedItemsTranche(itemRelatedItemsParam).then(
+      response => {
         resolve(response);
-      },
-      () => {
-        resolve({
-          total: 0,
-          start: 1,
-          num: 0,
-          nextStart: -1,
-          relatedItems: []
-        } as IGetRelatedItemsResponse);
       }
     );
   });
@@ -639,7 +640,7 @@ export function getItemsRelatedToASolution(
  */
 export function getItemThumbnail(
   itemId: string,
-  thumbnailUrlPart: string,
+  thumbnailUrlPart: string | null,
   isGroup: boolean,
   authentication: UserSession
 ): Promise<Blob> {
@@ -675,7 +676,7 @@ export function getItemThumbnail(
  */
 export function getItemThumbnailAsFile(
   itemId: string,
-  thumbnailUrlPart: string,
+  thumbnailUrlPart: string | null,
   isGroup: boolean,
   authentication: UserSession
 ): Promise<File> {
@@ -764,7 +765,7 @@ export function getJson(
  * @returns Portal sharing url to be used in API requests, defaulting to `https://www.arcgis.com/sharing/rest`
  */
 export function getPortalSharingUrlFromAuth(
-  authentication: UserSession
+  authentication: UserSession | undefined
 ): string {
   // If auth was passed, use that portal
   return getProp(authentication, "portal") || "https://www.arcgis.com/sharing/rest";
@@ -917,6 +918,58 @@ export function _getGroupContentsTranche(
         resolve([]);
       }
     }, reject);
+  });
+}
+
+/**
+ * Gets some of the related items of an AGO item.
+ *
+ * @param requestOptions Item id, relationship type, relationship direction, authentication, and paging
+ * @returns A promise that will resolve with the list of related items
+ * @private
+ */
+function _getItemRelatedItemsTranche(
+  requestOptions: IItemRelationshipOptionsPaging
+): Promise<IGetRelatedItemsResponse> {
+  return new Promise<IGetRelatedItemsResponse>(resolve => {
+    const response: IGetRelatedItemsResponse = {
+      total: 0,
+      relatedItems: []
+    };
+
+    getRelatedItems(requestOptions).then(
+      // Have to use `any` because `IGetRelatedItemsResponse` doesn't include all of the response properties
+      (results: any) => {  // IGetRelatedItemsResponseFull
+        // Are there any results?
+        if (results.aggregations.total.count > 0) {
+          response.total = results.aggregations.total.count;
+          response.relatedItems = results.relatedItems;
+
+          // Are there more items to fetch?
+          if (results.nextkey) {
+            requestOptions.params.start += requestOptions.params.num;
+            requestOptions.params.nextkey = results.nextkey;
+
+            // eslint-disable-next-line @typescript-eslint/no-floating-promises
+            _getItemRelatedItemsTranche(requestOptions).then(
+              (allSubsequentResults: IGetRelatedItemsResponse) => {
+                // Append all of the following tranches to the current tranche and return it
+                response.total += allSubsequentResults.total;
+                response.relatedItems = response.relatedItems.concat(allSubsequentResults.relatedItems);
+                resolve(response);
+              }
+            );
+          } else {
+            resolve(response);
+          }
+        } else {
+          resolve(response);
+        }
+      },
+      () => {
+        resolve(response);
+      }
+    );
   });
 }
 
