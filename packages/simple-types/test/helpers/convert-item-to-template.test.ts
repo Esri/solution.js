@@ -14,15 +14,15 @@
  * limitations under the License.
  */
 
-import * as simpleTypes from "../../src/simple-types";
-import * as simpleTypeHelpers from "../../src/helpers/convert-item-to-template";
-import * as utils from "../../../common/test/mocks/utils";
-import * as staticRelatedItemsMocks from "../../../common/test/mocks/staticRelatedItemsMocks";
+import * as common from "@esri/solution-common";
 import * as fetchMock from "fetch-mock";
 import * as mockItems from "../../../common/test/mocks/agolItems";
 import * as notebook from "../../src/notebook";
+import * as simpleTypeHelpers from "../../src/helpers/convert-item-to-template";
+import * as simpleTypes from "../../src/simple-types";
+import * as staticRelatedItemsMocks from "../../../common/test/mocks/staticRelatedItemsMocks";
 import * as templates from "../../../common/test/mocks/templates";
-import * as common from "@esri/solution-common";
+import * as utils from "../../../common/test/mocks/utils";
 
 jasmine.DEFAULT_TIMEOUT_INTERVAL = 20000; // default is 5000 ms
 
@@ -47,6 +47,7 @@ afterEach(() => {
 // ------------------------------------------------------------------------------------------------------------------ //
 
 describe("simpleTypeConvertItemToTemplate", () => {
+
   describe("dashboard", () => {
     it("should handle dashboard et al. item types", done => {
       const solutionItemId = "sln1234567890";
@@ -285,6 +286,11 @@ describe("simpleTypeConvertItemToTemplate", () => {
     it("should handle form item type with default filename for falsy item name", done => {
       itemTemplate.item.name = null;
 
+      spyOn(common, "getItemRelatedItemsInSameDirection").and.resolveTo([
+        { relationshipType: "Survey2Data", relatedItemIds: ["srv1234567890", "abc1234567890"] },
+        { relationshipType: "Survey2Service", relatedItemIds: ["srv1234567890"] }
+      ] as common.IRelatedItems[]);
+
       simpleTypes
         .convertItemToTemplate(
           solutionItemId,
@@ -298,6 +304,11 @@ describe("simpleTypeConvertItemToTemplate", () => {
 
     it('should handle form item type with default filename for "undefined" string literal item name', done => {
       itemTemplate.item.name = "undefined";
+
+      spyOn(common, "getItemRelatedItemsInSameDirection").and.resolveTo([
+        { relationshipType: "Survey2Data", relatedItemIds: ["srv1234567890", "abc1234567890"] },
+        { relationshipType: "Survey2Service", relatedItemIds: ["srv1234567890"] }
+      ] as common.IRelatedItems[]);
 
       simpleTypes
         .convertItemToTemplate(
@@ -451,6 +462,23 @@ describe("simpleTypeConvertItemToTemplate", () => {
       fetchMock
         .post(
           utils.PORTAL_SUBSET.restUrl +
+            "/content/items/qck1234567890/data",
+          Object({
+            application: {
+              basemap: {
+                  type: "WebMap",
+                  itemId: "3899c47412024f5cb3278e531bfbbf20",
+                  mapAreas: [],
+                  required: true,
+                  useDefaultBasemap: false,
+                  zoomLevel: null
+              }
+            },
+            name: "qc.project.json"
+          })
+        )
+        .post(
+          utils.PORTAL_SUBSET.restUrl +
             "/content/items/qck1234567890/resources",
           resources
         )
@@ -498,10 +526,368 @@ describe("simpleTypeConvertItemToTemplate", () => {
         itemId: "qck1234567890",
         key: "vx3ubyx3",
         data: Object({
-          application: Object(utils.getSampleJson()),
+          application: {
+            basemap: {
+                type: "WebMap",
+                itemId: "3899c47412024f5cb3278e531bfbbf20",
+                mapAreas: [],
+                required: true,
+                useDefaultBasemap: false,
+                zoomLevel: null
+            }
+          },
           name: "qc.project.json"
         }),
-        resources: [],
+        resources: [utils.getSampleJsonAsFile("qc.project.json")],
+        dependencies: ["3899c47412024f5cb3278e531bfbbf20"],
+        relatedItems: [],
+        groups: [],
+        type: "QuickCapture Project",
+        item: {
+          id: "{{qck1234567890.itemId}}",
+          type: "QuickCapture Project",
+          accessInformation: "Esri, Inc.",
+          categories: [],
+          contentStatus: null,
+          culture: "en-us",
+          description: "Description of an AGOL item",
+          extent: [],
+          spatialReference: undefined,
+          licenseInfo: null,
+          name: "Name of an AGOL item",
+          origUrl: undefined,
+          properties: null,
+          snippet: "Snippet of an AGOL item",
+          tags: ["test"],
+          thumbnail: "thumbnail/ago_downloaded.png",
+          title: "An AGOL item",
+          typeKeywords: ["JavaScript"],
+          url: "",
+          created: 1520968147000,
+          modified: 1522178539000
+        },
+        properties: {},
+        estimatedDeploymentCostFactor: 2
+      };
+
+      simpleTypes
+        .convertItemToTemplate(solutionItemId, itemInfo, MOCK_USER_SESSION, MOCK_USER_SESSION, {})
+        .then(actual => {
+          actual.key = expected.key;
+          expect(actual).toEqual(expected);
+          done();
+        }, done.fail);
+    });
+
+
+    it("should handle quick capture project without a data section", done => {
+      const solutionItemId = "ee67658b2a98450cba051fd001463df0";
+      const resources: any = {
+        total: 1,
+        start: 1,
+        num: 1,
+        nextStart: -1,
+        resources: [
+          {
+            resource: "qc.project.json",
+            created: 1579127879000,
+            size: 29882,
+            access: "inherit",
+            type: "application/json"
+          }
+        ]
+      };
+
+      fetchMock
+        .post(
+          utils.PORTAL_SUBSET.restUrl +
+            "/content/items/qck1234567890/data",
+          mockItems.get400Failure()
+        )
+        .post(
+          utils.PORTAL_SUBSET.restUrl +
+            "/content/items/qck1234567890/resources",
+          resources
+        )
+        .post(
+          utils.PORTAL_SUBSET.restUrl +
+            "/content/items/qck1234567890/info/metadata/metadata.xml",
+          mockItems.get500Failure()
+        )
+        .post(
+          utils.PORTAL_SUBSET.restUrl +
+            "/content/items/qck1234567890/info/thumbnail/ago_downloaded.png",
+          utils.getSampleImageAsBlob(),
+          { sendAsJson: false }
+        )
+        .post(
+          utils.PORTAL_SUBSET.restUrl +
+            "/content/items/qck1234567890/resources/images/Camera.png",
+          utils.getSampleImageAsBlob(),
+          { sendAsJson: false }
+        )
+        .post(
+          utils.PORTAL_SUBSET.restUrl +
+            "/content/items/qck1234567890/resources/qc.project.json",
+          utils.getSampleJsonAsFile("qc.project.json"),
+          { sendAsJson: false }
+        )
+        .post(
+          utils.PORTAL_SUBSET.restUrl +
+            "/content/users/casey/items/" +
+            solutionItemId +
+            "/addResources",
+          { success: true, id: solutionItemId }
+        );
+      staticRelatedItemsMocks.fetchMockRelatedItems("qck1234567890", {
+        total: 0,
+        relatedItems: []
+      });
+
+      const itemInfo: common.IItemTemplate = mockItems.getAGOLItem(
+        "QuickCapture Project",
+        null
+      );
+
+      const expected: common.IItemTemplate = {
+        itemId: "qck1234567890",
+        key: "vx3ubyx3",
+        data: null,
+        resources: [utils.getSampleJsonAsFile("qc.project.json")],
+        dependencies: [],
+        relatedItems: [],
+        groups: [],
+        type: "QuickCapture Project",
+        item: {
+          id: "{{qck1234567890.itemId}}",
+          type: "QuickCapture Project",
+          accessInformation: "Esri, Inc.",
+          categories: [],
+          contentStatus: null,
+          culture: "en-us",
+          description: "Description of an AGOL item",
+          extent: [],
+          spatialReference: undefined,
+          licenseInfo: null,
+          name: "Name of an AGOL item",
+          origUrl: undefined,
+          properties: null,
+          snippet: "Snippet of an AGOL item",
+          tags: ["test"],
+          thumbnail: "thumbnail/ago_downloaded.png",
+          title: "An AGOL item",
+          typeKeywords: ["JavaScript"],
+          url: "",
+          created: 1520968147000,
+          modified: 1522178539000
+        },
+        properties: {},
+        estimatedDeploymentCostFactor: 2
+      };
+
+      simpleTypes
+        .convertItemToTemplate(solutionItemId, itemInfo, MOCK_USER_SESSION, MOCK_USER_SESSION, {})
+        .then(actual => {
+          actual.key = expected.key;
+          expect(actual).toEqual(expected);
+          done();
+        }, done.fail);
+    });
+
+    it("should handle quick capture project without an application", done => {
+      const solutionItemId = "ee67658b2a98450cba051fd001463df0";
+      const resources: any = {
+        total: 1,
+        start: 1,
+        num: 1,
+        nextStart: -1,
+        resources: [
+          {
+            resource: "qc.project.json",
+            created: 1579127879000,
+            size: 29882,
+            access: "inherit",
+            type: "application/json"
+          }
+        ]
+      };
+
+      fetchMock
+        .post(
+          utils.PORTAL_SUBSET.restUrl +
+            "/content/items/qck1234567890/data",
+          Object({})
+        )
+        .post(
+          utils.PORTAL_SUBSET.restUrl +
+            "/content/items/qck1234567890/resources",
+          resources
+        )
+        .post(
+          utils.PORTAL_SUBSET.restUrl +
+            "/content/items/qck1234567890/info/metadata/metadata.xml",
+          mockItems.get500Failure()
+        )
+        .post(
+          utils.PORTAL_SUBSET.restUrl +
+            "/content/items/qck1234567890/info/thumbnail/ago_downloaded.png",
+          utils.getSampleImageAsBlob(),
+          { sendAsJson: false }
+        )
+        .post(
+          utils.PORTAL_SUBSET.restUrl +
+            "/content/items/qck1234567890/resources/images/Camera.png",
+          utils.getSampleImageAsBlob(),
+          { sendAsJson: false }
+        )
+        .post(
+          utils.PORTAL_SUBSET.restUrl +
+            "/content/items/qck1234567890/resources/qc.project.json",
+          utils.getSampleJsonAsFile("qc.project.json"),
+          { sendAsJson: false }
+        )
+        .post(
+          utils.PORTAL_SUBSET.restUrl +
+            "/content/users/casey/items/" +
+            solutionItemId +
+            "/addResources",
+          { success: true, id: solutionItemId }
+        );
+      staticRelatedItemsMocks.fetchMockRelatedItems("qck1234567890", {
+        total: 0,
+        relatedItems: []
+      });
+
+      const itemInfo: common.IItemTemplate = mockItems.getAGOLItem(
+        "QuickCapture Project",
+        null
+      );
+
+      const expected: common.IItemTemplate = {
+        itemId: "qck1234567890",
+        key: "vx3ubyx3",
+        data: Object({}),
+        resources: [utils.getSampleJsonAsFile("qc.project.json")],
+        dependencies: [],
+        relatedItems: [],
+        groups: [],
+        type: "QuickCapture Project",
+        item: {
+          id: "{{qck1234567890.itemId}}",
+          type: "QuickCapture Project",
+          accessInformation: "Esri, Inc.",
+          categories: [],
+          contentStatus: null,
+          culture: "en-us",
+          description: "Description of an AGOL item",
+          extent: [],
+          spatialReference: undefined,
+          licenseInfo: null,
+          name: "Name of an AGOL item",
+          origUrl: undefined,
+          properties: null,
+          snippet: "Snippet of an AGOL item",
+          tags: ["test"],
+          thumbnail: "thumbnail/ago_downloaded.png",
+          title: "An AGOL item",
+          typeKeywords: ["JavaScript"],
+          url: "",
+          created: 1520968147000,
+          modified: 1522178539000
+        },
+        properties: {},
+        estimatedDeploymentCostFactor: 2
+      };
+
+      simpleTypes
+        .convertItemToTemplate(solutionItemId, itemInfo, MOCK_USER_SESSION, MOCK_USER_SESSION, {})
+        .then(actual => {
+          actual.key = expected.key;
+          expect(actual).toEqual(expected);
+          done();
+        }, done.fail);
+    });
+
+    it("should handle quick capture project without a basemap", done => {
+      const solutionItemId = "ee67658b2a98450cba051fd001463df0";
+      const resources: any = {
+        total: 1,
+        start: 1,
+        num: 1,
+        nextStart: -1,
+        resources: [
+          {
+            resource: "qc.project.json",
+            created: 1579127879000,
+            size: 29882,
+            access: "inherit",
+            type: "application/json"
+          }
+        ]
+      };
+
+      fetchMock
+        .post(
+          utils.PORTAL_SUBSET.restUrl +
+            "/content/items/qck1234567890/data",
+          Object({
+            application: {},
+            name: "qc.project.json"
+          })
+        )
+        .post(
+          utils.PORTAL_SUBSET.restUrl +
+            "/content/items/qck1234567890/resources",
+          resources
+        )
+        .post(
+          utils.PORTAL_SUBSET.restUrl +
+            "/content/items/qck1234567890/info/metadata/metadata.xml",
+          mockItems.get500Failure()
+        )
+        .post(
+          utils.PORTAL_SUBSET.restUrl +
+            "/content/items/qck1234567890/info/thumbnail/ago_downloaded.png",
+          utils.getSampleImageAsBlob(),
+          { sendAsJson: false }
+        )
+        .post(
+          utils.PORTAL_SUBSET.restUrl +
+            "/content/items/qck1234567890/resources/images/Camera.png",
+          utils.getSampleImageAsBlob(),
+          { sendAsJson: false }
+        )
+        .post(
+          utils.PORTAL_SUBSET.restUrl +
+            "/content/items/qck1234567890/resources/qc.project.json",
+          utils.getSampleJsonAsFile("qc.project.json"),
+          { sendAsJson: false }
+        )
+        .post(
+          utils.PORTAL_SUBSET.restUrl +
+            "/content/users/casey/items/" +
+            solutionItemId +
+            "/addResources",
+          { success: true, id: solutionItemId }
+        );
+      staticRelatedItemsMocks.fetchMockRelatedItems("qck1234567890", {
+        total: 0,
+        relatedItems: []
+      });
+
+      const itemInfo: common.IItemTemplate = mockItems.getAGOLItem(
+        "QuickCapture Project",
+        null
+      );
+
+      const expected: common.IItemTemplate = {
+        itemId: "qck1234567890",
+        key: "vx3ubyx3",
+        data: Object({
+          application: {},
+          name: "qc.project.json"
+        }),
+        resources: [utils.getSampleJsonAsFile("qc.project.json")],
         dependencies: [],
         relatedItems: [],
         groups: [],

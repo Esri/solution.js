@@ -47,11 +47,8 @@ const SERVER_INFO = {
   authInfo: {}
 };
 
-const noRelatedItemsResponse: interfaces.IGetRelatedItemsResponse = {
+const noRelatedItemsResponse: portal.IGetRelatedItemsResponse = {
   total: 0,
-  start: 1,
-  num: 0,
-  nextStart: -1,
   relatedItems: []
 };
 
@@ -645,10 +642,13 @@ describe("Module `restHelpersGet`: common REST fetch functions shared across pac
           "/relatedItems" +
           "?f=json&direction=" +
           direction +
-          "&relationshipType=" +
+          "&start=1&num=100&relationshipType=" +
           relationshipType +
           "&token=fake-token",
-        expected
+        {
+          aggregations: { total: { count: 0, name: "total" } },
+          nextkey: null, num: 100, ...expected
+        } as interfaces.IGetRelatedItemsResponseFull
       );
       restHelpersGet
         .getItemRelatedItems(
@@ -679,10 +679,13 @@ describe("Module `restHelpersGet`: common REST fetch functions shared across pac
           "/relatedItems" +
           "?f=json&direction=" +
           direction +
-          "&relationshipTypes=" +
+          "&start=1&num=100&relationshipTypes=" +
           relationshipType.join("%2C") +
           "&token=fake-token",
-        expected
+        {
+          aggregations: { total: { count: 0, name: "total" } },
+          nextkey: null, num: 100, ...expected
+        } as interfaces.IGetRelatedItemsResponseFull
       );
       restHelpersGet
         .getItemRelatedItems(
@@ -776,10 +779,13 @@ describe("Module `restHelpersGet`: common REST fetch functions shared across pac
           "/relatedItems" +
           "?f=json&direction=" +
           direction +
-          "&relationshipType=" +
+          "&start=1&num=100&relationshipType=" +
           relationshipType +
           "&token=fake-token",
-        expected
+          {
+            aggregations: { total: { count: 1, name: "total" } },
+            nextkey: null, num: 100, ...expected
+          } as interfaces.IGetRelatedItemsResponseFull
       );
       restHelpersGet
         .getItemRelatedItems(
@@ -806,7 +812,7 @@ describe("Module `restHelpersGet`: common REST fetch functions shared across pac
           "/relatedItems" +
           "?f=json&direction=" +
           direction +
-          "&relationshipType=" +
+          "&start=1&num=100&relationshipType=" +
           relationshipType +
           "&token=fake-token",
         mockItems.get500Failure()
@@ -825,6 +831,145 @@ describe("Module `restHelpersGet`: common REST fetch functions shared across pac
           },
           (err: any) => done.fail(err)
         );
+    });
+
+    it("handles multiple batches of requests for related items", done => {
+      const itemId = "itm1234567890";
+      const expected = {
+        total: 7,
+        relatedItems: [
+          { id: "471e7500ab364db5a4f074c704962650" },
+          { id: "db5962011a394e3e9952dd4ba4ad84ef" },
+          { id: "f11985a2217e49c8989c392adc63e27a" },
+          { id: "5a7ca139565349e7813a7ed309717485" },
+          { id: "7495ad9c27aa43bf860b9d0a5dab58ab" },
+          { id: "6e5fb5d0f59b463cb17588caca8df246" },
+          { id: "cce1be82652e4238804c29f9cf2ea417" }
+        ]
+      };
+
+      fetchMock.get(
+        utils.PORTAL_SUBSET.restUrl +
+        "/content/items/" + itemId +
+        "/relatedItems?f=json&direction=forward&start=1&num=3&relationshipType=Survey2Service&token=fake-token",
+          {
+            aggregations: { total: { count: 3, name: "total" } },
+            nextkey: "fred", num: 3, total: 3, relatedItems: [
+              { id: "471e7500ab364db5a4f074c704962650" },
+              { id: "db5962011a394e3e9952dd4ba4ad84ef" },
+              { id: "f11985a2217e49c8989c392adc63e27a" }
+            ]
+          } as interfaces.IGetRelatedItemsResponseFull
+      );
+
+      fetchMock.get(
+        utils.PORTAL_SUBSET.restUrl +
+          "/content/items/" + itemId +
+          "/relatedItems?f=json&direction=forward&start=4&num=3&relationshipType=Survey2Service&nextkey=fred&token=fake-token",
+          {
+            aggregations: { total: { count: 3, name: "total" } },
+            nextkey: "ginger", num: 3, total: 3, relatedItems: [
+              { id: "5a7ca139565349e7813a7ed309717485" },
+              { id: "7495ad9c27aa43bf860b9d0a5dab58ab" },
+              { id: "6e5fb5d0f59b463cb17588caca8df246" }
+            ]
+          } as interfaces.IGetRelatedItemsResponseFull
+      );
+
+      fetchMock.get(
+        utils.PORTAL_SUBSET.restUrl +
+        "/content/items/" + itemId +
+        "/relatedItems?f=json&direction=forward&start=7&num=3&relationshipType=Survey2Service&nextkey=ginger&token=fake-token",
+          {
+            aggregations: { total: { count: 1, name: "total" } },
+            nextkey: null, num: 3, total: 1, relatedItems: [
+              { id: "cce1be82652e4238804c29f9cf2ea417" }
+            ]
+          } as interfaces.IGetRelatedItemsResponseFull
+      );
+
+      restHelpersGet
+        .getItemRelatedItems(
+          itemId,
+          "Survey2Service",
+          "forward",
+          MOCK_USER_SESSION,
+          3  // items per request
+        )
+        .then((response: any) => {
+          expect(response).toEqual(expected);
+          done();
+        }, done.fail);
+    });
+  });
+
+  describe("getItemRelatedItemsInSameDirection", () => {
+    it("gets the data blob url from the authentication", () => {
+      const itemId = "itm1234567890";
+      const relationshipTypes = [
+        // from ItemRelationshipType
+        "APIKey2Item",
+        "Area2CustomPackage",
+        "Area2Package",
+        "Item2Attachment",
+        "Item2Report",
+        "Listed2Provisioned",
+        "Map2AppConfig",
+        "Map2Area",
+        "Map2FeatureCollection",
+        "Map2Service",
+        "MobileApp2Code",
+        "Service2Data",
+        "Service2Layer",
+        "Service2Route",
+        "Service2Service",
+        "Service2Style",
+        "Solution2Item",
+        "Style2Style",
+        "Survey2Data",
+        "Survey2Service",
+        "SurveyAddIn2Data",
+        "Theme2Story",
+        "TrackView2Map",
+        "WebStyle2DesktopStyle",
+        "WMA2Code",
+        "WorkforceMap2FeatureService"
+      ];
+
+      relationshipTypes.forEach(
+        relationshipType => {
+          const response = relationshipType === "Survey2Data"
+            ?
+              {
+                aggregations: { total: { count: 1, name: "total" } },
+                nextkey: null, num: 100, total: 1, relatedItems: [{ id: "srv1234567890" }, { id: "abc1234567890" }]
+              } as interfaces.IGetRelatedItemsResponseFull
+            :
+              {
+                aggregations: { total: { count: 0, name: "total" } },
+                nextkey: null, num: 100, total: 0, relatedItems: []
+              } as interfaces.IGetRelatedItemsResponseFull
+            ;
+
+          fetchMock.get(
+            utils.PORTAL_SUBSET.restUrl +
+              "/content/items/" +
+              itemId +
+              "/relatedItems" +
+              "?f=json&direction=forward&start=1&num=100&relationshipType=" +
+              relationshipType +
+              "&token=fake-token",
+            response
+          );
+        }
+      );
+
+      return restHelpersGet.getItemRelatedItemsInSameDirection(itemId, "forward", MOCK_USER_SESSION)
+      .then(
+        response => {
+          expect(response).toEqual([{ relationshipType: "Survey2Data", relatedItemIds: ["srv1234567890", "abc1234567890"] }]);
+        }
+      );
     });
   });
 
@@ -936,12 +1081,17 @@ describe("Module `restHelpersGet`: common REST fetch functions shared across pac
         portal,
         "getRelatedItems"
       ).and.resolveTo({
-        total: 0,
-        start: 1,
-        num: 0,
-        nextStart: -1,
-        relatedItems: [mockItems.getAGOLItem("Web Map")]
-      } as interfaces.IGetRelatedItemsResponse);
+        aggregations: {
+          total: {
+            count: 1,
+            name: "total"
+          }
+        },
+        nextkey: null,
+        num: 100,
+        relatedItems: [mockItems.getAGOLItem("Web Map")],
+        total: 1
+      } as interfaces.IGetRelatedItemsResponseFull);
       restHelpersGet
         .getItemsRelatedToASolution(solutionId, MOCK_USER_SESSION)
         .then((response: interfaces.IItem[]) => {
@@ -951,8 +1101,8 @@ describe("Module `restHelpersGet`: common REST fetch functions shared across pac
             {
               id: solutionId,
               relationshipType: "Solution2Item",
-              direction: "forward",
-              authentication: MOCK_USER_SESSION
+              authentication: MOCK_USER_SESSION,
+              params: { direction: "forward", start: 1, num: 100 }
             } as portal.IItemRelationshipOptions
           ]);
           done();
@@ -1176,12 +1326,17 @@ describe("Module `restHelpersGet`: common REST fetch functions shared across pac
         portal,
         "getRelatedItems"
       ).and.resolveTo({
-        total: 0,
-        start: 1,
-        num: 0,
-        nextStart: -1,
-        relatedItems: [mockItems.getAGOLItem("Solution")]
-      } as interfaces.IGetRelatedItemsResponse);
+        aggregations: {
+          total: {
+            count: 1,
+            name: "total"
+          }
+        },
+        nextkey: null,
+        num: 100,
+        relatedItems: [mockItems.getAGOLItem("Solution")],
+        total: 1
+      } as interfaces.IGetRelatedItemsResponseFull);
       restHelpersGet
         .getSolutionsRelatedToAnItem(solutionId, MOCK_USER_SESSION)
         .then((response: string[]) => {
@@ -1191,8 +1346,8 @@ describe("Module `restHelpersGet`: common REST fetch functions shared across pac
             {
               id: solutionId,
               relationshipType: "Solution2Item",
-              direction: "reverse",
-              authentication: MOCK_USER_SESSION
+              authentication: MOCK_USER_SESSION,
+              params: { direction: "reverse", start: 1, num: 100 }
             } as portal.IItemRelationshipOptions
           ]);
           done();
