@@ -63,7 +63,7 @@ export function convertItemToTemplate(
 
     // Perform type-specific handling
     let dataPromise = Promise.resolve({});
-    let resourcesPromise = Promise.resolve({});
+    let resourcesPromise = Promise.resolve([]);
     switch (itemInfo.type) {
       case "Dashboard":
       case "Feature Collection":
@@ -142,6 +142,7 @@ export function convertItemToTemplate(
         if (basemap?.type === "WebMap") {
           itemTemplate.dependencies.push(basemap.itemId);
         }
+        itemTemplate.resources = resourcesResponse;
       }
 
       // Create the template

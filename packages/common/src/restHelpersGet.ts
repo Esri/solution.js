@@ -29,7 +29,6 @@ import {
 } from "./generalHelpers";
 import {
   IGetResourcesResponse,
-  IGetRelatedItemsResponseFull,
   IGroup,
   IItem,
   IItemRelationshipOptionsPaging,
