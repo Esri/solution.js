@@ -926,6 +926,9 @@ export function addFeatureServiceDefinition(
         _updateTemplateDictionaryFields(itemTemplate, templateDictionary);
       }
 
+      const isSelfReferential = _isSelfReferential(listToAdd);
+      listToAdd = _updateOrder(listToAdd, isSelfReferential);
+
       const chunkSize: number = _getLayerChunkSize();
       const layerChunks: any[] = [];
       listToAdd.forEach((toAdd, i) => {
@@ -987,6 +990,7 @@ export function addFeatureServiceDefinition(
           itemTemplate,
           options,
           layerChunks,
+          isSelfReferential,
           authentication
         );
 
@@ -1030,12 +1034,30 @@ export function addFeatureServiceDefinition(
 }
 
 /**
+ * When a view is a multi service view sort based on the id
+ * https://github.com/Esri/solution.js/issues/1048
+ *
+ * @param layersAndTables The list of layers and tables for the current template
+ * @param isSelfReferential Indicates if any layers or tables have relationships with other layers or tables in the same service
+ *
+ * @returns Sorted list of layers and tables when using a multi-service view
+ * @private
+ */
+export function _updateOrder(
+  layersAndTables: any[],
+  isSelfReferential: boolean
+): any[] {
+  return isSelfReferential ? layersAndTables.sort((a, b) => a.item.id - b.item.id) : layersAndTables;
+}
+
+/**
  * When a view is a multi service view add each layer separately
  * https://github.com/Esri/solution.js/issues/871
  *
- * @param itemTemplate
+ * @param itemTemplate The current itemTemplate being processed
  * @param options Add to service definition options
  * @param layerChunks Groups of layers or tables to add to the service
+ * @param isSelfReferential Indicates if any layers or tables have relationships with other layers or tables in the same service
  * @param authentication Credentials for the request
  *
  * @returns Add to service definition options
@@ -1045,12 +1067,12 @@ export function _updateAddOptions(
   itemTemplate: IItemTemplate,
   options: any,
   layerChunks: any[],
+  isSelfReferential: boolean,
   authentication: UserSession
 ): any {
-  const isMsView: boolean =
-    getProp(itemTemplate, "properties.service.isMultiServicesView") || false;
+  const isMsView: boolean = getProp(itemTemplate, "properties.service.isMultiServicesView") || false;
   /* istanbul ignore else */
-  if (isMsView) {
+  if (isMsView || isSelfReferential) {
     // if we already have some layers or tables add them first
     /* istanbul ignore else */
     if (options.layers.length > 0 || options.tables.length > 0) {
@@ -1063,6 +1085,25 @@ export function _updateAddOptions(
     }
   }
   return options;
+}
+
+/**
+ * Determine if any layer or table within the service references
+ * other layers or tables within the same service
+ *
+ * @param layersAndTables the list of layers and tables from the service
+ *
+ * @returns true when valid internal references are found
+ * @private
+ */
+export function _isSelfReferential(
+  layersAndTables: any[]
+): boolean {
+  const names = layersAndTables.map(l => l.item.name);
+  return layersAndTables.some(l => {
+    const relatedTables = l.item.adminLayerInfo?.viewLayerDefinition?.table?.relatedTables || [];
+    return relatedTables.some(r => names.indexOf(r.name) > -1);
+  });
 }
 
 /**

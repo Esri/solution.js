@@ -76,7 +76,9 @@ import {
   _templatizeTimeInfo,
   _templatizeDefinitionQuery,
   _getNameMapping,
+  _updateOrder,
   _updateAddOptions,
+  _isSelfReferential,
   _updateForPortal,
   _getFieldNames,
   _getDynamicFieldNames,
@@ -6376,6 +6378,57 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
     });
   });
 
+  describe("_updateOrder", () => {
+    it("will sort when self referential", () => {
+      const layersAndTables = [{
+        item: {
+          id: 4
+        }
+      }, {
+        item: {
+          id: 3
+        }
+      }, {
+        item: {
+          id: 1
+        }
+      }, {
+        item: {
+          id: 2
+        }
+      }, {
+        item: {
+          id: 0
+        }
+      }];
+
+      const expected = [{
+        item: {
+          id: 0
+        }
+      }, {
+        item: {
+          id: 1
+        }
+      }, {
+        item: {
+          id: 2
+        }
+      }, {
+        item: {
+          id: 3
+        }
+      }, {
+        item: {
+          id: 4
+        }
+      }];
+
+      const actual = _updateOrder(layersAndTables, true);
+      expect(actual).toEqual(expected);
+    });
+  });
+
   describe("_updateAddOptions", () => {
     it("will not create new array when isMultiServicesView is false", () => {
       const startOptions: any = {
@@ -6398,6 +6451,7 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
         itemTemplate,
         startOptions,
         layerChunks,
+        false,
         MOCK_USER_SESSION
       );
       expect(actual.layers).toEqual(startOptions.layers);
@@ -6426,6 +6480,7 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
         itemTemplate,
         startOptions,
         layerChunks,
+        false,
         MOCK_USER_SESSION
       );
 
@@ -6454,12 +6509,65 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
         itemTemplate,
         startOptions,
         layerChunks,
+        false,
         MOCK_USER_SESSION
       );
 
       expect(actual.layers).toEqual([]);
       expect(actual.tables).toEqual([]);
       expect(layerChunks).toEqual([startOptions]);
+    });
+  });
+
+  describe("_isSelfReferential", () => {
+    it("will return true when a layer references another layer from the same service", () => {
+      const layersAndTables = [{
+        item: {
+          adminLayerInfo: {
+            viewLayerDefinition: {
+              table: {
+                relatedTables: [{
+                  name: "A"
+                }]
+              }
+            }
+          },
+          name: "B"
+        }
+      }, {
+        item: {
+          name: "A"
+        }
+      }];
+
+      const expected = true;
+      const actual = _isSelfReferential(layersAndTables);
+      expect(actual).toEqual(expected);
+    });
+
+    it("will return false when a layer does not reference another layer from the same service", () => {
+      const layersAndTables = [{
+        item: {
+          adminLayerInfo: {
+            viewLayerDefinition: {
+              table: {
+                relatedTables: [{
+                  name: "C"
+                }]
+              }
+            }
+          },
+          name: "B"
+        }
+      }, {
+        item: {
+          name: "A"
+        }
+      }];
+
+      const expected = false;
+      const actual = _isSelfReferential(layersAndTables);
+      expect(actual).toEqual(expected);
     });
   });
 
