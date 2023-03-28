@@ -1043,6 +1043,7 @@ function visit(
   dependencies.forEach(dep => {
     n = !visited[dep] ? visit(dep, n, visited, sorted, graph) : n;
   });
+  sorted[v] = n;
   return n - 1;
 }
 
