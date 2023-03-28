@@ -1099,7 +1099,7 @@ export function _isSelfReferential(
 ): boolean {
   const names = layersAndTables.map(l => l.item.name);
   return layersAndTables.some(l => {
-    const relatedTables = l.item?.adminLayerInfo?.viewLayerDefinition?.table?.relatedTables || [];
+    const relatedTables = l.item.adminLayerInfo?.viewLayerDefinition?.table?.relatedTables || [];
     return relatedTables.some(r => names.indexOf(r.name) > -1);
   });
 }
