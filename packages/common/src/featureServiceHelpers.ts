@@ -926,7 +926,8 @@ export function addFeatureServiceDefinition(
         _updateTemplateDictionaryFields(itemTemplate, templateDictionary);
       }
 
-      listToAdd = _updateOrder(listToAdd);
+      const isSelfReferential = _isSelfReferential(listToAdd);
+      listToAdd = _updateOrder(listToAdd, isSelfReferential);
 
       const chunkSize: number = _getLayerChunkSize();
       const layerChunks: any[] = [];
@@ -989,6 +990,7 @@ export function addFeatureServiceDefinition(
           itemTemplate,
           options,
           layerChunks,
+          isSelfReferential,
           authentication
         );
 
@@ -1031,64 +1033,27 @@ export function addFeatureServiceDefinition(
   });
 }
 
-function visit(
-  v: string,
-  n: number,
-  visited: any,
-  sorted: any,
-  graph: any
-) {
-  visited[v] = true;
-  const dependencies = graph[v];
-  dependencies.forEach(dep => {
-    n = !visited[dep] ? visit(dep, n, visited, sorted, graph) : n;
-  });
-  sorted[v] = n;
-  return n - 1;
-}
-
-// @see {@link https://adelachao.medium.com/graph-topological-sort-javascript-implementation-1cc04e10f181}
+/**
+ * When a view is a multi service view sort based on the id
+ * https://github.com/Esri/solution.js/issues/1048
+ *
+ * @param layersAndTables The list of layers and tables for the current template
+ *
+ * @returns Sorted list of layers and tables when using a multi-service view
+ * @private
+ */
 export function _updateOrder(
-  layersAndTables: any[]
+  layersAndTables: any[],
+  isSelfReferential: boolean
 ): any[] {
-  const g = layersAndTables.reduce((prev, cur) => {
-    const item = cur.item;
-    const relatedTables = (item?.adminLayerInfo?.viewLayerDefinition?.table?.relatedTables || []);
-    if (!prev[item.name]) {
-      prev[item.name] = [];
-    }
-    relatedTables.forEach(t => {
-      prev[item.name].push(t.name);
-    })
-    return prev;
-  }, {});
-
-  const vertices = Object.keys(g);
-  const visited = {};
-  const sorted = {};
-  let n = vertices.length - 1;
-  vertices.forEach(v => {
-    n = !visited[v] ? visit(v, n, visited, sorted, g): n;
-  });
-
-  const sortedLayersAndTables = [];
-  Object.keys(sorted).forEach(s => {
-    layersAndTables.some(lt => {
-      if (lt.item.name === s) {
-        sortedLayersAndTables.push(lt);
-        return true;
-      }
-    })
-  })
-
-  return sortedLayersAndTables;
+  return isSelfReferential ? layersAndTables.sort((a, b) => a.item.id - b.item.id) : layersAndTables;
 }
 
 /**
  * When a view is a multi service view add each layer separately
  * https://github.com/Esri/solution.js/issues/871
  *
- * @param itemTemplate
+ * @param itemTemplate The current itemTemplate being processed
  * @param options Add to service definition options
  * @param layerChunks Groups of layers or tables to add to the service
  * @param authentication Credentials for the request
@@ -1100,12 +1065,12 @@ export function _updateAddOptions(
   itemTemplate: IItemTemplate,
   options: any,
   layerChunks: any[],
+  isSelfReferential: boolean,
   authentication: UserSession
 ): any {
-  const isMsView: boolean =
-    getProp(itemTemplate, "properties.service.isMultiServicesView") || false;
+  const isMsView: boolean = getProp(itemTemplate, "properties.service.isMultiServicesView") || false;
   /* istanbul ignore else */
-  if (isMsView) {
+  if (isMsView || isSelfReferential) {
     // if we already have some layers or tables add them first
     /* istanbul ignore else */
     if (options.layers.length > 0 || options.tables.length > 0) {
@@ -1118,6 +1083,25 @@ export function _updateAddOptions(
     }
   }
   return options;
+}
+
+/**
+ * Determine if any layer or table within the service references
+ * other layers or tables within the same service
+ *
+ * @param layersAndTables the list of layers and tables from the service
+ *
+ * @returns true when valid internal references are found
+ * @private
+ */
+export function _isSelfReferential(
+  layersAndTables: any[]
+): boolean {
+  const names = layersAndTables.map(l => l.item.name);
+  return layersAndTables.some(l => {
+    const relatedTables = l.item?.adminLayerInfo?.viewLayerDefinition?.table?.relatedTables || [];
+    return relatedTables.some(r => names.indexOf(r.name) > -1);
+  });
 }
 
 /**
