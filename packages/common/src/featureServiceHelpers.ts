@@ -1038,6 +1038,7 @@ export function addFeatureServiceDefinition(
  * https://github.com/Esri/solution.js/issues/1048
  *
  * @param layersAndTables The list of layers and tables for the current template
+ * @param isSelfReferential Indicates if any layers or tables have relationships with other layers or tables in the same service
  *
  * @returns Sorted list of layers and tables when using a multi-service view
  * @private
@@ -1056,6 +1057,7 @@ export function _updateOrder(
  * @param itemTemplate The current itemTemplate being processed
  * @param options Add to service definition options
  * @param layerChunks Groups of layers or tables to add to the service
+ * @param isSelfReferential Indicates if any layers or tables have relationships with other layers or tables in the same service
  * @param authentication Credentials for the request
  *
  * @returns Add to service definition options
