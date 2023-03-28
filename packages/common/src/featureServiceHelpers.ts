@@ -926,6 +926,8 @@ export function addFeatureServiceDefinition(
         _updateTemplateDictionaryFields(itemTemplate, templateDictionary);
       }
 
+      listToAdd = _updateOrder(listToAdd);
+
       const chunkSize: number = _getLayerChunkSize();
       const layerChunks: any[] = [];
       listToAdd.forEach((toAdd, i) => {
@@ -1027,6 +1029,58 @@ export function addFeatureServiceDefinition(
         );
     }
   });
+}
+
+function visit(
+  v: string,
+  n: number,
+  visited: any,
+  sorted: any,
+  graph: any
+) {
+  visited[v] = true;
+  const dependencies = graph[v];
+  dependencies.forEach(dep => {
+    n = !visited[dep] ? visit(dep, n, visited, sorted, graph) : n;
+  });
+  return n - 1;
+}
+
+// @see {@link https://adelachao.medium.com/graph-topological-sort-javascript-implementation-1cc04e10f181}
+export function _updateOrder(
+  layersAndTables: any[]
+): any[] {
+  const g = layersAndTables.reduce((prev, cur) => {
+    const item = cur.item;
+    const relatedTables = (item?.adminLayerInfo?.viewLayerDefinition?.table?.relatedTables || []);
+    if (!prev[item.name]) {
+      prev[item.name] = [];
+    }
+    relatedTables.forEach(t => {
+      prev[item.name].push(t.name);
+    })
+    return prev;
+  }, {});
+
+  const vertices = Object.keys(g);
+  const visited = {};
+  const sorted = {};
+  let n = vertices.length - 1;
+  vertices.forEach(v => {
+    n = !visited[v] ? visit(v, n, visited, sorted, g): n;
+  });
+
+  const sortedLayersAndTables = [];
+  Object.keys(sorted).forEach(s => {
+    layersAndTables.some(lt => {
+      if (lt.item.name === s) {
+        sortedLayersAndTables.push(lt);
+        return true;
+      }
+    })
+  })
+
+  return sortedLayersAndTables;
 }
 
 /**
