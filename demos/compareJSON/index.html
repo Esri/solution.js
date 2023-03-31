@@ -1,10 +1,10 @@
 <!doctype html>
 <html lang="en" dir="ltr">
 <head>
-  <meta http-equiv="content-type" content="text/html; charset=utf-8" />
-  <title>@esri/solution-common compareJSON example</title>
+  <meta charset="utf-8"/>
+  <title>compareJSON example</title>
   <!--
-   | Copyright 2020 Esri
+   | Copyright 2023 Esri
    |
    | Licensed under the Apache License, Version 2.0 (the "License");
    | you may not use this file except in compliance with the License.
@@ -18,28 +18,9 @@
    | See the License for the specific language governing permissions and
    | limitations under the License.
   -->
-  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
-  <link rel="stylesheet" href="https://esri.github.io/calcite-bootstrap/styles/calcite-bootstrap.min.css">
-  <style>
-  body {
-    padding: 8px;
-  }
-  button {
-    cursor: pointer;
-  }
-  textarea {
-     width: 100%;
-  }
-  .column2 {
-    width: 48%;
-    display: inline-block;
-    vertical-align: top;
-  }
-  .gap {
-    width: 2%;
-    display: inline-block;
-  }
-  </style>
+  <script>
+    var goFcn, loadFcn;
+  </script>
 </head>
 <body>
   <div id="input" style="display:none">
@@ -52,58 +33,11 @@
     <div class="column2"><textarea id="json2" rows=10></textarea></div>
 
     <br><br>
+    <span class="ital">Option: </span>
     <button onclick="loadFcn()">Load JSON 2 with sanitized JSON 1</button>
     <br><br>
     <button onclick="goFcn()">Go</button>
   </div>
   <div id="output" style="display:none">Comparing...</div>
-
-  <script crossorigin="anonymous" src="https://polyfill.io/v3/polyfill.min.js?features=fetch%2Ces2015"></script>
-  <script src="https://requirejs.org/docs/release/2.3.6/minified/require.js"></script>
-  <script>
-    var loadFcn, goFcn;
-    require.config({
-      paths: {
-        "@esri/arcgis-rest-auth": "../node_modules/@esri/arcgis-rest-auth/dist/umd/auth.umd.min",
-        "@esri/arcgis-rest-feature-layer": "../node_modules/@esri/arcgis-rest-feature-layer/dist/umd/feature-layer.umd.min",
-        "@esri/arcgis-rest-portal": "../node_modules/@esri/arcgis-rest-portal/dist/umd/portal.umd.min",
-        "@esri/arcgis-rest-request": "../node_modules/@esri/arcgis-rest-request/dist/umd/request.umd.min",
-        "@esri/arcgis-rest-service-admin": "../node_modules/@esri/arcgis-rest-service-admin/dist/umd/service-admin.umd.min",
-        "@esri/hub-common": "../node_modules/@esri/hub-common/dist/umd/common.umd.min",
-        "@esri/hub-initiatives": "../node_modules/@esri/hub-initiatives/dist/umd/initiatives.umd.min",
-        "@esri/hub-sites": "../node_modules/@esri/hub-sites/dist/umd/sites.umd.min",
-        "@esri/hub-teams": "../node_modules/@esri/hub-teams/dist/umd/teams.umd.min",
-        "@esri/solution-common": "../node_modules/@esri/solution-common/dist/umd/common.umd",
-        "adlib": "../node_modules/adlib/dist/adlib",
-        "tslib": "../node_modules/tslib/tslib"
-      }
-    });
-
-    require(["@esri/solution-common", "../dist/compare-json-main"],
-      function (common, main) {
-        "use strict";
-        loadFcn = load;
-        goFcn = go;
-        document.getElementById("input").style.display = "block";
-
-        function load () {
-          var json1 = document.getElementById("json1").value;
-          document.getElementById("json2").value = !json1 ? "" :
-            JSON.stringify(common.sanitizeJSON(JSON.parse(document.getElementById("json1").value)), null, 2);
-        }
-
-        function go () {
-          document.getElementById("input").style.display = "none";
-          document.getElementById("output").style.display = "block";
-
-          var json1 = document.getElementById("json1").value;
-          var json2 = document.getElementById("json2").value;
-          json1 = json1 ? JSON.parse(json1) : null;
-          json2 = json2 ? JSON.parse(json2) : null;
-
-          document.getElementById("output").innerHTML = main.compareJSON(json1, json2);
-        }
-      });
-  </script>
 </body>
 </html>

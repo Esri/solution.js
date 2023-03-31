@@ -1,7 +1,7 @@
 {
   "packages": [
     "packages/**",
-    "demos/"
+    "demos/compareJSON"
   ],
   "version": "1.7.0"
 }

@@ -1,0 +1,22 @@
+body {
+  padding: 8px;
+}
+button {
+  cursor: pointer;
+}
+textarea {
+   width: 100%;
+}
+.column2 {
+  width: 48%;
+  display: inline-block;
+  vertical-align: top;
+}
+.gap {
+  width: 2%;
+  display: inline-block;
+}
+.ital {
+  font-style: italic;
+}
+
