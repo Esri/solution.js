@@ -1,7 +1,8 @@
 {
   "packages": [
     "packages/**",
-    "demos/compareJSON"
+    "demos/compareJSON",
+    "demos/getItemInfo"
   ],
   "version": "1.7.0"
 }
