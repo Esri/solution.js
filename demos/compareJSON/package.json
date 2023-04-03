@@ -1,6 +1,6 @@
 {
   "name": "compareJSON",
-  "version": "2.0.1-alpha.0",
+  "version": "2.0.2-alpha.0",
   "description": "compareJSON demo",
   "author": "",
   "license": "Apache-2.0",
@@ -21,7 +21,7 @@
     "@esri/hub-initiatives": "^12.4.1",
     "@esri/hub-sites": "^12.5.0",
     "@esri/hub-teams": "^12.4.1",
-    "@esri/solution-common": "^2.0.1-alpha.0",
+    "@esri/solution-common": "^2.0.2-alpha.0",
     "css-loader": "^6.7.3",
     "html-webpack-plugin": "^5.5.0",
     "style-loader": "^3.3.2",
