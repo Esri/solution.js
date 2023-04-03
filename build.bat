@@ -6,17 +6,17 @@ call npm --version
 call npm install --force
 
 pushd demos\compareJSON
-call npm install --force
+call npm install
 call npm run build
 popd
 
 pushd demos\copySolutions
-call npm install --force
+call npm install
 call npm run build
 popd
 
 pushd demos\getItemInfo
-call npm install --force
+call npm install
 call npm run build
 popd
 

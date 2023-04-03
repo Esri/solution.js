@@ -1,6 +1,5 @@
 {
   "name": "compareJSON",
-  "private": true,
   "version": "2.0.0-alpha.0",
   "description": "compareJSON demo",
   "author": "",
@@ -12,11 +11,11 @@
     "watch": "webpack --watch"
   },
   "devDependencies": {
-    "@esri/arcgis-rest-auth": "3.5.0",
-    "@esri/arcgis-rest-feature-layer": "3.5.0",
-    "@esri/arcgis-rest-portal": "3.5.0",
-    "@esri/arcgis-rest-request": "3.5.0",
-    "@esri/arcgis-rest-service-admin": "3.5.0",
+    "@esri/arcgis-rest-auth": "~3.5.0",
+    "@esri/arcgis-rest-feature-layer": "~3.5.0",
+    "@esri/arcgis-rest-portal": "~3.5.0",
+    "@esri/arcgis-rest-request": "~3.5.0",
+    "@esri/arcgis-rest-service-admin": "~3.5.0",
     "@esri/hub-common": "^12.14.0",
     "@esri/hub-initiatives": "^12.4.1",
     "@esri/hub-sites": "^12.5.0",
