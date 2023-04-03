@@ -27,6 +27,7 @@ import {
   IItemTemplate,
   ICreateItemFromTemplateResponse,
   IUpdateItemResponse,
+  convertIModel,
   generateEmptyCreationResponse,
   updateItemTemplateFromDictionary
 } from "@esri/solution-common";
@@ -137,7 +138,7 @@ export function createItemFromTemplate(
         const response: ICreateItemFromTemplateResponse = {
           item: {
             ...template,
-            ...exbModel
+            ...convertIModel(exbModel)
           },
           id: exbModel.item.id,
           type: template.type,
