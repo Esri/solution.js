@@ -16,10 +16,12 @@
 
 import "./style.css";
 import * as common from "@esri/solution-common";
-import * as compareJSON from "./compare-json-main";
+import * as main from "./compare-json-main";
 
 declare var goFcn: any;
 declare var loadFcn: any;
+
+//--------------------------------------------------------------------------------------------------------------------//
 
 /**
  * Loads the second window with a sanitized version of the first window.
@@ -46,8 +48,10 @@ function go () {
   json1 = json1 ? JSON.parse(json1) : null;
   json2 = json2 ? JSON.parse(json2) : null;
 
-  document.getElementById("output").innerHTML = compareJSON.compareJSON(json1, json2);
+  document.getElementById("output").innerHTML = main.compareJSON(json1, json2);
 }
+
+//--------------------------------------------------------------------------------------------------------------------//
 
 goFcn = go;
 loadFcn = load;
