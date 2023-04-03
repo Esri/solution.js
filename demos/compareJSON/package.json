@@ -3,15 +3,14 @@
   "private": true,
   "version": "1.7.0",
   "description": "compareJSON demo",
+  "author": "",
+  "license": "Apache-2.0",
   "scripts": {
     "build": "webpack --mode=production --node-env=production",
     "build:dev": "webpack --mode=development",
     "build:prod": "webpack --mode=production --node-env=production",
     "watch": "webpack --watch"
   },
-  "keywords": [],
-  "author": "",
-  "license": "Apache-2.0",
   "devDependencies": {
     "@esri/arcgis-rest-auth": "3.5.0",
     "@esri/arcgis-rest-feature-layer": "3.5.0",
@@ -32,7 +31,6 @@
     "webpack-cli": "^5.0.1"
   },
   "dependencies": {
-    "adlib": "3.0.8",
     "tslib": "2.5.0"
   }
 }
