@@ -4,6 +4,7 @@
   "description": "getItemInfo demo",
   "author": "",
   "license": "Apache-2.0",
+  "private": true,
   "scripts": {
     "build": "webpack --mode=production --node-env=production",
     "build:dev": "webpack --mode=development",
@@ -31,5 +32,6 @@
   },
   "dependencies": {
     "tslib": "2.5.0"
-  }
+  },
+  "gitHead": "2ec5fb241f432832e9d191bfcf118a50b621491d"
 }
