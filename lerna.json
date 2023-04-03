@@ -2,6 +2,7 @@
   "packages": [
     "packages/**",
     "demos/compareJSON",
+    "demos/copySolutions",
     "demos/getItemInfo"
   ],
   "version": "1.7.0"
