@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="en" dir="ltr">
+<head>
+  <meta charset="utf-8"/>
+  <title>compareJSON example</title>
+  <!--
+   | Copyright 2023 Esri
+   |
+   | Licensed under the Apache License, Version 2.0 (the "License");
+   | you may not use this file except in compliance with the License.
+   | You may obtain a copy of the License at
+   |
+   |    http://www.apache.org/licenses/LICENSE-2.0
+   |
+   | Unless required by applicable law or agreed to in writing, software
+   | distributed under the License is distributed on an "AS IS" BASIS,
+   | WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   | See the License for the specific language governing permissions and
+   | limitations under the License.
+  -->
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+  <script>
+    var goFcn;
+  </script>
+</head>
+<body>
+  <h3>Create a Solution</h3>
+  <p>Create a solution item from the contents of a group or from a single item and its dependencies.</p>
+
+  <div id="container" style="display:none">
+    <div id="input">
+      <label for="itemOrGroupId">Enter an Item or Group ID:</label>
+      <input class="form-control" type="text" id="itemOrGroupId">
+
+      <br /><br />
+
+      <div class="section-title">Credentials in source organization</div>
+
+      <div class="labeledItem">
+        <label for="srcUsername">Username:&nbsp;</label>
+        <input type="text" id="srcUsername" placeholder="anonymous">
+      </div>
+      <div class="labeledItem">
+        <label for="srcPassword">Password:&nbsp;</label>
+        <input type="password" id="srcPassword">
+      </div>
+      <div class="labeledItem">
+        <label for="srcPortal">Portal:&nbsp;</label>
+        <input type="text" id="srcPortal" style="width:256px" placeholder="https://www.arcgis.com">
+      </div>
+
+      <br/><br/>
+
+      <div class="section-title">Credentials in destination organization</div>
+
+      <div class="labeledItem">
+        <label for="destUsername">Username:&nbsp;</label>
+        <input type="text" id="destUsername">
+      </div>
+      <div class="labeledItem">
+        <label for="destPassword">Password:&nbsp;</label>
+        <input type="password" id="destPassword">
+      </div>
+      <div class="labeledItem">
+        <label for="destPortal">Portal:&nbsp;</label>
+        <input type="text" id="destPortal" style="width:256px" placeholder="https://www.arcgis.com">
+      </div>
+
+      <br/><br/>
+
+      <button class="btn btn-default" onclick="goFcn()">Create Solution</button>
+    </div>
+
+    <br />
+
+    <div id="output" style="display:none">Creating...</div>
+</body>
+</html>

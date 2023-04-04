@@ -15,7 +15,6 @@
  */
 
 import "./style.css";
-import * as auth from "@esri/arcgis-rest-auth";
 import * as common from "@esri/solution-common";
 import * as demoCommon from "./demoCommon";
 import * as htmlSanitizer from "@esri/arcgis-html-sanitizer";
