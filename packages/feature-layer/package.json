@@ -1,6 +1,6 @@
 {
   "name": "@esri/solution-feature-layer",
-  "version": "1.7.0",
+  "version": "2.0.2-alpha.0",
   "description": "Manages the creation and deployment of feature layers and services for @esri/solution.js.",
   "main": "dist/node/index.js",
   "unpkg": "dist/umd/feature-layer.umd.min.js",
@@ -13,24 +13,24 @@
     "dist/**"
   ],
   "devDependencies": {
-    "@esri/arcgis-rest-auth": "3.5.0",
-    "@esri/arcgis-rest-feature-layer": "3.5.0",
-    "@esri/arcgis-rest-portal": "3.5.1",
-    "@esri/arcgis-rest-request": "3.5.0",
-    "@esri/arcgis-rest-service-admin": "3.5.0",
+    "@esri/arcgis-rest-auth": "~3.5.0",
+    "@esri/arcgis-rest-feature-layer": "~3.5.0",
+    "@esri/arcgis-rest-portal": "~3.5.0",
+    "@esri/arcgis-rest-request": "~3.5.0",
+    "@esri/arcgis-rest-service-admin": "~3.5.0",
     "@esri/hub-common": "^12.14.0",
     "@esri/hub-initiatives": "^12.4.1",
     "@esri/hub-sites": "^12.5.0",
     "@esri/hub-teams": "^12.4.1",
-    "@esri/solution-common": "^1.7.0",
+    "@esri/solution-common": "^2.0.2-alpha.0",
     "rollup": "2.79.1"
   },
   "peerDependencies": {
-    "@esri/arcgis-rest-auth": "3.5.0",
-    "@esri/arcgis-rest-feature-layer": "3.5.0",
-    "@esri/arcgis-rest-portal": "3.5.1",
-    "@esri/arcgis-rest-request": "3.5.0",
-    "@esri/arcgis-rest-service-admin": "3.5.0",
+    "@esri/arcgis-rest-auth": "~3.5.0",
+    "@esri/arcgis-rest-feature-layer": "~3.5.0",
+    "@esri/arcgis-rest-portal": "~3.5.0",
+    "@esri/arcgis-rest-request": "~3.5.0",
+    "@esri/arcgis-rest-service-admin": "~3.5.0",
     "@esri/hub-common": "^12.14.0",
     "@esri/hub-initiatives": "^12.4.1",
     "@esri/hub-sites": "^12.5.0",
@@ -90,5 +90,5 @@
     "esri",
     "ES6"
   ],
-  "gitHead": "90abda2458189857c45459ec57acea8453ec77f3"
+  "gitHead": "f9e62ca011235bb55cbfe17057177f070742a069"
 }

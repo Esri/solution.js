@@ -20,14 +20,13 @@
  * @module generalHelpers
  */
 
-import { createId } from "@esri/hub-common";
+import { createId, IModel } from "@esri/hub-common";
 import {
   ICreateItemFromTemplateResponse,
   IDatasourceInfo,
   IItemTemplate,
   IStringValuePair
 } from "./interfaces";
-import { IModel } from "@esri/hub-common";
 import { Sanitizer, sanitizeJSON } from "./libConnectors";
 import { new_File } from "./polyfills";
 
