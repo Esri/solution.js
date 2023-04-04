@@ -30,6 +30,11 @@ call npm install
 call npm run build
 popd
 
+pushd demos\verifySolution
+call npm install
+call npm run build
+popd
+
 call rmdir/q/s coverage
 call npm run test:chrome:ci
 
