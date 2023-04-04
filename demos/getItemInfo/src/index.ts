@@ -16,6 +16,7 @@
 
 import "./style.css";
 import * as common from "@esri/solution-common";
+import * as htmlUtil from "./htmlUtil";
 import * as main from "./getFormattedItemInfo";
 
 declare var goFcn: any;
@@ -30,11 +31,11 @@ function go () {
   document.getElementById("output").style.display = "block";
 
   main.getFormattedItemInfo(
-    (document.getElementById("id") as HTMLInputElement).value.trim(),
+    htmlUtil.getHTMLValue("id").trim(),
     new common.UserSession({
-      username: (document.getElementById("username") as HTMLInputElement).value,
-      password: (document.getElementById("password") as HTMLInputElement).value,
-      portal: (document.getElementById("srcPortal") as HTMLInputElement).value + "/sharing/rest"
+      username: htmlUtil.getHTMLValue("username"),
+      password: htmlUtil.getHTMLValue("password"),
+      portal: htmlUtil.getHTMLValue("srcPortal") + "/sharing/rest"
     })
   ).then(
     html => {

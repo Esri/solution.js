@@ -16,6 +16,7 @@
 
 import "./style.css";
 import * as common from "@esri/solution-common";
+import * as htmlUtil from "./htmlUtil";
 import * as main from "./compare-json-main";
 
 declare var goFcn: any;
@@ -27,12 +28,13 @@ declare var loadFcn: any;
  * Loads the second window with a sanitized version of the first window.
  */
 function load () {
-  var json1 = (document.getElementById("json1") as HTMLInputElement).value;
-  (document.getElementById("json2") as HTMLInputElement).value = !json1 ? "" :
-    JSON.stringify(
-      common.sanitizeJSON(
-        JSON.parse((document.getElementById("json1") as HTMLInputElement).value)
-      ), null, 2
+  var json1 = htmlUtil.getHTMLValue("json1");
+   (document.getElementById("json2") as HTMLInputElement).value = !json1
+     ? "" // json1 is empty, so just set json2 to empty
+     : JSON.stringify( // load json2 with the sanitized version of json1
+       common.sanitizeJSON(
+         JSON.parse(htmlUtil.getHTMLValue("json1"))
+       ), null, 2
     );
 }
 
@@ -43,8 +45,8 @@ function go () {
   document.getElementById("input").style.display = "none";
   document.getElementById("output").style.display = "block";
 
-  var json1 = (document.getElementById("json1") as HTMLInputElement).value;
-  var json2 = (document.getElementById("json2") as HTMLInputElement).value;
+  var json1 = htmlUtil.getHTMLValue("json1");
+  var json2 = htmlUtil.getHTMLValue("json2");
   json1 = json1 ? JSON.parse(json1) : null;
   json2 = json2 ? JSON.parse(json2) : null;
 
