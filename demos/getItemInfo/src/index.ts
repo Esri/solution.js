@@ -15,7 +15,7 @@
  */
 
 import "./style.css";
-import * as auth from "@esri/arcgis-rest-auth";
+import * as common from "@esri/solution-common";
 import * as main from "./getFormattedItemInfo";
 
 declare var goFcn: any;
@@ -31,7 +31,7 @@ function go () {
 
   main.getFormattedItemInfo(
     (document.getElementById("id") as HTMLInputElement).value.trim(),
-    new auth.UserSession({
+    new common.UserSession({
       username: (document.getElementById("username") as HTMLInputElement).value,
       password: (document.getElementById("password") as HTMLInputElement).value,
       portal: (document.getElementById("srcPortal") as HTMLInputElement).value + "/sharing/rest"
