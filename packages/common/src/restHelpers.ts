@@ -619,7 +619,7 @@ export function createFullItem(
       updatedThumbnailUrl => {
         /* istanbul ignore else */
         if (updatedThumbnailUrl) {
-          createOptions.item.thumbnailurl = appendQueryParam(
+          createOptions.item.thumbnailUrl = appendQueryParam(
             updatedThumbnailUrl,
             "w=400"
           );
