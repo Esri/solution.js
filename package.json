@@ -76,7 +76,6 @@
     "adlib": "^3.0.8",
     "changelog-parser": "^3.0.1",
     "cheerio": "^1.0.0-rc.12",
-    "codecov": "^3.8.2",
     "concurrently": "^7.6.0",
     "core-js": "^3.27.2",
     "coveralls": "^3.1.1",
