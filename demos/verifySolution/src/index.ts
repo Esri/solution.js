@@ -24,20 +24,6 @@ declare var goFcn: any;
 //--------------------------------------------------------------------------------------------------------------------//
 
 /**
- * Loads the second window with a sanitized version of the first window.
- */
-function load () {
-  var json1 = htmlUtil.getHTMLValue("json1");
-   (document.getElementById("json2") as HTMLInputElement).value = !json1
-     ? "" // json1 is empty, so just set json2 to empty
-     : JSON.stringify( // load json2 with the sanitized version of json1
-       common.sanitizeJSON(
-         JSON.parse(htmlUtil.getHTMLValue("json1"))
-       ), null, 2
-    );
-}
-
-/**
  * Runs the verification.
  */
 function go () {
