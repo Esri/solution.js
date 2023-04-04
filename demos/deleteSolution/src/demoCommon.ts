@@ -28,7 +28,7 @@ import * as portal from "@esri/arcgis-rest-portal";
  */
 export function addBusySymbol (containerElementId: string): HTMLElement {
   const busySymbol = addItem(containerElementId, "IMG", containerElementId + "_busySymbol");
-  (busySymbol as HTMLImageElement).src = "../images/loading.gif";
+  (busySymbol as HTMLImageElement).src = "loading.gif";
   return busySymbol;
 }
 
