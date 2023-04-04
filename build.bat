@@ -10,6 +10,11 @@ call npm install
 call npm run build
 popd
 
+pushd demos\copyItemInfo
+call npm install
+call npm run build
+popd
+
 pushd demos\copySolutions
 call npm install
 call npm run build

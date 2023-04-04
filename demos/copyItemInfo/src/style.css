@@ -1,0 +1,9 @@
+body {
+  padding: 16px;
+}
+button {
+  cursor: pointer;
+}
+td {
+  border: none;
+}
