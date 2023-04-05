@@ -1,0 +1,12 @@
+body {
+  padding: 16px;
+}
+button {
+  cursor: pointer;
+}
+td {
+  border: none;
+}
+li {
+  margin-bottom: 12px;
+}

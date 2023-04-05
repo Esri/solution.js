@@ -3,9 +3,14 @@ rem Builds the repository and its demos
 call node --version
 call npm --version
 
-call npm install --force
+call npm install
 
 pushd demos\compareJSON
+call npm install
+call npm run build
+popd
+
+pushd demos\copyItemInfo
 call npm install
 call npm run build
 popd
@@ -20,7 +25,17 @@ call npm install
 call npm run build
 popd
 
+pushd demos\deleteSolution
+call npm install
+call npm run build
+popd
+
 pushd demos\getItemInfo
+call npm install
+call npm run build
+popd
+
+pushd demos\verifySolution
 call npm install
 call npm run build
 popd

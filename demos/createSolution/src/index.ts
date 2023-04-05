@@ -16,6 +16,7 @@
 
 import "./style.css";
 import * as common from "@esri/solution-common";
+import * as htmlUtil from "./htmlUtil";
 import * as main from "./create-solution-main";
 
 declare var goFcn: any;
@@ -31,21 +32,21 @@ function go () {
   var startTime = Date.now();
 
   // use the manually entered value, but fall back to the select list
-  var id = (document.getElementById("itemOrGroupId") as HTMLInputElement).value;
+  var id = htmlUtil.getHTMLValue("itemOrGroupId");
 
   // Source credentials
-  const srcPortal = ((document.getElementById("srcPortal") as HTMLInputElement).value || "https://www.arcgis.com") + "/sharing/rest";
+  const srcPortal = (htmlUtil.getHTMLValue("srcPortal") || "https://www.arcgis.com") + "/sharing/rest";
   const srcCreds = new common.UserSession({
-    username: (document.getElementById("srcUsername") as HTMLInputElement).value,
-    password: (document.getElementById("srcPassword") as HTMLInputElement).value,
+    username: htmlUtil.getHTMLValue("srcUsername"),
+    password: htmlUtil.getHTMLValue("srcPassword"),
     portal: srcPortal
   });
 
   // Dest credentials
-  const destPortal = ((document.getElementById("destPortal") as HTMLInputElement).value || "https://www.arcgis.com") + "/sharing/rest";
+  const destPortal = (htmlUtil.getHTMLValue("destPortal") || "https://www.arcgis.com") + "/sharing/rest";
   const destCreds = new common.UserSession({
-    username: (document.getElementById("destUsername") as HTMLInputElement).value,
-    password: (document.getElementById("destPassword") as HTMLInputElement).value,
+    username: htmlUtil.getHTMLValue("destUsername"),
+    password: htmlUtil.getHTMLValue("destPassword"),
     portal: destPortal
   });
 

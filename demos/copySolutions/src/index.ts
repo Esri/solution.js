@@ -18,6 +18,7 @@ import "./style.css";
 import * as common from "@esri/solution-common";
 import * as demoCommon from "./demoCommon";
 import * as htmlSanitizer from "@esri/arcgis-html-sanitizer";
+import * as htmlUtil from "./htmlUtil";
 import * as main from "./copy-solutions-main";
 import * as portal from "@esri/arcgis-rest-portal";
 
@@ -40,20 +41,18 @@ function getSourceTemplates () {
 
   const srcPortal = ((document.getElementById("srcPortal") as HTMLInputElement).value || "https://www.arcgis.com") + "/sharing/rest";
   sourceAuthentication = demoCommon.getRequestAuthentication(
-    (document.getElementById("srcUsername") as HTMLInputElement).value,
-    (document.getElementById("srcPassword") as HTMLInputElement).value,
-    srcPortal
+    htmlUtil.getHTMLValue("srcUsername"), htmlUtil.getHTMLValue("srcPassword"), srcPortal
   );
 
 
-  main.getTemplates(sourceAuthentication, !(document.getElementById("srcOnlyMySolns") as HTMLInputElement).checked)
+  main.getTemplates(sourceAuthentication, !htmlUtil.getHTMLChecked("srcOnlyMySolns"))
   .then(
     searchResponse => {
       demoCommon.removeItem("sourceSolutionsDiv_busySymbol");
       var listDiv = demoCommon.addItem ("sourceSolutionsDiv", "DIV", "sourceSolutionsListDiv");
       listDiv.innerHTML = demoCommon.createChecklist(
         searchResponse.results,
-        sanitizer.sanitize((document.getElementById("srcPortal") as HTMLInputElement).value) || "https://www.arcgis.com",
+        sanitizer.sanitize(htmlUtil.getHTMLValue("srcPortal")) || "https://www.arcgis.com",
         "sourceSolutionsList",
         true
       );
@@ -74,7 +73,7 @@ function getSourceTemplates () {
 /**
  * Gets templates from an organization and shows them as a list in the div "destinationSolutionsDiv".
  */
- function getDestinationTemplates () {
+function getDestinationTemplates () {
   demoCommon.removeItem("destinationSolutionsListDiv");
   demoCommon.fadeItemOut("copiedSolutionsDiv");
   demoCommon.removeItem("copiedSolutionsListDiv");
@@ -83,14 +82,12 @@ function getSourceTemplates () {
   haveDestinationAccess = false;
   updateCopyBtn();
 
-  const destPortal = ((document.getElementById("destPortal") as HTMLInputElement).value || "https://www.arcgis.com") + "/sharing/rest";
+  const destPortal = (htmlUtil.getHTMLValue("destPortal") || "https://www.arcgis.com") + "/sharing/rest";
   destinationAuthentication = demoCommon.getRequestAuthentication(
-    (document.getElementById("destUsername") as HTMLInputElement).value,
-    (document.getElementById("destPassword") as HTMLInputElement).value,
-    destPortal
+    htmlUtil.getHTMLValue("destUsername"), htmlUtil.getHTMLValue("destPassword"), destPortal
   );
 
-  main.getTemplates(destinationAuthentication, !(document.getElementById("destOnlyMySolns") as HTMLInputElement).checked)
+  main.getTemplates(destinationAuthentication, !htmlUtil.getHTMLChecked("destOnlyMySolns"))
   .then(
     searchResponse => {
       demoCommon.removeItem("destinationSolutionsDiv_busySymbol");
@@ -100,7 +97,7 @@ function getSourceTemplates () {
       } else {
         listDiv.innerHTML = demoCommon.createSimpleList(
           searchResponse.results,
-          sanitizer.sanitize((document.getElementById("destPortal") as HTMLInputElement).value) || "https://www.arcgis.com"
+          sanitizer.sanitize(htmlUtil.getHTMLValue("destPortal")) || "https://www.arcgis.com"
         );
       }
       haveDestinationAccess = true;

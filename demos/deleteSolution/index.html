@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="en" dir="ltr">
+<head>
+  <meta charset="utf-8"/>
+  <title>deleteSolution example</title>
+  <!--
+   | Copyright 2023 Esri
+   |
+   | Licensed under the Apache License, Version 2.0 (the "License");
+   | you may not use this file except in compliance with the License.
+   | You may obtain a copy of the License at
+   |
+   |    http://www.apache.org/licenses/LICENSE-2.0
+   |
+   | Unless required by applicable law or agreed to in writing, software
+   | distributed under the License is distributed on an "AS IS" BASIS,
+   | WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   | See the License for the specific language governing permissions and
+   | limitations under the License.
+  -->
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+  <script>
+    var confirmDeletionFcn, connectFcn, continueFcn, launchDeleteSolutionsFcn, toggleSelectAllFcn, updateSolutionSelectionFcn;
+  </script>
+</head>
+<body>
+  <h3>Delete one or more Deployed Solutions</h3>
+
+  <div id="container">
+    <div id="input" style="display:none">
+
+      <div class="section-title">Credentials in organization</div>
+
+      <div class="labeledItem">
+        <label for="username">Username:&nbsp;</label>
+        <input type="text" id="username" placeholder="anonymous">
+      </div>
+      <div class="labeledItem">
+        <label for="password">Password:&nbsp;</label>
+        <input type="password" id="password">
+      </div>
+      <div class="labeledItem">
+        <label for="portal">Portal:&nbsp;</label>
+        <input type="text" id="portal" style="width:256px" placeholder="https://www.arcgis.com">
+      </div>
+      <button id="connectBtn fader" onclick="connectFcn()">Connect</button>
+    </div>
+    <br/><br/>
+
+    <div id="solutionSelection" style="display:none">
+      <div class="section-title">Select deployed Solutions to delete:</div>
+      <div id="sourceSolutionsDiv"></div>
+      <button id="toggleBtn" class="toggleBtn" onclick="toggleSelectAllFcn()">Select all</button>
+      <button id="deleteInteractiveBtn" class="deleteBtn danger" onclick="launchDeleteSolutionsFcn(true)">Delete Solution(s) one-by-one</button>
+      <button id="deleteBlastBtn" class="deleteBtn danger" onclick="launchDeleteSolutionsFcn(false)">Delete Solution(s) en masse</button>
+    </div>
+    <br/><br/>
+
+    <div id="doublecheck" class="col-sm-10 col-sm-offset-1" style="display:none">
+      <div id="checkOutput"></div>
+      <br>
+      <button id="cancelDeletionBtn" class="btn btn-default" onclick="confirmDeletionFcn(false)">Cancel Deletion</button>
+      <button id="confirmDeletionBtn" class="btn btn-default danger" onclick="confirmDeletionFcn(true)">Confirm Deletion</button>
+    </div>
+
+    <div class="col-sm-12">
+      <div id="output"></div>
+      <br/>
+      <button id="continue" class="btn btn-default display-none" onclick="continueFcn()">Continue</button>
+    </div>
+  </div>
+</body>
+</html>

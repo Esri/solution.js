@@ -17,45 +17,40 @@
 import "./style.css";
 import * as common from "@esri/solution-common";
 import * as htmlUtil from "./htmlUtil";
-import * as main from "./compare-json-main";
+import * as main from "./copy-item-info-main";
 
 declare var goFcn: any;
-declare var loadFcn: any;
 
 //--------------------------------------------------------------------------------------------------------------------//
 
 /**
- * Loads the second window with a sanitized version of the first window.
- */
-function load () {
-  var json1 = htmlUtil.getHTMLValue("json1");
-   (document.getElementById("json2") as HTMLInputElement).value = !json1
-     ? "" // json1 is empty, so just set json2 to empty
-     : JSON.stringify( // load json2 with the sanitized version of json1
-       common.sanitizeJSON(
-         JSON.parse(htmlUtil.getHTMLValue("json1"))
-       ), null, 2
-    );
-}
-
-/**
- * Runs the JSON comparison.
+ * Runs the item copy.
  */
 function go () {
   document.getElementById("input").style.display = "none";
   document.getElementById("output").style.display = "block";
 
-  var json1 = htmlUtil.getHTMLValue("json1");
-  var json2 = htmlUtil.getHTMLValue("json2");
-  json1 = json1 ? JSON.parse(json1) : null;
-  json2 = json2 ? JSON.parse(json2) : null;
-
-  document.getElementById("output").innerHTML = main.compareJSON(json1, json2);
+  main.copyItemInfo(
+    htmlUtil.getHTMLValue("id"),
+    new common.UserSession({
+      username: htmlUtil.getHTMLValue("username"),
+      password: htmlUtil.getHTMLValue("password"),
+      portal: htmlUtil.getHTMLValue("srcPortal") + "/sharing/rest"
+    })
+  ).then(
+    html => {
+      document.getElementById("output").innerHTML = html;
+    },
+    error => {
+      document.getElementById("output").innerHTML = "<span style=\"color:red\">" + error + "</span>";
+    }
+  );
 }
 
 //--------------------------------------------------------------------------------------------------------------------//
 
 goFcn = go;
-loadFcn = load;
+
+(document.getElementById("srcPortal") as HTMLInputElement).value = "https://www.arcgis.com";
 
 document.getElementById("input").style.display = "block";
