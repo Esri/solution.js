@@ -13,7 +13,7 @@
     "test:chrome": "karma start --single-run --browsers=Chrome"
   },
   "devDependencies": {
-    "typescript": "^4.9.5"
+    "typescript": "^5.0.4"
   },
   "dependencies": {
     "@esri/arcgis-html-sanitizer": "3.0.1",
