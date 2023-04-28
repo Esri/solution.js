@@ -50,7 +50,7 @@ function go () {
     portal: destPortal
   });
 
-  // Deploy!
+  // Create!
   main.createSolution(
     id,
     srcCreds,
