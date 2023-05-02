@@ -6,31 +6,31 @@ call npm --version
 call npm install
 
 pushd demos\compareJSON
-call npm run build
+call npm run build:dev
 popd
 
 pushd demos\copyItemInfo
-call npm run build
+call npm run build:dev
 popd
 
 pushd demos\copySolutions
-call npm run build
+call npm run build:dev
 popd
 
 pushd demos\createSolution
-call npm run build
+call npm run build:dev:dev
 popd
 
 pushd demos\deleteSolution
-call npm run build
+call npm run build:dev
 popd
 
 pushd demos\getItemInfo
-call npm run build
+call npm run build:dev
 popd
 
 pushd demos\verifySolution
-call npm run build
+call npm run build:dev
 popd
 
 call rmdir/q/s coverage
