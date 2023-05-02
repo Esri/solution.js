@@ -1,0 +1,37 @@
+{
+  "name": "deleteSolution",
+  "version": "2.0.2-alpha.0",
+  "description": "deleteSolution demo",
+  "author": "Esri",
+  "license": "Apache-2.0",
+  "private": true,
+  "scripts": {
+    "build": "webpack --mode=production --node-env=production",
+    "build:dev": "webpack --mode=development",
+    "build:prod": "webpack --mode=production --node-env=production",
+    "watch": "webpack --watch"
+  },
+  "devDependencies": {
+    "@esri/arcgis-rest-auth": "~3.5.0",
+    "@esri/arcgis-rest-feature-layer": "~3.5.0",
+    "@esri/arcgis-rest-portal": "~3.5.0",
+    "@esri/arcgis-rest-request": "~3.5.0",
+    "@esri/arcgis-rest-service-admin": "~3.5.0",
+    "@esri/solution-common": "^2.0.2-alpha.0",
+    "css-loader": "^6.7.3",
+    "html-webpack-plugin": "^5.5.0",
+    "style-loader": "^3.3.2",
+    "ts-loader": "^9.4.2",
+    "typescript": "^4.9.5",
+    "webpack": "^5.77.0",
+    "webpack-cli": "^5.0.1"
+  },
+  "dependencies": {
+    "@esri/hub-common": "^12.31.1",
+    "@esri/hub-initiatives": "^12.4.1",
+    "@esri/hub-sites": "^12.6.0",
+    "@esri/hub-teams": "^12.4.1",
+    "tslib": "2.5.0"
+  },
+  "gitHead": "2ec5fb241f432832e9d191bfcf118a50b621491d"
+}

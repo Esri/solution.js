@@ -1,0 +1,49 @@
+html {
+  font-family: Arial;
+  color: #4c4c4c;
+}
+body {
+  padding: 8px;
+}
+button {
+  cursor: pointer;
+}
+td {
+  border: none;
+}
+li {
+  margin-bottom: 12px;
+}
+.section-title {
+  margin-bottom: 12px;
+}
+.labeledItem {
+  display: inline-block;
+  margin: 0 8px 8px 0;
+}
+.checklist {
+  list-style-type: none;
+}
+.display-none {
+  display: none;
+}
+label {
+  margin-top: 5px;
+}
+.danger {
+  color: white;
+  background-color: red;
+}
+table, th, td {
+  border: 1px solid darkgray;
+}
+th, td {
+  padding: 4px;
+}
+.deleteBtn {
+  margin-left: 16px;
+  display: none;
+}
+.fader {
+  transition: 0.5s;
+}

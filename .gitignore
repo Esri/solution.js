@@ -82,6 +82,7 @@ __*
 
 # Temporary build products
 demos/**/*.js
+!demos/**/webpack.config.js
 demos/**/*.map
 demos/**/*.d.ts
 docs/

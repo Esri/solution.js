@@ -26,6 +26,7 @@ import {
   ICreateItemFromTemplateResponse,
   EItemProgressStatus,
   UserSession,
+  convertIModel,
   createHubRequestOptions,
   generateEmptyCreationResponse
 } from "@esri/solution-common";
@@ -220,7 +221,7 @@ export function createItemFromTemplate(
         const response: ICreateItemFromTemplateResponse = {
           item: {
             ...template,
-            ...pageModel
+            ...convertIModel(pageModel)
           },
           id: pageModel.item.id,
           type: template.type,
