@@ -77,6 +77,7 @@ export const moduleMap: IItemTypeModuleMap = {
   // App types
   Application: undefined,
   Dashboard: simpleTypes,
+  "Data Pipeline": simpleTypes,
   "Data Store": undefined,
   "Desktop Application": undefined,
   "Excalibur Imagery Project": undefined,
