@@ -340,9 +340,6 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
         type: itemTemplate.type
       };
 
-      const expected: any = {};
-      expected[itemId] = newItemID;
-
       fetchMock
         .post(
           utils.PORTAL_SUBSET.restUrl + "/content/users/casey/addItem",
@@ -379,9 +376,6 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
         id: itemId,
         type: itemTemplate.type
       };
-
-      const expected: any = {};
-      expected[itemId] = newItemID;
 
       fetchMock
         .post(
