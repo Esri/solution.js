@@ -18,7 +18,7 @@ call npm run build:dev
 popd
 
 pushd demos\createSolution
-call npm run build:dev:dev
+call npm run build:dev
 popd
 
 pushd demos\deleteSolution
