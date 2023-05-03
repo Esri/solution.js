@@ -320,21 +320,21 @@ export function postProcessFieldReferences(
         const dependencies: string[] = webMapFSDependencies.concat(
           template.dependencies
         );
-        let dependantDatasources: IDatasourceInfo[] = datasourceInfos.filter(
+        let dependentDatasources: IDatasourceInfo[] = datasourceInfos.filter(
           ds => {
             if (dependencies.indexOf(ds.itemId) > -1) {
               return ds;
             }
           }
         );
-        dependantDatasources = _addMapLayerIds(
-          dependantDatasources,
+        dependentDatasources = _addMapLayerIds(
+          dependentDatasources,
           templateTypeHash
         );
-        if (dependantDatasources.length > 0) {
+        if (dependentDatasources.length > 0) {
           template = itemHandler.postProcessFieldReferences(
             template,
-            dependantDatasources,
+            dependentDatasources,
             template.item.type
           );
         }

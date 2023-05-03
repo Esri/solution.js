@@ -1,6 +1,6 @@
-## createSolution
+## deploySolution
 
-This demo creates a ArcGIS Solution using the contents of an ArcGIS Online group.
+This demo deploys a ArcGIS Solution.
 
 ### Building
 

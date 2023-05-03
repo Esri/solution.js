@@ -592,31 +592,31 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
       // This should be handled differently when removing the static mock items in favor of standard mock items.
 
       // Clean datasource itemIds
-      expected.data.headerPanel.selectors[4].datasets[0].dataSource.itemId = common.cleanLayerBasedItemId(
+      expected.data.headerPanel.selectors[4].datasets[0].dataSource.itemId = common.cleanItemId(
         expected.data.headerPanel.selectors[4].datasets[0].dataSource.itemId
       );
-      expected.data.leftPanel.selectors[0].datasets[0].dataSource.itemId = common.cleanLayerBasedItemId(
+      expected.data.leftPanel.selectors[0].datasets[0].dataSource.itemId = common.cleanItemId(
         expected.data.leftPanel.selectors[0].datasets[0].dataSource.itemId
       );
-      expected.data.leftPanel.selectors[4].datasets[0].dataSource.itemId = common.cleanLayerBasedItemId(
+      expected.data.leftPanel.selectors[4].datasets[0].dataSource.itemId = common.cleanItemId(
         expected.data.leftPanel.selectors[4].datasets[0].dataSource.itemId
       );
-      expected.data.widgets[3].datasets[1].dataSource.itemId = common.cleanLayerBasedItemId(
+      expected.data.widgets[3].datasets[1].dataSource.itemId = common.cleanItemId(
         expected.data.widgets[3].datasets[1].dataSource.itemId
       );
-      expected.data.widgets[3].datasets[2].dataSource.itemId = common.cleanLayerBasedItemId(
+      expected.data.widgets[3].datasets[2].dataSource.itemId = common.cleanItemId(
         expected.data.widgets[3].datasets[2].dataSource.itemId
       );
-      expected.data.widgets[4].datasets[0].dataSource.itemId = common.cleanLayerBasedItemId(
+      expected.data.widgets[4].datasets[0].dataSource.itemId = common.cleanItemId(
         expected.data.widgets[4].datasets[0].dataSource.itemId
       );
-      expected.data.widgets[6].datasets[0].dataSource.itemId = common.cleanLayerBasedItemId(
+      expected.data.widgets[6].datasets[0].dataSource.itemId = common.cleanItemId(
         expected.data.widgets[6].datasets[0].dataSource.itemId
       );
-      expected.data.widgets[8].datasets[0].dataSource.itemId = common.cleanLayerBasedItemId(
+      expected.data.widgets[8].datasets[0].dataSource.itemId = common.cleanItemId(
         expected.data.widgets[8].datasets[0].dataSource.itemId
       );
-      expected.data.urlParameters[4].datasets[0].dataSource.itemId = common.cleanLayerBasedItemId(
+      expected.data.urlParameters[4].datasets[0].dataSource.itemId = common.cleanItemId(
         expected.data.urlParameters[4].datasets[0].dataSource.itemId
       );
 

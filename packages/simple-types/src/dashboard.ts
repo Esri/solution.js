@@ -158,7 +158,7 @@ export function _getDatasourceDependencies(
   templateDictionary: any
 ): void {
   obj.datasets.forEach((dataset: IDashboardDataset) => {
-    // when the datasource has an itemId is an external datasource
+    // when the datasource has an itemId it's an external datasource
     const itemId: string = common.getProp(dataset, "dataSource.itemId");
     if (itemId) {
       if (itemTemplate.dependencies.indexOf(itemId) < 0) {
@@ -169,16 +169,8 @@ export function _getDatasourceDependencies(
       dataset.dataSource.itemId = common.templatizeTerm(
         itemId,
         itemId,
-        layerId !== undefined ? ".layer" + layerId + ".itemId" : ".itemId"
+        ".itemId"
       );
-      /* istanbul ignore else */
-      if (layerId !== undefined) {
-        dataset.dataSource.layerId = common.templatizeTerm(
-          itemId,
-          itemId,
-          ".layer" + layerId + ".layerId"
-        );
-      }
     }
   });
 }
@@ -248,7 +240,7 @@ export function _updateDatasourceReferences(
       if (Array.isArray(obj.datasets)) {
         obj.datasets.forEach((dataset: IDashboardDataset) => {
           // when the datasource has an itemId it's an external datasource
-          const itemId: string = common.cleanLayerBasedItemId(
+          const itemId: string = common.cleanItemId(
             common.getProp(dataset, "dataSource.itemId")
           );
           if (itemId) {
@@ -443,7 +435,7 @@ export function _getDatasourceInfo(
     }
   } else {
     // otherwise match the itemId and the layerId to get the correct fields and path
-    const itemId: any = common.cleanLayerBasedItemId(
+    const itemId: any = common.cleanItemId(
       common.getProp(obj, "dataSource.itemId")
     );
     const layerId: any = common.cleanLayerId(
