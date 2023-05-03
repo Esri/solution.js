@@ -1,0 +1,120 @@
+<!doctype html>
+<html lang="en" dir="ltr">
+<head>
+  <meta charset="utf-8"/>
+  <title>deploySolution example</title>
+  <!--
+   | Copyright 2023 Esri
+   |
+   | Licensed under the Apache License, Version 2.0 (the "License");
+   | you may not use this file except in compliance with the License.
+   | You may obtain a copy of the License at
+   |
+   |    http://www.apache.org/licenses/LICENSE-2.0
+   |
+   | Unless required by applicable law or agreed to in writing, software
+   | distributed under the License is distributed on an "AS IS" BASIS,
+   | WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   | See the License for the specific language governing permissions and
+   | limitations under the License.
+  -->
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+  <script>
+    var fetchFoldersFcn, goFcn, updateDestAuthFcn;
+  </script>
+</head>
+<body>
+  <h3>Deploy one or more Solutions</h3>
+
+  <div id="container" style="display:none">
+    <div id="input">
+
+      <div class="section-title">Credentials in source organization</div>
+
+      <div class="labeledItem">
+        <label for="srcUsername">Username:&nbsp;</label>
+        <input type="text" id="srcUsername" placeholder="anonymous">
+      </div>
+      <div class="labeledItem">
+        <label for="srcPassword">Password:&nbsp;</label>
+        <input type="password" id="srcPassword">
+      </div>
+      <div class="labeledItem">
+        <label for="srcPortal">Portal:&nbsp;</label>
+        <input type="text" id="srcPortal" style="width:256px" placeholder="https://www.arcgis.com">
+      </div>
+
+      <br/><br/>
+
+      <label for="solutionId">Enter a Solution ID:</label>
+      <input class="form-control" type="text" id="solutionId">
+      <label for="solutionPicklist">Or pick a Solution from the list below:</label>
+      <select name="Solution Item" id="solutionPicklist" class="form-control"></select>
+      <label for="foldersPicklist">Or deploy all Solutions in a folder from the list below:</label>
+      <button id="fetchFoldersBtn fader" onclick="fetchFoldersFcn()">Fetch</button>
+      <select name="Solution Folder" id="foldersPicklist" class="form-control"></select>
+
+      <br /><br />
+
+      <div class="section-title">Credentials in destination organization</div>
+
+      <div class="labeledItem">
+        <label for="destAuthType">Use OAuth:&nbsp;</label>
+        <input type="checkbox" id="destAuthType" value="OAuth" onclick="updateDestAuthFcn(this)">
+      </div>
+
+      <div id="destCredentials">
+        <div class="labeledItem">
+          <label for="destUsername">Username:&nbsp;</label>
+          <input type="text" id="destUsername">
+        </div>
+        <div class="labeledItem">
+          <label for="destPassword">Password:&nbsp;</label>
+          <input type="password" id="destPassword">
+        </div>
+        <div class="labeledItem">
+          <label for="destPortal">Portal:&nbsp;</label>
+          <input type="text" id="destPortal" style="width:256px" placeholder="https://www.arcgis.com">
+        </div>
+      </div>
+
+      <div id="clientIdParent" class="display-none">
+        <label for="clientId">Client ID&nbsp;</label>
+        <input type="text" id="clientId">
+        <div>
+          <span class="labeledItem">To work with client ID:</span>
+          <ol>
+            <li>cd to the demos directory</li>
+            <li>run "npm start"</li>
+            <li>Create an application on the <a target="_blank" href="https://developers.arcgis.com/documentation/mapping-apis-and-services/security/arcgis-identity/serverless-web-apps/">ArcGIS for Developers</a> website.</li>
+            <li>Add one of the urls listed from "npm start" as a redirect uri for your application.</li>
+            <li>Open the deploySolution demo using the url from above and Copy/Paste clientId</li>
+          </ol>
+        </div>
+      </div>
+
+      <br/><br/>
+
+      <div class="section-title">Options</div>
+      <div class="labeledItem">
+        <label for="useExistingChk">Use Existing Items:</label>
+        <input type="checkbox" id="useExistingChk">
+      </div>
+
+      <br /><br />
+
+      <div class="section-title">Custom Params</div>
+      <div class="labeledItem">
+        <textarea id="customParams" cols="40" rows="5" placeholder="requires a valid JSON object"></textarea>
+      </div>
+
+      <br /><br />
+
+      <button class="btn btn-default" onclick="goFcn()">Deploy Solution(s)</button>
+    </div>
+
+    <br />
+  </div>
+  <div id="output" style="display:none">Deploying...</div>
+</body>
+</html>
