@@ -25,6 +25,10 @@ pushd demos\deleteSolution
 call npm run build:dev
 popd
 
+pushd demos\deploySolution
+call npm run build:dev
+popd
+
 pushd demos\getItemInfo
 call npm run build:dev
 popd
