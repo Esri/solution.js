@@ -123,7 +123,7 @@ describe("Module `dashboard`: manages the creation and deployment of dashboard i
     it("handles defaulting to .itemId", () => {
       const obj: any = {
         dataSource: {
-          itemId: "{{934a9ef8efa7448fa8ddf7b13cef0240.layer0.itemId}}"
+          itemId: "{{934a9ef8efa7448fa8ddf7b13cef0240.itemId}}"
         },
         datasets: [
           {
@@ -293,8 +293,8 @@ describe("Module `dashboard`: manages the creation and deployment of dashboard i
     it("handles dataSource.itemId", () => {
       const obj: any = {
         dataSource: {
-          itemId: "{{934a9ef8efa7448fa8ddf7b13cef0240.layer0.itemId}}",
-          layerId: "{{934a9ef8efa7448fa8ddf7b13cef0240.layer0.layerId}}"
+          itemId: "{{934a9ef8efa7448fa8ddf7b13cef0240.itemId}}",
+          layerId: "layer0"
         }
       };
 
