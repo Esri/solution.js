@@ -111,6 +111,10 @@ export function getAGOLItem(type?: string, url = "", itemId?: string): any {
       item = getAGOLItemFundamentals(type, url || undefined);
       break;
 
+    case "Data Pipeline":
+      item = getAGOLItemFundamentals(type, "", itemId);
+      break;
+
     case "Desktop Add In":
       break;
 

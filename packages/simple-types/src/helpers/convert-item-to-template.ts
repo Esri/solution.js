@@ -66,6 +66,7 @@ export function convertItemToTemplate(
     let resourcesPromise = Promise.resolve([]);
     switch (itemInfo.type) {
       case "Dashboard":
+      case "Data Pipeline":
       case "Feature Collection":
       case "Feature Service":
       case "Hub Initiative":
@@ -143,6 +144,11 @@ export function convertItemToTemplate(
           itemTemplate.dependencies.push(basemap.itemId);
         }
         itemTemplate.resources = resourcesResponse;
+      }
+
+      // Add Data Pipeline source and sink feature layers to dependencies
+      else if (itemInfo.type === "Data Pipeline") {
+        itemTemplate.dependencies = itemTemplate.dependencies.concat(_getDataPipelineSourcesAndSinks(itemDataResponse));
       }
 
       // Create the template
@@ -231,6 +237,32 @@ export function convertItemToTemplate(
       );
     });
   });
+}
+
+/**
+ * Extracts the feature layer ids for a Data Pipeline's sources and sinks.
+ *
+ * @param itemData Data Pipeline's data section
+ * @return List of feature layer ids or an empty list if there are no sources or sinks in the pipeline
+ */
+export function _getDataPipelineSourcesAndSinks(
+  itemData: any
+): string[] {
+  const dependencies = [] as string[];
+  const sourcesAndSinks = (itemData?.inputs ?? []).concat(itemData?.outputs ?? []);
+
+  sourcesAndSinks.forEach(
+    sourceOrSink => {
+      if (sourceOrSink.type === "FeatureServiceSource" || sourceOrSink.type === "FeatureServiceSink") {
+        const featureServiceId = common.getProp(sourceOrSink, "parameters.layer.value.itemId")
+        if (featureServiceId) {
+          dependencies.push(featureServiceId);
+        }
+      }
+    }
+  );
+
+  return dependencies;
 }
 
 /**

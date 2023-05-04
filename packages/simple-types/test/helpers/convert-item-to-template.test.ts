@@ -139,6 +139,209 @@ describe("simpleTypeConvertItemToTemplate", () => {
     });
   });
 
+  describe("data pipeline", () => {
+    it("should handle data pipeline item type", done => {
+      const solutionItemId = "sln1234567890";
+      const itemTemplate: common.IItemTemplate = templates.getItemTemplateSkeleton();
+      itemTemplate.itemId = "dpl1234567890";
+      itemTemplate.item = mockItems.getAGOLItem("Data Pipeline", null, itemTemplate.itemId);
+      itemTemplate.item.thumbnail = null;
+
+      const expectedTemplate: any = {
+        itemId: "dpl1234567890",
+        type: "Data Pipeline",
+        item: {
+          id: "{{dpl1234567890.itemId}}",
+          type: "Data Pipeline",
+          accessInformation: "Esri, Inc.",
+          categories: [],
+          contentStatus: null,
+          culture: "en-us",
+          description: "Description of an AGOL item",
+          extent: [],
+          spatialReference: undefined,
+          licenseInfo: null,
+          name: "Name of an AGOL item",
+          origUrl: undefined,
+          properties: null,
+          snippet: "Snippet of an AGOL item",
+          tags: ["test"],
+          thumbnail: null,
+          title: "An AGOL item",
+          typeKeywords: ["JavaScript"],
+          url: "",
+          created: 1520968147000,
+          modified: 1522178539000
+        },
+        data: ["abc", "def", "ghi"],
+        resources: [],
+        dependencies: [],
+        relatedItems: [],
+        groups: [],
+        properties: {},
+        estimatedDeploymentCostFactor: 2
+      };
+
+      fetchMock
+        .post(
+          utils.PORTAL_SUBSET.restUrl +
+            "/content/items/" +
+            itemTemplate.itemId +
+            "/data",
+          ["abc", "def", "ghi"]
+        )
+        .post(
+          utils.PORTAL_SUBSET.restUrl +
+            "/content/items/" +
+            itemTemplate.itemId +
+            "/resources",
+          noResourcesResponse
+        )
+        .post(
+          utils.PORTAL_SUBSET.restUrl +
+            "/content/items/" +
+            itemTemplate.itemId +
+            "/info/metadata/metadata.xml",
+          mockItems.get400Failure()
+        )
+        .post(
+          utils.PORTAL_SUBSET.restUrl +
+            "/content/users/casey/items/sln1234567890/addResources",
+          utils.getSuccessResponse()
+        );
+      staticRelatedItemsMocks.fetchMockRelatedItems("dpl1234567890", {
+        total: 0,
+        relatedItems: []
+      });
+
+      simpleTypes
+        .convertItemToTemplate(
+          solutionItemId,
+          itemTemplate.item,
+          MOCK_USER_SESSION,
+          MOCK_USER_SESSION,
+          {}
+        )
+        .then(newItemTemplate => {
+          delete newItemTemplate.key; // key is randomly generated, and so is not testable
+          expect(newItemTemplate).toEqual(expectedTemplate);
+          done();
+        }, done.fail);
+    });
+
+    describe("_getDataPipelineSourcesAndSinks", () => {
+      const itemData = {
+        "inputs": [{
+          "id": "1878f651b131",
+          "type": "FeatureServiceSource",
+          "parameters": {
+            "layer": {
+              "value": {
+                "itemId": "fe713ca8996a4db988b8b4f2e5949616",
+                "layerId": 0,
+                "uiTitle": "Requests"
+              }
+            }
+          }
+        }],
+        "tools": [{
+          "id": "1878f811c692",
+          "type": "FilterByAttributeTool",
+          "parameters": {
+            "uiLanguage": {
+              "value": "arcade"
+            },
+            "arcadeExpression": {
+              "value": "$record.reqcategory == 'Blight'"
+            },
+            "input": {
+              "fromId": "1878f651b131"
+            }
+          }
+        }, {
+          "id": "1878f81da253",
+          "type": "RemoveDuplicatesTool",
+          "parameters": {
+            "keyFields": {
+              "value": ["OBJECTID"]
+            },
+            "input": {
+              "fromId": "1878f811c692"
+            }
+          }
+        }],
+        "outputs": [{
+          "id": "1878f828e1c4",
+          "type": "FeatureServiceSink",
+          "parameters": {
+            "outputMethod": {
+              "value": "replace"
+            },
+            "layer": {
+              "value": {
+                "itemId": "5fe495577b434f0e865d3b288b9fcb73",
+                "layerId": 0,
+                "uiTitle": "New Layer"
+              }
+            },
+            "replaceMethod": {
+              "value": "truncateAppend"
+            },
+            "geometryField": {
+              "value": "shape"
+            },
+            "input": {
+              "fromId": "1878f81da253"
+            }
+          }
+        }]
+      };
+
+      it("should extract source and sink feature layer ids", () => {
+        const sourcesAndSinks = simpleTypeHelpers._getDataPipelineSourcesAndSinks(itemData);
+        expect(sourcesAndSinks).toEqual(["fe713ca8996a4db988b8b4f2e5949616", "5fe495577b434f0e865d3b288b9fcb73"]);
+      });
+
+      it("should handle absence of sources", () => {
+        const itemDataPartial = {
+          outputs: itemData.outputs,
+          tools: itemData.tools,
+          misc: "something else"
+        }
+        const sourcesAndSinks = simpleTypeHelpers._getDataPipelineSourcesAndSinks(itemDataPartial);
+        expect(sourcesAndSinks).toEqual(["5fe495577b434f0e865d3b288b9fcb73"]);
+      });
+
+      it("should handle absence of sinks", () => {
+        const itemDataPartial = {
+          misc: "something else",
+          inputs: itemData.inputs,
+          tools: itemData.tools
+        }
+        const sourcesAndSinks = simpleTypeHelpers._getDataPipelineSourcesAndSinks(itemDataPartial);
+        expect(sourcesAndSinks).toEqual(["fe713ca8996a4db988b8b4f2e5949616"]);
+      });
+
+      it("should handle absence of sources and sinks", () => {
+        const itemDataPartial = {
+          misc: "something else",
+          tools: itemData.tools,
+          json: {
+            a: "a",
+            b: 2
+          }
+        }
+        const sourcesAndSinks = simpleTypeHelpers._getDataPipelineSourcesAndSinks(itemDataPartial);
+        expect(sourcesAndSinks).toEqual([]);
+      });
+
+      it("should handle absence of item data", () => {
+        const sourcesAndSinks = simpleTypeHelpers._getDataPipelineSourcesAndSinks(undefined);
+        expect(sourcesAndSinks).toEqual([]);
+      });
+    });
+  });
+
   describe("form", () => {
     let solutionItemId: string;
     let itemTemplate: common.IItemTemplate;
