@@ -179,7 +179,7 @@ export function _getLayerIds(
           return false;
         }
 
-      // Discard this layer
+      // This layer is not a dependency
       } else {
         return false;
       }
@@ -191,26 +191,25 @@ export function _getLayerIds(
         (responses) => {
           responses.forEach((response, i) => {
 
-            const typeKeywords = common.getProp(response, "typeKeywords");
-            if (typeKeywords && typeKeywords.includes("Vector Tile Style Editor")) {
-              // Vector Tiles
-              if (dependencies.indexOf(response.id) < 0) {
-                dependencies.push(response.id);
+            if (layers[i].layerType === "VectorTileLayer") {
+              const typeKeywords = common.getProp(response, "typeKeywords");
+              if (typeKeywords && typeKeywords.includes("Vector Tile Style Editor")) {
+                // Vector tiles edited by the style editor
+                if (dependencies.indexOf(response.id) < 0) {
+                  dependencies.push(response.id);
+                }
+
+                // Templatize the URL to the style resource
+                const iSuffix = layers[i].styleUrl.indexOf(response.id) + response.id.length;
+                layers[i].styleUrl = common.templatizeTerm(
+                  layers[i].styleUrl.replace(layers[i].styleUrl.substring(0, iSuffix), response.id),
+                  response.id,
+                  ".url"
+                );
+              } else {
+                // Unsupported vector tiles
+                layers[i].styleUrl = "";
               }
-
-              // Templatize the URL to the style resource
-              const iSuffix = layers[i].styleUrl.indexOf(response.id) + response.id.length;
-              layers[i].styleUrl = common.templatizeTerm(
-                layers[i].styleUrl.replace(layers[i].styleUrl.substring(0, iSuffix), response.id),
-                response.id,
-                ".url"
-              );
-
-
-              //"styleUrl": "https://www.arcgis.com/sharing/rest/content/items/fe76a212bb2c42259f22971e3d771c60/resources/styles/root.json"
-              //"styleUrl":                                           "{{26efa4106d3c4a93ab8b2cf4bde5c235.url}}/resources/styles/root.json"
-
-
 
             } else if (common.getProp(response, "serviceItemId")) {
               // Feature Service
