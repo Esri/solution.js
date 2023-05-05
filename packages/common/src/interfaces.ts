@@ -1093,7 +1093,7 @@ export interface IKeyedListsOfStrings {
 /**
  * Type with key access to strings
  */
-export interface IMimeTypes {
+export interface IKeyedStrings {
   [key: string]: string;
 }
 
@@ -1580,6 +1580,21 @@ export interface ISurvey123CreateResult {
   formId: string;
   featureServiceId: string;
   folderId: string;
+}
+
+/**
+ * Result of fetching webmap dependencies
+ */
+export interface IWebmapDependencies {
+  /**
+   * Updated list of dependency ids
+   */
+  dependencies: string[];
+
+  /**
+   * Hash from URL to AGO item id
+   */
+  urlHash: IKeyedStrings;
 }
 
 /**

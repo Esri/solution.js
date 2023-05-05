@@ -61,7 +61,7 @@ export const moduleMap: IItemTypeModuleMap = {
   "Scene Service": undefined,
   "Stream Service": undefined,
   Tool: undefined,
-  "Vector Tile Service": undefined,
+  "Vector Tile Service": simpleTypes,
   WFS: undefined,
   WMS: undefined,
   WMTS: undefined,

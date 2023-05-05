@@ -198,6 +198,10 @@ export function getAGOLItem(type?: string, url = "", itemId?: string): any {
       item = getAGOLItemFundamentals(type);
       break;
 
+    case "Vector Tile Service":
+      item = getAGOLItemFundamentals(type, "", itemId);
+      break;
+
     case "Web Map":
       item = getAGOLItemFundamentals(type, url || undefined);
       break;
