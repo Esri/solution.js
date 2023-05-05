@@ -111,6 +111,7 @@ export function getItemTypeAbbrev(type: string): string {
       "CSV Collection": "xxx",
       CSV: "csv",
       Dashboard: "dsh",
+      "Data Pipeline": "dpl",
       "Deep Learning Package": "xxx",
       "Desktop Add In": "dai",
       "Desktop Application Template": "dat",

@@ -1679,8 +1679,8 @@ export const expectedWidgets: any[] = [
         type: "serviceDataset",
         dataSource: {
           type: "featureServiceDataSource",
-          itemId: "{{934a9ef8efa7448fa8ddf7b13cef0240.layer0.itemId}}",
-          layerId: "{{934a9ef8efa7448fa8ddf7b13cef0240.layer0.layerId}}",
+          itemId: "{{934a9ef8efa7448fa8ddf7b13cef0240.itemId}}",
+          layerId: 0,
           table: false
         },
         filter: {
@@ -1722,8 +1722,8 @@ export const expectedWidgets: any[] = [
         type: "serviceDataset",
         dataSource: {
           type: "featureServiceDataSource",
-          itemId: "{{934a9ef8efa7448fa8ddf7b13cef0240.layer0.itemId}}",
-          layerId: "{{934a9ef8efa7448fa8ddf7b13cef0240.layer0.layerId}}",
+          itemId: "{{934a9ef8efa7448fa8ddf7b13cef0240.itemId}}",
+          layerId: 0,
           table: false
         },
         outFields: ["*"],
@@ -1822,8 +1822,8 @@ export const expectedWidgets: any[] = [
         type: "serviceDataset",
         dataSource: {
           type: "featureServiceDataSource",
-          itemId: "{{934a9ef8efa7448fa8ddf7b13cef0240.layer0.itemId}}",
-          layerId: "{{934a9ef8efa7448fa8ddf7b13cef0240.layer0.layerId}}",
+          itemId: "{{934a9ef8efa7448fa8ddf7b13cef0240.itemId}}",
+          layerId: 0,
           table: false
         },
         filter: {
@@ -2102,8 +2102,8 @@ export const expectedWidgets: any[] = [
         type: "serviceDataset",
         dataSource: {
           type: "featureServiceDataSource",
-          itemId: "{{934a9ef8efa7448fa8ddf7b13cef0240.layer0.itemId}}",
-          layerId: "{{934a9ef8efa7448fa8ddf7b13cef0240.layer0.layerId}}",
+          itemId: "{{934a9ef8efa7448fa8ddf7b13cef0240.itemId}}",
+          layerId: 0,
           table: false
         },
         filter: {
@@ -2355,8 +2355,8 @@ export const expectedWidgets: any[] = [
         type: "serviceDataset",
         dataSource: {
           type: "featureServiceDataSource",
-          itemId: "{{934a9ef8efa7448fa8ddf7b13cef0240.layer0.itemId}}",
-          layerId: "{{934a9ef8efa7448fa8ddf7b13cef0240.layer0.layerId}}",
+          itemId: "{{934a9ef8efa7448fa8ddf7b13cef0240.itemId}}",
+          layerId: 0,
           table: false
         },
         filter: {
@@ -3664,8 +3664,8 @@ export const expectedHeaderPanel: any = {
           type: "serviceDataset",
           dataSource: {
             type: "featureServiceDataSource",
-            itemId: "{{934a9ef8efa7448fa8ddf7b13cef0240.layer0.itemId}}",
-            layerId: "{{934a9ef8efa7448fa8ddf7b13cef0240.layer0.layerId}}",
+            itemId: "{{934a9ef8efa7448fa8ddf7b13cef0240.itemId}}",
+            layerId: 0,
             table: false
           },
           filter: {
@@ -4137,8 +4137,8 @@ export const expectedLeftPanel: any = {
           type: "serviceDataset",
           dataSource: {
             type: "featureServiceDataSource",
-            itemId: "{{934a9ef8efa7448fa8ddf7b13cef0240.layer0.itemId}}",
-            layerId: "{{934a9ef8efa7448fa8ddf7b13cef0240.layer0.layerId}}",
+            itemId: "{{934a9ef8efa7448fa8ddf7b13cef0240.itemId}}",
+            layerId: 0,
             table: false
           },
           filter: {
@@ -4358,8 +4358,8 @@ export const expectedLeftPanel: any = {
           type: "serviceDataset",
           dataSource: {
             type: "featureServiceDataSource",
-            itemId: "{{934a9ef8efa7448fa8ddf7b13cef0240.layer0.itemId}}",
-            layerId: "{{934a9ef8efa7448fa8ddf7b13cef0240.layer0.layerId}}",
+            itemId: "{{934a9ef8efa7448fa8ddf7b13cef0240.itemId}}",
+            layerId: 0,
             table: false
           },
           filter: {
@@ -4826,8 +4826,8 @@ export const expectedUrlParameters: any[] = [
         type: "serviceDataset",
         dataSource: {
           type: "featureServiceDataSource",
-          itemId: "{{934a9ef8efa7448fa8ddf7b13cef0240.layer0.itemId}}",
-          layerId: "{{934a9ef8efa7448fa8ddf7b13cef0240.layer0.layerId}}",
+          itemId: "{{934a9ef8efa7448fa8ddf7b13cef0240.itemId}}",
+          layerId: 0,
           table: false
         },
         outFields: ["*"],

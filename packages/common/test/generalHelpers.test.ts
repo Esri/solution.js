@@ -103,9 +103,26 @@ describe("Module `generalHelpers`: common utility functions shared across packag
     });
   });
 
+  describe("cleanLayerBasedItemId", () => {
+    it("should handle empty id", () => {
+      expect(generalHelpers.cleanLayerBasedItemId(null)).toEqual(null);
+      expect(generalHelpers.cleanLayerBasedItemId(undefined)).toBeUndefined();
+      expect(generalHelpers.cleanLayerBasedItemId("")).toEqual("");
+    });
+
+    it("handles a layer-templatized item id", () => {
+      expect(
+        generalHelpers.cleanLayerBasedItemId(
+          "{{934a9ef8efa7448fa8ddf7b13cef0240.layer0.itemId}}"
+        )
+      ).toEqual("934a9ef8efa7448fa8ddf7b13cef0240");
+    });
+  });
+
   describe("cleanLayerId", () => {
-    it("handles a null or empty string", () => {
+    it("should handle empty id", () => {
       expect(generalHelpers.cleanLayerId(null)).toEqual(null);
+      expect(generalHelpers.cleanLayerId(undefined)).toBeUndefined();
       expect(generalHelpers.cleanLayerId("")).toEqual("");
     });
 
