@@ -204,7 +204,7 @@ export function _getLayerIds(
                 layers[i].styleUrl = common.templatizeTerm(
                   layers[i].styleUrl.replace(layers[i].styleUrl.substring(0, iSuffix), response.id),
                   response.id,
-                  ".url"
+                  ".itemUrl"
                 );
               } else {
                 // Unsupported vector tiles
