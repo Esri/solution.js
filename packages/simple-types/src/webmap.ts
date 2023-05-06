@@ -23,6 +23,12 @@ import * as common from "@esri/solution-common";
  */
 const WEBMAP_APP_URL_PART: string = "home/webmap/viewer.html?webmap=";
 
+/**
+ * A flag inserted used as a vector tile layer's styleUrl to indicate that the layer is unsupported and should
+ * be removed.
+ */
+const unsupportedTileLayerUrl = "unsupported";
+
 // ------------------------------------------------------------------------------------------------------------------ //
 
 /**
@@ -54,16 +60,22 @@ export function convertItemToTemplate(
 
         // Templatize the map layer ids after we've extracted them as dependencies
         if (itemTemplate.data) {
+          itemTemplate.data.baseMap.baseMapLayers =
+            itemTemplate.data.baseMap.baseMapLayers.filter(layer => layer.styleUrl !== unsupportedTileLayerUrl);
           _templatizeWebmapLayerIdsAndUrls(
             itemTemplate.data.baseMap.baseMapLayers,
             results.urlHash,
             templateDictionary
           );
+
+          itemTemplate.data.operationalLayers =
+            itemTemplate.data.operationalLayers.filter(layer => layer.styleUrl !== unsupportedTileLayerUrl);
           _templatizeWebmapLayerIdsAndUrls(
             itemTemplate.data.operationalLayers,
             results.urlHash,
             templateDictionary
           );
+
           _templatizeWebmapLayerIdsAndUrls(
             itemTemplate.data.tables,
             results.urlHash,
@@ -132,7 +144,7 @@ export function _excludeInitialState(data: any): void {
 /**
  * Extracts the AGOL itemId for each layer or table object in a list using the url.
  *
- * @param layerList List of map layers or tables
+ * @param layerList List of map layers or tables; supported vector tile layers have their styleUrls templatized
  * @param dependencies Current list of dependencies
  * @param authentication Credentials for any requests
  * @returns Updated list of dependencies ids, url/itemId hash (for feature layers),
@@ -208,7 +220,7 @@ export function _getLayerIds(
                 );
               } else {
                 // Unsupported vector tiles
-                layers[i].styleUrl = "";
+                layers[i].styleUrl = unsupportedTileLayerUrl;
               }
 
             } else if (common.getProp(response, "serviceItemId")) {
@@ -221,6 +233,7 @@ export function _getLayerIds(
             }
 
           });
+
           resolve({
             dependencies,
             urlHash
