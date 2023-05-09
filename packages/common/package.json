@@ -1,6 +1,6 @@
 {
   "name": "@esri/solution-common",
-  "version": "3.0.0",
+  "version": "3.0.1",
   "description": "Provides general helper functions for @esri/solution.js.",
   "main": "dist/node/index.js",
   "unpkg": "dist/umd/common.umd.min.js",
@@ -87,5 +87,5 @@
     "esri",
     "ES6"
   ],
-  "gitHead": "566b1c0fa884f94279a70d932dda3cd8a55ba050"
+  "gitHead": "86394b7a82adae26897cb2ec2aade0aa05e70e41"
 }
