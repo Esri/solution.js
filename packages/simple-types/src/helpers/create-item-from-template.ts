@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import * as common from "@esri/solution-common";
 import * as notebook from "../notebook";
 import * as webmappingapplication from "../webmappingapplication";
@@ -102,8 +103,9 @@ export function createItemFromTemplate(
             } else {
               // Add the new item to the settings
               templateDictionary[template.itemId] = {
-                itemId: createResponse.id
-              };
+                itemId: createResponse.id,
+                itemUrl: (templateDictionary["portalBaseUrl"] as string) + "/sharing/rest/content/items/" + createResponse.id
+              }
               newItemTemplate.itemId = createResponse.id;
 
               // Set the appItemId manually to get around cases where the path was incorrectly set

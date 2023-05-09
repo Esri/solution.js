@@ -48,7 +48,7 @@ export function getItemTypeAbbrev(type: string): string {
       "Scene Service": "xxx",
       "Stream Service": "xxx",
       Tool: "xxx",
-      "Vector Tile Service": "xxx",
+      "Vector Tile Service": "vts",
       WFS: "xxx",
       WMS: "xxx",
       WMTS: "xxx",

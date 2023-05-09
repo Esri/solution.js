@@ -202,6 +202,10 @@ export function getAGOLItem(type?: string, url = "", itemId?: string): any {
       item = getAGOLItemFundamentals(type);
       break;
 
+    case "Vector Tile Service":
+      item = getAGOLItemFundamentals(type, "", itemId);
+      break;
+
     case "Web Map":
       item = getAGOLItemFundamentals(type, url || undefined);
       break;
@@ -980,8 +984,8 @@ export function getAGOLItemData(type?: string, itemId?: string): any {
               styleUrl:
                 utils.PORTAL_SUBSET.restUrl +
                 "/content/items/" +
-                "7dc6cea0b1764a1f9af2e679f642f0f5/resources/styles/root.json",
-              itemId: "7dc6cea0b1764a1f9af2e679f642f0f5"
+                "vts1234567890/resources/styles/root.json",
+              itemId: "vts1234567890"
             }
           ],
           title: "Topographic"
