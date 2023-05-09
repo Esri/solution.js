@@ -13,17 +13,14 @@
     "url": "git+https://github.com/Esri/solution.js.git"
   },
   "scripts": {
-    "start:deployer": "lerna run build && http-server ./demos/deploySolution",
-    "build": "lerna run build:esm",
     "clean": "npm run clean:src && npm run clean:dist",
     "clean:src": "rm -rf packages/*/{src,test}/*.{d.ts,js,js.map} && rm -rf packages/*/{src,test}/**/*.{d.ts,js,js.map} && find demos/**/src/*.d.ts -type f -delete",
     "clean:dist": "rm -rf demos/**/dist/ && rm -rf packages/*/dist/ && rm -rf packages/*/.rpt2_cache",
-    "deepclean": "rm -rf ./node_modules && rm -rf ./demos/node_modules && rm -rf packages/*/node_modules && npm run clean",
+    "deepclean": "rm -rf ./node_modules && rm -rf ./demos/*/node_modules && rm -rf packages/*/node_modules && npm run clean",
     "lint": "eslint . --ext .ts",
     "lint:fix": "eslint . --ext .ts --fix",
     "lint:staged": "npx lint-staged",
     "prettify": "prettier --write \"packages/**/+(src|test)/**/*.ts\"",
-    "dev": "support/dev.sh",
     "getupdates": "npm-check-updates --upgrade",
     "test": "npm run lint && npm run test:chrome",
     "test:browsers": "karma start --single-run --browsers Chrome,Firefox,Edge",
@@ -49,9 +46,7 @@
     "release:publish-retry": "lerna publish from-package --no-git-tag-version --no-push --yes",
     "postinstall": "npm run bootstrap",
     "bootstrap": "lerna bootstrap",
-    "precommit": "lint-staged",
-    "y:link:hub": "lerna run y:link:hub",
-    "y:unlink:hub": "lerna run y:unlink:hub && npm install"
+    "precommit": "lint-staged"
   },
   "publishConfig": {
     "access": "public"
@@ -124,7 +119,7 @@
     "slug": "^8.0.0",
     "sri-toolbox": "0.2.0",
     "ts-node": "^10.9.1",
-    "typedoc": "^0.24.6",
+    "typedoc": "^0.24.7",
     "typescript": "^4.9.5",
     "ua-parser-js": "^1.0.35",
     "uuid": "^9.0.0"
