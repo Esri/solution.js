@@ -34,7 +34,7 @@
     "@esri/arcgis-rest-service-admin": "~3.5.0"
   },
   "dependencies": {
-    "@esri/hub-common": "^12.31.1",
+    "@esri/hub-common": "^12.37.1",
     "@esri/hub-initiatives": "^12.4.1",
     "@esri/hub-sites": "^12.6.0",
     "@esri/hub-teams": "^12.4.1",

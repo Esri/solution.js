@@ -30,7 +30,7 @@
   },
   "dependencies": {
     "@esri/arcgis-html-sanitizer": "3.0.1",
-    "@esri/hub-common": "^12.31.1",
+    "@esri/hub-common": "^12.37.1",
     "@esri/hub-initiatives": "^12.4.1",
     "@esri/hub-sites": "^12.6.0",
     "@esri/hub-teams": "^12.4.1",
