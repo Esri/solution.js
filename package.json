@@ -1,6 +1,6 @@
 {
   "name": "@esri/solution.js",
-  "version": "2.0.2-alpha.0",
+  "version": "3.0.0",
   "description": "A library running in Node.js and modern browsers for transferring ArcGIS Online items from one organization to another.",
   "author": "Esri",
   "license": "Apache-2.0",
@@ -15,6 +15,7 @@
   "scripts": {
     "start:deployer": "lerna run build && http-server ./demos/deploySolution",
     "build": "lerna run build:esm",
+    "clean": "npm run clean:src && npm run clean:dist",
     "clean:src": "rm -rf packages/*/{src,test}/*.{d.ts,js,js.map} && rm -rf packages/*/{src,test}/**/*.{d.ts,js,js.map} && find demos/**/src/*.d.ts -type f -delete",
     "clean:dist": "rm -rf demos/**/dist/ && rm -rf packages/*/dist/ && rm -rf packages/*/.rpt2_cache",
     "deepclean": "rm -rf ./node_modules && rm -rf ./demos/node_modules && rm -rf packages/*/node_modules && npm run clean",
