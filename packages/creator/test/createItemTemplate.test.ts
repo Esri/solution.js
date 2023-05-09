@@ -757,11 +757,6 @@ describe("Module `createItemTemplate`", () => {
         .toEqual(preExpectedTypeKeywords);
 
       fetchMock
-        .get(
-          utils.PORTAL_SUBSET.restUrl +
-            "/content/items/map12345678900?f=json&token=fake-token",
-          webmap
-        )
         .post(
           utils.PORTAL_SUBSET.restUrl +
             "/content/items/map1234567890/info/thumbnail/ago_downloaded.png?w=400",
@@ -778,11 +773,6 @@ describe("Module `createItemTemplate`", () => {
         )
         .post(
           utils.PORTAL_SUBSET.restUrl +
-            "/content/items/map1234567890/resources",
-          noResourcesResponse
-        )
-        .post(
-          utils.PORTAL_SUBSET.restUrl +
             "/content/users/casey/items/sln1234567890/addResources",
           { success: true, id: solutionItemId }
         );
@@ -791,11 +781,10 @@ describe("Module `createItemTemplate`", () => {
         relatedItems: []
       });
 
-      const getItemBase = spyOn(common, "getItemBase");
-      getItemBase.and.callThrough();
+      const getItemBase = spyOn(common, "getItemBase").and.resolveTo(webmap);
 
-      const getItemResourcesPaths = spyOn(common, "getItemResourcesPaths");
-      getItemResourcesPaths.and.callThrough();
+      const getItemResourcesPaths = spyOn(common, "getItemResourcesPaths").and.resolveTo([] as common.ISourceFileCopyPath[]);
+
       const expectedTags: string[] = ["test"];
       const expectedTypeKeywords: string[] = ["JavaScript"];
 
@@ -811,18 +800,15 @@ describe("Module `createItemTemplate`", () => {
           utils.ITEM_PROGRESS_CALLBACK
         )
         .then(() => {
-          // getItemBase.calls.mostRecent().returnValue.then(v => {
-          //   expect(v.tags).toEqual(preExpectedTags);
-          //   expect(v.typeKeywords).toEqual(preExpectedTypeKeywords);
-          // }, done.fail);
-          const actualTemplate: any = getItemResourcesPaths.calls.mostRecent()
-            .args[0];
+          const actualTemplate = common.findTemplateInList(existingTemplates, itemId);
+
           expect(actualTemplate.item.tags)
             .withContext("test final tags")
             .toEqual(expectedTags);
           expect(actualTemplate.item.typeKeywords)
             .withContext("test final typeKeywords")
             .toEqual(expectedTypeKeywords);
+
           done();
         });
     });

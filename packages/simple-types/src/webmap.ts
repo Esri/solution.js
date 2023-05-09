@@ -60,21 +60,27 @@ export function convertItemToTemplate(
 
         // Templatize the map layer ids after we've extracted them as dependencies
         if (itemTemplate.data) {
-          itemTemplate.data.baseMap.baseMapLayers =
-            itemTemplate.data.baseMap.baseMapLayers.filter(layer => layer.styleUrl !== unsupportedTileLayerUrl);
-          _templatizeWebmapLayerIdsAndUrls(
-            itemTemplate.data.baseMap.baseMapLayers,
-            results.urlHash,
-            templateDictionary
-          );
+          const baseMapLayers = itemTemplate.data.baseMap?.baseMapLayers;
+          if (baseMapLayers) {
+            itemTemplate.data.baseMap.baseMapLayers =
+              baseMapLayers.filter(layer => layer.styleUrl !== unsupportedTileLayerUrl);
+            _templatizeWebmapLayerIdsAndUrls(
+              itemTemplate.data.baseMap.baseMapLayers,
+              results.urlHash,
+              templateDictionary
+            );
+          }
 
-          itemTemplate.data.operationalLayers =
-            itemTemplate.data.operationalLayers.filter(layer => layer.styleUrl !== unsupportedTileLayerUrl);
-          _templatizeWebmapLayerIdsAndUrls(
-            itemTemplate.data.operationalLayers,
-            results.urlHash,
-            templateDictionary
-          );
+          const operationalLayers = itemTemplate.data.operationalLayers;
+          if (operationalLayers) {
+            itemTemplate.data.operationalLayers =
+              operationalLayers.filter(layer => layer.styleUrl !== unsupportedTileLayerUrl);
+            _templatizeWebmapLayerIdsAndUrls(
+              itemTemplate.data.operationalLayers,
+              results.urlHash,
+              templateDictionary
+            );
+          }
 
           _templatizeWebmapLayerIdsAndUrls(
             itemTemplate.data.tables,
@@ -108,7 +114,7 @@ export function _extractDependencies(
   return new Promise<any>((resolve, reject) => {
     const dependencies: string[] = [];
     if (itemTemplate.data) {
-      const basemapLayers: any[] = itemTemplate.data.baseMap.baseMapLayers || [];
+      const basemapLayers: any[] = itemTemplate.data.baseMap?.baseMapLayers || [];
       const opLayers: any[] = itemTemplate.data.operationalLayers || [];
       const tables: any[] = itemTemplate.data.tables || [];
       const layersAndTables: any[] = basemapLayers.concat(opLayers).concat(tables);
