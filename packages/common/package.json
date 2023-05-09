@@ -1,6 +1,6 @@
 {
   "name": "@esri/solution-common",
-  "version": "3.0.0",
+  "version": "3.0.1",
   "description": "Provides general helper functions for @esri/solution.js.",
   "main": "dist/node/index.js",
   "unpkg": "dist/umd/common.umd.min.js",
@@ -30,7 +30,7 @@
   },
   "dependencies": {
     "@esri/arcgis-html-sanitizer": "3.0.1",
-    "@esri/hub-common": "^12.31.1",
+    "@esri/hub-common": "^12.37.1",
     "@esri/hub-initiatives": "^12.4.1",
     "@esri/hub-sites": "^12.6.0",
     "@esri/hub-teams": "^12.4.1",
@@ -87,5 +87,5 @@
     "esri",
     "ES6"
   ],
-  "gitHead": "f9e62ca011235bb55cbfe17057177f070742a069"
+  "gitHead": "566b1c0fa884f94279a70d932dda3cd8a55ba050"
 }
