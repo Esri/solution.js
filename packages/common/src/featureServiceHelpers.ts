@@ -926,6 +926,9 @@ export function addFeatureServiceDefinition(
         _updateTemplateDictionaryFields(itemTemplate, templateDictionary);
       }
 
+      const isSelfReferential = _isSelfReferential(listToAdd);
+      listToAdd = _updateOrder(listToAdd, isSelfReferential);
+
       const chunkSize: number = _getLayerChunkSize();
       const layerChunks: any[] = [];
       listToAdd.forEach((toAdd, i) => {
@@ -973,10 +976,6 @@ export function addFeatureServiceDefinition(
                 return false;
               }
             });
-
-            // view field domain and alias can contain different values than the source field
-            // we need to set isViewOverride when added fields that differ from the source field
-            _validateViewFieldInfos(fieldInfos[item.id], item);
           }
         }
         /* istanbul ignore else */
@@ -991,6 +990,7 @@ export function addFeatureServiceDefinition(
           itemTemplate,
           options,
           layerChunks,
+          isSelfReferential,
           authentication
         );
 
@@ -1034,12 +1034,30 @@ export function addFeatureServiceDefinition(
 }
 
 /**
+ * When a view is a multi service view sort based on the id
+ * https://github.com/Esri/solution.js/issues/1048
+ *
+ * @param layersAndTables The list of layers and tables for the current template
+ * @param isSelfReferential Indicates if any layers or tables have relationships with other layers or tables in the same service
+ *
+ * @returns Sorted list of layers and tables when using a multi-service view
+ * @private
+ */
+export function _updateOrder(
+  layersAndTables: any[],
+  isSelfReferential: boolean
+): any[] {
+  return isSelfReferential ? layersAndTables.sort((a, b) => a.item.id - b.item.id) : layersAndTables;
+}
+
+/**
  * When a view is a multi service view add each layer separately
  * https://github.com/Esri/solution.js/issues/871
  *
- * @param itemTemplate
+ * @param itemTemplate The current itemTemplate being processed
  * @param options Add to service definition options
  * @param layerChunks Groups of layers or tables to add to the service
+ * @param isSelfReferential Indicates if any layers or tables have relationships with other layers or tables in the same service
  * @param authentication Credentials for the request
  *
  * @returns Add to service definition options
@@ -1049,12 +1067,12 @@ export function _updateAddOptions(
   itemTemplate: IItemTemplate,
   options: any,
   layerChunks: any[],
+  isSelfReferential: boolean,
   authentication: UserSession
 ): any {
-  const isMsView: boolean =
-    getProp(itemTemplate, "properties.service.isMultiServicesView") || false;
+  const isMsView: boolean = getProp(itemTemplate, "properties.service.isMultiServicesView") || false;
   /* istanbul ignore else */
-  if (isMsView) {
+  if (isMsView || isSelfReferential) {
     // if we already have some layers or tables add them first
     /* istanbul ignore else */
     if (options.layers.length > 0 || options.tables.length > 0) {
@@ -1067,6 +1085,25 @@ export function _updateAddOptions(
     }
   }
   return options;
+}
+
+/**
+ * Determine if any layer or table within the service references
+ * other layers or tables within the same service
+ *
+ * @param layersAndTables the list of layers and tables from the service
+ *
+ * @returns true when valid internal references are found
+ * @private
+ */
+export function _isSelfReferential(
+  layersAndTables: any[]
+): boolean {
+  const names = layersAndTables.map(l => l.item.name);
+  return layersAndTables.some(l => {
+    const relatedTables = l.item.adminLayerInfo?.viewLayerDefinition?.table?.relatedTables || [];
+    return relatedTables.some(r => names.indexOf(r.name) > -1);
+  });
 }
 
 /**
@@ -1126,10 +1163,14 @@ export function _updateForPortal(
         templateDictionary
       );
       fieldNames = fieldNames.concat(tableFieldNames);
+
+      const dynamicFieldNames = _getDynamicFieldNames(viewLayerDefTable);
+      fieldNames = fieldNames.concat(dynamicFieldNames);
+
       setProp(
         item,
         "adminLayerInfo.viewLayerDefinition.table",
-        _updateSourceLayerFields(viewLayerDefTable, tableFieldNames)
+        _updateSourceLayerFields(viewLayerDefTable, fieldNames)
       );
 
       // Handle related also
@@ -1142,7 +1183,14 @@ export function _updateForPortal(
             templateDictionary
           );
           fieldNames = fieldNames.concat(relatedTableFieldNames);
-          return _updateSourceLayerFields(relatedTable, relatedTableFieldNames);
+
+          const dynamicRelatedFieldNames = _getDynamicFieldNames(relatedTable);
+          fieldNames = fieldNames.concat(dynamicRelatedFieldNames);
+
+          return _updateSourceLayerFields(
+            relatedTable,
+            [...relatedTableFieldNames, ...dynamicRelatedFieldNames]
+          );
         });
       }
     } else {
@@ -1214,6 +1262,27 @@ export function _getFieldNames(
     });
     return sourceLayerFields;
   }
+}
+
+/**
+ * Get a list of any dynamically calculated fields
+ * These fields are still valid but will not exist in the source service
+ *
+ * @param table the table instance to compare
+ *
+ * @returns an array of field names
+ * @private
+ */
+export function _getDynamicFieldNames(
+  table: any
+): string[] {
+  const fieldNames: string[] = table.sourceLayerFields.reduce((prev, cur) => {
+    if (cur.statisticType) {
+      prev.push(cur.name);
+    }
+    return prev;
+  }, []);
+  return [...new Set(fieldNames)];
 }
 
 /**
@@ -1566,118 +1635,6 @@ export function postProcessFields(
       );
     }
   });
-}
-
-/**
- * View field domain, alias, editable, and visible props can contain
- * different values from the source.
- *
- * We need to check and set isFieldOverride to true when this occurs and false when it does not
- *
- * @param fieldInfo current view layer or table fieldInfo
- * @param item that stores the view fields
- *
- * This function will update the item that is provided
- * @private
- */
-export function _validateViewFieldInfos(fieldInfo: any, item: any): void {
-  _clearIsViewFieldOverride(item);
-  const fieldInfos = _getViewFieldInfos(fieldInfo);
-  item.fields.map((field: any) => {
-    const layerFieldInfo = getProp(fieldInfos, item.id.toString());
-    if (layerFieldInfo) {
-      Object.keys(layerFieldInfo).forEach(fi => {
-        _isViewFieldOverride(field, layerFieldInfo[fi].names, layerFieldInfo[fi].vals, fi);
-      });
-    }
-    return field;
-  });
-}
-
-/**
- * Clear previous isViewOverride settings
- * Due to a previous bug isViewOverride was being set on many fields incorrectly.
- * This function is used to clear the previously set value so we can make the proper determination.
- *
- * https://github.com/Esri/solution.js/issues/944
- *
- * @param item that stores the view fields
- *
- * This function will update the item that is provided
- * @private
- */
-export function _clearIsViewFieldOverride(
-  item: any
-): void {
-  item.fields = item.fields.map(field => {
-    deleteProp(field, "isViewOverride");
-    return field;
-  });
-}
-
-/**
- *  Get arrays of fields and names for domain, alias, and editable props
- *
- * @param fieldInfo current view layer or table fieldInfo
- * @private
- */
-export function _getViewFieldInfos(fieldInfo: any): any {
-  const fieldInfos = {};
-  const fieldOverrideKeys = ["domain", "alias", "editable"];
-  /* istanbul ignore else */
-  if (fieldInfo.sourceServiceFields) {
-    Object.keys(fieldInfo.sourceServiceFields).forEach(k => {
-      /* istanbul ignore else */
-      if (fieldInfo.sourceServiceFields[k]) {
-        Object.keys(fieldInfo.sourceServiceFields[k]).forEach(_k => {
-          fieldInfo.sourceServiceFields[k][_k].forEach((field: any) => {
-            fieldOverrideKeys.forEach(o_k => {
-              /* istanbul ignore else */
-              if (field.hasOwnProperty(o_k)) {
-                // need to store names and values relative to the individual sub layer/table
-                const name = String(field.name).toLocaleLowerCase();
-                const names = getProp(fieldInfos, `${_k}.${o_k}.names`) || [];
-                setCreateProp(fieldInfos, `${_k}.${o_k}.names`, [...names, name]);
-
-                const v = field[o_k];
-                const vals = getProp(fieldInfos, `${_k}.${o_k}.vals`) || [];
-                setCreateProp(fieldInfos, `${_k}.${o_k}.vals`, [...vals, v]);
-              }
-            });
-          });
-        });
-      }
-    });
-  }
-  return fieldInfos;
-}
-
-/**
- * Set isViewOverride for view fields when they have differences from the source FS field
- *
- * @param field the field instance we are testing
- * @param names array of field names
- * @param vals array of values
- * @param key the field key to compare
- * @private
- */
-export function _isViewFieldOverride(
-  field: any,
-  names: string[],
-  vals: any[],
-  key: string
-): void {
-  /* istanbul ignore else */
-  if (field.hasOwnProperty(key)) {
-    const i: number = names.indexOf(String(field.name).toLocaleLowerCase());
-    const isOverride = JSON.stringify(field[key]) !== (i > -1 ? JSON.stringify(vals[i]) : "");
-    const overrideSet = field.hasOwnProperty('isViewOverride');
-    // need to skip this check if isViewOverride has already been set to true
-    /* istanbul ignore else */
-    if (((overrideSet && !field.isViewOverride) || !overrideSet)) {
-      field.isViewOverride = isOverride;
-    }
-  }
 }
 
 /**

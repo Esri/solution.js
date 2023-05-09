@@ -20,7 +20,7 @@
  * @module generalHelpers
  */
 
-import { createId } from "@esri/hub-common";
+import { createId, IModel } from "@esri/hub-common";
 import {
   ICreateItemFromTemplateResponse,
   IDatasourceInfo,
@@ -111,6 +111,23 @@ export function blobToText(blob: Blob): Promise<string> {
  */
 export function checkUrlPathTermination(url: string): string {
   return url ? (url.endsWith("/") ? url : url + "/") : url;
+}
+
+/**
+ * Converts a hub-style item into a solutions-style item, the difference being handling of resources.
+ *
+ * @param hubModel Hub-style item
+ * @return solutions-style item
+ */
+export function convertIModel(
+  hubModel: IModel
+): IItemTemplate {
+  const item: any = {
+    ...hubModel
+  };
+  item.resources = hubModel?.resources ? Object.values(hubModel.resources) : [];
+
+  return item as IItemTemplate;
 }
 
 /**

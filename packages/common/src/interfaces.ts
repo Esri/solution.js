@@ -19,9 +19,10 @@
  */
 
 import {
+  IGetRelatedItemsResponse,
   IGroup,
-  IGetRelatedItemsResponse as IPortalGetRelatedItemsResponse,
-  IItem
+  IItem,
+  IItemRelationshipOptions
 } from "@esri/arcgis-rest-portal";
 import { ISpatialReference } from "@esri/arcgis-rest-service-admin";
 import { UserSession } from "@esri/arcgis-rest-auth";
@@ -36,6 +37,7 @@ export {
 export {
   IAddFolderResponse,
   ICreateItemResponse,
+  IGetRelatedItemsResponse,
   IGroup,
   IGroupAdd,
   IItem,
@@ -738,35 +740,45 @@ export interface IFolderStatusResponse {
 }
 
 /**
- * Response from getting the items related to a specified item, extended with paging properties
+ * Undocumented property returned by portal function `getRelatedItems`.
  */
-export interface IGetRelatedItemsResponse
-  extends IPortalGetRelatedItemsResponse {
+interface IGetRelatedItemsResponseAggregation {
+  total: IGetRelatedItemsResponseAggregationTotal;
+}
+
+/**
+ * Undocumented property returned by portal function `getRelatedItems`.
+ */
+interface IGetRelatedItemsResponseAggregationTotal {
   /**
-   * Total number of responses (from IPortalGetRelatedItemsResponse)
+   * Number of items returned in this response
    */
-  total: number;
+  count: number;
 
   /**
-   * Related items (from IPortalGetRelatedItemsResponse)
+   * Description of `count`, e.g., "total"
    */
-  relatedItems: IItem[];
+  name: string;
+}
+
+/**
+ * Extension of type to represent actual return from portal function `getRelatedItems`.
+ */
+export interface IGetRelatedItemsResponseFull extends IGetRelatedItemsResponse {
+  /**
+   * Undocumented property returned by portal function `getRelatedItems`.
+   */
+  aggregations: IGetRelatedItemsResponseAggregation;
 
   /**
-   * The number of the first entry requested. The index number is 1-based.
+   * Property used in conjunction with `start` to request the next batch of related items.
    */
-  start: number;
+  nextkey: string | null;
 
   /**
-   * The number of results requested.
+   * Echo of number of related items requested.
    */
   num: number;
-
-  /**
-   *  The 1-based index of the start of the next batch of results; value is -1 if there are no more results
-   *  to be fetched
-   */
-  nextStart: number;
 }
 
 /**
@@ -931,6 +943,34 @@ export interface IItemGeneralized {
 }
 
 /**
+ * Extends `IItemRelationshipOptions` for the REST JS `getRelatedItems` call because it doesn't include
+ * the new `start` and `num` properties.
+ */
+export interface IItemRelationshipOptionsPaging extends IItemRelationshipOptions {
+  params: {
+    /**
+     * Relationship direction sought
+     */
+    direction: "forward" | "reverse",
+
+    /**
+     * One-based index of start of next batch to fetch
+     */
+    start: number,
+
+    /**
+     * Number of items requested; maximum value is 100
+     */
+    num: number,
+
+    /**
+     * Key needed by related records search for second and subsequent batches; value comes from previous fetch
+     */
+    nextkey?: string
+  }
+}
+
+/**
  * The templatized form of an item or group.
  */
 export interface IItemTemplate {
@@ -1053,7 +1093,7 @@ export interface IKeyedListsOfStrings {
 /**
  * Type with key access to strings
  */
-export interface IMimeTypes {
+export interface IKeyedStrings {
   [key: string]: string;
 }
 
@@ -1540,6 +1580,21 @@ export interface ISurvey123CreateResult {
   formId: string;
   featureServiceId: string;
   folderId: string;
+}
+
+/**
+ * Result of fetching webmap dependencies
+ */
+export interface IWebmapDependencies {
+  /**
+   * Updated list of dependency ids
+   */
+  dependencies: string[];
+
+  /**
+   * Hash from URL to AGO item id
+   */
+  urlHash: IKeyedStrings;
 }
 
 /**

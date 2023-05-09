@@ -26,6 +26,7 @@ import {
   ICreateItemFromTemplateResponse,
   EItemProgressStatus,
   UserSession,
+  convertIModel,
   createHubRequestOptions,
   dedupe,
   generateEmptyCreationResponse,
@@ -222,7 +223,7 @@ export function createItemFromTemplate(
         const response: ICreateItemFromTemplateResponse = {
           item: {
             ...template,
-            ...siteModel
+            ...convertIModel(siteModel)
           },
           id: siteModel.item.id,
           type: template.type,

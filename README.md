@@ -148,10 +148,11 @@ These commands are
 
 ### Guides
 
-* [Package overview](https://github.com/Esri/solution.js/blob/master/guides/package-overview.md)
-* [Deploying with the repository](https://github.com/Esri/solution.js/blob/master/guides/deployment.md)
-* [Authentication in Browser-based Apps](https://github.com/Esri/solution.js/blob/master/guides/browser-authentication.md)
+* [Package Overview](https://github.com/Esri/solution.js/blob/master/guides/Package%20Overview.md)
+* [Getting Started](https://github.com/Esri/solution.js/blob/master/guides/Getting%20Started.md)
+* [Authentication in Browser-based Apps](https://github.com/Esri/solution.js/blob/master/guides/Authentication%20in%20Browser-based Apps.md)
 * [Publishing to npmjs](https://github.com/Esri/solution.js/blob/master/guides/Publishing%20to%20npmjs.md)
+* [Adding a Demo](https://github.com/Esri/solution.js/blob/master/guides/Adding%20a%20Demo.md)
 
 
 ### Issues
@@ -172,19 +173,13 @@ Esri welcomes contributions from anyone and everyone. Please see our [guidelines
 
 ### License
 
-Copyright &copy; 2018-2022 Esri
+Copyright &copy; 2018-2023 Esri
 
-Licensed under the Apache License, Version 2.0 (the "License");
-you may not use this file except in compliance with the License.
-You may obtain a copy of the License at
+Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at
 
 > http://www.apache.org/licenses/LICENSE-2.0
 
-Unless required by applicable law or agreed to in writing, software
-distributed under the License is distributed on an "AS IS" BASIS,
-WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-See the License for the specific language governing permissions and
-limitations under the License.
+Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
 
 A copy of the license is available in the repository's [LICENSE](https://github.com/Esri/solution.js/blob/master/LICENSE) file.
 

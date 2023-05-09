@@ -15,7 +15,7 @@
  */
 import { IModel, IHubUserRequestOptions } from "@esri/hub-common";
 
-import { _shareItemsToSiteGroups, updateSite, interpolateSite } from "@esri/hub-sites";
+import { shareItemsToSiteGroups, updateSite, interpolateSite } from "@esri/hub-sites";
 
 import { _updateSitePages } from "./_update-site-pages";
 
@@ -42,7 +42,7 @@ export function _postProcessSite(
   );
 
   // convert the itemInfo's into things that look enough like a model
-  // that we can call _shareItemsToSiteGroups
+  // that we can call shareItemsToSiteGroups
   const pseudoModels = infosWithoutSite.map(e => {
     return {
       item: {
@@ -55,7 +55,7 @@ export function _postProcessSite(
   let secondPassPromises: Array<Promise<any>> = [];
 
   secondPassPromises = secondPassPromises.concat(
-    _shareItemsToSiteGroups(
+    shareItemsToSiteGroups(
       siteModel,
       (pseudoModels as unknown) as IModel[],
       hubRequestOptions

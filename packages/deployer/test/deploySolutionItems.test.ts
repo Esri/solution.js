@@ -23,6 +23,7 @@ import * as deploySolution from "../src/deploySolutionItems";
 import * as fetchMock from "fetch-mock";
 import * as mockItems from "../../common/test/mocks/agolItems";
 import * as templates from "../../common/test/mocks/templates";
+import * as testUtils from "../../common/test/mocks/utils";
 import * as utils from "../../common/test/mocks/utils";
 
 // ------------------------------------------------------------------------------------------------------------------ //
@@ -98,7 +99,8 @@ describe("Module `deploySolutionItems`", () => {
       );
 
       const templateDictionary: any = {
-        user: mockItems.getAGOLUser("casey")
+        user: mockItems.getAGOLUser("casey"),
+        portalBaseUrl: utils.PORTAL_SUBSET.portalUrl
       };
 
       fetchMock
@@ -156,10 +158,12 @@ describe("Module `deploySolutionItems`", () => {
       ];
 
       const expectedTemplateDictionary: any = {
-        user: mockItems.getAGOLUser("casey")
+        user: mockItems.getAGOLUser("casey"),
+        portalBaseUrl: utils.PORTAL_SUBSET.portalUrl
       };
       expectedTemplateDictionary[id] = {
         itemId: newItemID,
+        itemUrl: testUtils.PORTAL_SUBSET.restUrl + "/content/items/ba4a6047326243b290f625e80ebe6531",
         url:
           "https://apl.maps.arcgis.com/apps/Viewer/index.html?appid=map1234567890"
       };
@@ -1614,12 +1618,6 @@ describe("Module `deploySolutionItems`", () => {
       expectedClone.properties.layers[0].relationships = null;
       expectedClone.properties.layers[0].adminLayerInfo = undefined;
       delete expectedClone.item.spatialReference;
-      expectedClone.properties.layers[0].fields = expectedClone.properties.layers[0].fields.map(
-        (f: any) => {
-          f.isViewOverride = true;
-          return f;
-        }
-      );
 
       fetchMock
         .post(

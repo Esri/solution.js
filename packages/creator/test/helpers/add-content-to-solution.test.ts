@@ -135,6 +135,10 @@ describe("addContentToSolution", () => {
         "https://myorg.maps.arcgis.com/sharing/rest/content/items/map1234567890?f=json&token=fake-token",
         mockItems.getAGOLItem("Web Map")
       )
+      .get(
+        "https://myorg.maps.arcgis.com/sharing/rest/content/items/vts1234567890?f=json&token=fake-token",
+        mockItems.getAGOLItem("Vector Tile Service")
+      )
       .post(
         "https://myorg.maps.arcgis.com/sharing/rest/content/items/map1234567890/data",
         mockItems.getAGOLItemData("Web Map")

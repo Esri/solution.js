@@ -10,11 +10,12 @@
 * \[ \] Run `npm run release:prepare2` in a Windows shell and pick new version number
 * \[ \] Run `npm run release:review`
 * \[ \] Run `npm run release:publish-git` in a bash shell
-* \[ \] Run `npm run release:publish-npm` in a Windows shell (if the rebuild appears to be stalled while building `@esri/solution-deployer`, try Enter to see if you'll get a complaint about the need for the npm 2-factor code; for some reason, the prompt for the code hasn't been appearing lately)
+* \[ \] Run `npm run release:publish-npm` in a Windows shell (if the rebuild appears to be stalled while building `@esri/solution-deployer`, try Enter to see if you'll get a complaint about the need for the npm 2-factor code; for some reason, the prompt for the code hasn't been appearing lately, or appears mixed into the build messages)
 * \[ \] Check that publishing worked using `check_npm_package_versions.html` in a browser
+* \[ \] Commit package.json files (publishing updates the `gitHead` property in the files) 
 * \[ \] Push `master` branch to GitHub
-* \[ \] Merge `master` into the `develop` branch and push it to GitHub
-* \[ \] Create as release from the build's tag in GitHub
+* \[ \] Merge `master` into the `develop` branch and push the latter to GitHub
+* \[ \] Create a release from the build's tag in GitHub
 * \[ \] Update documentation via `npm run docs:build`
 * \[ \] Deploy documentation via `npm run docs:deploy`
 

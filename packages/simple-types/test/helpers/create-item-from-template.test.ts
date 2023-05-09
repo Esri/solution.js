@@ -54,9 +54,16 @@ describe("simpleTypeCreateItemFromTemplate", () => {
       itemTemplate.data = mockItems.getAGOLItemData("Notebook");
 
       const newItemID: string = "abc1cab401af4828a25cc6eaeb59fb69";
-      const expected: any = {};
-      expected[itemTemplate.itemId] = { itemId: newItemID };
-      const templateDictionary: any = {};
+      const expected: any = {
+        portalBaseUrl: utils.PORTAL_SUBSET.portalUrl
+      };
+      expected[itemTemplate.itemId] = {
+        itemId: newItemID,
+        itemUrl: utils.PORTAL_SUBSET.restUrl + "/content/items/abc1cab401af4828a25cc6eaeb59fb69"
+      };
+      const templateDictionary: any = {
+        portalBaseUrl: utils.PORTAL_SUBSET.portalUrl
+      };
 
       const userUrl: string =
         utils.PORTAL_SUBSET.restUrl +
@@ -113,7 +120,10 @@ describe("simpleTypeCreateItemFromTemplate", () => {
 
       const newItemID: string = "abc1cab401af4828a25cc6eaeb59fb69";
       const expected: any = {};
-      expected[itemTemplate.itemId] = { itemId: newItemID };
+      expected[itemTemplate.itemId] = {
+        itemId: newItemID,
+        itemUrl: utils.PORTAL_SUBSET.restUrl + "/content/items/abc1cab401af4828a25cc6eaeb59fb69"
+      };
       const templateDictionary: any = {};
 
       const userUrl: string =
@@ -206,11 +216,13 @@ describe("simpleTypeCreateItemFromTemplate", () => {
       const newItemId: string = "xxx79c91fc7642ebb4c0bbacfbacd510";
 
       const templateDictionary: any = {
+        portalBaseUrl: utils.PORTAL_SUBSET.portalUrl,
         user: {
           email: "casey@esri.com"
         },
         "4efe5f693de34620934787ead6693f10": {
           itemId: "xxxe5f693de34620934787ead6693f10",
+          itemUrl: utils.PORTAL_SUBSET.restUrl + "/content/items/xxxe5f693de34620934787ead6693f10",
           layer0: {
             url: "https://abc123/name/FeatureServer/0"
           },
@@ -222,11 +234,13 @@ describe("simpleTypeCreateItemFromTemplate", () => {
       };
 
       const expectedTemplateDictionary: any = {
+        portalBaseUrl: utils.PORTAL_SUBSET.portalUrl,
         user: {
           email: "casey@esri.com"
         },
         "4efe5f693de34620934787ead6693f10": {
           itemId: "xxxe5f693de34620934787ead6693f10",
+          itemUrl: utils.PORTAL_SUBSET.restUrl + "/content/items/xxxe5f693de34620934787ead6693f10",
           layer0: {
             url: "https://abc123/name/FeatureServer/0"
           },
@@ -235,7 +249,8 @@ describe("simpleTypeCreateItemFromTemplate", () => {
           }
         },
         "9da79c91fc7642ebb4c0bbacfbacd510": {
-          itemId: "xxx79c91fc7642ebb4c0bbacfbacd510"
+          itemId: "xxx79c91fc7642ebb4c0bbacfbacd510",
+          itemUrl: utils.PORTAL_SUBSET.restUrl + "/content/items/xxx79c91fc7642ebb4c0bbacfbacd510"
         }
       };
 
@@ -987,9 +1002,16 @@ describe("simpleTypeCreateItemFromTemplate", () => {
       itemTemplate.data = mockItems.getAGOLItemData("Workforce Project");
 
       const newItemID: string = "abc1cab401af4828a25cc6eaeb59fb69";
-      const expected: any = {};
-      expected[itemTemplate.itemId] = { itemId: newItemID };
-      const templateDictionary: any = {};
+      const expected: any = {
+        portalBaseUrl: utils.PORTAL_SUBSET.portalUrl
+      };
+      expected[itemTemplate.itemId] = {
+        itemId: newItemID,
+        itemUrl: utils.PORTAL_SUBSET.restUrl + "/content/items/abc1cab401af4828a25cc6eaeb59fb69"
+      };
+      const templateDictionary: any = {
+        portalBaseUrl: utils.PORTAL_SUBSET.portalUrl
+      };
 
       const userUrl: string =
         utils.PORTAL_SUBSET.restUrl +

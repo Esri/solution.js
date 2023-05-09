@@ -1,5 +1,4 @@
 // Karma configuration
-// Generated on Thu Jul 13 2017 11:01:30 GMT-0700 (PDT)
 const fs = require("fs");
 
 module.exports = function(config) {

@@ -1,0 +1,35 @@
+html {
+  font-family: Arial;
+  color: #4c4c4c;
+}
+body {
+  padding: 8px;
+}
+button {
+  cursor: pointer;
+}
+.section {
+  margin: 8px 0 8px 0;
+  border: 1px solid gray;
+  padding: 8px;
+  opacity: 0;
+}
+.section-title {
+  margin-bottom: 12px;
+}
+.labeledItem {
+  display: inline-block;
+  margin: 0 8px 8px 0;
+}
+.checklist {
+  list-style-type: none;
+}
+.simpleList {
+  margin-left: 22px;
+}
+.copyBtn {
+  display: none;
+}
+.fader {
+  transition: 0.5s;
+}

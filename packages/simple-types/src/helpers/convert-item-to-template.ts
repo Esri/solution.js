@@ -63,8 +63,10 @@ export function convertItemToTemplate(
 
     // Perform type-specific handling
     let dataPromise = Promise.resolve({});
+    let resourcesPromise = Promise.resolve([]);
     switch (itemInfo.type) {
       case "Dashboard":
+      case "Data Pipeline":
       case "Feature Collection":
       case "Feature Service":
       case "Hub Initiative":
@@ -93,7 +95,13 @@ export function convertItemToTemplate(
         );
         break;
       case "QuickCapture Project":
-        dataPromise = common.getItemResourcesFiles(
+        dataPromise = new Promise(resolveJSON => {
+          // eslint-disable-next-line @typescript-eslint/no-floating-promises
+          common
+            .getItemDataAsJson(itemTemplate.itemId, srcAuthentication)
+            .then(json => resolveJSON(json));
+        });
+        resourcesPromise = common.getItemResourcesFiles(
           itemTemplate.itemId,
           srcAuthentication
         );
@@ -102,8 +110,8 @@ export function convertItemToTemplate(
 
     // Errors are handled as resolved empty values; this means that there's no `reject` clause to handle, hence:
     // eslint-disable-next-line @typescript-eslint/no-floating-promises
-    Promise.all([dataPromise, relatedPromise]).then(responses => {
-      const [itemDataResponse, relatedItemsResponse] = responses;
+    Promise.all([dataPromise, relatedPromise, resourcesPromise]).then(responses => {
+      const [itemDataResponse, relatedItemsResponse, resourcesResponse] = responses;
 
       // need to pre-process for velocity urls before they could be templatized by other processors
       itemTemplate.data = common.updateVelocityReferences(
@@ -129,6 +137,21 @@ export function convertItemToTemplate(
         }
       });
 
+      // Add QuickCapture basemap webmap references
+      if (itemInfo.type === "QuickCapture Project") {
+        const basemap = (itemDataResponse as any)?.application?.basemap;
+        if (basemap?.type === "WebMap") {
+          itemTemplate.dependencies.push(basemap.itemId);
+        }
+        itemTemplate.resources = resourcesResponse;
+      }
+
+      // Add Data Pipeline source and sink feature layers to dependencies
+      else if (itemInfo.type === "Data Pipeline") {
+        itemTemplate.dependencies = itemTemplate.dependencies.concat(_getDataPipelineSourcesAndSinks(itemDataResponse));
+      }
+
+      // Create the template
       let templateModifyingPromise = Promise.resolve(itemTemplate);
       switch (itemInfo.type) {
         case "Dashboard":
@@ -214,6 +237,32 @@ export function convertItemToTemplate(
       );
     });
   });
+}
+
+/**
+ * Extracts the feature layer ids for a Data Pipeline's sources and sinks.
+ *
+ * @param itemData Data Pipeline's data section
+ * @return List of feature layer ids or an empty list if there are no sources or sinks in the pipeline
+ */
+export function _getDataPipelineSourcesAndSinks(
+  itemData: any
+): string[] {
+  const dependencies = [] as string[];
+  const sourcesAndSinks = (itemData?.inputs ?? []).concat(itemData?.outputs ?? []);
+
+  sourcesAndSinks.forEach(
+    sourceOrSink => {
+      if (sourceOrSink.type === "FeatureServiceSource" || sourceOrSink.type === "FeatureServiceSink") {
+        const featureServiceId = common.getProp(sourceOrSink, "parameters.layer.value.itemId")
+        if (featureServiceId) {
+          dependencies.push(featureServiceId);
+        }
+      }
+    }
+  );
+
+  return dependencies;
 }
 
 /**

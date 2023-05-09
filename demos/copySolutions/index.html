@@ -1,10 +1,10 @@
 <!doctype html>
 <html lang="en" dir="ltr">
 <head>
-  <meta http-equiv="content-type" content="text/html; charset=utf-8" />
-  <title>@esri/solution-common copySolutions example</title>
+  <meta charset="utf-8"/>
+  <title>copySolutions example</title>
   <!--
-   | Copyright 2019 Esri
+   | Copyright 2023 Esri
    |
    | Licensed under the Apache License, Version 2.0 (the "License");
    | you may not use this file except in compliance with the License.
@@ -19,50 +19,15 @@
    | limitations under the License.
   -->
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
-  <link rel="stylesheet" href="https://esri.github.io/calcite-bootstrap/styles/calcite-bootstrap.min.css">
-  <style>
-  html {
-    font-family: Arial;
-    color: #4c4c4c;
-  }
-  body {
-    padding: 8px;
-  }
-  button {
-    cursor: pointer;
-  }
-  .section {
-    margin: 8px 0 8px 0;
-    border: 1px solid gray;
-    padding: 8px;
-    opacity: 0;
-  }
-  .section-title {
-    margin-bottom: 12px;
-  }
-  .labeledItem {
-    display: inline-block;
-    margin: 0 8px 8px 0;
-  }
-  .checklist {
-    list-style-type: none;
-  }
-  .simpleList {
-    margin-left: 22px;
-  }
-  .copyBtn {
-    display: none;
-  }
-  .fader {
-    transition: 0.5s;
-  }
-  </style>
+  <script>
+    var connectToSourceFcn, connectToDestinationFcn;
+  </script>
 </head>
 <body>
   <h3>Copy solution templates</h3>
 
   <div id="page">
-    <img id="page_busySymbol" src="../images/loading.gif">
+    <img id="page_busySymbol" src="loading.gif">
 
     <div id="credentialsDiv" class="section fader">
       <div class="section-title">Credentials in source organization</div>
@@ -121,195 +86,5 @@
     </div>
 
   </div>
-
-  <script crossorigin="anonymous" src="https://polyfill.io/v3/polyfill.min.js?features=fetch%2Ces2015"></script>
-  <script src="https://requirejs.org/docs/release/2.3.6/minified/require.js"></script>
-  <script>
-    var connectToSourceFcn, connectToDestinationFcn;
-    require.config({
-      paths: {
-        "@esri/arcgis-html-sanitizer": "../node_modules/@esri/arcgis-html-sanitizer/dist/umd/arcgis-html-sanitizer.min",
-        "@esri/arcgis-rest-auth": "../node_modules/@esri/arcgis-rest-auth/dist/umd/auth.umd.min",
-        "@esri/arcgis-rest-feature-layer": "../node_modules/@esri/arcgis-rest-feature-layer/dist/umd/feature-layer.umd.min",
-        "@esri/arcgis-rest-portal": "../node_modules/@esri/arcgis-rest-portal/dist/umd/portal.umd.min",
-        "@esri/arcgis-rest-request": "../node_modules/@esri/arcgis-rest-request/dist/umd/request.umd.min",
-        "@esri/arcgis-rest-service-admin": "../node_modules/@esri/arcgis-rest-service-admin/dist/umd/service-admin.umd.min",
-        "@esri/hub-common": "../node_modules/@esri/hub-common/dist/umd/common.umd.min",
-        "@esri/hub-initiatives": "../node_modules/@esri/hub-initiatives/dist/umd/initiatives.umd.min",
-        "@esri/hub-sites": "../node_modules/@esri/hub-sites/dist/umd/sites.umd.min",
-        "@esri/hub-teams": "../node_modules/@esri/hub-teams/dist/umd/teams.umd.min",
-        "@esri/solution-common": "../node_modules/@esri/solution-common/dist/umd/common.umd",
-        "adlib": "../node_modules/adlib/dist/adlib",
-        "tslib": "../node_modules/tslib/tslib"
-      }
-    });
-
-    require(["@esri/arcgis-rest-auth", "@esri/arcgis-rest-portal", "@esri/arcgis-html-sanitizer", "../dist/copy-solutions-main.js", "../dist/demoCommon.js"],
-      function (auth, portal, htmlSanitizer, main, demoCommon) {
-        "use strict";
-        demoCommon.removeItem("page_busySymbol");
-        connectToSourceFcn = getSourceTemplates;
-        connectToDestinationFcn = getDestinationTemplates;
-        demoCommon.fadeItemIn("credentialsDiv");
-
-        var haveSourceTemplates = false;
-        var haveDestinationAccess = false;
-
-        var sourceAuthentication = null;
-        var sourcePortal = null;
-        var destinationAuthentication = null;
-        var destinationPortal = null;
-
-        var sanitizer = new htmlSanitizer();
-
-        //------------------------------------------------------------------------------------------------------------//
-
-        /**
-         * Gets templates from an organization and shows them as a checklist in the div "sourceSolutionsDiv".
-         */
-        function getSourceTemplates () {
-          demoCommon.removeItem("sourceSolutionsListDiv");
-          demoCommon.fadeItemOut("copiedSolutionsDiv");
-          demoCommon.removeItem("copiedSolutionsListDiv");
-          demoCommon.fadeItemIn("sourceSolutionsDiv");
-          demoCommon.addBusySymbol("sourceSolutionsDiv");
-          sourceAuthentication = null;
-          haveSourceTemplates = false;
-          updateCopyBtn();
-
-          const srcPortal = (document.getElementById("srcPortal").value || "https://www.arcgis.com") + "/sharing/rest";
-          sourceAuthentication = demoCommon.getRequestAuthentication(
-            document.getElementById("srcUsername").value, document.getElementById("srcPassword").value,
-            srcPortal
-          );
-
-
-          main.getTemplates(sourceAuthentication, !document.getElementById("srcOnlyMySolns").checked)
-          .then(
-            searchResponse => {
-              demoCommon.removeItem("sourceSolutionsDiv_busySymbol");
-              var listDiv = demoCommon.addItem ("sourceSolutionsDiv", "DIV", "sourceSolutionsListDiv");
-              listDiv.innerHTML = demoCommon.createChecklist(
-                searchResponse.results,
-                sanitizer.sanitize(document.getElementById("srcPortal").value) || "https://www.arcgis.com",
-                "sourceSolutionsList",
-                true
-              );
-              var copyBtn = demoCommon.addItem("sourceSolutionsListDiv", "BUTTON", "copyBtn", "copyBtn");
-              copyBtn.innerHTML = "Copy Solution(s)";
-              copyBtn.addEventListener("click", copyTemplates);
-              haveSourceTemplates = true;
-              updateCopyBtn();
-            },
-            error => {
-              removeItem("sourceSolutionsDiv_busySymbol");
-              var listDiv = addItem ("sourceSolutionsDiv", "DIV", "sourceSolutionsListDiv");
-              listDiv.innerHTML = "Unable to get Solution templates: " + error;
-            }
-          );
-        }
-
-        /**
-         * Gets templates from an organization and shows them as a list in the div "destinationSolutionsDiv".
-         */
-         function getDestinationTemplates () {
-          demoCommon.removeItem("destinationSolutionsListDiv");
-          demoCommon.fadeItemOut("copiedSolutionsDiv");
-          demoCommon.removeItem("copiedSolutionsListDiv");
-          demoCommon.addBusySymbol("destinationSolutionsDiv");
-          demoCommon.fadeItemIn("destinationSolutionsDiv");
-          destinationAuthentication = null;
-          haveDestinationAccess = false;
-          updateCopyBtn();
-
-          const destPortal = (document.getElementById("destPortal").value || "https://www.arcgis.com") + "/sharing/rest";
-          destinationAuthentication = demoCommon.getRequestAuthentication(
-            document.getElementById("destUsername").value, document.getElementById("destPassword").value,
-            destPortal
-          );
-
-          main.getTemplates(destinationAuthentication, !document.getElementById("destOnlyMySolns").checked)
-          .then(
-            searchResponse => {
-              demoCommon.removeItem("destinationSolutionsDiv_busySymbol");
-              var listDiv = demoCommon.addItem ("destinationSolutionsDiv", "DIV", "destinationSolutionsListDiv");
-              if (searchResponse.total === 0) {
-                listDiv.innerHTML = "<i>No Solution templates found</i>";
-              } else {
-                listDiv.innerHTML = demoCommon.createSimpleList(
-                  searchResponse.results,
-                  sanitizer.sanitize(document.getElementById("destPortal").value) || "https://www.arcgis.com"
-                );
-              }
-              haveDestinationAccess = true;
-              updateCopyBtn();
-            },
-            error => {
-              demoCommon.removeItem("destinationSolutionsDiv_busySymbol");
-              var listDiv = demoCommon.addItem ("destinationSolutionsDiv", "DIV", "destinationSolutionsListDiv");
-              listDiv.innerHTML = "Unable to get Solution templates: " + error;
-            }
-          );
-        }
-
-        /**
-         * Copies checked templates in list in the div "sourceSolutionsList" to the destination organization.
-         */
-        function copyTemplates () {
-          demoCommon.removeItem("copiedSolutionsListDiv");
-          var sourceSolutionsList = document.getElementById("sourceSolutionsList");
-          var numSolutionsToCheck = sourceSolutionsList.children.length;
-          var solutionsToCopy = [];
-          for (var i = 0; i < numSolutionsToCheck; i++) {
-            var inputItem = sourceSolutionsList.children[i].children[0];
-            if (inputItem.checked) {
-               if (inputItem.value !== "custom") {
-                 solutionsToCopy.push(inputItem.value);
-               } else if (inputItem.nextElementSibling && inputItem.nextElementSibling.value
-                 && inputItem.nextElementSibling.value.length === 32) {
-                 solutionsToCopy.push(inputItem.nextElementSibling.value);
-               }
-            }
-          }
-
-          var listDiv = demoCommon.addItem ("copiedSolutionsDiv", "DIV", "copiedSolutionsListDiv");
-          demoCommon.fadeItemIn("copiedSolutionsDiv");
-          if (solutionsToCopy.length > 0) {
-            listDiv.innerHTML = "Copying...";
-
-            var solutionCopyPromises = solutionsToCopy.map(
-              solutionId => main.copyItemInfo(solutionId, sourceAuthentication, destinationAuthentication)
-            );
-            Promise.all(solutionCopyPromises)
-            .then(
-              responses => {
-                listDiv.innerHTML = responses.join("<br>");
-                if (responses.filter(response => !JSON.parse(response).success).length === 0) {
-                  getDestinationTemplates();
-                }
-              },
-              error => {
-                listDiv.innerHTML = "Unable to copy Solution templates: " + error;
-              }
-            );
-          } else {
-            listDiv.innerHTML = "<i>Nothing to copy</i>";
-          }
-        }
-
-        /**
-         * Updates the visibility of copy button based on presence of templates in source organization and
-         * access to destination organization.
-         */
-        function updateCopyBtn () {
-          var btnItem = document.getElementById("copyBtn");
-          if (btnItem) {
-            btnItem.style.display = haveSourceTemplates && haveDestinationAccess ? "block" : "none";
-          }
-        }
-
-      }
-    );
-  </script>
 </body>
 </html>

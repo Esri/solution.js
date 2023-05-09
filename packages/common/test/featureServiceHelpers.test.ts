@@ -50,9 +50,6 @@ import {
   _templatizeSourceServiceName,
   _templatizeAdminLayerInfoFields,
   _getDependantItemId,
-  _getViewFieldInfos,
-  _clearIsViewFieldOverride,
-  _isViewFieldOverride,
   _templatizeAdminSourceLayerFields,
   _templatizeTopFilter,
   _templatizeRelationshipFields,
@@ -79,9 +76,12 @@ import {
   _templatizeTimeInfo,
   _templatizeDefinitionQuery,
   _getNameMapping,
+  _updateOrder,
   _updateAddOptions,
+  _isSelfReferential,
   _updateForPortal,
   _getFieldNames,
+  _getDynamicFieldNames,
   _updateItemFields,
   _updateGeomFieldName,
   _updateTemplateDictionaryFields,
@@ -4594,181 +4594,6 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
     });
   });
 
-  describe("_clearIsViewFieldOverride", () => {
-    it("will clear previous isViewOverride", () => {
-      const item = {
-        fields: [{
-          alias: "A",
-          isViewOverride: true
-        }, {
-          alias: "B"
-        }]
-      }
-
-      const expected = [{
-        alias: "A"
-      }, {
-        alias: "B"
-      }];
-      _clearIsViewFieldOverride(item);
-      expect(item.fields).toEqual(expected);
-    });
-  });
-
-  describe("_getViewFieldInfos", () => {
-    it("gets domain and alias infos", () => {
-      const fieldInfo = {
-        sourceServiceFields: {
-          svc123: {
-            "0": [
-              {
-                name: "A",
-                domain: {},
-                editable: true,
-                visible: false
-              },
-              {
-                name: "B"
-              },
-              {
-                name: "C",
-                alias: "c123"
-              },
-              {
-                name: "D",
-                editable: false
-              },
-              {
-                name: "E",
-                visible: true
-              }
-            ]
-          }
-        }
-      };
-      const expected = {
-        "0": {
-          alias: { vals: ["c123"], names: ["c"] },
-          domain: { vals: [{}], names: ["a"] },
-          editable: { vals: [true, false], names: ["a", "d"] }
-        }
-      };
-
-      const actual = _getViewFieldInfos(fieldInfo);
-      expect(actual).toEqual(expected);
-    });
-  });
-
-  describe("_isViewFieldOverride", () => {
-    it("will set isViewOverride true when they differ", () => {
-      const field = {
-        alias: "a123",
-        name: "A"
-      };
-      const expected = {
-        alias: "a123",
-        name: "A",
-        isViewOverride: true
-      };
-      _isViewFieldOverride(field, ["a"], ["A123"], "alias");
-      expect(field).toEqual(expected);
-    });
-
-    it("will set isViewOverride false when they don't differ", () => {
-      const sourceField = {
-        alias: "A123",
-        name: "a"
-      };
-      const field = {
-        alias: "A123",
-        name: "a"
-      };
-      const expected = {
-        alias: "A123",
-        name: "a",
-        isViewOverride: false
-      };
-      _isViewFieldOverride(field, [sourceField.name], [sourceField.alias], "alias");
-      expect(field).toEqual(expected);
-    });
-
-    it("will set isViewOverride false when boolean don't differ", () => {
-      const sourceField = {
-        editable: true,
-        name: "a"
-      };
-      const field = {
-        editable: true,
-        name: "a"
-      };
-      const expected = {
-        editable: true,
-        name: "a",
-        isViewOverride: false
-      };
-      _isViewFieldOverride(field, [sourceField.name], [sourceField.editable], "editable");
-      expect(field).toEqual(expected);
-    });
-
-    it("will set isViewOverride true when boolean do differ", () => {
-      const sourceField = {
-        editable: false,
-        name: "a"
-      };
-      const field = {
-        editable: true,
-        name: "a"
-      };
-      const expected = {
-        editable: true,
-        name: "a",
-        isViewOverride: true
-      };
-      _isViewFieldOverride(field, [sourceField.name], [sourceField.editable], "editable");
-      expect(field).toEqual(expected);
-    });
-
-    it("will set isViewOverride can handle missing name", () => {
-      const sourceField = {
-        editable: false,
-        name: "a"
-      };
-      const field = {
-        editable: true,
-        name: "a"
-      };
-      const expected = {
-        editable: true,
-        name: "a",
-        isViewOverride: true
-      };
-      _isViewFieldOverride(field, [], [sourceField.editable], "editable");
-      expect(field).toEqual(expected);
-    });
-
-    it("will not override if already true", () => {
-      const sourceField = {
-        editable: false,
-        alias: "ABC",
-        name: "a"
-      };
-      const field = {
-        editable: true,
-        alias: "ABC",
-        name: "a"
-      };
-      const expected = {
-        editable: true,
-        alias: "ABC",
-        name: "a",
-        isViewOverride: true
-      };
-      _isViewFieldOverride(field, [sourceField.name], [sourceField.editable], "editable");
-      _isViewFieldOverride(field, [sourceField.name], [sourceField.alias], "alias");
-      expect(field).toEqual(expected);
-    });
-  });
-
   describe("_templatizeTopFilter", () => {
     it("handles missing topFilter fields via no-ops", () => {
       const topFilter: any = {};
@@ -6553,6 +6378,57 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
     });
   });
 
+  describe("_updateOrder", () => {
+    it("will sort when self referential", () => {
+      const layersAndTables = [{
+        item: {
+          id: 4
+        }
+      }, {
+        item: {
+          id: 3
+        }
+      }, {
+        item: {
+          id: 1
+        }
+      }, {
+        item: {
+          id: 2
+        }
+      }, {
+        item: {
+          id: 0
+        }
+      }];
+
+      const expected = [{
+        item: {
+          id: 0
+        }
+      }, {
+        item: {
+          id: 1
+        }
+      }, {
+        item: {
+          id: 2
+        }
+      }, {
+        item: {
+          id: 3
+        }
+      }, {
+        item: {
+          id: 4
+        }
+      }];
+
+      const actual = _updateOrder(layersAndTables, true);
+      expect(actual).toEqual(expected);
+    });
+  });
+
   describe("_updateAddOptions", () => {
     it("will not create new array when isMultiServicesView is false", () => {
       const startOptions: any = {
@@ -6575,6 +6451,7 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
         itemTemplate,
         startOptions,
         layerChunks,
+        false,
         MOCK_USER_SESSION
       );
       expect(actual.layers).toEqual(startOptions.layers);
@@ -6603,6 +6480,7 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
         itemTemplate,
         startOptions,
         layerChunks,
+        false,
         MOCK_USER_SESSION
       );
 
@@ -6631,12 +6509,65 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
         itemTemplate,
         startOptions,
         layerChunks,
+        false,
         MOCK_USER_SESSION
       );
 
       expect(actual.layers).toEqual([]);
       expect(actual.tables).toEqual([]);
       expect(layerChunks).toEqual([startOptions]);
+    });
+  });
+
+  describe("_isSelfReferential", () => {
+    it("will return true when a layer references another layer from the same service", () => {
+      const layersAndTables = [{
+        item: {
+          adminLayerInfo: {
+            viewLayerDefinition: {
+              table: {
+                relatedTables: [{
+                  name: "A"
+                }]
+              }
+            }
+          },
+          name: "B"
+        }
+      }, {
+        item: {
+          name: "A"
+        }
+      }];
+
+      const expected = true;
+      const actual = _isSelfReferential(layersAndTables);
+      expect(actual).toEqual(expected);
+    });
+
+    it("will return false when a layer does not reference another layer from the same service", () => {
+      const layersAndTables = [{
+        item: {
+          adminLayerInfo: {
+            viewLayerDefinition: {
+              table: {
+                relatedTables: [{
+                  name: "C"
+                }]
+              }
+            }
+          },
+          name: "B"
+        }
+      }, {
+        item: {
+          name: "A"
+        }
+      }];
+
+      const expected = false;
+      const actual = _isSelfReferential(layersAndTables);
+      expect(actual).toEqual(expected);
     });
   });
 
@@ -6919,6 +6850,59 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
         template,
         templateDictionary
       );
+      expect(actual).toEqual(expected);
+    });
+  });
+
+  describe("_getDynamicFieldNames", () => {
+    it("will keep expression fields", () => {
+      const table = {
+        "name": "Cemeteries_1678394615385_StatsTable",
+        "sourceServiceName": "Cemeteries_9eb657cfc34545038ee388071b3f730f",
+        "sourceLayerId": 5,
+        "sourceLayerFields": [
+          {
+            "name": "burialcount",
+            "alias": "Burial Count",
+            "source": "parentglobalid",
+            "statisticType": "COUNT"
+          },
+          {
+            "name": "fullname1",
+            "alias": "Full Name 1",
+            "source": "fullname",
+            "statisticType": "MIN"
+          },
+          {
+            "name": "fullname2",
+            "alias": "Full Name 2",
+            "source": "fullname",
+            "statisticType": "MAX"
+          },
+          {
+            "name": "population",
+            "alias": "Population",
+            "source": "population"
+          },
+          {
+            "name": "area",
+            "alias": "Area",
+            "source": "area"
+          }, {
+            "name": "density",
+            "alias": "Density",
+            "expression": "population / area",
+            "type": "esriFieldTypeDouble",
+            "source": "population"
+          }
+        ],
+        "groupBy": "parentglobalid",
+        "materialized": false
+      };
+
+      const actual = _getDynamicFieldNames(table);
+
+      const expected = ["burialcount", "fullname1", "fullname2"];
       expect(actual).toEqual(expected);
     });
   });

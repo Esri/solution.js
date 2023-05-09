@@ -140,6 +140,25 @@ describe("Module `webmap`: manages the creation and deployment of web map item t
           url: null
         } as any,
         data: {
+          baseMap: {
+            baseMapLayers: [
+              {
+                id: "World_Hillshade_3805",
+                opacity: 1,
+                title: "World Hillshade",
+                url: "https://services.arcgisonline.com/arcgis/rest/services/Elevation/World_Hillshade/MapServer",
+                visibility: true,
+                layerType: "ArcGISTiledMapServiceLayer"
+              },
+              {
+                id: "187dd95bb45-layer-4",
+                title: "Nova (German)",
+                itemId: "vts01234567890",
+                layerType: "VectorTileLayer",
+                styleUrl: "unsupported"  // flag indicating an unsupported Vector Tile Layer
+              }
+            ]
+          },
           operationalLayers: [
             {
               itemId: "bada9ef8efa7448fa8ddf7b13cef0240",
@@ -178,6 +197,18 @@ describe("Module `webmap`: manages the creation and deployment of web map item t
           url: null
         } as any,
         data: {
+          baseMap: {
+            baseMapLayers: [
+              {
+                id: "World_Hillshade_3805",
+                opacity: 1,
+                title: "World Hillshade",
+                url: "https://services.arcgisonline.com/arcgis/rest/services/Elevation/World_Hillshade/MapServer",
+                visibility: true,
+                layerType: "ArcGISTiledMapServiceLayer"
+              }
+            ]
+          },
           operationalLayers: [
             {
               itemId: "{{abca9ef8efa7448fa8ddf7b13cef0240.layer1.itemId}}",
@@ -209,6 +240,10 @@ describe("Module `webmap`: manages the creation and deployment of web map item t
       };
 
       fetchMock
+        .get(
+          "https://myorg.maps.arcgis.com/sharing/rest/content/items/vts01234567890?f=json&token=fake-token",
+          {}
+        )
         .post(
           "http://services.arcgis.com/myOrg/ArcGIS/rest/services/myService/FeatureServer/1",
           { serviceItemId: "abca9ef8efa7448fa8ddf7b13cef0240" }
@@ -858,6 +893,12 @@ describe("Module `webmap`: manages the creation and deployment of web map item t
     it("will get layer ids with url and construct url/id hash", done => {
       const layerList = [
         {
+          id: "layer0",
+          itemId: "vts01234567890",
+          layerType: "VectorTileLayer",
+          styleUrl: utils.PORTAL_SUBSET.restUrl + "/content/items/vts01234567890/resources/styles/root.json"
+        },
+        {
           itemId: "layer1",
           url:
             "http://services.arcgis.com/myOrg/ArcGIS/rest/services/myService1/FeatureServer/1"
@@ -879,6 +920,13 @@ describe("Module `webmap`: manages the creation and deployment of web map item t
       const dependencies: string[] = [];
 
       fetchMock
+        .get(
+          "https://myorg.maps.arcgis.com/sharing/rest/content/items/vts01234567890?f=json&token=fake-token",
+          {
+            id: "vts01234567890",
+            typeKeywords: ["Vector Tile Style Editor"]
+          }
+        )
         .post(
           "http://services.arcgis.com/myOrg/ArcGIS/rest/services/myService1/FeatureServer/1",
           { serviceItemId: "abc19ef8efa7448fa8ddf7b13cef0240", id: 1 }
@@ -894,6 +942,7 @@ describe("Module `webmap`: manages the creation and deployment of web map item t
 
       const expected = {
         dependencies: [
+          "vts01234567890",
           "abc19ef8efa7448fa8ddf7b13cef0240",
           "abc29ef8efa7448fa8ddf7b13cef0240",
           "abc49ef8efa7448fa8ddf7b13cef0240"
@@ -911,6 +960,7 @@ describe("Module `webmap`: manages the creation and deployment of web map item t
       webmap._getLayerIds(layerList, dependencies, MOCK_USER_SESSION).then(
         actual => {
           expect(actual).toEqual(expected);
+          expect(layerList[0].styleUrl).toEqual("{{vts01234567890.itemUrl}}/resources/styles/root.json");
           done();
         },
         e => done.fail(e)
@@ -921,6 +971,12 @@ describe("Module `webmap`: manages the creation and deployment of web map item t
   describe("_templatizeWebmapLayerIdsAndUrls", () => {
     it("handles no analysis layers", () => {
       const layerList = [
+        {
+          id: "layer0",
+          itemId: "vts01234567890",
+          layerType: "VectorTileLayer",
+          styleUrl: utils.PORTAL_SUBSET.restUrl + "/content/items/vts01234567890/resources/styles/root.json"
+        },
         {
           itemId: "layer1",
           url:
@@ -942,6 +998,12 @@ describe("Module `webmap`: manages the creation and deployment of web map item t
       webmap._templatizeWebmapLayerIdsAndUrls(layerList, urlHash, {});
 
       const expectedLayerListTemplate = [
+        {
+          id: "layer0",
+          itemId: "{{vts01234567890.itemId}}",
+          layerType: "VectorTileLayer",
+          styleUrl: utils.PORTAL_SUBSET.restUrl + "/content/items/vts01234567890/resources/styles/root.json"
+        },
         {
           itemId: "layer1",
           url:

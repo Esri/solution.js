@@ -23,6 +23,12 @@ import * as common from "@esri/solution-common";
  */
 const WEBMAP_APP_URL_PART: string = "home/webmap/viewer.html?webmap=";
 
+/**
+ * A flag inserted used as a vector tile layer's styleUrl to indicate that the layer is unsupported and should
+ * be removed.
+ */
+const unsupportedTileLayerUrl = "unsupported";
+
 // ------------------------------------------------------------------------------------------------------------------ //
 
 /**
@@ -49,16 +55,33 @@ export function convertItemToTemplate(
 
     // Extract dependencies
     _extractDependencies(itemTemplate, srcAuthentication).then(
-      (results: any) => {
+      (results: common.IWebmapDependencies) => {
         itemTemplate.dependencies = results.dependencies;
 
         // Templatize the map layer ids after we've extracted them as dependencies
         if (itemTemplate.data) {
-          _templatizeWebmapLayerIdsAndUrls(
-            itemTemplate.data.operationalLayers,
-            results.urlHash,
-            templateDictionary
-          );
+          const baseMapLayers = itemTemplate.data.baseMap?.baseMapLayers;
+          if (baseMapLayers) {
+            itemTemplate.data.baseMap.baseMapLayers =
+              baseMapLayers.filter(layer => layer.styleUrl !== unsupportedTileLayerUrl);
+            _templatizeWebmapLayerIdsAndUrls(
+              itemTemplate.data.baseMap.baseMapLayers,
+              results.urlHash,
+              templateDictionary
+            );
+          }
+
+          const operationalLayers = itemTemplate.data.operationalLayers;
+          if (operationalLayers) {
+            itemTemplate.data.operationalLayers =
+              operationalLayers.filter(layer => layer.styleUrl !== unsupportedTileLayerUrl);
+            _templatizeWebmapLayerIdsAndUrls(
+              itemTemplate.data.operationalLayers,
+              results.urlHash,
+              templateDictionary
+            );
+          }
+
           _templatizeWebmapLayerIdsAndUrls(
             itemTemplate.data.tables,
             results.urlHash,
@@ -87,13 +110,14 @@ export function convertItemToTemplate(
 export function _extractDependencies(
   itemTemplate: common.IItemTemplate,
   authentication: common.UserSession
-): Promise<any> {
+): Promise<common.IWebmapDependencies> {
   return new Promise<any>((resolve, reject) => {
     const dependencies: string[] = [];
     if (itemTemplate.data) {
-      const layers: any[] = itemTemplate.data.operationalLayers || [];
+      const basemapLayers: any[] = itemTemplate.data.baseMap?.baseMapLayers || [];
+      const opLayers: any[] = itemTemplate.data.operationalLayers || [];
       const tables: any[] = itemTemplate.data.tables || [];
-      const layersAndTables: any[] = layers.concat(tables);
+      const layersAndTables: any[] = basemapLayers.concat(opLayers).concat(tables);
       _getLayerIds(layersAndTables, dependencies, authentication).then(
         results => {
           resolve(results);
@@ -126,19 +150,20 @@ export function _excludeInitialState(data: any): void {
 /**
  * Extracts the AGOL itemId for each layer or table object in a list using the url.
  *
- * @param layerList List of map layers or tables
+ * @param layerList List of map layers or tables; supported vector tile layers have their styleUrls templatized
  * @param dependencies Current list of dependencies
  * @param authentication Credentials for any requests
- * @returns List of dependencies ids and url/itemId hash
+ * @returns Updated list of dependencies ids, url/itemId hash (for feature layers),
+ * and id/styleUrl hash (for vector tile layers)
  * @private
  */
 export function _getLayerIds(
   layerList: any[],
   dependencies: string[],
   authentication: common.UserSession
-): Promise<any> {
+): Promise<common.IWebmapDependencies> {
   return new Promise<any>((resolve, reject) => {
-    const urlHash: any = {};
+    const urlHash: common.IKeyedStrings = {};
 
     const options: any = {
       f: "json",
@@ -147,7 +172,17 @@ export function _getLayerIds(
     const layerPromises: Array<Promise<any>> = [];
     const layerChecks: any = {};
     const layers: any[] = layerList.filter(layer => {
-      if (layer.url && layer.url.indexOf("{{velocityUrl}}") < 0) {
+
+      // Test for Vector Tile Layers
+      if (layer.itemId && layer.layerType === "VectorTileLayer") {
+        // Fetch the item so that we can check if it has the typeKeyword "Vector Tile Style Editor", which ensures
+        // that the user has edited the style and it is something that could be reasonably be packaged with the
+        // solution
+        layerPromises.push(common.getItemBase(layer.itemId, authentication));
+        return true;
+
+      // Handle a feature server layer
+      } else if (layer.url && layer.url.indexOf("{{velocityUrl}}") < 0) {
         const results: any = /.+FeatureServer/g.exec(layer.url);
         const baseUrl: string =
           Array.isArray(results) && results.length > 0 ? results[0] : undefined;
@@ -161,35 +196,62 @@ export function _getLayerIds(
         } else {
           return false;
         }
+
+      // This layer is not a dependency
       } else {
         return false;
       }
     });
 
+    // We have a mix of Vector Tile Layer item base requests and Feature Server info requests
     if (layerPromises.length > 0) {
       Promise.all(layerPromises).then(
-        serviceResponses => {
-          serviceResponses.forEach((serviceResponse, i) => {
-            if (common.getProp(serviceResponse, "serviceItemId")) {
-              const id: string = serviceResponse.serviceItemId;
+        (responses) => {
+          responses.forEach((response, i) => {
+
+            if (layers[i].layerType === "VectorTileLayer") {
+              const typeKeywords = common.getProp(response, "typeKeywords");
+              if (typeKeywords && typeKeywords.includes("Vector Tile Style Editor")) {
+                // Vector tiles edited by the style editor
+                if (dependencies.indexOf(response.id) < 0) {
+                  dependencies.push(response.id);
+                }
+
+                // Templatize the URL to the style resource
+                const iSuffix = layers[i].styleUrl.indexOf(response.id) + response.id.length;
+                layers[i].styleUrl = common.templatizeTerm(
+                  layers[i].styleUrl.replace(layers[i].styleUrl.substring(0, iSuffix), response.id),
+                  response.id,
+                  ".itemUrl"
+                );
+              } else {
+                // Unsupported vector tiles
+                layers[i].styleUrl = unsupportedTileLayerUrl;
+              }
+
+            } else if (common.getProp(response, "serviceItemId")) {
+              // Feature Service
+              const id: string = response.serviceItemId;
               if (dependencies.indexOf(id) < 0) {
                 dependencies.push(id);
               }
               urlHash[layers[i].url] = id;
             }
+
           });
+
           resolve({
-            dependencies: dependencies,
-            urlHash: urlHash
-          });
+            dependencies,
+            urlHash
+          } as common.IWebmapDependencies);
         },
         e => reject(common.fail(e))
       );
     } else {
       resolve({
-        dependencies: dependencies,
-        urlHash: urlHash
-      });
+        dependencies,
+        urlHash
+      } as common.IWebmapDependencies);
     }
   });
 }
@@ -198,22 +260,29 @@ export function _getLayerIds(
  * Templatizes the url and item id for layers or tables within the webmap.
  *
  * @param layerList List of map layers or tables
- * @param urlHash Lookup object for analysis layers
+ * @param urlHash Lookup object for analysis layers; hash from URL to AGO item id
  * @param templateDictionary Hash of key details used for variable replacement
  * @returns void
  * @private
  */
 export function _templatizeWebmapLayerIdsAndUrls(
   layerList = [] as any[],
-  urlHash: any,
+  urlHash: common.IKeyedStrings,
   templateDictionary: any
 ): void {
   layerList.forEach((layer: any) => {
-    if (layer.url) {
+
+    // Test for Vector Tile Layers
+    if (layer.itemId && layer.layerType === "VectorTileLayer") {
+      // No further test needed: we've already pruned out unsupported vector tile layers
+      layer.itemId = common.templatizeTerm(layer.itemId, layer.itemId, ".itemId");
+
+    // Handle a feature server layer
+    } else if (layer.url) {
       const layerId = layer.url.substr(
         (layer.url as string).lastIndexOf("/") + 1
       );
-      const id: any =
+      const id: string =
         Object.keys(urlHash).indexOf(layer.url) > -1
           ? urlHash[layer.url]
           : undefined;
@@ -227,6 +296,7 @@ export function _templatizeWebmapLayerIdsAndUrls(
         );
       }
     }
+
   });
 }
 

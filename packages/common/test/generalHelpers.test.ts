@@ -19,6 +19,7 @@
  */
 
 import * as generalHelpers from "../src/generalHelpers";
+import * as hubCommon from "@esri/hub-common";
 import * as interfaces from "../src/interfaces";
 import * as mockItems from "../test/mocks/agolItems";
 import * as serviceAdmin from "@esri/arcgis-rest-service-admin";
@@ -102,9 +103,26 @@ describe("Module `generalHelpers`: common utility functions shared across packag
     });
   });
 
+  describe("cleanLayerBasedItemId", () => {
+    it("should handle empty id", () => {
+      expect(generalHelpers.cleanLayerBasedItemId(null)).toEqual(null);
+      expect(generalHelpers.cleanLayerBasedItemId(undefined)).toBeUndefined();
+      expect(generalHelpers.cleanLayerBasedItemId("")).toEqual("");
+    });
+
+    it("handles a layer-templatized item id", () => {
+      expect(
+        generalHelpers.cleanLayerBasedItemId(
+          "{{934a9ef8efa7448fa8ddf7b13cef0240.layer0.itemId}}"
+        )
+      ).toEqual("934a9ef8efa7448fa8ddf7b13cef0240");
+    });
+  });
+
   describe("cleanLayerId", () => {
-    it("handles a null or empty string", () => {
+    it("should handle empty id", () => {
       expect(generalHelpers.cleanLayerId(null)).toEqual(null);
+      expect(generalHelpers.cleanLayerId(undefined)).toBeUndefined();
       expect(generalHelpers.cleanLayerId("")).toEqual("");
     });
 
@@ -443,6 +461,42 @@ describe("Module `generalHelpers`: common utility functions shared across packag
         "Value difference: 43.4327 vs. 53",
         'Props difference: ["wkid","latestWkid"] vs. ["wkid"]'
       ]);
+    });
+  });
+
+  describe("convertIModel", () => {
+    it("handles hub IModel without resources", () => {
+      const model = {
+        item: {
+          id: "FAKE3ef"
+        }
+      } as unknown as hubCommon.IModel;
+
+      const result: interfaces.IItemTemplate = generalHelpers.convertIModel(model);
+
+      expect(result.resources).toEqual([], "should convert resources to array");
+    });
+
+    it("handles hub IModel with resources", () => {
+      const model = {
+        item: {
+          id: "FAKE3ef"
+        },
+        resources: {
+          a: "abc",
+          d: "def"
+        }
+      } as unknown as hubCommon.IModel;
+
+      const result: interfaces.IItemTemplate = generalHelpers.convertIModel(model);
+
+      expect(result.resources).toEqual(["abc", "def"], "should convert resources to array");
+    });
+
+    it("handles undefined hub IModel", () => {
+      const result: interfaces.IItemTemplate = generalHelpers.convertIModel(undefined);
+
+      expect(result.resources).toEqual([], "should convert resources to array");
     });
   });
 

@@ -377,7 +377,7 @@ describe("Module `resourceHelpers`: common functions involving the management of
       ];
       const destinationItemId: string = "itm1234567890";
       const destinationAuthentication = MOCK_USER_SESSION;
-      const mimeTypes: interfaces.IMimeTypes = {
+      const mimeTypes: interfaces.IKeyedStrings = {
         "storageFilename.png": "image/png"
       };
       const serverInfoUrl = "https://myserver/images/resource.png/rest/info";
