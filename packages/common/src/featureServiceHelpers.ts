@@ -1100,9 +1100,25 @@ export function _isSelfReferential(
   layersAndTables: any[]
 ): boolean {
   const names = layersAndTables.map(l => l.item.name);
+  const srcTables = {};
   return layersAndTables.some(l => {
-    const relatedTables = l.item.adminLayerInfo?.viewLayerDefinition?.table?.relatedTables || [];
-    return relatedTables.some(r => names.indexOf(r.name) > -1);
+    const table = l.item.adminLayerInfo?.viewLayerDefinition?.table;
+    if (table) {
+      const name = table.sourceServiceName;
+      const id = table.sourceLayerId;
+      if (name && id > -1) {
+        if (Object.keys(srcTables).indexOf(name) > -1) {
+          if (srcTables[name].indexOf(id) > -1) {
+            return true;
+          } else {
+            srcTables[name].push(id);
+          }
+        } else {
+          srcTables[name] = [id]
+        }
+      }
+      return (table.relatedTables || []).some(r => names.indexOf(r.name) > -1);
+    }
   });
 }
 
