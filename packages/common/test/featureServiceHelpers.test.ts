@@ -6569,6 +6569,53 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
       const actual = _isSelfReferential(layersAndTables);
       expect(actual).toEqual(expected);
     });
+
+    it("will return true when items have multiple references to the same layer", () => {
+      const layersAndTables = [{
+        item: {
+          adminLayerInfo: {
+            viewLayerDefinition: {
+              table: {
+                name: "C_1",
+                sourceServiceName: "C",
+                sourceLayerId: 0
+              }
+            }
+          },
+          name: "B"
+        }
+      }, {
+        item: {
+          adminLayerInfo: {
+            viewLayerDefinition: {
+              table: {
+                name: "C_3",
+                sourceServiceName: "C",
+                sourceLayerId: 1
+              }
+            }
+          },
+          name: "C"
+        }
+      }, {
+        item: {
+          adminLayerInfo: {
+            viewLayerDefinition: {
+              table: {
+                name: "C_2",
+                sourceServiceName: "C",
+                sourceLayerId: 0
+              }
+            }
+          },
+          name: "A"
+        }
+      }];
+
+      const expected = true;
+      const actual = _isSelfReferential(layersAndTables);
+      expect(actual).toEqual(expected);
+    });
   });
 
   describe("_updateForPortal", () => {
