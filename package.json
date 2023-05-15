@@ -104,7 +104,7 @@
     "karma-typescript-es6-transform": "^5.5.3",
     "lerna": "^6.6.2",
     "lint-staged": "^13.2.2",
-    "marked": "^4.3.0",
+    "marked": "^5.0.2",
     "minimatch": "^7.4.3",
     "prettier": "^2.8.7",
     "regenerator-runtime": "^0.13.10",
