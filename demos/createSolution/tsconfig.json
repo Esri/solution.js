@@ -8,7 +8,7 @@
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,
     "importHelpers": true,
-    "lib": ["dom", "es2022"],
+    "lib": ["dom", "esnext"],
     "module": "es2022",
     "moduleResolution": "node",
     "noImplicitAny": true,
@@ -16,7 +16,7 @@
     "sourceMap": true,
     "strict": true,
     "strictNullChecks": false,
-    "target": "es2022"
+    "target": "esnext"
   },
   "include": ["src"]
 }

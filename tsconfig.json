@@ -6,7 +6,7 @@
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,
     "importHelpers": true,
-    "lib": ["dom", "es2020"],
+    "lib": ["dom", "esnext"],
     "module": "esnext",
     "moduleResolution": "node",
     "noImplicitAny": false,
@@ -14,7 +14,7 @@
     "sourceMap": true,
     "strict": true,
     "strictNullChecks": false,
-    "target": "es2020"
+    "target": "esnext"
   },
   "exclude": [
     "node_modules"
