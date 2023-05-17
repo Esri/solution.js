@@ -191,116 +191,76 @@ export function createItemTemplate(
                       getItemResourcesFilesFromPaths(
                         resourceItemFilePaths,
                         srcAuthentication
-                      ).then((resourceItemFiles: ISourceFile[]) => {
-                        const synchronizePromises: Array<Promise<void>> = [];
+                      ).then(async (resourceItemFiles: ISourceFile[]) => {
+                        await _templatizeResources(itemTemplate, resourceItemFiles, srcAuthentication);
 
-                        if (itemTemplate.type === "Vector Tile Service") {
-                          // Get the root.json files
-                          const rootJsonResources = resourceItemFiles.filter(file => file.filename === "root.json");
+                        // update the template's resources
+                        itemTemplate.resources = itemTemplate.resources.concat(
+                          resourceItemFiles.map(
+                            (file: ISourceFile) =>
+                              file.folder + "/" + file.filename
+                          )
+                        );
 
-                          const resourcePath = srcAuthentication.portal + "/content/items/" + itemTemplate.itemId;
-                          const templatizedResourcePath = "{{" + itemTemplate.itemId + ".url}}";
-                          const replacer = new RegExp(resourcePath, "g");
+                        // Set the value keyed by the id to the created template, replacing the placeholder template
+                        replaceTemplate(
+                          existingTemplates,
+                          itemTemplate.itemId,
+                          itemTemplate
+                        );
 
-                          // Templatize the paths in the files that reference the source item id
-                          rootJsonResources.forEach(
-                            rootFileResource => {
-                              synchronizePromises.push(new Promise(resolve => {
-                                // Read the file
-                                blobToJson(rootFileResource.file)
-                                .then(fileJson => {
-
-                                  // Templatize by turning JSON into string, replacing paths with template, and re-JSONing
-                                  const updatedFileJson =
-                                    JSON.parse(
-                                      JSON.stringify(fileJson)
-                                        .replace(replacer, templatizedResourcePath)
-                                    );
-
-                                  // Write the changes back into the file
-                                  rootFileResource.file = jsonToFile(updatedFileJson, rootFileResource.filename);
-
-                                  resolve(null);
-                                })
-                                .catch(() => {
-                                  resolve(null);
-                                });
-                              }));
+                        // Trace item dependencies
+                        if (itemTemplate.dependencies.length === 0) {
+                          itemProgressCallback(
+                            itemId,
+                            EItemProgressStatus.Finished,
+                            1
+                          );
+                          resolve(resourceItemFiles);
+                        } else {
+                          // Get its dependencies, asking each to get its dependents via
+                          // recursive calls to this function
+                          const dependentDfds: Array<Promise<
+                            ISourceFile[]
+                          >> = [];
+                          itemTemplate.dependencies.forEach(dependentId => {
+                            if (
+                              !findTemplateInList(
+                                existingTemplates,
+                                dependentId
+                              )
+                            ) {
+                              dependentDfds.push(
+                                createItemTemplate(
+                                  solutionItemId,
+                                  dependentId,
+                                  templateDictionary,
+                                  srcAuthentication,
+                                  destAuthentication,
+                                  existingTemplates,
+                                  itemProgressCallback
+                                )
+                              );
+                            }
+                          });
+                          // eslint-disable-next-line @typescript-eslint/no-floating-promises
+                          Promise.all(dependentDfds).then(
+                            (dependentResourceItemFiles: ISourceFile[][]) => {
+                              // Templatization of item and its dependencies done
+                              itemProgressCallback(
+                                itemId,
+                                EItemProgressStatus.Finished,
+                                1
+                              );
+                              resourceItemFiles = dependentResourceItemFiles.reduce(
+                                (accumulator, currentValue) =>
+                                  accumulator.concat(currentValue),
+                                resourceItemFiles
+                              );
+                              resolve(resourceItemFiles);
                             }
                           );
-                        }
-
-                        // eslint-disable-next-line @typescript-eslint/no-floating-promises
-                        Promise.all(synchronizePromises).then(() => {
-
-                          // update the template's resources
-                          itemTemplate.resources = itemTemplate.resources.concat(
-                            resourceItemFiles.map(
-                              (file: ISourceFile) =>
-                                file.folder + "/" + file.filename
-                            )
-                          );
-
-                          // Set the value keyed by the id to the created template, replacing the placeholder template
-                          replaceTemplate(
-                            existingTemplates,
-                            itemTemplate.itemId,
-                            itemTemplate
-                          );
-
-                          // Trace item dependencies
-                          if (itemTemplate.dependencies.length === 0) {
-                            itemProgressCallback(
-                              itemId,
-                              EItemProgressStatus.Finished,
-                              1
-                            );
-                            resolve(resourceItemFiles);
-                          } else {
-                            // Get its dependencies, asking each to get its dependents via
-                            // recursive calls to this function
-                            const dependentDfds: Array<Promise<
-                              ISourceFile[]
-                            >> = [];
-                            itemTemplate.dependencies.forEach(dependentId => {
-                              if (
-                                !findTemplateInList(
-                                  existingTemplates,
-                                  dependentId
-                                )
-                              ) {
-                                dependentDfds.push(
-                                  createItemTemplate(
-                                    solutionItemId,
-                                    dependentId,
-                                    templateDictionary,
-                                    srcAuthentication,
-                                    destAuthentication,
-                                    existingTemplates,
-                                    itemProgressCallback
-                                  )
-                                );
-                              }
-                            });
-                            // eslint-disable-next-line @typescript-eslint/no-floating-promises
-                            Promise.all(dependentDfds).then(
-                              (dependentResourceItemFiles: ISourceFile[][]) => {
-                                // Templatization of item and its dependencies done
-                                itemProgressCallback(
-                                  itemId,
-                                  EItemProgressStatus.Finished,
-                                  1
-                                );
-                                resourceItemFiles = dependentResourceItemFiles.reduce(
-                                  (accumulator, currentValue) =>
-                                    accumulator.concat(currentValue),
-                                  resourceItemFiles
-                                );
-                                resolve(resourceItemFiles);
-                              }
-                            );
-                          }
-                        });
+                        };
                       });
                     });
                   },
@@ -543,7 +503,7 @@ export function _addMapLayerIds(
  *
  * @param template A webmap solution template
  * @param templateTypeHash A simple lookup object populated with key item info
- * @returns A lsit of feature service item IDs
+ * @returns A list of feature service item IDs
  * @private
  */
 export function _getWebMapFSDependencies(
@@ -563,4 +523,58 @@ export function _getWebMapFSDependencies(
     }
   });
   return webMapFSDependencies;
+}
+
+/**
+ * Perform templatizations needed in an item's resources
+ *
+ * @param itemTemplate Item being templatized
+ * @param resourceItemFiles Resources for the item; these resources are modified as needed
+ * by the templatization
+ * @param srcAuthentication Credentials for requests to source items
+ *
+ * @returns A promise that resolves when all templatization has completed
+ */
+export function _templatizeResources(
+  itemTemplate: IItemTemplate,
+  resourceItemFiles: ISourceFile[],
+  srcAuthentication: UserSession
+): Promise<void[]> {
+  const synchronizePromises: Array<Promise<void>> = [];
+
+  if (itemTemplate.type === "Vector Tile Service") {
+    // Get the root.json files
+    const rootJsonResources = resourceItemFiles.filter(file => file.filename === "root.json");
+
+    const resourcePath = srcAuthentication.portal + "/content/items/" + itemTemplate.itemId;
+    const templatizedResourcePath = "{{" + itemTemplate.itemId + ".url}}";
+    const replacer = new RegExp(resourcePath, "g");
+
+    // Templatize the paths in the files that reference the source item id
+    rootJsonResources.forEach(
+      rootFileResource => {
+        synchronizePromises.push(new Promise(resolve => {
+          // Read the file
+          // eslint-disable-next-line @typescript-eslint/no-floating-promises
+          blobToJson(rootFileResource.file)
+          .then(fileJson => {
+
+            // Templatize by turning JSON into string, replacing paths with template, and re-JSONing
+            const updatedFileJson =
+              JSON.parse(
+                JSON.stringify(fileJson)
+                  .replace(replacer, templatizedResourcePath)
+              );
+
+            // Write the changes back into the file
+            rootFileResource.file = jsonToFile(updatedFileJson, rootFileResource.filename);
+
+            resolve(null);
+          });
+        }));
+      }
+    );
+  }
+
+  return Promise.all(synchronizePromises);
 }

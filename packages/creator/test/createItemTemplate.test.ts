@@ -879,6 +879,53 @@ describe("Module `createItemTemplate`", () => {
       expect(actualAmendedDatasourceUrl).toEqual(expectedAmendedDatasourceUrl);
     });
   });
+
+  describe("_templatizeResources", () => {
+    it("handles an empty resources list", done => {
+      const itemTemplate: common.IItemTemplate = templates.getItemTemplate("Web Map");
+      const resourceItemFiles: common.ISourceFile[] = [];
+
+      createItemTemplate._templatizeResources(itemTemplate, resourceItemFiles, MOCK_USER_SESSION)
+      .then(
+        () => {
+          expect(resourceItemFiles.length).toEqual(0);
+          done();
+        },
+        done.fail
+      );
+    });
+
+    it("handles a vector tile service resources list", done => {
+      const itemTemplate: common.IItemTemplate = templates.getItemTemplate("Vector Tile Service");
+      const resourceItemFiles: common.ISourceFile[] =
+        templates.getItemTemplateResourcesAsSourceFiles("Vector Tile Service", itemTemplate.itemId);
+
+      createItemTemplate._templatizeResources(itemTemplate, resourceItemFiles, MOCK_USER_SESSION)
+      .then(
+        () => {
+          expect(resourceItemFiles.length).toEqual(3);
+
+          // Check file contents
+          common.blobToJson(resourceItemFiles[0].file)
+          .then(
+            infoRootJson => {
+              expect(infoRootJson).toEqual(templates.sampleInfoRootTemplatizedJson);
+
+              common.blobToJson(resourceItemFiles[1].file)
+              .then(
+                stylesRootJson => {
+                  expect(stylesRootJson).toEqual(templates.sampleStylesRootTemplatizedJson);
+
+                  done();
+                }
+              );
+            }
+          );
+        },
+        done.fail
+      );
+    });
+  });
 });
 
 // ------------------------------------------------------------------------------------------------------------------ //
