@@ -39,31 +39,31 @@ TEMP_FOLDER=solution.js-v$VERSION;
 mkdir $TEMP_FOLDER
 
 mkdir $TEMP_FOLDER/common
-cp -r packages/common/dist/umd/* $TEMP_FOLDER/common/
+cp -r packages/common/dist/esm/* $TEMP_FOLDER/common/
 mkdir $TEMP_FOLDER/creator
-cp -r packages/creator/dist/umd/* $TEMP_FOLDER/creator/
+cp -r packages/creator/dist/esm/* $TEMP_FOLDER/creator/
 mkdir $TEMP_FOLDER/deployer
-cp -r packages/deployer/dist/umd/* $TEMP_FOLDER/deployer/
+cp -r packages/deployer/dist/esm/* $TEMP_FOLDER/deployer/
 mkdir $TEMP_FOLDER/feature-layer
-cp -r packages/feature-layer/dist/umd/* $TEMP_FOLDER/feature-layer/
+cp -r packages/feature-layer/dist/esm/* $TEMP_FOLDER/feature-layer/
 mkdir $TEMP_FOLDER/file
-cp -r packages/file/dist/umd/* $TEMP_FOLDER/file/
+cp -r packages/file/dist/esm/* $TEMP_FOLDER/file/
 mkdir $TEMP_FOLDER/form
-cp -r packages/form/dist/umd/* $TEMP_FOLDER/form/
+cp -r packages/form/dist/esm/* $TEMP_FOLDER/form/
 mkdir $TEMP_FOLDER/group
-cp -r packages/group/dist/umd/* $TEMP_FOLDER/group/
+cp -r packages/group/dist/esm/* $TEMP_FOLDER/group/
 mkdir $TEMP_FOLDER/hub-types
-cp -r packages/hub-types/dist/umd/* $TEMP_FOLDER/hub-types/
+cp -r packages/hub-types/dist/esm/* $TEMP_FOLDER/hub-types/
 mkdir $TEMP_FOLDER/simple-types
-cp -r packages/simple-types/dist/umd/* $TEMP_FOLDER/simple-types/
+cp -r packages/simple-types/dist/esm/* $TEMP_FOLDER/simple-types/
 mkdir $TEMP_FOLDER/storymap
-cp -r packages/storymap/dist/umd/* $TEMP_FOLDER/storymap/
+cp -r packages/storymap/dist/esm/* $TEMP_FOLDER/storymap/
 mkdir $TEMP_FOLDER/velocity
-cp -r packages/velocity/dist/umd/* $TEMP_FOLDER/velocity/
+cp -r packages/velocity/dist/esm/* $TEMP_FOLDER/velocity/
 mkdir $TEMP_FOLDER/viewer
-cp -r packages/viewer/dist/umd/* $TEMP_FOLDER/viewer/
+cp -r packages/viewer/dist/esm/* $TEMP_FOLDER/viewer/
 mkdir $TEMP_FOLDER/web-experience
-cp -r packages/web-experience/dist/umd/* $TEMP_FOLDER/web-experience/
+cp -r packages/web-experience/dist/esm/* $TEMP_FOLDER/web-experience/
 
 zip -r $TEMP_FOLDER.zip $TEMP_FOLDER
 rm -rf $TEMP_FOLDER
