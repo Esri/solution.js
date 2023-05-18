@@ -102,6 +102,7 @@ describe("Module `copyAssociatedFiles`: functions for sending resources to AGO",
       copyAssociatedFilesByType(
         fileInfos,
         MOCK_USER_SESSION,
+        "sln1234567890",
         "itm1234567890",
         MOCK_USER_SESSION
       ).then((results: interfaces.IAssociatedFileCopyResults[]) => {
@@ -290,6 +291,7 @@ describe("Module `copyAssociatedFiles`: functions for sending resources to AGO",
       copyAssociatedFilesByType(
         fileInfos,
         MOCK_USER_SESSION,
+        "sln1234567890",
         "itm1234567890",
         MOCK_USER_SESSION
       ).then((results: interfaces.IAssociatedFileCopyResults[]) => {
@@ -349,6 +351,7 @@ describe("Module `copyAssociatedFiles`: functions for sending resources to AGO",
       copyAssociatedFilesByType(
         fileInfos,
         MOCK_USER_SESSION,
+        "sln1234567890",
         "itm1234567890",
         MOCK_USER_SESSION
       ).then((results: interfaces.IAssociatedFileCopyResults[]) => {

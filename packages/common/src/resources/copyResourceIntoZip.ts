@@ -63,7 +63,14 @@ export function copyResourceIntoZipFromInfo(
   zipInfo: IZipInfo
 ): Promise<IAssociatedFileCopyResults> {
   return new Promise<IAssociatedFileCopyResults>(resolve => {
-    getBlobAsFile(fileInfo.url, fileInfo.filename, sourceAuthentication).then(
+    let filePromise: Promise<any>;
+    if (fileInfo.file) {
+      filePromise = Promise.resolve(fileInfo.file);
+    } else {
+      filePromise = getBlobAsFile(fileInfo.url, fileInfo.filename, sourceAuthentication);
+    }
+
+    filePromise.then(
       (file: any) => {
         // And add it to the zip
         if (fileInfo.folder) {
