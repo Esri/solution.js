@@ -198,6 +198,7 @@ export function convertItemToTemplate(
             srcAuthentication
           );
           break;
+        case "Vector Tile Service":
         case "Web Map":
         case "Web Scene":
           templateModifyingPromise = webmap.convertItemToTemplate(

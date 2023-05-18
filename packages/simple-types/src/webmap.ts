@@ -49,10 +49,9 @@ export function convertItemToTemplate(
   return new Promise<common.IItemTemplate>((resolve, reject) => {
     // Templatize the app URL if it's not a vector tile service
     if (itemTemplate.type !== "Vector Tile Service") {
-      itemTemplate.item.url = itemTemplate.item.url ?
-        common.checkUrlPathTermination(common.placeholder(common.SERVER_NAME)) +
-        WEBMAP_APP_URL_PART +
-        itemTemplate.item.id : itemTemplate.item.url; // templatized id
+      itemTemplate.item.url = itemTemplate.item.url
+        ? common.checkUrlPathTermination(common.placeholder(common.SERVER_NAME)) + WEBMAP_APP_URL_PART + itemTemplate.item.id
+        : itemTemplate.item.url; // templatized id
     }
 
     // Extract dependencies

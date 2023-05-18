@@ -1132,6 +1132,100 @@ describe("simpleTypeConvertItemToTemplate", () => {
     });
   });
 
+  describe("vector tile service", () => {
+    it("should handle vector tile service", done => {
+      const solutionItemId = "sln1234567890";
+      const itemTemplate: common.IItemTemplate = mockItems.getAGOLItem(
+        "Vector Tile Service",
+        "https://myOrg.arcgis.com/home/item.html?id=vts1234567890",
+        "vts1234567890"
+      );
+
+      itemTemplate.item = {
+        id: "vts1234567890",
+        type: "Vector Tile Service",
+        title: "VTS",
+        url: "https://myOrg.arcgis.com/home/item.html?id=vts1234567890",
+        created: 1520968147000,
+        modified: 1522178539000
+      };
+
+      const expected = {
+        itemId: "vts1234567890",
+        type: "Vector Tile Service",
+        key: "abcdefgh",
+        item: {
+          id: "{{vts1234567890.itemId}}",
+          type: "Vector Tile Service",
+          created: 1520968147000,
+          extent: "{{solutionItemExtent}}",
+          modified: 1522178539000,
+          title: "VTS",
+          url: "https://myOrg.arcgis.com/home/item.html?id=vts1234567890",
+          accessInformation: undefined,
+          categories: undefined,
+          contentStatus: undefined,
+          culture: undefined,
+          description: undefined,
+          licenseInfo: undefined,
+          name: undefined,
+          origUrl: undefined,
+          properties: undefined,
+          snippet: undefined,
+          spatialReference: undefined,
+          tags: undefined,
+          thumbnail: undefined,
+          typeKeywords: undefined
+        } as any,
+        data: {},
+        resources: [] as any[],
+        dependencies: [],
+        relatedItems: [] as common.IRelatedItems[],
+        groups: [] as string[],
+        properties: {} as any,
+        estimatedDeploymentCostFactor: 2
+      };
+
+      fetchMock
+        .post(
+          utils.PORTAL_SUBSET.restUrl + "/content/items/vts1234567890/resources",
+          []
+        )
+        .post(
+          utils.PORTAL_SUBSET.restUrl + "/content/items/vts1234567890/data",
+          new Blob([JSON.stringify(itemTemplate.data)], {
+            type: "application/json"
+          }),
+          { sendAsJson: false }
+        )
+        .post(
+          utils.PORTAL_SUBSET.restUrl + "/content/users/casey/items/sln1234567890/addResources",
+          utils.getSuccessResponse()
+        );
+      staticRelatedItemsMocks.fetchMockRelatedItems(
+        "vts1234567890",
+        { total: 0, relatedItems: [] }
+      );
+
+      simpleTypes
+        .convertItemToTemplate(
+          solutionItemId,
+          itemTemplate.item,
+          MOCK_USER_SESSION,
+          MOCK_USER_SESSION,
+          {}
+        )
+        .then(
+          actual => {
+            actual.key = "abcdefgh";
+            expect(actual).toEqual(expected);
+            done();
+          },
+          e => done.fail(e)
+        );
+    });
+  });
+
   describe("web mapping application", () => {
     it("should handle web mapping application", done => {
       const solutionItemId = "sln1234567890";
