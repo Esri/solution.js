@@ -1,6 +1,6 @@
 {
   "name": "@esri/solution-velocity",
-  "version": "3.0.1",
+  "version": "3.1.0",
   "description": "Manages the creation and deployment of Velocity item types for @esri/solution.js.",
   "main": "dist/node/index.js",
   "unpkg": "dist/umd/velocity.umd.min.js",
@@ -18,8 +18,8 @@
     "@esri/arcgis-rest-portal": "~3.5.0",
     "@esri/arcgis-rest-request": "~3.5.0",
     "@esri/arcgis-rest-service-admin": "~3.5.0",
-    "@esri/solution-common": "^3.0.1",
-    "@esri/solution-simple-types": "^3.0.1",
+    "@esri/solution-common": "^3.1.0",
+    "@esri/solution-simple-types": "^3.1.0",
     "rollup": "2.79.1"
   },
   "peerDependencies": {

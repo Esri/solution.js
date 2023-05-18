@@ -1110,6 +1110,7 @@ export function _createItemFromTemplateWhenReady(
             return common.copyFilesFromStorageItem(
               storageAuthentication,
               resourceFilePaths,
+              template.itemId,
               templateDictionary.folderId,
               createResponse.id,
               destinationAuthentication,

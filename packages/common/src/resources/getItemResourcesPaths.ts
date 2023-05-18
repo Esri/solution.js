@@ -44,10 +44,19 @@ export function getItemResourcesPaths(
         .map((r: any) => r.resource)
         .filter((res: any) => {
           let result = true;
-          // StoryMaps has a set of resources that must be interpolated and can not be
+          // Certain types have resources that must be interpolated or removed and can not be
           // directly copied, so they must be filtered out. Sub-optimal as it spreads
           // type specific logic around the app, but until we refactor how resources
           // are handled, this is necessary
+
+          // Hub Sites
+          if (itemTemplate.type === "Hub Site Application") {
+            if (res.match(/^draft-(\d+).json$/)) {
+              result = false;
+            }
+          }
+
+          // Storymaps
           if (itemTemplate.type === "StoryMap") {
             if (["oembed.json", "oembed.xml"].indexOf(res) !== -1) {
               result = false;
@@ -56,12 +65,14 @@ export function getItemResourcesPaths(
               result = false;
             }
           }
-          // Web-Experiences stores drafts in the config.json file; we don't create Solutions with drafts
+
+          // Web Experiences
           if (itemTemplate.type === "Web Experience") {
             if (res === "config/config.json") {
               result = false;
             }
           }
+
           return result;
         });
       // create the filePaths

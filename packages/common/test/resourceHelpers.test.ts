@@ -261,6 +261,7 @@ describe("Module `resourceHelpers`: common functions involving the management of
     it("handles an empty files list", done => {
       const storageAuthentication = MOCK_USER_SESSION;
       const filePaths: interfaces.IDeployFileCopyPath[] = [] as interfaces.IDeployFileCopyPath[];
+      const sourceItemId = "sln1234567890;"
       const destinationItemId: string = "itm1234567890";
       const destinationAuthentication = MOCK_USER_SESSION;
       const expected = true;
@@ -269,6 +270,7 @@ describe("Module `resourceHelpers`: common functions involving the management of
         .copyFilesFromStorageItem(
           storageAuthentication,
           filePaths,
+          sourceItemId,
           null,
           destinationItemId,
           destinationAuthentication
@@ -281,6 +283,7 @@ describe("Module `resourceHelpers`: common functions involving the management of
 
     it("remaps hub files", done => {
       const storageAuthentication = MOCK_USER_SESSION;
+      const sourceItemId = "sln1234567890;"
       const filePaths: interfaces.IDeployFileCopyPath[] = [
         {
           type: interfaces.EFileType.Resource,
@@ -299,6 +302,7 @@ describe("Module `resourceHelpers`: common functions involving the management of
         .copyFilesFromStorageItem(
           storageAuthentication,
           filePaths,
+          sourceItemId,
           null,
           "3ef",
           storageAuthentication,
@@ -331,6 +335,7 @@ describe("Module `resourceHelpers`: common functions involving the management of
           url: "https://myserver/images/resource.png"
         }
       ];
+      const sourceItemId = "sln1234567890;"
       const destinationItemId: string = "itm1234567890";
       const destinationAuthentication = MOCK_USER_SESSION;
       const serverInfoUrl = "https://myserver/images/resource.png/rest/info";
@@ -355,6 +360,7 @@ describe("Module `resourceHelpers`: common functions involving the management of
         .copyFilesFromStorageItem(
           storageAuthentication,
           filePaths,
+          sourceItemId,
           null,
           destinationItemId,
           destinationAuthentication
@@ -375,6 +381,7 @@ describe("Module `resourceHelpers`: common functions involving the management of
           url: "https://myserver/images/resource.png"
         }
       ];
+      const sourceItemId = "sln1234567890;"
       const destinationItemId: string = "itm1234567890";
       const destinationAuthentication = MOCK_USER_SESSION;
       const mimeTypes: interfaces.IKeyedStrings = {
@@ -402,6 +409,7 @@ describe("Module `resourceHelpers`: common functions involving the management of
         .copyFilesFromStorageItem(
           storageAuthentication,
           filePaths,
+          sourceItemId,
           null,
           destinationItemId,
           destinationAuthentication,
@@ -423,6 +431,7 @@ describe("Module `resourceHelpers`: common functions involving the management of
           url: "https://myserver/doc/metadata.xml" // Metadata uses only URL
         }
       ];
+      const sourceItemId = "sln1234567890;"
       const destinationItemId: string = "itm1234567890";
       const destinationAuthentication = MOCK_USER_SESSION;
       const serverInfoUrl = "https://myserver/doc/metadata.xml/rest/info";
@@ -450,6 +459,7 @@ describe("Module `resourceHelpers`: common functions involving the management of
         .copyFilesFromStorageItem(
           storageAuthentication,
           filePaths,
+          sourceItemId,
           null,
           destinationItemId,
           destinationAuthentication
@@ -470,6 +480,7 @@ describe("Module `resourceHelpers`: common functions involving the management of
           url: "https://myserver/images/resource.png"
         }
       ];
+      const sourceItemId = "sln1234567890;"
       const destinationItemId: string = "itm1234567890";
       const destinationAuthentication = MOCK_USER_SESSION;
       const serverInfoUrl = "https://myserver/images/resource.png/rest/info";
@@ -494,6 +505,7 @@ describe("Module `resourceHelpers`: common functions involving the management of
         .copyFilesFromStorageItem(
           storageAuthentication,
           filePaths,
+          sourceItemId,
           null,
           destinationItemId,
           destinationAuthentication
@@ -529,6 +541,7 @@ describe("Module `resourceHelpers`: common functions involving the management of
           url: "https://myserver/images/resource.png"
         }
       ];
+      const sourceItemId = "sln1234567890;"
       const destinationItemId: string = "itm1234567890";
       const destinationAuthentication = MOCK_USER_SESSION;
       const serverInfoUrl = "https://myserver/images/resource.png/rest/info";
@@ -553,6 +566,7 @@ describe("Module `resourceHelpers`: common functions involving the management of
         .copyFilesFromStorageItem(
           storageAuthentication,
           filePaths,
+          sourceItemId,
           null,
           destinationItemId,
           destinationAuthentication,
@@ -566,6 +580,7 @@ describe("Module `resourceHelpers`: common functions involving the management of
 
     it("does not copy thumbnail files", done => {
       const storageAuthentication = MOCK_USER_SESSION;
+      const sourceItemId = "sln1234567890;"
       const filePaths: interfaces.IDeployFileCopyPath[] = [
         {
           type: interfaces.EFileType.Thumbnail,
@@ -581,6 +596,7 @@ describe("Module `resourceHelpers`: common functions involving the management of
         .copyFilesFromStorageItem(
           storageAuthentication,
           filePaths,
+          sourceItemId,
           null,
           destinationItemId,
           destinationAuthentication

@@ -1,6 +1,6 @@
 {
   "name": "copySolutions",
-  "version": "3.0.1",
+  "version": "3.1.0",
   "description": "copySolutions demo",
   "author": "Esri",
   "license": "Apache-2.0",
@@ -18,14 +18,14 @@
     "@esri/arcgis-rest-portal": "~3.5.0",
     "@esri/arcgis-rest-request": "~3.5.0",
     "@esri/arcgis-rest-service-admin": "~3.5.0",
-    "@esri/solution-common": "^3.0.1",
+    "@esri/solution-common": "^3.1.0",
     "copy-webpack-plugin": "^11.0.0",
     "css-loader": "^6.7.3",
     "html-webpack-plugin": "^5.5.1",
     "style-loader": "^3.3.2",
     "ts-loader": "^9.4.2",
     "typescript": "^4.9.5",
-    "webpack": "^5.77.0",
+    "webpack": "^5.82.1",
     "webpack-cli": "^5.0.1"
   },
   "dependencies": {

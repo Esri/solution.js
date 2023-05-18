@@ -103,6 +103,90 @@ describe("getItemResourcesPaths :: ", () => {
       );
     });
 
+    it("filters out hub site resources", () => {
+      // Hub Sites have a draft resource that we filter out.
+      // Sub-optimal as it spreads  type specific logic around the app, but until
+      // we refactor how resources are handled, this is necessary
+      const getResSpy = spyOn(
+        restHelpersModule,
+        "getItemResources"
+      ).and.resolveTo({
+        total: 4,
+        start: 1,
+        num: 0,
+        nextStart: -1,
+        resources: [
+          {
+            resource: "some-image.jpeg",
+            created: 1591306005000,
+            size: 207476,
+            access: "inherit"
+          },
+          {
+            resource: "draft-1684170029224.json",
+            created: 1591306005000,
+            size: 13850,
+            access: "inherit"
+          },
+          {
+            resource: "images/image-resources-list.json",
+            created: 1591306006000,
+            size: 37348,
+            access: "inherit"
+          }
+        ]
+      });
+
+      const itemTemplate: interfaces.IItemTemplate = templates.getItemTemplateSkeleton();
+      itemTemplate.itemId = "bc3";
+      itemTemplate.type = "Hub Site Application";
+
+      return getItemResourcesPaths(
+        itemTemplate,
+        "4de",
+        MOCK_USER_SESSION,
+        1
+      ).then(response => {
+        expect(Array.isArray(response)).toBe(true, "should return an array");
+        expect(response.length).toBe(
+          3, // metadata.xml is added automatically
+          "filter out config/config.json"
+        );
+
+        expect(response).toEqual(
+          [
+            {
+              itemId: "bc3",
+              url:
+                "https://myorg.maps.arcgis.com/sharing/rest/content/items/bc3/resources/some-image.jpeg",
+              folder: "bc3",
+              filename: "some-image.jpeg"
+            },
+            {
+              itemId: "bc3",
+              url:
+                "https://myorg.maps.arcgis.com/sharing/rest/content/items/bc3/resources/images/image-resources-list.json",
+              folder: "bc3/images",
+              filename: "image-resources-list.json"
+            },
+            {
+              itemId: "bc3",
+              url:
+                "https://myorg.maps.arcgis.com/sharing/rest/content/items/bc3/info/metadata/metadata.xml",
+              folder: "bc3_info_metadata",
+              filename: "metadata.xml"
+            }
+          ],
+          "should return full path of the file in the storage item"
+        );
+        expect(getResSpy.calls.count()).toBe(1, "should get resources");
+        expect(getResSpy.calls.argsFor(0)[0]).toBe(
+          "bc3",
+          "should get resources for template item"
+        );
+      });
+    });
+
     it("filters out storymap resources", () => {
       // StoryMaps has a pair of resources (oembed.json, oembed.xml draft_*.json) that must be
       // interpolated and can not be directly copied, so they must be filtered out. Sub-optimal

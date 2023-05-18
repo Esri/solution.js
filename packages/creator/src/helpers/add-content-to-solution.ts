@@ -217,9 +217,12 @@ export function addContentToSolution(
 
               _templatizeSolutionIds(solutionTemplates);
               _simplifyUrlsInItemDescriptions(solutionTemplates);
-              _replaceDictionaryItemsInObject(
-                templateDictionary,
-                solutionTemplates
+              solutionTemplates.forEach(
+                template => {
+                  if (template.type !== "Vector Tile Service") {
+                    _replaceDictionaryItemsInObject(templateDictionary, template);
+                  }
+                }
               );
               _templatizeOrgUrl(solutionTemplates, destAuthentication).then(
                 solutionTemplates2 => {

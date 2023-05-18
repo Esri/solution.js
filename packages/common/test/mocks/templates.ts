@@ -16,6 +16,7 @@
 
 // This file contains examples of templates of AGOL items.
 
+import * as generalHelpers from "../../src/generalHelpers";
 import * as getItemTypeAbbrev from "../../src/getItemTypeAbbrev";
 import * as interfaces from "../../src/interfaces";
 import * as utils from "./utils";
@@ -55,7 +56,7 @@ export function getFailedItem(
   itemType: string
 ): interfaces.ICreateItemFromTemplateResponse {
   return {
-    item: null,
+    item: null as any,
     id: "",
     type: itemType,
     postProcess: false
@@ -124,7 +125,7 @@ export function getItemTemplate(
   dependencies = [] as string[],
   url = ""
 ): interfaces.IItemTemplate {
-  let templatePart: interfaces.IItemTemplate = null;
+  let templatePart: interfaces.IItemTemplate = {} as any;
 
   // Supported item types
   switch (type) {
@@ -303,6 +304,17 @@ export function getItemTemplate(
       );
       templatePart.data = getItemTemplateData(type);
       templatePart.resources = [];
+      break;
+
+    case "Vector Tile Service":
+      templatePart = getItemTemplateFundamentals(
+        type,
+        getItemTypeAbbrev.getItemTypeAbbrev(type),
+        dependencies,
+        url ||
+          "https://basemaps.arcgis.com/arcgis/rest/services/World_Basemap_v2/VectorTileServer"
+      );
+      templatePart.resources = getItemTemplateResources(type, templatePart.itemId);
       break;
 
     case "Web Map":
@@ -575,7 +587,297 @@ function createItemTemplateRelationship(
   return relationship;
 }
 
-export function getItemTemplateData(type?: string): any {
+function getServiceTemplate(): any {
+  const service: any = {
+    currentVersion: 10.61,
+    serviceItemId: "{{svc1234567890.itemId}}",
+    isView: true,
+    isUpdatableView: true,
+    sourceSchemaChangesAllowed: true,
+    serviceDescription: "",
+    hasVersionedData: false,
+    supportsDisconnectedEditing: false,
+    hasStaticData: false,
+    maxRecordCount: 1000,
+    supportedQueryFormats: "JSON",
+    supportsVCSProjection: false,
+    capabilities: "Create,Query,Editing",
+    description: "",
+    copyrightText: "",
+    spatialReference: {
+      wkid: 102100,
+      latestWkid: 3857
+    },
+    initialExtent: {
+      xmin: -14999999.999989873,
+      ymin: 2699999.9999980442,
+      xmax: -6199999.9999958146,
+      ymax: 6499999.99999407,
+      spatialReference: {
+        wkid: 102100,
+        latestWkid: 3857
+      }
+    },
+    fullExtent: {
+      xmin: -14999999.999989873,
+      ymin: 2699999.9999980442,
+      xmax: -6199999.9999958146,
+      ymax: 6499999.99999407,
+      spatialReference: {
+        wkid: 102100,
+        latestWkid: 3857
+      }
+    },
+    allowGeometryUpdates: true,
+    units: "esriMeters",
+    supportsAppend: true,
+    syncEnabled: false,
+    supportsApplyEditsWithGlobalIds: true,
+    editorTrackingInfo: {
+      enableEditorTracking: true,
+      enableOwnershipAccessControl: false,
+      allowOthersToQuery: true,
+      allowOthersToUpdate: true,
+      allowOthersToDelete: true,
+      allowAnonymousToQuery: true,
+      allowAnonymousToUpdate: true,
+      allowAnonymousToDelete: true
+    },
+    xssPreventionInfo: {
+      xssPreventionEnabled: true,
+      xssPreventionRule: "InputOnly",
+      xssInputRule: "rejectInvalid"
+    }
+  };
+
+  return service;
+}
+
+function getLayerOrTableTemplate(
+  id: number,
+  name: string,
+  type: string,
+  relationships = [] as any
+): any {
+  return {
+    currentVersion: 10.61,
+    id: id,
+    name: name,
+    type: type,
+    serviceItemId: "{{svc1234567890.itemId}}",
+    isView: true,
+    isUpdatableView: true,
+    sourceSchemaChangesAllowed: true,
+    displayField: "appname",
+    description: "PermitApplication",
+    copyrightText: "",
+    defaultVisibility: true,
+    editFieldsInfo: {
+      creationDateField: "CreationDate",
+      creatorField: "Creator",
+      editDateField: "EditDate",
+      editorField: "Editor"
+    },
+    editingInfo: {
+      lastEditDate: 1538579807130
+    },
+    fields: [
+      {
+        name: "appname",
+        type: "esriFieldTypeString",
+        alias: "appname",
+        sqlType: "sqlTypeOther",
+        length: 0,
+        nullable: true,
+        editable: true,
+        visible: true,
+        domain: null,
+        defaultValue: null
+      },
+      {
+        name: "BoardReview",
+        type: "esriFieldTypeString",
+        alias: "Board Review",
+        sqlType: "sqlTypeOther",
+        length: 0,
+        nullable: true,
+        editable: true,
+        visible: true,
+        domain: null,
+        defaultValue: null
+      },
+      {
+        name: "globalid",
+        type: "esriFieldTypeGlobalID",
+        alias: "globalid",
+        sqlType: "sqlTypeOther",
+        length: 0,
+        nullable: false,
+        editable: true,
+        visible: true,
+        domain: null,
+        defaultValue: null
+      },
+      {
+        name: "CreationDate",
+        type: "esriFieldTypeDate",
+        alias: "CreationDate",
+        sqlType: "sqlTypeOther",
+        length: 0,
+        nullable: true,
+        editable: true,
+        visible: true,
+        domain: null,
+        defaultValue: null
+      },
+      {
+        name: "Creator",
+        type: "esriFieldTypeString",
+        alias: "Creator",
+        sqlType: "sqlTypeOther",
+        length: 0,
+        nullable: true,
+        editable: true,
+        visible: true,
+        domain: null,
+        defaultValue: null
+      },
+      {
+        name: "EditDate",
+        type: "esriFieldTypeDate",
+        alias: "EditDate",
+        sqlType: "sqlTypeOther",
+        length: 0,
+        nullable: true,
+        editable: true,
+        visible: true,
+        domain: null,
+        defaultValue: null
+      },
+      {
+        name: "Editor",
+        type: "esriFieldTypeString",
+        alias: "Editor",
+        sqlType: "sqlTypeOther",
+        length: 0,
+        nullable: true,
+        editable: true,
+        visible: true,
+        domain: null,
+        defaultValue: null
+      },
+      {
+        name: "OBJECTID",
+        type: "esriFieldTypeOID",
+        alias: "OBJECTID",
+        sqlType: "sqlTypeOther",
+        length: 8,
+        nullable: false,
+        editable: false,
+        visible: true,
+        domain: null,
+        defaultValue: null
+      }
+    ],
+    relationships: relationships,
+    geometryType: "esriGeometryPoint",
+    minScale: 0,
+    maxScale: 0,
+    extent: {
+      xmin: -14999999.999989873,
+      ymin: -13315943.826968452,
+      xmax: 1604565.8194646926,
+      ymax: 6499999.99999407,
+      spatialReference: {
+        wkid: 102100,
+        latestWkid: 3857
+      }
+    },
+    allowGeometryUpdates: true,
+    hasAttachments: true,
+    viewSourceHasAttachments: false,
+    attachmentProperties: [
+      {
+        name: "name",
+        isEnabled: true
+      },
+      {
+        name: "size",
+        isEnabled: true
+      },
+      {
+        name: "contentType",
+        isEnabled: true
+      },
+      {
+        name: "keywords",
+        isEnabled: true
+      }
+    ],
+    objectIdField: "OBJECTID",
+    uniqueIdField: {
+      name: "OBJECTID",
+      isSystemMaintained: true
+    },
+    globalIdField: "globalid",
+    capabilities: "Create,Query,Editing",
+    viewDefinitionQuery:
+      "status = '{{svc1234567890.layer" + id + ".fields.boardreview.name}}'",
+    definitionQuery: "status = 'BoardReview'"
+  };
+}
+
+function getItemTemplateFundamentals(
+  type: string,
+  typePrefix: string,
+  dependencies = [] as string[],
+  url = "",
+  groups = [] as string[]
+): interfaces.IItemTemplate {
+  return {
+    itemId: typePrefix + "1234567890",
+    type: type,
+    key: "i1a2b3c4",
+    item: {
+      id: "{{" + typePrefix + "1234567890.itemId}}",
+      name: "Name of an AGOL item",
+      title: "An AGOL item",
+      type: type,
+      typeKeywords: ["JavaScript"],
+      description: "Description of an AGOL item",
+      tags: ["test"],
+      snippet: "Snippet of an AGOL item",
+      thumbnail:
+        utils.PORTAL_SUBSET.restUrl +
+        "/content/items/" +
+        typePrefix +
+        "1234567890/info/thumbnail/ago_downloaded.png",
+      extent: "{{solutionItemExtent}}",
+      categories: [],
+      contentStatus: null,
+      spatialReference: undefined,
+      accessInformation: "Esri, Inc.",
+      licenseInfo: null,
+      origUrl: url && url.length > 0 ? url : undefined,
+      properties: null,
+      culture: "en-us",
+      url: url,
+      created: 1520968147000,
+      modified: 1522178539000
+    },
+    data: undefined,
+    resources: [],
+    dependencies: dependencies,
+    relatedItems: [],
+    groups: groups,
+    properties: {},
+    estimatedDeploymentCostFactor: 2
+  };
+}
+
+export function getItemTemplateData(
+  type: string
+): any {
   let data: any = {
     error: {
       code: 400,
@@ -908,7 +1210,7 @@ export function getItemTemplateData(type?: string): any {
               styleUrl:
                 utils.PORTAL_SUBSET.restUrl +
                 "/content/items/" +
-                "7dc6cea0b1764a1f9af2e679f642f0f5/resources/styles/root.json",
+                "vts1234567980/resources/styles/root.json",
               itemId: "7dc6cea0b1764a1f9af2e679f642f0f5"
             }
           ],
@@ -1006,7 +1308,7 @@ export function getItemTemplateData(type?: string): any {
       };
       break;
 
-    case "Unknown":
+    default:
       data = {};
       break;
   }
@@ -1014,295 +1316,143 @@ export function getItemTemplateData(type?: string): any {
   return data;
 }
 
-function getServiceTemplate(): any {
-  const service: any = {
-    currentVersion: 10.61,
-    serviceItemId: "{{svc1234567890.itemId}}",
-    isView: true,
-    isUpdatableView: true,
-    sourceSchemaChangesAllowed: true,
-    serviceDescription: "",
-    hasVersionedData: false,
-    supportsDisconnectedEditing: false,
-    hasStaticData: false,
-    maxRecordCount: 1000,
-    supportedQueryFormats: "JSON",
-    supportsVCSProjection: false,
-    capabilities: "Create,Query,Editing",
-    description: "",
-    copyrightText: "",
-    spatialReference: {
-      wkid: 102100,
-      latestWkid: 3857
-    },
-    initialExtent: {
-      xmin: -14999999.999989873,
-      ymin: 2699999.9999980442,
-      xmax: -6199999.9999958146,
-      ymax: 6499999.99999407,
-      spatialReference: {
-        wkid: 102100,
-        latestWkid: 3857
-      }
-    },
-    fullExtent: {
-      xmin: -14999999.999989873,
-      ymin: 2699999.9999980442,
-      xmax: -6199999.9999958146,
-      ymax: 6499999.99999407,
-      spatialReference: {
-        wkid: 102100,
-        latestWkid: 3857
-      }
-    },
-    allowGeometryUpdates: true,
-    units: "esriMeters",
-    supportsAppend: true,
-    syncEnabled: false,
-    supportsApplyEditsWithGlobalIds: true,
-    editorTrackingInfo: {
-      enableEditorTracking: true,
-      enableOwnershipAccessControl: false,
-      allowOthersToQuery: true,
-      allowOthersToUpdate: true,
-      allowOthersToDelete: true,
-      allowAnonymousToQuery: true,
-      allowAnonymousToUpdate: true,
-      allowAnonymousToDelete: true
-    },
-    xssPreventionInfo: {
-      xssPreventionEnabled: true,
-      xssPreventionRule: "InputOnly",
-      xssInputRule: "rejectInvalid"
-    }
-  };
+export function getItemTemplateResources(
+  type: string,
+  itemId: string
+): string[] {
+  let resources: any[] = [];
 
-  return service;
+  // Supported item types
+  switch (type) {
+    case "Vector Tile Service":
+      resources = [
+        itemId + "/info/root.json",
+        itemId + "/styles/root.json",
+        itemId + "_info_thumbnail/ago_downloaded.png"
+      ];
+      break;
+  }
+
+  return resources;
 }
 
-function getLayerOrTableTemplate(
-  id: number,
-  name: string,
+export function getItemTemplateResourcesAsSourceFiles(
   type: string,
-  relationships = [] as any
-): any {
-  return {
-    currentVersion: 10.61,
-    id: id,
-    name: name,
-    type: type,
-    serviceItemId: "{{svc1234567890.itemId}}",
-    isView: true,
-    isUpdatableView: true,
-    sourceSchemaChangesAllowed: true,
-    displayField: "appname",
-    description: "PermitApplication",
-    copyrightText: "",
-    defaultVisibility: true,
-    editFieldsInfo: {
-      creationDateField: "CreationDate",
-      creatorField: "Creator",
-      editDateField: "EditDate",
-      editorField: "Editor"
-    },
-    editingInfo: {
-      lastEditDate: 1538579807130
-    },
-    fields: [
-      {
-        name: "appname",
-        type: "esriFieldTypeString",
-        alias: "appname",
-        sqlType: "sqlTypeOther",
-        length: 0,
-        nullable: true,
-        editable: true,
-        visible: true,
-        domain: null,
-        defaultValue: null
-      },
-      {
-        name: "BoardReview",
-        type: "esriFieldTypeString",
-        alias: "Board Review",
-        sqlType: "sqlTypeOther",
-        length: 0,
-        nullable: true,
-        editable: true,
-        visible: true,
-        domain: null,
-        defaultValue: null
-      },
-      {
-        name: "globalid",
-        type: "esriFieldTypeGlobalID",
-        alias: "globalid",
-        sqlType: "sqlTypeOther",
-        length: 0,
-        nullable: false,
-        editable: true,
-        visible: true,
-        domain: null,
-        defaultValue: null
-      },
-      {
-        name: "CreationDate",
-        type: "esriFieldTypeDate",
-        alias: "CreationDate",
-        sqlType: "sqlTypeOther",
-        length: 0,
-        nullable: true,
-        editable: true,
-        visible: true,
-        domain: null,
-        defaultValue: null
-      },
-      {
-        name: "Creator",
-        type: "esriFieldTypeString",
-        alias: "Creator",
-        sqlType: "sqlTypeOther",
-        length: 0,
-        nullable: true,
-        editable: true,
-        visible: true,
-        domain: null,
-        defaultValue: null
-      },
-      {
-        name: "EditDate",
-        type: "esriFieldTypeDate",
-        alias: "EditDate",
-        sqlType: "sqlTypeOther",
-        length: 0,
-        nullable: true,
-        editable: true,
-        visible: true,
-        domain: null,
-        defaultValue: null
-      },
-      {
-        name: "Editor",
-        type: "esriFieldTypeString",
-        alias: "Editor",
-        sqlType: "sqlTypeOther",
-        length: 0,
-        nullable: true,
-        editable: true,
-        visible: true,
-        domain: null,
-        defaultValue: null
-      },
-      {
-        name: "OBJECTID",
-        type: "esriFieldTypeOID",
-        alias: "OBJECTID",
-        sqlType: "sqlTypeOther",
-        length: 8,
-        nullable: false,
-        editable: false,
-        visible: true,
-        domain: null,
-        defaultValue: null
-      }
-    ],
-    relationships: relationships,
-    geometryType: "esriGeometryPoint",
-    minScale: 0,
-    maxScale: 0,
-    extent: {
-      xmin: -14999999.999989873,
-      ymin: -13315943.826968452,
-      xmax: 1604565.8194646926,
-      ymax: 6499999.99999407,
-      spatialReference: {
-        wkid: 102100,
-        latestWkid: 3857
-      }
-    },
-    allowGeometryUpdates: true,
-    hasAttachments: true,
-    viewSourceHasAttachments: false,
-    attachmentProperties: [
-      {
-        name: "name",
-        isEnabled: true
-      },
-      {
-        name: "size",
-        isEnabled: true
-      },
-      {
-        name: "contentType",
-        isEnabled: true
-      },
-      {
-        name: "keywords",
-        isEnabled: true
-      }
-    ],
-    objectIdField: "OBJECTID",
-    uniqueIdField: {
-      name: "OBJECTID",
-      isSystemMaintained: true
-    },
-    globalIdField: "globalid",
-    capabilities: "Create,Query,Editing",
-    viewDefinitionQuery:
-      "status = '{{svc1234567890.layer" + id + ".fields.boardreview.name}}'",
-    definitionQuery: "status = 'BoardReview'"
-  };
+  itemId: string
+): interfaces.ISourceFile[] {
+  let resources: interfaces.ISourceFile[] = [];
+
+  // Supported item types
+  switch (type) {
+    case "Vector Tile Service":
+      resources = [{
+        itemId,
+        file: generalHelpers.jsonToFile(sampleInfoRootJson, "root.json"),
+        folder: itemId + "/info",
+        filename: "root.json"
+      }, {
+        itemId,
+        file: generalHelpers.jsonToFile(sampleStylesRootJson, "root.json"),
+        folder: itemId + "/styles",
+        filename: "root.json"
+      }, {
+        itemId,
+        file: utils.getSampleImageAsFile("ago_downloaded.png"),
+        folder: "_info_thumbnail",
+        filename: "ago_downloaded.png"
+      }];
+      break;
+  }
+
+  return resources;
 }
 
-function getItemTemplateFundamentals(
+export function getItemTemplateResourcesAsTemplatizedFiles(
   type: string,
-  typePrefix: string,
-  dependencies = [] as string[],
-  url = "",
-  groups = [] as string[]
-): interfaces.IItemTemplate {
-  return {
-    itemId: typePrefix + "1234567890",
-    type: type,
-    key: "i1a2b3c4",
-    item: {
-      id: "{{" + typePrefix + "1234567890.itemId}}",
-      name: "Name of an AGOL item",
-      title: "An AGOL item",
-      type: type,
-      typeKeywords: ["JavaScript"],
-      description: "Description of an AGOL item",
-      tags: ["test"],
-      snippet: "Snippet of an AGOL item",
-      thumbnail:
-        utils.PORTAL_SUBSET.restUrl +
-        "/content/items/" +
-        typePrefix +
-        "1234567890/info/thumbnail/ago_downloaded.png",
-      extent: "{{solutionItemExtent}}",
-      categories: [],
-      contentStatus: null,
-      spatialReference: undefined,
-      accessInformation: "Esri, Inc.",
-      licenseInfo: null,
-      origUrl: url && url.length > 0 ? url : undefined,
-      properties: null,
-      culture: "en-us",
-      url: url,
-      created: 1520968147000,
-      modified: 1522178539000
-    },
-    data: undefined,
-    resources: [],
-    dependencies: dependencies,
-    relatedItems: [],
-    groups: groups,
-    properties: {},
-    estimatedDeploymentCostFactor: 2
-  };
+): interfaces.IAssociatedFileInfo[] {
+  let resources: interfaces.IAssociatedFileInfo[] = [];
+
+  // Supported item types
+  switch (type) {
+    case "Vector Tile Service":
+      resources = [{
+        filename: "root.json",
+        folder: "info",
+        url: "https://www.arcgis.com/sharing/rest/content/items/sln1234567890/resources/vts1234567890/info/root.json"
+      }, {
+        filename: "root.json",
+        folder: "styles",
+        url: "https://www.arcgis.com/sharing/rest/content/items/sln1234567890/resources/vts1234567890/styles/root.json"
+      }, {
+        filename: "ago_downloaded.png",
+        folder: "_info_thumbnail",
+        url: "https://www.arcgis.com/sharing/rest/content/items/sln1234567890/resources/vts1234567890/ago_downloaded.png"
+      }];
+      break;
+  }
+
+  return resources;
 }
 
 export function removeEditFieldsInfoField(layerOrTable: any): any {
   layerOrTable.editFieldsInfo = null;
   return layerOrTable;
 }
+
+// ------------------------------------------------------------------------------------------------------------------ //
+
+export const sampleInfoRootJson = {
+  "resourceInfo": [
+    "https://basemaps.arcgis.com/arcgis/rest/services/World_Basemap_v2/VectorTileServer/resources/fonts/Arial%20Regular/0-255.pbf",
+    "https://basemaps.arcgis.com/arcgis/rest/services/World_Basemap_v2/VectorTileServer/resources/fonts/Arial%20Regular/256-511.pbf",
+    "https://basemaps.arcgis.com/arcgis/rest/services/World_Basemap_v2/VectorTileServer/resources/fonts/Palatino%20Linotype%20Regular/64512-64767.pbf",
+    "https://basemaps.arcgis.com/arcgis/rest/services/World_Basemap_v2/VectorTileServer/resources/fonts/Palatino%20Linotype%20Regular/64768-65023.pbf",
+    "https://myorg.maps.arcgis.com/sharing/rest/content/items/vts1234567890/resources/sprites/sprite-1682528799750@2x.json",
+    "https://myorg.maps.arcgis.com/sharing/rest/content/items/vts1234567890/resources/sprites/sprite-1682528799750@2x.png"
+  ]
+};
+
+export const sampleStylesRootJson = {
+  "version": 8,
+  "sprite": "https://myorg.maps.arcgis.com/sharing/rest/content/items/vts1234567890/resources/sprites/sprite-1682528799750",
+  "glyphs": "https://basemaps.arcgis.com/arcgis/rest/services/World_Basemap_v2/VectorTileServer/resources/fonts/{fontstack}/{range}.pbf",
+  "sources": {
+    "esri": {
+      "type": "vector",
+      "url": "https://basemaps.arcgis.com/arcgis/rest/services/World_Basemap_v2/VectorTileServer",
+      "tiles": [
+        "https://basemaps.arcgis.com/arcgis/rest/services/World_Basemap_v2/VectorTileServer/tile/{z}/{y}/{x}.pbf"
+      ]
+    }
+  },
+  "layers": [],
+  "metadata": {}
+};
+
+export const sampleInfoRootTemplatizedJson = {
+  "resourceInfo": [
+    "https://basemaps.arcgis.com/arcgis/rest/services/World_Basemap_v2/VectorTileServer/resources/fonts/Arial%20Regular/0-255.pbf",
+    "https://basemaps.arcgis.com/arcgis/rest/services/World_Basemap_v2/VectorTileServer/resources/fonts/Arial%20Regular/256-511.pbf",
+    "https://basemaps.arcgis.com/arcgis/rest/services/World_Basemap_v2/VectorTileServer/resources/fonts/Palatino%20Linotype%20Regular/64512-64767.pbf",
+    "https://basemaps.arcgis.com/arcgis/rest/services/World_Basemap_v2/VectorTileServer/resources/fonts/Palatino%20Linotype%20Regular/64768-65023.pbf",
+    "{{vts1234567890.url}}/resources/sprites/sprite-1682528799750@2x.json",
+    "{{vts1234567890.url}}/resources/sprites/sprite-1682528799750@2x.png"
+  ]
+};
+
+export const sampleStylesRootTemplatizedJson = {
+  "version": 8,
+  "sprite": "{{vts1234567890.url}}/resources/sprites/sprite-1682528799750",
+  "glyphs": "https://basemaps.arcgis.com/arcgis/rest/services/World_Basemap_v2/VectorTileServer/resources/fonts/{fontstack}/{range}.pbf",
+  "sources": {
+    "esri": {
+      "type": "vector",
+      "url": "https://basemaps.arcgis.com/arcgis/rest/services/World_Basemap_v2/VectorTileServer",
+      "tiles": [
+        "https://basemaps.arcgis.com/arcgis/rest/services/World_Basemap_v2/VectorTileServer/tile/{z}/{y}/{x}.pbf"
+      ]
+    }
+  },
+  "layers": [],
+  "metadata": {}
+};
