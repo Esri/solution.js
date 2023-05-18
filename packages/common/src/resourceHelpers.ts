@@ -121,15 +121,17 @@ export function convertBlobToSupportableResource(
  *
  * @param storageAuthentication Credentials for the request to the storage
  * @param filePaths List of item files' URLs and folder/filenames for storing the files
+ * @param sourceItemId Id of item supplying resource/metadata
  * @param destinationFolderId Id of folder
  * @param destinationItemId Id of item to receive copy of resource/metadata
  * @param destinationAuthentication Credentials for the request to the destination
- * @param template Template for using its itemId and properties for fine-tuning the filename for Hub
+ * @param template Description of item that will receive files
  * @returns A promise which resolves to a boolean indicating if the copies were successful
  */
 export function copyFilesFromStorageItem(
   storageAuthentication: UserSession,
   filePaths: IDeployFileCopyPath[],
+  sourceItemId: string,
   destinationFolderId: string,
   destinationItemId: string,
   destinationAuthentication: UserSession,
@@ -168,8 +170,10 @@ export function copyFilesFromStorageItem(
     void copyAssociatedFilesByType(
       fileInfos,
       storageAuthentication,
+      sourceItemId,
       destinationItemId,
-      destinationAuthentication
+      destinationAuthentication,
+      template
     ).then((results: IAssociatedFileCopyResults[]) => {
       const allOK: boolean = results
         // Filter out metadata

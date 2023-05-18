@@ -21,25 +21,27 @@
  */
 
 import {
-  cleanLayerBasedItemId,
-  createPlaceholderTemplate,
-  EItemProgressStatus,
   SolutionTemplateFormatVersion,
-  findTemplateInList,
-  getGroupBase,
-  getItemBase,
-  hasDatasource,
+  EItemProgressStatus,
   IDatasourceInfo,
   IItemGeneralized,
   IItemProgressCallback,
   IItemTemplate,
   ISourceFile,
   ISourceFileCopyPath,
+  blobToJson,
+  cleanLayerBasedItemId,
+  createPlaceholderTemplate,
+  fail,
+  findTemplateInList,
+  getGroupBase,
+  getItemBase,
   getItemResourcesFilesFromPaths,
   getItemResourcesPaths,
+  hasDatasource,
+  jsonToFile,
   replaceTemplate,
   sanitizeJSONAndReportChanges,
-  fail,
   UserSession
 } from "@esri/solution-common";
 import { getProp } from "@esri/hub-common";
@@ -189,7 +191,9 @@ export function createItemTemplate(
                       getItemResourcesFilesFromPaths(
                         resourceItemFilePaths,
                         srcAuthentication
-                      ).then((resourceItemFiles: ISourceFile[]) => {
+                      ).then(async (resourceItemFiles: ISourceFile[]) => {
+                        await _templatizeResources(itemTemplate, resourceItemFiles, srcAuthentication);
+
                         // update the template's resources
                         itemTemplate.resources = itemTemplate.resources.concat(
                           resourceItemFiles.map(
@@ -256,7 +260,7 @@ export function createItemTemplate(
                               resolve(resourceItemFiles);
                             }
                           );
-                        }
+                        };
                       });
                     });
                   },
@@ -499,7 +503,7 @@ export function _addMapLayerIds(
  *
  * @param template A webmap solution template
  * @param templateTypeHash A simple lookup object populated with key item info
- * @returns A lsit of feature service item IDs
+ * @returns A list of feature service item IDs
  * @private
  */
 export function _getWebMapFSDependencies(
@@ -519,4 +523,58 @@ export function _getWebMapFSDependencies(
     }
   });
   return webMapFSDependencies;
+}
+
+/**
+ * Perform templatizations needed in an item's resources
+ *
+ * @param itemTemplate Item being templatized
+ * @param resourceItemFiles Resources for the item; these resources are modified as needed
+ * by the templatization
+ * @param srcAuthentication Credentials for requests to source items
+ *
+ * @returns A promise that resolves when all templatization has completed
+ */
+export function _templatizeResources(
+  itemTemplate: IItemTemplate,
+  resourceItemFiles: ISourceFile[],
+  srcAuthentication: UserSession
+): Promise<void[]> {
+  const synchronizePromises: Array<Promise<void>> = [];
+
+  if (itemTemplate.type === "Vector Tile Service") {
+    // Get the root.json files
+    const rootJsonResources = resourceItemFiles.filter(file => file.filename === "root.json");
+
+    const resourcePath = srcAuthentication.portal + "/content/items/" + itemTemplate.itemId;
+    const templatizedResourcePath = "{{" + itemTemplate.itemId + ".url}}";
+    const replacer = new RegExp(resourcePath, "g");
+
+    // Templatize the paths in the files that reference the source item id
+    rootJsonResources.forEach(
+      rootFileResource => {
+        synchronizePromises.push(new Promise(resolve => {
+          // Read the file
+          // eslint-disable-next-line @typescript-eslint/no-floating-promises
+          blobToJson(rootFileResource.file)
+          .then(fileJson => {
+
+            // Templatize by turning JSON into string, replacing paths with template, and re-JSONing
+            const updatedFileJson =
+              JSON.parse(
+                JSON.stringify(fileJson)
+                  .replace(replacer, templatizedResourcePath)
+              );
+
+            // Write the changes back into the file
+            rootFileResource.file = jsonToFile(updatedFileJson, rootFileResource.filename);
+
+            resolve(null);
+          });
+        }));
+      }
+    );
+  }
+
+  return Promise.all(synchronizePromises);
 }

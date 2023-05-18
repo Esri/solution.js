@@ -213,7 +213,6 @@ updateDestAuthFcn = updateDestAuth;
 const solutionsSelect = document.getElementById("solutionPicklist") as HTMLSelectElement;
 solutionsSelect.add(document.createElement("option"));
 
-console.log("appConfig", appConfig, appConfig.primarySolutionsGroupId, appConfig.agoBasedEnterpriseSolutionsGroupId);//???
 main.getTemplates(
   appConfig.primarySolutionsGroupId, appConfig.agoBasedEnterpriseSolutionsGroupId
 ).then((solutions) => {
