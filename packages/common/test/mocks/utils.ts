@@ -694,7 +694,7 @@ export function getPortalsSelfResponse() {
           layerType: "VectorTileLayer",
           title: "World Topographic Map",
           styleUrl:
-            "https://cdn.arcgis.com/sharing/rest/content/items/7dc6cea0b1764a1f9af2e679f642f0f5/resources/styles/root.json",
+            "https://cdn.arcgis.com/sharing/rest/content/items/vts1234567890/resources/styles/root.json",
           visibility: true,
           opacity: 1
         }

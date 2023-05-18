@@ -56,7 +56,7 @@ export function getFailedItem(
   itemType: string
 ): interfaces.ICreateItemFromTemplateResponse {
   return {
-    item: null,
+    item: null as any,
     id: "",
     type: itemType,
     postProcess: false
@@ -125,7 +125,7 @@ export function getItemTemplate(
   dependencies = [] as string[],
   url = ""
 ): interfaces.IItemTemplate {
-  let templatePart: interfaces.IItemTemplate = null;
+  let templatePart: interfaces.IItemTemplate = {} as any;
 
   // Supported item types
   switch (type) {
@@ -1210,7 +1210,7 @@ export function getItemTemplateData(
               styleUrl:
                 utils.PORTAL_SUBSET.restUrl +
                 "/content/items/" +
-                "7dc6cea0b1764a1f9af2e679f642f0f5/resources/styles/root.json",
+                "vts1234567980/resources/styles/root.json",
               itemId: "7dc6cea0b1764a1f9af2e679f642f0f5"
             }
           ],
@@ -1367,6 +1367,33 @@ export function getItemTemplateResourcesAsSourceFiles(
   return resources;
 }
 
+export function getItemTemplateResourcesAsTemplatizedFiles(
+  type: string,
+): interfaces.IAssociatedFileInfo[] {
+  let resources: interfaces.IAssociatedFileInfo[] = [];
+
+  // Supported item types
+  switch (type) {
+    case "Vector Tile Service":
+      resources = [{
+        filename: "root.json",
+        folder: "info",
+        url: "https://www.arcgis.com/sharing/rest/content/items/sln1234567890/resources/vts1234567890/info/root.json"
+      }, {
+        filename: "root.json",
+        folder: "styles",
+        url: "https://www.arcgis.com/sharing/rest/content/items/sln1234567890/resources/vts1234567890/styles/root.json"
+      }, {
+        filename: "ago_downloaded.png",
+        folder: "_info_thumbnail",
+        url: "https://www.arcgis.com/sharing/rest/content/items/sln1234567890/resources/vts1234567890/ago_downloaded.png"
+      }];
+      break;
+  }
+
+  return resources;
+}
+
 export function removeEditFieldsInfoField(layerOrTable: any): any {
   layerOrTable.editFieldsInfo = null;
   return layerOrTable;
@@ -1374,7 +1401,7 @@ export function removeEditFieldsInfoField(layerOrTable: any): any {
 
 // ------------------------------------------------------------------------------------------------------------------ //
 
-const sampleInfoRootJson = {
+export const sampleInfoRootJson = {
   "resourceInfo": [
     "https://basemaps.arcgis.com/arcgis/rest/services/World_Basemap_v2/VectorTileServer/resources/fonts/Arial%20Regular/0-255.pbf",
     "https://basemaps.arcgis.com/arcgis/rest/services/World_Basemap_v2/VectorTileServer/resources/fonts/Arial%20Regular/256-511.pbf",
@@ -1385,7 +1412,7 @@ const sampleInfoRootJson = {
   ]
 };
 
-const sampleStylesRootJson = {
+export const sampleStylesRootJson = {
   "version": 8,
   "sprite": "https://myorg.maps.arcgis.com/sharing/rest/content/items/vts1234567890/resources/sprites/sprite-1682528799750",
   "glyphs": "https://basemaps.arcgis.com/arcgis/rest/services/World_Basemap_v2/VectorTileServer/resources/fonts/{fontstack}/{range}.pbf",

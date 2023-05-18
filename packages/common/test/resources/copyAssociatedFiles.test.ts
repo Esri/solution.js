@@ -23,20 +23,22 @@ import * as copyDataIntoItem from "../../src/resources/copyDataIntoItem";
 import * as copyMetadataIntoItem from "../../src/resources/copyMetadataIntoItem";
 import * as copyResourceIntoZip from "../../src/resources/copyResourceIntoZip";
 import * as copyZipIntoItem from "../../src/resources/copyZipIntoItem";
+import * as generalHelpers from "../../src/generalHelpers";
 import * as getBlob from "../../src/resources/get-blob";
 import * as interfaces from "../../src/interfaces";
 import * as portal from "@esri/arcgis-rest-portal";
-import * as resourceHelpers from "../../src/resourceHelpers";
 import * as restHelpers from "../../src/restHelpers";
 import * as restHelpersGet from "../../src/restHelpersGet";
 import {
   copyFilesAsResources,
-  copyAssociatedFilesByType
+  copyAssociatedFilesByType,
+  _detemplatizeResources
 } from "../../src/resources/copyAssociatedFiles";
 import { createCopyResults } from "../../src/resources/createCopyResults";
 import JSZip from "jszip";
 
 import * as mockItems from "../mocks/agolItems";
+import * as templates from "../mocks/templates";
 import * as utils from "../mocks/utils";
 
 // ------------------------------------------------------------------------------------------------------------------ //
@@ -93,7 +95,7 @@ describe("Module `copyAssociatedFiles`: functions for sending resources to AGO",
       const copyResourceIntoZipSpy = spyOn(
         copyResourceIntoZip,
         "copyResourceIntoZip"
-      ).and.returnValue(null);
+      ).and.returnValue({} as any);
       const copyZipIntoItemSpy = spyOn(
         copyZipIntoItem,
         "copyZipIntoItem"
@@ -626,6 +628,34 @@ describe("Module `copyAssociatedFiles`: functions for sending resources to AGO",
         }, done.fail);
     });
 
+    it("should handle copying a file supplied as a blob rather than a url", done => {
+      const fileInfo = _createIAssociatedFileInfoAsFile();
+      const zipInfo = _createIZipInfo();
+      const getBlobAsFileSpy = spyOn(
+        restHelpersGet,
+        "getBlobAsFile"
+      ).and.resolveTo(utils.getSampleImageAsFile());
+
+      copyResourceIntoZip
+        .copyResourceIntoZipFromInfo(fileInfo, MOCK_USER_SESSION, zipInfo)
+        .then((results: interfaces.IAssociatedFileCopyResults) => {
+          expect(results).toEqual(_createIAssociatedFileCopyResultsAsFile(true));
+          expect(getBlobAsFileSpy).toHaveBeenCalledTimes(0);
+          expect(Object.keys(zipInfo.zip.files).length).toEqual(2); // folder + file
+          expect(zipInfo.zip.files["fld/"]).toBeDefined();
+          expect(zipInfo.zip.files["fld/Data"]).toBeDefined();
+          expect(zipInfo.filelist.length).toEqual(1); // file
+          expect(zipInfo.filelist[0]).toEqual({
+            folder: "fld",
+            filename: "Data",
+            type: interfaces.EFileType.Data,
+            mimeType: "text",
+            file: utils.getSampleImageAsFile()
+          });
+          done();
+        }, done.fail);
+    });
+
     it("should handle error copying data", done => {
       const fileInfo = _createIAssociatedFileInfo();
       const zipInfo = _createIZipInfo();
@@ -726,6 +756,47 @@ describe("Module `copyAssociatedFiles`: functions for sending resources to AGO",
   });
 });
 
+describe("_detemplatizeResources", () => {
+  it("handles item types that don't need resource templatization", () => {
+    const fileInfos: interfaces.IAssociatedFileInfo[] = [{
+      folder: "",
+      filename: "",
+      url: ""
+    }];
+
+    const getBlobAsFileSpy = spyOn(restHelpersGet, "getBlobAsFile").and.resolveTo(utils.getSampleImageAsFile());
+
+    _detemplatizeResources(MOCK_USER_SESSION, "web1234567890",
+      templates.getDeployedItemTemplate("web1234567981", "Web Map"),
+      fileInfos, MOCK_USER_SESSION).then(() => {
+      expect(getBlobAsFileSpy).toHaveBeenCalledTimes(0);
+    });
+  });
+
+  it("should create IAssociatedFileCopyResults object", () => {
+    const fileInfos: interfaces.IAssociatedFileInfo[] =
+      templates.getItemTemplateResourcesAsTemplatizedFiles("Vector Tile Service");
+
+    const getBlobAsFileSpy = spyOn(restHelpersGet, "getBlobAsFile").and.callFake(
+      (url: string, _filename: string, _auth: interfaces.UserSession): Promise<File> => {
+        switch (url) {
+          case "https://www.arcgis.com/sharing/rest/content/items/sln1234567890/resources/vts1234567890/info/root.json":
+            return Promise.resolve(generalHelpers.jsonToFile(templates.sampleInfoRootJson, "root.json"));
+          case "https://www.arcgis.com/sharing/rest/content/items/sln1234567890/resources/vts1234567890/styles/root.json":
+            return Promise.resolve(generalHelpers.jsonToFile(templates.sampleStylesRootJson, "root.json"));
+        }
+        throw new Error("Unexpected file request");
+      }
+    );
+
+    _detemplatizeResources(MOCK_USER_SESSION, "vts1234567890",
+      templates.getDeployedItemTemplate("vts1234567981", "Vector Tile Service"),
+      fileInfos, MOCK_USER_SESSION).then(() => {
+      expect(getBlobAsFileSpy).toHaveBeenCalledTimes(2);
+    });
+  });
+});
+
 // ----- Helper functions for tests --------------------------------------------------------------------------------- //
 
 function _createIAssociatedFileCopyResults(
@@ -744,6 +815,22 @@ function _createIAssociatedFileCopyResults(
   } as interfaces.IAssociatedFileCopyResults;
 }
 
+function _createIAssociatedFileCopyResultsAsFile(
+  fetchedFromSource?: boolean,
+  copiedToDestination?: boolean,
+  type = interfaces.EFileType.Data
+): interfaces.IAssociatedFileCopyResults {
+  return {
+    folder: "fld",
+    filename: interfaces.SFileType[type],
+    type,
+    mimeType: "text",
+    file: utils.getSampleImageAsFile(),
+    fetchedFromSource,
+    copiedToDestination
+  } as interfaces.IAssociatedFileCopyResults;
+}
+
 function _createIAssociatedFileInfo(
   type = interfaces.EFileType.Data
 ): interfaces.IAssociatedFileInfo {
@@ -753,6 +840,18 @@ function _createIAssociatedFileInfo(
     type,
     mimeType: "text",
     url: "http://esri.com"
+  } as interfaces.IAssociatedFileInfo;
+}
+
+function _createIAssociatedFileInfoAsFile(
+  type = interfaces.EFileType.Data
+): interfaces.IAssociatedFileInfo {
+  return {
+    folder: "fld",
+    filename: interfaces.SFileType[type],
+    type,
+    mimeType: "text",
+    file: utils.getSampleImageAsFile()
   } as interfaces.IAssociatedFileInfo;
 }
 
