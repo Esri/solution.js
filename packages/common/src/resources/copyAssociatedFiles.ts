@@ -185,9 +185,11 @@ export async function copyAssociatedFilesByType(
     );
 
     const zipInfos: IZipInfo[] = [];
-    let awaitAllResources = new Promise<void>(resolve2 => {
+    // eslint-disable-next-line @typescript-eslint/no-floating-promises
+    const awaitAllResources = new Promise<void>(resolve2 => {
       if (resourceFileInfos.length > 0) {
         // De-templatize as needed in files before adding them to the zip
+        // eslint-disable-next-line @typescript-eslint/no-floating-promises
         _detemplatizeResources(sourceAuthentication, sourceItemId, template, resourceFileInfos, destinationAuthentication)
         .then(() => {
 
@@ -334,8 +336,10 @@ export function _detemplatizeResources(
     // Templatize the paths in the files that reference the source item id
     rootJsonResources.forEach(
       rootFileResource => {
+        // eslint-disable-next-line @typescript-eslint/no-floating-promises
         synchronizePromises.push(new Promise(resolve => {
           // Fetch the file
+          // eslint-disable-next-line @typescript-eslint/no-floating-promises
           getBlobAsFile(rootFileResource.url, rootFileResource.filename, sourceAuthentication).then(
             (file: any) => {
 
