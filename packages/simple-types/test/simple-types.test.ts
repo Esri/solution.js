@@ -578,7 +578,7 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
   describe("postProcessFieldReferences", () => {
     it("should process dashboard field references", () => {
       const template: common.IItemTemplate = common.cloneObject(
-        staticDashboardMocks._initialDashboardTemplate
+        staticDashboardMocks.initialDashboardTemplate
       );
       const datasourceInfos: common.IDatasourceInfo[] = common.cloneObject(
         staticDashboardMocks.datasourceInfos

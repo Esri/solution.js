@@ -161,7 +161,7 @@ export const datasourceInfos: interfaces.IDatasourceInfo[] = [
   }
 ];
 
-export const _baseWidgets: any[] = [
+export const baseWidgets: any[] = [
   {
     type: "mapWidget",
     flashRepeats: 3,
@@ -2903,7 +2903,7 @@ export const expectedWidgets: any[] = [
   }
 ];
 
-export const _baseHeaderPanel: any = {
+export const baseHeaderPanel: any = {
   type: "headerPanel",
   size: "medium",
   logoIcon:
@@ -3783,7 +3783,7 @@ export const expectedHeaderPanel: any = {
   ]
 };
 
-export const _baseLeftPanel: any = {
+export const baseLeftPanel: any = {
   type: "leftPanel",
   selectors: [
     {
@@ -4457,7 +4457,7 @@ export const expectedLeftPanel: any = {
   ]
 };
 
-export const _baseUrlParameters: any[] = [
+export const baseUrlParameters: any[] = [
   {
     datasets: [
       {
@@ -4926,7 +4926,7 @@ export const expectedUrlParameters: any[] = [
   }
 ];
 
-export const _initialDashboardTemplate: any = {
+export const initialDashboardTemplate: any = {
   itemId: "eff3f22d41ad42dcb6fe9015f26d40f4",
   type: "Dashboard",
   key: "w5u0o8te",
@@ -4948,10 +4948,10 @@ export const _initialDashboardTemplate: any = {
   },
   data: {
     version: 27,
-    headerPanel: _baseHeaderPanel,
-    leftPanel: _baseLeftPanel,
-    widgets: _baseWidgets,
-    urlParameters: _baseUrlParameters
+    headerPanel: baseHeaderPanel,
+    leftPanel: baseLeftPanel,
+    widgets: baseWidgets,
+    urlParameters: baseUrlParameters
   },
   resources: [
     "eff3f22d41ad42dcb6fe9015f26d40f4_info_thumbnail/ago_downloaded.png"
