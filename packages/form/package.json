@@ -38,7 +38,7 @@
     "@esri/hub-initiatives": "^12.4.1",
     "@esri/hub-sites": "^12.6.0",
     "@esri/hub-teams": "^12.4.1",
-    "tslib": "1.14.1"
+    "tslib": "2.5.2"
   },
   "scripts": {
     "prepare": "npm run build",

@@ -36,7 +36,7 @@
   "dependencies": {
     "@esri/hub-common": "^12.37.1",
     "@esri/hub-sites": "^12.6.0",
-    "tslib": "1.14.1"
+    "tslib": "2.5.2"
   },
   "scripts": {
     "prepare": "npm run build",

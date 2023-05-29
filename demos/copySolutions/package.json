@@ -33,7 +33,7 @@
     "@esri/hub-initiatives": "^12.4.1",
     "@esri/hub-sites": "^12.6.0",
     "@esri/hub-teams": "^12.4.1",
-    "tslib": "2.5.0"
+    "tslib": "2.5.2"
   },
   "gitHead": "2ec5fb241f432832e9d191bfcf118a50b621491d"
 }

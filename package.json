@@ -127,7 +127,7 @@
   "dependencies": {
     "rollup-plugin-node-builtins": "^2.1.2",
     "rollup-plugin-node-globals": "^1.4.0",
-    "tslib": "1.14.1"
+    "tslib": "2.5.2"
   },
   "lint-staged": {
     "packages/**/*.ts": [
