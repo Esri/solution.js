@@ -158,19 +158,22 @@ export function _getDatasourceDependencies(
   templateDictionary: any
 ): void {
   obj.datasets.forEach((dataset: IDashboardDataset) => {
-    // when the datasource has an itemId it's an external datasource
-    const itemId: string = common.getProp(dataset, "dataSource.itemId");
-    if (itemId) {
-      if (itemTemplate.dependencies.indexOf(itemId) < 0) {
-        itemTemplate.dependencies.push(itemId);
+    // when the datasource has an itemId it's an external datasource except if the datasource type is "arcadeDataSource"
+    const dataSourceType = common.getProp(dataset, "dataSource.type");
+    if (dataSourceType !== "arcadeDataSource") {
+      const itemId: string = common.getProp(dataset, "dataSource.itemId");
+      if (itemId) {
+        if (itemTemplate.dependencies.indexOf(itemId) < 0) {
+          itemTemplate.dependencies.push(itemId);
+        }
+        const layerId: number = common.getProp(dataset, "dataSource.layerId");
+        common.cacheLayerInfo(layerId?.toString(), itemId, "", templateDictionary);
+        dataset.dataSource.itemId = common.templatizeTerm(
+          itemId,
+          itemId,
+          ".itemId"
+        );
       }
-      const layerId: number = common.getProp(dataset, "dataSource.layerId");
-      common.cacheLayerInfo(layerId?.toString(), itemId, "", templateDictionary);
-      dataset.dataSource.itemId = common.templatizeTerm(
-        itemId,
-        itemId,
-        ".itemId"
-      );
     }
   });
 }
