@@ -5,39 +5,39 @@ call npm --version
 
 rem install the demos first because the overall install will perform symlinking of the solution.js libraries into the demos
 pushd demos\compareJSON
-call npm install
+call npm install --legacy-peer-deps
 popd
 
 pushd demos\copyItemInfo
-call npm install
+call npm install --legacy-peer-deps
 popd
 
 pushd demos\copySolutions
-call npm install
+call npm install --legacy-peer-deps
 popd
 
 pushd demos\createSolution
-call npm install
+call npm install --legacy-peer-deps
 popd
 
 pushd demos\deleteSolution
-call npm install
+call npm install --legacy-peer-deps
 popd
 
 pushd demos\deploySolution
-call npm install
+call npm install --legacy-peer-deps
 popd
 
 pushd demos\getItemInfo
-call npm install
+call npm install --legacy-peer-deps
 popd
 
 pushd demos\verifySolution
-call npm install
+call npm install --legacy-peer-deps
 popd
 
 rem install and build the packages
-call npm install
+call npm install --legacy-peer-deps
 
 rem build the demos
 pushd demos\compareJSON
