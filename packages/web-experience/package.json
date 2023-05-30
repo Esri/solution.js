@@ -1,6 +1,6 @@
 {
   "name": "@esri/solution-web-experience",
-  "version": "3.1.0",
+  "version": "4.0.0-alpha.0",
   "description": "Manages the creation and deployment of Web Experience item types for @esri/solution.js.",
   "main": "dist/node/index.js",
   "unpkg": "dist/umd/web-experience.umd.min.js",
@@ -18,20 +18,14 @@
     "@esri/arcgis-rest-portal": "~3.5.0",
     "@esri/arcgis-rest-request": "~3.5.0",
     "@esri/arcgis-rest-service-admin": "~3.5.0",
-    "@esri/solution-common": "^3.1.0",
-    "@esri/solution-simple-types": "^3.1.0",
+    "@esri/hub-common": "^13.0.0",
+    "@esri/hub-initiatives": "^13.0.0",
+    "@esri/solution-common": "^4.0.0-alpha.0",
+    "@esri/solution-simple-types": "^4.0.0-alpha.0",
     "rollup": "2.79.1"
   },
-  "peerDependencies": {
-    "@esri/arcgis-rest-auth": "~3.5.0",
-    "@esri/arcgis-rest-feature-layer": "~3.5.0",
-    "@esri/arcgis-rest-portal": "~3.5.0",
-    "@esri/arcgis-rest-request": "~3.5.0",
-    "@esri/arcgis-rest-service-admin": "~3.5.0"
-  },
   "dependencies": {
-    "@esri/hub-common": "^12.37.1",
-    "@esri/hub-initiatives": "^12.4.1",
+    "-": "^0.0.1",
     "tslib": "1.14.1"
   },
   "scripts": {
@@ -65,5 +59,5 @@
     "esri",
     "ES6"
   ],
-  "gitHead": "d7bddb4b7c7b98ef00eac060c639a22d0654a03f"
+  "gitHead": "0bb574aad6149da38543fbde339850388b5cf006"
 }
