@@ -161,7 +161,7 @@ export const datasourceInfos: interfaces.IDatasourceInfo[] = [
   }
 ];
 
-export const _baseWidgets: any[] = [
+export const baseWidgets: any[] = [
   {
     type: "mapWidget",
     flashRepeats: 3,
@@ -1495,6 +1495,91 @@ export const _baseWidgets: any[] = [
     noDataVerticalAlignment: "middle",
     showCaptionWhenNoData: true,
     showDescriptionWhenNoData: true
+  },
+  {
+    "id": "a9406fa5-25e3-41d6-a0c6-a7b7c8256bc9",
+    "name": "Indicator (3)",
+    "showLastUpdate": false,
+    "noDataState": {
+      "verticalAlignment": "middle",
+      "showCaption": true,
+      "showDescription": true
+    },
+    "noFilterState": {
+      "verticalAlignment": "middle",
+      "showCaption": true,
+      "showDescription": true
+    },
+    "datasets": [
+    {
+      "type": "serviceDataset",
+      "name": "main",
+      "dataSource": {
+        "type": "arcadeDataSource",
+        "itemId": "3f281598-2571-42c8-9fe7-fa7d18819bc3"
+      },
+      "groupByFields": [ ],
+      "orderByFields": [ ],
+      "statisticDefinitions": [
+      {
+        "onStatisticField": "OBJECTID",
+        "outStatisticFieldName": "value",
+        "statisticType": "count"
+      }
+        ],
+      "clientSideStatistics": false,
+      "outFields": [
+        "*"
+        ],
+      "returnDistinctValues": false,
+      "allowSourceDownload": false,
+      "allowSummaryDownload": false
+    }
+      ],
+    "type": "indicatorWidget",
+    "defaultSettings": {
+      "topSection": {
+        "fontSize": 80,
+        "textInfo": { }
+      },
+      "middleSection": {
+        "fontSize": 160,
+        "textInfo": {
+          "text": "{value}"
+        }
+      },
+      "bottomSection": {
+        "fontSize": 80,
+        "textInfo": { }
+      }
+    },
+    "comparison": "none",
+    "valueFormat": {
+      "name": "value",
+      "prefix": true,
+      "style": "decimal",
+      "useGrouping": true,
+      "maximumFractionDigits": 1
+    },
+    "percentageFormat": {
+      "name": "percentage",
+      "prefix": false,
+      "style": "percent",
+      "useGrouping": true
+    },
+    "ratioFormat": {
+      "name": "ratio",
+      "prefix": false,
+      "style": "decimal",
+      "useGrouping": true,
+      "maximumFractionDigits": 2
+    },
+    "valueType": "statistic",
+    "noValueState": {
+      "verticalAlignment": "middle",
+      "showCaption": true,
+      "showDescription": true
+    }
   }
 ];
 
@@ -2900,10 +2985,95 @@ export const expectedWidgets: any[] = [
     noDataVerticalAlignment: "middle",
     showCaptionWhenNoData: true,
     showDescriptionWhenNoData: true
+  },
+  {
+    "id": "a9406fa5-25e3-41d6-a0c6-a7b7c8256bc9",
+    "name": "Indicator (3)",
+    "showLastUpdate": false,
+    "noDataState": {
+      "verticalAlignment": "middle",
+      "showCaption": true,
+      "showDescription": true
+    },
+    "noFilterState": {
+      "verticalAlignment": "middle",
+      "showCaption": true,
+      "showDescription": true
+    },
+    "datasets": [
+    {
+      "type": "serviceDataset",
+      "name": "main",
+      "dataSource": {
+        "type": "arcadeDataSource",
+        "itemId": "3f281598-2571-42c8-9fe7-fa7d18819bc3"
+      },
+      "groupByFields": [ ],
+      "orderByFields": [ ],
+      "statisticDefinitions": [
+      {
+        "onStatisticField": "OBJECTID",
+        "outStatisticFieldName": "value",
+        "statisticType": "count"
+      }
+        ],
+      "clientSideStatistics": false,
+      "outFields": [
+        "*"
+        ],
+      "returnDistinctValues": false,
+      "allowSourceDownload": false,
+      "allowSummaryDownload": false
+    }
+      ],
+    "type": "indicatorWidget",
+    "defaultSettings": {
+      "topSection": {
+        "fontSize": 80,
+        "textInfo": { }
+      },
+      "middleSection": {
+        "fontSize": 160,
+        "textInfo": {
+          "text": "{value}"
+        }
+      },
+      "bottomSection": {
+        "fontSize": 80,
+        "textInfo": { }
+      }
+    },
+    "comparison": "none",
+    "valueFormat": {
+      "name": "value",
+      "prefix": true,
+      "style": "decimal",
+      "useGrouping": true,
+      "maximumFractionDigits": 1
+    },
+    "percentageFormat": {
+      "name": "percentage",
+      "prefix": false,
+      "style": "percent",
+      "useGrouping": true
+    },
+    "ratioFormat": {
+      "name": "ratio",
+      "prefix": false,
+      "style": "decimal",
+      "useGrouping": true,
+      "maximumFractionDigits": 2
+    },
+    "valueType": "statistic",
+    "noValueState": {
+      "verticalAlignment": "middle",
+      "showCaption": true,
+      "showDescription": true
+    }
   }
 ];
 
-export const _baseHeaderPanel: any = {
+export const baseHeaderPanel: any = {
   type: "headerPanel",
   size: "medium",
   logoIcon:
@@ -3783,7 +3953,7 @@ export const expectedHeaderPanel: any = {
   ]
 };
 
-export const _baseLeftPanel: any = {
+export const baseLeftPanel: any = {
   type: "leftPanel",
   selectors: [
     {
@@ -4457,7 +4627,7 @@ export const expectedLeftPanel: any = {
   ]
 };
 
-export const _baseUrlParameters: any[] = [
+export const baseUrlParameters: any[] = [
   {
     datasets: [
       {
@@ -4926,7 +5096,7 @@ export const expectedUrlParameters: any[] = [
   }
 ];
 
-export const _initialDashboardTemplate: any = {
+export const initialDashboardTemplate: any = {
   itemId: "eff3f22d41ad42dcb6fe9015f26d40f4",
   type: "Dashboard",
   key: "w5u0o8te",
@@ -4948,10 +5118,10 @@ export const _initialDashboardTemplate: any = {
   },
   data: {
     version: 27,
-    headerPanel: _baseHeaderPanel,
-    leftPanel: _baseLeftPanel,
-    widgets: _baseWidgets,
-    urlParameters: _baseUrlParameters
+    headerPanel: baseHeaderPanel,
+    leftPanel: baseLeftPanel,
+    widgets: baseWidgets,
+    urlParameters: baseUrlParameters
   },
   resources: [
     "eff3f22d41ad42dcb6fe9015f26d40f4_info_thumbnail/ago_downloaded.png"
