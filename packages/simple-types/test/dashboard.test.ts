@@ -39,7 +39,7 @@ beforeEach(() => {
   MOCK_USER_SESSION = utils.createRuntimeMockUserSession();
 
   initialDashboardTemplate = common.cloneObject(
-    staticMocks._initialDashboardTemplate
+    staticMocks.initialDashboardTemplate
   );
   expectedTemplate = common.cloneObject(staticMocks.expectedTemplate);
   datasourceInfos = common.cloneObject(staticMocks.datasourceInfos);
