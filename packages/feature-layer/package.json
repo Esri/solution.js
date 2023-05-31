@@ -26,7 +26,6 @@
     "rollup": "2.79.1"
   },
   "dependencies": {
-    "-": "^0.0.1",
     "tslib": "1.14.1"
   },
   "scripts": {

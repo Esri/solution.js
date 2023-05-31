@@ -26,7 +26,6 @@
     "rollup": "2.79.1"
   },
   "dependencies": {
-    "-": "^0.0.1",
     "@esri/arcgis-html-sanitizer": "3.0.1",
     "@types/lodash.isplainobject": "^4.0.7",
     "adlib": "3.0.7",
