@@ -22,7 +22,7 @@
     "@esri/hub-sites": "^13.0.0",
     "@esri/hub-teams": "^13.0.0",
     "@esri/solution-common": "^4.0.0",
-    "css-loader": "^6.7.3",
+    "css-loader": "^6.8.1",
     "html-webpack-plugin": "^5.5.1",
     "style-loader": "^3.3.3",
     "ts-loader": "^9.4.2",
