@@ -1,6 +1,6 @@
 {
   "name": "@esri/solution-hub-types",
-  "version": "4.0.0",
+  "version": "4.0.0-alpha.0",
   "description": "Manages the creation and deployment of Hub Site and Hub Page item types for @esri/solution.js.",
   "main": "dist/node/index.js",
   "unpkg": "dist/umd/hub-types.umd.min.js",
@@ -22,7 +22,7 @@
     "@esri/hub-initiatives": "^12.4.1",
     "@esri/hub-sites": "^12.6.0",
     "@esri/hub-teams": "^12.4.1",
-    "@esri/solution-common": "^4.0.0",
+    "@esri/solution-common": "^4.0.0-alpha.0",
     "rollup": "2.79.1"
   },
   "dependencies": {
