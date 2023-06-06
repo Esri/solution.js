@@ -23,7 +23,8 @@
     "@esri/hub-sites": "^13.0.0",
     "@esri/hub-teams": "^13.0.0",
     "@types/adlib": "^3.0.1",
-    "rollup": "2.79.1"
+    "rollup": "2.79.1",
+    "sinon": "^15.1.0"
   },
   "dependencies": {
     "@esri/arcgis-html-sanitizer": "3.0.1",
