@@ -32,6 +32,10 @@ pushd demos\getItemInfo
 call npm install
 popd
 
+pushd demos\implementedTypes
+call npm install
+popd
+
 pushd demos\verifySolution
 call npm install
 popd
@@ -65,6 +69,10 @@ call npm run build
 popd
 
 pushd demos\getItemInfo
+call npm run build
+popd
+
+pushd demos\implementedTypes
 call npm run build
 popd
 
