@@ -1,6 +1,6 @@
 {
   "name": "@esri/solution.js",
-  "version": "4.1.0",
+  "version": "4.0.1",
   "description": "A library running in Node.js and modern browsers for transferring ArcGIS Online items from one organization to another.",
   "author": "Esri",
   "license": "Apache-2.0",
@@ -13,6 +13,11 @@
     "url": "git+https://github.com/Esri/solution.js.git"
   },
   "scripts": {
+    "build": "npm run build:esm && npm run build:cjs",
+    "build:esm": "ultra --no-pretty --silent --build -r --filter \"packages/*\" build:esm",
+    "build:cjs": "ultra --no-pretty --silent --rebuild -r --filter \"packages/*\" build:cjs",
+    "dev:esm": "ultra -r --filter \"packages/*\" dev:esm",
+    "dev:cjs": "ultra -r --filter \"packages/*\" dev:cjs",
     "clean": "npm run clean:src && npm run clean:dist",
     "clean:src": "rm -rf packages/*/{src,test}/*.{d.ts,js,js.map} && rm -rf packages/*/{src,test}/**/*.{d.ts,js,js.map} && find demos/**/src/*.d.ts -type f -delete",
     "clean:dist": "rm -rf demos/**/dist/ && rm -rf packages/*/dist/ && rm -rf packages/*/.rpt2_cache",
@@ -38,7 +43,7 @@
     "coveralls:win": "start cmd.exe /c \"type coverage\\lcov\\lcov.info | node node_modules/coveralls/bin/coveralls.js\"",
     "docs:build": "typedoc",
     "docs:deploy": "node support/deploy-doc-site.js",
-    "release:prepare1": "git fetch --all && lerna bootstrap && npm test",
+    "release:prepare1": "git fetch --all && start cmd.exe /c \"build.bat\"",
     "release:prepare2": "lerna publish --no-git-tag-version --no-push --skip-npm --yes",
     "release:review": "git --no-pager diff --word-diff",
     "release:publish-git": "bash ./support/publish.sh",
@@ -121,6 +126,7 @@
     "typedoc": "^0.24.7",
     "typescript": "^4.9.5",
     "ua-parser-js": "^1.0.35",
+    "ultra-runner": "^3.10.5",
     "uuid": "^9.0.0"
   },
   "dependencies": {
