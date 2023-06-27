@@ -215,7 +215,7 @@ export function copyFilesToStorageItem(
   storageAuthentication: UserSession
 ): Promise<string[]> {
   return new Promise<string[]>(resolve => {
-    // tslint:disable-next-line: no-floating-promises
+    // eslint-disable-next-line @typescript-eslint/no-floating-promises
     void copyFilesAsResources(files, storageItemId, storageAuthentication).then(
       (results: IAssociatedFileCopyResults[]) => {
         resolve(

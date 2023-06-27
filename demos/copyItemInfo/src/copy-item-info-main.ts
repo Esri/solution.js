@@ -30,7 +30,7 @@ export function copyItemInfo(
     // Get the item information
     const itemBaseDef = common.getItemBase(itemId, authentication);
     const itemDataDef = new Promise<File>((resolve2, reject2) => {
-      // tslint:disable-next-line: no-floating-promises
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
       itemBaseDef.then(
         // any error fetching item base will be handled via Promise.all later
         (itemBase: any) => {

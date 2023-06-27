@@ -80,6 +80,9 @@ __*.*
 __*
 .vscode/
 
+# Prevent caches from ultra runner
+**/.ultra.cache.json
+
 # Temporary build products
 demos/**/*.js
 !demos/**/webpack.config.js

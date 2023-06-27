@@ -112,7 +112,6 @@ async function formatItemInfo(
     html += "<p><i>none</i>";
   } else {
     html += "<ol>";
-    // tslint:disable-next-line: prefer-for-of
     for (const resource of item.resources)
     {
       html += "<li><div>";
@@ -244,7 +243,7 @@ function showBlob(
   jsonMaxSize = 0,
   jsonPropertiesToPrune = [] as string[]
 ): Promise<string> {
-  // tslint:disable-next-line: no-floating-promises
+  // eslint-disable-next-line @typescript-eslint/no-floating-promises
   return new Promise<string>(resolve => {
     if (!blob || blob.size === 0) {
       resolve("<i>none</i>");
