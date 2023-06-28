@@ -468,13 +468,11 @@ export function convertExtent(
 ): Promise<any> {
   const _requestOptions: any = { authentication };
   return new Promise<any>((resolve, reject) => {
-    // tslint:disable-next-line:no-unnecessary-type-assertion
     if (extent.spatialReference.wkid === outSR?.wkid || !outSR) {
       resolve(extent);
     } else {
       _requestOptions.params = {
         f: "json",
-        // tslint:disable-next-line:no-unnecessary-type-assertion
         inSR: extent.spatialReference.wkid,
         outSR: outSR.wkid,
         extentOfInterest: JSON.stringify(extent)
@@ -501,7 +499,6 @@ export function convertExtent(
           _requestOptions.params = {
             f: "json",
             outSR: outSR.wkid,
-            // tslint:disable-next-line:no-unnecessary-type-assertion
             inSR: extent.spatialReference.wkid,
             geometries: {
               geometryType: "esriGeometryPoint",

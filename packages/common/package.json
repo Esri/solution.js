@@ -1,11 +1,16 @@
 {
   "name": "@esri/solution-common",
-  "version": "4.1.0",
+  "version": "4.1.2-alpha.0",
   "description": "Provides general helper functions for @esri/solution.js.",
-  "main": "dist/node/index.js",
-  "unpkg": "dist/umd/common.umd.min.js",
+  "main": "dist/cjs/index.js",
   "module": "dist/esm/index.js",
-  "js:next": "dist/esm/index.js",
+  "exports": {
+    ".": {
+      "import": "./dist/esm/index.js",
+      "require": "./dist/cjs/index.js"
+    },
+    "./package.json": "./package.json"
+  },
   "types": "dist/esm/index.d.ts",
   "author": "Esri",
   "license": "Apache-2.0",
@@ -24,7 +29,7 @@
     "@esri/hub-teams": "^13.0.0",
     "@types/adlib": "^3.0.1",
     "rollup": "2.79.1",
-    "sinon": "^15.1.0"
+    "sinon": "^15.2.0"
   },
   "dependencies": {
     "@esri/arcgis-html-sanitizer": "3.0.1",
@@ -36,9 +41,15 @@
     "xss": "^1.0.14"
   },
   "scripts": {
-    "prepare": "npm run build",
-    "build": "tsc -p ./tsconfig.json --module esnext --outDir ./dist/esm --declaration",
-    "build:dev": "tsc -w --module esnext --outDir ./dist/esm --declaration",
+    "build": "npm-run-all --parallel build:*",
+    "postbuild": "node ../../scripts/create-dist-package-jsons.mjs",
+    "build:cjs": "tsc --outDir ./dist/cjs -m commonjs",
+    "postbuild:cjs": "node ../../scripts/create-dist-package-jsons.mjs",
+    "build:esm": "tsc --outDir ./dist/esm --declaration",
+    "postbuild:esm": "node ../../scripts/create-dist-package-jsons.mjs",
+    "dev": "npm-run-all --parallel dev:*",
+    "dev:cjs": "tsc -w --outDir ./dist/cjs -m commonjs",
+    "dev:esm": "tsc -w --outDir ./dist/esm --declaration",
     "getupdates": "npm-check-updates --upgrade"
   },
   "publishConfig": {
@@ -81,5 +92,5 @@
     "esri",
     "ES6"
   ],
-  "gitHead": "0198ea230cc7e48ad4dc4b137923e5c286e3e25a"
+  "gitHead": "9740175be347ee23b5b788eda6e369b948d907fe"
 }

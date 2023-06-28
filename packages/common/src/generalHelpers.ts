@@ -95,7 +95,6 @@ export function blobToText(blob: Blob): Promise<string> {
     const reader = new FileReader();
     reader.onload = function(evt) {
       // Disable needed because Node requires cast
-      // tslint:disable-next-line: no-unnecessary-type-assertion
       const blobContents = evt.target.result;
       resolve(blobContents ? (blobContents as string) : ""); // not handling ArrayContents variant
     };
