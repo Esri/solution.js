@@ -81,7 +81,7 @@ export function deploySolution(
       const [itemBase, itemData] = responses;
       // sanitize all the things
       const sanitizer = new common.Sanitizer();
-      const item = common.sanitizeJSONAndReportChanges(itemBase, sanitizer);
+      const item = common.sanitizeJSON(itemBase, sanitizer);
       // TODO: we should delegate data sanization to the type-specific modules
       const data = itemData;
       // get the item id before it is deleted

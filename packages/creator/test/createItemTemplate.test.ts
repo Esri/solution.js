@@ -118,6 +118,168 @@ describe("Module `createItemTemplate`", () => {
         });
     });
 
+    it("creates a template for a QuickCapture Project item", done => {
+      const solutionItemId: string = "sln1234567890";
+      const itemId: string = "qck12345678900";
+      const templateDictionary: any = {};
+      const authentication: common.UserSession = MOCK_USER_SESSION;
+      const existingTemplates: common.IItemTemplate[] = [];
+      const resources: any = {
+        total: 1,
+        start: 1,
+        num: 1,
+        nextStart: -1,
+        resources: [
+          {
+            resource: "qc.project.json",
+            created: 1579127879000,
+            size: 29882,
+            access: "inherit",
+            type: "application/json"
+          }
+        ]
+      };
+
+      fetchMock
+        .get(
+          utils.PORTAL_SUBSET.restUrl +
+            "/content/items/qck12345678900?f=json&token=fake-token",
+          mockItems.getAGOLItem("QuickCapture Project")
+        )
+        .post(
+          utils.PORTAL_SUBSET.restUrl +
+            "/content/items/qck1234567890/info/thumbnail/ago_downloaded.png?w=400",
+          utils.getSampleImageAsBlob()
+        )
+        .post(
+          utils.PORTAL_SUBSET.restUrl + "/content/items/qck1234567890/data",
+          noDataResponse
+        )
+        .post(
+          utils.PORTAL_SUBSET.restUrl +
+            "/content/items/qck1234567890/info/metadata/metadata.xml",
+          noMetadataResponse
+        )
+        .post(
+          utils.PORTAL_SUBSET.restUrl +
+            "/content/items/qck1234567890/resources",
+          resources
+        )
+        .post(
+          utils.PORTAL_SUBSET.restUrl +
+            "/content/items/qck1234567890/resources/qc.project.json",
+          utils.getSampleJsonAsFile("qc.project.json"),
+          { sendAsJson: false }
+        )
+        .post(
+          utils.PORTAL_SUBSET.restUrl +
+            "/content/users/casey/items/sln1234567890/addResources",
+          { success: true, id: solutionItemId }
+        );
+      staticRelatedItemsMocks.fetchMockRelatedItems("qck1234567890", {
+        total: 0,
+        relatedItems: []
+      });
+
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
+      createItemTemplate
+        .createItemTemplate(
+          solutionItemId,
+          itemId,
+          templateDictionary,
+          authentication,
+          authentication,
+          existingTemplates,
+          utils.ITEM_PROGRESS_CALLBACK
+        )
+        .then(() => {
+          expect(existingTemplates.length).toEqual(1);
+          expect(existingTemplates[0].itemId).toEqual(itemId);
+          done();
+        });
+    });
+
+    it("creates a template for a QuickCapture Project item with resource in folder", done => {
+      const solutionItemId: string = "sln1234567890";
+      const itemId: string = "qck12345678900";
+      const templateDictionary: any = {};
+      const authentication: common.UserSession = MOCK_USER_SESSION;
+      const existingTemplates: common.IItemTemplate[] = [];
+      const resources: any = {
+        total: 1,
+        start: 1,
+        num: 1,
+        nextStart: -1,
+        resources: [
+          {
+            resource: "project/qc.project.json",
+            created: 1579127879000,
+            size: 29882,
+            access: "inherit",
+            type: "application/json"
+          }
+        ]
+      };
+
+      fetchMock
+        .get(
+          utils.PORTAL_SUBSET.restUrl +
+            "/content/items/qck12345678900?f=json&token=fake-token",
+          mockItems.getAGOLItem("QuickCapture Project")
+        )
+        .post(
+          utils.PORTAL_SUBSET.restUrl +
+            "/content/items/qck1234567890/info/thumbnail/ago_downloaded.png?w=400",
+          utils.getSampleImageAsBlob()
+        )
+        .post(
+          utils.PORTAL_SUBSET.restUrl + "/content/items/qck1234567890/data",
+          noDataResponse
+        )
+        .post(
+          utils.PORTAL_SUBSET.restUrl +
+            "/content/items/qck1234567890/info/metadata/metadata.xml",
+          noMetadataResponse
+        )
+        .post(
+          utils.PORTAL_SUBSET.restUrl +
+            "/content/items/qck1234567890/resources",
+          resources
+        )
+        .post(
+          utils.PORTAL_SUBSET.restUrl +
+            "/content/items/qck1234567890/resources/project/qc.project.json",
+          utils.getSampleJsonAsFile("qc.project.json"),
+          { sendAsJson: false }
+        )
+        .post(
+          utils.PORTAL_SUBSET.restUrl +
+            "/content/users/casey/items/sln1234567890/addResources",
+          { success: true, id: solutionItemId }
+        );
+      staticRelatedItemsMocks.fetchMockRelatedItems("qck1234567890", {
+        total: 0,
+        relatedItems: []
+      });
+
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
+      createItemTemplate
+        .createItemTemplate(
+          solutionItemId,
+          itemId,
+          templateDictionary,
+          authentication,
+          authentication,
+          existingTemplates,
+          utils.ITEM_PROGRESS_CALLBACK
+        )
+        .then(() => {
+          expect(existingTemplates.length).toEqual(1);
+          expect(existingTemplates[0].itemId).toEqual(itemId);
+          done();
+        });
+    });
+
     it("should handle cancellation after item's template is created", done => {
       const solutionItemId: string = "sln1234567890";
       const itemId: string = "map12345678900";

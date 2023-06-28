@@ -41,7 +41,7 @@ import {
   hasDatasource,
   jsonToFile,
   replaceTemplate,
-  sanitizeJSONAndReportChanges,
+  sanitizeJSON,
   UserSession
 } from "@esri/solution-common";
 import { getProp } from "@esri/hub-common";
@@ -95,7 +95,7 @@ export function createItemTemplate(
         })
         .then(
           itemInfo => {
-            itemInfo = sanitizeJSONAndReportChanges(itemInfo);
+            itemInfo = sanitizeJSON(itemInfo);
 
             // Save the URL as a symbol
             if (itemInfo.url) {
@@ -178,28 +178,53 @@ export function createItemTemplate(
                 )
                 .then(
                   itemTemplate => {
-                    // eslint-disable-next-line @typescript-eslint/no-floating-promises
-                    getItemResourcesPaths(
-                      itemTemplate,
-                      solutionItemId,
-                      srcAuthentication,
-                      SolutionTemplateFormatVersion
-                    ).then((resourceItemFilePaths: ISourceFileCopyPath[]) => {
-                      itemTemplate.item.thumbnail = null; // not needed in this property; handled as a resource
+                    let resourcePrepPromise = Promise.resolve([] as ISourceFile[]);
 
+                    // If the item type is Quick Capture, then we already have the resource files and just need to
+                    // convert them into ISourceFile objects
+                    if (itemTemplate.type === "QuickCapture Project") {
+                      const resourceItemFiles: ISourceFile[] = itemTemplate.resources.map(
+                        (file: File) => {
+                          const fileParts = file.name.split("/");
+                          return {
+                            itemId: itemTemplate.itemId,
+                            file,
+                            folder: fileParts.length === 1 ? "" : fileParts[0],
+                            filename: fileParts.length === 1 ? fileParts[0] : fileParts[1],
+                          };
+                        }
+                      );
+                      resourcePrepPromise = Promise.resolve(resourceItemFiles);
+
+                    } else {
                       // eslint-disable-next-line @typescript-eslint/no-floating-promises
-                      getItemResourcesFilesFromPaths(
-                        resourceItemFilePaths,
-                        srcAuthentication
-                      ).then(async (resourceItemFiles: ISourceFile[]) => {
+                      resourcePrepPromise = getItemResourcesPaths(
+                        itemTemplate,
+                        solutionItemId,
+                        srcAuthentication,
+                        SolutionTemplateFormatVersion
+                      ).then(
+                        (resourceItemFilePaths: ISourceFileCopyPath[]) => {
+                          itemTemplate.item.thumbnail = null; // not needed in this property; handled as a resource
+
+                          // eslint-disable-next-line @typescript-eslint/no-floating-promises
+                          return getItemResourcesFilesFromPaths(
+                            resourceItemFilePaths,
+                            srcAuthentication
+                          );
+                        }
+                      );
+                    }
+
+                    // eslint-disable-next-line @typescript-eslint/no-floating-promises
+                    resourcePrepPromise.then(
+                      async (resourceItemFiles: ISourceFile[]) => {
+                        // Perform any custom processing needed on resource files
                         await _templatizeResources(itemTemplate, resourceItemFiles, srcAuthentication);
 
                         // update the template's resources
-                        itemTemplate.resources = itemTemplate.resources.concat(
-                          resourceItemFiles.map(
-                            (file: ISourceFile) =>
-                              file.folder + "/" + file.filename
-                          )
+                        itemTemplate.resources = resourceItemFiles.map(
+                          (file: ISourceFile) => file.folder + "/" + file.filename
                         );
 
                         // Set the value keyed by the id to the created template, replacing the placeholder template
@@ -261,8 +286,8 @@ export function createItemTemplate(
                             }
                           );
                         };
-                      });
-                    });
+                      }
+                    );
                   },
                   error => {
                     placeholder.properties["error"] = JSON.stringify(error);

@@ -40,7 +40,7 @@ import {
   IGroup,
   IItem,
   removeItem,
-  sanitizeJSONAndReportChanges,
+  sanitizeJSON,
   setLocationTrackingEnabled,
   UserSession
 } from "@esri/solution-common";
@@ -344,7 +344,7 @@ export function _createSolutionItemModel(options: any): IModel {
   };
 
   // ensure that snippet and description are not nefarious
-  const sanitizedItem = sanitizeJSONAndReportChanges(solutionItem);
+  const sanitizedItem = sanitizeJSON(solutionItem);
 
   const addlKeywords = options?.additionalTypeKeywords || [];
   sanitizedItem.typeKeywords = [].concat(
