@@ -1,6 +1,6 @@
 {
   "name": "@esri/solution.js",
-  "version": "4.1.2-alpha.0",
+  "version": "4.1.2",
   "description": "A library running in Node.js and modern browsers for transferring ArcGIS Online items from one organization to another.",
   "author": "Esri",
   "license": "Apache-2.0",
