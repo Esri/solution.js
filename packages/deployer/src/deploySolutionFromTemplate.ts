@@ -194,7 +194,7 @@ export function deploySolutionFromTemplate(
 
         // Create a deployed Solution item
         const createSolutionItemBase = {
-          ...common.sanitizeJSONAndReportChanges(solutionTemplateBase),
+          ...common.sanitizeJSON(solutionTemplateBase),
           type: "Solution",
           typeKeywords: ["Solution"]
         };

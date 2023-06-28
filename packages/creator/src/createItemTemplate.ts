@@ -41,7 +41,7 @@ import {
   hasDatasource,
   jsonToFile,
   replaceTemplate,
-  sanitizeJSONAndReportChanges,
+  sanitizeJSON,
   UserSession
 } from "@esri/solution-common";
 import { getProp } from "@esri/hub-common";
@@ -95,7 +95,7 @@ export function createItemTemplate(
         })
         .then(
           itemInfo => {
-            itemInfo = sanitizeJSONAndReportChanges(itemInfo);
+            itemInfo = sanitizeJSON(itemInfo);
 
             // Save the URL as a symbol
             if (itemInfo.url) {
