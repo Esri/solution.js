@@ -666,19 +666,7 @@ describe("simpleTypeConvertItemToTemplate", () => {
         .post(
           utils.PORTAL_SUBSET.restUrl +
             "/content/items/qck1234567890/data",
-          Object({
-            application: {
-              basemap: {
-                  type: "WebMap",
-                  itemId: "3899c47412024f5cb3278e531bfbbf20",
-                  mapAreas: [],
-                  required: true,
-                  useDefaultBasemap: false,
-                  zoomLevel: null
-              }
-            },
-            name: "qc.project.json"
-          })
+          utils.getSampleQCJsonData()
         )
         .post(
           utils.PORTAL_SUBSET.restUrl +
@@ -699,7 +687,7 @@ describe("simpleTypeConvertItemToTemplate", () => {
         .post(
           utils.PORTAL_SUBSET.restUrl +
             "/content/items/qck1234567890/resources/qc.project.json",
-          utils.getSampleJsonAsFile("qc.project.json"),
+          utils.getSampleQCProjectJsonFile(),
           { sendAsJson: false }
         )
         .post(
@@ -722,20 +710,8 @@ describe("simpleTypeConvertItemToTemplate", () => {
       const expected: common.IItemTemplate = {
         itemId: "qck1234567890",
         key: "vx3ubyx3",
-        data: Object({
-          application: {
-            basemap: {
-                type: "WebMap",
-                itemId: "3899c47412024f5cb3278e531bfbbf20",
-                mapAreas: [],
-                required: true,
-                useDefaultBasemap: false,
-                zoomLevel: null
-            }
-          },
-          name: "qc.project.json"
-        }),
-        resources: [utils.getSampleJsonAsFile("qc.project.json")],
+        data: utils.getSampleQCJsonData(),
+        resources: [utils.getSampleQCProjectJsonFile()],
         dependencies: ["3899c47412024f5cb3278e531bfbbf20"],
         relatedItems: [],
         groups: [],
@@ -820,7 +796,7 @@ describe("simpleTypeConvertItemToTemplate", () => {
         .post(
           utils.PORTAL_SUBSET.restUrl +
             "/content/items/qck1234567890/resources/qc.project.json",
-          utils.getSampleJsonAsFile("qc.project.json"),
+          utils.getSampleQCProjectJsonFile(),
           { sendAsJson: false }
         )
         .post(
@@ -843,9 +819,9 @@ describe("simpleTypeConvertItemToTemplate", () => {
       const expected: common.IItemTemplate = {
         itemId: "qck1234567890",
         key: "vx3ubyx3",
-        data: null,
-        resources: [utils.getSampleJsonAsFile("qc.project.json")],
-        dependencies: [],
+        data: utils.getSampleQCJsonData(),
+        resources: [utils.getSampleQCProjectJsonFile()],
+        dependencies: ["3899c47412024f5cb3278e531bfbbf20"],
         relatedItems: [],
         groups: [],
         type: "QuickCapture Project",
@@ -928,7 +904,7 @@ describe("simpleTypeConvertItemToTemplate", () => {
         .post(
           utils.PORTAL_SUBSET.restUrl +
             "/content/items/qck1234567890/resources/qc.project.json",
-          utils.getSampleJsonAsFile("qc.project.json"),
+          utils.getSampleQCProjectJsonFile(),
           { sendAsJson: false }
         )
         .post(
@@ -952,7 +928,7 @@ describe("simpleTypeConvertItemToTemplate", () => {
         itemId: "qck1234567890",
         key: "vx3ubyx3",
         data: Object({}),
-        resources: [utils.getSampleJsonAsFile("qc.project.json")],
+        resources: [utils.getSampleQCProjectJsonFile()],
         dependencies: [],
         relatedItems: [],
         groups: [],
@@ -1039,7 +1015,7 @@ describe("simpleTypeConvertItemToTemplate", () => {
         .post(
           utils.PORTAL_SUBSET.restUrl +
             "/content/items/qck1234567890/resources/qc.project.json",
-          utils.getSampleJsonAsFile("qc.project.json"),
+          utils.getSampleQCProjectJsonFile(),
           { sendAsJson: false }
         )
         .post(
@@ -1066,7 +1042,7 @@ describe("simpleTypeConvertItemToTemplate", () => {
           application: {},
           name: "qc.project.json"
         }),
-        resources: [utils.getSampleJsonAsFile("qc.project.json")],
+        resources: [utils.getSampleQCProjectJsonFile()],
         dependencies: [],
         relatedItems: [],
         groups: [],

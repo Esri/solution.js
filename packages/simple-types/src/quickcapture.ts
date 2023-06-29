@@ -57,7 +57,8 @@ export function convertItemToTemplate(
 export function convertQuickCaptureToTemplate(
   itemTemplate: common.IItemTemplate
 ): common.IItemTemplate {
-  itemTemplate.data.application = _templatizeApplication(itemTemplate.data.application, itemTemplate);
+  common.setProp(itemTemplate, "data.application",
+    _templatizeApplication(itemTemplate.data.application, itemTemplate));
   return itemTemplate;
 }
 
@@ -80,7 +81,7 @@ export function _templatizeApplication(
   _templatizeAdminEmail(data);
 
   // datasource item id and url
-  const dataSources: common.IQuickCaptureDatasource[] = data.dataSources;
+  const dataSources: common.IQuickCaptureDatasource[] = data?.dataSources;
   if (dataSources && Array.isArray(dataSources)) {
     dataSources.forEach(ds => {
       const id: string = ds.featureServiceItemId;

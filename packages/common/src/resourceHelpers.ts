@@ -57,7 +57,6 @@ import {
   ISourceFileCopyPath,
   UserSession
 } from "./interfaces";
-import { new_File } from "./polyfills";
 import {
   IRemoveItemResourceOptions,
   IItemResourceOptions,
@@ -109,7 +108,7 @@ export function convertBlobToSupportableResource(
   }
 
   return {
-    blob: new_File([blob], filenameToUse, { type: blob.type }),
+    blob: new File([blob], filenameToUse, { type: blob.type }),
     filename: originalFilename,
     mimeType: blob.type
   };

@@ -168,7 +168,7 @@ describe("Module `createItemTemplate`", () => {
         .post(
           utils.PORTAL_SUBSET.restUrl +
             "/content/items/qck1234567890/resources/qc.project.json",
-          utils.getSampleJsonAsFile("qc.project.json"),
+          utils.getSampleQCProjectJsonFile(),
           { sendAsJson: false }
         )
         .post(
@@ -249,7 +249,7 @@ describe("Module `createItemTemplate`", () => {
         .post(
           utils.PORTAL_SUBSET.restUrl +
             "/content/items/qck1234567890/resources/project/qc.project.json",
-          utils.getSampleJsonAsFile("qc.project.json"),
+          utils.getSampleQCProjectJsonFile(),
           { sendAsJson: false }
         )
         .post(

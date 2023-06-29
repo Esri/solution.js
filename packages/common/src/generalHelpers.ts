@@ -28,7 +28,6 @@ import {
   IStringValuePair
 } from "./interfaces";
 import { Sanitizer, sanitizeJSON } from "./libConnectors";
-import { new_File } from "./polyfills";
 
 // ------------------------------------------------------------------------------------------------------------------ //
 
@@ -78,7 +77,7 @@ export function blobToFile(
   mimeType?: string
 ): File {
   return blob
-    ? new_File([blob], filename ? filename : "", {
+    ? new File([blob], filename ? filename : "", {
         type: mimeType || blob.type
       })
     : null;
