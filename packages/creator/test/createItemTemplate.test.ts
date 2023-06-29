@@ -458,8 +458,8 @@ describe("Module `createItemTemplate`", () => {
             existingTemplates,
             itemId
           );
-          expect(createdTemplate.properties.error).not.toBeUndefined();
-          const parsedError: any = JSON.parse(createdTemplate.properties.error);
+          expect(createdTemplate?.properties.error).not.toBeUndefined();
+          const parsedError: any = JSON.parse(createdTemplate?.properties.error);
           expect(parsedError.success).toBeFalse();
           expect(parsedError.error.message).toEqual(
             "Item does not have a file."
@@ -964,10 +964,10 @@ describe("Module `createItemTemplate`", () => {
         .then(() => {
           const actualTemplate = common.findTemplateInList(existingTemplates, itemId);
 
-          expect(actualTemplate.item.tags)
+          expect(actualTemplate?.item.tags)
             .withContext("test final tags")
             .toEqual(expectedTags);
-          expect(actualTemplate.item.typeKeywords)
+          expect(actualTemplate?.item.typeKeywords)
             .withContext("test final typeKeywords")
             .toEqual(expectedTypeKeywords);
 
@@ -5830,11 +5830,11 @@ const initialSolutionTemplates: common.IItemTemplate[] = [
       type: "Web Map",
       categories: [],
       culture: "en-us",
-      description: null,
+      description: undefined,
       extent: "{{solutionItemExtent}}",
       licenseInfo: null,
       name: null,
-      snippet: null,
+      snippet: undefined,
       tags: ["test"],
       thumbnail: "thumbnail/ago_downloaded.png?w=400",
       title: "DashboardMap",
@@ -6151,11 +6151,11 @@ const initialSolutionTemplates: common.IItemTemplate[] = [
       type: "Web Mapping Application",
       categories: [],
       culture: "en-us",
-      description: null,
+      description: undefined,
       extent: "{{solutionItemExtent}}",
       licenseInfo: null,
       name: null,
-      snippet: null,
+      snippet: undefined,
       tags: ["test"],
       thumbnail: "thumbnail/ago_downloaded.png?w=400",
       title: "TestWABAPP",
@@ -16075,11 +16075,11 @@ const initialSolutionTemplates: common.IItemTemplate[] = [
       type: "Web Map",
       categories: [],
       culture: "en-us",
-      description: null,
+      description: undefined,
       extent: "{{solutionItemExtent}}",
       licenseInfo: null,
       name: null,
-      snippet: null,
+      snippet: undefined,
       tags: ["test"],
       thumbnail: null,
       title: "WabAppMap",
@@ -24079,11 +24079,11 @@ const initialSolutionTemplates: common.IItemTemplate[] = [
       type: "Feature Service",
       categories: [],
       culture: "",
-      description: null,
+      description: undefined,
       extent: "{{solutionItemExtent}}",
       licenseInfo: null,
       name: "TestLayer2FromWebApp",
-      snippet: null,
+      snippet: undefined,
       tags: ["activity", "harvest", "Forestry", "chemical"],
       thumbnail: "thumbnail/ago_downloaded.png?w=400",
       title: "TestLayer2FromWebApp",
@@ -33847,11 +33847,11 @@ const expected: common.IItemTemplate[] = [
       type: "Web Map",
       categories: [],
       culture: "en-us",
-      description: null,
+      description: undefined,
       extent: "{{solutionItemExtent}}",
       licenseInfo: null,
       name: null,
-      snippet: null,
+      snippet: undefined,
       tags: ["test"],
       thumbnail: "thumbnail/ago_downloaded.png?w=400",
       title: "DashboardMap",
@@ -34168,11 +34168,11 @@ const expected: common.IItemTemplate[] = [
       type: "Web Mapping Application",
       categories: [],
       culture: "en-us",
-      description: null,
+      description: undefined,
       extent: "{{solutionItemExtent}}",
       licenseInfo: null,
       name: null,
-      snippet: null,
+      snippet: undefined,
       tags: ["test"],
       thumbnail: "thumbnail/ago_downloaded.png?w=400",
       title: "TestWABAPP",
@@ -44853,11 +44853,11 @@ const expected: common.IItemTemplate[] = [
       type: "Web Map",
       categories: [],
       culture: "en-us",
-      description: null,
+      description: undefined,
       extent: "{{solutionItemExtent}}",
       licenseInfo: null,
       name: null,
-      snippet: null,
+      snippet: undefined,
       tags: ["test"],
       thumbnail: null,
       title: "WabAppMap",
@@ -53186,11 +53186,11 @@ const expected: common.IItemTemplate[] = [
       type: "Feature Service",
       categories: [],
       culture: "",
-      description: null,
+      description: undefined,
       extent: "{{solutionItemExtent}}",
       licenseInfo: null,
       name: "TestLayer2FromWebApp",
-      snippet: null,
+      snippet: undefined,
       tags: ["activity", "harvest", "Forestry", "chemical"],
       thumbnail: "thumbnail/ago_downloaded.png?w=400",
       title: "TestLayer2FromWebApp",
