@@ -226,6 +226,7 @@ export function convertItemToTemplate(
 
           // Get the QC config
           templateModifyingPromise = new Promise(
+            // eslint-disable-next-line @typescript-eslint/no-misused-promises, no-async-promise-executor
             async (qcResolve) => {
               // If there's a data section, we'll use it; it's already loaded into itemTemplate.data, but as a File
               if (itemDataResponse) {
