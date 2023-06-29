@@ -81,7 +81,7 @@ describe("Module `quick capture`: manages the creation and deployment of quick c
     it("templatize application data", done => {
       const itemTemplate: common.IItemTemplate = mockItems.getAGOLItem(
         "QuickCapture Project",
-        null
+        undefined
       );
       itemTemplate.dependencies = [];
       itemTemplate.data = mockItems.getAGOLItemData("QuickCapture Project");
@@ -128,7 +128,7 @@ describe("Module `quick capture`: manages the creation and deployment of quick c
     it("will not fail with empty data", done => {
       const itemTemplate: common.IItemTemplate = mockItems.getAGOLItem(
         "QuickCapture Project",
-        null
+        undefined
       );
       itemTemplate.data = {};
       quickcapture.convertQuickCaptureToTemplate(itemTemplate).then(actual => {
@@ -141,7 +141,7 @@ describe("Module `quick capture`: manages the creation and deployment of quick c
   it("will not fail with missing JSON", done => {
     const itemTemplate: common.IItemTemplate = mockItems.getAGOLItem(
       "QuickCapture Project",
-      null
+      undefined
     );
     itemTemplate.dependencies = [];
     itemTemplate.data = mockItems.getAGOLItemData("QuickCapture Project");
@@ -171,7 +171,7 @@ describe("Module `quick capture`: manages the creation and deployment of quick c
       };
       const expectedUpdatedData = common.cloneObject(data);
 
-      const updatedData = quickcapture._templatizeApplication(data, null);
+      const updatedData = quickcapture._templatizeApplication(data, {} as common.IItemTemplate);
 
       expect(updatedData).toEqual(expectedUpdatedData);
     });
@@ -202,7 +202,7 @@ describe("Module `quick capture`: manages the creation and deployment of quick c
       };
       const idPath = "featureServiceItemId";
       const urlPath = "url";
-      const expectedUpdatedUrl: string = undefined;
+      const expectedUpdatedUrl: string | undefined = undefined;
 
       quickcapture._templatizeUrl(obj, idPath, urlPath);
 
@@ -215,7 +215,7 @@ describe("Module `quick capture`: manages the creation and deployment of quick c
       );
       const newItemId = qcTemplate.itemId;
       qcTemplate.item.id = newItemId;
-      qcTemplate.item.extent = null;
+      qcTemplate.item.extent = undefined;
       qcTemplate.item.licenseInfo =
         "https://abc12/apps/opsdashboard/index.html#/" +
         newItemId +
@@ -337,7 +337,7 @@ describe("Module `quick capture`: manages the creation and deployment of quick c
       );
       const newItemId = qcTemplate.itemId;
       qcTemplate.item.id = newItemId;
-      qcTemplate.item.extent = null;
+      qcTemplate.item.extent = undefined;
       qcTemplate.item.licenseInfo =
         "{{portalBaseUrl}}/apps/opsdashboard/index.html#/{{9da79c91fc7642ebb4c0bbacfbacd510.itemId}}?areaname=";
       qcTemplate.data = {
