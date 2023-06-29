@@ -56,38 +56,9 @@ export function convertItemToTemplate(
  */
 export function convertQuickCaptureToTemplate(
   itemTemplate: common.IItemTemplate
-): Promise<common.IItemTemplate> {
-  return new Promise<common.IItemTemplate>((resolve, reject) => {
-    // The templates data to process
-    const data: any = itemTemplate.data;
-    if (data && Array.isArray(data)) {
-      let applicationRequest: Promise<any> = Promise.resolve(null);
-      let applicationName: string = "";
-      data.some((item: File) => {
-        if (item.type === "application/json") {
-          applicationName = item.name;
-          applicationRequest = common.getBlobText(item);
-          return true;
-        }
-      });
-
-      applicationRequest.then(result => {
-        // replace the template data array with the templatized application JSON
-        itemTemplate.data = result
-          ? {
-              application: _templatizeApplication(
-                JSON.parse(result),
-                itemTemplate
-              ),
-              name: applicationName
-            }
-          : {};
-        resolve(itemTemplate);
-      }, reject);
-    } else {
-      resolve(itemTemplate);
-    }
-  });
+): common.IItemTemplate {
+  itemTemplate.data.application = _templatizeApplication(itemTemplate.data.application, itemTemplate);
+  return itemTemplate;
 }
 
 /**

@@ -95,12 +95,15 @@ export function convertItemToTemplate(
         );
         break;
       case "QuickCapture Project":
+        // Fetch older-version config
         dataPromise = new Promise(resolveJSON => {
           // eslint-disable-next-line @typescript-eslint/no-floating-promises
           common
             .getItemDataAsJson(itemTemplate.itemId, srcAuthentication)
             .then(json => resolveJSON(json));
         });
+
+        // Fetch all of the resources in case we need the newer-version config
         resourcesPromise = common.getItemResourcesFiles(
           itemTemplate.itemId,
           srcAuthentication
@@ -137,17 +140,8 @@ export function convertItemToTemplate(
         }
       });
 
-      // Add QuickCapture basemap webmap references
-      if (itemInfo.type === "QuickCapture Project") {
-        const basemap = (itemDataResponse as any)?.application?.basemap;
-        if (basemap?.type === "WebMap") {
-          itemTemplate.dependencies.push(basemap.itemId);
-        }
-        itemTemplate.resources = resourcesResponse;
-      }
-
       // Add Data Pipeline source and sink feature layers to dependencies
-      else if (itemInfo.type === "Data Pipeline") {
+      if (itemInfo.type === "Data Pipeline") {
         itemTemplate.dependencies = itemTemplate.dependencies.concat(_getDataPipelineSourcesAndSinks(itemDataResponse));
       }
 
@@ -227,14 +221,58 @@ export function convertItemToTemplate(
           );
           break;
         case "QuickCapture Project":
-          templateModifyingPromise = quickcapture.convertQuickCaptureToTemplate(
-            itemTemplate
+          // Save all of the resources that we've fetched so as to not fetch them again
+          itemTemplate.resources = resourcesResponse;
+
+          // Get the QC config
+          templateModifyingPromise = new Promise(
+            async (qcResolve) => {
+              // If there's a data section, we'll use it; it's already loaded into itemTemplate.data, but as a File
+              if (itemDataResponse) {
+                itemTemplate.data = await common.blobToJson(itemTemplate.data);
+
+              } else {
+                // No data section, so this is a newer-format QC; get the qc.project.json resource
+                let qcProjectFile: File = null;
+                if (resourcesResponse) {
+                  resourcesResponse.some(
+                    (file: File) => {
+                      const haveConfigFile = file.name === "qc.project.json";
+                      if (haveConfigFile) {
+                        qcProjectFile = file;
+                      }
+                      return haveConfigFile;
+                    }
+                  );
+
+                  // Copy the qc.project.json file into the data section
+                  if (qcProjectFile) {
+                    itemTemplate.data = {
+                      application: {
+                        ...await common.blobToJson(qcProjectFile),
+                      },
+                      name: "qc.project.json"
+                    }
+                  }
+                }
+              }
+
+              // Save the basemap dependency
+              if (itemTemplate.data?.application?.basemap?.type === "WebMap") {
+                itemTemplate.dependencies.push(itemTemplate.data.application.basemap.itemId);
+              }
+
+              // Create the template
+              const updatedTemplate = quickcapture.convertQuickCaptureToTemplate(itemTemplate);
+              qcResolve(updatedTemplate);
+            }
           );
           break;
       }
 
-      templateModifyingPromise.then(resolve, err =>
-        reject(common.fail(err))
+      templateModifyingPromise.then(
+        resolve,
+        err => reject(common.fail(err))
       );
     });
   });
