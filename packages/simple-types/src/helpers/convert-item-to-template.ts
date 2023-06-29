@@ -228,9 +228,9 @@ export function convertItemToTemplate(
           templateModifyingPromise = new Promise(
             // eslint-disable-next-line @typescript-eslint/no-misused-promises, no-async-promise-executor
             async (qcResolve) => {
-              // If there's a data section, we'll use it; it's already loaded into itemTemplate.data, but as a File
+              // If there's a data section, we'll use it; it's already loaded into itemTemplate.data as JSON
               if (itemDataResponse) {
-                itemTemplate.data = await common.blobToJson(itemTemplate.data);
+                itemTemplate.data = itemDataResponse;
 
               } else {
                 // No data section, so this is a newer-format QC; get the qc.project.json resource
@@ -259,7 +259,7 @@ export function convertItemToTemplate(
               }
 
               // Save the basemap dependency
-              if (itemTemplate.data?.application?.basemap?.type === "WebMap") {
+              if (itemTemplate.data.application?.basemap?.type === "WebMap") {
                 itemTemplate.dependencies.push(itemTemplate.data.application.basemap.itemId);
               }
 
