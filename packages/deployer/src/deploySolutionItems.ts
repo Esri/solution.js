@@ -891,7 +891,7 @@ export function _handleExistingItems(
   };
 }
 
-//???
+//TODO: function doc
 export function _updateTemplateDictionaryById(
   templateDictionary: any,
   sourceId: string,
@@ -1162,7 +1162,7 @@ export function _estimateDeploymentCost(
   );
 }
 
-//???
+//TODO: function doc
 // TODO: Return a Promise vs array of promises
 export function _getGroupUpdates(
   template: common.IItemTemplate,

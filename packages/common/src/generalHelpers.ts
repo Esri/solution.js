@@ -78,7 +78,7 @@ export function blobToFile(
 ): File {
   return blob
     ? new File([blob], filename ? filename : "", {
-        type: mimeType || blob.type
+        type: mimeType ?? blob.type ?? ""
       })
     : null;
 }
@@ -198,15 +198,9 @@ export function generateEmptyCreationResponse(
  * @returns A blob from the source JSON
  */
 export function jsonToBlob(json: any): Blob {
-  const _json = JSON.stringify(json);
+  const uint8array = new TextEncoder().encode(JSON.stringify(json));
   const blobOptions = { type: "application/octet-stream" };
-
-  const charArray = [];
-  for (let i = 0; i < _json.length; i++) {
-    charArray[i] = _json.charCodeAt(i);
-  }
-
-  return new Blob([new Uint8Array(charArray)], blobOptions);
+  return new Blob([uint8array], blobOptions);
 }
 
 /**
@@ -223,6 +217,18 @@ export function jsonToFile(
   mimeType = "application/json"
 ): File {
   return blobToFile(jsonToBlob(json), filename, mimeType);
+}
+
+/**
+ * Makes a unique copy of JSON by stringifying and parsing.
+ *
+ * @param json JSON to use as source
+ * @returns A JSON object from the source JSON
+ */
+export function jsonToJson(
+  json: any
+): any {
+  return JSON.parse(JSON.stringify(json));
 }
 
 /**

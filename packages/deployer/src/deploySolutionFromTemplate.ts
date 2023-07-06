@@ -396,7 +396,7 @@ export function _applySourceToDeployOptions(
   return deployOptions;
 }
 
-//???
+//TODO: function doc
 export function _replaceParamVariables(
   solutionTemplateData: any,
   templateDictionary: any
@@ -436,7 +436,7 @@ export function _replaceParamVariables(
   );
 }
 
-//???
+//TODO: function doc
 export function _updateProp(
   template: common.IItemTemplate,
   path: string,
@@ -455,7 +455,7 @@ export function _updateProp(
   return template;
 }
 
-//???
+//TODO: function doc
 export function _checkedReplaceAll(
   template: string,
   oldValue: string,
@@ -471,7 +471,7 @@ export function _checkedReplaceAll(
   return newTemplate;
 }
 
-//???
+//TODO: function doc
 export function _getPortalBaseUrl(
   portalResponse: common.IPortal,
   authentication: common.UserSession
@@ -490,7 +490,7 @@ export function _getPortalBaseUrl(
     : authentication.portal.replace("/sharing/rest", "");
 }
 
-//???
+//TODO: function doc
 export function _updateGroupReferences(
   itemTemplates: any[],
   templateDictionary: any
@@ -516,7 +516,7 @@ export function _updateGroupReferences(
   return itemTemplates;
 }
 
-//???
+//TODO: function doc
 export function _purgeTemplateProperties(itemTemplate: any): any {
   const retainProps: string[] = ["itemId", "type", "dependencies", "groups"];
   const deleteProps: string[] = Object.keys(itemTemplate).filter(

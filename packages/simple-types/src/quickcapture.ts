@@ -182,44 +182,4 @@ export function createItemFromTemplate(
   );
 }
 
-/**
- * QuickCapture post-processing actions
- *
- * @param {string} itemId The item ID
- * @param {string} type The template type
- * @param {any[]} itemInfos Array of \{id: 'ef3', type: 'Web Map'\} objects
- * @param {any} templateDictionary The template dictionary
- * @param {UserSession} authentication The destination session info
- * @returns Promise resolving to successfulness of update
- */
-export function postProcess(
-  itemId: string,
-  type: string,
-  itemInfos: any[],
-  template: common.IItemTemplate,
-  templates: common.IItemTemplate[],
-  templateDictionary: any,
-  authentication: common.UserSession
-): Promise<any> {
-  return new Promise<any>((resolve, reject) => {
-    template.data = common.replaceInTemplate(template.data, templateDictionary);
-    common
-      .updateItemTemplateFromDictionary(
-        itemId,
-        templateDictionary,
-        authentication
-      )
-      .then(() => {
-        common
-          .updateItemResourceText(
-            itemId,
-            template.data.name,
-            JSON.stringify(template.data.application),
-            authentication
-          )
-          .then(resolve, reject);
-      }, reject);
-  });
-}
-
 //#endregion

@@ -228,32 +228,39 @@ export function convertItemToTemplate(
           templateModifyingPromise = new Promise(
             // eslint-disable-next-line @typescript-eslint/no-misused-promises, no-async-promise-executor
             async (qcResolve) => {
+              // Remove the qc.project.json file from the resources
+              let qcProjectFile: File = null;
+              let iQcProjectFile: number = -1;
+              if (resourcesResponse) {
+                resourcesResponse.some(
+                  (file: File, i: number) => {
+                    const haveConfigFile = file.name === "qc.project.json";
+                    if (haveConfigFile) {
+                      qcProjectFile = file;
+                      iQcProjectFile = i;
+                    }
+                    return haveConfigFile;
+                  }
+                );
+
+                // Discard the qc.project.json file
+                if (iQcProjectFile >= 0) {
+                  resourcesResponse.splice(iQcProjectFile, 1);
+                }
+              }
+
               // If there's a data section, we'll use it; it's already loaded into itemTemplate.data as JSON
               if (itemDataResponse) {
                 itemTemplate.data = itemDataResponse;
 
               } else {
-                // No data section, so this is a newer-format QC; get the qc.project.json resource
-                let qcProjectFile: File = null;
-                if (resourcesResponse) {
-                  resourcesResponse.some(
-                    (file: File) => {
-                      const haveConfigFile = file.name === "qc.project.json";
-                      if (haveConfigFile) {
-                        qcProjectFile = file;
-                      }
-                      return haveConfigFile;
-                    }
-                  );
-
-                  // Copy the qc.project.json file into the data section
-                  if (qcProjectFile) {
-                    itemTemplate.data = {
-                      application: {
-                        ...await common.blobToJson(qcProjectFile),
-                      },
-                      name: "qc.project.json"
-                    }
+                // No data section, so this is a newer-format QC; copy the qc.project.json file into the data section
+                if (qcProjectFile) {
+                  itemTemplate.data = {
+                    application: {
+                      ...await common.blobToJson(qcProjectFile),
+                    },
+                    name: "qc.project.json"
                   }
                 }
               }

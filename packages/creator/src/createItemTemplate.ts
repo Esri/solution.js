@@ -185,12 +185,11 @@ export function createItemTemplate(
                     if (itemTemplate.type === "QuickCapture Project") {
                       const resourceItemFiles: ISourceFile[] = itemTemplate.resources.map(
                         (file: File) => {
-                          const fileParts = file.name.split("/");
                           return {
                             itemId: itemTemplate.itemId,
                             file,
-                            folder: fileParts.length === 1 ? "" : fileParts[0],
-                            filename: fileParts.length === 1 ? fileParts[0] : fileParts[1],
+                            folder: itemTemplate.itemId,
+                            filename: file.name
                           };
                         }
                       );

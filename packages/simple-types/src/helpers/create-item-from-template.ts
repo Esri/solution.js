@@ -48,11 +48,13 @@ export function createItemFromTemplate(
         templateDictionary
       );
 
+      let qcProjectFile;
+
       // Create the item, then update its URL with its new id
 
       // some fieldnames are used as keys for objects
       // when we templatize field references for web applications we first stringify the components of the
-      // web application that could contain field references and then serach for them with a regular expression.
+      // web application that could contain field references and then search for them with a regular expression.
       // We also need to stringify the web application when de-templatizing so it will find all of these occurrences as well.
       if (template.type === "Web Mapping Application" && template.data) {
         newItemTemplate = JSON.parse(
@@ -61,6 +63,14 @@ export function createItemFromTemplate(
             templateDictionary
           )
         );
+
+
+      } else if (template.type === "QuickCapture Project" && template.data) {
+        // Generate the qc.project.json file resource from the data section
+        qcProjectFile = common.jsonToFile(newItemTemplate.data.application, "qc.project.json");
+
+        // Delete the data section
+        delete newItemTemplate.data;
       }
 
       if (template.item.thumbnail) {
@@ -174,6 +184,13 @@ export function createItemFromTemplate(
                   destinationAuthentication,
                   templateDictionary
                 );
+              } else if (template.type === "QuickCapture Project") {
+                if (qcProjectFile) {
+                  // Send the created qc.project.json file to the item
+                  customProcDef = common.addResourceFromBlob(
+                    qcProjectFile, newItemTemplate.itemId, "", qcProjectFile.name, destinationAuthentication);
+                }
+
               } else if (template.type === "Notebook") {
                 customProcDef = notebook.fineTuneCreatedItem(
                   template,

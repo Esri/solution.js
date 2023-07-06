@@ -529,7 +529,7 @@ export function _getGenericWebAppDependencies(model: any): any {
   return common.getProps(model, props);
 }
 
-//???
+//TODO: function doc
 export function _getWABDependencies(model: any): string[] {
   const deps = [] as string[];
   const v = common.getProp(model, "data.map.itemId");
