@@ -298,23 +298,37 @@ export function generateSourceFilePaths(
 
   /* istanbul ignore else */
   if (thumbnailUrlPart) {
-    const path = {
-      itemId,
-      url: appendQueryParam(
-        generateSourceThumbnailUrl(
-          portalSharingUrl,
-          itemId,
-          thumbnailUrlPart,
-          isGroup
-        ),
-        "w=400"
-      ),
-      ...generateThumbnailStorageFilename(itemId, thumbnailUrlPart)
-    };
-    filePaths.push(path);
+    filePaths.push(generateSourceThumbnailPath(portalSharingUrl, itemId, thumbnailUrlPart));
   }
 
   return filePaths;
+}
+
+/**
+ * Generates the full URL and storage folder/filename for storing an item's thumbnail.
+ * 
+ * @param portalSharingUrl Server/sharing
+ * @param itemId Id of item
+ * @param thumbnailUrlPart Partial path to the thumbnail held in an item's JSON
+ * @returns URL and folder/filename for storing the thumbnail
+ */
+export function generateSourceThumbnailPath(
+  portalSharingUrl: string,
+  itemId: string,
+  thumbnailUrlPart: string
+): ISourceFileCopyPath {
+  return {
+    itemId,
+    url: appendQueryParam(
+      generateSourceThumbnailUrl(
+        portalSharingUrl,
+        itemId,
+        thumbnailUrlPart
+      ),
+      "w=400"
+    ),
+    ...generateThumbnailStorageFilename(itemId, thumbnailUrlPart)
+  };
 }
 
 /**
