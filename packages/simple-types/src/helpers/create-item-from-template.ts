@@ -48,7 +48,7 @@ export function createItemFromTemplate(
         templateDictionary
       );
 
-      let qcProjectFile;
+      let qcProjectFileContents: string;
 
       // Create the item, then update its URL with its new id
 
@@ -66,8 +66,8 @@ export function createItemFromTemplate(
 
 
       } else if (template.type === "QuickCapture Project" && template.data) {
-        // Generate the qc.project.json file resource from the data section
-        qcProjectFile = common.jsonToFile(newItemTemplate.data.application, "qc.project.json");
+        // Save the data section for creating the qc.project.json later
+        qcProjectFileContents = JSON.stringify(newItemTemplate.data.application);
 
         // Delete the data section
         delete newItemTemplate.data;
@@ -185,7 +185,13 @@ export function createItemFromTemplate(
                   templateDictionary
                 );
               } else if (template.type === "QuickCapture Project") {
-                if (qcProjectFile) {
+                if (qcProjectFileContents) {
+                  // Generate the qc.project.json file resource from the data section after handling templatized variables
+                  const qcProjectFile = common.jsonToFile(
+                    common.replaceInTemplate(JSON.parse(qcProjectFileContents), templateDictionary),
+                    "qc.project.json"
+                  );
+
                   // Send the created qc.project.json file to the item
                   customProcDef = common.addResourceFromBlob(
                     qcProjectFile, newItemTemplate.itemId, "", qcProjectFile.name, destinationAuthentication);
