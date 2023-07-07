@@ -48,11 +48,13 @@ export function createItemFromTemplate(
         templateDictionary
       );
 
+      let qcProjectFileContents: string;
+
       // Create the item, then update its URL with its new id
 
       // some fieldnames are used as keys for objects
       // when we templatize field references for web applications we first stringify the components of the
-      // web application that could contain field references and then serach for them with a regular expression.
+      // web application that could contain field references and then search for them with a regular expression.
       // We also need to stringify the web application when de-templatizing so it will find all of these occurrences as well.
       if (template.type === "Web Mapping Application" && template.data) {
         newItemTemplate = JSON.parse(
@@ -61,6 +63,14 @@ export function createItemFromTemplate(
             templateDictionary
           )
         );
+
+
+      } else if (template.type === "QuickCapture Project" && template.data) {
+        // Save the data section for creating the qc.project.json later
+        qcProjectFileContents = JSON.stringify(newItemTemplate.data.application);
+
+        // Delete the data section
+        delete newItemTemplate.data;
       }
 
       if (template.item.thumbnail) {
@@ -174,6 +184,19 @@ export function createItemFromTemplate(
                   destinationAuthentication,
                   templateDictionary
                 );
+              } else if (template.type === "QuickCapture Project") {
+                if (qcProjectFileContents) {
+                  // Generate the qc.project.json file resource from the data section after handling templatized variables
+                  const qcProjectFile = common.jsonToFile(
+                    common.replaceInTemplate(JSON.parse(qcProjectFileContents), templateDictionary),
+                    "qc.project.json"
+                  );
+
+                  // Send the created qc.project.json file to the item
+                  customProcDef = common.addResourceFromBlob(
+                    qcProjectFile, newItemTemplate.itemId, "", qcProjectFile.name, destinationAuthentication);
+                }
+
               } else if (template.type === "Notebook") {
                 customProcDef = notebook.fineTuneCreatedItem(
                   template,

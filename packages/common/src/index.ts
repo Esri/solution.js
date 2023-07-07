@@ -34,7 +34,6 @@ export * from "./get-subscription-info";
 export * from "./interfaces";
 export * from "./libConnectors";
 export * from "./migrator";
-export * from "./polyfills";
 export * from "./resourceHelpers";
 export * from "./resources";
 export * from "./restHelpers";

@@ -374,7 +374,7 @@ export function _updateGlobalIdAndAssignmentType(
   }
 }
 
-//???
+//TODO: function doc
 export function _getAssignmentTypeInfos(assignmentTypes: any): any[] {
   // Assignment Types
   const assignmentTypeInfos: any[] = [];
@@ -392,7 +392,7 @@ export function _getAssignmentTypeInfos(assignmentTypes: any): any[] {
   return assignmentTypeInfos;
 }
 
-//???
+//TODO: function doc
 export function _getAssignmentIntegrationInfos(
   assignmentIntegrations: any,
   authentication: UserSession
@@ -565,7 +565,7 @@ export function postProcessWorkforceTemplates(
   });
 }
 
-//???
+//TODO: function doc
 export function _templatizeWorkforceProject(
   t: IItemTemplate,
   groupUpdates: any
@@ -629,7 +629,7 @@ export function _templatizeWorkforceProject(
   return t;
 }
 
-//???
+//TODO: function doc
 export function _templatizeWorkforceDispatcherOrWorker(
   t: IItemTemplate,
   type: string
@@ -698,7 +698,7 @@ export function urlTest(v: any, authentication: UserSession): any {
   };
 }
 
-//???
+//TODO: function doc
 export function _getURLs(v: string): string[] {
   return regExTest(v, /=(http.*?FeatureServer.*?(?=&|$))/gi).map(_v =>
     _v.replace("=", "")
@@ -801,7 +801,7 @@ export function fineTuneCreatedWorkforceItem(
   });
 }
 
-//???
+//TODO: function doc
 export function _getFields(
   url: string,
   ids: number[],
@@ -831,13 +831,13 @@ export function _getFields(
   });
 }
 
-//???
+//TODO: function doc
 export function _updateUrl(url: string): string {
   url += url.endsWith("/") ? "" : "/";
   return url;
 }
 
-//???
+//TODO: function doc
 export function _getAddFeatures(updateInfos: any, fields: any[]): any {
   const features: any[] = [];
   updateInfos.forEach((update: any) => {
@@ -851,7 +851,7 @@ export function _getAddFeatures(updateInfos: any, fields: any[]): any {
   return features;
 }
 
-//???
+//TODO: function doc
 export function _getField(name: string, fields: string[]): string {
   return fields.filter(f => f.toLowerCase() === name.toLowerCase())[0];
 }
@@ -908,7 +908,7 @@ export function _updateDispatchers(
   });
 }
 
-//???
+//TODO: function doc
 export function _applyEdits(
   url: string,
   adds: any[],

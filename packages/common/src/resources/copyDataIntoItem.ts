@@ -23,7 +23,6 @@ import {
 } from "../interfaces";
 import { createCopyResults } from "./createCopyResults";
 import { getBlob } from "./get-blob";
-import { new_File } from "../polyfills";
 import { updateItem as helpersUpdateItem } from "../restHelpers";
 
 // ------------------------------------------------------------------------------------------------------------------ //
@@ -93,7 +92,7 @@ export function copyDataIntoItem(
  * @returns Created file
  */
 export function createMimeTypedFile(fileDescription: IFileMimeTyped): File {
-  return new_File([fileDescription.blob], fileDescription.filename, {
+  return new File([fileDescription.blob], fileDescription.filename, {
     type: fileDescription.mimeType
   });
 }

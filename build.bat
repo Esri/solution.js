@@ -40,7 +40,7 @@ pushd demos\verifySolution
 call npm install
 popd
 
-rem install and build the packages
+rem clear out older builds
 rmdir/s/q packages\common\dist 2>nul
 rmdir/s/q packages\creator\dist 2>nul
 rmdir/s/q packages\deployer\dist 2>nul
@@ -54,10 +54,20 @@ rmdir/s/q packages\storymap\dist 2>nul
 rmdir/s/q packages\velocity\dist 2>nul
 rmdir/s/q packages\viewer\dist 2>nul
 rmdir/s/q packages\web-experience\dist 2>nul
+rmdir/s/q copyItemInfo\dist 2>nul
+rmdir/s/q copySolutions\dist 2>nul
+rmdir/s/q createSolution\dist 2>nul
+rmdir/s/q deleteSolution\dist 2>nul
+rmdir/s/q deploySolution\dist 2>nul
+rmdir/s/q getItemInfo\dist 2>nul
+rmdir/s/q implementedTypes\dist 2>nul
+rmdir/s/q verifySolution\dist 2>nul
 
+rem install and build the packages
 call npm install
 call npm run build
 
+rem remove package.json files in distributions to keep lerna happy
 del/q packages\common\dist\cjs\package.json 2>nul
 del/q packages\common\dist\esm\package.json 2>nul
 del/q packages\creator\dist\cjs\package.json 2>nul

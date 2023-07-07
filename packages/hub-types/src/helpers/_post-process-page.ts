@@ -16,7 +16,7 @@
 import { IModel, IHubUserRequestOptions, interpolate } from "@esri/hub-common";
 import { updatePage } from "@esri/hub-sites";
 
-//???
+//TODO: function doc
 export function _postProcessPage(
   pageModel: IModel,
   itemInfos: any[],

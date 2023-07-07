@@ -23,7 +23,6 @@ import * as fetchMock from "fetch-mock";
 import * as generalHelpers from "../src/generalHelpers";
 import * as interfaces from "../src/interfaces";
 import * as mockItems from "../test/mocks/agolItems";
-import * as polyfills from "../src/polyfills";
 import * as portal from "@esri/arcgis-rest-portal";
 import * as request from "@esri/arcgis-rest-request";
 import * as restHelpers from "../src/restHelpers";
@@ -901,13 +900,13 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
       const folderId: string = null as string; // default is top level
       const itemThumbnailUrl: string =
         "https://myserver/thumbnail/thumbnail.png";
-      const dataFile: File = polyfills.new_File(
+      const dataFile: File = new File(
         [utils.getSampleJsonAsBlob()],
         "data.json"
       );
       const metadataFile: File = utils.getSampleMetadataAsFile();
       const resourcesFiles: File[] = [
-        polyfills.new_File([utils.getSampleImageAsBlob()], "image.png")
+        new File([utils.getSampleImageAsBlob()], "image.png")
       ];
       const access = "org";
 
@@ -972,7 +971,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
       const dataFile: File = null as File;
       const metadataFile: File = null as File;
       const resourcesFiles: File[] = [
-        polyfills.new_File(
+        new File(
           [utils.getSampleImageAsBlob()],
           "resourceFolder/image.png"
         )

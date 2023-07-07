@@ -255,41 +255,12 @@ describe("simpleTypeCreateItemFromTemplate", () => {
       };
 
       const itemTemplate: common.IItemTemplate = mockItems.getAGOLItem(
-        "QuickCapture Project",
-        null
+        "QuickCapture Project"
       );
 
       itemTemplate.itemId = "9da79c91fc7642ebb4c0bbacfbacd510";
 
       itemTemplate.dependencies = ["4efe5f693de34620934787ead6693f10"];
-
-      itemTemplate.data = {
-        application: {
-          basemap: {},
-          dataSources: [
-            {
-              featureServiceItemId:
-                "{{4efe5f693de34620934787ead6693f10.itemId}}",
-              dataSourceId: "1d4de1e4-ef58-4e02-9159-7a6e6701cada",
-              url: "{{4efe5f693de34620934787ead6693f10.layer0.url}}"
-            },
-            {
-              featureServiceItemId:
-                "{{4efe5f693de34620934787ead6693f10.itemId}}",
-              dataSourceId: "1687a71b-cf77-48ed-b948-c66e228a0f74",
-              url: "{{4efe5f693de34620934787ead6693f10.layer1.url}}"
-            }
-          ],
-          itemId: "{{9da79c91fc7642ebb4c0bbacfbacd510.itemId}}",
-          preferences: {
-            adminEmail: "{{user.email}}"
-          },
-          templateGroups: [],
-          userInputs: [],
-          version: 0.1
-        },
-        name: "qc.project.json"
-      };
 
       fetchMock
         .post(
@@ -322,17 +293,6 @@ describe("simpleTypeCreateItemFromTemplate", () => {
         itemTemplate
       );
       expectedClone.itemId = newItemId;
-      expectedClone.data.application.dataSources[0].featureServiceItemId =
-        "xxxe5f693de34620934787ead6693f10";
-      expectedClone.data.application.dataSources[0].url =
-        "https://abc123/name/FeatureServer/0";
-      expectedClone.data.application.dataSources[1].featureServiceItemId =
-        "xxxe5f693de34620934787ead6693f10";
-      expectedClone.data.application.dataSources[1].url =
-        "https://abc123/name/FeatureServer/1";
-      expectedClone.data.application.itemId =
-        "xxx79c91fc7642ebb4c0bbacfbacd510";
-      expectedClone.data.application.preferences.adminEmail = "casey@esri.com";
 
       // eslint-disable-next-line @typescript-eslint/no-floating-promises
       simpleTypes
@@ -347,21 +307,20 @@ describe("simpleTypeCreateItemFromTemplate", () => {
             item: expectedClone,
             id: newItemId,
             type: itemTemplate.type,
-            postProcess: true
+            postProcess: false
           });
           expect(templateDictionary).toEqual(expectedTemplateDictionary);
           done();
         });
     });
 
-    it("should handle error on update resources", done => {
+    it("should handle error on add resources", done => {
       const newItemId: string = "xxx79c91fc7642ebb4c0bbacfbacd510";
 
       const templateDictionary: any = {};
 
       const itemTemplate: common.IItemTemplate = mockItems.getAGOLItem(
-        "QuickCapture Project",
-        null
+        "QuickCapture Project"
       );
 
       itemTemplate.data = {
@@ -395,7 +354,7 @@ describe("simpleTypeCreateItemFromTemplate", () => {
           utils.PORTAL_SUBSET.restUrl +
             "/content/users/casey/items/" +
             newItemId +
-            "/updateResources",
+            "/addResources",
           mockItems.get400Failure()
         );
 
@@ -416,8 +375,7 @@ describe("simpleTypeCreateItemFromTemplate", () => {
   describe("web mapping application", () => {
     it("should handle web mapping application that is a WAB", done => {
       const itemTemplate: common.IItemTemplate = mockItems.getAGOLItem(
-        "Web Mapping Application",
-        null
+        "Web Mapping Application"
       );
       itemTemplate.itemId = "abc0cab401af4828a25cc6eaeb59fb69";
       itemTemplate.item = {
@@ -539,8 +497,7 @@ describe("simpleTypeCreateItemFromTemplate", () => {
 
     it("should handle web mapping application that's not a WAB", done => {
       const itemTemplate: common.IItemTemplate = mockItems.getAGOLItem(
-        "Web Mapping Application",
-        null
+        "Web Mapping Application"
       );
       itemTemplate.itemId = "abc0cab401af4828a25cc6eaeb59fb69";
       itemTemplate.item = {
@@ -665,8 +622,7 @@ describe("simpleTypeCreateItemFromTemplate", () => {
 
     it("should handle web mapping application with related items", done => {
       const itemTemplate: common.IItemTemplate = mockItems.getAGOLItem(
-        "Web Mapping Application",
-        null
+        "Web Mapping Application"
       );
       itemTemplate.itemId = "abc0cab401af4828a25cc6eaeb59fb69";
       itemTemplate.item = {
@@ -833,8 +789,7 @@ describe("simpleTypeCreateItemFromTemplate", () => {
 
     it("should handle web mapping application with missing data section and templatized URL", done => {
       const itemTemplate: common.IItemTemplate = mockItems.getAGOLItem(
-        "Web Mapping Application",
-        null
+        "Web Mapping Application"
       );
       itemTemplate.itemId = "abc0cab401af4828a25cc6eaeb59fb69";
       itemTemplate.item = {
@@ -907,8 +862,7 @@ describe("simpleTypeCreateItemFromTemplate", () => {
 
     it("should handle error web mapping application", done => {
       const itemTemplate: common.IItemTemplate = mockItems.getAGOLItem(
-        "Web Mapping Application",
-        null
+        "Web Mapping Application"
       );
       itemTemplate.itemId = "abc0cab401af4828a25cc6eaeb59fb69";
       itemTemplate.item = {

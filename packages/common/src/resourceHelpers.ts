@@ -57,7 +57,6 @@ import {
   ISourceFileCopyPath,
   UserSession
 } from "./interfaces";
-import { new_File } from "./polyfills";
 import {
   IRemoveItemResourceOptions,
   IItemResourceOptions,
@@ -109,7 +108,7 @@ export function convertBlobToSupportableResource(
   }
 
   return {
-    blob: new_File([blob], filenameToUse, { type: blob.type }),
+    blob: new File([blob], filenameToUse, { type: blob.type }),
     filename: originalFilename,
     mimeType: blob.type
   };
@@ -299,23 +298,40 @@ export function generateSourceFilePaths(
 
   /* istanbul ignore else */
   if (thumbnailUrlPart) {
-    const path = {
-      itemId,
-      url: appendQueryParam(
-        generateSourceThumbnailUrl(
-          portalSharingUrl,
-          itemId,
-          thumbnailUrlPart,
-          isGroup
-        ),
-        "w=400"
-      ),
-      ...generateThumbnailStorageFilename(itemId, thumbnailUrlPart)
-    };
-    filePaths.push(path);
+    filePaths.push(generateSourceThumbnailPath(portalSharingUrl, itemId, thumbnailUrlPart, isGroup));
   }
 
   return filePaths;
+}
+
+/**
+ * Generates the full URL and storage folder/filename for storing an item's thumbnail.
+ *
+ * @param portalSharingUrl Server/sharing
+ * @param itemId Id of item
+ * @param thumbnailUrlPart Partial path to the thumbnail held in an item's JSON
+ * @param isGroup Boolean to indicate if the files are associated with a group or item
+ * @returns URL and folder/filename for storing the thumbnail
+ */
+export function generateSourceThumbnailPath(
+  portalSharingUrl: string,
+  itemId: string,
+  thumbnailUrlPart: string,
+  isGroup: boolean = false
+): ISourceFileCopyPath {
+  return {
+    itemId,
+    url: appendQueryParam(
+      generateSourceThumbnailUrl(
+        portalSharingUrl,
+        itemId,
+        thumbnailUrlPart,
+        isGroup
+      ),
+      "w=400"
+    ),
+    ...generateThumbnailStorageFilename(itemId, thumbnailUrlPart)
+  };
 }
 
 /**
@@ -522,29 +538,6 @@ export function updateItemResourceFile(
     prefix: prefix,
     name: suffix,
     resource,
-    authentication: authentication
-  } as IItemResourceOptions);
-}
-
-/**
- * Updates the item's resource that matches the filename with new content
- *
- * @param itemId Id of the item to update
- * @param filename Name of the resource file to update
- * @param content The new content to update the resource with
- * @param authentication Credentials for the request to the storage
- * @returns A promise which resolves with a success true/false response
- */
-export function updateItemResourceText(
-  itemId: string,
-  filename: string,
-  content: string,
-  authentication: UserSession
-): Promise<IItemResourceResponse> {
-  return updateItemResource({
-    id: itemId,
-    name: filename,
-    content: content,
     authentication: authentication
   } as IItemResourceOptions);
 }

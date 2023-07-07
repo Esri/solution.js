@@ -53,7 +53,7 @@ describe("simpleTypeConvertItemToTemplate", () => {
       const solutionItemId = "sln1234567890";
       const itemTemplate: common.IItemTemplate = templates.getItemTemplateSkeleton();
       itemTemplate.itemId = "dsh1234567890";
-      itemTemplate.item = mockItems.getAGOLItem("Dashboard", null);
+      itemTemplate.item = mockItems.getAGOLItem("Dashboard", undefined);
       itemTemplate.item.thumbnail = null;
 
       const expectedTemplate: any = {
@@ -132,7 +132,7 @@ describe("simpleTypeConvertItemToTemplate", () => {
           {}
         )
         .then(newItemTemplate => {
-          delete newItemTemplate.key; // key is randomly generated, and so is not testable
+          delete (newItemTemplate as any).key; // key is randomly generated, and so is not testable
           expect(newItemTemplate).toEqual(expectedTemplate);
           done();
         }, done.fail);
@@ -144,7 +144,7 @@ describe("simpleTypeConvertItemToTemplate", () => {
       const solutionItemId = "sln1234567890";
       const itemTemplate: common.IItemTemplate = templates.getItemTemplateSkeleton();
       itemTemplate.itemId = "dpl1234567890";
-      itemTemplate.item = mockItems.getAGOLItem("Data Pipeline", null, itemTemplate.itemId);
+      itemTemplate.item = mockItems.getAGOLItem("Data Pipeline", undefined, itemTemplate.itemId);
       itemTemplate.item.thumbnail = null;
 
       const expectedTemplate: any = {
@@ -223,7 +223,7 @@ describe("simpleTypeConvertItemToTemplate", () => {
           {}
         )
         .then(newItemTemplate => {
-          delete newItemTemplate.key; // key is randomly generated, and so is not testable
+          delete (newItemTemplate as any).key; // key is randomly generated, and so is not testable
           expect(newItemTemplate).toEqual(expectedTemplate);
           done();
         }, done.fail);
@@ -351,7 +351,7 @@ describe("simpleTypeConvertItemToTemplate", () => {
       solutionItemId = "sln1234567890";
       itemTemplate = templates.getItemTemplateSkeleton();
       itemTemplate.itemId = "frm1234567890";
-      itemTemplate.item = mockItems.getAGOLItem("Form", null);
+      itemTemplate.item = mockItems.getAGOLItem("Form", undefined);
       itemTemplate.item.thumbnail = null;
 
       expectedTemplate = {
@@ -479,7 +479,7 @@ describe("simpleTypeConvertItemToTemplate", () => {
 
     const verifyFormTemplate = (done: DoneFn) => {
       return (newItemTemplate: common.IItemTemplate) => {
-        delete newItemTemplate.key; // key is randomly generated, and so is not testable
+        delete (newItemTemplate as any).key; // key is randomly generated, and so is not testable
         delete newItemTemplate.dataFile.file; // don't want to test File object
         expect(newItemTemplate).toEqual(expectedTemplate);
         done();
@@ -608,7 +608,7 @@ describe("simpleTypeConvertItemToTemplate", () => {
   describe("oic", () => {
     it("should handle OIC (Oriented Imagery Catalog)", done => {
       const solutionItemId = "sln1234567890";
-      const item: any = mockItems.getAGOLItem("Oriented Imagery Catalog", null);
+      const item: any = mockItems.getAGOLItem("Oriented Imagery Catalog", undefined);
       const data: any = mockItems.getAGOLItemData("Oriented Imagery Catalog");
       const service: any = mockItems.getAGOLService();
 
@@ -666,19 +666,7 @@ describe("simpleTypeConvertItemToTemplate", () => {
         .post(
           utils.PORTAL_SUBSET.restUrl +
             "/content/items/qck1234567890/data",
-          Object({
-            application: {
-              basemap: {
-                  type: "WebMap",
-                  itemId: "3899c47412024f5cb3278e531bfbbf20",
-                  mapAreas: [],
-                  required: true,
-                  useDefaultBasemap: false,
-                  zoomLevel: null
-              }
-            },
-            name: "qc.project.json"
-          })
+          utils.getSampleQCJsonData()
         )
         .post(
           utils.PORTAL_SUBSET.restUrl +
@@ -699,7 +687,7 @@ describe("simpleTypeConvertItemToTemplate", () => {
         .post(
           utils.PORTAL_SUBSET.restUrl +
             "/content/items/qck1234567890/resources/qc.project.json",
-          utils.getSampleJsonAsFile("qc.project.json"),
+          utils.getSampleQCProjectJsonFile(),
           { sendAsJson: false }
         )
         .post(
@@ -716,26 +704,14 @@ describe("simpleTypeConvertItemToTemplate", () => {
 
       const itemInfo: common.IItemTemplate = mockItems.getAGOLItem(
         "QuickCapture Project",
-        null
+        undefined
       );
 
       const expected: common.IItemTemplate = {
         itemId: "qck1234567890",
         key: "vx3ubyx3",
-        data: Object({
-          application: {
-            basemap: {
-                type: "WebMap",
-                itemId: "3899c47412024f5cb3278e531bfbbf20",
-                mapAreas: [],
-                required: true,
-                useDefaultBasemap: false,
-                zoomLevel: null
-            }
-          },
-          name: "qc.project.json"
-        }),
-        resources: [utils.getSampleJsonAsFile("qc.project.json")],
+        data: utils.getSampleQCJsonData(),
+        resources: [],
         dependencies: ["3899c47412024f5cb3278e531bfbbf20"],
         relatedItems: [],
         groups: [],
@@ -820,7 +796,7 @@ describe("simpleTypeConvertItemToTemplate", () => {
         .post(
           utils.PORTAL_SUBSET.restUrl +
             "/content/items/qck1234567890/resources/qc.project.json",
-          utils.getSampleJsonAsFile("qc.project.json"),
+          utils.getSampleQCProjectJsonFile(),
           { sendAsJson: false }
         )
         .post(
@@ -837,15 +813,15 @@ describe("simpleTypeConvertItemToTemplate", () => {
 
       const itemInfo: common.IItemTemplate = mockItems.getAGOLItem(
         "QuickCapture Project",
-        null
+        undefined
       );
 
       const expected: common.IItemTemplate = {
         itemId: "qck1234567890",
         key: "vx3ubyx3",
-        data: null,
-        resources: [utils.getSampleJsonAsFile("qc.project.json")],
-        dependencies: [],
+        data: utils.getSampleQCJsonData(),
+        resources: [],
+        dependencies: ["3899c47412024f5cb3278e531bfbbf20"],
         relatedItems: [],
         groups: [],
         type: "QuickCapture Project",
@@ -928,7 +904,7 @@ describe("simpleTypeConvertItemToTemplate", () => {
         .post(
           utils.PORTAL_SUBSET.restUrl +
             "/content/items/qck1234567890/resources/qc.project.json",
-          utils.getSampleJsonAsFile("qc.project.json"),
+          utils.getSampleQCProjectJsonFile(),
           { sendAsJson: false }
         )
         .post(
@@ -945,14 +921,14 @@ describe("simpleTypeConvertItemToTemplate", () => {
 
       const itemInfo: common.IItemTemplate = mockItems.getAGOLItem(
         "QuickCapture Project",
-        null
+        undefined
       );
 
       const expected: common.IItemTemplate = {
         itemId: "qck1234567890",
         key: "vx3ubyx3",
         data: Object({}),
-        resources: [utils.getSampleJsonAsFile("qc.project.json")],
+        resources: [],
         dependencies: [],
         relatedItems: [],
         groups: [],
@@ -1039,7 +1015,7 @@ describe("simpleTypeConvertItemToTemplate", () => {
         .post(
           utils.PORTAL_SUBSET.restUrl +
             "/content/items/qck1234567890/resources/qc.project.json",
-          utils.getSampleJsonAsFile("qc.project.json"),
+          utils.getSampleQCProjectJsonFile(),
           { sendAsJson: false }
         )
         .post(
@@ -1056,7 +1032,7 @@ describe("simpleTypeConvertItemToTemplate", () => {
 
       const itemInfo: common.IItemTemplate = mockItems.getAGOLItem(
         "QuickCapture Project",
-        null
+        undefined
       );
 
       const expected: common.IItemTemplate = {
@@ -1066,7 +1042,7 @@ describe("simpleTypeConvertItemToTemplate", () => {
           application: {},
           name: "qc.project.json"
         }),
-        resources: [utils.getSampleJsonAsFile("qc.project.json")],
+        resources: [],
         dependencies: [],
         relatedItems: [],
         groups: [],
@@ -1207,7 +1183,7 @@ describe("simpleTypeConvertItemToTemplate", () => {
       const solutionItemId = "sln1234567890";
       const itemTemplate: common.IItemTemplate = mockItems.getAGOLItem(
         "Web Mapping Application",
-        null
+        undefined
       );
 
       itemTemplate.item = {
@@ -1329,7 +1305,7 @@ describe("simpleTypeConvertItemToTemplate", () => {
       const solutionItemId = "sln1234567890";
       const itemTemplate: common.IItemTemplate = mockItems.getAGOLItem(
         "Web Mapping Application",
-        null
+        undefined
       );
 
       itemTemplate.item = {
@@ -1380,7 +1356,7 @@ describe("simpleTypeConvertItemToTemplate", () => {
       const solutionItemId = "sln1234567890";
       const itemTemplate: common.IItemTemplate = mockItems.getAGOLItem(
         "Web Mapping Application",
-        null
+        undefined
       );
 
       itemTemplate.item = {
@@ -1472,7 +1448,7 @@ describe("simpleTypeConvertItemToTemplate", () => {
       const itemTemplate: common.IItemTemplate = templates.getItemTemplateSkeleton();
       itemTemplate.item = mockItems.getAGOLItem(
         "Web Mapping Application",
-        null
+        undefined
       );
       itemTemplate.itemId = itemTemplate.item.id;
       itemTemplate.item.thumbnail = null;
@@ -1556,7 +1532,7 @@ describe("simpleTypeConvertItemToTemplate", () => {
           {}
         )
         .then(newItemTemplate => {
-          delete newItemTemplate.key; // key is randomly generated, and so is not testable
+          delete (newItemTemplate as any).key; // key is randomly generated, and so is not testable
           expect(newItemTemplate).toEqual(expectedTemplate);
           done();
         }, done.fail);
