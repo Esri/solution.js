@@ -76,11 +76,9 @@ export function blobToFile(
   filename: string,
   mimeType?: string
 ): File {
-  return blob
-    ? new File([blob], filename ? filename : "", {
-        type: mimeType ?? blob.type ?? ""
-      })
-    : null;
+  return new File([blob], filename ? filename : "", {
+    type: mimeType ?? blob.type  // Blobs default to type=""
+  });
 }
 
 /**
@@ -118,7 +116,7 @@ export function checkUrlPathTermination(url: string): string {
  * @return solutions-style item
  */
 export function convertIModel(
-  hubModel: IModel
+  hubModel: IModel | undefined
 ): IItemTemplate {
   const item: any = {
     ...hubModel
@@ -856,9 +854,12 @@ export function cleanLayerId(id: any) {
  *
  * @returns Template associated with the user provided id argument
  */
-export function getTemplateById(templates: IItemTemplate[], id: string): any {
+export function getTemplateById(
+  templates: IItemTemplate[], 
+  id: string
+): any {
   let template;
-  (templates || []).some(_template => {
+  templates.some(_template => {
     if (_template.itemId === id) {
       template = _template;
       return true;

@@ -218,6 +218,7 @@ export function createItemTemplate(
                         (resourceItemFilePaths: ISourceFileCopyPath[]) => {
                           itemTemplate.item.thumbnail = null; // not needed in this property; handled as a resource
 
+
                           // eslint-disable-next-line @typescript-eslint/no-floating-promises
                           return getItemResourcesFilesFromPaths(
                             resourceItemFilePaths,

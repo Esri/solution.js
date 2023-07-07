@@ -207,6 +207,7 @@ describe("Module `quick capture`: manages the creation and deployment of quick c
       expect(common.getProp(obj, urlPath)).toEqual(expectedUpdatedUrl);
     });
 
+    /* TODO: migrate to removal of postProcess function
     it("postProcess QuickCapture projects--no changes needed", done => {
       const qcTemplate: common.IItemTemplate = templates.getItemTemplate(
         "QuickCapture Project"
@@ -328,7 +329,9 @@ describe("Module `quick capture`: manages the creation and deployment of quick c
           done();
         }, done.fail);
     });
+    */
 
+    /* TODO: migrate to removal of postProcess function
     it("postProcess QuickCapture projects--changes needed", done => {
       const qcTemplate: common.IItemTemplate = templates.getItemTemplate(
         "QuickCapture Project"
@@ -458,5 +461,6 @@ describe("Module `quick capture`: manages the creation and deployment of quick c
           done();
         }, done.fail);
     });
+    */
   });
 });
