@@ -28,6 +28,8 @@ import * as utils from "../../common/test/mocks/utils";
 
 // ------------------------------------------------------------------------------------------------------------------ //
 
+jasmine.DEFAULT_TIMEOUT_INTERVAL = 20000; // default is 5000 ms
+
 let MOCK_USER_SESSION: common.UserSession;
 
 beforeEach(() => {
@@ -87,7 +89,7 @@ describe("Module `deploySolutionItems`", () => {
         "https://apl.maps.arcgis.com/apps/Viewer/index.html?appid=map1234567890";
       const itemTemplate: common.IItemTemplate = templates.getItemTemplate(
         type,
-        null,
+        undefined,
         url
       );
       itemTemplate.item.thumbnail = null;
@@ -201,7 +203,7 @@ describe("Module `deploySolutionItems`", () => {
 
       const itemTemplate: common.IItemTemplate = templates.getItemTemplate(
         type,
-        null,
+        undefined,
         "https://apl.maps.arcgis.com/apps/Viewer/index.html?appid=map1234567890"
       );
       itemTemplate.item.thumbnail = null;
@@ -243,7 +245,7 @@ describe("Module `deploySolutionItems`", () => {
 
       const expected: common.ICreateItemFromTemplateResponse[] = [
         {
-          item: null as common.IItemTemplate,
+          item: null as unknown as common.IItemTemplate,
           id: foundItemID,
           type: type,
           postProcess: false
@@ -289,7 +291,7 @@ describe("Module `deploySolutionItems`", () => {
 
       const itemTemplate: common.IItemTemplate = templates.getItemTemplate(
         type,
-        null,
+        undefined,
         "https://apl.maps.arcgis.com/apps/Viewer/index.html?appid=map1234567890"
       );
       itemTemplate.item.thumbnail = null;
@@ -339,7 +341,7 @@ describe("Module `deploySolutionItems`", () => {
 
       const expected: common.ICreateItemFromTemplateResponse[] = [
         {
-          item: null as common.IItemTemplate,
+          item: null as unknown as common.IItemTemplate,
           id: foundItemID,
           type: type,
           postProcess: false
@@ -385,7 +387,7 @@ describe("Module `deploySolutionItems`", () => {
 
       const itemTemplate: common.IItemTemplate = templates.getItemTemplate(
         type,
-        null,
+        undefined,
         "https://apl.maps.arcgis.com/apps/Viewer/index.html?appid=map1234567890"
       );
       itemTemplate.item.thumbnail = null;
@@ -440,7 +442,7 @@ describe("Module `deploySolutionItems`", () => {
 
       const expected: common.ICreateItemFromTemplateResponse[] = [
         {
-          item: null as common.IItemTemplate,
+          item: null as unknown as common.IItemTemplate,
           id: foundItemID2,
           type: type,
           postProcess: false
@@ -543,7 +545,7 @@ describe("Module `deploySolutionItems`", () => {
 
       const expected: common.ICreateItemFromTemplateResponse[] = [
         {
-          item: null as common.IItemTemplate,
+          item: null as unknown as common.IItemTemplate,
           id: foundItemID2,
           type: type,
           postProcess: false
@@ -620,7 +622,7 @@ describe("Module `deploySolutionItems`", () => {
 
       const expected: common.ICreateItemFromTemplateResponse[] = [
         {
-          item: null as common.IItemTemplate,
+          item: null as unknown as common.IItemTemplate,
           id: foundItemID,
           type: type,
           postProcess: false
@@ -679,7 +681,7 @@ describe("Module `deploySolutionItems`", () => {
 
       const expected: common.ICreateItemFromTemplateResponse[] = [
         {
-          item: null as common.IItemTemplate,
+          item: null as unknown as common.IItemTemplate,
           id: foundItemID,
           type: type,
           postProcess: false
@@ -724,7 +726,7 @@ describe("Module `deploySolutionItems`", () => {
 
       const itemTemplate: common.IItemTemplate = templates.getItemTemplate(
         type,
-        null,
+        undefined,
         "https://apl.maps.arcgis.com/apps/Viewer/index.html?appid=map1234567890"
       );
       itemTemplate.item.thumbnail = null;
@@ -748,7 +750,7 @@ describe("Module `deploySolutionItems`", () => {
 
       const expected: common.ICreateItemFromTemplateResponse[] = [
         {
-          item: null as common.IItemTemplate,
+          item: null as unknown as common.IItemTemplate,
           id: foundItemID,
           type: type,
           postProcess: false
@@ -797,7 +799,7 @@ describe("Module `deploySolutionItems`", () => {
 
       const itemTemplate: common.IItemTemplate = templates.getItemTemplate(
         type,
-        null,
+        undefined,
         "https://apl.maps.arcgis.com/apps/Viewer/index.html?appid=map1234567890"
       );
       itemTemplate.item.thumbnail = null;
@@ -831,7 +833,7 @@ describe("Module `deploySolutionItems`", () => {
 
       const expected: common.ICreateItemFromTemplateResponse[] = [
         {
-          item: null as common.IItemTemplate,
+          item: null as unknown as common.IItemTemplate,
           id: foundItemID,
           type: type,
           postProcess: false
@@ -882,7 +884,7 @@ describe("Module `deploySolutionItems`", () => {
         "https://apl.maps.arcgis.com/apps/Viewer/index.html?appid=map1234567890";
       const itemTemplate: common.IItemTemplate = templates.getItemTemplate(
         type,
-        null,
+        undefined,
         url
       );
       itemTemplate.item.thumbnail = null;
@@ -958,7 +960,7 @@ describe("Module `deploySolutionItems`", () => {
 
       const expected: common.ICreateItemFromTemplateResponse[] = [
         {
-          item: null as common.IItemTemplate,
+          item: null as unknown as common.IItemTemplate,
           id: newItemID,
           type: type,
           postProcess: true
@@ -1260,6 +1262,47 @@ describe("Module `deploySolutionItems`", () => {
     });
   });
 
+  describe("Remove qc.project.json files from the resources", () => {
+    it("can handle a QuickCapture Project template that has an unwanted qc.project.json", done => {
+      spyOn(console, "log").and.callFake(() => {});
+      const template = templates.getItemTemplateSkeleton();
+      template.itemId = template.item.id = "qck1234567890";
+      template.type = template.item.type = "QuickCapture Project";
+      delete (template as any)?.dependencies;
+      template.resources = ["qck1234567890/qc.project.json"];
+      spyOn(common, "createItemWithData").and.resolveTo({
+        success: true,
+        id: "qck1234567891",
+        folder: ""
+      } as common.ICreateItemResponse);
+
+      deploySolution
+        .deploySolutionItems(
+          "",
+          "",
+          [template],
+          MOCK_USER_SESSION,
+          {},
+          "",
+          MOCK_USER_SESSION,
+          {
+            enableItemReuse: false,
+            progressCallback: utils.SOLUTION_PROGRESS_CALLBACK,
+            consoleProgress: true
+          }
+        )
+        .then(
+          (results: common.ICreateItemFromTemplateResponse[]) => {
+            expect(results.length).toEqual(1);
+            expect(results[0].item?.dependencies).toEqual([]);
+            expect(results[0].item?.resources).toEqual([]);
+            done();
+          },
+          done.fail
+        );
+    });
+  });
+
   describe("_createItemFromTemplateWhenReady", () => {
     it("flags unimplemented item types", done => {
       const itemTemplate: common.IItemTemplate = templates.getItemTemplate(
@@ -1312,7 +1355,7 @@ describe("Module `deploySolutionItems`", () => {
     it("handles Web Mapping Applications that are not Storymaps", done => {
       const itemTemplate: common.IItemTemplate = templates.getItemTemplate(
         "Web Mapping Application",
-        null,
+        undefined,
         "https://apl.maps.arcgis.com/apps/Viewer/index.html?appid=map1234567890"
       );
       itemTemplate.item.thumbnail = null;
@@ -1795,7 +1838,7 @@ describe("Module `deploySolutionItems`", () => {
     it("can handle error on copyFilesFromStorage", done => {
       const itemTemplate: common.IItemTemplate = templates.getItemTemplate(
         "Web Mapping Application",
-        null,
+        undefined,
         "https://apl.maps.arcgis.com/apps/Viewer/index.html?appid=map1234567890"
       );
       itemTemplate.item.thumbnail = null;

@@ -185,11 +185,6 @@ export function createItemFromTemplate(
                   templateDictionary
                 );
               } else if (template.type === "QuickCapture Project") {
-                // Remove older qc.project.json files from the resources
-                newItemTemplate.resources = newItemTemplate.resources.filter(
-                  (filename: string) => !filename.endsWith("qc.project.json")
-                );
-
                 if (qcProjectFileContents) {
                   // Generate the qc.project.json file resource from the data section after handling templatized variables
                   const qcProjectFile = common.jsonToFile(

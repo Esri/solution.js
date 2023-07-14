@@ -95,15 +95,7 @@ export function convertItemToTemplate(
         );
         break;
       case "QuickCapture Project":
-        // Fetch older-version config
-        dataPromise = new Promise(resolveJSON => {
-          // eslint-disable-next-line @typescript-eslint/no-floating-promises
-          common
-            .getItemDataAsJson(itemTemplate.itemId, srcAuthentication)
-            .then(json => resolveJSON(json));
-        });
-
-        // Fetch all of the resources in case we need the newer-version config
+        // Fetch all of the resources to get the config
         resourcesPromise = common.getItemResourcesFiles(
           itemTemplate.itemId,
           srcAuthentication
@@ -192,34 +184,6 @@ export function convertItemToTemplate(
             srcAuthentication
           );
           break;
-        case "Vector Tile Service":
-        case "Web Map":
-        case "Web Scene":
-          templateModifyingPromise = webmap.convertItemToTemplate(
-            itemTemplate,
-            destAuthentication,
-            srcAuthentication,
-            templateDictionary
-          );
-          break;
-        case "Web Mapping Application":
-          if (itemDataResponse) {
-            templateModifyingPromise = webmappingapplication.convertItemToTemplate(
-              itemTemplate,
-              destAuthentication,
-              srcAuthentication,
-              templateDictionary
-            );
-          }
-          break;
-        case "Workforce Project":
-          templateModifyingPromise = workforce.convertItemToTemplate(
-            itemTemplate,
-            destAuthentication,
-            srcAuthentication,
-            templateDictionary
-          );
-          break;
         case "QuickCapture Project":
           // Save all of the resources that we've fetched so as to not fetch them again
           itemTemplate.resources = resourcesResponse;
@@ -260,7 +224,7 @@ export function convertItemToTemplate(
               }
 
               // Save the basemap dependency
-              if (itemTemplate.data.application?.basemap?.type === "WebMap") {
+              if (itemTemplate.data.application?.basemap?.type === "Web Map") {
                 itemTemplate.dependencies.push(itemTemplate.data.application.basemap.itemId);
               }
 
@@ -268,6 +232,34 @@ export function convertItemToTemplate(
               const updatedTemplate = quickcapture.convertQuickCaptureToTemplate(itemTemplate);
               qcResolve(updatedTemplate);
             }
+          );
+          break;
+        case "Vector Tile Service":
+        case "Web Map":
+        case "Web Scene":
+          templateModifyingPromise = webmap.convertItemToTemplate(
+            itemTemplate,
+            destAuthentication,
+            srcAuthentication,
+            templateDictionary
+          );
+          break;
+        case "Web Mapping Application":
+          if (itemDataResponse) {
+            templateModifyingPromise = webmappingapplication.convertItemToTemplate(
+              itemTemplate,
+              destAuthentication,
+              srcAuthentication,
+              templateDictionary
+            );
+          }
+          break;
+        case "Workforce Project":
+          templateModifyingPromise = workforce.convertItemToTemplate(
+            itemTemplate,
+            destAuthentication,
+            srcAuthentication,
+            templateDictionary
           );
           break;
       }

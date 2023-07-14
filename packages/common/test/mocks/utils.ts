@@ -223,8 +223,8 @@ export function getSampleQCJsonData(
   return {
     application: {
       basemap: {
-          type: "WebMap",
-          itemId: "3899c47412024f5cb3278e531bfbbf20",
+          type: "Web Map",
+          itemId: "map1234567890",
           mapAreas: [],
           required: true,
           useDefaultBasemap: false,
@@ -239,8 +239,8 @@ export function getSampleQCProjectJsonFile(
 ): File {
   return new File([jsonToBlob({
     basemap: {
-        type: "WebMap",
-        itemId: "3899c47412024f5cb3278e531bfbbf20",
+        type: "Web Map",
+        itemId: "map1234567890",
         mapAreas: [],
         required: true,
         useDefaultBasemap: false,
