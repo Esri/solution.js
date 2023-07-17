@@ -16,10 +16,9 @@ jobs:
       with:
         node-version: 18.x
 
-    - name: npm install, make test-coverage
+    - name: Run
       run: |
-        npm install
-        make test-coverage
+        npm run test:ci
 
     - name: Coveralls
       uses: coverallsapp/github-action@v2
