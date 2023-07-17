@@ -9,3 +9,5 @@ env:
 addons:
   chrome: stable
   firefox: latest
+notifications:
+  webhooks: https://coveralls.io/webhook
