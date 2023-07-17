@@ -13,7 +13,7 @@
   },
   "devDependencies": {
     "@esri/arcgis-rest-auth": "~3.5.0",
-    "@esri/arcgis-rest-feature-layer": "~3.5.0",
+    "@esri/arcgis-rest-feature-layer": "~3.6.0",
     "@esri/arcgis-rest-portal": "~3.5.0",
     "@esri/arcgis-rest-request": "~3.5.0",
     "@esri/arcgis-rest-service-admin": "~3.6.0",
