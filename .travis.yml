@@ -1,4 +1,4 @@
-os: windows
+dist: jammy
 language: node_js
 node_js:
   - 18
