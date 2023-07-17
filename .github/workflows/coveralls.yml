@@ -19,6 +19,7 @@ jobs:
     - name: Run
       run: |
         npm install
+        npm run build
         npm run test:coverage
 
     - name: Coveralls
