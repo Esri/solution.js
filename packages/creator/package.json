@@ -42,7 +42,7 @@
   },
   "dependencies": {
     "@esri/arcgis-rest-types": "^3.6.0",
-    "tslib": "1.14.1"
+    "tslib": "2.6.0"
   },
   "scripts": {
     "build": "npm-run-all --parallel build:*",
