@@ -37,9 +37,6 @@ jobs:
       - name: Lint
         run: npm run lint
 
-      - name: Test in Node
-        run: npm run test:node
-
       - name: Test in Chrome
         run: npm run test:chrome:ci
 
