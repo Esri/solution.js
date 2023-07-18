@@ -1,5 +1,4 @@
-os: linux
-dist: jammy
+os: ubuntu-latest
 language: node_js
 node_js:
   - 18
