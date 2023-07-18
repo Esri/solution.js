@@ -1,0 +1,31 @@
+language: node_js
+node_js:
+  - 18
+cache: npm
+script:
+  - npm run test:ci
+env:
+  - MOZ_HEADLESS=1
+addons:
+  chrome: stable
+  firefox: latest
+
+
+os: linux
+dist: jammy
+language: node_js
+node_js:
+  - 18
+cache: npm
+before_install:
+  - npm update
+install:
+  - npm install
+  - npm run build
+script:
+  - npm run test:ci
+env:
+  - MOZ_HEADLESS=1
+addons:
+  chrome: stable
+  firefox: latest
