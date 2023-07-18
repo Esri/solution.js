@@ -1,8 +1,14 @@
+os: linux
 dist: jammy
 language: node_js
 node_js:
   - 18
 cache: npm
+before_install:
+  - npm update
+install:
+  - npm install
+  - npm build
 script:
   - npm run test:ci
 env:
@@ -10,5 +16,3 @@ env:
 addons:
   chrome: stable
   firefox: latest
-notifications:
-  webhooks: https://coveralls.io/webhook
