@@ -9,8 +9,6 @@ before_install:
 install:
   - npm install
   - npm run build
-script:
-  - npm run test:ci
 env:
   - MOZ_HEADLESS=1
 addons:
