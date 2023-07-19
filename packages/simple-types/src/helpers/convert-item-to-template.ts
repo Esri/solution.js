@@ -95,15 +95,7 @@ export function convertItemToTemplate(
         );
         break;
       case "QuickCapture Project":
-        // Fetch older-version config
-        dataPromise = new Promise(resolveJSON => {
-          // eslint-disable-next-line @typescript-eslint/no-floating-promises
-          common
-            .getItemDataAsJson(itemTemplate.itemId, srcAuthentication)
-            .then(json => resolveJSON(json));
-        });
-
-        // Fetch all of the resources in case we need the newer-version config
+        // Fetch all of the resources to get the config
         resourcesPromise = common.getItemResourcesFiles(
           itemTemplate.itemId,
           srcAuthentication
@@ -192,6 +184,56 @@ export function convertItemToTemplate(
             srcAuthentication
           );
           break;
+        case "QuickCapture Project":
+          // Save all of the resources that we've fetched so as to not fetch them again
+          itemTemplate.resources = resourcesResponse;
+
+          // Get the QC config
+          templateModifyingPromise = new Promise(
+            // eslint-disable-next-line @typescript-eslint/no-misused-promises, no-async-promise-executor
+            async (qcResolve) => {
+              // Remove the qc.project.json file from the list of resources
+              let qcProjectFile: File = null;
+              let iQcProjectFile: number = -1;
+              if (resourcesResponse) {
+                resourcesResponse.some(
+                  (file: File, i: number) => {
+                    const haveConfigFile = file.name === "qc.project.json";
+                    if (haveConfigFile) {
+                      qcProjectFile = file;
+                      iQcProjectFile = i;
+                    }
+                    return haveConfigFile;
+                  }
+                );
+
+                // Discard the qc.project.json file
+                if (iQcProjectFile >= 0) {
+                  resourcesResponse.splice(iQcProjectFile, 1);
+                }
+              }
+
+              // Copy the qc.project.json file into the data section
+              if (qcProjectFile) {
+                itemTemplate.data = {
+                  application: {
+                    ...await common.blobToJson(qcProjectFile),
+                  },
+                  name: "qc.project.json"
+                }
+              }
+
+              // Save the basemap dependency
+              if (itemTemplate.data.application?.basemap?.type === "Web Map") {
+                itemTemplate.dependencies.push(itemTemplate.data.application.basemap.itemId);
+              }
+
+              // Create the template
+              const updatedTemplate = quickcapture.convertQuickCaptureToTemplate(itemTemplate);
+              qcResolve(updatedTemplate);
+            }
+          );
+          break;
         case "Vector Tile Service":
         case "Web Map":
         case "Web Scene":
@@ -218,62 +260,6 @@ export function convertItemToTemplate(
             destAuthentication,
             srcAuthentication,
             templateDictionary
-          );
-          break;
-        case "QuickCapture Project":
-          // Save all of the resources that we've fetched so as to not fetch them again
-          itemTemplate.resources = resourcesResponse;
-
-          // Get the QC config
-          templateModifyingPromise = new Promise(
-            // eslint-disable-next-line @typescript-eslint/no-misused-promises, no-async-promise-executor
-            async (qcResolve) => {
-              // Remove the qc.project.json file from the resources
-              let qcProjectFile: File = null;
-              let iQcProjectFile: number = -1;
-              if (resourcesResponse) {
-                resourcesResponse.some(
-                  (file: File, i: number) => {
-                    const haveConfigFile = file.name === "qc.project.json";
-                    if (haveConfigFile) {
-                      qcProjectFile = file;
-                      iQcProjectFile = i;
-                    }
-                    return haveConfigFile;
-                  }
-                );
-
-                // Discard the qc.project.json file
-                if (iQcProjectFile >= 0) {
-                  resourcesResponse.splice(iQcProjectFile, 1);
-                }
-              }
-
-              // If there's a data section, we'll use it; it's already loaded into itemTemplate.data as JSON
-              if (itemDataResponse) {
-                itemTemplate.data = itemDataResponse;
-
-              } else {
-                // No data section, so this is a newer-format QC; copy the qc.project.json file into the data section
-                if (qcProjectFile) {
-                  itemTemplate.data = {
-                    application: {
-                      ...await common.blobToJson(qcProjectFile),
-                    },
-                    name: "qc.project.json"
-                  }
-                }
-              }
-
-              // Save the basemap dependency
-              if (itemTemplate.data.application?.basemap?.type === "WebMap") {
-                itemTemplate.dependencies.push(itemTemplate.data.application.basemap.itemId);
-              }
-
-              // Create the template
-              const updatedTemplate = quickcapture.convertQuickCaptureToTemplate(itemTemplate);
-              qcResolve(updatedTemplate);
-            }
           );
           break;
       }

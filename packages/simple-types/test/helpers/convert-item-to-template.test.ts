@@ -712,7 +712,7 @@ describe("simpleTypeConvertItemToTemplate", () => {
         key: "vx3ubyx3",
         data: utils.getSampleQCJsonData(),
         resources: [],
-        dependencies: ["3899c47412024f5cb3278e531bfbbf20"],
+        dependencies: ["map1234567890"],
         relatedItems: [],
         groups: [],
         type: "QuickCapture Project",
@@ -821,115 +821,7 @@ describe("simpleTypeConvertItemToTemplate", () => {
         key: "vx3ubyx3",
         data: utils.getSampleQCJsonData(),
         resources: [],
-        dependencies: ["3899c47412024f5cb3278e531bfbbf20"],
-        relatedItems: [],
-        groups: [],
-        type: "QuickCapture Project",
-        item: {
-          id: "{{qck1234567890.itemId}}",
-          type: "QuickCapture Project",
-          accessInformation: "Esri, Inc.",
-          categories: [],
-          contentStatus: null,
-          culture: "en-us",
-          description: "Description of an AGOL item",
-          extent: [],
-          spatialReference: undefined,
-          licenseInfo: null,
-          name: "Name of an AGOL item",
-          origUrl: undefined,
-          properties: null,
-          snippet: "Snippet of an AGOL item",
-          tags: ["test"],
-          thumbnail: "thumbnail/ago_downloaded.png",
-          title: "An AGOL item",
-          typeKeywords: ["JavaScript"],
-          url: "",
-          created: 1520968147000,
-          modified: 1522178539000
-        },
-        properties: {},
-        estimatedDeploymentCostFactor: 2
-      };
-
-      simpleTypes
-        .convertItemToTemplate(solutionItemId, itemInfo, MOCK_USER_SESSION, MOCK_USER_SESSION, {})
-        .then(actual => {
-          actual.key = expected.key;
-          expect(actual).toEqual(expected);
-          done();
-        }, done.fail);
-    });
-
-    it("should handle quick capture project without an application", done => {
-      const solutionItemId = "ee67658b2a98450cba051fd001463df0";
-      const resources: any = {
-        total: 1,
-        start: 1,
-        num: 1,
-        nextStart: -1,
-        resources: [
-          {
-            resource: "qc.project.json",
-            created: 1579127879000,
-            size: 29882,
-            access: "inherit",
-            type: "application/json"
-          }
-        ]
-      };
-
-      fetchMock
-        .post(
-          utils.PORTAL_SUBSET.restUrl +
-            "/content/items/qck1234567890/data",
-          Object({})
-        )
-        .post(
-          utils.PORTAL_SUBSET.restUrl +
-            "/content/items/qck1234567890/resources",
-          resources
-        )
-        .post(
-          utils.PORTAL_SUBSET.restUrl +
-            "/content/items/qck1234567890/info/metadata/metadata.xml",
-          mockItems.get500Failure()
-        )
-        .post(
-          utils.PORTAL_SUBSET.restUrl +
-            "/content/items/qck1234567890/info/thumbnail/ago_downloaded.png",
-          utils.getSampleImageAsBlob(),
-          { sendAsJson: false }
-        )
-        .post(
-          utils.PORTAL_SUBSET.restUrl +
-            "/content/items/qck1234567890/resources/qc.project.json",
-          utils.getSampleQCProjectJsonFile(),
-          { sendAsJson: false }
-        )
-        .post(
-          utils.PORTAL_SUBSET.restUrl +
-            "/content/users/casey/items/" +
-            solutionItemId +
-            "/addResources",
-          { success: true, id: solutionItemId }
-        );
-      staticRelatedItemsMocks.fetchMockRelatedItems("qck1234567890", {
-        total: 0,
-        relatedItems: []
-      });
-
-      const itemInfo: common.IItemTemplate = mockItems.getAGOLItem(
-        "QuickCapture Project",
-        undefined
-      );
-
-      const expected: common.IItemTemplate = {
-        itemId: "qck1234567890",
-        key: "vx3ubyx3",
-        data: Object({}),
-        resources: [],
-        dependencies: [],
+        dependencies: ["map1234567890"],
         relatedItems: [],
         groups: [],
         type: "QuickCapture Project",
@@ -986,6 +878,8 @@ describe("simpleTypeConvertItemToTemplate", () => {
           }
         ]
       };
+      const qcProjectJson = new File([utils.jsonToBlob({})],
+        "qc.project.json", { type: "application/json" });
 
       fetchMock
         .post(
@@ -1015,7 +909,7 @@ describe("simpleTypeConvertItemToTemplate", () => {
         .post(
           utils.PORTAL_SUBSET.restUrl +
             "/content/items/qck1234567890/resources/qc.project.json",
-          utils.getSampleQCProjectJsonFile(),
+          qcProjectJson,
           { sendAsJson: false }
         )
         .post(
@@ -1038,10 +932,10 @@ describe("simpleTypeConvertItemToTemplate", () => {
       const expected: common.IItemTemplate = {
         itemId: "qck1234567890",
         key: "vx3ubyx3",
-        data: Object({
+        data: {
           application: {},
           name: "qc.project.json"
-        }),
+        },
         resources: [],
         dependencies: [],
         relatedItems: [],
