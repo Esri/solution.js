@@ -120,7 +120,7 @@ describe("Module `createItemTemplate`", () => {
 
     it("creates a template for a QuickCapture Project item", done => {
       const solutionItemId: string = "sln1234567890";
-      const itemId: string = "qck12345678900";
+      const itemId: string = "qck1234567890";
       const templateDictionary: any = {};
       const authentication: common.UserSession = MOCK_USER_SESSION;
       const existingTemplates: common.IItemTemplate[] = [];
@@ -143,7 +143,7 @@ describe("Module `createItemTemplate`", () => {
       fetchMock
         .get(
           utils.PORTAL_SUBSET.restUrl +
-            "/content/items/qck12345678900?f=json&token=fake-token",
+            "/content/items/qck1234567890?f=json&token=fake-token",
           mockItems.getAGOLItem("QuickCapture Project")
         )
         .post(
@@ -171,12 +171,39 @@ describe("Module `createItemTemplate`", () => {
           utils.getSampleQCProjectJsonFile(),
           { sendAsJson: false }
         )
+        .get(
+          utils.PORTAL_SUBSET.restUrl + "/content/items/map1234567890?f=json&token=fake-token",
+          mockItems.getAGOLItem("Web Map")
+        )
+        .post(
+          utils.PORTAL_SUBSET.restUrl +
+            "/content/items/map1234567890/info/thumbnail/ago_downloaded.png?w=400",
+          utils.getSampleImageAsBlob()
+        )
+        .post(
+          utils.PORTAL_SUBSET.restUrl + "/content/items/map1234567890/data",
+          noDataResponse
+        )
+        .post(
+          utils.PORTAL_SUBSET.restUrl +
+            "/content/items/map1234567890/info/metadata/metadata.xml",
+          noMetadataResponse
+        )
+        .post(
+          utils.PORTAL_SUBSET.restUrl +
+            "/content/items/map1234567890/resources",
+          noResourcesResponse
+        )
         .post(
           utils.PORTAL_SUBSET.restUrl +
             "/content/users/casey/items/sln1234567890/addResources",
           { success: true, id: solutionItemId }
         );
       staticRelatedItemsMocks.fetchMockRelatedItems("qck1234567890", {
+        total: 0,
+        relatedItems: []
+      });
+      staticRelatedItemsMocks.fetchMockRelatedItems("map1234567890", {
         total: 0,
         relatedItems: []
       });
@@ -193,15 +220,18 @@ describe("Module `createItemTemplate`", () => {
           utils.ITEM_PROGRESS_CALLBACK
         )
         .then(() => {
-          expect(existingTemplates.length).toEqual(1);
+          expect(existingTemplates.length).toEqual(2);
           expect(existingTemplates[0].itemId).toEqual(itemId);
+          expect(existingTemplates[0].resources).toEqual(["qck1234567890_info_thumbnail/ago_downloaded.png"]);
+          expect(existingTemplates[0].dependencies).toEqual(["map1234567890"]);
+          expect(existingTemplates[1].itemId).toEqual("map1234567890");
           done();
         });
     });
 
     it("creates a template for a QuickCapture Project item with resource in folder", done => {
       const solutionItemId: string = "sln1234567890";
-      const itemId: string = "qck12345678900";
+      const itemId: string = "qck1234567890";
       const templateDictionary: any = {};
       const authentication: common.UserSession = MOCK_USER_SESSION;
       const existingTemplates: common.IItemTemplate[] = [];
@@ -224,7 +254,7 @@ describe("Module `createItemTemplate`", () => {
       fetchMock
         .get(
           utils.PORTAL_SUBSET.restUrl +
-            "/content/items/qck12345678900?f=json&token=fake-token",
+            "/content/items/qck1234567890?f=json&token=fake-token",
           mockItems.getAGOLItem("QuickCapture Project")
         )
         .post(
