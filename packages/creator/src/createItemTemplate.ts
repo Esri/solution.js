@@ -34,6 +34,7 @@ import {
   createPlaceholderTemplate,
   fail,
   findTemplateInList,
+  generateSourceThumbnailPath,
   getGroupBase,
   getItemBase,
   getItemResourcesFilesFromPaths,
@@ -182,19 +183,29 @@ export function createItemTemplate(
 
                     // If the item type is Quick Capture, then we already have the resource files and just need to
                     // convert them into ISourceFile objects
+
                     if (itemTemplate.type === "QuickCapture Project") {
-                      const resourceItemFiles: ISourceFile[] = itemTemplate.resources.map(
-                        (file: File) => {
-                          const fileParts = file.name.split("/");
-                          return {
-                            itemId: itemTemplate.itemId,
-                            file,
-                            folder: fileParts.length === 1 ? "" : fileParts[0],
-                            filename: fileParts.length === 1 ? fileParts[0] : fileParts[1],
-                          };
+                      // Fetch thumbnail
+                      // eslint-disable-next-line @typescript-eslint/no-floating-promises
+                      resourcePrepPromise = getItemResourcesFilesFromPaths(
+                        [generateSourceThumbnailPath(srcAuthentication.portal, itemTemplate.itemId, itemTemplate.item.thumbnail)],
+                        srcAuthentication
+                      ).then(
+                        (thumbnailFile: ISourceFile[]) => {
+                          itemTemplate.item.thumbnail = null; // not needed in this property; handled as a resource
+
+                          return itemTemplate.resources.map(
+                            (file: File) => {
+                              return {
+                                itemId: itemTemplate.itemId,
+                                file,
+                                folder: itemTemplate.itemId,
+                                filename: file.name
+                              };
+                            }
+                          ).concat(thumbnailFile);
                         }
                       );
-                      resourcePrepPromise = Promise.resolve(resourceItemFiles);
 
                     } else {
                       // eslint-disable-next-line @typescript-eslint/no-floating-promises
@@ -206,6 +217,7 @@ export function createItemTemplate(
                       ).then(
                         (resourceItemFilePaths: ISourceFileCopyPath[]) => {
                           itemTemplate.item.thumbnail = null; // not needed in this property; handled as a resource
+
 
                           // eslint-disable-next-line @typescript-eslint/no-floating-promises
                           return getItemResourcesFilesFromPaths(

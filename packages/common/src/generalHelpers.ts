@@ -28,7 +28,6 @@ import {
   IStringValuePair
 } from "./interfaces";
 import { Sanitizer, sanitizeJSON } from "./libConnectors";
-import { new_File } from "./polyfills";
 
 // ------------------------------------------------------------------------------------------------------------------ //
 
@@ -77,11 +76,9 @@ export function blobToFile(
   filename: string,
   mimeType?: string
 ): File {
-  return blob
-    ? new_File([blob], filename ? filename : "", {
-        type: mimeType || blob.type
-      })
-    : null;
+  return new File([blob], filename ? filename : "", {
+    type: mimeType ?? blob.type  // Blobs default to type=""
+  });
 }
 
 /**
@@ -119,7 +116,7 @@ export function checkUrlPathTermination(url: string): string {
  * @return solutions-style item
  */
 export function convertIModel(
-  hubModel: IModel
+  hubModel: IModel | undefined
 ): IItemTemplate {
   const item: any = {
     ...hubModel
@@ -199,15 +196,9 @@ export function generateEmptyCreationResponse(
  * @returns A blob from the source JSON
  */
 export function jsonToBlob(json: any): Blob {
-  const _json = JSON.stringify(json);
+  const uint8array = new TextEncoder().encode(JSON.stringify(json));
   const blobOptions = { type: "application/octet-stream" };
-
-  const charArray = [];
-  for (let i = 0; i < _json.length; i++) {
-    charArray[i] = _json.charCodeAt(i);
-  }
-
-  return new Blob([new Uint8Array(charArray)], blobOptions);
+  return new Blob([uint8array], blobOptions);
 }
 
 /**
@@ -224,6 +215,18 @@ export function jsonToFile(
   mimeType = "application/json"
 ): File {
   return blobToFile(jsonToBlob(json), filename, mimeType);
+}
+
+/**
+ * Makes a unique copy of JSON by stringifying and parsing.
+ *
+ * @param json JSON to use as source
+ * @returns A JSON object from the source JSON
+ */
+export function jsonToJson(
+  json: any
+): any {
+  return JSON.parse(JSON.stringify(json));
 }
 
 /**
@@ -851,9 +854,12 @@ export function cleanLayerId(id: any) {
  *
  * @returns Template associated with the user provided id argument
  */
-export function getTemplateById(templates: IItemTemplate[], id: string): any {
+export function getTemplateById(
+  templates: IItemTemplate[], 
+  id: string
+): any {
   let template;
-  (templates || []).some(_template => {
+  templates.some(_template => {
     if (_template.itemId === id) {
       template = _template;
       return true;

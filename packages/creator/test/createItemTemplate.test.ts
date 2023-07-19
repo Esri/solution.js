@@ -120,7 +120,7 @@ describe("Module `createItemTemplate`", () => {
 
     it("creates a template for a QuickCapture Project item", done => {
       const solutionItemId: string = "sln1234567890";
-      const itemId: string = "qck12345678900";
+      const itemId: string = "qck1234567890";
       const templateDictionary: any = {};
       const authentication: common.UserSession = MOCK_USER_SESSION;
       const existingTemplates: common.IItemTemplate[] = [];
@@ -143,7 +143,7 @@ describe("Module `createItemTemplate`", () => {
       fetchMock
         .get(
           utils.PORTAL_SUBSET.restUrl +
-            "/content/items/qck12345678900?f=json&token=fake-token",
+            "/content/items/qck1234567890?f=json&token=fake-token",
           mockItems.getAGOLItem("QuickCapture Project")
         )
         .post(
@@ -168,8 +168,31 @@ describe("Module `createItemTemplate`", () => {
         .post(
           utils.PORTAL_SUBSET.restUrl +
             "/content/items/qck1234567890/resources/qc.project.json",
-          utils.getSampleJsonAsFile("qc.project.json"),
+          utils.getSampleQCProjectJsonFile(),
           { sendAsJson: false }
+        )
+        .get(
+          utils.PORTAL_SUBSET.restUrl + "/content/items/map1234567890?f=json&token=fake-token",
+          mockItems.getAGOLItem("Web Map")
+        )
+        .post(
+          utils.PORTAL_SUBSET.restUrl +
+            "/content/items/map1234567890/info/thumbnail/ago_downloaded.png?w=400",
+          utils.getSampleImageAsBlob()
+        )
+        .post(
+          utils.PORTAL_SUBSET.restUrl + "/content/items/map1234567890/data",
+          noDataResponse
+        )
+        .post(
+          utils.PORTAL_SUBSET.restUrl +
+            "/content/items/map1234567890/info/metadata/metadata.xml",
+          noMetadataResponse
+        )
+        .post(
+          utils.PORTAL_SUBSET.restUrl +
+            "/content/items/map1234567890/resources",
+          noResourcesResponse
         )
         .post(
           utils.PORTAL_SUBSET.restUrl +
@@ -177,6 +200,10 @@ describe("Module `createItemTemplate`", () => {
           { success: true, id: solutionItemId }
         );
       staticRelatedItemsMocks.fetchMockRelatedItems("qck1234567890", {
+        total: 0,
+        relatedItems: []
+      });
+      staticRelatedItemsMocks.fetchMockRelatedItems("map1234567890", {
         total: 0,
         relatedItems: []
       });
@@ -193,15 +220,18 @@ describe("Module `createItemTemplate`", () => {
           utils.ITEM_PROGRESS_CALLBACK
         )
         .then(() => {
-          expect(existingTemplates.length).toEqual(1);
+          expect(existingTemplates.length).toEqual(2);
           expect(existingTemplates[0].itemId).toEqual(itemId);
+          expect(existingTemplates[0].resources).toEqual(["qck1234567890_info_thumbnail/ago_downloaded.png"]);
+          expect(existingTemplates[0].dependencies).toEqual(["map1234567890"]);
+          expect(existingTemplates[1].itemId).toEqual("map1234567890");
           done();
         });
     });
 
     it("creates a template for a QuickCapture Project item with resource in folder", done => {
       const solutionItemId: string = "sln1234567890";
-      const itemId: string = "qck12345678900";
+      const itemId: string = "qck1234567890";
       const templateDictionary: any = {};
       const authentication: common.UserSession = MOCK_USER_SESSION;
       const existingTemplates: common.IItemTemplate[] = [];
@@ -224,7 +254,7 @@ describe("Module `createItemTemplate`", () => {
       fetchMock
         .get(
           utils.PORTAL_SUBSET.restUrl +
-            "/content/items/qck12345678900?f=json&token=fake-token",
+            "/content/items/qck1234567890?f=json&token=fake-token",
           mockItems.getAGOLItem("QuickCapture Project")
         )
         .post(
@@ -249,7 +279,7 @@ describe("Module `createItemTemplate`", () => {
         .post(
           utils.PORTAL_SUBSET.restUrl +
             "/content/items/qck1234567890/resources/project/qc.project.json",
-          utils.getSampleJsonAsFile("qc.project.json"),
+          utils.getSampleQCProjectJsonFile(),
           { sendAsJson: false }
         )
         .post(
@@ -458,8 +488,8 @@ describe("Module `createItemTemplate`", () => {
             existingTemplates,
             itemId
           );
-          expect(createdTemplate.properties.error).not.toBeUndefined();
-          const parsedError: any = JSON.parse(createdTemplate.properties.error);
+          expect(createdTemplate?.properties.error).not.toBeUndefined();
+          const parsedError: any = JSON.parse(createdTemplate?.properties.error);
           expect(parsedError.success).toBeFalse();
           expect(parsedError.error.message).toEqual(
             "Item does not have a file."
@@ -964,10 +994,10 @@ describe("Module `createItemTemplate`", () => {
         .then(() => {
           const actualTemplate = common.findTemplateInList(existingTemplates, itemId);
 
-          expect(actualTemplate.item.tags)
+          expect(actualTemplate?.item.tags)
             .withContext("test final tags")
             .toEqual(expectedTags);
-          expect(actualTemplate.item.typeKeywords)
+          expect(actualTemplate?.item.typeKeywords)
             .withContext("test final typeKeywords")
             .toEqual(expectedTypeKeywords);
 
@@ -5830,11 +5860,11 @@ const initialSolutionTemplates: common.IItemTemplate[] = [
       type: "Web Map",
       categories: [],
       culture: "en-us",
-      description: null,
+      description: undefined,
       extent: "{{solutionItemExtent}}",
       licenseInfo: null,
       name: null,
-      snippet: null,
+      snippet: undefined,
       tags: ["test"],
       thumbnail: "thumbnail/ago_downloaded.png?w=400",
       title: "DashboardMap",
@@ -6151,11 +6181,11 @@ const initialSolutionTemplates: common.IItemTemplate[] = [
       type: "Web Mapping Application",
       categories: [],
       culture: "en-us",
-      description: null,
+      description: undefined,
       extent: "{{solutionItemExtent}}",
       licenseInfo: null,
       name: null,
-      snippet: null,
+      snippet: undefined,
       tags: ["test"],
       thumbnail: "thumbnail/ago_downloaded.png?w=400",
       title: "TestWABAPP",
@@ -16075,11 +16105,11 @@ const initialSolutionTemplates: common.IItemTemplate[] = [
       type: "Web Map",
       categories: [],
       culture: "en-us",
-      description: null,
+      description: undefined,
       extent: "{{solutionItemExtent}}",
       licenseInfo: null,
       name: null,
-      snippet: null,
+      snippet: undefined,
       tags: ["test"],
       thumbnail: null,
       title: "WabAppMap",
@@ -24079,11 +24109,11 @@ const initialSolutionTemplates: common.IItemTemplate[] = [
       type: "Feature Service",
       categories: [],
       culture: "",
-      description: null,
+      description: undefined,
       extent: "{{solutionItemExtent}}",
       licenseInfo: null,
       name: "TestLayer2FromWebApp",
-      snippet: null,
+      snippet: undefined,
       tags: ["activity", "harvest", "Forestry", "chemical"],
       thumbnail: "thumbnail/ago_downloaded.png?w=400",
       title: "TestLayer2FromWebApp",
@@ -33847,11 +33877,11 @@ const expected: common.IItemTemplate[] = [
       type: "Web Map",
       categories: [],
       culture: "en-us",
-      description: null,
+      description: undefined,
       extent: "{{solutionItemExtent}}",
       licenseInfo: null,
       name: null,
-      snippet: null,
+      snippet: undefined,
       tags: ["test"],
       thumbnail: "thumbnail/ago_downloaded.png?w=400",
       title: "DashboardMap",
@@ -34168,11 +34198,11 @@ const expected: common.IItemTemplate[] = [
       type: "Web Mapping Application",
       categories: [],
       culture: "en-us",
-      description: null,
+      description: undefined,
       extent: "{{solutionItemExtent}}",
       licenseInfo: null,
       name: null,
-      snippet: null,
+      snippet: undefined,
       tags: ["test"],
       thumbnail: "thumbnail/ago_downloaded.png?w=400",
       title: "TestWABAPP",
@@ -44853,11 +44883,11 @@ const expected: common.IItemTemplate[] = [
       type: "Web Map",
       categories: [],
       culture: "en-us",
-      description: null,
+      description: undefined,
       extent: "{{solutionItemExtent}}",
       licenseInfo: null,
       name: null,
-      snippet: null,
+      snippet: undefined,
       tags: ["test"],
       thumbnail: null,
       title: "WabAppMap",
@@ -53186,11 +53216,11 @@ const expected: common.IItemTemplate[] = [
       type: "Feature Service",
       categories: [],
       culture: "",
-      description: null,
+      description: undefined,
       extent: "{{solutionItemExtent}}",
       licenseInfo: null,
       name: "TestLayer2FromWebApp",
-      snippet: null,
+      snippet: undefined,
       tags: ["activity", "harvest", "Forestry", "chemical"],
       thumbnail: "thumbnail/ago_downloaded.png?w=400",
       title: "TestLayer2FromWebApp",

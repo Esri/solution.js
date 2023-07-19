@@ -16,7 +16,6 @@
 
 import * as interfaces from "../../src/interfaces";
 import * as generalHelpers from "../../src/generalHelpers";
-import * as polyfills from "../../src/polyfills";
 
 // -------------------------------------------------------------------------------------------------------------------//
 
@@ -164,7 +163,7 @@ export function getSampleMetadataAsFile(
   filename = "metadata.xml",
   mimeType = "text/xml"
 ): File {
-  return polyfills.new_File([getSampleMetadataAsBlob(mimeType)], filename, {
+  return new File([getSampleMetadataAsBlob(mimeType)], filename, {
     type: mimeType
   });
 }
@@ -214,8 +213,41 @@ export function getSampleJsonAsFile(
   filename: string,
   mimeType = "application/json"
 ): File {
-  return polyfills.new_File([getSampleJsonAsBlob()], filename, {
+  return new File([getSampleJsonAsBlob()], filename, {
     type: mimeType
+  });
+}
+
+export function getSampleQCJsonData(
+): any {
+  return {
+    application: {
+      basemap: {
+          type: "Web Map",
+          itemId: "map1234567890",
+          mapAreas: [],
+          required: true,
+          useDefaultBasemap: false,
+          zoomLevel: null
+      }
+    },
+    name: "qc.project.json"
+  };
+}
+
+export function getSampleQCProjectJsonFile(
+): File {
+  return new File([jsonToBlob({
+    basemap: {
+        type: "Web Map",
+        itemId: "map1234567890",
+        mapAreas: [],
+        required: true,
+        useDefaultBasemap: false,
+        zoomLevel: null
+    }
+  })], "qc.project.json", {
+    type: "application/json"
   });
 }
 
@@ -227,7 +259,7 @@ export function getSampleTextAsFile(
   filename: string,
   mimeType = "text/plain"
 ): File {
-  return polyfills.new_File([getSampleTextAsBlob(mimeType)], filename, {
+  return new File([getSampleTextAsBlob(mimeType)], filename, {
     type: mimeType
   });
 }
@@ -252,7 +284,7 @@ EB352600 00002600 00000700 00006373\
 }
 
 export function getSampleZipFile(name: string): File {
-  return polyfills.new_File([getSampleZip()], name, {
+  return new File([getSampleZip()], name, {
     type: "application/zip"
   });
 }

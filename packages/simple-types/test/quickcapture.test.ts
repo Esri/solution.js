@@ -78,10 +78,10 @@ describe("Module `quick capture`: manages the creation and deployment of quick c
   });
 
   describe("convertQuickCaptureToTemplate", () => {
-    it("templatize application data", done => {
+    it("templatize application data", () => {
       const itemTemplate: common.IItemTemplate = mockItems.getAGOLItem(
         "QuickCapture Project",
-        null
+        undefined
       );
       itemTemplate.dependencies = [];
       itemTemplate.data = mockItems.getAGOLItemData("QuickCapture Project");
@@ -118,45 +118,43 @@ describe("Module `quick capture`: manages the creation and deployment of quick c
         name: "qc.project.json"
       };
 
-      quickcapture.convertQuickCaptureToTemplate(itemTemplate).then(actual => {
-        expect(actual.data).toEqual(expectedData);
-        expect(actual.dependencies).toEqual(expectedDependencies);
-        done();
-      }, done.fail);
+      const updatedTemplate = quickcapture.convertQuickCaptureToTemplate(itemTemplate);
+      expect(updatedTemplate.data).toEqual(expectedData);
+      expect(updatedTemplate.dependencies).toEqual(expectedDependencies);
     });
 
-    it("will not fail with empty data", done => {
+    it("will not fail with empty data", () => {
       const itemTemplate: common.IItemTemplate = mockItems.getAGOLItem(
         "QuickCapture Project",
-        null
+        undefined
       );
       itemTemplate.data = {};
-      quickcapture.convertQuickCaptureToTemplate(itemTemplate).then(actual => {
-        expect(actual).toEqual(itemTemplate);
-        done();
-      }, done.fail);
+      const updatedTemplate = quickcapture.convertQuickCaptureToTemplate(itemTemplate);
+      expect(updatedTemplate).toEqual(itemTemplate);
     });
   });
 
-  it("will not fail with missing JSON", done => {
+  it("will not fail with missing JSON", () => {
     const itemTemplate: common.IItemTemplate = mockItems.getAGOLItem(
       "QuickCapture Project",
-      null
+      undefined
     );
     itemTemplate.dependencies = [];
     itemTemplate.data = mockItems.getAGOLItemData("QuickCapture Project");
-    itemTemplate.data[1].text = () => {
-      return new Promise<any>(resolve => resolve(null));
-    };
 
-    const expectedDependencies: string[] = [];
-    const expectedData: any = {};
+    const expectedDependencies = ["4efe5f693de34620934787ead6693f10"];
+    const expectedData: any = mockItems.getAGOLItemData("QuickCapture Project");
+    expectedData.application.dataSources[0].featureServiceItemId = "{{4efe5f693de34620934787ead6693f10.itemId}}";
+    expectedData.application.dataSources[0].url = "{{4efe5f693de34620934787ead6693f10.layer0.url}}";
+    expectedData.application.dataSources[1].featureServiceItemId = "{{4efe5f693de34620934787ead6693f10.itemId}}";
+    expectedData.application.dataSources[1].url = "{{4efe5f693de34620934787ead6693f10.layer1.url}}";
+    expectedData.application.itemId = "{{9da79c91fc7642ebb4c0bbacfbacd510.itemId}}";
+    expectedData.application.preferences.adminEmail = "{{user.email}}";
 
-    quickcapture.convertQuickCaptureToTemplate(itemTemplate).then(actual => {
-      expect(actual.data).toEqual(expectedData);
-      expect(actual.dependencies).toEqual(expectedDependencies);
-      done();
-    }, done.fail);
+    const updatedTemplate = quickcapture.convertQuickCaptureToTemplate(itemTemplate);
+
+    expect(updatedTemplate.data).toEqual(expectedData);
+    expect(updatedTemplate.dependencies).toEqual(expectedDependencies);
   });
 
   describe("_templatizeApplication", () => {
@@ -171,7 +169,7 @@ describe("Module `quick capture`: manages the creation and deployment of quick c
       };
       const expectedUpdatedData = common.cloneObject(data);
 
-      const updatedData = quickcapture._templatizeApplication(data, null);
+      const updatedData = quickcapture._templatizeApplication(data, {} as common.IItemTemplate);
 
       expect(updatedData).toEqual(expectedUpdatedData);
     });
@@ -202,20 +200,21 @@ describe("Module `quick capture`: manages the creation and deployment of quick c
       };
       const idPath = "featureServiceItemId";
       const urlPath = "url";
-      const expectedUpdatedUrl: string = undefined;
+      const expectedUpdatedUrl: string | undefined = undefined;
 
       quickcapture._templatizeUrl(obj, idPath, urlPath);
 
       expect(common.getProp(obj, urlPath)).toEqual(expectedUpdatedUrl);
     });
 
+    /* TODO: migrate to removal of postProcess function
     it("postProcess QuickCapture projects--no changes needed", done => {
       const qcTemplate: common.IItemTemplate = templates.getItemTemplate(
         "QuickCapture Project"
       );
       const newItemId = qcTemplate.itemId;
       qcTemplate.item.id = newItemId;
-      qcTemplate.item.extent = null;
+      qcTemplate.item.extent = undefined;
       qcTemplate.item.licenseInfo =
         "https://abc12/apps/opsdashboard/index.html#/" +
         newItemId +
@@ -330,14 +329,16 @@ describe("Module `quick capture`: manages the creation and deployment of quick c
           done();
         }, done.fail);
     });
+    */
 
+    /* TODO: migrate to removal of postProcess function
     it("postProcess QuickCapture projects--changes needed", done => {
       const qcTemplate: common.IItemTemplate = templates.getItemTemplate(
         "QuickCapture Project"
       );
       const newItemId = qcTemplate.itemId;
       qcTemplate.item.id = newItemId;
-      qcTemplate.item.extent = null;
+      qcTemplate.item.extent = undefined;
       qcTemplate.item.licenseInfo =
         "{{portalBaseUrl}}/apps/opsdashboard/index.html#/{{9da79c91fc7642ebb4c0bbacfbacd510.itemId}}?areaname=";
       qcTemplate.data = {
@@ -460,5 +461,6 @@ describe("Module `quick capture`: manages the creation and deployment of quick c
           done();
         }, done.fail);
     });
+    */
   });
 });

@@ -26,12 +26,6 @@ import * as serviceAdmin from "@esri/arcgis-rest-service-admin";
 import * as utils from "../test/mocks/utils";
 
 describe("Module `generalHelpers`: common utility functions shared across packages", () => {
-  describe("blobToFile", () => {
-    it("handles a failed blob", () => {
-      expect(generalHelpers.blobToFile(null, "")).toBeNull();
-    });
-  });
-
   describe("blobToJson", () => {
     it("extracts JSON from a blob", done => {
       const srcJson: any = {
@@ -58,12 +52,38 @@ describe("Module `generalHelpers`: common utility functions shared across packag
     });
 
     it("fails to extract JSON from a blob 2", done => {
-      const blob: Blob = null;
+      const blob: Blob = new Blob(["a"], { type: "application/json" });
 
       generalHelpers.blobToJson(blob).then(extractedJson => {
         expect(extractedJson).toBeNull();
         done();
       }, done.fail);
+    });
+  });
+
+  describe("blobToFile", () => {
+    it("converts a blob to a file", () => {
+      const blob: Blob = new Blob(["a"], { type: "application/json" });
+      const file: File = generalHelpers.blobToFile(blob, "test.json");
+      expect(file).toBeDefined();
+      expect(file.name).toEqual("test.json");
+      expect(file.type).toEqual("application/json");
+    });
+
+    it("handles a typeless blob", () => {
+      const blob: Blob = new Blob(["a"]);
+      const file: File = generalHelpers.blobToFile(blob, "test.json");
+      expect(file).toBeDefined();
+      expect(file.name).toEqual("test.json");
+      expect(file.type).toEqual("");
+    });
+
+    it("handles an empty blob", () => {
+      const blob: Blob = new Blob([]);
+      const file: File = generalHelpers.blobToFile(blob, "test.json");
+      expect(file).toBeDefined();
+      expect(file.name).toEqual("test.json");
+      expect(file.type).toEqual("");
     });
   });
 
@@ -389,7 +409,7 @@ describe("Module `generalHelpers`: common utility functions shared across packag
         views: 5,
         id: "{{grp1234567890.itemId}}",
         tags: ["JavaScript"],
-        phone: null,
+        phone: "",
         extent: [
           [-111.299, 43.4327],
           [-109.7829, 44.1159]
@@ -404,7 +424,7 @@ describe("Module `generalHelpers`: common utility functions shared across packag
         views: 5,
         id: "{{grp1234567890.itemId}}",
         tags: ["JavaScript"],
-        phone: null,
+        phone: "",
         extent: [
           [-111.299, 43.4327],
           [-109.7829, 44.1159]
@@ -425,7 +445,7 @@ describe("Module `generalHelpers`: common utility functions shared across packag
         views: 5,
         id: "{{grp1234567890.itemId}}",
         tags: ["JavaScript"],
-        phone: null,
+        phone: "",
         extent: [
           [-111.299, 43.4327],
           [-109.7829, 44.1159]
@@ -457,10 +477,63 @@ describe("Module `generalHelpers`: common utility functions shared across packag
         "Value difference: 5 vs. 6",
         'String difference: "{{grp1234567890.itemId}}" vs. "{{grp1234567890.name}}"',
         "Array length difference: [1] vs. [2]",
-        "Type difference: null vs. string",
+        'String difference: "" vs. "555-1212"',
         "Value difference: 43.4327 vs. 53",
         'Props difference: ["wkid","latestWkid"] vs. ["wkid"]'
       ]);
+    });
+
+    it("should handle comparison with null", () => {
+      const json1: ITestCompareJSONProperties = {
+        isInvitationOnly: true,
+        views: 5,
+        id: "{{grp1234567890.itemId}}",
+        tags: ["JavaScript"],
+        phone: "",
+        extent: [
+          [-111.299, 43.4327],
+          [-109.7829, 44.1159]
+        ],
+        spatialReference: {
+          wkid: 102100,
+          latestWkid: 3857
+        }
+      };
+
+      const messages = generalHelpers.compareJSONProperties(json1, null);
+      expect(messages.length).toEqual(1);
+      expect(messages).toEqual([
+        "Type difference: object vs. null"
+      ]);
+    });
+
+    it("should handle comparison with undefined", () => {
+      const json1: ITestCompareJSONProperties = {
+        isInvitationOnly: true,
+        views: 5,
+        id: "{{grp1234567890.itemId}}",
+        tags: ["JavaScript"],
+        phone: "",
+        extent: [
+          [-111.299, 43.4327],
+          [-109.7829, 44.1159]
+        ],
+        spatialReference: {
+          wkid: 102100,
+          latestWkid: 3857
+        }
+      };
+
+      const messages = generalHelpers.compareJSONProperties(json1, undefined);
+      expect(messages.length).toEqual(1);
+      expect(messages).toEqual([
+        "Type difference: object vs. undefined"
+      ]);
+    });
+
+    it("should ignore undefined vs. null", () => {
+      const messages = generalHelpers.compareJSONProperties(null, undefined);
+      expect(messages.length).toEqual(0);
     });
   });
 
@@ -1134,7 +1207,7 @@ describe("Module `generalHelpers`: common utility functions shared across packag
       const id: string = "ABC124";
       const expected: any = undefined;
 
-      const actual: any = generalHelpers.getTemplateById(null, id);
+      const actual: any = generalHelpers.getTemplateById([], id);
 
       expect(actual).toEqual(expected);
     });
@@ -1493,6 +1566,20 @@ describe("Module `generalHelpers`: common utility functions shared across packag
         done();
       }, done.fail);
     });
+  });
+
+  describe("jsonToJson", () => {
+    it("Makes a unique copy of JSON by stringifying and parsing", () => {
+      const json = {
+        a: "an innocuous string"
+      };
+      const jsonCopy = generalHelpers.jsonToJson(json);
+      expect(jsonCopy).toEqual(json);
+      expect(jsonCopy).not.toBe(json);
+
+      jsonCopy.a = "a different string";
+      expect(jsonCopy).not.toEqual(json);
+    }); 
   });
 
   describe("sanitizeJSONAndReportChanges", () => {

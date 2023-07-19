@@ -7,8 +7,8 @@
 [npm-url]: https://www.npmjs.com/package/@esri/solution-common
 [travis-img]: https://img.shields.io/travis/com/Esri/solution.js/develop.svg
 [travis-url]: https://app.travis-ci.com/github/Esri/solution.js
-[coverage-img]: https://coveralls.io/repos/github/Esri/solution.js/badge.svg
-[coverage-url]: https://coveralls.io/github/Esri/solution.js
+[coverage-img]: https://codecov.io/gh/Esri/solution.js/branch/develop/graph/badge.svg?token=3SMwRL1AO5
+[coverage-url]: https://codecov.io/gh/Esri/solution.js
 [license-img]: https://img.shields.io/badge/license-Apache%202.0-blue.svg
 [license-url]: #license
 
@@ -84,15 +84,8 @@ Currently, the ArcGIS Online item types that can be converted into a template ar
 
 #### Setup
 
-The following steps will build the repository:
+The repository can be built using the Windows batch file `build.bat`.
 
-1. `npm install`
-1. `pushd demos`
-1. `npm run build`
-1. `popd`
-1. `npm run test:chrome:ci`
-
-These steps are in the file `build.bat` for Windows computers.
 
 #### npm commands
 

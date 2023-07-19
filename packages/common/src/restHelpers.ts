@@ -126,6 +126,19 @@ export { request as rest_request } from "@esri/arcgis-rest-request";
 
 // ------------------------------------------------------------------------------------------------------------------ //
 
+export function addItemData(
+  id: string,
+  data: any,
+  authentication: UserSession
+): Promise<IUpdateItemResponse> {
+  const addDataOptions: IAddItemDataOptions = {
+    id,
+    data,
+    authentication
+  };
+  return portalAddItemData(addDataOptions);
+};
+
 /**
  * Creates a UserSession via a function so that the global arcgisSolution variable can access authentication.
  *
@@ -1943,22 +1956,17 @@ export function _addItemDataFile(
   authentication: UserSession
 ): Promise<IUpdateItemResponse> {
   return new Promise<IUpdateItemResponse>((resolve, reject) => {
-    const addItemData: (data: any) => void = (data: any) => {
-      const addDataOptions: IAddItemDataOptions = {
-        id: itemId,
-        data: data,
-        authentication: authentication
-      };
-      portalAddItemData(addDataOptions).then(resolve, reject);
+    const _addItemData: (data: any) => void = (data: any) => {
+      addItemData(itemId, data, authentication).then(resolve, reject);
     };
 
     // Item data has to be submitted as text or JSON for those file types
     if (dataFile.type.startsWith("text/plain")) {
-      blobToText(dataFile).then(addItemData, reject);
+      blobToText(dataFile).then(_addItemData, reject);
     } else if (dataFile.type === "application/json") {
-      blobToJson(dataFile).then(addItemData, reject);
+      blobToJson(dataFile).then(_addItemData, reject);
     } else {
-      addItemData(dataFile);
+      _addItemData(dataFile);
     }
   });
 }

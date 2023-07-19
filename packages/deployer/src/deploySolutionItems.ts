@@ -155,6 +155,14 @@ export function deploySolutionItems(
           buildOrder.forEach((id: string) => {
             // Get the item's template out of the list of templates
             const template = common.findTemplateInList(templates, id);
+
+            if (template.type === "QuickCapture Project") {
+              // Remove qc.project.json files from the resources--we don't use them from solutions
+              template.resources = template.resources.filter(
+                (filename: string) => !filename.endsWith("qc.project.json")
+              );
+            }
+
             awaitAllItems.push(
               _createItemFromTemplateWhenReady(
                 template,
@@ -891,7 +899,7 @@ export function _handleExistingItems(
   };
 }
 
-//???
+//TODO: function doc
 export function _updateTemplateDictionaryById(
   templateDictionary: any,
   sourceId: string,
@@ -1162,7 +1170,7 @@ export function _estimateDeploymentCost(
   );
 }
 
-//???
+//TODO: function doc
 // TODO: Return a Promise vs array of promises
 export function _getGroupUpdates(
   template: common.IItemTemplate,

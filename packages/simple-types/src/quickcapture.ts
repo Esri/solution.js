@@ -56,38 +56,10 @@ export function convertItemToTemplate(
  */
 export function convertQuickCaptureToTemplate(
   itemTemplate: common.IItemTemplate
-): Promise<common.IItemTemplate> {
-  return new Promise<common.IItemTemplate>((resolve, reject) => {
-    // The templates data to process
-    const data: any = itemTemplate.data;
-    if (data && Array.isArray(data)) {
-      let applicationRequest: Promise<any> = Promise.resolve(null);
-      let applicationName: string = "";
-      data.some((item: File) => {
-        if (item.type === "application/json") {
-          applicationName = item.name;
-          applicationRequest = common.getBlobText(item);
-          return true;
-        }
-      });
-
-      applicationRequest.then(result => {
-        // replace the template data array with the templatized application JSON
-        itemTemplate.data = result
-          ? {
-              application: _templatizeApplication(
-                JSON.parse(result),
-                itemTemplate
-              ),
-              name: applicationName
-            }
-          : {};
-        resolve(itemTemplate);
-      }, reject);
-    } else {
-      resolve(itemTemplate);
-    }
-  });
+): common.IItemTemplate {
+  common.setProp(itemTemplate, "data.application",
+    _templatizeApplication(itemTemplate.data.application, itemTemplate));
+  return itemTemplate;
 }
 
 /**
@@ -109,7 +81,7 @@ export function _templatizeApplication(
   _templatizeAdminEmail(data);
 
   // datasource item id and url
-  const dataSources: common.IQuickCaptureDatasource[] = data.dataSources;
+  const dataSources: common.IQuickCaptureDatasource[] = data?.dataSources;
   if (dataSources && Array.isArray(dataSources)) {
     dataSources.forEach(ds => {
       const id: string = ds.featureServiceItemId;
@@ -208,46 +180,6 @@ export function createItemFromTemplate(
     destinationAuthentication,
     itemProgressCallback
   );
-}
-
-/**
- * QuickCapture post-processing actions
- *
- * @param {string} itemId The item ID
- * @param {string} type The template type
- * @param {any[]} itemInfos Array of \{id: 'ef3', type: 'Web Map'\} objects
- * @param {any} templateDictionary The template dictionary
- * @param {UserSession} authentication The destination session info
- * @returns Promise resolving to successfulness of update
- */
-export function postProcess(
-  itemId: string,
-  type: string,
-  itemInfos: any[],
-  template: common.IItemTemplate,
-  templates: common.IItemTemplate[],
-  templateDictionary: any,
-  authentication: common.UserSession
-): Promise<any> {
-  return new Promise<any>((resolve, reject) => {
-    template.data = common.replaceInTemplate(template.data, templateDictionary);
-    common
-      .updateItemTemplateFromDictionary(
-        itemId,
-        templateDictionary,
-        authentication
-      )
-      .then(() => {
-        common
-          .updateItemResourceText(
-            itemId,
-            template.data.name,
-            JSON.stringify(template.data.application),
-            authentication
-          )
-          .then(resolve, reject);
-      }, reject);
-  });
 }
 
 //#endregion
