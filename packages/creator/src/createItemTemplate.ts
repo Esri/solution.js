@@ -181,8 +181,8 @@ export function createItemTemplate(
                   itemTemplate => {
                     let resourcePrepPromise = Promise.resolve([] as ISourceFile[]);
 
-                    // If the item type is Quick Capture, then we already have the resource files and just need to
-                    // convert them into ISourceFile objects
+                    // If the item type is Quick Capture, then we already have the resource files (except for the
+                    // thumbnail) and just need to convert them into ISourceFile objects
 
                     if (itemTemplate.type === "QuickCapture Project") {
                       // Fetch thumbnail
@@ -235,8 +235,10 @@ export function createItemTemplate(
                         await _templatizeResources(itemTemplate, resourceItemFiles, srcAuthentication);
 
                         // update the template's resources
-                        itemTemplate.resources = resourceItemFiles.map(
-                          (file: ISourceFile) => file.folder + "/" + file.filename
+                        itemTemplate.resources =  itemTemplate.resources.concat(
+                          resourceItemFiles.map(
+                            (file: ISourceFile) => file.folder + "/" + file.filename
+                          )
                         );
 
                         // Set the value keyed by the id to the created template, replacing the placeholder template
