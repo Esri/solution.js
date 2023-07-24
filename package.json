@@ -43,8 +43,6 @@
     "release:publish-git": "bash ./support/publish.sh",
     "release:publish-npm": "lerna publish from-package --force-publish=* --no-git-tag-version --no-push --yes --no-git-reset",
     "release:publish-retry": "lerna publish from-package --no-git-tag-version --no-push --yes",
-    "postinstall": "npm run bootstrap",
-    "bootstrap": "lerna bootstrap",
     "precommit": "lint-staged"
   },
   "publishConfig": {
@@ -61,8 +59,8 @@
     "@types/jasmine": "^4.3.4",
     "@types/node": "^20.2.5",
     "@types/sinon": "^10.0.15",
-    "@typescript-eslint/eslint-plugin": "^5.59.5",
-    "@typescript-eslint/parser": "^5.61.0",
+    "@typescript-eslint/eslint-plugin": "^6.1.0",
+    "@typescript-eslint/parser": "^6.1.0",
     "acorn": "^8.8.2",
     "acorn-walk": "^8.2.0",
     "adlib": "^3.0.8",
@@ -99,7 +97,7 @@
     "karma-spec-reporter": "0.0.36",
     "karma-typescript": "^5.5.4",
     "karma-typescript-es6-transform": "^5.5.4",
-    "lerna": "^6.6.2",
+    "lerna": "^7.1.4",
     "lint-staged": "^13.2.2",
     "marked": "^5.0.4",
     "minimatch": "^9.0.1",
