@@ -179,7 +179,7 @@ interface ISortVertex {
   /**
    * Vertex (AGO) id and its visited status, described by the ESortVisitState enum
    */
-  [id: string]: number;
+  [id: string]: ESortVisitState;
 }
 
 /**

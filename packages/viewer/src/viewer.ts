@@ -180,8 +180,8 @@ export function checkSolution(
  * @see Only comparable properties are compared; see deleteItemProps() in the `common` package
  */
 export function compareItems(
-  item1: string | any,
-  item2: string | any,
+  item1: any,
+  item2: any,
   authentication: common.UserSession = null
 ): Promise<boolean> {
   return new Promise<boolean>((resolve, reject) => {
