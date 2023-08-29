@@ -31,7 +31,7 @@
     "webpack-cli": "^5.1.4"
   },
   "dependencies": {
-    "tslib": "2.5.0"
+    "tslib": "2.6.2"
   },
   "gitHead": "2ec5fb241f432832e9d191bfcf118a50b621491d"
 }
