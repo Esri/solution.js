@@ -22,7 +22,7 @@
     "@esri/arcgis-rest-feature-layer": "^3.6.0",
     "@esri/arcgis-rest-portal": "^3.6.0",
     "@esri/arcgis-rest-request": "^3.6.0",
-    "@esri/hub-common": "^13.32.2",
+    "@esri/hub-common": "^13.46.2",
     "@esri/solution-common": "^5.0.0",
     "rollup": "2.79.1"
   },

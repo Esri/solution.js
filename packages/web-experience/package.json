@@ -23,7 +23,7 @@
     "@esri/arcgis-rest-portal": "^3.6.0",
     "@esri/arcgis-rest-request": "^3.6.0",
     "@esri/arcgis-rest-service-admin": "^3.6.0",
-    "@esri/hub-common": "^13.32.2",
+    "@esri/hub-common": "^13.46.2",
     "@esri/hub-initiatives": "^13.0.0",
     "@esri/solution-common": "^5.0.0",
     "@esri/solution-simple-types": "^5.0.0",
