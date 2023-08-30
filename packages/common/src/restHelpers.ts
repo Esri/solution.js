@@ -319,7 +319,7 @@ export function checkRequestStatus(
         request(url, { authentication }).then(
           r => {
             /* istanbul ignore else */
-            if (r.status.toLowerCase() === "completed" || r.status.toLowerCase() === "success") {
+            if (["completed", "success"].indexOf(r.status.toLowerCase()) > -1) {
               clearInterval(checkStatus);
               resolve();
             } else if (r.status.toLowerCase() === "failed") {
