@@ -313,15 +313,16 @@ export function checkRequestStatus(
   authentication: any
 ): Promise<void> {
   return new Promise((resolve, reject) => {
-    if (result.statusURL) {
+    const url = result.statusURL || result.statusUrl;
+    if (url) {
       const checkStatus = setInterval(() => {
-        request(result.statusURL, { authentication }).then(
+        request(url, { authentication }).then(
           r => {
             /* istanbul ignore else */
-            if (r.status === "Completed") {
+            if (["completed", "success"].indexOf(r.status.toLowerCase()) > -1) {
               clearInterval(checkStatus);
               resolve();
-            } else if (r.status === "Failed") {
+            } else if (r.status.toLowerCase() === "failed") {
               clearInterval(checkStatus);
               reject(r);
             }
