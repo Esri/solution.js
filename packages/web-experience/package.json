@@ -1,6 +1,6 @@
 {
   "name": "@esri/solution-web-experience",
-  "version": "5.0.1",
+  "version": "5.0.2",
   "description": "Manages the creation and deployment of Web Experience item types for @esri/solution.js.",
   "main": "dist/cjs/index.js",
   "module": "dist/esm/index.js",
@@ -25,8 +25,12 @@
     "@esri/arcgis-rest-service-admin": "^3.6.0",
     "@esri/hub-common": "^13.46.2",
     "@esri/hub-initiatives": "^13.0.0",
-    "@esri/solution-common": "^5.0.1",
-    "@esri/solution-simple-types": "^5.0.1",
+    "@esri/solution-common": "^5.0.2",
+    "@esri/solution-simple-types": "^5.0.2",
+    "@types/jasmine": "^4.3.4",
+    "fetch-mock": "^7.7.3",
+    "jasmine": "^5.1.0",
+    "jasmine-core": "^5.1.0",
     "rollup": "2.79.1"
   },
   "dependencies": {
@@ -69,5 +73,5 @@
     "esri",
     "ES6"
   ],
-  "gitHead": "8c6c036b8e0c40a4b909ba69fa57869b0701e87c"
+  "gitHead": "37c20e336452cc39612060140186d2ff7820cc07"
 }

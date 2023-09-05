@@ -1,6 +1,6 @@
 {
   "name": "deleteSolution",
-  "version": "5.0.1",
+  "version": "5.0.2",
   "description": "deleteSolution demo",
   "author": "Esri",
   "license": "Apache-2.0",
@@ -21,7 +21,7 @@
     "@esri/hub-initiatives": "^13.0.0",
     "@esri/hub-sites": "^13.0.1",
     "@esri/hub-teams": "^13.0.0",
-    "@esri/solution-common": "^5.0.1",
+    "@esri/solution-common": "^5.0.2",
     "css-loader": "^6.8.1",
     "html-webpack-plugin": "^5.5.1",
     "style-loader": "^3.3.3",
