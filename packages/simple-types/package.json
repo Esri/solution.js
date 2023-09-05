@@ -30,6 +30,10 @@
     "@esri/solution-feature-layer": "^5.0.1",
     "@esri/solution-file": "^5.0.1",
     "@esri/solution-group": "^5.0.1",
+    "@types/jasmine": "^4.3.4",
+    "fetch-mock": "^7.7.3",
+    "jasmine": "^5.1.0",
+    "jasmine-core": "^5.1.0",
     "rollup": "2.79.1"
   },
   "dependencies": {
