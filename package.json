@@ -81,7 +81,7 @@
     "eslint-plugin-prefer-arrow": "^1.2.3",
     "event-stream": "^4.0.1",
     "fetch-mock": "^7.7.3",
-    "gh-pages": "^5.0.0",
+    "gh-pages": "^6.0.0",
     "gh-release": "^7.0.2",
     "handlebars": "^4.7.7",
     "http-cache-semantics": "^4.1.1",
