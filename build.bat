@@ -8,6 +8,10 @@ pushd demos\compareJSON
 call npm install
 popd
 
+pushd demos\compareSolutions
+call npm install
+popd
+
 pushd demos\copyItemInfo
 call npm install
 popd
@@ -97,6 +101,10 @@ del/q packages\web-experience\dist\esm\package.json 2>nul
 
 rem build the demos
 pushd demos\compareJSON
+call npm run build
+popd
+
+pushd demos\compareSolutions
 call npm run build
 popd
 

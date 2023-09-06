@@ -1,0 +1,17 @@
+body {
+  padding: 16px;
+}
+button {
+  cursor: pointer;
+}
+td {
+  border: none;
+}
+li {
+  margin-bottom: 12px;
+}
+.interstitial-text {
+  writing-mode: vertical-lr;
+  transform: rotate(-180deg);
+  text-align: -webkit-center;
+}
