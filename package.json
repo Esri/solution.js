@@ -100,7 +100,7 @@
     "karma-typescript": "^5.5.4",
     "karma-typescript-es6-transform": "^5.5.4",
     "lerna": "^6.6.2",
-    "lint-staged": "^13.2.2",
+    "lint-staged": "^14.0.1",
     "marked": "^7.0.2",
     "minimatch": "^9.0.1",
     "prettier": "^3.0.1",
