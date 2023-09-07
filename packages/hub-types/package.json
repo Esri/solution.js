@@ -28,6 +28,10 @@
     "@esri/hub-sites": "^13.0.1",
     "@esri/hub-teams": "^13.0.0",
     "@esri/solution-common": "^5.0.1",
+    "@types/jasmine": "^4.3.4",
+    "fetch-mock": "^7.7.3",
+    "jasmine": "^5.1.0",
+    "jasmine-core": "^5.1.0",
     "rollup": "2.79.1"
   },
   "dependencies": {
@@ -85,5 +89,5 @@
     "esri",
     "ES6"
   ],
-  "gitHead": "8c6c036b8e0c40a4b909ba69fa57869b0701e87c"
+  "gitHead": "37c20e336452cc39612060140186d2ff7820cc07"
 }
