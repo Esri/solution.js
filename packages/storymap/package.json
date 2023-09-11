@@ -18,10 +18,10 @@
     "dist/**"
   ],
   "devDependencies": {
-    "@esri/arcgis-rest-auth": "^3.6.0",
-    "@esri/arcgis-rest-feature-layer": "^3.6.0",
-    "@esri/arcgis-rest-portal": "^3.6.0",
-    "@esri/arcgis-rest-request": "^3.6.0",
+    "@esri/arcgis-rest-auth": "^3.7.0",
+    "@esri/arcgis-rest-feature-layer": "^3.7.0",
+    "@esri/arcgis-rest-portal": "^3.7.0",
+    "@esri/arcgis-rest-request": "^3.7.0",
     "@esri/hub-common": "^13.46.2",
     "@esri/solution-common": "^5.0.7",
     "@types/jasmine": "^4.3.4",
