@@ -35,6 +35,13 @@ export {
   UserSession
 } from "@esri/arcgis-rest-auth";
 export {
+  IFeature,
+  IQueryRelatedOptions,
+  IQueryRelatedResponse,
+  IRelatedRecordGroup,
+  queryRelated
+} from "@esri/arcgis-rest-feature-layer";
+export {
   IAddFolderResponse,
   ICreateItemResponse,
   IGetRelatedItemsResponse,

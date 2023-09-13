@@ -19,6 +19,7 @@
  */
 
 import {
+  getFeatureServiceRelatedRecords,
   templatize,
   deleteViewProps,
   cacheContingentValues,
@@ -95,6 +96,7 @@ import {
   _validateEditFieldsInfo,
   IPopupInfos
 } from "../src/featureServiceHelpers";
+import * as rest_feature_layer from "@esri/arcgis-rest-feature-layer";
 
 import * as restHelpers from '../../common/src/restHelpers';
 
@@ -177,6 +179,49 @@ afterEach(() => {
 });
 
 describe("Module `featureServiceHelpers`: utility functions for feature-service items", () => {
+  describe("getFeatureServiceRelatedRecords", () => {
+    it("asks for all objects", () => {
+      const url = "http://test/FeatureServer";
+      const relationshipId = 0;
+
+      const queryRelatedSpy = spyOn(rest_feature_layer, "queryRelated").and.resolveTo(null);
+      const requestOptions = {
+        url: url + "/0",
+        relationshipId,
+        objectIds: undefined
+      }
+
+      return getFeatureServiceRelatedRecords(url, relationshipId)
+      .then(
+        response => {
+          expect(queryRelatedSpy.calls.argsFor(0)[0]).toEqual(requestOptions);
+          return Promise.resolve(response);
+        }
+      );
+    });
+
+    it("asks for specific objects", () => {
+      const url = "http://test/FeatureServer";
+      const relationshipId = 0;
+      const objectIds = [1, 2, 3];
+
+      const queryRelatedSpy = spyOn(rest_feature_layer, "queryRelated").and.resolveTo(null);
+      const requestOptions = {
+        url: url + "/0",
+        relationshipId,
+        objectIds
+      }
+
+      return getFeatureServiceRelatedRecords(url, relationshipId, objectIds)
+      .then(
+        response => {
+          expect(queryRelatedSpy.calls.argsFor(0)[0]).toEqual(requestOptions);
+          return Promise.resolve(response);
+        }
+      );
+    });
+  });
+
   describe("templatize", () => {
     it("should handle empty dependency array", () => {
       const dependencies: interfaces.IDependency[] = [];
