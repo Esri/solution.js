@@ -34,6 +34,8 @@ import {
   IFeatureServiceProperties,
   IItemTemplate,
   INumberValuePair,
+  IQueryRelatedOptions,
+  IQueryRelatedResponse,
   IPostProcessArgs,
   IStringValuePair,
   IUpdate,
@@ -64,10 +66,34 @@ import {
   isTrackingViewTemplate,
   templatizeTracker
 } from "./trackingHelpers";
+import {
+  queryRelated
+} from "@esri/arcgis-rest-feature-layer";
 
 //#endregion ------------------------------------------------------------------------------------------------------------//
 
 //#region Public functions ----------------------------------------------------------------------------------------------//
+
+/**
+ * Get the related records for a feature service.
+ *
+ * @param url Feature service's URL, e.g., layer.url
+ * @param relationshipId Id of relationship
+ * @param objectIds Objects in the feature service whose related records are sought
+ */
+export function getFeatureServiceRelatedRecords(
+  url: string,
+  relationshipId: number,
+  objectIds?: number[]
+): Promise<IQueryRelatedResponse> {
+  const options: IQueryRelatedOptions = {
+    url: url + `/${relationshipId}`,
+    relationshipId,
+    objectIds
+  }
+
+  return queryRelated(options);
+}
 
 /**
  * Templatize the ID, url, field references ect
