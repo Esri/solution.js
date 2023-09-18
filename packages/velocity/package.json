@@ -29,7 +29,7 @@
     "@esri/hub-teams": "^13.0.0",
     "@esri/solution-common": "^5.0.7",
     "@esri/solution-simple-types": "^5.0.7",
-    "@types/jasmine": "^4.3.4",
+    "@types/jasmine": "^4.3.6",
     "fetch-mock": "^7.7.3",
     "jasmine": "^5.1.0",
     "jasmine-core": "^5.1.0",
