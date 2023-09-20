@@ -203,7 +203,7 @@ describe("Module `group`: manages the creation and deployment of groups", () => 
         },
         data: {},
         resources: [],
-        dependencies: ["156bf2715e9e4098961c4a2a6848fa20"],
+        dependencies: [],
         groups: [],
         properties: {},
         estimatedDeploymentCostFactor: 2

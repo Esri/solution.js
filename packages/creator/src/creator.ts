@@ -33,6 +33,7 @@ import {
   getGroupContents,
   getItemBase,
   getPortal,
+  getSubgroupIds,
   getUser,
   getVelocityUrlBase,
   ICreateSolutionOptions,
@@ -207,15 +208,12 @@ export function _applySourceToCreateOptions(
     delete sourceInfo.thumbnail;
   }
 
-  if (isGroup && sourceInfo.tags) {
+  if (isGroup) {
     // Does the group contain groups?
-    const containedGroupPrefix = "group.";
-    const containedGroupIds = sourceInfo.tags
-      .filter(tag => tag.startsWith(containedGroupPrefix))
-      .map(tag => tag.substring(containedGroupPrefix.length));
-    if (containedGroupIds.length > 0) {
-      createOptions.itemIds = createOptions.itemIds.concat(containedGroupIds);
-    }
+    createOptions.itemIds = [].concat(
+      createOptions.itemIds || [],
+      getSubgroupIds(sourceInfo.tags)
+    );
   }
 
   return createOptions;

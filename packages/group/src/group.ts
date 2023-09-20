@@ -56,7 +56,6 @@ export function convertItemToTemplate(
     common.getGroupContents(itemInfo.id, srcAuthentication).then(
       groupContents => {
         itemTemplate.type = "Group";
-        itemTemplate.dependencies = groupContents;
         common.getGroupBase(itemInfo.id, srcAuthentication).then(
           groupResponse => {
             groupResponse.id = itemTemplate.item.id;
@@ -66,15 +65,9 @@ export function convertItemToTemplate(
             };
 
             // Does the group contain groups?
-            if (groupResponse.tags) {
-              const containedGroupPrefix = "group.";
-              const containedGroupIds = groupResponse.tags
-                .filter(tag => tag.startsWith(containedGroupPrefix))
-                .map(tag => tag.substring(containedGroupPrefix.length));
-              if (containedGroupIds.length > 0) {
-                itemTemplate.dependencies = itemTemplate.dependencies.concat(containedGroupIds);
-              }
-            }
+            itemTemplate.dependencies = groupContents.concat(
+              common.getSubgroupIds(groupResponse.tags)
+            );
 
             resolve(itemTemplate);
           },
