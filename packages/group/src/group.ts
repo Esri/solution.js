@@ -64,6 +64,18 @@ export function convertItemToTemplate(
               ...groupResponse,
               type: "Group"
             };
+
+            // Does the group contain groups?
+            if (groupResponse.tags) {
+              const containedGroupPrefix = "group.";
+              const containedGroupIds = groupResponse.tags
+                .filter(tag => tag.startsWith(containedGroupPrefix))
+                .map(tag => tag.substring(containedGroupPrefix.length));
+              if (containedGroupIds.length > 0) {
+                itemTemplate.dependencies = itemTemplate.dependencies.concat(containedGroupIds);
+              }
+            }
+
             resolve(itemTemplate);
           },
           () => resolve(itemTemplate)

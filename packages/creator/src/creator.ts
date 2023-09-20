@@ -207,6 +207,17 @@ export function _applySourceToCreateOptions(
     delete sourceInfo.thumbnail;
   }
 
+  if (isGroup && sourceInfo.tags) {
+    // Does the group contain groups?
+    const containedGroupPrefix = "group.";
+    const containedGroupIds = sourceInfo.tags
+      .filter(tag => tag.startsWith(containedGroupPrefix))
+      .map(tag => tag.substring(containedGroupPrefix.length));
+    if (containedGroupIds.length > 0) {
+      createOptions.itemIds = createOptions.itemIds.concat(containedGroupIds);
+    }
+  }
+
   return createOptions;
 }
 
