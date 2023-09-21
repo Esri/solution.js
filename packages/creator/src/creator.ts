@@ -210,7 +210,8 @@ export function _applySourceToCreateOptions(
 
   if (isGroup) {
     // Does the group contain groups?
-    createOptions.itemIds = [].concat(
+    const groupIdsViaOptions: string[] = createOptions.subgroupIds || [];
+    createOptions.itemIds = groupIdsViaOptions.concat(
       createOptions.itemIds || [],
       getSubgroupIds(sourceInfo.tags)
     );

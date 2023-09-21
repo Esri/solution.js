@@ -23,7 +23,8 @@ export function createSolution(
   sourceId: string,
   srcAuthentication: common.UserSession,
   destAuthentication: common.UserSession,
-  progressCallback: common.ISolutionProgressCallback
+  progressCallback: common.ISolutionProgressCallback,
+  subgroupIds: string[]
 ): Promise<string> {
   return new Promise<string>((resolve, reject) => {
     if (!sourceId) {
@@ -33,7 +34,8 @@ export function createSolution(
 
     // Create a solution from the supplied id
     const options: common.ICreateSolutionOptions = {
-      progressCallback: progressCallback
+      progressCallback: progressCallback,
+      subgroupIds
     };
     creator.createSolution(sourceId.trim(), srcAuthentication, destAuthentication, options).then(
       createdSolutionId => {
