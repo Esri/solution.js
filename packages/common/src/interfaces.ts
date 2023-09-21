@@ -459,6 +459,12 @@ export interface ICreateSolutionOptions {
    * Credentials for the organization with the source items; default: solution item authentication
    */
   sourceItemAuthentication?: UserSession;
+
+  /**
+   * Groups to be included in solution; it's an alternate to including tags of the form "group.<embeddedGroupId>"
+   * in the top-level group.
+   */
+  subgroupIds?: string[];
 }
 
 /**
