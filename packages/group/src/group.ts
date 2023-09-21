@@ -56,7 +56,6 @@ export function convertItemToTemplate(
     common.getGroupContents(itemInfo.id, srcAuthentication).then(
       groupContents => {
         itemTemplate.type = "Group";
-        itemTemplate.dependencies = groupContents;
         common.getGroupBase(itemInfo.id, srcAuthentication).then(
           groupResponse => {
             groupResponse.id = itemTemplate.item.id;
@@ -64,6 +63,12 @@ export function convertItemToTemplate(
               ...groupResponse,
               type: "Group"
             };
+
+            // Does the group contain groups?
+            itemTemplate.dependencies = groupContents.concat(
+              common.getSubgroupIds(groupResponse.tags)
+            );
+
             resolve(itemTemplate);
           },
           () => resolve(itemTemplate)

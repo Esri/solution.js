@@ -1021,6 +1021,41 @@ describe("Module `generalHelpers`: common utility functions shared across packag
     });
   });
 
+  describe("getSubgroupIds", () => {
+    it("handles no tags", () => {
+      const tags: string[] = undefined;
+      const expectedIds: string[] = [];
+      expect(generalHelpers.getSubgroupIds(tags)).toEqual(expectedIds);
+    });
+
+    it("handles tags without group ids", () => {
+      const tags: string[] = [
+        "3D City",
+        "3D",
+        "ArcGIS Solutions",
+        "Buildings",
+        "Floors",
+        "Lidar"
+      ];
+      const expectedIds: string[] = [];
+      expect(generalHelpers.getSubgroupIds(tags)).toEqual(expectedIds);
+    });
+
+    it("handles tags with group ids", () => {
+      const tags: string[] = [
+        "3D City",
+        "3D",
+        "ArcGIS Solutions",
+        "Buildings",
+        "Floors",
+        "group.8d515625ee9f49d7b4f6c6cb2a389151",
+        "Lidar"
+      ];
+      const expectedIds: string[] = ["8d515625ee9f49d7b4f6c6cb2a389151"];
+      expect(generalHelpers.getSubgroupIds(tags)).toEqual(expectedIds);
+    });
+  });
+
   describe("generateEmptyCreationResponse", () => {
     it("returns an empty response", () => {
       const chk = generalHelpers.generateEmptyCreationResponse("Some Type");
@@ -1579,7 +1614,7 @@ describe("Module `generalHelpers`: common utility functions shared across packag
 
       jsonCopy.a = "a different string";
       expect(jsonCopy).not.toEqual(json);
-    }); 
+    });
   });
 
   describe("sanitizeJSONAndReportChanges", () => {

@@ -1413,6 +1413,7 @@ describe("Module `creator`", () => {
         snippet: "the group snippet",
         description: "the group desc",
         tags: ["the group tags"],
+        itemIds: [],
         thumbnailurl:
           "https://myorg.maps.arcgis.com/sharing/rest/community/groups/3ef/info/smile.png"
       });
@@ -1476,6 +1477,7 @@ describe("Module `creator`", () => {
         snippet: "the group snippet",
         description: "the group desc",
         tags: ["the group tags"],
+        itemIds: [],
         thumbnailurl: "https://hub.com/th.png"
       });
     });
@@ -1502,7 +1504,8 @@ describe("Module `creator`", () => {
         title: "the group title",
         snippet: "the group snippet",
         description: "the group desc",
-        tags: ["the group tags"]
+        tags: ["the group tags"],
+        itemIds: []
       });
     });
   });

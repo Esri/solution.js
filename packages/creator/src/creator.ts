@@ -33,6 +33,7 @@ import {
   getGroupContents,
   getItemBase,
   getPortal,
+  getSubgroupIds,
   getUser,
   getVelocityUrlBase,
   ICreateSolutionOptions,
@@ -205,6 +206,14 @@ export function _applySourceToCreateOptions(
       isGroup
     );
     delete sourceInfo.thumbnail;
+  }
+
+  if (isGroup) {
+    // Does the group contain groups?
+    createOptions.itemIds = [].concat(
+      createOptions.itemIds || [],
+      getSubgroupIds(sourceInfo.tags)
+    );
   }
 
   return createOptions;
