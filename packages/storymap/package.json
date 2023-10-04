@@ -22,7 +22,7 @@
     "@esri/arcgis-rest-feature-layer": "^3.7.0",
     "@esri/arcgis-rest-portal": "^3.7.0",
     "@esri/arcgis-rest-request": "^3.7.0",
-    "@esri/hub-common": "^13.46.2",
+    "@esri/hub-common": "^14.26.1",
     "@esri/solution-common": "^5.0.10",
     "@types/jasmine": "^4.3.6",
     "fetch-mock": "^7.7.3",
