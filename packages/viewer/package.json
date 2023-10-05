@@ -1,6 +1,6 @@
 {
   "name": "@esri/solution-viewer",
-  "version": "5.0.11",
+  "version": "5.0.12",
   "description": "Simplifies access to @esri/solution.js.",
   "main": "dist/cjs/index.js",
   "module": "dist/esm/index.js",
@@ -27,7 +27,7 @@
     "@esri/hub-initiatives": "^14.0.0",
     "@esri/hub-sites": "^14.0.1",
     "@esri/hub-teams": "^14.0.0",
-    "@esri/solution-common": "^5.0.11",
+    "@esri/solution-common": "^5.0.12",
     "@types/jasmine": "^4.3.6",
     "fetch-mock": "^7.7.3",
     "jasmine": "^5.1.0",

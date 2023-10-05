@@ -1,6 +1,6 @@
 {
   "name": "copySolutions",
-  "version": "5.0.11",
+  "version": "5.0.12",
   "description": "copySolutions demo",
   "author": "Esri",
   "license": "Apache-2.0",
@@ -22,7 +22,7 @@
     "@esri/hub-initiatives": "^14.0.0",
     "@esri/hub-sites": "^14.0.1",
     "@esri/hub-teams": "^14.0.0",
-    "@esri/solution-common": "^5.0.11",
+    "@esri/solution-common": "^5.0.12",
     "copy-webpack-plugin": "^11.0.0",
     "css-loader": "^6.8.1",
     "html-webpack-plugin": "^5.5.1",
