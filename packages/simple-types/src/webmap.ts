@@ -23,12 +23,6 @@ import * as common from "@esri/solution-common";
  */
 const WEBMAP_APP_URL_PART: string = "home/webmap/viewer.html?webmap=";
 
-/**
- * A flag inserted used as a vector tile layer's styleUrl to indicate that the layer is unsupported and should
- * be removed.
- */
-const unsupportedTileLayerUrl = "unsupported";
-
 // ------------------------------------------------------------------------------------------------------------------ //
 
 /**
@@ -63,8 +57,6 @@ export function convertItemToTemplate(
         if (itemTemplate.data) {
           const baseMapLayers = itemTemplate.data.baseMap?.baseMapLayers;
           if (baseMapLayers) {
-            itemTemplate.data.baseMap.baseMapLayers =
-              baseMapLayers.filter(layer => layer.styleUrl !== unsupportedTileLayerUrl);
             _templatizeWebmapLayerIdsAndUrls(
               itemTemplate.data.baseMap.baseMapLayers,
               results.urlHash,
@@ -74,8 +66,6 @@ export function convertItemToTemplate(
 
           const operationalLayers = itemTemplate.data.operationalLayers;
           if (operationalLayers) {
-            itemTemplate.data.operationalLayers =
-              operationalLayers.filter(layer => layer.styleUrl !== unsupportedTileLayerUrl);
             _templatizeWebmapLayerIdsAndUrls(
               itemTemplate.data.operationalLayers,
               results.urlHash,
@@ -213,10 +203,13 @@ export function _getLayerIds(
             if (layers[i].layerType === "VectorTileLayer") {
               const typeKeywords = common.getProp(response, "typeKeywords");
               if (typeKeywords && typeKeywords.includes("Vector Tile Style Editor")) {
-                // Vector tiles edited by the style editor
+                // Vector tiles edited by the style editor--flag as a dependency
                 if (dependencies.indexOf(response.id) < 0) {
                   dependencies.push(response.id);
                 }
+
+                // Set a flag indicating that this VectorTileLayer should have its id templatized
+                layers[i].templatizeId = true;
 
                 // Templatize the URL to the style resource
                 const iSuffix = layers[i].styleUrl.indexOf(response.id) + response.id.length;
@@ -225,9 +218,6 @@ export function _getLayerIds(
                   response.id,
                   ".itemUrl"
                 );
-              } else {
-                // Unsupported vector tiles
-                layers[i].styleUrl = unsupportedTileLayerUrl;
               }
 
             } else if (common.getProp(response, "serviceItemId")) {
@@ -275,8 +265,11 @@ export function _templatizeWebmapLayerIdsAndUrls(
 
     // Test for Vector Tile Layers
     if (layer.itemId && layer.layerType === "VectorTileLayer") {
-      // No further test needed: we've already pruned out unsupported vector tile layers
-      layer.itemId = common.templatizeTerm(layer.itemId, layer.itemId, ".itemId");
+      // Do we templatize its id?  We don't for basemaps, e.g.
+      if (layer.templatizeId) {
+        layer.itemId = common.templatizeTerm(layer.itemId, layer.itemId, ".itemId");
+        delete layer.templatizeId;
+      }
 
     // Handle a feature server layer
     } else if (layer.url) {
