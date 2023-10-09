@@ -32,7 +32,7 @@
     "fetch-mock": "^7.7.3",
     "jasmine": "^5.1.0",
     "jasmine-core": "^5.1.0",
-    "sinon": "^15.2.0"
+    "sinon": "^16.1.0"
   },
   "dependencies": {
     "@esri/arcgis-html-sanitizer": "3.0.1",
