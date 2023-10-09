@@ -25,8 +25,8 @@
     "@esri/arcgis-rest-service-admin": "^3.7.0",
     "@esri/hub-common": "^14.26.1",
     "@esri/hub-initiatives": "^14.0.0",
-    "@esri/hub-sites": "^14.0.1",
-    "@esri/hub-teams": "^14.0.0",
+    "@esri/hub-sites": "^14.1.0",
+    "@esri/hub-teams": "^14.1.0",
     "@esri/solution-common": "^5.0.12",
     "@esri/solution-feature-layer": "^5.0.12",
     "@esri/solution-file": "^5.0.12",
@@ -37,7 +37,7 @@
     "fetch-mock": "^7.7.3",
     "jasmine": "^5.1.0",
     "jasmine-core": "^5.1.0",
-    "rollup": "^3.29.4"
+    "rollup": "^4.0.2"
   },
   "dependencies": {
     "tslib": "1.14.1"
