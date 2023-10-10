@@ -1407,16 +1407,22 @@ export function removeGroup(
  *
  * @param itemId Id of an item to delete
  * @param authentication Credentials for the request to AGO
+ * @param permanentDelete If true (the default), the item is permanently deleted; if false and the item type
+ * supports the recycle bin, the item will be put into the recycle bin
  * @returns A promise that will resolve with the result of the request
  */
 export function removeItem(
   itemId: string,
-  authentication: UserSession
+  authentication: UserSession,
+  permanentDelete = true
 ): Promise<IStatusResponse> {
   return new Promise<IStatusResponse>((resolve, reject) => {
     const requestOptions: IUserItemOptions = {
       id: itemId,
-      authentication: authentication
+      authentication: authentication,
+      params: {
+        permanentDelete
+      }
     };
     portalRemoveItem(requestOptions).then(
       result => (result.success ? resolve(result) : reject(result)),
@@ -1430,14 +1436,17 @@ export function removeItem(
  *
  * @param itemId Id of an item or group to delete
  * @param authentication Credentials for the request to AGO
+ * @param permanentDelete If true (the default), the item is permanently deleted; if false and the item type
+ * supports the recycle bin, the item will be put into the recycle bin; note that this does not apply to groups
  * @returns A promise that will resolve with the result of the request
  */
 export function removeItemOrGroup(
   itemId: string,
-  authentication: UserSession
+  authentication: UserSession,
+  permanentDelete = true
 ): Promise<IStatusResponse> {
   return new Promise<IStatusResponse>((resolve, reject) => {
-    removeItem(itemId, authentication).then(resolve, error => {
+    removeItem(itemId, authentication, permanentDelete).then(resolve, error => {
       removeGroup(itemId, authentication).then(resolve, () => reject(error));
     });
   });
