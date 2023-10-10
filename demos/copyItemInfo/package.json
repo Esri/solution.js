@@ -1,6 +1,6 @@
 {
   "name": "copyItemInfo",
-  "version": "5.0.12",
+  "version": "5.0.13",
   "description": "copyItemInfo demo",
   "author": "Esri",
   "license": "Apache-2.0",
@@ -21,7 +21,7 @@
     "@esri/hub-initiatives": "^14.0.0",
     "@esri/hub-sites": "^14.1.0",
     "@esri/hub-teams": "^14.1.0",
-    "@esri/solution-common": "^5.0.12",
+    "@esri/solution-common": "^5.0.13",
     "css-loader": "^6.8.1",
     "html-webpack-plugin": "^5.5.1",
     "postcss": "^8.4.31",
