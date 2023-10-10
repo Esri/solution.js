@@ -31,8 +31,18 @@ function go () {
   document.getElementById("output").style.display = "block";
   var startTime = Date.now();
 
-  // use the manually entered value, but fall back to the select list
+  // Use the manually entered value
   var id = htmlUtil.getHTMLValue("itemOrGroupId");
+
+  // Are we embedding groups?
+  let subgroupIds: string[] = [];
+  if (htmlUtil.getHTMLChecked("includeSubgroups")) {
+    const subgroupIdsList = htmlUtil.getHTMLValue("subgroupIds") as string;
+    if (subgroupIdsList) {
+      subgroupIds = subgroupIdsList.split(",")
+        .map(id => id.trim());
+    }
+  }
 
   // Source credentials
   const srcPortal = (htmlUtil.getHTMLValue("srcPortal") || "https://www.arcgis.com") + "/sharing/rest";
@@ -57,7 +67,8 @@ function go () {
     destCreds,
     percentDone => {
       document.getElementById("output").innerHTML = "Creating..." + percentDone.toFixed().toString() + "%";
-    }
+    },
+    subgroupIds
   ).then(function (html){
       reportElapsedTime(startTime);
       document.getElementById("output").innerHTML = html;

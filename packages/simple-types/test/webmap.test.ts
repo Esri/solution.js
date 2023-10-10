@@ -155,7 +155,7 @@ describe("Module `webmap`: manages the creation and deployment of web map item t
                 title: "Nova (German)",
                 itemId: "vts01234567890",
                 layerType: "VectorTileLayer",
-                styleUrl: "unsupported"  // flag indicating an unsupported Vector Tile Layer
+                styleUrl: "https://www.arcgis.com/sharing/rest/content/items/4da7ae171a83428/resources/styles/root.json"
               }
             ]
           },
@@ -206,6 +206,13 @@ describe("Module `webmap`: manages the creation and deployment of web map item t
                 url: "https://services.arcgisonline.com/arcgis/rest/services/Elevation/World_Hillshade/MapServer",
                 visibility: true,
                 layerType: "ArcGISTiledMapServiceLayer"
+              },
+              {
+                id: "187dd95bb45-layer-4",
+                title: "Nova (German)",
+                itemId: "vts01234567890",
+                layerType: "VectorTileLayer",
+                styleUrl: "https://www.arcgis.com/sharing/rest/content/items/4da7ae171a83428/resources/styles/root.json"
               }
             ]
           },
@@ -968,6 +975,81 @@ describe("Module `webmap`: manages the creation and deployment of web map item t
     });
   });
 
+  it("will get layer ids with url and construct url/id hash; VectorTileLayer doesn't contain 'Vector Tile Style Editor' typeKeyword", done => {
+    const layerList = [
+      {
+        id: "layer0",
+        itemId: "vts01234567890",
+        layerType: "VectorTileLayer",
+        styleUrl: utils.PORTAL_SUBSET.restUrl + "/content/items/vts01234567890/resources/styles/root.json"
+      },
+      {
+        itemId: "layer1",
+        url:
+          "http://services.arcgis.com/myOrg/ArcGIS/rest/services/myService1/FeatureServer/1"
+      },
+      {
+        itemId: "layer2",
+        url:
+          "http://services.arcgis.com/myOrg/ArcGIS/rest/services/myService2/FeatureServer/2"
+      },
+      {
+        itemId: "layer4",
+        url:
+          "http://services.arcgis.com/myOrg/ArcGIS/rest/services/myService4/FeatureServer/4"
+      },
+      {
+        url: "http://myServer/ArcGIS/services/myService4/MapServer/4"
+      }
+    ];
+    const dependencies: string[] = [];
+
+    fetchMock
+      .get(
+        "https://myorg.maps.arcgis.com/sharing/rest/content/items/vts01234567890?f=json&token=fake-token",
+        {
+          id: "vts01234567890"
+        }
+      )
+      .post(
+        "http://services.arcgis.com/myOrg/ArcGIS/rest/services/myService1/FeatureServer/1",
+        { serviceItemId: "abc19ef8efa7448fa8ddf7b13cef0240", id: 1 }
+      )
+      .post(
+        "http://services.arcgis.com/myOrg/ArcGIS/rest/services/myService2/FeatureServer/2",
+        { serviceItemId: "abc29ef8efa7448fa8ddf7b13cef0240", id: 2 }
+      )
+      .post(
+        "http://services.arcgis.com/myOrg/ArcGIS/rest/services/myService4/FeatureServer/4",
+        { serviceItemId: "abc49ef8efa7448fa8ddf7b13cef0240", id: 4 }
+      );
+
+    const expected = {
+      dependencies: [
+        "abc19ef8efa7448fa8ddf7b13cef0240",
+        "abc29ef8efa7448fa8ddf7b13cef0240",
+        "abc49ef8efa7448fa8ddf7b13cef0240"
+      ],
+      urlHash: {
+        "http://services.arcgis.com/myOrg/ArcGIS/rest/services/myService1/FeatureServer/1":
+          "abc19ef8efa7448fa8ddf7b13cef0240",
+        "http://services.arcgis.com/myOrg/ArcGIS/rest/services/myService2/FeatureServer/2":
+          "abc29ef8efa7448fa8ddf7b13cef0240",
+        "http://services.arcgis.com/myOrg/ArcGIS/rest/services/myService4/FeatureServer/4":
+          "abc49ef8efa7448fa8ddf7b13cef0240"
+      }
+    };
+
+    webmap._getLayerIds(layerList, dependencies, MOCK_USER_SESSION).then(
+      actual => {
+        expect(actual).toEqual(expected);
+        expect(layerList[0].styleUrl).toEqual(utils.PORTAL_SUBSET.restUrl + "/content/items/vts01234567890/resources/styles/root.json");
+        done();
+      },
+      e => done.fail(e)
+    );
+  });
+
   describe("_templatizeWebmapLayerIdsAndUrls", () => {
     it("handles no analysis layers", () => {
       const layerList = [
@@ -1093,6 +1175,37 @@ describe("Module `webmap`: manages the creation and deployment of web map item t
       const expectedLayerListTemplate = [
         {
           itemId: "layer1",
+          url:
+            "http://services.arcgis.com/myOrg/ArcGIS/rest/services/myService/FeatureServer/{{layer1.layer1.url}}"
+        },
+        {
+          url:
+            "http://services.arcgis.com/myOrg/ArcGIS/rest/services/myService/FeatureServer/3"
+        }
+      ];
+    });
+
+    it("handles an a VectorTileLayer that should have its item id templatized", () => {
+      const layerList = [
+        {
+          itemId: "layer1",
+          layerType: "VectorTileLayer",
+          templatizeId: true,
+          url:
+            "http://services.arcgis.com/myOrg/ArcGIS/rest/services/myService/FeatureServer/1"
+        },
+        {
+          url:
+            "http://services.arcgis.com/myOrg/ArcGIS/rest/services/myService/FeatureServer/3"
+        }
+      ];
+      const urlHash = {};
+
+      webmap._templatizeWebmapLayerIdsAndUrls(layerList, urlHash, {});
+
+      const expectedLayerListTemplate = [
+        {
+          itemId: "{{layer1.itemId}}",
           url:
             "http://services.arcgis.com/myOrg/ArcGIS/rest/services/myService/FeatureServer/{{layer1.layer1.url}}"
         },

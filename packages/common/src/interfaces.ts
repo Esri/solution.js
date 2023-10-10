@@ -35,6 +35,13 @@ export {
   UserSession
 } from "@esri/arcgis-rest-auth";
 export {
+  IFeature,
+  IQueryRelatedOptions,
+  IQueryRelatedResponse,
+  IRelatedRecordGroup,
+  queryRelated
+} from "@esri/arcgis-rest-feature-layer";
+export {
   IAddFolderResponse,
   ICreateItemResponse,
   IGetRelatedItemsResponse,
@@ -452,6 +459,12 @@ export interface ICreateSolutionOptions {
    * Credentials for the organization with the source items; default: solution item authentication
    */
   sourceItemAuthentication?: UserSession;
+
+  /**
+   * Groups to be included in solution; it's an alternate to including tags of the form "group.<embeddedGroupId>"
+   * in the top-level group.
+   */
+  subgroupIds?: string[];
 }
 
 /**

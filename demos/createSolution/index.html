@@ -19,6 +19,14 @@
    | limitations under the License.
   -->
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+  <style>
+    .indent {
+      margin-left: 20px;
+    }
+    #subgroupIdsDiv {
+      display: none;
+    }
+  </style>
   <script>
     var goFcn;
   </script>
@@ -31,6 +39,18 @@
     <div id="input">
       <label for="itemOrGroupId">Enter an Item or Group ID:</label>
       <input class="form-control" type="text" id="itemOrGroupId">
+
+      <br /><br />
+
+      <div>
+        <label for="includeSubgroups">Embed groups in solution?&nbsp;</label>
+        <input type="checkbox" id="includeSubgroups" onchange="changeSubgroupIdsVisibility(this)">
+
+        <div id="subgroupIdsDiv" class="indent">
+          <label for="subgroupIds">IDs of embedded groups separated by commas:</label>
+          <input type="text" id="subgroupIds" style="width:485px">
+        </div>
+      </div>
 
       <br /><br />
 
@@ -74,5 +94,16 @@
     <br />
   </div>
   <div id="output" style="display:none">Creating...</div>
+
+  <script>
+
+    function changeSubgroupIdsVisibility(
+      changeEvent
+    ) {
+      document.getElementById("subgroupIdsDiv").style.display =
+        changeEvent.checked ? "block" : "none";
+    }
+
+  </script>
 </body>
 </html>

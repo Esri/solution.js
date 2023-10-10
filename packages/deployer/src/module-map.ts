@@ -33,7 +33,7 @@ export const UNSUPPORTED: moduleHandler = null;
 
 /**
  * Mapping from item type to module with type-specific template-handling code.
- * AGO types come from a blend of arcgis-portal-app\src\js\arcgisonline\pages\item\_Info.js and
+ * AGO types come from a blend of arcgis-portal-app\src\js\arcgisonline\pages\item\_Info.ts and
  * arcgis-portal-app\src\js\arcgis-components\src\_utils\metadata\item\displayName.ts
  */
 export const moduleMap: IItemTypeModuleMap = {
@@ -196,6 +196,43 @@ export const moduleMap: IItemTypeModuleMap = {
   "Windows Viewer Add In": fileProcessor,
   "Windows Viewer Configuration": fileProcessor,
   "Workflow Manager Package": fileProcessor,
+
+  ////////////////////////////////////////////////////////
+  // New types
+  "Administrative Report": undefined,
+  "Apache Parquet": undefined,
+  "API Key": undefined,
+  "datastore catalog service": undefined,
+  "Deep Learning Studio Project": undefined,
+  "Earth Configuration": undefined,
+  "Elevation Layer": undefined,
+  "Esri Classifier Definition": undefined,
+  "Export Package": undefined,
+  "GeoBIM Application": undefined,
+  "GeoBIM Project": undefined,
+  "Geoenrichment Service": undefined,
+  GML: undefined,
+  "Hub Event": undefined,
+  "Hub Initiative Template": undefined,
+  "Hub Project": undefined,
+  "Insights Data Engineering Model": undefined,
+  "Insights Data Engineering Workbook": undefined,
+  "Insights Workbook Package": undefined,
+  "Knowledge Graph": undefined,
+  "Knowledge Studio Project": undefined,
+  "Link Chart": undefined,
+  "Map Image Layer": undefined,
+  Markup: undefined,
+  OGCFeatureServer: undefined,
+  "Pro Project": undefined,
+  "Pro Report Template": undefined,
+  "Route Layer": undefined,
+  "Scene Layer Package": undefined,
+  "Site Initiative": undefined,
+  "StoryMap Theme": undefined,
+  Table: undefined,
+  "Video Service": undefined,
+  Workflow: undefined,
 
   ////////////////////////////////////////////////////////
   // Testing "types"

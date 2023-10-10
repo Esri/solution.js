@@ -8,6 +8,10 @@ pushd demos\compareJSON
 call npm install
 popd
 
+pushd demos\compareSolutions
+call npm install
+popd
+
 pushd demos\copyItemInfo
 call npm install
 popd
@@ -100,6 +104,10 @@ pushd demos\compareJSON
 call npm run build
 popd
 
+pushd demos\compareSolutions
+call npm run build
+popd
+
 pushd demos\copyItemInfo
 call npm run build
 popd
@@ -132,3 +140,5 @@ pushd demos\verifySolution
 call npm run build
 popd
 
+call rmdir/q/s coverage
+call npm run test:chrome:ci

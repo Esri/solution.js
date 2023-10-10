@@ -523,6 +523,26 @@ export function failWithIds(itemIds: string[], e?: any): any {
 }
 
 /**
+ * Extracts subgroup ids from item tags
+ *
+ * @param tags Tags in an item
+ * @returns List of subgroup ids; subgroups are identified using tags that begin with "group." and end with a group id,
+ * e.g., "group.8d515625ee9f49d7b4f6c6cb2a389151"; non-matching tags are ignored
+ */
+export function getSubgroupIds(
+  tags: string[]
+): string[] {
+  if (tags) {
+    const containedGroupPrefix = "group.";
+    return tags
+      .filter(tag => tag.startsWith(containedGroupPrefix))
+      .map(tag => tag.substring(containedGroupPrefix.length));
+  } else {
+    return [];
+  }
+}
+
+/**
  * Extracts the ids from a string
  *
  * @param v String to examine
@@ -855,7 +875,7 @@ export function cleanLayerId(id: any) {
  * @returns Template associated with the user provided id argument
  */
 export function getTemplateById(
-  templates: IItemTemplate[], 
+  templates: IItemTemplate[],
   id: string
 ): any {
   let template;

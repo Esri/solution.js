@@ -1,7 +1,7 @@
 {
-  "name": "compareJSON",
+  "name": "compareSolutions",
   "version": "5.0.13",
-  "description": "compareJSON demo",
+  "description": "compareSolutions demo",
   "author": "Esri",
   "license": "Apache-2.0",
   "private": true,
