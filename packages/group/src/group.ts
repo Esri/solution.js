@@ -114,18 +114,26 @@ export function createItemFromTemplate(
 
     // Set up properties needed to create group
     const newGroup: common.IGroupAdd = {
-      title: newItemTemplate.item.title || "",
       access: "private",
-      owner: newItemTemplate.item.owner,
-      tags: newItemTemplate.item.tags,
-      typeKeywords: newItemTemplate.item.typeKeywords,
       description: newItemTemplate.item.description,
+      owner: newItemTemplate.item.owner,
+      snippet: newItemTemplate.item.snippet,
+      tags: newItemTemplate.item.tags,
       thumbnail: newItemTemplate.item.thumbnail,
-      snippet: newItemTemplate.item.snippet
+      title: newItemTemplate.item.title || "",
+      typeKeywords: newItemTemplate.item.typeKeywords
     };
 
     const props: string[] = [
-      "isInvitationOnly", "autoJoin", "membershipAccess", "isViewOnly", "sortField", "sortOrder", "isOpenData", "displaySettings"
+      "autoJoin",
+      "displaySettings",
+      "isInvitationOnly",
+      "isOpenData",
+      "isViewOnly",
+      "membershipAccess",
+      "properties",
+      "sortField",
+      "sortOrder"
     ];
     props.forEach(p => {
       /* istanbul ignore else */
