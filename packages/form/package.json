@@ -33,7 +33,7 @@
     "@esri/solution-group": "^5.0.13",
     "@esri/solution-simple-types": "^5.0.13",
     "@esri/solution-storymap": "^5.0.13",
-    "@types/jasmine": "^4.3.6",
+    "@types/jasmine": "^5.1.0",
     "fetch-mock": "^7.7.3",
     "jasmine": "^5.1.0",
     "jasmine-core": "^5.1.0",
