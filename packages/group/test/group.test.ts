@@ -1509,4 +1509,198 @@ describe("Module `group`: manages the creation and deployment of groups", () => 
       })
     });
   });
+
+  describe("_initializeNewGroup", () => {
+    it("copies required properties", () => {
+      const sourceGroup: common.IItemGeneralized = {
+        id: "grp1234567890",
+        type: "Group",
+
+        access: "private",
+        title: "title property"
+      }
+
+      const newGroup = group._initializeNewGroup(sourceGroup);
+
+      const expectedNewGroup: common.IGroupAdd = {
+        access: "private",
+        description: undefined,
+        owner: undefined,
+        snippet: undefined,
+        tags: undefined,
+        thumbnail: undefined,
+        title: "title property",
+        typeKeywords: undefined
+      }
+      expect(newGroup).toEqual(expectedNewGroup);
+    });
+
+    it("copies properties that we always want to copy", () => {
+      const sourceGroup: common.IItemGeneralized = {
+        id: "grp1234567890",
+        type: "Group",
+
+        access: "private",
+        description: "description property",
+        owner: "owner property",
+        snippet: "snippet property",
+        tags: ["tags property 1", "tags property 2"],
+        thumbnail: "thumbnail property",
+        title: "title property",
+        typeKeywords: ["typeKeywords property 1", "typeKeywords property 2"]
+      }
+
+      const newGroup = group._initializeNewGroup(sourceGroup);
+
+      const expectedNewGroup: common.IGroupAdd = {
+        access: "private",
+        description: "description property",
+        owner: "owner property",
+        snippet: "snippet property",
+        tags: ["tags property 1", "tags property 2"],
+        thumbnail: "thumbnail property",
+        title: "title property",
+        typeKeywords: ["typeKeywords property 1", "typeKeywords property 2"]
+      }
+      expect(newGroup).toEqual(expectedNewGroup);
+    });
+
+    it("handles nulls in properties that we always want to copy", () => {
+      const sourceGroup: common.IItemGeneralized = {
+        id: "grp1234567890",
+        type: "Group",
+
+        access: "org",
+        description: null,
+        owner: null,
+        snippet: null,
+        tags: null,
+        thumbnail: null,
+        title: "title property",
+        typeKeywords: null
+      }
+
+      const newGroup = group._initializeNewGroup(sourceGroup);
+
+      const expectedNewGroup: common.IGroupAdd = {
+        access: "private",
+        description: null,
+        owner: null,
+        snippet: null,
+        tags: null,
+        thumbnail: null,
+        title: "title property",
+        typeKeywords: null
+      }
+      expect(newGroup).toEqual(expectedNewGroup);
+    });
+
+    it("copies optional properties", () => {
+      const sourceGroup: common.IItemGeneralized = {
+        id: "grp1234567890",
+        type: "Group",
+
+        access: "public",
+        description: null,
+        owner: null,
+        snippet: null,
+        tags: null,
+        thumbnail: null,
+        title: "title property",
+        typeKeywords: ["typeKeywords property 1", "typeKeywords property 2"],
+
+        autoJoin: true,
+        displaySettings: true,
+        isInvitationOnly: true,
+        isOpenData: true,
+        isViewOnly: true,
+        membershipAccess: "membershipAccess property",
+        properties: {
+          "featuredItemIds": [
+            "{{312f7d21b9024e8cb977709541ae6a16.itemId}}",
+            "{{f35c3102c054414c81760958b726be3a.itemId}}",
+            "{{d8e86c5937da4691a09a050eefc65bb6.itemId}}",
+            "{{e0eccb81ee0c47eb8fd9189a3edb1fae.itemId}}"
+          ],
+          "isFeatured": true
+        },
+        sortField: "modified",
+        sortOrder: "asc"
+      }
+
+      const newGroup = group._initializeNewGroup(sourceGroup);
+
+      const expectedNewGroup: common.IGroupAdd = {
+        access: "private",
+        description: null,
+        owner: null,
+        snippet: null,
+        tags: null,
+        thumbnail: null,
+        title: "title property",
+        typeKeywords: ["typeKeywords property 1", "typeKeywords property 2"],
+
+        autoJoin: true,
+        displaySettings: true,
+        isInvitationOnly: true,
+        isOpenData: true,
+        isViewOnly: true,
+        membershipAccess: "membershipAccess property",
+        properties: {
+          "featuredItemIds": [
+            "{{312f7d21b9024e8cb977709541ae6a16.itemId}}",
+            "{{f35c3102c054414c81760958b726be3a.itemId}}",
+            "{{d8e86c5937da4691a09a050eefc65bb6.itemId}}",
+            "{{e0eccb81ee0c47eb8fd9189a3edb1fae.itemId}}"
+          ],
+          "isFeatured": true
+        },
+        sortField: "modified",
+        sortOrder: "asc"
+      }
+      expect(newGroup).toEqual(expectedNewGroup);
+    });
+
+    it("copies ignores optional properties that aren't wanted", () => {
+      const sourceGroup: common.IItemGeneralized = {
+        id: "grp1234567890",
+        type: "Group",
+
+        access: "public",
+        description: null,
+        owner: null,
+        snippet: null,
+        tags: null,
+        thumbnail: null,
+        title: "title property",
+        typeKeywords: ["typeKeywords property 1", "typeKeywords property 2"],
+
+        autoJoin: true,
+        displaySettings: true,
+        isInvitationOnly: true,
+
+        unwanted1: "unwanted property 1",
+        unwanted2: "unwanted property 2",
+        unwanted3: "unwanted property 3"
+      }
+
+      const newGroup = group._initializeNewGroup(sourceGroup);
+
+      const expectedNewGroup: common.IGroupAdd = {
+        access: "private",
+        description: null,
+        owner: null,
+        snippet: null,
+        tags: null,
+        thumbnail: null,
+        title: "title property",
+        typeKeywords: ["typeKeywords property 1", "typeKeywords property 2"],
+
+        autoJoin: true,
+        displaySettings: true,
+        isInvitationOnly: true
+      }
+      expect(newGroup).toEqual(expectedNewGroup);
+    });
+  });
 });
