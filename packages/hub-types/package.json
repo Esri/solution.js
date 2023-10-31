@@ -25,14 +25,14 @@
     "@esri/arcgis-rest-service-admin": "^3.7.0",
     "@esri/hub-common": "^14.26.1",
     "@esri/hub-initiatives": "^14.0.0",
-    "@esri/hub-sites": "^14.1.0",
+    "@esri/hub-sites": "^14.2.0",
     "@esri/hub-teams": "^14.1.0",
     "@esri/solution-common": "^5.0.13",
-    "@types/jasmine": "^4.3.6",
+    "@types/jasmine": "^5.1.1",
     "fetch-mock": "^7.7.3",
     "jasmine": "^5.1.0",
     "jasmine-core": "^5.1.0",
-    "rollup": "^4.0.2"
+    "rollup": "^4.1.5"
   },
   "dependencies": {
     "tslib": "1.14.1"
