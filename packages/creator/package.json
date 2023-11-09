@@ -42,7 +42,7 @@
     "jasmine": "^5.1.0",
     "jasmine-core": "^5.1.0",
     "rollup": "^4.1.5",
-    "sinon": "^15.2.0"
+    "sinon": "^17.0.1"
   },
   "dependencies": {
     "@esri/arcgis-rest-types": "^3.7.0",
