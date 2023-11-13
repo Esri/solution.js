@@ -18,7 +18,7 @@
 <h1>Function removeItem</h1></div>
 <section class="tsd-panel">
 <ul class="tsd-signatures">
-<li class="tsd-signature tsd-anchor-link" id="removeItem"><span class="tsd-kind-call-signature">remove<wbr/>Item</span><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">itemId</span>, <span class="tsd-kind-parameter">authentication</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type ">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/common_src.IStatusResponse.html" class="tsd-signature-type tsd-kind-interface">IStatusResponse</a><span class="tsd-signature-symbol">&gt;</span><a href="#removeItem" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></li>
+<li class="tsd-signature tsd-anchor-link" id="removeItem"><span class="tsd-kind-call-signature">remove<wbr/>Item</span><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">itemId</span>, <span class="tsd-kind-parameter">authentication</span>, <span class="tsd-kind-parameter">permanentDelete</span><span class="tsd-signature-symbol">?</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type ">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/common_src.IStatusResponse.html" class="tsd-signature-type tsd-kind-interface">IStatusResponse</a><span class="tsd-signature-symbol">&gt;</span><a href="#removeItem" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></li>
 <li class="tsd-description">
 <div class="tsd-comment tsd-typography"><p>Removes an item from AGO.</p>
 </div>
@@ -34,12 +34,18 @@
 <h5><span class="tsd-kind-parameter">authentication</span>: <a href="../classes/common_src.UserSession.html" class="tsd-signature-type tsd-kind-class">UserSession</a></h5>
 <div class="tsd-comment tsd-typography"><p>Credentials for the request to AGO</p>
 </div>
+<div class="tsd-comment tsd-typography"></div></li>
+<li>
+<h5><span class="tsd-kind-parameter">permanentDelete</span>: <span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol"> = true</span></h5>
+<div class="tsd-comment tsd-typography"><p>If true (the default), the item is permanently deleted; if false and the item type
+supports the recycle bin, the item will be put into the recycle bin</p>
+</div>
 <div class="tsd-comment tsd-typography"></div></li></ul></div>
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type ">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/common_src.IStatusResponse.html" class="tsd-signature-type tsd-kind-interface">IStatusResponse</a><span class="tsd-signature-symbol">&gt;</span></h4><p>A promise that will resolve with the result of the request</p>
 
 <div class="tsd-comment tsd-typography"></div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/Esri/solution.js/blob/4b2759816/packages/common/src/restHelpers.ts#L1412">packages/common/src/restHelpers.ts:1412</a></li></ul></aside></li></ul></section></div>
+<li>Defined in <a href="https://github.com/Esri/solution.js/blob/e896544e8/packages/common/src/restHelpers.ts#L1414">packages/common/src/restHelpers.ts:1414</a></li></ul></aside></li></ul></section></div>
 <div class="col-sidebar">
 <div class="page-menu">
 <div class="tsd-navigation settings">
