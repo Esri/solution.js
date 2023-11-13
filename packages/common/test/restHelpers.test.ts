@@ -563,14 +563,13 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
     });
 
     it("can handle an ISearchOptions", () => {
-      const q = "my search";
       const search = {
-        q,
+        q: "my search",
         start: 1,
         num: 50
       } as portal.ISearchOptions;
       const expectedOptions = {
-        q,
+        q: "my search",
         start: 1,
         num: 50
       } as portal.ISearchOptions;
@@ -579,12 +578,27 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
     });
 
     it("can handle an ISearchOptions with defaults", () => {
-      const q = "my search";
       const search = {
-        q
+        q: "my search"
       } as portal.ISearchOptions;
       const expectedOptions = {
-        q,
+        q: "my search",
+        start: 1,
+        num: 100
+      } as portal.ISearchOptions;
+      const constructedOptions = restHelpers.convertToISearchOptions(search);
+      expect(constructedOptions).toEqual(expectedOptions);
+    });
+
+    it("can removes sortField='relevance' in ISearchOptions", () => {
+      const search = {
+        q: "my search",
+        sortField: "relevance",
+        sortOrder: "desc"
+      } as portal.ISearchOptions;
+      const expectedOptions = {
+        q: "my search",
+        sortOrder: "desc",
         start: 1,
         num: 100
       } as portal.ISearchOptions;
@@ -3323,11 +3337,15 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
     it("can fetch a single tranche", done => {
       const groupId: string = "grp1234567890";
       const query: string = "Fred";
-      const additionalSearchOptions: interfaces.IAdditionalGroupSearchOptions = { num: 5 };
+      const additionalSearchOptions: interfaces.IAdditionalGroupSearchOptions = {
+        sortField: "relevance",
+        sortOrder: "asc",
+        num: 5
+      };
 
       fetchMock.get(
         utils.PORTAL_SUBSET.restUrl +
-          `/content/groups/${groupId}/search?f=json&num=5&q=${query}&token=fake-token`,
+          `/content/groups/${groupId}/search?f=json&num=5&sortOrder=asc&q=${query}&token=fake-token`,
         //                        q    s  #   x  t  r
         utils.getSearchResponse(query, 1, 5, -1, 4, 4)
       );
