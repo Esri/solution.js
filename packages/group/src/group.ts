@@ -113,26 +113,7 @@ export function createItemFromTemplate(
     newItemTemplate.item.thumbnail = template.item.thumbnail;
 
     // Set up properties needed to create group
-    const newGroup: common.IGroupAdd = {
-      title: newItemTemplate.item.title || "",
-      access: "private",
-      owner: newItemTemplate.item.owner,
-      tags: newItemTemplate.item.tags,
-      typeKeywords: newItemTemplate.item.typeKeywords,
-      description: newItemTemplate.item.description,
-      thumbnail: newItemTemplate.item.thumbnail,
-      snippet: newItemTemplate.item.snippet
-    };
-
-    const props: string[] = [
-      "isInvitationOnly", "autoJoin", "membershipAccess", "isViewOnly", "sortField", "sortOrder", "isOpenData", "displaySettings"
-    ];
-    props.forEach(p => {
-      /* istanbul ignore else */
-      if (newItemTemplate.item.hasOwnProperty(p)) {
-        newGroup[p] = newItemTemplate.item[p];
-      }
-    })
+    const newGroup = _initializeNewGroup(newItemTemplate.item);
 
     // Create a group, appending a sequential suffix to its name if the group exists, e.g.,
     //  * Manage Right of Way Activities
@@ -384,4 +365,40 @@ export function postProcess(
     }
   });
   return promise;
+}
+
+export function _initializeNewGroup(
+  sourceGroup: common.IItemGeneralized
+): common.IGroupAdd {
+  // Set up properties needed to create group
+  const newGroup: common.IGroupAdd = {
+    access: "private",
+    description: sourceGroup.description,
+    owner: sourceGroup.owner,
+    snippet: sourceGroup.snippet,
+    tags: sourceGroup.tags,
+    thumbnail: sourceGroup.thumbnail,
+    title: sourceGroup.title || "",
+    typeKeywords: sourceGroup.typeKeywords
+  };
+
+  const props: string[] = [
+    "autoJoin",
+    "displaySettings",
+    "isInvitationOnly",
+    "isOpenData",
+    "isViewOnly",
+    "membershipAccess",
+    "properties",
+    "sortField",
+    "sortOrder"
+  ];
+  props.forEach(p => {
+    /* istanbul ignore else */
+    if (sourceGroup.hasOwnProperty(p)) {
+      newGroup[p] = sourceGroup[p];
+    }
+  })
+
+  return newGroup;
 }
