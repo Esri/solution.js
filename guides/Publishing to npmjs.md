@@ -12,7 +12,8 @@
 * \[ \] Run `npm run release:publish-git` in a bash shell
 * \[ \] Run `npm run release:publish-npm` in a Windows shell and enter the npm 2-factor code when requested
 * \[ \] Check that publishing worked using `check_npm_package_versions.html` in a browser
-* \[ \] Commit package.json files (publishing updates the `gitHead` property in the files) 
+* \[ \] Run `build.bat` to update the package-lock.json files with the latest version.
+* \[ \] Commit package.json files (publishing updates the `gitHead` property in the files) and the package-lock.json files. 
 * \[ \] Push `master` branch to GitHub
 * \[ \] Merge `master` into the `develop` branch and push the latter to GitHub
 * \[ \] Create a release from the build's tag in GitHub
