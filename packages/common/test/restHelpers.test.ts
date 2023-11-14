@@ -832,12 +832,12 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
   describe("createFullItem", () => {
     it("can create a minimal item", done => {
       const itemInfo: any = {};
-      const folderId: string = null as string; // default is top level
-      const itemThumbnailUrl: string = null as string;
-      const dataFile: File = null as File;
-      const metadataFile: File = null as File;
-      const resourcesFiles: File[] = null as File[];
-      const access = undefined as string; // default is "private"
+      const folderId: string = null as unknown as string; // default is top level
+      const itemThumbnailUrl: string = null as unknown as string;
+      const dataFile: File = null as unknown as File;
+      const metadataFile: File = null as unknown as File;
+      const resourcesFiles: File[] = null as unknown as File[];
+      const access = undefined as unknown as string; // default is "private"
 
       fetchMock.post(
         utils.PORTAL_SUBSET.restUrl +
@@ -867,11 +867,11 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
 
     it("can create a minimal public item", done => {
       const itemInfo: any = {};
-      const folderId: string = null as string; // default is top level
-      const itemThumbnailUrl: string = null as string;
-      const dataFile: File = null as File;
-      const metadataFile: File = null as File;
-      const resourcesFiles: File[] = null as File[];
+      const folderId: string = null as unknown as string; // default is top level
+      const itemThumbnailUrl: string = null as unknown as string;
+      const dataFile: File = null as unknown as File;
+      const metadataFile: File = null as unknown as File;
+      const resourcesFiles: File[] = null as unknown as File[];
       const access = "public";
 
       fetchMock
@@ -911,7 +911,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
 
     it("can create an org item with goodies", done => {
       const itemInfo: any = {};
-      const folderId: string = null as string; // default is top level
+      const folderId: string = null as unknown as string; // default is top level
       const itemThumbnailUrl: string =
         "https://myserver/thumbnail/thumbnail.png";
       const dataFile: File = new File(
@@ -980,17 +980,17 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
 
     it("can create an item with a resource in a subfolder", done => {
       const itemInfo: any = {};
-      const folderId: string = null as string; // default is top level
-      const itemThumbnailUrl: string = null as string;
-      const dataFile: File = null as File;
-      const metadataFile: File = null as File;
+      const folderId: string = null as unknown as string; // default is top level
+      const itemThumbnailUrl: string = null as unknown as string;
+      const dataFile: File = null as unknown as File;
+      const metadataFile: File = null as unknown as File;
       const resourcesFiles: File[] = [
         new File(
           [utils.getSampleImageAsBlob()],
           "resourceFolder/image.png"
         )
       ];
-      const access = undefined as string; // default is "private"
+      const access = undefined as unknown as string; // default is "private"
 
       fetchMock
         .post(
@@ -1030,12 +1030,12 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
 
     it("can handle failure to add metadata to item, hard error", done => {
       const itemInfo: any = {};
-      const folderId: string = null as string; // default is top level
-      const itemThumbnailUrl: string = null as string;
-      const dataFile: File = null as File;
+      const folderId: string = null as unknown as string; // default is top level
+      const itemThumbnailUrl: string = null as unknown as string;
+      const dataFile: File = null as unknown as File;
       const metadataFile: File = utils.getSampleMetadataAsFile();
-      const resourcesFiles: File[] = null as File[];
-      const access = undefined as string; // default is "private"
+      const resourcesFiles: File[] = null as unknown as File[];
+      const access = undefined as unknown as string; // default is "private"
 
       fetchMock
         .post(
@@ -1074,12 +1074,12 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
 
     it("can handle failure to create an item", done => {
       const itemInfo: any = {};
-      const folderId: string = null as string; // default is top level
-      const itemThumbnailUrl: string = null as string;
-      const dataFile: File = null as File;
-      const metadataFile: File = null as File;
-      const resourcesFiles: File[] = null as File[];
-      const access = undefined as string; // default is "private"
+      const folderId: string = null as unknown as string; // default is top level
+      const itemThumbnailUrl: string = null as unknown as string;
+      const dataFile: File = null as unknown as File;
+      const metadataFile: File = null as unknown as File;
+      const resourcesFiles: File[] = null as unknown as File[];
+      const access = undefined as unknown as string; // default is "private"
 
       fetchMock.post(
         utils.PORTAL_SUBSET.restUrl +
@@ -1112,12 +1112,12 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
 
     it("can handle failure to create an item, hard error", done => {
       const itemInfo: any = {};
-      const folderId: string = null as string; // default is top level
-      const itemThumbnailUrl: string = null as string;
-      const dataFile: File = null as File;
-      const metadataFile: File = null as File;
-      const resourcesFiles: File[] = null as File[];
-      const access = undefined as string; // default is "private"
+      const folderId: string = null as unknown as string; // default is top level
+      const itemThumbnailUrl: string = null as unknown as string;
+      const dataFile: File = null as unknown as File;
+      const metadataFile: File = null as unknown as File;
+      const resourcesFiles: File[] = null as unknown as File[];
+      const access = undefined as unknown as string; // default is "private"
 
       fetchMock.post(
         utils.PORTAL_SUBSET.restUrl +
@@ -1146,11 +1146,11 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
 
     it("can handle failure to create a public item, hard error", done => {
       const itemInfo: any = {};
-      const folderId: string = null as string; // default is top level
-      const itemThumbnailUrl: string = null as string;
-      const dataFile: File = null as File;
-      const metadataFile: File = null as File;
-      const resourcesFiles: File[] = null as File[];
+      const folderId: string = null as unknown as string; // default is top level
+      const itemThumbnailUrl: string = null as unknown as string;
+      const dataFile: File = null as unknown as File;
+      const metadataFile: File = null as unknown as File;
+      const resourcesFiles: File[] = null as unknown as File[];
       const access = "public";
 
       fetchMock
@@ -1809,7 +1809,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
   describe("convertExtent", () => {
     it("can handle undefined out SR", done => {
       restHelpers
-        .convertExtent(extent, undefined, geometryServiceUrl, MOCK_USER_SESSION)
+        .convertExtent(extent, undefined as unknown as interfaces.ISpatialReference, geometryServiceUrl, MOCK_USER_SESSION)
         .then(_extent => {
           expect(_extent).toEqual(extent);
           done();
@@ -3298,7 +3298,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
           utils.getSearchResponse(query, 6, 5, -1, 9, 4)
         );
 
-      restHelpers.searchAllGroups(query, MOCK_USER_SESSION, null, pagingParams).then(
+      restHelpers.searchAllGroups(query, MOCK_USER_SESSION, undefined, pagingParams).then(
         response => {
           expect(response.length).toEqual(9);
           done();
@@ -3475,7 +3475,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
       restHelpers
         .searchGroupContents(
           groupId,
-          null,
+          null as unknown as string,
           MOCK_USER_SESSION,
           additionalSearchOptions
         )
@@ -3510,7 +3510,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
       restHelpers
         .searchGroupContents(
           groupId,
-          null,
+          null as unknown as string,
           MOCK_USER_SESSION,
           additionalSearchOptions
         )
@@ -3651,14 +3651,14 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
         .stub(portal, "updateItem")
         .resolves(utils.getSuccessResponse());
       restHelpers
-        .updateItem(itemInfo, MOCK_USER_SESSION, null, additionalParams)
+        .updateItem(itemInfo, MOCK_USER_SESSION, undefined, additionalParams)
         .then(response => {
           const updateItemFnCall = updateItemFnStub.getCall(0);
           expect(updateItemFnCall.args[0]).toEqual({
             item: {
               id: "itm1234567890"
             },
-            folderId: null,
+            folderId: undefined,
             authentication: MOCK_USER_SESSION,
             params: {
               data: "fred"
@@ -3804,7 +3804,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
           itemTemplate.item,
           itemTemplate.data,
           MOCK_USER_SESSION,
-          null,
+          undefined,
           "public"
         )
         .then(
@@ -3836,7 +3836,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
           itemTemplate.item,
           itemTemplate.data,
           MOCK_USER_SESSION,
-          null,
+          undefined,
           "public",
           { locationTracking: { owner: "LocationTrackingServiceOwner"} }
         )
@@ -3865,7 +3865,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
           itemTemplate.item,
           itemTemplate.data,
           MOCK_USER_SESSION,
-          null,
+          undefined,
           "org"
         )
         .then(
@@ -3893,7 +3893,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
           itemTemplate.item,
           itemTemplate.data,
           MOCK_USER_SESSION,
-          null,
+          undefined,
           "org"
         )
         .then(
@@ -5009,7 +5009,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
   describe("_lowercaseDomain", () => {
     it("handles empty or undefined URL", () => {
       expect(restHelpers._lowercaseDomain("")).toEqual("");
-      expect(restHelpers._lowercaseDomain(undefined)).toEqual(undefined);
+      expect(restHelpers._lowercaseDomain(undefined as unknown as string)).toEqual(undefined as unknown as string);
     });
 
     it("lowercases a domain", () => {
@@ -5195,7 +5195,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
         }
       };
       const actual = restHelpers._validateExtent({
-        xmin: undefined,
+        xmin: undefined as unknown as number,
         ymin: 5117339.123090005,
         xmax: -9797228.384715842,
         ymax: 5137789.39951188,
