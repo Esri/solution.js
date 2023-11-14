@@ -1,6 +1,6 @@
 {
   "name": "@esri/solution-group",
-  "version": "5.0.14",
+  "version": "5.0.15",
   "description": "Manages the creation and deployment of group item types for @esri/solution.js.",
   "main": "dist/cjs/index.js",
   "module": "dist/esm/index.js",
@@ -27,7 +27,7 @@
     "@esri/hub-initiatives": "^14.0.0",
     "@esri/hub-sites": "^14.2.1",
     "@esri/hub-teams": "^14.1.0",
-    "@esri/solution-common": "^5.0.14",
+    "@esri/solution-common": "^5.0.15",
     "@types/jasmine": "^5.1.1",
     "fetch-mock": "^7.7.3",
     "jasmine": "^5.1.0",
