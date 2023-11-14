@@ -65,9 +65,9 @@
     "packages/web-experience"
   ],
   "devDependencies": {
-    "@babel/core": "^7.23.2",
+    "@babel/core": "^7.23.3",
     "@babel/preset-env": "^7.23.3",
-    "@babel/preset-typescript": "^7.23.2",
+    "@babel/preset-typescript": "^7.23.3",
     "@babel/types": "^7.23.3",
     "@chiragrupani/karma-chromium-edge-launcher": "^2.3.1",
     "@types/node": "^20.8.10",

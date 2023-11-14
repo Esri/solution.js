@@ -370,6 +370,10 @@ export function convertToISearchOptions(
     }
   }
 
+  // Remove the sortField if it's "relevance"; that's the default option and is not meant to be specified
+  if (searchOptions.sortField === "relevance") {
+    delete searchOptions.sortField;
+  }
 
   return searchOptions;
 }
@@ -1616,6 +1620,12 @@ export function searchGroupAllContents(
     total: 0,
     results: [] as IItem[]
   } as ISearchResult<IItem>;
+
+  
+  // Remove the sortField if it's "relevance"; that's the default option and is not meant to be specified
+  if (additionalSearchOptions.sortField === "relevance") {
+    delete additionalSearchOptions.sortField;
+  }
 
   return new Promise<ISearchResult<IItem>>((resolve, reject) => {
     searchGroupContents(
