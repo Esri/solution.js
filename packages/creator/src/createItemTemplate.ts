@@ -194,7 +194,7 @@ export function createItemTemplate(
                         (thumbnailFile: ISourceFile[]) => {
                           itemTemplate.item.thumbnail = null; // not needed in this property; handled as a resource
 
-                          return itemTemplate.resources.map(
+                          const resourceSourceFiles = itemTemplate.resources.map(
                             (file: File) => {
                               return {
                                 itemId: itemTemplate.itemId,
@@ -204,6 +204,11 @@ export function createItemTemplate(
                               };
                             }
                           ).concat(thumbnailFile);
+
+                          // Clear out the files from the itemTemplate.resources
+                          itemTemplate.resources = [];
+
+                          return resourceSourceFiles;
                         }
                       );
 
@@ -231,6 +236,7 @@ export function createItemTemplate(
                     // eslint-disable-next-line @typescript-eslint/no-floating-promises
                     resourcePrepPromise.then(
                       async (resourceItemFiles: ISourceFile[]) => {
+
                         // Perform any custom processing needed on resource files
                         await _templatizeResources(itemTemplate, resourceItemFiles, srcAuthentication);
 
