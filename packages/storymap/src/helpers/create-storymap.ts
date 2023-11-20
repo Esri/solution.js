@@ -51,6 +51,9 @@ export function createStoryMap(
   // that we have to generate from the passed in model
   const resources: any[] = [];
 
+  // The data section has been de-templatized. Some entries need to be encoded URLs, so we'll find and encode them.
+  model.data = JSON.parse(JSON.stringify(model.data).replace(/portalUrl=https:\/\//g, "portalUrl=https%3A%2F%2F"));
+
   // For unknown reasons we can not seem to spy on createItemInFolder
   // so we will create-then-move for now
   const createOptions: ICreateItemOptions = {
