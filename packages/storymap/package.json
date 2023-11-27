@@ -28,7 +28,7 @@
     "fetch-mock": "^7.7.3",
     "jasmine": "^5.1.0",
     "jasmine-core": "^5.1.0",
-    "rollup": "^4.4.0"
+    "rollup": "^4.6.0"
   },
   "dependencies": {
     "tslib": "1.14.1"
