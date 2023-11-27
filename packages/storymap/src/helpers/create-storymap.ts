@@ -82,9 +82,10 @@ export function createStoryMap(
 
       // Storymaps store draft data in a timestamped resource attached to the item
       // We'll just use the published data for the first "draft"
+      const dataBlob = stringToBlob(JSON.stringify(model.data));
       resources.push({
         name: model.properties.draftFileName,
-        file: stringToBlob(JSON.stringify(model.data))
+        file: dataBlob
       });
       resources.push({
         name: "oembed.json",
@@ -93,6 +94,10 @@ export function createStoryMap(
       resources.push({
         name: "oembed.xml",
         file: stringToBlob(model.properties.oembedXML)
+      });
+      resources.push({
+        name: "published_data.json",
+        file: dataBlob
       });
       // remove the properties hash now that we've gotten what we need
       delete model.properties;
