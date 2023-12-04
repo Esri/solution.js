@@ -98,8 +98,7 @@
     }
 
     function addSpecificPackageVersionToTable(packageName, packageFileName, useMinimized) {
-      fetch("https://unpkg.com/" + packageName + "/dist/umd/" +
-        packageFileName + ".umd" + (useMinimized ? ".min" : "") + ".js").then(
+      fetch("https://unpkg.com/" + packageName).then(
         packageFile => {
           const packageUrl = packageFile.url;
           const iVersionStart = packageUrl.indexOf(packageName) + packageName.length + 1;

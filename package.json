@@ -1,6 +1,6 @@
 {
   "name": "@esri/solution.js",
-  "version": "5.1.0",
+  "version": "5.1.1",
   "description": "A library running in Node.js and modern browsers for transferring ArcGIS Online items from one organization to another.",
   "author": "Esri",
   "license": "Apache-2.0",
@@ -34,7 +34,7 @@
     "test:all": "npm run test:chrome && npm run test:firefox",
     "docs:build": "typedoc",
     "docs:deploy": "node support/deploy-doc-site.js",
-    "docs:srihash": "node docs/generate-srihashes.js",
+    "docs:srihash": "node scripts/generate-srihashes.js",
     "release:prepare1": "git fetch --all && start cmd.exe /c \"build.bat\"",
     "release:prepare2": "lerna publish --no-git-tag-version --no-push --skip-npm --yes",
     "release:review": "git --no-pager diff --word-diff",
