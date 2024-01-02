@@ -97,7 +97,7 @@
     "sri-toolbox": "^0.2.0",
     "ts-node": "^10.9.2",
     "typedoc": "^0.25.4",
-    "typescript": "^5.2.2",
+    "typescript": "~5.2.2",
     "ultra-runner": "^3.10.5"
   },
   "lint-staged": {
