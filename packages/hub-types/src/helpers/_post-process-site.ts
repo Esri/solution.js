@@ -54,6 +54,7 @@ export function _postProcessSite(
 
   let secondPassPromises: Array<Promise<any>> = [];
 
+  // eslint-disable-next-line @typescript-eslint/no-floating-promises
   secondPassPromises = secondPassPromises.concat(
     shareItemsToSiteGroups(
       siteModel,
@@ -65,6 +66,7 @@ export function _postProcessSite(
   // we can't use that same trick w/ the page sharing
   // because we really need the models themselves
   // so we delegate to a local function
+  // eslint-disable-next-line @typescript-eslint/no-floating-promises
   secondPassPromises = secondPassPromises.concat(
     _updateSitePages(siteModel, infosWithoutSite, hubRequestOptions)
   );
