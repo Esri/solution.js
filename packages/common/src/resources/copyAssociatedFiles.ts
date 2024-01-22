@@ -147,6 +147,7 @@ export async function copyAssociatedFilesByType(
     let awaitAllItems: Array<Promise<IAssociatedFileCopyResults>> = [];
     let resourceFileInfos = fileInfos;
 
+    // eslint-disable-next-line @typescript-eslint/no-floating-promises
     awaitAllItems = fileInfos
       .filter(
         fileInfo =>
@@ -206,6 +207,7 @@ export async function copyAssociatedFilesByType(
               zip: new JSZip(),
               filelist: [] as IAssociatedFileInfo[]
             };
+            // eslint-disable-next-line @typescript-eslint/no-floating-promises
             awaitAllItems = awaitAllItems.concat(
               chunk.map(fileInfo => {
                 return copyResourceIntoZipFromInfo(
