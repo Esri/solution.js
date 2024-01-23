@@ -21,6 +21,7 @@
  */
 
 import * as common from "@esri/solution-common";
+import JSZip from "jszip";
 import { moduleMap } from "./module-map";
 
 const UNSUPPORTED: common.moduleHandler = null;
@@ -1013,6 +1014,8 @@ export function _createItemFromTemplateWhenReady(
   destinationAuthentication: common.UserSession,
   itemProgressCallback: common.IItemProgressCallback
 ): Promise<common.ICreateItemFromTemplateResponse> {
+  const sourceItemId = template.itemId;
+
   // ensure this is present
   template.dependencies = template.dependencies || [];
   // if there is no entry in the templateDictionary
@@ -1097,7 +1100,7 @@ export function _createItemFromTemplateWhenReady(
             itemProgressCallback
           );
         })
-        .then((response: common.ICreateItemFromTemplateResponse) => {
+        .then(async (response: common.ICreateItemFromTemplateResponse) => {
           if (response.id === "") {
             statusCode = common.EItemProgressStatus.Failed;
             throw new Error("handled"); // fails to create item
@@ -1108,17 +1111,96 @@ export function _createItemFromTemplateWhenReady(
           if (createResponse.item.item.url) {
             common.setCreateProp(
               templateDictionary,
-              template.itemId + ".url",
+              sourceItemId + ".url",
               createResponse.item.item.url
             );
           }
 
           if (resourceFilePaths.length > 0) {
-            // Copy resources, metadata, form
+            // Update and copy form resource
+            if (template.type === "Form") {
+              // Filter out Form zip file
+              let formZipFilePath: common.IDeployFileCopyPath;
+              resourceFilePaths = resourceFilePaths.filter(
+                (filePath) => {
+                  if (filePath.filename === `${sourceItemId}.zip`) {
+                    formZipFilePath = filePath;
+                    return false;
+                  } else {
+                    return true;
+                  }
+                }
+              );
+
+              // Fetch the zip file
+              if (formZipFilePath) {
+                const formZip = await common.getBlob(formZipFilePath.url, storageAuthentication);
+                const zip = new JSZip();
+                zip.loadAsync(formZip)
+                .then(async (zip) => {
+                  // Get the contents of the files in the zip that contain the source item id
+                  const extractedZipFiles = [];
+                  const fileContentsRetrievalPromises = [];
+                  zip.forEach(
+                    (relativePath, file) => {
+                      const getContents = async () => {
+                        if ([
+                            "esriinfo/form.info",
+                            "esriinfo/form.itemInfo",
+                            "esriinfo/form.webform",
+                            "esriinfo/form.xml"
+                          ].includes(relativePath)) {
+                          const fileContentsFetch = file.async('string');
+                          fileContentsRetrievalPromises.push(fileContentsFetch)
+                          extractedZipFiles.push({
+                            file: relativePath,
+                            content: await fileContentsFetch
+                          });
+                        }
+                      }
+                      void getContents();
+                    }
+                  )
+                  await Promise.all(fileContentsRetrievalPromises);
+
+                  // Replace source id with new item id
+                  extractedZipFiles.forEach(
+                    (file) => {
+                      const content = file.content.replace(new RegExp(sourceItemId, "g"), createResponse.item.item.id);
+                      zip.file(file.file, content);
+                    }
+                  )
+
+                  // Update the new item
+                  const filename = `${createResponse.item.item.id}.zip`;
+                  const update: common.IItemUpdate = {
+                    id: createResponse.item.item.id,
+                    data: common.createMimeTypedFile({
+                      blob: await zip.generateAsync({ type: "blob"}),
+                      filename,
+                      mimeType: "application/zip"
+                    })
+                  };
+
+                  common.updateItem(
+                    update,
+                    destinationAuthentication
+                  ).catch(() => {
+                    return Promise.resolve(null);
+                  });
+                  // Fall through to copy resources upon successful update
+                })
+                .catch(() => {
+                  return Promise.resolve(null);
+                });
+              }
+            }
+
+            // Copy resources, metadata
             return common.copyFilesFromStorageItem(
               storageAuthentication,
               resourceFilePaths,
-              template.itemId,
+              sourceItemId,
               templateDictionary.folderId,
               createResponse.id,
               destinationAuthentication,
@@ -1134,7 +1216,7 @@ export function _createItemFromTemplateWhenReady(
         .catch(error => {
           if (!error || error.message !== "handled") {
             itemProgressCallback(
-              template.itemId,
+              sourceItemId,
               statusCode === common.EItemProgressStatus.Unknown
                 ? common.EItemProgressStatus.Failed
                 : statusCode,
@@ -1147,7 +1229,7 @@ export function _createItemFromTemplateWhenReady(
         });
     });
   }
-  return templateDictionary[template.itemId].def;
+  return templateDictionary[sourceItemId].def;
 }
 
 /**
