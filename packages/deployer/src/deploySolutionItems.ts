@@ -21,7 +21,7 @@
  */
 
 import * as common from "@esri/solution-common";
-import JSZip from "jszip";
+import * as zipUtils from "./helpers/zip-utils";
 import { moduleMap } from "./module-map";
 
 const UNSUPPORTED: common.moduleHandler = null;
@@ -1117,6 +1117,7 @@ export function _createItemFromTemplateWhenReady(
           }
 
           if (resourceFilePaths.length > 0) {
+            const destinationItemId = createResponse.id;
             // Update and copy form resource
             if (template.type === "Form") {
               // Filter out Form zip file
@@ -1132,67 +1133,13 @@ export function _createItemFromTemplateWhenReady(
                 }
               );
 
-              // Fetch the zip file
+              // Fetch and swizzle the zip file
               if (formZipFilePath) {
-                const formZip = await common.getBlob(formZipFilePath.url, storageAuthentication);
-                const zip = new JSZip();
-                zip.loadAsync(formZip)
-                .then(async (zip) => {
-                  // Get the contents of the files in the zip that contain the source item id
-                  const extractedZipFiles = [];
-                  const fileContentsRetrievalPromises = [];
-                  zip.forEach(
-                    (relativePath, file) => {
-                      const getContents = async () => {
-                        if ([
-                            "esriinfo/form.info",
-                            "esriinfo/form.itemInfo",
-                            "esriinfo/form.webform",
-                            "esriinfo/form.xml"
-                          ].includes(relativePath)) {
-                          const fileContentsFetch = file.async('string');
-                          fileContentsRetrievalPromises.push(fileContentsFetch)
-                          extractedZipFiles.push({
-                            file: relativePath,
-                            content: await fileContentsFetch
-                          });
-                        }
-                      }
-                      void getContents();
-                    }
-                  )
-                  await Promise.all(fileContentsRetrievalPromises);
+                const zipBlob = await common.getBlob(formZipFilePath.url, storageAuthentication);
+                const updatedZip = await zipUtils.swizzleFormZipFile(zipBlob, sourceItemId, destinationItemId);
 
-                  // Replace source id with new item id
-                  extractedZipFiles.forEach(
-                    (file) => {
-                      const content = file.content.replace(new RegExp(sourceItemId, "g"), createResponse.item.item.id);
-                      zip.file(file.file, content);
-                    }
-                  )
-
-                  // Update the new item
-                  const filename = `${createResponse.item.item.id}.zip`;
-                  const update: common.IItemUpdate = {
-                    id: createResponse.item.item.id,
-                    data: common.createMimeTypedFile({
-                      blob: await zip.generateAsync({ type: "blob"}),
-                      filename,
-                      mimeType: "application/zip"
-                    })
-                  };
-
-                  common.updateItem(
-                    update,
-                    destinationAuthentication
-                  ).catch(() => {
-                    return Promise.resolve(null);
-                  });
-                  // Fall through to copy resources upon successful update
-                })
-                .catch(() => {
-                  return Promise.resolve(null);
-                });
+                // Update the new item
+                void zipUtils.updateItemWithZip(updatedZip, destinationItemId, destinationAuthentication);
               }
             }
 
@@ -1202,7 +1149,7 @@ export function _createItemFromTemplateWhenReady(
               resourceFilePaths,
               sourceItemId,
               templateDictionary.folderId,
-              createResponse.id,
+              destinationItemId,
               destinationAuthentication,
               createResponse.item
             );
