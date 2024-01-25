@@ -1922,12 +1922,12 @@ describe("Module `deploySolutionItems`", () => {
 
       const swizzleFormZipFileSpy = spyOn(
         zipUtils,
-        "swizzleFormZipFile"
+        "swizzleIdsInZipFile"
       ).and.resolveTo(JSZip());
 
       const swizzlePortalUrlsInFormJson = spyOn(
         zipUtils,
-        "swizzlePortalUrlsInFormJson"
+        "modifyFilesinZip"
       ).and.resolveTo(JSZip());
 
       const updateItemWithZipSpy = spyOn(

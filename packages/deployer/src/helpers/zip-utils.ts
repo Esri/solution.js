@@ -46,64 +46,58 @@ export async function blobToZip(
   });
 }
 
+  /**
+   * Extracts files of interest from a zip file, calls a supplied function to modify them, and
+   * restores the files into the zip.
+   *
+   * @param modificationCallback Function that modifies the specified files
+   * @param zip Zip file that contains the files to modify
+   * @param filesOfInterest Array of file names to extract from the zip file. If empty, all files are extracted.
+   * @returns Promise that resolves to the modified zip file if the swizzle was successful
+   */
+  export async function modifyFilesinZip(
+    modificationCallback: (zipContentStr: IZipFileContent) => string,
+    zip: JSZip,
+    filesOfInterest: string[] = []
+    ): Promise<JSZip> {
+      // Get the contents of the form.json file
+      const extractedZipFiles = await _getZipFileContents(zip, filesOfInterest);
+
+      extractedZipFiles.forEach((extractedZipFile) => {
+        // Run the modification callback
+        const content = modificationCallback(extractedZipFile);
+
+        // Update the zip file
+        zip.file(extractedZipFile.file, content);
+      });
+
+      return Promise.resolve(zip);
+    }
+
 /**
  * Swizzles the source item id with the destination item id in the form zip file and updates the destination item
  * with the swizzled zip file.
  *
- * @param zipBlob Form zip file as a blob
  * @param sourceItemId Source item id
  * @param destinationItemId Destination item id
+ * @param zipBlob Form zip file as a blob
+ * @param filesOfInterest Array of file names to extract from the zip file. If empty, all files are extracted.
  * @returns Promise that resolves to the modified zip file if the swizzle was successful
  */
-export async function swizzleFormZipFile(
-    zip: JSZip,
+export async function swizzleIdsInZipFile(
     sourceItemId: string,
     destinationItemId: string,
+    zip: JSZip,
+    filesOfInterest: string[] = []
   ): Promise<JSZip> {
-    // Get the contents of the files in the zip that contain the source item id
-    const extractedZipFiles = await _getZipFileContents(zip, [
-      "esriinfo/form.info",
-      "esriinfo/form.itemInfo",
-      "esriinfo/form.json",
-      "esriinfo/form.webform",
-      "esriinfo/form.xml"
-    ]);
-
-    // Replace source id with new item id
-    extractedZipFiles.forEach(
-      (file) => {
-        const content = file.content.replace(new RegExp(sourceItemId, "g"), destinationItemId);
-        zip.file(file.file, content);
-      }
+    const updatedZip = await modifyFilesinZip(
+      (zipFile: IZipFileContent) => {
+        return zipFile.content.replace(new RegExp(sourceItemId, "g"), destinationItemId);
+      }, zip, filesOfInterest
     );
 
-    return Promise.resolve(zip);
+    return Promise.resolve(updatedZip);
   }
-
-  /**
-   * Swizzles the portal urls in the form.json file.
-   *
-   * @param zip Zip file that contains the form.json file
-   * @param swizzleCallback Function that swizzles the portal urls
-   * @returns Promise that resolves to the modified zip file if the swizzle was successful
-   */
-  export async function swizzlePortalUrlsInFormJson(
-    zip: JSZip,
-    swizzleCallback: (zipContentStr: string) => string
-    ): Promise<JSZip> {
-      // Get the contents of the form.json file
-      const extractedZipFile = await _getZipFileContents(zip, [
-        "esriinfo/form.json"
-      ]);
-
-      // Templatize the webhook section
-      const content = swizzleCallback(extractedZipFile[0].content);
-
-      // Update the form.json file
-      zip.file(extractedZipFile[0].file, content);
-
-      return Promise.resolve(zip);
-    }
 
   /**
    * Updates an item with a zip file.
@@ -111,6 +105,7 @@ export async function swizzleFormZipFile(
    * @param zip Zip file with which to update the item
    * @param destinationItemId Destination item id
    * @param destinationAuthentication Destination authentication
+   * @param filesOfInterest Array of file names to extract from the zip file. If empty, all files are extracted.
    * @returns Promise that resolves to the update item response
    */
   export async function updateItemWithZip(
@@ -139,6 +134,7 @@ export async function swizzleFormZipFile(
    * Gets the contents of the files in the zip.
    *
    * @param zip Zip file
+   * @param filesOfInterest Array of file names to extract from the zip file. If empty, all files are extracted.
    * @returns Promise that resolves to an array of objects containing the file name and contents
    */
   export async function _getZipFileContents(
