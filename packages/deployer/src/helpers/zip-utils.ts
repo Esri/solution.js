@@ -1,5 +1,5 @@
 /** @license
- * Copyright 2018 Esri
+ * Copyright 2024 Esri
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,6 +28,25 @@ export interface IZipFileContent {
 // ------------------------------------------------------------------------------------------------------------------ //
 
 /**
+ * Converts a blob to a zip file.
+ *
+ * @param blob Blob to convert
+ * @returns Promise resolving to zip file
+ */
+export async function blobToZip(
+  blob: Blob
+): Promise<JSZip> {
+  const zip = new JSZip();
+  return zip.loadAsync(blob)
+  .then(async (zip) => {
+    return Promise.resolve(zip);
+  })
+  .catch(() => {
+    return Promise.reject();
+  });
+}
+
+/**
  * Swizzles the source item id with the destination item id in the form zip file and updates the destination item
  * with the swizzled zip file.
  *
@@ -37,35 +56,54 @@ export interface IZipFileContent {
  * @returns Promise that resolves to the modified zip file if the swizzle was successful
  */
 export async function swizzleFormZipFile(
-    zipBlob: Blob,
+    zip: JSZip,
     sourceItemId: string,
     destinationItemId: string,
   ): Promise<JSZip> {
-    const zip = new JSZip();
-    return zip.loadAsync(zipBlob)
-    .then(async (zip) => {
-      // Get the contents of the files in the zip that contain the source item id
-      const extractedZipFiles = await _getZipFileContents(zip, [
-        "esriinfo/form.info",
-        "esriinfo/form.itemInfo",
-        "esriinfo/form.webform",
-        "esriinfo/form.xml"
+    // Get the contents of the files in the zip that contain the source item id
+    const extractedZipFiles = await _getZipFileContents(zip, [
+      "esriinfo/form.info",
+      "esriinfo/form.itemInfo",
+      "esriinfo/form.json",
+      "esriinfo/form.webform",
+      "esriinfo/form.xml"
+    ]);
+
+    // Replace source id with new item id
+    extractedZipFiles.forEach(
+      (file) => {
+        const content = file.content.replace(new RegExp(sourceItemId, "g"), destinationItemId);
+        zip.file(file.file, content);
+      }
+    );
+
+    return Promise.resolve(zip);
+  }
+
+  /**
+   * Swizzles the portal urls in the form.json file.
+   *
+   * @param zip Zip file that contains the form.json file
+   * @param swizzleCallback Function that swizzles the portal urls
+   * @returns Promise that resolves to the modified zip file if the swizzle was successful
+   */
+  export async function swizzlePortalUrlsInFormJson(
+    zip: JSZip,
+    swizzleCallback: (zipContentStr: string) => string
+    ): Promise<JSZip> {
+      // Get the contents of the form.json file
+      const extractedZipFile = await _getZipFileContents(zip, [
+        "esriinfo/form.json"
       ]);
 
-      // Replace source id with new item id
-      extractedZipFiles.forEach(
-        (file) => {
-          const content = file.content.replace(new RegExp(sourceItemId, "g"), destinationItemId);
-          zip.file(file.file, content);
-        }
-      );
+      // Templatize the webhook section
+      const content = swizzleCallback(extractedZipFile[0].content);
+
+      // Update the form.json file
+      zip.file(extractedZipFile[0].file, content);
 
       return Promise.resolve(zip);
-    })
-    .catch(() => {
-      return Promise.reject();
-    });
-  }
+    }
 
   /**
    * Updates an item with a zip file.

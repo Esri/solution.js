@@ -1133,10 +1133,41 @@ export function _createItemFromTemplateWhenReady(
                 }
               );
 
-              // Fetch and swizzle the zip file
               if (formZipFilePath) {
+                // Fetch the zip file
                 const zipBlob = await common.getBlob(formZipFilePath.url, storageAuthentication);
-                const updatedZip = await zipUtils.swizzleFormZipFile(zipBlob, sourceItemId, destinationItemId);
+                const zip = await zipUtils.blobToZip(zipBlob);
+
+                // Swizzle the source id in the zip file
+                let updatedZip = await zipUtils.swizzleFormZipFile(zip, sourceItemId, destinationItemId);
+
+                // Swizzle webhook(s) in the form.json file
+                updatedZip = await zipUtils.swizzlePortalUrlsInFormJson(
+                  updatedZip,
+                  (zipContentStr: string) => {
+                    let zipContent: any = JSON.parse(zipContentStr);
+
+                    zipContent.portalUrl = "{{portalBaseUrl}}";
+
+                    const webhooksJson = common.getProp(
+                      zipContent, "settings.notificationsInfo.webhooks");
+                    if (webhooksJson && webhooksJson.length > 0) {
+                      // Templatize the webhook url
+                      webhooksJson.forEach((webhook: any) => {
+                        if (webhook.url) {
+                          const url = new URL(webhook.url);
+                          webhook.url = webhook.url.replace(url.origin, "{{portalBaseUrl}}");
+                        }
+                      });
+                      common.setProp(
+                        zipContent, "settings.notificationsInfo.webhooks", webhooksJson);
+                    }
+
+                    // Replace the templates
+                    zipContent = common.replaceInTemplate(zipContent, templateDictionary);
+                    return JSON.stringify(zipContent);
+                  }
+                );
 
                 // Update the new item
                 void zipUtils.updateItemWithZip(updatedZip, destinationItemId, destinationAuthentication);
