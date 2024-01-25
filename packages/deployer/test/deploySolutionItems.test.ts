@@ -27,6 +27,7 @@ import * as templates from "../../common/test/mocks/templates";
 import * as testUtils from "../../common/test/mocks/utils";
 import * as utils from "../../common/test/mocks/utils";
 import * as zipUtils from "../src/helpers/zip-utils";
+import * as zipUtilsTest from "../test/helpers/zip-utils.test";
 import JSZip from "jszip";
 
 // ------------------------------------------------------------------------------------------------------------------ //
@@ -1917,11 +1918,16 @@ describe("Module `deploySolutionItems`", () => {
       const templateDictionary: any = {};
       const newItemID: string = "frm1234567891";
 
-      const getBlobSpy = spyOn(common, "getBlob").and.resolveTo(new Blob([]));
+      const getBlobSpy = spyOn(common, "getBlob").and.returnValue(zipUtilsTest.getSampleZipBlob(itemTemplate.itemId));
 
       const swizzleFormZipFileSpy = spyOn(
         zipUtils,
         "swizzleFormZipFile"
+      ).and.resolveTo(JSZip());
+
+      const swizzlePortalUrlsInFormJson = spyOn(
+        zipUtils,
+        "swizzlePortalUrlsInFormJson"
       ).and.resolveTo(JSZip());
 
       const updateItemWithZipSpy = spyOn(
@@ -1957,6 +1963,7 @@ describe("Module `deploySolutionItems`", () => {
         .then(() => {
           expect(getBlobSpy).toHaveBeenCalledTimes(1);
           expect(swizzleFormZipFileSpy).toHaveBeenCalledTimes(1);
+          expect(swizzlePortalUrlsInFormJson).toHaveBeenCalledTimes(1);
           expect(updateItemWithZipSpy).toHaveBeenCalledTimes(1);
           expect(copyFilesFromStorageItemSpy).toHaveBeenCalledTimes(1);
 

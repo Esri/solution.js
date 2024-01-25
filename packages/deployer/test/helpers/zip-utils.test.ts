@@ -47,7 +47,7 @@ describe("Module `zip-utils`", () => {
 
     it("swizzles the form zip file", async () => {
       // Build the zip file
-      const sourceZip = _generateFormZip(sourceItemId);
+      const sourceZip = generateFormZip(sourceItemId);
 
       // Convert to a blob and send to the swizzle function
       const zipAsBlob  = await sourceZip.generateAsync({ type: "blob" });
@@ -55,8 +55,8 @@ describe("Module `zip-utils`", () => {
       const swizzledZip = await zipUtils.swizzleFormZipFile(zip, sourceItemId, destinationItemId);
 
       // Compare the swizzled zip file to the expected zip file
-      const expectedZip = _generateFormZip(destinationItemId);
-      expect(await _compareZips(swizzledZip, expectedZip)).toBeTrue();
+      const expectedZip = generateFormZip(destinationItemId);
+      expect(await compareZips(swizzledZip, expectedZip)).toBeTrue();
 
       return Promise.resolve();
     });
@@ -76,7 +76,7 @@ describe("Module `zip-utils`", () => {
   describe("updateItemWithZip", () => {
     it("updates the item with a zip file", async () => {
       const itemId = "abc1234567890";
-      const zip = _generateFormZip(itemId);
+      const zip = generateFormZip(itemId);
 
       spyOn(common, "updateItem").and.callFake(async (
         update: common.IItemUpdate
@@ -94,6 +94,8 @@ describe("Module `zip-utils`", () => {
   });
 });
 
+// ------------------------------------------------------------------------------------------------------------------ //
+
 /**
  * Compares the contents of two zip files.
  *
@@ -101,7 +103,7 @@ describe("Module `zip-utils`", () => {
  * @param zip2 Second zip file
  * @returns A promise resolving to be true if the zip files are equal, false otherwise
  */
-async function _compareZips(
+export async function compareZips(
   zip1: JSZip,
   zip2: JSZip
 ): Promise<boolean> {
@@ -137,7 +139,7 @@ async function _compareZips(
  * @param id ID of the form
  * @returns Zip file containing form files
  */
-function _generateFormZip(
+export function generateFormZip(
   id: string
 ): JSZip {
   const zip = new JSZip();
@@ -178,4 +180,16 @@ function _generateFormZip(
       `);
   zip.file("esriinfo/forminfo.json", `{"name":"form","type":"xform"}`);
   return zip;
+}
+
+/**
+ * Generates a sample zip file and returns it as a blob.
+ *
+ * @param id Item id to use in the zip file
+ * @returns Promise resolving to the blob
+ */
+export async function getSampleZipBlob(
+  id: string
+): Promise<Blob> {
+  return await generateFormZip(id).generateAsync({ type: "blob" })
 }
