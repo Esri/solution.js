@@ -1140,16 +1140,30 @@ export function _createItemFromTemplateWhenReady(
                 const zip = await zipUtils.blobToZip(zipBlob);
 
                 // Swizzle the source id in the zip file
-                let updatedZip = await zipUtils.swizzleIdsInZipFile(sourceItemId, destinationItemId, zip, [
-                    "esriinfo/form.info",
-                    "esriinfo/form.itemInfo",
-                    "esriinfo/form.json",
-                    "esriinfo/form.webform",
-                    "esriinfo/form.xml"
-                  ]);
+                const updatedZip = await zipUtils.swizzleIdsInZipFile(sourceItemId, destinationItemId, zip, [
+                  "esriinfo/form.info",
+                  "esriinfo/form.itemInfo",
+                  "esriinfo/form.json",
+                  "esriinfo/form.webform",
+                  "esriinfo/form.xml"
+                ]);
 
-                // Swizzle webhook(s) in the form.json file
-                updatedZip = await swizzleFormInfoContents(updatedZip, templateDictionary);
+                // Swizzle webhook(s) in the form.json file and restore them
+                const surveyWebhookAddUrl = `https://survey123.arcgis.com/api/survey/${destinationItemId}/webhook/add`;
+                const webhooks: any[] = await swizzleFormInfoContents(updatedZip, templateDictionary);
+                webhooks.forEach((webhook: any) => {
+                  try {
+                    void common.rest_request(surveyWebhookAddUrl, {
+                      params: {
+                        webhook,
+                        portalUrl: "https://www.arcgis.com"
+                      },
+                      authentication: destinationAuthentication
+                    });
+                  }
+                  // eslint-disable-next-line no-empty
+                  catch (_e) {}
+                });
 
                 // Update the new item
                 void zipUtils.updateItemWithZip(updatedZip, destinationItemId, destinationAuthentication);
@@ -1195,49 +1209,56 @@ export function _createItemFromTemplateWhenReady(
 /**
  * Templatize the contents of the form.json file in a zip file and then replace the templates.
  *
- * @param zip Zip file containing the form.json file
+ * @param zip Zip file containing the form.json file; modified in place
  * @param templateDictionary Dictionary of replacement values
- * @returns Promise that resolves to the modified zip file
+ * @returns Promise that resolves to webhooks in the form.info file
  */
 export async function swizzleFormInfoContents(
   zip: JSZip,
   templateDictionary: any
-): Promise<JSZip> {
-    zip = await zipUtils.modifyFilesinZip(
+): Promise<any[]> {
+  let webhooks: any[] = [];
+
+  await zipUtils.modifyFilesinZip(
     (zipFile: zipUtils.IZipFileContent) => {
       let zipContent: any = JSON.parse(zipFile.content);
 
       zipContent.portalUrl = "{{portalBaseUrl}}";
 
-      const webhooksJson = common.getProp(
-        zipContent, "settings.notificationsInfo.webhooks");
-      if (webhooksJson && webhooksJson.length > 0) {
-        // Templatize the webhook url
-        webhooksJson.forEach((webhook: any) => {
-          if (webhook.url) {
-            const url = new URL(webhook.url);
-            if (url.origin.endsWith("arcgis.com")) {
-              // Templatize the URL's origin
-              webhook.url = webhook.url.replace(url.origin, "{{portalBaseUrl}}");
-            }
-
-            // Templatize AGO ids in the URL
-            const matches = [...webhook.url.matchAll(/[a-f0-9]{32}/g)];
-            matches.forEach((match: any) => {
-              const agoId = match[0];
-              webhook.url = webhook.url.replace(agoId, `{{${agoId}}}`);
-            });
+      // Templatize the webhook urls
+      webhooks = common.getProp(zipContent, "settings.notificationsInfo.webhooks") ?? [];
+      webhooks.forEach((webhook: any) => {
+        if (webhook.url) {
+          const url = new URL(webhook.url);
+          if (url.origin.endsWith("arcgis.com")) {
+            // Templatize the URL's origin
+            webhook.url = webhook.url.replace(url.origin, "{{portalBaseUrl}}");
           }
-        });
-        common.setProp(zipContent, "settings.notificationsInfo.webhooks", webhooksJson);
+
+          // Templatize AGO ids in the URL
+          const matches = [...webhook.url.matchAll(/[a-f0-9]{32}/g)];
+          matches.forEach((match: any) => {
+            const agoId = match[0];
+            webhook.url = webhook.url.replace(agoId, `{{${agoId}}}`);
+          });
+        }
+      });
+
+      if (webhooks.length > 0) {
+        common.setProp(zipContent, "settings.notificationsInfo.webhooks", webhooks);
       }
 
       // Replace the templates
       zipContent = common.replaceInTemplate(zipContent, templateDictionary);
+
+      webhooks = webhooks.length > 0 &&
+        common.getProp(zipContent, "settings.notificationsInfo.webhooks");
+
       return JSON.stringify(zipContent);
     }, zip, ["esriinfo/form.json"]
   );
-  return zip;
+
+  return webhooks;
 }
 
 /**

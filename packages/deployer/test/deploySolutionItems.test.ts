@@ -1920,15 +1920,13 @@ describe("Module `deploySolutionItems`", () => {
 
       const getBlobSpy = spyOn(common, "getBlob").and.returnValue(zipUtilsTest.getSampleZipBlob(itemTemplate.itemId));
 
-      const swizzleFormZipFileSpy = spyOn(
+      const swizzleIdsInZipFileSpy = spyOn(
         zipUtils,
         "swizzleIdsInZipFile"
-      ).and.resolveTo(JSZip());
+      ).and.resolveTo(zipUtilsTest.generateFormZip(itemTemplate.itemId));
 
-      const swizzlePortalUrlsInFormJson = spyOn(
-        zipUtils,
-        "modifyFilesinZip"
-      ).and.resolveTo(JSZip());
+      const requestSpy = spyOn(common, "rest_request")
+      .and.resolveTo(mockItems.get200Success(itemTemplate.itemId));
 
       const updateItemWithZipSpy = spyOn(
         zipUtils,
@@ -1962,12 +1960,15 @@ describe("Module `deploySolutionItems`", () => {
         )
         .then(() => {
           expect(getBlobSpy).toHaveBeenCalledTimes(1);
-          expect(swizzleFormZipFileSpy).toHaveBeenCalledTimes(1);
-          expect(swizzlePortalUrlsInFormJson).toHaveBeenCalledTimes(1);
+          expect(swizzleIdsInZipFileSpy).toHaveBeenCalledTimes(1);
+          expect(requestSpy).toHaveBeenCalledTimes(1);
           expect(updateItemWithZipSpy).toHaveBeenCalledTimes(1);
           expect(copyFilesFromStorageItemSpy).toHaveBeenCalledTimes(1);
 
           done();
+        })
+        .catch(() => {
+          done.fail();
         });
     });
   });
