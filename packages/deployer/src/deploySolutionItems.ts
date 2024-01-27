@@ -1153,6 +1153,12 @@ export function _createItemFromTemplateWhenReady(
                 const webhooks: any[] = await swizzleFormInfoContents(updatedZip, templateDictionary);
                 webhooks.forEach((webhook: any) => {
                   try {
+                    // Remove unnecessary properties
+                    delete webhook.id;
+                    delete webhook.created;
+                    delete webhook.modified;
+
+                    // Add the webhook
                     void common.rest_request(surveyWebhookAddUrl, {
                       params: {
                         webhook,
