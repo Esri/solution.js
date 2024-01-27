@@ -1236,7 +1236,8 @@ export async function swizzleFormInfoContents(
       webhooks.forEach((webhook: any) => {
         if (webhook.url) {
           const url = new URL(webhook.url);
-          if (url.origin.endsWith("arcgis.com")) {
+          const urlOrigin = url.origin;
+          if (urlOrigin.endsWith("arcgis.com")) {
             // Templatize the URL's origin
             webhook.url = webhook.url.replace(url.origin, "{{portalBaseUrl}}");
           }
