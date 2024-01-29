@@ -22,9 +22,13 @@ import * as common from "@esri/solution-common";
 import * as deploySolution from "../src/deploySolutionItems";
 import * as fetchMock from "fetch-mock";
 import * as mockItems from "../../common/test/mocks/agolItems";
+import * as simpleTypes from "@esri/solution-simple-types";
 import * as templates from "../../common/test/mocks/templates";
 import * as testUtils from "../../common/test/mocks/utils";
 import * as utils from "../../common/test/mocks/utils";
+import * as zipUtils from "../src/helpers/zip-utils";
+import * as zipUtilsTest from "../test/helpers/zip-utils.test";
+import JSZip from "jszip";
 
 // ------------------------------------------------------------------------------------------------------------------ //
 
@@ -1893,6 +1897,78 @@ describe("Module `deploySolutionItems`", () => {
         .then(response => {
           expect(response).toEqual(templates.getFailedItem(itemTemplate.type));
           done();
+        });
+    });
+
+    it("handles Form zip file resources separately", done => {
+      const itemTemplate: common.IItemTemplate = templates.getItemTemplate(
+        "Form"
+      );
+      const resourceFilePaths: common.IDeployFileCopyPath[] = [{
+        type: common.EFileType.Resource,
+        folder: "aFolder",
+        filename: "git_merge.png",
+        url: "http://someurl0"
+      }, {
+        type: common.EFileType.Data,
+        folder: "",
+        filename: `${itemTemplate.itemId}.zip`,
+        url: "http://someurl1"
+      }];
+      const templateDictionary: any = {};
+      const newItemID: string = "frm1234567891";
+
+      const getBlobSpy = spyOn(common, "getBlob").and.returnValue(zipUtilsTest.getSampleZipBlob(itemTemplate.itemId));
+
+      const swizzleIdsInZipFileSpy = spyOn(
+        zipUtils,
+        "swizzleIdsInZipFile"
+      ).and.resolveTo(zipUtilsTest.generateFormZip(itemTemplate.itemId));
+
+      const requestSpy = spyOn(common, "rest_request")
+      .and.resolveTo(mockItems.get200Success(itemTemplate.itemId));
+
+      const updateItemWithZipSpy = spyOn(
+        zipUtils,
+        "updateItemWithZip"
+      ).and.resolveTo(mockItems.get200Success(itemTemplate.itemId));
+
+      spyOn(
+        simpleTypes.simpleTypes,
+        "createItemFromTemplate"
+      ).and.resolveTo({
+        item: itemTemplate,
+        id: newItemID,
+        type: itemTemplate.type,
+        postProcess: false
+      } as common.ICreateItemFromTemplateResponse);
+
+      const copyFilesFromStorageItemSpy = spyOn(
+        common,
+        "copyFilesFromStorageItem"
+      ).and.resolveTo(true);
+
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
+      deploySolution
+        ._createItemFromTemplateWhenReady(
+          itemTemplate,
+          resourceFilePaths,
+          MOCK_USER_SESSION,
+          templateDictionary,
+          MOCK_USER_SESSION,
+          utils.ITEM_PROGRESS_CALLBACK
+        )
+        .then(() => {
+          expect(getBlobSpy).toHaveBeenCalledTimes(1);
+          expect(swizzleIdsInZipFileSpy).toHaveBeenCalledTimes(1);
+          expect(requestSpy).toHaveBeenCalledTimes(1);
+          expect(updateItemWithZipSpy).toHaveBeenCalledTimes(1);
+          expect(copyFilesFromStorageItemSpy).toHaveBeenCalledTimes(1);
+
+          done();
+        })
+        .catch(() => {
+          done.fail();
         });
     });
   });
