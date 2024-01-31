@@ -98,6 +98,8 @@ del/q packages\viewer\dist\cjs\package.json 2>nul
 del/q packages\viewer\dist\esm\package.json 2>nul
 del/q packages\web-experience\dist\cjs\package.json 2>nul
 del/q packages\web-experience\dist\esm\package.json 2>nul
+del/q packages\workflow\dist\cjs\package.json 2>nul
+del/q packages\workflow\dist\esm\package.json 2>nul
 
 rem build the demos
 pushd demos\compareJSON
