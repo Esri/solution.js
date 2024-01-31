@@ -43,3 +43,4 @@ export * from "./templatization";
 export * from "./trackingHelpers";
 export * from "./velocityHelpers";
 export * from "./workforceHelpers";
+export * from "./zip-utils";
