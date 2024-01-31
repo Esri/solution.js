@@ -59,7 +59,8 @@
     "packages/storymap",
     "packages/velocity",
     "packages/viewer",
-    "packages/web-experience"
+    "packages/web-experience",
+    "packages/workflow"
   ],
   "devDependencies": {
     "@babel/core": "^7.23.7",
