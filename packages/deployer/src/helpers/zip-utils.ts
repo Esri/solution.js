@@ -28,25 +28,6 @@ export interface IZipFileContent {
 // ------------------------------------------------------------------------------------------------------------------ //
 
 /**
- * Converts a blob to a zip file.
- *
- * @param blob Blob to convert
- * @returns Promise resolving to zip file
- */
-export async function blobToZip(
-  blob: Blob
-): Promise<JSZip> {
-  const zip = new JSZip();
-  return zip.loadAsync(blob)
-  .then(async (zip) => {
-    return Promise.resolve(zip);
-  })
-  .catch(() => {
-    return Promise.reject();
-  });
-}
-
-/**
  * Extracts files of interest from a zip file, calls a supplied function to modify them, and
  * restores the files into the zip.
  *
@@ -61,7 +42,7 @@ export async function modifyFilesinZip(
   filesOfInterest: string[] = []
 ): Promise<JSZip> {
   // Get the contents of the form.json file
-  const extractedZipFiles = await _getZipFileContents(zip, filesOfInterest);
+  const extractedZipFiles = await common.getZipFileContents(zip, filesOfInterest);
 
   extractedZipFiles.forEach((extractedZipFile) => {
     // Run the modification callback
@@ -97,67 +78,4 @@ export async function swizzleIdsInZipFile(
   );
 
   return Promise.resolve(updatedZip);
-}
-
-/**
- * Updates an item with a zip file.
- *
- * @param zip Zip file with which to update the item
- * @param destinationItemId Destination item id
- * @param destinationAuthentication Destination authentication
- * @param filesOfInterest Array of file names to extract from the zip file. If empty, all files are extracted.
- * @returns Promise that resolves to the update item response
- */
-export async function updateItemWithZip(
-  zip: JSZip,
-  destinationItemId: string,
-  destinationAuthentication: common.UserSession,
-): Promise<common.IUpdateItemResponse> {
-  const update: common.IItemUpdate = {
-    id: destinationItemId,
-    data: common.createMimeTypedFile({
-      blob: await zip.generateAsync({ type: "blob" }),
-      filename: `${destinationItemId}.zip`,
-      mimeType: "application/zip"
-    })
-  };
-
-  return common.updateItem(
-    update,
-    destinationAuthentication
-  );
-}
-
-// ------------------------------------------------------------------------------------------------------------------ //
-
-/**
- * Gets the contents of the files in the zip.
- *
- * @param zip Zip file
- * @param filesOfInterest Array of file names to extract from the zip file. If empty, all files are extracted.
- * @returns Promise that resolves to an array of objects containing the file name and contents
- */
-export async function _getZipFileContents(
-  zip: JSZip,
-  filesOfInterest: string[] = []
-): Promise<IZipFileContent[]> {
-  const extractedZipFiles: IZipFileContent[] = [];
-  const fileContentsRetrievalPromises: Array<Promise<string>> = [];
-  zip.forEach(
-    (relativePath, file) => {
-      const getContents = async () => {
-        if (filesOfInterest.length === 0 || filesOfInterest.includes(relativePath)) {
-          const fileContentsFetch = file.async('string');
-          fileContentsRetrievalPromises.push(fileContentsFetch);
-          extractedZipFiles.push({
-            file: relativePath,
-            content: await fileContentsFetch
-          });
-        }
-      };
-      void getContents();
-    }
-  );
-  await Promise.all(fileContentsRetrievalPromises);
-  return extractedZipFiles;
 }

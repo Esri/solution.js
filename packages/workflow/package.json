@@ -1,7 +1,7 @@
 {
-  "name": "@esri/solution-deployer",
+  "name": "@esri/solution-workflow",
   "version": "5.1.1",
-  "description": "Manages the deployment of a Solution for @esri/solution.js.",
+  "description": "Manages the creation and deployment of Workflow item types for @esri/solution.js.",
   "main": "dist/cjs/index.js",
   "module": "dist/esm/index.js",
   "exports": {
@@ -19,33 +19,15 @@
   ],
   "devDependencies": {
     "@esri/arcgis-rest-auth": "^3.7.0",
-    "@esri/arcgis-rest-feature-layer": "^3.7.0",
-    "@esri/arcgis-rest-portal": "^3.7.0",
-    "@esri/arcgis-rest-request": "^3.7.0",
-    "@esri/arcgis-rest-service-admin": "^3.7.0",
-    "@esri/hub-common": "^14.74.1",
-    "@esri/hub-initiatives": "^14.0.0",
-    "@esri/hub-sites": "^14.2.2",
-    "@esri/hub-teams": "^14.1.0",
     "@esri/solution-common": "^5.1.1",
-    "@esri/solution-feature-layer": "^5.1.1",
-    "@esri/solution-file": "^5.1.1",
-    "@esri/solution-form": "^5.1.1",
-    "@esri/solution-group": "^5.1.1",
-    "@esri/solution-hub-types": "^5.1.1",
-    "@esri/solution-simple-types": "^5.1.1",
-    "@esri/solution-storymap": "^5.1.1",
-    "@esri/solution-velocity": "^5.1.1",
-    "@esri/solution-web-experience": "^5.1.1",
-    "@esri/solution-workflow": "^5.1.1",
     "@types/jasmine": "^5.1.4",
     "fetch-mock": "^7.7.3",
     "jasmine": "^5.1.0",
     "jasmine-core": "^5.1.0",
-    "rollup": "^4.9.4",
-    "sinon": "^15.2.0"
+    "rollup": "^4.9.4"
   },
   "dependencies": {
+    "jszip": "3.10.1",
     "tslib": "1.14.1"
   },
   "scripts": {
@@ -70,21 +52,6 @@
     {
       "name": "Mike Tschudi",
       "email": "mtschudi@esri.com"
-    },
-    {
-      "name": "Chris Fox",
-      "email": "cfox@esri.com"
-    },
-    {
-      "name": "John Hauck",
-      "email": "jhauck@esri.com"
-    },
-    {
-      "name": "Dave Bouwman",
-      "email": "dbouwman@esri.com"
-    },
-    {
-      "name": "John Gravois"
     }
   ],
   "bugs": {

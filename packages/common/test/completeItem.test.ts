@@ -22,6 +22,7 @@ import * as completeItem from "../src/completeItem";
 import * as interfaces from "../src/interfaces";
 import * as restHelpersGet from "../src/restHelpersGet";
 import * as restHelpers from "../src/restHelpers";
+import * as workflowHelpers from "../src/workflowHelpers";
 
 import * as utils from "./mocks/utils";
 import * as mockItems from "../test/mocks/agolItems";
@@ -134,6 +135,59 @@ describe("Module `completeItem`: functions for accessing a complete item", () =>
           expect(item.base.id).toEqual("svc1234567890");
           expect((item.data as any).layers[0].id).toEqual(0);
           expect((item.data as any).tables[0].id).toEqual(1);
+          expect(item.thumbnail.name).toEqual("sampleImage");
+          expect(item.metadata.name).toEqual("metadata.xml");
+          done();
+        });
+    });
+
+    it("should get a workflow item", done => {
+      const itemId = "abc";
+
+      const baseSpy = spyOn(restHelpersGet, "getItemBase").and.resolveTo(
+        mockItems.getAGOLItem("Workflow")
+      );
+      const dataSpy = spyOn(restHelpersGet, "getItemDataAsFile").and.resolveTo(
+        mockItems.getAGOLItemData("Workflow")
+      );
+      const thumbnailSpy = spyOn(
+        restHelpersGet,
+        "getItemThumbnailAsFile"
+      ).and.resolveTo(utils.getSampleImageAsFile());
+      const metadataSpy = spyOn(
+        restHelpersGet,
+        "getItemMetadataAsFile"
+      ).and.resolveTo(utils.getSampleMetadataAsFile());
+      const resourcesSpy = spyOn(
+        restHelpersGet,
+        "getItemResourcesFiles"
+      ).and.resolveTo([] as File[]);
+      const relatedItemsSpy = spyOn(
+        restHelpersGet,
+        "getItemRelatedItemsInSameDirection"
+      ).and.resolveTo([] as interfaces.IRelatedItems[]);
+      const workflowConfigSpy = spyOn(
+        restHelpers,
+        "getWorkflowConfiguration"
+      ).and.resolveTo({ "jobTemplates": "abc" } as any);
+      const extractWorkflowSpy = spyOn(
+        workflowHelpers,
+        "extractWorkflowFromZipFile"
+      ).and.resolveTo({ "jobTemplates": "abc" } as any);
+
+      completeItem
+        .getCompleteItem(itemId, MOCK_USER_SESSION)
+        .then((item: interfaces.ICompleteItem) => {
+          // base: IItem; text/plain JSON
+          // data: File; */*
+          // thumbnail: File; image/*
+          // metadata: File; application/xml
+          // resources: File[]; list of */*
+          // fwdRelatedItems: IRelatedItems[]; list of forward relationshipType/relatedItems[] pairs
+          // revRelatedItems: IRelatedItems[]; list of reverse relationshipType/relatedItems[] pairs
+          // featureServiceProperties?: IFeatureServiceProperties (only if item is a feature service)
+          expect(item).not.toBeNull();
+          expect(item.base.id).toEqual("wfw1234567890");
           expect(item.thumbnail.name).toEqual("sampleImage");
           expect(item.metadata.name).toEqual("metadata.xml");
           done();

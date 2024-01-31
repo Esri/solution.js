@@ -2989,6 +2989,27 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
     });
   });
 
+  describe("getWorkflowConfiguration", () => {
+    it("can get workflow configuration", async () => {
+      const orgId = "abcdefghij";
+      const itemId = "1234567890";
+
+      const restHelpersGetSpy = spyOn(restHelpersGet, "getUser").and.resolveTo({
+        orgId
+      } as interfaces.IUser);
+      const requestSpy = spyOn(request, "request").and.resolveTo({
+        "jobTemplateIds": "abc"
+      });
+
+      const response = await restHelpers.getWorkflowConfiguration(itemId, MOCK_USER_SESSION);
+
+      expect(restHelpersGetSpy.calls.count()).toEqual(1);
+      expect(requestSpy.calls.count()).toEqual(1);
+      expect(requestSpy.calls.argsFor(0)[0]).toEqual(`https://workflow.arcgis.com/${orgId}/admin/${itemId}/export`);
+      expect(response).toEqual({ "jobTemplateIds": "abc" });
+  })
+})
+
   describe("removeFolder", () => {
     it("removes a folder", done => {
       const folderId: string = "ABC123";

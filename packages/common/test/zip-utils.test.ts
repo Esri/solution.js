@@ -18,18 +18,19 @@
  * Provides tests for functions involving deployment of items via the REST API.
  */
 
-import * as common from "@esri/solution-common";
-import * as deploySolution from "../../src/deploySolutionItems";
 import * as fetchMock from "fetch-mock";
-import * as utils from "../../../common/test/mocks/utils";
-import * as zipUtils from "../../src/helpers/zip-utils";
+import * as interfaces from "../src/interfaces";
+import * as mockItems from "./mocks/agolItems";
+import * as restHelpers from "../src/restHelpers";
+import * as utils from "./mocks/utils";
+import * as zipUtils from "../src/zip-utils";
 import JSZip from "jszip";
 
 // ------------------------------------------------------------------------------------------------------------------ //
 
 jasmine.DEFAULT_TIMEOUT_INTERVAL = 20000; // default is 5000 ms
 
-let MOCK_USER_SESSION: common.UserSession;
+let MOCK_USER_SESSION: interfaces.UserSession;
 
 beforeEach(() => {
   MOCK_USER_SESSION = utils.createRuntimeMockUserSession();
@@ -41,90 +42,34 @@ afterEach(() => {
 
 describe("Module `zip-utils`", () => {
 
-  describe("modifyFilesinZip", () => {
-    const itemId = "abc1234567890";
+  describe("updateItemWithZip", () => {
+    it("catches the inability to convert a blob into a the zip", async () => {
+      const blob = new Blob([""], { type: "application/zip" });
+      zipUtils.blobToZip(blob)
+        .then(() => {
+          return Promise.reject("Should not have converted empty blob into a zip file");
+        })
+        .catch(() => {
+          return Promise.resolve();
+        });
+    });
 
-    it("swizzles the portal urls in the form json", async () => {
+    it("updates the item with a zip file", async () => {
+      const itemId = "abc1234567890";
       const zip = generateFormZip(itemId);
-      const templateDictionary = {
-        "portalBaseUrl": "https://ginger.maps.arcgis.com",
-        "1e9cec0aec654a2d8d8760ff054a2b0b": "1e9cec0aec654a2d8d8760ff054a2b0b"
-      }
 
-      await deploySolution.swizzleFormInfoContents(zip, templateDictionary);
+      spyOn(restHelpers, "updateItem").and.callFake(async (
+        update: interfaces.IItemUpdate
+      ) => {
+        expect(update.id).toEqual(itemId);
+        const file = update.data;
+        expect(file.name).toEqual(`${itemId}.zip`);
+        expect(file.type).toEqual("application/zip");
+        return Promise.resolve(mockItems.get200Success(itemId));
+      });
 
-      const swizzledZipFile = await common.getZipFileContents(zip, ["esriinfo/form.json"]);
-      const fileJson = JSON.parse(swizzledZipFile[0].content);
-      expect(common.getProp(fileJson, "portalUrl")).toEqual("https://ginger.maps.arcgis.com");
-      expect(common.getProp(fileJson, "settings.notificationsInfo.webhooks")[0].url)
-      .toEqual("https://ginger.maps.arcgis.com/1e9cec0aec654a2d8d8760ff054a2b0b/link");
-
-      return Promise.resolve();
-    });
-
-    it("handles case where form json doesn't have webhooks", async () => {
-      const zip = generateFormZip(itemId, false);
-      const templateDictionary = {
-        "portalBaseUrl": "https://ginger.maps.arcgis.com",
-        "1e9cec0aec654a2d8d8760ff054a2b0b": "1e9cec0aec654a2d8d8760ff054a2b0b"
-      }
-
-      await deploySolution.swizzleFormInfoContents(zip, templateDictionary);
-
-      const swizzledZipFile = await common.getZipFileContents(zip, ["esriinfo/form.json"]);
-      const fileJson = JSON.parse(swizzledZipFile[0].content);
-      expect(common.getProp(fileJson, "portalUrl")).toEqual("https://ginger.maps.arcgis.com");
-
-      return Promise.resolve();
-    });
-
-    it("applies a function to all files in the zip", async () => {
-      let zip = generateFormZip(itemId);
-      const zipFileContents = await common.getZipFileContents(zip);
-      const zipFiles: string[] = zipFileContents.map((zipFile) => zipFile.file);
-
-      const zipFilesModified: string[] = [];
-      zip = await zipUtils.modifyFilesinZip(
-        (zipFile: zipUtils.IZipFileContent) => {
-          zipFilesModified.push(zipFile.file);
-          return zipFile.content;
-        }, zip
-      );
-
-      expect(zipFilesModified).toEqual(zipFiles);
-    });
-  });
-
-  describe("swizzleIdsInZipFile", () => {
-    const sourceItemId = "abc1234567890";
-    const destinationItemId = "def1234567890";
-
-    it("swizzles the form zip file", async () => {
-      const zip = generateFormZip(sourceItemId);
-      const swizzledZip = await zipUtils.swizzleIdsInZipFile(sourceItemId, destinationItemId, zip, [
-        "esriinfo/form.info",
-        "esriinfo/form.itemInfo",
-        "esriinfo/form.json",
-        "esriinfo/form.webform",
-        "esriinfo/form.xml"
-      ]);
-
-      // Compare the swizzled zip file to the expected zip file
-      const expectedZip = generateFormZip(destinationItemId);
-      expect(await compareZips(swizzledZip, expectedZip)).toBeTrue();
-
-      return Promise.resolve();
-    });
-
-    it("swizzles all files in the zip", async () => {
-      let zip = generateFormZip(sourceItemId);
-      const swizzledZip = await zipUtils.swizzleIdsInZipFile(sourceItemId, destinationItemId, zip);
-
-      // Compare the swizzled zip file to the expected zip file
-      const expectedZip = generateFormZip(destinationItemId);
-      expect(await compareZips(swizzledZip, expectedZip)).toBeTrue();
-
-      return Promise.resolve();
+      const response = await zipUtils.updateItemWithZip(zip, itemId, MOCK_USER_SESSION);
+      expect(response).toEqual(mockItems.get200Success(itemId));
     });
   });
 });
@@ -142,8 +87,8 @@ export async function compareZips(
   zip1: JSZip,
   zip2: JSZip
 ): Promise<boolean> {
-  const zip1Files = await common.getZipFileContents(zip1);
-  const zip2Files = await common.getZipFileContents(zip2);
+  const zip1Files = await zipUtils.getZipFileContents(zip1);
+  const zip2Files = await zipUtils.getZipFileContents(zip2);
 
   if (zip1Files.length !== zip2Files.length) {
     console.log("length mismatch", zip1Files.length, zip2Files.length);

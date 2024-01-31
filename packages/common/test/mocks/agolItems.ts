@@ -218,6 +218,10 @@ export function getAGOLItem(type?: string, url = "", itemId?: string): any {
       );
       break;
 
+    case "Workflow":
+      item = getAGOLItemFundamentals(type);
+      break;
+
     case "Workforce Project":
       item = getAGOLItemFundamentals(type);
       break;
