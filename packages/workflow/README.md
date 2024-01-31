@@ -16,7 +16,7 @@
 
 # @esri/solution-workflow
 
-> Manages the creation and deployment of Workflow Manager item types for [`@esri/solution-*`](https://github.com/Esri/solution.js).
+> Manages the creation and deployment of Workflow item types for [`@esri/solution-*`](https://github.com/Esri/solution.js).
 
 ### [API Reference](https://esri.github.io/solution.js/api/workflow/)
 
