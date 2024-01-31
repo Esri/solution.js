@@ -21,71 +21,49 @@
  */
 
 import * as zipUtils from "./zip-utils";
+import { createMimeTypedFile } from "./resources/copyDataIntoItem";
+import JSZip from "jszip";
 
 // ------------------------------------------------------------------------------------------------------------------ //
 
-export function compressWorkflowIntoZipFile(
-  //workflow: any
+/**
+ * Compresses a workflow configuration into a zip file.
+ *
+ * @param workflowConfig Workflow configuration
+ * @returns Promise resolving with a zip file
+ */
+export async function compressWorkflowIntoZipFile(
+  workflowConfig: any
 ): Promise<File> {
+  const zip = new JSZip();
+  Object.keys(workflowConfig).forEach((key: string) => {
+    zip.file(key, JSON.stringify(workflowConfig[key]));
+  });
 
+  const zipFile = createMimeTypedFile({
+    blob: await zip.generateAsync({ type: "blob" }),
+    filename: `workflow_configuration.zip`,
+    mimeType: "application/zip"
+  })
 
-
-
-
-
-
-  return Promise.resolve(new File([], ""));
+  return Promise.resolve(zipFile);
 }
 
+/**
+ * Extracts a workflow configuration from a zip file into a JSON object.
+ *
+ * @param zipFile Zip file containing a workflow configuration
+ * @returns Promise resolving with a workflow configuration as JSON object, with each file being a key
+ */
 export async function extractWorkflowFromZipFile(
-    zipFile: File
+  zipFile: File
 ): Promise<any> {
-    const files = zipUtils.getZipFileContents(await zipUtils.blobToZip(zipFile));
+  const zippedFiles = await zipUtils.getZipFileContents(await zipUtils.blobToZip(zipFile));
 
+  const workflowConfig: any = {};
+  zippedFiles.forEach((zippedFile: zipUtils.IZipFileContent) => {
+    workflowConfig[zippedFile.file] = zippedFile.content;
+  });
 
-
-
-
-
-    return Promise.resolve(files);
+  return Promise.resolve(workflowConfig);
 }
-
-
-  /*const body = {
-    "jobTemplateIds": [
-      "string"
-    ],
-    "diagramIds": [
-      "string"
-    ],
-    "includeOtherConfiguration": true,
-    "passphrase": "string"
-  };*/
-  /*
-  const diagramsUrl =  `/${orgId}/${itemId}/diagrams`;
-  const individualDiagramUrl = `/${orgId}/${itemId}/diagrams/${diagramId}`;
-
-  const jobTemplatesUrl = `/${orgId}/${itemId}/jobTemplates`;
-  const individualJobTemplateUrl = `/${orgId}/${itemId}/jobTemplates/${jobTemplateId}`;
-
-  "diagrams": [
-    {
-      "diagramId": "string",
-      "diagramName": "string",
-      "description": "string",
-      "active": true,
-      "draft": true
-    }
-  ]
-  "jobTemplates": [
-    {
-      "jobTemplateId": "string",
-      "jobTemplateName": "string",
-      "description": "string",
-      "category": "string",
-      "diagramId": "string",
-      "diagramName": "string",
-      "state": "Draft"
-    }
-  ]
-}*/
