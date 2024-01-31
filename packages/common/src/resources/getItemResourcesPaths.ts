@@ -64,6 +64,9 @@ export function getItemResourcesPaths(
             if (res.match(/^draft_[\s\S]*.json$/)) {
               result = false;
             }
+            if (res === "published_data.json") {
+              result = false;
+            }
           }
 
           // Web Experiences

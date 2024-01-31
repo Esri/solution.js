@@ -64,7 +64,7 @@ describe("Module `deployer`", () => {
   describe("deploy solution orchestration", () => {
     it("should reject if no maybeModel passed", done => {
       deployer
-        .deploySolution(null, MOCK_USER_SESSION)
+        .deploySolution("", MOCK_USER_SESSION)
         .then(_ => {
           fail("deploySolution should reject if passed null");
         })
@@ -87,7 +87,7 @@ describe("Module `deployer`", () => {
         itemInfo = cloneObject(templates.getSolutionTemplateItem([]));
         solTmplStub = sinon
           .stub(deployUtils, "getSolutionTemplateItem")
-          .callsFake((idOrObj, auth) => {
+          .callsFake(() => {
             return Promise.resolve({
               item: itemInfo.item,
               data: itemInfo.data
@@ -209,7 +209,7 @@ describe("Module `deployer`", () => {
   describe("deploySolution", () => {
     it("reports an error if the solution id is not supplied", done => {
       deployer
-        .deploySolution(null, MOCK_USER_SESSION)
+        .deploySolution("", MOCK_USER_SESSION)
         .then(() => done.fail())
         .catch(err => {
           expect(err).toEqual({
@@ -496,6 +496,10 @@ describe("Module `deployer`", () => {
         .get(
           "https://myorg.maps.arcgis.com/sharing/rest/content/items/aaa2c6105dc243a2ad1377245722e312?f=json&token=fake-token",
           { owner: "LocationTrackingServiceOwner", id: "aaa2c6105dc243a2ad1377245722e312" }
+        )
+        .post(
+          "https://survey123.arcgis.com/api/survey/frm1234567891/webhook/add",
+          { success: true }
         );
       spyOn(console, "log").and.callFake(() => {});
 

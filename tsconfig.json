@@ -41,7 +41,8 @@
       "packages/storymap/src/index.ts",
       "packages/velocity/src/index.ts",
       "packages/viewer/src/index.ts",
-      "packages/web-experience/src/index.ts"
+      "packages/web-experience/src/index.ts",
+      "packages/workflow/src/index.ts"
     ],
     "out": "docs"
   }

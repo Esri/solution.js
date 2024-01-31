@@ -6,7 +6,7 @@
 * \[ \] Switch to `master` branch
 * \[ \] Merge in--but don't commit--the current `release/X.X.X` branch
 * \[ \] Run `npm run clean` in a bash shell
-* \[ \] Run `npm run release:prepare1` in a bash shell
+* \[ \] Run `npm run release:prepare1`
 * \[ \] Run `npm run release:prepare2` in a Windows shell and pick new version number
 * \[ \] Run `npm run release:review`
 * \[ \] Run `npm run release:publish-git` in a bash shell

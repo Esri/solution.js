@@ -58,14 +58,14 @@ rmdir/s/q packages\storymap\dist 2>nul
 rmdir/s/q packages\velocity\dist 2>nul
 rmdir/s/q packages\viewer\dist 2>nul
 rmdir/s/q packages\web-experience\dist 2>nul
-rmdir/s/q copyItemInfo\dist 2>nul
-rmdir/s/q copySolutions\dist 2>nul
-rmdir/s/q createSolution\dist 2>nul
-rmdir/s/q deleteSolution\dist 2>nul
-rmdir/s/q deploySolution\dist 2>nul
-rmdir/s/q getItemInfo\dist 2>nul
-rmdir/s/q implementedTypes\dist 2>nul
-rmdir/s/q verifySolution\dist 2>nul
+rmdir/s/q demos\copyItemInfo\dist 2>nul
+rmdir/s/q demos\copySolutions\dist 2>nul
+rmdir/s/q demos\createSolution\dist 2>nul
+rmdir/s/q demos\deleteSolution\dist 2>nul
+rmdir/s/q demos\deploySolution\dist 2>nul
+rmdir/s/q demos\getItemInfo\dist 2>nul
+rmdir/s/q demos\implementedTypes\dist 2>nul
+rmdir/s/q demos\verifySolution\dist 2>nul
 
 rem install and build the packages
 call npm install
@@ -98,6 +98,8 @@ del/q packages\viewer\dist\cjs\package.json 2>nul
 del/q packages\viewer\dist\esm\package.json 2>nul
 del/q packages\web-experience\dist\cjs\package.json 2>nul
 del/q packages\web-experience\dist\esm\package.json 2>nul
+del/q packages\workflow\dist\cjs\package.json 2>nul
+del/q packages\workflow\dist\esm\package.json 2>nul
 
 rem build the demos
 pushd demos\compareJSON

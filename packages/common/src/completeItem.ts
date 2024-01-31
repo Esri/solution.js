@@ -27,6 +27,7 @@ import {
 } from "./interfaces";
 import * as restHelpers from "./restHelpers";
 import * as restHelpersGet from "./restHelpersGet";
+import * as workflowHelpers from "./workflowHelpers";
 
 // ------------------------------------------------------------------------------------------------------------------ //
 
@@ -105,13 +106,25 @@ export function getCompleteItem(
           itemBase.url,
           authentication
         );
+
+      } else if (itemBase.type === "Workflow") {
+        // eslint-disable-next-line @typescript-eslint/no-floating-promises
+        return restHelpers.getWorkflowConfiguration(
+          itemBase.id,
+          authentication
+        );
+
       } else {
         return Promise.resolve(null);
       }
     })
-    .then((properties: IFeatureServiceProperties) => {
+    .then((properties: IFeatureServiceProperties | any) => {
       if (properties) {
-        completeItem.featureServiceProperties = properties;
+        if (completeItem.base.type === "Feature Service") {
+          completeItem.featureServiceProperties = properties;
+        } else if (completeItem.base.type === "Workflow") {
+          completeItem.workflowConfiguration = workflowHelpers.extractWorkflowFromZipFile(properties);
+        }
       }
       return Promise.resolve(completeItem);
     });

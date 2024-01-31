@@ -183,6 +183,7 @@ export function getItemTypeAbbrev(type: string): string {
       "Windows Mobile Package": "xxx",
       "Windows Viewer Add In": "xxx",
       "Windows Viewer Configuration": "xxx",
+      Workflow: "wfw",
       "Workflow Manager Package": "xxx",
 
       ////////////////////////////////////////////////////////

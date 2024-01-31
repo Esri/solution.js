@@ -339,6 +339,11 @@ export interface ICompleteItem {
    * Additional feature-service-only info
    */
   featureServiceProperties?: IFeatureServiceProperties;
+
+  /**
+   * Additional workflow-only info
+   */
+  workflowConfiguration?: any
 }
 
 /**

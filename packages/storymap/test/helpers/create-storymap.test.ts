@@ -75,7 +75,7 @@ describe("createStoryMap ::", () => {
           "should call interpolateId"
         );
         expect(updateItemSpy.calls.count()).toBe(1, "should call updateItem");
-        expect(addResSpy.calls.count()).toBe(3, "should add three resources");
+        expect(addResSpy.calls.count()).toBe(4, "should add four resources");
         if (typeof Blob !== "undefined") {
           const draftArgs = addResSpy.calls.argsFor(0)[0];
           expect(draftArgs.resource instanceof Blob).toBe(
@@ -154,7 +154,7 @@ describe("createStoryMap ::", () => {
           "should call interpolateId"
         );
         expect(updateItemSpy.calls.count()).toBe(1, "should call updateItem");
-        expect(addResSpy.calls.count()).toBe(3, "should add three resources");
+        expect(addResSpy.calls.count()).toBe(4, "should add four resources");
         if (typeof Blob !== "undefined") {
           const draftArgs = addResSpy.calls.argsFor(0)[0];
           expect(draftArgs.resource instanceof Blob).toBe(

@@ -547,7 +547,7 @@ export function _templatizeOrgUrl(
   return new Promise((resolve, reject) => {
     // Get the org's URL
     getPortal(null, destAuthentication).then(org => {
-      const orgUrl = "https://" + org.urlKey + "." + org.customBaseUrl;
+      let orgUrl = "https://" + org.urlKey + "." + org.customBaseUrl;
       const templatizedOrgUrl = "{{portalBaseUrl}}";
 
       // Cycle through each of the items in the template and scan the `item` and `data` sections of each for replacements
@@ -563,6 +563,19 @@ export function _templatizeOrgUrl(
           templatizedOrgUrl
         );
       });
+
+      // Handle encoded URLs
+      orgUrl = orgUrl.replace("https://", "https%3A%2F%2F");
+
+      // Cycle through each of the items in the template and scan the `data` sections of each for replacements
+      templates.forEach((template: IItemTemplate) => {
+        globalStringReplace(
+          template.data,
+          new RegExp(orgUrl, "gi"),
+          templatizedOrgUrl
+        );
+      });
+
       resolve(templates);
     }, reject);
   });

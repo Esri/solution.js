@@ -63,8 +63,8 @@ import {
   UserSession
 } from "./interfaces";
 import { createZip } from "./libConnectors";
-import { getItemBase, getItemDataAsJson } from "./restHelpersGet";
-import { IUserSessionOptions } from "@esri/arcgis-rest-auth";
+import { getItemBase, getItemDataAsJson, getUser } from "./restHelpersGet";
+import { IUser, IUserSessionOptions } from "@esri/arcgis-rest-auth";
 import {
   addItemData as portalAddItemData,
   addItemRelationship,
@@ -370,6 +370,10 @@ export function convertToISearchOptions(
     }
   }
 
+  // Remove the sortField if it's "relevance"; that's the default option and is not meant to be specified
+  if (searchOptions.sortField === "relevance") {
+    delete searchOptions.sortField;
+  }
 
   return searchOptions;
 }
@@ -1315,6 +1319,34 @@ export function getFeatureServiceProperties(
 }
 
 /**
+ * Fetches the configuration of a workflow.
+ *
+ * @param itemId Id of the workflow item
+ * @param authentication Credentials for the request to AGOL
+ * @returns Promise resolving with the workflow configuration in a zip file
+ */
+export async function getWorkflowConfiguration(
+  itemId: string,
+  authentication: UserSession
+): Promise<any> {
+
+  const user: IUser = await getUser(authentication);
+  const exportConfigUrl = `https://workflow.arcgis.com/${user.orgId}/admin/${itemId}/export`;
+  return request(exportConfigUrl, {
+    authentication,
+    headers: {
+      Host: "workflow.arcgis.com",
+      "Accept": "application/octet-stream",
+      "Authorization": `Bearer ${authentication.token}`,
+      "X-Esri-Authorization": `Bearer ${authentication.token}`
+    },
+    params: {
+      f: "zip"
+    }
+  });
+}
+
+/**
  * Parses the layers array and will filter subsets of Layers and Tables
  * Layers and Tables are both returned in the layers array when we access a feature service from the admin api.
  *
@@ -1616,6 +1648,12 @@ export function searchGroupAllContents(
     total: 0,
     results: [] as IItem[]
   } as ISearchResult<IItem>;
+
+
+  // Remove the sortField if it's "relevance"; that's the default option and is not meant to be specified
+  if (additionalSearchOptions.sortField === "relevance") {
+    delete additionalSearchOptions.sortField;
+  }
 
   return new Promise<ISearchResult<IItem>>((resolve, reject) => {
     searchGroupContents(

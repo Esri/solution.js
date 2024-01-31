@@ -51,6 +51,9 @@ export function createStoryMap(
   // that we have to generate from the passed in model
   const resources: any[] = [];
 
+  // The data section has been de-templatized. Some entries need to be encoded URLs, so we'll find and encode them.
+  model.data = JSON.parse(JSON.stringify(model.data).replace(/portalUrl=https:\/\//g, "portalUrl=https%3A%2F%2F"));
+
   // For unknown reasons we can not seem to spy on createItemInFolder
   // so we will create-then-move for now
   const createOptions: ICreateItemOptions = {
@@ -79,9 +82,10 @@ export function createStoryMap(
 
       // Storymaps store draft data in a timestamped resource attached to the item
       // We'll just use the published data for the first "draft"
+      const dataBlob = stringToBlob(JSON.stringify(model.data));
       resources.push({
         name: model.properties.draftFileName,
-        file: stringToBlob(JSON.stringify(model.data))
+        file: dataBlob
       });
       resources.push({
         name: "oembed.json",
@@ -90,6 +94,10 @@ export function createStoryMap(
       resources.push({
         name: "oembed.xml",
         file: stringToBlob(model.properties.oembedXML)
+      });
+      resources.push({
+        name: "published_data.json",
+        file: dataBlob
       });
       // remove the properties hash now that we've gotten what we need
       delete model.properties;

@@ -127,7 +127,8 @@ export function extractWorkforceDependencies(
               Array.isArray(serviceRequests.requests) &&
               serviceRequests.requests.length > 0
             ) {
-              requests = requests.concat(serviceRequests.requests);
+            // eslint-disable-next-line @typescript-eslint/no-floating-promises
+            requests = requests.concat(serviceRequests.requests);
               urls = urls.concat(serviceRequests.urls);
             }
           });
@@ -423,6 +424,7 @@ export function _getAssignmentIntegrationInfos(
             Array.isArray(serviceRequests.requests) &&
             serviceRequests.requests.length > 0
           ) {
+            // eslint-disable-next-line @typescript-eslint/no-floating-promises
             requests = requests.concat(serviceRequests.requests);
             urls = urls.concat(serviceRequests.urls);
           }
