@@ -24,6 +24,19 @@ import * as zipUtils from "./zip-utils";
 
 // ------------------------------------------------------------------------------------------------------------------ //
 
+export function compressWorkflowIntoZipFile(
+  //workflow: any
+): Promise<File> {
+
+
+
+
+
+
+
+  return Promise.resolve(new File([], ""));
+}
+
 export async function extractWorkflowFromZipFile(
     zipFile: File
 ): Promise<any> {
@@ -34,20 +47,7 @@ export async function extractWorkflowFromZipFile(
 
 
 
-    return Promise.resolve();
-}
-
-export function compressWorkflowIntoZipFile(
-    workflow: any
-): Promise<File> {
-
-
-
-
-
-
-
-    return Promise.resolve(new File([], ""));
+    return Promise.resolve(files);
 }
 
 

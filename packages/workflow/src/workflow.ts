@@ -35,19 +35,19 @@ import * as commonTest from "../../common/test/mocks/templates"; //???
  * @returns A promise that will resolve when the template has been created
  */
 export function convertItemToTemplate(
-  solutionItemId: string,
+  /*solutionItemId: string,
   itemInfo: any,
   destAuthentication: common.UserSession,
-  srcAuthentication: common.UserSession
+  srcAuthentication: common.UserSession*/
 ): Promise<common.IItemTemplate> {
   return Promise.resolve(commonTest.getItemTemplate("Workflow"));
 }
 
 export function createItemFromTemplate(
-  template: common.IItemTemplate,
+  template: common.IItemTemplate/*,
   templateDictionary: any,
   destinationAuthentication: common.UserSession,
-  itemProgressCallback: common.IItemProgressCallback
+  itemProgressCallback: common.IItemProgressCallback*/
 ): Promise<common.ICreateItemFromTemplateResponse> {
   return Promise.resolve({
     id: template.itemId,

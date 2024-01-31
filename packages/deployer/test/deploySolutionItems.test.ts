@@ -1929,7 +1929,7 @@ describe("Module `deploySolutionItems`", () => {
       .and.resolveTo(mockItems.get200Success(itemTemplate.itemId));
 
       const updateItemWithZipSpy = spyOn(
-        zipUtils,
+        common,
         "updateItemWithZip"
       ).and.resolveTo(mockItems.get200Success(itemTemplate.itemId));
 
