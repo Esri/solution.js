@@ -341,6 +341,15 @@ export function getItemTemplate(
       templatePart.resources = [];
       break;
 
+    case "Workflow":
+      templatePart = getItemTemplateFundamentals(
+        type,
+        getItemTypeAbbrev.getItemTypeAbbrev(type),
+        dependencies,
+        url
+      );
+      break;
+
     case "Workforce Project":
       templatePart = getItemTemplateFundamentals(
         type,

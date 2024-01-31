@@ -30,6 +30,8 @@ rmdir/s/q packages\viewer\dist 2>nul
 rmdir/s/q packages\viewer\node_modules 2>nul
 rmdir/s/q packages\web-experience\dist 2>nul
 rmdir/s/q packages\web-experience\node_modules 2>nul
+rmdir/s/q packages\workflow\dist 2>nul
+rmdir/s/q packages\workflow\node_modules 2>nul
 
 del/q package-lock.json 2>nul
 del/q packages\common\package-lock.json 2>nul
@@ -45,6 +47,7 @@ del/q packages\storymap\package-lock.json 2>nul
 del/q packages\velocity\package-lock.json 2>nul
 del/q packages\viewer\package-lock.json 2>nul
 del/q packages\web-experience\package-lock.json 2>nul
+del/q packages\workflow\package-lock.json 2>nul
 
 rmdir/q/s coverage 2>nul
 
