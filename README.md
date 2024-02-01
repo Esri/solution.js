@@ -60,6 +60,7 @@ The API is divided into packages to make it easier to use just the parts that yo
 * `velocity`, which contains functions to support ArcGIS Velocity items
 * `viewer`, which contains functions to support displaying Solution items
 * `web-experience`, which contains functions for Experience Builder items
+* `workflow`, which contains functions for Workflow items
 
 #### Additional information
 
