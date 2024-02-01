@@ -1023,7 +1023,7 @@ describe("Module `generalHelpers`: common utility functions shared across packag
 
   describe("getSubgroupIds", () => {
     it("handles no tags", () => {
-      const tags: string[] = undefined;
+      const tags: string[] = [];
       const expectedIds: string[] = [];
       expect(generalHelpers.getSubgroupIds(tags)).toEqual(expectedIds);
     });
@@ -1072,6 +1072,52 @@ describe("Module `generalHelpers`: common utility functions shared across packag
       expect(chk.id).toBe("Some Id", "id should be empty");
       expect(chk.type).toBe("Some Type", "type should be set");
       expect(chk.postProcess).toBe(false, "postProcess set to false");
+    });
+  });
+
+  describe("getAgoIdRegEx", () => {
+    it("matches an id", () => {
+      const id = "bad3483e025c47338d43df308c117308";
+      const match = id.match(generalHelpers.getAgoIdRegEx());
+      expect(match).not.toBeNull();
+    });
+
+    it("doesn't match a string that's not an id 1", () => {
+      const id = "bad3483e025c47338d43df308c11730";
+      const match = id.match(generalHelpers.getAgoIdRegEx());
+      expect(match).toBeNull();
+    });
+
+    it("doesn't match a string that's not an id 2", () => {
+      const id = "bad3483e025c47338d43df308c117308a";
+      const match = id.match(generalHelpers.getAgoIdRegEx());
+      expect(match).toBeNull();
+    });
+  });
+
+  describe("getAgoIdTemplateRegEx", () => {
+    it("matches an id", () => {
+      const id = "{{bad3483e025c47338d43df308c117308}}";
+      const match = id.match(generalHelpers.getAgoIdTemplateRegEx());
+      expect(match).not.toBeNull();
+    });
+
+    it("doesn't match a string that's not an id 1", () => {
+      const id = "{{bad3483e025c47338d43df308c11730}}";
+      const match = id.match(generalHelpers.getAgoIdTemplateRegEx());
+      expect(match).toBeNull();
+    });
+
+    it("doesn't match a string that's not an id 2", () => {
+      const id = "{{bad3483e025c47338d43df308c117308a}}";
+      const match = id.match(generalHelpers.getAgoIdTemplateRegEx());
+      expect(match).toBeNull();
+    });
+
+    it("doesn't match a string that's not an id 3", () => {
+      const id = "bad3483e025c47338d43df308c117308";
+      const match = id.match(generalHelpers.getAgoIdTemplateRegEx());
+      expect(match).toBeNull();
     });
   });
 
