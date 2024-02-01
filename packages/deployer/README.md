@@ -6,9 +6,9 @@
 
 [npm-img]: https://img.shields.io/npm/v/@esri/solution-deployer.svg?style=round-square&color=blue
 [npm-url]: https://www.npmjs.com/package/@esri/solution-deployer
-[travis-img]: https://img.shields.io/travis/Esri/solution.js/develop.svg
+[travis-img]: https://img.shields.io/travis/com/Esri/solution.js/develop.svg
 [travis-url]: https://travis-ci.org/Esri/solution.js
-[gzip-img]: https://img.badgesize.io/https://unpkg.com/@esri/solution-deployer/dist/umd/deployer.umd.min.js?compression=gzip
+[gzip-img]: https://img.badgesize.io/https://unpkg.com/@esri/solution-deployer/dist/esm/index.js?compression=gzip
 [coverage-img]: https://coveralls.io/repos/github/Esri/solution.js/badge.svg
 [coverage-url]: https://coveralls.io/github/Esri/solution.js
 [license-img]: https://img.shields.io/badge/license-Apache%202.0-blue.svg

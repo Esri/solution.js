@@ -163,14 +163,14 @@ async function formatItemInfo(
 
     html += "<p><i>Layers</i>";
     item.featureServiceProperties.layers.forEach(
-      layer =>
+      (layer: any) =>
         (html += textAreaHtmlFromJSON(layer))
     );
     html += "</p>";
 
     html += "<p><i>Tables</i>";
     item.featureServiceProperties.tables.forEach(
-      layer =>
+      (layer: any) =>
         (html += textAreaHtmlFromJSON(layer))
     );
     html += "</p>";
@@ -191,7 +191,7 @@ async function formatItemInfo(
         if (topologicalSortGraphicDiv && Raphael && Dracula) {
           topologicalSortGraphicDiv.innerHTML = "";
           // eslint-disable-next-line @typescript-eslint/no-floating-promises
-          common.blobToJson(item.data).then(itemData => {
+          common.blobToJson(item.data).then((itemData: any) => {
             showTopologicalSortGraph(itemData.templates, topologicalSortGraphicDiv, 1400, 1600, Raphael, Dracula);
           });
         }
@@ -267,7 +267,7 @@ function showBlob(
 
     if (blob.type === "application/json") {
       common.blobToJson(blob).then(
-        json => {
+        (json: any) => {
           if (jsonMaxSize && blob.size > jsonMaxSize && jsonPropertiesToPrune.length > 0) {
             // Attempt to reduce size of JSON by removing specified properties
             json = findAndPruneProperties(json, jsonPropertiesToPrune);
@@ -276,7 +276,7 @@ function showBlob(
             textAreaHtmlFromJSON(json) + addFilename(filename)
           );
         },
-        error => resolve("<i>problem extracting JSON: " + error + "</i>")
+        (error: any) => resolve("<i>problem extracting JSON: " + error + "</i>")
       );
     } else if (
       blob.type.startsWith("text/plain") ||
@@ -284,8 +284,8 @@ function showBlob(
       blob.type === "application/xml"
     ) {
       common.blobToText(blob).then(
-        text => resolve(textAreaHtmlFromText(text) + addFilename(filename)),
-        error => resolve("<i>problem extracting text: " + error + "</i>")
+        (text: any) => resolve(textAreaHtmlFromText(text) + addFilename(filename)),
+        (error: any) => resolve("<i>problem extracting text: " + error + "</i>")
       );
     } else if (blob.type.startsWith("image/")) {
       let html =
