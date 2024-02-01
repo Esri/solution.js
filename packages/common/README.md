@@ -65,7 +65,7 @@ Promise (resolved) undefined
 "ymin: 41.70799917451703"
 ```
 
-### [API Reference](https://esri.github.io/solution.js/api/common/)
+### [API Reference](https://esri.github.io/solution.js/modules/common_src.html)
 
 ### Issues
 
@@ -83,7 +83,7 @@ Esri welcomes contributions from anyone and everyone. Please see our [guidelines
 
 ### License
 
-Copyright &copy; 2018-2020 Esri
+Copyright &copy; 2018 Esri
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
