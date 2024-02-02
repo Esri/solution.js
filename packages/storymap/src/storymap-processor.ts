@@ -38,13 +38,11 @@ import { createStoryMap } from "./helpers/create-storymap";
 /**
  * Convert a StoryMap to a template
  *
- * @param solutionItemId
  * @param itemInfo
  * @param destAuthentication Credentials for requests to the destination organization
  * @param srcAuthentication Credentials for requests to source items
  */
 export function convertItemToTemplate(
-  solutionItemId: string,
   itemInfo: any,
   destAuthentication: UserSession,
   srcAuthentication: UserSession

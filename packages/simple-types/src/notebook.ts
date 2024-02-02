@@ -21,7 +21,6 @@ import * as notebookHelpers from "./helpers/notebook-helpers";
 /**
  * Converts a notebook item into a template.
  *
- * @param solutionItemId The solution to contain the template
  * @param itemInfo Info about the item
  * @param destAuthentication Credentials for requests to the destination organization
  * @param srcAuthentication Credentials for requests to source items
@@ -29,7 +28,6 @@ import * as notebookHelpers from "./helpers/notebook-helpers";
  * @returns A promise that will resolve when the template has been created
  */
 export function convertItemToTemplate(
-  solutionItemId: string,
   itemInfo: any,
   destAuthentication: common.UserSession,
   srcAuthentication: common.UserSession,
@@ -39,7 +37,6 @@ export function convertItemToTemplate(
   // to convertNotebookToTemplate at the correct point in the process
   // This is a temporary refactor step
   return notebookHelpers.convertItemToTemplate(
-    solutionItemId,
     itemInfo,
     destAuthentication,
     srcAuthentication,

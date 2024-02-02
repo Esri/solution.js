@@ -31,7 +31,7 @@ describe("Module `ClassicStorymapProcessor`: ", () => {
   describe("convertItemToTemplate :: ", () => {
     it("recognizes Classic StoryMap", done => {
       const solutionItemId = "sln1234567890";
-      ClassicStorymapProcessor.convertItemToTemplate(solutionItemId, {
+      ClassicStorymapProcessor.convertItemToTemplate({
         type: "Web Mapping Application",
         url:
           "{{portalBaseUrl}}/apps/MapJournal/index.html?appid={{wma1234567890.itemId}}"
@@ -48,7 +48,7 @@ describe("Module `ClassicStorymapProcessor`: ", () => {
 
     it("rejects a non-StoryMap", done => {
       const solutionItemId = "sln1234567890";
-      ClassicStorymapProcessor.convertItemToTemplate(solutionItemId, {
+      ClassicStorymapProcessor.convertItemToTemplate({
         id: "wma1234567890",
         type: "Web Mapping Application",
         url:

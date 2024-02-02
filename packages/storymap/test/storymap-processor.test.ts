@@ -46,7 +46,6 @@ describe("Module `storymap`: ", () => {
       ).and.resolveTo(tmpl);
 
       return StorymapProcessor.convertItemToTemplate(
-        "sln1234567890",
         {
           type: "StoryMap",
           id: "bcfake23"

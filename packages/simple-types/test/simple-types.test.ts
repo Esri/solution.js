@@ -98,7 +98,7 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
       });
 
       simpleTypes
-        .convertItemToTemplate(solutionItemId, item, MOCK_USER_SESSION, MOCK_USER_SESSION, {})
+        .convertItemToTemplate(item, MOCK_USER_SESSION, MOCK_USER_SESSION, {})
         .then(newItemTemplate => {
           newItemTemplate.key = expectedTemplate.key;
           expect(newItemTemplate).toEqual(expectedTemplate);
@@ -140,7 +140,7 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
       );
 
       simpleTypes
-        .convertItemToTemplate(solutionItemId, item, MOCK_USER_SESSION, MOCK_USER_SESSION, {})
+        .convertItemToTemplate(item, MOCK_USER_SESSION, MOCK_USER_SESSION, {})
         .then(
           () => done(),
           () => done.fail()
@@ -263,7 +263,6 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
 
       simpleTypes
         .convertItemToTemplate(
-          solutionItemId,
           itemTemplate.item,
           MOCK_USER_SESSION,
           MOCK_USER_SESSION,
@@ -313,7 +312,6 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
 
       simpleTypes
         .convertItemToTemplate(
-          solutionItemId,
           itemTemplate.item,
           MOCK_USER_SESSION,
           MOCK_USER_SESSION,

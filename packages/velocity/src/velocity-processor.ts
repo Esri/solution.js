@@ -47,7 +47,6 @@ import {
 /**
  * Convert a Velocity item into a Template
  *
- * @param solutionItemId The solution to contain the item
  * @param itemInfo The basic item info
  * @param destAuthentication Credentials for requests to the destination organization
  * @param srcAuthentication Credentials for requests to source items
@@ -57,7 +56,6 @@ import {
  *
  */
 export function convertItemToTemplate(
-  solutionItemId: string,
   itemInfo: any,
   destAuthentication: UserSession,
   srcAuthentication: UserSession,
