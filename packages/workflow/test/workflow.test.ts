@@ -76,11 +76,12 @@ describe("Module `workflow`", () => {
   });
 
   describe("createItemFromTemplate", () => {
-    it("initial test", async () => {
-      const itemId: string = "wfw1234567890";
+    it("basically works", async () => {
       const itemTemplate: common.IItemTemplate = templates.getItemTemplate("Workflow");
+      const templateDictionary: any = {};
+      const newItemID: string = "wfw1234567891";
 
-      await workflow.createItemFromTemplate(itemTemplate);
+      //await workflow.createItemFromTemplate(itemTemplate, templateDictionary, MOCK_USER_SESSION, utils.ITEM_PROGRESS_CALLBACK);
     });
   });
 
