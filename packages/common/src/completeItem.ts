@@ -118,12 +118,12 @@ export function getCompleteItem(
         return Promise.resolve(null);
       }
     })
-    .then((properties: IFeatureServiceProperties | any) => {
+    .then(async (properties: IFeatureServiceProperties | any) => {
       if (properties) {
         if (completeItem.base.type === "Feature Service") {
           completeItem.featureServiceProperties = properties;
         } else if (completeItem.base.type === "Workflow") {
-          completeItem.workflowConfiguration = workflowHelpers.extractWorkflowFromZipFile(properties);
+          completeItem.workflowConfiguration = await workflowHelpers.extractWorkflowFromZipFile(properties);
         }
       }
       return Promise.resolve(completeItem);

@@ -37,14 +37,17 @@ describe("Module `workflowHelpers`", () => {
 
   describe("compressWorkflowIntoZipFile", () => {
     it("initial test", async () => {
-      /*const zipFile =*/ await workflowHelpers.compressWorkflowIntoZipFile();
+      const workflowConfig: any = { "jsTemplates": "Fred" };
+      const zipFile = await workflowHelpers.compressWorkflowIntoZipFile(workflowConfig);
+      expect(zipFile.name).toEqual("workflow_configuration.zip");
     });
   });
 
   describe("extractWorkflowFromZipFile", () => {
     it("initial test", async () => {
       const sampleWorkflowConfig = await generateWorkflowZipFile();
-      const zipFile = await workflowHelpers.extractWorkflowFromZipFile(sampleWorkflowConfig);
+      const zipFiles = await workflowHelpers.extractWorkflowFromZipFile(sampleWorkflowConfig);
+      expect(zipFiles).toEqual({ "jsTemplates": "Fred" });
     });
   });
 
@@ -53,8 +56,10 @@ describe("Module `workflowHelpers`", () => {
 export function generateWorkflowZipFile(
 ): Promise<File> {
   const zip = new JSZip();
+  zip.file("jsTemplates", "Fred");
+
   return zip.generateAsync({ type: "blob" })
   .then((blob) => {
-    return Promise.resolve(new File([blob], "workflow.zip"));
+    return Promise.resolve(new File([blob], "workflow_configuration.zip"));
   });
 }

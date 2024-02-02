@@ -21,7 +21,6 @@
  */
 
 import * as common from "@esri/solution-common";
-import * as commonTest from "../../common/test/mocks/templates"; //???
 
 // ------------------------------------------------------------------------------------------------------------------ //
 
@@ -40,7 +39,7 @@ export function convertItemToTemplate(
   destAuthentication: common.UserSession,
   srcAuthentication: common.UserSession*/
 ): Promise<common.IItemTemplate> {
-  return Promise.resolve(commonTest.getItemTemplate("Workflow"));
+  return Promise.resolve(_getItemTemplate());
 }
 
 export function createItemFromTemplate(
@@ -54,4 +53,47 @@ export function createItemFromTemplate(
     type: "Workflow",
     postProcess: false
   });
+}
+
+
+// ------------------------------------------------------------------------------------------------------------------ //
+// Temporary implementation until the real one is available
+
+function _getItemTemplate(
+): common.IItemTemplate {
+  return {
+    itemId: "wfw1234567890",
+    type: "Workflow",
+    key: "i1a2b3c4",
+    item: {
+      id: "{{wfw1234567890.itemId}}",
+      name: "Name of an AGOL item",
+      title: "An AGOL item",
+      type: "Workflow",
+      typeKeywords: ["JavaScript"],
+      description: "Description of an AGOL item",
+      tags: ["test"],
+      snippet: "Snippet of an AGOL item",
+      thumbnail: "https://myorg.maps.arcgis.co/sharing/rest/content/items/wfw1234567890/info/thumbnail/ago_downloaded.png",
+      extent: "{{solutionItemExtent}}",
+      categories: [],
+      contentStatus: null,
+      spatialReference: undefined,
+      accessInformation: "Esri, Inc.",
+      licenseInfo: null,
+      origUrl: undefined,
+      properties: null,
+      culture: "en-us",
+      url: "",
+      created: 1520968147000,
+      modified: 1522178539000
+    },
+    data: undefined,
+    resources: [],
+    dependencies: [],
+    relatedItems: [],
+    groups: [],
+    properties: {},
+    estimatedDeploymentCostFactor: 2
+  };
 }

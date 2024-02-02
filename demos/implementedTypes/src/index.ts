@@ -88,6 +88,7 @@ export function implementedTypes(): string {
     "Web Experience Template",
     "Web Experience",
     "Web Mapping Application",
+    "Workflow",
     "Workforce Project"
   ];
 

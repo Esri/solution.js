@@ -19,6 +19,7 @@ import * as featureLayer from "@esri/solution-feature-layer";
 import * as fileProcessor from "@esri/solution-file";
 import * as formProcessor from "@esri/solution-form";
 import * as group from "@esri/solution-group";
+import { HubPageProcessor, HubSiteProcessor } from "@esri/solution-hub-types";
 import {
   simpleTypes,
   notebookProcessor,
@@ -27,7 +28,7 @@ import {
 import { StoryMapProcessor } from "@esri/solution-storymap";
 import { VelocityProcessor } from "@esri/solution-velocity";
 import { WebExperienceProcessor } from "@esri/solution-web-experience";
-import { HubPageProcessor, HubSiteProcessor } from "@esri/solution-hub-types";
+import * as workflowProcessor from "@esri/solution-workflow";
 
 export const UNSUPPORTED: moduleHandler = null;
 
@@ -195,6 +196,7 @@ export const moduleMap: IItemTypeModuleMap = {
   "Windows Mobile Package": fileProcessor,
   "Windows Viewer Add In": fileProcessor,
   "Windows Viewer Configuration": fileProcessor,
+  Workflow: workflowProcessor,
   "Workflow Manager Package": fileProcessor,
 
   ////////////////////////////////////////////////////////
@@ -232,7 +234,6 @@ export const moduleMap: IItemTypeModuleMap = {
   "StoryMap Theme": undefined,
   Table: undefined,
   "Video Service": undefined,
-  Workflow: undefined,
 
   ////////////////////////////////////////////////////////
   // Testing "types"

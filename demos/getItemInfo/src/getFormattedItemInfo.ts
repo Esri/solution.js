@@ -178,9 +178,9 @@ async function formatItemInfo(
     html += "</p>";
     return html;
 
-  } else if (item.workflowConfiguration) {
+  } else if (item.base.type === "Workflow") {
     html += "<p>Workflow Configuration<br/>";
-
+    html += '<div >' + textAreaHtmlFromJSON(item.workflowConfiguration) + '</div>';
 
   } else if (item.base.type === "Solution" && Raphael && Dracula) {
     html += "<p>Solution Dependency Graph<br/><div id=\"topologicalSortGraphic\"><i>Drawing...</i></div>";
