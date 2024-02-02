@@ -15,7 +15,7 @@
 
 > Manages the creation and deployment of Web Experience item types for [`@esri/solution-*`](https://github.com/Esri/solution.js).
 
-### [API Reference](https://esri.github.io/solution.js/api/velocity/)
+### [API Reference](https://esri.github.io/solution.js/modules/velocity_src.html)
 
 ### Issues
 
