@@ -1328,7 +1328,7 @@ export function getFeatureServiceProperties(
 export async function getWorkflowConfigurationZip(
   itemId: string,
   authentication: UserSession
-): Promise<any> {
+): Promise<File> {
 
   const user: IUser = await getUser(authentication);
   const exportConfigUrl = `https://workflow.arcgis.com/${user.orgId}/admin/${itemId}/export`;

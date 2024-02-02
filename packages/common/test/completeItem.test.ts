@@ -23,6 +23,7 @@ import * as interfaces from "../src/interfaces";
 import * as restHelpersGet from "../src/restHelpersGet";
 import * as restHelpers from "../src/restHelpers";
 import * as workflowHelpers from "../src/workflowHelpers";
+import * as zipUtils from "../src/zip-utils";
 
 import * as utils from "./mocks/utils";
 import * as mockItems from "../test/mocks/agolItems";
@@ -169,7 +170,7 @@ describe("Module `completeItem`: functions for accessing a complete item", () =>
       const workflowConfigSpy = spyOn(
         restHelpers,
         "getWorkflowConfigurationZip"
-      ).and.resolveTo({ "jobTemplates": "abc" } as any);
+      ).and.returnValue(zipUtils.jsonToZipFile("jobConfig.json", {"jobTemplates": "abc" }, "config"));
       const extractWorkflowSpy = spyOn(
         workflowHelpers,
         "extractWorkflowFromZipFile"

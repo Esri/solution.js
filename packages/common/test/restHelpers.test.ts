@@ -27,9 +27,10 @@ import * as portal from "@esri/arcgis-rest-portal";
 import * as request from "@esri/arcgis-rest-request";
 import * as restHelpers from "../src/restHelpers";
 import * as restHelpersGet from "../src/restHelpersGet";
+import * as sinon from "sinon";
 import * as templates from "../test/mocks/templates";
 import * as utils from "./mocks/utils";
-import * as sinon from "sinon";
+import * as zipUtils from "../src/zip-utils";
 import { IPagingParams } from "@esri/arcgis-rest-portal";
 
 
@@ -2997,16 +2998,15 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
       const restHelpersGetSpy = spyOn(restHelpersGet, "getUser").and.resolveTo({
         orgId
       } as interfaces.IUser);
-      const requestSpy = spyOn(request, "request").and.resolveTo({
-        "jobTemplateIds": "abc"
-      });
+      const requestSpy = spyOn(request, "request")
+        .and.returnValue(zipUtils.jsonToZipFile("jobConfig.json", {"jobTemplates": "abc" }, "config"));
 
       const response = await restHelpers.getWorkflowConfigurationZip(itemId, MOCK_USER_SESSION);
 
       expect(restHelpersGetSpy.calls.count()).toEqual(1);
       expect(requestSpy.calls.count()).toEqual(1);
       expect(requestSpy.calls.argsFor(0)[0]).toEqual(`https://workflow.arcgis.com/${orgId}/admin/${itemId}/export`);
-      expect(response).toEqual({ "jobTemplateIds": "abc" });
+      expect(response).toEqual(await zipUtils.jsonToZipFile("jobConfig.json", {"jobTemplates": "abc" }, "config"));
   })
 })
 
