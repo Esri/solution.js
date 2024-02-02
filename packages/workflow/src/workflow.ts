@@ -81,7 +81,6 @@ export async function convertItemToTemplate(
   });
 
   // Add the templatized configuration to the template
-  itemTemplate.properties = itemTemplate.properties || {};
   itemTemplate.properties.configuration = await common.extractAndTemplatizeWorkflowFromZipFile(configZip);
 
   return Promise.resolve(itemTemplate);
