@@ -19,8 +19,9 @@
  */
 
 import * as common from "@esri/solution-common";
-import * as utils from "../../common/test/mocks/utils";
+import * as mockItems from "../../common/test/mocks/agolItems";
 import * as templates from "../../common/test/mocks/templates";
+import * as utils from "../../common/test/mocks/utils";
 import * as workflow from "../src/workflow";
 
 // ------------------------------------------------------------------------------------------------------------------ //
@@ -33,11 +34,44 @@ beforeEach(() => {
   MOCK_USER_SESSION = utils.createRuntimeMockUserSession();
 });
 
-xdescribe("Module `workflow`", () => {
+describe("Module `workflow`", () => {
 
   describe("convertItemToTemplate", () => {
-    it("initial test", async () => {
-      //await workflow.convertItemToTemplate();
+    it("basically works", async () => {
+      const agolItem = mockItems.getAGOLItem("Workflow");
+      agolItem.thumbnail = null;
+
+      spyOn(common, "getItemRelatedItemsInSameDirection").and.resolveTo([{
+        relationshipType: "WMA2JobDependency",
+        relatedItemIds: ["job1234567890"]
+      }]);
+
+      spyOn(common, "getWorkflowConfigurationZip")
+        .and.returnValue(common.jsonToZipFile("jobConfig.json", { "jobTemplates": "abc" }, "config"));
+
+      spyOn(common, "extractAndTemplatizeWorkflowFromZipFile")
+        .and.resolveTo({ "jobTemplates": "abc" });
+
+      const itemTemplate = await workflow.convertItemToTemplate(agolItem, MOCK_USER_SESSION, MOCK_USER_SESSION);
+
+      expect(itemTemplate?.properties?.configuration?.jobTemplates).toEqual("abc");
+    });
+
+    it("handles case where item has related items", async () => {
+      const agolItem = mockItems.getAGOLItem("Workflow");
+      agolItem.thumbnail = null;
+
+      spyOn(common, "getItemRelatedItemsInSameDirection").and.resolveTo([]);
+
+      spyOn(common, "getWorkflowConfigurationZip")
+        .and.returnValue(common.jsonToZipFile("jobConfig.json", { "jobTemplates": "abc" }, "config"));
+
+      spyOn(common, "extractAndTemplatizeWorkflowFromZipFile")
+        .and.resolveTo({ "jobTemplates": "abc" });
+
+      const itemTemplate = await workflow.convertItemToTemplate(agolItem, MOCK_USER_SESSION, MOCK_USER_SESSION);
+
+      expect(itemTemplate?.properties?.configuration?.jobTemplates).toEqual("abc");
     });
   });
 
