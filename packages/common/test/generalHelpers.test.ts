@@ -1076,46 +1076,70 @@ describe("Module `generalHelpers`: common utility functions shared across packag
   });
 
   describe("getAgoIdRegEx", () => {
-    it("matches an id", () => {
+    it("matches an id 1", () => {
       const id = "bad3483e025c47338d43df308c117308";
       const match = id.match(generalHelpers.getAgoIdRegEx());
       expect(match).not.toBeNull();
     });
 
+    it("matches an id 2", () => {
+      const id = "\"bad3483e025c47338d43df308c117308\"";
+      const match = id.match(generalHelpers.getAgoIdRegEx());
+      expect(match).not.toBeNull();
+    });
+
+    it("matches an id 3", () => {
+      const id = ",bad3483e025c47338d43df308c117308,";
+      const match = id.match(generalHelpers.getAgoIdRegEx());
+      expect(match).not.toBeNull();
+    });
+
     it("doesn't match a string that's not an id 1", () => {
-      const id = "bad3483e025c47338d43df308c11730";
+      const id = "bad3483e025c47338d43df308c11730";  // too short
       const match = id.match(generalHelpers.getAgoIdRegEx());
       expect(match).toBeNull();
     });
 
     it("doesn't match a string that's not an id 2", () => {
-      const id = "bad3483e025c47338d43df308c117308a";
+      const id = "bad3483e025c47338d43df308c117308a";  // too long
       const match = id.match(generalHelpers.getAgoIdRegEx());
       expect(match).toBeNull();
     });
   });
 
   describe("getAgoIdTemplateRegEx", () => {
-    it("matches an id", () => {
+    it("matches a templatized id 1", () => {
       const id = "{{bad3483e025c47338d43df308c117308}}";
       const match = id.match(generalHelpers.getAgoIdTemplateRegEx());
       expect(match).not.toBeNull();
     });
 
-    it("doesn't match a string that's not an id 1", () => {
-      const id = "{{bad3483e025c47338d43df308c11730}}";
+    it("matches a templatized id 2", () => {
+      const id = "\"{{bad3483e025c47338d43df308c117308}}\"";
+      const match = id.match(generalHelpers.getAgoIdTemplateRegEx());
+      expect(match).not.toBeNull();
+    });
+
+    it("matches a templatized id 3", () => {
+      const id = ",{{bad3483e025c47338d43df308c117308}},";
+      const match = id.match(generalHelpers.getAgoIdTemplateRegEx());
+      expect(match).not.toBeNull();
+    });
+
+    it("doesn't match a string that's not a templatized id 1", () => {
+      const id = "{{bad3483e025c47338d43df308c11730}}";  // too short
       const match = id.match(generalHelpers.getAgoIdTemplateRegEx());
       expect(match).toBeNull();
     });
 
-    it("doesn't match a string that's not an id 2", () => {
-      const id = "{{bad3483e025c47338d43df308c117308a}}";
+    it("doesn't match a string that's not a templatized id 2", () => {
+      const id = "{{bad3483e025c47338d43df308c117308a}}";  // too long
       const match = id.match(generalHelpers.getAgoIdTemplateRegEx());
       expect(match).toBeNull();
     });
 
-    it("doesn't match a string that's not an id 3", () => {
-      const id = "bad3483e025c47338d43df308c117308";
+    it("doesn't match a string that's not a templatized id 3", () => {
+      const id = "bad3483e025c47338d43df308c117308";  // not templatized
       const match = id.match(generalHelpers.getAgoIdTemplateRegEx());
       expect(match).toBeNull();
     });

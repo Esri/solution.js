@@ -22,6 +22,7 @@
 
 import * as zipUtils from "./zip-utils";
 import { createMimeTypedFile } from "./resources/copyDataIntoItem";
+import { getAgoIdRegEx } from "./generalHelpers";
 import JSZip from "jszip";
 
 // ------------------------------------------------------------------------------------------------------------------ //
@@ -66,4 +67,26 @@ export async function extractWorkflowFromZipFile(
   });
 
   return Promise.resolve(workflowConfig);
+}
+
+/**
+ * Extracts a workflow configuration from a zip file into a JSON object, with all AGO ids in the
+ * configuration templatized.
+ *
+ * @param zipFile Zip file containing a workflow configuration
+ * @returns Promise resolving with a workflow configuration as JSON object, with each file being a key
+ */
+export async function extractAndTemplatizeWorkflowFromZipFile(
+  zipFile: File
+): Promise<any> {
+  const workflowConfig = await extractWorkflowFromZipFile(zipFile);
+
+  // Replace AGO ids with templatized versions
+  let workflowConfigStr = JSON.stringify(workflowConfig);
+  const matches = workflowConfigStr.match(getAgoIdRegEx()) || [];
+  matches.forEach((match: string) => {
+    workflowConfigStr = workflowConfigStr.replace(match, `{{${match}}}`);
+  });
+
+  return Promise.resolve(JSON.parse(workflowConfigStr));
 }

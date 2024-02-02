@@ -196,7 +196,7 @@ export function generateEmptyCreationResponse(
  */
 export function getAgoIdRegEx(
 ): RegExp {
-  return /^([0-9A-Fa-f]){32}$/g;
+  return /\b([0-9A-Fa-f]){32}\b/g;
 }
 
 /**
@@ -206,7 +206,7 @@ export function getAgoIdRegEx(
  */
 export function getAgoIdTemplateRegEx(
 ): RegExp {
-  return /^{{([0-9A-Fa-f]){32}}}$/g;
+  return /{{\b([0-9A-Fa-f]){32}\b}}/g;
 }
 
 /**
