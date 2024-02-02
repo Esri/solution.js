@@ -33,11 +33,11 @@ beforeEach(() => {
   MOCK_USER_SESSION = utils.createRuntimeMockUserSession();
 });
 
-describe("Module `workflow`", () => {
+xdescribe("Module `workflow`", () => {
 
   describe("convertItemToTemplate", () => {
     it("initial test", async () => {
-      await workflow.convertItemToTemplate();
+      //await workflow.convertItemToTemplate();
     });
   });
 

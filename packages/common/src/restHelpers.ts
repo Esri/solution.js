@@ -1325,7 +1325,7 @@ export function getFeatureServiceProperties(
  * @param authentication Credentials for the request to AGOL
  * @returns Promise resolving with the workflow configuration in a zip file
  */
-export async function getWorkflowConfiguration(
+export async function getWorkflowConfigurationZip(
   itemId: string,
   authentication: UserSession
 ): Promise<any> {

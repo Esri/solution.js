@@ -2989,7 +2989,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
     });
   });
 
-  describe("getWorkflowConfiguration", () => {
+  describe("getWorkflowConfigurationZip", () => {
     it("can get workflow configuration", async () => {
       const orgId = "abcdefghij";
       const itemId = "1234567890";
@@ -3001,7 +3001,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
         "jobTemplateIds": "abc"
       });
 
-      const response = await restHelpers.getWorkflowConfiguration(itemId, MOCK_USER_SESSION);
+      const response = await restHelpers.getWorkflowConfigurationZip(itemId, MOCK_USER_SESSION);
 
       expect(restHelpersGetSpy.calls.count()).toEqual(1);
       expect(requestSpy.calls.count()).toEqual(1);

@@ -27,19 +27,64 @@ import * as common from "@esri/solution-common";
 /**
  * Converts a workflow item into a template.
  *
- * @param solutionItemId The solution to contain the template
  * @param itemInfo Info about the item
  * @param destAuthentication Credentials for requests to the destination organization
  * @param srcAuthentication Credentials for requests to source items
  * @returns A promise that will resolve when the template has been created
  */
-export function convertItemToTemplate(
-  /*solutionItemId: string,
+export async function convertItemToTemplate(
   itemInfo: any,
   destAuthentication: common.UserSession,
-  srcAuthentication: common.UserSession*/
+  srcAuthentication: common.UserSession
 ): Promise<common.IItemTemplate> {
-  return Promise.resolve(_getItemTemplate());
+  // Init template
+  const itemTemplate: common.IItemTemplate = common.createInitializedItemTemplate(
+    itemInfo
+  );
+
+  // Templatize item info property values
+  itemTemplate.item.id = common.templatizeTerm(
+    itemTemplate.item.id,
+    itemTemplate.item.id,
+    ".itemId"
+  );
+
+  // Request related items
+  const relatedPromise = common.getItemRelatedItemsInSameDirection(
+    itemTemplate.itemId,
+    "forward",
+    srcAuthentication
+  );
+
+  // Request its configuration
+  const configPromise = common.getWorkflowConfigurationZip(
+    itemInfo.id,
+    srcAuthentication
+  );
+
+  const [relatedItems, configZip] = await Promise.all([relatedPromise, configPromise]);
+
+  // Save the mappings to related items & add those items to the dependencies, but not WMA Code Attachments
+  itemTemplate.dependencies = [] as string[];
+  itemTemplate.relatedItems = [] as common.IRelatedItems[];
+
+  relatedItems.forEach(relatedItem => {
+    /* istanbul ignore else */
+    if (relatedItem.relationshipType !== "WMA2Code") {
+      itemTemplate.relatedItems.push(relatedItem);
+      relatedItem.relatedItemIds.forEach(relatedItemId => {
+        if (itemTemplate.dependencies.indexOf(relatedItemId) < 0) {
+          itemTemplate.dependencies.push(relatedItemId);
+        }
+      });
+    }
+  });
+
+  // Add the templatized configuration to the template
+  itemTemplate.properties = itemTemplate.properties || {};
+  itemTemplate.properties.configuration = await common.extractAndTemplatizeWorkflowFromZipFile(configZip);
+
+  return Promise.resolve(itemTemplate);
 }
 
 export function createItemFromTemplate(
@@ -53,47 +98,4 @@ export function createItemFromTemplate(
     type: "Workflow",
     postProcess: false
   });
-}
-
-
-// ------------------------------------------------------------------------------------------------------------------ //
-// Temporary implementation until the real one is available
-
-function _getItemTemplate(
-): common.IItemTemplate {
-  return {
-    itemId: "wfw1234567890",
-    type: "Workflow",
-    key: "i1a2b3c4",
-    item: {
-      id: "{{wfw1234567890.itemId}}",
-      name: "Name of an AGOL item",
-      title: "An AGOL item",
-      type: "Workflow",
-      typeKeywords: ["JavaScript"],
-      description: "Description of an AGOL item",
-      tags: ["test"],
-      snippet: "Snippet of an AGOL item",
-      thumbnail: "https://myorg.maps.arcgis.co/sharing/rest/content/items/wfw1234567890/info/thumbnail/ago_downloaded.png",
-      extent: "{{solutionItemExtent}}",
-      categories: [],
-      contentStatus: null,
-      spatialReference: undefined,
-      accessInformation: "Esri, Inc.",
-      licenseInfo: null,
-      origUrl: undefined,
-      properties: null,
-      culture: "en-us",
-      url: "",
-      created: 1520968147000,
-      modified: 1522178539000
-    },
-    data: undefined,
-    resources: [],
-    dependencies: [],
-    relatedItems: [],
-    groups: [],
-    properties: {},
-    estimatedDeploymentCostFactor: 2
-  };
 }

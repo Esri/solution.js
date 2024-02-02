@@ -168,7 +168,7 @@ describe("Module `completeItem`: functions for accessing a complete item", () =>
       ).and.resolveTo([] as interfaces.IRelatedItems[]);
       const workflowConfigSpy = spyOn(
         restHelpers,
-        "getWorkflowConfiguration"
+        "getWorkflowConfigurationZip"
       ).and.resolveTo({ "jobTemplates": "abc" } as any);
       const extractWorkflowSpy = spyOn(
         workflowHelpers,

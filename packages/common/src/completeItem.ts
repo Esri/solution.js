@@ -109,7 +109,7 @@ export function getCompleteItem(
 
       } else if (itemBase.type === "Workflow") {
         // eslint-disable-next-line @typescript-eslint/no-floating-promises
-        return restHelpers.getWorkflowConfiguration(
+        return restHelpers.getWorkflowConfigurationZip(
           itemBase.id,
           authentication
         );
