@@ -98,6 +98,7 @@ describe("Module `workflow`", () => {
 
       const response = await workflow.createItemFromTemplate(
         itemTemplate, templateDictionary, MOCK_USER_SESSION, utils.ITEM_PROGRESS_CALLBACK);
+
       expect(response.id).toEqual(newItemID);
       expect(response.type).toEqual("Workflow");
       expect(response.postProcess).toBeFalse();
@@ -107,6 +108,68 @@ describe("Module `workflow`", () => {
       itemTemplate2.item.id = newItemID;
       itemTemplate2.properties.configuration = getSampleConfigJson(false);
       expect(response.item).toEqual(itemTemplate2);
+    });
+
+    it("handles case where overall deployment has been cancelled before we start", async () => {
+      const itemTemplate: common.IItemTemplate = templates.getItemTemplate("Workflow");
+      itemTemplate.properties.configuration = getSampleConfigJson(true);
+      const templateDictionary: any = {
+        "7a69f67e4c6744918fbea49b8241640e": "7a69f67e4c6744918fbea49b8241640e",
+        "9ef76d79ed2741a8bf5a3b9b344b3c07": "9ef76d79ed2741a8bf5a3b9b344b3c07"
+      };
+
+      const response = await workflow.createItemFromTemplate(
+        itemTemplate, templateDictionary, MOCK_USER_SESSION, utils.createFailingItemProgressCallbackOnNthCall(1));
+
+      expect(response).toEqual(
+        templates.getFailedItem(itemTemplate.type)
+      );
+    });
+
+    it("handles case where overall deployment has been cancelled after new item created", async () => {
+      const itemTemplate: common.IItemTemplate = templates.getItemTemplate("Workflow");
+      itemTemplate.properties.configuration = getSampleConfigJson(true);
+      const templateDictionary: any = {
+        "7a69f67e4c6744918fbea49b8241640e": "7a69f67e4c6744918fbea49b8241640e",
+        "9ef76d79ed2741a8bf5a3b9b344b3c07": "9ef76d79ed2741a8bf5a3b9b344b3c07"
+      };
+      const newItemID: string = "wfw1234567891";
+
+      spyOn(common, "createItemWithData").and.resolveTo({
+        folder: "folder1234567890",
+        id: newItemID,
+        success: true
+      });
+
+      const response = await workflow.createItemFromTemplate(
+        itemTemplate, templateDictionary, MOCK_USER_SESSION, utils.createFailingItemProgressCallbackOnNthCall(2));
+
+      expect(response).toEqual(
+        templates.getFailedItem(itemTemplate.type)
+      );
+    });
+
+    it("handles case where new item creation throws an error", async () => {
+      const itemTemplate: common.IItemTemplate = templates.getItemTemplate("Workflow");
+      itemTemplate.properties.configuration = getSampleConfigJson(true);
+      const templateDictionary: any = {
+        "7a69f67e4c6744918fbea49b8241640e": "7a69f67e4c6744918fbea49b8241640e",
+        "9ef76d79ed2741a8bf5a3b9b344b3c07": "9ef76d79ed2741a8bf5a3b9b344b3c07"
+      };
+      const newItemID: string = "wfw1234567891";
+
+      spyOn(common, "createItemWithData").and.rejectWith({
+        folder: "",
+        id: "",
+        success: false
+      });
+
+      const response = await workflow.createItemFromTemplate(
+        itemTemplate, templateDictionary, MOCK_USER_SESSION, utils.ITEM_PROGRESS_CALLBACK);
+
+      expect(response).toEqual(
+        templates.getFailedItem(itemTemplate.type)
+      );
     });
   });
 
