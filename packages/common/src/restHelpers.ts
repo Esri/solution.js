@@ -1325,11 +1325,10 @@ export function getFeatureServiceProperties(
  * @param authentication Credentials for the request to AGOL
  * @returns Promise resolving with the workflow configuration in a zip file
  */
-export async function getWorkflowConfiguration(
+export async function getWorkflowConfigurationZip(
   itemId: string,
   authentication: UserSession
-): Promise<any> {
-
+): Promise<File> {
   const user: IUser = await getUser(authentication);
   const exportConfigUrl = `https://workflow.arcgis.com/${user.orgId}/admin/${itemId}/export`;
   return request(exportConfigUrl, {
@@ -1342,6 +1341,35 @@ export async function getWorkflowConfiguration(
     },
     params: {
       f: "zip"
+    }
+  });
+}
+
+/**
+ * Sets the configuration of a workflow.
+ *
+ * @param configurationZipFile Configuration files in a zip file
+ * @param itemId Id of the workflow item
+ * @param authentication Credentials for the request to AGOL
+ * @returns Promise resolving with the workflow configuration in a zip file
+ */
+export async function setWorkflowConfigurationZip(
+  configurationZipFile: File,
+  itemId: string,
+  authentication: UserSession
+  ): Promise<IStatusResponse> {
+  const user: IUser = await getUser(authentication);
+  const importConfigUrl = `https://workflow.arcgis.com/${user.orgId}/admin/${itemId}/import`;
+  return request(importConfigUrl, {
+    authentication,
+    headers: {
+      Host: "workflow.arcgis.com",
+      "Accept": "application/octet-stream",
+      "Authorization": `Bearer ${authentication.token}`,
+      "X-Esri-Authorization": `Bearer ${authentication.token}`
+    },
+    params: {
+      file: configurationZipFile
     }
   });
 }
