@@ -52,7 +52,6 @@ describe("Module `web-experience`: ", () => {
       ).and.resolveTo(tmpl);
 
       return WebExperienceProcessor.convertItemToTemplate(
-        "2c36d3679e7f4934ac599051df22daf6",
         { id: "bc3" },
         MOCK_USER_SESSION,
         MOCK_USER_SESSION

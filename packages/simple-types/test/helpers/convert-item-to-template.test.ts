@@ -125,7 +125,6 @@ describe("simpleTypeConvertItemToTemplate", () => {
 
       simpleTypes
         .convertItemToTemplate(
-          solutionItemId,
           itemTemplate.item,
           MOCK_USER_SESSION,
           MOCK_USER_SESSION,
@@ -216,7 +215,6 @@ describe("simpleTypeConvertItemToTemplate", () => {
 
       simpleTypes
         .convertItemToTemplate(
-          solutionItemId,
           itemTemplate.item,
           MOCK_USER_SESSION,
           MOCK_USER_SESSION,
@@ -496,7 +494,6 @@ describe("simpleTypeConvertItemToTemplate", () => {
 
       simpleTypes
         .convertItemToTemplate(
-          solutionItemId,
           itemTemplate.item,
           MOCK_USER_SESSION,
           MOCK_USER_SESSION,
@@ -515,7 +512,6 @@ describe("simpleTypeConvertItemToTemplate", () => {
 
       simpleTypes
         .convertItemToTemplate(
-          solutionItemId,
           itemTemplate.item,
           MOCK_USER_SESSION,
           MOCK_USER_SESSION,
@@ -595,7 +591,7 @@ describe("simpleTypeConvertItemToTemplate", () => {
       );
 
       simpleTypes
-        .convertItemToTemplate(solutionItemId, item, MOCK_USER_SESSION, MOCK_USER_SESSION, {})
+        .convertItemToTemplate(item, MOCK_USER_SESSION, MOCK_USER_SESSION, {})
         .then(newItemTemplate => {
           expect(newItemTemplate.data).toEqual(
             templates.getItemTemplateData("Notebook")
@@ -627,7 +623,7 @@ describe("simpleTypeConvertItemToTemplate", () => {
       });
 
       simpleTypes
-        .convertItemToTemplate(solutionItemId, item, MOCK_USER_SESSION, MOCK_USER_SESSION, {})
+        .convertItemToTemplate(item, MOCK_USER_SESSION, MOCK_USER_SESSION, {})
         .then(newItemTemplate => {
           const expectedTemplate = templates.getItemTemplate(
             "Oriented Imagery Catalog",
@@ -744,7 +740,7 @@ describe("simpleTypeConvertItemToTemplate", () => {
       };
 
       simpleTypes
-        .convertItemToTemplate(solutionItemId, itemInfo, MOCK_USER_SESSION, MOCK_USER_SESSION, {})
+        .convertItemToTemplate(itemInfo, MOCK_USER_SESSION, MOCK_USER_SESSION, {})
         .then(actual => {
           actual.key = expected.key;
           expect(actual).toEqual(expected);
@@ -853,7 +849,7 @@ describe("simpleTypeConvertItemToTemplate", () => {
       };
 
       simpleTypes
-        .convertItemToTemplate(solutionItemId, itemInfo, MOCK_USER_SESSION, MOCK_USER_SESSION, {})
+        .convertItemToTemplate(itemInfo, MOCK_USER_SESSION, MOCK_USER_SESSION, {})
         .then(actual => {
           actual.key = expected.key;
           expect(actual).toEqual(expected);
@@ -969,7 +965,7 @@ describe("simpleTypeConvertItemToTemplate", () => {
       };
 
       simpleTypes
-        .convertItemToTemplate(solutionItemId, itemInfo, MOCK_USER_SESSION, MOCK_USER_SESSION, {})
+        .convertItemToTemplate(itemInfo, MOCK_USER_SESSION, MOCK_USER_SESSION, {})
         .then(actual => {
           actual.key = expected.key;
           expect(actual).toEqual(expected);
@@ -1055,7 +1051,6 @@ describe("simpleTypeConvertItemToTemplate", () => {
 
       simpleTypes
         .convertItemToTemplate(
-          solutionItemId,
           itemTemplate.item,
           MOCK_USER_SESSION,
           MOCK_USER_SESSION,
@@ -1179,7 +1174,6 @@ describe("simpleTypeConvertItemToTemplate", () => {
 
       simpleTypes
         .convertItemToTemplate(
-          solutionItemId,
           itemTemplate.item,
           MOCK_USER_SESSION,
           MOCK_USER_SESSION,
@@ -1237,7 +1231,6 @@ describe("simpleTypeConvertItemToTemplate", () => {
 
       simpleTypes
         .convertItemToTemplate(
-          solutionItemId,
           itemTemplate.item,
           MOCK_USER_SESSION,
           MOCK_USER_SESSION,
@@ -1322,7 +1315,6 @@ describe("simpleTypeConvertItemToTemplate", () => {
 
       simpleTypes
         .convertItemToTemplate(
-          solutionItemId,
           itemTemplate.item,
           MOCK_USER_SESSION,
           MOCK_USER_SESSION,
@@ -1419,7 +1411,6 @@ describe("simpleTypeConvertItemToTemplate", () => {
 
       simpleTypes
         .convertItemToTemplate(
-          solutionItemId,
           itemTemplate.item,
           MOCK_USER_SESSION,
           MOCK_USER_SESSION,
@@ -1518,7 +1509,7 @@ describe("simpleTypeConvertItemToTemplate", () => {
       );
 
       simpleTypes
-        .convertItemToTemplate(solutionItemId, item, MOCK_USER_SESSION, MOCK_USER_SESSION, {})
+        .convertItemToTemplate(item, MOCK_USER_SESSION, MOCK_USER_SESSION, {})
         .then(newItemTemplate => {
           expect(newItemTemplate.data).toEqual(expectedTemplateData);
           done();

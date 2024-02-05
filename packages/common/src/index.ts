@@ -42,5 +42,6 @@ export * from "./sharing";
 export * from "./templatization";
 export * from "./trackingHelpers";
 export * from "./velocityHelpers";
+export * from "./workflowHelpers";
 export * from "./workforceHelpers";
 export * from "./zip-utils";

@@ -171,7 +171,6 @@ export function createItemTemplate(
               // Delegate the creation of the item to the handler
               itemHandler
                 .convertItemToTemplate(
-                  solutionItemId,
                   itemInfo,
                   destAuthentication,
                   srcAuthentication,

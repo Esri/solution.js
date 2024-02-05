@@ -31,7 +31,6 @@ import * as common from "@esri/solution-common";
 /**
  * Fills in missing data, including full layer and table definitions, in a feature services' definition.
  *
- * @param solutionItemId
  * @param itemInfo Feature service item
  * @param destAuthentication Credentials for requests to the destination organization
  * @param srcAuthentication Credentials for requests to source items
@@ -39,7 +38,6 @@ import * as common from "@esri/solution-common";
  * @returns A promise that will resolve when fullItem has been updated
  */
 export function convertItemToTemplate(
-  solutionItemId: string,
   itemInfo: any,
   destAuthentication: common.UserSession,
   srcAuthentication: common.UserSession,

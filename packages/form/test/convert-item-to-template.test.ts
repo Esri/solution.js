@@ -37,7 +37,6 @@ describe("convertItemToTemplate", () => {
     const formBase = mockItems.getAGOLItem("Form");
     convertProcessor
       .convertItemToTemplate(
-        "2c36d3679e7f4934ac599051df22daf6",
         formBase,
         MOCK_USER_SESSION,
         MOCK_USER_SESSION,
@@ -47,7 +46,6 @@ describe("convertItemToTemplate", () => {
         results => {
           expect(simpleTypesSpy.calls.count()).toBe(1);
           expect(simpleTypesSpy.calls.first().args).toEqual([
-            "2c36d3679e7f4934ac599051df22daf6",
             formBase,
             MOCK_USER_SESSION,
             MOCK_USER_SESSION,

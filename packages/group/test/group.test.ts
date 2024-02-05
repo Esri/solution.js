@@ -98,7 +98,6 @@ describe("Module `group`: manages the creation and deployment of groups", () => 
 
       group
         .convertItemToTemplate(
-          itemTemplate.itemId,
           itemTemplate.item,
           MOCK_USER_SESSION,
           MOCK_USER_SESSION
@@ -228,7 +227,6 @@ describe("Module `group`: manages the creation and deployment of groups", () => 
 
       group
         .convertItemToTemplate(
-          itemTemplate.itemId,
           itemTemplate.item,
           MOCK_USER_SESSION,
           MOCK_USER_SESSION
@@ -436,7 +434,6 @@ describe("Module `group`: manages the creation and deployment of groups", () => 
 
       group
         .convertItemToTemplate(
-          itemTemplate.itemId,
           itemTemplate.item,
           MOCK_USER_SESSION,
           MOCK_USER_SESSION
@@ -628,7 +625,6 @@ describe("Module `group`: manages the creation and deployment of groups", () => 
 
       group
         .convertItemToTemplate(
-          itemTemplate.itemId,
           itemTemplate.item,
           MOCK_USER_SESSION,
           MOCK_USER_SESSION

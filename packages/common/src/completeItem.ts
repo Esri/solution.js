@@ -109,7 +109,7 @@ export function getCompleteItem(
 
       } else if (itemBase.type === "Workflow") {
         // eslint-disable-next-line @typescript-eslint/no-floating-promises
-        return restHelpers.getWorkflowConfiguration(
+        return restHelpers.getWorkflowConfigurationZip(
           itemBase.id,
           authentication
         );
@@ -118,12 +118,12 @@ export function getCompleteItem(
         return Promise.resolve(null);
       }
     })
-    .then(async (properties: IFeatureServiceProperties | any) => {
+    .then(async (properties: IFeatureServiceProperties | File) => {
       if (properties) {
         if (completeItem.base.type === "Feature Service") {
           completeItem.featureServiceProperties = properties;
         } else if (completeItem.base.type === "Workflow") {
-          completeItem.workflowConfiguration = await workflowHelpers.extractWorkflowFromZipFile(properties);
+          completeItem.workflowConfiguration = await workflowHelpers.extractWorkflowFromZipFile(properties as File);
         }
       }
       return Promise.resolve(completeItem);
