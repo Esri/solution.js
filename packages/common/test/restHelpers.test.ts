@@ -31,6 +31,7 @@ import * as sinon from "sinon";
 import * as templates from "../test/mocks/templates";
 import * as utils from "./mocks/utils";
 import * as zipUtils from "../src/zip-utils";
+import * as zipUtilsTest from "./zip-utils.test";
 import { IPagingParams } from "@esri/arcgis-rest-portal";
 
 
@@ -3007,8 +3008,29 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
       expect(requestSpy.calls.count()).toEqual(1);
       expect(requestSpy.calls.argsFor(0)[0]).toEqual(`https://workflow.arcgis.com/${orgId}/admin/${itemId}/export`);
       expect(response).toEqual(await zipUtils.jsonToZipFile("jobConfig.json", {"jobTemplates": "abc" }, "config"));
-  })
-})
+    })
+  });
+
+  describe("setWorkflowConfigurationZip", () => {
+    it("can set workflow configuration", async () => {
+      const orgId = "abcdefghij";
+      const itemId = "1234567890";
+      const configurationZipFile = await zipUtilsTest.getSampleZipBlob(itemId);
+
+      const restHelpersGetSpy = spyOn(restHelpersGet, "getUser").and.resolveTo({
+        orgId
+      } as interfaces.IUser);
+      const requestSpy = spyOn(request, "request")
+        .and.resolveTo({ success: true });
+
+      const response = await restHelpers.setWorkflowConfigurationZip(
+        generalHelpers.blobToFile(configurationZipFile, "workflow"), itemId, MOCK_USER_SESSION);
+      expect(restHelpersGetSpy.calls.count()).toEqual(1);
+      expect(requestSpy.calls.count()).toEqual(1);
+      expect(requestSpy.calls.argsFor(0)[0]).toEqual(`https://workflow.arcgis.com/${orgId}/admin/${itemId}/import`);
+      expect(response.success).toBeTrue();
+    })
+  });
 
   describe("removeFolder", () => {
     it("removes a folder", done => {

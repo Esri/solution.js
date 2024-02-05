@@ -118,7 +118,6 @@ export async function createItemFromTemplate(
     return Promise.resolve(common.generateEmptyCreationResponse(template.type));
   }
 
-  console.log("Creating workflow item from template", JSON.stringify(template, null, 2));//???
   // Replace the templatized symbols in a copy of the template
   let newItemTemplate: common.IItemTemplate = common.cloneObject(template);
   newItemTemplate = common.replaceInTemplate(
@@ -129,7 +128,6 @@ export async function createItemFromTemplate(
   if (template.item.thumbnail) {
     newItemTemplate.item.thumbnail = template.item.thumbnail;
   }
-  console.log("Detemplatized workflow template", JSON.stringify(newItemTemplate, null, 2));//???
 
   try {
     // Create the item, then update its URL with its new id
@@ -159,6 +157,12 @@ export async function createItemFromTemplate(
       return Promise.resolve(common.generateEmptyCreationResponse(template.type));
     }
 
+    // Add the new item to the settings
+    newItemTemplate.itemId = newItemTemplate.item.id = createResponse.id;
+    templateDictionary[template.itemId] = {
+      itemId: createResponse.id
+    };
+
     // Add the item's configuration properties
     const configZipFile = await common.compressWorkflowIntoZipFile(newItemTemplate.properties.configuration);
     const updateResponse = await common.setWorkflowConfigurationZip(
@@ -166,13 +170,6 @@ export async function createItemFromTemplate(
       createResponse.id,
       destinationAuthentication
     );
-    console.log("configuration update response", JSON.stringify(updateResponse, null, 2));//???
-
-    // Add the new item to the settings
-    newItemTemplate.itemId = createResponse.id;
-    templateDictionary[template.itemId] = {
-      itemId: createResponse.id
-    };
 
     itemProgressCallback(
       template.itemId,
