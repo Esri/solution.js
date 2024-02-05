@@ -165,7 +165,7 @@ export async function createItemFromTemplate(
 
     // Add the item's configuration properties
     const configZipFile = await common.compressWorkflowIntoZipFile(newItemTemplate.properties.configuration);
-    const updateResponse = await common.setWorkflowConfigurationZip(
+    await common.setWorkflowConfigurationZip(
       configZipFile,
       createResponse.id,
       destinationAuthentication
