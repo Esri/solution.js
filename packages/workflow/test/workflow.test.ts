@@ -141,6 +141,11 @@ describe("Module `workflow`", () => {
         success: true
       });
 
+      spyOn(common, "removeItem").and.resolveTo({
+        success: true,
+        itemId: newItemID
+      });
+
       const response = await workflow.createItemFromTemplate(
         itemTemplate, templateDictionary, MOCK_USER_SESSION, utils.createFailingItemProgressCallbackOnNthCall(2));
 
@@ -162,6 +167,11 @@ describe("Module `workflow`", () => {
         folder: "",
         id: "",
         success: false
+      });
+
+      spyOn(common, "removeItem").and.resolveTo({
+        success: true,
+        itemId: newItemID
       });
 
       const response = await workflow.createItemFromTemplate(
