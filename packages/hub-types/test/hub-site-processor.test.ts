@@ -76,7 +76,6 @@ describe("HubSiteProcessor: ", () => {
         "replaceItemIds"
       ).and.callThrough();
       return HubSiteProcessor.convertItemToTemplate(
-        "bc3",
         { id: "ef4" },
         MOCK_USER_SESSION
       ).then(tmpl => {
@@ -133,7 +132,6 @@ describe("HubSiteProcessor: ", () => {
         "replaceItemIds"
       ).and.callThrough();
       return HubSiteProcessor.convertItemToTemplate(
-        "bc3",
         { id: "ef4" },
         MOCK_USER_SESSION,
         MOCK_USER_SESSION

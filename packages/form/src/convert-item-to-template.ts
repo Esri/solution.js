@@ -26,7 +26,6 @@ import { simpleTypes } from "@esri/solution-simple-types";
 /**
  * Creates a template from a Form item
  *
- * @param {string} solutionItemId The solution item ID
  * @param {any} itemInfo: The base item info
  * @param {UserSession} destAuthentication Credentials for requests to the destination organization
  * @param {UserSession} srcAuthentication Credentials for requests to source items
@@ -34,7 +33,6 @@ import { simpleTypes } from "@esri/solution-simple-types";
  * @returns {Promise<IItemTemplate>}
  */
 export function convertItemToTemplate(
-  solutionItemId: string,
   itemInfo: any,
   destAuthentication: UserSession,
   srcAuthentication: UserSession,
@@ -42,7 +40,6 @@ export function convertItemToTemplate(
 ): Promise<IItemTemplate> {
   // Delegate to simple types
   return simpleTypes.convertItemToTemplate(
-    solutionItemId,
     itemInfo,
     destAuthentication,
     srcAuthentication,

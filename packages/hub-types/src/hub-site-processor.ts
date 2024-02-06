@@ -55,14 +55,12 @@ import { replaceItemIds } from "./helpers/replace-item-ids";
 /**
  * Converts a Site item into a template.
  *
- * @param solutionItemId The solution to contain the template
  * @param itemInfo Info about the item
  * @param destAuthentication Credentials for requests to the destination organization
  * @param srcAuthentication Credentials for requests to source items (placeholder--not used)
  * @returns A promise that will resolve when the template has been created
  */
 export function convertItemToTemplate(
-  solutionItemId: string,
   itemInfo: any,
   destAuthentication: UserSession,
   srcAuthentication: UserSession = null // eslint-disable-line @typescript-eslint/no-unused-vars

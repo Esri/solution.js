@@ -1062,7 +1062,6 @@ export interface IItemTemplateConversions {
    * Converts an item into a template for use in a Solution.
    */
   convertItemToTemplate(
-    solutionItemId: string,
     itemInfo: any,
     destAuthentication: UserSession,
     srcAuthentication: UserSession,

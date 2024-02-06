@@ -49,6 +49,43 @@ export async function blobToZip(
 }
 
 /**
+ * Converts a JSON object to a zip.
+ *
+ * @param zippedFileName Name of the file in the zip
+ * @param zippedFileJson JSON object to convert
+ * @returns Promise resolving to zip
+ */
+export async function jsonToZip(
+  zippedFileName: string,
+  zippedFileJson: any
+): Promise<JSZip> {
+  const zip = new JSZip();
+  zip.file(zippedFileName, JSON.stringify(zippedFileJson));
+  return Promise.resolve(zip);
+}
+
+/**
+ * Converts a JSON object to a zip file.
+ *
+ * @param zippedFileName Name of the file in the zip file
+ * @param zippedFileJson JSON object to convert
+ * @returns Promise resolving to zip file
+ */
+export async function jsonToZipFile(
+  zippedFileName: string,
+  zippedFileJson: any,
+  filename: string
+): Promise<File> {
+  const zip = await jsonToZip(zippedFileName, zippedFileJson);
+
+  return createMimeTypedFile({
+    blob: await zip.generateAsync({ type: "blob" }),
+    filename: `${filename}.zip`,
+    mimeType: "application/zip"
+  })
+}
+
+/**
  * Gets the contents of the files in the zip.
  *
  * @param zip Zip file

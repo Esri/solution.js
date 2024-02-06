@@ -40,7 +40,6 @@ import * as simpleTypeHelpers from "./helpers/simple-type-helpers";
 /**
  * Converts an item into a template.
  *
- * @param solutionItemId The solution to contain the template
  * @param itemInfo Info about the item
  * @param destAuthentication Credentials for requests to the destination organization
  * @param srcAuthentication Credentials for requests to source items
@@ -48,14 +47,12 @@ import * as simpleTypeHelpers from "./helpers/simple-type-helpers";
  * @returns A promise that will resolve when the template has been created
  */
 export function convertItemToTemplate(
-  solutionItemId: string,
   itemInfo: any,
   destAuthentication: UserSession,
   srcAuthentication: UserSession,
   templateDictionary: any
 ): Promise<IItemTemplate> {
   return simpleTypeHelpers.convertItemToTemplate(
-    solutionItemId,
     itemInfo,
     destAuthentication,
     srcAuthentication,

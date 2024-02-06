@@ -154,6 +154,7 @@ call npm deprecate "@esri/solution-storymap@%obsoleteVersion%" "obsolete" --otp=
 call npm deprecate "@esri/solution-velocity@%obsoleteVersion%" "obsolete" --otp=%twoFactorCode%
 call npm deprecate "@esri/solution-viewer@%obsoleteVersion%" "obsolete" --otp=%twoFactorCode%
 call npm deprecate "@esri/solution-web-experience@%obsoleteVersion%" "obsolete" --otp=%twoFactorCode%
+call npm deprecate "@esri/solution-webform@%obsoleteVersion%" "obsolete" --otp=%twoFactorCode%
 ```
 
 ---

@@ -60,6 +60,7 @@ The API is divided into packages to make it easier to use just the parts that yo
 * `velocity`, which contains functions to support ArcGIS Velocity items
 * `viewer`, which contains functions to support displaying Solution items
 * `web-experience`, which contains functions for Experience Builder items
+* `workflow`, which contains functions for Workflow items
 
 #### Additional information
 
@@ -75,7 +76,7 @@ Currently, the ArcGIS Online item types that can be converted into a template ar
 
 * **Layer types:** Big Data Analytic, Feature Collection, Feature Service, Feed, Map Service, Real Time Analytic
 
-* **File types:** 360 VR Experience, AppBuilder Extension, AppBuilder Widget Package, Application Configuration, ArcGIS Pro Add In, ArcGIS Pro Configuration, ArcPad Package, Basemap Package, CAD Drawing, CityEngine Web Scene, Code Attachment, Code Sample, Color Set, Compact Tile Package, CSV Collection, CSV, Deep Learning Package, Desktop Add In, Desktop Application Template, Desktop Style, Document Link, Explorer Add In, Explorer Layer, Explorer Map, Feature Collection Template, File Geodatabase, GeoJson, GeoPackage, Geoprocessing Package, Geoprocessing Sample, Globe Document, Image Collection, Image, iWork Keynote, iWork Numbers, iWork Pages, KML Collection, Layer Package, Layer Template, Layer, Layout, Locator Package, Map Document, Map Package, Map Template, Microsoft Excel, Microsoft Powerpoint, Microsoft Word, Mobile Basemap Package, Mobile Map Package, Mobile Scene Package, Native Application, Native Application Installer, Native Application Template, netCDF, Operation View, Operations Dashboard Add In, Operations Dashboard Extension, PDF, Pro Layer Package, Pro Layer, Pro Map Package, Pro Map, Pro Report, Project Package, Project Template, Published Map, Raster function template, Report Template, Rule Package, Scene Document, Scene Package, Service Definition, Shapefile, Statistical Data Collection, Style, Survey123 Add In, Symbol Set, Task File, Tile Package, Toolbox Package, Vector Tile Package, Viewer Configuration, Visio Document, Window Mobile Package, Windows Mobile Package, Windows Viewer Add In, Windows Viewer Configuration, Workflow Manager Package
+* **File types:** 360 VR Experience, AppBuilder Extension, AppBuilder Widget Package, Application Configuration, ArcGIS Pro Add In, ArcGIS Pro Configuration, ArcPad Package, Basemap Package, CAD Drawing, CityEngine Web Scene, Code Attachment, Code Sample, Color Set, Compact Tile Package, CSV Collection, CSV, Deep Learning Package, Desktop Add In, Desktop Application Template, Desktop Style, Document Link, Explorer Add In, Explorer Layer, Explorer Map, Feature Collection Template, File Geodatabase, GeoJson, GeoPackage, Geoprocessing Package, Geoprocessing Sample, Globe Document, Image Collection, Image, iWork Keynote, iWork Numbers, iWork Pages, KML Collection, Layer Package, Layer Template, Layer, Layout, Locator Package, Map Document, Map Package, Map Template, Microsoft Excel, Microsoft Powerpoint, Microsoft Word, Mobile Basemap Package, Mobile Map Package, Mobile Scene Package, Native Application, Native Application Installer, Native Application Template, netCDF, Operation View, Operations Dashboard Add In, Operations Dashboard Extension, PDF, Pro Layer Package, Pro Layer, Pro Map Package, Pro Map, Pro Report, Project Package, Project Template, Published Map, Raster function template, Report Template, Rule Package, Scene Document, Scene Package, Service Definition, Shapefile, Statistical Data Collection, Style, Survey123 Add In, Symbol Set, Task File, Tile Package, Toolbox Package, Vector Tile Package, Viewer Configuration, Visio Document, Window Mobile Package, Windows Mobile Package, Windows Viewer Add In, Windows Viewer Configuration, Workflow, Workflow Manager Package
 
 *The `implemented-types` demo generates its list from the source code.*
 
@@ -166,7 +167,7 @@ Esri welcomes contributions from anyone and everyone. Please see our [guidelines
 
 ### License
 
-Copyright &copy; 2018-2023 Esri
+Copyright &copy; 2018 Esri
 
 Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at
 

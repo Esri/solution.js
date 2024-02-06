@@ -1,16 +1,13 @@
 [![npm status][npm-img]][npm-url]
 [![Build status][travis-img]][travis-url]
 [![gzip bundle size][gzip-img]][npm-url]
-[![Coverage status][coverage-img]][coverage-url]
 [![Apache 2.0 licensed][license-img]][license-url]
 
 [npm-img]: https://img.shields.io/npm/v/@esri/solution-velocity.svg?style=round-square&color=blue
 [npm-url]: https://www.npmjs.com/package/@esri/solution-velocity
-[travis-img]: https://img.shields.io/travis/Esri/solution.js/develop.svg
+[travis-img]: https://img.shields.io/travis/com/Esri/solution.js/develop.svg
 [travis-url]: https://travis-ci.org/Esri/solution.js
-[gzip-img]: https://img.badgesize.io/https://unpkg.com/@esri/solution-velocity/dist/umd/velocity.umd.min.js?compression=gzip
-[coverage-img]: https://coveralls.io/repos/github/Esri/solution.js/badge.svg
-[coverage-url]: https://coveralls.io/github/Esri/solution.js
+[gzip-img]: https://img.badgesize.io/https://unpkg.com/@esri/solution-velocity/dist/esm/index.js?compression=gzip
 [license-img]: https://img.shields.io/badge/license-Apache%202.0-blue.svg
 [license-url]: #license
 
@@ -18,7 +15,7 @@
 
 > Manages the creation and deployment of Web Experience item types for [`@esri/solution-*`](https://github.com/Esri/solution.js).
 
-### [API Reference](https://esri.github.io/solution.js/api/velocity/)
+### [API Reference](https://esri.github.io/solution.js/modules/velocity_src.html)
 
 ### Issues
 
