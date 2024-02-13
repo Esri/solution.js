@@ -1654,5 +1654,20 @@ export interface IVelocityTitle {
   titles: string[];
 }
 
+/**
+ * Relative path and string contents of a file in a zip object.
+ */
+export interface IZipObjectContentItem {
+  /**
+   * Filename
+   */
+  file: string;
+
+  /**
+   * Contents of file
+   */
+  content: string;
+}
+
 
 //#endregion ---------------------------------------------------------------------------------------------------------//

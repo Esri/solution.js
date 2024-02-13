@@ -42,10 +42,30 @@ afterEach(() => {
 
 describe("Module `zip-utils`", () => {
 
-  describe("updateItemWithZip", () => {
+  describe("modifyFilesinZipObject", () => {
+    const itemId = "abc1234567890";
+
+    it("applies a function to all files in the zip", async () => {
+      let zip = generateFormZip(itemId);
+      const zipFileContents = await zipUtils.getZipObjectContents(zip);
+      const zipFiles: string[] = zipFileContents.map((zipFile) => zipFile.file);
+
+      const zipFilesModified: string[] = [];
+      zip = await zipUtils.modifyFilesinZipObject(
+        (zipFile: interfaces.IZipObjectContentItem) => {
+          zipFilesModified.push(zipFile.file);
+          return zipFile.content;
+        }, zip
+      );
+
+      expect(zipFilesModified).toEqual(zipFiles);
+    });
+  });
+
+  describe("updateItemWithZipObject", () => {
     it("catches the inability to convert a blob into a the zip", async () => {
       const blob = new Blob([""], { type: "application/zip" });
-      zipUtils.blobToZip(blob)
+      zipUtils.blobToZipObject(blob)
         .then(() => {
           return Promise.reject("Should not have converted empty blob into a zip file");
         })
@@ -68,7 +88,7 @@ describe("Module `zip-utils`", () => {
         return Promise.resolve(mockItems.get200Success(itemId));
       });
 
-      const response = await zipUtils.updateItemWithZip(zip, itemId, MOCK_USER_SESSION);
+      const response = await zipUtils.updateItemWithZipObject(zip, itemId, MOCK_USER_SESSION);
       expect(response).toEqual(mockItems.get200Success(itemId));
     });
   });
@@ -87,8 +107,8 @@ export async function compareZips(
   zip1: JSZip,
   zip2: JSZip
 ): Promise<boolean> {
-  const zip1Files = await zipUtils.getZipFileContents(zip1);
-  const zip2Files = await zipUtils.getZipFileContents(zip2);
+  const zip1Files = await zipUtils.getZipObjectContents(zip1);
+  const zip2Files = await zipUtils.getZipObjectContents(zip2);
 
   if (zip1Files.length !== zip2Files.length) {
     console.log("length mismatch", zip1Files.length, zip2Files.length);

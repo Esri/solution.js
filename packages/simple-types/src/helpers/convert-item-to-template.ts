@@ -22,6 +22,7 @@ import * as quickcapture from "../quickcapture";
 import * as webmap from "../webmap";
 import * as webmappingapplication from "../webmappingapplication";
 import * as workforce from "../workforce";
+import * as zipUtils from "./zip-utils";
 
 /**
  * Converts an item into a template.
@@ -147,28 +148,41 @@ export function convertItemToTemplate(
 
           // Add the form data to the template for a post-process resource upload
           if (itemDataResponse) {
-            itemTemplate.item.name = _getFormDataFilename(
-              itemTemplate.item.name, (itemDataResponse as File).name, `${itemTemplate.itemId}.zip`
-            );
-            const storageName = common.convertItemResourceToStorageResource(
-              itemTemplate.itemId,
-              itemTemplate.item.name,
-              common.SolutionTemplateFormatVersion,
-              common.SolutionResourceType.data
-            );
+            templateModifyingPromise = new Promise(
+              // eslint-disable-next-line @typescript-eslint/no-misused-promises, no-async-promise-executor
+              async (resolve) => {
 
-            // Add the data file to the template so that it can be uploaded with the other resources in the solution
-            const dataFile: common.ISourceFile = {
-              itemId: itemTemplate.itemId,
-              file: itemDataResponse as File,
-              folder: storageName.folder,
-              filename: itemTemplate.item.name
-            }
-            itemTemplate.dataFile = dataFile;
+                // Templatize the form's data
+                itemTemplate.item.name = _getFormDataFilename(
+                  itemTemplate.item.name, (itemDataResponse as File).name, `${itemTemplate.itemId}.zip`
+                );
 
-            // Update the template's resources
-            itemTemplate.resources.push(
-              storageName.folder + "/" + storageName.filename
+                const templatizedFormData: File = await zipUtils.templatizeFormData(
+                  itemDataResponse as File, itemTemplate.item.name);
+
+                // Add the data file to the template so that it can be uploaded with the other resources in the solution
+                const storageName = common.convertItemResourceToStorageResource(
+                  itemTemplate.itemId,
+                  itemTemplate.item.name,
+                  common.SolutionTemplateFormatVersion,
+                  common.SolutionResourceType.data
+                );
+
+                const dataFile: common.ISourceFile = {
+                  itemId: itemTemplate.itemId,
+                  file: templatizedFormData,
+                  folder: storageName.folder,
+                  filename: itemTemplate.item.name
+                }
+                itemTemplate.dataFile = dataFile;
+
+                // Update the template's resources
+                itemTemplate.resources.push(
+                  storageName.folder + "/" + storageName.filename
+                );
+
+                resolve(itemTemplate);
+              }
             );
           }
           break;

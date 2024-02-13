@@ -41,7 +41,7 @@ afterEach(() => {
 
 describe("Module `zip-utils`", () => {
 
-  describe("modifyFilesinZip", () => {
+  describe("swizzleFormInfoContents", () => {
     const itemId = "abc1234567890";
 
     it("swizzles the portal urls in the form json", async () => {
@@ -53,7 +53,7 @@ describe("Module `zip-utils`", () => {
 
       await deploySolution.swizzleFormInfoContents(zip, templateDictionary);
 
-      const swizzledZipFile = await common.getZipFileContents(zip, ["esriinfo/form.json"]);
+      const swizzledZipFile = await common.getZipObjectContents(zip, ["esriinfo/form.json"]);
       const fileJson = JSON.parse(swizzledZipFile[0].content);
       expect(common.getProp(fileJson, "portalUrl")).toEqual("https://ginger.maps.arcgis.com");
       expect(common.getProp(fileJson, "settings.notificationsInfo.webhooks")[0].url)
@@ -71,27 +71,11 @@ describe("Module `zip-utils`", () => {
 
       await deploySolution.swizzleFormInfoContents(zip, templateDictionary);
 
-      const swizzledZipFile = await common.getZipFileContents(zip, ["esriinfo/form.json"]);
+      const swizzledZipFile = await common.getZipObjectContents(zip, ["esriinfo/form.json"]);
       const fileJson = JSON.parse(swizzledZipFile[0].content);
       expect(common.getProp(fileJson, "portalUrl")).toEqual("https://ginger.maps.arcgis.com");
 
       return Promise.resolve();
-    });
-
-    it("applies a function to all files in the zip", async () => {
-      let zip = generateFormZip(itemId);
-      const zipFileContents = await common.getZipFileContents(zip);
-      const zipFiles: string[] = zipFileContents.map((zipFile) => zipFile.file);
-
-      const zipFilesModified: string[] = [];
-      zip = await zipUtils.modifyFilesinZip(
-        (zipFile: zipUtils.IZipFileContent) => {
-          zipFilesModified.push(zipFile.file);
-          return zipFile.content;
-        }, zip
-      );
-
-      expect(zipFilesModified).toEqual(zipFiles);
     });
   });
 
@@ -127,6 +111,7 @@ describe("Module `zip-utils`", () => {
       return Promise.resolve();
     });
   });
+
 });
 
 // ------------------------------------------------------------------------------------------------------------------ //
@@ -142,8 +127,8 @@ export async function compareZips(
   zip1: JSZip,
   zip2: JSZip
 ): Promise<boolean> {
-  const zip1Files = await common.getZipFileContents(zip1);
-  const zip2Files = await common.getZipFileContents(zip2);
+  const zip1Files = await common.getZipObjectContents(zip1);
+  const zip2Files = await common.getZipObjectContents(zip2);
 
   if (zip1Files.length !== zip2Files.length) {
     console.log("length mismatch", zip1Files.length, zip2Files.length);

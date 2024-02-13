@@ -1930,7 +1930,7 @@ describe("Module `deploySolutionItems`", () => {
 
       const updateItemWithZipSpy = spyOn(
         common,
-        "updateItemWithZip"
+        "updateItemWithZipObject"
       ).and.resolveTo(mockItems.get200Success(itemTemplate.itemId));
 
       spyOn(

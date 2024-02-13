@@ -1137,7 +1137,7 @@ export function _createItemFromTemplateWhenReady(
               if (formZipFilePath) {
                 // Fetch the zip file
                 const zipBlob = await common.getBlob(formZipFilePath.url, storageAuthentication);
-                const zip = await common.blobToZip(zipBlob);
+                const zip = await common.blobToZipObject(zipBlob);
 
                 // Swizzle the source id in the zip file
                 const updatedZip = await zipUtils.swizzleIdsInZipFile(sourceItemId, destinationItemId, zip, [
@@ -1172,7 +1172,7 @@ export function _createItemFromTemplateWhenReady(
                 });
 
                 // Update the new item
-                void common.updateItemWithZip(updatedZip, destinationItemId, destinationAuthentication);
+                void common.updateItemWithZipObject(updatedZip, destinationItemId, destinationAuthentication);
               }
             }
 
@@ -1225,8 +1225,8 @@ export async function swizzleFormInfoContents(
 ): Promise<any[]> {
   let webhooks: any[] = [];
 
-  await zipUtils.modifyFilesinZip(
-    (zipFile: common.IZipFileContent) => {
+  await common.modifyFilesinZipObject(
+    (zipFile: common.IZipObjectContentItem) => {
       let zipContent: any = JSON.parse(zipFile.content);
 
       zipContent.portalUrl = "{{portalBaseUrl}}";
