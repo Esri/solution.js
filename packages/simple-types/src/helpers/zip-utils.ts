@@ -62,7 +62,7 @@ export async function templatizeFormData(
  * @param zipObject Zip object to templatize
  * @returns Promise that resolves to the modified zip object
  */
-export async function _templatizeAgoIds(
+export function _templatizeAgoIds(
   zipObject: JSZip
 ): Promise<JSZip> {
   const agoIdRegEx = common.getAgoIdRegEx();
