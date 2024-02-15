@@ -190,7 +190,7 @@ export function generateEmptyCreationResponse(
 }
 
 /**
- * Returns a regular expression matching a 32-character AGO-style id.
+ * Returns a regular expression matching a global search for a 32-character AGO-style id.
  *
  * @returns Regular expression
  */
@@ -200,13 +200,25 @@ export function getAgoIdRegEx(
 }
 
 /**
- * Returns a regular expression matching a 32-character AGO-style id as a Solution template variable.
+ * Returns a regular expression matching a global search for a 32-character AGO-style id as a Solution template variable.
  *
  * @returns Regular expression
  */
 export function getAgoIdTemplateRegEx(
 ): RegExp {
   return /{{\b([0-9A-Fa-f]){32}\b}}/g;
+}
+
+/**
+ * Returns a regular expression matching a global search for a word such as an AGO-style id.
+ *
+ * @param word Word to search for, bounded by regular expression word boundaries (\b)
+ * @returns Regular expression
+ */
+export function getSpecifiedWordRegEx(
+  word: string
+): RegExp {
+  return new RegExp(`\\b${word}\\b`, "g");
 }
 
 /**

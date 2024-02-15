@@ -930,7 +930,7 @@ describe("Module `webmappingapplication`: manages the creation and deployment of
       fetchMock
         .post("https://fake.com/arcgis/rest/info", {})
         .post(
-          "https://services7.arcgis.com/piPfTFmrV9d1DIvN/arcgis/rest/services/TestLayer2FromWebApp/FeatureServer/3",
+          "https://services7.arcgis.com/org1234567890/arcgis/rest/services/TestLayer2FromWebApp/FeatureServer/3",
           {
             id: 3,
             serviceItemId: "b19aec399444407da84fffe2a55d4151",
@@ -942,7 +942,7 @@ describe("Module `webmappingapplication`: manages the creation and deployment of
           }
         )
         .post(
-          "https://services7.arcgis.com/piPfTFmrV9d1DIvN/arcgis/rest/services/TestLayer2FromWebApp/FeatureServer/2",
+          "https://services7.arcgis.com/org1234567890/arcgis/rest/services/TestLayer2FromWebApp/FeatureServer/2",
           {
             id: 2,
             serviceItemId: "b19aec399444407da84fffe2a55d4151",
@@ -954,7 +954,7 @@ describe("Module `webmappingapplication`: manages the creation and deployment of
           }
         )
         .post(
-          "https://services7.arcgis.com/piPfTFmrV9d1DIvN/arcgis/rest/services/TestLayer2FromWebApp/FeatureServer/1",
+          "https://services7.arcgis.com/org1234567890/arcgis/rest/services/TestLayer2FromWebApp/FeatureServer/1",
           {
             id: 1,
             serviceItemId: "b19aec399444407da84fffe2a55d4151",
@@ -966,7 +966,7 @@ describe("Module `webmappingapplication`: manages the creation and deployment of
           }
         )
         .post(
-          "https://services7.arcgis.com/piPfTFmrV9d1DIvN/arcgis/rest/services/TestLayer2FromWebApp/FeatureServer/0",
+          "https://services7.arcgis.com/org1234567890/arcgis/rest/services/TestLayer2FromWebApp/FeatureServer/0",
           {
             id: 0,
             serviceItemId: "b19aec399444407da84fffe2a55d4151",
@@ -978,7 +978,7 @@ describe("Module `webmappingapplication`: manages the creation and deployment of
           }
         )
         .post(
-          "https://services7.arcgis.com/piPfTFmrV9d1DIvN/arcgis/rest/services/TestLayerForDashBoardMap/FeatureServer/7",
+          "https://services7.arcgis.com/org1234567890/arcgis/rest/services/TestLayerForDashBoardMap/FeatureServer/7",
           {
             id: 7,
             serviceItemId: "4efe5f693de34620934787ead6693f19",
@@ -990,7 +990,7 @@ describe("Module `webmappingapplication`: manages the creation and deployment of
           }
         )
         .post(
-          "https://services7.arcgis.com/piPfTFmrV9d1DIvN/arcgis/rest/services/TestLayerForDashBoardMap/FeatureServer/6",
+          "https://services7.arcgis.com/org1234567890/arcgis/rest/services/TestLayerForDashBoardMap/FeatureServer/6",
           {
             id: 6,
             serviceItemId: "4efe5f693de34620934787ead6693f19",
@@ -1002,7 +1002,7 @@ describe("Module `webmappingapplication`: manages the creation and deployment of
           }
         )
         .post(
-          "https://services7.arcgis.com/piPfTFmrV9d1DIvN/arcgis/rest/services/TestLayerForDashBoardMap/FeatureServer/5",
+          "https://services7.arcgis.com/org1234567890/arcgis/rest/services/TestLayerForDashBoardMap/FeatureServer/5",
           {
             id: 5,
             serviceItemId: "4efe5f693de34620934787ead6693f19",
@@ -1014,7 +1014,7 @@ describe("Module `webmappingapplication`: manages the creation and deployment of
           }
         )
         .post(
-          "https://services7.arcgis.com/piPfTFmrV9d1DIvN/arcgis/rest/services/TestLayerForDashBoardMap/FeatureServer/4",
+          "https://services7.arcgis.com/org1234567890/arcgis/rest/services/TestLayerForDashBoardMap/FeatureServer/4",
           {
             id: 4,
             serviceItemId: "4efe5f693de34620934787ead6693f19",
@@ -1026,7 +1026,7 @@ describe("Module `webmappingapplication`: manages the creation and deployment of
           }
         )
         .post(
-          "https://services7.arcgis.com/piPfTFmrV9d1DIvN/arcgis/rest/services/TestLayerForDashBoardMap/FeatureServer/3",
+          "https://services7.arcgis.com/org1234567890/arcgis/rest/services/TestLayerForDashBoardMap/FeatureServer/3",
           {
             id: 3,
             serviceItemId: "4efe5f693de34620934787ead6693f19",
@@ -1038,7 +1038,7 @@ describe("Module `webmappingapplication`: manages the creation and deployment of
           }
         )
         .post(
-          "https://services7.arcgis.com/piPfTFmrV9d1DIvN/arcgis/rest/services/TestLayerForDashBoardMap/FeatureServer/2",
+          "https://services7.arcgis.com/org1234567890/arcgis/rest/services/TestLayerForDashBoardMap/FeatureServer/2",
           {
             id: 2,
             serviceItemId: "4efe5f693de34620934787ead6693f19",
@@ -1050,7 +1050,7 @@ describe("Module `webmappingapplication`: manages the creation and deployment of
           }
         )
         .post(
-          "https://services7.arcgis.com/piPfTFmrV9d1DIvN/arcgis/rest/services/TestLayerForDashBoardMap/FeatureServer/1",
+          "https://services7.arcgis.com/org1234567890/arcgis/rest/services/TestLayerForDashBoardMap/FeatureServer/1",
           {
             id: 1,
             serviceItemId: "4efe5f693de34620934787ead6693f19",
@@ -1062,7 +1062,7 @@ describe("Module `webmappingapplication`: manages the creation and deployment of
           }
         )
         .post(
-          "https://services7.arcgis.com/piPfTFmrV9d1DIvN/arcgis/rest/services/TestLayerForDashBoardMap/FeatureServer/0",
+          "https://services7.arcgis.com/org1234567890/arcgis/rest/services/TestLayerForDashBoardMap/FeatureServer/0",
           {
             id: 0,
             serviceItemId: "4efe5f693de34620934787ead6693f19",
@@ -1093,51 +1093,51 @@ describe("Module `webmappingapplication`: manages the creation and deployment of
       fetchMock
         .post("https://fake.com/arcgis/rest/info", {})
         .post(
-          "https://services7.arcgis.com/piPfTFmrV9d1DIvN/arcgis/rest/services/TestLayer2FromWebApp/FeatureServer/3",
+          "https://services7.arcgis.com/org1234567890/arcgis/rest/services/TestLayer2FromWebApp/FeatureServer/3",
           mockItems.get400Failure()
         )
         .post(
-          "https://services7.arcgis.com/piPfTFmrV9d1DIvN/arcgis/rest/services/TestLayer2FromWebApp/FeatureServer/2",
+          "https://services7.arcgis.com/org1234567890/arcgis/rest/services/TestLayer2FromWebApp/FeatureServer/2",
           mockItems.get400Failure()
         )
         .post(
-          "https://services7.arcgis.com/piPfTFmrV9d1DIvN/arcgis/rest/services/TestLayer2FromWebApp/FeatureServer/1",
+          "https://services7.arcgis.com/org1234567890/arcgis/rest/services/TestLayer2FromWebApp/FeatureServer/1",
           mockItems.get400Failure()
         )
         .post(
-          "https://services7.arcgis.com/piPfTFmrV9d1DIvN/arcgis/rest/services/TestLayer2FromWebApp/FeatureServer/0",
+          "https://services7.arcgis.com/org1234567890/arcgis/rest/services/TestLayer2FromWebApp/FeatureServer/0",
           mockItems.get400Failure()
         )
         .post(
-          "https://services7.arcgis.com/piPfTFmrV9d1DIvN/arcgis/rest/services/TestLayerForDashBoardMap/FeatureServer/7",
+          "https://services7.arcgis.com/org1234567890/arcgis/rest/services/TestLayerForDashBoardMap/FeatureServer/7",
           mockItems.get400Failure()
         )
         .post(
-          "https://services7.arcgis.com/piPfTFmrV9d1DIvN/arcgis/rest/services/TestLayerForDashBoardMap/FeatureServer/6",
+          "https://services7.arcgis.com/org1234567890/arcgis/rest/services/TestLayerForDashBoardMap/FeatureServer/6",
           mockItems.get400Failure()
         )
         .post(
-          "https://services7.arcgis.com/piPfTFmrV9d1DIvN/arcgis/rest/services/TestLayerForDashBoardMap/FeatureServer/5",
+          "https://services7.arcgis.com/org1234567890/arcgis/rest/services/TestLayerForDashBoardMap/FeatureServer/5",
           mockItems.get400Failure()
         )
         .post(
-          "https://services7.arcgis.com/piPfTFmrV9d1DIvN/arcgis/rest/services/TestLayerForDashBoardMap/FeatureServer/4",
+          "https://services7.arcgis.com/org1234567890/arcgis/rest/services/TestLayerForDashBoardMap/FeatureServer/4",
           mockItems.get400Failure()
         )
         .post(
-          "https://services7.arcgis.com/piPfTFmrV9d1DIvN/arcgis/rest/services/TestLayerForDashBoardMap/FeatureServer/3",
+          "https://services7.arcgis.com/org1234567890/arcgis/rest/services/TestLayerForDashBoardMap/FeatureServer/3",
           mockItems.get400Failure()
         )
         .post(
-          "https://services7.arcgis.com/piPfTFmrV9d1DIvN/arcgis/rest/services/TestLayerForDashBoardMap/FeatureServer/2",
+          "https://services7.arcgis.com/org1234567890/arcgis/rest/services/TestLayerForDashBoardMap/FeatureServer/2",
           mockItems.get400Failure()
         )
         .post(
-          "https://services7.arcgis.com/piPfTFmrV9d1DIvN/arcgis/rest/services/TestLayerForDashBoardMap/FeatureServer/1",
+          "https://services7.arcgis.com/org1234567890/arcgis/rest/services/TestLayerForDashBoardMap/FeatureServer/1",
           mockItems.get400Failure()
         )
         .post(
-          "https://services7.arcgis.com/piPfTFmrV9d1DIvN/arcgis/rest/services/TestLayerForDashBoardMap/FeatureServer/0",
+          "https://services7.arcgis.com/org1234567890/arcgis/rest/services/TestLayerForDashBoardMap/FeatureServer/0",
           mockItems.get400Failure()
         );
 
@@ -2376,17 +2376,17 @@ describe("Module `webmappingapplication`: manages the creation and deployment of
     it("can enforce must match full url", () => {
       let objString: any = JSON.stringify({
         url1:
-          "https://services7.arcgis.com/piPfTFmrV9d1DIvN/arcgis/rest/services/EducationalFacilities_public/FeatureServer/0",
+          "https://services7.arcgis.com/org1234567890/arcgis/rest/services/EducationalFacilities_public/FeatureServer/0",
         url2:
-          "https://services7.arcgis.com/piPfTFmrV9d1DIvN/arcgis/rest/services/EducationalFacilities_public/FeatureServer/",
+          "https://services7.arcgis.com/org1234567890/arcgis/rest/services/EducationalFacilities_public/FeatureServer/",
         url3:
-          "https://services7.arcgis.com/piPfTFmrV9d1DIvN/arcgis/rest/services/EducationalFacilities_public/FeatureServer/1"
+          "https://services7.arcgis.com/org1234567890/arcgis/rest/services/EducationalFacilities_public/FeatureServer/1"
       });
 
       const urls: string[] = [
-        "https://services7.arcgis.com/piPfTFmrV9d1DIvN/arcgis/rest/services/EducationalFacilities_public/FeatureServer/0",
-        "https://services7.arcgis.com/piPfTFmrV9d1DIvN/arcgis/rest/services/EducationalFacilities_public/FeatureServer/",
-        "https://services7.arcgis.com/piPfTFmrV9d1DIvN/arcgis/rest/services/EducationalFacilities_public/FeatureServer/1"
+        "https://services7.arcgis.com/org1234567890/arcgis/rest/services/EducationalFacilities_public/FeatureServer/0",
+        "https://services7.arcgis.com/org1234567890/arcgis/rest/services/EducationalFacilities_public/FeatureServer/",
+        "https://services7.arcgis.com/org1234567890/arcgis/rest/services/EducationalFacilities_public/FeatureServer/1"
       ];
 
       const newUrls: string[] = [
@@ -2416,9 +2416,9 @@ describe("Module `webmappingapplication`: manages the creation and deployment of
 
     it("can ignore force full url for simple url", () => {
       const urls: string[] = [
-        "https://services7.arcgis.com/piPfTFmrV9d1DIvN/arcgis/rest/services/EducationalFacilities_public/FeatureServer/0",
-        "https://services7.arcgis.com/piPfTFmrV9d1DIvN/arcgis/rest/services/EducationalFacilities_public/FeatureServer/",
-        "https://services7.arcgis.com/piPfTFmrV9d1DIvN/arcgis/rest/services/EducationalFacilities_public/FeatureServer/1"
+        "https://services7.arcgis.com/org1234567890/arcgis/rest/services/EducationalFacilities_public/FeatureServer/0",
+        "https://services7.arcgis.com/org1234567890/arcgis/rest/services/EducationalFacilities_public/FeatureServer/",
+        "https://services7.arcgis.com/org1234567890/arcgis/rest/services/EducationalFacilities_public/FeatureServer/1"
       ];
 
       const newUrls: string[] = [
@@ -2569,7 +2569,7 @@ const _infoLookupTemplate: any = {
           {
             flayerId: "TestLayer2FromWebApp_4042",
             url:
-              "https://services7.arcgis.com/piPfTFmrV9d1DIvN/arcgis/rest/services/TestLayer2FromWebApp/FeatureServer/3",
+              "https://services7.arcgis.com/org1234567890/arcgis/rest/services/TestLayer2FromWebApp/FeatureServer/3",
             name: "TestLayer2FromWebApp - Stands",
             id: "dojoUnique394",
             enable: true,
@@ -2579,7 +2579,7 @@ const _infoLookupTemplate: any = {
           {
             flayerId: "TestLayer2FromWebApp_8439",
             url:
-              "https://services7.arcgis.com/piPfTFmrV9d1DIvN/arcgis/rest/services/TestLayer2FromWebApp/FeatureServer/2",
+              "https://services7.arcgis.com/org1234567890/arcgis/rest/services/TestLayer2FromWebApp/FeatureServer/2",
             name: "TestLayer2FromWebApp - Property",
             id: "dojoUnique395",
             enable: true,
@@ -2589,7 +2589,7 @@ const _infoLookupTemplate: any = {
           {
             flayerId: "TestLayer2FromWebApp_5607",
             url:
-              "https://services7.arcgis.com/piPfTFmrV9d1DIvN/arcgis/rest/services/TestLayer2FromWebApp/FeatureServer/1",
+              "https://services7.arcgis.com/org1234567890/arcgis/rest/services/TestLayer2FromWebApp/FeatureServer/1",
             name: "TestLayer2FromWebApp - Chemical Activity",
             id: "dojoUnique396",
             enable: true,
@@ -2599,7 +2599,7 @@ const _infoLookupTemplate: any = {
           {
             flayerId: "TestLayer2FromWebApp_9409",
             url:
-              "https://services7.arcgis.com/piPfTFmrV9d1DIvN/arcgis/rest/services/TestLayer2FromWebApp/FeatureServer/0",
+              "https://services7.arcgis.com/org1234567890/arcgis/rest/services/TestLayer2FromWebApp/FeatureServer/0",
             name: "TestLayer2FromWebApp - HarvestActivity",
             id: "dojoUnique397",
             enable: true,
@@ -2609,7 +2609,7 @@ const _infoLookupTemplate: any = {
           {
             flayerId: "TestLayerForDashBoardMap_2615",
             url:
-              "https://services7.arcgis.com/piPfTFmrV9d1DIvN/arcgis/rest/services/TestLayerForDashBoardMap/FeatureServer/7",
+              "https://services7.arcgis.com/org1234567890/arcgis/rest/services/TestLayerForDashBoardMap/FeatureServer/7",
             name: "TestLayerForDashBoardMap - Incident Area",
             id: "dojoUnique398",
             enable: true,
@@ -2619,7 +2619,7 @@ const _infoLookupTemplate: any = {
           {
             flayerId: "TestLayerForDashBoardMap_8627",
             url:
-              "https://services7.arcgis.com/piPfTFmrV9d1DIvN/arcgis/rest/services/TestLayerForDashBoardMap/FeatureServer/6",
+              "https://services7.arcgis.com/org1234567890/arcgis/rest/services/TestLayerForDashBoardMap/FeatureServer/6",
             name: "TestLayerForDashBoardMap - DemographicPolygons",
             id: "dojoUnique399",
             enable: true,
@@ -2629,7 +2629,7 @@ const _infoLookupTemplate: any = {
           {
             flayerId: "TestLayerForDashBoardMap_7797",
             url:
-              "https://services7.arcgis.com/piPfTFmrV9d1DIvN/arcgis/rest/services/TestLayerForDashBoardMap/FeatureServer/5",
+              "https://services7.arcgis.com/org1234567890/arcgis/rest/services/TestLayerForDashBoardMap/FeatureServer/5",
             name: "TestLayerForDashBoardMap - Road Closure",
             id: "dojoUnique400",
             enable: true,
@@ -2639,7 +2639,7 @@ const _infoLookupTemplate: any = {
           {
             flayerId: "TestLayerForDashBoardMap_5389",
             url:
-              "https://services7.arcgis.com/piPfTFmrV9d1DIvN/arcgis/rest/services/TestLayerForDashBoardMap/FeatureServer/4",
+              "https://services7.arcgis.com/org1234567890/arcgis/rest/services/TestLayerForDashBoardMap/FeatureServer/4",
             name: "TestLayerForDashBoardMap - Bridges",
             id: "dojoUnique401",
             enable: true,
@@ -2649,7 +2649,7 @@ const _infoLookupTemplate: any = {
           {
             flayerId: "TestLayerForDashBoardMap_5538",
             url:
-              "https://services7.arcgis.com/piPfTFmrV9d1DIvN/arcgis/rest/services/TestLayerForDashBoardMap/FeatureServer/3",
+              "https://services7.arcgis.com/org1234567890/arcgis/rest/services/TestLayerForDashBoardMap/FeatureServer/3",
             name: "TestLayerForDashBoardMap - Emergency Assistance",
             id: "dojoUnique402",
             enable: true,
@@ -2659,7 +2659,7 @@ const _infoLookupTemplate: any = {
           {
             flayerId: "TestLayerForDashBoardMap_2914",
             url:
-              "https://services7.arcgis.com/piPfTFmrV9d1DIvN/arcgis/rest/services/TestLayerForDashBoardMap/FeatureServer/2",
+              "https://services7.arcgis.com/org1234567890/arcgis/rest/services/TestLayerForDashBoardMap/FeatureServer/2",
             name: "TestLayerForDashBoardMap - Emergency Shelter",
             id: "dojoUnique403",
             enable: true,
@@ -2669,7 +2669,7 @@ const _infoLookupTemplate: any = {
           {
             flayerId: "TestLayerForDashBoardMap_7041",
             url:
-              "https://services7.arcgis.com/piPfTFmrV9d1DIvN/arcgis/rest/services/TestLayerForDashBoardMap/FeatureServer/1",
+              "https://services7.arcgis.com/org1234567890/arcgis/rest/services/TestLayerForDashBoardMap/FeatureServer/1",
             name: "TestLayerForDashBoardMap - School",
             id: "dojoUnique404",
             enable: true,
@@ -2679,7 +2679,7 @@ const _infoLookupTemplate: any = {
           {
             flayerId: "TestLayerForDashBoardMap_2892",
             url:
-              "https://services7.arcgis.com/piPfTFmrV9d1DIvN/arcgis/rest/services/TestLayerForDashBoardMap/FeatureServer/0",
+              "https://services7.arcgis.com/org1234567890/arcgis/rest/services/TestLayerForDashBoardMap/FeatureServer/0",
             name: "TestLayerForDashBoardMap - Hospital",
             id: "dojoUnique405",
             enable: true,

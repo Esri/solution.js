@@ -23,6 +23,7 @@ import * as simpleTypes from "../../src/simple-types";
 import * as staticRelatedItemsMocks from "../../../common/test/mocks/staticRelatedItemsMocks";
 import * as templates from "../../../common/test/mocks/templates";
 import * as utils from "../../../common/test/mocks/utils";
+import * as zipUtils from "../../src/helpers/zip-utils";
 
 jasmine.DEFAULT_TIMEOUT_INTERVAL = 20000; // default is 5000 ms
 
@@ -491,6 +492,7 @@ describe("simpleTypeConvertItemToTemplate", () => {
         { relationshipType: "Survey2Data", relatedItemIds: ["srv1234567890", "abc1234567890"] },
         { relationshipType: "Survey2Service", relatedItemIds: ["srv1234567890"] }
       ] as common.IRelatedItems[]);
+      spyOn(zipUtils, "templatizeFormData").and.callFake((zip: File) => Promise.resolve(zip));
 
       simpleTypes
         .convertItemToTemplate(
@@ -509,6 +511,7 @@ describe("simpleTypeConvertItemToTemplate", () => {
         { relationshipType: "Survey2Data", relatedItemIds: ["srv1234567890", "abc1234567890"] },
         { relationshipType: "Survey2Service", relatedItemIds: ["srv1234567890"] }
       ] as common.IRelatedItems[]);
+      spyOn(zipUtils, "templatizeFormData").and.callFake((zip: File) => Promise.resolve(zip));
 
       simpleTypes
         .convertItemToTemplate(
