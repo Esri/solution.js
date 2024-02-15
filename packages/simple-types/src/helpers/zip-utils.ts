@@ -15,6 +15,7 @@
  */
 
 import * as common from "@esri/solution-common";
+import JSZip from "jszip";
 
 // ------------------------------------------------------------------------------------------------------------------ //
 
@@ -29,19 +30,10 @@ export async function templatizeFormData(
   zip: File,
   filename: string
 ): Promise<File> {
-  const agoIdRegEx = common.getAgoIdRegEx();
-  const zipObject = await common.blobToZipObject(zip);
+  let zipObject = await common.blobToZipObject(zip);
 
   // Replace AGO ids
-  common.modifyFilesinZipObject(
-    (zipContentStr: common.IZipObjectContentItem): string => {
-      const agoIdMatches = zipContentStr.content.match(agoIdRegEx) ?? [];
-      agoIdMatches.forEach((match: string) => {
-        zipContentStr.content = zipContentStr.content.replace(match, `{{${match}}}`);
-      });
-      return zipContentStr.content;
-    },
-    zipObject);
+  zipObject = await _templatizeAgoIds(zipObject);
 
   // Get the index file to get the name used for the other files
   const filenameRoot = JSON.parse(await zipObject.file("esriinfo/forminfo.json").async("string")).name;
@@ -52,10 +44,57 @@ export async function templatizeFormData(
 
   // Templatize each webhook
   const webhooks = infoFile.notificationsInfo?.webhooks ?? [];
+  if (webhooks.length > 0) {
+    _templatizeWebHooks(webhooks);
+    infoFile.notificationsInfo.webhooks = webhooks;
+    zipObject.file(infoFilename, JSON.stringify(infoFile));
+  }
 
+  // Return the modified zip file
+  return common.zipObjectToZipFile(zipObject, filename)
+}
+
+// ------------------------------------------------------------------------------------------------------------------ //
+
+/**
+ * Templatizes AGO ids in the supplied zip object.
+ *
+ * @param zipObject Zip object to templatize
+ * @returns Promise that resolves to the modified zip object
+ */
+export async function _templatizeAgoIds(
+  zipObject: JSZip
+): Promise<JSZip> {
+  const agoIdRegEx = common.getAgoIdRegEx();
+
+  return common.modifyFilesinZipObject(
+    (zippedFile: common.IZipObjectContentItem): string => {
+      const agoIdMatches = zippedFile.content.match(agoIdRegEx) ?? [];
+      const completedMatches: any = {};
+      agoIdMatches.forEach((match: string) => {
+        if (completedMatches[match]) {
+          return;
+        }
+        zippedFile.content = zippedFile.content.replace(new RegExp(match, "g"), `{{${match}.itemId}}`);
+        completedMatches[match] = true;
+      });
+      return zippedFile.content;
+    },
+    zipObject
+  );
+}
+
+/**
+ * Templatizes the URLs in webhooks.
+ *
+ * @param webhooks List of Form webhook definitions to templatize
+ */
+export function _templatizeWebHooks(
+  webhooks: any[]
+): void {
   webhooks.forEach((webhook: any) => {
-    const urlObj = new URL(webhook.url);
-    let url = urlObj.toString();
+    let url = webhook.url;
+    const urlObj = new URL(url);
 
     const server = `${urlObj.protocol}//${urlObj.host}`;
     const workflowServer = "https://workflow.arcgis.com";
@@ -71,28 +110,7 @@ export async function templatizeFormData(
       url = url.replace(server, "{{portalBaseUrl}}");
     }
 
-    // Templatize all AGO ids in the URL
-    const agoIdMatches = url.match(agoIdRegEx) ?? [];
-    agoIdMatches.forEach((match: string) => {
-      const idRE = common.getSpecificAgoIdRegEx(match);
-      const templatizedId = `{{${match}}}`;
-      url = url.replace(idRE, templatizedId);
-    });
-
     webhook.url = url;
   });
-
-  // Return the modified zip file
-  if (webhooks.length > 0) {
-    infoFile.notificationsInfo.webhooks = webhooks;
-    zipObject.file(infoFilename, JSON.stringify(infoFile));
-    return common.zipObjectToZipFile(zipObject, filename)
-  } else {
-    return common.createMimeTypedFile({
-      blob: zip,
-      filename,
-      mimeType: "application/zip"
-    });
-
-  }
 }
+

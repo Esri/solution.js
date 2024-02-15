@@ -210,14 +210,15 @@ export function getAgoIdTemplateRegEx(
 }
 
 /**
- * Returns a regular expression matching a global search for a specific AGO-style id.
+ * Returns a regular expression matching a global search for a word such as an AGO-style id.
  *
+ * @param word Word to search for, bounded by regular expression word boundaries (\b)
  * @returns Regular expression
  */
-export function getSpecificAgoIdRegEx(
-  id: string
+export function getSpecifiedWordRegEx(
+  word: string
 ): RegExp {
-  return new RegExp(`\\b${id}\\b`, "g");
+  return new RegExp(`\\b${word}\\b`, "g");
 }
 
 /**

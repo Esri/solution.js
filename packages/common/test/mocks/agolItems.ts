@@ -745,13 +745,13 @@ export function getAGOLItemData(type?: string, itemId?: string): any {
               featureServiceItemId: "4efe5f693de34620934787ead6693f10",
               dataSourceId: "1d4de1e4-ef58-4e02-9159-7a6e6701cada",
               url:
-                "https://services7.arcgis.com/piPfTFmrV9d1DIvN/arcgis/rest/services/TestLayerForDashBoardMap/FeatureServer/0"
+                "https://services7.arcgis.com/org1234567890/arcgis/rest/services/TestLayerForDashBoardMap/FeatureServer/0"
             },
             {
               featureServiceItemId: "4efe5f693de34620934787ead6693f10",
               dataSourceId: "1687a71b-cf77-48ed-b948-c66e228a0f74",
               url:
-                "https://services7.arcgis.com/piPfTFmrV9d1DIvN/arcgis/rest/services/TestLayerForDashBoardMap/FeatureServer/1"
+                "https://services7.arcgis.com/org1234567890/arcgis/rest/services/TestLayerForDashBoardMap/FeatureServer/1"
             }
           ],
           itemId: "9da79c91fc7642ebb4c0bbacfbacd510",

@@ -27,7 +27,7 @@ import * as templates from "../../common/test/mocks/templates";
 import * as testUtils from "../../common/test/mocks/utils";
 import * as utils from "../../common/test/mocks/utils";
 import * as zipUtils from "../src/helpers/zip-utils";
-import * as zipUtilsTest from "../test/helpers/zip-utils.test";
+import * as zipUtilsTest from "../../common/test/zip-utils.test";
 import JSZip from "jszip";
 
 // ------------------------------------------------------------------------------------------------------------------ //
@@ -1900,10 +1900,8 @@ describe("Module `deploySolutionItems`", () => {
         });
     });
 
-    it("handles Form zip file resources separately", done => {
-      const itemTemplate: common.IItemTemplate = templates.getItemTemplate(
-        "Form"
-      );
+    it("handles Form zip file resources separately", async () => {
+      const itemTemplate: common.IItemTemplate = templates.getItemTemplate("Form");
       const resourceFilePaths: common.IDeployFileCopyPath[] = [{
         type: common.EFileType.Resource,
         folder: "aFolder",
@@ -1918,58 +1916,39 @@ describe("Module `deploySolutionItems`", () => {
       const templateDictionary: any = {};
       const newItemID: string = "frm1234567891";
 
-      const getBlobSpy = spyOn(common, "getBlob").and.returnValue(zipUtilsTest.getSampleZipBlob(itemTemplate.itemId));
+      spyOn(common, "fetchZipObject").and
+        .resolveTo(zipUtilsTest.generateFormZipObject(itemTemplate.itemId));
 
-      const swizzleIdsInZipFileSpy = spyOn(
-        zipUtils,
-        "swizzleIdsInZipFile"
-      ).and.resolveTo(zipUtilsTest.generateFormZip(itemTemplate.itemId));
+      const getThumbnailFromStorageItemSpy = spyOn(common, "getThumbnailFromStorageItem").and
+        .resolveTo(undefined);
 
-      const requestSpy = spyOn(common, "rest_request")
-      .and.resolveTo(mockItems.get200Success(itemTemplate.itemId));
+      const updateItemWithZipSpy = spyOn(common, "updateItemWithZipObject").and
+        .resolveTo(mockItems.get200Success(itemTemplate.itemId));
 
-      const updateItemWithZipSpy = spyOn(
-        common,
-        "updateItemWithZipObject"
-      ).and.resolveTo(mockItems.get200Success(itemTemplate.itemId));
+      spyOn(simpleTypes.simpleTypes, "createItemFromTemplate").and
+        .resolveTo({
+          item: itemTemplate,
+          id: newItemID,
+          type: itemTemplate.type,
+          postProcess: false
+        } as common.ICreateItemFromTemplateResponse);
 
-      spyOn(
-        simpleTypes.simpleTypes,
-        "createItemFromTemplate"
-      ).and.resolveTo({
-        item: itemTemplate,
-        id: newItemID,
-        type: itemTemplate.type,
-        postProcess: false
-      } as common.ICreateItemFromTemplateResponse);
-
-      const copyFilesFromStorageItemSpy = spyOn(
-        common,
-        "copyFilesFromStorageItem"
-      ).and.resolveTo(true);
+      const copyFilesFromStorageItemSpy = spyOn(common, "copyFilesFromStorageItem").and
+        .resolveTo(true);
 
       // eslint-disable-next-line @typescript-eslint/no-floating-promises
-      deploySolution
-        ._createItemFromTemplateWhenReady(
-          itemTemplate,
-          resourceFilePaths,
-          MOCK_USER_SESSION,
-          templateDictionary,
-          MOCK_USER_SESSION,
-          utils.ITEM_PROGRESS_CALLBACK
-        )
-        .then(() => {
-          expect(getBlobSpy).toHaveBeenCalledTimes(1);
-          expect(swizzleIdsInZipFileSpy).toHaveBeenCalledTimes(1);
-          expect(requestSpy).toHaveBeenCalledTimes(1);
-          expect(updateItemWithZipSpy).toHaveBeenCalledTimes(1);
-          expect(copyFilesFromStorageItemSpy).toHaveBeenCalledTimes(1);
+      const response: common.ICreateItemFromTemplateResponse = await deploySolution._createItemFromTemplateWhenReady(
+        itemTemplate,
+        resourceFilePaths,
+        MOCK_USER_SESSION,
+        templateDictionary,
+        MOCK_USER_SESSION,
+        utils.ITEM_PROGRESS_CALLBACK
+      );
 
-          done();
-        })
-        .catch(() => {
-          done.fail();
-        });
+      expect(getThumbnailFromStorageItemSpy).toHaveBeenCalledTimes(1);
+      expect(updateItemWithZipSpy).toHaveBeenCalledTimes(1);
+      expect(copyFilesFromStorageItemSpy).toHaveBeenCalledTimes(1);
     });
   });
 

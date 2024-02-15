@@ -181,7 +181,7 @@ describe("Module `quick capture`: manages the creation and deployment of quick c
         featureServiceItemId: "4efe5f693de34620934787ead6693f10",
         dataSourceId: "1687a71b-cf77-48ed-b948-c66e228a0f74",
         url:
-          "https://services7.arcgis.com/piPfTFmrV9d1DIvN/arcgis/rest/services/TestLayerForDashBoardMap/FeatureServer/1"
+          "https://services7.arcgis.com/org1234567890/arcgis/rest/services/TestLayerForDashBoardMap/FeatureServer/1"
       };
       const idPath = "featureServiceItemId";
       const urlPath = "url";

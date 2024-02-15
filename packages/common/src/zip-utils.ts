@@ -17,6 +17,7 @@
 import JSZip from "jszip";
 import * as interfaces from "./interfaces";
 import { createMimeTypedFile } from "./resources/copyDataIntoItem";
+import { getBlob } from "./resources/get-blob";
 import { updateItem } from "./restHelpers";
 import { IItemUpdate, IUpdateItemResponse, UserSession } from "./interfaces";
 
@@ -39,6 +40,20 @@ export async function blobToZipObject(
   .catch(() => {
     return Promise.reject();
   });
+}
+
+/**
+ * Fetches a zip object.
+ *
+ * @param formZipFilePath Path to the zip file
+ * @param authentication Credentials to zip file
+ * @returns Promise resolving to zip object
+ */
+export async function fetchZipObject(
+  formZipFilePath: string,
+  authentication: UserSession
+): Promise<JSZip> {
+  return blobToZipObject(await getBlob(formZipFilePath, authentication));
 }
 
 /**

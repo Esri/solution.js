@@ -3015,7 +3015,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
     it("can set workflow configuration", async () => {
       const orgId = "abcdefghij";
       const itemId = "1234567890";
-      const configurationZipFile = await zipUtilsTest.getSampleZipBlob(itemId);
+      const configurationZipFile = await zipUtilsTest.getSampleFormZipFile(itemId, "workflow");
 
       const restHelpersGetSpy = spyOn(restHelpersGet, "getUser").and.resolveTo({
         orgId
@@ -3023,8 +3023,8 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
       const requestSpy = spyOn(request, "request")
         .and.resolveTo({ success: true });
 
-      const response = await restHelpers.setWorkflowConfigurationZip(
-        generalHelpers.blobToFile(configurationZipFile, "workflow"), itemId, MOCK_USER_SESSION);
+      const response = await restHelpers.setWorkflowConfigurationZip(configurationZipFile, itemId, MOCK_USER_SESSION);
+
       expect(restHelpersGetSpy.calls.count()).toEqual(1);
       expect(requestSpy.calls.count()).toEqual(1);
       expect(requestSpy.calls.argsFor(0)[0]).toEqual(`https://workflow.arcgis.com/${orgId}/admin/${itemId}/import`);

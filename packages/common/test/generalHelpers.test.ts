@@ -1094,16 +1094,23 @@ describe("Module `generalHelpers`: common utility functions shared across packag
       expect(match).not.toBeNull();
     });
 
-    it("doesn't match a string that's not an id 1", () => {
-      const id = "bad3483e025c47338d43df308c11730";  // too short
+    it("doesn't match a string that's not an id: too short", () => {
+      const id = "bad3483e025c47338d43df308c11730";
       const match = id.match(generalHelpers.getAgoIdRegEx());
       expect(match).toBeNull();
     });
 
-    it("doesn't match a string that's not an id 2", () => {
-      const id = "bad3483e025c47338d43df308c117308a";  // too long
+    it("doesn't match a string that's not an id: too long", () => {
+      const id = "bad3483e025c47338d43df308c117308a";
       const match = id.match(generalHelpers.getAgoIdRegEx());
       expect(match).toBeNull();
+    });
+
+    it("matches multiple instances of ids", () => {
+      const id = "bad3483e025c47338d43df308c117308, bad3483e025c47338d43df308c117309";
+      const match = id.match(generalHelpers.getAgoIdRegEx());
+      expect(match).not.toBeNull();
+      expect(match?.length).toEqual(2);
     });
   });
 
@@ -1127,13 +1134,13 @@ describe("Module `generalHelpers`: common utility functions shared across packag
     });
 
     it("doesn't match a string that's not a templatized id 1", () => {
-      const id = "{{bad3483e025c47338d43df308c11730}}";  // too short
+      const id = "{{bad3483e025c47338d43df308c11730}}";
       const match = id.match(generalHelpers.getAgoIdTemplateRegEx());
       expect(match).toBeNull();
     });
 
     it("doesn't match a string that's not a templatized id 2", () => {
-      const id = "{{bad3483e025c47338d43df308c117308a}}";  // too long
+      const id = "{{bad3483e025c47338d43df308c117308a}}";
       const match = id.match(generalHelpers.getAgoIdTemplateRegEx());
       expect(match).toBeNull();
     });
@@ -1142,6 +1149,64 @@ describe("Module `generalHelpers`: common utility functions shared across packag
       const id = "bad3483e025c47338d43df308c117308";  // not templatized
       const match = id.match(generalHelpers.getAgoIdTemplateRegEx());
       expect(match).toBeNull();
+    });
+
+    it("matches multiple instances of templatized ids", () => {
+      const id = "{{bad3483e025c47338d43df308c117308}}, {{bad3483e025c47338d43df308c117309}}";
+      const match = id.match(generalHelpers.getAgoIdTemplateRegEx());
+      expect(match).not.toBeNull();
+      expect(match?.length).toEqual(2);
+    });
+  });
+
+  describe("getSpecifiedWordRegEx", () => {
+    it("matches an word 1", () => {
+      const word = "bad3483e025c47338d43df308c117308";
+      const match = word.match(generalHelpers.getSpecifiedWordRegEx(word));
+      expect(match).not.toBeNull();
+    });
+
+    it("matches an word 2", () => {
+      const word = "bad3483e025c47338d43df308c117308";
+      const test = "\"bad3483e025c47338d43df308c117308\"";
+      const match = test.match(generalHelpers.getSpecifiedWordRegEx(word));
+      expect(match).not.toBeNull();
+    });
+
+    it("matches an word 3", () => {
+      const word = "bad3483e025c47338d43df308c117308";
+      const test = ",bad3483e025c47338d43df308c117308,";
+      const match = test.match(generalHelpers.getSpecifiedWordRegEx(word));
+      expect(match).not.toBeNull();
+    });
+
+    it("doesn't match a word 1", () => {
+      const word = "bad3483e025c47338d43df308c117308";
+      const test = "bad3483e025c47338d43df308c11730";
+      const match = test.match(generalHelpers.getSpecifiedWordRegEx(word));
+      expect(match).toBeNull();
+    });
+
+    it("doesn't match a word 2", () => {
+      const word = "bad3483e025c47338d43df308c117308";
+      const test = "bad3483e025c47338d43df308c117308a";
+      const match = test.match(generalHelpers.getSpecifiedWordRegEx(word));
+      expect(match).toBeNull();
+    });
+
+    it("doesn't match a word 3", () => {
+      const word = "bad3483e025c47338d43df308c117308";
+      const test = "bad3483e025c47338d43df308c117309";
+      const match = test.match(generalHelpers.getSpecifiedWordRegEx(word));
+      expect(match).toBeNull();
+    });
+
+    it("matches multiple instances of word", () => {
+      const word = "bad3483e025c47338d43df308c117308";
+      const test = "bad3483e025c47338d43df308c117308, bad3483e025c47338d43df308c117309, bad3483e025c47338d43df308c117308,";
+      const match = test.match(generalHelpers.getSpecifiedWordRegEx(word));
+      expect(match).not.toBeNull();
+      expect(match?.length).toEqual(2);
     });
   });
 

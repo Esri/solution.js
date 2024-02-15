@@ -20,26 +20,34 @@ import JSZip from "jszip";
 // ------------------------------------------------------------------------------------------------------------------ //
 
 /**
- * Swizzles the source item id with the destination item id in the form zip file and updates the destination item
- * with the swizzled zip file.
+ * Detemplatize the contents of a zip object.
  *
- * @param sourceItemId Source item id
- * @param destinationItemId Destination item id
- * @param zipBlob Form zip file
- * @param filesOfInterest Array of file names to extract from the zip file. If empty, all files are extracted.
- * @returns Promise that resolves to the modified zip file if the swizzle was successful
+ * @param zipObject Zip file to be modified in place
+ * @param templateDictionary Dictionary of replacement values
+ * @returns Promise that resolves to the updated zip object
  */
-export async function swizzleIdsInZipFile(
-  sourceItemId: string,
-  destinationItemId: string,
-  zip: JSZip,
-  filesOfInterest: string[] = []
+export async function detemplatizeFormData(
+  zipObject: JSZip,
+  templateDictionary: any
 ): Promise<JSZip> {
-  const updatedZip = await common.modifyFilesinZipObject(
+  // Get the contents of the zip object
+  const zipObjectContents = await common.getZipObjectContents(zipObject);
+
+  // Detemplatize the contents of each file in a zip file and replace them in the zip object
+  zipObjectContents.forEach(
     (zipFile: common.IZipObjectContentItem) => {
-      return zipFile.content.replace(new RegExp(sourceItemId, "g"), destinationItemId);
-    }, zip, filesOfInterest
+      try {
+        // Replace the templates
+        const updatedZipContent = common.replaceInTemplate(zipFile.content, templateDictionary);
+
+        // Replace the file content
+        zipObject.file(zipFile.file, updatedZipContent);
+
+      } catch (_e) {
+        // Ignore errors
+      }
+    }
   );
 
-  return Promise.resolve(updatedZip);
+  return Promise.resolve(zipObject);
 }

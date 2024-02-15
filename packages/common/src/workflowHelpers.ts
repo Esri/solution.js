@@ -86,7 +86,7 @@ export async function extractAndTemplatizeWorkflowFromZipFile(
   let workflowConfigStr = JSON.stringify(workflowConfig);
   const matches = workflowConfigStr.match(getAgoIdRegEx()) || [];
   matches.forEach((match: string) => {
-    workflowConfigStr = workflowConfigStr.replace(match, `{{${match}}}`);
+    workflowConfigStr = workflowConfigStr.replace(new RegExp(match, "g"), `{{${match}}}`);
   });
 
   return Promise.resolve(JSON.parse(workflowConfigStr));
