@@ -21,3 +21,4 @@
  */
 
 export * from "./workflow";
+export * from "./workflowHelpers";
