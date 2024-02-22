@@ -20,34 +20,39 @@ import JSZip from "jszip";
 // ------------------------------------------------------------------------------------------------------------------ //
 
 /**
- * Detemplatize the contents of a zip object.
+ * Detemplatizes Form data and swizzles the AGO ids of a zip object if they are present in the template dictionary.
  *
  * @param zipObject Zip file to be modified in place
  * @param templateDictionary Dictionary of replacement values
  * @returns Promise that resolves to the updated zip object
  */
-export async function detemplatizeFormData(
+export async function swizzleFormData(
   zipObject: JSZip,
   templateDictionary: any
 ): Promise<JSZip> {
   // Get the contents of the zip object
   const zipObjectContents = await common.getZipObjectContents(zipObject);
 
-  // Detemplatize the contents of each file in a zip file and replace them in the zip object
+  // Swizzle the contents of each file in a zip file and replace them in the zip object
   zipObjectContents.forEach(
-    (zipFile: common.IZipObjectContentItem) => {
-      try {
-        let updatedZipContent = zipFile.content;
+    (zipFile : common.IZipObjectContentItem) => {
+      // Detemplatize the file content
+      let updatedZipContent = common.replaceInTemplate(zipFile.content, templateDictionary);
 
-        // Detemplatize the file content
-        updatedZipContent = common.replaceInTemplate(updatedZipContent, templateDictionary);
+      // Find the AGO ids in the file content
+      const agoIdRegEx = common.getAgoIdRegEx();
+      const agoIdMatches = updatedZipContent.match(agoIdRegEx) ?? [];
 
-        // Replace the file content in the zip object
-        zipObject.file(zipFile.file, updatedZipContent);
+      // Replace the matching AGO id in the file content iff it is present in the template dictionary
+      agoIdMatches.forEach((match: string) => {
+        const replacement = templateDictionary[match];
+        if (replacement) {
+          updatedZipContent = updatedZipContent.replace(new RegExp(match, "g"), `${replacement.itemId}`);
+        }
+      });
 
-      } catch (_e) {
-        // Ignore errors
-      }
+      // Replace the file content in the zip object
+      zipObject.file(zipFile.file, updatedZipContent);
     }
   );
 

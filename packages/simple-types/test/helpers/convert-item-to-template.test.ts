@@ -492,7 +492,7 @@ describe("simpleTypeConvertItemToTemplate", () => {
         { relationshipType: "Survey2Data", relatedItemIds: ["srv1234567890", "abc1234567890"] },
         { relationshipType: "Survey2Service", relatedItemIds: ["srv1234567890"] }
       ] as common.IRelatedItems[]);
-      spyOn(formHelpers, "templatizeFormData").and.callFake((zipObject: JSZip) => Promise.resolve(zipObject));
+      spyOn(formHelpers, "templatizeFormWebHooks").and.callFake((zipObject: any) => Promise.resolve(zipObject));
 
       simpleTypes
         .convertItemToTemplate(
@@ -511,7 +511,7 @@ describe("simpleTypeConvertItemToTemplate", () => {
         { relationshipType: "Survey2Data", relatedItemIds: ["srv1234567890", "abc1234567890"] },
         { relationshipType: "Survey2Service", relatedItemIds: ["srv1234567890"] }
       ] as common.IRelatedItems[]);
-      spyOn(formHelpers, "templatizeFormData").and.callFake((zipObject: JSZip) => Promise.resolve(zipObject));
+      spyOn(formHelpers, "templatizeFormWebHooks").and.callFake((zipObject: any) => Promise.resolve(zipObject));
 
       simpleTypes
         .convertItemToTemplate(

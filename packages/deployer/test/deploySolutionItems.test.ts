@@ -26,7 +26,7 @@ import * as simpleTypes from "@esri/solution-simple-types";
 import * as templates from "../../common/test/mocks/templates";
 import * as testUtils from "../../common/test/mocks/utils";
 import * as utils from "../../common/test/mocks/utils";
-import * as zipUtils from "../src/helpers/zip-utils";
+import * as formHelpers from "../src/helpers/formHelpers";
 import * as zipUtilsTest from "../../common/test/zip-utils.test";
 import JSZip from "jszip";
 

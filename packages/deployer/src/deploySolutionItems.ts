@@ -21,7 +21,7 @@
  */
 
 import * as common from "@esri/solution-common";
-import * as zipUtils from "./helpers/zip-utils";
+import * as formHelpers from "./helpers/formHelpers";
 import { moduleMap } from "./module-map";
 
 const UNSUPPORTED: common.moduleHandler = null;
@@ -1135,9 +1135,9 @@ export function _createItemFromTemplateWhenReady(
               );
 
               if (formZipFilePath) {
-                // Fetch the formzip file and demplatize it
+                // Fetch the form's zip file and detemplatize it
                 const zipObject = await common.fetchZipObject(formZipFilePath.url, storageAuthentication);
-                const updatedZipObject = await zipUtils.detemplatizeFormData(zipObject, templateDictionary);
+                const updatedZipObject = await formHelpers.swizzleFormData(zipObject, templateDictionary);
 
                 // Update the new item
                 void common.updateItemWithZipObject(updatedZipObject, destinationItemId, destinationAuthentication);

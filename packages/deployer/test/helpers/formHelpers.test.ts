@@ -19,9 +19,9 @@
  */
 
 import * as common from "@esri/solution-common";
-import * as utils from "../../../common/test/mocks/utils";
-import * as zipUtils from "../../src/helpers/zip-utils";
-import * as zipUtilsTest from "../../../common/test/zip-utils.test";1
+import * as utils from "@esri/solution-common/test/mocks/utils";
+import * as zipUtils from "../../src/helpers/formHelpers";
+import * as zipUtilsTest from "@esri/solution-common/test/zip-utils.test";1
 
 // ------------------------------------------------------------------------------------------------------------------ //
 
@@ -35,7 +35,7 @@ beforeEach(() => {
 
 describe("Module `zip-utils`", () => {
 
-  describe("detemplatizeFormData", () => {
+  describe("swizzleFormData", () => {
     const org1 = "org1234567890";
     const itemId1 = "2f56b3b59cdc4ac8b8f5de0399887e1e";
     const orgId2 = "org1234567891";
@@ -57,7 +57,7 @@ describe("Module `zip-utils`", () => {
         itemId: itemId2
       };
 
-      const modifiedZipObject = await zipUtils.detemplatizeFormData(zipObject, templateDictionary);
+      const modifiedZipObject = await zipUtils.swizzleFormData(zipObject, templateDictionary);
 
       const modifiedZipContents = await common.getZipObjectContents(modifiedZipObject);
 

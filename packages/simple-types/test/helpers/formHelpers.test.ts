@@ -20,7 +20,7 @@
 
 import * as common from "@esri/solution-common";
 import * as formHelpers from "../../src/helpers/formHelpers";
-import * as zipUtilsTest from "../../../common/test/zip-utils.test";
+import * as zipUtilsTest from "@esri/solution-common/test/zip-utils.test";
 
 // ------------------------------------------------------------------------------------------------------------------ //
 
@@ -36,7 +36,7 @@ describe("Module `zip-utils`", () => {
       const filename = "test.zip";
       const zipObject = await zipUtilsTest.generateFormZipObject(itemId);
 
-      const modifiedZipObject = await formHelpers.templatizeFormData(zipObject);
+      const modifiedZipObject = await formHelpers.templatizeFormWebHooks(zipObject, true);
       const modifiedZipContents = await common.getZipObjectContents(modifiedZipObject);
 
       const expectedZipObject = zipUtilsTest.generateFormZipObject(`{{${itemId}.itemId}}`);
@@ -52,59 +52,13 @@ describe("Module `zip-utils`", () => {
       const filename = "test.zip";
       const zipObject = await zipUtilsTest.generateFormZipObject(itemId, false);
 
-      const modifiedZipObject = await formHelpers.templatizeFormData(zipObject);
+      const modifiedZipObject = await formHelpers.templatizeFormWebHooks(zipObject, true);
       const modifiedZipContents = await common.getZipObjectContents(modifiedZipObject);
 
       const expectedZipObject = zipUtilsTest.generateFormZipObject(`{{${itemId}.itemId}}`, false);
       const expectedZipContents = await common.getZipObjectContents(expectedZipObject);
 
       expect(modifiedZipContents).toEqual(expectedZipContents);
-    });
-  });
-
-  describe("_templatizeAgoIds", () => {
-    const itemId = "2f56b3b59cdc4ac8b8f5de0399887e1e";
-
-    it("templatizes AGO ids", async () => {
-      const zipObject = zipUtilsTest.generateFormZipObject(itemId);
-      const zipContents = await common.getZipObjectContents(zipObject);
-
-      const modifiedZipObject = await formHelpers._templatizeAgoIds(zipObject);
-      const modifiedZipContents = await common.getZipObjectContents(modifiedZipObject);
-
-      const expectedZipObject = zipUtilsTest.generateFormZipObject(`{{${itemId}.itemId}}`);
-      const expectedZipContents = await common.getZipObjectContents(expectedZipObject);
-
-      expect(zipContents).not.toEqual(modifiedZipContents);
-      expect(modifiedZipContents).toEqual(expectedZipContents);
-    });
-  });
-
-  describe("_templatizeWebHooks", () => {
-    it("templatizes webhooks", () => {
-      const webhooks = [{
-        "active": true,
-        "name": "workflow manager",
-        "url":
-        "https://workflow.arcgis.com/org1234567890/e788fd6491bb46fda9e7c97d0bf4eb02/webhooks/createJobFromSurveyResponse/hook1234567890",
-      }, {
-        "active": true,
-        "name": "Swizzle Webhook",
-        "url": "https://myorg.maps.arcgis.com/home/item.html?id=e788fd6491bb46fda9e7c97d0bf4eb02",
-      }];
-
-      formHelpers._templatizeWebHooks(webhooks);
-
-      expect(webhooks).toEqual([{
-        "active": true,
-        "name": "workflow manager",
-        "url":
-        "https://workflow.arcgis.com/{{user.orgId}}/e788fd6491bb46fda9e7c97d0bf4eb02/webhooks/createJobFromSurveyResponse/hook1234567890",
-      }, {
-        "active": true,
-        "name": "Swizzle Webhook",
-        "url": "{{portalBaseUrl}}/home/item.html?id=e788fd6491bb46fda9e7c97d0bf4eb02",
-      }]);
     });
   });
 
