@@ -19,7 +19,7 @@
  */
 
 import * as common from "@esri/solution-common";
-import * as zipUtils from "../../src/helpers/zip-utils";
+import * as formHelpers from "../../src/helpers/formHelpers";
 import * as zipUtilsTest from "../../../common/test/zip-utils.test";
 
 // ------------------------------------------------------------------------------------------------------------------ //
@@ -34,11 +34,9 @@ describe("Module `zip-utils`", () => {
 
     it("templatizes form data containing webhooks", async () => {
       const filename = "test.zip";
-      const zip = await zipUtilsTest.getSampleFormZipFile(itemId, filename);
+      const zipObject = await zipUtilsTest.generateFormZipObject(itemId);
 
-      const modifiedZip = await zipUtils.templatizeFormData(zip, filename);
-
-      const modifiedZipObject = await common.blobToZipObject(modifiedZip);
+      const modifiedZipObject = await formHelpers.templatizeFormData(zipObject);
       const modifiedZipContents = await common.getZipObjectContents(modifiedZipObject);
 
       const expectedZipObject = zipUtilsTest.generateFormZipObject(`{{${itemId}.itemId}}`);
@@ -52,11 +50,9 @@ describe("Module `zip-utils`", () => {
 
     it("templatizes form data that doesn't contain webhooks", async () => {
       const filename = "test.zip";
-      const zip = await zipUtilsTest.getSampleFormZipFile(itemId, filename, false);
+      const zipObject = await zipUtilsTest.generateFormZipObject(itemId, false);
 
-      const modifiedZip = await zipUtils.templatizeFormData(zip, filename);
-
-      const modifiedZipObject = await common.blobToZipObject(modifiedZip);
+      const modifiedZipObject = await formHelpers.templatizeFormData(zipObject);
       const modifiedZipContents = await common.getZipObjectContents(modifiedZipObject);
 
       const expectedZipObject = zipUtilsTest.generateFormZipObject(`{{${itemId}.itemId}}`, false);
@@ -73,7 +69,7 @@ describe("Module `zip-utils`", () => {
       const zipObject = zipUtilsTest.generateFormZipObject(itemId);
       const zipContents = await common.getZipObjectContents(zipObject);
 
-      const modifiedZipObject = await zipUtils._templatizeAgoIds(zipObject);
+      const modifiedZipObject = await formHelpers._templatizeAgoIds(zipObject);
       const modifiedZipContents = await common.getZipObjectContents(modifiedZipObject);
 
       const expectedZipObject = zipUtilsTest.generateFormZipObject(`{{${itemId}.itemId}}`);
@@ -97,13 +93,13 @@ describe("Module `zip-utils`", () => {
         "url": "https://myorg.maps.arcgis.com/home/item.html?id=e788fd6491bb46fda9e7c97d0bf4eb02",
       }];
 
-      zipUtils._templatizeWebHooks(webhooks);
+      formHelpers._templatizeWebHooks(webhooks);
 
       expect(webhooks).toEqual([{
         "active": true,
         "name": "workflow manager",
         "url":
-        "https://workflow.arcgis.com/{{orgId}}/e788fd6491bb46fda9e7c97d0bf4eb02/webhooks/createJobFromSurveyResponse/hook1234567890",
+        "https://workflow.arcgis.com/{{user.orgId}}/e788fd6491bb46fda9e7c97d0bf4eb02/webhooks/createJobFromSurveyResponse/hook1234567890",
       }, {
         "active": true,
         "name": "Swizzle Webhook",

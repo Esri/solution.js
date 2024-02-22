@@ -1125,7 +1125,7 @@ export function _createItemFromTemplateWhenReady(
               let formZipFilePath: common.IDeployFileCopyPath;
               resourceFilePaths = resourceFilePaths.filter(
                 (filePath) => {
-                  if (filePath.filename === `${sourceItemId}.zip`) {
+                  if (filePath.filename.endsWith(".zip")) {
                     formZipFilePath = filePath;
                     return false;
                   } else {

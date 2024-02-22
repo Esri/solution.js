@@ -37,10 +37,12 @@ export async function detemplatizeFormData(
   zipObjectContents.forEach(
     (zipFile: common.IZipObjectContentItem) => {
       try {
-        // Replace the templates
-        const updatedZipContent = common.replaceInTemplate(zipFile.content, templateDictionary);
+        let updatedZipContent = zipFile.content;
 
-        // Replace the file content
+        // Detemplatize the file content
+        updatedZipContent = common.replaceInTemplate(updatedZipContent, templateDictionary);
+
+        // Replace the file content in the zip object
         zipObject.file(zipFile.file, updatedZipContent);
 
       } catch (_e) {

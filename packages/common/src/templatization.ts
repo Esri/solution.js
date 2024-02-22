@@ -110,6 +110,7 @@ export function createInitializedItemTemplate(itemInfo: any): IItemTemplate {
     culture: itemInfo.culture,
     description: itemInfo.description,
     extent: getDefaultExtent(itemInfo),
+    isOrgItem: itemInfo.isOrgItem,
     licenseInfo: itemInfo.licenseInfo,
     modified: itemInfo.modified,
     name: itemInfo.name,
@@ -150,7 +151,8 @@ export function createPlaceholderTemplate(
     dependencies: [],
     groups: [],
     properties: {},
-    estimatedDeploymentCostFactor: 2
+    estimatedDeploymentCostFactor: 2,
+    isOrgItem: true
   };
 }
 
