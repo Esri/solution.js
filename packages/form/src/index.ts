@@ -22,4 +22,5 @@
 
 export * from "./convert-item-to-template";
 export * from "./create-item-from-template";
+export * from "./formUtils";
 export * from "./post-process";

@@ -22,7 +22,7 @@ import JSZip from "jszip";
 /**
  * Templatizes the URLs in webhooks in a form's zip object.
  *
- * @param zipObject Form zip object to templatize in place
+ * @param zipObject Form zip object to templatize; it is modified in place
  * @param isOrgItem Indicates whether this item and the user whose credential was used to fetch this item belong
  * to the same ArcGIS Enterprise Portal or ArcGIS Online Organization
  * @returns Promise that resolves to the modified zip object

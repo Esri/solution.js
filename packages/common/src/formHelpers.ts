@@ -24,31 +24,6 @@ import JSZip from "jszip";
 // ------------------------------------------------------------------------------------------------------------------ //
 
 /**
- * Gets the dependencies of a Form that are stored in its zip object webhooks.
- *
- * @param zipObject Zip file object from which to get the dependencies
- * @returns Promise that resolves to an array of dependencies
- */
-export async function getWebHookDependencies(
-  zipObject: JSZip
-): Promise<string[]> {
-  const agoIdRegEx = generalHelpers.getAgoIdRegEx();
-  const webhooks = await getWebHooksFromZipObject(zipObject);
-  const dependencies: string[] = [];
-  webhooks.forEach((webhook: any) => {
-    if (!webhook.url.startsWith("https://workflow.arcgis.com")) {
-      const matches = webhook.url.match(agoIdRegEx) ?? [];
-      matches.forEach((match: string) => {
-        if (!dependencies.includes(match)) {
-          dependencies.push(match);
-        }
-      });
-    }
-  });
-  return Promise.resolve(dependencies);
-}
-
-/**
  * Gets the webhooks from a Form zip object's *.info file.
  *
  * @param zipObject Zip file object from which to get the webhooks

@@ -21,7 +21,7 @@
  */
 
 import * as common from "@esri/solution-common";
-import * as formHelpers from "./helpers/formHelpers";
+import * as form from "@esri/solution-form";
 import { moduleMap } from "./module-map";
 
 const UNSUPPORTED: common.moduleHandler = null;
@@ -157,7 +157,10 @@ export function deploySolutionItems(
             // Get the item's template out of the list of templates
             const template = common.findTemplateInList(templates, id);
 
-            if (template.type === "QuickCapture Project") {
+            if (template.type === "Form") {
+              // Flag all forms for post processing of their webhooks
+              itemsToBePatched[id] = [];
+            } else if (template.type === "QuickCapture Project") {
               // Remove qc.project.json files from the resources--we don't use them from solutions
               template.resources = template.resources.filter(
                 (filename: string) => !filename.endsWith("qc.project.json")
@@ -1137,7 +1140,7 @@ export function _createItemFromTemplateWhenReady(
               if (formZipFilePath) {
                 // Fetch the form's zip file and detemplatize it
                 const zipObject = await common.fetchZipObject(formZipFilePath.url, storageAuthentication);
-                const updatedZipObject = await formHelpers.swizzleFormData(zipObject, templateDictionary);
+                const updatedZipObject = await form.swizzleFormObject(zipObject, templateDictionary);
 
                 // Update the new item
                 void common.updateItemWithZipObject(updatedZipObject, destinationItemId, destinationAuthentication);

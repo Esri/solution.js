@@ -156,11 +156,8 @@ export function convertItemToTemplate(
               async (resolve) => {
                 let zipObject: JSZip = await common.blobToZipObject(itemDataResponse as File);
 
-                itemTemplate.dependencies =
-                  itemTemplate.dependencies.concat(await common.getWebHookDependencies(zipObject));
-
-                // Templatize the form's webhooks; we'll postpone handling the AGO ids until deployment
-                zipObject = await formHelpers.templatizeFormWebHooks(zipObject, itemTemplate.isOrgItem);
+                // Templatize the form's webhooks,
+                zipObject = await formHelpers.templatizeFormWebHooks(zipObject, itemTemplate.item.isOrgItem);
 
                 itemTemplate.item.name = _getFormDataFilename(
                   itemTemplate.item.name, (itemDataResponse as File).name, `${itemTemplate.itemId}.zip`

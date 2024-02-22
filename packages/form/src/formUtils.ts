@@ -26,7 +26,7 @@ import JSZip from "jszip";
  * @param templateDictionary Dictionary of replacement values
  * @returns Promise that resolves to the updated zip object
  */
-export async function swizzleFormData(
+export async function swizzleFormObject(
   zipObject: JSZip,
   templateDictionary: any
 ): Promise<JSZip> {
@@ -46,7 +46,8 @@ export async function swizzleFormData(
       // Replace the matching AGO id in the file content iff it is present in the template dictionary
       agoIdMatches.forEach((match: string) => {
         const replacement = templateDictionary[match];
-        if (replacement) {
+        if (replacement && typeof replacement?.itemId === "string") {
+          if (match === replacement.itemId) { return; }
           updatedZipContent = updatedZipContent.replace(new RegExp(match, "g"), `${replacement.itemId}`);
         }
       });
