@@ -608,6 +608,15 @@ describe("Module `generalHelpers`: common utility functions shared across packag
     });
   });
 
+  describe("delay", () => {
+    it("should delay", async () => {
+      const start = Date.now();
+      await generalHelpers.delay(1000);
+      const end = Date.now();
+      expect(end - start).toBeGreaterThanOrEqual(1000);
+    });
+  });
+
   describe("deleteProp", () => {
     it("should handle missing prop", () => {
       const testObject: any = {};

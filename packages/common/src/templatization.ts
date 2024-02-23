@@ -109,7 +109,6 @@ export function createInitializedItemTemplate(itemInfo: any): IItemTemplate {
     culture: itemInfo.culture,
     description: itemInfo.description,
     extent: getDefaultExtent(itemInfo),
-    isOrgItem: itemInfo.isOrgItem,
     licenseInfo: itemInfo.licenseInfo,
     modified: itemInfo.modified,
     name: itemInfo.name,
@@ -123,6 +122,9 @@ export function createInitializedItemTemplate(itemInfo: any): IItemTemplate {
     typeKeywords: itemInfo.typeKeywords,
     url: itemInfo.url
   };
+  if (typeof itemInfo.isOrgItem !== "undefined") {
+    itemTemplate.isOrgItem = itemInfo.isOrgItem;
+  }
   return itemTemplate;
 }
 

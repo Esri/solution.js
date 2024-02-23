@@ -46,7 +46,7 @@ export async function swizzleFormObject(
       // Replace the matching AGO id in the file content iff it is present in the template dictionary
       agoIdMatches.forEach((match: string) => {
         const replacement = templateDictionary[match];
-        if (replacement && typeof replacement?.itemId === "string") {
+        if (typeof replacement?.itemId === "string") {
           if (match === replacement.itemId) { return; }
           updatedZipContent = updatedZipContent.replace(new RegExp(match, "g"), `${replacement.itemId}`);
         }

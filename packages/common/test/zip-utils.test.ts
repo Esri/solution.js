@@ -165,6 +165,8 @@ export function generateFormZipObject(
     "esriinfo/form.webform",
     "esriinfo/form.xml",
     "esriinfo/forminfo.json"
+
+    Note that the folder and forminfo.json files have constant names; the others can vary
   */
   const zip = new JSZip();
   includeWebhooks

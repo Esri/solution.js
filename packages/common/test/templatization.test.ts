@@ -27,6 +27,61 @@ import * as utils from "./mocks/utils";
 // ------------------------------------------------------------------------------------------------------------------ //
 
 describe("Module `templatization`: common functions involving the adlib library", () => {
+
+  describe("createInitializedItemTemplate", () => {
+    it("creates an initialized template that doesn't have the optional `isOrgItem` property", () => {
+      const template: interfaces.IItemTemplate = templatization.createInitializedItemTemplate(
+        { id: "fred", type: "Web Map" }
+      );
+      template.key = "";
+
+      expect(template).toEqual({
+        itemId: "fred",
+        type: "Web Map",
+        key: "",
+        item: {
+          accessInformation: undefined,
+          categories: undefined,
+          contentStatus: undefined,
+          created: undefined,
+          culture: undefined,
+          description: undefined,
+          extent: "{{solutionItemExtent}}",
+          id: "fred",
+          licenseInfo: undefined,
+          modified: undefined,
+          name: undefined,
+          origUrl: undefined,
+          properties: undefined,
+          snippet: undefined,
+          spatialReference: undefined,
+          tags: undefined,
+          thumbnail: undefined,
+          title: undefined,
+          type: "Web Map",
+          typeKeywords: undefined,
+          url: undefined,
+        },
+        data: {},
+        resources: [],
+        dependencies: [],
+        groups: [],
+        properties: {},
+        estimatedDeploymentCostFactor: 2
+      });
+    });
+
+    it("creates an initialized template that has the optional `isOrgItem` property", () => {
+      const template: interfaces.IItemTemplate = templatization.createInitializedItemTemplate(
+        { id: "fred", type: "Web Map", description: "desc", properties: { a: "propA", b: "propB" }, isOrgItem: true }
+      );
+
+      expect(template.item.description).toEqual("desc");
+      expect(template.item.properties).toEqual({ a: "propA", b: "propB" });
+      expect(template.isOrgItem).toBeTruthy();
+    });
+  });
+
   describe("createInitializedGroupTemplate", () => {
     it("handles missing typeKeywords", () => {
       const template: interfaces.IItemTemplate = templatization.createInitializedGroupTemplate({ id: "fred" });
@@ -166,7 +221,7 @@ describe("Module `templatization`: common functions involving the adlib library"
     it("should handle an empty list", () => {
       const solnTemplates: interfaces.IItemTemplate[] = [];
       const id: string = "";
-      const expected: interfaces.IItemTemplate = null;
+      const expected: any = null;  // interfaces.IItemTemplate
 
       const actual = templatization.findTemplateInList(solnTemplates, id);
       expect(actual).toEqual(expected);
@@ -180,7 +235,7 @@ describe("Module `templatization`: common functions involving the adlib library"
         "jkl"
       ]);
       const id: string = "xyz";
-      const expected: interfaces.IItemTemplate = null;
+      const expected: any = null;  // interfaces.IItemTemplate
 
       const actual = templatization.findTemplateInList(solnTemplates, id);
       expect(actual).toEqual(expected);
@@ -429,9 +484,9 @@ describe("Module `templatization`: common functions involving the adlib library"
 
   describe("templatizeTerm", () => {
     it("should handle undefined context", () => {
-      const context: string = undefined;
+      const context: any = undefined;  // string
       const term: string = "aTerm";
-      const suffix: string = undefined;
+      const suffix: any = undefined;  // string
       const expected: string = context;
 
       const actual = templatization.templatizeTerm(context, term, suffix);
@@ -441,7 +496,7 @@ describe("Module `templatization`: common functions involving the adlib library"
     it("should handle default suffix", () => {
       const context: string = "a sentence with aTerm in it";
       const term: string = "aTerm";
-      const suffix: string = undefined;
+      const suffix: any = undefined;  // string
       const expected: string = "a sentence with {{aTerm}} in it";
 
       const actual = templatization.templatizeTerm(context, term, suffix);
@@ -687,6 +742,7 @@ describe("Module `templatization`: common functions involving the adlib library"
       expect(templatizedObj).toEqual(expectedTemplatizedObj);
     });
   });
+
 });
 
 // ------------------------------------------------------------------------------------------------------------------ //

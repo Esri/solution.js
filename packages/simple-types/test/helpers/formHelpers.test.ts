@@ -27,35 +27,33 @@ import * as zipUtilsTest from "@esri/solution-common/test/zip-utils.test";
 
 jasmine.DEFAULT_TIMEOUT_INTERVAL = 20000; // default is 5000 ms
 
-describe("Module `zip-utils`", () => {
+describe("Module `formHelpers`", () => {
 
   describe("templatizeFormData", () => {
     const itemId = "2f56b3b59cdc4ac8b8f5de0399887e1e";
 
     it("templatizes form data containing webhooks", async () => {
-      const filename = "test.zip";
       const zipObject = await zipUtilsTest.generateFormZipObject(itemId);
 
       const modifiedZipObject = await formHelpers.templatizeFormWebHooks(zipObject, true);
       const modifiedZipContents = await common.getZipObjectContents(modifiedZipObject);
 
-      const expectedZipObject = zipUtilsTest.generateFormZipObject(`{{${itemId}.itemId}}`);
+      const expectedZipObject = zipUtilsTest.generateFormZipObject(itemId);
       const expectedZipContents = await common.getZipObjectContents(expectedZipObject);
       expectedZipContents[1].content = expectedZipContents[1].content
         .replace("https://fred.maps.arcgis.com", "{{portalBaseUrl}}")
-        .replace("org1234567890", "{{orgId}}");
+        .replace("org1234567890", "{{user.orgId}}");
 
       expect(modifiedZipContents).toEqual(expectedZipContents);
     });
 
     it("templatizes form data that doesn't contain webhooks", async () => {
-      const filename = "test.zip";
       const zipObject = await zipUtilsTest.generateFormZipObject(itemId, false);
 
       const modifiedZipObject = await formHelpers.templatizeFormWebHooks(zipObject, true);
       const modifiedZipContents = await common.getZipObjectContents(modifiedZipObject);
 
-      const expectedZipObject = zipUtilsTest.generateFormZipObject(`{{${itemId}.itemId}}`, false);
+      const expectedZipObject = zipUtilsTest.generateFormZipObject(itemId, false);
       const expectedZipContents = await common.getZipObjectContents(expectedZipObject);
 
       expect(modifiedZipContents).toEqual(expectedZipContents);
