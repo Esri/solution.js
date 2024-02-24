@@ -82,6 +82,78 @@ describe("Module `deploySolutionItems`", () => {
         );
     });
 
+    it("adds Forms to the itemsToBePatched queue", async () => {  //??? TEST FAILS WHEN RUN WITH OTHER TESTS
+      const id: string = "aa4a6047326243b290f625e80ebe6531";
+      const newItemID: string = "ba4a6047326243b290f625e80ebe6531";
+      const type: string = "Form";
+
+      const url: string =
+        "https://apl.maps.arcgis.com/apps/Viewer/index.html?appid=map1234567890";
+      const itemTemplate: common.IItemTemplate = templates.getItemTemplate(
+        type,
+        undefined,
+        url
+      );
+      itemTemplate.item.thumbnail = null;
+      itemTemplate.itemId = id;
+
+      const updatedItem = mockItems.getAGOLItem("Form");
+
+      const templateDictionary: any = {
+        user: mockItems.getAGOLUser("casey"),
+        portalBaseUrl: utils.PORTAL_SUBSET.portalUrl
+      };
+
+      fetchMock
+        .get(
+          utils.PORTAL_SUBSET.restUrl +
+            "/search?f=json&q=typekeywords%3Asource-" +
+            id +
+            "%20type%3AWeb%20Mapping%20Application%20owner%3Acasey&token=fake-token",
+          {
+            results: []
+          }
+        )
+        .get(
+          utils.PORTAL_SUBSET.restUrl +
+            "/search?f=json&q=tags%3Asource-" +
+            id +
+            "%20type%3AWeb%20Mapping%20Application%20owner%3Acasey&token=fake-token",
+          {
+            results: []
+          }
+        )
+        .post(
+          utils.PORTAL_SUBSET.restUrl + "/content/users/casey/addItem",
+          utils.getSuccessResponse({ id: newItemID })
+        )
+        .post(
+          utils.PORTAL_SUBSET.restUrl +
+            "/content/users/casey/items/" +
+            newItemID +
+            "/update",
+          utils.getSuccessResponse({ id: newItemID })
+        )
+        .get(
+          utils.PORTAL_SUBSET.restUrl +
+            "/content/items/" +
+            newItemID +
+            "?f=json&token=fake-token",
+          updatedItem
+        );
+
+      const result = await deploySolution.deploySolutionItems(
+        utils.PORTAL_URL,
+        "sln1234567890",
+        [itemTemplate],
+        MOCK_USER_SESSION,
+        templateDictionary,
+        "",
+        MOCK_USER_SESSION,
+        {}
+      );
+    });
+
     it("reuse items but no items exist", done => {
       const id: string = "aa4a6047326243b290f625e80ebe6531";
       const newItemID: string = "ba4a6047326243b290f625e80ebe6531";

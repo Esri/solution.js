@@ -23,6 +23,7 @@ import * as staticRelatedItemsMocks from "../../../common/test/mocks/staticRelat
 import * as templates from "../../../common/test/mocks/templates";
 import * as utils from "../../../common/test/mocks/utils";
 import * as formHelpers from "../../src/helpers/formHelpers";
+import * as zipUtilsTest from "../../../common/test/zip-utils.test";
 import * as JSZip from "jszip";
 
 jasmine.DEFAULT_TIMEOUT_INTERVAL = 20000; // default is 5000 ms
@@ -476,54 +477,53 @@ describe("simpleTypeConvertItemToTemplate", () => {
       );
     });
 
-    const verifyFormTemplate = (done: DoneFn) => {
-      return (newItemTemplate: common.IItemTemplate) => {
-        delete (newItemTemplate as any).key; // key is randomly generated, and so is not testable
-        delete newItemTemplate.dataFile.file; // don't want to test File object
-        expect(newItemTemplate).toEqual(expectedTemplate);
-        done();
-      };
-    };
-
-    /*
-    fit("should handle form item type with default filename for falsy item name", done => {
+    it("should handle form item type with default filename for falsy item name", async () => {
+      const formId = "frm1234567890";
       itemTemplate.item.name = null;
 
       spyOn(common, "getItemRelatedItemsInSameDirection").and.resolveTo([
         { relationshipType: "Survey2Data", relatedItemIds: ["srv1234567890", "abc1234567890"] },
         { relationshipType: "Survey2Service", relatedItemIds: ["srv1234567890"] }
       ] as common.IRelatedItems[]);
+      spyOn(common, "getItemDataAsFile")
+        .and.resolveTo(await zipUtilsTest.getSampleFormZipFile(formId, "frm1234567890.zip"));
       spyOn(formHelpers, "templatizeFormWebHooks").and.callFake((zipObject: any) => Promise.resolve(zipObject));
 
-      simpleTypes
-        .convertItemToTemplate(
-          itemTemplate.item,
-          MOCK_USER_SESSION,
-          MOCK_USER_SESSION,
-          {}
-        )
-        .then(verifyFormTemplate(done), done.fail);
+      const template = await simpleTypes.convertItemToTemplate(
+        itemTemplate.item,
+        MOCK_USER_SESSION,
+        MOCK_USER_SESSION,
+        {}
+      );
+
+      delete (template as any).key; // key is randomly generated, and so is not testable
+      delete template.dataFile.file; // don't want to test File object
+      expect(template).toEqual(expectedTemplate);
     });
 
-    fit('should handle form item type with default filename for "undefined" string literal item name', done => {
+    it('should handle form item type with default filename for "undefined" string literal item name', async () => {
+      const formId = "frm1234567890";
       itemTemplate.item.name = "undefined";
 
       spyOn(common, "getItemRelatedItemsInSameDirection").and.resolveTo([
         { relationshipType: "Survey2Data", relatedItemIds: ["srv1234567890", "abc1234567890"] },
         { relationshipType: "Survey2Service", relatedItemIds: ["srv1234567890"] }
       ] as common.IRelatedItems[]);
+      spyOn(common, "getItemDataAsFile")
+        .and.resolveTo(await zipUtilsTest.getSampleFormZipFile(formId, "frm1234567890.zip"));
       spyOn(formHelpers, "templatizeFormWebHooks").and.callFake((zipObject: any) => Promise.resolve(zipObject));
 
-      simpleTypes
-        .convertItemToTemplate(
-          itemTemplate.item,
-          MOCK_USER_SESSION,
-          MOCK_USER_SESSION,
-          {}
-        )
-        .then(verifyFormTemplate(done), done.fail);
+      const template = await simpleTypes.convertItemToTemplate(
+        itemTemplate.item,
+        MOCK_USER_SESSION,
+        MOCK_USER_SESSION,
+        {}
+      );
+
+      delete (template as any).key; // key is randomly generated, and so is not testable
+      delete template.dataFile.file; // don't want to test File object
+      expect(template).toEqual(expectedTemplate);
     });
-    */  //???
 
     it("should use the template's item name for the form data name", () => {
       const itemName = "itemName";
