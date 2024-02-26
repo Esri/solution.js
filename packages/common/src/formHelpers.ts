@@ -75,7 +75,6 @@ export async function setWebHooksInZipObject(
  * @param zipObject Zip file object with which to update the item
  * @param destinationItemId Destination item id
  * @param destinationAuthentication Destination authentication
- * @param filesOfInterest Array of file names to extract from the zipObject file. If empty, all files are extracted.
  * @returns Promise that resolves to the update item response
  */
 export async function updateItemWithZipObject(
