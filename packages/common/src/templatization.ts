@@ -20,9 +20,8 @@
  * @module templatization
  */
 
-import { unique } from "@esri/hub-common";
 import { adlib } from "adlib";
-import { createShortId, getProp } from "./generalHelpers";
+import { createShortId, getProp, uniqueStringList } from "./generalHelpers";
 import { IItemTemplate, ISolutionItemData } from "./interfaces";
 
 // ------------------------------------------------------------------------------------------------------------------ //
@@ -123,6 +122,9 @@ export function createInitializedItemTemplate(itemInfo: any): IItemTemplate {
     typeKeywords: itemInfo.typeKeywords,
     url: itemInfo.url
   };
+  if (typeof itemInfo.isOrgItem !== "undefined") {
+    itemTemplate.isOrgItem = itemInfo.isOrgItem;
+  }
   return itemTemplate;
 }
 
@@ -338,7 +340,7 @@ export function templatizeIds(obj: any): any {
   const idTest: RegExp = /[0-9A-F]{32}/gim;
   if (obj && idTest.test(objString)) {
     // Templatize ids
-    const ids: string[] = objString.match(idTest).filter(unique);
+    const ids: string[] = uniqueStringList(objString.match(idTest));
     ids.forEach(id => {
       const regEx = new RegExp(id, "gm");
       objString = objString.replace(regEx, "{{" + id + ".itemId}}");
