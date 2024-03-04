@@ -26,9 +26,7 @@ import * as simpleTypes from "@esri/solution-simple-types";
 import * as templates from "../../common/test/mocks/templates";
 import * as testUtils from "../../common/test/mocks/utils";
 import * as utils from "../../common/test/mocks/utils";
-import * as zipUtils from "../src/helpers/zip-utils";
-import * as zipUtilsTest from "../test/helpers/zip-utils.test";
-import JSZip from "jszip";
+import * as zipUtilsTest from "../../common/test/zip-utils.test";
 
 // ------------------------------------------------------------------------------------------------------------------ //
 
@@ -82,6 +80,78 @@ describe("Module `deploySolutionItems`", () => {
             done();
           }
         );
+    });
+
+    it("adds Forms to the itemsToBePatched queue", async () => {  //??? TEST FAILS WHEN RUN WITH OTHER TESTS
+      const id: string = "aa4a6047326243b290f625e80ebe6531";
+      const newItemID: string = "ba4a6047326243b290f625e80ebe6531";
+      const type: string = "Form";
+
+      const url: string =
+        "https://apl.maps.arcgis.com/apps/Viewer/index.html?appid=map1234567890";
+      const itemTemplate: common.IItemTemplate = templates.getItemTemplate(
+        type,
+        undefined,
+        url
+      );
+      itemTemplate.item.thumbnail = null;
+      itemTemplate.itemId = id;
+
+      const updatedItem = mockItems.getAGOLItem("Form");
+
+      const templateDictionary: any = {
+        user: mockItems.getAGOLUser("casey"),
+        portalBaseUrl: utils.PORTAL_SUBSET.portalUrl
+      };
+
+      fetchMock
+        .get(
+          utils.PORTAL_SUBSET.restUrl +
+            "/search?f=json&q=typekeywords%3Asource-" +
+            id +
+            "%20type%3AWeb%20Mapping%20Application%20owner%3Acasey&token=fake-token",
+          {
+            results: []
+          }
+        )
+        .get(
+          utils.PORTAL_SUBSET.restUrl +
+            "/search?f=json&q=tags%3Asource-" +
+            id +
+            "%20type%3AWeb%20Mapping%20Application%20owner%3Acasey&token=fake-token",
+          {
+            results: []
+          }
+        )
+        .post(
+          utils.PORTAL_SUBSET.restUrl + "/content/users/casey/addItem",
+          utils.getSuccessResponse({ id: newItemID })
+        )
+        .post(
+          utils.PORTAL_SUBSET.restUrl +
+            "/content/users/casey/items/" +
+            newItemID +
+            "/update",
+          utils.getSuccessResponse({ id: newItemID })
+        )
+        .get(
+          utils.PORTAL_SUBSET.restUrl +
+            "/content/items/" +
+            newItemID +
+            "?f=json&token=fake-token",
+          updatedItem
+        );
+
+      const result = await deploySolution.deploySolutionItems(
+        utils.PORTAL_URL,
+        "sln1234567890",
+        [itemTemplate],
+        MOCK_USER_SESSION,
+        templateDictionary,
+        "",
+        MOCK_USER_SESSION,
+        {}
+      );
     });
 
     it("reuse items but no items exist", done => {
@@ -1900,10 +1970,8 @@ describe("Module `deploySolutionItems`", () => {
         });
     });
 
-    it("handles Form zip file resources separately", done => {
-      const itemTemplate: common.IItemTemplate = templates.getItemTemplate(
-        "Form"
-      );
+    it("handles Form zip file resources separately", async () => {
+      const itemTemplate: common.IItemTemplate = templates.getItemTemplate("Form");
       const resourceFilePaths: common.IDeployFileCopyPath[] = [{
         type: common.EFileType.Resource,
         folder: "aFolder",
@@ -1918,58 +1986,39 @@ describe("Module `deploySolutionItems`", () => {
       const templateDictionary: any = {};
       const newItemID: string = "frm1234567891";
 
-      const getBlobSpy = spyOn(common, "getBlob").and.returnValue(zipUtilsTest.getSampleZipBlob(itemTemplate.itemId));
+      spyOn(common, "fetchZipObject").and
+        .resolveTo(zipUtilsTest.generateFormZipObject(itemTemplate.itemId));
 
-      const swizzleIdsInZipFileSpy = spyOn(
-        zipUtils,
-        "swizzleIdsInZipFile"
-      ).and.resolveTo(zipUtilsTest.generateFormZip(itemTemplate.itemId));
+      const getThumbnailFromStorageItemSpy = spyOn(common, "getThumbnailFromStorageItem").and
+        .resolveTo(undefined);
 
-      const requestSpy = spyOn(common, "rest_request")
-      .and.resolveTo(mockItems.get200Success(itemTemplate.itemId));
+      const updateItemWithZipSpy = spyOn(common, "updateItemWithZipObject").and
+        .resolveTo(mockItems.get200Success(itemTemplate.itemId));
 
-      const updateItemWithZipSpy = spyOn(
-        common,
-        "updateItemWithZip"
-      ).and.resolveTo(mockItems.get200Success(itemTemplate.itemId));
+      spyOn(simpleTypes.simpleTypes, "createItemFromTemplate").and
+        .resolveTo({
+          item: itemTemplate,
+          id: newItemID,
+          type: itemTemplate.type,
+          postProcess: false
+        } as common.ICreateItemFromTemplateResponse);
 
-      spyOn(
-        simpleTypes.simpleTypes,
-        "createItemFromTemplate"
-      ).and.resolveTo({
-        item: itemTemplate,
-        id: newItemID,
-        type: itemTemplate.type,
-        postProcess: false
-      } as common.ICreateItemFromTemplateResponse);
-
-      const copyFilesFromStorageItemSpy = spyOn(
-        common,
-        "copyFilesFromStorageItem"
-      ).and.resolveTo(true);
+      const copyFilesFromStorageItemSpy = spyOn(common, "copyFilesFromStorageItem").and
+        .resolveTo(true);
 
       // eslint-disable-next-line @typescript-eslint/no-floating-promises
-      deploySolution
-        ._createItemFromTemplateWhenReady(
-          itemTemplate,
-          resourceFilePaths,
-          MOCK_USER_SESSION,
-          templateDictionary,
-          MOCK_USER_SESSION,
-          utils.ITEM_PROGRESS_CALLBACK
-        )
-        .then(() => {
-          expect(getBlobSpy).toHaveBeenCalledTimes(1);
-          expect(swizzleIdsInZipFileSpy).toHaveBeenCalledTimes(1);
-          expect(requestSpy).toHaveBeenCalledTimes(1);
-          expect(updateItemWithZipSpy).toHaveBeenCalledTimes(1);
-          expect(copyFilesFromStorageItemSpy).toHaveBeenCalledTimes(1);
+      const response: common.ICreateItemFromTemplateResponse = await deploySolution._createItemFromTemplateWhenReady(
+        itemTemplate,
+        resourceFilePaths,
+        MOCK_USER_SESSION,
+        templateDictionary,
+        MOCK_USER_SESSION,
+        utils.ITEM_PROGRESS_CALLBACK
+      );
 
-          done();
-        })
-        .catch(() => {
-          done.fail();
-        });
+      expect(getThumbnailFromStorageItemSpy).toHaveBeenCalledTimes(1);
+      expect(updateItemWithZipSpy).toHaveBeenCalledTimes(1);
+      expect(copyFilesFromStorageItemSpy).toHaveBeenCalledTimes(1);
     });
   });
 

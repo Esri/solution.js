@@ -165,7 +165,7 @@ describe("Module `group`: manages the creation and deployment of groups", () => 
             culture: "",
             properties: null,
             url:
-              "https://services7.arcgis.com/piPfTFmrV9d1DIvN/arcgis/rest/services/location_9402a6f176f54415ad4b8cb07598f42d/FeatureServer",
+              "https://services7.arcgis.com/org1234567890/arcgis/rest/services/location_9402a6f176f54415ad4b8cb07598f42d/FeatureServer",
             proxyFilter: null,
             access: "public",
             size: 0,
@@ -293,7 +293,7 @@ describe("Module `group`: manages the creation and deployment of groups", () => 
             culture: "",
             properties: null,
             url:
-              "https://services7.arcgis.com/piPfTFmrV9d1DIvN/arcgis/rest/services/location_9402a6f176f54415ad4b8cb07598f42d/FeatureServer",
+              "https://services7.arcgis.com/org1234567890/arcgis/rest/services/location_9402a6f176f54415ad4b8cb07598f42d/FeatureServer",
             proxyFilter: null,
             access: "public",
             size: 0,
@@ -371,7 +371,7 @@ describe("Module `group`: manages the creation and deployment of groups", () => 
               culture: "",
               properties: null,
               url:
-                "https://services7.arcgis.com/piPfTFmrV9d1DIvN/arcgis/rest/services/location_9402a6f176f54415ad4b8cb07598f42d/FeatureServer",
+                "https://services7.arcgis.com/org1234567890/arcgis/rest/services/location_9402a6f176f54415ad4b8cb07598f42d/FeatureServer",
               proxyFilter: null,
               access: "public",
               size: 0,
@@ -501,7 +501,7 @@ describe("Module `group`: manages the creation and deployment of groups", () => 
             culture: "",
             properties: null,
             url:
-              "https://services7.arcgis.com/piPfTFmrV9d1DIvN/arcgis/rest/services/location_9402a6f176f54415ad4b8cb07598f42d/FeatureServer",
+              "https://services7.arcgis.com/org1234567890/arcgis/rest/services/location_9402a6f176f54415ad4b8cb07598f42d/FeatureServer",
             proxyFilter: null,
             access: "public",
             size: 0,
@@ -579,7 +579,7 @@ describe("Module `group`: manages the creation and deployment of groups", () => 
               culture: "",
               properties: null,
               url:
-                "https://services7.arcgis.com/piPfTFmrV9d1DIvN/arcgis/rest/services/location_9402a6f176f54415ad4b8cb07598f42d/FeatureServer",
+                "https://services7.arcgis.com/org1234567890/arcgis/rest/services/location_9402a6f176f54415ad4b8cb07598f42d/FeatureServer",
               proxyFilter: null,
               access: "public",
               size: 0,

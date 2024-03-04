@@ -20,13 +20,13 @@
  * @module post-process
  */
 
-import {
-  UserSession,
-  IItemTemplate,
-  updateItemTemplateFromDictionary
-} from "@esri/solution-common";
 import { isHubFormTemplate } from "./helpers/is-hub-form-template";
 import { postProcessHubSurvey } from "./helpers/post-process-survey";
+import * as common from "@esri/solution-common";
+import * as formUtils from "./formUtils";
+import JSZip from "jszip";
+
+// ------------------------------------------------------------------------------------------------------------------ //
 
 /**
  * Form post-processing actions
@@ -38,15 +38,33 @@ import { postProcessHubSurvey } from "./helpers/post-process-survey";
  * @param {UserSession} authentication The destination session info
  * @returns Promise resolving to successfulness of update
  */
-export function postProcess(
+export async function postProcess(
   itemId: string,
   type: string,
   itemInfos: any[],
-  template: IItemTemplate,
-  templates: IItemTemplate[],
+  template: common.IItemTemplate,
+  templates: common.IItemTemplate[],
   templateDictionary: any,
-  authentication: UserSession
+  authentication: common.UserSession
 ): Promise<any> {
+  // Fetch the form's zip file
+  const formDataResponse = await common.getItemDataAsFile(itemId, "Form", authentication);
+  if (formDataResponse) {
+    const zipObject: JSZip = await common.blobToZipObject(formDataResponse);
+
+    // Detemplatize it
+    const updatedZipObject = await formUtils.swizzleFormObject(zipObject, templateDictionary);
+
+    // Update the form
+    void common.updateItemWithZipObject(updatedZipObject, itemId, authentication);
+
+  } else {
+    // If the form data is not found, AGO is slow storing the data; try again
+    await common.delay(5000);
+    return postProcess(itemId, type, itemInfos, template, templates, templateDictionary, authentication);
+  }
+
+  // If this is a Hub form, post-process it as such
   if (isHubFormTemplate(template)) {
     return postProcessHubSurvey(
       itemId,
@@ -59,7 +77,8 @@ export function postProcess(
     );
   }
 
-  return updateItemTemplateFromDictionary(
+  // Otherwise, just update the item's template
+  return common.updateItemTemplateFromDictionary(
     itemId,
     templateDictionary,
     authentication

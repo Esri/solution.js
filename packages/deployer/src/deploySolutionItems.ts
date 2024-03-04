@@ -21,9 +21,8 @@
  */
 
 import * as common from "@esri/solution-common";
-import * as zipUtils from "./helpers/zip-utils";
+import * as form from "@esri/solution-form";
 import { moduleMap } from "./module-map";
-import JSZip from "jszip";
 
 const UNSUPPORTED: common.moduleHandler = null;
 
@@ -158,7 +157,10 @@ export function deploySolutionItems(
             // Get the item's template out of the list of templates
             const template = common.findTemplateInList(templates, id);
 
-            if (template.type === "QuickCapture Project") {
+            if (template.type === "Form") {
+              // Flag all forms for post processing of their webhooks
+              itemsToBePatched[id] = [];
+            } else if (template.type === "QuickCapture Project") {
               // Remove qc.project.json files from the resources--we don't use them from solutions
               template.resources = template.resources.filter(
                 (filename: string) => !filename.endsWith("qc.project.json")
@@ -1119,13 +1121,14 @@ export function _createItemFromTemplateWhenReady(
 
           if (resourceFilePaths.length > 0) {
             const destinationItemId = createResponse.id;
+
             // Update and copy form resource
             if (template.type === "Form") {
               // Filter out Form zip file
               let formZipFilePath: common.IDeployFileCopyPath;
               resourceFilePaths = resourceFilePaths.filter(
                 (filePath) => {
-                  if (filePath.filename === `${sourceItemId}.zip`) {
+                  if (filePath.filename.endsWith(".zip")) {
                     formZipFilePath = filePath;
                     return false;
                   } else {
@@ -1135,44 +1138,12 @@ export function _createItemFromTemplateWhenReady(
               );
 
               if (formZipFilePath) {
-                // Fetch the zip file
-                const zipBlob = await common.getBlob(formZipFilePath.url, storageAuthentication);
-                const zip = await common.blobToZip(zipBlob);
-
-                // Swizzle the source id in the zip file
-                const updatedZip = await zipUtils.swizzleIdsInZipFile(sourceItemId, destinationItemId, zip, [
-                  "esriinfo/form.info",
-                  "esriinfo/form.itemInfo",
-                  "esriinfo/form.json",
-                  "esriinfo/form.webform",
-                  "esriinfo/form.xml"
-                ]);
-
-                // Swizzle webhook(s) in the form.json file and restore them
-                const surveyWebhookAddUrl = `https://survey123.arcgis.com/api/survey/${destinationItemId}/webhook/add`;
-                const webhooks: any[] = await swizzleFormInfoContents(updatedZip, templateDictionary);
-                webhooks.forEach((webhook: any) => {
-                  try {
-                    // Remove unnecessary properties
-                    delete webhook.id;
-                    delete webhook.created;
-                    delete webhook.modified;
-
-                    // Add the webhook
-                    void common.rest_request(surveyWebhookAddUrl, {
-                      params: {
-                        webhook,
-                        portalUrl: "https://www.arcgis.com"
-                      },
-                      authentication: destinationAuthentication
-                    });
-                  }
-                  // eslint-disable-next-line no-empty
-                  catch (_e) {}
-                });
+                // Fetch the form's zip file and detemplatize it
+                const zipObject = await common.fetchZipObject(formZipFilePath.url, storageAuthentication);
+                const updatedZipObject = await form.swizzleFormObject(zipObject, templateDictionary);
 
                 // Update the new item
-                void common.updateItemWithZip(updatedZip, destinationItemId, destinationAuthentication);
+                void common.updateItemWithZipObject(updatedZipObject, destinationItemId, destinationAuthentication);
               }
             }
 
@@ -1210,61 +1181,6 @@ export function _createItemFromTemplateWhenReady(
     });
   }
   return templateDictionary[sourceItemId].def;
-}
-
-/**
- * Templatize the contents of the form.json file in a zip file and then replace the templates.
- *
- * @param zip Zip file containing the form.json file; modified in place
- * @param templateDictionary Dictionary of replacement values
- * @returns Promise that resolves to webhooks in the form.info file
- */
-export async function swizzleFormInfoContents(
-  zip: JSZip,
-  templateDictionary: any
-): Promise<any[]> {
-  let webhooks: any[] = [];
-
-  await zipUtils.modifyFilesinZip(
-    (zipFile: common.IZipFileContent) => {
-      let zipContent: any = JSON.parse(zipFile.content);
-
-      zipContent.portalUrl = "{{portalBaseUrl}}";
-
-      // Templatize the webhook urls
-      webhooks = common.getProp(zipContent, "settings.notificationsInfo.webhooks") ?? [];
-      webhooks.forEach((webhook: any) => {
-        if (webhook.url) {
-          const url = new URL(webhook.url);
-          if (url.origin.endsWith(".arcgis.com")) {
-            // Templatize the URL's origin
-            webhook.url = webhook.url.replace(url.origin, "{{portalBaseUrl}}");
-          }
-
-          // Templatize AGO ids in the URL
-          const matches = [...webhook.url.matchAll(/[a-f0-9]{32}/g)];
-          matches.forEach((match: any) => {
-            const agoId = match[0];
-            webhook.url = webhook.url.replace(agoId, `{{${agoId}}}`);
-          });
-        }
-      });
-
-      if (webhooks.length > 0) {
-        common.setProp(zipContent, "settings.notificationsInfo.webhooks", webhooks);
-      }
-
-      // Replace the templates
-      zipContent = common.replaceInTemplate(zipContent, templateDictionary);
-
-      webhooks = webhooks.length > 0 &&
-        common.getProp(zipContent, "settings.notificationsInfo.webhooks");
-
-      return JSON.stringify(zipContent);
-    }, zip, ["esriinfo/form.json"]
-  );
-
-  return webhooks;
 }
 
 /**

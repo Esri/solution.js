@@ -26,6 +26,7 @@ export * from "./deleteHelpers";
 export * from "./deleteSolution";
 export * from "./dependencies";
 export * from "./featureServiceHelpers";
+export * from "./formHelpers";
 export * from "./generalHelpers";
 export * from "./getDeletableSolutionInfo";
 export * from "./getItemTypeAbbrev";

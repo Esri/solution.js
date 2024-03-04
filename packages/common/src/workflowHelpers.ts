@@ -20,6 +20,7 @@
  * @module workflowHelpers
  */
 
+import * as interfaces from "./interfaces";
 import * as zipUtils from "./zip-utils";
 import { createMimeTypedFile } from "./resources/copyDataIntoItem";
 import { getAgoIdRegEx } from "./generalHelpers";
@@ -59,10 +60,10 @@ export async function compressWorkflowIntoZipFile(
 export async function extractWorkflowFromZipFile(
   zipFile: File
 ): Promise<any> {
-  const zippedFiles = await zipUtils.getZipFileContents(await zipUtils.blobToZip(zipFile));
+  const zippedFiles = await zipUtils.getZipObjectContents(await zipUtils.blobToZipObject(zipFile));
 
   const workflowConfig: any = {};
-  zippedFiles.forEach((zippedFile: zipUtils.IZipFileContent) => {
+  zippedFiles.forEach((zippedFile: interfaces.IZipObjectContentItem) => {
     workflowConfig[zippedFile.file] = zippedFile.content;
   });
 
@@ -85,7 +86,7 @@ export async function extractAndTemplatizeWorkflowFromZipFile(
   let workflowConfigStr = JSON.stringify(workflowConfig);
   const matches = workflowConfigStr.match(getAgoIdRegEx()) || [];
   matches.forEach((match: string) => {
-    workflowConfigStr = workflowConfigStr.replace(match, `{{${match}}}`);
+    workflowConfigStr = workflowConfigStr.replace(new RegExp(match, "g"), `{{${match}}}`);
   });
 
   return Promise.resolve(JSON.parse(workflowConfigStr));

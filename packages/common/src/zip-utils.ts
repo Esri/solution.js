@@ -15,17 +15,10 @@
  */
 
 import JSZip from "jszip";
+import * as interfaces from "./interfaces";
 import { createMimeTypedFile } from "./resources/copyDataIntoItem";
-import { updateItem } from "./restHelpers";
-import { IItemUpdate, IUpdateItemResponse, UserSession } from "./interfaces";
-
-/**
- * Relative path and string contents of a file in a zip file.
- */
-export interface IZipFileContent {
-  file: string;
-  content: string;
-}
+import { getBlob } from "./resources/get-blob";
+import { UserSession } from "./interfaces";
 
 // ------------------------------------------------------------------------------------------------------------------ //
 
@@ -33,15 +26,15 @@ export interface IZipFileContent {
  * Converts a blob to a zip file.
  *
  * @param blob Blob to convert
- * @returns Promise resolving to zip file
+ * @returns Promise resolving to zip object
  */
-export async function blobToZip(
+export async function blobToZipObject(
   blob: Blob
 ): Promise<JSZip> {
-  const zip = new JSZip();
-  return zip.loadAsync(blob)
-  .then(async (zip) => {
-    return Promise.resolve(zip);
+  const zipObject = new JSZip();
+  return zipObject.loadAsync(blob)
+  .then(async (zipObject) => {
+    return Promise.resolve(zipObject);
   })
   .catch(() => {
     return Promise.reject();
@@ -49,40 +42,17 @@ export async function blobToZip(
 }
 
 /**
- * Converts a JSON object to a zip.
+ * Fetches a zip object.
  *
- * @param zippedFileName Name of the file in the zip
- * @param zippedFileJson JSON object to convert
- * @returns Promise resolving to zip
+ * @param formZipFilePath Path to the zip file
+ * @param authentication Credentials to zip file
+ * @returns Promise resolving to zip object
  */
-export async function jsonToZip(
-  zippedFileName: string,
-  zippedFileJson: any
+export async function fetchZipObject(
+  formZipFilePath: string,
+  authentication: UserSession
 ): Promise<JSZip> {
-  const zip = new JSZip();
-  zip.file(zippedFileName, JSON.stringify(zippedFileJson));
-  return Promise.resolve(zip);
-}
-
-/**
- * Converts a JSON object to a zip file.
- *
- * @param zippedFileName Name of the file in the zip file
- * @param zippedFileJson JSON object to convert
- * @returns Promise resolving to zip file
- */
-export async function jsonToZipFile(
-  zippedFileName: string,
-  zippedFileJson: any,
-  filename: string
-): Promise<File> {
-  const zip = await jsonToZip(zippedFileName, zippedFileJson);
-
-  return createMimeTypedFile({
-    blob: await zip.generateAsync({ type: "blob" }),
-    filename: `${filename}.zip`,
-    mimeType: "application/zip"
-  })
+  return blobToZipObject(await getBlob(formZipFilePath, authentication));
 }
 
 /**
@@ -92,13 +62,13 @@ export async function jsonToZipFile(
  * @param filesOfInterest Array of file names to extract from the zip file. If empty, all files are extracted.
  * @returns Promise that resolves to an array of objects containing the file name and contents
  */
-export async function getZipFileContents(
-  zip: JSZip,
+export async function getZipObjectContents(
+  zipObject: JSZip,
   filesOfInterest: string[] = []
-): Promise<IZipFileContent[]> {
-  const extractedZipFiles: IZipFileContent[] = [];
+): Promise<interfaces.IZipObjectContentItem[]> {
+  const extractedZipFiles: interfaces.IZipObjectContentItem[] = [];
   const fileContentsRetrievalPromises: Array<Promise<string>> = [];
-  zip.forEach(
+  zipObject.forEach(
     (relativePath, file) => {
       const getContents = async () => {
         if (filesOfInterest.length === 0 || filesOfInterest.includes(relativePath)) {
@@ -118,30 +88,82 @@ export async function getZipFileContents(
 }
 
 /**
- * Updates an item with a zip file.
+ * Converts a JSON object to a zip object.
  *
- * @param zip Zip file with which to update the item
- * @param destinationItemId Destination item id
- * @param destinationAuthentication Destination authentication
- * @param filesOfInterest Array of file names to extract from the zip file. If empty, all files are extracted.
- * @returns Promise that resolves to the update item response
+ * @param zippedFileName Name of the file in the zip
+ * @param zippedFileJson JSON object to convert
+ * @returns Promise resolving to zip object
  */
-export async function updateItemWithZip(
-  zip: JSZip,
-  destinationItemId: string,
-  destinationAuthentication: UserSession,
-): Promise<IUpdateItemResponse> {
-  const update: IItemUpdate = {
-    id: destinationItemId,
-    data: createMimeTypedFile({
-      blob: await zip.generateAsync({ type: "blob" }),
-      filename: `${destinationItemId}.zip`,
-      mimeType: "application/zip"
-    })
-  };
+export async function jsonToZipObject(
+  zippedFileName: string,
+  zippedFileJson: any
+): Promise<JSZip> {
+  const zipObject = new JSZip();
+  zipObject.file(zippedFileName, JSON.stringify(zippedFileJson));
+  return Promise.resolve(zipObject);
+}
 
-  return updateItem(
-    update,
-    destinationAuthentication
-  );
+/**
+ * Converts a JSON object to a zip file.
+ *
+ * @param zippedFileName Name of the file in the zip file
+ * @param zippedFileJson JSON object to convert
+ * @param filename Name to use for zip file; ".zip" added if missing
+ * @returns Promise resolving to zip file
+ */
+export async function jsonToZipFile(
+  zippedFileName: string,
+  zippedFileJson: any,
+  filename: string
+): Promise<File> {
+  const zipObject = await jsonToZipObject(zippedFileName, zippedFileJson);
+  return zipObjectToZipFile(zipObject, filename);
+}
+
+/**
+ * Extracts files of interest from a zip object, calls a supplied function to modify them, and
+ * restores the files into the zip object.
+ *
+ * @param modificationCallback Function that modifies the specified files
+ * @param zip Zip file that contains the files to modify; modified in place
+ * @param filesOfInterest Array of file names to extract from the zip file. If empty, all files are extracted.
+ * @returns Promise that resolves to the modified zip file if the swizzle was successful
+ */
+export async function modifyFilesinZipObject(
+  modificationCallback: (zipContentStr: interfaces.IZipObjectContentItem) => string,
+  zipObject: JSZip,
+  filesOfInterest: string[] = []
+): Promise<JSZip> {
+  // Get the contents of the form.json file
+  const extractedZipFiles = await getZipObjectContents(zipObject, filesOfInterest);
+
+  extractedZipFiles.forEach((extractedZipFile) => {
+    // Run the modification callback
+    const content = modificationCallback(extractedZipFile);
+
+    // Update the zip file
+    zipObject.file(extractedZipFile.file, content);
+  });
+
+  return Promise.resolve(zipObject);
+}
+
+/**
+ * Converts a zip object to a zip file.
+ *
+ * @param zipObject Zip object
+ * @param filename Name to use for zip file; ".zip" added if missing
+ * @returns Promise resolving to zip file
+ */
+export async function zipObjectToZipFile(
+  zipObject: JSZip,
+  filename: string
+): Promise<File> {
+  const completeFilename = filename.endsWith(".zip") ? filename : `${filename}.zip`;
+
+  return createMimeTypedFile({
+    blob: await zipObject.generateAsync({ type: "blob" }),
+    filename: completeFilename,
+    mimeType: "application/zip"
+  });
 }

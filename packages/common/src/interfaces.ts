@@ -1049,6 +1049,12 @@ export interface IItemTemplate {
   estimatedDeploymentCostFactor: number;
 
   /**
+   * Indicates whether this item and the user whose credential was used to fetch this item belong to the same
+   * ArcGIS Enterprise Portal or ArcGIS Online Organization.
+   */
+  isOrgItem?: boolean;
+
+  /**
    * Allow for adhoc properties
    */
   [propName: string]: any;
@@ -1652,6 +1658,21 @@ export interface IVelocityTitle {
    * Existing titles that have been used in the org
    */
   titles: string[];
+}
+
+/**
+ * Relative path and string contents of a file in a zip object.
+ */
+export interface IZipObjectContentItem {
+  /**
+   * Filename
+   */
+  file: string;
+
+  /**
+   * Contents of file
+   */
+  content: string;
 }
 
 
