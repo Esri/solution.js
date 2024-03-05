@@ -85,7 +85,7 @@ Currently, the ArcGIS Online item types that can be converted into a template ar
 
 #### Setup
 
-The repository can be built using the Windows batch file `build.bat`.
+After running `npm install`, the repository can be built using the Windows batch file `build.bat`.
 
 
 #### npm commands
