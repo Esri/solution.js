@@ -95,7 +95,7 @@ export async function extractAndTemplatizeWorkflowFromZipFile(
 
 /**
  * Check the license capability of Workflow Manager Server.
-
+ *
  * @param orgId Id of organization whose license is to be checked
  * @param authentication Credentials for the request to AGO
  * @param enterpriseWebAdaptorUrl URL of the enterprise web adaptor, e.g., "https://gisserver.domain.com/server"
