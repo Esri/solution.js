@@ -110,11 +110,27 @@ describe("Module `workflowHelpers`", () => {
       expect(isAuthorized).toBeFalse();
     });
 
+    it("handles AGO unauthorized via throw", async () => {
+      const orgId = "abcdef";
+      spyOn(request, "request").and.throwError("Unauthorized");
+
+      const isAuthorized = await workflowHelpers.getWorkflowManagerAuthorized(orgId, MOCK_USER_SESSION);
+      expect(isAuthorized).toBeFalse();
+    });
+
     it("handles failure from `request`", async () => {
       const orgId = "abcdef";
       spyOn(request, "request").and.resolveTo(null);
 
       const isAuthorized = await workflowHelpers.getWorkflowManagerAuthorized(orgId, MOCK_USER_SESSION);
+      expect(isAuthorized).toBeFalse();
+    });
+
+    it("handles undefined args", async () => {
+      const orgId = "abcdef";
+      spyOn(request, "request").and.resolveTo(null);
+
+      const isAuthorized = await workflowHelpers.getWorkflowManagerAuthorized(undefined, undefined);
       expect(isAuthorized).toBeFalse();
     });
   });
