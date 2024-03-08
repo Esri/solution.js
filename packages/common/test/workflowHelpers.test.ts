@@ -127,7 +127,6 @@ describe("Module `workflowHelpers`", () => {
     });
 
     it("handles undefined args", async () => {
-      const orgId = "abcdef";
       spyOn(request, "request").and.resolveTo(null);
 
       const isAuthorized = await workflowHelpers.getWorkflowManagerAuthorized(undefined, undefined);
