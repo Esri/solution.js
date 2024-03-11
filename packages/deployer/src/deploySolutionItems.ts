@@ -919,7 +919,8 @@ export function _updateTemplateDictionaryById(
       itemId,
       name: v.name,
       title: v.title,
-      url: v.url
+      url: v.url,
+      label: v.title
     }
   );
 }
