@@ -27,7 +27,7 @@ import { IRequestOptions, request } from "@esri/arcgis-rest-request";
 
 export async function addWorkflowItem(
   item: common.IItemTemplate,
-  //destinationFolderId: string,
+  destinationFolderId: string,
   authentication: common.UserSession
 ): Promise<common.IItemTemplate> {
   const user = await authentication.getUser({ authentication });
@@ -51,25 +51,23 @@ export async function addWorkflowItem(
   const workflowLocationsItemName = `WorkflowLocations_${workflowItemId}`;
   const workflowViewsItemName = `workflow_views_${workflowItemId}`;
   const workflowItemName = `workflow_${workflowItemId}`;
-  console.log("auxiliary items: ", workflowLocationsItemName, workflowViewsItemName, workflowItemName);//???
+  console.log("workflow auxiliary items: ", workflowLocationsItemName, workflowViewsItemName, workflowItemName);//???
 
   const fetchResults = await Promise.all([
     common.getItemBase(workflowLocationsItemName, authentication),
     common.getItemBase(workflowViewsItemName, authentication),
     common.getItemBase(workflowItemName, authentication)
   ]);
-  console.log("auxiliary items: ", JSON.stringify(fetchResults.map(item => item.id), null, 2));//???
+  console.log("Fetched auxiliary items: ", JSON.stringify(fetchResults.map(item => item.id), null, 2));//???
 
   // Move the workflow and auxiliary items to the destination
-  const
   const moveResults = await Promise.all([
-    common.moveItem(workflowItemId, item.item.owner, authentication),
-    common.moveItem(fetchResults[0].id, item.item.owner, authentication),
-    common.moveItem(fetchResults[1].id, item.item.owner, authentication),
-    common.moveItem(fetchResults[2].id, item.item.owner, authentication)
+    common.moveItemToFolder(workflowItemId, destinationFolderId, authentication),
+    common.moveItemToFolder(fetchResults[0].id, destinationFolderId, authentication),
+    common.moveItemToFolder(fetchResults[1].id, destinationFolderId, authentication),
+    common.moveItemToFolder(fetchResults[2].id, destinationFolderId, authentication)
   ]);
-
-
+  console.log("Moved workflow & its auxiliary items: ", JSON.stringify(moveResults.map(item => item.itemId), null, 2));//???
 
   return Promise.resolve(item);
 }

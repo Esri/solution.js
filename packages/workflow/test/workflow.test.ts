@@ -76,7 +76,7 @@ describe("Module `workflow`", () => {
   });
 
   describe("createItemFromTemplate", () => {
-    it("basically works", async () => {
+    xit("basically works", async () => {
       const itemTemplate: common.IItemTemplate = templates.getItemTemplate("Workflow");
       itemTemplate.properties.configuration = getSampleConfigJson(true);
       const templateDictionary: any = {

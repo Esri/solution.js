@@ -80,6 +80,8 @@ import {
   IItemResourceOptions,
   IItemResourceResponse,
   IManageItemRelationshipOptions,
+  IMoveItemOptions,
+  IMoveItemResponse,
   IPagingParams,
   ISearchGroupContentOptions,
   ISearchOptions,
@@ -89,6 +91,7 @@ import {
   IUpdateItemOptions,
   IUserGroupOptions,
   IUserItemOptions,
+  moveItem as portalMoveItem,
   removeFolder as portalRemoveFolder,
   removeGroup as portalRemoveGroup,
   removeGroupUsers as portalRemoveGroupUsers,
@@ -1104,6 +1107,28 @@ export function getLayerUpdates(
     }
   }
   return updates.length === 1 ? [] : updates;
+}
+
+/**
+ * Moves an AGO item to a specified folder.
+ *
+ * @param itemId Id of item to move
+ * @param folderId Id of folder to receive item
+ * @param authentication Credentials for the request
+ * @returns
+ */
+export function moveItemToFolder(
+  itemId: string,
+  folderId: string,
+  authentication: UserSession
+): Promise<IMoveItemResponse> {
+  const moveOptions: IMoveItemOptions = {
+    itemId,
+    folderId,
+    authentication
+  };
+
+  return portalMoveItem(moveOptions);
 }
 
 /**

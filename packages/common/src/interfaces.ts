@@ -48,6 +48,7 @@ export {
   IGroup,
   IGroupAdd,
   IItem,
+  IMoveItemResponse,
   IPagingParams,
   IPortal,
   ISearchResult,

@@ -21,6 +21,7 @@
  */
 
 import * as common from "@esri/solution-common";
+import * as workflowHelpers from "./workflowHelpers";
 
 // ------------------------------------------------------------------------------------------------------------------ //
 
@@ -130,13 +131,13 @@ export async function createItemFromTemplate(
   }
 
   try {
-    // Create the item, then update its URL with its new id
-    const createResponse = await common.createItemWithData(
-      newItemTemplate.item,
-      newItemTemplate.data,
-      destinationAuthentication,
-      templateDictionary.folderId
-    );
+    /*const response =*/ await workflowHelpers.addWorkflowItem(
+      newItemTemplate, templateDictionary.folderId, destinationAuthentication);
+    const createResponse = {
+      success: true,
+      id: newItemTemplate.itemId,
+      folder: templateDictionary.folderId
+    };
 
     // Interrupt process if progress callback returns `false`
     if (
