@@ -333,7 +333,8 @@ describe("Module `deploySolutionItems`", () => {
         itemId: foundItemID,
         name: "name",
         title: "title",
-        url: url
+        url: url,
+        label: "title"
       };
 
       deploySolution
@@ -428,7 +429,8 @@ describe("Module `deploySolutionItems`", () => {
         itemId: foundItemID,
         name: "name",
         title: "title",
-        url: url
+        url: url,
+        label: "title"
       };
 
       deploySolution
@@ -532,7 +534,8 @@ describe("Module `deploySolutionItems`", () => {
         itemId: foundItemID2,
         name: "name2",
         title: "title2",
-        url: url2
+        url: url2,
+        label: "title2"
       };
 
       deploySolution
@@ -650,7 +653,8 @@ describe("Module `deploySolutionItems`", () => {
           url: url2 + "/1",
           layerId: 1,
           itemId: foundItemID2
-        }
+        },
+        label: "title2"
       };
 
       deploySolution
@@ -709,7 +713,8 @@ describe("Module `deploySolutionItems`", () => {
         itemId: group.id,
         name: group.name,
         title: group.title,
-        url: group.url
+        url: group.url,
+        label: group.title
       };
 
       deploySolution
@@ -768,7 +773,8 @@ describe("Module `deploySolutionItems`", () => {
         itemId: group.id,
         name: group.name,
         title: group.title,
-        url: group.url
+        url: group.url,
+        label: group.title
       };
 
       deploySolution
@@ -2524,7 +2530,8 @@ describe("Module `deploySolutionItems`", () => {
         name: customFS.name,
         title: customFS.title,
         url: customFS.url,
-        itemId: "ca4a6047326243b290f625e80ebe6531"
+        itemId: "ca4a6047326243b290f625e80ebe6531",
+        label: customFS.title
       };
 
       spyOn(common, "getLayerSettings").and.callFake(() => {});
@@ -2614,7 +2621,8 @@ describe("Module `deploySolutionItems`", () => {
         name: customFS.name,
         title: customFS.title,
         url: customFS.url,
-        itemId: id
+        itemId: id,
+        label: customFS.title
       };
 
       spyOn(common, "getLayerSettings").and.callFake(() => {});
@@ -2704,7 +2712,8 @@ describe("Module `deploySolutionItems`", () => {
         name: customFS.name,
         title: customFS.title,
         url: customFS.url,
-        itemId: id
+        itemId: id,
+        label: customFS.title
       };
 
       spyOn(common, "getLayerSettings").and.callFake(() => {});
@@ -2794,7 +2803,8 @@ describe("Module `deploySolutionItems`", () => {
         name: customFS.name,
         title: customFS.title,
         url: customFS.url,
-        itemId: id
+        itemId: id,
+        label: customFS.title
       };
 
       spyOn(common, "getLayerSettings").and.callFake(() => {});
