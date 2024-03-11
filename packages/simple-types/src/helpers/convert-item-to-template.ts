@@ -22,7 +22,10 @@ import * as quickcapture from "../quickcapture";
 import * as webmap from "../webmap";
 import * as webmappingapplication from "../webmappingapplication";
 import * as workforce from "../workforce";
-import * as zipUtils from "./zip-utils";
+import * as formHelpers from "./formHelpers";
+import JSZip from "jszip";
+
+// ------------------------------------------------------------------------------------------------------------------ //
 
 /**
  * Converts an item into a template.
@@ -151,14 +154,15 @@ export function convertItemToTemplate(
             templateModifyingPromise = new Promise(
               // eslint-disable-next-line @typescript-eslint/no-misused-promises, no-async-promise-executor
               async (resolve) => {
+                let zipObject: JSZip = await common.blobToZipObject(itemDataResponse as File);
 
-                // Templatize the form's data
+                // Templatize the form's webhooks,
+                zipObject = await formHelpers.templatizeFormWebHooks(zipObject, itemTemplate.item.isOrgItem);
+
                 itemTemplate.item.name = _getFormDataFilename(
                   itemTemplate.item.name, (itemDataResponse as File).name, `${itemTemplate.itemId}.zip`
                 );
-
-                const templatizedFormData: File = await zipUtils.templatizeFormData(
-                  itemDataResponse as File, itemTemplate.item.name);
+                const templatizedFormData: File = await common.zipObjectToZipFile(zipObject, itemTemplate.item.name);
 
                 // Add the data file to the template so that it can be uploaded with the other resources in the solution
                 const storageName = common.convertItemResourceToStorageResource(

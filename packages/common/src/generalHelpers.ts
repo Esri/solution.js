@@ -20,7 +20,7 @@
  * @module generalHelpers
  */
 
-import { createId, IModel } from "@esri/hub-common";
+import { IModel, createId, unique } from "@esri/hub-common";
 import {
   ICreateItemFromTemplateResponse,
   IDatasourceInfo,
@@ -168,6 +168,18 @@ export function dedupe(input: string[] = []): string[] {
   const output: string[] = [];
   dedupedList.forEach((value: string) => output.push(value));
   return output;
+}
+
+/**
+ * Performs an asynchronous delay.
+ *
+ * @param ms Milliseconds to delay
+ * @returns Promise when delay is complete
+ */
+export function delay(
+  ms: number
+) {
+  return new Promise(resolve => setTimeout(resolve, ms));
 }
 
 /**
@@ -930,6 +942,18 @@ export function getTemplateById(
  */
 export function regExTest(v: any, ex: RegExp): any[] {
   return v && ex.test(v) ? v.match(ex) : [];
+}
+
+/**
+ * Removes duplicates from a list of strings.
+ *
+ * @param list List to be de-duped
+ * @returns List of unique strings
+ */
+export function uniqueStringList(
+  list: string[]
+): string[] {
+  return list.filter(unique);
 }
 
 // ------------------------------------------------------------------------------------------------------------------ //

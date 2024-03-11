@@ -66,7 +66,7 @@
       package_json => {
         currentVersion = package_json.version;
         html = "<b>Current repository version: " + currentVersion + "</b><br><br>" +
-          "<table><tr><th class='package'>Package in unpkg</th><th>.umd.js</th><th>.umd.min.js</th></tr>";
+          "<table><tr><th class='package'>Package in unpkg</th><th>esm</th><th>cjs</th></tr>";
 
         html += addPackageVersionsToTable("@esri/solution-common", "common");
         html += addPackageVersionsToTable("@esri/solution-creator", "creator");
@@ -95,10 +95,10 @@
       setTimeout(() => addSpecificPackageVersionToTable(packageName, packageFileName, false), 10);
       setTimeout(() => addSpecificPackageVersionToTable(packageName, packageFileName, true), 10);
       return "<tr><td class='package'><a href='https://www.npmjs.com/package/" + packageName + "' target='_blank'>" + packageName + "</td><td id='" +
-        packageFileName + "_reg'></td><td id='" + packageFileName + "_min'></td></tr>";
+        packageFileName + "_esm'></td><td id='" + packageFileName + "_cjs'></td></tr>";
     }
 
-    function addSpecificPackageVersionToTable(packageName, packageFileName, useMinimized) {
+    function addSpecificPackageVersionToTable(packageName, packageFileName, useCJS) {
       fetch("https://unpkg.com/" + packageName).then(
         packageFile => {
           const packageUrl = packageFile.url;
@@ -111,10 +111,20 @@
           } else if (packageVersion !== currentVersion) {
             packageVersion = "<span class='bad'>&nbsp;&nbsp;" + packageVersion + "</span>";
           } else {
-            packageVersion = "<span class='good'>&nbsp;&nbsp;" + packageVersion + "</span>";
+            const versionRoot = packageUrl.substring(0, iVersionEnd);
+            const urlToFetch = versionRoot + (useCJS ? "/dist/cjs/index.js" : "/dist/esm/index.js");
+            fetch(urlToFetch).then(
+              packageVersionFile => {
+                if (packageVersionFile.status === 404) {
+                  packageVersion = "<span class='bad'>&nbsp;&nbsp;" + packageVersion + "</span>";
+                } else {
+                  packageVersion = "<span class='good'>&nbsp;&nbsp;" + packageVersion + "</span>";
+                }
+                document.getElementById(packageFileName + (useCJS ? "_cjs" : "_esm")).innerHTML = packageVersion;
+              }
+            );
           }
 
-          document.getElementById(packageFileName + (useMinimized ? "_min" : "_reg")).innerHTML = packageVersion;
         }
       );
     }

@@ -21,6 +21,7 @@
 import * as interfaces from "../src/interfaces";
 import * as utils from "../../common/test/mocks/utils";
 import * as workflowHelpers from "../src/workflowHelpers";
+import * as request from "@esri/arcgis-rest-request";
 import JSZip from "jszip";
 
 // ------------------------------------------------------------------------------------------------------------------ //
@@ -71,6 +72,65 @@ describe("Module `workflowHelpers`", () => {
         "jobExtPropertyDefinitions.json": "[{\"table_id\":\"xMkNNrbMTga4mrWnoREGWA\",\"property_name\":\"reqid\",\"property_alias\":\"Request ID\",\"property_order\":0,\"data_type\":-1,\"required\":0,\"editable\":0,\"visible\":1},{\"table_id\":\"xMkNNrbMTga4mrWnoREGWA\",\"property_name\":\"reqcategory\",\"property_alias\":\"Request Category\",\"property_order\":1,\"data_type\":-1,\"required\":0,\"editable\":0,\"visible\":1},{\"table_id\":\"xMkNNrbMTga4mrWnoREGWA\",\"property_name\":\"reqtype\",\"property_alias\":\"Request Type\",\"property_order\":2,\"data_type\":-1,\"required\":0,\"editable\":0,\"visible\":1},{\"table_id\":\"xMkNNrbMTga4mrWnoREGWA\",\"property_name\":\"details\",\"property_alias\":\"Details\",\"property_order\":3,\"data_type\":-1,\"required\":0,\"editable\":0,\"visible\":1},{\"table_id\":\"xMkNNrbMTga4mrWnoREGWA\",\"property_name\":\"pocfirstname\",\"property_alias\":\"First Name\",\"property_order\":4,\"data_type\":-1,\"required\":0,\"editable\":0,\"visible\":1},{\"table_id\":\"xMkNNrbMTga4mrWnoREGWA\",\"property_name\":\"poclastname\",\"property_alias\":\"Last Name\",\"property_order\":5,\"data_type\":-1,\"required\":0,\"editable\":0,\"visible\":1},{\"table_id\":\"xMkNNrbMTga4mrWnoREGWA\",\"property_name\":\"pocphone\",\"property_alias\":\"Phone Number\",\"property_order\":6,\"data_type\":-1,\"required\":0,\"editable\":0,\"visible\":1},{\"table_id\":\"xMkNNrbMTga4mrWnoREGWA\",\"property_name\":\"pocemail\",\"property_alias\":\"Email\",\"property_order\":7,\"data_type\":-1,\"required\":0,\"editable\":0,\"visible\":1},{\"table_id\":\"xMkNNrbMTga4mrWnoREGWA\",\"property_name\":\"locdesc\",\"property_alias\":\"Location\",\"property_order\":8,\"data_type\":-1,\"required\":0,\"editable\":0,\"visible\":1},{\"table_id\":\"xMkNNrbMTga4mrWnoREGWA\",\"property_name\":\"publicview\",\"property_alias\":\"Visible to Public\",\"property_order\":9,\"data_type\":-1,\"required\":0,\"editable\":0,\"visible\":1},{\"table_id\":\"xMkNNrbMTga4mrWnoREGWA\",\"property_name\":\"source\",\"property_alias\":\"Source\",\"property_order\":10,\"data_type\":-1,\"required\":0,\"editable\":0,\"visible\":1},{\"table_id\":\"xMkNNrbMTga4mrWnoREGWA\",\"property_name\":\"assetglobalid\",\"property_alias\":\"Asset GlobalID\",\"property_order\":11,\"data_type\":-1,\"required\":0,\"editable\":0,\"visible\":1},{\"table_id\":\"xMkNNrbMTga4mrWnoREGWA\",\"property_name\":\"assignmentglobalid\",\"property_alias\":\"Assignment GlobalID\",\"property_order\":12,\"data_type\":-1,\"required\":0,\"editable\":0,\"visible\":1},{\"table_id\":\"xMkNNrbMTga4mrWnoREGWA\",\"property_name\":\"status\",\"property_alias\":\"Status\",\"property_order\":13,\"data_type\":-1,\"required\":0,\"editable\":0,\"visible\":1},{\"table_id\":\"xMkNNrbMTga4mrWnoREGWA\",\"property_name\":\"notes\",\"property_alias\":\"Notes\",\"property_order\":14,\"data_type\":-1,\"required\":0,\"editable\":0,\"visible\":1},{\"table_id\":\"xMkNNrbMTga4mrWnoREGWA\",\"property_name\":\"assignedto\",\"property_alias\":\"Assigned To\",\"property_order\":15,\"data_type\":-1,\"required\":0,\"editable\":0,\"visible\":1},{\"table_id\":\"xMkNNrbMTga4mrWnoREGWA\",\"property_name\":\"resolutiondt\",\"property_alias\":\"Resolved On\",\"property_order\":16,\"data_type\":-1,\"required\":0,\"editable\":0,\"visible\":1},{\"table_id\":\"xMkNNrbMTga4mrWnoREGWA\",\"property_name\":\"resolution\",\"property_alias\":\"Resolution\",\"property_order\":17,\"data_type\":-1,\"required\":0,\"editable\":0,\"visible\":1},{\"table_id\":\"xMkNNrbMTga4mrWnoREGWA\",\"property_name\":\"globalid\",\"property_alias\":\"GlobalID\",\"property_order\":18,\"data_type\":-1,\"required\":0,\"editable\":1,\"visible\":1},{\"table_id\":\"xMkNNrbMTga4mrWnoREGWA\",\"property_name\":\"created_date\",\"property_alias\":\"Submitted On\",\"property_order\":19,\"data_type\":-1,\"required\":0,\"editable\":0,\"visible\":1},{\"table_id\":\"xMkNNrbMTga4mrWnoREGWA\",\"property_name\":\"created_user\",\"property_alias\":\"Submitted By\",\"property_order\":20,\"data_type\":-1,\"required\":0,\"editable\":0,\"visible\":1},{\"table_id\":\"xMkNNrbMTga4mrWnoREGWA\",\"property_name\":\"last_edited_date\",\"property_alias\":\"Last Edited On\",\"property_order\":21,\"data_type\":-1,\"required\":0,\"editable\":0,\"visible\":1},{\"table_id\":\"xMkNNrbMTga4mrWnoREGWA\",\"property_name\":\"last_edited_user\",\"property_alias\":\"Last Edited By\",\"property_order\":22,\"data_type\":-1,\"required\":0,\"editable\":0,\"visible\":1}]",
         "jobTemplatesToExtPropertyTableDefXref.json": "[{\"table_id\":\"xMkNNrbMTga4mrWnoREGWA\",\"table_order\":0,\"job_template_id\":\"Gk9IjgBWQdGCFlRMf6fplw\"}]"
       });
+    });
+  });
+
+  describe("getWorkflowManagerAuthorized", () => {
+    it("handles AGO authorized", async () => {
+      const orgId = "abcdef";
+      spyOn(request, "request").and.resolveTo({ hasAdvancedLicense: true });
+
+      const isAuthorized = await workflowHelpers.getWorkflowManagerAuthorized(orgId, MOCK_USER_SESSION);
+      expect(isAuthorized).toBeTrue();
+    });
+
+    it("handles AGO unauthorized", async () => {
+      const orgId = "abcdef";
+      spyOn(request, "request").and.resolveTo({ hasAdvancedLicense: false });
+
+      const isAuthorized = await workflowHelpers.getWorkflowManagerAuthorized(orgId, MOCK_USER_SESSION);
+      expect(isAuthorized).toBeFalse();
+    });
+
+    it("handles Enterprise authorized", async () => {
+      const orgId = "abcdef";
+      const enterpriseWebAdaptorUrl = "https://myserver.mycompany.com/webadaptor";
+      spyOn(request, "request").and.resolveTo({ hasAdvancedLicense: true });
+
+      const isAuthorized = await workflowHelpers.getWorkflowManagerAuthorized(orgId, MOCK_USER_SESSION, enterpriseWebAdaptorUrl);
+      expect(isAuthorized).toBeTrue();
+    });
+
+    it("handles Enterprise unauthorized", async () => {
+      const orgId = "abcdef";
+      const enterpriseWebAdaptorUrl = "https://myserver.mycompany.com/webadaptor";
+      spyOn(request, "request").and.resolveTo({ hasAdvancedLicense: false });
+
+      const isAuthorized = await workflowHelpers.getWorkflowManagerAuthorized(orgId, MOCK_USER_SESSION, enterpriseWebAdaptorUrl);
+      expect(isAuthorized).toBeFalse();
+    });
+
+    it("handles AGO unauthorized via throw", async () => {
+      const orgId = "abcdef";
+      spyOn(request, "request").and.throwError("Unauthorized");
+
+      const isAuthorized = await workflowHelpers.getWorkflowManagerAuthorized(orgId, MOCK_USER_SESSION);
+      expect(isAuthorized).toBeFalse();
+    });
+
+    it("handles failure from `request`", async () => {
+      const orgId = "abcdef";
+      spyOn(request, "request").and.resolveTo(null);
+
+      const isAuthorized = await workflowHelpers.getWorkflowManagerAuthorized(orgId, MOCK_USER_SESSION);
+      expect(isAuthorized).toBeFalse();
+    });
+
+    it("handles undefined args", async () => {
+      spyOn(request, "request").and.resolveTo(null);
+
+      const isAuthorized = await workflowHelpers.getWorkflowManagerAuthorized(undefined, undefined);
+      expect(isAuthorized).toBeFalse();
     });
   });
 });

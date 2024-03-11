@@ -24,6 +24,7 @@ import * as interfaces from "./interfaces";
 import * as zipUtils from "./zip-utils";
 import { createMimeTypedFile } from "./resources/copyDataIntoItem";
 import { getAgoIdRegEx } from "./generalHelpers";
+import { IRequestOptions, request } from "@esri/arcgis-rest-request";
 import JSZip from "jszip";
 
 // ------------------------------------------------------------------------------------------------------------------ //
@@ -90,4 +91,37 @@ export async function extractAndTemplatizeWorkflowFromZipFile(
   });
 
   return Promise.resolve(JSON.parse(workflowConfigStr));
+}
+
+/**
+ * Check the license capability of Workflow Manager Server.
+ *
+ * @param orgId Id of organization whose license is to be checked
+ * @param authentication Credentials for the request to AGO
+ * @param enterpriseWebAdaptorUrl URL of the enterprise web adaptor, e.g., "https://gisserver.domain.com/server"
+ * @returns Promise resolving with a boolean indicating whether the organization has the license
+ */
+export async function getWorkflowManagerAuthorized(
+  orgId: string | undefined,
+  authentication: interfaces.UserSession | undefined,
+  enterpriseWebAdaptorUrl?: string
+): Promise<boolean> {
+  const url = enterpriseWebAdaptorUrl
+    ? `${enterpriseWebAdaptorUrl}/workflow/${orgId}/checkStatus`
+    : `https://workflow.arcgis.com/${orgId}/checkStatus`;
+  const options: IRequestOptions = {
+    authentication,
+    httpMethod: "GET",
+    params: {
+      f: "json"
+    }
+  };
+
+  try {
+    const response = await request(url, options);
+    const isAuthorized = response?.hasAdvancedLicense || false;
+    return Promise.resolve(isAuthorized);
+  } catch (error) {
+    return Promise.resolve(false);
+  }
 }

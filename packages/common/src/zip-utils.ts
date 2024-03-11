@@ -18,8 +18,7 @@ import JSZip from "jszip";
 import * as interfaces from "./interfaces";
 import { createMimeTypedFile } from "./resources/copyDataIntoItem";
 import { getBlob } from "./resources/get-blob";
-import { updateItem } from "./restHelpers";
-import { IItemUpdate, IUpdateItemResponse, UserSession } from "./interfaces";
+import { UserSession } from "./interfaces";
 
 // ------------------------------------------------------------------------------------------------------------------ //
 
@@ -147,35 +146,6 @@ export async function modifyFilesinZipObject(
   });
 
   return Promise.resolve(zipObject);
-}
-
-/**
- * Updates an item with a zip object.
- *
- * @param zipObject Zip file object with which to update the item
- * @param destinationItemId Destination item id
- * @param destinationAuthentication Destination authentication
- * @param filesOfInterest Array of file names to extract from the zipObject file. If empty, all files are extracted.
- * @returns Promise that resolves to the update item response
- */
-export async function updateItemWithZipObject(
-  zipObject: JSZip,
-  destinationItemId: string,
-  destinationAuthentication: UserSession,
-): Promise<IUpdateItemResponse> {
-  const update: IItemUpdate = {
-    id: destinationItemId,
-    data: createMimeTypedFile({
-      blob: await zipObject.generateAsync({ type: "blob" }),
-      filename: `${destinationItemId}.zip`,
-      mimeType: "application/zip"
-    })
-  };
-
-  return updateItem(
-    update,
-    destinationAuthentication
-  );
 }
 
 /**
