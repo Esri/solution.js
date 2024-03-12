@@ -1497,8 +1497,41 @@ export function validateSpatialReferenceAndExtent(
 ): void {
   /* istanbul ignore else */
   if (getProp(serviceInfo, "service.isView")) {
+    const layersAndTables = [
+      ...serviceInfo?.layers || [],
+      ...serviceInfo?.tables || []
+    ];
+
     let sourceSR: any;
     let sourceExt: any;
+
+    // first pass ensure we have a geometry type before getting the spatial reference or extent
+    // issue: #1368
+    itemTemplate.dependencies.some(id => {
+      const source: any = templateDictionary[id];
+
+      let hasGeom = layersAndTables.some(layerOrTable => {
+        const name = layerOrTable?.adminLayerInfo?.viewLayerDefinition?.table?.sourceServiceName;
+        return name && source.name && name === source.name && layerOrTable.geometryType;
+      });
+
+      const sr: any = getProp(source, "defaultSpatialReference");
+      /* istanbul ignore else */
+      if (!sourceSR && sr && hasGeom) {
+        sourceSR = sr;
+      }
+
+      const ext: any = getProp(source, "defaultExtent");
+      /* istanbul ignore else */
+      if (!sourceExt && ext && hasGeom) {
+        sourceExt = ext;
+      }
+
+      return sourceSR && sourceExt;
+    });
+
+    // if not found with first pass just check for the first service that has the key values defined
+    // as we did before the above handeling
     itemTemplate.dependencies.some(id => {
       const source: any = templateDictionary[id];
 
