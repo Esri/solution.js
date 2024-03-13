@@ -30,13 +30,16 @@ export {
 //#region Imports -------------------------------------------------------------------------------------------------------//
 
 import {
+  IDefaultSpatialReferenceAndExtent,
   IDependency,
+  IExtent,
   IFeatureServiceProperties,
   IItemTemplate,
   INumberValuePair,
   IQueryRelatedOptions,
   IQueryRelatedResponse,
   IPostProcessArgs,
+  ISpatialReference,
   IStringValuePair,
   IUpdate,
   UNREACHABLE,
@@ -1497,25 +1500,27 @@ export function validateSpatialReferenceAndExtent(
 ): void {
   /* istanbul ignore else */
   if (getProp(serviceInfo, "service.isView")) {
-    let sourceSR: any;
-    let sourceExt: any;
-    itemTemplate.dependencies.some(id => {
-      const source: any = templateDictionary[id];
+    // first pass ensure we have a geometry type before getting the spatial reference or extent
+    // issue: #1368
+    const geomCheckResults = _getSourceSpatialReferenceAndExtent(
+      serviceInfo,
+      itemTemplate,
+      templateDictionary,
+      true
+    );
 
-      const sr: any = getProp(source, "defaultSpatialReference");
-      /* istanbul ignore else */
-      if (!sourceSR && sr) {
-        sourceSR = sr;
-      }
+    // if not found with first pass just check for the first service that has the key values defined
+    // as we did before the above handeling
+    const results = _getSourceSpatialReferenceAndExtent(
+      serviceInfo,
+      itemTemplate,
+      templateDictionary,
+      false
+    );
 
-      const ext: any = getProp(source, "defaultExtent");
-      /* istanbul ignore else */
-      if (!sourceExt && ext) {
-        sourceExt = ext;
-      }
+    const sourceSR = geomCheckResults.spatialReference || results.spatialReference;
+    const sourceExt = geomCheckResults.extent || results.extent;
 
-      return sourceSR && sourceExt;
-    });
     const sourceWkid: number = getProp(sourceSR, "wkid");
 
     const viewWkid: number = getProp(
@@ -1536,6 +1541,60 @@ export function validateSpatialReferenceAndExtent(
     ) {
       setCreateProp(serviceInfo, "defaultExtent", sourceExt);
     }
+  }
+}
+
+/**
+ * Get the spatial reference from a views source.
+ * Optionally ensure that the source has a valid geometry type prior to using its values.
+ *
+ * @param serviceInfo Basic service information
+ * @param itemTemplate The current template to process
+ * @param templateDictionary Hash mapping Solution source id to id of its clone (and name & URL for feature service)
+ * @param validateGeom When true the source must contain a geometryType for values to be returned
+ *
+ * @returns An object that contains the default spatial reference and extent value
+ * @private
+ */
+export function _getSourceSpatialReferenceAndExtent(
+  serviceInfo: any,
+  itemTemplate: IItemTemplate,
+  templateDictionary: any,
+  validateGeom: boolean
+): IDefaultSpatialReferenceAndExtent {
+  const layersAndTables = [
+    ...serviceInfo.layers || [],
+    ...serviceInfo.tables || []
+  ];
+
+  let spatialReference: ISpatialReference;
+  let extent: IExtent;
+
+  itemTemplate.dependencies.some(id => {
+    const source: any = templateDictionary[id];
+
+    const hasGeom = validateGeom ? layersAndTables.some(layerOrTable => {
+      const name = getProp(layerOrTable, "adminLayerInfo.viewLayerDefinition.table.sourceServiceName");
+      return name && source.name && name === source.name && layerOrTable.geometryType;
+    }) : true;
+
+    const sr: any = getProp(source, "defaultSpatialReference");
+    /* istanbul ignore else */
+    if (!spatialReference && sr && hasGeom) {
+      spatialReference = sr;
+    }
+
+    const ext: any = getProp(source, "defaultExtent");
+    /* istanbul ignore else */
+    if (!extent && ext && hasGeom) {
+      extent = ext;
+    }
+
+    return spatialReference && extent;
+  });
+  return {
+    spatialReference,
+    extent
   }
 }
 

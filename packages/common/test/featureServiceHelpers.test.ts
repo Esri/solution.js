@@ -7420,6 +7420,71 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
       expect(serviceInfo.service.spatialReference.wkid).toEqual(102100);
       expect(serviceInfo.defaultExtent.xmin).toEqual(0);
     });
+
+    it("can check for geom in dependant source spatial reference and extent", () => {
+      const serviceInfo: any = {
+        service: {
+          isView: true,
+          spatialReference: {
+            wkid: 4326
+          },
+          fullExtent: {
+            xmin: 1
+          }
+        },
+        layers: [{
+          name: "A",
+          adminLayerInfo: {
+            viewLayerDefinition: {
+              table: {
+                sourceServiceName: "source_A"
+              }
+            }
+          }
+        }, {
+          name: "B",
+          adminLayerInfo: {
+            viewLayerDefinition: {
+              table: {
+                sourceServiceName: "source_B"
+              }
+            }
+          },
+          geometryType: "point"
+        }]
+      };
+
+      itemTemplate.dependencies = ["aaec7d5e113e4252bf1dcdfbcd8400f9", "bbec7d5e113e4252bf1dcdfbcd8400f9"];
+
+      const templateDictionary: any = {
+        aaec7d5e113e4252bf1dcdfbcd8400f9: {
+          defaultSpatialReference: {
+            wkid: 4326
+          },
+          defaultExtent: {
+            xmin: 0
+          },
+          name: "source_A"
+        },
+        bbec7d5e113e4252bf1dcdfbcd8400f9: {
+          defaultSpatialReference: {
+            wkid: 102100
+          },
+          defaultExtent: {
+            xmin: 2
+          },
+          name: "source_B"
+        }
+      };
+
+      validateSpatialReferenceAndExtent(
+        serviceInfo,
+        itemTemplate,
+        templateDictionary
+      );
+      expect(serviceInfo.service.spatialReference.wkid).toEqual(102100);
+      expect(serviceInfo.defaultExtent.xmin).toEqual(2);
+    });
   });
 
   describe("deleteViewProps", () => {
