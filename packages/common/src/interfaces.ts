@@ -24,7 +24,7 @@ import {
   IItem,
   IItemRelationshipOptions
 } from "@esri/arcgis-rest-portal";
-import { ISpatialReference } from "@esri/arcgis-rest-service-admin";
+import { IExtent, ISpatialReference } from "@esri/arcgis-rest-service-admin";
 import { UserSession } from "@esri/arcgis-rest-auth";
 
 //#region Re-exports -------------------------------------------------------------------------------------------------//
@@ -1675,5 +1675,12 @@ export interface IZipObjectContentItem {
   content: string;
 }
 
+/**
+ * The default spatial reference and extent values from a template item
+ */
+export interface IDefaultSpatialReferenceAndExtent {
+  spatialReference: ISpatialReference;
+  extent: IExtent;
+}
 
 //#endregion ---------------------------------------------------------------------------------------------------------//

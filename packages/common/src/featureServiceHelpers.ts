@@ -30,13 +30,16 @@ export {
 //#region Imports -------------------------------------------------------------------------------------------------------//
 
 import {
+  IDefaultSpatialReferenceAndExtent,
   IDependency,
+  IExtent,
   IFeatureServiceProperties,
   IItemTemplate,
   INumberValuePair,
   IQueryRelatedOptions,
   IQueryRelatedResponse,
   IPostProcessArgs,
+  ISpatialReference,
   IStringValuePair,
   IUpdate,
   UNREACHABLE,
@@ -1515,8 +1518,8 @@ export function validateSpatialReferenceAndExtent(
       false
     );
 
-    const sourceSR = geomCheckResults.sourceSR || results.sourceSR;
-    const sourceExt = geomCheckResults.sourceExt || results.sourceExt;
+    const sourceSR = geomCheckResults.spatialReference || results.spatialReference;
+    const sourceExt = geomCheckResults.extent || results.extent;
 
     const sourceWkid: number = getProp(sourceSR, "wkid");
 
@@ -1549,6 +1552,8 @@ export function validateSpatialReferenceAndExtent(
  * @param itemTemplate The current template to process
  * @param templateDictionary Hash mapping Solution source id to id of its clone (and name & URL for feature service)
  * @param validateGeom When true the source must contain a geometryType for values to be returned
+ *
+ * @returns An object that contains the default spatial reference and extent value
  * @private
  */
 export function _getSourceSpatialReferenceAndExtent(
@@ -1556,14 +1561,14 @@ export function _getSourceSpatialReferenceAndExtent(
   itemTemplate: IItemTemplate,
   templateDictionary: any,
   validateGeom: boolean
-): any {
+): IDefaultSpatialReferenceAndExtent {
   const layersAndTables = [
     ...serviceInfo.layers || [],
     ...serviceInfo.tables || []
   ];
 
-  let sourceSR: any;
-  let sourceExt: any;
+  let spatialReference: ISpatialReference;
+  let extent: IExtent;
 
   itemTemplate.dependencies.some(id => {
     const source: any = templateDictionary[id];
@@ -1575,21 +1580,21 @@ export function _getSourceSpatialReferenceAndExtent(
 
     const sr: any = getProp(source, "defaultSpatialReference");
     /* istanbul ignore else */
-    if (!sourceSR && sr && hasGeom) {
-      sourceSR = sr;
+    if (!spatialReference && sr && hasGeom) {
+      spatialReference = sr;
     }
 
     const ext: any = getProp(source, "defaultExtent");
     /* istanbul ignore else */
-    if (!sourceExt && ext && hasGeom) {
-      sourceExt = ext;
+    if (!extent && ext && hasGeom) {
+      extent = ext;
     }
 
-    return sourceSR && sourceExt;
+    return spatialReference && extent;
   });
   return {
-    sourceSR,
-    sourceExt
+    spatialReference,
+    extent
   }
 }
 
