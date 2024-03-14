@@ -21,7 +21,6 @@
  */
 
 import * as common from "@esri/solution-common";
-import * as form from "@esri/solution-form";
 import { moduleMap } from "./module-map";
 
 const UNSUPPORTED: common.moduleHandler = null;
@@ -1139,12 +1138,9 @@ export function _createItemFromTemplateWhenReady(
               );
 
               if (formZipFilePath) {
-                // Fetch the form's zip file and detemplatize it
+                // Fetch the form's zip file and send it to the item
                 const zipObject = await common.fetchZipObject(formZipFilePath.url, storageAuthentication);
-                const updatedZipObject = await form.swizzleFormObject(zipObject, templateDictionary);
-
-                // Update the new item
-                void common.updateItemWithZipObject(updatedZipObject, destinationItemId, destinationAuthentication);
+                await common.updateItemWithZipObject(zipObject, destinationItemId, destinationAuthentication);
               }
             }
 
