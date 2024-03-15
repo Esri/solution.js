@@ -1672,7 +1672,7 @@ export interface IZipObjectContentItem {
   /**
    * Contents of file
    */
-  content: string;
+  content: TZipObjectContent;
 }
 
 /**
@@ -1682,5 +1682,7 @@ export interface IDefaultSpatialReferenceAndExtent {
   spatialReference: ISpatialReference;
   extent: IExtent;
 }
+
+export type TZipObjectContent = string | Blob;
 
 //#endregion ---------------------------------------------------------------------------------------------------------//

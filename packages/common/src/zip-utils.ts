@@ -60,19 +60,23 @@ export async function fetchZipObject(
  *
  * @param zip Zip file
  * @param filesOfInterest Array of file names to extract from the zip file. If empty, all files are extracted.
+ * @param blobExtensions Array of file extensions to treat as blobs; defaults to
+ * ["png", "jpeg", "jpg", "gif", "svg", "xls", "xlsx"]
  * @returns Promise that resolves to an array of objects containing the file name and contents
  */
 export async function getZipObjectContents(
   zipObject: JSZip,
-  filesOfInterest: string[] = []
+  filesOfInterest: string[] = [],
+  blobExtensions: string[] = ["png", "jpeg", "jpg", "gif", "svg", "xls", "xlsx"]
 ): Promise<interfaces.IZipObjectContentItem[]> {
   const extractedZipFiles: interfaces.IZipObjectContentItem[] = [];
-  const fileContentsRetrievalPromises: Array<Promise<string>> = [];
+  const fileContentsRetrievalPromises: Array<Promise<interfaces.TZipObjectContent>> = [];
   zipObject.forEach(
     (relativePath, file) => {
       const getContents = async () => {
         if (filesOfInterest.length === 0 || filesOfInterest.includes(relativePath)) {
-          const fileContentsFetch = file.async('string');
+          const fileType = blobExtensions.includes(relativePath.split('.').pop()) ? 'blob' : 'string';
+          const fileContentsFetch = file.async(fileType);
           fileContentsRetrievalPromises.push(fileContentsFetch);
           extractedZipFiles.push({
             file: relativePath,

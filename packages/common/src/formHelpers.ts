@@ -37,7 +37,7 @@ export async function getWebHooksFromZipObject(
   zipObjectContents.forEach(
     (zipFile: interfaces.IZipObjectContentItem) => {
       if (zipFile.file.endsWith(".info")) {
-        const infoFileJson = JSON.parse(zipFile.content);
+        const infoFileJson = JSON.parse(zipFile.content as string);
         webhooks = generalHelpers.getProp(infoFileJson, "notificationsInfo.webhooks") || [];
       }
     }
@@ -60,7 +60,7 @@ export async function setWebHooksInZipObject(
   zipObjectContents.forEach(
     (zipFile: interfaces.IZipObjectContentItem) => {
       if (zipFile.file.endsWith(".info")) {
-        const infoFileJson = JSON.parse(zipFile.content);
+        const infoFileJson = JSON.parse(zipFile.content as string);
         generalHelpers.setProp(infoFileJson, "notificationsInfo.webhooks", webHooks);
         zipObject.file(zipFile.file, JSON.stringify(infoFileJson));
       }
