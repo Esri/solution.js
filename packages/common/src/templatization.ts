@@ -122,9 +122,6 @@ export function createInitializedItemTemplate(itemInfo: any): IItemTemplate {
     typeKeywords: itemInfo.typeKeywords,
     url: itemInfo.url
   };
-  if (typeof itemInfo.isOrgItem !== "undefined") {
-    itemTemplate.isOrgItem = itemInfo.isOrgItem;
-  }
   return itemTemplate;
 }
 
