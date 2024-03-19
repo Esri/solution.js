@@ -416,7 +416,8 @@ export function createMockSettings(
 
 export function createRuntimeMockUserSession(
   now?: number,
-  portalUrl?: string
+  portalUrl?: string,
+  isEnterprise = false
 ): interfaces.UserSession {
   if (now === undefined) {
     now = Date.now();
@@ -435,8 +436,12 @@ export function createRuntimeMockUserSession(
     portal: (portalUrl || PORTAL_URL) + "/sharing/rest"
   });
 
+  (userSession as any).isEnterprise = isEnterprise;
+
   userSession.getPortal = function () {
-    return Promise.resolve({ portal: "myUrlKey" });
+    return (this as any).isEnterprise
+      ? Promise.resolve({ portalHostname: "myOrg.ags.esri.com/portal" })
+      : Promise.resolve({ urlKey: "myUrlKey" });
   }
 
   return userSession;
