@@ -556,6 +556,34 @@ describe("simpleTypeConvertItemToTemplate", () => {
       const formDataName = simpleTypeHelpers._getFormDataFilename(itemName, dataFilename, itemIdAsName);
       expect(itemIdAsName).toEqual(itemIdAsName);
     });
+
+    it("should handle an Enterprise portal", async () => {
+      let MOCK_USER_ENTERPRISE_SESSION: common.UserSession = utils.createRuntimeMockUserSession(
+        undefined, undefined, true
+      );
+
+      const formId = "frm1234567890";
+      itemTemplate.item.name = "undefined";
+
+      spyOn(common, "getItemRelatedItemsInSameDirection").and.resolveTo([
+        { relationshipType: "Survey2Data", relatedItemIds: ["srv1234567890", "abc1234567890"] },
+        { relationshipType: "Survey2Service", relatedItemIds: ["srv1234567890"] }
+      ] as common.IRelatedItems[]);
+      spyOn(common, "getItemDataAsFile")
+        .and.resolveTo(await zipUtilsTest.getSampleFormZipFile(formId, "frm1234567890.zip"));
+      spyOn(formHelpers, "templatizeFormWebHooks").and.callFake((zipObject: any) => Promise.resolve(zipObject));
+
+      const template = await simpleTypes.convertItemToTemplate(
+        itemTemplate.item,
+        MOCK_USER_ENTERPRISE_SESSION,
+        MOCK_USER_ENTERPRISE_SESSION,
+        {}
+      );
+
+      delete (template as any).key; // key is randomly generated, and so is not testable
+      delete template.dataFile.file; // don't want to test File object
+      expect(template).toEqual(expectedTemplate);
+    });
   });
 
   describe("notebook", () => {
