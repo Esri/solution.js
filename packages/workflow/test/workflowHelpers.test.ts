@@ -39,22 +39,38 @@ describe("Module `workflowHelpers`", () => {
 
   describe("addWorkflowItem", () => {
     it("basically works", async () => {
+      const itemId = "wfw123456789";
+      let itemIdOffset = 0;
+
       const agolItem = mockItems.getAGOLItem("Workflow");
       agolItem.thumbnail = null;
       const destinationFolderId = "fld1234567890";
 
       spyOn(restRequest, "request").and.resolveTo({
         success: true,
-        itemId: "wfw1234567890"
+        itemId: itemId + (itemIdOffset++).toString()
       });
 
-      spyOn(common, "getItemBase").and.resolveTo({} as any);  //???
+      spyOn(common, "getItemBase").and.callFake(
+        (itemName: string, authentication: common.UserSession) => {
+          return Promise.resolve(mockItems.getAGOLItem("Workflow", "", itemId + (itemIdOffset++).toString()));
+        }
+      );
 
-      spyOn(common, "moveItemToFolder").and.resolveTo({} as any);  //???
+      spyOn(common, "moveItemToFolder").and.callFake(
+        (itemId: string, folderId: string, authentication: common.UserSession) => {
+          return Promise.resolve({
+            success: true,
+            itemId,
+            owner: authentication.username,
+            folder: folderId
+          });
+        }
+      );
 
       const itemTemplate = await workflowHelpers.addWorkflowItem(agolItem, destinationFolderId, MOCK_USER_SESSION);
 
-      //???expect(itemTemplate?.properties?.configuration?.jobTemplates).toEqual("abc");
+      expect(itemTemplate).toEqual(agolItem);
     });
   });
 });

@@ -23,6 +23,7 @@ import * as mockItems from "../../common/test/mocks/agolItems";
 import * as templates from "../../common/test/mocks/templates";
 import * as utils from "../../common/test/mocks/utils";
 import * as workflow from "../src/workflow";
+import * as workflowHelpers from "../src/workflowHelpers";
 
 // ------------------------------------------------------------------------------------------------------------------ //
 
@@ -83,6 +84,7 @@ describe("Module `workflow`", () => {
         "7a69f67e4c6744918fbea49b8241640e": "7a69f67e4c6744918fbea49b8241640e",
         "9ef76d79ed2741a8bf5a3b9b344b3c07": "9ef76d79ed2741a8bf5a3b9b344b3c07"
       };
+      const folderId: string = "folder1234567890";
       const newItemID: string = "wfw1234567891";
 
       spyOn(common, "createItemWithData").and.resolveTo({
@@ -95,6 +97,8 @@ describe("Module `workflow`", () => {
         itemId: newItemID,
         success: true
       });
+
+      spyOn(workflowHelpers, "addWorkflowItem").and.resolveTo(templates.getItemTemplate("Workflow"));
 
       const response = await workflow.createItemFromTemplate(
         itemTemplate, templateDictionary, MOCK_USER_SESSION, utils.ITEM_PROGRESS_CALLBACK);
