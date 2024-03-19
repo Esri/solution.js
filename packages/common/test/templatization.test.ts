@@ -70,16 +70,6 @@ describe("Module `templatization`: common functions involving the adlib library"
         estimatedDeploymentCostFactor: 2
       });
     });
-
-    it("creates an initialized template that has the optional `isOrgItem` property", () => {
-      const template: interfaces.IItemTemplate = templatization.createInitializedItemTemplate(
-        { id: "fred", type: "Web Map", description: "desc", properties: { a: "propA", b: "propB" }, isOrgItem: true }
-      );
-
-      expect(template.item.description).toEqual("desc");
-      expect(template.item.properties).toEqual({ a: "propA", b: "propB" });
-      expect(template.isOrgItem).toBeTruthy();
-    });
   });
 
   describe("createInitializedGroupTemplate", () => {

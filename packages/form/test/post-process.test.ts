@@ -129,7 +129,5 @@ describe("postProcess", () => {
     expect(isHubFormTemplateSpy.calls.count()).toBe(1);
     expect(postProcessSpy.calls.count()).toBe(1);
     expect(results).toEqual(expectedResults);
-
-
   });
 });

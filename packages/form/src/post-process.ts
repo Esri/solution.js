@@ -77,7 +77,7 @@ export async function postProcess(
     );
   }
 
-  // Otherwise, just update the item's template
+  // Update the item's template
   return common.updateItemTemplateFromDictionary(
     itemId,
     templateDictionary,

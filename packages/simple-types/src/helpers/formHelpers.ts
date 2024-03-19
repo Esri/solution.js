@@ -23,13 +23,12 @@ import JSZip from "jszip";
  * Templatizes the URLs in webhooks in a form's zip object.
  *
  * @param zipObject Form zip object to templatize; it is modified in place
- * @param isOrgItem Indicates whether this item and the user whose credential was used to fetch this item belong
- * to the same ArcGIS Enterprise Portal or ArcGIS Online Organization
+ * @param sourceOrgUrl URL of the source organization,  e.g., "https://myorg.maps.arcgis.com"
  * @returns Promise that resolves to the modified zip object
  */
 export async function templatizeFormWebHooks(
   zipObject: JSZip,
-  isOrgItem: boolean
+  sourceOrgUrl: string
 ): Promise<JSZip> {
   const webhooks = await common.getWebHooksFromZipObject(zipObject);
   if (webhooks.length > 0) {
@@ -48,9 +47,9 @@ export async function templatizeFormWebHooks(
         const orgId = partialPathParts[1];
         url = url.replace(orgId, "{{user.orgId}}");
 
-      } else if (isOrgItem) {
-        // Templatize server
-        url = url.replace(server, "{{portalBaseUrl}}");
+      } else {
+        // Templatize server, but only if it matches the source org URL
+        url = url.replace(sourceOrgUrl, "{{portalBaseUrl}}");
       }
 
       webhook.url = url;
