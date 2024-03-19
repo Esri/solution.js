@@ -134,7 +134,7 @@ export async function jsonToZipFile(
  * @returns Promise that resolves to the modified zip file if the swizzle was successful
  */
 export async function modifyFilesinZipObject(
-  modificationCallback: (zipContentStr: interfaces.IZipObjectContentItem) => string,
+  modificationCallback: (zipContentStr: interfaces.IZipObjectContentItem) => interfaces.TZipObjectContent,
   zipObject: JSZip,
   filesOfInterest: string[] = []
 ): Promise<JSZip> {

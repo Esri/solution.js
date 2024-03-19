@@ -72,21 +72,16 @@ export async function swizzleFormObject(
  * @param templateDictionary Dictionary of replacement values
  * @returns Promise that resolves to the updated zip file item
  */
-async function _updateZipObjectBinaryContent(
+export async function _updateZipObjectBinaryContent(
   zipFileItem: common.IZipObjectContentItem,
   templateDictionary: any
 ): Promise<common.IZipObjectContentItem> {
-  let updatedZipFileItem;
-  try {
-    const updatedZipContent = await swizzleFormObject(await JSZip.loadAsync(zipFileItem.content), templateDictionary);
+  const updatedZipContent = await swizzleFormObject(await JSZip.loadAsync(zipFileItem.content), templateDictionary);
 
-    // Replace the file content in the zip file item
-    updatedZipFileItem = {
-      file: zipFileItem.file,
-      content: await common.zipObjectToZipFile(updatedZipContent, zipFileItem.file)
-    }
-  } catch (error) {
-    console.log("Error loading binary zip object: ", error, zipFileItem.file);
+  // Replace the file content in the zip file item
+  const updatedZipFileItem = {
+    file: zipFileItem.file,
+    content: await common.zipObjectToZipFile(updatedZipContent, zipFileItem.file)
   }
 
   return Promise.resolve(updatedZipFileItem);
@@ -99,7 +94,7 @@ async function _updateZipObjectBinaryContent(
  * @param templateDictionary Dictionary of replacement values
  * @returns Updated zip file item text content
  */
-function _updateZipObjectTextContent(
+export function _updateZipObjectTextContent(
   zipFileItem: common.IZipObjectContentItem,
   templateDictionary: any
 ): string {
@@ -114,11 +109,10 @@ function _updateZipObjectTextContent(
   // Find the AGO ids in the file content
   const agoIdMatches = updatedZipObjectContent.match(agoIdRegEx) ?? [];
 
-  // Replace the matching AGO id in the file content iff it is present in the template dictionary
+  // Replace things that look like AGO ids in the file content iff they are present in the template dictionary
   agoIdMatches.forEach((match: string) => {
     const replacement = templateDictionary[match];
     if (typeof replacement?.itemId === "string") {
-      if (match === replacement.itemId) { return; }
       updatedZipObjectContent = updatedZipObjectContent.replace(new RegExp(match, "g"), `${replacement.itemId}`);
     }
   });

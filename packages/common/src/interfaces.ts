@@ -1677,6 +1677,6 @@ export interface IDefaultSpatialReferenceAndExtent {
   extent: IExtent;
 }
 
-export type TZipObjectContent = string | Blob;
+export type TZipObjectContent = string | Blob | File;
 
 //#endregion ---------------------------------------------------------------------------------------------------------//
