@@ -39,6 +39,8 @@ describe("postProcess", () => {
     const formId = "frm1234567890";
     const expectedResults = { success: true };
 
+    const getItemDataSpy = spyOn(common, "getItemDataAsFile").and.resolveTo(await zipUtilsTest.getSampleFormZipFile(formId, "form"));
+    const updateItemDataSpy = spyOn(common, "updateItemWithZipObject").and.resolveTo({ success: true });
     const isHubFormTemplateSpy = spyOn(hubFormTemplateHelpers, "isHubFormTemplate").and.returnValue(true);
     const postProcessHubSurveySpy = spyOn(hubFormProcessingHelpers, "postProcessHubSurvey").and.resolveTo(expectedResults);
 
@@ -52,6 +54,8 @@ describe("postProcess", () => {
       MOCK_USER_SESSION
     );
 
+    expect(getItemDataSpy.calls.count()).toBe(1);
+    expect(updateItemDataSpy.calls.count()).toBe(1);
     expect(isHubFormTemplateSpy.calls.count()).toBe(1);
     expect(isHubFormTemplateSpy.calls.first().args).toEqual([template]);
     expect(postProcessHubSurveySpy.calls.count()).toBe(1);
@@ -86,6 +90,42 @@ describe("postProcess", () => {
       MOCK_USER_SESSION
     );
 
+    expect(getItemDataSpy.calls.count()).toBe(1);
+    expect(updateItemDataSpy.calls.count()).toBe(1);
+    expect(isHubFormTemplateSpy.calls.count()).toBe(1);
+    expect(postProcessSpy.calls.count()).toBe(1);
+    expect(results).toEqual(expectedResults);
+  });
+
+  it("should try again if the first attempt to update the item fails", async () => {
+    const formId = "frm1234567890";
+    const expectedResults = utils.getSuccessResponse({ id: "itm1234567890" });
+    let igetItemDataAsFile = 0;
+
+    const getItemDataSpy = spyOn(common, "getItemDataAsFile").and.callFake(async (): Promise<any> => {
+      if (igetItemDataAsFile === 0) {
+        igetItemDataAsFile++;
+        return Promise.resolve(null);
+      } else {
+        return await zipUtilsTest.getSampleFormZipFile(formId, "form");
+      }
+    });
+    const updateItemDataSpy = spyOn(common, "updateItemWithZipObject").and.resolveTo({ success: true });
+    const isHubFormTemplateSpy = spyOn(hubFormTemplateHelpers, "isHubFormTemplate").and.returnValue(false);
+    const postProcessSpy = spyOn(common, "updateItemTemplateFromDictionary").and.resolveTo({ success: true, id: "itm1234567890" });
+
+    const results = await postProcessor.postProcess(
+      template.id,
+      template.type,
+      itemInfos,
+      template,
+      [template],
+      templateDictionary,
+      MOCK_USER_SESSION
+    );
+
+    expect(getItemDataSpy.calls.count()).toBe(2);
+    expect(updateItemDataSpy.calls.count()).toBe(1);
     expect(isHubFormTemplateSpy.calls.count()).toBe(1);
     expect(postProcessSpy.calls.count()).toBe(1);
     expect(results).toEqual(expectedResults);

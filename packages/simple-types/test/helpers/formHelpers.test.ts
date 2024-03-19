@@ -35,12 +35,12 @@ describe("Module `formHelpers`", () => {
     it("templatizes form data containing webhooks", async () => {
       const zipObject = await zipUtilsTest.generateFormZipObject(itemId);
 
-      const modifiedZipObject = await formHelpers.templatizeFormWebHooks(zipObject, true);
+      const modifiedZipObject = await formHelpers.templatizeFormWebHooks(zipObject, "https://fred.maps.arcgis.com");
       const modifiedZipContents = await common.getZipObjectContents(modifiedZipObject);
 
       const expectedZipObject = zipUtilsTest.generateFormZipObject(itemId);
       const expectedZipContents = await common.getZipObjectContents(expectedZipObject);
-      expectedZipContents[1].content = expectedZipContents[1].content
+      expectedZipContents[1].content = (expectedZipContents[1].content as string)
         .replace("https://fred.maps.arcgis.com", "{{portalBaseUrl}}")
         .replace("org1234567890", "{{user.orgId}}");
 
@@ -50,7 +50,7 @@ describe("Module `formHelpers`", () => {
     it("templatizes form data that doesn't contain webhooks", async () => {
       const zipObject = await zipUtilsTest.generateFormZipObject(itemId, false);
 
-      const modifiedZipObject = await formHelpers.templatizeFormWebHooks(zipObject, true);
+      const modifiedZipObject = await formHelpers.templatizeFormWebHooks(zipObject, "https://fred.maps.arcgis.com");
       const modifiedZipContents = await common.getZipObjectContents(modifiedZipObject);
 
       const expectedZipObject = zipUtilsTest.generateFormZipObject(itemId, false);
