@@ -23,7 +23,6 @@
 import * as interfaces from "./interfaces";
 import * as zipUtils from "./zip-utils";
 import { createMimeTypedFile } from "./resources/copyDataIntoItem";
-import { dedupe, getAgoIdRegEx } from "./generalHelpers";
 import { IRequestOptions, request } from "@esri/arcgis-rest-request";
 import JSZip from "jszip";
 
@@ -40,7 +39,7 @@ export async function compressWorkflowIntoZipFile(
 ): Promise<File> {
   const zip = new JSZip();
   Object.keys(workflowConfig).forEach((key: string) => {
-    zip.file(key, JSON.stringify(workflowConfig[key]));
+    zip.file(key, workflowConfig[key]);
   });
 
   const zipFile = createMimeTypedFile({
@@ -69,28 +68,6 @@ export async function extractWorkflowFromZipFile(
   });
 
   return Promise.resolve(workflowConfig);
-}
-
-/**
- * Extracts a workflow configuration from a zip file into a JSON object, with all AGO ids in the
- * configuration templatized.
- *
- * @param zipFile Zip file containing a workflow configuration
- * @returns Promise resolving with a workflow configuration as JSON object, with each file being a key
- */
-export async function extractAndTemplatizeWorkflowFromZipFile(
-  zipFile: File
-): Promise<any> {
-  const workflowConfig = await extractWorkflowFromZipFile(zipFile);
-
-  // Replace AGO ids with templatized versions
-  let workflowConfigStr = JSON.stringify(workflowConfig);
-  const matches = dedupe(workflowConfigStr.match(getAgoIdRegEx()) || []);
-  matches.forEach((match: string) => {
-    workflowConfigStr = workflowConfigStr.replace(new RegExp(match, "g"), `{{${match}}}`);
-  });
-
-  return Promise.resolve(JSON.parse(workflowConfigStr));
 }
 
 /**

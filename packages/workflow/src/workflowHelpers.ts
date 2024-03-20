@@ -29,48 +29,50 @@ export async function addWorkflowItem(
   item: common.IItemTemplate,
   destinationFolderId: string,
   authentication: common.UserSession
-): Promise<common.IItemTemplate> {
+): Promise<string> {
   const user = await authentication.getUser({ authentication });
 
   // Add the workflow item
-  try {
-    const workflowUrl = `https://workflow.arcgis.com/${user.orgId}/admin/createWorkflowItem?name=${item.item.title}`;
-    const requestOptions: restRequest.IRequestOptions = {
-      authentication: authentication,
-      params: {
-        f: "json",
-        token: authentication.token
-      }
-    };
-    console.log("Creating workflow item URL: ", workflowUrl);//???
-    const createdWorkflowResponse = await restRequest.request(workflowUrl, requestOptions);
-    console.log("Created workflow item: ", JSON.stringify(createdWorkflowResponse, null, 2));//???
-
-    // Fetch the auxiliary items
-    const workflowItemId = createdWorkflowResponse.itemId;
-    const workflowLocationsItemName = `WorkflowLocations_${workflowItemId}`;
-    const workflowViewsItemName = `workflow_views_${workflowItemId}`;
-    const workflowItemName = `workflow_${workflowItemId}`;
-    console.log("workflow auxiliary items: ", workflowLocationsItemName, workflowViewsItemName, workflowItemName);//???
-
-    const fetchResults = await Promise.all([
-      common.getItemBase(workflowLocationsItemName, authentication),
-      common.getItemBase(workflowViewsItemName, authentication),
-      common.getItemBase(workflowItemName, authentication)
-    ]);
-    console.log("Fetched auxiliary items: ", JSON.stringify(fetchResults.map(item => item.id), null, 2));//???
-
-    // Move the workflow and auxiliary items to the destination
-    const moveResults = await Promise.all([
-      common.moveItemToFolder(workflowItemId, destinationFolderId, authentication),
-      common.moveItemToFolder(fetchResults[0].id, destinationFolderId, authentication),
-      common.moveItemToFolder(fetchResults[1].id, destinationFolderId, authentication),
-      common.moveItemToFolder(fetchResults[2].id, destinationFolderId, authentication)
-    ]);
-    console.log("Moved workflow & its auxiliary items: ", JSON.stringify(moveResults.map(item => item.itemId), null, 2));//???
-
-    return Promise.resolve(item);
-  } catch (err) {
-    return Promise.resolve(null);
+  const workflowUrl = `https://workflow.arcgis.com/${user.orgId}/admin/createWorkflowItem?name=${item.item.title}`;
+  const requestOptions: restRequest.IRequestOptions = {
+    authentication: authentication,
+    headers: {
+      Accept: "application/json",
+      Authorization: `Bearer ${authentication.token}`,
+      "Content-Type": "application/json",
+      Host: "workflow.arcgis.com",
+      "X-Esri-Authorization": `Bearer ${authentication.token}`
+    },
+    params: {
+      name: `${item.item.title}`
+    }
+  };
+  const createdWorkflowResponse = await restRequest.request(workflowUrl, requestOptions);
+  if (!createdWorkflowResponse.success) {
+    throw new Error("Failed to create workflow item");
   }
+
+  return Promise.resolve(createdWorkflowResponse.itemId);
+}
+
+/**
+ * Fetches the auxiliary items.
+ *
+ * @param workflowItemId Workflow whose auxiliary items are to be fetched
+ * @param authentication Credentials for requests to the destination organization
+ * @returns List of auxiliary item ids
+ */
+export async function fetchAuxiliaryItems(
+  workflowItemId: string,
+  authentication: common.UserSession
+): Promise<string[]> {
+  const workflowItemName = `workflow_${workflowItemId}`;
+  const workflowLocationsItemName = `WorkflowLocations_${workflowItemId}`;
+  const workflowViewsItemName = `workflow_views_${workflowItemId}`;
+
+  const auxiliaryItemsResults = await common.searchItems({
+    q: `title:${workflowItemName} OR title:${workflowLocationsItemName} OR title:${workflowViewsItemName}`,
+    authentication: authentication
+  });
+  return auxiliaryItemsResults.results.map(item => item.id);
 }

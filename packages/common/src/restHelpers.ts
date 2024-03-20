@@ -1115,9 +1115,9 @@ export function getLayerUpdates(
  * @param itemId Id of item to move
  * @param folderId Id of folder to receive item
  * @param authentication Credentials for the request
- * @returns
+ * @returns A Promise resolving to the results of the move
  */
-export function moveItemToFolder(
+export async function moveItemToFolder(
   itemId: string,
   folderId: string,
   authentication: UserSession
@@ -1129,6 +1129,26 @@ export function moveItemToFolder(
   };
 
   return portalMoveItem(moveOptions);
+}
+
+/**
+ * Moves a list of AGO items to a specified folder.
+ *
+ * @param itemIds Ids of items to move
+ * @param folderId Id of folder to receive item
+ * @param authentication Credentials for the request
+ * @returns A Promise resolving to the results of the moves
+ */
+export async function moveItemsToFolder(
+  itemIds: string[],
+  folderId: any,
+  authentication: UserSession,
+): Promise<IMoveItemResponse[]> {
+  const movePromises = new Array<Promise<IMoveItemResponse>>();
+  itemIds.forEach(itemId => {
+    movePromises.push(moveItemToFolder(itemId, folderId, authentication));
+  });
+  return Promise.all(movePromises);
 }
 
 /**
@@ -1359,9 +1379,9 @@ export async function getWorkflowConfigurationZip(
   return request(exportConfigUrl, {
     authentication,
     headers: {
+      Accept: "application/octet-stream",
+      Authorization: `Bearer ${authentication.token}`,
       Host: "workflow.arcgis.com",
-      "Accept": "application/octet-stream",
-      "Authorization": `Bearer ${authentication.token}`,
       "X-Esri-Authorization": `Bearer ${authentication.token}`
     },
     params: {
@@ -1388,9 +1408,9 @@ export async function setWorkflowConfigurationZip(
   return request(importConfigUrl, {
     authentication,
     headers: {
+      Accept: "application/octet-stream",
+      Authorization: `Bearer ${authentication.token}`,
       Host: "workflow.arcgis.com",
-      "Accept": "application/octet-stream",
-      "Authorization": `Bearer ${authentication.token}`,
       "X-Esri-Authorization": `Bearer ${authentication.token}`
     },
     params: {

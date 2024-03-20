@@ -50,7 +50,7 @@ describe("Module `workflow`", () => {
       spyOn(common, "getWorkflowConfigurationZip")
         .and.returnValue(common.jsonToZipFile("jobConfig.json", { "jobTemplates": "abc" }, "config"));
 
-      spyOn(common, "extractAndTemplatizeWorkflowFromZipFile")
+      spyOn(common, "extractWorkflowFromZipFile")
         .and.resolveTo({ "jobTemplates": "abc" });
 
       const itemTemplate = await workflow.convertItemToTemplate(agolItem, MOCK_USER_SESSION, MOCK_USER_SESSION);
@@ -67,7 +67,7 @@ describe("Module `workflow`", () => {
       spyOn(common, "getWorkflowConfigurationZip")
         .and.returnValue(common.jsonToZipFile("jobConfig.json", { "jobTemplates": "abc" }, "config"));
 
-      spyOn(common, "extractAndTemplatizeWorkflowFromZipFile")
+      spyOn(common, "extractWorkflowFromZipFile")
         .and.resolveTo({ "jobTemplates": "abc" });
 
       const itemTemplate = await workflow.convertItemToTemplate(agolItem, MOCK_USER_SESSION, MOCK_USER_SESSION);

@@ -82,7 +82,7 @@ export async function convertItemToTemplate(
   });
 
   // Add the templatized configuration to the template
-  itemTemplate.properties.configuration = await common.extractAndTemplatizeWorkflowFromZipFile(configZip);
+  itemTemplate.properties.configuration = await common.extractWorkflowFromZipFile(configZip);
 
   return Promise.resolve(itemTemplate);
 }
@@ -131,17 +131,11 @@ export async function createItemFromTemplate(
   }
 
   try {
-    const response = await workflowHelpers.addWorkflowItem(
+    const createdWorkflowItemId = await workflowHelpers.addWorkflowItem(
       newItemTemplate, templateDictionary.folderId, destinationAuthentication);
-    if (!response) {
+    if (!createdWorkflowItemId) {
       throw new Error("Failed to create workflow item");
     }
-
-    const createResponse = {
-      success: true,
-      id: response.itemId,
-      folder: templateDictionary.folderId
-    };
 
     // Interrupt process if progress callback returns `false`
     if (
@@ -149,7 +143,7 @@ export async function createItemFromTemplate(
         template.itemId,
         common.EItemProgressStatus.Created,
         template.estimatedDeploymentCostFactor / 2,
-        createResponse.id
+        createdWorkflowItemId
       )
     ) {
       itemProgressCallback(
@@ -158,34 +152,59 @@ export async function createItemFromTemplate(
         0
       );
 
-      void common.removeItem(createResponse.id, destinationAuthentication);
+      void common.removeItem(createdWorkflowItemId, destinationAuthentication);
       return Promise.resolve(common.generateEmptyCreationResponse(template.type));
     }
 
     // Add the new item to the settings
-    newItemTemplate.itemId = newItemTemplate.item.id = createResponse.id;
+    newItemTemplate.itemId = newItemTemplate.item.id = createdWorkflowItemId;
     templateDictionary[template.itemId] = {
-      itemId: createResponse.id
+      itemId: createdWorkflowItemId
     };
+
+    // Detempletize the workflow configuration
+    newItemTemplate.properties.configuration = common.replaceInTemplate(
+      newItemTemplate.properties.configuration, templateDictionary);
+
+    // Find the AGO ids in the file content
+    let configStr = JSON.stringify(newItemTemplate.properties.configuration);
+    const agoIdRegEx = common.getAgoIdRegEx();
+    const agoIdMatches = common.dedupe(configStr.match(agoIdRegEx) ?? []);
+
+    // Replace things that look like AGO ids in the file content iff they are present in the template dictionary
+    agoIdMatches.forEach((match: string) => {
+      const replacement = templateDictionary[match];
+      if (typeof replacement?.itemId === "string") {
+        configStr = configStr.replace(new RegExp(match, "g"), `${replacement.itemId}`);
+      }
+    });
+    newItemTemplate.properties.configuration = JSON.parse(configStr);
 
     // Add the item's configuration properties
     const configZipFile = await common.compressWorkflowIntoZipFile(newItemTemplate.properties.configuration);
-    await common.setWorkflowConfigurationZip(
-      configZipFile,
-      createResponse.id,
-      destinationAuthentication
-    );
+    const uploadResult = await common.setWorkflowConfigurationZip(configZipFile, createdWorkflowItemId, destinationAuthentication);
+    if (!uploadResult.success) {
+      throw new Error("Failed to upload workflow configuration");
+    }
+
+    // Fetch the auxiliary items
+    const itemIds = await workflowHelpers.fetchAuxiliaryItems(createdWorkflowItemId, destinationAuthentication);
+
+    // Move the workflow and auxiliary items to the destination
+    itemIds.push(createdWorkflowItemId);
+    const moveResults = await common.moveItemsToFolder(itemIds, templateDictionary.folderId, destinationAuthentication);
+    console.log("Moved items: ", JSON.stringify(moveResults, null, 2));//???
 
     itemProgressCallback(
       template.itemId,
       common.EItemProgressStatus.Finished,
       template.estimatedDeploymentCostFactor / 2,
-      createResponse.id
+      createdWorkflowItemId
     );
 
     return Promise.resolve({
       item: newItemTemplate,
-      id: createResponse.id,
+      id: createdWorkflowItemId,
       type: newItemTemplate.type,
       postProcess: false
     });
