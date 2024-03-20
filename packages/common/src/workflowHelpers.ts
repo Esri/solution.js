@@ -23,7 +23,7 @@
 import * as interfaces from "./interfaces";
 import * as zipUtils from "./zip-utils";
 import { createMimeTypedFile } from "./resources/copyDataIntoItem";
-import { getAgoIdRegEx } from "./generalHelpers";
+import { dedupe, getAgoIdRegEx } from "./generalHelpers";
 import { IRequestOptions, request } from "@esri/arcgis-rest-request";
 import JSZip from "jszip";
 
@@ -85,7 +85,7 @@ export async function extractAndTemplatizeWorkflowFromZipFile(
 
   // Replace AGO ids with templatized versions
   let workflowConfigStr = JSON.stringify(workflowConfig);
-  const matches = workflowConfigStr.match(getAgoIdRegEx()) || [];
+  const matches = dedupe(workflowConfigStr.match(getAgoIdRegEx()) || []);
   matches.forEach((match: string) => {
     workflowConfigStr = workflowConfigStr.replace(new RegExp(match, "g"), `{{${match}}}`);
   });
