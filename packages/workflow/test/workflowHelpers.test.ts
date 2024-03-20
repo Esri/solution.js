@@ -72,5 +72,23 @@ describe("Module `workflowHelpers`", () => {
 
       expect(itemTemplate).toEqual(agolItem);
     });
+
+    it("handles failure to add workflow item", async () => {
+      const agolItem = mockItems.getAGOLItem("Workflow");
+      const destinationFolderId = "fld1234567890";
+
+      spyOn(restRequest, "request").and.callFake(
+        (url: string) => {
+          if (url.includes("createWorkflowItem")) {
+            throw new Error("Error");
+          } else {
+            return Promise.resolve({});
+          }
+        }
+      );
+      const itemTemplate = await workflowHelpers.addWorkflowItem(agolItem, destinationFolderId, MOCK_USER_SESSION);
+
+      expect(itemTemplate).toBeNull();
+    });
   });
 });

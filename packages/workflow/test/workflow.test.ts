@@ -77,7 +77,7 @@ describe("Module `workflow`", () => {
   });
 
   describe("createItemFromTemplate", () => {
-    xit("basically works", async () => {
+    it("basically works", async () => {
       const itemTemplate: common.IItemTemplate = templates.getItemTemplate("Workflow");
       itemTemplate.properties.configuration = getSampleConfigJson(true);
       const templateDictionary: any = {
@@ -98,26 +98,62 @@ describe("Module `workflow`", () => {
         success: true
       });
 
-      spyOn(workflowHelpers, "addWorkflowItem").and.resolveTo(templates.getItemTemplate("Workflow"));
+      spyOn(workflowHelpers, "addWorkflowItem").and.callFake(
+        () => {
+          const createdItem: common.IItemTemplate = templates.getItemTemplate("Workflow");
+          createdItem.itemId = newItemID;
+          createdItem.item.id = newItemID;
+          return Promise.resolve(createdItem);
+        }
+      );
 
       const response = await workflow.createItemFromTemplate(
         itemTemplate, templateDictionary, MOCK_USER_SESSION, utils.ITEM_PROGRESS_CALLBACK);
 
-      //expect(response.id).toEqual(newItemID);
-      //expect(response.type).toEqual("Workflow");
-      //expect(response.postProcess).toBeFalse();
+      expect(response.id).withContext("created id").toEqual(newItemID);
+      expect(response.type).withContext("created type").toEqual("Workflow");
+      expect(response.postProcess).withContext("created postProcess").toBeFalse();
 
       const itemTemplate2: common.IItemTemplate = templates.getItemTemplate("Workflow");
       itemTemplate2.itemId = newItemID;
       itemTemplate2.item.id = newItemID;
       itemTemplate2.properties.configuration = getSampleConfigJson(false);
-      //expect(response.item).toEqual(itemTemplate2);
+      expect(response).withContext("final item").toEqual({
+        item: itemTemplate2,
+        id: newItemID,
+        type: "Workflow",
+        postProcess: false
+      } as common.ICreateItemFromTemplateResponse);
+    });
 
-      /*
-      Expected '' to equal 'wfw1234567891'
+    it("handles failure to add workflow item", async () => {
+      const itemTemplate: common.IItemTemplate = templates.getItemTemplate("Workflow");
+      itemTemplate.properties.configuration = getSampleConfigJson(true);
+      const templateDictionary: any = {
+        "7a69f67e4c6744918fbea49b8241640e": "7a69f67e4c6744918fbea49b8241640e",
+        "9ef76d79ed2741a8bf5a3b9b344b3c07": "9ef76d79ed2741a8bf5a3b9b344b3c07"
+      };
+      const newItemID: string = "wfw1234567891";
 
-      at 110 Expected null to equal Object({ itemId: 'wfw1234567891', type: 'Workflow', key: 'i1a2b3c4', item: Object({ id: 'wfw1234567891', name: 'Name of an AGOL item', title: 'An AGOL item', type: 'Workflow', typeKeywords: [ 'JavaScript' ], description: 'Description of an AGOL item', tags: [ 'test' ], snippet: 'Snippet of an AGOL item', thumbnail: 'https://myorg.maps.arcgis.com/sharing/rest/content/items/wfw1234567890/info/thumbnail/ago_downloaded.png', extent: '{{solutionItemExtent}}', categories: [  ], contentStatus: null, spatialReference: undefined, accessInformation: 'Esri, Inc.', licenseInfo: null, origUrl: undefined, properties: null, culture: 'en-us', url: '', created: 1520968147000, modified: 1522178539000 }), data: undefined, resources: [  ], dependencies: [  ], relatedItems: [  ], groups: [  ], properties: Object({ configuration: Object({ info.json: '{"schemaVersion":"11.2.0.1"}', diagrams.json: '[{"diagram_id":"w7shJbW2QL-hE9-AZ7nbRA","diagram_version":1,"diagram_details":"{\"initialStepId\":\"b3722bc9 ....
-      */
+      spyOn(common, "createItemWithData").and.resolveTo({
+        folder: "folder1234567890",
+        id: newItemID,
+        success: true
+      });
+
+      spyOn(common, "setWorkflowConfigurationZip").and.resolveTo({
+        itemId: newItemID,
+        success: true
+      });
+
+      spyOn(workflowHelpers, "addWorkflowItem").and.resolveTo(undefined);
+
+      spyOn(common, "removeItem").and.resolveTo({ success: true, itemId: newItemID });
+
+      const response = await workflow.createItemFromTemplate(
+        itemTemplate, templateDictionary, MOCK_USER_SESSION, utils.ITEM_PROGRESS_CALLBACK);
+
+      expect(response).toEqual(common.generateEmptyCreationResponse("Workflow"));
     });
 
     it("handles case where overall deployment has been cancelled before we start", async () => {
@@ -151,10 +187,21 @@ describe("Module `workflow`", () => {
         success: true
       });
 
-      spyOn(common, "removeItem").and.resolveTo({
-        success: true,
-        itemId: newItemID
+      spyOn(common, "setWorkflowConfigurationZip").and.resolveTo({
+        itemId: newItemID,
+        success: true
       });
+
+      spyOn(workflowHelpers, "addWorkflowItem").and.callFake(
+        () => {
+          const createdItem: common.IItemTemplate = templates.getItemTemplate("Workflow");
+          createdItem.itemId = newItemID;
+          createdItem.item.id = newItemID;
+          return Promise.resolve(createdItem);
+        }
+      );
+
+      spyOn(common, "removeItem").and.resolveTo({ success: true, itemId: newItemID });
 
       const response = await workflow.createItemFromTemplate(
         itemTemplate, templateDictionary, MOCK_USER_SESSION, utils.createFailingItemProgressCallbackOnNthCall(2));
