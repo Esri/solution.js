@@ -176,7 +176,6 @@ async function formatItemInfo(
     html += "</p>";
 
     html += "</p>";
-    return html;
 
   } else if (item.base.type === "Workflow") {
     html += "<p>Workflow Configuration<br/>";
