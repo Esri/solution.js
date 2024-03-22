@@ -1369,6 +1369,7 @@ export function getFeatureServiceProperties(
  * @param itemId Id of the workflow item
  * @param authentication Credentials for the request to AGOL
  * @returns Promise resolving with the workflow configuration in a zip file
+ * @throws {WorkflowJsonExceptionDTO} if request to workflow manager fails
  */
 export async function getWorkflowConfigurationZip(
   itemId: string,
@@ -1397,6 +1398,7 @@ export async function getWorkflowConfigurationZip(
  * @param itemId Id of the workflow item
  * @param authentication Credentials for the request to AGOL
  * @returns Promise resolving with the workflow configuration in a zip file
+ * @throws {WorkflowJsonExceptionDTO} if request to workflow manager fails
  */
 export async function setWorkflowConfigurationZip(
   configurationZipFile: File,

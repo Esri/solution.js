@@ -25,9 +25,16 @@ import * as restRequest from "@esri/arcgis-rest-request";
 
 // ------------------------------------------------------------------------------------------------------------------ //
 
+/**
+ * Creates a new workflow item.
+ *
+ * @param item Item to add
+ * @param authentication Credentials for requests to the workflow manager
+ * @returns Promise resolving with new item's AGO id
+ * @throws {WorkflowJsonExceptionDTO} if request to workflow manager fails
+ */
 export async function addWorkflowItem(
   item: common.IItemTemplate,
-  destinationFolderId: string,
   authentication: common.UserSession
 ): Promise<string> {
   const user = await authentication.getUser({ authentication });
@@ -48,9 +55,6 @@ export async function addWorkflowItem(
     }
   };
   const createdWorkflowResponse = await restRequest.request(workflowUrl, requestOptions);
-  if (!createdWorkflowResponse.success) {
-    throw new Error("Failed to create workflow item");
-  }
 
   return Promise.resolve(createdWorkflowResponse.itemId);
 }
@@ -74,5 +78,5 @@ export async function fetchAuxiliaryItems(
     q: `title:${workflowItemName} OR title:${workflowLocationsItemName} OR title:${workflowViewsItemName}`,
     authentication: authentication
   });
-  return auxiliaryItemsResults.results.map(item => item.id);
+  return Promise.resolve(auxiliaryItemsResults.results.map(item => item.id));
 }

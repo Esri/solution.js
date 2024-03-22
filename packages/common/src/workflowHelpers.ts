@@ -21,9 +21,9 @@
  */
 
 import * as interfaces from "./interfaces";
+import * as request from "@esri/arcgis-rest-request";
 import * as zipUtils from "./zip-utils";
 import { createMimeTypedFile } from "./resources/copyDataIntoItem";
-import { IRequestOptions, request } from "@esri/arcgis-rest-request";
 import JSZip from "jszip";
 
 // ------------------------------------------------------------------------------------------------------------------ //
@@ -77,6 +77,7 @@ export async function extractWorkflowFromZipFile(
  * @param authentication Credentials for the request to AGO
  * @param enterpriseWebAdaptorUrl URL of the enterprise web adaptor, e.g., "https://gisserver.domain.com/server"
  * @returns Promise resolving with a boolean indicating whether the organization has the license
+ * @throws {WorkflowJsonExceptionDTO} if request to workflow manager fails
  */
 export async function getWorkflowManagerAuthorized(
   orgId: string | undefined,
@@ -86,7 +87,7 @@ export async function getWorkflowManagerAuthorized(
   const url = enterpriseWebAdaptorUrl
     ? `${enterpriseWebAdaptorUrl}/workflow/${orgId}/checkStatus`
     : `https://workflow.arcgis.com/${orgId}/checkStatus`;
-  const options: IRequestOptions = {
+  const options: request.IRequestOptions = {
     authentication,
     httpMethod: "GET",
     params: {
@@ -94,11 +95,7 @@ export async function getWorkflowManagerAuthorized(
     }
   };
 
-  try {
-    const response = await request(url, options);
-    const isAuthorized = response?.hasAdvancedLicense || false;
-    return Promise.resolve(isAuthorized);
-  } catch (error) {
-    return Promise.resolve(false);
-  }
+  const response = await request.request(url, options);
+  const isAuthorized = response?.hasAdvancedLicense || false;
+  return Promise.resolve(isAuthorized);
 }

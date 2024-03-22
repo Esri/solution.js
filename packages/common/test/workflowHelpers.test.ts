@@ -94,8 +94,11 @@ describe("Module `workflowHelpers`", () => {
       const orgId = "abcdef";
       spyOn(request, "request").and.throwError("Unauthorized");
 
-      const isAuthorized = await workflowHelpers.getWorkflowManagerAuthorized(orgId, MOCK_USER_SESSION);
-      expect(isAuthorized).toBeFalse();
+      try {
+        await workflowHelpers.getWorkflowManagerAuthorized(orgId, MOCK_USER_SESSION);
+        fail("Expected an error to be thrown");
+      } catch (e) {
+      }
     });
 
     it("handles failure from `request`", async () => {

@@ -39,56 +39,44 @@ describe("Module `workflowHelpers`", () => {
 
   describe("addWorkflowItem", () => {
     it("basically works", async () => {
-      const itemId = "wfw123456789";
-      let itemIdOffset = 0;
+      const itemId = "wfw1234567890";
 
-      const agolItem = mockItems.getAGOLItem("Workflow");
+      const agolItem = templates.getItemTemplate("Workflow");
       agolItem.thumbnail = null;
-      const destinationFolderId = "fld1234567890";
 
       spyOn(restRequest, "request").and.resolveTo({
         success: true,
-        itemId: itemId + (itemIdOffset++).toString()
+        itemId
       });
 
       spyOn(common, "getItemBase").and.callFake(
-        (itemName: string, authentication: common.UserSession) => {
-          return Promise.resolve(mockItems.getAGOLItem("Workflow", "", itemId + (itemIdOffset++).toString()));
+        () => {
+          return Promise.resolve(mockItems.getAGOLItem("Workflow", "", itemId) as common.IItem);
         }
       );
 
-      spyOn(common, "moveItemToFolder").and.callFake(
-        (itemId: string, folderId: string, authentication: common.UserSession) => {
-          return Promise.resolve({
-            success: true,
-            itemId,
-            owner: authentication.username,
-            folder: folderId
-          });
-        }
-      );
+      const createdItemId = await workflowHelpers.addWorkflowItem(agolItem, MOCK_USER_SESSION);
 
-      const itemTemplate = await workflowHelpers.addWorkflowItem(agolItem, destinationFolderId, MOCK_USER_SESSION);
-
-      expect(itemTemplate).toEqual(agolItem);
-    });
-
-    it("handles failure to add workflow item", async () => {
-      const agolItem = mockItems.getAGOLItem("Workflow");
-      const destinationFolderId = "fld1234567890";
-
-      spyOn(restRequest, "request").and.callFake(
-        (url: string) => {
-          if (url.includes("createWorkflowItem")) {
-            throw new Error("Error");
-          } else {
-            return Promise.resolve({});
-          }
-        }
-      );
-      const itemTemplate = await workflowHelpers.addWorkflowItem(agolItem, destinationFolderId, MOCK_USER_SESSION);
-
-      expect(itemTemplate).toBeNull();
+      expect(createdItemId).toEqual(itemId);
     });
   });
+
+  describe("fetchAuxiliaryItems", () => {
+    it("handles failure to add workflow item", async () => {
+      const itemId = "wfw1234567890";
+
+      const searchItemsSpy = spyOn(common, "searchItems").and.resolveTo({
+        results: [{ id: "item1" }, { id: "item2" }, { id: "item3" }]
+      } as common.ISearchResult<common.IItem>);
+
+      const auxiliaryItemsIds = await workflowHelpers.fetchAuxiliaryItems(itemId, MOCK_USER_SESSION);
+
+      expect(searchItemsSpy.calls.count()).toBe(1);
+      expect((searchItemsSpy.calls.argsFor(0)[0] as any).q)
+        .toBe("title:workflow_wfw1234567890 OR title:WorkflowLocations_wfw1234567890 OR title:workflow_views_wfw1234567890");
+
+      expect(auxiliaryItemsIds).toEqual(["item1", "item2", "item3"]);
+    });
+  });
+
 });

@@ -132,7 +132,7 @@ export async function createItemFromTemplate(
 
   try {
     const createdWorkflowItemId = await workflowHelpers.addWorkflowItem(
-      newItemTemplate, templateDictionary.folderId, destinationAuthentication);
+      newItemTemplate, destinationAuthentication);
     if (!createdWorkflowItemId) {
       throw new Error("Failed to create workflow item");
     }
@@ -180,12 +180,9 @@ export async function createItemFromTemplate(
     });
     newItemTemplate.properties.configuration = JSON.parse(configStr);
 
-    // Add the item's configuration properties
+    // Add the item's configuration properties; throw if the configuration update fails
     const configZipFile = await common.compressWorkflowIntoZipFile(newItemTemplate.properties.configuration);
-    const uploadResult = await common.setWorkflowConfigurationZip(configZipFile, createdWorkflowItemId, destinationAuthentication);
-    if (!uploadResult.success) {
-      throw new Error("Failed to upload workflow configuration");
-    }
+    await common.setWorkflowConfigurationZip(configZipFile, createdWorkflowItemId, destinationAuthentication);
 
     // Fetch the auxiliary items
     const itemIds = await workflowHelpers.fetchAuxiliaryItems(createdWorkflowItemId, destinationAuthentication);
@@ -193,7 +190,12 @@ export async function createItemFromTemplate(
     // Move the workflow and auxiliary items to the destination
     itemIds.push(createdWorkflowItemId);
     const moveResults = await common.moveItemsToFolder(itemIds, templateDictionary.folderId, destinationAuthentication);
-    console.log("Moved items: ", JSON.stringify(moveResults, null, 2));//???
+    const hasFailure = moveResults.some(result => {
+      return !result.success;
+    });
+    if (hasFailure) {
+      throw new Error("Failed to move all workflow items");
+    }
 
     itemProgressCallback(
       template.itemId,

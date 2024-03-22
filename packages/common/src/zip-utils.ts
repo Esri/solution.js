@@ -32,13 +32,7 @@ export async function blobToZipObject(
   blob: Blob
 ): Promise<JSZip> {
   const zipObject = new JSZip();
-  return zipObject.loadAsync(blob)
-  .then(async (zipObject) => {
-    return Promise.resolve(zipObject);
-  })
-  .catch(() => {
-    return Promise.reject();
-  });
+  return zipObject.loadAsync(blob);
 }
 
 /**
