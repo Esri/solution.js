@@ -108,6 +108,7 @@ import { IUserRequestOptions } from "@esri/arcgis-rest-auth";
 import * as fetchMock from "fetch-mock";
 import * as mockItems from "../../common/test/mocks/agolItems";
 import * as templates from "../../common/test/mocks/templates";
+import { setCreateProp } from "../src/generalHelpers";
 
 let itemTemplate: interfaces.IItemTemplate;
 const itemId: string = "cd766cba0dd44ec080420acc10990282";
@@ -6468,8 +6469,59 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
           id: 4
         }
       }];
+      const _itemTemplate: interfaces.IItemTemplate = templates.getItemTemplateSkeleton();
+      const actual = _updateOrder(layersAndTables, true, _itemTemplate);
+      expect(actual).toEqual(expected);
+    });
 
-      const actual = _updateOrder(layersAndTables, true);
+    it("will sort multisource", () => {
+      const layersAndTables = [{
+        item: {
+          id: 4
+        }
+      }, {
+        item: {
+          id: 3
+        }
+      }, {
+        item: {
+          id: 1
+        }
+      }, {
+        item: {
+          id: 2
+        }
+      }, {
+        item: {
+          id: 0
+        }
+      }];
+
+      const expected = [{
+        item: {
+          id: 0
+        }
+      }, {
+        item: {
+          id: 1
+        }
+      }, {
+        item: {
+          id: 2
+        }
+      }, {
+        item: {
+          id: 3
+        }
+      }, {
+        item: {
+          id: 4
+        }
+      }];
+
+      const _itemTemplate: interfaces.IItemTemplate = templates.getItemTemplateSkeleton();
+      setCreateProp(_itemTemplate, "properties.service.isMultiServicesView", true);
+      const actual = _updateOrder(layersAndTables, false, _itemTemplate);
       expect(actual).toEqual(expected);
     });
   });

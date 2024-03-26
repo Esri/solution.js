@@ -956,7 +956,7 @@ export function addFeatureServiceDefinition(
       }
 
       const isSelfReferential = _isSelfReferential(listToAdd);
-      listToAdd = _updateOrder(listToAdd, isSelfReferential);
+      listToAdd = _updateOrder(listToAdd, isSelfReferential, itemTemplate);
 
       const chunkSize: number = _getLayerChunkSize();
       const layerChunks: any[] = [];
@@ -1068,15 +1068,18 @@ export function addFeatureServiceDefinition(
  *
  * @param layersAndTables The list of layers and tables for the current template
  * @param isSelfReferential Indicates if any layers or tables have relationships with other layers or tables in the same service
+ * @param itemTemplate The current itemTemplate being processed
  *
  * @returns Sorted list of layers and tables when using a multi-service view
  * @private
  */
 export function _updateOrder(
   layersAndTables: any[],
-  isSelfReferential: boolean
+  isSelfReferential: boolean,
+  itemTemplate: IItemTemplate
 ): any[] {
-  return isSelfReferential ? layersAndTables.sort((a, b) => a.item.id - b.item.id) : layersAndTables;
+  const isMsView: boolean = getProp(itemTemplate, "properties.service.isMultiServicesView") || false;
+  return isSelfReferential || isMsView ? layersAndTables.sort((a, b) => a.item.id - b.item.id) : layersAndTables;
 }
 
 /**
