@@ -18,6 +18,7 @@ import * as common from "@esri/solution-common";
 import * as formUtils from "../src/formUtils";
 import * as utils from "../../common/test/mocks/utils";
 import * as zipUtilsTest from "../../common/test/zip-utils.test";
+import JSZip from "jszip";
 
 let MOCK_USER_SESSION: common.UserSession;
 
@@ -80,6 +81,91 @@ describe("formUtils", () => {
       const expectedZipContents = await common.getZipObjectContents(expectedZipObject);
 
       expect(resultingZipContents).toEqual(expectedZipContents);
+    });
+
+    it("swizzles a binary object", async () => {
+      const zipObject = await zipUtilsTest.generateFormZipObject("0c01725576b640e4bd25a16721850000");
+      const originalXLSX = utils.loadSampleXLSX("09b843d27d8a441db4c88c1f03b8e9aa");
+      zipObject.file("09b843d27d8a441db4c88c1f03b8e9aa.xlsx", originalXLSX, { binary: true });
+
+      const templateDictionary = {
+        "content": "item",
+        "09b843d27d8a441db4c88c1f03b8e9aa": { itemId: "c909d4ffd708476789e22664051629a0" },
+        "bf0b8500dc824f0bbd03dbde294cbec9": { itemId: "3abb693e55374947ba60ec7d974e8e92" },
+      }
+
+      const resultingZipObject = await formUtils.swizzleFormObject(zipObject, templateDictionary);
+      const resultingZipContents = await common.getZipObjectContents(resultingZipObject);
+
+      const expectedZipObject = await zipUtilsTest.generateFormZipObject("0c01725576b640e4bd25a16721850000");
+      const modifiedXLSX = utils.loadSampleXLSX("c909d4ffd708476789e22664051629a0");
+      expectedZipObject.file("09b843d27d8a441db4c88c1f03b8e9aa.xlsx", modifiedXLSX, { binary: true });
+      const expectedZipContents = await common.getZipObjectContents(expectedZipObject);
+
+      expect(resultingZipContents).toEqual(expectedZipContents);
+    });
+
+  });
+
+  describe("_updateZipObjectBinaryContent", () => {
+
+    it("swizzles binary form object", async () => {
+      const originalXLSX = utils.loadSampleXLSX("09b843d27d8a441db4c88c1f03b8e9aa");
+      const originalZipFileItem: common.IZipObjectContentItem = {
+        file: "09b843d27d8a441db4c88c1f03b8e9aa.xlsx",
+        content: originalXLSX
+      };
+
+      const modifiedXLSX = utils.loadSampleXLSX("c909d4ffd708476789e22664051629a0");
+      const modifiedZipFileItem: common.IZipObjectContentItem = {
+        file: "c909d4ffd708476789e22664051629a0.xlsx",
+        content: modifiedXLSX
+      };
+      const modfifiedZipFileObject = new JSZip();
+      modfifiedZipFileObject.file("file.xlsx", modifiedXLSX, { binary: true });
+
+      const templateDictionary = {
+        "content": "item",
+        "09b843d27d8a441db4c88c1f03b8e9aa": { itemId: "c909d4ffd708476789e22664051629a0" },
+        "bf0b8500dc824f0bbd03dbde294cbec9": { itemId: "3abb693e55374947ba60ec7d974e8e92" },
+      }
+
+      const result = await formUtils._updateZipObjectBinaryContent(originalZipFileItem, templateDictionary);
+      expect(result.content).toEqual(modifiedZipFileItem.content);
+    });
+
+  });
+
+  describe("_updateZipObjectTextContent", () => {
+
+    it("modifies text form content", () => {
+      const zipFileItem: common.IZipObjectContentItem = {
+        file: "file.txt",
+        content: "This is the bf0b8500dc824f0bbd03dbde294cbec9 {{content}} of {{09b843d27d8a441db4c88c1f03b8e9aa.itemId}}: 774ac2524dad4bf38c369ac1950d8d97 & bf0b8500dc824f0bbd03dbde294cbec9. It is a very important item 3abb693e55374947ba60ec7d974e8e92 for {{content}} and {{bf0b8500dc824f0bbd03dbde294cbec9.itemId}}. But not for 13d47c3960084f8a9effb0451df5ea1b {{content}}."
+      };
+      const templateDictionary = {
+        "content": "item",
+        "09b843d27d8a441db4c88c1f03b8e9aa": { itemId: "c909d4ffd708476789e22664051629a0" },
+        "bf0b8500dc824f0bbd03dbde294cbec9": { itemId: "3abb693e55374947ba60ec7d974e8e92" },
+      }
+
+      const result = formUtils._updateZipObjectTextContent(zipFileItem, templateDictionary);
+      expect(result).toEqual("This is the 3abb693e55374947ba60ec7d974e8e92 item of c909d4ffd708476789e22664051629a0: 774ac2524dad4bf38c369ac1950d8d97 & 3abb693e55374947ba60ec7d974e8e92. It is a very important item 3abb693e55374947ba60ec7d974e8e92 for item and 3abb693e55374947ba60ec7d974e8e92. But not for 13d47c3960084f8a9effb0451df5ea1b item.");
+    });
+
+    it("doesn't modify text form content if there are no matches with template dictionary", () => {
+      const zipFileItem: common.IZipObjectContentItem = {
+        file: "file.txt",
+        content: "it doesn't modify text form content if there are no matches with template dictionary."
+      };
+      const templateDictionary = {
+        "content": "item",
+        "09b843d27d8a441db4c88c1f03b8e9aa": "c909d4ffd708476789e22664051629a0",
+        "bf0b8500dc824f0bbd03dbde294cbec9": "3abb693e55374947ba60ec7d974e8e92",
+      }
+
+      const result = formUtils._updateZipObjectTextContent(zipFileItem, templateDictionary);
+      expect(result).toEqual("it doesn't modify text form content if there are no matches with template dictionary.");
     });
 
   });

@@ -44,7 +44,7 @@ describe("Module `zip-utils`", () => {
     it("detemplatizes the form data", async () => {
       const zipObject = zipUtilsTest.generateFormZipObject(`{{${itemId1}.itemId}}`);
       const zipObjectContents = await common.getZipObjectContents(zipObject);
-      zipObjectContents[1].content = zipObjectContents[1].content
+      zipObjectContents[1].content = (zipObjectContents[1].content as string)
         .replace("https://fred.maps.arcgis.com", "{{portalBaseUrl}}")
         .replace(org1, "{{orgId}}");
       zipObject.file(zipObjectContents[1].file, zipObjectContents[1].content);
@@ -63,7 +63,7 @@ describe("Module `zip-utils`", () => {
 
       const expectedZipObject = zipUtilsTest.generateFormZipObject(itemId2);
       const expectedZipContents = await common.getZipObjectContents(expectedZipObject);
-      expectedZipContents[1].content = expectedZipContents[1].content
+      expectedZipContents[1].content = (expectedZipContents[1].content as string)
         .replace("https://fred.maps.arcgis.com", "https://ginger.maps.arcgis.com")
         .replace(org1, orgId2);
 

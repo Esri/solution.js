@@ -156,8 +156,17 @@ export function convertItemToTemplate(
               async (resolve) => {
                 let zipObject: JSZip = await common.blobToZipObject(itemDataResponse as File);
 
-                // Templatize the form's webhooks,
-                zipObject = await formHelpers.templatizeFormWebHooks(zipObject, itemTemplate.item.isOrgItem);
+                // Templatize the form's webhooks
+                const portal = await srcAuthentication.getPortal();
+                let sourceOrgUrl;
+                if (portal.urlKey) {
+                  sourceOrgUrl = `https://${portal.urlKey}.maps.arcgis.com`;
+                } else if (portal.portalHostname) {
+                  sourceOrgUrl = `https://${portal.portalHostname}`;
+                }
+                if (sourceOrgUrl) {
+                  zipObject = await formHelpers.templatizeFormWebHooks(zipObject, sourceOrgUrl);
+                }
 
                 itemTemplate.item.name = _getFormDataFilename(
                   itemTemplate.item.name, (itemDataResponse as File).name, `${itemTemplate.itemId}.zip`
