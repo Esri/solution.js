@@ -80,6 +80,8 @@ import {
   IItemResourceOptions,
   IItemResourceResponse,
   IManageItemRelationshipOptions,
+  IMoveItemOptions,
+  IMoveItemResponse,
   IPagingParams,
   ISearchGroupContentOptions,
   ISearchOptions,
@@ -89,6 +91,7 @@ import {
   IUpdateItemOptions,
   IUserGroupOptions,
   IUserItemOptions,
+  moveItem as portalMoveItem,
   removeFolder as portalRemoveFolder,
   removeGroup as portalRemoveGroup,
   removeGroupUsers as portalRemoveGroupUsers,
@@ -1107,6 +1110,48 @@ export function getLayerUpdates(
 }
 
 /**
+ * Moves an AGO item to a specified folder.
+ *
+ * @param itemId Id of item to move
+ * @param folderId Id of folder to receive item
+ * @param authentication Credentials for the request
+ * @returns A Promise resolving to the results of the move
+ */
+export async function moveItemToFolder(
+  itemId: string,
+  folderId: string,
+  authentication: UserSession
+): Promise<IMoveItemResponse> {
+  const moveOptions: IMoveItemOptions = {
+    itemId,
+    folderId,
+    authentication
+  };
+
+  return portalMoveItem(moveOptions);
+}
+
+/**
+ * Moves a list of AGO items to a specified folder.
+ *
+ * @param itemIds Ids of items to move
+ * @param folderId Id of folder to receive item
+ * @param authentication Credentials for the request
+ * @returns A Promise resolving to the results of the moves
+ */
+export async function moveItemsToFolder(
+  itemIds: string[],
+  folderId: any,
+  authentication: UserSession,
+): Promise<IMoveItemResponse[]> {
+  const movePromises = new Array<Promise<IMoveItemResponse>>();
+  itemIds.forEach(itemId => {
+    movePromises.push(moveItemToFolder(itemId, folderId, authentication));
+  });
+  return Promise.all(movePromises);
+}
+
+/**
  * Sorts relationships based on order of supporting layers and tables in the service definition
  *
  * @param layers the layers from the service
@@ -1324,6 +1369,7 @@ export function getFeatureServiceProperties(
  * @param itemId Id of the workflow item
  * @param authentication Credentials for the request to AGOL
  * @returns Promise resolving with the workflow configuration in a zip file
+ * @throws {WorkflowJsonExceptionDTO} if request to workflow manager fails
  */
 export async function getWorkflowConfigurationZip(
   itemId: string,
@@ -1334,9 +1380,9 @@ export async function getWorkflowConfigurationZip(
   return request(exportConfigUrl, {
     authentication,
     headers: {
+      Accept: "application/octet-stream",
+      Authorization: `Bearer ${authentication.token}`,
       Host: "workflow.arcgis.com",
-      "Accept": "application/octet-stream",
-      "Authorization": `Bearer ${authentication.token}`,
       "X-Esri-Authorization": `Bearer ${authentication.token}`
     },
     params: {
@@ -1352,6 +1398,7 @@ export async function getWorkflowConfigurationZip(
  * @param itemId Id of the workflow item
  * @param authentication Credentials for the request to AGOL
  * @returns Promise resolving with the workflow configuration in a zip file
+ * @throws {WorkflowJsonExceptionDTO} if request to workflow manager fails
  */
 export async function setWorkflowConfigurationZip(
   configurationZipFile: File,
@@ -1363,9 +1410,9 @@ export async function setWorkflowConfigurationZip(
   return request(importConfigUrl, {
     authentication,
     headers: {
+      Accept: "application/octet-stream",
+      Authorization: `Bearer ${authentication.token}`,
       Host: "workflow.arcgis.com",
-      "Accept": "application/octet-stream",
-      "Authorization": `Bearer ${authentication.token}`,
       "X-Esri-Authorization": `Bearer ${authentication.token}`
     },
     params: {

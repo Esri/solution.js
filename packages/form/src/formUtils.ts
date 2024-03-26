@@ -107,7 +107,7 @@ export function _updateZipObjectTextContent(
   updatedZipObjectContent = common.replaceInTemplate(zipFileItem.content, templateDictionary);
 
   // Find the AGO ids in the file content
-  const agoIdMatches = updatedZipObjectContent.match(agoIdRegEx) ?? [];
+  const agoIdMatches = common.dedupe(updatedZipObjectContent.match(agoIdRegEx) ?? []);
 
   // Replace things that look like AGO ids in the file content iff they are present in the template dictionary
   agoIdMatches.forEach((match: string) => {

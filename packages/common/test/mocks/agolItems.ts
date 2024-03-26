@@ -219,7 +219,7 @@ export function getAGOLItem(type?: string, url = "", itemId?: string): any {
       break;
 
     case "Workflow":
-      item = getAGOLItemFundamentals(type);
+      item = getAGOLItemFundamentals(type, "", itemId);
       break;
 
     case "Workforce Project":
@@ -246,7 +246,7 @@ export function getAGOLItemPrecis(
   const precis: interfaces.ISolutionItemPrecis = {
     id: item.id,
     type: item.type,
-    title: item.title,
+    title: item.title || "",
     modified: item.modified,
     owner: item.owner
   };
@@ -273,8 +273,10 @@ export function getCompleteMockItem(
 
 export function getCompleteDeployedSolutionItem(): interfaces.ICompleteItem {
   const item = getCompleteMockItem("Solution");
-  item.base.typeKeywords.push("Solution");
-  item.base.typeKeywords.push("Deployed");
+  if (item.base.typeKeywords) {
+    item.base.typeKeywords.push("Solution");
+    item.base.typeKeywords.push("Deployed");
+  }
   item.data = generalHelpers.jsonToFile(
     {
       metadata: {},
@@ -375,8 +377,10 @@ export function getCompleteDeployedSolutionItemVersioned(
 
 export function getCompleteTemplateSolutionItem(): interfaces.ICompleteItem {
   const item = getCompleteMockItem("Solution");
-  item.base.typeKeywords.push("Solution");
-  item.base.typeKeywords.push("Template");
+  if (item.base.typeKeywords) {
+    item.base.typeKeywords.push("Solution");
+    item.base.typeKeywords.push("Template");
+  }
   return item;
 }
 
