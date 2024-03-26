@@ -32,13 +32,7 @@ export async function blobToZipObject(
   blob: Blob
 ): Promise<JSZip> {
   const zipObject = new JSZip();
-  return zipObject.loadAsync(blob)
-  .then(async (zipObject) => {
-    return Promise.resolve(zipObject);
-  })
-  .catch(() => {
-    return Promise.reject();
-  });
+  return zipObject.loadAsync(blob);
 }
 
 /**
@@ -92,19 +86,35 @@ export async function getZipObjectContents(
 }
 
 /**
+ * Converts a JSON object of keys (filenames)/content (stringified JSON) to a zip object.
+ *
+ * @param zippedFileJson JSON object to convert
+ * @returns Created zip object
+ */
+export function jsonFilesToZipObject(
+  zippedFileJson: any
+): JSZip {
+  const zipObject = new JSZip();
+  Object.keys(zippedFileJson).forEach((key) => {
+    zipObject.file(key, zippedFileJson[key]);
+  });
+  return zipObject;
+}
+
+/**
  * Converts a JSON object to a zip object.
  *
  * @param zippedFileName Name of the file in the zip
  * @param zippedFileJson JSON object to convert
- * @returns Promise resolving to zip object
+ * @returns Created zip object
  */
-export async function jsonToZipObject(
+export function jsonToZipObject(
   zippedFileName: string,
   zippedFileJson: any
-): Promise<JSZip> {
+): JSZip {
   const zipObject = new JSZip();
   zipObject.file(zippedFileName, JSON.stringify(zippedFileJson));
-  return Promise.resolve(zipObject);
+  return zipObject;
 }
 
 /**
@@ -120,7 +130,7 @@ export async function jsonToZipFile(
   zippedFileJson: any,
   filename: string
 ): Promise<File> {
-  const zipObject = await jsonToZipObject(zippedFileName, zippedFileJson);
+  const zipObject = jsonToZipObject(zippedFileName, zippedFileJson);
   return zipObjectToZipFile(zipObject, filename);
 }
 

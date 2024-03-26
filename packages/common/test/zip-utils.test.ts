@@ -37,32 +37,121 @@ beforeEach(() => {
 
 describe("Module `zip-utils`", () => {
 
+  describe("blobToZipObject", () => {
+    it("handles a non-zip blob", async () => {
+      const blob = new Blob(["Hello, world!"], { type: "text/plain" });
+
+      try {
+        await zipUtils.blobToZipObject(blob);
+        fail("Expected an error to be thrown");
+      } catch (e) {
+      }
+    });
+  });
+
   describe("fetchZipObject", () => {
     it("fetches a zip object", async () => {
       const itemId = "2f56b3b59cdc4ac8b8f5de0399887e1e";
       spyOn(getBlobUtil, "getBlob").and.returnValue(getSampleFormZipBlob(itemId));
 
       const zip = await zipUtils.fetchZipObject(itemId, MOCK_USER_SESSION);
+
       const zipFiles = await zipUtils.getZipObjectContents(zip);
+
       expect(zipFiles.length).toBe(7);
+      expect(zipFiles[1].file).toBe("esriinfo/form.info");
+      expect(zipFiles[2].file).toBe("esriinfo/form.itemInfo");
     });
   });
 
   describe("getZipObjectContents", () => {
-    it("returns the contents of a zip object", async () => {
+    it("returns the contents of a non-binary zip object", async () => {
       const itemId = "2f56b3b59cdc4ac8b8f5de0399887e1e";
       const zip = generateFormZipObject(itemId);
+
       const zipFiles = await zipUtils.getZipObjectContents(zip);
+
       expect(zipFiles.length).toBe(7);
     });
 
     it("returns just two files out of a zip object", async () => {
       const itemId = "2f56b3b59cdc4ac8b8f5de0399887e1e";
       const zip = generateFormZipObject(itemId);
+
       const zipFiles = await zipUtils.getZipObjectContents(zip, ["esriinfo/form.info", "esriinfo/form.json"]);
+
       expect(zipFiles.length).toBe(2);
       expect(zipFiles[0].file).toBe("esriinfo/form.info");
       expect(zipFiles[1].file).toBe("esriinfo/form.json");
+    });
+
+
+    it("returns the contents of a binary zip object", async () => {
+      const zip = generateBinaryZipObject();
+
+      const zipFiles = await zipUtils.getZipObjectContents(zip);
+
+      expect(zipFiles.length).toBe(1);
+      expect(zipFiles[0].file).toBe("sample.png");
+    });
+  });
+
+  describe("jsonFilesToZipObject", () => {
+    it("converts a collection of JSON files to a zip object", async () => {
+      const itemId = "2f56b3b59cdc4ac8b8f5de0399887e1e";
+      const formJson = generateFormJsonFiles(itemId);
+
+      const zip = zipUtils.jsonFilesToZipObject(formJson);
+
+      const zipFiles = await zipUtils.getZipObjectContents(zip);
+      expect(zipFiles.length).toBe(7);
+      expect(zipFiles[1].file).toBe("esriinfo/form.info");
+      expect(zipFiles[2].file).toBe("esriinfo/form.itemInfo");
+    });
+  });
+
+  describe("jsonToZipObject", () => {
+    it("converts a JSON object to a zip object", async () => {
+      const zippedFileName = "config.json";
+      const json = {
+        "appId": "ABCDEFGHIJKLMNOP",
+        "portalURL": "https://www.arcgis.com",
+        "primarySolutionsGroupId": "81f043eecfe8404b8a6121e0016fe6f8",
+        "agoBasedEnterpriseSolutionsGroupId": "c3cc0b1f0f114861a3427ac0e99925aa",
+
+        "isRTL": false,
+        "locale": ""
+      };
+
+      const zip = zipUtils.jsonToZipObject(zippedFileName, json);
+
+      const zipFiles = await zipUtils.getZipObjectContents(zip);
+      expect(zipFiles.length).toBe(1);
+      expect(zipFiles[0].file).toBe(zippedFileName);
+      expect(zipFiles[0].content).toBe(JSON.stringify(json));
+    });
+  });
+
+  describe("jsonToZipFile", () => {
+    it("converts a JSON object to a zip file", async () => {
+      const zippedFileName = "config.json";
+      const json = {
+        "appId": "ABCDEFGHIJKLMNOP",
+        "portalURL": "https://www.arcgis.com",
+        "primarySolutionsGroupId": "81f043eecfe8404b8a6121e0016fe6f8",
+        "agoBasedEnterpriseSolutionsGroupId": "c3cc0b1f0f114861a3427ac0e99925aa",
+
+        "isRTL": false,
+        "locale": ""
+      };
+      const zipFileFilename = "config.zip";
+
+      const zip = await zipUtils.jsonToZipFile(zippedFileName, json, zipFileFilename);
+
+      const zipFiles = await zipUtils.getZipObjectContents(await zipUtils.blobToZipObject(zip));
+      expect(zipFiles.length).toBe(1);
+      expect(zipFiles[0].file).toBe(zippedFileName);
+      expect(zipFiles[0].content).toBe(JSON.stringify(json));
     });
   });
 
@@ -146,16 +235,28 @@ export async function compareZips(
 }
 
 /**
- * Generates a partial collection of files that represent a Survey123 form.
+ * Generates a binary zip object.
  *
- * @param id ID of the form
- * @param includeWebhooks Whether to include webhooks in the form.json file
- * @returns Zip file containing form files
+ * @returns Zip file containing a binary file--a PNG image
  */
-export function generateFormZipObject(
+export function generateBinaryZipObject(
+): JSZip {
+  const sampleBinaryFile = utils.getSampleImageAsFile("sample.png");
+  const zip = new JSZip();
+  zip.file(sampleBinaryFile.name, sampleBinaryFile);
+  return zip;
+}
+
+/**
+ * Generates a key-value pair of form files, where the key is the file name and the value is the file content.
+ *
+ * @param id
+ * @param includeWebhooks
+ */
+export function generateFormJsonFiles(
   id: string,
   includeWebhooks: boolean = true
-): JSZip {
+): any {
   /*
   There are 7 items in the file as reported by zipObject.forEach:
     "esriinfo/",
@@ -168,14 +269,15 @@ export function generateFormZipObject(
 
     Note that the folder and forminfo.json files have constant names; the others can vary
   */
-  const zip = new JSZip();
+  const formJson = {};
+
   includeWebhooks
-    ? zip.file("esriinfo/form.info", `{"displayInfo":{"map":{"coordinateFormat":null,"defaultType":{"name":""},"home":{"latitude":null,"longitude":null,"zoomLevel":0},"preview":{"coordinateFormat":null,"zoomLevel":0}}},"notificationsInfo":{"webhooks":[{"name":"TestWebhook","url":"https://fred.maps.arcgis.com/${id}/link"},{"name":"TestWebhook","url":"https://workflow.arcgis.com/org1234567890/${id}/webhooks"}]}}`)
-    : zip.file("esriinfo/form.info", `{"displayInfo":{"map":{"coordinateFormat":null,"defaultType":{"name":""},"home":{"latitude":null,"longitude":null,"zoomLevel":0},"preview":{"coordinateFormat":null,"zoomLevel":0}}}}`);
-  zip.file("esriinfo/form.itemInfo", `{"id":"${id}","created":1705691185000,"isOrgItem":true,"modified":1705691194000,"guid":null,"name":"${id}","title":"Untitled survey","type":"Form","typeKeywords":["Draft","Form","Survey123","Survey123 Hub","xForm"]}`);
-  zip.file("esriinfo/form.json", `{"layerName":"survey","portalUrl":"https://www.arcgis.com","questions":[{"id":"field_1","position":0,"fieldName":"untitled_question_1","name":"untitled_question_1","type":"esriQuestionTypeText","isRequired":false,"fieldType":"esriFieldTypeString","validation":{"valueRange":{"isEnabled":false},"inputMask":{"isEnabled":false,"customFormat":""}},"label":"Untitled question 1","description":null}],"notificationsInfo":{},"version":"3.19"}`);
-  zip.file("esriinfo/form.webform", `{"form":"<form autocomplete=\"off\" novalidate=\"novalidate\" class=\"or clearfix\" dir=\"ltr\" data-form-id=\"survey\">\n<!--This form was created by transforming an ODK/OpenRosa-flavored (X)Form using an XSL stylesheet created by Enketo LLC.--><section class=\"form-logo\"></section><h3 dir=\"auto\" id=\"form-title\">survey</h3>\n  \n  \n    <label class=\"question non-select \"><span lang=\"\" class=\"question-label active\" id=\"idm1660384\">&lt;p&gt;Survey title not set&lt;/p&gt;</span><span lang=\"\" class=\"or-hint active\" id=\"idm1659952\">&lt;p&gt;Description content for the survey&lt;/p&gt;</span><input type=\"text\" name=\"/xls-${id}/generated_note_form_title\" data-type-xml=\"string\" readonly=\"\" id=\"idm1652688\"></label>\n    <label class=\"question non-select \"><span lang=\"\" class=\"question-label active\" id=\"idm1658944\">Submit</span><input type=\"text\" name=\"/xls-${id}/generated_note_form_submit_text\" data-type-xml=\"string\" readonly=\"\" id=\"idm1659376\"></label>\n    <label class=\"question non-select \"><span lang=\"\" class=\"question-label active\" id=\"idm1657936\">&lt;a target='_blank' style='color:#000000;' href='https://www.esri.com/products/survey123'&gt;Powered by ArcGIS Survey123&lt;/a&gt;</span><input type=\"text\" name=\"/xls-${id}/generated_note_form_footer\" data-type-xml=\"string\" readonly=\"\" id=\"idm1658368\"></label>\n    <label class=\"question non-select \"><span lang=\"\" class=\"question-label active\" id=\"idm1656928\">&lt;p style=\"text-align:center;\"&gt;&lt;br&gt;&lt;/p&gt;&lt;p style=\"text-align:center;\"&gt;&lt;img alt=\"Green check icon\" src=\"data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjQiIGhlaWdodD0iNjQiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGcgZmlsbD0ibm9uZSIgZmlsbC1ydWxlPSJldmVub2RkIj48Y2lyY2xlIGZpbGw9IiMzMTg3MkUiIGN4PSIzMiIgY3k9IjMyIiByPSIzMiIvPjxwYXRoIGZpbGw9IiNGRkYiIGQ9Ik0yMi42NjEgMzAuMjQ2bDUuMTgyIDQuOTg3TDQxLjU1MiAyMiA0NSAyNS40NjEgMjcuNzQ3IDQyIDE5IDMzLjQ5OHoiLz48L2c+PC9zdmc+\"&gt;&lt;/p&gt;&lt;p style=\"text-align:center;\"&gt;&lt;br&gt;&lt;/p&gt;&lt;p style=\"text-align:center;\"&gt;&lt;strong style=\"font-size:16px;\"&gt;&lt;p style=\"text-align:center;\"&gt;Thank you.&lt;/p&gt;&lt;p style=\"text-align:center;\"&gt;Your response was submitted successfully.&lt;/p&gt;&lt;/strong&gt;&lt;/p&gt;</span><input type=\"text\" name=\"/xls-${id}/generated_note_prompt_submitted\" data-type-xml=\"string\" readonly=\"\" id=\"idm1657360\"></label>\n    <label class=\"question non-select \"><span lang=\"\" class=\"question-label active\" id=\"idm1664048\">Untitled question 1</span><input type=\"text\" name=\"/xls-${id}/untitled_question_1\" data-type-xml=\"string\" id=\"idm1664480\"></label>\n    <label class=\"question non-select or-appearance-multiline\"><span lang=\"\" class=\"question-label active\" id=\"idm1662896\">Untitled question 2</span><textarea name=\"/xls-${id}/untitled_question_2\" data-type-xml=\"string\" id=\"idm1663472\"></textarea></label>\n  \n<fieldset id=\"or-calculated-items\" style=\"display:none;\"><label class=\"calculation non-select \"><input type=\"hidden\" name=\"/xls-${id}/meta/instanceID\" data-calculate=\"concat('uuid:', uuid())\" data-type-xml=\"string\" id=\"idm1654128\"></label></fieldset></form>","model":"<model><instance>\n        <xls-${id} xmlns:esri=\"http://esri.com/xforms\" xmlns:jr=\"http://openrosa.org/javarosa\" xmlns:orx=\"http://openrosa.org/xforms\" xmlns:odk=\"http://www.opendatakit.org/xforms\" id=\"survey\">\n          <generated_note_form_title/>\n          <generated_note_form_submit_text/>\n          <generated_note_form_footer/>\n          <generated_note_prompt_submitted/>\n          <untitled_question_1/>\n          <untitled_question_2/>\n          <meta>\n            <instanceID/>\n          </meta>\n        </xls-${id}>\n      </instance></model>","languageMap":{},"transformerVersion":"2.3.0"}`);
-  zip.file("esriinfo/form.xml", `<?xml version="1.0"?>
+    ? formJson["esriinfo/form.info"] = `{"displayInfo":{"map":{"coordinateFormat":null,"defaultType":{"name":""},"home":{"latitude":null,"longitude":null,"zoomLevel":0},"preview":{"coordinateFormat":null,"zoomLevel":0}}},"notificationsInfo":{"webhooks":[{"name":"TestWebhook","url":"https://fred.maps.arcgis.com/${id}/link"},{"name":"TestWebhook","url":"https://workflow.arcgis.com/org1234567890/${id}/webhooks"}]}}`
+    : formJson["esriinfo/form.info"] = `{"displayInfo":{"map":{"coordinateFormat":null,"defaultType":{"name":""},"home":{"latitude":null,"longitude":null,"zoomLevel":0},"preview":{"coordinateFormat":null,"zoomLevel":0}}}}`;
+  formJson["esriinfo/form.itemInfo"] = `{"id":"${id}","created":1705691185000,"isOrgItem":true,"modified":1705691194000,"guid":null,"name":"${id}","title":"Untitled survey","type":"Form","typeKeywords":["Draft","Form","Survey123","Survey123 Hub","xForm"]}`;
+  formJson["esriinfo/form.json"] = `{"layerName":"survey","portalUrl":"https://www.arcgis.com","questions":[{"id":"field_1","position":0,"fieldName":"untitled_question_1","name":"untitled_question_1","type":"esriQuestionTypeText","isRequired":false,"fieldType":"esriFieldTypeString","validation":{"valueRange":{"isEnabled":false},"inputMask":{"isEnabled":false,"customFormat":""}},"label":"Untitled question 1","description":null}],"notificationsInfo":{},"version":"3.19"}`;
+  formJson["esriinfo/form.webform"] = `{"form":"<form autocomplete=\"off\" novalidate=\"novalidate\" class=\"or clearfix\" dir=\"ltr\" data-form-id=\"survey\">\n<!--This form was created by transforming an ODK/OpenRosa-flavored (X)Form using an XSL stylesheet created by Enketo LLC.--><section class=\"form-logo\"></section><h3 dir=\"auto\" id=\"form-title\">survey</h3>\n  \n  \n    <label class=\"question non-select \"><span lang=\"\" class=\"question-label active\" id=\"idm1660384\">&lt;p&gt;Survey title not set&lt;/p&gt;</span><span lang=\"\" class=\"or-hint active\" id=\"idm1659952\">&lt;p&gt;Description content for the survey&lt;/p&gt;</span><input type=\"text\" name=\"/xls-${id}/generated_note_form_title\" data-type-xml=\"string\" readonly=\"\" id=\"idm1652688\"></label>\n    <label class=\"question non-select \"><span lang=\"\" class=\"question-label active\" id=\"idm1658944\">Submit</span><input type=\"text\" name=\"/xls-${id}/generated_note_form_submit_text\" data-type-xml=\"string\" readonly=\"\" id=\"idm1659376\"></label>\n    <label class=\"question non-select \"><span lang=\"\" class=\"question-label active\" id=\"idm1657936\">&lt;a target='_blank' style='color:#000000;' href='https://www.esri.com/products/survey123'&gt;Powered by ArcGIS Survey123&lt;/a&gt;</span><input type=\"text\" name=\"/xls-${id}/generated_note_form_footer\" data-type-xml=\"string\" readonly=\"\" id=\"idm1658368\"></label>\n    <label class=\"question non-select \"><span lang=\"\" class=\"question-label active\" id=\"idm1656928\">&lt;p style=\"text-align:center;\"&gt;&lt;br&gt;&lt;/p&gt;&lt;p style=\"text-align:center;\"&gt;&lt;img alt=\"Green check icon\" src=\"data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjQiIGhlaWdodD0iNjQiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGcgZmlsbD0ibm9uZSIgZmlsbC1ydWxlPSJldmVub2RkIj48Y2lyY2xlIGZpbGw9IiMzMTg3MkUiIGN4PSIzMiIgY3k9IjMyIiByPSIzMiIvPjxwYXRoIGZpbGw9IiNGRkYiIGQ9Ik0yMi42NjEgMzAuMjQ2bDUuMTgyIDQuOTg3TDQxLjU1MiAyMiA0NSAyNS40NjEgMjcuNzQ3IDQyIDE5IDMzLjQ5OHoiLz48L2c+PC9zdmc+\"&gt;&lt;/p&gt;&lt;p style=\"text-align:center;\"&gt;&lt;br&gt;&lt;/p&gt;&lt;p style=\"text-align:center;\"&gt;&lt;strong style=\"font-size:16px;\"&gt;&lt;p style=\"text-align:center;\"&gt;Thank you.&lt;/p&gt;&lt;p style=\"text-align:center;\"&gt;Your response was submitted successfully.&lt;/p&gt;&lt;/strong&gt;&lt;/p&gt;</span><input type=\"text\" name=\"/xls-${id}/generated_note_prompt_submitted\" data-type-xml=\"string\" readonly=\"\" id=\"idm1657360\"></label>\n    <label class=\"question non-select \"><span lang=\"\" class=\"question-label active\" id=\"idm1664048\">Untitled question 1</span><input type=\"text\" name=\"/xls-${id}/untitled_question_1\" data-type-xml=\"string\" id=\"idm1664480\"></label>\n    <label class=\"question non-select or-appearance-multiline\"><span lang=\"\" class=\"question-label active\" id=\"idm1662896\">Untitled question 2</span><textarea name=\"/xls-${id}/untitled_question_2\" data-type-xml=\"string\" id=\"idm1663472\"></textarea></label>\n  \n<fieldset id=\"or-calculated-items\" style=\"display:none;\"><label class=\"calculation non-select \"><input type=\"hidden\" name=\"/xls-${id}/meta/instanceID\" data-calculate=\"concat('uuid:', uuid())\" data-type-xml=\"string\" id=\"idm1654128\"></label></fieldset></form>","model":"<model><instance>\n        <xls-${id} xmlns:esri=\"http://esri.com/xforms\" xmlns:jr=\"http://openrosa.org/javarosa\" xmlns:orx=\"http://openrosa.org/xforms\" xmlns:odk=\"http://www.opendatakit.org/xforms\" id=\"survey\">\n          <generated_note_form_title/>\n          <generated_note_form_submit_text/>\n          <generated_note_form_footer/>\n          <generated_note_prompt_submitted/>\n          <untitled_question_1/>\n          <untitled_question_2/>\n          <meta>\n            <instanceID/>\n          </meta>\n        </xls-${id}>\n      </instance></model>","languageMap":{},"transformerVersion":"2.3.0"}`;
+  formJson["esriinfo/form.xml"] = `<?xml version="1.0"?>
         <h:html xmlns:esri="http://esri.com/xforms" xmlns="http://www.w3.org/2002/xforms" xmlns:h="http://www.w3.org/1999/xhtml" xmlns:ev="http://www.w3.org/2001/xml-events" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:jr="http://openrosa.org/javarosa" xmlns:orx="http://openrosa.org/xforms" xmlns:odk="http://www.opendatakit.org/xforms">
           <h:head>
             <h:title>survey</h:title>
@@ -205,7 +307,29 @@ export function generateFormZipObject(
           <h:body>
           </h:body>
         </h:html>
-      `);
+      `;
+  formJson["esriinfo/forminfo.json"] = `{"name":"form","type":"xform"}`;
+
+  return formJson;
+}
+
+/**
+ * Generates a partial collection of files that represent a Survey123 form.
+ *
+ * @param id ID of the form
+ * @param includeWebhooks Whether to include webhooks in the form.json file
+ * @returns Zip file containing form files
+ */
+export function generateFormZipObject(
+  id: string,
+  includeWebhooks: boolean = true
+): JSZip {
+  const formJson = generateFormJsonFiles(id, includeWebhooks);
+
+  const zip = new JSZip();
+  Object.keys(formJson).forEach((key) => {
+    zip.file(key, formJson[key]);
+  });
   zip.file("esriinfo/forminfo.json", `{"name":"form","type":"xform"}`);
   return zip;
 }

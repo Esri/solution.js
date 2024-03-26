@@ -2991,6 +2991,67 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
     });
   });
 
+  describe("moveItemToFolder", () => {
+    it("tests the isolation function to the RESTJS moveItem function", async () => {
+      const itemId = "abc123";
+      const folderId = "def456";
+      const expected = {
+        success: true,
+        itemId,
+        owner: MOCK_USER_SESSION.username,
+        folder: folderId
+      };
+      fetchMock.post(
+        utils.PORTAL_SUBSET.restUrl +
+          "/content/users/casey/items/abc123/move",
+        expected
+      );
+      const actual = await restHelpers.moveItemToFolder(
+        itemId,
+        folderId,
+        MOCK_USER_SESSION
+      );
+      expect(actual).toEqual(expected);
+    });
+  });
+
+  describe("moveItemsToFolder", () => {
+    it("tests multiple moveItem function calls", async () => {
+      const itemIds = ["abc123", "def456", "ghi789"];
+      const folderId = "xyz987";
+
+      const owner = MOCK_USER_SESSION.username;
+
+      fetchMock
+      .post(
+        utils.PORTAL_SUBSET.restUrl +
+          "/content/users/casey/items/abc123/move",
+          { success: true, itemId: "abc123", owner, folder: folderId }
+      )
+      .post(
+        utils.PORTAL_SUBSET.restUrl +
+          "/content/users/casey/items/def456/move",
+          { success: true, itemId: "def456", owner, folder: folderId }
+      )
+      .post(
+        utils.PORTAL_SUBSET.restUrl +
+          "/content/users/casey/items/ghi789/move",
+          { success: true, itemId: "ghi789", owner, folder: folderId }
+      )
+
+      const actual = await restHelpers.moveItemsToFolder(
+        itemIds,
+        folderId,
+        MOCK_USER_SESSION
+      );
+      expect(actual).toEqual([
+        { success: true, itemId: "abc123", owner, folder: folderId },
+        { success: true, itemId: "def456", owner, folder: folderId },
+        { success: true, itemId: "ghi789", owner, folder: folderId }
+      ]);
+    });
+  });
+
   describe("getWorkflowConfigurationZip", () => {
     it("can get workflow configuration", async () => {
       const orgId = "abcdefghij";
