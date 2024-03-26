@@ -956,7 +956,8 @@ export function addFeatureServiceDefinition(
       }
 
       const isSelfReferential = _isSelfReferential(listToAdd);
-      listToAdd = _updateOrder(listToAdd, isSelfReferential);
+      const isMsView: boolean = getProp(itemTemplate, "properties.service.isMultiServicesView") || false;
+      listToAdd = _updateOrder(listToAdd, isSelfReferential || isMsView);
 
       const chunkSize: number = _getLayerChunkSize();
       const layerChunks: any[] = [];
@@ -1074,9 +1075,9 @@ export function addFeatureServiceDefinition(
  */
 export function _updateOrder(
   layersAndTables: any[],
-  isSelfReferential: boolean
+  sort: boolean
 ): any[] {
-  return isSelfReferential ? layersAndTables.sort((a, b) => a.item.id - b.item.id) : layersAndTables;
+  return sort ? layersAndTables.sort((a, b) => a.item.id - b.item.id) : layersAndTables;
 }
 
 /**
