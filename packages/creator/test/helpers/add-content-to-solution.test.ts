@@ -26,7 +26,8 @@ import {
   _replaceDictionaryItemsInObject,
   _replaceRemainingIdsInObject,
   _replaceRemainingIdsInString,
-  _simplifyUrlsInItemDescriptions
+  _simplifyUrlsInItemDescriptions,
+  _templatizeWorkflowConfig
 } from "../../src/helpers/add-content-to-solution";
 import * as fetchMock from "fetch-mock";
 import * as createItemTemplateModule from "../../src/createItemTemplate";
@@ -1333,6 +1334,69 @@ describe("_templatizeSolutionIds", () => {
 
 describe("_templatizeWorkflowConfig", () => {
   it("templatizes the workflow config", () => {
+    const workflowTemplate = templates.getItemTemplate("Workflow");
+    common.setCreateProp(workflowTemplate, "properties.configuration", {
+      "diagrams.json": "suspendisse porttitor tempus nulla 7a69f67e4c6744918fbea49b8241640e proin convallis finibus leo sed 9ef76d79ed2741a8bf5a3b9b344b3c07 praesent ac ultrices lectus"
+    });
+    const templateList= [
+      workflowTemplate
+    ];
+    const templateDictionary: any = {
+      "7a69f67e4c6744918fbea49b8241640e": "7a69f67e4c6744918fbea49b8241640e"
+    };
 
+    _templatizeWorkflowConfig(templateList, templateDictionary);
+
+    const expectedWorkflowTemplate = templates.getItemTemplate("Workflow");
+    common.setCreateProp(expectedWorkflowTemplate, "properties.configuration", {
+      "diagrams.json": "suspendisse porttitor tempus nulla {{7a69f67e4c6744918fbea49b8241640e.itemId}} proin convallis finibus leo sed 9ef76d79ed2741a8bf5a3b9b344b3c07 praesent ac ultrices lectus"
+    });
+    expectedWorkflowTemplate.dependencies = ["7a69f67e4c6744918fbea49b8241640e"];
+    const expectedTemplateList= [
+      expectedWorkflowTemplate
+    ];
+
+    expect(templateList).toEqual(expectedTemplateList);
+  });
+
+  it("handles case where workflow config doesn't have anything to templateize", () => {
+    const workflowTemplate = templates.getItemTemplate("Workflow");
+    common.setCreateProp(workflowTemplate, "properties.configuration", {
+      "diagrams.json": "suspendisse porttitor tempus nulla proin convallis finibus leo sed praesent ac ultrices lectus"
+    });
+    const templateList= [
+      workflowTemplate
+    ];
+    const templateDictionary: any = {
+      "7a69f67e4c6744918fbea49b8241640e": "7a69f67e4c6744918fbea49b8241640e"
+    };
+
+    _templatizeWorkflowConfig(templateList, templateDictionary);
+
+    const expectedWorkflowTemplate = templates.getItemTemplate("Workflow");
+    common.setCreateProp(expectedWorkflowTemplate, "properties.configuration", {
+      "diagrams.json": "suspendisse porttitor tempus nulla proin convallis finibus leo sed praesent ac ultrices lectus"
+    });
+    const expectedTemplateList= [
+      expectedWorkflowTemplate
+    ];
+
+    expect(templateList).toEqual(expectedTemplateList);
+  });
+
+  it("leaves non-workflow items alone", () => {
+    const templateList= [
+      templates.getItemTemplate("Web Map"),
+      templates.getItemTemplate("Web Mapping Application")
+    ];
+    const templateDictionary = {};
+
+    _templatizeWorkflowConfig(templateList, templateDictionary);
+
+    const expectedTemplateList= [
+      templates.getItemTemplate("Web Map"),
+      templates.getItemTemplate("Web Mapping Application")
+    ];
+    expect(templateList).toEqual(expectedTemplateList);
   });
 });
