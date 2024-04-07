@@ -1335,21 +1335,26 @@ describe("_templatizeSolutionIds", () => {
 describe("_templatizeWorkflowConfig", () => {
   it("templatizes the workflow config", () => {
     const workflowTemplate = templates.getItemTemplate("Workflow");
+    workflowTemplate.itemId = workflowTemplate.item.id = "69c996f13345470da56639b5c4f85d11";
     common.setCreateProp(workflowTemplate, "properties.configuration", {
-      "diagrams.json": "suspendisse porttitor tempus nulla 7a69f67e4c6744918fbea49b8241640e proin convallis finibus leo sed 9ef76d79ed2741a8bf5a3b9b344b3c07 praesent ac ultrices lectus"
+      "diagrams.json": "suspendisse porttitor 69c996f13345470da56639b5c4f85d11 tempus nulla 7a69f67e4c6744918fbea49b8241640e proin convallis finibus leo sed 9ef76d79ed2741a8bf5a3b9b344b3c07 praesent ac ultrices lectus"
     });
     const templateList= [
       workflowTemplate
     ];
     const templateDictionary: any = {
+      "69c996f13345470da56639b5c4f85d11": "69c996f13345470da56639b5c4f85d11",
       "7a69f67e4c6744918fbea49b8241640e": "7a69f67e4c6744918fbea49b8241640e"
     };
 
     _templatizeWorkflowConfig(templateList, templateDictionary);
 
+    // Item's id is templatized, but the workflow item id is not add to its own dependencies
+    // The item id that is not in the templateDictionary is not templatized
     const expectedWorkflowTemplate = templates.getItemTemplate("Workflow");
+    expectedWorkflowTemplate.itemId = expectedWorkflowTemplate.item.id = "69c996f13345470da56639b5c4f85d11";  // we're not testing this part
     common.setCreateProp(expectedWorkflowTemplate, "properties.configuration", {
-      "diagrams.json": "suspendisse porttitor tempus nulla {{7a69f67e4c6744918fbea49b8241640e.itemId}} proin convallis finibus leo sed 9ef76d79ed2741a8bf5a3b9b344b3c07 praesent ac ultrices lectus"
+      "diagrams.json": "suspendisse porttitor {{69c996f13345470da56639b5c4f85d11.itemId}} tempus nulla {{7a69f67e4c6744918fbea49b8241640e.itemId}} proin convallis finibus leo sed 9ef76d79ed2741a8bf5a3b9b344b3c07 praesent ac ultrices lectus"
     });
     expectedWorkflowTemplate.dependencies = ["7a69f67e4c6744918fbea49b8241640e"];
     const expectedTemplateList= [
@@ -1361,6 +1366,7 @@ describe("_templatizeWorkflowConfig", () => {
 
   it("handles case where workflow config doesn't have anything to templateize", () => {
     const workflowTemplate = templates.getItemTemplate("Workflow");
+    workflowTemplate.itemId = workflowTemplate.item.id = "69c996f13345470da56639b5c4f85d11";
     common.setCreateProp(workflowTemplate, "properties.configuration", {
       "diagrams.json": "suspendisse porttitor tempus nulla proin convallis finibus leo sed praesent ac ultrices lectus"
     });
@@ -1368,12 +1374,14 @@ describe("_templatizeWorkflowConfig", () => {
       workflowTemplate
     ];
     const templateDictionary: any = {
+      "69c996f13345470da56639b5c4f85d11": "69c996f13345470da56639b5c4f85d11",
       "7a69f67e4c6744918fbea49b8241640e": "7a69f67e4c6744918fbea49b8241640e"
     };
 
     _templatizeWorkflowConfig(templateList, templateDictionary);
 
     const expectedWorkflowTemplate = templates.getItemTemplate("Workflow");
+    expectedWorkflowTemplate.itemId = expectedWorkflowTemplate.item.id = "69c996f13345470da56639b5c4f85d11";  // we're not testing this part
     common.setCreateProp(expectedWorkflowTemplate, "properties.configuration", {
       "diagrams.json": "suspendisse porttitor tempus nulla proin convallis finibus leo sed praesent ac ultrices lectus"
     });
