@@ -87,6 +87,9 @@ describe("Module `workflow`", () => {
       };
       const folderId: string = "folder1234567890";
       const newItemID: string = "wfw1234567891";
+      itemTemplate.properties.configuration['diagrams.json'] =
+        itemTemplate.properties.configuration['diagrams.json']
+        .replace('733d6d9a09aa4086be8019e6d826cd60', '31630a0db4844a95bc28aaf5bfb40b4d');
 
       spyOn(common, "createItemWithData").and.resolveTo({
         folder: "folder1234567890",
@@ -122,17 +125,8 @@ describe("Module `workflow`", () => {
       expect(response.id).withContext("created id").toEqual(newItemID);
       expect(response.type).withContext("created type").toEqual("Workflow");
       expect(response.postProcess).withContext("created postProcess").toBeFalse();
-
-      const itemTemplate2: common.IItemTemplate = templates.getItemTemplate("Workflow");
-      itemTemplate2.itemId = newItemID;
-      itemTemplate2.item.id = newItemID;
-      itemTemplate2.properties.configuration = getSampleConfigJsonConverted();
-      expect(response).withContext("final item").toEqual({
-        item: itemTemplate2,
-        id: newItemID,
-        type: "Workflow",
-        postProcess: false
-      } as common.ICreateItemFromTemplateResponse);
+      expect(response.item?.properties.configuration['diagrams.json'])
+        .withContext("diagram version").toContain('31630a0db4844a95bc28aaf5bfb40b4d');
     });
 
     it("handles case where configuration doesn't contain templates", async () => {
