@@ -31,6 +31,7 @@ import * as workflowHelpers from "./workflowHelpers";
  * @param itemInfo Info about the item
  * @param destAuthentication Credentials for requests to the destination organization
  * @param srcAuthentication Credentials for requests to source items
+ * @param {any} templateDictionary Hash of facts: folder id, org URL, adlib replacements
  * @returns A promise that will resolve when the template has been created
  */
 export async function convertItemToTemplate(
@@ -165,20 +166,6 @@ export async function createItemFromTemplate(
     // Detempletize the workflow configuration
     newItemTemplate.properties.configuration = common.replaceInTemplate(
       newItemTemplate.properties.configuration, templateDictionary);
-
-    // Find the AGO ids in the file content
-    let configStr = JSON.stringify(newItemTemplate.properties.configuration);
-    const agoIdRegEx = common.getAgoIdRegEx();
-    const agoIdMatches = common.dedupe(configStr.match(agoIdRegEx) ?? []);
-
-    // Replace things that look like AGO ids in the file content iff they are present in the template dictionary
-    agoIdMatches.forEach((match: string) => {
-      const replacement = templateDictionary[match];
-      if (typeof replacement?.itemId === "string") {
-        configStr = configStr.replace(new RegExp(match, "g"), `${replacement.itemId}`);
-      }
-    });
-    newItemTemplate.properties.configuration = JSON.parse(configStr);
 
     // Add the item's configuration properties; throw if the configuration update fails
     const configZipFile = await common.compressWorkflowIntoZipFile(newItemTemplate.properties.configuration);
