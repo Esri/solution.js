@@ -66,7 +66,7 @@ describe("addContentToSolution", () => {
             0
           );
         }
-        return Promise.resolve(null);
+        return Promise.resolve([] as common.ISourceFile[]);
       }
     );
 
@@ -105,7 +105,7 @@ describe("addContentToSolution", () => {
             0
           );
         }
-        return Promise.resolve(null);
+        return Promise.resolve([] as common.ISourceFile[]);
       }
     );
 
@@ -220,12 +220,12 @@ describe("_getIdsOutOfTemplateVariables", () => {
 describe("_getSolutionItemUrls", () => {
   it("gets item id/URL pairs for items with URLs", () => {
     const templateList = [
-      templates.getItemTemplate("Notebook", null, "url1"),
-      templates.getItemTemplate("Oriented Imagery Catalog", null, "url2"),
-      templates.getItemTemplate("QuickCapture Project", null, "url3"),
-      templates.getItemTemplate("Web Map", null, "url4"),
-      templates.getItemTemplate("Web Mapping Application", null, "url5"),
-      templates.getItemTemplate("Workforce Project", null, "url6")
+      templates.getItemTemplate("Notebook", undefined, "url1"),
+      templates.getItemTemplate("Oriented Imagery Catalog", undefined, "url2"),
+      templates.getItemTemplate("QuickCapture Project", undefined, "url3"),
+      templates.getItemTemplate("Web Map", undefined, "url4"),
+      templates.getItemTemplate("Web Mapping Application", undefined, "url5"),
+      templates.getItemTemplate("Workforce Project", undefined, "url6")
     ];
     expect(_getSolutionItemUrls(templateList)).toEqual([
       ["nbk1234567890", "url1"],
@@ -239,12 +239,12 @@ describe("_getSolutionItemUrls", () => {
 
   it("skips items without a URL", () => {
     const templateList = [
-      templates.getItemTemplate("Notebook", null, ""),
-      templates.getItemTemplate("Oriented Imagery Catalog", null, "url2"),
-      templates.getItemTemplate("QuickCapture Project", null, ""),
-      templates.getItemTemplate("Web Map", null, "url4"),
-      templates.getItemTemplate("Web Mapping Application", null, "url5"),
-      templates.getItemTemplate("Workforce Project", null, "url6")
+      templates.getItemTemplate("Notebook", undefined, ""),
+      templates.getItemTemplate("Oriented Imagery Catalog", undefined, "url2"),
+      templates.getItemTemplate("QuickCapture Project", undefined, ""),
+      templates.getItemTemplate("Web Map", undefined, "url4"),
+      templates.getItemTemplate("Web Mapping Application", undefined, "url5"),
+      templates.getItemTemplate("Workforce Project", undefined, "url6")
     ];
     expect(_getSolutionItemUrls(templateList)).toEqual([
       ["oic1234567890", "url2"],
@@ -256,10 +256,10 @@ describe("_getSolutionItemUrls", () => {
 
   it("handles a list of items without URLs", () => {
     const templateList = [
-      templates.getItemTemplate("Notebook", null, ""),
-      templates.getItemTemplate("Oriented Imagery Catalog", null, ""),
-      templates.getItemTemplate("QuickCapture Project", null, ""),
-      templates.getItemTemplate("Workforce Project", null, "")
+      templates.getItemTemplate("Notebook", undefined, ""),
+      templates.getItemTemplate("Oriented Imagery Catalog", undefined, ""),
+      templates.getItemTemplate("QuickCapture Project", undefined, ""),
+      templates.getItemTemplate("Workforce Project", undefined, "")
     ];
     expect(_getSolutionItemUrls(templateList)).toEqual([]);
   });
@@ -308,12 +308,12 @@ describe("_getTemplateVariables", () => {
 describe("_postProcessGroupDependencies", () => {
   it("remove group dependencies if we find a circular dependency with one of its items", done => {
     const groupTemplate: common.IItemTemplate = templates.getItemTemplateSkeleton();
-    groupTemplate.item = mockItems.getAGOLItem("Group", null);
+    groupTemplate.item = mockItems.getAGOLItem("Group", undefined);
     groupTemplate.itemId = "grpb15c2df2b466da05577776e82d044";
     groupTemplate.type = "Group";
 
     const itemTemplate: common.IItemTemplate = templates.getItemTemplateSkeleton();
-    itemTemplate.item = mockItems.getAGOLItem("Workforce Project", null);
+    itemTemplate.item = mockItems.getAGOLItem("Workforce Project", undefined);
     itemTemplate.itemId = "wrkccab401af4828a25cc6eaeb59fb69";
     itemTemplate.type = "Workforce Project";
 
@@ -324,7 +324,7 @@ describe("_postProcessGroupDependencies", () => {
     const _templates: common.IItemTemplate[] = [groupTemplate, itemTemplate];
 
     const expectedGroupTemplate: common.IItemTemplate = templates.getItemTemplateSkeleton();
-    expectedGroupTemplate.item = mockItems.getAGOLItem("Group", null);
+    expectedGroupTemplate.item = mockItems.getAGOLItem("Group", undefined);
     expectedGroupTemplate.itemId = "grpb15c2df2b466da05577776e82d044";
     expectedGroupTemplate.type = "Group";
     expectedGroupTemplate.dependencies = [];
@@ -332,7 +332,7 @@ describe("_postProcessGroupDependencies", () => {
     const expectedItemTemplate: common.IItemTemplate = templates.getItemTemplateSkeleton();
     expectedItemTemplate.item = mockItems.getAGOLItem(
       "Workforce Project",
-      null
+      undefined
     );
     expectedItemTemplate.itemId = "wrkccab401af4828a25cc6eaeb59fb69";
     expectedItemTemplate.type = "Workforce Project";
@@ -358,19 +358,19 @@ describe("_postProcessGroupDependencies", () => {
         itemId: "bc3-group",
         dependencies: ["3ef-webmap", "cb7-initiative", "3ef-webmap2"],
         groups: []
-      } as common.IItemTemplate,
+      } as any as common.IItemTemplate,
       {
         type: "Web App",
         itemId: "3ef-webapp",
         dependencies: ["bc3-group"],
         groups: []
-      } as common.IItemTemplate,
+      } as any as common.IItemTemplate,
       {
         type: "Hub Site Application",
         itemId: "3ef-site",
         dependencies: ["3ef-webapp"],
         groups: []
-      } as common.IItemTemplate,
+      } as any as common.IItemTemplate,
       {
         type: "Web Map",
         itemId: "3ef-webmap"
@@ -396,13 +396,13 @@ describe("_postProcessGroupDependencies", () => {
 
   it("add group dependencies to groups array", done => {
     const groupTemplate: common.IItemTemplate = templates.getItemTemplateSkeleton();
-    groupTemplate.item = mockItems.getAGOLItem("Group", null);
+    groupTemplate.item = mockItems.getAGOLItem("Group", undefined);
     groupTemplate.itemId = "grpb15c2df2b466da05577776e82d044";
     groupTemplate.type = "Group";
     groupTemplate.dependencies = [];
 
     const itemTemplate: common.IItemTemplate = templates.getItemTemplateSkeleton();
-    itemTemplate.item = mockItems.getAGOLItem("Web Mapping Application", null);
+    itemTemplate.item = mockItems.getAGOLItem("Web Mapping Application", undefined);
     itemTemplate.itemId = "wmaccab401af4828a25cc6eaeb59fb69";
     itemTemplate.type = "Web Mapping Application";
     itemTemplate.dependencies = [groupTemplate.itemId];
@@ -410,7 +410,7 @@ describe("_postProcessGroupDependencies", () => {
     const _templates: common.IItemTemplate[] = [groupTemplate, itemTemplate];
 
     const expectedGroupTemplate: common.IItemTemplate = templates.getItemTemplateSkeleton();
-    expectedGroupTemplate.item = mockItems.getAGOLItem("Group", null);
+    expectedGroupTemplate.item = mockItems.getAGOLItem("Group", undefined);
     expectedGroupTemplate.itemId = "grpb15c2df2b466da05577776e82d044";
     expectedGroupTemplate.type = "Group";
     expectedGroupTemplate.dependencies = [];
@@ -418,7 +418,7 @@ describe("_postProcessGroupDependencies", () => {
     const expectedItemTemplate: common.IItemTemplate = templates.getItemTemplateSkeleton();
     expectedItemTemplate.item = mockItems.getAGOLItem(
       "Web Mapping Application",
-      null
+      undefined
     );
     expectedItemTemplate.itemId = "wmaccab401af4828a25cc6eaeb59fb69";
     expectedItemTemplate.type = "Web Mapping Application";
@@ -1110,7 +1110,7 @@ describe("_replaceRemainingIdsInString", () => {
       "21387aebe63d495eb708ae2eaedb5bdd",
       "4da9328722be419cbf64abd88247749b"
     ];
-    const str: string = null;
+    const str: string = "";
 
     expect(_replaceRemainingIdsInString(ids, str)).toEqual(str);
   });
@@ -1215,17 +1215,17 @@ describe("_simplifyUrlsInItemDescriptions", () => {
 
     const notebookTemplate = templates.getItemTemplate(
       "Notebook",
-      null,
+      undefined,
       "url1"
     );
     notebookTemplate.item.origUrl = notebookTemplate.item.url;
 
-    const webmapTemplate = templates.getItemTemplate("Web Map", null, "url4");
+    const webmapTemplate = templates.getItemTemplate("Web Map", undefined, "url4");
     webmapTemplate.item.description = descrip1 + " url5,url5,url1 " + descrip2;
 
     const wmaTemplate = templates.getItemTemplate(
       "Web Mapping Application",
-      null,
+      undefined,
       "url5"
     );
     wmaTemplate.item.description = descrip1 + " url0 " + descrip2;
@@ -1233,7 +1233,7 @@ describe("_simplifyUrlsInItemDescriptions", () => {
 
     const workforceTemplate = templates.getItemTemplate(
       "Workforce Project",
-      null,
+      undefined,
       "url6"
     );
     workforceTemplate.item.origUrl = workforceTemplate.item.url;
@@ -1295,14 +1295,14 @@ describe("_simplifyUrlsInItemDescriptions", () => {
   it("doesn't choke if the description is missing", () => {
     const notebookTemplate = templates.getItemTemplate(
       "Notebook",
-      null,
+      undefined,
       "url1"
     );
     notebookTemplate.item.origUrl = notebookTemplate.item.url;
-    notebookTemplate.item.description = null;
+    notebookTemplate.item.description = undefined;
 
     _simplifyUrlsInItemDescriptions([notebookTemplate]);
-    expect(notebookTemplate.item.description).toBeNull();
+    expect(notebookTemplate.item.description).toBeUndefined();
   });
 });
 
@@ -1313,9 +1313,13 @@ describe("_templatizeSolutionIds", () => {
       "Workforce Project"
     );
     template.dependencies = [];
-    template.item.typeKeywords.push("Workforce Project");
-    _templatizeSolutionIds([template]);
-    expect(template.dependencies).toEqual([]);
+    if(template.item.typeKeywords) {
+      template.item.typeKeywords.push("Workforce Project");
+      _templatizeSolutionIds([template]);
+      expect(template.dependencies).toEqual([]);
+    } else {
+      fail("template.item.typeKeywords is undefined");
+    }
   });
 
   it("skips _getDependencies for group", () => {
@@ -1324,5 +1328,11 @@ describe("_templatizeSolutionIds", () => {
     const template: common.IItemTemplate = templates.getItemTemplate("Group");
     _templatizeSolutionIds([template]);
     expect(getDependenciesSpy.notCalled).toBe(true);
+  });
+});
+
+describe("_templatizeWorkflowConfig", () => {
+  it("templatizes the workflow config", () => {
+
   });
 });
