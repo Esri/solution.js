@@ -17,7 +17,9 @@
 import {
   SolutionTemplateFormatVersion,
   EItemProgressStatus,
+  dedupe,
   failWithIds,
+  getAgoIdRegEx,
   getIDs,
   getPortal,
   getTemplateById,
@@ -161,6 +163,7 @@ export function addContentToSolution(
         solutionTemplates,
         itemProgressCallback
       );
+      templateDictionary[itemId] = itemId;  // save a record of items that we've added to the solution
       getItemsPromise.push(createDef);
     });
 
@@ -224,6 +227,9 @@ export function addContentToSolution(
                   }
                 }
               );
+
+              _templatizeWorkflowConfig(solutionTemplates, templateDictionary);
+
               _templatizeOrgUrl(solutionTemplates, destAuthentication).then(
                 solutionTemplates2 => {
                   // Update solution item with its data JSON
@@ -602,6 +608,47 @@ export function _templatizeSolutionIds(templates: IItemTemplate[]): void {
     /* istanbul ignore else */
     if (template.type !== "Group" && !isWorkforceProject(template)) {
       template.dependencies = _getDependencies(template);
+    }
+  });
+}
+
+/**
+ * Finds and templatizes any references to AGO ids in the workflow configuration.
+ *
+ * @param templates The array of templates whose workflow configurations are to be templatized; this array is
+ * modified in place
+ * @param templateDictionary Hash of key details used for variable replacement
+ */
+export function _templatizeWorkflowConfig(
+  templates: IItemTemplate[],
+  templateDictionary: any
+): void {
+  // Cycle through each of the items in the template and templatize each workflow configuration
+  templates.forEach((template: IItemTemplate) => {
+    if (template.type === "Workflow") {
+      let configStr = JSON.stringify(template.properties.configuration);
+      const agoIdRegEx = getAgoIdRegEx();
+      const agoIdMatches = dedupe(configStr.match(agoIdRegEx) ?? []);
+
+      // Replace things that look like AGO ids in the file content with templates
+      // iff they are present in the template dictionary
+      agoIdMatches.forEach((match: string) => {
+        const entry = templateDictionary[match];
+        if (entry) {
+          const matchRegExp = new RegExp(match, "g");
+
+          // Only proceed if the match is in the configuration string
+          if (matchRegExp.test(configStr)) {
+            configStr = configStr.replace(matchRegExp, `{{${match}.itemId}}`);
+
+            // Add the match as a dependency if it's not the template's id
+            if (match !== template.itemId) {
+              template.dependencies.push(match);
+            }
+          }
+        }
+      });
+      template.properties.configuration = JSON.parse(configStr);
     }
   });
 }
