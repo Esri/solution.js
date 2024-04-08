@@ -34,7 +34,7 @@ export async function swizzleFormObject(
   const zipObjectContents = await common.getZipObjectContents(zipObject);
 
   // Swizzle the contents of each file in a zip file and replace them in the zip object
-  const zipObjectUpdatePromises: Array<Promise<common.IZipObjectContentItem>> = [];
+  //const zipObjectUpdatePromises: Array<Promise<common.IZipObjectContentItem>> = [];
   zipObjectContents.forEach(
     (zipFileItem : common.IZipObjectContentItem) => {
 
@@ -45,20 +45,23 @@ export async function swizzleFormObject(
         // Replace the file content in the zip object
         zipObject.file(zipFileItem.file, updatedZipContent);
 
-      } else {
+      /*} else {
         // Only update XLSX binary files
         if (zipFileItem.file.endsWith(".xlsx")) {
           zipObjectUpdatePromises.push(_updateZipObjectBinaryContent(zipFileItem, templateDictionary));
         }
+      */
       }
     }
   );
 
+  /*
   const asyncUpdates = await Promise.all(zipObjectUpdatePromises);
   asyncUpdates.forEach((zipFileItem: common.IZipObjectContentItem) => {
     // Replace the file content in the zip object
     zipObject.file(zipFileItem.file, zipFileItem.content);
   });
+  */
 
   return Promise.resolve(zipObject);
 }
@@ -72,6 +75,7 @@ export async function swizzleFormObject(
  * @param templateDictionary Dictionary of replacement values
  * @returns Promise that resolves to the updated zip file item
  */
+/*
 export async function _updateZipObjectBinaryContent(
   zipFileItem: common.IZipObjectContentItem,
   templateDictionary: any
@@ -86,6 +90,7 @@ export async function _updateZipObjectBinaryContent(
 
   return Promise.resolve(updatedZipFileItem);
 }
+*/
 
 /**
  * Updates the text content of a zip object.

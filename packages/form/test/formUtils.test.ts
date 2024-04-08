@@ -83,7 +83,7 @@ describe("formUtils", () => {
       expect(resultingZipContents).toEqual(expectedZipContents);
     });
 
-    it("swizzles a binary object", async () => {
+    it("doesn't swizzle a binary object", async () => {
       const zipObject = await zipUtilsTest.generateFormZipObject("0c01725576b640e4bd25a16721850000");
       const originalXLSX = utils.loadSampleXLSX("09b843d27d8a441db4c88c1f03b8e9aa");
       zipObject.file("09b843d27d8a441db4c88c1f03b8e9aa.xlsx", originalXLSX, { binary: true });
@@ -98,8 +98,8 @@ describe("formUtils", () => {
       const resultingZipContents = await common.getZipObjectContents(resultingZipObject);
 
       const expectedZipObject = await zipUtilsTest.generateFormZipObject("0c01725576b640e4bd25a16721850000");
-      const modifiedXLSX = utils.loadSampleXLSX("c909d4ffd708476789e22664051629a0");
-      expectedZipObject.file("09b843d27d8a441db4c88c1f03b8e9aa.xlsx", modifiedXLSX, { binary: true });
+      const unmodifiedXLSX = utils.loadSampleXLSX("09b843d27d8a441db4c88c1f03b8e9aa");
+      expectedZipObject.file("09b843d27d8a441db4c88c1f03b8e9aa.xlsx", unmodifiedXLSX, { binary: true });
       const expectedZipContents = await common.getZipObjectContents(expectedZipObject);
 
       expect(resultingZipContents).toEqual(expectedZipContents);
@@ -107,6 +107,7 @@ describe("formUtils", () => {
 
   });
 
+  /*
   describe("_updateZipObjectBinaryContent", () => {
 
     it("swizzles binary form object", async () => {
@@ -135,6 +136,7 @@ describe("formUtils", () => {
     });
 
   });
+  */
 
   describe("_updateZipObjectTextContent", () => {
 
