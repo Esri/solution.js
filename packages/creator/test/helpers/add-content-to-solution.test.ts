@@ -38,7 +38,6 @@ import * as templates from "../../../common/test/mocks/templates";
 import * as sinon from "sinon";
 import * as staticRelatedItemsMocks from "../../../common/test/mocks/staticRelatedItemsMocks";
 import { findBy } from "@esri/hub-common";
-import { IItemTemplate } from "@esri/solution-common";
 // Set up a UserSession to use in all these tests
 const MOCK_USER_SESSION = utils.createRuntimeMockUserSession();
 
@@ -545,7 +544,7 @@ describe("_postProcessIgnoredItems", () => {
 
 describe("_postProcessIgnoredItems", () => {
   it("uses cached info for mocked invalid designations", () => {
-    const _templates: IItemTemplate[] = [
+    const _templates: common.IItemTemplate[] = [
       templates.getItemTemplateSkeleton(),
       templates.getItemTemplateSkeleton(),
       templates.getItemTemplateSkeleton()
@@ -1337,14 +1336,15 @@ describe("_templatizeWorkflowConfig", () => {
     const workflowTemplate = templates.getItemTemplate("Workflow");
     workflowTemplate.itemId = workflowTemplate.item.id = "69c996f13345470da56639b5c4f85d11";
     common.setCreateProp(workflowTemplate, "properties.configuration", {
-      "diagrams.json": "suspendisse porttitor 69c996f13345470da56639b5c4f85d11 tempus nulla 7a69f67e4c6744918fbea49b8241640e proin convallis finibus leo sed 9ef76d79ed2741a8bf5a3b9b344b3c07 praesent ac ultrices lectus"
+      "diagrams.json": "suspendisse https://myorg.maps.arcgis.com/porttitor 69c996f13345470da56639b5c4f85d11 tempus nulla 7a69f67e4c6744918fbea49b8241640e proin convallis finibus leo sed 9ef76d79ed2741a8bf5a3b9b344b3c07 praesent ac ultrices lectus"
     });
     const templateList= [
       workflowTemplate
     ];
     const templateDictionary: any = {
       "69c996f13345470da56639b5c4f85d11": "69c996f13345470da56639b5c4f85d11",
-      "7a69f67e4c6744918fbea49b8241640e": "7a69f67e4c6744918fbea49b8241640e"
+      "7a69f67e4c6744918fbea49b8241640e": "7a69f67e4c6744918fbea49b8241640e",
+      "portalBaseUrl": "https://myorg.maps.arcgis.com"
     };
 
     _templatizeWorkflowConfig(templateList, templateDictionary);
@@ -1354,7 +1354,7 @@ describe("_templatizeWorkflowConfig", () => {
     const expectedWorkflowTemplate = templates.getItemTemplate("Workflow");
     expectedWorkflowTemplate.itemId = expectedWorkflowTemplate.item.id = "69c996f13345470da56639b5c4f85d11";  // we're not testing this part
     common.setCreateProp(expectedWorkflowTemplate, "properties.configuration", {
-      "diagrams.json": "suspendisse porttitor {{69c996f13345470da56639b5c4f85d11.itemId}} tempus nulla {{7a69f67e4c6744918fbea49b8241640e.itemId}} proin convallis finibus leo sed 9ef76d79ed2741a8bf5a3b9b344b3c07 praesent ac ultrices lectus"
+      "diagrams.json": "suspendisse {{portalBaseUrl}}/porttitor {{69c996f13345470da56639b5c4f85d11.itemId}} tempus nulla {{7a69f67e4c6744918fbea49b8241640e.itemId}} proin convallis finibus leo sed 9ef76d79ed2741a8bf5a3b9b344b3c07 praesent ac ultrices lectus"
     });
     expectedWorkflowTemplate.dependencies = ["7a69f67e4c6744918fbea49b8241640e"];
     const expectedTemplateList= [
@@ -1368,14 +1368,15 @@ describe("_templatizeWorkflowConfig", () => {
     const workflowTemplate = templates.getItemTemplate("Workflow");
     workflowTemplate.itemId = workflowTemplate.item.id = "69c996f13345470da56639b5c4f85d11";
     common.setCreateProp(workflowTemplate, "properties.configuration", {
-      "diagrams.json": "suspendisse porttitor tempus nulla proin convallis finibus leo sed praesent ac ultrices lectus"
+      "diagrams.json": "suspendisse https://myorg.maps.arcgis.com/porttitor tempus nulla proin convallis finibus leo sed praesent ac ultrices lectus"
     });
     const templateList= [
       workflowTemplate
     ];
     const templateDictionary: any = {
       "69c996f13345470da56639b5c4f85d11": "69c996f13345470da56639b5c4f85d11",
-      "7a69f67e4c6744918fbea49b8241640e": "7a69f67e4c6744918fbea49b8241640e"
+      "7a69f67e4c6744918fbea49b8241640e": "7a69f67e4c6744918fbea49b8241640e",
+      "portalBaseUrl": "https://myorg.maps.arcgis.com"
     };
 
     _templatizeWorkflowConfig(templateList, templateDictionary);
@@ -1383,7 +1384,7 @@ describe("_templatizeWorkflowConfig", () => {
     const expectedWorkflowTemplate = templates.getItemTemplate("Workflow");
     expectedWorkflowTemplate.itemId = expectedWorkflowTemplate.item.id = "69c996f13345470da56639b5c4f85d11";  // we're not testing this part
     common.setCreateProp(expectedWorkflowTemplate, "properties.configuration", {
-      "diagrams.json": "suspendisse porttitor tempus nulla proin convallis finibus leo sed praesent ac ultrices lectus"
+      "diagrams.json": "suspendisse {{portalBaseUrl}}/porttitor tempus nulla proin convallis finibus leo sed praesent ac ultrices lectus"
     });
     const expectedTemplateList= [
       expectedWorkflowTemplate
