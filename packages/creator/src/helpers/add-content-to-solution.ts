@@ -665,7 +665,7 @@ export function _templatizeWorkflowConfig(
 
       // Replace the organization's URL in the configuration
       configStr = configStr.replace(
-        new RegExp(templateDictionary.portalBaseUrl, "g"),
+        new RegExp(`${templateDictionary.portalBaseUrl}`, "g"),
         "{{portalBaseUrl}}"
       );
 
