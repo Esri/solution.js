@@ -228,10 +228,16 @@ export function addContentToSolution(
                 }
               );
 
-              _templatizeWorkflowConfig(solutionTemplates, templateDictionary);
+              // Get the org's URL
+              _getOrgUrl(destAuthentication).then(
+                orgUrl => {
+                  // Templatizes occurrences of the URL to the user's organization in the `item` and `data` template sections
+                  templateDictionary.portalBaseUrl = orgUrl;
+                  const solutionTemplates2 = _templatizeOrgUrl(solutionTemplates, orgUrl);
 
-              _templatizeOrgUrl(solutionTemplates, destAuthentication).then(
-                solutionTemplates2 => {
+                  // Templatize any references to AGO ids in the workflow configuration
+                  _templatizeWorkflowConfig(solutionTemplates, templateDictionary);
+
                   // Update solution item with its data JSON
                   const solutionData: ISolutionItemData = {
                     metadata: { version: SolutionTemplateFormatVersion },
@@ -246,9 +252,7 @@ export function addContentToSolution(
                   updateItem(itemInfo, destAuthentication).then(() => {
                     resolve(solutionItemId);
                   }, reject);
-                },
-                reject
-              );
+                }, reject);
             });
           } else {
             resolve(solutionItemId);
@@ -309,6 +313,22 @@ export function _getIdsOutOfTemplateVariables(variables: string[]): string[] {
       }
     })
     .filter(variable => !!variable);
+}
+
+/**
+ * Fetches the organization's URL.
+ *
+ * @param destAuthentication Credentials for request organization info
+ * @returns Promise resolving with the organization's URL
+ * @private
+ */
+export async function _getOrgUrl(
+  destAuthentication: UserSession
+): Promise<string> {
+  // Get the org's URL
+  const org = await getPortal(null, destAuthentication);
+  const orgUrl = "https://" + org.urlKey + "." + org.customBaseUrl;
+  return orgUrl;
 }
 
 /**
@@ -541,50 +561,44 @@ export function _simplifyUrlsInItemDescriptions(
 /**
  * Templatizes occurrences of the URL to the user's organization in the `item` and `data` template sections.
  *
- * @param templates The array of templates to evaluate; templates is modified in place
- * @param destAuthentication Credentials for request organization info
- * @returns Promise resolving with `templates`
+ * @param templates The array of templates to evaluate; `templates` is modified in place
+ * @param orgUrl The organization's URL
+ * @returns Updated templates
  * @private
  */
 export function _templatizeOrgUrl(
   templates: IItemTemplate[],
-  destAuthentication: UserSession
-): Promise<IItemTemplate[]> {
-  return new Promise((resolve, reject) => {
-    // Get the org's URL
-    getPortal(null, destAuthentication).then(org => {
-      let orgUrl = "https://" + org.urlKey + "." + org.customBaseUrl;
-      const templatizedOrgUrl = "{{portalBaseUrl}}";
+  orgUrl: string
+): IItemTemplate[] {
+  const templatizedOrgUrl = "{{portalBaseUrl}}";
 
-      // Cycle through each of the items in the template and scan the `item` and `data` sections of each for replacements
-      templates.forEach((template: IItemTemplate) => {
-        globalStringReplace(
-          template.item,
-          new RegExp(orgUrl, "gi"),
-          templatizedOrgUrl
-        );
-        globalStringReplace(
-          template.data,
-          new RegExp(orgUrl, "gi"),
-          templatizedOrgUrl
-        );
-      });
-
-      // Handle encoded URLs
-      orgUrl = orgUrl.replace("https://", "https%3A%2F%2F");
-
-      // Cycle through each of the items in the template and scan the `data` sections of each for replacements
-      templates.forEach((template: IItemTemplate) => {
-        globalStringReplace(
-          template.data,
-          new RegExp(orgUrl, "gi"),
-          templatizedOrgUrl
-        );
-      });
-
-      resolve(templates);
-    }, reject);
+  // Cycle through each of the items in the template and scan the `item` and `data` sections of each for replacements
+  templates.forEach((template: IItemTemplate) => {
+    globalStringReplace(
+      template.item,
+      new RegExp(orgUrl, "gi"),
+      templatizedOrgUrl
+    );
+    globalStringReplace(
+      template.data,
+      new RegExp(orgUrl, "gi"),
+      templatizedOrgUrl
+    );
   });
+
+  // Handle encoded URLs
+  orgUrl = orgUrl.replace("https://", "https%3A%2F%2F");
+
+  // Cycle through each of the items in the template and scan the `data` sections of each for replacements
+  templates.forEach((template: IItemTemplate) => {
+    globalStringReplace(
+      template.data,
+      new RegExp(orgUrl, "gi"),
+      templatizedOrgUrl
+    );
+  });
+
+  return templates;
 }
 
 /**
@@ -648,6 +662,14 @@ export function _templatizeWorkflowConfig(
           }
         }
       });
+
+      // Replace the organization's URL in the configuration
+      configStr = configStr.replace(
+        new RegExp(`${templateDictionary.portalBaseUrl}`, "g"),
+        "{{portalBaseUrl}}"
+      );
+
+      // Update configuration
       template.properties.configuration = JSON.parse(configStr);
     }
   });
