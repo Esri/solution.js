@@ -39,6 +39,7 @@ describe("Module `workflowHelpers`", () => {
 
   describe("addWorkflowItem", () => {
     it("basically works", async () => {
+      const orgId = "abcdefghij";
       const itemId = "wfw1234567890";
 
       const agolItem = templates.getItemTemplate("Workflow");
@@ -55,7 +56,7 @@ describe("Module `workflowHelpers`", () => {
         }
       );
 
-      const createdItemId = await workflowHelpers.addWorkflowItem(agolItem, MOCK_USER_SESSION);
+      const createdItemId = await workflowHelpers.addWorkflowItem(agolItem, MOCK_USER_SESSION, orgId);
 
       expect(createdItemId).toEqual(itemId);
     });

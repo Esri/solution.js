@@ -132,7 +132,7 @@ export async function createItemFromTemplate(
 
   try {
     const createdWorkflowItemId = await workflowHelpers.addWorkflowItem(
-      newItemTemplate, destinationAuthentication);
+      newItemTemplate, destinationAuthentication, templateDictionary.orgId, templateDictionary.workflowManagerUrl);
     if (!createdWorkflowItemId) {
       throw new Error("Failed to create workflow item");
     }
