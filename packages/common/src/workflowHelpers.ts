@@ -75,17 +75,17 @@ export async function extractWorkflowFromZipFile(
  *
  * @param orgId Id of organization whose license is to be checked
  * @param authentication Credentials for the request to AGO
- * @param enterpriseWebAdaptorUrl URL of the enterprise web adaptor, e.g., "https://gisserver.domain.com/server"
+ * @param workflowManagerUrl URL of the enterprise web adaptor, e.g., "https://gisserver.domain.com/server"
  * @returns Promise resolving with a boolean indicating whether the organization has the license
  * @throws {WorkflowJsonExceptionDTO} if request to workflow manager fails
  */
 export async function getWorkflowManagerAuthorized(
   orgId: string | undefined,
   authentication: interfaces.UserSession | undefined,
-  enterpriseWebAdaptorUrl?: string
+  workflowManagerUrl?: string
 ): Promise<boolean> {
-  const url = enterpriseWebAdaptorUrl
-    ? `${enterpriseWebAdaptorUrl}/workflow/${orgId}/checkStatus`
+  const url = workflowManagerUrl
+    ? `${workflowManagerUrl}/workflow/${orgId}/checkStatus`
     : `https://workflow.arcgis.com/${orgId}/checkStatus`;
   const options: request.IRequestOptions = {
     authentication,

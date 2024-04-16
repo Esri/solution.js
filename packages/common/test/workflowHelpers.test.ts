@@ -74,19 +74,19 @@ describe("Module `workflowHelpers`", () => {
 
     it("handles Enterprise authorized", async () => {
       const orgId = "abcdef";
-      const enterpriseWebAdaptorUrl = "https://myserver.mycompany.com/webadaptor";
+      const workflowManagerUrl = "https://myserver.mycompany.com/webadaptor";
       spyOn(request, "request").and.resolveTo({ hasAdvancedLicense: true });
 
-      const isAuthorized = await workflowHelpers.getWorkflowManagerAuthorized(orgId, MOCK_USER_SESSION, enterpriseWebAdaptorUrl);
+      const isAuthorized = await workflowHelpers.getWorkflowManagerAuthorized(orgId, MOCK_USER_SESSION, workflowManagerUrl);
       expect(isAuthorized).toBeTrue();
     });
 
     it("handles Enterprise unauthorized", async () => {
       const orgId = "abcdef";
-      const enterpriseWebAdaptorUrl = "https://myserver.mycompany.com/webadaptor";
+      const workflowManagerUrl = "https://myserver.mycompany.com/webadaptor";
       spyOn(request, "request").and.resolveTo({ hasAdvancedLicense: false });
 
-      const isAuthorized = await workflowHelpers.getWorkflowManagerAuthorized(orgId, MOCK_USER_SESSION, enterpriseWebAdaptorUrl);
+      const isAuthorized = await workflowHelpers.getWorkflowManagerAuthorized(orgId, MOCK_USER_SESSION, workflowManagerUrl);
       expect(isAuthorized).toBeFalse();
     });
 
