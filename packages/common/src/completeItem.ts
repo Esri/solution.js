@@ -22,7 +22,6 @@
 
 import {
   ICompleteItem,
-  IFeatureServiceProperties,
   UserSession
 } from "./interfaces";
 import * as restHelpers from "./restHelpers";
@@ -32,7 +31,7 @@ import * as workflowHelpers from "./workflowHelpers";
 // ------------------------------------------------------------------------------------------------------------------ //
 
 /**
- * Gets everything about an item.
+ * Gets everything about an item. Does not work for Workflow Manager on Enterprise.
  *
  * @param itemId Id of an item whose information is sought
  * @param authentication Credentials for the request
@@ -42,92 +41,69 @@ export async function getCompleteItem(
   itemId: string,
   authentication: UserSession
 ): Promise<ICompleteItem> {
-  let itemBase: any;
-  let completeItem: any;
-  const user = await restHelpersGet.getUser(authentication);
+  const itemBase: any = await restHelpersGet.getItemBase(itemId, authentication);
 
-  return restHelpersGet
-    .getItemBase(itemId, authentication)
-    .then((response: any) => {
-      itemBase = response;
+  const responses = await Promise.all([
+    restHelpersGet.getItemDataAsFile(itemId, itemBase.name, authentication),
+    restHelpersGet.getItemThumbnailAsFile(
+      itemId,
+      itemBase.thumbnail,
+      false,
+      authentication
+    ),
+    restHelpersGet.getItemMetadataAsFile(itemId, authentication),
+    restHelpersGet.getItemResourcesFiles(itemId, authentication),
+    restHelpersGet.getItemRelatedItemsInSameDirection(
+      itemId,
+      "forward",
+      authentication
+    ),
+    restHelpersGet.getItemRelatedItemsInSameDirection(
+      itemId,
+      "reverse",
+      authentication
+    )
+  ]);
 
-      return Promise.all([
-        restHelpersGet.getItemDataAsFile(itemId, itemBase.name, authentication),
-        restHelpersGet.getItemThumbnailAsFile(
-          itemId,
-          itemBase.thumbnail,
-          false,
-          authentication
-        ),
-        restHelpersGet.getItemMetadataAsFile(itemId, authentication),
-        restHelpersGet.getItemResourcesFiles(itemId, authentication),
-        restHelpersGet.getItemRelatedItemsInSameDirection(
-          itemId,
-          "forward",
-          authentication
-        ),
-        restHelpersGet.getItemRelatedItemsInSameDirection(
-          itemId,
-          "reverse",
-          authentication
-        )
-      ]);
-    })
-    .then(responses => {
-      const [
-        itemData,
-        itemThumbnail,
-        itemMetadata,
-        itemResources,
-        itemFwdRelatedItems,
-        itemRevRelatedItems
-      ] = responses;
-      // Summarize what we have
-      // ----------------------
-      // (itemBase: IItem)  text/plain JSON
-      // (itemData: File)  */*
-      // (itemThumbnail: File)  image/*
-      // (itemMetadata: File)  application/xml
-      // (itemResources: File[])  list of */*
-      // (itemFwdRelatedItems: IRelatedItems[])  list of forward relationshipType/relatedItems[] pairs
-      // (itemRevRelatedItems: IRelatedItems[])  list of reverse relationshipType/relatedItems[] pairs
-      completeItem = {
-        base: itemBase,
-        data: itemData,
-        thumbnail: itemThumbnail,
-        metadata: itemMetadata,
-        resources: itemResources,
-        fwdRelatedItems: itemFwdRelatedItems,
-        revRelatedItems: itemRevRelatedItems
-      };
+  const [
+    itemData,
+    itemThumbnail,
+    itemMetadata,
+    itemResources,
+    itemFwdRelatedItems,
+    itemRevRelatedItems
+  ] = responses;
+  // Summarize what we have
+  // ----------------------
+  // (itemBase: IItem)  text/plain JSON
+  // (itemData: File)  */*
+  // (itemThumbnail: File)  image/*
+  // (itemMetadata: File)  application/xml
+  // (itemResources: File[])  list of */*
+  // (itemFwdRelatedItems: IRelatedItems[])  list of forward relationshipType/relatedItems[] pairs
+  // (itemRevRelatedItems: IRelatedItems[])  list of reverse relationshipType/relatedItems[] pairs
+  const completeItem: ICompleteItem = {
+    base: itemBase,
+    data: itemData,
+    thumbnail: itemThumbnail,
+    metadata: itemMetadata,
+    resources: itemResources,
+    fwdRelatedItems: itemFwdRelatedItems,
+    revRelatedItems: itemRevRelatedItems
+  };
 
-      if (itemBase.type === "Feature Service") {
-        // eslint-disable-next-line @typescript-eslint/no-floating-promises
-        return restHelpers.getFeatureServiceProperties(
-          itemBase.url,
-          authentication
-        );
+  if (itemBase.type === "Feature Service") {
+    // eslint-disable-next-line @typescript-eslint/no-floating-promises
+    completeItem.featureServiceProperties = await restHelpers.getFeatureServiceProperties(
+      itemBase.url,
+      authentication
+    );
 
-      } else if (itemBase.type === "Workflow") {
-        // eslint-disable-next-line @typescript-eslint/no-floating-promises
-        return restHelpers.getWorkflowConfigurationZip(
-          itemBase.id,
-          authentication,
-          user.orgId
-        );
+  } else if (itemBase.type === "Workflow") {
+    const user = await restHelpersGet.getUser(authentication);
+    const workflowConfigZip = await restHelpers.getWorkflowConfigurationZip(itemBase.id, authentication, user.orgId);
+    completeItem.workflowConfiguration = await workflowHelpers.extractWorkflowFromZipFile(workflowConfigZip);
+  }
 
-      } else {
-        return Promise.resolve(null);
-      }
-    })
-    .then(async (properties: IFeatureServiceProperties | File) => {
-      if (properties) {
-        if (completeItem.base.type === "Feature Service") {
-          completeItem.featureServiceProperties = properties;
-        } else if (completeItem.base.type === "Workflow") {
-          completeItem.workflowConfiguration = await workflowHelpers.extractWorkflowFromZipFile(properties as File);
-        }
-      }
-      return Promise.resolve(completeItem);
-    });
+  return Promise.resolve(completeItem);
 }
