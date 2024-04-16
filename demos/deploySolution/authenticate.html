@@ -20,23 +20,5 @@
     -->
   </head>
   <body>
-    <script src="https://unpkg.com/@esri/arcgis-rest-request"></script>
-    <script src="https://unpkg.com/@esri/arcgis-rest-auth"></script>
-    <script>
-      const match = window.location.href.match(
-        /&state=([^&]+)/
-      );
-      const clientId = match[1] || "";
-      let session;
-      function processAuthentication() {
-        window.location.href = './';
-        session = arcgisRest.UserSession.completeOAuth2({
-          clientId: clientId,
-        });
-        localStorage.setItem('__SOLUTION_JS_USER_SESSION__', session.serialize());
-        debugger;
-      }
-      processAuthentication();
-    </script>
   </body>
 </html>
