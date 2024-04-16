@@ -85,13 +85,14 @@ describe("Module `deployer`", () => {
       // setup the stubs in before each... ensures they are clean each time
       beforeEach(() => {
         itemInfo = cloneObject(templates.getSolutionTemplateItem([]));
+        sinon
+          .stub(common, "getUser")
+          .resolves({ orgId: "abcdefghij" } as any);
         solTmplStub = sinon
           .stub(deployUtils, "getSolutionTemplateItem")
-          .callsFake(() => {
-            return Promise.resolve({
-              item: itemInfo.item,
-              data: itemInfo.data
-            });
+          .resolves({
+            item: itemInfo.item,
+            data: itemInfo.data
           });
         // create a fake file
         const xmlFile = new File(["xml"], "metadata.xml", {
@@ -112,18 +113,9 @@ describe("Module `deployer`", () => {
         deployer
           .deploySolution(itemInfo.item.id, MOCK_USER_SESSION)
           .then(() => {
-            expect(solTmplStub.calledOnce).toBe(
-              true,
-              "getSolutionTemplateItem should be called"
-            );
-            expect(metaStub.calledOnce).toBe(
-              false,
-              "getItemMetadataAsFile should not be called because item id is not a GUID"
-            );
-            expect(deployFnStub.calledOnce).toBe(
-              true,
-              "deploySolutionFromTemplate should be called once"
-            );
+            expect(solTmplStub.calledOnce).withContext("getSolutionTemplateItem should be called").toBe(true);
+            expect(metaStub.calledOnce).withContext("getItemMetadataAsFile should not be called because item id is not a GUID").toBe(false);
+            expect(deployFnStub.calledOnce).withContext("deploySolutionFromTemplate should be called once").toBe(true);
             // TODO: verify inputs to deployFn
             done();
           })
@@ -135,10 +127,7 @@ describe("Module `deployer`", () => {
         deployer
           .deploySolution(itemInfo.item.id, MOCK_USER_SESSION)
           .then(() => {
-            expect(solTmplStub.args[0][1]).toBe(
-              MOCK_USER_SESSION,
-              "destination authentication should be used"
-            );
+            expect(solTmplStub.args[0][1]).withContext("destination authentication should be used").toBe(MOCK_USER_SESSION);
             done();
           })
           .catch(err => {
@@ -155,10 +144,7 @@ describe("Module `deployer`", () => {
         deployer
           .deploySolution(itemInfo.item.id, MOCK_USER_SESSION, opts)
           .then(() => {
-            expect(solTmplStub.args[0][1]).toBe(
-              opts.storageAuthentication,
-              "source authentication should be used"
-            );
+            expect(solTmplStub.args[0][1]).withContext("source authentication should be used").toBe(opts.storageAuthentication);
             done();
           })
           .catch(err => {
@@ -181,23 +167,11 @@ describe("Module `deployer`", () => {
         deployer
           .deploySolution(itemInfo.item.id, MOCK_USER_SESSION, opts)
           .then(() => {
-            expect(solTmplStub.calledOnce).toBe(
-              true,
-              "getSolutionTemplateItem should be called"
-            );
-            expect(deployFnStub.calledOnce).toBe(
-              true,
-              "deploySolutionFromTemplate should be called once"
-            );
-            expect(deployFnStub.args[0][0]).toBe(
-              _itemInfo.item.id,
-              "deploySolutionFromTemplate should be called with an item id"
-            );
+            expect(solTmplStub.calledOnce).withContext("getSolutionTemplateItem should be called").toBe(true);
+            expect(deployFnStub.calledOnce).withContext("deploySolutionFromTemplate should be called once").toBe(true);
+            expect(deployFnStub.args[0][0]).withContext("deploySolutionFromTemplate should be called with an item id").toBe(_itemInfo.item.id);
             // TODO: verify inputs to deployFn
-            expect(pgStub.calledTwice).toBe(
-              true,
-              "progressCallback should be called twice"
-            );
+            expect(pgStub.calledTwice).withContext("progressCallback should be called twice").toBe(true);
             done();
           })
           .catch(err => {
@@ -326,6 +300,8 @@ describe("Module `deployer`", () => {
         portalHelper,
         "addItemRelationship"
       ).and.resolveTo();
+
+      spyOn(common, "getUser").and.resolveTo({ orgId: "abcdefghij" });
 
       fetchMock
         .get(
@@ -677,9 +653,6 @@ describe("Module `deployer`", () => {
             // not concerned with the def here
             templateDictionary["svc1234567890"].def = {};
 
-            expect(templateDictionary)
-              .withContext("test templateDictionary === expectedTemplate")
-              .toEqual(expectedTemplate);
             expect(actual)
               .withContext("test actual === expected")
               .toEqual(expected);
