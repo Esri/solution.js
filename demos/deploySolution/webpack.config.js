@@ -4,13 +4,23 @@ const path = require('path');
 const isProduction = process.env.NODE_ENV == 'production';
 
 const config = {
-  entry: './src/index.ts',
+  entry: {
+    main: './src/index.ts',
+    authenticate: './src/authenticate.ts'
+  },
   output: {
     path: path.resolve(__dirname, 'dist'),
   },
   plugins: [
     new HtmlWebpackPlugin({
+      filename: 'index.html',
       template: 'index.html',
+      chunks: ['main']
+    }),
+    new HtmlWebpackPlugin({
+      filename: 'authenticate.html',
+      template: 'authenticate.html',
+      chunks: ['authenticate']
     }),
   ],
   module: {
