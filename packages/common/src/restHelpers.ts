@@ -63,8 +63,8 @@ import {
   UserSession
 } from "./interfaces";
 import { createZip } from "./libConnectors";
-import { getItemBase, getItemDataAsJson, getUser } from "./restHelpersGet";
-import { IUser, IUserSessionOptions } from "@esri/arcgis-rest-auth";
+import { getItemBase, getItemDataAsJson } from "./restHelpersGet";
+import { IUserSessionOptions } from "@esri/arcgis-rest-auth";
 import {
   addItemData as portalAddItemData,
   addItemRelationship,
@@ -112,6 +112,9 @@ import {
   addToServiceDefinition as svcAdminAddToServiceDefinition,
   createFeatureService as svcAdminCreateFeatureService
 } from "@esri/arcgis-rest-service-admin";
+import {
+  getWorkflowManagerUrlRoot
+} from "./workflowHelpers";
 import {
   getWorkforceDependencies,
   isWorkforceProject,
@@ -1368,21 +1371,25 @@ export function getFeatureServiceProperties(
  *
  * @param itemId Id of the workflow item
  * @param authentication Credentials for the request to AGOL
+ * @param orgId Id of organization whose license is to be checked; only used if `enterpriseWebAdaptorUrl` is falsy
+ * @param workflowManagerUrl URL of the workflow manager portal, e.g., "https://gisserver.domain.com/server"
  * @returns Promise resolving with the workflow configuration in a zip file
  * @throws {WorkflowJsonExceptionDTO} if request to workflow manager fails
  */
 export async function getWorkflowConfigurationZip(
   itemId: string,
-  authentication: UserSession
+  authentication: UserSession,
+  orgId: string | undefined,
+  workflowManagerUrl?: string
 ): Promise<File> {
-  const user: IUser = await getUser(authentication);
-  const exportConfigUrl = `https://workflow.arcgis.com/${user.orgId}/admin/${itemId}/export`;
-  return request(exportConfigUrl, {
+  const workflowUrlRoot = getWorkflowManagerUrlRoot(orgId, workflowManagerUrl);
+  const url = `${workflowUrlRoot}/admin/${itemId}/export`;
+
+  return request(url, {
     authentication,
     headers: {
       Accept: "application/octet-stream",
       Authorization: `Bearer ${authentication.token}`,
-      Host: "workflow.arcgis.com",
       "X-Esri-Authorization": `Bearer ${authentication.token}`
     },
     params: {
@@ -1397,22 +1404,26 @@ export async function getWorkflowConfigurationZip(
  * @param configurationZipFile Configuration files in a zip file
  * @param itemId Id of the workflow item
  * @param authentication Credentials for the request to AGOL
+ * @param orgId Id of organization whose license is to be checked; only used if `enterpriseWebAdaptorUrl` is falsy
+ * @param workflowManagerUrl URL of the workflow manager portal, e.g., "https://gisserver.domain.com/server"
  * @returns Promise resolving with the workflow configuration in a zip file
  * @throws {WorkflowJsonExceptionDTO} if request to workflow manager fails
  */
 export async function setWorkflowConfigurationZip(
   configurationZipFile: File,
   itemId: string,
-  authentication: UserSession
+  authentication: UserSession,
+  orgId: string | undefined,
+  workflowManagerUrl?: string
   ): Promise<IStatusResponse> {
-  const user: IUser = await getUser(authentication);
-  const importConfigUrl = `https://workflow.arcgis.com/${user.orgId}/admin/${itemId}/import`;
-  return request(importConfigUrl, {
+  const workflowUrlRoot = getWorkflowManagerUrlRoot(orgId, workflowManagerUrl);
+  const url = `${workflowUrlRoot}/admin/${itemId}/import`;
+
+  return request(url, {
     authentication,
     headers: {
       Accept: "application/octet-stream",
       Authorization: `Bearer ${authentication.token}`,
-      Host: "workflow.arcgis.com",
       "X-Esri-Authorization": `Bearer ${authentication.token}`
     },
     params: {

@@ -38,12 +38,13 @@ import * as workflowHelpers from "./workflowHelpers";
  * @param authentication Credentials for the request
  * @returns Promise that will resolve with everything known about the item
  */
-export function getCompleteItem(
+export async function getCompleteItem(
   itemId: string,
   authentication: UserSession
 ): Promise<ICompleteItem> {
   let itemBase: any;
   let completeItem: any;
+  const user = await restHelpersGet.getUser(authentication);
 
   return restHelpersGet
     .getItemBase(itemId, authentication)
@@ -111,7 +112,8 @@ export function getCompleteItem(
         // eslint-disable-next-line @typescript-eslint/no-floating-promises
         return restHelpers.getWorkflowConfigurationZip(
           itemBase.id,
-          authentication
+          authentication,
+          user.orgId
         );
 
       } else {

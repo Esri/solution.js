@@ -45,32 +45,14 @@ describe("Module `completeItem`: functions for accessing a complete item", () =>
     it("should get an item", done => {
       const itemId = "abc";
 
-      const baseSpy = spyOn(restHelpersGet, "getItemBase").and.resolveTo(
-        mockItems.getAGOLItem("Web Mapping Application")
-      );
-      const dataSpy = spyOn(restHelpersGet, "getItemDataAsFile").and.resolveTo(
-        mockItems.getAGOLItemData("Web Mapping Application")
-      );
-      const thumbnailSpy = spyOn(
-        restHelpersGet,
-        "getItemThumbnailAsFile"
-      ).and.resolveTo(utils.getSampleImageAsFile());
-      const metadataSpy = spyOn(
-        restHelpersGet,
-        "getItemMetadataAsFile"
-      ).and.resolveTo(utils.getSampleMetadataAsFile());
-      const resourcesSpy = spyOn(
-        restHelpersGet,
-        "getItemResourcesFiles"
-      ).and.resolveTo([] as File[]);
-      const relatedItemsSpy = spyOn(
-        restHelpersGet,
-        "getItemRelatedItemsInSameDirection"
-      ).and.resolveTo([] as interfaces.IRelatedItems[]);
-      const fsPropertiesSpy = spyOn(
-        restHelpers,
-        "getFeatureServiceProperties"
-      ).and.resolveTo({} as interfaces.IFeatureServiceProperties);
+      spyOn(restHelpers, "getFeatureServiceProperties").and.resolveTo({} as interfaces.IFeatureServiceProperties);
+      spyOn(restHelpersGet, "getItemBase").and.resolveTo(mockItems.getAGOLItem("Web Mapping Application"));
+      spyOn(restHelpersGet, "getItemDataAsFile").and.resolveTo(mockItems.getAGOLItemData("Web Mapping Application"));
+      spyOn(restHelpersGet, "getItemMetadataAsFile").and.resolveTo(utils.getSampleMetadataAsFile());
+      spyOn(restHelpersGet, "getItemRelatedItemsInSameDirection").and.resolveTo([] as interfaces.IRelatedItems[]);
+      spyOn(restHelpersGet, "getItemResourcesFiles").and.resolveTo([] as File[]);
+      spyOn(restHelpersGet, "getItemThumbnailAsFile").and.resolveTo(utils.getSampleImageAsFile());
+      spyOn(restHelpersGet, "getUser").and.resolveTo({ orgId: "abcdefghij" } as any);
 
       completeItem
         .getCompleteItem(itemId, MOCK_USER_SESSION)
@@ -94,32 +76,14 @@ describe("Module `completeItem`: functions for accessing a complete item", () =>
     it("should get a feature service item", done => {
       const itemId = "abc";
 
-      const baseSpy = spyOn(restHelpersGet, "getItemBase").and.resolveTo(
-        mockItems.getAGOLItem("Feature Service")
-      );
-      const dataSpy = spyOn(restHelpersGet, "getItemDataAsFile").and.resolveTo(
-        mockItems.getAGOLItemData("Feature Service")
-      );
-      const thumbnailSpy = spyOn(
-        restHelpersGet,
-        "getItemThumbnailAsFile"
-      ).and.resolveTo(utils.getSampleImageAsFile());
-      const metadataSpy = spyOn(
-        restHelpersGet,
-        "getItemMetadataAsFile"
-      ).and.resolveTo(utils.getSampleMetadataAsFile());
-      const resourcesSpy = spyOn(
-        restHelpersGet,
-        "getItemResourcesFiles"
-      ).and.resolveTo([] as File[]);
-      const relatedItemsSpy = spyOn(
-        restHelpersGet,
-        "getItemRelatedItemsInSameDirection"
-      ).and.resolveTo([] as interfaces.IRelatedItems[]);
-      const fsPropertiesSpy = spyOn(
-        restHelpers,
-        "getFeatureServiceProperties"
-      ).and.resolveTo({} as interfaces.IFeatureServiceProperties);
+      spyOn(restHelpers, "getFeatureServiceProperties").and.resolveTo({} as interfaces.IFeatureServiceProperties);
+      spyOn(restHelpersGet, "getItemBase").and.resolveTo(mockItems.getAGOLItem("Feature Service"));
+      spyOn(restHelpersGet, "getItemDataAsFile").and.resolveTo(mockItems.getAGOLItemData("Feature Service"));
+      spyOn(restHelpersGet, "getItemMetadataAsFile").and.resolveTo(utils.getSampleMetadataAsFile());
+      spyOn(restHelpersGet, "getItemRelatedItemsInSameDirection").and.resolveTo([] as interfaces.IRelatedItems[]);
+      spyOn(restHelpersGet, "getItemResourcesFiles").and.resolveTo([] as File[]);
+      spyOn(restHelpersGet, "getItemThumbnailAsFile").and.resolveTo(utils.getSampleImageAsFile());
+      spyOn(restHelpersGet, "getUser").and.resolveTo({ orgId: "abcdefghij" } as any);
 
       completeItem
         .getCompleteItem(itemId, MOCK_USER_SESSION)
@@ -145,36 +109,15 @@ describe("Module `completeItem`: functions for accessing a complete item", () =>
     it("should get a workflow item", done => {
       const itemId = "abc";
 
-      const baseSpy = spyOn(restHelpersGet, "getItemBase").and.resolveTo(
-        mockItems.getAGOLItem("Workflow")
-      );
-      const dataSpy = spyOn(restHelpersGet, "getItemDataAsFile").and.resolveTo(
-        mockItems.getAGOLItemData("Workflow")
-      );
-      const thumbnailSpy = spyOn(
-        restHelpersGet,
-        "getItemThumbnailAsFile"
-      ).and.resolveTo(utils.getSampleImageAsFile());
-      const metadataSpy = spyOn(
-        restHelpersGet,
-        "getItemMetadataAsFile"
-      ).and.resolveTo(utils.getSampleMetadataAsFile());
-      const resourcesSpy = spyOn(
-        restHelpersGet,
-        "getItemResourcesFiles"
-      ).and.resolveTo([] as File[]);
-      const relatedItemsSpy = spyOn(
-        restHelpersGet,
-        "getItemRelatedItemsInSameDirection"
-      ).and.resolveTo([] as interfaces.IRelatedItems[]);
-      const workflowConfigSpy = spyOn(
-        restHelpers,
-        "getWorkflowConfigurationZip"
-      ).and.returnValue(zipUtils.jsonToZipFile("jobConfig.json", {"jobTemplates": "abc" }, "config"));
-      const extractWorkflowSpy = spyOn(
-        workflowHelpers,
-        "extractWorkflowFromZipFile"
-      ).and.resolveTo({ "jobTemplates": "abc" } as any);
+      spyOn(restHelpers, "getWorkflowConfigurationZip").and.returnValue(zipUtils.jsonToZipFile("jobConfig.json", {"jobTemplates": "abc" }, "config"));
+      spyOn(restHelpersGet, "getItemBase").and.resolveTo(mockItems.getAGOLItem("Workflow"));
+      spyOn(restHelpersGet, "getItemDataAsFile").and.resolveTo(mockItems.getAGOLItemData("Workflow"));
+      spyOn(restHelpersGet, "getItemMetadataAsFile").and.resolveTo(utils.getSampleMetadataAsFile());
+      spyOn(restHelpersGet, "getItemRelatedItemsInSameDirection").and.resolveTo([] as interfaces.IRelatedItems[]);
+      spyOn(restHelpersGet, "getItemResourcesFiles").and.resolveTo([] as File[]);
+      spyOn(restHelpersGet, "getItemThumbnailAsFile").and.resolveTo(utils.getSampleImageAsFile());
+      spyOn(restHelpersGet, "getUser").and.resolveTo({ orgId: "abcdefghij" } as any);
+      spyOn(workflowHelpers, "extractWorkflowFromZipFile").and.resolveTo({ "jobTemplates": "abc" } as any);
 
       completeItem
         .getCompleteItem(itemId, MOCK_USER_SESSION)
@@ -198,32 +141,14 @@ describe("Module `completeItem`: functions for accessing a complete item", () =>
     it("should handle failure to get an item", done => {
       const itemId = "abc";
 
-      const baseSpy = spyOn(restHelpersGet, "getItemBase").and.rejectWith(
-        mockItems.get400Failure()
-      );
-      const dataSpy = spyOn(restHelpersGet, "getItemDataAsFile").and.rejectWith(
-        mockItems.get400Failure()
-      );
-      const thumbnailSpy = spyOn(
-        restHelpersGet,
-        "getItemThumbnailAsFile"
-      ).and.resolveTo(mockItems.get400Failure());
-      const metadataSpy = spyOn(
-        restHelpersGet,
-        "getItemMetadataAsFile"
-      ).and.resolveTo(utils.getSampleMetadataAsFile());
-      const resourcesSpy = spyOn(
-        restHelpersGet,
-        "getItemResourcesFiles"
-      ).and.resolveTo([] as File[]);
-      const relatedItemsSpy = spyOn(
-        restHelpersGet,
-        "getItemRelatedItemsInSameDirection"
-      ).and.resolveTo([] as interfaces.IRelatedItems[]);
-      const fsPropertiesSpy = spyOn(
-        restHelpers,
-        "getFeatureServiceProperties"
-      ).and.resolveTo({} as interfaces.IFeatureServiceProperties);
+      spyOn(restHelpers, "getFeatureServiceProperties").and.resolveTo({} as interfaces.IFeatureServiceProperties);
+      spyOn(restHelpersGet, "getItemBase").and.rejectWith(mockItems.get400Failure());
+      spyOn(restHelpersGet, "getItemDataAsFile").and.rejectWith(mockItems.get400Failure());
+      spyOn(restHelpersGet, "getItemMetadataAsFile").and.resolveTo(utils.getSampleMetadataAsFile());
+      spyOn(restHelpersGet, "getItemRelatedItemsInSameDirection").and.resolveTo([] as interfaces.IRelatedItems[]);
+      spyOn(restHelpersGet, "getItemResourcesFiles").and.resolveTo([] as File[]);
+      spyOn(restHelpersGet, "getItemThumbnailAsFile").and.resolveTo(mockItems.get400Failure());
+      spyOn(restHelpersGet, "getUser").and.resolveTo({ orgId: "abcdefghij" } as any);
 
       completeItem.getCompleteItem(itemId, MOCK_USER_SESSION).then(
         () => done.fail(),
