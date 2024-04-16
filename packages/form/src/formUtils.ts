@@ -33,6 +33,13 @@ export async function swizzleFormObject(
   // Get the contents of the zip object
   const zipObjectContents = await common.getZipObjectContents(zipObject);
 
+  // Set the file dates to be a day in the past offset for time zone to get around S123 bug with dates during unzipping
+  let now = new Date();
+  now = new Date(now.valueOf()
+    - 86400000  // back up 1 day in milliseconds
+    - now.getTimezoneOffset() * 1000 * 60  // back up the time zone offset in milliseconds
+  );
+
   // Swizzle the contents of each file in a zip file and replace them in the zip object
   //const zipObjectUpdatePromises: Array<Promise<common.IZipObjectContentItem>> = [];
   zipObjectContents.forEach(
@@ -43,14 +50,14 @@ export async function swizzleFormObject(
         const updatedZipContent = _updateZipObjectTextContent(zipFileItem, templateDictionary);
 
         // Replace the file content in the zip object
-        zipObject.file(zipFileItem.file, updatedZipContent);
+        zipObject.file(zipFileItem.file, updatedZipContent, { date: now });
 
-      /*} else {
-        // Only update XLSX binary files
+      } else {
+        // Update XLSX binary files' timestamp to match the other files
         if (zipFileItem.file.endsWith(".xlsx")) {
-          zipObjectUpdatePromises.push(_updateZipObjectBinaryContent(zipFileItem, templateDictionary));
+          zipObject.file(zipFileItem.file, zipFileItem.content, { date: now });
+          //zipObjectUpdatePromises.push(_updateZipObjectBinaryContent(zipFileItem, templateDictionary));
         }
-      */
       }
     }
   );

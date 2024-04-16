@@ -82,7 +82,9 @@ export async function getZipObjectContents(
     }
   );
   await Promise.all(fileContentsRetrievalPromises);
-  return extractedZipFiles;
+
+  // Sort the files by name because the order of the files in the zip object is not guaranteed
+  return extractedZipFiles.sort((a, b) => a.file.localeCompare(b.file));
 }
 
 /**

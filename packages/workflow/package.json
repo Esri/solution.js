@@ -1,6 +1,6 @@
 {
   "name": "@esri/solution-workflow",
-  "version": "5.2.10",
+  "version": "5.2.11",
   "description": "Manages the creation and deployment of Workflow item types for @esri/solution.js.",
   "main": "dist/cjs/index.js",
   "module": "dist/esm/index.js",
@@ -19,7 +19,7 @@
   ],
   "devDependencies": {
     "@esri/arcgis-rest-auth": "^3.7.0",
-    "@esri/solution-common": "^5.2.10",
+    "@esri/solution-common": "^5.2.11",
     "@types/jasmine": "^5.1.4",
     "fetch-mock": "^7.7.3",
     "jasmine": "^5.1.0",
@@ -66,5 +66,5 @@
     "esri",
     "ES6"
   ],
-  "gitHead": "5ad94c5c39559c3399cc7c42ba1b0075ec618bf4"
+  "gitHead": "b18da792b764d1a13133e9d787a4f7e64618d12a"
 }
