@@ -20,13 +20,12 @@ import * as auth from "@esri/arcgis-rest-auth";
 
 const match = window.location.href.match(
   /&state=([^&]+)/
-);
-const clientId = match[1] || "";
-let session;
+) || [""];
+const clientId = match[1];
 
 function processAuthentication() {
   window.location.href = './';
-  session = auth.UserSession.completeOAuth2({
+  const session = auth.UserSession.completeOAuth2({
     clientId,
     redirectUri: window.location.href
   });
