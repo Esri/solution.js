@@ -1,3 +1,4 @@
+const CopyPlugin = require('copy-webpack-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const path = require('path');
 
@@ -12,6 +13,13 @@ const config = {
     new HtmlWebpackPlugin({
       template: 'index.html',
     }),
+    new CopyPlugin({
+     patterns: [
+       {
+         from: 'authenticate.html'
+       }
+     ]
+   }),
   ],
   module: {
     rules: [{
