@@ -74,19 +74,19 @@ describe("Module `workflowHelpers`", () => {
 
     it("handles Enterprise authorized", async () => {
       const orgId = "abcdef";
-      const workflowManagerUrl = "https://myserver.mycompany.com/webadaptor";
+      const enterpriseWebAdaptorUrl = "https://myserver.mycompany.com/webadaptor";
       spyOn(request, "request").and.resolveTo({ hasAdvancedLicense: true });
 
-      const isAuthorized = await workflowHelpers.getWorkflowManagerAuthorized(orgId, MOCK_USER_SESSION, workflowManagerUrl);
+      const isAuthorized = await workflowHelpers.getWorkflowManagerAuthorized(orgId, MOCK_USER_SESSION, enterpriseWebAdaptorUrl);
       expect(isAuthorized).toBeTrue();
     });
 
     it("handles Enterprise unauthorized", async () => {
       const orgId = "abcdef";
-      const workflowManagerUrl = "https://myserver.mycompany.com/webadaptor";
+      const enterpriseWebAdaptorUrl = "https://myserver.mycompany.com/webadaptor";
       spyOn(request, "request").and.resolveTo({ hasAdvancedLicense: false });
 
-      const isAuthorized = await workflowHelpers.getWorkflowManagerAuthorized(orgId, MOCK_USER_SESSION, workflowManagerUrl);
+      const isAuthorized = await workflowHelpers.getWorkflowManagerAuthorized(orgId, MOCK_USER_SESSION, enterpriseWebAdaptorUrl);
       expect(isAuthorized).toBeFalse();
     });
 
@@ -114,6 +114,29 @@ describe("Module `workflowHelpers`", () => {
 
       const isAuthorized = await workflowHelpers.getWorkflowManagerAuthorized(undefined, undefined);
       expect(isAuthorized).toBeFalse();
+    });
+  });
+
+  describe("getWorkflowManagerUrlRoot", () => {
+    it("handles AGO workflow manager", () => {
+      const orgId = "abcdef";
+      let workflowManagerUrl;
+      const rootUrl = workflowHelpers.getWorkflowManagerUrlRoot(orgId, workflowManagerUrl);
+      expect(rootUrl).toEqual(`https://workflow.arcgis.com/${orgId}`);
+    });
+
+    it("handles Enterprise workflow manager with orgId defined", () => {
+      const orgId = "abcdef";
+      const workflowManagerUrl = "https://myserver.mycompany.com/webadaptor";
+      const rootUrl = workflowHelpers.getWorkflowManagerUrlRoot(orgId, workflowManagerUrl);
+      expect(rootUrl).toEqual("https://myserver.mycompany.com/webadaptor/workflow");
+    });
+
+    it("handles Enterprise workflow manager with orgId undefined", () => {
+      let orgId;
+      const workflowManagerUrl = "https://myserver.mycompany.com/webadaptor";
+      const rootUrl = workflowHelpers.getWorkflowManagerUrlRoot(orgId, workflowManagerUrl);
+      expect(rootUrl).toEqual("https://myserver.mycompany.com/webadaptor/workflow");
     });
   });
 });

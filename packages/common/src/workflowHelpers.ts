@@ -73,9 +73,9 @@ export async function extractWorkflowFromZipFile(
 /**
  * Check the license capability of Workflow Manager Server.
  *
- * @param orgId Id of organization whose license is to be checked
+ * @param orgId Id of organization whose license is to be checked; only used if `enterpriseWebAdaptorUrl` is falsy
  * @param authentication Credentials for the request to AGO
- * @param workflowManagerUrl URL of the enterprise web adaptor, e.g., "https://gisserver.domain.com/server"
+ * @param workflowManagerUrl URL of the workflow manager portal, e.g., "https://gisserver.domain.com/server"
  * @returns Promise resolving with a boolean indicating whether the organization has the license
  * @throws {WorkflowJsonExceptionDTO} if request to workflow manager fails
  */
@@ -84,9 +84,9 @@ export async function getWorkflowManagerAuthorized(
   authentication: interfaces.UserSession | undefined,
   workflowManagerUrl?: string
 ): Promise<boolean> {
-  const url = workflowManagerUrl
-    ? `${workflowManagerUrl}/workflow/${orgId}/checkStatus`
-    : `https://workflow.arcgis.com/${orgId}/checkStatus`;
+  const workflowUrlRoot = getWorkflowManagerUrlRoot(orgId, workflowManagerUrl);
+  const url = `${workflowUrlRoot}/checkStatus`;
+
   const options: request.IRequestOptions = {
     authentication,
     httpMethod: "GET",
@@ -98,4 +98,20 @@ export async function getWorkflowManagerAuthorized(
   const response = await request.request(url, options);
   const isAuthorized = response?.hasAdvancedLicense || false;
   return Promise.resolve(isAuthorized);
+}
+
+/**
+ * Get the root URL for the Workflow Manager application.
+ *
+ * @param orgId Id of organization whose license is to be checked; only used if `enterpriseWebAdaptorUrl` is falsy
+ * @param workflowManagerUrl URL of the workflow manager portal, e.g., "https://gisserver.domain.com/server"
+ * @returns URL for the Workflow Manager application
+ */
+export function getWorkflowManagerUrlRoot(
+  orgId: string | undefined,
+  workflowManagerUrl?: string
+): string {
+  return workflowManagerUrl
+    ? `${workflowManagerUrl}/workflow`
+    : `https://workflow.arcgis.com/${orgId}`;
 }
