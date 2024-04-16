@@ -20,7 +20,6 @@ import { getWithDefault } from "@esri/hub-common";
 import * as portal from "@esri/arcgis-rest-portal";
 import { postProcess } from "./helpers/post-process";
 import { sortTemplates } from "./helpers/sortTemplates";
-import { setCreateProp } from "@esri/solution-common";
 
 // NOTE: Moved to separate file to allow stubbing in main deploySolution tests
 
@@ -185,7 +184,7 @@ export function deploySolutionFromTemplate(
         // this will affect how we handle group sharing
         /* istanbul ignore else */
         if (templateDictionary.locationTrackingEnabled) {
-          setCreateProp(
+          common.setCreateProp(
             templateDictionary,
             "locationTracking.userIsOwner",
             trackingOwnerResponse

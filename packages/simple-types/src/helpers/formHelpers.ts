@@ -20,7 +20,7 @@ import JSZip from "jszip";
 // ------------------------------------------------------------------------------------------------------------------ //
 
 /**
- * Templatizes the URLs in webhooks in a form's zip object.
+ * Templatizes the URLs in webhooks in a form's zip object. Assumes ArcGIS Online.
  *
  * @param zipObject Form zip object to templatize; it is modified in place
  * @param sourceOrgUrl URL of the source organization,  e.g., "https://myorg.maps.arcgis.com"
