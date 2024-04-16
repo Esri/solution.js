@@ -33,7 +33,6 @@
     "@esri/solution-viewer": "file:../../packages/viewer/dist",
     "@esri/solution-web-experience": "file:../../packages/web-experience/dist",
     "@esri/solution-workflow": "file:../../packages/workflow/dist",
-    "copy-webpack-plugin": "^12.0.2",
     "css-loader": "^6.9.0",
     "html-webpack-plugin": "^5.5.1",
     "postcss": "^8.4.33",
