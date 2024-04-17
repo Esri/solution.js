@@ -84,20 +84,25 @@ export async function getWorkflowManagerAuthorized(
   authentication: interfaces.UserSession | undefined,
   server?: string
 ): Promise<boolean> {
-  const workflowUrlRoot = getWorkflowManagerUrlRoot(orgId, server);
-  const url = `${workflowUrlRoot}/checkStatus`;
+  try {
+    const workflowUrlRoot = getWorkflowManagerUrlRoot(orgId, server);
+    const url = `${workflowUrlRoot}/checkStatus`;
 
-  const options: request.IRequestOptions = {
-    authentication,
-    httpMethod: "GET",
-    params: {
-      f: "json"
-    }
-  };
+    const options: request.IRequestOptions = {
+      authentication,
+      httpMethod: "GET",
+      params: {
+        f: "json"
+      }
+    };
 
-  const response = await request.request(url, options);
-  const isAuthorized = response?.hasAdvancedLicense || false;
-  return Promise.resolve(isAuthorized);
+    const response = await request.request(url, options);
+    const isAuthorized = response?.hasAdvancedLicense || false;
+    return Promise.resolve(isAuthorized);
+  } catch (err) {
+    // User is not authorized for Workflow Manager
+    return Promise.resolve(false);
+  }
 }
 
 /**
