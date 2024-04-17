@@ -41,6 +41,7 @@ describe("Module `workflow`", () => {
     it("basically works", async () => {
       const agolItem = mockItems.getAGOLItem("Workflow");
       agolItem.thumbnail = null;
+      const templateDictionary: any = {};
 
       spyOn(common, "getItemRelatedItemsInSameDirection").and.resolveTo([{
         relationshipType: "WMA2JobDependency",
@@ -53,7 +54,8 @@ describe("Module `workflow`", () => {
       spyOn(common, "extractWorkflowFromZipFile")
         .and.resolveTo({ "jobTemplates": "abc" });
 
-      const itemTemplate = await workflow.convertItemToTemplate(agolItem, MOCK_USER_SESSION, MOCK_USER_SESSION);
+      const itemTemplate = await workflow.convertItemToTemplate(
+        agolItem, MOCK_USER_SESSION, MOCK_USER_SESSION, templateDictionary);
 
       expect(itemTemplate?.properties?.configuration?.jobTemplates).toEqual("abc");
     });
@@ -61,6 +63,7 @@ describe("Module `workflow`", () => {
     it("handles case where item has related items", async () => {
       const agolItem = mockItems.getAGOLItem("Workflow");
       agolItem.thumbnail = null;
+      const templateDictionary: any = {};
 
       spyOn(common, "getItemRelatedItemsInSameDirection").and.resolveTo([]);
 
@@ -70,7 +73,8 @@ describe("Module `workflow`", () => {
       spyOn(common, "extractWorkflowFromZipFile")
         .and.resolveTo({ "jobTemplates": "abc" });
 
-      const itemTemplate = await workflow.convertItemToTemplate(agolItem, MOCK_USER_SESSION, MOCK_USER_SESSION);
+      const itemTemplate = await workflow.convertItemToTemplate(
+        agolItem, MOCK_USER_SESSION, MOCK_USER_SESSION, templateDictionary);
 
       expect(itemTemplate?.properties?.configuration?.jobTemplates).toEqual("abc");
     });

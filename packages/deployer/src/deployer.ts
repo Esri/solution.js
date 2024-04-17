@@ -41,7 +41,7 @@ import { IModel } from "@esri/hub-common";
  * @param options Options to override deployed information and to provide additional credentials
  * @returns The id of the created deployed solution item
  */
-export function deploySolution(
+export async function deploySolution(
   maybeModel: string | IModel,
   authentication: common.UserSession,
   options?: common.IDeploySolutionOptions
@@ -60,6 +60,12 @@ export function deploySolution(
   const storageAuthentication: common.UserSession = deployOptions.storageAuthentication
     ? deployOptions.storageAuthentication
     : authentication;
+
+  // Add information needed for workflow manager
+  const user = await common.getUser(authentication);
+  deployOptions.templateDictionary = deployOptions.templateDictionary || {};
+  deployOptions.templateDictionary.orgId = user.orgId;
+  deployOptions.templateDictionary.server = authentication.portal.replace("/sharing/rest", "");
 
   // deal with maybe getting an item or an id
   return getSolutionTemplateItem(maybeModel, storageAuthentication)

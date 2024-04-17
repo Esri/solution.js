@@ -31,13 +31,14 @@ import * as workflowHelpers from "./workflowHelpers";
  * @param itemInfo Info about the item
  * @param destAuthentication Credentials for requests to the destination organization
  * @param srcAuthentication Credentials for requests to source items
- * @param {any} templateDictionary Hash of facts: folder id, org URL, adlib replacements
+ * @param templateDictionary Hash of facts: folder id, org URL, adlib replacements
  * @returns A promise that will resolve when the template has been created
  */
 export async function convertItemToTemplate(
   itemInfo: any,
   destAuthentication: common.UserSession,
-  srcAuthentication: common.UserSession
+  srcAuthentication: common.UserSession,
+  templateDictionary: any
 ): Promise<common.IItemTemplate> {
   // Init template
   const itemTemplate: common.IItemTemplate = common.createInitializedItemTemplate(
@@ -59,10 +60,8 @@ export async function convertItemToTemplate(
   );
 
   // Request its configuration
-  const configPromise = common.getWorkflowConfigurationZip(
-    itemInfo.id,
-    srcAuthentication
-  );
+  const configPromise = common.getWorkflowConfigurationZip(itemInfo.id, srcAuthentication,
+    templateDictionary.orgId, templateDictionary.server);
 
   const [relatedItems, configZip] = await Promise.all([relatedPromise, configPromise]);
 
@@ -133,7 +132,7 @@ export async function createItemFromTemplate(
 
   try {
     const createdWorkflowItemId = await workflowHelpers.addWorkflowItem(
-      newItemTemplate, destinationAuthentication);
+      newItemTemplate, destinationAuthentication, templateDictionary.orgId, templateDictionary.server);
     if (!createdWorkflowItemId) {
       throw new Error("Failed to create workflow item");
     }
@@ -169,7 +168,8 @@ export async function createItemFromTemplate(
 
     // Add the item's configuration properties; throw if the configuration update fails
     const configZipFile = await common.compressWorkflowIntoZipFile(newItemTemplate.properties.configuration);
-    await common.setWorkflowConfigurationZip(configZipFile, createdWorkflowItemId, destinationAuthentication);
+    await common.setWorkflowConfigurationZip(configZipFile, createdWorkflowItemId, destinationAuthentication,
+      templateDictionary.orgId, templateDictionary.server);
 
     // Fetch the auxiliary items
     const itemIds = await workflowHelpers.fetchAuxiliaryItems(createdWorkflowItemId, destinationAuthentication);

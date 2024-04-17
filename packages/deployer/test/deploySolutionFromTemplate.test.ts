@@ -51,7 +51,7 @@ describe("Module `deploySolutionFromTemplate`", () => {
 
   describe("_checkedReplaceAll", () => {
     it("_checkedReplaceAll no template", () => {
-      const template: string = null;
+      const template: string = "";
       const oldValue = "onm";
       const newValue = "ONM";
       const expectedResult = template;
@@ -187,6 +187,29 @@ describe("Module `deploySolutionFromTemplate`", () => {
         .stub(postProcess, "postProcess")
         .resolves();
 
+      sinon
+      .stub(common, "setLocationTrackingEnabled")
+      .callsFake(
+        (
+          portalResponse: any,
+          userResponse: any,
+          templateDictionary: any
+        ) => {
+          templateDictionary.locationTracking = {
+            id: "loc1234567890",
+            url: "https://services.arcgis.com/org1234567890/arcgis/rest/services/LocationTracking/FeatureServer"
+          };
+          templateDictionary.locationTrackingEnabled = true;
+          Promise.resolve()
+        }
+      );
+
+      // Create modified portal response location tracking
+      const portal = testUtils.getPortalsSelfResponse();
+      (portal.helperServices as any).locationTracking = {
+        url: "https://services.arcgis.com/org1234567890/arcgis/rest/services/LocationTracking/FeatureServer"
+      };
+
       fetchMock
         .post("https://utility.arcgisonline.com/arcgis/rest/info", testUtils.getPortalsSelfResponse())
         .get(
@@ -207,6 +230,124 @@ describe("Module `deploySolutionFromTemplate`", () => {
         .get(
           testUtils.PORTAL_SUBSET.restUrl +
             "/community/users/casey?f=json&token=fake-token",
+          testUtils.getSuccessResponse()
+        )
+        .get(
+          testUtils.PORTAL_SUBSET.restUrl +
+            "/content/items/loc1234567890?f=json&token=fake-token",
+          testUtils.getSuccessResponse()
+        )
+        .post(
+          "https://utility.arcgisonline.com/arcgis/rest/services/Geometry/GeometryServer/findTransformations",
+          testUtils.getTransformationsResponse()
+        )
+        .post(
+          testUtils.PORTAL_SUBSET.restUrl + "/content/users/casey/createFolder",
+          testUtils.getCreateFolderResponse(folderId)
+        )
+        .post(
+          "https://utility.arcgisonline.com/arcgis/rest/services/Geometry/GeometryServer/project",
+          testUtils.getProjectResponse()
+        )
+        .post(
+          testUtils.PORTAL_SUBSET.restUrl +
+            "/content/users/casey/" +
+            folderId +
+            "/addItem",
+          testUtils.getSuccessResponse({
+            id: deployedSolutionId,
+            folder: folderId
+          })
+        )
+        .post(
+          testUtils.PORTAL_SUBSET.restUrl +
+            "/content/users/casey/fld1234567890/items/dpl1234567890/update",
+          testUtils.getSuccessResponse({ id: deployedSolutionId })
+        )
+        .post(
+          "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/items/dpl1234567890/protect",
+          { success: true }
+        );
+
+      deploySolutionFromTemplate(
+        templateSolutionId,
+        solutionTemplateBase,
+        solutionTemplateData,
+        authentication,
+        options
+      ).then(
+        () => {
+          const deployFnCall = deployFnStub.getCall(0);
+          expect(deployFnCall.args[0]).toEqual(MOCK_USER_SESSION.portal); // portalSharingUrl
+          expect(deployFnCall.args[3].portal).toEqual(MOCK_USER_SESSION.portal); // storageAuthentication
+          expect(deployFnCall.args[6].portal).toEqual(MOCK_USER_SESSION.portal); // destinationAuthentication
+
+          deployFnStub.restore();
+          postProcessFnStub.restore();
+          done();
+        },
+        () => {
+          deployFnStub.restore();
+          postProcessFnStub.restore();
+          done.fail();
+        }
+      );
+    });
+
+    it("defaults storageAuthentication to authentication with no templateDictionary", done => {
+      const templates: common.IItemTemplate[] = [
+        mockTemplates.getItemTemplate("Web Map")
+      ];
+      const solution: common.ISolutionItem = mockTemplates.getSolutionTemplateItem(
+        templates
+      );
+      const folderId = "fld1234567890";
+      const templateSolutionId: string = "sln1234567890";
+      const solutionTemplateBase: any = solution.item;
+      const solutionTemplateData: any = solution.data;
+      const authentication: common.UserSession = MOCK_USER_SESSION;
+      const options: common.IDeploySolutionOptions = {};
+      const deployedSolutionId = "dpl1234567890";
+
+      const deployFnStub = sinon
+        .stub(deployItems, "deploySolutionItems")
+        .resolves([
+          {
+            id: deployedSolutionId,
+            item: mockTemplates.getItemTemplate("Web Map"),
+            type: "Web Map",
+            postProcess: false
+          }
+        ]);
+      const postProcessFnStub = sinon
+        .stub(postProcess, "postProcess")
+        .resolves();
+
+      fetchMock
+        .post("https://utility.arcgisonline.com/arcgis/rest/info", testUtils.getPortalsSelfResponse())
+        .get(
+          testUtils.PORTAL_SUBSET.restUrl +
+            "/portals/self?f=json&token=fake-token",
+          portalsSelfResponse
+        )
+        .get(
+          testUtils.PORTAL_SUBSET.restUrl +
+            "/community/self?f=json&token=fake-token",
+          communitySelfResponse
+        )
+        .get(
+          testUtils.PORTAL_SUBSET.restUrl +
+            "/content/users/casey?f=json&token=fake-token",
+          testUtils.getSuccessResponse()
+        )
+        .get(
+          testUtils.PORTAL_SUBSET.restUrl +
+            "/community/users/casey?f=json&token=fake-token",
+          testUtils.getSuccessResponse()
+        )
+        .get(
+          testUtils.PORTAL_SUBSET.restUrl +
+            "/content/items/loc1234567890?f=json&token=fake-token",
           testUtils.getSuccessResponse()
         )
         .post(
@@ -343,6 +484,11 @@ describe("Module `deploySolutionFromTemplate`", () => {
         .get(
           testUtils.PORTAL_SUBSET.restUrl +
             "/community/users/casey?f=json&token=fake-token",
+          testUtils.getSuccessResponse()
+        )
+        .get(
+          testUtils.PORTAL_SUBSET.restUrl +
+            "/content/items/loc1234567890?f=json&token=fake-token",
           testUtils.getSuccessResponse()
         )
         .post(

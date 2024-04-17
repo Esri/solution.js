@@ -73,20 +73,20 @@ export async function extractWorkflowFromZipFile(
 /**
  * Check the license capability of Workflow Manager Server.
  *
- * @param orgId Id of organization whose license is to be checked
+ * @param orgId Id of organization whose license is to be checked; only used if `enterpriseWebAdaptorUrl` is falsy
  * @param authentication Credentials for the request to AGO
- * @param enterpriseWebAdaptorUrl URL of the enterprise web adaptor, e.g., "https://gisserver.domain.com/server"
+ * @param server URL of the server, e.g., "https://gisserver.domain.com/server"
  * @returns Promise resolving with a boolean indicating whether the organization has the license
  * @throws {WorkflowJsonExceptionDTO} if request to workflow manager fails
  */
 export async function getWorkflowManagerAuthorized(
   orgId: string | undefined,
   authentication: interfaces.UserSession | undefined,
-  enterpriseWebAdaptorUrl?: string
+  server?: string
 ): Promise<boolean> {
-  const url = enterpriseWebAdaptorUrl
-    ? `${enterpriseWebAdaptorUrl}/workflow/${orgId}/checkStatus`
-    : `https://workflow.arcgis.com/${orgId}/checkStatus`;
+  const workflowUrlRoot = getWorkflowManagerUrlRoot(orgId, server);
+  const url = `${workflowUrlRoot}/checkStatus`;
+
   const options: request.IRequestOptions = {
     authentication,
     httpMethod: "GET",
@@ -98,4 +98,20 @@ export async function getWorkflowManagerAuthorized(
   const response = await request.request(url, options);
   const isAuthorized = response?.hasAdvancedLicense || false;
   return Promise.resolve(isAuthorized);
+}
+
+/**
+ * Get the root URL for the Workflow Manager application.
+ *
+ * @param orgId Id of organization whose license is to be checked; only used if `enterpriseWebAdaptorUrl` is falsy
+ * @param server URL of the server, e.g., "https://gisserver.domain.com/server"
+ * @returns URL for the Workflow Manager application
+ */
+export function getWorkflowManagerUrlRoot(
+  orgId: string | undefined,
+  server?: string
+): string {
+  return server
+    ? `${server}/workflow`
+    : `https://workflow.arcgis.com/${orgId}`;
 }

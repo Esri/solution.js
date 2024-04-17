@@ -409,7 +409,7 @@ describe("Module `deleteSolution`: functions for deleting a deployed Solution it
       deleteSolution
         .deleteSolution(testItem, MOCK_USER_SESSION)
         .then((response: interfaces.ISolutionPrecis[]) => {
-          expect(response).toEqual([undefined, undefined]);
+          expect(response).toEqual([undefined as any, undefined as any]);
           done();
         });
     });
@@ -454,18 +454,9 @@ describe("Module `deleteSolution`: functions for deleting a deployed Solution it
             ]),
             mockItems.getSolutionPrecis()
           ]);
-          expect(unprotectItemSpy.calls.count()).toBe(
-            1,
-            "should unprotect Solution item"
-          );
-          expect(_removeItemSpy.calls.count()).toBe(
-            1,
-            "should remove Solution item"
-          );
-          expect(_deleteSolutionFolderSpy.calls.count()).toBe(
-            1,
-            "should remove Solution folder"
-          );
+          expect(unprotectItemSpy.calls.count()).withContext("should unprotect Solution item").toBe(1);
+          expect(_removeItemSpy.calls.count()).withContext("should remove Solution item").toBe(1);
+          expect(_deleteSolutionFolderSpy.calls.count()).withContext("should remove Solution folder").toBe(1);
           done();
         });
     });
@@ -495,18 +486,9 @@ describe("Module `deleteSolution`: functions for deleting a deployed Solution it
             mockItems.getSolutionPrecis(),
             mockItems.getSolutionPrecis()
           ]);
-          expect(unprotectItemSpy.calls.count()).toBe(
-            1,
-            "should unprotect Solution item"
-          );
-          expect(_removeItemSpy.calls.count()).toBe(
-            1,
-            "should remove Solution item"
-          );
-          expect(_deleteSolutionFolderSpy.calls.count()).toBe(
-            1,
-            "should remove Solution folder"
-          );
+          expect(unprotectItemSpy.calls.count()).withContext("should unprotect Solution item").toBe(1);
+          expect(_removeItemSpy.calls.count()).withContext("should remove Solution item").toBe(1);
+          expect(_deleteSolutionFolderSpy.calls.count()).withContext("should remove Solution folder").toBe(1);
           done();
         });
     });
@@ -561,18 +543,9 @@ describe("Module `deleteSolution`: functions for deleting a deployed Solution it
             ]),
             mockItems.getSolutionPrecis()
           ]);
-          expect(unprotectItemSpy.calls.count()).toBe(
-            1,
-            "should unprotect Solution item"
-          );
-          expect(_removeItemSpy.calls.count()).toBe(
-            1,
-            "should remove Solution item"
-          );
-          expect(_deleteSolutionFolderSpy.calls.count()).toBe(
-            1,
-            "should remove Solution folder"
-          );
+          expect(unprotectItemSpy.calls.count()).withContext("should unprotect Solution item").toBe(1);
+          expect(_removeItemSpy.calls.count()).withContext("should remove Solution item").toBe(1);
+          expect(_deleteSolutionFolderSpy.calls.count()).withContext("should remove Solution folder").toBe(1);
           done();
         });
     });
@@ -617,18 +590,9 @@ describe("Module `deleteSolution`: functions for deleting a deployed Solution it
               mockItems.getAGOLItemPrecis("Web Map")
             ])
           ]);
-          expect(unprotectItemSpy.calls.count()).toBe(
-            0,
-            "should not unprotect Solution item"
-          );
-          expect(_removeItemSpy.calls.count()).toBe(
-            0,
-            "should not remove Solution item"
-          );
-          expect(_deleteSolutionFolderSpy.calls.count()).toBe(
-            0,
-            "should not remove Solution folder"
-          );
+          expect(unprotectItemSpy.calls.count()).withContext("should not unprotect Solution item").toBe(0);
+          expect(_removeItemSpy.calls.count()).withContext("should not remove Solution item").toBe(0);
+          expect(_deleteSolutionFolderSpy.calls.count()).withContext("should not remove Solution folder").toBe(0);
           done();
         });
     });
@@ -673,18 +637,9 @@ describe("Module `deleteSolution`: functions for deleting a deployed Solution it
             ]),
             mockItems.getSolutionPrecis()
           ]);
-          expect(unprotectItemSpy.calls.count()).toBe(
-            1,
-            "should unprotect Solution item"
-          );
-          expect(_removeItemSpy.calls.count()).toBe(
-            0,
-            "should not remove Solution item"
-          );
-          expect(_deleteSolutionFolderSpy.calls.count()).toBe(
-            0,
-            "should not remove Solution folder"
-          );
+          expect(unprotectItemSpy.calls.count()).withContext("should unprotect Solution item").toBe(1);
+          expect(_removeItemSpy.calls.count()).withContext("should not remove Solution item").toBe(0);
+          expect(_deleteSolutionFolderSpy.calls.count()).withContext("should not remove Solution folder").toBe(0);
           done();
         });
     });
@@ -729,18 +684,9 @@ describe("Module `deleteSolution`: functions for deleting a deployed Solution it
             ]),
             mockItems.getSolutionPrecis()
           ]);
-          expect(unprotectItemSpy.calls.count()).toBe(
-            1,
-            "should unprotect Solution item"
-          );
-          expect(_removeItemSpy.calls.count()).toBe(
-            1,
-            "should remove Solution item"
-          );
-          expect(_deleteSolutionFolderSpy.calls.count()).toBe(
-            0,
-            "should not remove Solution folder"
-          );
+          expect(unprotectItemSpy.calls.count()).withContext("should unprotect Solution item").toBe(1);
+          expect(_removeItemSpy.calls.count()).withContext("should remove Solution item").toBe(1);
+          expect(_deleteSolutionFolderSpy.calls.count()).withContext("should not remove Solution folder").toBe(0);
           done();
         });
     });
@@ -785,18 +731,9 @@ describe("Module `deleteSolution`: functions for deleting a deployed Solution it
             ]),
             mockItems.getSolutionPrecis()
           ]);
-          expect(unprotectItemSpy.calls.count()).toBe(
-            1,
-            "should unprotect Solution item"
-          );
-          expect(_removeItemSpy.calls.count()).toBe(
-            1,
-            "should remove Solution item"
-          );
-          expect(_deleteSolutionFolderSpy.calls.count()).toBe(
-            1,
-            "should remove Solution folder"
-          );
+          expect(unprotectItemSpy.calls.count()).withContext("should unprotect Solution item").toBe(1);
+          expect(_removeItemSpy.calls.count()).withContext("should remove Solution item").toBe(1);
+          expect(_deleteSolutionFolderSpy.calls.count()).withContext("should remove Solution folder").toBe(1);
           done();
         });
     });
@@ -1308,10 +1245,7 @@ describe("Module `deleteSolution`: functions for deleting a deployed Solution it
             expect(solutionDeletedSummary.items.length).toEqual(2);
             expect(solutionFailureSummary.items.length).toEqual(0);
 
-            expect(removeItemSpy.calls.count()).toBe(
-              2,
-              "should call removeItem twice"
-            );
+            expect(removeItemSpy.calls.count()).withContext("should call removeItem twice").toBe(2);
             expect(removeItemSpy.calls.argsFor(0)[0]).toEqual(secondItemId);
             expect(removeItemSpy.calls.argsFor(0)[1]).toEqual(
               MOCK_USER_SESSION
@@ -1321,10 +1255,7 @@ describe("Module `deleteSolution`: functions for deleting a deployed Solution it
               MOCK_USER_SESSION
             );
 
-            expect(consoleSpy.calls.count()).toBe(
-              2,
-              "should call console.log twice"
-            );
+            expect(consoleSpy.calls.count()).withContext("should call console.log twice").toBe(2);
             expect(consoleSpy.calls.argsFor(0)[0]).toBe(now);
             expect(consoleSpy.calls.argsFor(0)[1]).toBe(secondItemId);
             expect(consoleSpy.calls.argsFor(0)[2]).toBe("");
@@ -1390,10 +1321,7 @@ describe("Module `deleteSolution`: functions for deleting a deployed Solution it
           (results: interfaces.ISolutionPrecis[]) => {
             const [solutionDeletedSummary, solutionFailureSummary] = results;
 
-            expect(unprotectItemSpy.calls.count()).toBe(
-              2,
-              "should call unprotectItemSpy twice"
-            );
+            expect(unprotectItemSpy.calls.count()).withContext("should call unprotectItemSpy twice").toBe(2);
             expect(unprotectItemSpy.calls.argsFor(0)[0]).toEqual({
               id: secondItemId,
               authentication: MOCK_USER_SESSION
@@ -1403,10 +1331,7 @@ describe("Module `deleteSolution`: functions for deleting a deployed Solution it
               authentication: MOCK_USER_SESSION
             });
 
-            expect(removeItemSpy.calls.count()).toBe(
-              2,
-              "should call removeItem twice"
-            );
+            expect(removeItemSpy.calls.count()).withContext("should call removeItem twice").toBe(2);
             expect(removeItemSpy.calls.argsFor(0)[0]).toEqual(secondItemId);
             expect(removeItemSpy.calls.argsFor(0)[1]).toEqual(
               MOCK_USER_SESSION
@@ -1416,10 +1341,7 @@ describe("Module `deleteSolution`: functions for deleting a deployed Solution it
               MOCK_USER_SESSION
             );
 
-            expect(consoleSpy.calls.count()).toBe(
-              2,
-              "should call console.log twice"
-            );
+            expect(consoleSpy.calls.count()).withContext("should call console.log twice").toBe(2);
 
             expect(consoleSpy.calls.argsFor(0)[0]).toBe(now);
             expect(consoleSpy.calls.argsFor(0)[1]).toBe(secondItemId);
@@ -1493,10 +1415,7 @@ describe("Module `deleteSolution`: functions for deleting a deployed Solution it
             expect(solutionDeletedSummary.items.length).toEqual(1);
             expect(solutionFailureSummary.items.length).toEqual(0);
 
-            expect(unprotectItemSpy.calls.count()).toBe(
-              2,
-              "should call unprotectItemSpy twice"
-            );
+            expect(unprotectItemSpy.calls.count()).withContext("should call unprotectItemSpy twice").toBe(2);
             expect(unprotectItemSpy.calls.argsFor(0)[0]).toEqual({
               id: secondItemId,
               authentication: MOCK_USER_SESSION
@@ -1506,19 +1425,13 @@ describe("Module `deleteSolution`: functions for deleting a deployed Solution it
               authentication: MOCK_USER_SESSION
             });
 
-            expect(removeItemSpy.calls.count()).toBe(
-              1,
-              "should call removeItem once"
-            );
+            expect(removeItemSpy.calls.count()).withContext("should call removeItem once").toBe(1);
             expect(removeItemSpy.calls.argsFor(0)[0]).toEqual(secondItemId);
             expect(removeItemSpy.calls.argsFor(0)[1]).toEqual(
               MOCK_USER_SESSION
             );
 
-            expect(consoleSpy.calls.count()).toBe(
-              2,
-              "should call console.log twice"
-            );
+            expect(consoleSpy.calls.count()).withContext("should call console.log twice").toBe(2);
             expect(consoleSpy.calls.argsFor(0)[0]).toBe(now);
             expect(consoleSpy.calls.argsFor(0)[1]).toBe(secondItemId);
             expect(consoleSpy.calls.argsFor(0)[2]).toBe("");
@@ -1586,10 +1499,7 @@ describe("Module `deleteSolution`: functions for deleting a deployed Solution it
             expect(solutionDeletedSummary.items.length).toEqual(1);
             expect(solutionFailureSummary.items.length).toEqual(0);
 
-            expect(removeItemSpy.calls.count()).toBe(
-              1,
-              "should call removeItem once"
-            );
+            expect(removeItemSpy.calls.count()).withContext("should call removeItem once").toBe(1);
             expect(removeItemSpy.calls.argsFor(0)[0]).toEqual(itemId);
             expect(removeItemSpy.calls.argsFor(0)[1].authentication).toEqual(
               MOCK_USER_SESSION

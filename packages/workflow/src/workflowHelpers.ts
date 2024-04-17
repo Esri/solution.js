@@ -30,31 +30,34 @@ import * as restRequest from "@esri/arcgis-rest-request";
  *
  * @param item Item to add
  * @param authentication Credentials for requests to the workflow manager
+ * @param orgId Id of organization whose license is to be checked; only used if `enterpriseWebAdaptorUrl` is falsy
+ * @param server URL of the server, e.g., "https://gisserver.domain.com/server"
  * @returns Promise resolving with new item's AGO id
  * @throws {WorkflowJsonExceptionDTO} if request to workflow manager fails
  */
 export async function addWorkflowItem(
   item: common.IItemTemplate,
-  authentication: common.UserSession
+  authentication: common.UserSession,
+  orgId: string | undefined,
+  server?: string
 ): Promise<string> {
-  const user = await authentication.getUser({ authentication });
-
   // Add the workflow item
-  const workflowUrl = `https://workflow.arcgis.com/${user.orgId}/admin/createWorkflowItem?name=${item.item.title}`;
-  const requestOptions: restRequest.IRequestOptions = {
+  const workflowUrlRoot = common.getWorkflowManagerUrlRoot(orgId, server);
+  const url = `${workflowUrlRoot}/admin/createWorkflowItem?name=${item.item.title}`;
+
+  const options: restRequest.IRequestOptions = {
     authentication: authentication,
     headers: {
       Accept: "application/json",
       Authorization: `Bearer ${authentication.token}`,
       "Content-Type": "application/json",
-      Host: "workflow.arcgis.com",
       "X-Esri-Authorization": `Bearer ${authentication.token}`
     },
     params: {
       name: `${item.item.title}`
     }
   };
-  const createdWorkflowResponse = await restRequest.request(workflowUrl, requestOptions);
+  const createdWorkflowResponse = await restRequest.request(url, options);
 
   return Promise.resolve(createdWorkflowResponse.itemId);
 }

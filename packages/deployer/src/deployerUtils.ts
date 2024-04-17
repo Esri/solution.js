@@ -26,7 +26,7 @@ import * as common from "@esri/solution-common";
 export function getSolutionTemplateItem(
   idOrObject: any,
   authentication: common.UserSession
-): Promise<any> {
+): Promise<common.ISolutionItem> {
   if (typeof idOrObject === "string") {
     // get the item + data
     return Promise.all([
