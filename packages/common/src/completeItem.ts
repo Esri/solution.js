@@ -31,7 +31,7 @@ import * as workflowHelpers from "./workflowHelpers";
 // ------------------------------------------------------------------------------------------------------------------ //
 
 /**
- * Gets everything about an item. Does not work for Workflow Manager on Enterprise.
+ * Gets everything about an item.
  *
  * @param itemId Id of an item whose information is sought
  * @param authentication Credentials for the request
@@ -101,7 +101,12 @@ export async function getCompleteItem(
 
   } else if (itemBase.type === "Workflow") {
     const user = await restHelpersGet.getUser(authentication);
-    const workflowConfigZip = await restHelpers.getWorkflowConfigurationZip(itemBase.id, authentication, user.orgId);
+    let server;
+    const portal = new URL(authentication.portal);
+    if (!portal.origin.endsWith(".arcgis.com") && !portal.origin.endsWith(".esri.com")) {
+      server = authentication.portal.replace("/sharing/rest", "");
+    }
+    const workflowConfigZip = await restHelpers.getWorkflowConfigurationZip(itemBase.id, authentication, user.orgId, server);
     completeItem.workflowConfiguration = await workflowHelpers.extractWorkflowFromZipFile(workflowConfigZip);
   }
 

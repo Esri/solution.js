@@ -106,10 +106,11 @@ describe("Module `completeItem`: functions for accessing a complete item", () =>
         });
     });
 
-    it("should get a workflow item", done => {
+    it("should get a workflow item on arcgis.com", async () => {
       const itemId = "abc";
+      const config = await zipUtils.jsonToZipFile("jobConfig.json", {"jobTemplates": "abc" }, "config");
 
-      spyOn(restHelpers, "getWorkflowConfigurationZip").and.returnValue(zipUtils.jsonToZipFile("jobConfig.json", {"jobTemplates": "abc" }, "config"));
+      const getConfigSpy = spyOn(restHelpers, "getWorkflowConfigurationZip").and.resolveTo(config);
       spyOn(restHelpersGet, "getItemBase").and.resolveTo(mockItems.getAGOLItem("Workflow"));
       spyOn(restHelpersGet, "getItemDataAsFile").and.resolveTo(mockItems.getAGOLItemData("Workflow"));
       spyOn(restHelpersGet, "getItemMetadataAsFile").and.resolveTo(utils.getSampleMetadataAsFile());
@@ -119,23 +120,84 @@ describe("Module `completeItem`: functions for accessing a complete item", () =>
       spyOn(restHelpersGet, "getUser").and.resolveTo({ orgId: "abcdefghij" } as any);
       spyOn(workflowHelpers, "extractWorkflowFromZipFile").and.resolveTo({ "jobTemplates": "abc" } as any);
 
-      completeItem
-        .getCompleteItem(itemId, MOCK_USER_SESSION)
-        .then((item: interfaces.ICompleteItem) => {
-          // base: IItem; text/plain JSON
-          // data: File; */*
-          // thumbnail: File; image/*
-          // metadata: File; application/xml
-          // resources: File[]; list of */*
-          // fwdRelatedItems: IRelatedItems[]; list of forward relationshipType/relatedItems[] pairs
-          // revRelatedItems: IRelatedItems[]; list of reverse relationshipType/relatedItems[] pairs
-          // featureServiceProperties?: IFeatureServiceProperties (only if item is a feature service)
-          expect(item).not.toBeNull();
-          expect(item.base.id).toEqual("wfw1234567890");
-          expect(item.thumbnail.name).toEqual("sampleImage");
-          expect(item.metadata.name).toEqual("metadata.xml");
-          done();
-        });
+      const item: interfaces.ICompleteItem = await completeItem.getCompleteItem(itemId, MOCK_USER_SESSION);
+      // base: IItem; text/plain JSON
+      // data: File; */*
+      // thumbnail: File; image/*
+      // metadata: File; application/xml
+      // resources: File[]; list of */*
+      // fwdRelatedItems: IRelatedItems[]; list of forward relationshipType/relatedItems[] pairs
+      // revRelatedItems: IRelatedItems[]; list of reverse relationshipType/relatedItems[] pairs
+      // featureServiceProperties?: IFeatureServiceProperties (only if item is a feature service)
+      expect(item).not.toBeNull();
+      expect(item.base.id).toEqual("wfw1234567890");
+      expect(item.thumbnail.name).toEqual("sampleImage");
+      expect(item.metadata.name).toEqual("metadata.xml");
+      expect(getConfigSpy.calls.argsFor(0)[3]).toBeUndefined();
+    });
+
+    it("should get a workflow item on esri.com", async () => {
+      const itemId = "abc";
+      const config = await zipUtils.jsonToZipFile("jobConfig.json", {"jobTemplates": "abc" }, "config");
+
+      const getConfigSpy = spyOn(restHelpers, "getWorkflowConfigurationZip").and.resolveTo(config);
+      spyOn(restHelpersGet, "getItemBase").and.resolveTo(mockItems.getAGOLItem("Workflow"));
+      spyOn(restHelpersGet, "getItemDataAsFile").and.resolveTo(mockItems.getAGOLItemData("Workflow"));
+      spyOn(restHelpersGet, "getItemMetadataAsFile").and.resolveTo(utils.getSampleMetadataAsFile());
+      spyOn(restHelpersGet, "getItemRelatedItemsInSameDirection").and.resolveTo([] as interfaces.IRelatedItems[]);
+      spyOn(restHelpersGet, "getItemResourcesFiles").and.resolveTo([] as File[]);
+      spyOn(restHelpersGet, "getItemThumbnailAsFile").and.resolveTo(utils.getSampleImageAsFile());
+      spyOn(restHelpersGet, "getUser").and.resolveTo({ orgId: "abcdefghij" } as any);
+      spyOn(workflowHelpers, "extractWorkflowFromZipFile").and.resolveTo({ "jobTemplates": "abc" } as any);
+
+      const userSession = utils.createRuntimeMockUserSession(undefined, "https://myorg.maps.esri.com");
+
+      const item: interfaces.ICompleteItem = await completeItem.getCompleteItem(itemId, userSession);
+      // base: IItem; text/plain JSON
+      // data: File; */*
+      // thumbnail: File; image/*
+      // metadata: File; application/xml
+      // resources: File[]; list of */*
+      // fwdRelatedItems: IRelatedItems[]; list of forward relationshipType/relatedItems[] pairs
+      // revRelatedItems: IRelatedItems[]; list of reverse relationshipType/relatedItems[] pairs
+      // featureServiceProperties?: IFeatureServiceProperties (only if item is a feature service)
+      expect(item).not.toBeNull();
+      expect(item.base.id).toEqual("wfw1234567890");
+      expect(item.thumbnail.name).toEqual("sampleImage");
+      expect(item.metadata.name).toEqual("metadata.xml");
+      expect(getConfigSpy.calls.argsFor(0)[3]).toBeUndefined();
+    });
+
+    it("should get a workflow item on Enterprise", async () => {
+      const itemId = "abc";
+      const config = await zipUtils.jsonToZipFile("jobConfig.json", {"jobTemplates": "abc" }, "config");
+
+      const getConfigSpy = spyOn(restHelpers, "getWorkflowConfigurationZip").and.resolveTo(config);
+      spyOn(restHelpersGet, "getItemBase").and.resolveTo(mockItems.getAGOLItem("Workflow"));
+      spyOn(restHelpersGet, "getItemDataAsFile").and.resolveTo(mockItems.getAGOLItemData("Workflow"));
+      spyOn(restHelpersGet, "getItemMetadataAsFile").and.resolveTo(utils.getSampleMetadataAsFile());
+      spyOn(restHelpersGet, "getItemRelatedItemsInSameDirection").and.resolveTo([] as interfaces.IRelatedItems[]);
+      spyOn(restHelpersGet, "getItemResourcesFiles").and.resolveTo([] as File[]);
+      spyOn(restHelpersGet, "getItemThumbnailAsFile").and.resolveTo(utils.getSampleImageAsFile());
+      spyOn(restHelpersGet, "getUser").and.resolveTo({ orgId: "abcdefghij" } as any);
+      spyOn(workflowHelpers, "extractWorkflowFromZipFile").and.resolveTo({ "jobTemplates": "abc" } as any);
+
+      const userSession = utils.createRuntimeMockUserSession(undefined, "https://gisserver.domain.com/server");
+
+      const item: interfaces.ICompleteItem = await completeItem.getCompleteItem(itemId, userSession);
+      // base: IItem; text/plain JSON
+      // data: File; */*
+      // thumbnail: File; image/*
+      // metadata: File; application/xml
+      // resources: File[]; list of */*
+      // fwdRelatedItems: IRelatedItems[]; list of forward relationshipType/relatedItems[] pairs
+      // revRelatedItems: IRelatedItems[]; list of reverse relationshipType/relatedItems[] pairs
+      // featureServiceProperties?: IFeatureServiceProperties (only if item is a feature service)
+      expect(item).not.toBeNull();
+      expect(item.base.id).toEqual("wfw1234567890");
+      expect(item.thumbnail.name).toEqual("sampleImage");
+      expect(item.metadata.name).toEqual("metadata.xml");
+      expect(getConfigSpy.calls.argsFor(0)[3]).toEqual("https://gisserver.domain.com/server");
     });
 
     it("should handle failure to get an item", done => {

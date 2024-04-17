@@ -3065,6 +3065,18 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
       expect(requestSpy.calls.argsFor(0)[0]).toEqual(`https://workflow.arcgis.com/${orgId}/admin/${itemId}/export`);
       expect(response).toEqual(await zipUtils.jsonToZipFile("jobConfig.json", {"jobTemplates": "abc" }, "config"));
     })
+
+    it("can get workflow configuration using supplied server", async () => {
+      const itemId = "1234567890";
+      const requestSpy = spyOn(request, "request")
+        .and.returnValue(zipUtils.jsonToZipFile("jobConfig.json", {"jobTemplates": "abc" }, "config"));
+
+      const response = await restHelpers.getWorkflowConfigurationZip(itemId, MOCK_USER_SESSION, undefined, "https://gisserver.domain.com/server");
+
+      expect(requestSpy.calls.count()).toEqual(1);
+      expect(requestSpy.calls.argsFor(0)[0]).toEqual(`https://gisserver.domain.com/server/workflow/admin/${itemId}/export`);
+      expect(response).toEqual(await zipUtils.jsonToZipFile("jobConfig.json", {"jobTemplates": "abc" }, "config"));
+    })
   });
 
   describe("setWorkflowConfigurationZip", () => {
