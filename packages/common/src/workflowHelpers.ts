@@ -75,16 +75,16 @@ export async function extractWorkflowFromZipFile(
  *
  * @param orgId Id of organization whose license is to be checked; only used if `enterpriseWebAdaptorUrl` is falsy
  * @param authentication Credentials for the request to AGO
- * @param workflowManagerUrl URL of the workflow manager portal, e.g., "https://gisserver.domain.com/server"
+ * @param server URL of the server, e.g., "https://gisserver.domain.com/server"
  * @returns Promise resolving with a boolean indicating whether the organization has the license
  * @throws {WorkflowJsonExceptionDTO} if request to workflow manager fails
  */
 export async function getWorkflowManagerAuthorized(
   orgId: string | undefined,
   authentication: interfaces.UserSession | undefined,
-  workflowManagerUrl?: string
+  server?: string
 ): Promise<boolean> {
-  const workflowUrlRoot = getWorkflowManagerUrlRoot(orgId, workflowManagerUrl);
+  const workflowUrlRoot = getWorkflowManagerUrlRoot(orgId, server);
   const url = `${workflowUrlRoot}/checkStatus`;
 
   const options: request.IRequestOptions = {
@@ -104,14 +104,14 @@ export async function getWorkflowManagerAuthorized(
  * Get the root URL for the Workflow Manager application.
  *
  * @param orgId Id of organization whose license is to be checked; only used if `enterpriseWebAdaptorUrl` is falsy
- * @param workflowManagerUrl URL of the workflow manager portal, e.g., "https://gisserver.domain.com/server"
+ * @param server URL of the server, e.g., "https://gisserver.domain.com/server"
  * @returns URL for the Workflow Manager application
  */
 export function getWorkflowManagerUrlRoot(
   orgId: string | undefined,
-  workflowManagerUrl?: string
+  server?: string
 ): string {
-  return workflowManagerUrl
-    ? `${workflowManagerUrl}/workflow`
+  return server
+    ? `${server}/workflow`
     : `https://workflow.arcgis.com/${orgId}`;
 }

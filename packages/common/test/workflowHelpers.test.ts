@@ -120,22 +120,22 @@ describe("Module `workflowHelpers`", () => {
   describe("getWorkflowManagerUrlRoot", () => {
     it("handles AGO workflow manager", () => {
       const orgId = "abcdef";
-      let workflowManagerUrl;
-      const rootUrl = workflowHelpers.getWorkflowManagerUrlRoot(orgId, workflowManagerUrl);
+      let server;
+      const rootUrl = workflowHelpers.getWorkflowManagerUrlRoot(orgId, server);
       expect(rootUrl).toEqual(`https://workflow.arcgis.com/${orgId}`);
     });
 
     it("handles Enterprise workflow manager with orgId defined", () => {
       const orgId = "abcdef";
-      const workflowManagerUrl = "https://myserver.mycompany.com/webadaptor";
-      const rootUrl = workflowHelpers.getWorkflowManagerUrlRoot(orgId, workflowManagerUrl);
+      const server = "https://myserver.mycompany.com/webadaptor";
+      const rootUrl = workflowHelpers.getWorkflowManagerUrlRoot(orgId, server);
       expect(rootUrl).toEqual("https://myserver.mycompany.com/webadaptor/workflow");
     });
 
     it("handles Enterprise workflow manager with orgId undefined", () => {
       let orgId;
-      const workflowManagerUrl = "https://myserver.mycompany.com/webadaptor";
-      const rootUrl = workflowHelpers.getWorkflowManagerUrlRoot(orgId, workflowManagerUrl);
+      const server = "https://myserver.mycompany.com/webadaptor";
+      const rootUrl = workflowHelpers.getWorkflowManagerUrlRoot(orgId, server);
       expect(rootUrl).toEqual("https://myserver.mycompany.com/webadaptor/workflow");
     });
   });

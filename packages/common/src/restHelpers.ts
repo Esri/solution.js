@@ -1372,7 +1372,7 @@ export function getFeatureServiceProperties(
  * @param itemId Id of the workflow item
  * @param authentication Credentials for the request to AGOL
  * @param orgId Id of organization whose license is to be checked; only used if `enterpriseWebAdaptorUrl` is falsy
- * @param workflowManagerUrl URL of the workflow manager portal, e.g., "https://gisserver.domain.com/server"
+ * @param server URL of the server, e.g., "https://gisserver.domain.com/server"
  * @returns Promise resolving with the workflow configuration in a zip file
  * @throws {WorkflowJsonExceptionDTO} if request to workflow manager fails
  */
@@ -1380,9 +1380,9 @@ export async function getWorkflowConfigurationZip(
   itemId: string,
   authentication: UserSession,
   orgId: string | undefined,
-  workflowManagerUrl?: string
+  server?: string
 ): Promise<File> {
-  const workflowUrlRoot = getWorkflowManagerUrlRoot(orgId, workflowManagerUrl);
+  const workflowUrlRoot = getWorkflowManagerUrlRoot(orgId, server);
   const url = `${workflowUrlRoot}/admin/${itemId}/export`;
 
   return request(url, {
@@ -1405,7 +1405,7 @@ export async function getWorkflowConfigurationZip(
  * @param itemId Id of the workflow item
  * @param authentication Credentials for the request to AGOL
  * @param orgId Id of organization whose license is to be checked; only used if `enterpriseWebAdaptorUrl` is falsy
- * @param workflowManagerUrl URL of the workflow manager portal, e.g., "https://gisserver.domain.com/server"
+ * @param server URL of the server, e.g., "https://gisserver.domain.com/server"
  * @returns Promise resolving with the workflow configuration in a zip file
  * @throws {WorkflowJsonExceptionDTO} if request to workflow manager fails
  */
@@ -1414,9 +1414,9 @@ export async function setWorkflowConfigurationZip(
   itemId: string,
   authentication: UserSession,
   orgId: string | undefined,
-  workflowManagerUrl?: string
+  server?: string
   ): Promise<IStatusResponse> {
-  const workflowUrlRoot = getWorkflowManagerUrlRoot(orgId, workflowManagerUrl);
+  const workflowUrlRoot = getWorkflowManagerUrlRoot(orgId, server);
   const url = `${workflowUrlRoot}/admin/${itemId}/import`;
 
   return request(url, {

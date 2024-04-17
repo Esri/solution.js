@@ -644,8 +644,7 @@ describe("Module `deployer`", () => {
       const options: common.IDeploySolutionOptions = {
         templateDictionary: templateDictionary,
         progressCallback: testUtils.SOLUTION_PROGRESS_CALLBACK,
-        consoleProgress: true,
-        workflowManagerUrl: "https://myorg.com/workflow"
+        consoleProgress: true
       };
       deployer
         .deploySolution(itemInfo.item.id, MOCK_USER_SESSION, options)

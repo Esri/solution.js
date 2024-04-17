@@ -680,11 +680,6 @@ export interface IDeploySolutionOptions {
    * Version of storage read from Solution item. DO NOT USE--it is overwritten by function deploySolutionFromTemplate
    */
   storageVersion?: number;
-
-  /**
-   * URL of Enterprise portal; if falsy, ArcGIS Online is assumed
-   */
-  workflowManagerUrl?: string;
 }
 
 /**
