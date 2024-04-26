@@ -65,7 +65,6 @@ export async function deploySolution(
   const user = await common.getUser(authentication);
   deployOptions.templateDictionary = deployOptions.templateDictionary || {};
   deployOptions.templateDictionary.orgId = user.orgId;
-  deployOptions.templateDictionary.server = authentication.portal.replace("/sharing/rest", "");
 
   // deal with maybe getting an item or an id
   return getSolutionTemplateItem(maybeModel, storageAuthentication)
