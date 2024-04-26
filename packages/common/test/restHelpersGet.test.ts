@@ -19,10 +19,11 @@
  */
 
 import * as generalHelpers from "../src/generalHelpers";
-import * as portal from "@esri/arcgis-rest-portal";
-import * as restHelpersGet from "../src/restHelpersGet";
-import * as restHelpers from "../src/restHelpers";
 import * as interfaces from "../src/interfaces";
+import * as portal from "@esri/arcgis-rest-portal";
+import * as request from "@esri/arcgis-rest-request";
+import * as restHelpers from "../src/restHelpers";
+import * as restHelpersGet from "../src/restHelpersGet";
 
 import * as utils from "./mocks/utils";
 import * as fetchMock from "fetch-mock";
@@ -265,6 +266,85 @@ describe("Module `restHelpersGet`: common REST fetch functions shared across pac
           done();
         }
       );
+    });
+  });
+
+  describe("getEnterpriseServers", () => {
+    it("fetches the servers", async () => {
+      const portalRestUrl = utils.PORTAL_SUBSET.restUrl;
+
+      const serversJSON =
+      {
+        "servers": [
+          {
+            "id": "abc",
+            "name": "serverABC.esri.com:11443",
+            "adminUrl": "https://serverABC.esri.com:11443/arcgis",
+            "url": "https://serverABC.ags.esri.com/gis",
+            "isHosted": false,
+            "serverType": "ARCGIS_NOTEBOOK_SERVER",
+            "serverRole": "FEDERATED_SERVER",
+            "serverFunction": "NotebookServer"
+          },
+          {
+            "id": "def",
+            "name": "serverDEF.ags.esri.com",
+            "adminUrl": "https://serverDEF.ags.esri.com/video",
+            "url": "https://serverDEF.ags.esri.com/video",
+            "isHosted": false,
+            "serverType": "ARCGIS_VIDEO_SERVER",
+            "serverRole": "FEDERATED_SERVER",
+            "serverFunction": "VideoServer"
+          },
+          {
+            "id": "ghi",
+            "name": "serverGHI.esri.com:6443",
+            "adminUrl": "https://serverGHI.esri.com:6443/arcgis",
+            "url": "https://serverGHI.ags.esri.com/server",
+            "isHosted": true,
+            "serverType": "ArcGIS",
+            "serverRole": "HOSTING_SERVER",
+            "serverFunction": "WorkflowManager"
+          }
+        ]
+      }
+      const getServersSpy = spyOn(request, "request").and.resolveTo(serversJSON);
+
+      const actual = await restHelpersGet.getEnterpriseServers(portalRestUrl, MOCK_USER_SESSION);
+
+      expect(getServersSpy.calls.first().args[0]).toEqual(`${portalRestUrl}/portals/self/servers`);
+      expect(actual).toEqual([
+        {
+          "id": "abc",
+          "name": "serverABC.esri.com:11443",
+          "adminUrl": "https://serverABC.esri.com:11443/arcgis",
+          "url": "https://serverABC.ags.esri.com/gis",
+          "isHosted": false,
+          "serverType": "ARCGIS_NOTEBOOK_SERVER",
+          "serverRole": "FEDERATED_SERVER",
+          "serverFunction": "NotebookServer"
+        },
+        {
+          "id": "def",
+          "name": "serverDEF.ags.esri.com",
+          "adminUrl": "https://serverDEF.ags.esri.com/video",
+          "url": "https://serverDEF.ags.esri.com/video",
+          "isHosted": false,
+          "serverType": "ARCGIS_VIDEO_SERVER",
+          "serverRole": "FEDERATED_SERVER",
+          "serverFunction": "VideoServer"
+        },
+        {
+          "id": "ghi",
+          "name": "serverGHI.esri.com:6443",
+          "adminUrl": "https://serverGHI.esri.com:6443/arcgis",
+          "url": "https://serverGHI.ags.esri.com/server",
+          "isHosted": true,
+          "serverType": "ArcGIS",
+          "serverRole": "HOSTING_SERVER",
+          "serverFunction": "WorkflowManager"
+        }
+      ]);
     });
   });
 
