@@ -113,7 +113,7 @@ export async function getWorkflowManagerAuthorized(
  * @param authentication Credentials for the request to AGO
  * @returns URL for the Workflow Manager Enterprise application, or an empty string if Workflow Manager is not enabled
  */
-export async function getWorkflowEnterpriseServer(
+export async function getWorkflowEnterpriseServerURL(
   portalRestUrl: string,
   authentication: interfaces.UserSession
 ): Promise<string> {
