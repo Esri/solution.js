@@ -20,6 +20,7 @@
 
 import * as interfaces from "../src/interfaces";
 import * as utils from "../../common/test/mocks/utils";
+import * as restHelpersGet from "../src/restHelpersGet";
 import * as workflowHelpers from "../src/workflowHelpers";
 import * as request from "@esri/arcgis-rest-request";
 import JSZip from "jszip";
@@ -111,6 +112,82 @@ describe("Module `workflowHelpers`", () => {
 
       const isAuthorized = await workflowHelpers.getWorkflowManagerAuthorized(undefined, undefined);
       expect(isAuthorized).toBeFalse();
+    });
+  });
+
+  describe("getWorkflowEnterpriseServerURL", () => {
+    it("fetches the Workflow Manager URL on Enterprise", async () => {
+      const portalRestUrl = utils.PORTAL_SUBSET.restUrl;
+      const servers = [
+        {
+          "id": "abc",
+          "name": "serverABC.esri.com:11443",
+          "adminUrl": "https://serverABC.esri.com:11443/arcgis",
+          "url": "https://serverABC.ags.esri.com/gis",
+          "isHosted": false,
+          "serverType": "ARCGIS_NOTEBOOK_SERVER",
+          "serverRole": "FEDERATED_SERVER",
+          "serverFunction": "NotebookServer"
+        },
+        {
+          "id": "def",
+          "name": "serverDEF.ags.esri.com",
+          "adminUrl": "https://serverDEF.ags.esri.com/video",
+          "url": "https://serverDEF.ags.esri.com/video",
+          "isHosted": false,
+          "serverType": "ARCGIS_VIDEO_SERVER",
+          "serverRole": "FEDERATED_SERVER",
+          "serverFunction": "VideoServer"
+        },
+        {
+          "id": "ghi",
+          "name": "serverGHI.esri.com:6443",
+          "adminUrl": "https://serverGHI.esri.com:6443/arcgis",
+          "url": "https://serverGHI.ags.esri.com/server",
+          "isHosted": true,
+          "serverType": "ArcGIS",
+          "serverRole": "HOSTING_SERVER",
+          "serverFunction": "WorkflowManager"
+        }
+      ];
+
+      spyOn(restHelpersGet, "getEnterpriseServers").and.resolveTo(servers);
+
+      const actual = await workflowHelpers.getWorkflowEnterpriseServerURL(portalRestUrl, MOCK_USER_SESSION);
+
+      expect(actual).toEqual("https://serverGHI.ags.esri.com/server");
+    });
+
+    it("handles case where the Workflow Manager is not enabled on Enterprise", async () => {
+      const portalRestUrl = utils.PORTAL_SUBSET.restUrl;
+      const servers = [
+        {
+          "id": "abc",
+          "name": "serverABC.esri.com:11443",
+          "adminUrl": "https://serverABC.esri.com:11443/arcgis",
+          "url": "https://serverABC.ags.esri.com/gis",
+          "isHosted": false,
+          "serverType": "ARCGIS_NOTEBOOK_SERVER",
+          "serverRole": "FEDERATED_SERVER",
+          "serverFunction": "NotebookServer"
+        },
+        {
+          "id": "def",
+          "name": "serverDEF.ags.esri.com",
+          "adminUrl": "https://serverDEF.ags.esri.com/video",
+          "url": "https://serverDEF.ags.esri.com/video",
+          "isHosted": false,
+          "serverType": "ARCGIS_VIDEO_SERVER",
+          "serverRole": "FEDERATED_SERVER",
+          "serverFunction": "VideoServer"
+        }
+      ];
+
+      spyOn(restHelpersGet, "getEnterpriseServers").and.resolveTo(servers);
+
+      const actual = await workflowHelpers.getWorkflowEnterpriseServerURL(portalRestUrl, MOCK_USER_SESSION);
+
+      expect(actual).toEqual("");
     });
   });
 

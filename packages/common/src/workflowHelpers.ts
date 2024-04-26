@@ -24,6 +24,7 @@ import * as interfaces from "./interfaces";
 import * as request from "@esri/arcgis-rest-request";
 import * as zipUtils from "./zip-utils";
 import { createMimeTypedFile } from "./resources/copyDataIntoItem";
+import { getEnterpriseServers } from "./restHelpersGet";
 import JSZip from "jszip";
 
 // ------------------------------------------------------------------------------------------------------------------ //
@@ -103,6 +104,30 @@ export async function getWorkflowManagerAuthorized(
     // User is not authorized for Workflow Manager
     return Promise.resolve(false);
   }
+}
+
+/**
+ * Get the URL for the Workflow Manager Enterprise application.
+ *
+ * @param portalRestUrl URL of the portal REST endpoint, e.g., "https://gisserver.domain.com/server/rest/services"
+ * @param authentication Credentials for the request to AGO
+ * @returns URL for the Workflow Manager Enterprise application, or an empty string if Workflow Manager is not enabled
+ */
+export async function getWorkflowEnterpriseServerURL(
+  portalRestUrl: string,
+  authentication: interfaces.UserSession
+): Promise<string> {
+  // Get the servers
+  const servers = await getEnterpriseServers(portalRestUrl, authentication);
+
+  // Find the Workflow Manager server
+  const workflowServer = servers.find(
+    (server: any) => server.serverFunction === "WorkflowManager"
+  );
+  if (!workflowServer) {
+    return "";
+  }
+  return workflowServer.url as string;
 }
 
 /**

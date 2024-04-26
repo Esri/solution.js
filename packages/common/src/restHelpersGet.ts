@@ -187,6 +187,29 @@ export function getBlobCheckForError(
 }
 
 /**
+ * Get the servers available on the Enterprise portal.
+ *
+ * @param portalRestUrl URL of the portal REST endpoint, e.g., "https://gisserver.domain.com/server/rest/services"
+ * @param authentication Credentials for the request to AGO
+ * @returns List of servers available on the portal
+ */
+export async function getEnterpriseServers(
+  portalRestUrl: string,
+  authentication: UserSession
+): Promise<any[]> {
+  // Get the servers
+  const getServersURL = `${portalRestUrl}/portals/self/servers`;
+  const serversJSON = await request(getServersURL, {
+    authentication,
+    httpMethod: "GET",
+    params: {
+      f: "json"
+    }
+  });
+  return serversJSON.servers;
+}
+
+/**
  * Extracts the text in a url between the last forward slash and the beginning of the url's parameters.
  *
  * @param url URL to work with
