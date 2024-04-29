@@ -133,15 +133,16 @@ export async function getWorkflowEnterpriseServerURL(
 /**
  * Get the root URL for the Workflow Manager application.
  *
- * @param orgId Id of organization whose license is to be checked; only used if `enterpriseWebAdaptorUrl` is falsy
+ * @param orgId Id of organization whose license is to be checked; if truthy, the URL will be for AGO;
+ * if falsy, the URL will be for Workflow Manager Enterprise
  * @param server URL of the server, e.g., "https://gisserver.domain.com/server"
  * @returns URL for the Workflow Manager application
  */
 export function getWorkflowManagerUrlRoot(
   orgId: string | undefined,
-  server?: string
+  server: string
 ): string {
-  return server
-    ? `${server}/workflow`
-    : `https://workflow.arcgis.com/${orgId}`;
+  return orgId
+    ? `https://workflow.arcgis.com/${orgId}`
+    : `${server}/workflow`;
 }

@@ -3059,7 +3059,8 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
       const requestSpy = spyOn(request, "request")
         .and.returnValue(zipUtils.jsonToZipFile("jobConfig.json", {"jobTemplates": "abc" }, "config"));
 
-      const response = await restHelpers.getWorkflowConfigurationZip(itemId, MOCK_USER_SESSION, orgId);
+      const response = await restHelpers.getWorkflowConfigurationZip(
+        itemId, MOCK_USER_SESSION, orgId, "https://arcgis.com");
 
       expect(requestSpy.calls.count()).toEqual(1);
       expect(requestSpy.calls.argsFor(0)[0]).toEqual(`https://workflow.arcgis.com/${orgId}/admin/${itemId}/export`);
@@ -3088,7 +3089,8 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
       const requestSpy = spyOn(request, "request")
         .and.resolveTo({ success: true });
 
-      const response = await restHelpers.setWorkflowConfigurationZip(configurationZipFile, itemId, MOCK_USER_SESSION, orgId);
+      const response = await restHelpers.setWorkflowConfigurationZip(
+        configurationZipFile, itemId, MOCK_USER_SESSION, orgId, "https://arcgis.com");
 
       expect(requestSpy.calls.count()).toEqual(1);
       expect(requestSpy.calls.argsFor(0)[0]).toEqual(`https://workflow.arcgis.com/${orgId}/admin/${itemId}/import`);

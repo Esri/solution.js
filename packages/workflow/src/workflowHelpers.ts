@@ -39,7 +39,7 @@ export async function addWorkflowItem(
   item: common.IItemTemplate,
   authentication: common.UserSession,
   orgId: string | undefined,
-  server?: string
+  server: string
 ): Promise<string> {
   // Add the workflow item
   const workflowUrlRoot = common.getWorkflowManagerUrlRoot(orgId, server);

@@ -203,7 +203,7 @@ describe("Module `workflowHelpers`", () => {
       const orgId = "abcdef";
       const server = "https://myserver.mycompany.com/webadaptor";
       const rootUrl = workflowHelpers.getWorkflowManagerUrlRoot(orgId, server);
-      expect(rootUrl).toEqual("https://myserver.mycompany.com/webadaptor/workflow");
+      expect(rootUrl).toEqual(`https://workflow.arcgis.com/${orgId}`);
     });
 
     it("handles Enterprise workflow manager with orgId undefined", () => {

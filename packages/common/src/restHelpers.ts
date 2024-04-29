@@ -1380,7 +1380,7 @@ export async function getWorkflowConfigurationZip(
   itemId: string,
   authentication: UserSession,
   orgId: string | undefined,
-  server?: string
+  server: string
 ): Promise<File> {
   const workflowUrlRoot = getWorkflowManagerUrlRoot(orgId, server);
   const url = `${workflowUrlRoot}/admin/${itemId}/export`;
@@ -1414,7 +1414,7 @@ export async function setWorkflowConfigurationZip(
   itemId: string,
   authentication: UserSession,
   orgId: string | undefined,
-  server?: string
+  server: string
   ): Promise<IStatusResponse> {
   const workflowUrlRoot = getWorkflowManagerUrlRoot(orgId, server);
   const url = `${workflowUrlRoot}/admin/${itemId}/import`;
