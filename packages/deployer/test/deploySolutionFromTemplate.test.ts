@@ -21,6 +21,7 @@ import {
   _checkedReplaceAll,
   _getPortalBaseUrl,
   _getNewItemId,
+  _getWorkflowURL,
   _updateGroupReferences
 } from "../src/deploySolutionFromTemplate";
 import * as common from "@esri/solution-common";
@@ -30,6 +31,7 @@ import * as mockTemplates from "../../common/test/mocks/templates";
 import * as postProcess from "../src/helpers/post-process";
 import * as sinon from "sinon";
 import * as testUtils from "../../common/test/mocks/utils";
+const MOCK_USER_SESSION = testUtils.createRuntimeMockUserSession();
 
 describe("Module `deploySolutionFromTemplate`", () => {
   describe("_getNewItemId", () => {
@@ -711,6 +713,91 @@ describe("Module `deploySolutionFromTemplate`", () => {
           groups: ["xyz", "ghi"]
         }
       ]);
+    });
+  });
+
+  describe("_getWorkflowURL", () => {
+    it("returns a supplied workflow URL unchanged", async () => {
+      const workflowUrl = "https://workflow.myServer.com";
+      const portalResponse = {
+        id: "",
+        isPortal: false,
+        name: "",
+        portalHostname: ""
+      }
+
+      const actual = await _getWorkflowURL(workflowUrl, portalResponse, MOCK_USER_SESSION);
+      expect(actual).toEqual(workflowUrl);
+    });
+
+    it("returns a default AGO workflow URL with no helperServices", async () => {
+      let workflowUrl;
+      const portalResponse = {
+        id: "",
+        isPortal: false,
+        name: "",
+        portalHostname: "www.arcgis.com"
+      }
+      const expectedURL = `https://${portalResponse.portalHostname}`;
+
+      const actual = await _getWorkflowURL(workflowUrl, portalResponse, MOCK_USER_SESSION);
+      expect(actual).toEqual(expectedURL);
+    });
+
+    it("returns a default AGO workflow URL with no workflowManager entry in helperServices", async () => {
+      let workflowUrl;
+      const portalResponse = {
+        helperServices: {},
+        id: "",
+        isPortal: false,
+        name: "",
+        portalHostname: "www.arcgis.com"
+      }
+      const expectedURL = `https://${portalResponse.portalHostname}`;
+
+      const actual = await _getWorkflowURL(workflowUrl, portalResponse, MOCK_USER_SESSION);
+      expect(actual).toEqual(expectedURL);
+    });
+
+    it("returns an AGO workflow URL from the helperServices", async () => {
+      let workflowUrl;
+      const portalResponse = {
+        helperServices: {
+          workflowManager: {
+            url: "https://workflow.myServer.com"
+          }
+        },
+        id: "",
+        isPortal: false,
+        name: "",
+        portalHostname: "www.arcgis.com"
+      }
+      const expectedURL = "https://workflow.myServer.com";
+
+      const actual = await _getWorkflowURL(workflowUrl, portalResponse, MOCK_USER_SESSION);
+      expect(actual).toEqual(expectedURL);
+    });
+
+    it("returns an Enterprise workflow URL", async () => {
+      let workflowUrl;
+      const portalResponse = {
+        helperServices: {
+          workflow: {
+            url: "https://workflow.myServer.com"
+          }
+        },
+        id: "",
+        isPortal: true,
+        name: "",
+        portalHostname: "serverGHI.ags.esri.com/server"
+      }
+      const enterpriseServerSpy = spyOn(common, "getWorkflowEnterpriseServerURL")
+        .and.resolveTo("https://serverGHI.ags.esri.com/server");
+      const expectedURL = "https://serverGHI.ags.esri.com/server";
+
+      const actual = await _getWorkflowURL(workflowUrl, portalResponse, MOCK_USER_SESSION);
+      expect(actual).toEqual(expectedURL);
+      expect(enterpriseServerSpy.calls.argsFor(0)[0]).toEqual("https://serverGHI.ags.esri.com/server/sharing/rest");
     });
   });
 });
