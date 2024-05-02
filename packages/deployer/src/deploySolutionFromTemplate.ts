@@ -23,7 +23,7 @@ import { sortTemplates } from "./helpers/sortTemplates";
 
 // NOTE: Moved to separate file to allow stubbing in main deploySolution tests
 
-export function deploySolutionFromTemplate(
+export async function deploySolutionFromTemplate(
   templateSolutionId: string,
   solutionTemplateBase: any,
   solutionTemplateData: any,
@@ -32,306 +32,297 @@ export function deploySolutionFromTemplate(
 ): Promise<string> {
   options.storageVersion = common.extractSolutionVersion(solutionTemplateData);
 
-  return new Promise((resolve, reject) => {
-    // It is possible to provide a separate authentication for the source
-    const storageAuthentication: common.UserSession = options.storageAuthentication
-      ? options.storageAuthentication
-      : authentication;
+  // It is possible to provide a separate authentication for the source
+  const storageAuthentication: common.UserSession = options.storageAuthentication
+    ? options.storageAuthentication
+    : authentication;
 
-    // Replacement dictionary and high-level deployment ids for cleanup
+  // Replacement dictionary and high-level deployment ids for cleanup
 
-    // TODO: Extract all templateDictionary prep into a separate function
-    const templateDictionary = options.templateDictionary ?? {};
-    let deployedFolderId: string;
-    let deployedSolutionId: string;
+  // TODO: Extract all templateDictionary prep into a separate function
+  const templateDictionary = options.templateDictionary ?? {};
 
-    _applySourceToDeployOptions(
-      options,
-      solutionTemplateBase,
-      templateDictionary,
-      authentication
+  _applySourceToDeployOptions(
+    options,
+    solutionTemplateBase,
+    templateDictionary,
+    authentication
+  );
+
+  if (options.additionalTypeKeywords) {
+    solutionTemplateBase.typeKeywords = [].concat(
+      solutionTemplateBase.typeKeywords,
+      options.additionalTypeKeywords
     );
+  }
 
-    if (options.additionalTypeKeywords) {
-      solutionTemplateBase.typeKeywords = [].concat(
-        solutionTemplateBase.typeKeywords,
-        options.additionalTypeKeywords
+  // Get the thumbnail file
+  let thumbFilename = "thumbnail";
+  let thumbDef = Promise.resolve(null);
+  if (!options.thumbnail && options.thumbnailurl) {
+    // Figure out the thumbnail's filename
+    thumbFilename =
+      common.getFilenameFromUrl(options.thumbnailurl) || thumbFilename;
+    const thumbnailurl = common.appendQueryParam(
+      options.thumbnailurl,
+      "w=400"
+    );
+    delete options.thumbnailurl;
+
+    // Fetch the thumbnail
+    thumbDef = common.getBlobAsFile(
+      thumbnailurl,
+      thumbFilename,
+      storageAuthentication,
+      [400]
+    );
+  }
+
+  _replaceParamVariables(solutionTemplateData, templateDictionary);
+
+  // Get information about deployment environment
+  const environResponses = await Promise.all([
+    common.getPortal("", authentication), // determine if we are deploying to portal
+    common.getUser(authentication), // find out about the user
+    common.getFoldersAndGroups(authentication), // get all folders so that we can create a unique one, and all groups
+    thumbDef
+  ]);
+
+  const [
+    portalResponse,
+    userResponse,
+    foldersAndGroupsResponse,
+    thumbnailFile
+  ] = environResponses;
+  if (!options.thumbnail && thumbnailFile) {
+    options.thumbnail = thumbnailFile;
+  }
+
+  // update template items with source-itemId type keyword
+  solutionTemplateData.templates = _addSourceId(solutionTemplateData.templates);
+
+  templateDictionary.isPortal = portalResponse.isPortal;
+  templateDictionary.organization = Object.assign(
+    templateDictionary.organization || {},
+    portalResponse
+  );
+  // TODO: Add more computed properties here
+  // portal: portalResponse
+  // orgextent as bbox for assignment onto items
+  // more info in #266 https://github.com/Esri/solution.js/issues/266
+
+  templateDictionary.portalBaseUrl = _getPortalBaseUrl(
+    portalResponse,
+    authentication
+  );
+
+  templateDictionary.user = userResponse;
+  templateDictionary.user.folders = foldersAndGroupsResponse.folders;
+  templateDictionary.user.groups = foldersAndGroupsResponse.groups.filter(
+    (group: common.IGroup) =>
+      group.owner === templateDictionary.user.username
+  );
+
+  // Set workflow URL if not supplied
+  templateDictionary.workflowURL = await _getWorkflowURL(templateDictionary.workflowURL, portalResponse, authentication);
+
+  // if we have tracking views and the user is not admin or the org doesn't support tracking an error is thrown
+  common.setLocationTrackingEnabled(
+    portalResponse,
+    userResponse,
+    templateDictionary,
+    solutionTemplateData.templates
+  );
+  const trackingOwnerPromise = common.getTackingServiceOwner(
+    templateDictionary,
+    authentication
+  )
+
+  // Create a folder to hold the deployed solution. We use the solution name, appending a sequential
+  // suffix if the folder exists, e.g.,
+  //  * Manage Right of Way Activities
+  //  * Manage Right of Way Activities 1
+  //  * Manage Right of Way Activities 2
+  const folderPromise = common.createUniqueFolder(
+    solutionTemplateBase.title,
+    templateDictionary,
+    authentication
+  );
+
+  // Apply the portal extents to the solution
+  const portalExtent: any = portalResponse.defaultExtent;
+  const extentsPromise = common.convertExtentWithFallback(
+    portalExtent,
+    undefined,
+    { wkid: 4326 },
+    portalResponse.helperServices.geometry.url,
+    authentication
+  );
+
+  // Await completion of async actions: folder creation & extents conversion
+  const folderExtentsResponses = await Promise.all([folderPromise, extentsPromise, trackingOwnerPromise]);
+  const [folderResponse, wgs84Extent, trackingOwnerResponse] = folderExtentsResponses;
+  const deployedFolderId = folderResponse.folder.id;
+  templateDictionary.folderId = deployedFolderId;
+  templateDictionary.solutionItemExtent =
+    wgs84Extent.xmin +
+    "," +
+    wgs84Extent.ymin +
+    "," +
+    wgs84Extent.xmax +
+    "," +
+    wgs84Extent.ymax;
+  // Hub Solutions depend on organization defaultExtentBBox as a nested array not a string
+  templateDictionary.organization.defaultExtentBBox = [
+    [wgs84Extent.xmin, wgs84Extent.ymin],
+    [wgs84Extent.xmax, wgs84Extent.ymax]
+  ];
+
+  // update templateDictionary to indicate if the user owns the tracking service
+  // this will affect how we handle group sharing
+  /* istanbul ignore else */
+  if (templateDictionary.locationTrackingEnabled) {
+    common.setCreateProp(
+      templateDictionary,
+      "locationTracking.userIsOwner",
+      trackingOwnerResponse
+    );
+  }
+
+  // Create a deployed Solution item
+  const createSolutionItemBase = {
+    ...common.sanitizeJSON(solutionTemplateBase),
+    type: "Solution",
+    typeKeywords: ["Solution"]
+  };
+
+  if (options.additionalTypeKeywords) {
+    createSolutionItemBase.typeKeywords = ["Solution"].concat(
+      options.additionalTypeKeywords
+    );
+  }
+
+  // Create deployed solution item
+  createSolutionItemBase.thumbnail = options.thumbnail;
+  const createSolutionResponse = await common.createItemWithData(
+    createSolutionItemBase,
+    {},
+    authentication,
+    deployedFolderId
+  );
+
+  const deployedSolutionId = createSolutionResponse.id;
+
+  // Protect the solution item
+  const protectOptions: portal.IUserItemOptions = {
+    id: deployedSolutionId,
+    authentication
+  };
+  await portal.protectItem(protectOptions);
+
+  // TODO: Attach the whole solution model so we can
+  // have stuff like `{{solution.item.title}}
+  templateDictionary.solutionItemId = deployedSolutionId;
+  solutionTemplateBase.id = deployedSolutionId;
+
+  solutionTemplateBase.tryitUrl = _checkedReplaceAll(
+    solutionTemplateBase.tryitUrl,
+    templateSolutionId,
+    deployedSolutionId
+  );
+  solutionTemplateBase.url = _checkedReplaceAll(
+    solutionTemplateBase.url,
+    templateSolutionId,
+    deployedSolutionId
+  );
+
+  // Handle the contained item templates
+  const clonedSolutionsResponse: common.ICreateItemFromTemplateResponse[] = await deployItems.deploySolutionItems(
+    storageAuthentication.portal,
+    templateSolutionId,
+    solutionTemplateData.templates,
+    storageAuthentication,
+    templateDictionary,
+    deployedSolutionId,
+    authentication,
+    options
+  );
+
+  solutionTemplateData.templates = solutionTemplateData.templates.map(
+    (itemTemplate: common.IItemTemplate) => {
+      // Update ids present in template dictionary
+      itemTemplate.itemId = common.getProp(
+        templateDictionary,
+        `${itemTemplate.itemId}.itemId`
       );
+
+      // Update the dependencies hash to point to the new item ids
+      itemTemplate.dependencies = itemTemplate.dependencies.map(
+        (id: string) =>
+          getWithDefault(templateDictionary, `${id}.itemId`, id)
+      );
+      return itemTemplate;
     }
+  );
 
-    // Get the thumbnail file
-    let thumbFilename = "thumbnail";
-    let thumbDef = Promise.resolve(null);
-    if (!options.thumbnail && options.thumbnailurl) {
-      // Figure out the thumbnail's filename
-      thumbFilename =
-        common.getFilenameFromUrl(options.thumbnailurl) || thumbFilename;
-      const thumbnailurl = common.appendQueryParam(
-        options.thumbnailurl,
-        "w=400"
-      );
-      delete options.thumbnailurl;
+  // Sort the templates into build order, which is provided by clonedSolutionsResponse
+  sortTemplates(
+    solutionTemplateData.templates,
+    clonedSolutionsResponse.map(response => response.id)
+  );
 
-      // Fetch the thumbnail
-      thumbDef = common.getBlobAsFile(
-        thumbnailurl,
-        thumbFilename,
-        storageAuthentication,
-        [400]
-      );
-    }
+  // Wrap up with post-processing, in which we deal with groups and cycle remnants
+  await postProcess(
+    deployedSolutionId,
+    solutionTemplateData.templates,
+    clonedSolutionsResponse,
+    authentication,
+    templateDictionary
+  );
 
-    _replaceParamVariables(solutionTemplateData, templateDictionary);
+  // Update solution item using internal representation & and the updated data JSON
+  solutionTemplateBase.typeKeywords = [].concat(
+    solutionTemplateBase.typeKeywords,
+    ["Deployed"]
+  );
+  const iTemplateKeyword = solutionTemplateBase.typeKeywords.indexOf(
+    "Template"
+  );
+  /* istanbul ignore else */
+  if (iTemplateKeyword >= 0) {
+    solutionTemplateBase.typeKeywords.splice(iTemplateKeyword, 1);
+  }
 
-    // Get information about deployment environment
-    Promise.all([
-      common.getPortal("", authentication), // determine if we are deploying to portal
-      common.getUser(authentication), // find out about the user
-      common.getFoldersAndGroups(authentication), // get all folders so that we can create a unique one, and all groups
-      thumbDef
-    ])
-      .then(responses => {
-        const [
-          portalResponse,
-          userResponse,
-          foldersAndGroupsResponse,
-          thumbnailFile
-        ] = responses;
-        if (!options.thumbnail && thumbnailFile) {
-          options.thumbnail = thumbnailFile;
-        }
+  solutionTemplateData.templates = solutionTemplateData.templates.map(
+    (itemTemplate: common.IItemTemplate) =>
+      _purgeTemplateProperties(itemTemplate)
+  );
 
-        // update template items with source-itemId type keyword
-        solutionTemplateData.templates = _addSourceId(solutionTemplateData.templates);
+  solutionTemplateData.templates = _updateGroupReferences(
+    solutionTemplateData.templates,
+    templateDictionary
+  );
 
-        templateDictionary.isPortal = portalResponse.isPortal;
-        templateDictionary.organization = Object.assign(
-          templateDictionary.organization || {},
-          portalResponse
-        );
-        // TODO: Add more computed properties here
-        // portal: portalResponse
-        // orgextent as bbox for assignment onto items
-        // more info in #266 https://github.com/Esri/solution.js/issues/266
+  // Update solution items data using template dictionary, and then update the
+  // itemId & dependencies in each item template
+  solutionTemplateBase.data = common.replaceInTemplate(
+    solutionTemplateData,
+    templateDictionary
+  );
 
-        templateDictionary.portalBaseUrl = _getPortalBaseUrl(
-          portalResponse,
-          authentication
-        );
+  // Write any user defined params to the solution
+  /* istanbul ignore else */
+  if (templateDictionary.params) {
+    solutionTemplateBase.data.params = templateDictionary.params;
+  }
 
-        templateDictionary.user = userResponse;
-        templateDictionary.user.folders = foldersAndGroupsResponse.folders;
-        templateDictionary.user.groups = foldersAndGroupsResponse.groups.filter(
-          (group: common.IGroup) =>
-            group.owner === templateDictionary.user.username
-        );
+  await common.updateItem(
+    solutionTemplateBase,
+    authentication,
+    deployedFolderId
+  );
 
-        // if we have tracking views and the user is not admin or the org doesn't support tracking an error is thrown
-        common.setLocationTrackingEnabled(
-          portalResponse,
-          userResponse,
-          templateDictionary,
-          solutionTemplateData.templates
-        );
-        const trackingOwnerPromise = common.getTackingServiceOwner(
-          templateDictionary,
-          authentication
-        )
-
-        // Create a folder to hold the deployed solution. We use the solution name, appending a sequential
-        // suffix if the folder exists, e.g.,
-        //  * Manage Right of Way Activities
-        //  * Manage Right of Way Activities 1
-        //  * Manage Right of Way Activities 2
-        const folderPromise = common.createUniqueFolder(
-          solutionTemplateBase.title,
-          templateDictionary,
-          authentication
-        );
-
-        // Apply the portal extents to the solution
-        const portalExtent: any = portalResponse.defaultExtent;
-        const extentsPromise = common.convertExtentWithFallback(
-          portalExtent,
-          undefined,
-          { wkid: 4326 },
-          portalResponse.helperServices.geometry.url,
-          authentication
-        );
-
-        // Await completion of async actions: folder creation & extents conversion
-        return Promise.all([folderPromise, extentsPromise, trackingOwnerPromise]);
-      })
-      .then(responses => {
-        const [folderResponse, wgs84Extent, trackingOwnerResponse] = responses;
-        deployedFolderId = folderResponse.folder.id;
-        templateDictionary.folderId = deployedFolderId;
-        templateDictionary.solutionItemExtent =
-          wgs84Extent.xmin +
-          "," +
-          wgs84Extent.ymin +
-          "," +
-          wgs84Extent.xmax +
-          "," +
-          wgs84Extent.ymax;
-        // Hub Solutions depend on organization defaultExtentBBox as a nested array not a string
-        templateDictionary.organization.defaultExtentBBox = [
-          [wgs84Extent.xmin, wgs84Extent.ymin],
-          [wgs84Extent.xmax, wgs84Extent.ymax]
-        ];
-
-        // update templateDictionary to indicate if the user owns the tracking service
-        // this will affect how we handle group sharing
-        /* istanbul ignore else */
-        if (templateDictionary.locationTrackingEnabled) {
-          common.setCreateProp(
-            templateDictionary,
-            "locationTracking.userIsOwner",
-            trackingOwnerResponse
-          );
-        }
-
-        // Create a deployed Solution item
-        const createSolutionItemBase = {
-          ...common.sanitizeJSON(solutionTemplateBase),
-          type: "Solution",
-          typeKeywords: ["Solution"]
-        };
-
-        if (options.additionalTypeKeywords) {
-          createSolutionItemBase.typeKeywords = ["Solution"].concat(
-            options.additionalTypeKeywords
-          );
-        }
-
-        // Create deployed solution item
-        createSolutionItemBase.thumbnail = options.thumbnail;
-        return common.createItemWithData(
-          createSolutionItemBase,
-          {},
-          authentication,
-          deployedFolderId
-        );
-      })
-      .then(createSolutionResponse => {
-        deployedSolutionId = createSolutionResponse.id;
-
-        // Protect the solution item
-        const protectOptions: portal.IUserItemOptions = {
-          id: deployedSolutionId,
-          authentication
-        };
-        return portal.protectItem(protectOptions);
-      })
-      .then(() => {
-        // TODO: Attach the whole solution model so we can
-        // have stuff like `{{solution.item.title}}
-        templateDictionary.solutionItemId = deployedSolutionId;
-        solutionTemplateBase.id = deployedSolutionId;
-
-        solutionTemplateBase.tryitUrl = _checkedReplaceAll(
-          solutionTemplateBase.tryitUrl,
-          templateSolutionId,
-          deployedSolutionId
-        );
-        solutionTemplateBase.url = _checkedReplaceAll(
-          solutionTemplateBase.url,
-          templateSolutionId,
-          deployedSolutionId
-        );
-
-        // Handle the contained item templates
-        return deployItems.deploySolutionItems(
-          storageAuthentication.portal,
-          templateSolutionId,
-          solutionTemplateData.templates,
-          storageAuthentication,
-          templateDictionary,
-          deployedSolutionId,
-          authentication,
-          options
-        );
-      })
-      .then(
-        (clonedSolutionsResponse: common.ICreateItemFromTemplateResponse[]) => {
-          solutionTemplateData.templates = solutionTemplateData.templates.map(
-            (itemTemplate: common.IItemTemplate) => {
-              // Update ids present in template dictionary
-              itemTemplate.itemId = common.getProp(
-                templateDictionary,
-                `${itemTemplate.itemId}.itemId`
-              );
-
-              // Update the dependencies hash to point to the new item ids
-              itemTemplate.dependencies = itemTemplate.dependencies.map(
-                (id: string) =>
-                  getWithDefault(templateDictionary, `${id}.itemId`, id)
-              );
-              return itemTemplate;
-            }
-          );
-
-          // Sort the templates into build order, which is provided by clonedSolutionsResponse
-          sortTemplates(
-            solutionTemplateData.templates,
-            clonedSolutionsResponse.map(response => response.id)
-          );
-
-          // Wrap up with post-processing, in which we deal with groups and cycle remnants
-          return postProcess(
-            deployedSolutionId,
-            solutionTemplateData.templates,
-            clonedSolutionsResponse,
-            authentication,
-            templateDictionary
-          );
-        }
-      )
-      .then(() => {
-        // Update solution item using internal representation & and the updated data JSON
-        solutionTemplateBase.typeKeywords = [].concat(
-          solutionTemplateBase.typeKeywords,
-          ["Deployed"]
-        );
-        const iTemplateKeyword = solutionTemplateBase.typeKeywords.indexOf(
-          "Template"
-        );
-        /* istanbul ignore else */
-        if (iTemplateKeyword >= 0) {
-          solutionTemplateBase.typeKeywords.splice(iTemplateKeyword, 1);
-        }
-
-        solutionTemplateData.templates = solutionTemplateData.templates.map(
-          (itemTemplate: common.IItemTemplate) =>
-            _purgeTemplateProperties(itemTemplate)
-        );
-
-        solutionTemplateData.templates = _updateGroupReferences(
-          solutionTemplateData.templates,
-          templateDictionary
-        );
-
-        // Update solution items data using template dictionary, and then update the
-        // itemId & dependencies in each item template
-        solutionTemplateBase.data = common.replaceInTemplate(
-          solutionTemplateData,
-          templateDictionary
-        );
-
-        // Write any user defined params to the solution
-        /* istanbul ignore else */
-        if (templateDictionary.params) {
-          solutionTemplateBase.data.params = templateDictionary.params;
-        }
-
-        return common.updateItem(
-          solutionTemplateBase,
-          authentication,
-          deployedFolderId
-        );
-      })
-      .then(() => resolve(solutionTemplateBase.id), reject);
-  });
+  return solutionTemplateBase.id;
 }
 
 /**
@@ -534,4 +525,32 @@ export function _purgeTemplateProperties(itemTemplate: any): any {
  */
 export function _getNewItemId(id: string, templateDictionary: any): string {
   return common.getProp(templateDictionary, id + ".itemId") ?? id;
+}
+
+/**
+ * Determines the Workflow Manager URL to use for the deployment if not supplied.
+ *
+ * @param workflowURL Existing workflow URL; if supplied, it's simply returned
+ * @param portalResponse Response from portal "self" call
+ * @param authentication Authenticated user session
+ * @returns workflowURL or a URL based on ArcGIS Online or Enterprise
+ */
+export async function _getWorkflowURL(
+  workflowURL: string,
+  portalResponse: common.IPortal,
+  authentication: common.UserSession
+): Promise<string> {
+  if (!workflowURL) {
+    const portalURL = `https://${portalResponse.portalHostname}`;
+    const portalRestURL = `${portalURL}/sharing/rest`;
+
+    if (portalResponse.isPortal) {
+      // Enterprise
+      workflowURL = await common.getWorkflowEnterpriseServerURL(portalRestURL, authentication);
+    } else {
+      // ArcGIS Online
+      workflowURL = portalResponse.helperServices?.workflowManager?.url ?? portalURL;
+    }
+  }
+  return Promise.resolve(workflowURL);
 }

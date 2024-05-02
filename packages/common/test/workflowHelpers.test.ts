@@ -61,7 +61,7 @@ describe("Module `workflowHelpers`", () => {
       const orgId = "abcdef";
       spyOn(request, "request").and.resolveTo({ hasAdvancedLicense: true });
 
-      const isAuthorized = await workflowHelpers.getWorkflowManagerAuthorized(orgId, MOCK_USER_SESSION);
+      const isAuthorized = await workflowHelpers.getWorkflowManagerAuthorized(orgId, "https://workflow.arcgis.com", MOCK_USER_SESSION);
       expect(isAuthorized).toBeTrue();
     });
 
@@ -69,7 +69,7 @@ describe("Module `workflowHelpers`", () => {
       const orgId = "abcdef";
       spyOn(request, "request").and.resolveTo({ hasAdvancedLicense: false });
 
-      const isAuthorized = await workflowHelpers.getWorkflowManagerAuthorized(orgId, MOCK_USER_SESSION);
+      const isAuthorized = await workflowHelpers.getWorkflowManagerAuthorized(orgId, "https://workflow.arcgis.com", MOCK_USER_SESSION);
       expect(isAuthorized).toBeFalse();
     });
 
@@ -78,7 +78,7 @@ describe("Module `workflowHelpers`", () => {
       const enterpriseWebAdaptorUrl = "https://myserver.mycompany.com/webadaptor";
       spyOn(request, "request").and.resolveTo({ hasAdvancedLicense: true });
 
-      const isAuthorized = await workflowHelpers.getWorkflowManagerAuthorized(orgId, MOCK_USER_SESSION, enterpriseWebAdaptorUrl);
+      const isAuthorized = await workflowHelpers.getWorkflowManagerAuthorized(orgId, enterpriseWebAdaptorUrl, MOCK_USER_SESSION);
       expect(isAuthorized).toBeTrue();
     });
 
@@ -87,7 +87,7 @@ describe("Module `workflowHelpers`", () => {
       const enterpriseWebAdaptorUrl = "https://myserver.mycompany.com/webadaptor";
       spyOn(request, "request").and.resolveTo({ hasAdvancedLicense: false });
 
-      const isAuthorized = await workflowHelpers.getWorkflowManagerAuthorized(orgId, MOCK_USER_SESSION, enterpriseWebAdaptorUrl);
+      const isAuthorized = await workflowHelpers.getWorkflowManagerAuthorized(orgId, enterpriseWebAdaptorUrl, MOCK_USER_SESSION);
       expect(isAuthorized).toBeFalse();
     });
 
@@ -95,7 +95,7 @@ describe("Module `workflowHelpers`", () => {
       const orgId = "abcdef";
       spyOn(request, "request").and.throwError("Unauthorized");
 
-      const isAuthorized = await workflowHelpers.getWorkflowManagerAuthorized(orgId, MOCK_USER_SESSION);
+      const isAuthorized = await workflowHelpers.getWorkflowManagerAuthorized(orgId, "https://workflow.arcgis.com", MOCK_USER_SESSION);
       expect(isAuthorized).toBeFalse();
     });
 
@@ -103,14 +103,14 @@ describe("Module `workflowHelpers`", () => {
       const orgId = "abcdef";
       spyOn(request, "request").and.resolveTo(null);
 
-      const isAuthorized = await workflowHelpers.getWorkflowManagerAuthorized(orgId, MOCK_USER_SESSION);
+      const isAuthorized = await workflowHelpers.getWorkflowManagerAuthorized(orgId, "https://workflow.arcgis.com", MOCK_USER_SESSION);
       expect(isAuthorized).toBeFalse();
     });
 
     it("handles undefined args", async () => {
       spyOn(request, "request").and.resolveTo(null);
 
-      const isAuthorized = await workflowHelpers.getWorkflowManagerAuthorized(undefined, undefined);
+      const isAuthorized = await workflowHelpers.getWorkflowManagerAuthorized(undefined, "", undefined);
       expect(isAuthorized).toBeFalse();
     });
   });
@@ -194,22 +194,15 @@ describe("Module `workflowHelpers`", () => {
   describe("getWorkflowManagerUrlRoot", () => {
     it("handles AGO workflow manager", () => {
       const orgId = "abcdef";
-      let server;
-      const rootUrl = workflowHelpers.getWorkflowManagerUrlRoot(orgId, server);
-      expect(rootUrl).toEqual(`https://workflow.arcgis.com/${orgId}`);
-    });
-
-    it("handles Enterprise workflow manager with orgId defined", () => {
-      const orgId = "abcdef";
-      const server = "https://myserver.mycompany.com/webadaptor";
-      const rootUrl = workflowHelpers.getWorkflowManagerUrlRoot(orgId, server);
+      const workflowURL = "https://workflow.arcgis.com";
+      const rootUrl = workflowHelpers.getWorkflowManagerUrlRoot(orgId, workflowURL);
       expect(rootUrl).toEqual(`https://workflow.arcgis.com/${orgId}`);
     });
 
     it("handles Enterprise workflow manager with orgId undefined", () => {
       let orgId;
-      const server = "https://myserver.mycompany.com/webadaptor";
-      const rootUrl = workflowHelpers.getWorkflowManagerUrlRoot(orgId, server);
+      const workflowURL = "https://myserver.mycompany.com/webadaptor";
+      const rootUrl = workflowHelpers.getWorkflowManagerUrlRoot(orgId, workflowURL);
       expect(rootUrl).toEqual("https://myserver.mycompany.com/webadaptor/workflow");
     });
   });
