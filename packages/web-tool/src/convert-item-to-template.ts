@@ -38,16 +38,11 @@ export function convertItemToTemplate(
   srcAuthentication: UserSession,
   templateDictionary: any
 ): Promise<IItemTemplate> {
-  return new Promise<IItemTemplate>((resolve, reject) => {
-    console.log("Web Tool: convertItemToTemplate")
-    resolve(null);
-  });
-
   // Delegate to simple types
-  // return simpleTypes.convertItemToTemplate(
-  //   itemInfo,
-  //   destAuthentication,
-  //   srcAuthentication,
-  //   templateDictionary
-  // );
+  return simpleTypes.convertItemToTemplate(
+    itemInfo,
+    destAuthentication,
+    srcAuthentication,
+    templateDictionary
+  );
 }
