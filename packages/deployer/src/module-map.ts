@@ -28,7 +28,7 @@ import {
 import { StoryMapProcessor } from "@esri/solution-storymap";
 import { VelocityProcessor } from "@esri/solution-velocity";
 import { WebExperienceProcessor } from "@esri/solution-web-experience";
-import * as webtool from "@esri/solution-web-tool";
+import { WebToolProcessor } from "@esri/solution-web-tool";
 import * as workflowProcessor from "@esri/solution-workflow";
 
 export const UNSUPPORTED: moduleHandler = null;
@@ -52,7 +52,7 @@ export const moduleMap: IItemTypeModuleMap = {
   "Geocoding Service": undefined,
   "Geodata Service": undefined,
   "Geometry Service": undefined,
-  "Geoprocessing Service": webtool,
+  "Geoprocessing Service": WebToolProcessor,
   "Globe Service": undefined,
   "Image Service": undefined,
   KML: undefined,

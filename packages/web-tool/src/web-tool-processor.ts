@@ -15,9 +15,9 @@
  */
 
 /**
- * Manages the deployment items from Form templates.
+ * Manages the creation and deployment of web-experience item types.
  *
- * @module create-item-from-template
+ * @module solution-web-tool
  */
 
 import {
@@ -25,7 +25,33 @@ import {
   IItemTemplate,
   IItemProgressCallback,
   ICreateItemFromTemplateResponse
-} from "@esri/solution-common";
+ } from "@esri/solution-common";
+
+import { simpleTypes } from "@esri/solution-simple-types";
+
+/**
+ * Creates a template from a Web Tool Geoprocessing item
+ *
+ * @param {any} itemInfo: The base item info
+ * @param {UserSession} destAuthentication Credentials for requests to the destination organization
+ * @param {UserSession} srcAuthentication Credentials for requests to source items
+ * @param {any} templateDictionary Hash of facts: folder id, org URL, adlib replacements
+ * @returns {Promise<IItemTemplate>}
+ */
+export function convertItemToTemplate(
+  itemInfo: any,
+  destAuthentication: UserSession,
+  srcAuthentication: UserSession,
+  templateDictionary: any
+): Promise<IItemTemplate> {
+  // Delegate to simple types
+  return simpleTypes.convertItemToTemplate(
+    itemInfo,
+    destAuthentication,
+    srcAuthentication,
+    templateDictionary
+  );
+}
 
 /**
  * Creates a Web tool item from a template
@@ -42,7 +68,11 @@ export function createItemFromTemplate(
   destinationAuthentication: UserSession,
   itemProgressCallback: IItemProgressCallback
 ): Promise<ICreateItemFromTemplateResponse> {
-  return new Promise<ICreateItemFromTemplateResponse>((resolve, reject) => {
-    resolve(null);
-  });
+  // Delegate to simple types
+  return simpleTypes.createItemFromTemplate(
+    template,
+    templateDictionary,
+    destinationAuthentication,
+    itemProgressCallback
+  );
 }

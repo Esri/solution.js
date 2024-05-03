@@ -1075,6 +1075,9 @@ export function _createItemFromTemplateWhenReady(
           // Find the conversion handler for this item type
           const templateType = template.type;
           itemHandler = moduleMap[templateType];
+          if (template.type === "Geoprocessing Service") {
+            itemHandler = template.item.typeKeywords.indexOf("Web Tool") > -1 ? itemHandler : UNSUPPORTED;
+          }
           if (!itemHandler || itemHandler === UNSUPPORTED) {
             if (itemHandler === UNSUPPORTED) {
               statusCode = common.EItemProgressStatus.Ignored;
@@ -1152,7 +1155,8 @@ export function _createItemFromTemplateWhenReady(
               templateDictionary.folderId,
               destinationItemId,
               destinationAuthentication,
-              createResponse.item
+              createResponse.item,
+              templateDictionary
             );
           } else {
             return Promise.resolve(null);

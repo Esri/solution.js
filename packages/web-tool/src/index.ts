@@ -15,11 +15,10 @@
  */
 
 /**
- * Manages the creation and deployment of form item types.
+ * Manages the creation and deployment of web tool geoprocessing service item types.
  *
- * @module solution-form
+ * @module solution-web-tool
  */
+import * as WebToolProcessor from "./web-tool-processor";
 
-export * from "./convert-item-to-template";
-export * from "./create-item-from-template";
-export * from "./webtoolUtils";
+export { WebToolProcessor };

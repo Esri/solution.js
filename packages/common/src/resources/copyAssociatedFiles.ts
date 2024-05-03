@@ -133,6 +133,7 @@ export function copyFilesAsResources(
  * @param destinationItemId Id of item to receive copy of resource/metadata/thumbnail
  * @param destinationAuthentication Credentials for the request to the storage
  * @param template Description of item that will receive files
+ * @param templateDictionary Hash of facts: org URL, adlib replacements, deferreds for dependencies
  * @returns A promise which resolves to a list of the result of the copies
  */
 export async function copyAssociatedFilesByType(
@@ -141,7 +142,8 @@ export async function copyAssociatedFilesByType(
   sourceItemId: string,
   destinationItemId: string,
   destinationAuthentication: UserSession,
-  template: any = {}
+  template: any = {},
+  templateDictionary: any
 ): Promise<IAssociatedFileCopyResults[]> {
   return new Promise<IAssociatedFileCopyResults[]>(resolve => {
     let awaitAllItems: Array<Promise<IAssociatedFileCopyResults>> = [];
@@ -191,8 +193,14 @@ export async function copyAssociatedFilesByType(
       if (resourceFileInfos.length > 0) {
         // De-templatize as needed in files before adding them to the zip
         // eslint-disable-next-line @typescript-eslint/no-floating-promises
-        _detemplatizeResources(sourceAuthentication, sourceItemId, template, resourceFileInfos, destinationAuthentication)
-        .then(() => {
+        _detemplatizeResources(
+          sourceAuthentication,
+          sourceItemId,
+          template,
+          resourceFileInfos,
+          destinationAuthentication,
+          templateDictionary
+        ).then(() => {
 
           // Bundle the resources into chunked zip updates because AGO tends to have problems with
           // many updates in a row to the same item: it claims success despite randomly failing.
@@ -315,6 +323,7 @@ export function _copyAssociatedFileZips(
  * @param fileInfos Resources for the item; these resources are modified as needed
  * by removing the templatization: the `url` property is replaced by the `file` property
  * @param destinationAuthentication Credentials for the request to the storage
+ * @param templateDictionary Hash of facts: org URL, adlib replacements, deferreds for dependencies
  *
  * @returns A promise that resolves when all de-templatization has completed
  */
@@ -324,6 +333,7 @@ export function _detemplatizeResources(
   itemTemplate: IItemTemplate,
   fileInfos: IAssociatedFileInfo[],
   destinationAuthentication: UserSession,
+  templateDictionary: any
 ): Promise<void[]> {
   const synchronizePromises: Array<Promise<void>> = [];
 
@@ -360,6 +370,45 @@ export function _detemplatizeResources(
               // Write the changes back into the file
               rootFileResource.file = jsonToFile(updatedFileJson, rootFileResource.filename);
               rootFileResource.url = "";
+
+              resolve(null);
+            });
+          });
+        }));
+      }
+    );
+  } else if (itemTemplate.type === "Geoprocessing Service") {
+    const paths = {};
+    paths[`{{${sourceItemId}.itemId}}`] = itemTemplate.itemId;
+    itemTemplate.dependencies.forEach(id => {
+      paths[`{{${id}.itemId}}`] = templateDictionary[id]?.itemId;
+    });
+
+    fileInfos.forEach(
+      fileResource => {
+        // eslint-disable-next-line @typescript-eslint/no-floating-promises
+        synchronizePromises.push(new Promise(resolve => {
+          // Fetch the file
+          // eslint-disable-next-line @typescript-eslint/no-floating-promises
+          getBlobAsFile(fileResource.url, fileResource.filename, sourceAuthentication).then(
+            (file: any) => {
+
+            // Read the file
+            // eslint-disable-next-line @typescript-eslint/no-floating-promises
+            blobToJson(file)
+            .then(fileJson => {
+              // DeTemplatize by turning JSON into string, replacing paths with new value, and re-JSONing
+              let fileString = JSON.stringify(fileJson);
+              Object.keys(paths).forEach(k => {
+                const replacer = new RegExp(k, "g");
+                fileString = fileString.replace(replacer, paths[k]);
+              });
+
+              const updatedFileJson = JSON.parse(fileString);
+
+              // Write the changes back into the file
+              fileResource.file = jsonToFile(updatedFileJson, fileResource.filename);
+              fileResource.url = "";
 
               resolve(null);
             });
