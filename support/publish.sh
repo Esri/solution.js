@@ -64,6 +64,8 @@ mkdir $TEMP_FOLDER/viewer
 cp -r packages/viewer/dist/esm/* $TEMP_FOLDER/viewer/
 mkdir $TEMP_FOLDER/web-experience
 cp -r packages/web-experience/dist/esm/* $TEMP_FOLDER/web-experience/
+mkdir $TEMP_FOLDER/web-tool
+cp -r packages/web-tool/dist/esm/* $TEMP_FOLDER/web-tool/
 mkdir $TEMP_FOLDER/workflow
 cp -r packages/workflow/dist/esm/* $TEMP_FOLDER/workflow/
 

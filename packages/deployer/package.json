@@ -37,6 +37,7 @@
     "@esri/solution-storymap": "^5.2.14",
     "@esri/solution-velocity": "^5.2.14",
     "@esri/solution-web-experience": "^5.2.14",
+    "@esri/solution-web-tool": "^5.2.14",
     "@esri/solution-workflow": "^5.2.14",
     "@types/jasmine": "^5.1.4",
     "fetch-mock": "^7.7.3",

@@ -60,6 +60,7 @@
     "packages/velocity",
     "packages/viewer",
     "packages/web-experience",
+    "packages/web-tool",
     "packages/workflow"
   ],
   "devDependencies": {
