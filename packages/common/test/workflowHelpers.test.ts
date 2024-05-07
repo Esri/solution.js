@@ -206,6 +206,124 @@ describe("Module `workflowHelpers`", () => {
       expect(rootUrl).toEqual("https://myserver.mycompany.com/webadaptor/workflow");
     });
   });
+
+  describe("getWorkflowURL", () => {
+    it("returns a supplied workflow URL unchanged", async () => {
+      const workflowUrl = "https://workflow.myServer.com";
+      const portalResponse = {
+        id: "",
+        isPortal: false,
+        name: "",
+        portalHostname: ""
+      }
+
+      const actual = await workflowHelpers.getWorkflowURL(workflowUrl, portalResponse, MOCK_USER_SESSION);
+      expect(actual).toEqual(workflowUrl);
+    });
+
+    it("returns a default AGO workflow URL with no helperServices", async () => {
+      let workflowUrl;
+      const portalResponse = {
+        id: "",
+        isPortal: false,
+        name: "",
+        portalHostname: "www.arcgis.com"
+      }
+      const expectedURL = `https://${portalResponse.portalHostname}`;
+
+      const actual = await workflowHelpers.getWorkflowURL(workflowUrl, portalResponse, MOCK_USER_SESSION);
+      expect(actual).toEqual(expectedURL);
+    });
+
+    it("returns a default AGO workflow URL with no workflowManager entry in helperServices", async () => {
+      let workflowUrl;
+      const portalResponse = {
+        helperServices: {},
+        id: "",
+        isPortal: false,
+        name: "",
+        portalHostname: "www.arcgis.com"
+      }
+      const expectedURL = `https://${portalResponse.portalHostname}`;
+
+      const actual = await workflowHelpers.getWorkflowURL(workflowUrl, portalResponse, MOCK_USER_SESSION);
+      expect(actual).toEqual(expectedURL);
+    });
+
+    it("returns an AGO workflow URL from the helperServices", async () => {
+      let workflowUrl;
+      const portalResponse = {
+        helperServices: {
+          workflowManager: {
+            url: "https://workflow.myServer.com"
+          }
+        },
+        id: "",
+        isPortal: false,
+        name: "",
+        portalHostname: "www.arcgis.com"
+      }
+      const expectedURL = "https://workflow.myServer.com";
+
+      const actual = await workflowHelpers.getWorkflowURL(workflowUrl, portalResponse, MOCK_USER_SESSION);
+      expect(actual).toEqual(expectedURL);
+    });
+
+    it("returns an Enterprise workflow URL", async () => {
+      let workflowUrl;
+      const portalResponse = {
+        helperServices: {
+          workflow: {
+            url: "https://workflow.myServer.com"
+          }
+        },
+        id: "",
+        isPortal: true,
+        name: "",
+        portalHostname: "serverGHI.ags.esri.com/server"
+      }
+
+      const serversResponse = [
+        {
+          "id": "abc",
+          "name": "serverABC.esri.com:11443",
+          "adminUrl": "https://serverABC.esri.com:11443/arcgis",
+          "url": "https://serverABC.ags.esri.com/gis",
+          "isHosted": false,
+          "serverType": "ARCGIS_NOTEBOOK_SERVER",
+          "serverRole": "FEDERATED_SERVER",
+          "serverFunction": "NotebookServer"
+        },
+        {
+          "id": "def",
+          "name": "serverDEF.ags.esri.com",
+          "adminUrl": "https://serverDEF.ags.esri.com/video",
+          "url": "https://serverDEF.ags.esri.com/video",
+          "isHosted": false,
+          "serverType": "ARCGIS_VIDEO_SERVER",
+          "serverRole": "FEDERATED_SERVER",
+          "serverFunction": "VideoServer"
+        },
+        {
+          "id": "ghi",
+          "name": "serverGHI.esri.com:6443",
+          "adminUrl": "https://serverGHI.esri.com:6443/arcgis",
+          "url": "https://serverGHI.ags.esri.com/server",
+          "isHosted": true,
+          "serverType": "ArcGIS",
+          "serverRole": "HOSTING_SERVER",
+          "serverFunction": "WorkflowManager"
+        }
+      ];
+
+      const enterpriseServerSpy = spyOn(restHelpersGet, "getEnterpriseServers").and.resolveTo(serversResponse);
+      const expectedURL = "https://serverGHI.ags.esri.com/server";
+
+      const actual = await workflowHelpers.getWorkflowURL(workflowUrl, portalResponse, MOCK_USER_SESSION);
+      expect(actual).toEqual(expectedURL);
+      expect(enterpriseServerSpy.calls.argsFor(0)[0]).toEqual("https://serverGHI.ags.esri.com/server/sharing/rest");
+    });
+  });
 });
 
 // ------------------------------------------------------------------------------------------------------------------ //
