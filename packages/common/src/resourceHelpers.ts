@@ -136,7 +136,7 @@ export function copyFilesFromStorageItem(
   destinationItemId: string,
   destinationAuthentication: UserSession,
   template: any = {},
-  templateDictionary: any
+  templateDictionary: any = {}
 ): Promise<boolean> {
   // TODO: This is only used in deployer, so move there
   // changed to allow the template to be passed in

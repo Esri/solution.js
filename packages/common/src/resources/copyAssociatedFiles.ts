@@ -143,7 +143,7 @@ export async function copyAssociatedFilesByType(
   destinationItemId: string,
   destinationAuthentication: UserSession,
   template: any = {},
-  templateDictionary: any
+  templateDictionary: any = {}
 ): Promise<IAssociatedFileCopyResults[]> {
   return new Promise<IAssociatedFileCopyResults[]>(resolve => {
     let awaitAllItems: Array<Promise<IAssociatedFileCopyResults>> = [];
@@ -333,7 +333,7 @@ export function _detemplatizeResources(
   itemTemplate: IItemTemplate,
   fileInfos: IAssociatedFileInfo[],
   destinationAuthentication: UserSession,
-  templateDictionary: any
+  templateDictionary: any = {}
 ): Promise<void[]> {
   const synchronizePromises: Array<Promise<void>> = [];
 

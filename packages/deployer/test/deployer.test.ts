@@ -476,6 +476,10 @@ describe("Module `deployer`", () => {
         .post(
           "https://survey123.arcgis.com/api/survey/frm1234567891/webhook/add",
           { success: true }
+        )
+        .get(
+          "https://myorg.maps.arcgis.com/sharing/rest/portals/self/urls?f=json&token=fake-token",
+          mockItems.urlsResponse
         );
       spyOn(console, "log").and.callFake(() => {});
 
@@ -1106,6 +1110,10 @@ describe("Module `deployer`", () => {
               id: "a4468da125a64526b359b70d8ba4a9dd"
             }
           })
+        )
+        .get(
+          "https://myorg.maps.arcgis.com/sharing/rest/portals/self/urls?f=json&token=fake-token",
+          mockItems.urlsResponse
         );
 
       deployer.deploySolution(itemInfo.item.id, MOCK_USER_SESSION).then(
@@ -1349,6 +1357,10 @@ describe("Module `deployer`", () => {
         .post(
           "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/items/map1234567890/unprotect",
           { success: true }
+        )
+        .get(
+          "https://myorg.maps.arcgis.com/sharing/rest/portals/self/urls?f=json&token=fake-token",
+          mockItems.urlsResponse
         );
 
       const options: common.IDeploySolutionOptions = {
@@ -1571,6 +1583,10 @@ describe("Module `deployer`", () => {
         .post(
           "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/items/map1234567890/unprotect",
           { success: true }
+        )
+        .get(
+          "https://myorg.maps.arcgis.com/sharing/rest/portals/self/urls?f=json&token=fake-token",
+          mockItems.urlsResponse
         );
 
       const options: common.IDeploySolutionOptions = {
@@ -1874,6 +1890,10 @@ describe("Module `deployer`", () => {
         .post(
           "https://utility.arcgisonline.com/arcgis/rest/info",
           testUtils.UTILITY_SERVER_INFO
+        )
+        .get(
+          "https://myorg.maps.arcgis.com/sharing/rest/portals/self/urls?f=json&token=fake-token",
+          mockItems.urlsResponse
         );
 
       const options: common.IDeploySolutionOptions = {

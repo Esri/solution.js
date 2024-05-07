@@ -28,6 +28,7 @@ import * as common from "@esri/solution-common";
 import * as deployItems from "../src/deploySolutionItems";
 import * as fetchMock from "fetch-mock";
 import * as mockTemplates from "../../common/test/mocks/templates";
+import * as mockItems from "../../common/test/mocks/agolItems";
 import * as postProcess from "../src/helpers/post-process";
 import * as sinon from "sinon";
 import * as testUtils from "../../common/test/mocks/utils";
@@ -269,6 +270,10 @@ describe("Module `deploySolutionFromTemplate`", () => {
         .post(
           "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/items/dpl1234567890/protect",
           { success: true }
+        )
+        .get(
+          "https://myorg.maps.arcgis.com/sharing/rest/portals/self/urls?f=json&token=fake-token",
+          mockItems.urlsResponse
         );
 
       deploySolutionFromTemplate(
@@ -382,6 +387,10 @@ describe("Module `deploySolutionFromTemplate`", () => {
         .post(
           "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/items/dpl1234567890/protect",
           { success: true }
+        )
+        .get(
+          "https://myorg.maps.arcgis.com/sharing/rest/portals/self/urls?f=json&token=fake-token",
+          mockItems.urlsResponse
         );
 
       deploySolutionFromTemplate(
@@ -523,6 +532,10 @@ describe("Module `deploySolutionFromTemplate`", () => {
         .post(
           "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/items/dpl1234567890/protect",
           { success: true }
+        )
+        .get(
+          "https://myorg.maps.arcgis.com/sharing/rest/portals/self/urls?f=json&token=fake-token",
+          mockItems.urlsResponse
         );
 
       deploySolutionFromTemplate(

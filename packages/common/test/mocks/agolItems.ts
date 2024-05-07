@@ -1702,3 +1702,10 @@ export function getAGOLSubscriptionInfo(hasVelocity: boolean): any {
     storageRegion: "us1"
   };
 }
+
+export const urlsResponse = {
+  "urls": {
+    "http": "",
+    "https": ""
+  }
+}
