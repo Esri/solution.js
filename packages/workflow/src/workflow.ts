@@ -44,6 +44,7 @@ export async function convertItemToTemplate(
   const itemTemplate: common.IItemTemplate = common.createInitializedItemTemplate(
     itemInfo
   );
+  itemTemplate.estimatedDeploymentCostFactor = 20;  // creating a workflow item can be really slow
 
   // Templatize item info property values
   itemTemplate.item.id = common.templatizeTerm(
