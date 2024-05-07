@@ -61,11 +61,6 @@ export async function deploySolution(
     ? deployOptions.storageAuthentication
     : authentication;
 
-  // Add information needed for workflow manager
-  const user = await common.getUser(authentication);
-  deployOptions.templateDictionary = deployOptions.templateDictionary || {};
-  deployOptions.templateDictionary.orgId = user.orgId;
-
   // deal with maybe getting an item or an id
   return getSolutionTemplateItem(maybeModel, storageAuthentication)
     .then(model => {

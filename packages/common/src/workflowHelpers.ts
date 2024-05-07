@@ -146,3 +146,31 @@ export function getWorkflowManagerUrlRoot(
     ? `${workflowURL}/${orgId}`
     : `${workflowURL}/workflow`;
 }
+
+/**
+ * Determines the Workflow Manager URL to use for the deployment if not supplied.
+ *
+ * @param workflowURL Existing workflow URL; if supplied, it's simply returned
+ * @param portalResponse Response from portal "self" call
+ * @param authentication Authenticated user session
+ * @returns workflowURL or a URL based on ArcGIS Online or Enterprise
+ */
+export async function getWorkflowURL(
+  workflowURL: string,
+  portalResponse: interfaces.IPortal,
+  authentication: interfaces.UserSession
+): Promise<string> {
+  if (!workflowURL) {
+    const portalURL = `https://${portalResponse.portalHostname}`;
+    const portalRestURL = `${portalURL}/sharing/rest`;
+
+    if (portalResponse.isPortal) {
+      // Enterprise
+      workflowURL = await getWorkflowEnterpriseServerURL(portalRestURL, authentication);
+    } else {
+      // ArcGIS Online
+      workflowURL = portalResponse.helperServices?.workflowManager?.url ?? portalURL;
+    }
+  }
+  return Promise.resolve(workflowURL);
+}
