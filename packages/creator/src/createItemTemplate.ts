@@ -630,6 +630,16 @@ export function _templatizeResources(
           // eslint-disable-next-line @typescript-eslint/no-floating-promises
           blobToJson(rootFileResource.file)
             .then(fileJson => {
+              if (rootFileResource.filename.indexOf("webtoolDefinition") > -1) {
+                const notebookId = fileJson?.jsonProperties?.notebookId;
+                const name = fileJson?.jsonProperties?.tasks[0].name;
+
+                itemTemplate.data = {
+                  name,
+                  notebookId
+                };
+              }
+
               const idTest: RegExp = /[0-9A-F]{32}/gim;
               let dataString = JSON.stringify(fileJson);
               if (fileJson && idTest.test(dataString)) {

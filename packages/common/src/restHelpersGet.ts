@@ -73,6 +73,29 @@ export function getPortal(
   return portalGetPortal(id, requestOptions);
 }
 
+/**
+ * Get the urls available on the portal self.
+ *
+ * @param authentication Credentials for the request to AGO
+ * @returns List of http and https helper urls
+ */
+export function getPortalUrls(
+  authentication: UserSession
+): Promise<IPortal> {
+  return new Promise<any>((resolve, reject) => {
+    const requestOptions = {
+      httpMethod: "GET",
+      authentication: authentication,
+      rawResponse: false
+    } as IRequestOptions;
+
+    const url: string = `${authentication.portal}/portals/self/urls`;
+    request(url, requestOptions).then((response) => {
+      resolve(response);
+    }, e => reject(e))
+  });
+}
+
 export function getUser(authentication: UserSession): Promise<IUser> {
   return authentication.getUser();
 }
