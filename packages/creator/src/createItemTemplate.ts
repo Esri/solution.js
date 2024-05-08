@@ -141,7 +141,11 @@ export function createItemTemplate(
               return;
             }
 
-            const itemHandler = moduleMap[itemType];
+            let itemHandler = moduleMap[itemType];
+            // Only allow processing of Geoprocessing Service if its defined as a Web Tool
+            if (itemType === "Geoprocessing Service") {
+              itemHandler = itemInfo.typeKeywords.indexOf("Web Tool") > -1 ? itemHandler : UNSUPPORTED;
+            }
             if (!itemHandler || itemHandler === UNSUPPORTED) {
               if (itemHandler === UNSUPPORTED) {
                 itemProgressCallback(itemId, EItemProgressStatus.Ignored, 1);
@@ -617,6 +621,50 @@ export function _templatizeResources(
         }));
       }
     );
+  } else if (itemTemplate.type === "Geoprocessing Service") {
+    const rootJsonResources = resourceItemFiles.filter(file => file.filename.indexOf(".json") > -1);
+    rootJsonResources.forEach(
+      rootFileResource => {
+        synchronizePromises.push(new Promise(resolve => {
+          // Read the file
+          // eslint-disable-next-line @typescript-eslint/no-floating-promises
+          blobToJson(rootFileResource.file)
+            .then(fileJson => {
+              if (rootFileResource.filename.indexOf("webtoolDefinition") > -1) {
+                itemTemplate.data = {
+                  name: fileJson.jsonProperties.tasks[0].name,
+                  notebookId: fileJson.jsonProperties.notebookId
+                };
+              }
+
+              const idTest: RegExp = /[0-9A-F]{32}/gim;
+              let dataString = JSON.stringify(fileJson);
+              if (fileJson && idTest.test(dataString)) {
+                const ids: string[] = dataString.match(idTest) as string[];
+                const verifiedIds: string[] = [];
+                ids.forEach(id => {
+                  if (verifiedIds.indexOf(id) === -1) {
+                    verifiedIds.push(id);
+                    // templatize the itemId--but only once per unique id
+                    const regEx = new RegExp(id, "gm");
+                    dataString = dataString.replace(regEx, "{{" + id + ".itemId}}");
+
+                    // update the dependencies
+                    if (itemTemplate.dependencies.indexOf(id) === -1) {
+                      itemTemplate.dependencies.push(id);
+                    }
+                  }
+                });
+              }
+
+              const updatedFileJson = JSON.parse(dataString);
+              rootFileResource.file = jsonToFile(updatedFileJson, rootFileResource.filename);
+              resolve(null);
+            });
+        }));
+      }
+    );
+
   }
 
   return Promise.all(synchronizePromises);

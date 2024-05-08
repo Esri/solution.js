@@ -795,6 +795,32 @@ describe("_detemplatizeResources", () => {
       expect(getBlobAsFileSpy).toHaveBeenCalledTimes(2);
     });
   });
+
+  it("should create IAssociatedFileCopyResults object for Geoprocessing Service", () => {
+    const fileInfos: interfaces.IAssociatedFileInfo[] =
+      templates.getItemTemplateResourcesAsTemplatizedFiles("Geoprocessing Service");
+
+    const getBlobAsFileSpy = spyOn(restHelpersGet, "getBlobAsFile").and.callFake(
+      (url: string, _filename: string, _auth: interfaces.UserSession): Promise<File> => {
+        switch (url) {
+          case "https://www.arcgis.com/sharing/rest/content/items/sln1234567890/resources/gs1234567890/info/webtoolDefinition.json":
+            return Promise.resolve(generalHelpers.jsonToFile(templates.sampleWebToolTemplatizedJson, "webtoolDefinition.json"));
+        }
+        throw new Error("Unexpected file request");
+      }
+    );
+
+    const templateDictionary = {};
+    templateDictionary["aaa637ded3a74a7f9c2325a043f59fb6"] = {
+      itemId: "bbb637ded3a74a7f9c2325a043f59fb6"
+    };
+
+    _detemplatizeResources(MOCK_USER_SESSION, "gs1234567890",
+      templates.getDeployedItemTemplate("gs1234567981", "Geoprocessing Service", ["aaa637ded3a74a7f9c2325a043f59fb6"]),
+      fileInfos, MOCK_USER_SESSION, templateDictionary).then(() => {
+      expect(getBlobAsFileSpy).toHaveBeenCalledTimes(1);
+    });
+  });
 });
 
 // ----- Helper functions for tests --------------------------------------------------------------------------------- //

@@ -27,6 +27,8 @@ import * as templates from "../../common/test/mocks/templates";
 import * as testUtils from "../../common/test/mocks/utils";
 import * as utils from "../../common/test/mocks/utils";
 import * as zipUtilsTest from "../../common/test/zip-utils.test";
+import * as webtool from "@esri/solution-web-tool";
+import * as wt from "../../web-tool/src/web-tool-processor";
 
 // ------------------------------------------------------------------------------------------------------------------ //
 
@@ -1428,6 +1430,57 @@ describe("Module `deploySolutionItems`", () => {
         )
         .then((response: common.ICreateItemFromTemplateResponse) => {
           expect(response).toEqual(templates.getFailedItem(itemTemplate.type));
+          done();
+        });
+    });
+
+    it("skips Geoprocessing Service that is not a Web Tool", done => {
+      const createItemFromTemplateSpy = spyOn(wt, "createItemFromTemplate").and.callThrough();
+      const itemTemplate: common.IItemTemplate = templates.getItemTemplate(
+        "Geoprocessing Service"
+      );
+      itemTemplate.item.thumbnail = null;
+      const resourceFilePaths: common.IDeployFileCopyPath[] = [];
+      const templateDictionary: any = {};
+
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
+      deploySolution
+        ._createItemFromTemplateWhenReady(
+          itemTemplate,
+          resourceFilePaths,
+          MOCK_USER_SESSION,
+          templateDictionary,
+          MOCK_USER_SESSION,
+          utils.ITEM_PROGRESS_CALLBACK
+        )
+        .then(() => {
+          expect(createItemFromTemplateSpy.calls.count()).toBe(0);
+          done();
+        });
+    });
+
+    it("handles Geoprocessing Service that is a Web Tool", done => {
+      const createItemFromTemplateSpy = spyOn(wt, "createItemFromTemplate").and.callThrough();
+      const itemTemplate: common.IItemTemplate = templates.getItemTemplate(
+        "Geoprocessing Service"
+      );
+      itemTemplate.item.thumbnail = null;
+      itemTemplate.item.typeKeywords = ["Web Tool"];
+      const resourceFilePaths: common.IDeployFileCopyPath[] = [];
+      const templateDictionary: any = {};
+
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
+      deploySolution
+        ._createItemFromTemplateWhenReady(
+          itemTemplate,
+          resourceFilePaths,
+          MOCK_USER_SESSION,
+          templateDictionary,
+          MOCK_USER_SESSION,
+          utils.ITEM_PROGRESS_CALLBACK
+        )
+        .then(() => {
+          expect(createItemFromTemplateSpy.calls.count()).toBe(1);
           done();
         });
     });

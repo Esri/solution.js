@@ -83,6 +83,7 @@ export async function deploySolutionFromTemplate(
   // Get information about deployment environment
   const environResponses = await Promise.all([
     common.getPortal("", authentication), // determine if we are deploying to portal
+    common.getPortalUrls(authentication), // fetch the urls such as the notebooks service url
     common.getUser(authentication), // find out about the user
     common.getFoldersAndGroups(authentication), // get all folders so that we can create a unique one, and all groups
     thumbDef
@@ -90,6 +91,7 @@ export async function deploySolutionFromTemplate(
 
   const [
     portalResponse,
+    portalUrlsResponse,
     userResponse,
     foldersAndGroupsResponse,
     thumbnailFile
@@ -110,6 +112,8 @@ export async function deploySolutionFromTemplate(
   // portal: portalResponse
   // orgextent as bbox for assignment onto items
   // more info in #266 https://github.com/Esri/solution.js/issues/266
+
+  templateDictionary.portalUrls = portalUrlsResponse.urls;
 
   templateDictionary.portalBaseUrl = _getPortalBaseUrl(
     portalResponse,

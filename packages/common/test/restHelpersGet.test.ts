@@ -1399,6 +1399,21 @@ describe("Module `restHelpersGet`: common REST fetch functions shared across pac
     });
   });
 
+  describe("getPortalUrls", () => {
+    it("handles failure to fetch", done => {
+      fetchMock
+      .get(
+        "https://myorg.maps.arcgis.com/sharing/rest/portals/self/urls?f=json&token=fake-token",
+        mockItems.get400Failure()
+      );
+      restHelpersGet.getPortalUrls(MOCK_USER_SESSION).then(
+        () => {
+          done();
+        }
+      );
+    });
+  });
+
   describe("getSolutionsRelatedToAnItem", () => {
     it("gets solutions", done => {
       const solutionId = "sol1234567890";

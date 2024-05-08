@@ -37,7 +37,7 @@ export function getItemTypeAbbrev(type: string): string {
       "Geocoding Service": "xxx",
       "Geodata Service": "xxx",
       "Geometry Service": "xxx",
-      "Geoprocessing Service": "xxx",
+      "Geoprocessing Service": "gs",
       "Globe Service": "xxx",
       "Image Service": "xxx",
       KML: "xxx",

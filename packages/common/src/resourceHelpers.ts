@@ -125,6 +125,7 @@ export function convertBlobToSupportableResource(
  * @param destinationItemId Id of item to receive copy of resource/metadata
  * @param destinationAuthentication Credentials for the request to the destination
  * @param template Description of item that will receive files
+ * @param templateDictionary Hash of facts: org URL, adlib replacements, deferreds for dependencies
  * @returns A promise which resolves to a boolean indicating if the copies were successful
  */
 export function copyFilesFromStorageItem(
@@ -134,7 +135,8 @@ export function copyFilesFromStorageItem(
   destinationFolderId: string,
   destinationItemId: string,
   destinationAuthentication: UserSession,
-  template: any = {}
+  template: any = {},
+  templateDictionary: any = {}
 ): Promise<boolean> {
   // TODO: This is only used in deployer, so move there
   // changed to allow the template to be passed in
@@ -172,7 +174,8 @@ export function copyFilesFromStorageItem(
       sourceItemId,
       destinationItemId,
       destinationAuthentication,
-      template
+      template,
+      templateDictionary
     ).then((results: IAssociatedFileCopyResults[]) => {
       const allOK: boolean = results
         // Filter out metadata

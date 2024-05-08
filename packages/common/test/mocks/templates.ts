@@ -215,6 +215,15 @@ export function getItemTemplate(
     case "Geoprocessing Sample":
       break;
 
+    case "Geoprocessing Service":
+      templatePart = getItemTemplateFundamentals(
+        type,
+        getItemTypeAbbrev.getItemTypeAbbrev(type),
+        dependencies,
+        url
+      );
+      break;
+
     case "Group":
       templatePart = getGroupTemplatePart(dependencies);
       break;
@@ -1371,6 +1380,14 @@ export function getItemTemplateResourcesAsSourceFiles(
         filename: "ago_downloaded.png"
       }];
       break;
+    case "Geoprocessing Service":
+      resources = [{
+        itemId,
+        file: generalHelpers.jsonToFile(sampleWebToolJson, "webtoolDefinition.json"),
+        folder: itemId + "/info",
+        filename: "webtoolDefinition.json"
+      }];
+      break;
   }
 
   return resources;
@@ -1396,6 +1413,13 @@ export function getItemTemplateResourcesAsTemplatizedFiles(
         filename: "ago_downloaded.png",
         folder: "_info_thumbnail",
         url: "https://www.arcgis.com/sharing/rest/content/items/sln1234567890/resources/vts1234567890/ago_downloaded.png"
+      }];
+      break;
+    case "Geoprocessing Service":
+      resources = [{
+        filename: "webtoolDefinition.json",
+        folder: "info",
+        url: "https://www.arcgis.com/sharing/rest/content/items/sln1234567890/resources/gs1234567890/info/webtoolDefinition.json"
       }];
       break;
   }
@@ -1464,4 +1488,94 @@ export const sampleStylesRootTemplatizedJson = {
   },
   "layers": [],
   "metadata": {}
+};
+
+export const sampleWebToolJson = {
+  "datasets": [],
+  "portalProperties": {
+      "isHosted": false,
+      "portalItems": [
+          {
+              "itemId": "aaaeefbeb43245ccbe00a948e87ccdfa",
+              "type": "GPServer"
+          }
+      ]
+  },
+  "properties": {},
+  "jsonProperties": {
+      "title": "Test Web Tool",
+      "notebookId": "aaa637ded3a74a7f9c2325a043f59fb6",
+      "snapshotId": "notebook.json",
+      "timeoutInMinutes": 0,
+      "tasks": [
+          {
+              "type": "notebook",
+              "name": "Test_Notebook"
+          }
+      ]
+  },
+  "serviceName": "aaaeefbeb43245ccbe00a948e87ccdfa",
+  "type": "GPServer",
+  "description": "Test Web Tool",
+  "provider": "notebooks"
+}
+
+export const sampleWebToolTemplatizedJson = {
+  "datasets": [],
+  "portalProperties": {
+      "isHosted": false,
+      "portalItems": [
+          {
+              "itemId": "{{aaaeefbeb43245ccbe00a948e87ccdfa.itemId}}",
+              "type": "GPServer"
+          }
+      ]
+  },
+  "properties": {},
+  "jsonProperties": {
+      "title": "Test Web Tool",
+      "notebookId": "{{aaa637ded3a74a7f9c2325a043f59fb6.itemId}}",
+      "snapshotId": "notebook.json",
+      "timeoutInMinutes": 0,
+      "tasks": [
+          {
+              "type": "notebook",
+              "name": "Test_Notebook"
+          }
+      ]
+  },
+  "serviceName": "{{aaaeefbeb43245ccbe00a948e87ccdfa.itemId}}",
+  "type": "GPServer",
+  "description": "Test Web Tool",
+  "provider": "notebooks"
+}
+
+export const sampleWebToolServiceJson = {
+  "currentVersion": 11.2,
+  "cimVersion": "2.9.0",
+  "serviceDescription": "Test Web Tool",
+  "executionType": "esriExecutionTypeAsynchronous",
+  "resultMapServerName": "",
+  "maximumRecords": 1000,
+  "capabilities": "",
+  "tasks": [
+      "Test_Notebook"
+  ],
+  "serviceUrl": "https://notebookswebtoolsdev.arcgis.com/arcgis/rest/services/aaaeefbeb43245ccbe00a948e87ccdfa/GPServer",
+  "timeoutInMinutes": 100
+};
+
+export const sampleWebToolServiceTemplatizedJson = {
+  "currentVersion": 11.2,
+  "cimVersion": "2.9.0",
+  "serviceDescription": "Test Web Tool",
+  "executionType": "esriExecutionTypeAsynchronous",
+  "resultMapServerName": "",
+  "maximumRecords": 1000,
+  "capabilities": "",
+  "tasks": [
+      "Test_Notebook"
+  ],
+  "serviceUrl": "https://notebookswebtoolsdev.arcgis.com/arcgis/rest/services/{{aaaeefbeb43245ccbe00a948e87ccdfa.itemId}}/GPServer",
+  "timeoutInMinutes": 100
 };

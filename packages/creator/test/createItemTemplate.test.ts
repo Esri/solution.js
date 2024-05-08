@@ -118,6 +118,99 @@ describe("Module `createItemTemplate`", () => {
         });
     });
 
+    it("creates a template for a Geoprocessing Service Web Tool item", done => {
+      const solutionItemId: string = "sln1234567890";
+      const itemId: string = "gs12345678900";
+      const templateDictionary: any = {};
+      const authentication: common.UserSession = MOCK_USER_SESSION;
+      const existingTemplates: common.IItemTemplate[] = [];
+      const gpService = mockItems.getAGOLItem("Geoprocessing Service");
+      gpService.typeKeywords = ["Web Tool"];
+      fetchMock
+        .get(
+          utils.PORTAL_SUBSET.restUrl +
+            "/content/items/gs12345678900?f=json&token=fake-token",
+            gpService
+        )
+        .post(
+          utils.PORTAL_SUBSET.restUrl +
+            "/content/items/gs1234567890/info/thumbnail/ago_downloaded.png?w=400",
+          utils.getSampleImageAsBlob()
+        )
+        .post(
+          utils.PORTAL_SUBSET.restUrl + "/content/items/gs12345678900/data",
+          noDataResponse
+        )
+        .post(
+          utils.PORTAL_SUBSET.restUrl +
+            "/content/items/gs1234567890/info/metadata/metadata.xml",
+          noMetadataResponse
+        )
+        .post(
+          utils.PORTAL_SUBSET.restUrl +
+            "/content/items/gs1234567890/resources",
+          noResourcesResponse
+        )
+        .post(
+          utils.PORTAL_SUBSET.restUrl +
+            "/content/users/casey/items/sln1234567890/addResources",
+          { success: true, id: solutionItemId }
+        );
+
+      staticRelatedItemsMocks.fetchMockRelatedItems("gs1234567890", {
+        total: 0,
+        relatedItems: []
+      });
+
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
+      createItemTemplate
+        .createItemTemplate(
+          solutionItemId,
+          itemId,
+          templateDictionary,
+          authentication,
+          authentication,
+          existingTemplates,
+          utils.ITEM_PROGRESS_CALLBACK
+        )
+        .then(() => {
+          expect(existingTemplates.length).toEqual(1);
+          expect(existingTemplates[0].itemId).toEqual(itemId);
+          done();
+        });
+    });
+
+    it("dosn't create a template for a Geoprocessing Service that is NOT a Web Tool item", done => {
+      const solutionItemId: string = "sln1234567890";
+      const itemId: string = "gs12345678900";
+      const templateDictionary: any = {};
+      const authentication: common.UserSession = MOCK_USER_SESSION;
+      const existingTemplates: common.IItemTemplate[] = [];
+      const gpService = mockItems.getAGOLItem("Geoprocessing Service");
+      fetchMock
+        .get(
+          utils.PORTAL_SUBSET.restUrl +
+            "/content/items/gs12345678900?f=json&token=fake-token",
+            gpService
+        );
+
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
+      createItemTemplate
+        .createItemTemplate(
+          solutionItemId,
+          itemId,
+          templateDictionary,
+          authentication,
+          authentication,
+          existingTemplates,
+          utils.ITEM_PROGRESS_CALLBACK
+        )
+        .then((response) => {
+          expect(response.length).toEqual(0);
+          done();
+        });
+    });
+
     it("creates a template for a QuickCapture Project item", done => {
       const solutionItemId: string = "sln1234567890";
       const itemId: string = "qck1234567890";
@@ -1111,6 +1204,29 @@ describe("Module `createItemTemplate`", () => {
                   done();
                 }
               );
+            }
+          );
+        },
+        done.fail
+      );
+    });
+
+    it("handles a Geoprocessing Service resources list", done => {
+      const itemTemplate: common.IItemTemplate = templates.getItemTemplate("Geoprocessing Service");
+      const resourceItemFiles: common.ISourceFile[] =
+        templates.getItemTemplateResourcesAsSourceFiles("Geoprocessing Service", itemTemplate.itemId);
+
+      createItemTemplate._templatizeResources(itemTemplate, resourceItemFiles, MOCK_USER_SESSION)
+      .then(
+        () => {
+          expect(resourceItemFiles.length).toEqual(1);
+
+          // Check file contents
+          common.blobToJson(resourceItemFiles[0].file)
+          .then(
+            infoRootJson => {
+              expect(infoRootJson).toEqual(templates.sampleWebToolTemplatizedJson);
+              done();
             }
           );
         },

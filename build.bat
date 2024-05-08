@@ -58,6 +58,7 @@ rmdir/s/q packages\storymap\dist 2>nul
 rmdir/s/q packages\velocity\dist 2>nul
 rmdir/s/q packages\viewer\dist 2>nul
 rmdir/s/q packages\web-experience\dist 2>nul
+rmdir/s/q packages\web-tool\dist 2>nul
 rmdir/s/q demos\copyItemInfo\dist 2>nul
 rmdir/s/q demos\copySolutions\dist 2>nul
 rmdir/s/q demos\createSolution\dist 2>nul
@@ -98,6 +99,8 @@ del/q packages\viewer\dist\cjs\package.json 2>nul
 del/q packages\viewer\dist\esm\package.json 2>nul
 del/q packages\web-experience\dist\cjs\package.json 2>nul
 del/q packages\web-experience\dist\esm\package.json 2>nul
+del/q packages\web-tool\dist\cjs\package.json 2>nul
+del/q packages\web-tool\dist\esm\package.json 2>nul
 del/q packages\workflow\dist\cjs\package.json 2>nul
 del/q packages\workflow\dist\esm\package.json 2>nul
 

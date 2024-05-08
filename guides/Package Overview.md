@@ -94,4 +94,5 @@ The library is a collection of packages that are framework agnostic and make a v
 * [`@esri/solution-velocity`](https://github.com/Esri/solution.js/tree/master/packages/velocity): Manages the creation and deployment of Velocity item types for @esri/solution.js.
 * [`@esri/solution-viewer`](https://github.com/Esri/solution.js/tree/master/packages/viewer): Simplifies access to @esri/solution.js.
 * [`@esri/solution-web-experience`](https://github.com/Esri/solution.js/tree/master/packages/web-experience): Manages the creation and deployment of Web Experience item types for @esri/solution.js.
+* [`@esri/solution-web-tool`](https://github.com/Esri/solution.js/tree/master/packages/web-tool): Manages the creation and deployment of Web Tool Geoprocessing Service item types for @esri/solution.js.
 * [`@esri/solution-workflow`](https://github.com/Esri/solution.js/tree/master/packages/workflow): Manages the creation and deployment of Workflow item types for @esri/solution.js.
