@@ -36,6 +36,7 @@ import {
   getSubgroupIds,
   getUser,
   getVelocityUrlBase,
+  getWorkflowURL,
   ICreateSolutionOptions,
   ISolutionItemData,
   IGroup,
@@ -60,7 +61,7 @@ const noOp = () => {};
  * @param options Customizations for creating the solution
  * @returns A promise that resolves with the AGO id of the new solution
  */
-export function createSolution(
+export async function createSolution(
   sourceId: string,
   srcAuthentication: UserSession,
   destAuthentication: UserSession,
@@ -75,105 +76,95 @@ export function createSolution(
 
   progressCb(1); // let the caller know that we've started
 
-  // Assume that source is a group and try to get group's information
-  return Promise.all([
-    getGroupBase(sourceId, srcAuthentication),
-    getGroupContents(sourceId, srcAuthentication),
-    getVelocityUrlBase(srcAuthentication, createOptions.templateDictionary)
-  ])
-    .then(
-      // Group fetches worked; assumption was correct
-      responses => {
-        createOptions.itemIds = responses[1];
-        progressCb(15);
+  try {
+    // Assume that source is a group and try to get group's information
+    let updatedCreateOptions: ICreateSolutionOptions = await Promise.all([
+      getGroupBase(sourceId, srcAuthentication),
+      getGroupContents(sourceId, srcAuthentication),
+      getVelocityUrlBase(srcAuthentication, createOptions.templateDictionary)
+    ])
+      .then(
+        // Group fetches worked; assumption was correct
+        responses => {
+          createOptions.itemIds = responses[1];
+          progressCb(15);
 
-        return new Promise<ICreateSolutionOptions>(resolve => {
-          // Update the createOptions with values from the group
-          resolve(
-            _applySourceToCreateOptions(
-              createOptions,
-              responses[0],
-              srcAuthentication,
-              true
-            )
-          );
-        });
-      },
+          return new Promise<ICreateSolutionOptions>(resolve => {
+            // Update the createOptions with values from the group
+            resolve(
+              _applySourceToCreateOptions(
+                createOptions,
+                responses[0],
+                srcAuthentication,
+                true
+              )
+            );
+          });
+        },
 
-      // Assumption incorrect; try source as an item
-      () => {
-        return new Promise<ICreateSolutionOptions>((resolve, reject) => {
-          createOptions.itemIds = [sourceId];
-          getItemBase(sourceId, srcAuthentication).then(
-            // Update the createOptions with values from the item
-            itemBase =>
-              resolve(
-                _applySourceToCreateOptions(
-                  createOptions,
-                  itemBase,
-                  srcAuthentication,
-                  false
-                )
-              ),
-            reject
-          );
-        });
-      }
-    )
+        // Assumption incorrect; try source as an item
+        () => {
+          return new Promise<ICreateSolutionOptions>((resolve, reject) => {
+            createOptions.itemIds = [sourceId];
+            getItemBase(sourceId, srcAuthentication).then(
+              // Update the createOptions with values from the item
+              itemBase =>
+                resolve(
+                  _applySourceToCreateOptions(
+                    createOptions,
+                    itemBase,
+                    srcAuthentication,
+                    false
+                  )
+                ),
+              reject
+            );
+          });
+        }
+      )
 
-    .then(createOptions => {
-      return new Promise<ICreateSolutionOptions>((resolve, reject) => {
-        Promise.all([
-          getPortal("", srcAuthentication),
-          getUser(srcAuthentication)
-        ]).then(responses => {
-          // check tracking
-          const [portalResponse, userResponse] = responses;
-          setLocationTrackingEnabled(
-            portalResponse,
-            userResponse,
-            createOptions.templateDictionary
-          );
-          resolve(createOptions);
-        }, reject);
-      });
-    })
+      const userInfoResponses = await Promise.all([
+        getPortal("", srcAuthentication),
+        getUser(srcAuthentication)
+      ]);
+      const [portalResponse, userResponse] = userInfoResponses;
 
-    .then(
+      // check tracking
+      setLocationTrackingEnabled(
+        portalResponse,
+        userResponse,
+        createOptions.templateDictionary
+      );
+
+      // Add information needed for workflow manager
+      const user = await getUser(srcAuthentication);
+      createOptions.templateDictionary.orgId = user.orgId;
+      createOptions.templateDictionary.workflowURL = await getWorkflowURL(
+        createOptions.templateDictionary.workflowURL, portalResponse, srcAuthentication);
+
       // Use a copy of the thumbnail rather than a URL to it
-      createOptions => {
-        return _addThumbnailFileToCreateOptions(
-          createOptions,
-          srcAuthentication
-        );
-      }
-    )
+      updatedCreateOptions = await _addThumbnailFileToCreateOptions(
+        updatedCreateOptions,
+        srcAuthentication
+      );
 
-    .then(
       // Create a solution
-      createOptions => {
-        return _createSolutionFromItemIds(
-          createOptions,
-          srcAuthentication,
-          destAuthentication
-        );
-      }
-    )
+      const createdSolutionId = _createSolutionFromItemIds(
+        updatedCreateOptions,
+        srcAuthentication,
+        destAuthentication
+      );
 
-    .then(
       // Successfully created solution
-      createdSolutionId => {
         progressCb(100); // finished
         return createdSolutionId;
-      },
 
-      // Error fetching group, group contents, or item, or error creating solution from ids
-      error => {
-        progressCb(1);
-        console.error(error);
-        throw error;
-      }
-    );
+    } catch (error) {
+    // Error fetching group, group contents, or item, or error creating solution from ids
+      progressCb(1);
+      console.error(error);
+      throw error;
+    }
 }
 
 /**

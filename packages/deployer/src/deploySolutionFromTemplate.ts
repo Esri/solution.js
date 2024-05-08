@@ -127,8 +127,11 @@ export async function deploySolutionFromTemplate(
       group.owner === templateDictionary.user.username
   );
 
-  // Set workflow URL if not supplied
-  templateDictionary.workflowURL = await _getWorkflowURL(templateDictionary.workflowURL, portalResponse, authentication);
+  // Add information needed for workflow manager
+  const user = await common.getUser(authentication);
+  templateDictionary.orgId = user.orgId;
+  templateDictionary.workflowURL = await common.getWorkflowURL(
+    templateDictionary.workflowURL, portalResponse, authentication);
 
   // if we have tracking views and the user is not admin or the org doesn't support tracking an error is thrown
   common.setLocationTrackingEnabled(
@@ -529,32 +532,4 @@ export function _purgeTemplateProperties(itemTemplate: any): any {
  */
 export function _getNewItemId(id: string, templateDictionary: any): string {
   return common.getProp(templateDictionary, id + ".itemId") ?? id;
-}
-
-/**
- * Determines the Workflow Manager URL to use for the deployment if not supplied.
- *
- * @param workflowURL Existing workflow URL; if supplied, it's simply returned
- * @param portalResponse Response from portal "self" call
- * @param authentication Authenticated user session
- * @returns workflowURL or a URL based on ArcGIS Online or Enterprise
- */
-export async function _getWorkflowURL(
-  workflowURL: string,
-  portalResponse: common.IPortal,
-  authentication: common.UserSession
-): Promise<string> {
-  if (!workflowURL) {
-    const portalURL = `https://${portalResponse.portalHostname}`;
-    const portalRestURL = `${portalURL}/sharing/rest`;
-
-    if (portalResponse.isPortal) {
-      // Enterprise
-      workflowURL = await common.getWorkflowEnterpriseServerURL(portalRestURL, authentication);
-    } else {
-      // ArcGIS Online
-      workflowURL = portalResponse.helperServices?.workflowManager?.url ?? portalURL;
-    }
-  }
-  return Promise.resolve(workflowURL);
 }
