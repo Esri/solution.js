@@ -381,7 +381,7 @@ export function _detemplatizeResources(
     const paths = {};
     paths[`{{${sourceItemId}.itemId}}`] = itemTemplate.itemId;
     itemTemplate.dependencies.forEach(id => {
-      paths[`{{${id}.itemId}}`] = templateDictionary[id]?.itemId;
+      paths[`{{${id}.itemId}}`] = templateDictionary[id].itemId;
     });
 
     fileInfos.forEach(

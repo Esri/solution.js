@@ -1,5 +1,5 @@
 /** @license
- * Copyright 2018 Esri
+ * Copyright 2024 Esri
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -170,7 +170,7 @@ export function createWebTool(
   destinationAuthentication: common.UserSession,
 ): Promise<any> {
   return new Promise<any>((resolve, reject) => {
-    if (templateDictionary?.portalUrls?.notebooks?.https?.length > 0) {
+    if (templateDictionary?.portalUrls?.notebooks.https.length > 0) {
       const notebookUrl = templateDictionary.portalUrls.notebooks.https[0];
       const url = `https://${notebookUrl}/admin/services/createService?f=json&request.preventCache=${Date.now()}`;
 
@@ -181,7 +181,7 @@ export function createWebTool(
           "type": "GPServer",
           "jsonProperties": {
             "title": template.item.title,
-            "notebookId": template?.data.notebookId,
+            "notebookId": template.data.notebookId,
             "tasks": [{
               "type": "notebook",
               "name": template.data.name

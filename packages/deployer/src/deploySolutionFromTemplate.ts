@@ -113,7 +113,7 @@ export async function deploySolutionFromTemplate(
   // orgextent as bbox for assignment onto items
   // more info in #266 https://github.com/Esri/solution.js/issues/266
 
-  templateDictionary.portalUrls = portalUrlsResponse?.urls;
+  templateDictionary.portalUrls = portalUrlsResponse.urls;
 
   templateDictionary.portalBaseUrl = _getPortalBaseUrl(
     portalResponse,

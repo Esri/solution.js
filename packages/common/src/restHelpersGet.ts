@@ -92,7 +92,7 @@ export function getPortalUrls(
     const url: string = `${authentication.portal}/portals/self/urls`;
     request(url, requestOptions).then((response) => {
       resolve(response);
-    }, e => reject(e))
+    }, e => reject(e));
   });
 }
 

@@ -150,6 +150,10 @@ export function getAGOLItem(type?: string, url = "", itemId?: string): any {
     case "Geoprocessing Sample":
       break;
 
+    case "Geoprocessing Service":
+      item = getAGOLItemFundamentals(type, url || undefined);
+      break;
+
     case "Group":
       item = getAGOLGroup();
       break;
@@ -1704,8 +1708,10 @@ export function getAGOLSubscriptionInfo(hasVelocity: boolean): any {
 }
 
 export const urlsResponse = {
-  "urls": {
-    "http": "",
-    "https": ""
+  urls: {
+    notebooks: {
+      http: ["http://notebookservice"],
+      https: ["https://notebookservice"]
+    }
   }
 }

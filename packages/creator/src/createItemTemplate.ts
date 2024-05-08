@@ -631,12 +631,9 @@ export function _templatizeResources(
           blobToJson(rootFileResource.file)
             .then(fileJson => {
               if (rootFileResource.filename.indexOf("webtoolDefinition") > -1) {
-                const notebookId = fileJson?.jsonProperties?.notebookId;
-                const name = fileJson?.jsonProperties?.tasks[0].name;
-
                 itemTemplate.data = {
-                  name,
-                  notebookId
+                  name: fileJson.jsonProperties.tasks[0].name,
+                  notebookId: fileJson.jsonProperties.notebookId
                 };
               }
 
