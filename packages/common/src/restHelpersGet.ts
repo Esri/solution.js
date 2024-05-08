@@ -82,7 +82,7 @@ export function getPortal(
 export function getPortalUrls(
   authentication: UserSession
 ): Promise<IPortal> {
-  return new Promise<any>((resolve, reject) => {
+  return new Promise<any>((resolve) => {
     const requestOptions = {
       httpMethod: "GET",
       authentication: authentication,
@@ -92,7 +92,7 @@ export function getPortalUrls(
     const url: string = `${authentication.portal}/portals/self/urls`;
     request(url, requestOptions).then((response) => {
       resolve(response);
-    }, e => reject(e));
+    }, () => resolve({}));
   });
 }
 

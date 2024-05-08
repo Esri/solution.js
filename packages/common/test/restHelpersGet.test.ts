@@ -1407,7 +1407,6 @@ describe("Module `restHelpersGet`: common REST fetch functions shared across pac
         mockItems.get400Failure()
       );
       restHelpersGet.getPortalUrls(MOCK_USER_SESSION).then(
-        () => {},
         () => {
           done();
         }
