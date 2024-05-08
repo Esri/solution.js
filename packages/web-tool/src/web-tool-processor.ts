@@ -161,7 +161,7 @@ export function createItemFromTemplate(
  *
  * @param {IItemTemplate} template The template
  * @param {any} templateDictionary The template dictionary
- * @param {UserSession} authentication The destination user session info
+ * @param {UserSession} destinationAuthentication The destination user session info
  * @returns List of http and https helper urls
  */
 export function createWebTool(
