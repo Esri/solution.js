@@ -1710,8 +1710,8 @@ export function getAGOLSubscriptionInfo(hasVelocity: boolean): any {
 export const urlsResponse = {
   urls: {
     notebooks: {
-      http: ["http://notebookservice"],
-      https: ["https://notebookservice"]
+      http: ["notebookservice"],
+      https: ["notebookservice"]
     }
   }
 }
