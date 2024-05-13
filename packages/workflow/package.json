@@ -23,8 +23,8 @@
     "@types/jasmine": "^5.1.4",
     "fetch-mock": "^7.7.3",
     "jasmine": "^5.1.0",
-    "jasmine-core": "^5.1.0",
-    "rollup": "^4.13.2"
+    "jasmine-core": "^5.1.2",
+    "npm-check-updates": "^16.14.20"
   },
   "dependencies": {
     "jszip": "3.10.1",
