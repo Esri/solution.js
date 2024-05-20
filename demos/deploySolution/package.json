@@ -6,6 +6,7 @@
   "license": "Apache-2.0",
   "private": true,
   "scripts": {
+    "prebuild": "node -p \"'export const appConfig = ' + JSON.stringify(require('./data/appConfig.json')) + ';'\" > src/appConfig.ts",
     "build": "webpack --mode=production --node-env=production",
     "getupdates": "npm-check-updates --upgrade",
     "watch": "webpack --watch"

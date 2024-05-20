@@ -15,7 +15,7 @@
  */
 
 import "./style.css";
-import * as appConfig from "../data/appConfig.json";
+import { appConfig } from "./appConfig";
 import * as common from "@esri/solution-common";
 import * as htmlUtil from "./htmlUtil";
 import * as main from "./deploy-solution-main";
@@ -150,11 +150,14 @@ function go(
     });
     deploySolution(solutionId, folderId, srcCreds, destCreds, useExisting, customParams);
   } else {
-    const redirect_uri = window.location.origin + window.location.pathname;
+    let redirect_uri = window.location.origin + window.location.pathname;
+    const iLastSlash = redirect_uri.lastIndexOf("/");
+    redirect_uri = redirect_uri.slice(0, iLastSlash);
+
     const clientId = htmlUtil.getHTMLValue("clientId");
     common.UserSession.beginOAuth2({
       clientId: clientId,
-      redirectUri: redirect_uri + 'authenticate.html?clientID=' + clientId,
+      redirectUri: redirect_uri + '/authenticate.html?clientID=' + clientId,
       popup: true,
     }).then(function (newSession) {
       // Upon a successful login, update the session with the new session.

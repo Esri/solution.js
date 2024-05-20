@@ -19,19 +19,12 @@ import * as auth from "@esri/arcgis-rest-auth";
 //--------------------------------------------------------------------------------------------------------------------//
 
 const match = window.location.href.match(
-  /&state=([^&]+)/
+  /[\?&]clientID=([^#]+)/
 ) || [""];
 const clientId = match[1];
 
-function processAuthentication() {
-  window.location.href = './';
-  const session = auth.UserSession.completeOAuth2({
-    clientId,
-    redirectUri: window.location.href
-  });
-  localStorage.setItem('__SOLUTION_JS_USER_SESSION__', session.serialize());
-  debugger;
-}
-
-processAuthentication();
-
+const session = auth.UserSession.completeOAuth2({
+  clientId,
+  redirectUri: window.location.href
+});
+localStorage.setItem('__SOLUTION_JS_USER_SESSION__', session.serialize());
