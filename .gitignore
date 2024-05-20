@@ -95,6 +95,7 @@ packages/**/src/**/*.map
 packages/**/test/**/*.d.ts
 packages/**/test/**/*.js
 packages/**/test/**/*.map
+appConfig.ts
 
 TODO.md
 demos/deploy-harness
