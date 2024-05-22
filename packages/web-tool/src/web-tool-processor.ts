@@ -127,7 +127,9 @@ export function createItemFromTemplate(
               itemUrl: (templateDictionary["portalBaseUrl"] as string) + "/sharing/rest/content/items/" + createResponse.itemId
             }
             newItemTemplate.itemId = createResponse.itemId;
+            newItemTemplate.item.id = createResponse.itemId;
             newItemTemplate.data = {};
+            delete newItemTemplate.item.thumbnail;
 
             // Update the template again now that we have the new item id
             newItemTemplate = common.replaceInTemplate(
@@ -135,12 +137,125 @@ export function createItemFromTemplate(
               templateDictionary
             );
 
-            resolve({
-              item: newItemTemplate,
-              id: createResponse.itemId,
-              type: newItemTemplate.type,
-              postProcess: false
-            });
+            // Update the item with snippet, description, popupInfo, etc.
+            common.updateItemExtended(
+              {
+                ...newItemTemplate.item
+              },
+              newItemTemplate.data,
+              destinationAuthentication,
+              template.item.thumbnail,
+              undefined,
+              templateDictionary
+            ).then(
+              () => {
+                // Interrupt process if progress callback returns `false`
+                if (
+                  !itemProgressCallback(
+                    template.itemId,
+                    common.EItemProgressStatus.Finished,
+                    template.estimatedDeploymentCostFactor / 2,
+                    createResponse.itemId
+                  )
+                ) {
+                  itemProgressCallback(
+                    template.itemId,
+                    common.EItemProgressStatus.Cancelled,
+                    0
+                  );
+                  common
+                    .removeItem(
+                      createResponse.itemId,
+                      destinationAuthentication
+                    )
+                    .then(
+                      () =>
+                        resolve(
+                          common.generateEmptyCreationResponse(
+                            template.type
+                          )
+                        ),
+                      () =>
+                        resolve(
+                          common.generateEmptyCreationResponse(
+                            template.type
+                          )
+                        )
+                    );
+                } else {
+                  // Update the template to match what we've stored in AGO
+                  common
+                    .getItemBase(
+                      newItemTemplate.itemId,
+                      destinationAuthentication
+                    )
+                    .then(
+                      updatedItem => {
+                        newItemTemplate.item = updatedItem;
+
+                        resolve({
+                          item: newItemTemplate,
+                          id: createResponse.itemId,
+                          type: newItemTemplate.type,
+                          postProcess: false
+                        });
+                      },
+                      () => {
+                        itemProgressCallback(
+                          template.itemId,
+                          common.EItemProgressStatus.Failed,
+                          0
+                        );
+                        common
+                          .removeItem(
+                            createResponse.itemId,
+                            destinationAuthentication
+                          )
+                          .then(
+                            () =>
+                              resolve(
+                                common.generateEmptyCreationResponse(
+                                  template.type
+                                )
+                              ),
+                            () =>
+                              resolve(
+                                common.generateEmptyCreationResponse(
+                                  template.type
+                                )
+                              )
+                          );
+                      } // fails to update item
+                    );
+                }
+              },
+              () => {
+                itemProgressCallback(
+                  template.itemId,
+                  common.EItemProgressStatus.Failed,
+                  0
+                );
+                common
+                  .removeItem(
+                    createResponse.itemId,
+                    destinationAuthentication
+                  )
+                  .then(
+                    () =>
+                      resolve(
+                        common.generateEmptyCreationResponse(
+                          template.type
+                        )
+                      ),
+                    () =>
+                      resolve(
+                        common.generateEmptyCreationResponse(
+                          template.type
+                        )
+                      )
+                  );
+              } // fails to update item
+            );
           }
         },
         () => {
