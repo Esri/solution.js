@@ -150,7 +150,7 @@ describe("Module `web-tool-processor`: ", () => {
         MOCK_USER_SESSION,
         cb
       ).then(result => {
-        expect(createRequestSpy1.calls.count()).toBe(1);
+        expect(createRequestSpy1.calls.count()).toBe(3);
         expect(result.item?.data).toEqual({});
         done();
       });
@@ -244,6 +244,303 @@ describe("Module `web-tool-processor`: ", () => {
         createCb2()
       ).then(() => {
         expect(createRequestSpy2.calls.count()).toBe(1);
+        expect(removeSpy.calls.count()).toBe(1);
+        done();
+      });
+    });
+
+    it("handles cancel during updateItemExtended", done => {
+      const createCb2 = () => {
+        let calls = 0;
+        return () => {
+          calls = calls + 1;
+          return calls < 3;
+        };
+      };
+      const createRequestSpy2 = spyOn(
+        request,
+        "request"
+      ).and.resolveTo({
+        itemId: "newgs0123456789"
+      });
+      WebToolProcessor.createItemFromTemplate(
+        {
+          id: "bc3",
+          type: "Geoprocessing Service",
+          item: {
+            typeKeywords: ["Web Tool"],
+            thumbnail: "thumb"
+          },
+          data: {
+            notebookId: "123",
+            name: "NotebookName"
+          }
+        } as any,
+        {
+          portalUrls: {
+            notebooks: {
+              https: [
+                "notebookservice"
+              ]
+            }
+          }
+        },
+        MOCK_USER_SESSION,
+        createCb2()
+      ).then(() => {
+        expect(createRequestSpy2.calls.count()).toBe(3);
+        done();
+      });
+    });
+
+    it("handles cancel during updateItemExtended and removes item", done => {
+      const createCb2 = () => {
+        let calls = 0;
+        return () => {
+          calls = calls + 1;
+          return calls < 3;
+        };
+      };
+      const createRequestSpy2 = spyOn(
+        request,
+        "request"
+      ).and.resolveTo({
+        itemId: "newgs0123456789"
+      });
+      const removeSpy = spyOn(portalModule, "removeItem").and.resolveTo({
+        success: true,
+        itemId: "3ef"
+      });
+      WebToolProcessor.createItemFromTemplate(
+        {
+          id: "bc3",
+          type: "Geoprocessing Service",
+          item: {
+            typeKeywords: ["Web Tool"],
+            thumbnail: "thumb"
+          },
+          data: {
+            notebookId: "123",
+            name: "NotebookName"
+          }
+        } as any,
+        {
+          portalUrls: {
+            notebooks: {
+              https: [
+                "notebookservice"
+              ]
+            }
+          }
+        },
+        MOCK_USER_SESSION,
+        createCb2()
+      ).then(() => {
+        expect(createRequestSpy2.calls.count()).toBe(2);
+        expect(removeSpy.calls.count()).toBe(1);
+        done();
+      });
+    });
+
+    it("handles reject during updateItemExtended and removes item", done => {
+      const createCb2 = () => {
+        let calls = 0;
+        return () => {
+          calls = calls + 1;
+          return calls < 3;
+        };
+      };
+      const createRequestSpy2 = spyOn(
+        request,
+        "request"
+      ).and.resolveTo({
+        itemId: "newgs0123456789"
+      });
+      const updateItemRejectSpy = spyOn(
+        common,
+        "updateItemExtended"
+      ).and.rejectWith("error");
+      const removeSpy = spyOn(portalModule, "removeItem").and.resolveTo({
+        success: true,
+        itemId: "3ef"
+      });
+      WebToolProcessor.createItemFromTemplate(
+        {
+          id: "bc3",
+          type: "Geoprocessing Service",
+          item: {
+            typeKeywords: ["Web Tool"],
+            thumbnail: "thumb"
+          },
+          data: {
+            notebookId: "123",
+            name: "NotebookName"
+          }
+        } as any,
+        {
+          portalUrls: {
+            notebooks: {
+              https: [
+                "notebookservice"
+              ]
+            }
+          }
+        },
+        MOCK_USER_SESSION,
+        createCb2()
+      ).then(() => {
+        expect(createRequestSpy2.calls.count()).toBe(1);
+        expect(updateItemRejectSpy.calls.count()).toBe(1);
+        expect(removeSpy.calls.count()).toBe(1);
+        done();
+      });
+    });
+
+    it("handles reject during updateItemExtended and reject during remove item", done => {
+      const createCb2 = () => {
+        let calls = 0;
+        return () => {
+          calls = calls + 1;
+          return calls < 3;
+        };
+      };
+      const createRequestSpy2 = spyOn(
+        request,
+        "request"
+      ).and.resolveTo({
+        itemId: "newgs0123456789"
+      });
+      const updateItemRejectSpy = spyOn(
+        common,
+        "updateItemExtended"
+      ).and.rejectWith("error");
+      const removeSpy = spyOn(portalModule, "removeItem").and.rejectWith("error");
+      WebToolProcessor.createItemFromTemplate(
+        {
+          id: "bc3",
+          type: "Geoprocessing Service",
+          item: {
+            typeKeywords: ["Web Tool"],
+            thumbnail: "thumb"
+          },
+          data: {
+            notebookId: "123",
+            name: "NotebookName"
+          }
+        } as any,
+        {
+          portalUrls: {
+            notebooks: {
+              https: [
+                "notebookservice"
+              ]
+            }
+          }
+        },
+        MOCK_USER_SESSION,
+        createCb2()
+      ).then(() => {
+        expect(createRequestSpy2.calls.count()).toBe(1);
+        expect(updateItemRejectSpy.calls.count()).toBe(1);
+        expect(removeSpy.calls.count()).toBe(1);
+        done();
+      });
+    });
+
+    it("getItemBase", done => {
+      const createCb2 = () => {
+        let calls = 0;
+        return () => {
+          calls = calls + 1;
+          return calls < 4;
+        };
+      };
+      const createRequestSpy2 = spyOn(
+        request,
+        "request"
+      ).and.resolveTo({
+        itemId: "newgs0123456789"
+      });
+      const getItemBaseSpy = spyOn(common, "getItemBase").and.rejectWith("error");
+      const removeSpy = spyOn(portalModule, "removeItem").and.resolveTo({
+        success: true,
+        itemId: "3ef"
+      });
+      WebToolProcessor.createItemFromTemplate(
+        {
+          id: "bc3",
+          type: "Geoprocessing Service",
+          item: {
+            typeKeywords: ["Web Tool"],
+            thumbnail: "thumb"
+          },
+          data: {
+            notebookId: "123",
+            name: "NotebookName"
+          }
+        } as any,
+        {
+          portalUrls: {
+            notebooks: {
+              https: [
+                "notebookservice"
+              ]
+            }
+          }
+        },
+        MOCK_USER_SESSION,
+        createCb2()
+      ).then(() => {
+        expect(getItemBaseSpy.calls.count()).toBe(1);
+        expect(createRequestSpy2.calls.count()).toBe(2);
+        expect(removeSpy.calls.count()).toBe(1);
+        done();
+      });
+    });
+
+    it("getItemBase removeItem can handle reject", done => {
+      const createCb2 = () => {
+        let calls = 0;
+        return () => {
+          calls = calls + 1;
+          return calls < 4;
+        };
+      };
+      const createRequestSpy2 = spyOn(
+        request,
+        "request"
+      ).and.resolveTo({
+        itemId: "newgs0123456789"
+      });
+      const getItemBaseSpy = spyOn(common, "getItemBase").and.rejectWith("error");
+      const removeSpy = spyOn(common, "removeItem").and.rejectWith("error");
+      WebToolProcessor.createItemFromTemplate(
+        {
+          id: "bc3",
+          type: "Geoprocessing Service",
+          item: {
+            typeKeywords: ["Web Tool"],
+            thumbnail: "thumb"
+          },
+          data: {
+            notebookId: "123",
+            name: "NotebookName"
+          }
+        } as any,
+        {
+          portalUrls: {
+            notebooks: {
+              https: [
+                "notebookservice"
+              ]
+            }
+          }
+        },
+        MOCK_USER_SESSION,
+        createCb2()
+      ).then(() => {
+        expect(getItemBaseSpy.calls.count()).toBe(1);
+        expect(createRequestSpy2.calls.count()).toBe(2);
         expect(removeSpy.calls.count()).toBe(1);
         done();
       });
