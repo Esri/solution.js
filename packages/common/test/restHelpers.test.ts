@@ -34,7 +34,6 @@ import * as zipUtils from "../src/zip-utils";
 import * as zipUtilsTest from "./zip-utils.test";
 import { IPagingParams } from "@esri/arcgis-rest-portal";
 
-
 // ------------------------------------------------------------------------------------------------------------------ //
 
 let MOCK_USER_SESSION: interfaces.UserSession;
