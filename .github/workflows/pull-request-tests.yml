@@ -4,11 +4,13 @@ name: PR Tests
 on:
   pull_request:
     types: [opened, reopened, ready_for_review, synchronize]
-    # If the PR has other files, a push w/ just .md or /docs
-    # files will still cause tests to run
+    # Dont run if it's just markdown or doc files
     paths-ignore:
       - "**.md"
       - "docs/**"
+      - "guides/**"
+      - "scripts/**"
+      - "support/**"
 jobs:
   build:
     if: github.event.pull_request.draft == false
@@ -17,16 +19,13 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest]
-        node: [18]
+        node: [21]
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - uses: actions/setup-node@v3
         with:
           node-version: ${{ matrix.node }}
-
-      - name: Update to NPM 9 for workspace support
-        run: npm install -g npm@9
 
       - name: Install Dependencies
         run: npm install
@@ -37,6 +36,6 @@ jobs:
       - name: Test in Chrome
         run: npm run test:chrome:ci
 
-      - uses: codecov/codecov-action@v3
+      - uses: codecov/codecov-action@v4
         with:
           directory: ./coverage

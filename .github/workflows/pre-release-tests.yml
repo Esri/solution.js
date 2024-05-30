@@ -1,7 +1,7 @@
 name: Pre-Release Tests
 
 # On pushes to master (i.e. merging a PR)
-# run all tests, on win, macos, linux, on node 12 & 14
+# run all tests, on win, macos, linux
 on:
   push:
     branches:
@@ -10,6 +10,9 @@ on:
     paths-ignore:
       - "**.md"
       - "docs/**"
+      - "guides/**"
+      - "scripts/**"
+      - "support/**"
 jobs:
   build:
     runs-on: ${{ matrix.os }}
@@ -17,16 +20,13 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest, macos-latest, windows-latest]
-        node: [18]
+        node: [21]
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - uses: actions/setup-node@v3
         with:
           node-version: ${{ matrix.node }}
-
-      - name: Update to NPM 9 for workspace support
-        run: npm install -g npm@9
 
       - name: Install Dependencies
         run: npm install
@@ -37,6 +37,6 @@ jobs:
       - name: Test in Chrome
         run: npm run test:chrome:ci
 
-      - uses: codecov/codecov-action@v3
+      - uses: codecov/codecov-action@v4
         with:
           directory: ./coverage
