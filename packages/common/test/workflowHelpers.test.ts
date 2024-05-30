@@ -19,10 +19,11 @@
  */
 
 import * as interfaces from "../src/interfaces";
-import * as utils from "../../common/test/mocks/utils";
-import * as restHelpersGet from "../src/restHelpersGet";
-import * as workflowHelpers from "../src/workflowHelpers";
 import * as request from "@esri/arcgis-rest-request";
+import * as restHelpers from "../src/restHelpers";
+import * as restHelpersGet from "../src/restHelpersGet";
+import * as utils from "../../common/test/mocks/utils";
+import * as workflowHelpers from "../src/workflowHelpers";
 import JSZip from "jszip";
 
 // ------------------------------------------------------------------------------------------------------------------ //
@@ -42,6 +43,53 @@ describe("Module `workflowHelpers`", () => {
       const workflowConfig: any = { "jsTemplates": "Fred" };
       const zipFile = await workflowHelpers.compressWorkflowIntoZipFile(workflowConfig);
       expect(zipFile.name).toEqual("workflow_configuration.zip");
+    });
+  });
+
+  describe("deleteWorkflowItem", () => {
+    it("basic test", async () => {
+      MOCK_USER_SESSION.getUser = () => Promise.resolve({ orgId: "org123" });
+      MOCK_USER_SESSION.getPortal = () => Promise.resolve({ helperServices: { workflowManager: { url: "https://workflow.arcgis.com" } } });
+      spyOn(restHelpersGet, "getItemDataAsJson").and.resolveTo({ "groupId": "grp1234567890" });
+      const requestSpy = spyOn(request, "request").and.resolveTo(utils.getSuccessResponse());
+      const removeGroupSpy = spyOn(restHelpers, "removeGroup").and.resolveTo(utils.getSuccessResponse({ id: "grp1234567890" }));
+
+      const result: boolean = await workflowHelpers.deleteWorkflowItem("itm1234567890", MOCK_USER_SESSION);
+
+      expect(requestSpy.calls.argsFor(0)[0]).toEqual("https://workflow.arcgis.com/org123/admin/itm1234567890");
+      expect(result).toBeTrue();
+      expect(removeGroupSpy).toHaveBeenCalled();
+    });
+
+    it("handles missing helperServices", async () => {
+      MOCK_USER_SESSION.getUser = () => Promise.resolve({ orgId: "org123" });
+      const restHelpersGetSpy = spyOn(restHelpersGet, "getItemDataAsJson").and.resolveTo({});
+      const requestSpy = spyOn(request, "request").and.resolveTo(utils.getSuccessResponse());
+      const removeGroupSpy = spyOn(restHelpers, "removeGroup").and.resolveTo(utils.getSuccessResponse({ id: "grp1234567890" }));
+
+      let result: boolean;
+      try {
+        result = await workflowHelpers.deleteWorkflowItem("itm1234567890", MOCK_USER_SESSION);
+        fail();
+      } catch(err) {
+        expect(err).toEqual({ message: 'Workflow Manager is not enabled for this organization.' });
+        expect(restHelpersGetSpy).not.toHaveBeenCalled();
+        expect(requestSpy).not.toHaveBeenCalled();
+        expect(removeGroupSpy).not.toHaveBeenCalled();
+      }
+    });
+
+    it("handles missing group id", async () => {
+      MOCK_USER_SESSION.getUser = () => Promise.resolve({ orgId: "org123" });
+      MOCK_USER_SESSION.getPortal = () => Promise.resolve({ helperServices: { workflowManager: { url: "https://workflow.arcgis.com" } } });
+      spyOn(restHelpersGet, "getItemDataAsJson").and.resolveTo(null);
+      spyOn(request, "request").and.resolveTo(utils.getSuccessResponse());
+      const removeGroupSpy = spyOn(restHelpers, "removeGroup").and.resolveTo(utils.getSuccessResponse({ id: "grp1234567890" }));
+
+      const result: boolean = await workflowHelpers.deleteWorkflowItem("itm1234567890", MOCK_USER_SESSION);
+
+      expect(result).toBeTrue();
+      expect(removeGroupSpy).not.toHaveBeenCalled();
     });
   });
 

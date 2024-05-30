@@ -23,8 +23,9 @@
 import * as interfaces from "./interfaces";
 import * as request from "@esri/arcgis-rest-request";
 import * as zipUtils from "./zip-utils";
+import { removeGroup } from "./restHelpers";
+import { getEnterpriseServers, getItemDataAsJson } from "./restHelpersGet";
 import { createMimeTypedFile } from "./resources/copyDataIntoItem";
-import { getEnterpriseServers } from "./restHelpersGet";
 import JSZip from "jszip";
 
 // ------------------------------------------------------------------------------------------------------------------ //
@@ -50,6 +51,60 @@ export async function compressWorkflowIntoZipFile(
   })
 
   return Promise.resolve(zipFile);
+}
+
+/**
+ * Deletes a workflow.
+ *
+ * @param itemId Id of the workflow item
+ * @param authentication Credentials for the request to AGOL
+ * @returns Promise resolving with success or faliure of the request
+ */
+export async function deleteWorkflowItem(
+  itemId: string,
+  authentication: interfaces.UserSession,
+): Promise<boolean> {
+  // Get the user
+  const user: interfaces.IUser = await authentication.getUser(authentication);
+  const orgId = user.orgId;
+
+  const portal = await authentication.getPortal({ authentication});
+  const workflowURL: string | undefined = portal.helperServices?.workflowManager?.url;
+  if (!workflowURL) {
+    return Promise.reject({
+      message: "Workflow Manager is not enabled for this organization."
+    });
+  }
+
+  // Get the id of the Workflow Manager Admin group because the group has to be deleted separately
+  const data = await getItemDataAsJson(itemId, authentication);
+  const adminGroupId = data?.groupId;
+
+  // Delete the item
+  const workflowUrlRoot = getWorkflowManagerUrlRoot(orgId, workflowURL);
+  const url = `${workflowUrlRoot}/admin/${itemId}`;
+
+  const options: request.IRequestOptions = {
+    authentication,
+    headers: {
+      Accept: "application/json",
+      Authorization: `Bearer ${authentication.token}`,
+      "X-Esri-Authorization": `Bearer ${authentication.token}`
+    },
+    httpMethod: "DELETE" as any,
+    params: {
+      f: "json"
+    }
+  };
+
+  const response = await request.request(url, options);
+
+  // Delete the admin group
+  if (adminGroupId) {
+    await removeGroup(adminGroupId, authentication);
+  }
+
+  return Promise.resolve(response.success);
 }
 
 /**

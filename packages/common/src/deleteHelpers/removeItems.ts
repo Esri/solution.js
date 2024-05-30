@@ -28,6 +28,7 @@ import * as reportProgress from "./reportProgress";
 import * as hubSites from "@esri/hub-sites";
 import * as portal from "@esri/arcgis-rest-portal";
 import * as restHelpers from "../restHelpers";
+import * as workflowHelpers from "../workflowHelpers";
 import { createHubRequestOptions } from "../create-hub-request-options";
 
 // ------------------------------------------------------------------------------------------------------------------ //
@@ -85,6 +86,8 @@ export function removeItems(
         if (hubSiteItemIds.includes(itemToDelete.id)) {
           const options = await createHubRequestOptions(authentication);
           return hubSites.removeSite(itemToDelete.id, options);
+        } else if (itemToDelete.type === "Workflow")  {
+          return workflowHelpers.deleteWorkflowItem(itemToDelete.id, authentication);
         } else {
           return restHelpers.removeItem(itemToDelete.id, authentication);
         }
