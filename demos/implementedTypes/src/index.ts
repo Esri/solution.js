@@ -63,6 +63,7 @@ export function implementedTypes(): string {
   const appTypes = [
     "Application",
     "Dashboard",
+    "Data Pipeline",
     "Data Store",
     "Desktop Application",
     "Excalibur Imagery Project",
@@ -88,7 +89,6 @@ export function implementedTypes(): string {
     "Web Experience Template",
     "Web Experience",
     "Web Mapping Application",
-    "Workflow",
     "Workforce Project"
   ];
 
@@ -183,6 +183,7 @@ export function implementedTypes(): string {
     "Windows Mobile Package",
     "Windows Viewer Add In",
     "Windows Viewer Configuration",
+    "Workflow",
     "Workflow Manager Package"
   ];
 
