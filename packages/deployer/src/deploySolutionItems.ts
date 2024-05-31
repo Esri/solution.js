@@ -1019,9 +1019,6 @@ export function _createItemFromTemplateWhenReady(
 ): Promise<common.ICreateItemFromTemplateResponse> {
   const sourceItemId = template.itemId;
 
-  // Discard categories from the template
-  template.item.categories = [];
-
   // ensure this is present
   template.dependencies = template.dependencies || [];
   // if there is no entry in the templateDictionary
