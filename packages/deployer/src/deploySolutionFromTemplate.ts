@@ -199,6 +199,7 @@ export async function deploySolutionFromTemplate(
   // Create a deployed Solution item
   const createSolutionItemBase = {
     ...common.sanitizeJSON(solutionTemplateBase),
+    categories: [],
     type: "Solution",
     typeKeywords: ["Solution"]
   };
