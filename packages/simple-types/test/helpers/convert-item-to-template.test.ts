@@ -596,6 +596,7 @@ describe("simpleTypeConvertItemToTemplate", () => {
       };
 
       const dataResponse: any = mockItems.getAGOLItemData("Notebook");
+      const id = "3b927de78a784a5aa3981469d85cf45d";
 
       fetchMock
         .post(
@@ -617,7 +618,18 @@ describe("simpleTypeConvertItemToTemplate", () => {
           utils.PORTAL_SUBSET.restUrl +
             "/content/users/casey/items/sln1234567890/addResources",
           utils.getSuccessResponse()
+        )
+        .get(
+          utils.PORTAL_SUBSET.restUrl +
+          `/content/items/${id}?f=json&token=fake-token`,
+          utils.getSuccessResponse({ id })
+        )
+        .get(
+          utils.PORTAL_SUBSET.restUrl +
+          `/community/groups/${id}?f=json&token=fake-token`,
+          utils.getSuccessResponse({ id })
         );
+
       staticRelatedItemsMocks.fetchMockRelatedItems(
         "abc0cab401af4828a25cc6eaeb59fb69",
         { total: 0, relatedItems: [] }
