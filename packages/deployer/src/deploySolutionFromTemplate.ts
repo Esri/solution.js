@@ -197,9 +197,9 @@ export async function deploySolutionFromTemplate(
   }
 
   // Create a deployed Solution item
+  solutionTemplateBase.categories = [];  // we don't want to carry over categories from the template
   const createSolutionItemBase = {
     ...common.sanitizeJSON(solutionTemplateBase),
-    categories: [],
     type: "Solution",
     typeKeywords: ["Solution"]
   };
