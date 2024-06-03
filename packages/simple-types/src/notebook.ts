@@ -64,39 +64,58 @@ export function createItemFromTemplate(
  * Converts a Python Notebook item to a template.
  *
  * @param itemTemplate template for the Python Notebook
+ * @param srcAuthentication Credentials for requests to source items
  * @returns templatized itemTemplate
  */
 export function convertNotebookToTemplate(
-  itemTemplate: common.IItemTemplate
-): common.IItemTemplate {
-  // The templates data to process
-  const data: any = itemTemplate.data;
-  deleteProps(data);
-  let dataString: string = JSON.stringify(data);
+  itemTemplate: common.IItemTemplate,
+  srcAuthentication: common.UserSession
+): Promise<common.IItemTemplate> {
+  return new Promise<common.IItemTemplate>((resolve, reject) => {
+    // The templates data to process
+    const data: any = itemTemplate.data;
+    deleteProps(data);
+    let dataString: string = JSON.stringify(data);
 
-  const idTest: RegExp = /[0-9A-F]{32}/gim;
+    const idTest: RegExp = /[0-9A-F]{32}/gim;
 
-  if (data && idTest.test(dataString)) {
-    const ids: string[] = dataString.match(idTest) as string[];
-    const verifiedIds: string[] = [];
-    ids.forEach(id => {
-      if (verifiedIds.indexOf(id) === -1) {
-        verifiedIds.push(id);
+    if (data && idTest.test(dataString)) {
+      const ids: string[] = dataString.match(idTest) as string[];
+      const promises = [];
+      const verifiedIds: string[] = [];
+      const idLookup = [];
+      ids.forEach(id => {
+        if (verifiedIds.indexOf(id) === -1) {
+          promises.push(common.isItem(id, srcAuthentication));
+          idLookup.push(id);
 
-        // templatize the itemId--but only once per unique id
-        const regEx = new RegExp(id, "gm");
-        dataString = dataString.replace(regEx, "{{" + id + ".itemId}}");
-
-        // update the dependencies
-        if (itemTemplate.dependencies.indexOf(id) === -1) {
-          itemTemplate.dependencies.push(id);
+          promises.push(common.isGroup(id, srcAuthentication));
+          idLookup.push(id);
         }
-      }
-    });
-    itemTemplate.data = JSON.parse(dataString);
-  }
+      });
 
-  return itemTemplate;
+      Promise.all(promises).then((
+        results
+      ) => {
+        results.forEach((isValid, i) => {
+          const id = idLookup[i];
+          if (isValid && verifiedIds.indexOf(id) < 0) {
+            verifiedIds.push(id);
+            // templatize the itemId--but only once per unique id
+            const regEx = new RegExp(id, "gm");
+            dataString = dataString.replace(regEx, "{{" + id + ".itemId}}");
+
+            // update the dependencies
+            if (itemTemplate.dependencies.indexOf(id) === -1) {
+              itemTemplate.dependencies.push(id);
+            }
+          }
+        });
+        itemTemplate.data = JSON.parse(dataString);
+        resolve(itemTemplate);
+      }, (error: any) => reject(JSON.stringify(error)));
+    }
+  });
 }
 
 /**
