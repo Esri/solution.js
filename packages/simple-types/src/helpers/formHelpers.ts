@@ -30,33 +30,74 @@ export async function templatizeFormWebHooks(
   zipObject: JSZip,
   sourceOrgUrl: string
 ): Promise<JSZip> {
-  const webhooks = await common.getWebHooksFromZipObject(zipObject);
-  if (webhooks.length > 0) {
-    webhooks.forEach((webhook: any) => {
-      // Templatize the webhook URL
-      let url = webhook.url;
-      const urlObj = new URL(url);
+  const zipObjectContents: common.IZipObjectContentItem[] = await common.getZipObjectContents(zipObject);
 
-      const server = `${urlObj.protocol}//${urlObj.host}`;
-      const workflowServer = "https://workflow.arcgis.com";
+  zipObjectContents.forEach(
+    (zipFile: common.IZipObjectContentItem) => {
 
-      if (server === workflowServer) {
-        // Templatize organization
-        const partialPath = url.substring(workflowServer.length);
-        const partialPathParts = partialPath.split("/");
-        const orgId = partialPathParts[1];
-        url = url.replace(orgId, "{{user.orgId}}");
+      if (zipFile.file.endsWith(".info")) {
+        const contents = JSON.parse(zipFile.content as string);
+        JSON.parse(zipFile.content as string);
 
-      } else {
-        // Templatize server, but only if it matches the source org URL
-        url = url.replace(sourceOrgUrl, "{{portalBaseUrl}}");
+        const webhooks = common.getProp(contents, "notificationsInfo.webhooks");
+        if (webhooks) {
+          templatizeWebhooks(webhooks, sourceOrgUrl);
+          common.setProp(contents, "notificationsInfo.webhooks", webhooks);
+        }
+
+        const serviceInfo = common.getProp(contents, "serviceInfo");
+        if (serviceInfo) {
+          serviceInfo.url = `{{${serviceInfo.itemId}.url}}`;
+          common.setProp(serviceInfo, "serviceInfo", serviceInfo);
+        }
+
+        zipObject.file(zipFile.file, JSON.stringify(contents));
+
+      } else if (zipFile.file.endsWith(".json")) {
+        const contents = JSON.parse(zipFile.content as string);
+        JSON.parse(zipFile.content as string);
+
+        const webhooks = common.getProp(contents, "settings.notificationsInfo.webhooks");
+        if (webhooks) {
+          templatizeWebhooks(webhooks, sourceOrgUrl);
+          common.setProp(contents, "settings.notificationsInfo.webhooks", webhooks);
+          zipObject.file(zipFile.file, JSON.stringify(contents));
+        }
+
       }
 
-      webhook.url = url;
-    });
-    zipObject = await common.setWebHooksInZipObject(zipObject, webhooks);
-  }
+    }
+  );
 
   // Return the modified zip object
   return Promise.resolve(zipObject);
 }
+
+export function templatizeWebhooks(
+  webhooks: string[],
+  sourceOrgUrl: string
+): void {
+  webhooks.forEach((webhook: any) => {
+    // Templatize the webhook URL
+    let url = webhook.url;
+    const urlObj = new URL(url);
+
+    const server = `${urlObj.protocol}//${urlObj.host}`;
+    const workflowServer = "https://workflow.arcgis.com";
+
+    if (server === workflowServer) {
+      // Templatize organization
+      const partialPath = url.substring(workflowServer.length);
+      const partialPathParts = partialPath.split("/");
+      const orgId = partialPathParts[1];
+      url = url.replace(orgId, "{{user.orgId}}");
+
+    } else {
+      // Templatize server, but only if it matches the source org URL
+      url = url.replace(sourceOrgUrl, "{{portalBaseUrl}}");
+    }
+
+    webhook.url = url;
+  });
+}
+
