@@ -165,139 +165,49 @@ describe("simpleTypeCreateItemFromTemplate", () => {
         });
     });
 
-    it("should handle missing python notebook content with invalid ids", done => {
+    it("should handle missing python notebook content: no data", () => {
       const itemTemplate: common.IItemTemplate = templates.getItemTemplate(
         "Notebook"
       );
-      const fakeId = "aaa27de78a784a5aa3981469d85cf45d";
-      itemTemplate.data.cells[0].source = fakeId;
-
+      itemTemplate.data = null;
       const expected = common.cloneObject(itemTemplate);
-      expected.dependencies = [];
 
-      const isItemSpy = spyOn(common, "isItem").and.rejectWith(utils.getFailureResponse());
-      const isGroupSpy = spyOn(common, "isGroup").and.rejectWith(utils.getFailureResponse());
-
-      fetchMock
-        .get(
-          utils.PORTAL_SUBSET.restUrl +
-          `/content/items/${fakeId}?f=json&token=fake-token`,
-          mockItems.get400Failure()
-        )
-        .get(
-          utils.PORTAL_SUBSET.restUrl +
-          `/community/groups/${fakeId}?f=json&token=fake-token`,
-          mockItems.get400Failure()
-        );
-
-      notebook.convertNotebookToTemplate(
-        itemTemplate,
-        MOCK_USER_SESSION
-      ).then(() => {}, () => {
-        expect(isItemSpy).toHaveBeenCalled();
-        expect(isGroupSpy).toHaveBeenCalled();
-        done();
-      });
+      const result: common.IItemTemplate = notebook.convertNotebookToTemplate(
+        itemTemplate
+      );
+      expect(result).toEqual(expected);
     });
 
-    it("should handle missing python notebook content with invalid ids", done => {
+    it("should handle missing python notebook content: duplicate ids, but not in dependencies", () => {
       const itemTemplate: common.IItemTemplate = templates.getItemTemplate(
         "Notebook"
       );
-      const fakeId = "aaa27de78a784a5aa3981469d85cf45d";
-      itemTemplate.data.cells[0].source = fakeId;
-
-      const expected = common.cloneObject(itemTemplate);
-      expected.dependencies = [];
-
-      fetchMock
-        .get(
-          utils.PORTAL_SUBSET.restUrl +
-          `/content/items/${fakeId}?f=json&token=fake-token`,
-          mockItems.get400Failure()
-        )
-        .get(
-          utils.PORTAL_SUBSET.restUrl +
-          `/community/groups/${fakeId}?f=json&token=fake-token`,
-          mockItems.get400Failure()
-        );
-
-      notebook.convertNotebookToTemplate(
-        itemTemplate,
-        MOCK_USER_SESSION
-      ).then(result => {
-        expect(result).toEqual(expected);
-        done();
-      });
-    });
-
-    it("should handle missing python notebook content: duplicate ids, but not in dependencies", done => {
-      const itemTemplate: common.IItemTemplate = templates.getItemTemplate(
-        "Notebook"
-      );
-      const id = "3b927de78a784a5aa3981469d85cf45d";
-
       itemTemplate.data.cells.push(itemTemplate.data.cells[0]);
-      itemTemplate.data.cells[0].source = id;
-      itemTemplate.data.cells[1].source = id;
-
       const expected = common.cloneObject(itemTemplate);
-      expected.dependencies = [id];
-      expected.data.cells[0].source = `{{${id}.itemId}}`;
-      expected.data.cells[1].source = `{{${id}.itemId}}`;
+      expected.dependencies = ["3b927de78a784a5aa3981469d85cf45d"];
+      itemTemplate.data.cells[0].source = "3b927de78a784a5aa3981469d85cf45d";
+      itemTemplate.data.cells[1].source = "3b927de78a784a5aa3981469d85cf45d";
 
-      fetchMock
-        .get(
-          utils.PORTAL_SUBSET.restUrl +
-          `/content/items/${id}?f=json&token=fake-token`,
-          utils.getSuccessResponse({ id })
-        )
-        .get(
-          utils.PORTAL_SUBSET.restUrl +
-          `/community/groups/${id}?f=json&token=fake-token`,
-          utils.getSuccessResponse({ id })
-        );
-
-      notebook.convertNotebookToTemplate(
-        itemTemplate,
-        MOCK_USER_SESSION
-      ).then(result => {
-        expect(result).toEqual(expected);
-        done();
-      });
+      const result: common.IItemTemplate = notebook.convertNotebookToTemplate(
+        itemTemplate
+      );
+      expect(result).toEqual(expected);
     });
 
-    it("should handle missing python notebook content: duplicate ids in dependencies", done => {
-      const id = "3b927de78a784a5aa3981469d85cf45d";
+    it("should handle missing python notebook content: duplicate ids in dependencies", () => {
       const itemTemplate: common.IItemTemplate = templates.getItemTemplate(
         "Notebook",
-        [id]
+        ["3b927de78a784a5aa3981469d85cf45d"]
       );
       itemTemplate.data.cells.push(itemTemplate.data.cells[0]);
       const expected = common.cloneObject(itemTemplate);
-      itemTemplate.data.cells[0].source = id;
-      itemTemplate.data.cells[1].source = id;
+      itemTemplate.data.cells[0].source = "3b927de78a784a5aa3981469d85cf45d";
+      itemTemplate.data.cells[1].source = "3b927de78a784a5aa3981469d85cf45d";
 
-      fetchMock
-      .get(
-        utils.PORTAL_SUBSET.restUrl +
-        `/content/items/${id}?f=json&token=fake-token`,
-        utils.getSuccessResponse({ id })
-      )
-      .get(
-        utils.PORTAL_SUBSET.restUrl +
-        `/community/groups/${id}?f=json&token=fake-token`,
-        utils.getSuccessResponse({ id })
+      const result: common.IItemTemplate = notebook.convertNotebookToTemplate(
+        itemTemplate
       );
-
-
-      notebook.convertNotebookToTemplate(
-        itemTemplate,
-        MOCK_USER_SESSION
-      ).then(result => {
-        expect(result).toEqual(expected);
-        done();
-      });
+      expect(result).toEqual(expected);
     });
   });
 

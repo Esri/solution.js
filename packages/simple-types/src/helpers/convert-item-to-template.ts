@@ -200,10 +200,7 @@ export function convertItemToTemplate(
           }
           break;
         case "Notebook":
-          templateModifyingPromise = notebook.convertNotebookToTemplate(
-            itemTemplate,
-            srcAuthentication
-          );
+          notebook.convertNotebookToTemplate(itemTemplate);
           break;
         case "Oriented Imagery Catalog":
           templateModifyingPromise = oic.convertItemToTemplate(
