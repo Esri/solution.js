@@ -93,13 +93,13 @@ export async function templatizeFormData(
         || zipFile.file.endsWith(".webform") || zipFile.file.endsWith(".xml")) {
         let contents = zipFile.content as string;
 
-        const agoIdRegEx = common.getAgoIdRegEx();
+        const agoIdTypeRegEx = /\b([0-9A-Fa-f]){32}\b_type/g
 
         // Replace the item id references
-        contents = _replaceItemIds(contents, templateDictionary, agoIdRegEx);
+        contents = _replaceItemIds(contents, templateDictionary, agoIdTypeRegEx);
 
         // Replace the feature service url references
-        contents = _replaceFeatureServiceURLs(contents, templateDictionary, agoIdRegEx);
+        contents = _replaceFeatureServiceURLs(contents, templateDictionary, agoIdTypeRegEx);
 
         // Replace portal base url references
         contents = _replacePortalBaseUrls(contents, templateDictionary);
@@ -124,17 +124,17 @@ export async function templatizeFormData(
  *
  * @param contents String in which to replace feature service URLs
  * @param templateDictionary Item ids of feature services pointing to feature service URLs
- * @param agoIdRegEx Matcher for AGO ids
+ * @param agoIdTypeRegEx Matcher for AGO ids with "_type" suffix
  * @returns Modified contents
  */
 export function _replaceFeatureServiceURLs(
   contents: string,
   templateDictionary: any,
-  agoIdRegEx: RegExp
+  agoIdTypeRegEx: RegExp
 ): string {
   let updatedContents = contents;
   const fsIds = Object.keys(templateDictionary)
-    .filter((key) => key.match(agoIdRegEx) && templateDictionary[key].type === "Feature Service");
+    .filter((key) => key.match(agoIdTypeRegEx) && templateDictionary[key].type === "Feature Service");
   fsIds.forEach((fsId) => {
     const urlToReplace = templateDictionary[fsId].url;
     const urlReplacement = templateDictionary[urlToReplace];
@@ -150,17 +150,17 @@ export function _replaceFeatureServiceURLs(
  *
  * @param contents String in which to replace the item id references
  * @param templateDictionary Item ids of feature services pointing to feature service URLs
- * @param agoIdRegEx Matcher for AGO ids
+ * @param agoIdTypeRegEx Matcher for AGO ids
  * @returns Modified contents
  */
 export function _replaceItemIds(
   contents: string,
   templateDictionary: any,
-  agoIdRegEx: RegExp
+  agoIdTypeRegEx: RegExp
 ): string {
   let updatedContents = contents;
   const itemIds = Object.keys(templateDictionary)
-    .filter((key) => key.match(agoIdRegEx) && templateDictionary[key].type !== "Feature Service");
+    .filter((key) => key.match(agoIdTypeRegEx) && templateDictionary[key].type !== "Feature Service");
   itemIds.forEach((itemId) => {
     updatedContents = updatedContents.replace(new RegExp(itemId, "g"), `{{${itemId}.itemId}}`);
   });

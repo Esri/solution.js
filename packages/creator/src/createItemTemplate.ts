@@ -99,7 +99,7 @@ export function createItemTemplate(
             itemInfo = sanitizeJSON(itemInfo);
 
             // Save a record of items that we've added to the solution
-            templateDictionary[itemId] = {
+            templateDictionary[`${itemId}_type`] = {
               type: itemInfo.type,
               url: itemInfo.url
             };
