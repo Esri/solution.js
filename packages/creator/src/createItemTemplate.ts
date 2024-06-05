@@ -98,6 +98,12 @@ export function createItemTemplate(
           itemInfo => {
             itemInfo = sanitizeJSON(itemInfo);
 
+            // Save a record of items that we've added to the solution
+            templateDictionary[itemId] = {
+              type: itemInfo.type,
+              url: itemInfo.url
+            };
+
             // Save the URL as a symbol
             if (itemInfo.url) {
               templateDictionary[itemInfo.url] = "{{" + itemInfo.id + ".url}}";

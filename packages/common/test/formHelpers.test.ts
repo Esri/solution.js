@@ -23,8 +23,8 @@ import * as interfaces from "../src/interfaces";
 import * as mockItems from "./mocks/agolItems";
 import * as restHelpers from "../src/restHelpers";
 import * as utils from "./mocks/utils";
+import * as zipHelpers from "../test/mocks/zipHelpers";
 import * as zipUtils from "../src/zip-utils";
-import * as zipUtilsTest from "../test/zip-utils.test";
 
 // ------------------------------------------------------------------------------------------------------------------ //
 
@@ -52,7 +52,7 @@ describe("Module `zip-utils`", () => {
 
     it("updates the item with a zip file", async () => {
       const itemId = "2f56b3b59cdc4ac8b8f5de0399887e1e";
-      const zip = zipUtilsTest.generateFormZipObject(itemId);
+      const zip = zipHelpers.generateFormZipObject(itemId);
 
       spyOn(restHelpers, "updateItem").and.callFake(async (
         update: interfaces.IItemUpdate

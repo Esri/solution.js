@@ -31,7 +31,7 @@ import * as sinon from "sinon";
 import * as templates from "../test/mocks/templates";
 import * as utils from "./mocks/utils";
 import * as zipUtils from "../src/zip-utils";
-import * as zipUtilsTest from "./zip-utils.test";
+import * as zipHelpers from "../test/mocks/zipHelpers";
 import { IPagingParams } from "@esri/arcgis-rest-portal";
 
 // ------------------------------------------------------------------------------------------------------------------ //
@@ -3083,7 +3083,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
     it("can set workflow configuration", async () => {
       const orgId = "abcdefghij";
       const itemId = "1234567890";
-      const configurationZipFile = await zipUtilsTest.getSampleFormZipFile(itemId, "workflow");
+      const configurationZipFile = await zipHelpers.getSampleFormZipFile(itemId, "workflow");
 
       const requestSpy = spyOn(request, "request")
         .and.resolveTo({ success: true });

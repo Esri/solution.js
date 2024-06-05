@@ -36,6 +36,7 @@ import {
   getSubgroupIds,
   getUser,
   getVelocityUrlBase,
+  getWorkflowManagerUrlRoot,
   getWorkflowURL,
   ICreateSolutionOptions,
   ISolutionItemData,
@@ -133,14 +134,27 @@ export async function createSolution(
       setLocationTrackingEnabled(
         portalResponse,
         userResponse,
-        createOptions.templateDictionary
+        updatedCreateOptions.templateDictionary
       );
 
       // Add information needed for workflow manager
       const user = await getUser(srcAuthentication);
-      createOptions.templateDictionary.orgId = user.orgId;
-      createOptions.templateDictionary.workflowURL = await getWorkflowURL(
-        createOptions.templateDictionary.workflowURL, portalResponse, srcAuthentication);
+      updatedCreateOptions.templateDictionary.orgId = user.orgId;
+      updatedCreateOptions.templateDictionary.workflowURL = await getWorkflowURL(
+        updatedCreateOptions.templateDictionary.workflowURL, portalResponse, srcAuthentication);
+      updatedCreateOptions.templateDictionary.workflowBaseUrl = getWorkflowManagerUrlRoot(
+        updatedCreateOptions.templateDictionary.orgId, updatedCreateOptions.templateDictionary.workflowURL);
+
+      const portal = await srcAuthentication.getPortal();
+      let portalBaseUrl;
+      if (portal.urlKey) {
+        portalBaseUrl = `https://${portal.urlKey}.maps.arcgis.com`;
+      } else if (portal.portalHostname) {
+        portalBaseUrl = `https://${portal.portalHostname}`;
+      }
+      if (portalBaseUrl) {
+        updatedCreateOptions.templateDictionary["portalBaseUrl"] = portalBaseUrl;
+      }
 
       // Use a copy of the thumbnail rather than a URL to it
       updatedCreateOptions = await _addThumbnailFileToCreateOptions(

@@ -31,7 +31,7 @@ import * as restRequest from "@esri/arcgis-rest-request";
  * @param item Item to add
  * @param authentication Credentials for requests to the workflow manager
  * @param orgId Id of organization whose license is to be checked; only used if `enterpriseWebAdaptorUrl` is falsy
- * @param server URL of the server, e.g., "https://gisserver.domain.com/server"
+ * @param workflowURL URL of the workflow manager, e.g., "https://workflow.arcgis.com"
  * @returns Promise resolving with new item's AGO id
  * @throws {WorkflowJsonExceptionDTO} if request to workflow manager fails
  */
@@ -39,10 +39,10 @@ export async function addWorkflowItem(
   item: common.IItemTemplate,
   authentication: common.UserSession,
   orgId: string | undefined,
-  server: string
+  workflowURL: string
 ): Promise<string> {
   // Add the workflow item
-  const workflowUrlRoot = common.getWorkflowManagerUrlRoot(orgId, server);
+  const workflowUrlRoot = common.getWorkflowManagerUrlRoot(orgId, workflowURL);
   const url = `${workflowUrlRoot}/admin/createWorkflowItem?name=${item.item.title}`;
 
   const options: restRequest.IRequestOptions = {

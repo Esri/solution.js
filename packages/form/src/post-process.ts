@@ -84,3 +84,84 @@ export async function postProcess(
     authentication
   );
 }
+
+/**
+ * Post-processes form items just before a Solution item is created.
+ *
+ * @param templates All of the templates in the created Solution item
+ * @param templateDictionary A collection of mappings from item ids and service URLs to templatizing info
+ * @returns
+ */
+export async function postProcessFormItems(
+  templates: common.IItemTemplate[],
+  templateDictionary: any
+): Promise<common.IItemTemplate[]> {
+  for (const template of templates) {
+    if (template.type === "Form") {
+      // Store the form's data in the solution resources, not in template
+      const formData = template.data;
+      template.data = null;
+
+      // Add the form data to the template for a post-process resource upload
+      if (formData) {
+        let zipObject: JSZip = await common.blobToZipObject(formData as File);
+
+        // Templatize the form
+        zipObject = await formUtils.templatizeFormData(zipObject, templateDictionary);
+
+        template.item.name = _getFormDataFilename(
+          template.item.name, (formData as File).name, `${template.itemId}.zip`
+        );
+        const templatizedFormData: File = await common.zipObjectToZipFile(zipObject, template.item.name);
+
+        // Add the data file to the template so that it can be uploaded with the other resources in the solution
+        const storageName = common.convertItemResourceToStorageResource(
+          template.itemId,
+          template.item.name,
+          common.SolutionTemplateFormatVersion,
+          common.SolutionResourceType.data
+        );
+
+        const dataFile: common.ISourceFile = {
+          itemId: template.itemId,
+          file: templatizedFormData,
+          folder: storageName.folder,
+          filename: template.item.name
+        }
+        template.dataFile = dataFile;
+
+        // Update the template's resources
+        template.resources.push(
+          storageName.folder + "/" + storageName.filename
+        );
+      }
+    }
+  }
+
+  return Promise.resolve(templates);
+}
+
+// ------------------------------------------------------------------------------------------------------------------ //
+
+/**
+ * Encapsulates the rules for naming a form's data file.
+ * Chooses the first parameter that's defined and is not the string "undefined".
+ *
+ * @param itemName Template's item name
+ * @param dataFilename The data file name
+ * @param itemIdAsName A name constructed from the template's id suffixed with ".zip"
+ *
+ * @return A name for the data file
+ */
+export function _getFormDataFilename(
+  itemName: string,
+  dataFilename: string,
+  itemIdAsName: string
+): string {
+  const originalFilename = itemName || dataFilename;
+  const filename =
+    originalFilename && originalFilename !== "undefined"
+      ? originalFilename
+      : itemIdAsName;
+  return filename;
+}

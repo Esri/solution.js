@@ -45,10 +45,13 @@ import {
   createItemTemplate,
   postProcessFieldReferences
 } from "../createItemTemplate";
+import * as form from "@esri/solution-form";
 import {
   getDataFilesFromTemplates,
   removeDataFilesFromTemplates
 } from "./template";
+
+// ------------------------------------------------------------------------------------------------------------------ //
 
 /**
  * Adds a list of AGO item ids to a solution item.
@@ -163,13 +166,12 @@ export function addContentToSolution(
         solutionTemplates,
         itemProgressCallback
       );
-      templateDictionary[itemId] = itemId;  // save a record of items that we've added to the solution
       getItemsPromise.push(createDef);
     });
 
     // eslint-disable-next-line @typescript-eslint/no-floating-promises
     Promise.all(getItemsPromise).then(
-      (multipleResourceItemFiles: ISourceFile[][]) => {
+      async (multipleResourceItemFiles: ISourceFile[][]) => {
         if (failedItemIds.length > 0) {
           reject(
             failWithIds(
@@ -185,10 +187,10 @@ export function addContentToSolution(
               [] as ISourceFile[]
             );
 
-            // Extract resource data files from templates
-            resourceItemFiles = resourceItemFiles.concat(getDataFilesFromTemplates(solutionTemplates));
-
             // test for and update group dependencies and other post-processing
+            solutionTemplates = await form.postProcessFormItems(
+              solutionTemplates, templateDictionary
+            );
             solutionTemplates = _postProcessGroupDependencies(
               solutionTemplates
             );
@@ -202,6 +204,9 @@ export function addContentToSolution(
             const templateIds = solutionTemplates.map(
               template => template.itemId
             );
+
+            // Extract resource data files from templates
+            resourceItemFiles = resourceItemFiles.concat(getDataFilesFromTemplates(solutionTemplates));
 
             // Coalesce the resource file paths from the created templates
             resourceItemFiles = resourceItemFiles.filter(file =>
