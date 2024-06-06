@@ -22,6 +22,7 @@
 
 import * as interfaces from "./interfaces";
 import * as request from "@esri/arcgis-rest-request";
+import * as restHelpersGet from "./restHelpersGet";
 import * as zipUtils from "./zip-utils";
 import { removeGroup } from "./restHelpers";
 import { getEnterpriseServers, getItemDataAsJson } from "./restHelpersGet";
@@ -57,32 +58,21 @@ export async function compressWorkflowIntoZipFile(
  * Deletes a workflow.
  *
  * @param itemId Id of the workflow item
+ * @param workflowBaseUrl URL of the workflow manager, e.g., "https://workflow.arcgis.com/orgId"
  * @param authentication Credentials for the request to AGOL
  * @returns Promise resolving with success or faliure of the request
  */
 export async function deleteWorkflowItem(
   itemId: string,
+  workflowBaseUrl: string,
   authentication: interfaces.UserSession,
 ): Promise<boolean> {
-  // Get the user
-  const user: interfaces.IUser = await authentication.getUser(authentication);
-  const orgId = user.orgId;
-
-  const portal = await authentication.getPortal({ authentication});
-  const workflowURL: string | undefined = portal.helperServices?.workflowManager?.url;
-  if (!workflowURL) {
-    return Promise.reject({
-      message: "Workflow Manager is not enabled for this organization."
-    });
-  }
-
   // Get the id of the Workflow Manager Admin group because the group has to be deleted separately
   const data = await getItemDataAsJson(itemId, authentication);
   const adminGroupId = data?.groupId;
 
   // Delete the item
-  const workflowUrlRoot = getWorkflowManagerUrlRoot(orgId, workflowURL);
-  const url = `${workflowUrlRoot}/admin/${itemId}`;
+  const url = `${workflowBaseUrl}/admin/${itemId}`;
 
   const options: request.IRequestOptions = {
     authentication,
@@ -129,20 +119,17 @@ export async function extractWorkflowFromZipFile(
 /**
  * Check the license capability of Workflow Manager Server.
  *
- * @param orgId Id of organization whose license is to be checked; only used if `enterpriseWebAdaptorUrl` is falsy
- * @param workflowURL URL of the workflow manager, e.g., "https://workflow.arcgis.com"
+ * @param workflowBaseUrl URL of the workflow manager, e.g., "https://workflow.arcgis.com/orgId"
  * @param authentication Credentials for the request to AGO
  * @returns Promise resolving with a boolean indicating whether the organization has the license
  * @throws {WorkflowJsonExceptionDTO} if request to workflow manager fails
  */
 export async function getWorkflowManagerAuthorized(
-  orgId: string | undefined,
-  workflowURL: string,
-  authentication?: interfaces.UserSession
+  workflowBaseUrl: string,
+  authentication: interfaces.UserSession
 ): Promise<boolean> {
   try {
-    const workflowUrlRoot = getWorkflowManagerUrlRoot(orgId, workflowURL);
-    const url = `${workflowUrlRoot}/checkStatus`;
+    const url = `${workflowBaseUrl}/checkStatus`;
 
     const options: request.IRequestOptions = {
       authentication,
@@ -162,13 +149,57 @@ export async function getWorkflowManagerAuthorized(
 }
 
 /**
+ * Determines the URL to the Workflow Manager.
+ *
+ * @param authentication Authenticated user session
+ * @param portalResponse Response from portal "self" call; will be fetched if not supplied
+ * @param orgId Id of organization whose license is to be checked; if truthy, the URL will be for AGO;
+ * if falsy, the URL will be for Workflow Manager Enterprise
+ * @returns A URL based on ArcGIS Online or Enterprise, e.g., "https://abc123.esri.com:6443/arcgis"
+ */
+export async function getWorkflowBaseURL(
+  authentication: interfaces.UserSession,
+  portalResponse?: interfaces.IPortal,
+  orgId?: string
+): Promise<string> {
+  let workflowServerUrl: string;
+
+  if (!portalResponse) {
+    const user = await restHelpersGet.getUser(authentication);
+    orgId = orgId ?? user.orgId;
+
+    portalResponse = await restHelpersGet.getPortal("", authentication);
+  }
+
+  const portalURL = `https://${portalResponse.portalHostname}`;
+  const portalRestURL = `${portalURL}/sharing/rest`;
+
+  if (portalResponse.isPortal) {
+    // Enterprise
+    workflowServerUrl = await _getWorkflowEnterpriseServerRootURL(portalRestURL, authentication);
+  } else {
+    // ArcGIS Online
+    workflowServerUrl = portalResponse.helperServices?.workflowManager?.url ?? portalURL;
+  }
+
+  return Promise.resolve(
+    orgId
+    ? `${workflowServerUrl}/${orgId}`
+    : `${workflowServerUrl}/workflow`
+  );
+}
+
+// ------------------------------------------------------------------------------------------------------------------ //
+
+/**
  * Get the URL for the Workflow Manager Enterprise application.
  *
  * @param portalRestUrl URL of the portal REST endpoint, e.g., "https://gisserver.domain.com/server/rest/services"
  * @param authentication Credentials for the request to AGO
- * @returns URL for the Workflow Manager Enterprise application, or an empty string if Workflow Manager is not enabled
+ * @returns URL for the Workflow Manager Enterprise application (e.g., "https://abc123.esri.com:6443/arcgis"),
+ * or an empty string if Workflow Manager is not enabled
  */
-export async function getWorkflowEnterpriseServerURL(
+export async function _getWorkflowEnterpriseServerRootURL(
   portalRestUrl: string,
   authentication: interfaces.UserSession
 ): Promise<string> {
@@ -183,49 +214,4 @@ export async function getWorkflowEnterpriseServerURL(
     return "";
   }
   return workflowServer.url as string;
-}
-
-/**
- * Get the root URL for the Workflow Manager application.
- *
- * @param orgId Id of organization whose license is to be checked; if truthy, the URL will be for AGO;
- * if falsy, the URL will be for Workflow Manager Enterprise
- * @param workflowURL URL of the workflow manager, e.g., "https://workflow.arcgis.com"
- * @returns URL for the Workflow Manager application
- */
-export function getWorkflowManagerUrlRoot(
-  orgId: string | undefined,
-  workflowURL: string
-): string {
-  return orgId
-    ? `${workflowURL}/${orgId}`
-    : `${workflowURL}/workflow`;
-}
-
-/**
- * Determines the Workflow Manager URL to use for the deployment if not supplied.
- *
- * @param workflowURL Existing workflow URL; if supplied, it's simply returned
- * @param portalResponse Response from portal "self" call
- * @param authentication Authenticated user session
- * @returns workflowURL or a URL based on ArcGIS Online or Enterprise
- */
-export async function getWorkflowURL(
-  workflowURL: string,
-  portalResponse: interfaces.IPortal,
-  authentication: interfaces.UserSession
-): Promise<string> {
-  if (!workflowURL) {
-    const portalURL = `https://${portalResponse.portalHostname}`;
-    const portalRestURL = `${portalURL}/sharing/rest`;
-
-    if (portalResponse.isPortal) {
-      // Enterprise
-      workflowURL = await getWorkflowEnterpriseServerURL(portalRestURL, authentication);
-    } else {
-      // ArcGIS Online
-      workflowURL = portalResponse.helperServices?.workflowManager?.url ?? portalURL;
-    }
-  }
-  return Promise.resolve(workflowURL);
 }

@@ -36,8 +36,7 @@ import {
   getSubgroupIds,
   getUser,
   getVelocityUrlBase,
-  getWorkflowManagerUrlRoot,
-  getWorkflowURL,
+  getWorkflowBaseURL,
   ICreateSolutionOptions,
   ISolutionItemData,
   IGroup,
@@ -139,11 +138,8 @@ export async function createSolution(
 
       // Add information needed for workflow manager
       const user = await getUser(srcAuthentication);
-      updatedCreateOptions.templateDictionary.orgId = user.orgId;
-      updatedCreateOptions.templateDictionary.workflowURL = await getWorkflowURL(
-        updatedCreateOptions.templateDictionary.workflowURL, portalResponse, srcAuthentication);
-      updatedCreateOptions.templateDictionary.workflowBaseUrl = getWorkflowManagerUrlRoot(
-        updatedCreateOptions.templateDictionary.orgId, updatedCreateOptions.templateDictionary.workflowURL);
+      updatedCreateOptions.templateDictionary.workflowBaseUrl = await getWorkflowBaseURL(
+        srcAuthentication, portalResponse, user.orgId);
 
       const portal = await srcAuthentication.getPortal();
       let portalBaseUrl;

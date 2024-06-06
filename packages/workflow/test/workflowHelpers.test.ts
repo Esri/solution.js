@@ -57,7 +57,7 @@ describe("Module `workflowHelpers`", () => {
       );
 
       const createdItemId = await workflowHelpers.addWorkflowItem(
-        agolItem, MOCK_USER_SESSION, orgId, "https://arcgis.com");
+        agolItem, "https://arcgis.com/orgId", MOCK_USER_SESSION);
 
       expect(createdItemId).toEqual(itemId);
     });

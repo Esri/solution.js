@@ -100,13 +100,8 @@ export async function getCompleteItem(
     );
 
   } else if (itemBase.type === "Workflow") {
-    const user = await restHelpersGet.getUser(authentication);
-    let server;
-    const portal = new URL(authentication.portal);
-    if (!portal.origin.endsWith(".arcgis.com") && !portal.origin.endsWith(".esri.com")) {
-      server = authentication.portal.replace("/sharing/rest", "");
-    }
-    const workflowConfigZip = await restHelpers.getWorkflowConfigurationZip(itemBase.id, authentication, user.orgId, server);
+    const workflowBaseUrl = await workflowHelpers.getWorkflowBaseURL(authentication);
+    const workflowConfigZip = await restHelpers.getWorkflowConfigurationZip(itemBase.id, workflowBaseUrl, authentication);
     completeItem.workflowConfiguration = await workflowHelpers.extractWorkflowFromZipFile(workflowConfigZip);
   }
 

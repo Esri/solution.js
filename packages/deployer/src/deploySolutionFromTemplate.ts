@@ -129,9 +129,8 @@ export async function deploySolutionFromTemplate(
 
   // Add information needed for workflow manager
   const user = await common.getUser(authentication);
-  templateDictionary.orgId = user.orgId;
-  templateDictionary.workflowURL = await common.getWorkflowURL(
-    templateDictionary.workflowURL, portalResponse, authentication);
+  templateDictionary.workflowBaseUrl = await common.getWorkflowBaseURL(
+    authentication, portalResponse, user.orgId);
 
   // if we have tracking views and the user is not admin or the org doesn't support tracking an error is thrown
   common.setLocationTrackingEnabled(

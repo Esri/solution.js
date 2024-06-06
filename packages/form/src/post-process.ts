@@ -29,7 +29,7 @@ import JSZip from "jszip";
 // ------------------------------------------------------------------------------------------------------------------ //
 
 /**
- * Form post-processing actions
+ * Post-processes form items and the end of Solution item deployment.
  *
  * @param {string} itemId The item ID
  * @param {string} type The template type

@@ -88,12 +88,11 @@ export async function templatizeFormData(
 
   zipObjectContents.forEach(
     (zipFile: common.IZipObjectContentItem) => {
-
       if (zipFile.file.endsWith(".info") || zipFile.file.endsWith(".itemInfo") || zipFile.file.endsWith(".json")
         || zipFile.file.endsWith(".webform") || zipFile.file.endsWith(".xml")) {
         let contents = zipFile.content as string;
 
-        const agoIdTypeRegEx = /\b([0-9A-Fa-f]){32}\b_type/g
+        const agoIdTypeRegEx = /\b([0-9A-Fa-f]){32}_type/g
 
         // Replace the item id references
         contents = _replaceItemIds(contents, templateDictionary, agoIdTypeRegEx);
@@ -160,7 +159,8 @@ export function _replaceItemIds(
 ): string {
   let updatedContents = contents;
   const itemIds = Object.keys(templateDictionary)
-    .filter((key) => key.match(agoIdTypeRegEx) && templateDictionary[key].type !== "Feature Service");
+    .filter((key) => key.match(agoIdTypeRegEx) && templateDictionary[key].type !== "Feature Service")
+    .map((key) => key.replace("_type", ""));
   itemIds.forEach((itemId) => {
     updatedContents = updatedContents.replace(new RegExp(itemId, "g"), `{{${itemId}.itemId}}`);
   });

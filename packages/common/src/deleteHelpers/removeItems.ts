@@ -87,7 +87,8 @@ export function removeItems(
           const options = await createHubRequestOptions(authentication);
           return hubSites.removeSite(itemToDelete.id, options);
         } else if (itemToDelete.type === "Workflow")  {
-          return workflowHelpers.deleteWorkflowItem(itemToDelete.id, authentication);
+          const workflowBaseUrl = await workflowHelpers.getWorkflowBaseURL(authentication);
+          return workflowHelpers.deleteWorkflowItem(itemToDelete.id, workflowBaseUrl, authentication);
         } else {
           return restHelpers.removeItem(itemToDelete.id, authentication);
         }
