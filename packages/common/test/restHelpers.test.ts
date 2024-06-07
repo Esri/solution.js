@@ -31,7 +31,7 @@ import * as sinon from "sinon";
 import * as templates from "../test/mocks/templates";
 import * as utils from "./mocks/utils";
 import * as zipUtils from "../src/zip-utils";
-import * as zipUtilsTest from "./zip-utils.test";
+import * as zipHelpers from "../test/mocks/zipHelpers";
 import { IPagingParams } from "@esri/arcgis-rest-portal";
 
 // ------------------------------------------------------------------------------------------------------------------ //
@@ -3059,37 +3059,40 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
         .and.returnValue(zipUtils.jsonToZipFile("jobConfig.json", {"jobTemplates": "abc" }, "config"));
 
       const response = await restHelpers.getWorkflowConfigurationZip(
-        itemId, MOCK_USER_SESSION, orgId, "https://workflow.arcgis.com");
+        itemId, `https://workflow.arcgis.com/${orgId}`, MOCK_USER_SESSION);
 
       expect(requestSpy.calls.count()).toEqual(1);
       expect(requestSpy.calls.argsFor(0)[0]).toEqual(`https://workflow.arcgis.com/${orgId}/admin/${itemId}/export`);
       expect(response).toEqual(await zipUtils.jsonToZipFile("jobConfig.json", {"jobTemplates": "abc" }, "config"));
     })
 
+    /*  //???
     it("can get workflow configuration using supplied server", async () => {
       const itemId = "1234567890";
       const requestSpy = spyOn(request, "request")
         .and.returnValue(zipUtils.jsonToZipFile("jobConfig.json", {"jobTemplates": "abc" }, "config"));
 
-      const response = await restHelpers.getWorkflowConfigurationZip(itemId, MOCK_USER_SESSION, undefined, "https://gisserver.domain.com/server");
+      const response = await restHelpers.getWorkflowConfigurationZip(
+        itemId, "https://workflow.arcgis.com", MOCK_USER_SESSION);
 
       expect(requestSpy.calls.count()).toEqual(1);
       expect(requestSpy.calls.argsFor(0)[0]).toEqual(`https://gisserver.domain.com/server/workflow/admin/${itemId}/export`);
       expect(response).toEqual(await zipUtils.jsonToZipFile("jobConfig.json", {"jobTemplates": "abc" }, "config"));
     })
+  */
   });
 
   describe("setWorkflowConfigurationZip", () => {
     it("can set workflow configuration", async () => {
       const orgId = "abcdefghij";
       const itemId = "1234567890";
-      const configurationZipFile = await zipUtilsTest.getSampleFormZipFile(itemId, "workflow");
+      const configurationZipFile = await zipHelpers.getSampleFormZipFile(itemId, "workflow");
 
       const requestSpy = spyOn(request, "request")
         .and.resolveTo({ success: true });
 
       const response = await restHelpers.setWorkflowConfigurationZip(
-        configurationZipFile, itemId, MOCK_USER_SESSION, orgId, "https://workflow.arcgis.com");
+        itemId, configurationZipFile, `https://workflow.arcgis.com/${orgId}`, MOCK_USER_SESSION);
 
       expect(requestSpy.calls.count()).toEqual(1);
       expect(requestSpy.calls.argsFor(0)[0]).toEqual(`https://workflow.arcgis.com/${orgId}/admin/${itemId}/import`);

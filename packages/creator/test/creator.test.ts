@@ -903,6 +903,12 @@ describe("Module `creator`", () => {
     });
 
     it("createSolution fails to add items to solution item", done => {
+      MOCK_USER_SESSION.getPortal = function () {
+        return (this as any).isEnterprise
+          ? Promise.resolve({ portalHostname: "myOrg.ags.esri.com/portal" })
+          : Promise.resolve({ portalHostname: "myPortalHostname" });
+      }
+
       const itemIds: string = "itm1234567890";
       const authentication: common.UserSession = MOCK_USER_SESSION;
       const expectedSolutionId = "sln1234567890";
@@ -1234,12 +1240,12 @@ describe("Module `creator`", () => {
           const fetchBody = (fetchOptions as fetchMock.MockResponseObject).body;
           expect(fetchBody).toEqual(
             "f=json&title=" +
-              encodeURIComponent(options.title) +
+              encodeURIComponent(options.title as any) +
               "&type=Solution" +
               "&snippet=" +
-              encodeURIComponent(options.snippet) +
+              encodeURIComponent(options.snippet as any) +
               "&description=" +
-              encodeURIComponent(options.description) +
+              encodeURIComponent(options.description as any) +
               "&properties=" +
               encodeURIComponent(
                 JSON.stringify({
@@ -1247,10 +1253,10 @@ describe("Module `creator`", () => {
                 })
               ) +
               "&tags=" +
-              options.tags.map(encodeURIComponent).join("%2C") +
+              options.tags?.map(encodeURIComponent).join("%2C") +
               "&typeKeywords=" +
               ["Solution", "Template", "solutionid-guid", "solutionversion-1.0"]
-                .concat(options.additionalTypeKeywords)
+                .concat(options.additionalTypeKeywords as any)
                 .map(encodeURIComponent)
                 .join("%2C") +
               "&text=%7B%22metadata%22%3A%7B%7D%2C%22templates%22%3A%5B%5D%7D&token=fake-token"
@@ -1328,13 +1334,13 @@ describe("Module `creator`", () => {
       const opts = {};
       const chk = creator._createSolutionItemModel(opts);
       expect(chk.item.title).toBeDefined();
-      expect(chk.item.typeKeywords.length).toBe(4);
+      expect(chk.item.typeKeywords?.length).toBe(4);
       // remove things that are random
-      delete chk.item.title;
       delete chk.item.typeKeywords;
 
       expect(chk).toEqual({
         item: {
+          title: chk.item.title,
           type: "Solution",
           snippet: "",
           description: "",
@@ -1547,7 +1553,7 @@ describe("Module `creator`", () => {
     it("finds a desired prefix", () => {
       const desiredTagPrefix = "aPrefix";
       const tags = ["abcdef", "aprefixNotValue", "aPrefixValue"];
-      const value: string = creator._getDeploymentProperty(
+      const value: string | null = creator._getDeploymentProperty(
         desiredTagPrefix,
         tags
       );
@@ -1557,7 +1563,7 @@ describe("Module `creator`", () => {
     it("doesn't finds a desired prefix", () => {
       const desiredTagPrefix = "aPrefix";
       const tags = ["abcdef", "aprefixNotValue"];
-      const value: string = creator._getDeploymentProperty(
+      const value: string | null = creator._getDeploymentProperty(
         desiredTagPrefix,
         tags
       );

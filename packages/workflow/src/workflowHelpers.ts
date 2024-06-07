@@ -17,7 +17,7 @@
 /**
  * Manages the creation and deployment of workflow item types.
  *
- * @module workflow
+ * @module workflowHelpers
  */
 
 import * as common from "@esri/solution-common";
@@ -29,21 +29,18 @@ import * as restRequest from "@esri/arcgis-rest-request";
  * Creates a new workflow item.
  *
  * @param item Item to add
+ * @param workflowBaseUrl URL of the workflow manager, e.g., "https://workflow.arcgis.com/orgId"
  * @param authentication Credentials for requests to the workflow manager
- * @param orgId Id of organization whose license is to be checked; only used if `enterpriseWebAdaptorUrl` is falsy
- * @param server URL of the server, e.g., "https://gisserver.domain.com/server"
  * @returns Promise resolving with new item's AGO id
  * @throws {WorkflowJsonExceptionDTO} if request to workflow manager fails
  */
 export async function addWorkflowItem(
   item: common.IItemTemplate,
-  authentication: common.UserSession,
-  orgId: string | undefined,
-  server: string
+  workflowBaseUrl: string,
+  authentication: common.UserSession
 ): Promise<string> {
   // Add the workflow item
-  const workflowUrlRoot = common.getWorkflowManagerUrlRoot(orgId, server);
-  const url = `${workflowUrlRoot}/admin/createWorkflowItem?name=${item.item.title}`;
+  const url = `${workflowBaseUrl}/admin/createWorkflowItem?name=${item.item.title}`;
 
   const options: restRequest.IRequestOptions = {
     authentication: authentication,

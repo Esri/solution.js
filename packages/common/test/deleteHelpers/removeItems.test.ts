@@ -51,6 +51,7 @@ describe("Module `removeItems`: removing items from AGO", () => {
 
     spyOn(portal, "unprotectItem").and.resolveTo(utils.getSuccessResponse());
     spyOn(workflowHelpers, "deleteWorkflowItem").and.resolveTo(true);
+    spyOn(workflowHelpers, "getWorkflowBaseURL").and.resolveTo("https://workflow.arcgis.com/workflow");
 
     const expectedResult: interfaces.ISolutionPrecis[] = [{
       // Successful deletions

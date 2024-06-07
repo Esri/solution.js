@@ -61,8 +61,8 @@ export async function convertItemToTemplate(
   );
 
   // Request its configuration
-  const configPromise = common.getWorkflowConfigurationZip(itemInfo.id, srcAuthentication,
-    templateDictionary.orgId, templateDictionary.workflowURL);
+  const configPromise = common.getWorkflowConfigurationZip(
+    itemInfo.id, templateDictionary.workflowBaseUrl, srcAuthentication);
 
   const [relatedItems, configZip] = await Promise.all([relatedPromise, configPromise]);
 
@@ -133,7 +133,7 @@ export async function createItemFromTemplate(
 
   try {
     const createdWorkflowItemId = await workflowHelpers.addWorkflowItem(
-      newItemTemplate, destinationAuthentication, templateDictionary.orgId, templateDictionary.workflowURL);
+      newItemTemplate, templateDictionary.workflowBaseUrl, destinationAuthentication);
     if (!createdWorkflowItemId) {
       throw new Error("Failed to create workflow item");
     }
@@ -169,8 +169,8 @@ export async function createItemFromTemplate(
 
     // Add the item's configuration properties; throw if the configuration update fails
     const configZipFile = await common.compressWorkflowIntoZipFile(newItemTemplate.properties.configuration);
-    await common.setWorkflowConfigurationZip(configZipFile, createdWorkflowItemId, destinationAuthentication,
-      templateDictionary.orgId, templateDictionary.workflowURL);
+    await common.setWorkflowConfigurationZip(
+      createdWorkflowItemId, configZipFile, templateDictionary.workflowBaseUrl, destinationAuthentication);
 
     // Fetch the auxiliary items
     const itemIds = await workflowHelpers.fetchAuxiliaryItems(createdWorkflowItemId, destinationAuthentication);

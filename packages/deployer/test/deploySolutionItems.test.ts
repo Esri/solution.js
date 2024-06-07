@@ -26,8 +26,7 @@ import * as simpleTypes from "@esri/solution-simple-types";
 import * as templates from "../../common/test/mocks/templates";
 import * as testUtils from "../../common/test/mocks/utils";
 import * as utils from "../../common/test/mocks/utils";
-import * as zipUtilsTest from "../../common/test/zip-utils.test";
-import * as webtool from "@esri/solution-web-tool";
+import * as zipHelpers from "../../common/test/mocks/zipHelpers";
 import * as wt from "../../web-tool/src/web-tool-processor";
 
 // ------------------------------------------------------------------------------------------------------------------ //
@@ -2046,7 +2045,7 @@ describe("Module `deploySolutionItems`", () => {
       const newItemID: string = "frm1234567891";
 
       spyOn(common, "fetchZipObject").and
-        .resolveTo(zipUtilsTest.generateFormZipObject(itemTemplate.itemId));
+        .resolveTo(zipHelpers.generateFormZipObject(itemTemplate.itemId));
 
       const getThumbnailFromStorageItemSpy = spyOn(common, "getThumbnailFromStorageItem").and
         .resolveTo(undefined);

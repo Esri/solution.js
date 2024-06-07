@@ -73,7 +73,135 @@ export async function swizzleFormObject(
   return Promise.resolve(zipObject);
 }
 
+/**
+ * Templatizes the content in a form's zip object.
+ *
+ * @param zipObject Form zip object to templatize; it is modified in place
+ * @param templateDictionary Dictionary of values to use when templatizing
+ * @returns Promise that resolves to the modified zip object
+ */
+export async function templatizeFormData(
+  zipObject: JSZip,
+  templateDictionary: any
+): Promise<JSZip> {
+  const zipObjectContents: common.IZipObjectContentItem[] = await common.getZipObjectContents(zipObject);
+
+  zipObjectContents.forEach(
+    (zipFile: common.IZipObjectContentItem) => {
+      if (zipFile.file.endsWith(".info") || zipFile.file.endsWith(".itemInfo") || zipFile.file.endsWith(".json")
+        || zipFile.file.endsWith(".webform") || zipFile.file.endsWith(".xml")) {
+        let contents = zipFile.content as string;
+
+        const agoIdTypeRegEx = /\b([0-9A-Fa-f]){32}_type/g
+
+        // Replace the item id references
+        contents = _replaceItemIds(contents, templateDictionary, agoIdTypeRegEx);
+
+        // Replace the feature service url references
+        contents = _replaceFeatureServiceURLs(contents, templateDictionary, agoIdTypeRegEx);
+
+        // Replace portal base url references
+        contents = _replacePortalBaseUrls(contents, templateDictionary);
+
+        // Replace workflow manager base url references
+        contents = _replaceWorkflowManagerBaseUrls(contents, templateDictionary);
+
+        zipObject.file(zipFile.file, contents);
+      }
+
+    }
+  );
+
+  // Return the modified zip object
+  return Promise.resolve(zipObject);
+}
+
 // ------------------------------------------------------------------------------------------------------------------ //
+
+/**
+ * Replaces the feature service url references.
+ *
+ * @param contents String in which to replace feature service URLs
+ * @param templateDictionary Item ids of feature services pointing to feature service URLs
+ * @param agoIdTypeRegEx Matcher for AGO ids with "_type" suffix
+ * @returns Modified contents
+ */
+export function _replaceFeatureServiceURLs(
+  contents: string,
+  templateDictionary: any,
+  agoIdTypeRegEx: RegExp
+): string {
+  let updatedContents = contents;
+  const fsIds = Object.keys(templateDictionary)
+    .filter((key) => key.match(agoIdTypeRegEx) && templateDictionary[key].type === "Feature Service");
+  fsIds.forEach((fsId) => {
+    const urlToReplace = templateDictionary[fsId].url;
+    const urlReplacement = templateDictionary[urlToReplace];
+    if (urlReplacement) {
+      updatedContents = updatedContents.replace(new RegExp(urlToReplace, "g"), urlReplacement);
+    }
+  });
+  return updatedContents;
+}
+
+/**
+ * Replaces the item id references.
+ *
+ * @param contents String in which to replace the item id references
+ * @param templateDictionary Item ids of feature services pointing to feature service URLs
+ * @param agoIdTypeRegEx Matcher for AGO ids
+ * @returns Modified contents
+ */
+export function _replaceItemIds(
+  contents: string,
+  templateDictionary: any,
+  agoIdTypeRegEx: RegExp
+): string {
+  let updatedContents = contents;
+  const itemIds = Object.keys(templateDictionary)
+    .filter((key) => key.match(agoIdTypeRegEx) && templateDictionary[key].type !== "Feature Service")
+    .map((key) => key.replace("_type", ""));
+  itemIds.forEach((itemId) => {
+    updatedContents = updatedContents.replace(new RegExp(itemId, "g"), `{{${itemId}.itemId}}`);
+  });
+  return updatedContents;
+}
+
+/**
+ * Replaces portal base url references.
+ *
+ * @param contents String in which to replace the portal base url references
+ * @param templateDictionary Item ids of feature services pointing to feature service URLs
+ * @returns Modified contents
+ */
+export function _replacePortalBaseUrls(
+  contents: string,
+  templateDictionary: any
+): string {
+  let updatedContents = contents;
+  if (templateDictionary.portalBaseUrl) {
+    updatedContents = updatedContents.replace(new RegExp(templateDictionary.portalBaseUrl, "g"), "{{portalBaseUrl}}");
+  }
+  return updatedContents;
+}
+
+/**
+ * Replaces workflow manager base url references.
+ *
+ * @param contents String in which to replace the workflow manager base url references
+ * @param templateDictionary Item ids of feature services pointing to feature service URLs
+ * @returns Modified contents
+ */
+export function _replaceWorkflowManagerBaseUrls(
+  contents: string,
+  templateDictionary: any
+): string {
+  let updatedContents = contents;
+  if (templateDictionary.workflowBaseUrl) {
+    updatedContents = updatedContents.replace(new RegExp(templateDictionary.workflowBaseUrl, "g"), "{{workflowBaseUrl}}");
+  }
+  return updatedContents;
+}
 
 /**
  * Updates the binary content of a zip object.

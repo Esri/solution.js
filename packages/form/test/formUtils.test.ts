@@ -17,8 +17,7 @@
 import * as common from "@esri/solution-common";
 import * as formUtils from "../src/formUtils";
 import * as utils from "../../common/test/mocks/utils";
-import * as zipUtilsTest from "../../common/test/zip-utils.test";
-import JSZip from "jszip";
+import * as zipHelpers from "../../common/test/mocks/zipHelpers";
 
 let MOCK_USER_SESSION: common.UserSession;
 
@@ -33,7 +32,7 @@ describe("formUtils", () => {
   describe("swizzleFormObject", () => {
 
     it("swizzles a form object", async () => {
-      const zipObject = await zipUtilsTest.generateFormZipObject("0c01725576b640e4bd25a16721850000");
+      const zipObject = await zipHelpers.generateFormZipObject("0c01725576b640e4bd25a16721850000");
       const templateDictionary = {
         "0c01725576b640e4bd25a16721850000": {
           itemId: "0c01725576b640e4bd25a16721850001"
@@ -43,14 +42,14 @@ describe("formUtils", () => {
       const resultingZipObject = await formUtils.swizzleFormObject(zipObject, templateDictionary);
       const resultingZipContents = await common.getZipObjectContents(resultingZipObject);
 
-      const expectedZipObject = await zipUtilsTest.generateFormZipObject("0c01725576b640e4bd25a16721850001");
+      const expectedZipObject = await zipHelpers.generateFormZipObject("0c01725576b640e4bd25a16721850001");
       const expectedZipContents = await common.getZipObjectContents(expectedZipObject);
 
       expect(resultingZipContents).toEqual(expectedZipContents);
     });
 
     it("skips no-ops", async () => {
-      const zipObject = await zipUtilsTest.generateFormZipObject("0c01725576b640e4bd25a16721850000");
+      const zipObject = await zipHelpers.generateFormZipObject("0c01725576b640e4bd25a16721850000");
       const templateDictionary = {
         "0c01725576b640e4bd25a16721850000": {
           itemId: "0c01725576b640e4bd25a16721850000"
@@ -60,14 +59,14 @@ describe("formUtils", () => {
       const resultingZipObject = await formUtils.swizzleFormObject(zipObject, templateDictionary);
       const resultingZipContents = await common.getZipObjectContents(resultingZipObject);
 
-      const expectedZipObject = await zipUtilsTest.generateFormZipObject("0c01725576b640e4bd25a16721850000");
+      const expectedZipObject = await zipHelpers.generateFormZipObject("0c01725576b640e4bd25a16721850000");
       const expectedZipContents = await common.getZipObjectContents(expectedZipObject);
 
       expect(resultingZipContents).toEqual(expectedZipContents);
     });
 
     it("doesn't swizzle the wrong items", async () => {
-      const zipObject = await zipUtilsTest.generateFormZipObject("0c01725576b640e4bd25a16721850002");
+      const zipObject = await zipHelpers.generateFormZipObject("0c01725576b640e4bd25a16721850002");
       const templateDictionary = {
         "0c01725576b640e4bd25a16721850000": {
           itemId: "0c01725576b640e4bd25a16721850001"
@@ -77,14 +76,14 @@ describe("formUtils", () => {
       const resultingZipObject = await formUtils.swizzleFormObject(zipObject, templateDictionary);
       const resultingZipContents = await common.getZipObjectContents(resultingZipObject);
 
-      const expectedZipObject = await zipUtilsTest.generateFormZipObject("0c01725576b640e4bd25a16721850002");
+      const expectedZipObject = await zipHelpers.generateFormZipObject("0c01725576b640e4bd25a16721850002");
       const expectedZipContents = await common.getZipObjectContents(expectedZipObject);
 
       expect(resultingZipContents).toEqual(expectedZipContents);
     });
 
     it("doesn't swizzle a binary object", async () => {
-      const zipObject = await zipUtilsTest.generateFormZipObject("0c01725576b640e4bd25a16721850000");
+      const zipObject = await zipHelpers.generateFormZipObject("0c01725576b640e4bd25a16721850000");
       const originalXLSX = utils.loadSampleXLSX("09b843d27d8a441db4c88c1f03b8e9aa");
       zipObject.file("09b843d27d8a441db4c88c1f03b8e9aa.xlsx", originalXLSX, { binary: true });
 
@@ -97,12 +96,213 @@ describe("formUtils", () => {
       const resultingZipObject = await formUtils.swizzleFormObject(zipObject, templateDictionary);
       const resultingZipContents = await common.getZipObjectContents(resultingZipObject);
 
-      const expectedZipObject = await zipUtilsTest.generateFormZipObject("0c01725576b640e4bd25a16721850000");
+      const expectedZipObject = await zipHelpers.generateFormZipObject("0c01725576b640e4bd25a16721850000");
       const unmodifiedXLSX = utils.loadSampleXLSX("09b843d27d8a441db4c88c1f03b8e9aa");
       expectedZipObject.file("09b843d27d8a441db4c88c1f03b8e9aa.xlsx", unmodifiedXLSX, { binary: true });
       const expectedZipContents = await common.getZipObjectContents(expectedZipObject);
 
       expect(resultingZipContents).toEqual(expectedZipContents);
+    });
+
+  });
+
+  describe("templatizeFormData", () => {
+
+    const itemId = "2f56b3b59cdc4ac8b8f5de0399887e1e";
+
+    it("templatizes form data", async () => {
+      const zipObject = await zipHelpers.generateFormZipObject(itemId);
+      const templateDictionary = {
+        "portalBaseUrl": "https://fred.maps.arcgis.com",
+      };
+
+      const modifiedZipObject = await formUtils.templatizeFormData(zipObject, templateDictionary);
+      const modifiedZipContents = await common.getZipObjectContents(modifiedZipObject);
+
+      const expectedZipObject = zipHelpers.generateFormZipObject(itemId);
+      const expectedZipContents = await common.getZipObjectContents(expectedZipObject);
+      expectedZipContents[1].content = (expectedZipContents[1].content as string)
+        .replace("https://fred.maps.arcgis.com", "{{portalBaseUrl}}");
+
+      expect(modifiedZipContents).toEqual(expectedZipContents);
+    });
+
+  });
+
+  describe("_replaceFeatureServiceUrl", () => {
+
+    it("replaces feature service URL", () => {
+      const content =
+        '"serviceInfo":{"itemId":"123456","type":"Feature Service","url":"https://myServices/abcdef/arcgis/rest/services/fred/FeatureServer","fayard":"nicholas"}' +
+        '"serviceInfo":{"itemId":"789012","type":"Feature Service","url":"https://myServices/abcdef/arcgis/rest/services/fred/FeatureServer","harold":"nicholas"}';
+      const templateDictionary = {
+        "7f056b285512495e80254154c53bde2b": {
+          type: "Feature Service",
+          url: "https://myServices/abcdef/arcgis/rest/services/fred/FeatureServer"
+        },
+        "https://myServices/abcdef/arcgis/rest/services/fred/FeatureServer": "{{7f056b285512495e80254154c53bde2b.url}}"
+      };
+      const agoIdRegEx = common.getAgoIdRegEx();
+
+      const result = formUtils._replaceFeatureServiceURLs(content, templateDictionary, agoIdRegEx);
+
+      const expectedContent =
+        '"serviceInfo":{"itemId":"123456","type":"Feature Service","url":"{{7f056b285512495e80254154c53bde2b.url}}","fayard":"nicholas"}' +
+        '"serviceInfo":{"itemId":"789012","type":"Feature Service","url":"{{7f056b285512495e80254154c53bde2b.url}}","harold":"nicholas"}';
+      expect(result).toEqual(expectedContent);
+    });
+
+    it("doesn't replace feature service URL if a feature service doesn't have a URL in the dictionary", () => {
+      const content =
+        '"serviceInfo":{"itemId":"123456","type":"Feature Service","url":"https://myServices/abcdef/arcgis/rest/services/fred/FeatureServer","fayard":"nicholas"}' +
+        '"serviceInfo":{"itemId":"789012","type":"Feature Service","url":"https://myServices/abcdef/arcgis/rest/services/fred/FeatureServer","harold":"nicholas"}';
+      const templateDictionary = {
+        "7f056b285512495e80254154c53bde2b": {
+          type: "Feature Service",
+          url: "https://myServices/abcdef/arcgis/rest/services/fred/FeatureServer"
+        }
+      };
+      const agoIdRegEx = common.getAgoIdRegEx();
+
+      const result = formUtils._replaceFeatureServiceURLs(content, templateDictionary, agoIdRegEx);
+
+      const expectedContent =
+        '"serviceInfo":{"itemId":"123456","type":"Feature Service","url":"https://myServices/abcdef/arcgis/rest/services/fred/FeatureServer","fayard":"nicholas"}' +
+        '"serviceInfo":{"itemId":"789012","type":"Feature Service","url":"https://myServices/abcdef/arcgis/rest/services/fred/FeatureServer","harold":"nicholas"}';
+      expect(result).toEqual(expectedContent);
+    });
+
+    it("doesn't replace feature service URL if there are no matches with template dictionary", () => {
+      const content =
+        '"serviceInfo":{"itemId":"123456","type":"Feature Service","url":"https://myServices/zyxwvut/arcgis/rest/services/fred/FeatureServer","fayard":"nicholas"}' +
+        '"serviceInfo":{"itemId":"789012","type":"Feature Service","url":"https://myServices/zyxwvut/arcgis/rest/services/fred/FeatureServer","harold":"nicholas"}';
+      const templateDictionary = {
+        "7f056b285512495e80254154c53bde2b": {
+          type: "Feature Service",
+          url: "https://myServices/abcdef/arcgis/rest/services/fred/FeatureServer"
+        },
+        "https://myServices/abcdef/arcgis/rest/services/fred/FeatureServer": "{{7f056b285512495e80254154c53bde2b.url}}"
+      };
+      const agoIdRegEx = common.getAgoIdRegEx();
+
+      const result = formUtils._replaceFeatureServiceURLs(content, templateDictionary, agoIdRegEx);
+
+      const expectedContent =
+        '"serviceInfo":{"itemId":"123456","type":"Feature Service","url":"https://myServices/zyxwvut/arcgis/rest/services/fred/FeatureServer","fayard":"nicholas"}' +
+        '"serviceInfo":{"itemId":"789012","type":"Feature Service","url":"https://myServices/zyxwvut/arcgis/rest/services/fred/FeatureServer","harold":"nicholas"}';
+      expect(result).toEqual(expectedContent);
+    });
+
+  });
+
+  describe("_replaceItemIds", () => {
+
+    it("replaces item ids", () => {
+      const content =
+        '"webhooks":[{"active":true,"name":"Workflow","url":"https://workflow.arcgis.com/abcdef/16876b187f1349f19fa92712ae55bfbe/webhooks/createJobFromSurveyResponse"}]' +
+        '"webhooks":[{"active":true,"name":"Workflow","url":"https://workflow.arcgis.com/abcdef/16876b187f1349f19fa92712ae55bfbe/webhooks/createJobFromSurveyResponse"}]'
+      const templateDictionary = {
+        "16876b187f1349f19fa92712ae55bfbe": {
+          type: "Web Map"
+        }
+      };
+      const agoIdRegEx = common.getAgoIdRegEx();
+
+      const result = formUtils._replaceItemIds(content, templateDictionary, agoIdRegEx);
+
+      const expectedContent =
+        '"webhooks":[{"active":true,"name":"Workflow","url":"https://workflow.arcgis.com/abcdef/{{16876b187f1349f19fa92712ae55bfbe.itemId}}/webhooks/createJobFromSurveyResponse"}]' +
+        '"webhooks":[{"active":true,"name":"Workflow","url":"https://workflow.arcgis.com/abcdef/{{16876b187f1349f19fa92712ae55bfbe.itemId}}/webhooks/createJobFromSurveyResponse"}]'
+      expect(result).toEqual(expectedContent);
+    });
+
+    it("doesn't replace item ids if there are no matches with template dictionary", () => {
+      const content =
+        '"webhooks":[{"active":true,"name":"Workflow","url":"https://workflow.arcgis.com/abcdef/16876b187f1349f19fa92712ae55bfbe/webhooks/createJobFromSurveyResponse"}]' +
+        '"webhooks":[{"active":true,"name":"Workflow","url":"https://workflow.arcgis.com/abcdef/16876b187f1349f19fa92712ae55bfbe/webhooks/createJobFromSurveyResponse"}]'
+      const templateDictionary = {
+        "a38c6d56ca3842cca60b7daa76202fa3": {
+          type: "Web Map"
+        }
+      };
+      const agoIdRegEx = common.getAgoIdRegEx();
+
+      const result = formUtils._replaceItemIds(content, templateDictionary, agoIdRegEx);
+
+      const expectedContent =
+        '"webhooks":[{"active":true,"name":"Workflow","url":"https://workflow.arcgis.com/abcdef/16876b187f1349f19fa92712ae55bfbe/webhooks/createJobFromSurveyResponse"}]' +
+        '"webhooks":[{"active":true,"name":"Workflow","url":"https://workflow.arcgis.com/abcdef/16876b187f1349f19fa92712ae55bfbe/webhooks/createJobFromSurveyResponse"}]'
+      expect(result).toEqual(expectedContent);
+    });
+
+  });
+
+  describe("_replacePortalBaseUrls", () => {
+
+    it("replaces portal base URL", () => {
+      const content =
+        '"webhooks":[{"active":true,"name":"Workflow","url":"https://www.arcgis.com/abcdef/16876b187f1349f19fa92712ae55bfbe/webhooks/createJobFromSurveyResponse"}]' +
+        '"webhooks":[{"active":true,"name":"Workflow","url":"https://www.arcgis.com/abcdef/16876b187f1349f19fa92712ae55bfbe/webhooks/createJobFromSurveyResponse"}]'
+      const templateDictionary = {
+        "portalBaseUrl": "https://www.arcgis.com/abcdef"
+      };
+
+      const result = formUtils._replacePortalBaseUrls(content, templateDictionary);
+
+      const expectedContent =
+        '"webhooks":[{"active":true,"name":"Workflow","url":"{{portalBaseUrl}}/16876b187f1349f19fa92712ae55bfbe/webhooks/createJobFromSurveyResponse"}]' +
+        '"webhooks":[{"active":true,"name":"Workflow","url":"{{portalBaseUrl}}/16876b187f1349f19fa92712ae55bfbe/webhooks/createJobFromSurveyResponse"}]'
+      expect(result).toEqual(expectedContent);
+    });
+
+    it("doesn't replace portal base URL if there are no matches with template dictionary", () => {
+      const content =
+        '"webhooks":[{"active":true,"name":"Workflow","url":"https://www.arcgis.com/abcdef/16876b187f1349f19fa92712ae55bfbe/webhooks/createJobFromSurveyResponse"}]' +
+        '"webhooks":[{"active":true,"name":"Workflow","url":"https://www.arcgis.com/abcdef/16876b187f1349f19fa92712ae55bfbe/webhooks/createJobFromSurveyResponse"}]'
+      const templateDictionary = {
+      };
+
+      const result = formUtils._replacePortalBaseUrls(content, templateDictionary);
+
+      const expectedContent =
+        '"webhooks":[{"active":true,"name":"Workflow","url":"https://www.arcgis.com/abcdef/16876b187f1349f19fa92712ae55bfbe/webhooks/createJobFromSurveyResponse"}]' +
+        '"webhooks":[{"active":true,"name":"Workflow","url":"https://www.arcgis.com/abcdef/16876b187f1349f19fa92712ae55bfbe/webhooks/createJobFromSurveyResponse"}]'
+      expect(result).toEqual(expectedContent);
+    });
+
+  });
+
+  describe("_replaceWorkflowManagerBaseUrls", () => {
+
+    it("replaces workflow manager base URL", () => {
+      const content =
+        '"webhooks":[{"active":true,"name":"Workflow","url":"https://workflow.arcgis.com/abcdef/16876b187f1349f19fa92712ae55bfbe/webhooks/createJobFromSurveyResponse"}]' +
+        '"webhooks":[{"active":true,"name":"Workflow","url":"https://workflow.arcgis.com/abcdef/16876b187f1349f19fa92712ae55bfbe/webhooks/createJobFromSurveyResponse"}]'
+      const templateDictionary = {
+        "workflowBaseUrl": "https://workflow.arcgis.com/abcdef"
+      };
+
+      const result = formUtils._replaceWorkflowManagerBaseUrls(content, templateDictionary);
+
+      const expectedContent =
+        '"webhooks":[{"active":true,"name":"Workflow","url":"{{workflowBaseUrl}}/16876b187f1349f19fa92712ae55bfbe/webhooks/createJobFromSurveyResponse"}]' +
+        '"webhooks":[{"active":true,"name":"Workflow","url":"{{workflowBaseUrl}}/16876b187f1349f19fa92712ae55bfbe/webhooks/createJobFromSurveyResponse"}]'
+      expect(result).toEqual(expectedContent);
+    });
+
+    it("doesn't replace workflow manager base URL if there are no matches with template dictionary", () => {
+      const content =
+        '"webhooks":[{"active":true,"name":"Workflow","url":"https://workflow.arcgis.com/abcdef/16876b187f1349f19fa92712ae55bfbe/webhooks/createJobFromSurveyResponse"}]' +
+        '"webhooks":[{"active":true,"name":"Workflow","url":"https://workflow.arcgis.com/abcdef/16876b187f1349f19fa92712ae55bfbe/webhooks/createJobFromSurveyResponse"}]'
+      const templateDictionary = {
+      };
+
+      const result = formUtils._replaceWorkflowManagerBaseUrls(content, templateDictionary);
+
+      const expectedContent =
+        '"webhooks":[{"active":true,"name":"Workflow","url":"https://workflow.arcgis.com/abcdef/16876b187f1349f19fa92712ae55bfbe/webhooks/createJobFromSurveyResponse"}]' +
+        '"webhooks":[{"active":true,"name":"Workflow","url":"https://workflow.arcgis.com/abcdef/16876b187f1349f19fa92712ae55bfbe/webhooks/createJobFromSurveyResponse"}]'
+      expect(result).toEqual(expectedContent);
     });
 
   });

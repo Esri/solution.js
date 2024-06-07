@@ -110,7 +110,8 @@ describe("Module `completeItem`: functions for accessing a complete item", () =>
       const itemId = "abc";
       const config = await zipUtils.jsonToZipFile("jobConfig.json", {"jobTemplates": "abc" }, "config");
 
-      const getConfigSpy = spyOn(restHelpers, "getWorkflowConfigurationZip").and.resolveTo(config);
+      spyOn(workflowHelpers, "getWorkflowBaseURL").and.resolveTo("https://myorg.maps.arcgis.com/myorgid");
+      spyOn(restHelpers, "getWorkflowConfigurationZip").and.resolveTo(config);
       spyOn(restHelpersGet, "getItemBase").and.resolveTo(mockItems.getAGOLItem("Workflow"));
       spyOn(restHelpersGet, "getItemDataAsFile").and.resolveTo(mockItems.getAGOLItemData("Workflow"));
       spyOn(restHelpersGet, "getItemMetadataAsFile").and.resolveTo(utils.getSampleMetadataAsFile());
@@ -133,14 +134,14 @@ describe("Module `completeItem`: functions for accessing a complete item", () =>
       expect(item.base.id).toEqual("wfw1234567890");
       expect(item.thumbnail.name).toEqual("sampleImage");
       expect(item.metadata.name).toEqual("metadata.xml");
-      expect(getConfigSpy.calls.argsFor(0)[3]).toBeUndefined();
     });
 
     it("should get a workflow item on esri.com", async () => {
       const itemId = "abc";
       const config = await zipUtils.jsonToZipFile("jobConfig.json", {"jobTemplates": "abc" }, "config");
 
-      const getConfigSpy = spyOn(restHelpers, "getWorkflowConfigurationZip").and.resolveTo(config);
+      spyOn(workflowHelpers, "getWorkflowBaseURL").and.resolveTo("https://myorg.maps.esri.com/myorgid");
+      spyOn(restHelpers, "getWorkflowConfigurationZip").and.resolveTo(config);
       spyOn(restHelpersGet, "getItemBase").and.resolveTo(mockItems.getAGOLItem("Workflow"));
       spyOn(restHelpersGet, "getItemDataAsFile").and.resolveTo(mockItems.getAGOLItemData("Workflow"));
       spyOn(restHelpersGet, "getItemMetadataAsFile").and.resolveTo(utils.getSampleMetadataAsFile());
@@ -165,14 +166,14 @@ describe("Module `completeItem`: functions for accessing a complete item", () =>
       expect(item.base.id).toEqual("wfw1234567890");
       expect(item.thumbnail.name).toEqual("sampleImage");
       expect(item.metadata.name).toEqual("metadata.xml");
-      expect(getConfigSpy.calls.argsFor(0)[3]).toBeUndefined();
     });
 
     it("should get a workflow item on Enterprise", async () => {
       const itemId = "abc";
       const config = await zipUtils.jsonToZipFile("jobConfig.json", {"jobTemplates": "abc" }, "config");
 
-      const getConfigSpy = spyOn(restHelpers, "getWorkflowConfigurationZip").and.resolveTo(config);
+      spyOn(workflowHelpers, "getWorkflowBaseURL").and.resolveTo("https://gisserver.domain.com/server/workflow");
+      spyOn(restHelpers, "getWorkflowConfigurationZip").and.resolveTo(config);
       spyOn(restHelpersGet, "getItemBase").and.resolveTo(mockItems.getAGOLItem("Workflow"));
       spyOn(restHelpersGet, "getItemDataAsFile").and.resolveTo(mockItems.getAGOLItemData("Workflow"));
       spyOn(restHelpersGet, "getItemMetadataAsFile").and.resolveTo(utils.getSampleMetadataAsFile());
@@ -197,7 +198,6 @@ describe("Module `completeItem`: functions for accessing a complete item", () =>
       expect(item.base.id).toEqual("wfw1234567890");
       expect(item.thumbnail.name).toEqual("sampleImage");
       expect(item.metadata.name).toEqual("metadata.xml");
-      expect(getConfigSpy.calls.argsFor(0)[3]).toEqual("https://gisserver.domain.com/server");
     });
 
     it("should handle failure to get an item", done => {

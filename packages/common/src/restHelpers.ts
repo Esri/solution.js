@@ -113,9 +113,6 @@ import {
   createFeatureService as svcAdminCreateFeatureService
 } from "@esri/arcgis-rest-service-admin";
 import {
-  getWorkflowManagerUrlRoot
-} from "./workflowHelpers";
-import {
   getWorkforceDependencies,
   isWorkforceProject,
   getWorkforceServiceInfo
@@ -1370,20 +1367,17 @@ export function getFeatureServiceProperties(
  * Fetches the configuration of a workflow.
  *
  * @param itemId Id of the workflow item
+ * @param workflowBaseUrl URL of the workflow manager, e.g., "https://workflow.arcgis.com/orgId"
  * @param authentication Credentials for the request to AGOL
- * @param orgId Id of organization whose license is to be checked; only used if `enterpriseWebAdaptorUrl` is falsy
- * @param workflowURL URL of the workflow manager, e.g., "https://workflow.arcgis.com"
  * @returns Promise resolving with the workflow configuration in a zip file
  * @throws {WorkflowJsonExceptionDTO} if request to workflow manager fails
  */
 export async function getWorkflowConfigurationZip(
   itemId: string,
-  authentication: UserSession,
-  orgId: string | undefined,
-  workflowURL: string
+  workflowBaseUrl: string,
+  authentication: UserSession
 ): Promise<File> {
-  const workflowUrlRoot = getWorkflowManagerUrlRoot(orgId, workflowURL);
-  const url = `${workflowUrlRoot}/admin/${itemId}/export`;
+  const url = `${workflowBaseUrl}/admin/${itemId}/export`;
 
   return request(url, {
     authentication,
@@ -1401,23 +1395,20 @@ export async function getWorkflowConfigurationZip(
 /**
  * Sets the configuration of a workflow.
  *
- * @param configurationZipFile Configuration files in a zip file
  * @param itemId Id of the workflow item
+ * @param configurationZipFile Configuration files in a zip file
+ * @param workflowBaseUrl URL of the workflow manager, e.g., "https://workflow.arcgis.com/orgId"
  * @param authentication Credentials for the request to AGOL
- * @param orgId Id of organization whose license is to be checked; only used if `enterpriseWebAdaptorUrl` is falsy
- * @param workflowURL URL of the workflow manager, e.g., "https://workflow.arcgis.com"
  * @returns Promise resolving with the workflow configuration in a zip file
  * @throws {WorkflowJsonExceptionDTO} if request to workflow manager fails
  */
 export async function setWorkflowConfigurationZip(
-  configurationZipFile: File,
   itemId: string,
-  authentication: UserSession,
-  orgId: string | undefined,
-  workflowURL: string
+  configurationZipFile: File,
+  workflowBaseUrl: string,
+  authentication: UserSession
   ): Promise<IStatusResponse> {
-  const workflowUrlRoot = getWorkflowManagerUrlRoot(orgId, workflowURL);
-  const url = `${workflowUrlRoot}/admin/${itemId}/import`;
+  const url = `${workflowBaseUrl}/admin/${itemId}/import`;
 
   return request(url, {
     authentication,

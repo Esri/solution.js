@@ -20,8 +20,8 @@
 
 import * as common from "@esri/solution-common";
 import * as form from "@esri/solution-form";
-import * as utils from "@esri/solution-common/test/mocks/utils";
-import * as zipUtilsTest from "@esri/solution-common/test/zip-utils.test";1
+import * as utils from "../../../common/test/mocks/utils";
+import * as zipHelpers from "../../../common/test/mocks/zipHelpers";
 
 // ------------------------------------------------------------------------------------------------------------------ //
 
@@ -42,7 +42,7 @@ describe("Module `zip-utils`", () => {
     const itemId2 = "c73d0ae07a2445b29087f392ed4eb9f9";
 
     it("detemplatizes the form data", async () => {
-      const zipObject = zipUtilsTest.generateFormZipObject(`{{${itemId1}.itemId}}`);
+      const zipObject = zipHelpers.generateFormZipObject(`{{${itemId1}.itemId}}`);
       const zipObjectContents = await common.getZipObjectContents(zipObject);
       zipObjectContents[1].content = (zipObjectContents[1].content as string)
         .replace("https://fred.maps.arcgis.com", "{{portalBaseUrl}}")
@@ -61,7 +61,7 @@ describe("Module `zip-utils`", () => {
 
       const modifiedZipContents = await common.getZipObjectContents(modifiedZipObject);
 
-      const expectedZipObject = zipUtilsTest.generateFormZipObject(itemId2);
+      const expectedZipObject = zipHelpers.generateFormZipObject(itemId2);
       const expectedZipContents = await common.getZipObjectContents(expectedZipObject);
       expectedZipContents[1].content = (expectedZipContents[1].content as string)
         .replace("https://fred.maps.arcgis.com", "https://ginger.maps.arcgis.com")

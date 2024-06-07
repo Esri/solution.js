@@ -22,8 +22,6 @@ import * as quickcapture from "../quickcapture";
 import * as webmap from "../webmap";
 import * as webmappingapplication from "../webmappingapplication";
 import * as workforce from "../workforce";
-import * as formHelpers from "./formHelpers";
-import JSZip from "jszip";
 
 // ------------------------------------------------------------------------------------------------------------------ //
 
@@ -144,60 +142,6 @@ export function convertItemToTemplate(
       switch (itemInfo.type) {
         case "Dashboard":
           dashboard.convertItemToTemplate(itemTemplate, templateDictionary);
-          break;
-        case "Form":
-          // Store the form's data in the solution resources, not in template
-          itemTemplate.data = null;
-
-          // Add the form data to the template for a post-process resource upload
-          if (itemDataResponse) {
-            templateModifyingPromise = new Promise(
-              // eslint-disable-next-line @typescript-eslint/no-misused-promises, no-async-promise-executor
-              async (resolve) => {
-                let zipObject: JSZip = await common.blobToZipObject(itemDataResponse as File);
-
-                // Templatize the form's webhooks
-                const portal = await srcAuthentication.getPortal();
-                let sourceOrgUrl;
-                if (portal.urlKey) {
-                  sourceOrgUrl = `https://${portal.urlKey}.maps.arcgis.com`;
-                } else if (portal.portalHostname) {
-                  sourceOrgUrl = `https://${portal.portalHostname}`;
-                }
-                if (sourceOrgUrl) {
-                  zipObject = await formHelpers.templatizeFormWebHooks(zipObject, sourceOrgUrl);
-                }
-
-                itemTemplate.item.name = _getFormDataFilename(
-                  itemTemplate.item.name, (itemDataResponse as File).name, `${itemTemplate.itemId}.zip`
-                );
-                const templatizedFormData: File = await common.zipObjectToZipFile(zipObject, itemTemplate.item.name);
-
-                // Add the data file to the template so that it can be uploaded with the other resources in the solution
-                const storageName = common.convertItemResourceToStorageResource(
-                  itemTemplate.itemId,
-                  itemTemplate.item.name,
-                  common.SolutionTemplateFormatVersion,
-                  common.SolutionResourceType.data
-                );
-
-                const dataFile: common.ISourceFile = {
-                  itemId: itemTemplate.itemId,
-                  file: templatizedFormData,
-                  folder: storageName.folder,
-                  filename: itemTemplate.item.name
-                }
-                itemTemplate.dataFile = dataFile;
-
-                // Update the template's resources
-                itemTemplate.resources.push(
-                  storageName.folder + "/" + storageName.filename
-                );
-
-                resolve(itemTemplate);
-              }
-            );
-          }
           break;
         case "Notebook":
           templateModifyingPromise = notebook.convertNotebookToTemplate(
@@ -324,27 +268,4 @@ export function _getDataPipelineSourcesAndSinks(
   );
 
   return dependencies;
-}
-
-/**
- * Encapsulates the rules for naming a form's data file.
- * Chooses the first parameter that's defined and is not the string "undefined".
- *
- * @param itemName Template's item name
- * @param dataFilename The data file name
- * @param itemIdAsName A name constructed from the template's id suffixed with ".zip"
- *
- * @return A name for the data file
- */
-export function _getFormDataFilename(
-  itemName: string,
-  dataFilename: string,
-  itemIdAsName: string
-): string {
-  const originalFilename = itemName || dataFilename;
-  const filename =
-    originalFilename && originalFilename !== "undefined"
-      ? originalFilename
-      : itemIdAsName;
-  return filename;
 }

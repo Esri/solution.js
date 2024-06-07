@@ -16,15 +16,14 @@
 
 import * as common from "@esri/solution-common";
 import * as fetchMock from "fetch-mock";
+import * as formHelpers from "../../../form/src/formUtils";
 import * as mockItems from "../../../common/test/mocks/agolItems";
 import * as simpleTypeHelpers from "../../src/helpers/convert-item-to-template";
 import * as simpleTypes from "../../src/simple-types";
 import * as staticRelatedItemsMocks from "../../../common/test/mocks/staticRelatedItemsMocks";
 import * as templates from "../../../common/test/mocks/templates";
 import * as utils from "../../../common/test/mocks/utils";
-import * as formHelpers from "../../src/helpers/formHelpers";
-import * as zipUtilsTest from "../../../common/test/zip-utils.test";
-import * as JSZip from "jszip";
+import * as zipHelpers from "../../../common/test/mocks/zipHelpers";
 
 jasmine.DEFAULT_TIMEOUT_INTERVAL = 20000; // default is 5000 ms
 
@@ -229,6 +228,213 @@ describe("simpleTypeConvertItemToTemplate", () => {
         }, done.fail);
     });
 
+    describe("form", () => {
+      let solutionItemId: string;
+      let itemTemplate: common.IItemTemplate;
+      let expectedTemplate: any;
+
+      beforeEach(async () => {
+        solutionItemId = "sln1234567890";
+        itemTemplate = templates.getItemTemplateSkeleton();
+        itemTemplate.itemId = "frm1234567890";
+        itemTemplate.item = mockItems.getAGOLItem("Form", undefined);
+        itemTemplate.item.thumbnail = null;
+
+        expectedTemplate = {
+          itemId: "frm1234567890",
+          type: "Form",
+          item: {
+            id: "{{frm1234567890.itemId}}",
+            type: "Form",
+            accessInformation: "Esri, Inc.",
+            categories: [],
+            contentStatus: null,
+            culture: "en-us",
+            description: "Description of an AGOL item",
+            extent: [],
+            spatialReference: undefined,
+            licenseInfo: null,
+            name: null,
+            origUrl: undefined,
+            properties: null,
+            snippet: "Snippet of an AGOL item",
+            tags: ["test"],
+            thumbnail: null,
+            title: "An AGOL item",
+            typeKeywords: ["JavaScript"],
+            url: "",
+            created: 1520968147000,
+            modified: 1522178539000
+          },
+          data: await zipHelpers.getSampleFormZipFile("frm1234567890", "frm1234567890.zip"),
+          resources: [],
+          relatedItems: [
+            {
+              relationshipType: "Survey2Data",
+              relatedItemIds: ["srv1234567890", "abc1234567890"]
+            },
+            {
+              relationshipType: "Survey2Service",
+              relatedItemIds: ["srv1234567890"]
+            }
+          ],
+          dependencies: ["srv1234567890", "abc1234567890"],
+          groups: [],
+          properties: {},
+          estimatedDeploymentCostFactor: 2
+        };
+
+        fetchMock
+          .post(
+            utils.PORTAL_SUBSET.restUrl +
+              "/content/items/" +
+              itemTemplate.itemId +
+              "/data",
+            ["abc", "def", "ghi"]
+          )
+          .post(
+            utils.PORTAL_SUBSET.restUrl +
+              "/content/items/" +
+              itemTemplate.itemId +
+              "/resources",
+            noResourcesResponse
+          )
+          .post(
+            utils.PORTAL_SUBSET.restUrl +
+              "/content/items/" +
+              itemTemplate.itemId +
+              "/info/metadata/metadata.xml",
+            mockItems.get400Failure()
+          )
+          .post(
+            utils.PORTAL_SUBSET.restUrl +
+              "/content/users/" +
+              MOCK_USER_SESSION.username +
+              "/items/" +
+              solutionItemId +
+              "/addResources",
+            {
+              success: true,
+              itemId: itemTemplate.itemId,
+              owner: MOCK_USER_SESSION.username,
+              folder: null
+            }
+          );
+        staticRelatedItemsMocks.fetchMockRelatedItems(
+          itemTemplate.itemId,
+          { total: 0, relatedItems: [] },
+          ["Survey2Data", "Survey2Service"]
+        );
+        fetchMock.get(
+          utils.PORTAL_SUBSET.restUrl +
+            "/content/items/" +
+            itemTemplate.itemId +
+            "/relatedItems?f=json&direction=forward&relationshipType=Survey2Data&token=fake-token",
+          {
+            total: 2,
+            relatedItems: [
+              {
+                id: "srv1234567890"
+              },
+              {
+                id: "abc1234567890"
+              }
+            ]
+          }
+        );
+        fetchMock.get(
+          utils.PORTAL_SUBSET.restUrl +
+            "/content/items/" +
+            itemTemplate.itemId +
+            "/relatedItems?f=json&direction=forward&relationshipType=Survey2Service&token=fake-token",
+          {
+            total: 1,
+            relatedItems: [
+              {
+                id: "srv1234567890"
+              }
+            ]
+          }
+        );
+      });
+
+      it("should handle form item type with default filename for falsy item name", async () => {
+        const formId = "frm1234567890";
+        itemTemplate.item.name = null;
+
+        spyOn(common, "getItemRelatedItemsInSameDirection").and.resolveTo([
+          { relationshipType: "Survey2Data", relatedItemIds: ["srv1234567890", "abc1234567890"] },
+          { relationshipType: "Survey2Service", relatedItemIds: ["srv1234567890"] }
+        ] as common.IRelatedItems[]);
+        spyOn(common, "getItemDataAsFile")
+          .and.resolveTo(await zipHelpers.getSampleFormZipFile(formId, "frm1234567890.zip"));
+        spyOn(formHelpers, "templatizeFormData").and.callFake((zipObject: any) => Promise.resolve(zipObject));
+
+        const template = await simpleTypes.convertItemToTemplate(
+          itemTemplate.item,
+          MOCK_USER_SESSION,
+          MOCK_USER_SESSION,
+          {}
+        );
+
+        delete (template as any).key; // key is randomly generated, and so is not testable
+        expect(template).toEqual(expectedTemplate);
+      });
+
+      it('should handle form item type with default filename for "undefined" string literal item name', async () => {
+        const formId = "frm1234567890";
+        itemTemplate.item.name = "undefined";
+
+        spyOn(common, "getItemRelatedItemsInSameDirection").and.resolveTo([
+          { relationshipType: "Survey2Data", relatedItemIds: ["srv1234567890", "abc1234567890"] },
+          { relationshipType: "Survey2Service", relatedItemIds: ["srv1234567890"] }
+        ] as common.IRelatedItems[]);
+        spyOn(common, "getItemDataAsFile")
+          .and.resolveTo(await zipHelpers.getSampleFormZipFile(formId, "frm1234567890.zip"));
+        spyOn(formHelpers, "templatizeFormData").and.callFake((zipObject: any) => Promise.resolve(zipObject));
+
+        const template = await simpleTypes.convertItemToTemplate(
+          itemTemplate.item,
+          MOCK_USER_SESSION,
+          MOCK_USER_SESSION,
+          {}
+        );
+
+        delete (template as any).key; // key is randomly generated, and so is not testable
+        expectedTemplate.item.name = "undefined";
+        expect(template).toEqual(expectedTemplate);
+      });
+
+      it("should handle an Enterprise portal", async () => {
+        let MOCK_USER_ENTERPRISE_SESSION: common.UserSession = utils.createRuntimeMockUserSession(
+          undefined, undefined, true
+        );
+
+        const formId = "frm1234567890";
+        itemTemplate.item.name = "undefined";
+
+        spyOn(common, "getItemRelatedItemsInSameDirection").and.resolveTo([
+          { relationshipType: "Survey2Data", relatedItemIds: ["srv1234567890", "abc1234567890"] },
+          { relationshipType: "Survey2Service", relatedItemIds: ["srv1234567890"] }
+        ] as common.IRelatedItems[]);
+        spyOn(common, "getItemDataAsFile")
+          .and.resolveTo(await zipHelpers.getSampleFormZipFile(formId, "frm1234567890.zip"));
+        spyOn(formHelpers, "templatizeFormData").and.callFake((zipObject: any) => Promise.resolve(zipObject));
+
+        const template = await simpleTypes.convertItemToTemplate(
+          itemTemplate.item,
+          MOCK_USER_ENTERPRISE_SESSION,
+          MOCK_USER_ENTERPRISE_SESSION,
+          {}
+        );
+
+        delete (template as any).key; // key is randomly generated, and so is not testable
+        expectedTemplate.item.name = "undefined";
+        expect(template).toEqual(expectedTemplate);
+      });
+
+    });
+
     describe("_getDataPipelineSourcesAndSinks", () => {
       const itemData = {
         "inputs": [{
@@ -339,250 +545,6 @@ describe("simpleTypeConvertItemToTemplate", () => {
         const sourcesAndSinks = simpleTypeHelpers._getDataPipelineSourcesAndSinks(undefined);
         expect(sourcesAndSinks).toEqual([]);
       });
-    });
-  });
-
-  describe("form", () => {
-    let solutionItemId: string;
-    let itemTemplate: common.IItemTemplate;
-    let expectedTemplate: any;
-
-    beforeEach(() => {
-      solutionItemId = "sln1234567890";
-      itemTemplate = templates.getItemTemplateSkeleton();
-      itemTemplate.itemId = "frm1234567890";
-      itemTemplate.item = mockItems.getAGOLItem("Form", undefined);
-      itemTemplate.item.thumbnail = null;
-
-      expectedTemplate = {
-        itemId: "frm1234567890",
-        type: "Form",
-        item: {
-          id: "{{frm1234567890.itemId}}",
-          type: "Form",
-          accessInformation: "Esri, Inc.",
-          categories: [],
-          contentStatus: null,
-          culture: "en-us",
-          description: "Description of an AGOL item",
-          extent: [],
-          spatialReference: undefined,
-          licenseInfo: null,
-          name: "frm1234567890.zip",
-          origUrl: undefined,
-          properties: null,
-          snippet: "Snippet of an AGOL item",
-          tags: ["test"],
-          thumbnail: null,
-          title: "An AGOL item",
-          typeKeywords: ["JavaScript"],
-          url: "",
-          created: 1520968147000,
-          modified: 1522178539000
-        },
-        data: null, // forms don't store info here
-        resources: ["frm1234567890_info_data/frm1234567890.zip"],
-        relatedItems: [
-          {
-            relationshipType: "Survey2Data",
-            relatedItemIds: ["srv1234567890", "abc1234567890"]
-          },
-          {
-            relationshipType: "Survey2Service",
-            relatedItemIds: ["srv1234567890"]
-          }
-        ],
-        dependencies: ["srv1234567890", "abc1234567890"],
-        groups: [],
-        properties: {},
-        estimatedDeploymentCostFactor: 2,
-        dataFile: {
-          itemId: 'frm1234567890',
-          folder: 'frm1234567890_info_data',
-          filename: 'frm1234567890.zip'
-        }
-      };
-
-      fetchMock
-        .post(
-          utils.PORTAL_SUBSET.restUrl +
-            "/content/items/" +
-            itemTemplate.itemId +
-            "/data",
-          ["abc", "def", "ghi"]
-        )
-        .post(
-          utils.PORTAL_SUBSET.restUrl +
-            "/content/items/" +
-            itemTemplate.itemId +
-            "/resources",
-          noResourcesResponse
-        )
-        .post(
-          utils.PORTAL_SUBSET.restUrl +
-            "/content/items/" +
-            itemTemplate.itemId +
-            "/info/metadata/metadata.xml",
-          mockItems.get400Failure()
-        )
-        .post(
-          utils.PORTAL_SUBSET.restUrl +
-            "/content/users/" +
-            MOCK_USER_SESSION.username +
-            "/items/" +
-            solutionItemId +
-            "/addResources",
-          {
-            success: true,
-            itemId: itemTemplate.itemId,
-            owner: MOCK_USER_SESSION.username,
-            folder: null
-          }
-        );
-      staticRelatedItemsMocks.fetchMockRelatedItems(
-        itemTemplate.itemId,
-        { total: 0, relatedItems: [] },
-        ["Survey2Data", "Survey2Service"]
-      );
-      fetchMock.get(
-        utils.PORTAL_SUBSET.restUrl +
-          "/content/items/" +
-          itemTemplate.itemId +
-          "/relatedItems?f=json&direction=forward&relationshipType=Survey2Data&token=fake-token",
-        {
-          total: 2,
-          relatedItems: [
-            {
-              id: "srv1234567890"
-            },
-            {
-              id: "abc1234567890"
-            }
-          ]
-        }
-      );
-      fetchMock.get(
-        utils.PORTAL_SUBSET.restUrl +
-          "/content/items/" +
-          itemTemplate.itemId +
-          "/relatedItems?f=json&direction=forward&relationshipType=Survey2Service&token=fake-token",
-        {
-          total: 1,
-          relatedItems: [
-            {
-              id: "srv1234567890"
-            }
-          ]
-        }
-      );
-    });
-
-    it("should handle form item type with default filename for falsy item name", async () => {
-      const formId = "frm1234567890";
-      itemTemplate.item.name = null;
-
-      spyOn(common, "getItemRelatedItemsInSameDirection").and.resolveTo([
-        { relationshipType: "Survey2Data", relatedItemIds: ["srv1234567890", "abc1234567890"] },
-        { relationshipType: "Survey2Service", relatedItemIds: ["srv1234567890"] }
-      ] as common.IRelatedItems[]);
-      spyOn(common, "getItemDataAsFile")
-        .and.resolveTo(await zipUtilsTest.getSampleFormZipFile(formId, "frm1234567890.zip"));
-      spyOn(formHelpers, "templatizeFormWebHooks").and.callFake((zipObject: any) => Promise.resolve(zipObject));
-
-      const template = await simpleTypes.convertItemToTemplate(
-        itemTemplate.item,
-        MOCK_USER_SESSION,
-        MOCK_USER_SESSION,
-        {}
-      );
-
-      delete (template as any).key; // key is randomly generated, and so is not testable
-      delete template.dataFile.file; // don't want to test File object
-      expect(template).toEqual(expectedTemplate);
-    });
-
-    it('should handle form item type with default filename for "undefined" string literal item name', async () => {
-      const formId = "frm1234567890";
-      itemTemplate.item.name = "undefined";
-
-      spyOn(common, "getItemRelatedItemsInSameDirection").and.resolveTo([
-        { relationshipType: "Survey2Data", relatedItemIds: ["srv1234567890", "abc1234567890"] },
-        { relationshipType: "Survey2Service", relatedItemIds: ["srv1234567890"] }
-      ] as common.IRelatedItems[]);
-      spyOn(common, "getItemDataAsFile")
-        .and.resolveTo(await zipUtilsTest.getSampleFormZipFile(formId, "frm1234567890.zip"));
-      spyOn(formHelpers, "templatizeFormWebHooks").and.callFake((zipObject: any) => Promise.resolve(zipObject));
-
-      const template = await simpleTypes.convertItemToTemplate(
-        itemTemplate.item,
-        MOCK_USER_SESSION,
-        MOCK_USER_SESSION,
-        {}
-      );
-
-      delete (template as any).key; // key is randomly generated, and so is not testable
-      delete template.dataFile.file; // don't want to test File object
-      expect(template).toEqual(expectedTemplate);
-    });
-
-    it("should use the template's item name for the form data name", () => {
-      const itemName = "itemName";
-      const dataFilename = "dataFilename";
-      const itemIdAsName = "itemIdAsName";
-      const formDataName = simpleTypeHelpers._getFormDataFilename(itemName, dataFilename, itemIdAsName);
-      expect(formDataName).toEqual(itemName);
-    });
-
-    it("should use the template's file data name for the form data name", () => {
-      const itemName = "";
-      const dataFilename = "dataFilename";
-      const itemIdAsName = "itemIdAsName";
-      const formDataName = simpleTypeHelpers._getFormDataFilename(itemName, dataFilename, itemIdAsName);
-      expect(formDataName).toEqual(dataFilename);
-    });
-
-    it("should use the template's id to create a name for the form data name--'undefined' file name", () => {
-      const itemName = "";
-      const dataFilename = "undefined";
-      const itemIdAsName = "itemIdAsName";
-      const formDataName = simpleTypeHelpers._getFormDataFilename(itemName, dataFilename, itemIdAsName);
-      expect(itemIdAsName).toEqual(itemIdAsName);
-    });
-
-    it("should use the template's id to create a name for the form data name", () => {
-      const itemName = "";
-      const dataFilename = "";
-      const itemIdAsName = "itemIdAsName";
-      const formDataName = simpleTypeHelpers._getFormDataFilename(itemName, dataFilename, itemIdAsName);
-      expect(itemIdAsName).toEqual(itemIdAsName);
-    });
-
-    it("should handle an Enterprise portal", async () => {
-      let MOCK_USER_ENTERPRISE_SESSION: common.UserSession = utils.createRuntimeMockUserSession(
-        undefined, undefined, true
-      );
-
-      const formId = "frm1234567890";
-      itemTemplate.item.name = "undefined";
-
-      spyOn(common, "getItemRelatedItemsInSameDirection").and.resolveTo([
-        { relationshipType: "Survey2Data", relatedItemIds: ["srv1234567890", "abc1234567890"] },
-        { relationshipType: "Survey2Service", relatedItemIds: ["srv1234567890"] }
-      ] as common.IRelatedItems[]);
-      spyOn(common, "getItemDataAsFile")
-        .and.resolveTo(await zipUtilsTest.getSampleFormZipFile(formId, "frm1234567890.zip"));
-      spyOn(formHelpers, "templatizeFormWebHooks").and.callFake((zipObject: any) => Promise.resolve(zipObject));
-
-      const template = await simpleTypes.convertItemToTemplate(
-        itemTemplate.item,
-        MOCK_USER_ENTERPRISE_SESSION,
-        MOCK_USER_ENTERPRISE_SESSION,
-        {}
-      );
-
-      delete (template as any).key; // key is randomly generated, and so is not testable
-      delete template.dataFile.file; // don't want to test File object
-      expect(template).toEqual(expectedTemplate);
     });
   });
 
