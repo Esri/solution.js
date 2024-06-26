@@ -39,13 +39,7 @@ export function getDeployedSolutionsAndItems(
 ): Promise<any> {
   return getDeployedSolutions(authentication).then(
     (searchResults: ISearchResult<IItem>) => {
-      console.log("searchResults")
-      console.log(searchResults)
-      return getSolutionItemsFromDeployedSolutions(authentication, searchResults).then(r => {
-        console.log("r")
-        console.log(r)
-        return JSON.stringify(r);
-      });
+      return getSolutionItemsFromDeployedSolutions(authentication, searchResults);
     }
   );
 }
@@ -91,14 +85,8 @@ export function getSolutionItemsFromDeployedSolutions(
   }
 
   return Promise.all(promises).then(results => {
-    console.log("getSolutionItemsFromDeployedSolutions results");
-    console.log(results);
     return results.reduce((prev, cur, i) => {
-      prev[itemIds[i]] = cur.templates.map(template => {
-        // console.log("template")
-        // console.log(template)
-        return template.itemId;
-    });
+      prev[itemIds[i]] = cur.templates.map(template => template.itemId);
       return prev;
     }, {});
   });
@@ -108,15 +96,66 @@ export function findReusableSolutionsAndItems(
   id: string,
   authentication: UserSession
 ) {
-  return getDeployedSolutionsAndItems(authentication).then(results => {
-    console.log("results of getDeployedSolutionsAndItems")
-    console.log(results)
-    return getIdsFromSolutionTemplates(id, authentication).then(ids => {
-      console.log("ids from the solution to be deployed")
-      console.log(ids)
-      return ids;
+  return getItemHash(id, authentication).then(itemHash => {
+    return getDeployedSolutionsAndItems(authentication).then(results => {
+      console.log("results")
+      console.log(results)
+
+      const ids = Object.keys(itemHash);
+      Object.keys(results).forEach(solutionId => {
+        const solutionItemIds = results[solutionId];
+        ids.forEach(id => {
+          const items = itemHash[id]
+          items.forEach(item => {
+            if (solutionItemIds.indexOf(item.id) > -1 && item.solutions.indexOf(solutionId) < 0) {
+              item.solutions.push(solutionId);
+            }
+          });
+        })
+      });
+      return itemHash;
     });
   })
+}
+
+export function getItemHash(
+  id: string,
+  authentication: UserSession
+) {
+  return getIdsFromSolutionTemplates(id, authentication).then(ids => {
+    // search for existing items that reference any of these ids in their typeKeywords
+    //const q = `typekeywords:source-${template.itemId} type:${template.item.type} owner:${templateDictionary.user.username}`;
+    const promises = ids.map(id => {
+      const q = `typekeywords:source-${id} owner:${authentication.username}`;
+      const searchOptions = {
+        q,
+        authentication,
+        pagingParam: { start: 1, num: 100 }
+      };
+      return searchItems(searchOptions);
+    });
+
+    return Promise.all(promises).then(results => {
+      // if we have a result from the typeKeyword search we need to understand what solution it came from and what its id is
+      if (results.length > 0) {
+        return results.reduce((prev: any, cur: any, i: number) => {
+          // key is source id and value is any ids for items that were deployed based on this source
+          prev[ids[i]] = cur.results.map(r => {
+            return {
+              created: r.created,
+              id: r.id,
+              solutions: [],
+              title: r.title,
+              type: r.type
+            };
+          });
+          return prev;
+        }, {});
+      } else {
+        return undefined;
+      }
+    });
+  });
 }
 
 export function getIdsFromSolutionTemplates(
