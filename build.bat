@@ -44,6 +44,10 @@ pushd demos\verifySolution
 call npm install
 popd
 
+pushd demos\reuseDeployedItems
+call npm install
+popd
+
 rem clear out older builds
 rmdir/s/q packages\common\dist 2>nul
 rmdir/s/q packages\creator\dist 2>nul
@@ -67,6 +71,7 @@ rmdir/s/q demos\deploySolution\dist 2>nul
 rmdir/s/q demos\getItemInfo\dist 2>nul
 rmdir/s/q demos\implementedTypes\dist 2>nul
 rmdir/s/q demos\verifySolution\dist 2>nul
+rmdir/s/q demos\reuseDeployedItems\dist 2>nul
 
 rem install and build the packages
 call npm install
@@ -142,6 +147,10 @@ call npm run build
 popd
 
 pushd demos\verifySolution
+call npm run build
+popd
+
+pushd demos\reuseDeployedItems
 call npm run build
 popd
 
