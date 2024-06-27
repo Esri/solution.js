@@ -15,25 +15,23 @@
  */
 
 import "./style.css";
-import * as common from "@esri/solution-common";
+import { UserSession } from "@esri/solution-common";
 import * as demoCommon from "./demoCommon";
 import * as htmlUtil from "./htmlUtil";
 import * as main from "./reuse-deployed-items-main";
 import { textAreaHtmlFromJSON } from "./getFormattedItemInfo";
 
 declare var findSolutionsFcn: any;
-declare var continueFcn: any;
 declare var findRelatedSolutionsFcn: any;
 
-declare var toggleSelectAllFcn: any;
-declare var updateSolutionSelectionFcn: any;
-
-let authentication: common.UserSession;
+let authentication: UserSession;
 
 //--------------------------------------------------------------------------------------------------------------------//
 
+/**
+ * Gets deployable solutions from the user defined group.
+ */
 function getSolutions() {
-  //demoCommon.removeItem("sourceSolutionsListDiv");
   authentication = null;
   document.getElementById("output").innerHTML = "";
 
@@ -48,9 +46,7 @@ function getSolutions() {
   .then(
     (response: any) => {
       if (response) {
-        console.log(response)
         var list = demoCommon.addItem("sourceSolutionsDiv", "select", "solutionsList");
-        //list.innerHTML = response.results.map((r: any) => r.title);
 
         const solutions = response.results.map((r: any) => {
           return {id: r.id, title: r.title}
@@ -67,10 +63,9 @@ function getSolutions() {
           list.appendChild(item);
         });
 
-        //document.getElementById("toggleBtn").style.display = "inline-block";
         document.getElementById("solutionSelection").style.display = "block";
       } else {
-        document.getElementById("output").innerHTML = "No deployed Solution templates found";
+        document.getElementById("output").innerHTML = "No deployable Solution templates found";
       }
     },
     (error: any) => {
@@ -78,61 +73,23 @@ function getSolutions() {
         "<span style=\"color:red\">Unable to get Solution templates: " + JSON.stringify(error) + "</span>";
     }
   );
-}
-
-
-function findRelatedSolutions() {
-  const id = (document.getElementById("solutionsList") as any)?.value;
-  console.log(id);
-  main.findReusableSolutionsAndItems(authentication, id).then(s => {
-    const html =
-    '<div style="width:100%;display:inline-block;">Potential items for reuse in your org</div>' +
-    '<div style="width:100%;display:inline-block;">' +
-    textAreaHtmlFromJSON(s) +
-    '</div>';
-
-    document.getElementById("output").innerHTML = html;
-  });
-  // common.getIdsFromSolutionTemplates(id, authentication).then(results => {
-  //   console.log(results);
-  // });
 }
 
 /**
- * Gets deployed Solutions from an organization and shows them as a checklist in the div "sourceSolutionsDiv".
+ * Find deployed items and solutions that leverage one or more of the items in the user selected solution
  */
-function getDeployedSolutions() {
-  demoCommon.removeItem("sourceSolutionsListDiv");
-  authentication = null;
-  document.getElementById("output").innerHTML = "";
+function findRelatedSolutions() {
+  const id = (document.getElementById("solutionsList") as any)?.value;
+  main.findReusableSolutionsAndItems(authentication, id).then(s => {
+    const html =
+      '<div style="width:100%;display:inline-block;">Potential items for reuse in your org:</div>' +
+      '<div style="width:100%;display:inline-block;">' +
+      textAreaHtmlFromJSON(s) +
+      '</div>';
 
-  const portal = (htmlUtil.getHTMLValue("portal") || "https://www.arcgis.com") + "/sharing/rest";
-  authentication = demoCommon.getRequestAuthentication(
-    htmlUtil.getHTMLValue("username"), htmlUtil.getHTMLValue("password"), portal
-  );
-
-  const id = htmlUtil.getHTMLValue("solutionId");
-
-  main.getDeployedSolutionsAndItems(authentication, id)
-  .then(
-    (response: any) => {
-      if (response) {
-        var listDiv = demoCommon.addItem("sourceSolutionsDiv", "DIV", "sourceSolutionsListDiv");
-        listDiv.innerHTML = response;
-
-        //document.getElementById("toggleBtn").style.display = "inline-block";
-        document.getElementById("solutionSelection").style.display = "block";
-      } else {
-        document.getElementById("output").innerHTML = "No deployed Solution templates found";
-      }
-    },
-    (error: any) => {
-      document.getElementById("output").innerHTML =
-        "<span style=\"color:red\">Unable to get Solution templates: " + JSON.stringify(error) + "</span>";
-    }
-  );
+    document.getElementById("output").innerHTML = html;
+  });
 }
 
 findSolutionsFcn = getSolutions;
-continueFcn = getDeployedSolutions;
 findRelatedSolutionsFcn = findRelatedSolutions;

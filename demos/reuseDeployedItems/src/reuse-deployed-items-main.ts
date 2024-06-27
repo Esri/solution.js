@@ -17,18 +17,12 @@
 
 import * as common from "@esri/solution-common";
 
-export function getDeployedSolutionsAndItems(
-  authentication: common.UserSession,
-  solutionId: string
-): Promise<any> {
-  console.log(solutionId);
-  return new Promise<string>((resolve, reject) => {
-    common.getDeployedSolutionsAndItems(authentication).then(r => {
-      resolve(r);
-    }, e => reject(e));
-  });
-}
-
+/**
+ * Gets deployable solutions from the user defined group.
+ *
+ * @param authentication Credentials for the request
+ * @param groupId The id of the group to search for deployable solutions from
+ */
 export function getDeployableSolutions(
   authentication: common.UserSession,
   groupId: string
@@ -41,6 +35,12 @@ export function getDeployableSolutions(
   });
 }
 
+/**
+ * Find deployed items and solutions that leverage one or more of the items in the user selected solution
+ *
+ * @param authentication Credentials for the request
+ * @param solutionId The id of the solution we would like to find relevant items for potential reuse
+ */
 export function findReusableSolutionsAndItems(
   authentication: common.UserSession,
   solutionId: string
