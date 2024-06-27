@@ -44,7 +44,7 @@
         <input type="text" id="portal" style="width:256px" placeholder="https://www.arcgis.com">
       </div>
       <div class="labeledItem">
-        <label for="groupId">Solution group id (same as used for deployment app):</label>
+        <label for="groupId">Solution group id (e.g. same as used for deployment app):</label>
         <input class="form-control" type="text" id="groupId" value="966b251241bb4e3bb9ee3f2b92921aa5">
       </div>
       <button id="connectBtn fader" onclick="findSolutionsFcn()">Get solutions</button>
@@ -54,14 +54,13 @@
     <div id="solutionSelection" style="display:none">
       <div class="section-title">Solutions:</div>
       <div id="sourceSolutionsDiv"></div>
-      <button id="findBtn fader" onclick="findRelatedSolutionsFcn()">Find related solutions</button>
+      <br/>
+      <button id="findBtn fader" onclick="findRelatedSolutionsFcn()">Find items for reuse</button>
     </div>
     <br/><br/>
 
     <div class="col-sm-12">
       <div id="output"></div>
-      <br/>
-      <button id="continue" class="btn btn-default display-none" onclick="continueFcn()">Continue</button>
     </div>
   </div>
 </body>

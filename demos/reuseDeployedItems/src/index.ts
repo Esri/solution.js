@@ -19,7 +19,7 @@ import * as common from "@esri/solution-common";
 import * as demoCommon from "./demoCommon";
 import * as htmlUtil from "./htmlUtil";
 import * as main from "./reuse-deployed-items-main";
-
+import { textAreaHtmlFromJSON } from "./getFormattedItemInfo";
 
 declare var findSolutionsFcn: any;
 declare var continueFcn: any;
@@ -85,8 +85,13 @@ function findRelatedSolutions() {
   const id = (document.getElementById("solutionsList") as any)?.value;
   console.log(id);
   main.findReusableSolutionsAndItems(authentication, id).then(s => {
-    console.log("s");
-    console.log(s);
+    const html =
+    '<div style="width:100%;display:inline-block;">Potential items for reuse in your org</div>' +
+    '<div style="width:100%;display:inline-block;">' +
+    textAreaHtmlFromJSON(s) +
+    '</div>';
+
+    document.getElementById("output").innerHTML = html;
   });
   // common.getIdsFromSolutionTemplates(id, authentication).then(results => {
   //   console.log(results);

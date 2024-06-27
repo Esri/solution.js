@@ -71,22 +71,34 @@ export function getDeployedSolutions(
   });
 }
 
+// searchResults are the deployed solutions
 export function getSolutionItemsFromDeployedSolutions(
   authentication: UserSession,
   searchResults: ISearchResult<IItem>
 ): Promise<any> {
   const promises = [];
   const itemIds = [];
+  const sols = {};
   if (searchResults?.results?.length > 0) {
-    searchResults.results.forEach(r => {
+    searchResults.results.forEach((r) => {
       itemIds.push(r.id);
+      sols[r.id] = {
+        created: r.created,
+        id: r.id,
+        title: r.title,
+        type: r.type
+      }
       promises.push(getItemData(r.id, { authentication }));
     });
   }
 
   return Promise.all(promises).then(results => {
     return results.reduce((prev, cur, i) => {
-      prev[itemIds[i]] = cur.templates.map(template => template.itemId);
+      const id = itemIds[i];
+      prev[id] = {
+        templates: cur.templates.map(template => template.itemId),
+        solInfo: sols[id]
+      };
       return prev;
     }, {});
   });
@@ -103,12 +115,12 @@ export function findReusableSolutionsAndItems(
 
       const ids = Object.keys(itemHash);
       Object.keys(results).forEach(solutionId => {
-        const solutionItemIds = results[solutionId];
+        const solution = results[solutionId];
         ids.forEach(id => {
           const items = itemHash[id]
           items.forEach(item => {
-            if (solutionItemIds.indexOf(item.id) > -1 && item.solutions.indexOf(solutionId) < 0) {
-              item.solutions.push(solutionId);
+            if (solution.templates.indexOf(item.id) > -1 && Object.keys(item.solutions).indexOf(solutionId) < 0) {
+              item.solutions[solutionId] = solution.solInfo;
             }
           });
         })
@@ -124,7 +136,6 @@ export function getItemHash(
 ) {
   return getIdsFromSolutionTemplates(id, authentication).then(ids => {
     // search for existing items that reference any of these ids in their typeKeywords
-    //const q = `typekeywords:source-${template.itemId} type:${template.item.type} owner:${templateDictionary.user.username}`;
     const promises = ids.map(id => {
       const q = `typekeywords:source-${id} owner:${authentication.username}`;
       const searchOptions = {
@@ -144,7 +155,7 @@ export function getItemHash(
             return {
               created: r.created,
               id: r.id,
-              solutions: [],
+              solutions: {},
               title: r.title,
               type: r.type
             };
