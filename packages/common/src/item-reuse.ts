@@ -24,9 +24,9 @@ import { getItemData, IItem, ISearchResult, searchItems, SearchQueryBuilder} fro
  */
 export interface IReuseItems {
   /**
-   * The id of the item as it is within the solution template that will be deployed
+   * The key is the id of the item as it is within the solution template that will be deployed
    */
-  [key: string]: IReuseItem[];
+  [key: string]: IReuseItem;
 }
 
 /**
@@ -37,11 +37,6 @@ export interface IReuseItem {
    *  The date/time the item was created
    */
   created: number;
-
-  /**
-   * The id of the item that is already deployed
-   */
-  id: string;
 
   /**
    * A collection of key details from solutions that leverage this item
@@ -65,6 +60,7 @@ export interface IReuseItem {
 export interface IReuseSolutions {
   /**
    * A collection of key details from a solution that leverages one or more reuse items
+   * The key is the id of the deployed solution.
    */
   [key: string]: IReuseSolution;
 }
@@ -79,27 +75,33 @@ export interface IReuseSolution {
   created: number;
 
   /**
-   * The id of the solution is already deployed
-   */
-  id: string;
-
-  /**
    * The title of the solution is already deployed
    */
   title: string;
-
-  /**
-   * The type of the solution is already deployed
-   */
-  type: string;
 }
 
+/**
+ * Collection of key details about one or more solutions
+ */
 export interface ISolutionInfos {
+  /**
+   * Key details about a solution
+   * The key value is the solutions item id
+   */
   [key: string]: ISolutionInfo;
 }
 
+/**
+ * Key details about a solution
+ */
 export interface ISolutionInfo {
+  /**
+   * Array of template ids from the solution
+   */
   templates: string[];
+/**
+ * A collection of key details from a solution that leverages one or more reuse items
+ */
   solutionInfo: IReuseSolution;
 }
 
@@ -213,13 +215,14 @@ export function findReusableSolutionsAndItems(
 ): Promise<IReuseItems> {
   return getItemHash(id, authentication).then(itemHash => {
     return getDeployedSolutionsAndItems(authentication).then(results => {
-      const ids = Object.keys(itemHash);
+      const sourceIds = Object.keys(itemHash);
       Object.keys(results).forEach(solutionId => {
         const solution = results[solutionId];
-        ids.forEach(id => {
-          const items = itemHash[id];
-          items.forEach(item => {
-            if (solution.templates.indexOf(item.id) > -1 && Object.keys(item.solutions).indexOf(solutionId) < 0) {
+        sourceIds.forEach(sourceId => {
+          const itemKeys = Object.keys(itemHash[sourceId]);
+          itemKeys.forEach(deployedId => {
+            const item = itemHash[sourceId][deployedId];
+            if (solution.templates.indexOf(deployedId) > -1 && Object.keys(item.solutions).indexOf(solutionId) < 0) {
               item.solutions[solutionId] = solution.solutionInfo;
             }
           });
@@ -256,15 +259,15 @@ export function getItemHash(
       if (results.length > 0) {
         return results.reduce((prev: any, cur: any, i: number) => {
           // key is source id and value is any ids for items that were deployed based on this source
-          prev[ids[i]] = cur.results.map(r => {
-            return {
-              created: r.created,
-              id: r.id,
+          prev[ids[i]] = cur.results.reduce((prev, cur) => {
+            prev[cur.id] = {
+              created: cur.created,
               solutions: {},
-              title: r.title,
-              type: r.type
-            };
-          });
+              title: cur.title,
+              type: cur.type
+            }
+            return prev;
+          }, {});
           return prev;
         }, {});
       } else {
