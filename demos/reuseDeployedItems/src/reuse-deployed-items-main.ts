@@ -26,7 +26,7 @@ import * as common from "@esri/solution-common";
 export function getDeployableSolutions(
   authentication: common.UserSession,
   groupId: string
-): Promise<any> {
+): Promise<common.ISearchResult<common.IItem>> {
   console.log(groupId);
   return new Promise<any>((resolve, reject) => {
     common.searchGroupAllContents(groupId, "", authentication).then(r => {
@@ -44,6 +44,6 @@ export function getDeployableSolutions(
 export function findReusableSolutionsAndItems(
   authentication: common.UserSession,
   solutionId: string
-): Promise<any>  {
+): Promise<common.IReuseItems>  {
   return common.findReusableSolutionsAndItems(solutionId, authentication);
 }
