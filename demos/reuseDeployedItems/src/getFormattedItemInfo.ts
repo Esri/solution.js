@@ -280,7 +280,7 @@ function showBlob(
       blob.type === "application/xml"
     ) {
       common.blobToText(blob).then(
-        text => resolve(textAreaHtmlFromText(text) + addFilename(filename)),
+        text => resolve(textAreaHtmlFromText(text, 10) + addFilename(filename)),
         error => resolve("<i>problem extracting text: " + error + "</i>")
       );
     } else if (blob.type.startsWith("image/")) {
@@ -354,12 +354,13 @@ function showTopologicalSortGraph(
  * @param json JSON to insert into textarea
  * @returns textarea HTML
  */
-export function textAreaHtmlFromJSON(json: any): string {
+export function textAreaHtmlFromJSON(json: any, rows: number = 10): string {
   return textAreaHtmlFromText(
     JSON.stringify(
       common.sanitizeJSON(json),
       null, 2
-    )
+    ),
+    rows
   );
 }
 
@@ -369,9 +370,9 @@ export function textAreaHtmlFromJSON(json: any): string {
  * @param text Text to insert into textarea
  * @returns textarea HTML
  */
-function textAreaHtmlFromText(text: string): string {
+function textAreaHtmlFromText(text: string, rows: number): string {
   return (
-    '<textarea rows="10" style="width:99%;font-size:x-small">' +
+    `<textarea rows="${rows}" style="width:99%;font-size:x-small">` +
     text +
     "</textarea>"
   );

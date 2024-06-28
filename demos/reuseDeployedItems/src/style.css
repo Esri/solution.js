@@ -47,3 +47,15 @@ th, td {
 .fader {
   transition: 0.5s;
 }
+.padding-end-1 {
+  padding-inline-end: 1rem;
+}
+.padding-top-5 {
+  padding-top: 5px;
+}
+.display-flex {
+  display: flex;
+}
+.align-items-center{
+  align-items: center;
+}

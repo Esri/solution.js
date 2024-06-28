@@ -168,9 +168,7 @@ export function getSolutionItemsFromDeployedSolutions(
       itemIds.push(r.id);
       solutions[r.id] = {
         created: r.created,
-        id: r.id,
-        title: r.title,
-        type: r.type
+        title: r.title
       }
       promises.push(getItemData(r.id, { authentication }));
     });
@@ -248,8 +246,7 @@ export function getItemHash(
       const q = `typekeywords:source-${id} owner:${authentication.username}`;
       const searchOptions = {
         q,
-        authentication,
-        pagingParam: { start: 1, num: 100 }
+        authentication
       };
       return searchItems(searchOptions);
     });

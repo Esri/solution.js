@@ -47,6 +47,7 @@ function getSolutions() {
     (response: any) => {
       if (response) {
         var list = demoCommon.addItem("sourceSolutionsDiv", "select", "solutionsList");
+        list.classList.add("form-control");
 
         const solutions = response.results.map((r: any) => {
           return {id: r.id, title: r.title}
@@ -63,7 +64,8 @@ function getSolutions() {
           list.appendChild(item);
         });
 
-        document.getElementById("solutionSelection").style.display = "block";
+        const solutionSelection = document.getElementById("solutionSelection")
+        solutionSelection.style.display = "flex";
       } else {
         document.getElementById("output").innerHTML = "No deployable Solution templates found";
       }
@@ -81,10 +83,28 @@ function getSolutions() {
 function findRelatedSolutions() {
   const id = (document.getElementById("solutionsList") as any)?.value;
   main.findReusableSolutionsAndItems(authentication, id).then(s => {
+    const example = {
+      "item-id-from-the-selected-solution": [
+        {
+          "created": "deployed-item-created-value",
+          "id": "id-of-the-deployed-item",
+          "solutions": {
+            "solution-id-that-uses-the-deployed-item": {
+              "created": "solution-created-value",
+              "title": "solution-title"
+            }
+          },
+          "title": "title-of-the-deployed-item",
+          "type": "type-of-the-deployed-item"
+        }
+      ]
+    }
     const html =
-      '<div style="width:100%;display:inline-block;">Potential items for reuse in your org:</div>' +
+      '<label style="width:100%;display:inline-block;">Structure of response:</label>' +
+      textAreaHtmlFromJSON(example, 16) +
+      '<label style="width:100%;display:inline-block;">Potential items for reuse in your org:</label>' +
       '<div style="width:100%;display:inline-block;">' +
-      textAreaHtmlFromJSON(s) +
+      textAreaHtmlFromJSON(s, 20) +
       '</div>';
 
     document.getElementById("output").innerHTML = html;
