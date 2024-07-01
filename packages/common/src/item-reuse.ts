@@ -261,8 +261,6 @@ export function getItemHash(
       return searchItems(searchOptions);
     });
 
-    // make sure this would properly handle if one of these is deleted..??
-    // something just feels off with this...like ids
     return Promise.all(promises).then(results => {
       // if we have a result from the typeKeyword search we need to understand what solution it came from and what its id is
       return results.reduce((prev: any, cur: any, i: number) => {
