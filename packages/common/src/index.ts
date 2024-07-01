@@ -33,6 +33,7 @@ export * from "./getItemTypeAbbrev";
 export * from "./getSolutionSummary";
 export * from "./get-subscription-info";
 export * from "./interfaces";
+export * from "./item-reuse";
 export * from "./libConnectors";
 export * from "./migrator";
 export * from "./resourceHelpers";

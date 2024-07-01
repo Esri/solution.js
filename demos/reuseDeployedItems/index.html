@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="en" dir="ltr">
+<head>
+  <meta charset="utf-8"/>
+  <title>reuseDeployedItems example</title>
+  <!--
+   | Copyright 2024 Esri
+   |
+   | Licensed under the Apache License, Version 2.0 (the "License");
+   | you may not use this file except in compliance with the License.
+   | You may obtain a copy of the License at
+   |
+   |    http://www.apache.org/licenses/LICENSE-2.0
+   |
+   | Unless required by applicable law or agreed to in writing, software
+   | distributed under the License is distributed on an "AS IS" BASIS,
+   | WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   | See the License for the specific language governing permissions and
+   | limitations under the License.
+  -->
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+  <script>
+    var findSolutionsFcn, findRelatedSolutionsFcn;
+  </script>
+</head>
+<body>
+  <h3>Reuse one or more Deployed Solution Items</h3>
+
+  <div id="container">
+    <div id="input">
+
+      <div class="section-title">Credentials in organization</div>
+
+      <div class="labeledItem">
+        <label for="username">Username:&nbsp;</label>
+        <input type="text" id="username" placeholder="anonymous" value="LocalGovDeployJohnH">
+      </div>
+      <div class="labeledItem">
+        <label for="password">Password:&nbsp;</label>
+        <input type="password" id="password" value="password2">
+      </div>
+      <div class="labeledItem">
+        <label for="portal">Portal:&nbsp;</label>
+        <input type="text" id="portal" style="width:256px" placeholder="https://www.arcgis.com">
+      </div>
+      <div class="labeledItem">
+        <label for="groupId">Solution group id (e.g. same as used for deployment app):</label>
+        <input class="form-control" type="text" id="groupId" value="966b251241bb4e3bb9ee3f2b92921aa5">
+      </div>
+      <button id="connectBtn fader" onclick="findSolutionsFcn()">Get solutions</button>
+    </div>
+    <br/><br/>
+
+    <div id="solutionSelection" style="display:none">
+      <label class="padding-end-1 display-flex align-items-center">Solutions:</label>
+      <div class="padding-end-1" id="sourceSolutionsDiv"></div>
+      <br/>
+      <button id="findBtn fader" onclick="findRelatedSolutionsFcn()">Find items for reuse</button>
+    </div>
+    <br/><br/>
+
+    <div class="col-sm-12">
+      <div id="output"></div>
+    </div>
+  </div>
+</body>
+</html>
