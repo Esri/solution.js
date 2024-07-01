@@ -19,10 +19,7 @@
 import { UserSession } from "./interfaces";
 import { getItemData, IItem, ISearchResult, searchItems, SearchQueryBuilder} from "@esri/arcgis-rest-portal";
 
-/**
- * Object that contains key details for items that could be leveraged for reuse
- */
-export interface IReuseItems {
+export interface ISourceItem {
   /**
    * The key is the id of the item as it is within the solution template that will be deployed
    */
@@ -30,9 +27,19 @@ export interface IReuseItems {
 }
 
 /**
- * Object that contains key details for an item that could be leveraged for reuse
+ * Object that contains key details for items that could be leveraged for reuse
  */
 export interface IReuseItem {
+  /**
+   * The key is the id of the item as it is within the solution template that will be deployed
+   */
+  [key: string]: IReuseItemInfo;
+}
+
+/**
+ * Object that contains key details for an item that could be leveraged for reuse
+ */
+export interface IReuseItemInfo {
   /**
    *  The date/time the item was created
    */
@@ -99,9 +106,9 @@ export interface ISolutionInfo {
    * Array of template ids from the solution
    */
   templates: string[];
-/**
- * A collection of key details from a solution that leverages one or more reuse items
- */
+  /**
+   * A collection of key details from a solution that leverages one or more reuse items
+   */
   solutionInfo: IReuseSolution;
 }
 
@@ -165,7 +172,7 @@ export function getSolutionItemsFromDeployedSolutions(
   const promises = [];
   const itemIds = [];
   const solutions = {};
-  if (searchResults?.results?.length > 0) {
+  if (searchResults.results.length > 0) {
     searchResults.results.forEach((r) => {
       itemIds.push(r.id);
       solutions[r.id] = {
@@ -197,8 +204,8 @@ export function getIdsFromSolutionTemplates(
   id: string,
   authentication: UserSession
 ): Promise<string[]> {
-  return getItemData(id, { authentication }).then(data => {
-    return data?.templates.map(t => t.itemId);
+  return getItemData(id, { authentication }).then(data => {;
+    return data.templates.map(t => t.itemId);
   })
 }
 
@@ -212,7 +219,7 @@ export function getIdsFromSolutionTemplates(
 export function findReusableSolutionsAndItems(
   id: string,
   authentication: UserSession
-): Promise<IReuseItems> {
+): Promise<ISourceItem> {
   return getItemHash(id, authentication).then(itemHash => {
     return getDeployedSolutionsAndItems(authentication).then(results => {
       const sourceIds = Object.keys(itemHash);
@@ -242,7 +249,7 @@ export function findReusableSolutionsAndItems(
 export function getItemHash(
   id: string,
   authentication: UserSession
-): Promise<IReuseItems> {
+): Promise<ISourceItem> {
   return getIdsFromSolutionTemplates(id, authentication).then(ids => {
     // search for existing items that reference any of these ids in their typeKeywords
     const promises = ids.map(id => {
@@ -254,25 +261,23 @@ export function getItemHash(
       return searchItems(searchOptions);
     });
 
+    // make sure this would properly handle if one of these is deleted..??
+    // something just feels off with this...like ids
     return Promise.all(promises).then(results => {
       // if we have a result from the typeKeyword search we need to understand what solution it came from and what its id is
-      if (results.length > 0) {
-        return results.reduce((prev: any, cur: any, i: number) => {
-          // key is source id and value is any ids for items that were deployed based on this source
-          prev[ids[i]] = cur.results.reduce((prev, cur) => {
-            prev[cur.id] = {
-              created: cur.created,
-              solutions: {},
-              title: cur.title,
-              type: cur.type
-            }
-            return prev;
-          }, {});
+      return results.reduce((prev: any, cur: any, i: number) => {
+        // key is source id and value is any ids for items that were deployed based on this source
+        prev[ids[i]] = cur.results.reduce((prev, cur) => {
+          prev[cur.id] = {
+            created: cur.created,
+            solutions: {},
+            title: cur.title,
+            type: cur.type
+          }
           return prev;
         }, {});
-      } else {
-        return undefined;
-      }
+        return prev;
+      }, {});
     });
   });
 }

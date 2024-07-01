@@ -82,7 +82,7 @@ function getSolutions() {
  */
 function findRelatedSolutions() {
   const id = (document.getElementById("solutionsList") as any)?.value;
-  main.findReusableSolutionsAndItems(authentication, id).then(s => {
+  main.findReusableSolutionsAndItems(authentication, id).then(results => {
     const example = {
       "item-id-from-the-selected-solution": [
         {
@@ -104,7 +104,7 @@ function findRelatedSolutions() {
       textAreaHtmlFromJSON(example, 16) +
       '<label style="width:100%;display:inline-block;">Potential items for reuse in your org:</label>' +
       '<div style="width:100%;display:inline-block;">' +
-      textAreaHtmlFromJSON(s, 20) +
+      textAreaHtmlFromJSON(results, 20) +
       '</div>';
 
     document.getElementById("output").innerHTML = html;

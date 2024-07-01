@@ -27,7 +27,6 @@ export function getDeployableSolutions(
   authentication: common.UserSession,
   groupId: string
 ): Promise<common.ISearchResult<common.IItem>> {
-  console.log(groupId);
   return new Promise<any>((resolve, reject) => {
     common.searchGroupAllContents(groupId, "", authentication).then(r => {
       resolve(r);
@@ -44,6 +43,6 @@ export function getDeployableSolutions(
 export function findReusableSolutionsAndItems(
   authentication: common.UserSession,
   solutionId: string
-): Promise<common.IReuseItems>  {
+): Promise<common.ISourceItem>  {
   return common.findReusableSolutionsAndItems(solutionId, authentication);
 }
