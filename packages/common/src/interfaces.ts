@@ -1272,9 +1272,56 @@ export interface ISolutionItemData {
   metadata: any;
 
   /**
+   * Supplemental information about the solution, e.g., its default spatial reference
+   */
+  params?: ISolutionItemDataParams;
+
+  /**
    * The collection of templates
    */
   templates: IItemTemplate[];
+}
+
+/**
+ * Supplemental information about the solution, e.g., its default spatial reference
+ */
+interface ISolutionItemDataParams {
+  /**
+   * Information about the default spatial reference for a solution item.
+   */
+  wkid: ISolutionItemDataWkidParams;
+}
+
+/**
+ * Information about the default spatial reference for a solution item.
+ */
+interface ISolutionItemDataWkidParams {
+  /**
+   * A label for the wkid, e.g., "Spatial Reference".
+   */
+  label: string;
+
+  /**
+   * The default wkid, e.g., "102100"
+   */
+  default: string;
+
+  /**
+   * A value flag, e.g., "spatialReference"
+   */
+  valueType: string;
+
+  /**
+   * Attributes of the default spatial reference for a solution item.
+   */
+  attributes: ISolutionItemDataWkidAttrsParams;
+}
+
+/**
+ * Attributes of the default spatial reference for a solution item.
+ */
+interface ISolutionItemDataWkidAttrsParams {
+  required: boolean;
 }
 
 /**
