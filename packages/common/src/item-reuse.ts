@@ -177,7 +177,8 @@ export function getSolutionItemsFromDeployedSolutions(
       itemIds.push(r.id);
       solutions[r.id] = {
         created: r.created,
-        title: r.title
+        title: r.title,
+        version: r.typeKeywords.filter(v => /solutionversion-.+/.exec(v))[0]
       }
       promises.push(getItemData(r.id, { authentication }));
     });
