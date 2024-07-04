@@ -20,9 +20,6 @@
 
 import * as fetchMock from "fetch-mock";
 import * as interfaces from "../src/interfaces";
-import * as mockItems from "../test/mocks/agolItems";
-import * as sinon from "sinon";
-import * as templates from "../test/mocks/templates";
 import * as utils from "./mocks/utils";
 import {
   findReusableSolutionsAndItems,
@@ -65,7 +62,7 @@ describe("Module `item-reuse`: functions to find reusable items and solutions", 
           id: solutionCId,
           created: 1819430834000,
           title: "C",
-          typeKeywords: ["solutionversion-2.0"]
+          typeKeywords: []
         }, {
           id: solutionBId,
           created: 1919430834000,
@@ -135,7 +132,7 @@ describe("Module `item-reuse`: functions to find reusable items and solutions", 
           solutionInfo: {
             created: 1819430834000,
             title: "C",
-            version: "solutionversion-2.0"
+            version: ""
           }
         }
       };

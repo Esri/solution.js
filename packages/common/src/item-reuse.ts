@@ -174,11 +174,13 @@ export function getSolutionItemsFromDeployedSolutions(
   const solutions = {};
   if (searchResults.results.length > 0) {
     searchResults.results.forEach((r) => {
+      const versionKeywords = r.typeKeywords.filter(v => /solutionversion-.+/.exec(v));
+      const version = versionKeywords.length > 0 ? versionKeywords[0] : "";
       itemIds.push(r.id);
       solutions[r.id] = {
         created: r.created,
         title: r.title,
-        version: r.typeKeywords.filter(v => /solutionversion-.+/.exec(v))[0]
+        version
       }
       promises.push(getItemData(r.id, { authentication }));
     });
