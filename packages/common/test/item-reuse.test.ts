@@ -59,15 +59,18 @@ describe("Module `item-reuse`: functions to find reusable items and solutions", 
         results: [{
           id: solutionAId,
           created: 1719430833000,
-          title: "A"
+          title: "A",
+          typeKeywords: ["solutionversion-1.0"]
         }, {
           id: solutionCId,
           created: 1819430834000,
-          title: "C"
+          title: "C",
+          typeKeywords: ["solutionversion-2.0"]
         }, {
           id: solutionBId,
           created: 1919430834000,
-          title: "B"
+          title: "B",
+          typeKeywords: ["solutionversion-2.0"]
         }]
       };
 
@@ -109,7 +112,8 @@ describe("Module `item-reuse`: functions to find reusable items and solutions", 
           ],
           solutionInfo: {
             created: 1719430833000,
-            title: "A"
+            title: "A",
+            version: "solutionversion-1.0"
           }
         },
         "bbb12006b49746a99127cef12ab61e85": {
@@ -119,7 +123,8 @@ describe("Module `item-reuse`: functions to find reusable items and solutions", 
           ],
           solutionInfo: {
             created: 1919430834000,
-            title: "B"
+            title: "B",
+            version: "solutionversion-2.0"
           }
         },
         "ccc12006b49746a99127cef12ab61e85": {
@@ -129,7 +134,8 @@ describe("Module `item-reuse`: functions to find reusable items and solutions", 
           ],
           solutionInfo: {
             created: 1819430834000,
-            title: "C"
+            title: "C",
+            version: "solutionversion-2.0"
           }
         }
       };
@@ -409,15 +415,18 @@ describe("Module `item-reuse`: functions to find reusable items and solutions", 
         results: [{
           id: solutionAId,
           created: 1719430833000,
-          title: "A"
+          title: "A",
+          typeKeywords: ["solutionversion-2.0"]
         }, {
           id: solutionCId,
           created: 1819430834000,
-          title: "C"
+          title: "C",
+          typeKeywords: ["solutionversion-2.0"]
         }, {
           id: solutionBId,
           created: 1919430834000,
-          title: "B"
+          title: "B",
+          typeKeywords: ["solutionversion-2.0"]
         }]
       };
 
@@ -458,11 +467,13 @@ describe("Module `item-reuse`: functions to find reusable items and solutions", 
             "solutions": {
               "sol1x006b49746a99127cef12ab61e85": {
                 "created": 1719430833000,
-                "title": "A"
+                "title": "A",
+                "version": "solutionversion-2.0"
               },
               "sol3x006b49746a99127cef12ab61e85": {
                 "created": 1819430834000,
-                "title": "C"
+                "title": "C",
+                "version": "solutionversion-2.0"
               }
             },
             "title": "A",
@@ -475,11 +486,13 @@ describe("Module `item-reuse`: functions to find reusable items and solutions", 
             "solutions": {
               "sol2x006b49746a99127cef12ab61e85": {
                 "created": 1919430834000,
-                "title": "B"
+                "title": "B",
+                "version": "solutionversion-2.0"
               },
               "sol3x006b49746a99127cef12ab61e85": {
                 "created": 1819430834000,
-                "title": "C"
+                "title": "C",
+                "version": "solutionversion-2.0"
               }
             },
             "title": "B",
