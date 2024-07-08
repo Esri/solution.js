@@ -1285,7 +1285,7 @@ export interface ISolutionItemData {
 /**
  * Supplemental information about the solution, e.g., its default spatial reference
  */
-interface ISolutionItemDataParams {
+export interface ISolutionItemDataParams {
   /**
    * Information about the default spatial reference for a solution item.
    */
@@ -1295,7 +1295,7 @@ interface ISolutionItemDataParams {
 /**
  * Information about the default spatial reference for a solution item.
  */
-interface ISolutionItemDataWkidParams {
+export interface ISolutionItemDataWkidParams {
   /**
    * A label for the wkid, e.g., "Spatial Reference".
    */
@@ -1320,7 +1320,7 @@ interface ISolutionItemDataWkidParams {
 /**
  * Attributes of the default spatial reference for a solution item.
  */
-interface ISolutionItemDataWkidAttrsParams {
+export interface ISolutionItemDataWkidAttrsParams {
   required: boolean;
 }
 
