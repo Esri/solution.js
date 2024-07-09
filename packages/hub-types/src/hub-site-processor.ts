@@ -67,6 +67,8 @@ export function convertItemToTemplate(
 ): Promise<IItemTemplate> {
   let created: number = 0;
   let modified: number = 0;
+  let itemTitle: string;
+  let dataTitle: string;
 
   let hubRo: IHubUserRequestOptions;
   // get hubRequestOptions
@@ -79,13 +81,17 @@ export function convertItemToTemplate(
       // We need to save these properties in order to restore them after hub.js deletes them
       created = siteModel.item.created;
       modified = siteModel.item.modified;
+      itemTitle = siteModel.item.title;
+      dataTitle = siteModel.data.values.title;
       return convertSiteToTemplate(siteModel, hubRo);
     })
     .then(tmpl => {
       // add in some stuff Hub.js does not yet add
       tmpl.item.created = created;
       tmpl.item.modified = modified;
+      tmpl.item.title = itemTitle;
       tmpl.item.typeKeywords = without(tmpl.item.typeKeywords, "doNotDelete");
+      tmpl.data.values.title = dataTitle;
       tmpl.groups = [];
       tmpl.estimatedDeploymentCostFactor = 2;
       tmpl.resources = [];

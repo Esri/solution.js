@@ -43,12 +43,17 @@ describe("HubSiteProcessor: ", () => {
       // we are testing some post-templating logic, so the rawTmpl needs to have some props
       const rawTmpl = {
         item: {
-          typeKeywords: ["doNotDelete"]
+          typeKeywords: ["doNotDelete"],
+          title: "Hub Site Title"
         },
         itemId: "ef4",
         key: "not-used",
         type: "Hub Site Application",
-        data: {},
+        data: {
+          values: {
+            title: "Hub Site Title"
+          }
+        },
         properties: {}
       } as hubCommon.IModelTemplate;
       fetchMock
@@ -62,7 +67,11 @@ describe("HubSiteProcessor: ", () => {
         )
         .get(
           "https://www.arcgis.com/sharing/rest/content/items/ef4/data?f=json",
-          Promise.resolve({})
+          Promise.resolve({
+            values: {
+              title: "Hub Site Title"
+            }
+          })
         );
       const hubRoSpy = spyOn(common, "createHubRequestOptions").and.resolveTo(
         {} as hubCommon.IHubUserRequestOptions
@@ -100,12 +109,17 @@ describe("HubSiteProcessor: ", () => {
       // we are testing some post-templating logic, so the rawTmpl needs to have some props
       const rawTmpl = {
         item: {
-          typeKeywords: ["doNotDelete"]
+          typeKeywords: ["doNotDelete"],
+          title: "Hub Site Title"
         },
         itemId: "ef4",
         key: "not-used",
         type: "Hub Site Application",
-        data: {}
+        data: {
+          values: {
+            title: "Hub Site Title"
+          }
+        }
       } as hubCommon.IModelTemplate;
       fetchMock
         .get(
@@ -118,7 +132,11 @@ describe("HubSiteProcessor: ", () => {
         )
         .get(
           "https://www.arcgis.com/sharing/rest/content/items/ef4/data?f=json",
-          Promise.resolve({})
+          Promise.resolve({
+            values: {
+              title: "Hub Site Title"
+            }
+          })
         );
       const hubRoSpy = spyOn(common, "createHubRequestOptions").and.resolveTo(
         {} as hubCommon.IHubUserRequestOptions
