@@ -176,7 +176,7 @@ export async function getWorkflowBaseURL(
 
   if (portalResponse.isPortal) {
     // Enterprise
-    workflowServerUrl = await _getWorkflowEnterpriseServerRootURL(portalRestURL, authentication);
+    workflowServerUrl = await getWorkflowEnterpriseServerRootURL(portalRestURL, authentication);
   } else {
     // ArcGIS Online
     workflowServerUrl = portalResponse.helperServices?.workflowManager?.url ?? portalURL;
@@ -189,8 +189,6 @@ export async function getWorkflowBaseURL(
   );
 }
 
-// ------------------------------------------------------------------------------------------------------------------ //
-
 /**
  * Get the URL for the Workflow Manager Enterprise application.
  *
@@ -199,7 +197,7 @@ export async function getWorkflowBaseURL(
  * @returns URL for the Workflow Manager Enterprise application (e.g., "https://abc123.esri.com:6443/arcgis"),
  * or an empty string if Workflow Manager is not enabled
  */
-export async function _getWorkflowEnterpriseServerRootURL(
+export async function getWorkflowEnterpriseServerRootURL(
   portalRestUrl: string,
   authentication: interfaces.UserSession
 ): Promise<string> {

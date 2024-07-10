@@ -270,7 +270,7 @@ describe("Module `workflowHelpers`", () => {
     });
   });
 
-  describe("_getWorkflowEnterpriseServerRootURL", () => {
+  describe("getWorkflowEnterpriseServerRootURL", () => {
     it("fetches the Workflow Manager URL on Enterprise", async () => {
       const portalRestUrl = utils.PORTAL_SUBSET.restUrl;
       const servers = [
@@ -308,7 +308,7 @@ describe("Module `workflowHelpers`", () => {
 
       spyOn(restHelpersGet, "getEnterpriseServers").and.resolveTo(servers);
 
-      const actual = await workflowHelpers._getWorkflowEnterpriseServerRootURL(portalRestUrl, MOCK_USER_SESSION);
+      const actual = await workflowHelpers.getWorkflowEnterpriseServerRootURL(portalRestUrl, MOCK_USER_SESSION);
 
       expect(actual).toEqual("https://serverGHI.ags.esri.com/server");
     });
@@ -340,7 +340,7 @@ describe("Module `workflowHelpers`", () => {
 
       spyOn(restHelpersGet, "getEnterpriseServers").and.resolveTo(servers);
 
-      const actual = await workflowHelpers._getWorkflowEnterpriseServerRootURL(portalRestUrl, MOCK_USER_SESSION);
+      const actual = await workflowHelpers.getWorkflowEnterpriseServerRootURL(portalRestUrl, MOCK_USER_SESSION);
 
       expect(actual).toEqual("");
     });
