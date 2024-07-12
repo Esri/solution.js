@@ -76,6 +76,7 @@ rmdir/s/q demos\reuseDeployedItems\dist 2>nul
 rem install and build the packages
 call npm install
 call npm run build
+call commit-stamp.bat
 
 rem remove package.json files in distributions to keep lerna happy
 del/q packages\common\dist\cjs\package.json 2>nul
