@@ -13,7 +13,7 @@
     "url": "git+https://github.com/Esri/solution.js.git"
   },
   "scripts": {
-    "build": "npm run build:esm && npm run build:cjs",
+    "build": "npm run build:esm && npm run build:cjs && commit-stamp.bat",
     "build:esm": "ultra --no-pretty --silent --rebuild -r --filter \"packages/*\" build:esm",
     "build:cjs": "ultra --no-pretty --silent --rebuild -r --filter \"packages/*\" build:cjs",
     "clean": "npm run clean:src && npm run clean:dist",
