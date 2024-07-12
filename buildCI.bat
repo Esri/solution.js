@@ -35,26 +35,10 @@ rmdir/s/q packages\web-tool\node_modules 2>nul
 rmdir/s/q packages\workflow\dist 2>nul
 rmdir/s/q packages\workflow\node_modules 2>nul
 
-del/q package-lock.json 2>nul
-del/q packages\common\package-lock.json 2>nul
-del/q packages\creator\package-lock.json 2>nul
-del/q packages\deployer\package-lock.json 2>nul
-del/q packages\feature-layer\package-lock.json 2>nul
-del/q packages\file\package-lock.json 2>nul
-del/q packages\form\package-lock.json 2>nul
-del/q packages\group\package-lock.json 2>nul
-del/q packages\hub-types\package-lock.json 2>nul
-del/q packages\simple-types\package-lock.json 2>nul
-del/q packages\storymap\package-lock.json 2>nul
-del/q packages\velocity\package-lock.json 2>nul
-del/q packages\viewer\package-lock.json 2>nul
-del/q packages\web-experience\package-lock.json 2>nul
-del/q packages\web-tool\package-lock.json 2>nul
-del/q packages\workflow\package-lock.json 2>nul
-
-rmdir/q/s coverage 2>nul
-
 rem install and build the packages
 call npm install
 call npm run build
+call commit-stamp.bat
+
+rmdir/q/s coverage 2>nul
 call npm run test:chrome:ci
