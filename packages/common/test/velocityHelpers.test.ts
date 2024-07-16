@@ -15,7 +15,21 @@
  */
 
 import * as mockItems from "../test/mocks/agolItems";
-import { updateVelocityReferences } from "../src/velocityHelpers";
+import { getVelocityInfo, updateVelocityReferences } from "../src/velocityHelpers";
+import * as utils from "./mocks/utils";
+import * as interfaces from "../src/interfaces";
+import * as fetchMock from "fetch-mock";
+
+let MOCK_USER_SESSION: interfaces.UserSession;
+
+beforeEach(() => {
+  MOCK_USER_SESSION = utils.createRuntimeMockUserSession();
+});
+
+afterEach(() => {
+  fetchMock.restore();
+});
+
 
 describe("Module `velocityHelpers`: common functions", () => {
   describe("updateVelocityReferences", () => {
@@ -50,6 +64,22 @@ describe("Module `velocityHelpers`: common functions", () => {
         "{{velocityUrl}}/maps/arcgis/rest/services/RouteStatus_{{solutionItemId}}/FeatureServer/0";
       expect(opLayer.url).toEqual(expected);
       expect(opLayer.itemId).toBeUndefined();
+    });
+  });
+
+  describe("getVelocityInfo", () => {
+    it("handles missing velocity id", done => {
+      const subscriptionInfo: any = mockItems.getAGOLSubscriptionInfo(false);
+      fetchMock.get(
+        "https://myorg.maps.arcgis.com/sharing/rest/portals/self/subscriptioninfo?f=json&token=fake-token",
+        subscriptionInfo
+      );
+
+      getVelocityInfo(MOCK_USER_SESSION).then(actual => {
+        expect(actual.velocityUrl).toEqual("");
+        expect(actual.hasVelocity).toEqual(false);
+        done();
+      });
     });
   });
 });

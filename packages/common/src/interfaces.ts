@@ -1703,6 +1703,21 @@ export interface IVelocityTitle {
 }
 
 /**
+ * Key info about Velocity subscription
+ */
+export interface IVelocityInfo {
+  /**
+   * The organizations velocity url
+   */
+  velocityUrl: string;
+
+  /**
+   * When true the organizations subscriptionInfo contains Velocity
+   */
+  hasVelocity: boolean;
+}
+
+/**
  * Relative path and string contents of a file in a zip object.
  */
 export interface IZipObjectContentItem {
