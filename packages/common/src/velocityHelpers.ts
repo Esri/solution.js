@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { UserSession } from "./interfaces";
+import { IVelocityInfo, UserSession } from "./interfaces";
 import {
   getSubscriptionInfo,
   ISubscriptionInfo
@@ -57,28 +57,49 @@ export function getVelocityUrlBase(
   if (templateDictionary.hasOwnProperty("velocityUrl")) {
     return Promise.resolve(templateDictionary.velocityUrl);
   } else {
-    // get the url from the orgs subscription info
-    return getSubscriptionInfo({ authentication }).then(
-      (subscriptionInfo: ISubscriptionInfo) => {
-        let velocityUrl = "";
-        const orgCapabilities = getProp(subscriptionInfo, "orgCapabilities");
-        /* istanbul ignore else */
-        if (Array.isArray(orgCapabilities)) {
-          orgCapabilities.some(c => {
-            /* istanbul ignore else */
-            if (c.id === "velocity" && c.status === "active" && c.velocityUrl) {
-              velocityUrl = c.velocityUrl;
-            }
-            return velocityUrl;
-          });
-        }
-        // add the base url to the templateDictionary for reuse
-        templateDictionary.velocityUrl = velocityUrl;
-
-        return Promise.resolve(velocityUrl);
-      }
-    );
+    return getVelocityInfo(authentication).then(velocityInfo => {
+      // add the base url to the templateDictionary for reuse
+      templateDictionary.velocityUrl = velocityInfo.velocityUrl;
+      return Promise.resolve(velocityInfo.velocityUrl);
+    })
   }
+}
+
+/**
+ * Get the baser velocity url from the current ogs subscription info and verify that we have a valid
+ * id for velocity
+ *
+ * @param authentication Credentials for the requests
+ *
+ * @returns a promise that will resolve with a hasVelocity boolean flag and the velocity url or an empty string when the org does not support velocity
+ *
+ */
+export function getVelocityInfo(
+  authentication: UserSession
+): Promise<IVelocityInfo> {
+  // get the url from the orgs subscription info
+  return getSubscriptionInfo({ authentication }).then(
+    (subscriptionInfo: ISubscriptionInfo) => {
+      let velocityUrl = "";
+      let hasVelocity = false;
+      const orgCapabilities = getProp(subscriptionInfo, "orgCapabilities");
+      /* istanbul ignore else */
+      if (Array.isArray(orgCapabilities)) {
+        orgCapabilities.some(c => {
+          hasVelocity = c.id === "velocity" ? true : hasVelocity;
+          /* istanbul ignore else */
+          if (hasVelocity && c.status === "active" && c.velocityUrl) {
+            velocityUrl = c.velocityUrl;
+          }
+          return velocityUrl;
+        });
+      }
+      return Promise.resolve({
+        velocityUrl,
+        hasVelocity
+      });
+    }
+  );
 }
 
 /**
