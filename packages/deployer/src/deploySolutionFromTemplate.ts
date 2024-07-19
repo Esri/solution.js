@@ -42,6 +42,13 @@ export async function deploySolutionFromTemplate(
   // TODO: Extract all templateDictionary prep into a separate function
   const templateDictionary = options.templateDictionary ?? {};
 
+  const preProcessResponse = common.preprocessWorkflowTemplates(
+    solutionTemplateData.templates,
+    templateDictionary
+  );
+
+  solutionTemplateData.templates = preProcessResponse.deployTemplates;
+
   _applySourceToDeployOptions(
     options,
     solutionTemplateBase,
@@ -305,9 +312,20 @@ export async function deploySolutionFromTemplate(
       _purgeTemplateProperties(itemTemplate)
   );
 
+  preProcessResponse.workflowManagedTemplates.forEach(
+    (itemTemplate: common.IItemTemplate) => {
+      solutionTemplateData.templates.push(_purgeTemplateProperties(itemTemplate));
+    }
+  );
+
   solutionTemplateData.templates = _updateGroupReferences(
     solutionTemplateData.templates,
     templateDictionary
+  );
+
+  solutionTemplateData.templates = common.updateWorkflowTemplateIds(
+    templateDictionary,
+    solutionTemplateData.templates
   );
 
   // Update solution items data using template dictionary, and then update the

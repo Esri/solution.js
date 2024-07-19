@@ -1727,4 +1727,13 @@ export interface IDefaultSpatialReferenceAndExtent {
 
 export type TZipObjectContent = string | Blob | File;
 
+/**
+ * Contains an array of templates that should use standard depolyment as well as
+ * templates that will leverage some specific handeling for workflow
+ */
+export interface IPreProcessWorkflowTemplatesResponse {
+  deployTemplates: IItemTemplate[];
+  workflowManagedTemplates: IItemTemplate[];
+}
+
 //#endregion ---------------------------------------------------------------------------------------------------------//
