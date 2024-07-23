@@ -1702,7 +1702,7 @@ export function getAGOLSubscriptionInfo(hasVelocity: boolean): any {
             storageUnits: 0
           }
         ]
-      : [],
+      : [{}],
     storageRegion: "us1"
   };
 }
