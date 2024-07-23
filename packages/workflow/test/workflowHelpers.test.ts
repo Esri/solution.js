@@ -24,6 +24,7 @@ import * as templates from "../../common/test/mocks/templates";
 import * as utils from "../../common/test/mocks/utils";
 import * as workflowHelpers from "../src/workflowHelpers";
 import * as restRequest from "@esri/arcgis-rest-request";
+import * as fetchMock from "fetch-mock";
 
 // ------------------------------------------------------------------------------------------------------------------ //
 
@@ -33,6 +34,10 @@ let MOCK_USER_SESSION: common.UserSession;
 
 beforeEach(() => {
   MOCK_USER_SESSION = utils.createRuntimeMockUserSession();
+});
+
+afterEach(() => {
+  fetchMock.restore();
 });
 
 describe("Module `workflowHelpers`", () => {
@@ -81,4 +86,222 @@ describe("Module `workflowHelpers`", () => {
     });
   });
 
+  describe("_cacheLayerDetails", () => {
+    it("will capture fields and update tempate dict", () => {
+      const layers = [{
+        id: "layerA",
+        fields: [{
+          alias: "a",
+          name: "A",
+          type: "string"
+        }]
+      }];
+      const templateDictionary = {};
+      const baseUrl = "http://src";
+      const srcId = "src123";
+      const itemId = "new123";
+
+      templateDictionary[srcId] = {};
+
+      const actual = {
+        src123: {
+          layerlayerA: {
+            fields: {
+              a: {
+                alias: "a",
+                name: "A",
+                type: "string"
+              }
+            },
+            itemId: "new123",
+            layerId: "layerA",
+            url: "http://src/layerA"
+          }
+        }
+      };
+
+      workflowHelpers._cacheLayerDetails(
+        layers,
+        templateDictionary,
+        baseUrl,
+        srcId,
+        itemId
+      );
+
+      expect(templateDictionary).toEqual(actual);
+    });
+  });
+
+  describe("updateTemplateDictionaryForWorkforce", () => {
+    it("store ids and key values", done => {
+      const sourceId = "src123";
+      const newId = "new123";
+
+      const templateDictionary = {
+        workflows: {},
+        "aa848a457d5d4f0495f89476b6b3dcff": {},
+        "bb857382b2de441e95e81a6cd1740558": {},
+        "cc4a067c851a47449f162a1a716748a3": {}
+      };
+      templateDictionary.workflows[sourceId] = {
+        viewSchema: "aa848a457d5d4f0495f89476b6b3dcff",
+        workflowLocations: "bb857382b2de441e95e81a6cd1740558",
+        workflowSchema: "cc4a067c851a47449f162a1a716748a3"
+      };
+      const authentication = MOCK_USER_SESSION;
+
+      const completeItemData = {
+        base: {
+          url: "http://baseurl",
+          name: "basename3"
+        },
+        featureServiceProperties: {
+          layers: [{
+            id: "layer",
+            fields: [{
+              alias: "layer-alias",
+              name: "layer-name",
+              type: "layer-type",
+              someotherprop: "someotherprop"
+            }]
+          }],
+          tables: [{
+            id: "table",
+            fields: [{
+              alias: "table-alias",
+              name: "table-name",
+              type: "table-type",
+              someotherprop: "someotherprop"
+            }]
+          }]
+        }
+      };
+
+      spyOn(common, "getCompleteItem").and.resolveTo(completeItemData as any);
+
+      const workflowData = {
+        groupId:"1507c6dbc36d48acaaa02ed196cb583f",
+        workflowSchema:{
+          itemId:"2517d1763b594b15977ed769c40cf68a"
+        },
+        workflowLocations:{
+          itemId:"e763e40e9dbb4abda7133d6b32ac99f5"
+        },
+        viewSchema:{
+          itemId:"7ed90e023736486c9caf9839a7acca17"
+        },
+        cleanupTask:{
+          itemId:"2229f3386bf64f5592ed11000c184fd3"
+        }
+      };
+      spyOn(common, "getItemDataAsJson").and.resolveTo(workflowData as any);
+
+      const expected = {
+        workflows: {
+          src123: {
+            viewSchema: "aa848a457d5d4f0495f89476b6b3dcff",
+            workflowLocations: "bb857382b2de441e95e81a6cd1740558",
+            workflowSchema: "cc4a067c851a47449f162a1a716748a3"
+          }
+        },
+        aa848a457d5d4f0495f89476b6b3dcff: {
+          itemId: "7ed90e023736486c9caf9839a7acca17",
+          url: "http://baseurl",
+          name: "basename3",
+          layerlayer: {
+            fields: {
+              "layer-name": {
+                alias: "layer-alias",
+                name: "layer-name",
+                type: "layer-type"
+              }
+            },
+            itemId: "7ed90e023736486c9caf9839a7acca17",
+            layerId: "layer",
+            url: "http://baseurl/layer"
+          },
+          layertable: {
+            fields: {
+              "table-name": {
+                alias: "table-alias",
+                name: "table-name",
+                type: "table-type"
+              }
+            },
+            itemId: "7ed90e023736486c9caf9839a7acca17",
+            layerId: "table",
+            url: "http://baseurl/table"
+          }
+        },
+        bb857382b2de441e95e81a6cd1740558: {
+          itemId: "e763e40e9dbb4abda7133d6b32ac99f5",
+          url: "http://baseurl",
+          name: "basename3",
+          layerlayer: {
+            fields: {
+              "layer-name": {
+                alias: "layer-alias",
+                name: "layer-name",
+                type: "layer-type"
+              }
+            },
+            itemId: "e763e40e9dbb4abda7133d6b32ac99f5",
+            layerId: "layer",
+            url: "http://baseurl/layer"
+          },
+          layertable: {
+            fields: {
+              "table-name": {
+                alias: "table-alias",
+                name: "table-name",
+                type: "table-type"
+              }
+            },
+            itemId: "e763e40e9dbb4abda7133d6b32ac99f5",
+            layerId: "table",
+            url: "http://baseurl/table"
+          }
+        },
+        cc4a067c851a47449f162a1a716748a3: {
+          itemId: "2517d1763b594b15977ed769c40cf68a",
+          url: "http://baseurl",
+          name: "basename3",
+          layerlayer: {
+            fields: {
+              "layer-name": {
+                alias: "layer-alias",
+                name: "layer-name",
+                type: "layer-type"
+              }
+            },
+            itemId: "2517d1763b594b15977ed769c40cf68a",
+            layerId: "layer",
+            url: "http://baseurl/layer"
+          },
+          layertable: {
+            fields: {
+              "table-name": {
+                alias: "table-alias",
+                name: "table-name",
+                type: "table-type"
+              }
+            },
+            itemId: "2517d1763b594b15977ed769c40cf68a",
+            layerId: "table",
+            url: "http://baseurl/table"
+          }
+        }
+      };
+
+      workflowHelpers.updateTemplateDictionaryForWorkforce(
+        sourceId,
+        newId,
+        templateDictionary,
+        authentication
+      ).then(() => {
+        expect(templateDictionary).toEqual(expected);
+        done();
+      });
+    });
+  });
 });

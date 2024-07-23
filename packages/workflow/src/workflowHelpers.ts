@@ -157,7 +157,7 @@ export function _cacheLayerDetails(
   baseUrl: string,
   srcId: string,
   itemId: string
-) {
+): void {
   if (layers) {
     layers.forEach(layer => {
       const fields = layer.fields.reduce((prev, cur) => {

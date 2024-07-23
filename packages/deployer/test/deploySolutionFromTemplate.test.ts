@@ -21,6 +21,7 @@ import {
   _checkedReplaceAll,
   _getPortalBaseUrl,
   _getNewItemId,
+  _handleWorkflowManagedTemplates,
   _updateGroupReferences
 } from "../src/deploySolutionFromTemplate";
 import * as common from "@esri/solution-common";
@@ -725,6 +726,201 @@ describe("Module `deploySolutionFromTemplate`", () => {
           groups: ["xyz", "ghi"]
         }
       ]);
+    });
+  });
+
+  describe("_handleWorkflowManagedTemplates", () => {
+    it("will find and purge workflow managed templates", () => {
+      const preProcessResponse = {
+        deployTemplates: [
+          {
+            itemId: "b7f53fa4503b45dcb05ef2e5dc8f6c75",
+            type: "Workflow",
+            dependencies: [
+              "8753929b48d34a6b99ada44b0b32e048",
+              "4a862f463055475d8fe92d4fa2ea3e39",
+              "3be919613c6c4fdfa4b899d0a1b464e1"
+            ],
+            groups: []
+          },
+          {
+            itemId: "f87e00c060f942b5bfe650d836654ce4",
+            type: "Web Map",
+            dependencies: [
+              "8753929b48d34a6b99ada44b0b32e048",
+              "4a862f463055475d8fe92d4fa2ea3e39",
+              "3be919613c6c4fdfa4b899d0a1b464e1",
+              "454e87e31ed34a9dbcd36f849b8b31a5"
+            ],
+            groups: []
+          },
+          {
+            itemId: "8c05c999b35a44b899068181ba61d51d",
+            type: "Dashboard",
+            dependencies: [
+              "3be919613c6c4fdfa4b899d0a1b464e1",
+              "f87e00c060f942b5bfe650d836654ce4",
+              "454e87e31ed34a9dbcd36f849b8b31a5"
+            ],
+            groups: []
+          },
+          {
+            itemId: "454e87e31ed34a9dbcd36f849b8b31a5",
+            type: "Feature Service",
+            dependencies: [],
+            groups: []
+          }
+        ],
+        workflowManagedTemplates: [
+          {
+            itemId: "494a067c851a47449f162a1a716748a3",
+            type: "Feature Service",
+            key: "qj8nazzs",
+            item: {},
+            data: null,
+            resources: [],
+            dependencies: [],
+            groups: [],
+            properties: {},
+            estimatedDeploymentCostFactor: 10
+          },
+          {
+            itemId: "37848a457d5d4f0495f89476b6b3dcff",
+            type: "Feature Service",
+            key: "wzfmptvh",
+            item: {},
+            data: null,
+            resources: [],
+            dependencies: [
+              "494a067c851a47449f162a1a716748a3"
+            ],
+            groups: [],
+            properties: {},
+            estimatedDeploymentCostFactor: 10
+          },
+          {
+            itemId: "14857382b2de441e95e81a6cd1740558",
+            type: "Feature Service",
+            key: "x8k587vp",
+            item: {},
+            data: null,
+            resources: [],
+            dependencies: [
+              "494a067c851a47449f162a1a716748a3"
+            ],
+            groups: [],
+            properties: {},
+            estimatedDeploymentCostFactor: 10
+          }
+        ]
+      } as any;
+
+      const solutionTemplateData = {
+        metadata: {
+          version: 1
+        },
+        templates: [
+          {
+            itemId: "454e87e31ed34a9dbcd36f849b8b31a5",
+            type: "Feature Service",
+            dependencies: [],
+            groups: []
+          },
+          {
+            itemId: "b7f53fa4503b45dcb05ef2e5dc8f6c75",
+            type: "Workflow",
+            dependencies: [
+              "8753929b48d34a6b99ada44b0b32e048",
+              "4a862f463055475d8fe92d4fa2ea3e39",
+              "3be919613c6c4fdfa4b899d0a1b464e1"
+            ],
+            groups: []
+          },
+          {
+            itemId: "f87e00c060f942b5bfe650d836654ce4",
+            type: "Web Map",
+            dependencies: [
+              "8753929b48d34a6b99ada44b0b32e048",
+              "4a862f463055475d8fe92d4fa2ea3e39",
+              "3be919613c6c4fdfa4b899d0a1b464e1",
+              "454e87e31ed34a9dbcd36f849b8b31a5"
+            ],
+            groups: []
+          },
+          {
+            itemId: "8c05c999b35a44b899068181ba61d51d",
+            type: "Dashboard",
+            dependencies: [
+              "3be919613c6c4fdfa4b899d0a1b464e1",
+              "f87e00c060f942b5bfe650d836654ce4",
+              "454e87e31ed34a9dbcd36f849b8b31a5"
+            ],
+            groups: []
+          }
+        ]
+      };
+
+      _handleWorkflowManagedTemplates(preProcessResponse, solutionTemplateData)
+
+      const expected = {
+        metadata: {
+          version: 1
+        },
+        templates: [{
+          itemId: "454e87e31ed34a9dbcd36f849b8b31a5",
+          type: "Feature Service",
+          dependencies: [],
+          groups: []
+        }, {
+          itemId: "b7f53fa4503b45dcb05ef2e5dc8f6c75",
+          type: "Workflow",
+          dependencies: [
+            "8753929b48d34a6b99ada44b0b32e048",
+            "4a862f463055475d8fe92d4fa2ea3e39",
+            "3be919613c6c4fdfa4b899d0a1b464e1"
+          ],
+          groups: []
+        }, {
+          itemId: "f87e00c060f942b5bfe650d836654ce4",
+          type: "Web Map",
+          dependencies: [
+            "8753929b48d34a6b99ada44b0b32e048",
+            "4a862f463055475d8fe92d4fa2ea3e39",
+            "3be919613c6c4fdfa4b899d0a1b464e1",
+            "454e87e31ed34a9dbcd36f849b8b31a5"
+          ],
+          groups: []
+        }, {
+          itemId: "8c05c999b35a44b899068181ba61d51d",
+          type: "Dashboard",
+          dependencies: [
+            "3be919613c6c4fdfa4b899d0a1b464e1",
+            "f87e00c060f942b5bfe650d836654ce4",
+            "454e87e31ed34a9dbcd36f849b8b31a5"
+          ],
+          groups: []
+        }, {
+          itemId: "494a067c851a47449f162a1a716748a3",
+          type: "Feature Service",
+          dependencies: [],
+          groups: []
+        }, {
+          itemId: "37848a457d5d4f0495f89476b6b3dcff",
+          type: "Feature Service",
+          dependencies: [
+            "494a067c851a47449f162a1a716748a3"
+          ],
+          groups: []
+        }, {
+          itemId: "14857382b2de441e95e81a6cd1740558",
+          type: "Feature Service",
+          dependencies: [
+            "494a067c851a47449f162a1a716748a3"
+          ],
+          groups: []
+        }]
+      };
+      expect(solutionTemplateData).toEqual(expected);
     });
   });
 });

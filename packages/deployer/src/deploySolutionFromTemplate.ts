@@ -312,11 +312,7 @@ export async function deploySolutionFromTemplate(
       _purgeTemplateProperties(itemTemplate)
   );
 
-  preProcessResponse.workflowManagedTemplates.forEach(
-    (itemTemplate: common.IItemTemplate) => {
-      solutionTemplateData.templates.push(_purgeTemplateProperties(itemTemplate));
-    }
-  );
+  _handleWorkflowManagedTemplates(preProcessResponse, solutionTemplateData);
 
   solutionTemplateData.templates = _updateGroupReferences(
     solutionTemplateData.templates,
@@ -348,6 +344,23 @@ export async function deploySolutionFromTemplate(
   );
 
   return solutionTemplateBase.id;
+}
+
+/**
+ * Add templates for the items that were automatically created by workflow
+ *
+ * @param preProcessResponse response from pre processing of workflow items
+ * @param solutionTemplateData the current solution template data that will be used to show item details
+ */
+export function _handleWorkflowManagedTemplates(
+  preProcessResponse: common.IPreProcessWorkflowTemplatesResponse,
+  solutionTemplateData: any
+): void {
+  preProcessResponse.workflowManagedTemplates.forEach(
+    (itemTemplate: common.IItemTemplate) => {
+      solutionTemplateData.templates.push(_purgeTemplateProperties(itemTemplate));
+    }
+  );
 }
 
 /**
