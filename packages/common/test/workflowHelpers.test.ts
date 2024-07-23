@@ -452,7 +452,7 @@ describe("Module `workflowHelpers`", () => {
         },
         "37848a457d5d4f0495f89476b6b3dcff": {
           itemId: "f6fab03ad56548798f4b329852eb612d",
-          url: "https://services7.arcgis.com/piPfTFmrV9d1DIvN/arcgis/rest/services/workflow_views_5a007c90da4f4574987b03bb00e06bc9/FeatureServer",
+          url: "https://org/arcgis/rest/services/workflow_views_5a007c90da4f4574987b03bb00e06bc9/FeatureServer",
           name: "workflow_views_5a007c90da4f4574987b03bb00e06bc9",
           layer0: {
             fields: {
@@ -479,12 +479,12 @@ describe("Module `workflowHelpers`", () => {
             },
             itemId: "f6fab03ad56548798f4b329852eb612d",
             layerId: 0,
-            url: "https://services7.arcgis.com/piPfTFmrV9d1DIvN/arcgis/rest/services/workflow_views_5a007c90da4f4574987b03bb00e06bc9/FeatureServer/0"
+            url: "https://org/arcgis/rest/services/workflow_views_5a007c90da4f4574987b03bb00e06bc9/FeatureServer/0"
           }
         },
         "14857382b2de441e95e81a6cd1740558": {
           itemId: "7d0335ccc8fa47e58e04e0695785961a",
-          url: "https://services7.arcgis.com/piPfTFmrV9d1DIvN/arcgis/rest/services/WorkflowLocations_5a007c90da4f4574987b03bb00e06bc9/FeatureServer",
+          url: "https://org/arcgis/rest/services/WorkflowLocations_5a007c90da4f4574987b03bb00e06bc9/FeatureServer",
           name: "WorkflowLocations_5a007c90da4f4574987b03bb00e06bc9",
           layer0: {
             fields: {
@@ -506,12 +506,12 @@ describe("Module `workflowHelpers`", () => {
             },
             itemId: "7d0335ccc8fa47e58e04e0695785961a",
             layerId: 0,
-            url: "https://services7.arcgis.com/piPfTFmrV9d1DIvN/arcgis/rest/services/WorkflowLocations_5a007c90da4f4574987b03bb00e06bc9/FeatureServer/0"
+            url: "https://org/arcgis/rest/services/WorkflowLocations_5a007c90da4f4574987b03bb00e06bc9/FeatureServer/0"
           }
         },
         "494a067c851a47449f162a1a716748a3": {
           itemId: "bbd0b91e181a4889957d225dfba063b0",
-          url: "https://services7.arcgis.com/piPfTFmrV9d1DIvN/arcgis/rest/services/workflow_5a007c90da4f4574987b03bb00e06bc9/FeatureServer",
+          url: "https://org/arcgis/rest/services/workflow_5a007c90da4f4574987b03bb00e06bc9/FeatureServer",
           name: null,
           layer0: {
             fields: {
@@ -528,7 +528,7 @@ describe("Module `workflowHelpers`", () => {
             },
             itemId: "bbd0b91e181a4889957d225dfba063b0",
             layerId: 0,
-            url: "https://services7.arcgis.com/piPfTFmrV9d1DIvN/arcgis/rest/services/workflow_5a007c90da4f4574987b03bb00e06bc9/FeatureServer/0"
+            url: "https://org/arcgis/rest/services/workflow_5a007c90da4f4574987b03bb00e06bc9/FeatureServer/0"
           }
         },
         title: "Workflow Services",
@@ -538,7 +538,7 @@ describe("Module `workflowHelpers`", () => {
         "6e637a5807cb4e8886ae3066fddaedee": {
           def: {},
           itemId: "b8a8612eb445464bb69d2e7581fac195",
-          url: "https://services7.arcgis.com/piPfTFmrV9d1DIvN/arcgis/rest/services/Layer1_e22767d30acf4f6eb1223f0ae6a9a9a2/FeatureServer/",
+          url: "https://org/arcgis/rest/services/Layer1_e22767d30acf4f6eb1223f0ae6a9a9a2/FeatureServer/",
           name: "Layer1_e22767d30acf4f6eb1223f0ae6a9a9a2",
           layer0: {
             fields: {
@@ -548,7 +548,7 @@ describe("Module `workflowHelpers`", () => {
                 type: "esriFieldTypeOID"
               }
             },
-            url: "https://services7.arcgis.com/piPfTFmrV9d1DIvN/arcgis/rest/services/Layer1_e22767d30acf4f6eb1223f0ae6a9a9a2/FeatureServer/0",
+            url: "https://org/arcgis/rest/services/Layer1_e22767d30acf4f6eb1223f0ae6a9a9a2/FeatureServer/0",
             layerId: "0",
             itemId: "b8a8612eb445464bb69d2e7581fac195"
           }
@@ -558,15 +558,15 @@ describe("Module `workflowHelpers`", () => {
         },
         "5a7e9bcb201f45db995939d5039d2aae": {
           itemId: "45444764bdb1434a9bbebcf36a7fa3b6",
-          itemUrl: "https://localdeployment.maps.arcgis.com/sharing/rest/content/items/45444764bdb1434a9bbebcf36a7fa3b6"
+          itemUrl: "https://org/sharing/rest/content/items/45444764bdb1434a9bbebcf36a7fa3b6"
         },
         bb0337a672ac4352b465db4628af4b8c: {
           itemId: "3e3117fb944f421598839a34da21aa00",
-          itemUrl: "https://localdeployment.maps.arcgis.com/sharing/rest/content/items/3e3117fb944f421598839a34da21aa00"
+          itemUrl: "https://org/sharing/rest/content/items/3e3117fb944f421598839a34da21aa00"
         },
         b8a8612eb445464bb69d2e7581fac195: {
           itemId: "b8a8612eb445464bb69d2e7581fac195",
-          url: "https://services7.arcgis.com/piPfTFmrV9d1DIvN/arcgis/rest/services/Layer1_e22767d30acf4f6eb1223f0ae6a9a9a2/FeatureServer/",
+          url: "https://org/arcgis/rest/services/Layer1_e22767d30acf4f6eb1223f0ae6a9a9a2/FeatureServer/",
           name: "Layer1_e22767d30acf4f6eb1223f0ae6a9a9a2"
         }
       } as any;
