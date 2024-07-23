@@ -80,3 +80,102 @@ export async function fetchAuxiliaryItems(
   });
   return Promise.resolve(auxiliaryItemsResults.results.map(item => item.id));
 }
+
+/**
+ * Fetch the data from the new Workflow item and update the templateDictionary for variable replacement
+ *
+ * @param sourceId The id of the source Workflow item that was used to create the solution template
+ * @param newId The id of the Workflow item that has been deployed
+ * @param templateDictionary Hash of facts: folder id, org URL, adlib replacements
+ * @param authentication Credentials for requests to the destination organization
+ *
+ */
+export async function updateTemplateDictionaryForWorkforce(
+  sourceId: string,
+  newId: string,
+  templateDictionary: any,
+  authentication: common.UserSession
+): Promise<void> {
+  const workflowData = await common.getItemDataAsJson(newId, authentication);
+
+  const workflowLookup = common.getProp(templateDictionary, `workflows.${sourceId}`);
+  if (workflowLookup) {
+    await updateTempDictWorkflowId(templateDictionary, "viewSchema", workflowLookup, workflowData, authentication);
+    await updateTempDictWorkflowId(templateDictionary, "workflowLocations", workflowLookup, workflowData, authentication);
+    await updateTempDictWorkflowId(templateDictionary, "workflowSchema", workflowLookup, workflowData, authentication);
+  }
+}
+
+/**
+ * Store ids and key values for variable replacement from the new Workflow item based on
+ * previously stored source IDs.
+ *
+ * @param templateDictionary Hash of facts: folder id, org URL, adlib replacements
+ * @param key The property from the workflow items data that contains an item id for a supporting service
+ * @param workflowLookup The stored source item Ids from the templateDictionary
+ * @param workflowData The data object from the new Workflow item
+ * @param authentication Credentials for requests to the destination organization
+ *
+ */
+export async function updateTempDictWorkflowId(
+  templateDictionary: any,
+  key: string,
+  workflowLookup: any,
+  workflowData: any,
+  authentication: common.UserSession
+): Promise<void> {
+  const id = workflowLookup[key];
+  const itemId = common.getProp(workflowData, `${key}.itemId`);
+  templateDictionary[id].itemId = itemId;
+
+  const item = await common.getCompleteItem(id, authentication);
+
+  const baseUrl = common.getProp(item, "base.url");
+  templateDictionary[id].url = baseUrl;
+  templateDictionary[id].name = common.getProp(item, "base.name");
+
+  const layers = common.getProp(item, "featureServiceProperties.layers");
+  _cacheLayerDetails(layers, templateDictionary, baseUrl, id, itemId);
+
+  const tables = common.getProp(item, "featureServiceProperties.tables");
+  _cacheLayerDetails(tables, templateDictionary, baseUrl, id, itemId);
+}
+
+/**
+ * Store key values for variable replacement from the new Workflow item
+ *
+ * @param layers
+ * @param templateDictionary Hash of facts: folder id, org URL, adlib replacements
+ * @param baseUrl The base url of the new item
+ * @param srcId The id of the source item that was used to create the solution
+ * @param itemId The id of the new item that was created by workflow
+ *
+ */
+export function _cacheLayerDetails(
+  layers: any[],
+  templateDictionary: any,
+  baseUrl: string,
+  srcId: string,
+  itemId: string
+): void {
+  if (layers) {
+    layers.forEach(layer => {
+      const fields = layer.fields.reduce((prev, cur) => {
+        prev[cur.name.toLowerCase()] = {
+          alias: cur.alias,
+          name: cur.name,
+          type: cur.type
+        }
+        return prev;
+      }, {});
+      const layerId = layer.id;
+      const url = `${baseUrl}/${layerId}`;
+      templateDictionary[srcId][`layer${layerId}`] = {
+        fields,
+        itemId,
+        layerId,
+        url
+      };
+    });
+  }
+}
