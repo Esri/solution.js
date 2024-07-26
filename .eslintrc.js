@@ -2,6 +2,7 @@ module.exports = {
   "root": true,
   "env": {
     "browser": true,
+    "es6": true,
     "node": true
   },
   "extends": [
@@ -21,7 +22,7 @@ module.exports = {
     "eslint-plugin-jsdoc",
     "eslint-plugin-prefer-arrow"
   ],
-  "ignorePatterns": ["demos", "tests", "*.d.ts"],
+  "ignorePatterns": ["coverage", "demos", "dist", "node_modules", "*.d.ts"],
   "rules": {
     "@typescript-eslint/adjacent-overload-signatures": "error",
     "@typescript-eslint/array-type": [
