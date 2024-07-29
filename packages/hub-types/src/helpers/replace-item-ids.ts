@@ -14,17 +14,13 @@
  * limitations under the License.
  */
 
-import {
-  IModelTemplate,
-  cloneObject,
-  deepStringReplace
-} from "@esri/hub-common";
+import { IModelTemplate, cloneObject, deepStringReplace } from "@esri/hub-common";
 
 export function replaceItemIds(template: IModelTemplate): IModelTemplate {
   const clone = cloneObject(template);
   const deps = template.dependencies || [];
   // iterate the dependencies
-  deps.forEach(depId => {
+  deps.forEach((depId) => {
     const re = new RegExp(depId, "g");
     const replacement = `{{${depId}.itemId}}`;
     // we have to do this property-by-property or we would replace the `itemId` prop itself

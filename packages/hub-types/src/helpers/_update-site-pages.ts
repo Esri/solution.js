@@ -25,19 +25,19 @@ import { _updatePages } from "@esri/hub-sites";
 export function _updateSitePages(
   siteModel: IModel,
   itemInfos: any[],
-  hubRequestOptions: IHubUserRequestOptions
+  hubRequestOptions: IHubUserRequestOptions,
 ): Promise<any> {
   const pageIds = itemInfos
-    .filter(e => {
+    .filter((e) => {
       return e.type.indexOf("Page") > -1;
     })
-    .map(e => e.id);
+    .map((e) => e.id);
 
   // now get all those models
   return Promise.all(
-    pageIds.map(id => {
+    pageIds.map((id) => {
       return getModel(id, hubRequestOptions);
-    })
+    }),
   ).then((pageModels: any) => {
     // now delegate back to hub.js internal _updatePages fn
     return _updatePages(siteModel, pageModels, hubRequestOptions);
