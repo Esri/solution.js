@@ -14,30 +14,24 @@
  * limitations under the License.
  */
 
-import {
-  IItemTemplate,
-  ISourceFile
-} from "@esri/solution-common";
-import {
-  getDataFilesFromTemplates,
-  removeDataFilesFromTemplates
-} from "../../src/helpers/template";
-import {
-  getItemTemplate
-} from "../../../common/test/mocks/templates";
+import { IItemTemplate, ISourceFile } from "@esri/solution-common";
+import { getDataFilesFromTemplates, removeDataFilesFromTemplates } from "../../src/helpers/template";
+import { getItemTemplate } from "../../../common/test/mocks/templates";
 
 describe("template", () => {
   function fakeSourceFile(filename: string): ISourceFile {
     return {
       itemId: "id",
       folder: "",
-      filename
+      filename,
     } as ISourceFile;
   }
 
   it("extracts resource data files from templates", () => {
     // Create a list of 6 templates of which 3 have data
-    const templates: IItemTemplate[] = Array(6).fill(null).map(() => getItemTemplate("Form"));
+    const templates: IItemTemplate[] = Array(6)
+      .fill(null)
+      .map(() => getItemTemplate("Form"));
     templates[1].dataFile = fakeSourceFile("file 1");
     templates[4].dataFile = fakeSourceFile("file 4");
     templates[5].dataFile = fakeSourceFile("file 5");
@@ -51,7 +45,9 @@ describe("template", () => {
 
   it("removes data files from templates", () => {
     // Create a list of 6 templates of which 3 have data
-    const templates: IItemTemplate[] = Array(6).fill(null).map(() => getItemTemplate("Form"));
+    const templates: IItemTemplate[] = Array(6)
+      .fill(null)
+      .map(() => getItemTemplate("Form"));
     templates[1].dataFile = fakeSourceFile("file 1");
     templates[4].dataFile = fakeSourceFile("file 4");
     templates[5].dataFile = fakeSourceFile("file 5");
