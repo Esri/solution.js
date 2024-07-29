@@ -102,11 +102,6 @@
       "git add"
     ]
   },
-  "prettier": {
-    "parser": "typescript",
-    "tabWidth": 2,
-    "useTabs": false
-  },
   "contributors": [
     {
       "name": "Chris Fox",
