@@ -28,7 +28,7 @@ export async function deploySolutionFromTemplate(
   solutionTemplateBase: any,
   solutionTemplateData: any,
   authentication: common.UserSession,
-  options: common.IDeploySolutionOptions
+  options: common.IDeploySolutionOptions,
 ): Promise<string> {
   options.storageVersion = common.extractSolutionVersion(solutionTemplateData);
 
@@ -42,25 +42,14 @@ export async function deploySolutionFromTemplate(
   // TODO: Extract all templateDictionary prep into a separate function
   const templateDictionary = options.templateDictionary ?? {};
 
-  const preProcessResponse = common.preprocessWorkflowTemplates(
-    solutionTemplateData.templates,
-    templateDictionary
-  );
+  const preProcessResponse = common.preprocessWorkflowTemplates(solutionTemplateData.templates, templateDictionary);
 
   solutionTemplateData.templates = preProcessResponse.deployTemplates;
 
-  _applySourceToDeployOptions(
-    options,
-    solutionTemplateBase,
-    templateDictionary,
-    authentication
-  );
+  _applySourceToDeployOptions(options, solutionTemplateBase, templateDictionary, authentication);
 
   if (options.additionalTypeKeywords) {
-    solutionTemplateBase.typeKeywords = [].concat(
-      solutionTemplateBase.typeKeywords,
-      options.additionalTypeKeywords
-    );
+    solutionTemplateBase.typeKeywords = [].concat(solutionTemplateBase.typeKeywords, options.additionalTypeKeywords);
   }
 
   // Get the thumbnail file
@@ -68,21 +57,12 @@ export async function deploySolutionFromTemplate(
   let thumbDef = Promise.resolve(null);
   if (!options.thumbnail && options.thumbnailurl) {
     // Figure out the thumbnail's filename
-    thumbFilename =
-      common.getFilenameFromUrl(options.thumbnailurl) || thumbFilename;
-    const thumbnailurl = common.appendQueryParam(
-      options.thumbnailurl,
-      "w=400"
-    );
+    thumbFilename = common.getFilenameFromUrl(options.thumbnailurl) || thumbFilename;
+    const thumbnailurl = common.appendQueryParam(options.thumbnailurl, "w=400");
     delete options.thumbnailurl;
 
     // Fetch the thumbnail
-    thumbDef = common.getBlobAsFile(
-      thumbnailurl,
-      thumbFilename,
-      storageAuthentication,
-      [400]
-    );
+    thumbDef = common.getBlobAsFile(thumbnailurl, thumbFilename, storageAuthentication, [400]);
   }
 
   _replaceParamVariables(solutionTemplateData, templateDictionary);
@@ -93,16 +73,10 @@ export async function deploySolutionFromTemplate(
     common.getPortalUrls(authentication), // fetch the urls such as the notebooks service url
     common.getUser(authentication), // find out about the user
     common.getFoldersAndGroups(authentication), // get all folders so that we can create a unique one, and all groups
-    thumbDef
+    thumbDef,
   ]);
 
-  const [
-    portalResponse,
-    portalUrlsResponse,
-    userResponse,
-    foldersAndGroupsResponse,
-    thumbnailFile
-  ] = environResponses;
+  const [portalResponse, portalUrlsResponse, userResponse, foldersAndGroupsResponse, thumbnailFile] = environResponses;
   if (!options.thumbnail && thumbnailFile) {
     options.thumbnail = thumbnailFile;
   }
@@ -111,10 +85,7 @@ export async function deploySolutionFromTemplate(
   solutionTemplateData.templates = _addSourceId(solutionTemplateData.templates);
 
   templateDictionary.isPortal = portalResponse.isPortal;
-  templateDictionary.organization = Object.assign(
-    templateDictionary.organization || {},
-    portalResponse
-  );
+  templateDictionary.organization = Object.assign(templateDictionary.organization || {}, portalResponse);
   // TODO: Add more computed properties here
   // portal: portalResponse
   // orgextent as bbox for assignment onto items
@@ -122,45 +93,28 @@ export async function deploySolutionFromTemplate(
 
   templateDictionary.portalUrls = portalUrlsResponse.urls;
 
-  templateDictionary.portalBaseUrl = _getPortalBaseUrl(
-    portalResponse,
-    authentication
-  );
+  templateDictionary.portalBaseUrl = _getPortalBaseUrl(portalResponse, authentication);
 
   templateDictionary.user = userResponse;
   templateDictionary.user.folders = foldersAndGroupsResponse.folders;
   templateDictionary.user.groups = foldersAndGroupsResponse.groups.filter(
-    (group: common.IGroup) =>
-      group.owner === templateDictionary.user.username
+    (group: common.IGroup) => group.owner === templateDictionary.user.username,
   );
 
   // Add information needed for workflow manager
   const user = await common.getUser(authentication);
-  templateDictionary.workflowBaseUrl = await common.getWorkflowBaseURL(
-    authentication, portalResponse, user.orgId);
+  templateDictionary.workflowBaseUrl = await common.getWorkflowBaseURL(authentication, portalResponse, user.orgId);
 
   // if we have tracking views and the user is not admin or the org doesn't support tracking an error is thrown
-  common.setLocationTrackingEnabled(
-    portalResponse,
-    userResponse,
-    templateDictionary,
-    solutionTemplateData.templates
-  );
-  const trackingOwnerPromise = common.getTackingServiceOwner(
-    templateDictionary,
-    authentication
-  )
+  common.setLocationTrackingEnabled(portalResponse, userResponse, templateDictionary, solutionTemplateData.templates);
+  const trackingOwnerPromise = common.getTackingServiceOwner(templateDictionary, authentication);
 
   // Create a folder to hold the deployed solution. We use the solution name, appending a sequential
   // suffix if the folder exists, e.g.,
   //  * Manage Right of Way Activities
   //  * Manage Right of Way Activities 1
   //  * Manage Right of Way Activities 2
-  const folderPromise = common.createUniqueFolder(
-    solutionTemplateBase.title,
-    templateDictionary,
-    authentication
-  );
+  const folderPromise = common.createUniqueFolder(solutionTemplateBase.title, templateDictionary, authentication);
 
   // Apply the portal extents to the solution
   const portalExtent: any = portalResponse.defaultExtent;
@@ -169,7 +123,7 @@ export async function deploySolutionFromTemplate(
     undefined,
     { wkid: 4326 },
     portalResponse.helperServices.geometry.url,
-    authentication
+    authentication,
   );
 
   // Await completion of async actions: folder creation & extents conversion
@@ -178,42 +132,30 @@ export async function deploySolutionFromTemplate(
   const deployedFolderId = folderResponse.folder.id;
   templateDictionary.folderId = deployedFolderId;
   templateDictionary.solutionItemExtent =
-    wgs84Extent.xmin +
-    "," +
-    wgs84Extent.ymin +
-    "," +
-    wgs84Extent.xmax +
-    "," +
-    wgs84Extent.ymax;
+    wgs84Extent.xmin + "," + wgs84Extent.ymin + "," + wgs84Extent.xmax + "," + wgs84Extent.ymax;
   // Hub Solutions depend on organization defaultExtentBBox as a nested array not a string
   templateDictionary.organization.defaultExtentBBox = [
     [wgs84Extent.xmin, wgs84Extent.ymin],
-    [wgs84Extent.xmax, wgs84Extent.ymax]
+    [wgs84Extent.xmax, wgs84Extent.ymax],
   ];
 
   // update templateDictionary to indicate if the user owns the tracking service
   // this will affect how we handle group sharing
   /* istanbul ignore else */
   if (templateDictionary.locationTrackingEnabled) {
-    common.setCreateProp(
-      templateDictionary,
-      "locationTracking.userIsOwner",
-      trackingOwnerResponse
-    );
+    common.setCreateProp(templateDictionary, "locationTracking.userIsOwner", trackingOwnerResponse);
   }
 
   // Create a deployed Solution item
-  solutionTemplateBase.categories = [];  // we don't want to carry over categories from the template
+  solutionTemplateBase.categories = []; // we don't want to carry over categories from the template
   const createSolutionItemBase = {
     ...common.sanitizeJSON(solutionTemplateBase),
     type: "Solution",
-    typeKeywords: ["Solution"]
+    typeKeywords: ["Solution"],
   };
 
   if (options.additionalTypeKeywords) {
-    createSolutionItemBase.typeKeywords = ["Solution"].concat(
-      options.additionalTypeKeywords
-    );
+    createSolutionItemBase.typeKeywords = ["Solution"].concat(options.additionalTypeKeywords);
   }
 
   // Create deployed solution item
@@ -222,7 +164,7 @@ export async function deploySolutionFromTemplate(
     createSolutionItemBase,
     {},
     authentication,
-    deployedFolderId
+    deployedFolderId,
   );
 
   const deployedSolutionId = createSolutionResponse.id;
@@ -230,7 +172,7 @@ export async function deploySolutionFromTemplate(
   // Protect the solution item
   const protectOptions: portal.IUserItemOptions = {
     id: deployedSolutionId,
-    authentication
+    authentication,
   };
   await portal.protectItem(protectOptions);
 
@@ -242,13 +184,9 @@ export async function deploySolutionFromTemplate(
   solutionTemplateBase.tryitUrl = _checkedReplaceAll(
     solutionTemplateBase.tryitUrl,
     templateSolutionId,
-    deployedSolutionId
+    deployedSolutionId,
   );
-  solutionTemplateBase.url = _checkedReplaceAll(
-    solutionTemplateBase.url,
-    templateSolutionId,
-    deployedSolutionId
-  );
+  solutionTemplateBase.url = _checkedReplaceAll(solutionTemplateBase.url, templateSolutionId, deployedSolutionId);
 
   // Handle the contained item templates
   const clonedSolutionsResponse: common.ICreateItemFromTemplateResponse[] = await deployItems.deploySolutionItems(
@@ -259,30 +197,24 @@ export async function deploySolutionFromTemplate(
     templateDictionary,
     deployedSolutionId,
     authentication,
-    options
+    options,
   );
 
-  solutionTemplateData.templates = solutionTemplateData.templates.map(
-    (itemTemplate: common.IItemTemplate) => {
-      // Update ids present in template dictionary
-      itemTemplate.itemId = common.getProp(
-        templateDictionary,
-        `${itemTemplate.itemId}.itemId`
-      );
+  solutionTemplateData.templates = solutionTemplateData.templates.map((itemTemplate: common.IItemTemplate) => {
+    // Update ids present in template dictionary
+    itemTemplate.itemId = common.getProp(templateDictionary, `${itemTemplate.itemId}.itemId`);
 
-      // Update the dependencies hash to point to the new item ids
-      itemTemplate.dependencies = itemTemplate.dependencies.map(
-        (id: string) =>
-          getWithDefault(templateDictionary, `${id}.itemId`, id)
-      );
-      return itemTemplate;
-    }
-  );
+    // Update the dependencies hash to point to the new item ids
+    itemTemplate.dependencies = itemTemplate.dependencies.map((id: string) =>
+      getWithDefault(templateDictionary, `${id}.itemId`, id),
+    );
+    return itemTemplate;
+  });
 
   // Sort the templates into build order, which is provided by clonedSolutionsResponse
   sortTemplates(
     solutionTemplateData.templates,
-    clonedSolutionsResponse.map(response => response.id)
+    clonedSolutionsResponse.map((response) => response.id),
   );
 
   // Wrap up with post-processing, in which we deal with groups and cycle remnants
@@ -291,45 +223,30 @@ export async function deploySolutionFromTemplate(
     solutionTemplateData.templates,
     clonedSolutionsResponse,
     authentication,
-    templateDictionary
+    templateDictionary,
   );
 
   // Update solution item using internal representation & and the updated data JSON
-  solutionTemplateBase.typeKeywords = [].concat(
-    solutionTemplateBase.typeKeywords,
-    ["Deployed"]
-  );
-  const iTemplateKeyword = solutionTemplateBase.typeKeywords.indexOf(
-    "Template"
-  );
+  solutionTemplateBase.typeKeywords = [].concat(solutionTemplateBase.typeKeywords, ["Deployed"]);
+  const iTemplateKeyword = solutionTemplateBase.typeKeywords.indexOf("Template");
   /* istanbul ignore else */
   if (iTemplateKeyword >= 0) {
     solutionTemplateBase.typeKeywords.splice(iTemplateKeyword, 1);
   }
 
-  solutionTemplateData.templates = solutionTemplateData.templates.map(
-    (itemTemplate: common.IItemTemplate) =>
-      _purgeTemplateProperties(itemTemplate)
+  solutionTemplateData.templates = solutionTemplateData.templates.map((itemTemplate: common.IItemTemplate) =>
+    _purgeTemplateProperties(itemTemplate),
   );
 
   _handleWorkflowManagedTemplates(preProcessResponse, solutionTemplateData);
 
-  solutionTemplateData.templates = _updateGroupReferences(
-    solutionTemplateData.templates,
-    templateDictionary
-  );
+  solutionTemplateData.templates = _updateGroupReferences(solutionTemplateData.templates, templateDictionary);
 
-  solutionTemplateData.templates = common.updateWorkflowTemplateIds(
-    templateDictionary,
-    solutionTemplateData.templates
-  );
+  solutionTemplateData.templates = common.updateWorkflowTemplateIds(templateDictionary, solutionTemplateData.templates);
 
   // Update solution items data using template dictionary, and then update the
   // itemId & dependencies in each item template
-  solutionTemplateBase.data = common.replaceInTemplate(
-    solutionTemplateData,
-    templateDictionary
-  );
+  solutionTemplateBase.data = common.replaceInTemplate(solutionTemplateData, templateDictionary);
 
   // Write any user defined params to the solution
   /* istanbul ignore else */
@@ -337,11 +254,7 @@ export async function deploySolutionFromTemplate(
     solutionTemplateBase.data.params = templateDictionary.params;
   }
 
-  await common.updateItem(
-    solutionTemplateBase,
-    authentication,
-    deployedFolderId
-  );
+  await common.updateItem(solutionTemplateBase, authentication, deployedFolderId);
 
   return solutionTemplateBase.id;
 }
@@ -354,13 +267,11 @@ export async function deploySolutionFromTemplate(
  */
 export function _handleWorkflowManagedTemplates(
   preProcessResponse: common.IPreProcessWorkflowTemplatesResponse,
-  solutionTemplateData: any
+  solutionTemplateData: any,
 ): void {
-  preProcessResponse.workflowManagedTemplates.forEach(
-    (itemTemplate: common.IItemTemplate) => {
-      solutionTemplateData.templates.push(_purgeTemplateProperties(itemTemplate));
-    }
-  );
+  preProcessResponse.workflowManagedTemplates.forEach((itemTemplate: common.IItemTemplate) => {
+    solutionTemplateData.templates.push(_purgeTemplateProperties(itemTemplate));
+  });
 }
 
 /**
@@ -369,20 +280,16 @@ export function _handleWorkflowManagedTemplates(
  * @param template the array of solution data templates
  * @private
  */
-export function _addSourceId(
-  templates: common.IItemTemplate[]
-): common.IItemTemplate[] {
-  return templates.map(
-    (template: any) => {
-      /* istanbul ignore else */
-      if (template.item) {
-        const typeKeywords = template.item!.typeKeywords || [];
-        typeKeywords.push("source-" + template.itemId);
-        template.item.typeKeywords = typeKeywords;
-      }
-      return template;
+export function _addSourceId(templates: common.IItemTemplate[]): common.IItemTemplate[] {
+  return templates.map((template: any) => {
+    /* istanbul ignore else */
+    if (template.item) {
+      const typeKeywords = template.item!.typeKeywords || [];
+      typeKeywords.push("source-" + template.itemId);
+      template.item.typeKeywords = typeKeywords;
     }
-  );
+    return template;
+  });
 }
 
 /**
@@ -398,11 +305,11 @@ export function _applySourceToDeployOptions(
   deployOptions: common.IDeploySolutionOptions,
   solutionTemplateBase: any,
   templateDictionary: any,
-  authentication: common.UserSession
+  authentication: common.UserSession,
 ): common.IDeploySolutionOptions {
   // Deploy a solution from the template's contents,
   // using the template's information as defaults for the deployed solution item
-  ["title", "snippet", "description", "tags"].forEach(prop => {
+  ["title", "snippet", "description", "tags"].forEach((prop) => {
     deployOptions[prop] = deployOptions[prop] ?? solutionTemplateBase[prop];
     if (deployOptions[prop]) {
       solutionTemplateBase[prop] = deployOptions[prop];
@@ -416,7 +323,7 @@ export function _applySourceToDeployOptions(
     deployOptions.thumbnailurl = common.generateSourceThumbnailUrl(
       authentication.portal,
       solutionTemplateBase.id,
-      solutionTemplateBase.thumbnail
+      solutionTemplateBase.thumbnail,
     );
     delete solutionTemplateBase.thumbnail;
   }
@@ -425,43 +332,27 @@ export function _applySourceToDeployOptions(
 }
 
 //TODO: function doc
-export function _replaceParamVariables(
-  solutionTemplateData: any,
-  templateDictionary: any
-): void {
+export function _replaceParamVariables(solutionTemplateData: any, templateDictionary: any): void {
   // a custom params object can be passed in with the options to deploy a solution
   // in most cases we can defer to the item type handlers to use these values
   // for variable replacement
   // for spatial reference specifically we need to replace up front so the default extent
   // logic can execute as expected
-  solutionTemplateData.templates = solutionTemplateData.templates.map(
-    (template: common.IItemTemplate) => {
-      // can't do this as it causes other values that don't exist in the dict yet to revert to defaults they may have defined
-      // return common.replaceInTemplate(template, templateDictionary);
-      /* istanbul ignore else */
-      if (template.type === "Feature Service") {
-        const paramsLookup: string = "params.";
+  solutionTemplateData.templates = solutionTemplateData.templates.map((template: common.IItemTemplate) => {
+    // can't do this as it causes other values that don't exist in the dict yet to revert to defaults they may have defined
+    // return common.replaceInTemplate(template, templateDictionary);
+    /* istanbul ignore else */
+    if (template.type === "Feature Service") {
+      const paramsLookup: string = "params.";
 
-        const wkidItemPath: string = "item.spatialReference.wkid";
-        template = _updateProp(
-          template,
-          wkidItemPath,
-          paramsLookup,
-          templateDictionary
-        );
+      const wkidItemPath: string = "item.spatialReference.wkid";
+      template = _updateProp(template, wkidItemPath, paramsLookup, templateDictionary);
 
-        const wkidServicePath: string =
-          "properties.service.spatialReference.wkid";
-        template = _updateProp(
-          template,
-          wkidServicePath,
-          paramsLookup,
-          templateDictionary
-        );
-      }
-      return template;
+      const wkidServicePath: string = "properties.service.spatialReference.wkid";
+      template = _updateProp(template, wkidServicePath, paramsLookup, templateDictionary);
     }
-  );
+    return template;
+  });
 }
 
 //TODO: function doc
@@ -469,26 +360,18 @@ export function _updateProp(
   template: common.IItemTemplate,
   path: string,
   lookup: string,
-  templateDictionary: any
+  templateDictionary: any,
 ): common.IItemTemplate {
   const wkid: any = common.getProp(template, path);
   /* istanbul ignore else */
   if (wkid && typeof wkid === "string" && wkid.indexOf(lookup) > -1) {
-    common.setProp(
-      template,
-      path,
-      common.replaceInTemplate(wkid, templateDictionary)
-    );
+    common.setProp(template, path, common.replaceInTemplate(wkid, templateDictionary));
   }
   return template;
 }
 
 //TODO: function doc
-export function _checkedReplaceAll(
-  template: string,
-  oldValue: string,
-  newValue: string
-): string {
+export function _checkedReplaceAll(template: string, oldValue: string, newValue: string): string {
   let newTemplate;
   if (template && template.indexOf(oldValue) > -1) {
     const re = new RegExp(oldValue, "g");
@@ -500,10 +383,7 @@ export function _checkedReplaceAll(
 }
 
 //TODO: function doc
-export function _getPortalBaseUrl(
-  portalResponse: common.IPortal,
-  authentication: common.UserSession
-): string {
+export function _getPortalBaseUrl(portalResponse: common.IPortal, authentication: common.UserSession): string {
   // As of Spring 2020, only HTTPS (see
   // https://www.esri.com/arcgis-blog/products/product/administration/2019-arcgis-transport-security-improvements/)
   const scheme: string = "https"; // portalResponse.allSSL ? "https" : "http";
@@ -514,29 +394,23 @@ export function _getPortalBaseUrl(
   return urlKey && customBaseUrl
     ? `${scheme}://${urlKey}.${customBaseUrl}`
     : enterpriseBaseUrl
-    ? `${scheme}://${enterpriseBaseUrl}`
-    : authentication.portal.replace("/sharing/rest", "");
+      ? `${scheme}://${enterpriseBaseUrl}`
+      : authentication.portal.replace("/sharing/rest", "");
 }
 
 //TODO: function doc
-export function _updateGroupReferences(
-  itemTemplates: any[],
-  templateDictionary: any
-): any[] {
-  const groupIds = itemTemplates.reduce(
-    (result: string[], t: common.IItemTemplate) => {
-      if (t.type === "Group") {
-        result.push(t.itemId);
-      }
-      return result;
-    },
-    []
-  );
+export function _updateGroupReferences(itemTemplates: any[], templateDictionary: any): any[] {
+  const groupIds = itemTemplates.reduce((result: string[], t: common.IItemTemplate) => {
+    if (t.type === "Group") {
+      result.push(t.itemId);
+    }
+    return result;
+  }, []);
 
-  Object.keys(templateDictionary).forEach(k => {
+  Object.keys(templateDictionary).forEach((k) => {
     const newId: string = templateDictionary[k].itemId;
     if (groupIds.indexOf(newId) > -1) {
-      itemTemplates.forEach(t => {
+      itemTemplates.forEach((t) => {
         t.groups = t.groups.map((id: string) => (id === k ? newId : id));
       });
     }
@@ -547,9 +421,7 @@ export function _updateGroupReferences(
 //TODO: function doc
 export function _purgeTemplateProperties(itemTemplate: any): any {
   const retainProps: string[] = ["itemId", "type", "dependencies", "groups"];
-  const deleteProps: string[] = Object.keys(itemTemplate).filter(
-    k => retainProps.indexOf(k) < 0
-  );
+  const deleteProps: string[] = Object.keys(itemTemplate).filter((k) => retainProps.indexOf(k) < 0);
   common.deleteProps(itemTemplate, deleteProps);
   return itemTemplate;
 }

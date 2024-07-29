@@ -27,6 +27,7 @@ import * as zipHelpers from "../../../common/test/mocks/zipHelpers";
 
 jasmine.DEFAULT_TIMEOUT_INTERVAL = 20000; // default is 5000 ms
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 let MOCK_USER_SESSION: common.UserSession;
 
 beforeEach(() => {
@@ -34,7 +35,6 @@ beforeEach(() => {
 });
 
 describe("Module `zip-utils`", () => {
-
   describe("swizzleFormData", () => {
     const org1 = "org1234567890";
     const itemId1 = "2f56b3b59cdc4ac8b8f5de0399887e1e";
@@ -51,10 +51,10 @@ describe("Module `zip-utils`", () => {
 
       const templateDictionary = {
         orgId: orgId2,
-        portalBaseUrl: "https://ginger.maps.arcgis.com"
+        portalBaseUrl: "https://ginger.maps.arcgis.com",
       };
       templateDictionary[itemId1] = {
-        itemId: itemId2
+        itemId: itemId2,
       };
 
       const modifiedZipObject = await form.swizzleFormObject(zipObject, templateDictionary);
@@ -70,5 +70,4 @@ describe("Module `zip-utils`", () => {
       expect(modifiedZipContents).toEqual(expectedZipContents);
     });
   });
-
 });

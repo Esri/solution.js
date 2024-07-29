@@ -16,7 +16,7 @@
 
 import { IItemTemplate, getItemTypeAbbrev } from "@esri/solution-common";
 import { sortTemplates } from "../../src/helpers/sortTemplates";
-import * as templates from "@esri/solution-common/test/mocks/templates";
+import * as templates from "../../../common/test/mocks/templates";
 
 describe("sortTemplates", () => {
   it("sorts a list of templates", () => {
@@ -24,21 +24,19 @@ describe("sortTemplates", () => {
       templates.getItemTemplate("Web Map"),
       templates.getItemTemplate("Feature Service"),
       templates.getItemTemplate("Dashboard"),
-      templates.getItemTemplate("QuickCapture Project")
+      templates.getItemTemplate("QuickCapture Project"),
     ];
     const sortOrderIds = [
       getItemTypeAbbrev("Web Map"),
       getItemTypeAbbrev("Feature Service"),
       getItemTypeAbbrev("Dashboard"),
-      getItemTypeAbbrev("QuickCapture Project")
+      getItemTypeAbbrev("QuickCapture Project"),
     ]
       .sort()
-      .map(id => id + "1234567890");
+      .map((id) => id + "1234567890");
 
     sortTemplates(itemTemplates, sortOrderIds);
 
-    expect(itemTemplates.map(template => template.itemId)).toEqual(
-      sortOrderIds
-    );
+    expect(itemTemplates.map((template) => template.itemId)).toEqual(sortOrderIds);
   });
 });

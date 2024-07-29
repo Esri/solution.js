@@ -19,7 +19,7 @@ import {
   getProp,
   shareItemToGroups,
   isTrackingViewTemplate,
-  replaceInTemplate
+  replaceInTemplate,
 } from "@esri/solution-common";
 import { maybePush } from "@esri/hub-common";
 
@@ -33,20 +33,17 @@ import { maybePush } from "@esri/hub-common";
 export function shareTemplatesToGroups(
   templates: IItemTemplate[],
   templateDictionary: any,
-  authentication: UserSession
+  authentication: UserSession,
 ): Promise<any> {
   // Filter to entries with groups to share to
-  const templatesWithGroups = templates.filter(e => {
+  const templatesWithGroups = templates.filter((e) => {
     return e.groups && e.groups.length > 0;
   });
   // fire off all the promises
   return Promise.all(
-    templatesWithGroups.map(tmpl => {
+    templatesWithGroups.map((tmpl) => {
       const groupIds = tmpl.groups.reduce((acc, sourceGroupId) => {
-        return maybePush(
-          getProp(templateDictionary, `${sourceGroupId}.itemId`),
-          acc
-        );
+        return maybePush(getProp(templateDictionary, `${sourceGroupId}.itemId`), acc);
       }, []);
       // need to pass the tracking owner when sharing to tracking group
       if (isTrackingViewTemplate(tmpl) && !getProp(templateDictionary, "locationTracking.userIsOwner")) {
@@ -54,15 +51,15 @@ export function shareTemplatesToGroups(
         const owner = getProp(templateDictionary, "locationTracking.owner");
         /* istanbul ignore else */
         if (trackingGroupId && owner) {
-          const trackerGroupIds = groupIds.filter(id => {
+          const trackerGroupIds = groupIds.filter((id) => {
             return id === replaceInTemplate(trackingGroupId, templateDictionary);
           });
           if (trackerGroupIds.length !== groupIds.length) {
-            const nonTrackerGroupIds = groupIds.filter(id => id !== trackingGroupId)
+            const nonTrackerGroupIds = groupIds.filter((id) => id !== trackingGroupId);
             return Promise.all([
               shareItemToGroups(trackerGroupIds, tmpl.itemId, authentication, owner),
-              shareItemToGroups(nonTrackerGroupIds, tmpl.itemId, authentication)
-            ])
+              shareItemToGroups(nonTrackerGroupIds, tmpl.itemId, authentication),
+            ]);
           } else {
             return shareItemToGroups(groupIds, tmpl.itemId, authentication, owner);
           }
@@ -70,6 +67,6 @@ export function shareTemplatesToGroups(
       } else {
         return shareItemToGroups(groupIds, tmpl.itemId, authentication);
       }
-    })
+    }),
   );
 }

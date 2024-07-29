@@ -48,7 +48,7 @@ export function deploySolutionItems(
   templateDictionary: any,
   deployedSolutionId: string,
   destinationAuthentication: common.UserSession,
-  options: common.IDeploySolutionOptions
+  options: common.IDeploySolutionOptions,
 ): Promise<common.ICreateItemFromTemplateResponse[]> {
   return new Promise((resolve, reject) => {
     // Prepare feedback mechanism
@@ -65,7 +65,7 @@ export function deploySolutionItems(
       itemId: string,
       status: common.EItemProgressStatus,
       costUsed: number,
-      createdItemId: string // supplied when status is EItemProgressStatus.Created or .Finished
+      createdItemId: string, // supplied when status is EItemProgressStatus.Created or .Finished
     ) => {
       percentDone += progressPercentStep * costUsed;
       /* istanbul ignore else */
@@ -73,13 +73,9 @@ export function deploySolutionItems(
         if (status === common.EItemProgressStatus.Finished) {
           const event = {
             event: common.SItemProgressStatus[status],
-            data: itemId
+            data: itemId,
           } as common.ISolutionProgressEvent;
-          options.progressCallback(
-            Math.round(percentDone),
-            options.jobId,
-            event
-          );
+          options.progressCallback(Math.round(percentDone), options.jobId, event);
         } else {
           options.progressCallback(Math.round(percentDone), options.jobId);
         }
@@ -94,7 +90,7 @@ export function deploySolutionItems(
           common.SItemProgressStatus[status],
           percentDone.toFixed(0) + "%",
           costUsed,
-          createdItemId ? "==> " + createdItemId : ""
+          createdItemId ? "==> " + createdItemId : "",
         );
       }
 
@@ -118,23 +114,19 @@ export function deploySolutionItems(
     // Create an ordered graph of the templates so that dependencies are created before the items that need them.
     // Because cycles are permitted, we also keep track of items that need to be patched later because their
     // dependencies are necessarily created after they are created.
-    const { buildOrder, itemsToBePatched } = common.topologicallySortItems(
-      templates
-    );
+    const { buildOrder, itemsToBePatched } = common.topologicallySortItems(templates);
 
     // For each item in order from no dependencies to dependent on other items,
     //   * replace template symbols using template dictionary
     //   * create item in destination group
     //   * add created item's id into the template dictionary
-    const awaitAllItems = [] as Array<
-      Promise<common.ICreateItemFromTemplateResponse>
-    >;
+    const awaitAllItems = [] as Array<Promise<common.ICreateItemFromTemplateResponse>>;
 
     const reuseItemsDef: Promise<any> = _reuseDeployedItems(
       templates,
       options.enableItemReuse ?? false,
       templateDictionary,
-      destinationAuthentication
+      destinationAuthentication,
     );
     // eslint-disable-next-line @typescript-eslint/no-floating-promises
     reuseItemsDef.then(
@@ -143,14 +135,11 @@ export function deploySolutionItems(
           templates,
           common.getProp(templateDictionary, "params.useExisting"),
           templateDictionary,
-          destinationAuthentication
+          destinationAuthentication,
         );
         // eslint-disable-next-line @typescript-eslint/no-floating-promises
         useExistingItemsDef.then(() => {
-          templates = common.setNamesAndTitles(
-            templates,
-            templateDictionary.solutionItemId
-          );
+          templates = common.setNamesAndTitles(templates, templateDictionary.solutionItemId);
 
           buildOrder.forEach((id: string) => {
             // Get the item's template out of the list of templates
@@ -162,7 +151,7 @@ export function deploySolutionItems(
             } else if (template.type === "QuickCapture Project") {
               // Remove qc.project.json files from the resources--we don't use them from solutions
               template.resources = template.resources.filter(
-                (filename: string) => !filename.endsWith("qc.project.json")
+                (filename: string) => !filename.endsWith("qc.project.json"),
               );
             }
 
@@ -173,58 +162,50 @@ export function deploySolutionItems(
                   portalSharingUrl,
                   storageItemId,
                   template.resources,
-                  options.storageVersion
+                  options.storageVersion,
                 ),
                 storageAuthentication,
                 templateDictionary,
                 destinationAuthentication,
-                itemProgressCallback
-              )
+                itemProgressCallback,
+              ),
             );
           });
 
           // Wait until all items have been created
           // eslint-disable-next-line @typescript-eslint/no-floating-promises
-          Promise.all(awaitAllItems).then(
-            (clonedSolutionItems: common.ICreateItemFromTemplateResponse[]) => {
-              if (failedTemplateItemIds.length === 0) {
-                // Do we have any items to be patched (i.e., they refer to dependencies using the template id rather
-                // than the cloned id because the item had to be created before the dependency)? Flag these items
-                // for post processing in the list of clones.
-                _flagPatchItemsForPostProcessing(
-                  itemsToBePatched,
-                  templateDictionary,
-                  clonedSolutionItems
-                );
+          Promise.all(awaitAllItems).then((clonedSolutionItems: common.ICreateItemFromTemplateResponse[]) => {
+            if (failedTemplateItemIds.length === 0) {
+              // Do we have any items to be patched (i.e., they refer to dependencies using the template id rather
+              // than the cloned id because the item had to be created before the dependency)? Flag these items
+              // for post processing in the list of clones.
+              _flagPatchItemsForPostProcessing(itemsToBePatched, templateDictionary, clonedSolutionItems);
 
-                resolve(clonedSolutionItems);
-              } else {
-                // Delete created items
-                const progressOptions: common.IDeleteSolutionOptions = {
-                  consoleProgress: true
-                };
-                // eslint-disable-next-line @typescript-eslint/no-floating-promises
-                common
-                  .deleteSolutionByComponents(
-                    deployedSolutionId,
-                    deployedItemIds,
-                    templates,
-                    templateDictionary,
-                    destinationAuthentication,
-                    progressOptions
-                  )
-                  .then(() =>
-                    reject(common.failWithIds(failedTemplateItemIds))
-                  );
-              }
+              resolve(clonedSolutionItems);
+            } else {
+              // Delete created items
+              const progressOptions: common.IDeleteSolutionOptions = {
+                consoleProgress: true,
+              };
+              // eslint-disable-next-line @typescript-eslint/no-floating-promises
+              common
+                .deleteSolutionByComponents(
+                  deployedSolutionId,
+                  deployedItemIds,
+                  templates,
+                  templateDictionary,
+                  destinationAuthentication,
+                  progressOptions,
+                )
+                .then(() => reject(common.failWithIds(failedTemplateItemIds)));
             }
-          );
+          });
         });
       },
-      e => {
+      (e) => {
         console.error(e);
         reject(common.fail(e));
-      }
+      },
     );
   });
 }
@@ -240,19 +221,17 @@ export function deploySolutionItems(
 export function _flagPatchItemsForPostProcessing(
   itemsToBePatched: common.IKeyedListsOfStrings,
   templateDictionary: any,
-  templates: common.ICreateItemFromTemplateResponse[]
+  templates: common.ICreateItemFromTemplateResponse[],
 ): void {
   let itemIdsToBePatched = Object.keys(itemsToBePatched);
 
   /* istanbul ignore else */
   if (itemIdsToBePatched.length > 0) {
     // Replace the ids of the items to be patched (which are template ids) with their cloned versions
-    itemIdsToBePatched = itemIdsToBePatched.map(
-      id => templateDictionary[id].itemId
-    );
+    itemIdsToBePatched = itemIdsToBePatched.map((id) => templateDictionary[id].itemId);
 
     // Make sure that the items to be patched are flagged for post processing
-    templates.forEach(item => {
+    templates.forEach((item) => {
       /* istanbul ignore else */
       if (itemIdsToBePatched.includes(item.id)) {
         item.postProcess = true;
@@ -271,9 +250,7 @@ export function _flagPatchItemsForPostProcessing(
  * @returns An updated array of item templates
  * @private
  */
-export function _evaluateSharedViewSources(
-  templates: common.IItemTemplate[]
-): common.IItemTemplate[] {
+export function _evaluateSharedViewSources(templates: common.IItemTemplate[]): common.IItemTemplate[] {
   // update the templates so we can defer the deployment when more than one view shares the same source
   // these are not classic dependencies but are in some ways similar
   const views: any[] = _getViews(templates);
@@ -286,9 +263,9 @@ export function _evaluateSharedViewSources(
 
   const visited: string[] = [];
 
-  Object.keys(viewHash).forEach(k => {
+  Object.keys(viewHash).forEach((k) => {
     const _views: string[] = viewHash[k];
-    _views.forEach(cv => {
+    _views.forEach((cv) => {
       const template = common.findTemplateInList(templates, cv);
       const syncViews = common.getProp(template, "properties.syncViews");
 
@@ -299,11 +276,7 @@ export function _evaluateSharedViewSources(
       /* istanbul ignore else */
       if (syncViews && syncViews.length > 0) {
         // when a view has multiple dependencies we need to retain the syncViews if they have been set already...
-        common.setProp(
-          template,
-          "properties.syncViews",
-          common.cloneObject(processed)
-        );
+        common.setProp(template, "properties.syncViews", common.cloneObject(processed));
       }
       /* istanbul ignore else */
       if (processed.indexOf(cv) < 0) {
@@ -331,19 +304,12 @@ export function _evaluateSharedViewSources(
  * @returns An updated array of item templates
  * @private
  */
-export function _updateViewTemplates(
-  templates: common.IItemTemplate[],
-  views: any[]
-): common.IItemTemplate[] {
-  views.forEach(v => {
+export function _updateViewTemplates(templates: common.IItemTemplate[], views: any[]): common.IItemTemplate[] {
+  views.forEach((v) => {
     v.dependencies.forEach((id: string) => {
-      templates = templates.map(t => {
+      templates = templates.map((t) => {
         /* istanbul ignore else */
-        if (
-          common.getProp(t, "properties.service.isView") &&
-          t.dependencies.indexOf(id) > -1 &&
-          t.itemId !== v.id
-        ) {
+        if (common.getProp(t, "properties.service.isView") && t.dependencies.indexOf(id) > -1 && t.itemId !== v.id) {
           /* istanbul ignore else */
           if (!Array.isArray(t.properties.syncViews)) {
             t.properties.syncViews = [];
@@ -372,7 +338,7 @@ export function _updateViewTemplates(
  */
 export function _getViewHash(views: any[]): any {
   const viewHash: any = {};
-  views.forEach(v => {
+  views.forEach((v) => {
     v.dependencies.forEach((d: string) => {
       /* istanbul ignore else */
       if (Object.keys(viewHash).indexOf(d) < 0) {
@@ -400,7 +366,7 @@ export function _getViews(templates: common.IItemTemplate[]): any[] {
     if (common.getProp(v, "properties.service.isView")) {
       acc.push({
         id: v.itemId,
-        dependencies: v.dependencies
+        dependencies: v.dependencies,
       });
     }
     return acc;
@@ -423,19 +389,17 @@ export function _reuseDeployedItems(
   templates: common.IItemTemplate[],
   reuseItems: boolean,
   templateDictionary: any,
-  authentication: common.UserSession
+  authentication: common.UserSession,
 ): Promise<any> {
   return new Promise((resolve, reject) => {
     if (reuseItems) {
       const findItemsByKeywordResponse: common.IFindExistingItemsResponse = _findExistingItemByKeyword(
         templates,
         templateDictionary,
-        authentication
+        authentication,
       );
 
-      const existingItemsByKeyword: Array<Promise<
-        any
-      >> = findItemsByKeywordResponse.existingItemsDefs;
+      const existingItemsByKeyword: Array<Promise<any>> = findItemsByKeywordResponse.existingItemsDefs;
       const existingItemInfos: common.IFindExistingItemInfos[] = findItemsByKeywordResponse.existingItemInfos;
 
       Promise.all(existingItemsByKeyword).then(
@@ -445,34 +409,28 @@ export function _reuseDeployedItems(
             existingItemInfos,
             templateDictionary,
             authentication,
-            true
+            true,
           );
 
-          const existingItemsByTag: Array<Promise<
-            any
-          >> = findExistingItemsByTag.existingItemsDefs;
+          const existingItemsByTag: Array<Promise<any>> = findExistingItemsByTag.existingItemsDefs;
           const existingItemInfosByTag: common.IFindExistingItemInfos[] = findExistingItemsByTag.existingItemInfos;
 
           Promise.all(existingItemsByTag).then(
-            existingItemsByTagResponse => {
+            (existingItemsByTagResponse) => {
               _handleExistingItems(
                 existingItemsByTagResponse,
                 existingItemInfosByTag,
                 templateDictionary,
                 authentication,
-                false
+                false,
               );
               // eslint-disable-next-line @typescript-eslint/no-floating-promises
-              _updateTemplateDictionary(
-                templates,
-                templateDictionary,
-                authentication
-              ).then(resolve);
+              _updateTemplateDictionary(templates, templateDictionary, authentication).then(resolve);
             },
-            e => reject(common.fail(e))
+            (e) => reject(common.fail(e)),
           );
         },
-        e => reject(common.fail(e))
+        (e) => reject(common.fail(e)),
       );
     } else {
       resolve(null);
@@ -504,14 +462,14 @@ export function _useExistingItems(
   templates: common.IItemTemplate[],
   useExisting: boolean,
   templateDictionary: any,
-  authentication: common.UserSession
+  authentication: common.UserSession,
 ): Promise<any> {
-  return new Promise(resolve => {
+  return new Promise((resolve) => {
     if (useExisting) {
       const itemDefs: Array<Promise<any>> = [];
       const sourceIdHash: any = {};
       const itemIds: string[] = [];
-      Object.keys(templateDictionary.params).forEach(k => {
+      Object.keys(templateDictionary.params).forEach((k) => {
         const v: any = templateDictionary.params[k];
         /* istanbul ignore else */
         if (v.itemId && /[0-9A-F]{32}/i.test(k)) {
@@ -529,16 +487,14 @@ export function _useExistingItems(
         }
       });
       // eslint-disable-next-line @typescript-eslint/no-floating-promises
-      _setTypekeywordForExisting(itemDefs, sourceIdHash, authentication).then(
-        () => {
-          // eslint-disable-next-line @typescript-eslint/no-floating-promises
-          _updateTemplateDictionary(
-            itemIds.map(id => common.getTemplateById(templates, id)),
-            templateDictionary,
-            authentication
-          ).then(resolve);
-        }
-      );
+      _setTypekeywordForExisting(itemDefs, sourceIdHash, authentication).then(() => {
+        // eslint-disable-next-line @typescript-eslint/no-floating-promises
+        _updateTemplateDictionary(
+          itemIds.map((id) => common.getTemplateById(templates, id)),
+          templateDictionary,
+          authentication,
+        ).then(resolve);
+      });
     } else {
       resolve(null);
     }
@@ -560,14 +516,14 @@ export function _useExistingItems(
 export function _setTypekeywordForExisting(
   itemDefs: Array<Promise<any>>,
   sourceIdHash: any,
-  authentication: common.UserSession
+  authentication: common.UserSession,
 ): Promise<any> {
-  return new Promise(resolve => {
+  return new Promise((resolve) => {
     if (itemDefs.length > 0) {
       Promise.all(itemDefs).then(
-        results => {
+        (results) => {
           const itemUpdateDefs: Array<Promise<any>> = [];
-          results.forEach(result => {
+          results.forEach((result) => {
             const sourceId: string = sourceIdHash[result.id];
             /* istanbul ignore else */
             if (result && sourceId && result.typeKeywords) {
@@ -577,9 +533,7 @@ export function _setTypekeywordForExisting(
               if (typeKeywords.indexOf(sourceKeyword) < 0) {
                 typeKeywords.push(sourceKeyword);
                 const itemUpdate: any = { id: result.id, typeKeywords };
-                itemUpdateDefs.push(
-                  common.updateItem(itemUpdate, authentication)
-                );
+                itemUpdateDefs.push(common.updateItem(itemUpdate, authentication));
               }
             }
           });
@@ -591,7 +545,7 @@ export function _setTypekeywordForExisting(
             resolve(undefined);
           }
         },
-        () => resolve(undefined)
+        () => resolve(undefined),
       );
     } else {
       resolve(undefined);
@@ -610,42 +564,35 @@ export function _setTypekeywordForExisting(
 export function _updateTemplateDictionary(
   templates: common.IItemTemplate[],
   templateDictionary: any,
-  authentication: common.UserSession
+  authentication: common.UserSession,
 ): Promise<any> {
-  return new Promise(resolve => {
+  return new Promise((resolve) => {
     const defs: Array<Promise<any>> = [];
     const urls: string[] = [];
     const types: string[] = [];
     const ids: string[] = [];
-    templates.forEach(t => {
+    templates.forEach((t) => {
       const templateInfo: any = templateDictionary[t.itemId];
       /* istanbul ignore else */
       if (templateInfo && templateInfo.url && templateInfo.itemId) {
         /* istanbul ignore else */
         if (t.item.type === "Feature Service") {
-          const enterpriseIDMapping: any = common.getProp(
-            templateDictionary,
-            `params.${t.itemId}.enterpriseIDMapping`
-          );
+          const enterpriseIDMapping: any = common.getProp(templateDictionary, `params.${t.itemId}.enterpriseIDMapping`);
           Object.assign(
             templateDictionary[t.itemId],
             common.getLayerSettings(
               common.getLayersAndTables(t),
               templateInfo.url,
               templateInfo.itemId,
-              enterpriseIDMapping
-            )
+              enterpriseIDMapping,
+            ),
           );
 
           // if the service has veiws keep track of the fields so we can use them to
           // compare with the view fields
           /* istanbul ignore else */
           if (common.getProp(t, "properties.service.hasViews")) {
-            common._updateTemplateDictionaryFields(
-              t,
-              templateDictionary,
-              false
-            );
+            common._updateTemplateDictionaryFields(t, templateDictionary, false);
           }
         }
 
@@ -658,7 +605,7 @@ export function _updateTemplateDictionary(
           defs.push(
             t.item.type === "Feature Service"
               ? common.rest_request(templateInfo.url, { authentication })
-              : common.getItemBase(templateInfo.itemId, authentication)
+              : common.getItemBase(templateInfo.itemId, authentication),
           );
           urls.push(templateInfo.url);
           types.push(t.item.type);
@@ -669,88 +616,61 @@ export function _updateTemplateDictionary(
 
     if (defs.length > 0) {
       // eslint-disable-next-line @typescript-eslint/no-floating-promises
-      Promise.all(defs.map(p => p.catch(e => e))).then(results => {
+      Promise.all(defs.map((p) => p.catch((e) => e))).then((results) => {
         /* istanbul ignore else */
         if (Array.isArray(results) && results.length > 0) {
           const fieldDefs: Array<Promise<any>> = [];
           results.forEach((r, i) => {
             // a feature service result will contain a serviceItemId if it was successfully fetched
             if (r.serviceItemId && types[i] === "Feature Service") {
-              Object.keys(templateDictionary).forEach(k => {
+              Object.keys(templateDictionary).forEach((k) => {
                 const v: any = templateDictionary[k];
                 /* istanbul ignore else */
                 if (v.itemId && v.itemId === r.serviceItemId) {
-                  common.setDefaultSpatialReference(
-                    templateDictionary,
-                    k,
-                    r.spatialReference
-                  );
+                  common.setDefaultSpatialReference(templateDictionary, k, r.spatialReference);
 
                   // keep the extent values from these responses as well
-                  common.setCreateProp(
-                    templateDictionary,
-                    `${k}.defaultExtent`,
-                    r.fullExtent || r.initialExtent
-                  );
+                  common.setCreateProp(templateDictionary, `${k}.defaultExtent`, r.fullExtent || r.initialExtent);
 
-                  const layerIds: number[] = (r.layers || []).map(
-                    (l: any) => l.id
-                  );
-                  const tablesIds: number[] = (r.tables || []).map(
-                    (t: any) => t.id
-                  );
+                  const layerIds: number[] = (r.layers || []).map((l: any) => l.id);
+                  const tablesIds: number[] = (r.tables || []).map((t: any) => t.id);
                   fieldDefs.push(
-                    common.getExistingLayersAndTables(
-                      urls[i],
-                      layerIds.concat(tablesIds),
-                      authentication
-                    )
+                    common.getExistingLayersAndTables(urls[i], layerIds.concat(tablesIds), authentication),
                   );
                 }
               });
             } else {
               /* istanbul ignore else */
-              if (
-                types[i] === "Feature Service" ||
-                common.getProp(r, "response.error")
-              ) {
+              if (types[i] === "Feature Service" || common.getProp(r, "response.error")) {
                 // if an error is returned we need to clean up the templateDictionary
-                templateDictionary = _updateTemplateDictionaryForError(
-                  templateDictionary,
-                  ids[i]
-                );
+                templateDictionary = _updateTemplateDictionaryForError(templateDictionary, ids[i]);
               }
             }
           });
 
           if (fieldDefs.length > 0) {
             // eslint-disable-next-line @typescript-eslint/no-floating-promises
-            Promise.all(fieldDefs).then(layerTableResult => {
-              layerTableResult.forEach(l => {
+            Promise.all(fieldDefs).then((layerTableResult) => {
+              layerTableResult.forEach((l) => {
                 l.forEach((ll: any) => {
-                  Object.keys(templateDictionary).forEach(k => {
+                  Object.keys(templateDictionary).forEach((k) => {
                     /* istanbul ignore else */
                     if (templateDictionary[k].itemId === ll.serviceItemId) {
                       let sourceId: string = "";
-                      Object.keys(templateDictionary).some(_k => {
+                      Object.keys(templateDictionary).some((_k) => {
                         /* istanbul ignore else */
-                        if (
-                          templateDictionary[_k].itemId === ll.serviceItemId
-                        ) {
+                        if (templateDictionary[_k].itemId === ll.serviceItemId) {
                           sourceId = _k;
                           return true;
                         }
                       });
                       const enterpriseIDMapping: any = common.getProp(
                         templateDictionary,
-                        `params.${sourceId}.enterpriseIDMapping`
+                        `params.${sourceId}.enterpriseIDMapping`,
                       );
                       if (enterpriseIDMapping) {
-                        Object.keys(enterpriseIDMapping).forEach(id => {
-                          if (
-                            enterpriseIDMapping[id].toString() ===
-                            ll.id.toString()
-                          ) {
+                        Object.keys(enterpriseIDMapping).forEach((id) => {
+                          if (enterpriseIDMapping[id].toString() === ll.id.toString()) {
                             _setFields(templateDictionary, k, id, ll.fields);
                           }
                         });
@@ -786,16 +706,8 @@ export function _updateTemplateDictionary(
  *
  * @private
  */
-export function _setFields(
-  templateDictionary: any,
-  itemId: string,
-  layerId: string,
-  fields: any[]
-): void {
-  const layerInfo: any = common.getProp(
-    templateDictionary,
-    `${itemId}.layer${layerId}`
-  );
+export function _setFields(templateDictionary: any, itemId: string, layerId: string, fields: any[]): void {
+  const layerInfo: any = common.getProp(templateDictionary, `${itemId}.layer${layerId}`);
   /* istanbul ignore else */
   if (layerInfo && fields) {
     layerInfo.fields = fields;
@@ -814,14 +726,11 @@ export function _setFields(
  *
  * @private
  */
-export function _updateTemplateDictionaryForError(
-  templateDictionary: any,
-  itemId: string
-): any {
+export function _updateTemplateDictionaryForError(templateDictionary: any, itemId: string): any {
   /* istanbul ignore else */
   if (itemId) {
     let removeKey: string = "";
-    Object.keys(templateDictionary).some(k => {
+    Object.keys(templateDictionary).some((k) => {
       /* istanbul ignore else */
       if (templateDictionary[k].itemId === itemId) {
         removeKey = k;
@@ -853,7 +762,7 @@ export function _handleExistingItems(
   existingItemInfos: common.IFindExistingItemInfos[],
   templateDictionary: any,
   authentication: common.UserSession,
-  addTagQuery: boolean
+  addTagQuery: boolean,
 ): common.IFindExistingItemsResponse {
   // if items are not found by type keyword search by tag
   const existingItemsByTag: Array<Promise<any>> = [Promise.resolve(null)];
@@ -868,16 +777,12 @@ export function _handleExistingItems(
         if (results.length === 1) {
           result = results[0];
         } else if (results.length > 1) {
-          result = results.reduce((a: any, b: any) =>
-            a.created > b.created ? a : b
-          );
+          result = results.reduce((a: any, b: any) => (a.created > b.created ? a : b));
         } else {
           if (addTagQuery && existingItemInfos[i]) {
             const itemInfo: common.IFindExistingItemInfos = existingItemInfos[i];
             const tagQuery: string = `tags:source-${itemInfo.itemId} type:${itemInfo.type} owner:${templateDictionary.user.username}`;
-            existingItemsByTag.push(
-              _findExistingItem(tagQuery, authentication)
-            );
+            existingItemsByTag.push(_findExistingItem(tagQuery, authentication));
             existingItemInfosByTag.push(existingItemInfos[i]);
           }
         }
@@ -885,12 +790,7 @@ export function _handleExistingItems(
           const sourceId: any = existingItemInfos[i].itemId;
           /* istanbul ignore else */
           if (sourceId) {
-            _updateTemplateDictionaryById(
-              templateDictionary,
-              sourceId,
-              result.id,
-              result
-            );
+            _updateTemplateDictionaryById(templateDictionary, sourceId, result.id, result);
           }
         }
       }
@@ -898,30 +798,20 @@ export function _handleExistingItems(
   }
   return {
     existingItemsDefs: existingItemsByTag,
-    existingItemInfos: existingItemInfosByTag
+    existingItemInfos: existingItemInfosByTag,
   };
 }
 
 //TODO: function doc
-export function _updateTemplateDictionaryById(
-  templateDictionary: any,
-  sourceId: string,
-  itemId: string,
-  v: any
-): void {
-  templateDictionary[sourceId] = Object.assign(
-    templateDictionary[sourceId] || {},
-    {
-      def: Promise.resolve(
-        common.generateEmptyCreationResponse(v.type, itemId)
-      ),
-      itemId,
-      name: v.name,
-      title: v.title,
-      url: v.url,
-      label: v.title
-    }
-  );
+export function _updateTemplateDictionaryById(templateDictionary: any, sourceId: string, itemId: string, v: any): void {
+  templateDictionary[sourceId] = Object.assign(templateDictionary[sourceId] || {}, {
+    def: Promise.resolve(common.generateEmptyCreationResponse(v.type, itemId)),
+    itemId,
+    name: v.name,
+    title: v.title,
+    url: v.url,
+    label: v.title,
+  });
 }
 
 /**
@@ -937,11 +827,11 @@ export function _updateTemplateDictionaryById(
 export function _findExistingItemByKeyword(
   templates: common.IItemTemplate[],
   templateDictionary: any,
-  authentication: common.UserSession
+  authentication: common.UserSession,
 ): common.IFindExistingItemsResponse {
   const existingItemsDefs: Array<Promise<any>> = [];
   const existingItemInfos: any[] = [];
-  templates.forEach(template => {
+  templates.forEach((template) => {
     if (template.item.type === "Group") {
       const userGroups: any = templateDictionary.user?.groups;
       /* istanbul ignore else */
@@ -949,31 +839,35 @@ export function _findExistingItemByKeyword(
         existingItemsDefs.push(
           Promise.resolve({
             results: userGroups
-              .filter(g => g.tags.indexOf(`source-${template.itemId}`) > -1 || g.typeKeywords.indexOf(`source-${template.itemId}`) > -1)
-              .map(g => {
+              .filter(
+                (g) =>
+                  g.tags.indexOf(`source-${template.itemId}`) > -1 ||
+                  g.typeKeywords.indexOf(`source-${template.itemId}`) > -1,
+              )
+              .map((g) => {
                 g.type = "Group";
                 return g;
               }),
-            sourceId: template.itemId
-          })
+            sourceId: template.itemId,
+          }),
         );
       }
     } else {
       existingItemsDefs.push(
         _findExistingItem(
           `typekeywords:source-${template.itemId} type:${template.item.type} owner:${templateDictionary.user.username}`,
-          authentication
-        )
+          authentication,
+        ),
       );
     }
     existingItemInfos.push({
       itemId: template.itemId,
-      type: template.item.type
+      type: template.item.type,
     });
   });
   return {
     existingItemsDefs,
-    existingItemInfos
+    existingItemInfos,
   };
 }
 
@@ -985,14 +879,11 @@ export function _findExistingItemByKeyword(
  * @returns A promise that will resolve with an array of results
  * @private
  */
-export function _findExistingItem(
-  query: string,
-  authentication: common.UserSession
-): Promise<any> {
+export function _findExistingItem(query: string, authentication: common.UserSession): Promise<any> {
   const searchOptions = {
     q: query,
     authentication: authentication,
-    pagingParam: { start: 1, num: 100 }
+    pagingParam: { start: 1, num: 100 },
   };
   return common.searchItems(searchOptions);
 }
@@ -1015,7 +906,7 @@ export function _createItemFromTemplateWhenReady(
   storageAuthentication: common.UserSession,
   templateDictionary: any,
   destinationAuthentication: common.UserSession,
-  itemProgressCallback: common.IItemProgressCallback
+  itemProgressCallback: common.IItemProgressCallback,
 ): Promise<common.ICreateItemFromTemplateResponse> {
   const sourceItemId = template.itemId;
 
@@ -1028,35 +919,25 @@ export function _createItemFromTemplateWhenReady(
     !common.getProp(templateDictionary[template.itemId], "def")
   ) {
     let createResponse: common.ICreateItemFromTemplateResponse;
-    let statusCode: common.EItemProgressStatus =
-      common.EItemProgressStatus.Unknown;
+    let statusCode: common.EItemProgressStatus = common.EItemProgressStatus.Unknown;
     let itemHandler: common.IItemTemplateConversions;
 
-    templateDictionary[template.itemId] =
-      templateDictionary[template.itemId] || {};
+    templateDictionary[template.itemId] = templateDictionary[template.itemId] || {};
 
     // Save the deferred for the use of items that depend on this item being created first
-    templateDictionary[template.itemId].def = new Promise<
-      common.ICreateItemFromTemplateResponse
-    >(resolve => {
+    templateDictionary[template.itemId].def = new Promise<common.ICreateItemFromTemplateResponse>((resolve) => {
       // Wait until all of the item's dependencies are deployed
-      const _awaitDependencies = template.dependencies.reduce(
-        (acc: any[], id: string) => {
-          const def = common.getProp(templateDictionary, `${id}.def`);
-          // can't use maybePush as that clones the object, which does not work for Promises
-          /* istanbul ignore else */
-          if (def) {
-            acc.push(def);
-          }
-          return acc;
-        },
-        []
-      );
+      const _awaitDependencies = template.dependencies.reduce((acc: any[], id: string) => {
+        const def = common.getProp(templateDictionary, `${id}.def`);
+        // can't use maybePush as that clones the object, which does not work for Promises
+        /* istanbul ignore else */
+        if (def) {
+          acc.push(def);
+        }
+        return acc;
+      }, []);
 
-      const syncViews: string[] = common.getProp(
-        template,
-        "properties.syncViews"
-      );
+      const syncViews: string[] = common.getProp(template, "properties.syncViews");
 
       const awaitDependencies =
         syncViews && syncViews.length > 0
@@ -1089,12 +970,9 @@ export function _createItemFromTemplateWhenReady(
           }
 
           // Get the item's thumbnail
-          return common.getThumbnailFromStorageItem(
-            storageAuthentication,
-            resourceFilePaths
-          );
+          return common.getThumbnailFromStorageItem(storageAuthentication, resourceFilePaths);
         })
-        .then(thumbnail => {
+        .then((thumbnail) => {
           template.item.thumbnail = thumbnail;
 
           // Delegate the creation of the item to the handler
@@ -1103,7 +981,7 @@ export function _createItemFromTemplateWhenReady(
             template,
             templateDictionary,
             destinationAuthentication,
-            itemProgressCallback
+            itemProgressCallback,
           );
         })
         .then(async (response: common.ICreateItemFromTemplateResponse) => {
@@ -1115,11 +993,7 @@ export function _createItemFromTemplateWhenReady(
           /* istanbul ignore else */
           createResponse = response;
           if (createResponse.item.item.url) {
-            common.setCreateProp(
-              templateDictionary,
-              sourceItemId + ".url",
-              createResponse.item.item.url
-            );
+            common.setCreateProp(templateDictionary, sourceItemId + ".url", createResponse.item.item.url);
           }
 
           if (resourceFilePaths.length > 0) {
@@ -1129,16 +1003,14 @@ export function _createItemFromTemplateWhenReady(
             if (template.type === "Form") {
               // Filter out Form zip file
               let formZipFilePath: common.IDeployFileCopyPath;
-              resourceFilePaths = resourceFilePaths.filter(
-                (filePath) => {
-                  if (filePath.filename.endsWith(".zip")) {
-                    formZipFilePath = filePath;
-                    return false;
-                  } else {
-                    return true;
-                  }
+              resourceFilePaths = resourceFilePaths.filter((filePath) => {
+                if (filePath.filename.endsWith(".zip")) {
+                  formZipFilePath = filePath;
+                  return false;
+                } else {
+                  return true;
                 }
-              );
+              });
 
               if (formZipFilePath) {
                 // Fetch the form's zip file and send it to the item
@@ -1156,7 +1028,7 @@ export function _createItemFromTemplateWhenReady(
               destinationItemId,
               destinationAuthentication,
               createResponse.item,
-              templateDictionary
+              templateDictionary,
             );
           } else {
             return Promise.resolve(null);
@@ -1165,14 +1037,12 @@ export function _createItemFromTemplateWhenReady(
         .then(() => {
           resolve(createResponse);
         })
-        .catch(error => {
+        .catch((error) => {
           if (!error || error.message !== "handled") {
             itemProgressCallback(
               sourceItemId,
-              statusCode === common.EItemProgressStatus.Unknown
-                ? common.EItemProgressStatus.Failed
-                : statusCode,
-              0
+              statusCode === common.EItemProgressStatus.Unknown ? common.EItemProgressStatus.Failed : statusCode,
+              0,
             );
           }
 
@@ -1191,17 +1061,10 @@ export function _createItemFromTemplateWhenReady(
  * @returns Sum of estimated deployment costs
  * @private
  */
-export function _estimateDeploymentCost(
-  templates: common.IItemTemplate[]
-): number {
-  return templates.reduce(
-    (accumulatedEstimatedCost: number, template: common.IItemTemplate) => {
-      return (
-        accumulatedEstimatedCost + (template.estimatedDeploymentCostFactor || 1)
-      );
-    },
-    0
-  );
+export function _estimateDeploymentCost(templates: common.IItemTemplate[]): number {
+  return templates.reduce((accumulatedEstimatedCost: number, template: common.IItemTemplate) => {
+    return accumulatedEstimatedCost + (template.estimatedDeploymentCostFactor || 1);
+  }, 0);
 }
 
 //TODO: function doc
@@ -1209,7 +1072,7 @@ export function _estimateDeploymentCost(
 export function _getGroupUpdates(
   template: common.IItemTemplate,
   authentication: common.UserSession,
-  templateDictionary: any
+  templateDictionary: any,
 ): Array<Promise<any>> {
   const groups = template.groups || [];
   return groups.map((sourceGroupId: string) => {
@@ -1217,7 +1080,7 @@ export function _getGroupUpdates(
       templateDictionary[sourceGroupId].itemId,
       template.itemId,
       authentication,
-      common.isTrackingViewTemplate(template) ? templateDictionary.locationTracking.owner : undefined
+      common.isTrackingViewTemplate(template) ? templateDictionary.locationTracking.owner : undefined,
     );
   });
 }
