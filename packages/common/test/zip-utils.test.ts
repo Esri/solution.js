@@ -35,16 +35,11 @@ beforeEach(() => {
 });
 
 describe("Module `zip-utils`", () => {
-
   describe("blobToZipObject", () => {
     it("handles a non-zip blob", async () => {
       const blob = new Blob(["Hello, world!"], { type: "text/plain" });
 
-      try {
-        await zipUtils.blobToZipObject(blob);
-        fail("Expected an error to be thrown");
-      } catch (e) {
-      }
+      await expectAsync(zipUtils.blobToZipObject(blob)).toBeRejected();
     });
   });
 
@@ -84,7 +79,6 @@ describe("Module `zip-utils`", () => {
       expect(zipFiles[1].file).toBe("esriinfo/form.json");
     });
 
-
     it("returns the contents of a binary zip object", async () => {
       const zip = zipHelpers.generateBinaryZipObject();
 
@@ -113,13 +107,13 @@ describe("Module `zip-utils`", () => {
     it("converts a JSON object to a zip object", async () => {
       const zippedFileName = "config.json";
       const json = {
-        "appId": "ABCDEFGHIJKLMNOP",
-        "portalURL": "https://www.arcgis.com",
-        "primarySolutionsGroupId": "81f043eecfe8404b8a6121e0016fe6f8",
-        "agoBasedEnterpriseSolutionsGroupId": "c3cc0b1f0f114861a3427ac0e99925aa",
+        appId: "ABCDEFGHIJKLMNOP",
+        portalURL: "https://www.arcgis.com",
+        primarySolutionsGroupId: "81f043eecfe8404b8a6121e0016fe6f8",
+        agoBasedEnterpriseSolutionsGroupId: "c3cc0b1f0f114861a3427ac0e99925aa",
 
-        "isRTL": false,
-        "locale": ""
+        isRTL: false,
+        locale: "",
       };
 
       const zip = zipUtils.jsonToZipObject(zippedFileName, json);
@@ -135,13 +129,13 @@ describe("Module `zip-utils`", () => {
     it("converts a JSON object to a zip file", async () => {
       const zippedFileName = "config.json";
       const json = {
-        "appId": "ABCDEFGHIJKLMNOP",
-        "portalURL": "https://www.arcgis.com",
-        "primarySolutionsGroupId": "81f043eecfe8404b8a6121e0016fe6f8",
-        "agoBasedEnterpriseSolutionsGroupId": "c3cc0b1f0f114861a3427ac0e99925aa",
+        appId: "ABCDEFGHIJKLMNOP",
+        portalURL: "https://www.arcgis.com",
+        primarySolutionsGroupId: "81f043eecfe8404b8a6121e0016fe6f8",
+        agoBasedEnterpriseSolutionsGroupId: "c3cc0b1f0f114861a3427ac0e99925aa",
 
-        "isRTL": false,
-        "locale": ""
+        isRTL: false,
+        locale: "",
       };
       const zipFileFilename = "config.zip";
 
@@ -163,12 +157,10 @@ describe("Module `zip-utils`", () => {
       const zipFiles: string[] = zipFileContents.map((zipFile) => zipFile.file);
 
       const zipFilesModified: string[] = [];
-      zip = await zipUtils.modifyFilesinZipObject(
-        (zipFile: interfaces.IZipObjectContentItem) => {
-          zipFilesModified.push(zipFile.file);
-          return zipFile.content;
-        }, zip
-      );
+      zip = await zipUtils.modifyFilesinZipObject((zipFile: interfaces.IZipObjectContentItem) => {
+        zipFilesModified.push(zipFile.file);
+        return zipFile.content;
+      }, zip);
 
       expect(zipFilesModified).toEqual(zipFiles);
     });
@@ -191,5 +183,4 @@ describe("Module `zip-utils`", () => {
       expect(zipFile.type).toEqual("application/zip");
     });
   });
-
 });

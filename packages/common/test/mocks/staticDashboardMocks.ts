@@ -30,135 +30,135 @@ export const datasourceInfos: interfaces.IDatasourceInfo[] = [
     url: "{{934a9ef8efa7448fa8ddf7b13cef0240.url}}",
     fields: [
       {
-        name: "OBJECTID"
+        name: "OBJECTID",
       },
       {
-        name: "FACILITYID"
+        name: "FACILITYID",
       },
       {
-        name: "NAME"
+        name: "NAME",
       },
       {
-        name: "OWNER"
+        name: "OWNER",
       },
       {
-        name: "OWNTYPE"
+        name: "OWNTYPE",
       },
       {
-        name: "SUBTYPEFIELD"
+        name: "SUBTYPEFIELD",
       },
       {
-        name: "FEATURECODE"
+        name: "FEATURECODE",
       },
       {
-        name: "FULLADDR"
+        name: "FULLADDR",
       },
       {
-        name: "AGENCYURL"
+        name: "AGENCYURL",
       },
       {
-        name: "OPERDAYS"
+        name: "OPERDAYS",
       },
       {
-        name: "OPERHOURS"
+        name: "OPERHOURS",
       },
       {
-        name: "NUMBEDS"
+        name: "NUMBEDS",
       },
       {
-        name: "CONTACT"
+        name: "CONTACT",
       },
       {
-        name: "PHONE"
+        name: "PHONE",
       },
       {
-        name: "EMAIL"
-      }
+        name: "EMAIL",
+      },
     ],
     ids: [],
     relationships: [],
-    adminLayerInfo: {}
+    adminLayerInfo: {},
   },
   {
     itemId: "4efe5f693de34620934787ead6693f19",
     layerId: 2,
     fields: [
       {
-        name: "OBJECTID"
+        name: "OBJECTID",
       },
       {
-        name: "FACILITYID"
+        name: "FACILITYID",
       },
       {
-        name: "FACNAME"
+        name: "FACNAME",
       },
       {
-        name: "FULLADDR"
+        name: "FULLADDR",
       },
       {
-        name: "ORGANIZ"
+        name: "ORGANIZ",
       },
       {
-        name: "REDXMODEL"
+        name: "REDXMODEL",
       },
       {
-        name: "POCNAME"
+        name: "POCNAME",
       },
       {
-        name: "POCEMAIL"
+        name: "POCEMAIL",
       },
       {
-        name: "POCPHONE"
+        name: "POCPHONE",
       },
       {
-        name: "CAPACITY"
+        name: "CAPACITY",
       },
       {
-        name: "NUMBEDS"
+        name: "NUMBEDS",
       },
       {
-        name: "OCCUPANCY"
+        name: "OCCUPANCY",
       },
       {
-        name: "HOURSOPER"
+        name: "HOURSOPER",
       },
       {
-        name: "HANDICAP"
+        name: "HANDICAP",
       },
       {
-        name: "BACKPOWER"
+        name: "BACKPOWER",
       },
       {
-        name: "ALLOWPETS"
+        name: "ALLOWPETS",
       },
       {
-        name: "DAYSOPER"
+        name: "DAYSOPER",
       },
       {
-        name: "ACCESSRES"
+        name: "ACCESSRES",
       },
       {
-        name: "OPENDATE"
+        name: "OPENDATE",
       },
       {
-        name: "CLOSEDDATE"
+        name: "CLOSEDDATE",
       },
       {
-        name: "OPSSTATUS"
+        name: "OPSSTATUS",
       },
       {
-        name: "LASTUPDATE"
+        name: "LASTUPDATE",
       },
       {
-        name: "LASTEDITOR"
-      }
+        name: "LASTEDITOR",
+      },
     ],
     basePath: "4efe5f693de34620934787ead6693f19.layer2.fields",
     url: "{{4efe5f693de34620934787ead6693f19.url}}",
     ids: ["TestLayerForDashBoardMap_632"],
     relationships: [],
-    adminLayerInfo: {}
-  }
+    adminLayerInfo: {},
+  },
 ];
 
 export const baseWidgets: any[] = [
@@ -178,29 +178,29 @@ export const baseWidgets: any[] = [
             actions: [
               {
                 type: "flashGeometry",
-                targetId: "b38e032d-bf0c-426f-8036-b86341eb3693"
+                targetId: "b38e032d-bf0c-426f-8036-b86341eb3693",
               },
               {
                 type: "pan",
-                targetId: "b38e032d-bf0c-426f-8036-b86341eb3693"
+                targetId: "b38e032d-bf0c-426f-8036-b86341eb3693",
               },
               {
                 type: "zoom",
-                targetId: "b38e032d-bf0c-426f-8036-b86341eb3693"
-              }
-            ]
-          }
+                targetId: "b38e032d-bf0c-426f-8036-b86341eb3693",
+              },
+            ],
+          },
         ],
         type: "featureLayerDataSource",
-        layerId: "TestLayerForDashBoardMap_632"
-      }
+        layerId: "TestLayerForDashBoardMap_632",
+      },
     ],
     id: "b38e032d-bf0c-426f-8036-b86341eb3693",
     name: "DashboardMap",
     showLastUpdate: true,
     noDataVerticalAlignment: "middle",
     showCaptionWhenNoData: true,
-    showDescriptionWhenNoData: true
+    showDescriptionWhenNoData: true,
   },
   {
     type: "legendWidget",
@@ -210,7 +210,7 @@ export const baseWidgets: any[] = [
     showLastUpdate: true,
     noDataVerticalAlignment: "middle",
     showCaptionWhenNoData: true,
-    showDescriptionWhenNoData: true
+    showDescriptionWhenNoData: true,
   },
   {
     type: "gaugeWidget",
@@ -220,13 +220,13 @@ export const baseWidgets: any[] = [
       name: "value",
       type: "decimal",
       prefix: true,
-      pattern: "#,###.#"
+      pattern: "#,###.#",
     },
     percentageFormat: {
       name: "percentage",
       type: "decimal",
       prefix: false,
-      pattern: "#.#%"
+      pattern: "#.#%",
     },
     labels: [
       {
@@ -234,8 +234,8 @@ export const baseWidgets: any[] = [
         align: "center",
         color: null,
         size: 12,
-        y: "40%"
-      }
+        y: "40%",
+      },
     ],
     valueField: "NUMBEDS",
     minValueField: "OCCUPANCY",
@@ -248,8 +248,7 @@ export const baseWidgets: any[] = [
       {
         type: "serviceDataset",
         dataSource: {
-          id:
-            "b38e032d-bf0c-426f-8036-b86341eb3693#TestLayerForDashBoardMap_632"
+          id: "b38e032d-bf0c-426f-8036-b86341eb3693#TestLayerForDashBoardMap_632",
         },
         filter: {
           type: "filterGroup",
@@ -263,17 +262,17 @@ export const baseWidgets: any[] = [
                   type: "filterRule",
                   field: {
                     name: "FACILITYID",
-                    type: "esriFieldTypeString"
+                    type: "esriFieldTypeString",
                   },
                   operator: "equal",
                   constraint: {
                     type: "value",
-                    value: "12"
-                  }
-                }
-              ]
-            }
-          ]
+                    value: "12",
+                  },
+                },
+              ],
+            },
+          ],
         },
         outFields: ["*"],
         groupByFields: [],
@@ -283,8 +282,8 @@ export const baseWidgets: any[] = [
         querySpatialRelationship: "esriSpatialRelIntersects",
         returnGeometry: false,
         clientSideStatistics: false,
-        name: "main"
-      }
+        name: "main",
+      },
     ],
     id: "7866f4bd-8361-4205-8fd7-f92da41fdb61",
     name: "Gauge (1)",
@@ -292,7 +291,7 @@ export const baseWidgets: any[] = [
     showLastUpdate: true,
     noDataVerticalAlignment: "middle",
     showCaptionWhenNoData: true,
-    showDescriptionWhenNoData: true
+    showDescriptionWhenNoData: true,
   },
   {
     type: "gaugeWidget",
@@ -302,13 +301,13 @@ export const baseWidgets: any[] = [
       name: "value",
       type: "decimal",
       prefix: true,
-      pattern: "#,###.#"
+      pattern: "#,###.#",
     },
     percentageFormat: {
       name: "percentage",
       type: "decimal",
       prefix: false,
-      pattern: "#.#%"
+      pattern: "#.#%",
     },
     labels: [
       {
@@ -316,8 +315,8 @@ export const baseWidgets: any[] = [
         align: "center",
         color: null,
         size: 12,
-        y: "40%"
-      }
+        y: "40%",
+      },
     ],
     valueField: "NUMBEDS",
     noValueVerticalAlignment: "middle",
@@ -328,7 +327,7 @@ export const baseWidgets: any[] = [
       {
         type: "staticDataset",
         data: 0,
-        name: "min"
+        name: "min",
       },
       {
         type: "serviceDataset",
@@ -336,7 +335,7 @@ export const baseWidgets: any[] = [
           type: "featureServiceDataSource",
           itemId: "934a9ef8efa7448fa8ddf7b13cef0240",
           layerId: 0,
-          table: false
+          table: false,
         },
         filter: {
           type: "filterGroup",
@@ -350,17 +349,17 @@ export const baseWidgets: any[] = [
                   type: "filterRule",
                   field: {
                     name: "OWNER",
-                    type: "esriFieldTypeString"
+                    type: "esriFieldTypeString",
                   },
                   operator: "equal",
                   constraint: {
                     type: "value",
-                    value: "wwer"
-                  }
-                }
-              ]
-            }
-          ]
+                    value: "wwer",
+                  },
+                },
+              ],
+            },
+          ],
         },
         outFields: ["*"],
         groupByFields: [],
@@ -370,7 +369,7 @@ export const baseWidgets: any[] = [
         querySpatialRelationship: "esriSpatialRelIntersects",
         returnGeometry: false,
         clientSideStatistics: false,
-        name: "main"
+        name: "main",
       },
       {
         type: "serviceDataset",
@@ -378,7 +377,7 @@ export const baseWidgets: any[] = [
           type: "featureServiceDataSource",
           itemId: "934a9ef8efa7448fa8ddf7b13cef0240",
           layerId: 0,
-          table: false
+          table: false,
         },
         outFields: ["*"],
         groupByFields: [],
@@ -387,14 +386,14 @@ export const baseWidgets: any[] = [
           {
             onStatisticField: "NUMBEDS",
             outStatisticFieldName: "value",
-            statisticType: "min"
-          }
+            statisticType: "min",
+          },
         ],
         querySpatialRelationship: "esriSpatialRelIntersects",
         returnGeometry: false,
         clientSideStatistics: false,
-        name: "max"
-      }
+        name: "max",
+      },
     ],
     id: "8830ce79-2010-408d-838c-93b1afd6308a",
     name: "Gauge (2)",
@@ -402,7 +401,7 @@ export const baseWidgets: any[] = [
     showLastUpdate: true,
     noDataVerticalAlignment: "middle",
     showCaptionWhenNoData: true,
-    showDescriptionWhenNoData: true
+    showDescriptionWhenNoData: true,
   },
   {
     type: "serialChartWidget",
@@ -410,8 +409,8 @@ export const baseWidgets: any[] = [
       labelOverrides: [
         {
           key: "qw",
-          label: "qw"
-        }
+          label: "qw",
+        },
       ],
       byCategoryColors: true,
       colors: [],
@@ -422,7 +421,7 @@ export const baseWidgets: any[] = [
       blankLabel: "Blank",
       defaultColor: "#d6d6d6",
       nullColor: "#d6d6d6",
-      blankColor: "#d6d6d6"
+      blankColor: "#d6d6d6",
     },
     graphs: [
       {
@@ -440,13 +439,13 @@ export const baseWidgets: any[] = [
         bulletBorderAlpha: 0,
         bulletBorderThickness: 2,
         showBalloon: true,
-        bulletSize: 8
-      }
+        bulletSize: 8,
+      },
     ],
     guides: [],
     splitBy: {
       defaultColor: "#d6d6d6",
-      seriesProperties: []
+      seriesProperties: [],
     },
     rotate: true,
     events: [
@@ -456,15 +455,15 @@ export const baseWidgets: any[] = [
           {
             type: "filter",
             by: "whereClause",
-            targetId: "8830ce79-2010-408d-838c-93b1afd6308a#main"
+            targetId: "8830ce79-2010-408d-838c-93b1afd6308a#main",
           },
           {
             type: "filter",
             by: "whereClause",
-            targetId: "0ef05811-5ef1-4079-b8c3-68671d1d2a77#main"
-          }
-        ]
-      }
+            targetId: "0ef05811-5ef1-4079-b8c3-68671d1d2a77#main",
+          },
+        ],
+      },
     ],
     selectionMode: "single",
     categoryType: "features",
@@ -475,7 +474,7 @@ export const baseWidgets: any[] = [
           type: "featureServiceDataSource",
           itemId: "934a9ef8efa7448fa8ddf7b13cef0240",
           layerId: 0,
-          table: false
+          table: false,
         },
         filter: {
           type: "filterGroup",
@@ -489,29 +488,29 @@ export const baseWidgets: any[] = [
                   type: "filterRule",
                   field: {
                     name: "FACILITYID",
-                    type: "esriFieldTypeString"
+                    type: "esriFieldTypeString",
                   },
                   operator: "equal",
                   constraint: {
                     type: "value",
-                    value: "1"
-                  }
+                    value: "1",
+                  },
                 },
                 {
                   type: "filterRule",
                   field: {
                     name: "OWNER",
-                    type: "esriFieldTypeString"
+                    type: "esriFieldTypeString",
                   },
                   operator: "equal",
                   constraint: {
                     type: "value",
-                    value: "www"
-                  }
-                }
-              ]
-            }
-          ]
+                    value: "www",
+                  },
+                },
+              ],
+            },
+          ],
         },
         outFields: ["*"],
         groupByFields: [],
@@ -521,8 +520,8 @@ export const baseWidgets: any[] = [
         querySpatialRelationship: "esriSpatialRelIntersects",
         returnGeometry: false,
         clientSideStatistics: false,
-        name: "main"
-      }
+        name: "main",
+      },
     ],
     id: "e321f855-d6c0-4bf5-9c2a-861db15fe877",
     name: "Serial Chart (1)",
@@ -530,7 +529,7 @@ export const baseWidgets: any[] = [
     showLastUpdate: true,
     noDataVerticalAlignment: "middle",
     showCaptionWhenNoData: true,
-    showDescriptionWhenNoData: true
+    showDescriptionWhenNoData: true,
   },
   {
     type: "pieChartWidget",
@@ -541,7 +540,7 @@ export const baseWidgets: any[] = [
       blankLabel: "Blank",
       defaultColor: "#d6d6d6",
       nullColor: "#d6d6d6",
-      blankColor: "#d6d6d6"
+      blankColor: "#d6d6d6",
     },
     pie: {
       type: "pie",
@@ -563,7 +562,7 @@ export const baseWidgets: any[] = [
       marginBottom: 0,
       marginLeft: 0,
       marginRight: 0,
-      groupedColor: "#d6d6d6"
+      groupedColor: "#d6d6d6",
     },
     legend: {
       enabled: false,
@@ -573,20 +572,20 @@ export const baseWidgets: any[] = [
       markerType: "circle",
       align: "center",
       labelWidth: 100,
-      valueWidth: 50
+      valueWidth: 50,
     },
     showBalloon: true,
     valueFormat: {
       name: "value",
       type: "decimal",
       prefix: true,
-      pattern: "#,###.#"
+      pattern: "#,###.#",
     },
     percentageFormat: {
       name: "percentage",
       type: "decimal",
       prefix: false,
-      pattern: "#.##"
+      pattern: "#.##",
     },
     events: [
       {
@@ -595,16 +594,15 @@ export const baseWidgets: any[] = [
           {
             type: "filter",
             by: "whereClause",
-            targetId:
-              "b38e032d-bf0c-426f-8036-b86341eb3693#TestLayerForDashBoardMap_632"
+            targetId: "b38e032d-bf0c-426f-8036-b86341eb3693#TestLayerForDashBoardMap_632",
           },
           {
             type: "filter",
             by: "whereClause",
-            targetId: "f81f2270-e104-453d-9c09-045d8d1087c9#main"
-          }
-        ]
-      }
+            targetId: "f81f2270-e104-453d-9c09-045d8d1087c9#main",
+          },
+        ],
+      },
     ],
     selectionMode: "single",
     categoryType: "groupByValues",
@@ -612,8 +610,7 @@ export const baseWidgets: any[] = [
       {
         type: "serviceDataset",
         dataSource: {
-          id:
-            "b38e032d-bf0c-426f-8036-b86341eb3693#TestLayerForDashBoardMap_632"
+          id: "b38e032d-bf0c-426f-8036-b86341eb3693#TestLayerForDashBoardMap_632",
         },
         filter: {
           type: "filterGroup",
@@ -627,17 +624,17 @@ export const baseWidgets: any[] = [
                   type: "filterRule",
                   field: {
                     name: "FACILITYID",
-                    type: "esriFieldTypeString"
+                    type: "esriFieldTypeString",
                   },
                   operator: "equal",
                   constraint: {
                     type: "value",
-                    value: "1"
-                  }
-                }
-              ]
-            }
-          ]
+                    value: "1",
+                  },
+                },
+              ],
+            },
+          ],
         },
         outFields: ["*"],
         groupByFields: ["FACILITYID"],
@@ -646,15 +643,15 @@ export const baseWidgets: any[] = [
           {
             onStatisticField: "OBJECTID",
             outStatisticFieldName: "value",
-            statisticType: "count"
-          }
+            statisticType: "count",
+          },
         ],
         maxFeatures: 20,
         querySpatialRelationship: "esriSpatialRelIntersects",
         returnGeometry: false,
         clientSideStatistics: false,
-        name: "main"
-      }
+        name: "main",
+      },
     ],
     id: "b90fa68a-1817-40a2-91c4-1738f5b37e7e",
     name: "Pie Chart (1)",
@@ -662,7 +659,7 @@ export const baseWidgets: any[] = [
     showLastUpdate: true,
     noDataVerticalAlignment: "middle",
     showCaptionWhenNoData: true,
-    showDescriptionWhenNoData: true
+    showDescriptionWhenNoData: true,
   },
   {
     type: "pieChartWidget",
@@ -673,7 +670,7 @@ export const baseWidgets: any[] = [
       blankLabel: "Blank",
       defaultColor: "#d6d6d6",
       nullColor: "#d6d6d6",
-      blankColor: "#d6d6d6"
+      blankColor: "#d6d6d6",
     },
     pie: {
       type: "pie",
@@ -695,7 +692,7 @@ export const baseWidgets: any[] = [
       marginBottom: 0,
       marginLeft: 0,
       marginRight: 0,
-      groupedColor: "#d6d6d6"
+      groupedColor: "#d6d6d6",
     },
     valueField: "NUMBEDS",
     legend: {
@@ -706,20 +703,20 @@ export const baseWidgets: any[] = [
       markerType: "circle",
       align: "center",
       labelWidth: 100,
-      valueWidth: 50
+      valueWidth: 50,
     },
     showBalloon: true,
     valueFormat: {
       name: "value",
       type: "decimal",
       prefix: true,
-      pattern: "#,###.#"
+      pattern: "#,###.#",
     },
     percentageFormat: {
       name: "percentage",
       type: "decimal",
       prefix: false,
-      pattern: "#.##"
+      pattern: "#.##",
     },
     events: [
       {
@@ -728,10 +725,10 @@ export const baseWidgets: any[] = [
           {
             type: "filter",
             by: "whereClause",
-            targetId: "79de7d45-0586-43fa-91e6-9d020c88d2d3#main"
-          }
-        ]
-      }
+            targetId: "79de7d45-0586-43fa-91e6-9d020c88d2d3#main",
+          },
+        ],
+      },
     ],
     selectionMode: "single",
     categoryType: "features",
@@ -742,7 +739,7 @@ export const baseWidgets: any[] = [
           type: "featureServiceDataSource",
           itemId: "934a9ef8efa7448fa8ddf7b13cef0240",
           layerId: 0,
-          table: false
+          table: false,
         },
         filter: {
           type: "filterGroup",
@@ -756,17 +753,17 @@ export const baseWidgets: any[] = [
                   type: "filterRule",
                   field: {
                     name: "NAME",
-                    type: "esriFieldTypeString"
+                    type: "esriFieldTypeString",
                   },
                   operator: "equal",
                   constraint: {
                     type: "value",
-                    value: "sad"
-                  }
-                }
-              ]
-            }
-          ]
+                    value: "sad",
+                  },
+                },
+              ],
+            },
+          ],
         },
         outFields: ["*"],
         groupByFields: [],
@@ -776,8 +773,8 @@ export const baseWidgets: any[] = [
         querySpatialRelationship: "esriSpatialRelIntersects",
         returnGeometry: false,
         clientSideStatistics: false,
-        name: "main"
-      }
+        name: "main",
+      },
     ],
     id: "161e9532-317f-4ce2-acea-445b1c4dae59",
     name: "Pie Features",
@@ -785,7 +782,7 @@ export const baseWidgets: any[] = [
     showLastUpdate: true,
     noDataVerticalAlignment: "middle",
     showCaptionWhenNoData: true,
-    showDescriptionWhenNoData: true
+    showDescriptionWhenNoData: true,
   },
   {
     type: "pieChartWidget",
@@ -794,20 +791,20 @@ export const baseWidgets: any[] = [
         {
           key: "NUMBEDS",
           label: "# of Beds Available",
-          color: "#ffaa00"
+          color: "#ffaa00",
         },
         {
           key: "NUMBEDS",
           label: "# of Beds Available",
-          color: "#ffff00"
-        }
+          color: "#ffff00",
+        },
       ],
       fieldName: "category",
       nullLabel: "Null",
       blankLabel: "Blank",
       defaultColor: "#d6d6d6",
       nullColor: "#d6d6d6",
-      blankColor: "#d6d6d6"
+      blankColor: "#d6d6d6",
     },
     pie: {
       type: "pie",
@@ -829,7 +826,7 @@ export const baseWidgets: any[] = [
       marginBottom: 0,
       marginLeft: 0,
       marginRight: 0,
-      groupedColor: "#d6d6d6"
+      groupedColor: "#d6d6d6",
     },
     legend: {
       enabled: false,
@@ -839,20 +836,20 @@ export const baseWidgets: any[] = [
       markerType: "circle",
       align: "center",
       labelWidth: 100,
-      valueWidth: 50
+      valueWidth: 50,
     },
     showBalloon: true,
     valueFormat: {
       name: "value",
       type: "decimal",
       prefix: true,
-      pattern: "#,###.#"
+      pattern: "#,###.#",
     },
     percentageFormat: {
       name: "percentage",
       type: "decimal",
       prefix: false,
-      pattern: "#.##"
+      pattern: "#.##",
     },
     selectionMode: "single",
     categoryType: "fields",
@@ -860,8 +857,7 @@ export const baseWidgets: any[] = [
       {
         type: "serviceDataset",
         dataSource: {
-          id:
-            "b38e032d-bf0c-426f-8036-b86341eb3693#TestLayerForDashBoardMap_632"
+          id: "b38e032d-bf0c-426f-8036-b86341eb3693#TestLayerForDashBoardMap_632",
         },
         filter: {
           type: "filterGroup",
@@ -875,15 +871,15 @@ export const baseWidgets: any[] = [
                   type: "filterRule",
                   field: {
                     name: "FULLADDR",
-                    type: "esriFieldTypeString"
+                    type: "esriFieldTypeString",
                   },
                   operator: "equal",
                   constraint: {
                     type: "value",
-                    value: "123"
-                  }
-                }
-              ]
+                    value: "123",
+                  },
+                },
+              ],
             },
             {
               type: "filterGroup",
@@ -893,17 +889,17 @@ export const baseWidgets: any[] = [
                   type: "filterRule",
                   field: {
                     name: "FACILITYID",
-                    type: "esriFieldTypeString"
+                    type: "esriFieldTypeString",
                   },
                   operator: "equal",
                   constraint: {
                     type: "value",
-                    value: "12"
-                  }
-                }
-              ]
-            }
-          ]
+                    value: "12",
+                  },
+                },
+              ],
+            },
+          ],
         },
         outFields: ["*"],
         groupByFields: [],
@@ -912,20 +908,20 @@ export const baseWidgets: any[] = [
           {
             onStatisticField: "NUMBEDS",
             outStatisticFieldName: "NUMBEDS",
-            statisticType: "avg"
+            statisticType: "avg",
           },
           {
             onStatisticField: "NUMBEDS",
             outStatisticFieldName: "NUMBEDS",
-            statisticType: "avg"
-          }
+            statisticType: "avg",
+          },
         ],
         maxFeatures: null,
         querySpatialRelationship: "esriSpatialRelIntersects",
         returnGeometry: false,
         clientSideStatistics: false,
-        name: "main"
-      }
+        name: "main",
+      },
     ],
     id: "2ccc8953-1958-40c0-b237-689a39d5904b",
     name: "Pie Chart (2)",
@@ -933,7 +929,7 @@ export const baseWidgets: any[] = [
     showLastUpdate: true,
     noDataVerticalAlignment: "middle",
     showCaptionWhenNoData: true,
-    showDescriptionWhenNoData: true
+    showDescriptionWhenNoData: true,
   },
   {
     type: "serialChartWidget",
@@ -947,14 +943,14 @@ export const baseWidgets: any[] = [
       blankLabel: "Blank",
       defaultColor: "#d6d6d6",
       nullColor: "#d6d6d6",
-      blankColor: "#d6d6d6"
+      blankColor: "#d6d6d6",
     },
     graphs: [],
     guides: [],
     splitBy: {
       fieldName: "NAME",
       defaultColor: "#d6d6d6",
-      seriesProperties: []
+      seriesProperties: [],
     },
     rotate: false,
     events: [
@@ -964,15 +960,15 @@ export const baseWidgets: any[] = [
           {
             type: "filter",
             by: "whereClause",
-            targetId: "161e9532-317f-4ce2-acea-445b1c4dae59#main"
+            targetId: "161e9532-317f-4ce2-acea-445b1c4dae59#main",
           },
           {
             type: "filter",
             by: "whereClause",
-            targetId: "8830ce79-2010-408d-838c-93b1afd6308a#main"
-          }
-        ]
-      }
+            targetId: "8830ce79-2010-408d-838c-93b1afd6308a#main",
+          },
+        ],
+      },
     ],
     selectionMode: "multi",
     categoryType: "groupByValues",
@@ -983,7 +979,7 @@ export const baseWidgets: any[] = [
           type: "featureServiceDataSource",
           itemId: "934a9ef8efa7448fa8ddf7b13cef0240",
           layerId: 0,
-          table: false
+          table: false,
         },
         filter: {
           type: "filterGroup",
@@ -997,17 +993,17 @@ export const baseWidgets: any[] = [
                   type: "filterRule",
                   field: {
                     name: "FACILITYID",
-                    type: "esriFieldTypeString"
+                    type: "esriFieldTypeString",
                   },
                   operator: "equal",
                   constraint: {
                     type: "value",
-                    value: "123"
-                  }
-                }
-              ]
-            }
-          ]
+                    value: "123",
+                  },
+                },
+              ],
+            },
+          ],
         },
         outFields: ["*"],
         groupByFields: ["FACILITYID", "NAME"],
@@ -1016,14 +1012,14 @@ export const baseWidgets: any[] = [
           {
             onStatisticField: "OBJECTID",
             outStatisticFieldName: "value",
-            statisticType: "count"
-          }
+            statisticType: "count",
+          },
         ],
         querySpatialRelationship: "esriSpatialRelIntersects",
         returnGeometry: false,
         clientSideStatistics: false,
-        name: "main"
-      }
+        name: "main",
+      },
     ],
     id: "ecf67bd0-3b15-4920-877a-7b02f28a9d4a",
     name: "Serial Chart (2)",
@@ -1031,7 +1027,7 @@ export const baseWidgets: any[] = [
     showLastUpdate: true,
     noDataVerticalAlignment: "middle",
     showCaptionWhenNoData: true,
-    showDescriptionWhenNoData: true
+    showDescriptionWhenNoData: true,
   },
   {
     type: "serialChartWidget",
@@ -1039,12 +1035,12 @@ export const baseWidgets: any[] = [
       labelOverrides: [
         {
           key: "NUMBEDS",
-          label: "# of Beds Available"
+          label: "# of Beds Available",
         },
         {
           key: "NUMBEDS",
-          label: "# of Beds Available"
-        }
+          label: "# of Beds Available",
+        },
       ],
       byCategoryColors: false,
       labelsPlacement: "default",
@@ -1054,7 +1050,7 @@ export const baseWidgets: any[] = [
       blankLabel: "Blank",
       defaultColor: "#d6d6d6",
       nullColor: "#d6d6d6",
-      blankColor: "#d6d6d6"
+      blankColor: "#d6d6d6",
     },
     graphs: [
       {
@@ -1071,13 +1067,13 @@ export const baseWidgets: any[] = [
         bulletBorderAlpha: 0,
         bulletBorderThickness: 2,
         showBalloon: true,
-        bulletSize: 8
-      }
+        bulletSize: 8,
+      },
     ],
     guides: [],
     splitBy: {
       defaultColor: "#d6d6d6",
-      seriesProperties: []
+      seriesProperties: [],
     },
     rotate: false,
     selectionMode: "single",
@@ -1086,8 +1082,7 @@ export const baseWidgets: any[] = [
       {
         type: "serviceDataset",
         dataSource: {
-          id:
-            "b38e032d-bf0c-426f-8036-b86341eb3693#TestLayerForDashBoardMap_632"
+          id: "b38e032d-bf0c-426f-8036-b86341eb3693#TestLayerForDashBoardMap_632",
         },
         filter: {
           type: "filterGroup",
@@ -1101,17 +1096,17 @@ export const baseWidgets: any[] = [
                   type: "filterRule",
                   field: {
                     name: "FULLADDR",
-                    type: "esriFieldTypeString"
+                    type: "esriFieldTypeString",
                   },
                   operator: "equal",
                   constraint: {
                     type: "value",
-                    value: "123"
-                  }
-                }
-              ]
-            }
-          ]
+                    value: "123",
+                  },
+                },
+              ],
+            },
+          ],
         },
         outFields: ["*"],
         groupByFields: [],
@@ -1120,19 +1115,19 @@ export const baseWidgets: any[] = [
           {
             onStatisticField: "NUMBEDS",
             outStatisticFieldName: "NUMBEDS",
-            statisticType: "avg"
+            statisticType: "avg",
           },
           {
             onStatisticField: "NUMBEDS",
             outStatisticFieldName: "NUMBEDS",
-            statisticType: "avg"
-          }
+            statisticType: "avg",
+          },
         ],
         querySpatialRelationship: "esriSpatialRelIntersects",
         returnGeometry: false,
         clientSideStatistics: false,
-        name: "main"
-      }
+        name: "main",
+      },
     ],
     id: "c220e9bb-f0b9-4f0e-93e8-8baa3f39aa0c",
     name: "Serial Chart (3)",
@@ -1140,7 +1135,7 @@ export const baseWidgets: any[] = [
     showLastUpdate: true,
     noDataVerticalAlignment: "middle",
     showCaptionWhenNoData: true,
-    showDescriptionWhenNoData: true
+    showDescriptionWhenNoData: true,
   },
   {
     type: "gaugeWidget",
@@ -1150,13 +1145,13 @@ export const baseWidgets: any[] = [
       name: "value",
       type: "decimal",
       prefix: true,
-      pattern: "#,###.#"
+      pattern: "#,###.#",
     },
     percentageFormat: {
       name: "percentage",
       type: "decimal",
       prefix: false,
-      pattern: "#.#%"
+      pattern: "#.#%",
     },
     labels: [
       {
@@ -1164,8 +1159,8 @@ export const baseWidgets: any[] = [
         align: "center",
         color: null,
         size: 12,
-        y: "40%"
-      }
+        y: "40%",
+      },
     ],
     noValueVerticalAlignment: "middle",
     showCaptionWhenNoValue: true,
@@ -1175,8 +1170,7 @@ export const baseWidgets: any[] = [
       {
         type: "serviceDataset",
         dataSource: {
-          id:
-            "b38e032d-bf0c-426f-8036-b86341eb3693#TestLayerForDashBoardMap_632"
+          id: "b38e032d-bf0c-426f-8036-b86341eb3693#TestLayerForDashBoardMap_632",
         },
         filter: {
           type: "filterGroup",
@@ -1190,17 +1184,17 @@ export const baseWidgets: any[] = [
                   type: "filterRule",
                   field: {
                     name: "FACNAME",
-                    type: "esriFieldTypeString"
+                    type: "esriFieldTypeString",
                   },
                   operator: "equal",
                   constraint: {
                     type: "value",
-                    value: "qwe"
-                  }
-                }
-              ]
-            }
-          ]
+                    value: "qwe",
+                  },
+                },
+              ],
+            },
+          ],
         },
         outFields: ["*"],
         groupByFields: [],
@@ -1209,19 +1203,18 @@ export const baseWidgets: any[] = [
           {
             onStatisticField: "OBJECTID",
             outStatisticFieldName: "value",
-            statisticType: "count"
-          }
+            statisticType: "count",
+          },
         ],
         querySpatialRelationship: "esriSpatialRelIntersects",
         returnGeometry: false,
         clientSideStatistics: false,
-        name: "main"
+        name: "main",
       },
       {
         type: "serviceDataset",
         dataSource: {
-          id:
-            "b38e032d-bf0c-426f-8036-b86341eb3693#TestLayerForDashBoardMap_632"
+          id: "b38e032d-bf0c-426f-8036-b86341eb3693#TestLayerForDashBoardMap_632",
         },
         filter: {
           type: "filterGroup",
@@ -1235,17 +1228,17 @@ export const baseWidgets: any[] = [
                   type: "filterRule",
                   field: {
                     name: "FACNAME",
-                    type: "esriFieldTypeString"
+                    type: "esriFieldTypeString",
                   },
                   operator: "equal",
                   constraint: {
                     type: "value",
-                    value: "2313"
-                  }
-                }
-              ]
-            }
-          ]
+                    value: "2313",
+                  },
+                },
+              ],
+            },
+          ],
         },
         outFields: ["*"],
         groupByFields: [],
@@ -1254,19 +1247,18 @@ export const baseWidgets: any[] = [
           {
             onStatisticField: "OBJECTID",
             outStatisticFieldName: "value",
-            statisticType: "count"
-          }
+            statisticType: "count",
+          },
         ],
         querySpatialRelationship: "esriSpatialRelIntersects",
         returnGeometry: false,
         clientSideStatistics: false,
-        name: "min"
+        name: "min",
       },
       {
         type: "serviceDataset",
         dataSource: {
-          id:
-            "b38e032d-bf0c-426f-8036-b86341eb3693#TestLayerForDashBoardMap_632"
+          id: "b38e032d-bf0c-426f-8036-b86341eb3693#TestLayerForDashBoardMap_632",
         },
         filter: {
           type: "filterGroup",
@@ -1280,17 +1272,17 @@ export const baseWidgets: any[] = [
                   type: "filterRule",
                   field: {
                     name: "FULLADDR",
-                    type: "esriFieldTypeString"
+                    type: "esriFieldTypeString",
                   },
                   operator: "equal",
                   constraint: {
                     type: "value",
-                    value: "123"
-                  }
-                }
-              ]
-            }
-          ]
+                    value: "123",
+                  },
+                },
+              ],
+            },
+          ],
         },
         outFields: ["*"],
         groupByFields: [],
@@ -1299,14 +1291,14 @@ export const baseWidgets: any[] = [
           {
             onStatisticField: "OBJECTID",
             outStatisticFieldName: "value",
-            statisticType: "count"
-          }
+            statisticType: "count",
+          },
         ],
         querySpatialRelationship: "esriSpatialRelIntersects",
         returnGeometry: false,
         clientSideStatistics: false,
-        name: "max"
-      }
+        name: "max",
+      },
     ],
     id: "27daba1f-9223-4013-8ca8-797388fd2116",
     name: "Gauge (3)",
@@ -1314,7 +1306,7 @@ export const baseWidgets: any[] = [
     showLastUpdate: true,
     noDataVerticalAlignment: "middle",
     showCaptionWhenNoData: true,
-    showDescriptionWhenNoData: true
+    showDescriptionWhenNoData: true,
   },
   {
     events: [
@@ -1324,15 +1316,14 @@ export const baseWidgets: any[] = [
           {
             type: "filter",
             by: "whereClause",
-            targetId:
-              "b38e032d-bf0c-426f-8036-b86341eb3693#TestLayerForDashBoardMap_632"
+            targetId: "b38e032d-bf0c-426f-8036-b86341eb3693#TestLayerForDashBoardMap_632",
           },
           {
             type: "identify",
-            targetId: "b38e032d-bf0c-426f-8036-b86341eb3693"
-          }
-        ]
-      }
+            targetId: "b38e032d-bf0c-426f-8036-b86341eb3693",
+          },
+        ],
+      },
     ],
     type: "listWidget",
     iconType: "symbol",
@@ -1341,8 +1332,7 @@ export const baseWidgets: any[] = [
       {
         type: "serviceDataset",
         dataSource: {
-          id:
-            "b38e032d-bf0c-426f-8036-b86341eb3693#TestLayerForDashBoardMap_632"
+          id: "b38e032d-bf0c-426f-8036-b86341eb3693#TestLayerForDashBoardMap_632",
         },
         filter: {
           type: "filterGroup",
@@ -1356,17 +1346,17 @@ export const baseWidgets: any[] = [
                   type: "filterRule",
                   field: {
                     name: "FULLADDR",
-                    type: "esriFieldTypeString"
+                    type: "esriFieldTypeString",
                   },
                   operator: "equal",
                   constraint: {
                     type: "value",
-                    value: "asD"
-                  }
-                }
-              ]
-            }
-          ]
+                    value: "asD",
+                  },
+                },
+              ],
+            },
+          ],
         },
         outFields: ["*"],
         groupByFields: [],
@@ -1376,8 +1366,8 @@ export const baseWidgets: any[] = [
         querySpatialRelationship: "esriSpatialRelIntersects",
         returnGeometry: false,
         clientSideStatistics: false,
-        name: "main"
-      }
+        name: "main",
+      },
     ],
     id: "bd1eec15-c178-4929-b800-936be1e6789b",
     name: "List (1)",
@@ -1385,7 +1375,7 @@ export const baseWidgets: any[] = [
     showLastUpdate: true,
     noDataVerticalAlignment: "middle",
     showCaptionWhenNoData: true,
-    showDescriptionWhenNoData: true
+    showDescriptionWhenNoData: true,
   },
   {
     type: "detailsWidget",
@@ -1397,8 +1387,7 @@ export const baseWidgets: any[] = [
       {
         type: "serviceDataset",
         dataSource: {
-          id:
-            "b38e032d-bf0c-426f-8036-b86341eb3693#TestLayerForDashBoardMap_632"
+          id: "b38e032d-bf0c-426f-8036-b86341eb3693#TestLayerForDashBoardMap_632",
         },
         filter: {
           type: "filterGroup",
@@ -1412,17 +1401,17 @@ export const baseWidgets: any[] = [
                   type: "filterRule",
                   field: {
                     name: "FULLADDR",
-                    type: "esriFieldTypeString"
+                    type: "esriFieldTypeString",
                   },
                   operator: "equal",
                   constraint: {
                     type: "value",
-                    value: "QSAD"
-                  }
-                }
-              ]
-            }
-          ]
+                    value: "QSAD",
+                  },
+                },
+              ],
+            },
+          ],
         },
         outFields: ["*"],
         groupByFields: [],
@@ -1432,8 +1421,8 @@ export const baseWidgets: any[] = [
         querySpatialRelationship: "esriSpatialRelIntersects",
         returnGeometry: false,
         clientSideStatistics: false,
-        name: "main"
-      }
+        name: "main",
+      },
     ],
     id: "be4aad77-c0c3-42f5-8a74-53dfc79f6558",
     name: "Details (1)",
@@ -1441,7 +1430,7 @@ export const baseWidgets: any[] = [
     showLastUpdate: true,
     noDataVerticalAlignment: "middle",
     showCaptionWhenNoData: true,
-    showDescriptionWhenNoData: true
+    showDescriptionWhenNoData: true,
   },
   {
     type: "embeddedContentWidget",
@@ -1450,8 +1439,7 @@ export const baseWidgets: any[] = [
       {
         type: "serviceDataset",
         dataSource: {
-          id:
-            "b38e032d-bf0c-426f-8036-b86341eb3693#TestLayerForDashBoardMap_632"
+          id: "b38e032d-bf0c-426f-8036-b86341eb3693#TestLayerForDashBoardMap_632",
         },
         filter: {
           type: "filterGroup",
@@ -1465,17 +1453,17 @@ export const baseWidgets: any[] = [
                   type: "filterRule",
                   field: {
                     name: "FACILITYID",
-                    type: "esriFieldTypeString"
+                    type: "esriFieldTypeString",
                   },
                   operator: "equal",
                   constraint: {
                     type: "value",
-                    value: "esf"
-                  }
-                }
-              ]
-            }
-          ]
+                    value: "esf",
+                  },
+                },
+              ],
+            },
+          ],
         },
         outFields: ["*"],
         groupByFields: [],
@@ -1485,8 +1473,8 @@ export const baseWidgets: any[] = [
         querySpatialRelationship: "esriSpatialRelIntersects",
         returnGeometry: false,
         clientSideStatistics: false,
-        name: "main"
-      }
+        name: "main",
+      },
     ],
     id: "2f547ec0-cd71-4b05-b28a-a467793d7601",
     name: "Embedded Content (1)",
@@ -1494,93 +1482,91 @@ export const baseWidgets: any[] = [
     showLastUpdate: true,
     noDataVerticalAlignment: "middle",
     showCaptionWhenNoData: true,
-    showDescriptionWhenNoData: true
+    showDescriptionWhenNoData: true,
   },
   {
-    "id": "a9406fa5-25e3-41d6-a0c6-a7b7c8256bc9",
-    "name": "Indicator (3)",
-    "showLastUpdate": false,
-    "noDataState": {
-      "verticalAlignment": "middle",
-      "showCaption": true,
-      "showDescription": true
+    id: "a9406fa5-25e3-41d6-a0c6-a7b7c8256bc9",
+    name: "Indicator (3)",
+    showLastUpdate: false,
+    noDataState: {
+      verticalAlignment: "middle",
+      showCaption: true,
+      showDescription: true,
     },
-    "noFilterState": {
-      "verticalAlignment": "middle",
-      "showCaption": true,
-      "showDescription": true
+    noFilterState: {
+      verticalAlignment: "middle",
+      showCaption: true,
+      showDescription: true,
     },
-    "datasets": [
-    {
-      "type": "serviceDataset",
-      "name": "main",
-      "dataSource": {
-        "type": "arcadeDataSource",
-        "itemId": "3f281598-2571-42c8-9fe7-fa7d18819bc3"
-      },
-      "groupByFields": [ ],
-      "orderByFields": [ ],
-      "statisticDefinitions": [
+    datasets: [
       {
-        "onStatisticField": "OBJECTID",
-        "outStatisticFieldName": "value",
-        "statisticType": "count"
-      }
+        type: "serviceDataset",
+        name: "main",
+        dataSource: {
+          type: "arcadeDataSource",
+          itemId: "3f281598-2571-42c8-9fe7-fa7d18819bc3",
+        },
+        groupByFields: [],
+        orderByFields: [],
+        statisticDefinitions: [
+          {
+            onStatisticField: "OBJECTID",
+            outStatisticFieldName: "value",
+            statisticType: "count",
+          },
         ],
-      "clientSideStatistics": false,
-      "outFields": [
-        "*"
-        ],
-      "returnDistinctValues": false,
-      "allowSourceDownload": false,
-      "allowSummaryDownload": false
-    }
-      ],
-    "type": "indicatorWidget",
-    "defaultSettings": {
-      "topSection": {
-        "fontSize": 80,
-        "textInfo": { }
+        clientSideStatistics: false,
+        outFields: ["*"],
+        returnDistinctValues: false,
+        allowSourceDownload: false,
+        allowSummaryDownload: false,
       },
-      "middleSection": {
-        "fontSize": 160,
-        "textInfo": {
-          "text": "{value}"
-        }
+    ],
+    type: "indicatorWidget",
+    defaultSettings: {
+      topSection: {
+        fontSize: 80,
+        textInfo: {},
       },
-      "bottomSection": {
-        "fontSize": 80,
-        "textInfo": { }
-      }
+      middleSection: {
+        fontSize: 160,
+        textInfo: {
+          text: "{value}",
+        },
+      },
+      bottomSection: {
+        fontSize: 80,
+        textInfo: {},
+      },
     },
-    "comparison": "none",
-    "valueFormat": {
-      "name": "value",
-      "prefix": true,
-      "style": "decimal",
-      "useGrouping": true,
-      "maximumFractionDigits": 1
+    comparison: "none",
+    valueFormat: {
+      name: "value",
+      prefix: true,
+      style: "decimal",
+      useGrouping: true,
+      maximumFractionDigits: 1,
     },
-    "percentageFormat": {
-      "name": "percentage",
-      "prefix": false,
-      "style": "percent",
-      "useGrouping": true
+    percentageFormat: {
+      name: "percentage",
+      prefix: false,
+      style: "percent",
+      useGrouping: true,
     },
-    "ratioFormat": {
-      "name": "ratio",
-      "prefix": false,
-      "style": "decimal",
-      "useGrouping": true,
-      "maximumFractionDigits": 2
+    ratioFormat: {
+      name: "ratio",
+      prefix: false,
+      style: "decimal",
+      useGrouping: true,
+      maximumFractionDigits: 2,
     },
-    "valueType": "statistic",
-    "noValueState": {
-      "verticalAlignment": "middle",
-      "showCaption": true,
-      "showDescription": true
-    }
-  }
+    valueType: "statistic",
+    noValueState: {
+      verticalAlignment: "middle",
+      showCaption: true,
+      showDescription: true,
+    },
+  },
 ];
 
 export const expectedWidgets: any[] = [
@@ -1600,29 +1586,29 @@ export const expectedWidgets: any[] = [
             actions: [
               {
                 type: "flashGeometry",
-                targetId: "b38e032d-bf0c-426f-8036-b86341eb3693"
+                targetId: "b38e032d-bf0c-426f-8036-b86341eb3693",
               },
               {
                 type: "pan",
-                targetId: "b38e032d-bf0c-426f-8036-b86341eb3693"
+                targetId: "b38e032d-bf0c-426f-8036-b86341eb3693",
               },
               {
                 type: "zoom",
-                targetId: "b38e032d-bf0c-426f-8036-b86341eb3693"
-              }
-            ]
-          }
+                targetId: "b38e032d-bf0c-426f-8036-b86341eb3693",
+              },
+            ],
+          },
         ],
         type: "featureLayerDataSource",
-        layerId: "TestLayerForDashBoardMap_632"
-      }
+        layerId: "TestLayerForDashBoardMap_632",
+      },
     ],
     id: "b38e032d-bf0c-426f-8036-b86341eb3693",
     name: "DashboardMap",
     showLastUpdate: true,
     noDataVerticalAlignment: "middle",
     showCaptionWhenNoData: true,
-    showDescriptionWhenNoData: true
+    showDescriptionWhenNoData: true,
   },
   {
     type: "legendWidget",
@@ -1632,7 +1618,7 @@ export const expectedWidgets: any[] = [
     showLastUpdate: true,
     noDataVerticalAlignment: "middle",
     showCaptionWhenNoData: true,
-    showDescriptionWhenNoData: true
+    showDescriptionWhenNoData: true,
   },
   {
     type: "gaugeWidget",
@@ -1642,13 +1628,13 @@ export const expectedWidgets: any[] = [
       name: "value",
       type: "decimal",
       prefix: true,
-      pattern: "#,###.#"
+      pattern: "#,###.#",
     },
     percentageFormat: {
       name: "percentage",
       type: "decimal",
       prefix: false,
-      pattern: "#.#%"
+      pattern: "#.#%",
     },
     labels: [
       {
@@ -1656,15 +1642,12 @@ export const expectedWidgets: any[] = [
         align: "center",
         color: null,
         size: 12,
-        y: "40%"
-      }
+        y: "40%",
+      },
     ],
-    valueField:
-      "{{4efe5f693de34620934787ead6693f19.layer2.fields.numbeds.name}}",
-    minValueField:
-      "{{4efe5f693de34620934787ead6693f19.layer2.fields.occupancy.name}}",
-    maxValueField:
-      "{{4efe5f693de34620934787ead6693f19.layer2.fields.occupancy.name}}",
+    valueField: "{{4efe5f693de34620934787ead6693f19.layer2.fields.numbeds.name}}",
+    minValueField: "{{4efe5f693de34620934787ead6693f19.layer2.fields.occupancy.name}}",
+    maxValueField: "{{4efe5f693de34620934787ead6693f19.layer2.fields.occupancy.name}}",
     noValueVerticalAlignment: "middle",
     showCaptionWhenNoValue: true,
     showDescriptionWhenNoValue: true,
@@ -1673,8 +1656,7 @@ export const expectedWidgets: any[] = [
       {
         type: "serviceDataset",
         dataSource: {
-          id:
-            "b38e032d-bf0c-426f-8036-b86341eb3693#TestLayerForDashBoardMap_632"
+          id: "b38e032d-bf0c-426f-8036-b86341eb3693#TestLayerForDashBoardMap_632",
         },
         filter: {
           type: "filterGroup",
@@ -1687,33 +1669,32 @@ export const expectedWidgets: any[] = [
                 {
                   type: "filterRule",
                   field: {
-                    name:
-                      "{{4efe5f693de34620934787ead6693f19.layer2.fields.facilityid.name}}",
-                    type: "esriFieldTypeString"
+                    name: "{{4efe5f693de34620934787ead6693f19.layer2.fields.facilityid.name}}",
+                    type: "esriFieldTypeString",
                   },
                   operator: "equal",
                   constraint: {
                     type: "value",
-                    value: "12"
-                  }
-                }
-              ]
-            }
-          ]
+                    value: "12",
+                  },
+                },
+              ],
+            },
+          ],
         },
         outFields: ["*"],
         groupByFields: [],
         orderByFields: [
           "{{4efe5f693de34620934787ead6693f19.layer2.fields.facname.name}} asc",
-          "{{4efe5f693de34620934787ead6693f19.layer2.fields.facilityid.name}} asc"
+          "{{4efe5f693de34620934787ead6693f19.layer2.fields.facilityid.name}} asc",
         ],
         statisticDefinitions: [],
         maxFeatures: 50,
         querySpatialRelationship: "esriSpatialRelIntersects",
         returnGeometry: false,
         clientSideStatistics: false,
-        name: "main"
-      }
+        name: "main",
+      },
     ],
     id: "7866f4bd-8361-4205-8fd7-f92da41fdb61",
     name: "Gauge (1)",
@@ -1721,7 +1702,7 @@ export const expectedWidgets: any[] = [
     showLastUpdate: true,
     noDataVerticalAlignment: "middle",
     showCaptionWhenNoData: true,
-    showDescriptionWhenNoData: true
+    showDescriptionWhenNoData: true,
   },
   {
     type: "gaugeWidget",
@@ -1731,13 +1712,13 @@ export const expectedWidgets: any[] = [
       name: "value",
       type: "decimal",
       prefix: true,
-      pattern: "#,###.#"
+      pattern: "#,###.#",
     },
     percentageFormat: {
       name: "percentage",
       type: "decimal",
       prefix: false,
-      pattern: "#.#%"
+      pattern: "#.#%",
     },
     labels: [
       {
@@ -1745,11 +1726,10 @@ export const expectedWidgets: any[] = [
         align: "center",
         color: null,
         size: 12,
-        y: "40%"
-      }
+        y: "40%",
+      },
     ],
-    valueField:
-      "{{934a9ef8efa7448fa8ddf7b13cef0240.layer0.fields.numbeds.name}}",
+    valueField: "{{934a9ef8efa7448fa8ddf7b13cef0240.layer0.fields.numbeds.name}}",
     noValueVerticalAlignment: "middle",
     showCaptionWhenNoValue: true,
     showDescriptionWhenNoValue: true,
@@ -1758,7 +1738,7 @@ export const expectedWidgets: any[] = [
       {
         type: "staticDataset",
         data: 0,
-        name: "min"
+        name: "min",
       },
       {
         type: "serviceDataset",
@@ -1766,7 +1746,7 @@ export const expectedWidgets: any[] = [
           type: "featureServiceDataSource",
           itemId: "{{934a9ef8efa7448fa8ddf7b13cef0240.itemId}}",
           layerId: 0,
-          table: false
+          table: false,
         },
         filter: {
           type: "filterGroup",
@@ -1779,19 +1759,18 @@ export const expectedWidgets: any[] = [
                 {
                   type: "filterRule",
                   field: {
-                    name:
-                      "{{934a9ef8efa7448fa8ddf7b13cef0240.layer0.fields.owner.name}}",
-                    type: "esriFieldTypeString"
+                    name: "{{934a9ef8efa7448fa8ddf7b13cef0240.layer0.fields.owner.name}}",
+                    type: "esriFieldTypeString",
                   },
                   operator: "equal",
                   constraint: {
                     type: "value",
-                    value: "wwer"
-                  }
-                }
-              ]
-            }
-          ]
+                    value: "wwer",
+                  },
+                },
+              ],
+            },
+          ],
         },
         outFields: ["*"],
         groupByFields: [],
@@ -1801,7 +1780,7 @@ export const expectedWidgets: any[] = [
         querySpatialRelationship: "esriSpatialRelIntersects",
         returnGeometry: false,
         clientSideStatistics: false,
-        name: "main"
+        name: "main",
       },
       {
         type: "serviceDataset",
@@ -1809,24 +1788,23 @@ export const expectedWidgets: any[] = [
           type: "featureServiceDataSource",
           itemId: "{{934a9ef8efa7448fa8ddf7b13cef0240.itemId}}",
           layerId: 0,
-          table: false
+          table: false,
         },
         outFields: ["*"],
         groupByFields: [],
         orderByFields: [],
         statisticDefinitions: [
           {
-            onStatisticField:
-              "{{934a9ef8efa7448fa8ddf7b13cef0240.layer0.fields.numbeds.name}}",
+            onStatisticField: "{{934a9ef8efa7448fa8ddf7b13cef0240.layer0.fields.numbeds.name}}",
             outStatisticFieldName: "value",
-            statisticType: "min"
-          }
+            statisticType: "min",
+          },
         ],
         querySpatialRelationship: "esriSpatialRelIntersects",
         returnGeometry: false,
         clientSideStatistics: false,
-        name: "max"
-      }
+        name: "max",
+      },
     ],
     id: "8830ce79-2010-408d-838c-93b1afd6308a",
     name: "Gauge (2)",
@@ -1834,7 +1812,7 @@ export const expectedWidgets: any[] = [
     showLastUpdate: true,
     noDataVerticalAlignment: "middle",
     showCaptionWhenNoData: true,
-    showDescriptionWhenNoData: true
+    showDescriptionWhenNoData: true,
   },
   {
     type: "serialChartWidget",
@@ -1842,25 +1820,23 @@ export const expectedWidgets: any[] = [
       labelOverrides: [
         {
           key: "qw",
-          label: "qw"
-        }
+          label: "qw",
+        },
       ],
       byCategoryColors: true,
       colors: [],
       labelsPlacement: "default",
       labelRotation: 0,
-      fieldName:
-        "{{934a9ef8efa7448fa8ddf7b13cef0240.layer0.fields.facilityid.name}}",
+      fieldName: "{{934a9ef8efa7448fa8ddf7b13cef0240.layer0.fields.facilityid.name}}",
       nullLabel: "Null",
       blankLabel: "Blank",
       defaultColor: "#d6d6d6",
       nullColor: "#d6d6d6",
-      blankColor: "#d6d6d6"
+      blankColor: "#d6d6d6",
     },
     graphs: [
       {
-        valueField:
-          "{{934a9ef8efa7448fa8ddf7b13cef0240.layer0.fields.numbeds.name}}",
+        valueField: "{{934a9ef8efa7448fa8ddf7b13cef0240.layer0.fields.numbeds.name}}",
         title: "# of Beds Available",
         lineColor: "#ffaa00",
         lineColorField: "_lineColor_",
@@ -1874,13 +1850,13 @@ export const expectedWidgets: any[] = [
         bulletBorderAlpha: 0,
         bulletBorderThickness: 2,
         showBalloon: true,
-        bulletSize: 8
-      }
+        bulletSize: 8,
+      },
     ],
     guides: [],
     splitBy: {
       defaultColor: "#d6d6d6",
-      seriesProperties: []
+      seriesProperties: [],
     },
     rotate: true,
     events: [
@@ -1890,15 +1866,15 @@ export const expectedWidgets: any[] = [
           {
             type: "filter",
             by: "whereClause",
-            targetId: "8830ce79-2010-408d-838c-93b1afd6308a#main"
+            targetId: "8830ce79-2010-408d-838c-93b1afd6308a#main",
           },
           {
             type: "filter",
             by: "whereClause",
-            targetId: "0ef05811-5ef1-4079-b8c3-68671d1d2a77#main"
-          }
-        ]
-      }
+            targetId: "0ef05811-5ef1-4079-b8c3-68671d1d2a77#main",
+          },
+        ],
+      },
     ],
     selectionMode: "single",
     categoryType: "features",
@@ -1909,7 +1885,7 @@ export const expectedWidgets: any[] = [
           type: "featureServiceDataSource",
           itemId: "{{934a9ef8efa7448fa8ddf7b13cef0240.itemId}}",
           layerId: 0,
-          table: false
+          table: false,
         },
         filter: {
           type: "filterGroup",
@@ -1922,45 +1898,41 @@ export const expectedWidgets: any[] = [
                 {
                   type: "filterRule",
                   field: {
-                    name:
-                      "{{934a9ef8efa7448fa8ddf7b13cef0240.layer0.fields.facilityid.name}}",
-                    type: "esriFieldTypeString"
+                    name: "{{934a9ef8efa7448fa8ddf7b13cef0240.layer0.fields.facilityid.name}}",
+                    type: "esriFieldTypeString",
                   },
                   operator: "equal",
                   constraint: {
                     type: "value",
-                    value: "1"
-                  }
+                    value: "1",
+                  },
                 },
                 {
                   type: "filterRule",
                   field: {
-                    name:
-                      "{{934a9ef8efa7448fa8ddf7b13cef0240.layer0.fields.owner.name}}",
-                    type: "esriFieldTypeString"
+                    name: "{{934a9ef8efa7448fa8ddf7b13cef0240.layer0.fields.owner.name}}",
+                    type: "esriFieldTypeString",
                   },
                   operator: "equal",
                   constraint: {
                     type: "value",
-                    value: "www"
-                  }
-                }
-              ]
-            }
-          ]
+                    value: "www",
+                  },
+                },
+              ],
+            },
+          ],
         },
         outFields: ["*"],
         groupByFields: [],
-        orderByFields: [
-          "{{934a9ef8efa7448fa8ddf7b13cef0240.layer0.fields.owner.name}} asc"
-        ],
+        orderByFields: ["{{934a9ef8efa7448fa8ddf7b13cef0240.layer0.fields.owner.name}} asc"],
         statisticDefinitions: [],
         maxFeatures: 10,
         querySpatialRelationship: "esriSpatialRelIntersects",
         returnGeometry: false,
         clientSideStatistics: false,
-        name: "main"
-      }
+        name: "main",
+      },
     ],
     id: "e321f855-d6c0-4bf5-9c2a-861db15fe877",
     name: "Serial Chart (1)",
@@ -1968,19 +1940,18 @@ export const expectedWidgets: any[] = [
     showLastUpdate: true,
     noDataVerticalAlignment: "middle",
     showCaptionWhenNoData: true,
-    showDescriptionWhenNoData: true
+    showDescriptionWhenNoData: true,
   },
   {
     type: "pieChartWidget",
     category: {
       sliceProperties: [],
-      fieldName:
-        "{{4efe5f693de34620934787ead6693f19.layer2.fields.facilityid.name}}",
+      fieldName: "{{4efe5f693de34620934787ead6693f19.layer2.fields.facilityid.name}}",
       nullLabel: "Null",
       blankLabel: "Blank",
       defaultColor: "#d6d6d6",
       nullColor: "#d6d6d6",
-      blankColor: "#d6d6d6"
+      blankColor: "#d6d6d6",
     },
     pie: {
       type: "pie",
@@ -2002,7 +1973,7 @@ export const expectedWidgets: any[] = [
       marginBottom: 0,
       marginLeft: 0,
       marginRight: 0,
-      groupedColor: "#d6d6d6"
+      groupedColor: "#d6d6d6",
     },
     legend: {
       enabled: false,
@@ -2012,20 +1983,20 @@ export const expectedWidgets: any[] = [
       markerType: "circle",
       align: "center",
       labelWidth: 100,
-      valueWidth: 50
+      valueWidth: 50,
     },
     showBalloon: true,
     valueFormat: {
       name: "value",
       type: "decimal",
       prefix: true,
-      pattern: "#,###.#"
+      pattern: "#,###.#",
     },
     percentageFormat: {
       name: "percentage",
       type: "decimal",
       prefix: false,
-      pattern: "#.##"
+      pattern: "#.##",
     },
     events: [
       {
@@ -2034,16 +2005,15 @@ export const expectedWidgets: any[] = [
           {
             type: "filter",
             by: "whereClause",
-            targetId:
-              "b38e032d-bf0c-426f-8036-b86341eb3693#TestLayerForDashBoardMap_632"
+            targetId: "b38e032d-bf0c-426f-8036-b86341eb3693#TestLayerForDashBoardMap_632",
           },
           {
             type: "filter",
             by: "whereClause",
-            targetId: "f81f2270-e104-453d-9c09-045d8d1087c9#main"
-          }
-        ]
-      }
+            targetId: "f81f2270-e104-453d-9c09-045d8d1087c9#main",
+          },
+        ],
+      },
     ],
     selectionMode: "single",
     categoryType: "groupByValues",
@@ -2051,8 +2021,7 @@ export const expectedWidgets: any[] = [
       {
         type: "serviceDataset",
         dataSource: {
-          id:
-            "b38e032d-bf0c-426f-8036-b86341eb3693#TestLayerForDashBoardMap_632"
+          id: "b38e032d-bf0c-426f-8036-b86341eb3693#TestLayerForDashBoardMap_632",
         },
         filter: {
           type: "filterGroup",
@@ -2065,41 +2034,35 @@ export const expectedWidgets: any[] = [
                 {
                   type: "filterRule",
                   field: {
-                    name:
-                      "{{4efe5f693de34620934787ead6693f19.layer2.fields.facilityid.name}}",
-                    type: "esriFieldTypeString"
+                    name: "{{4efe5f693de34620934787ead6693f19.layer2.fields.facilityid.name}}",
+                    type: "esriFieldTypeString",
                   },
                   operator: "equal",
                   constraint: {
                     type: "value",
-                    value: "1"
-                  }
-                }
-              ]
-            }
-          ]
+                    value: "1",
+                  },
+                },
+              ],
+            },
+          ],
         },
         outFields: ["*"],
-        groupByFields: [
-          "{{4efe5f693de34620934787ead6693f19.layer2.fields.facilityid.name}}"
-        ],
-        orderByFields: [
-          "{{4efe5f693de34620934787ead6693f19.layer2.fields.facilityid.name}} asc"
-        ],
+        groupByFields: ["{{4efe5f693de34620934787ead6693f19.layer2.fields.facilityid.name}}"],
+        orderByFields: ["{{4efe5f693de34620934787ead6693f19.layer2.fields.facilityid.name}} asc"],
         statisticDefinitions: [
           {
-            onStatisticField:
-              "{{4efe5f693de34620934787ead6693f19.layer2.fields.objectid.name}}",
+            onStatisticField: "{{4efe5f693de34620934787ead6693f19.layer2.fields.objectid.name}}",
             outStatisticFieldName: "value",
-            statisticType: "count"
-          }
+            statisticType: "count",
+          },
         ],
         maxFeatures: 20,
         querySpatialRelationship: "esriSpatialRelIntersects",
         returnGeometry: false,
         clientSideStatistics: false,
-        name: "main"
-      }
+        name: "main",
+      },
     ],
     id: "b90fa68a-1817-40a2-91c4-1738f5b37e7e",
     name: "Pie Chart (1)",
@@ -2107,19 +2070,18 @@ export const expectedWidgets: any[] = [
     showLastUpdate: true,
     noDataVerticalAlignment: "middle",
     showCaptionWhenNoData: true,
-    showDescriptionWhenNoData: true
+    showDescriptionWhenNoData: true,
   },
   {
     type: "pieChartWidget",
     category: {
       sliceProperties: [],
-      fieldName:
-        "{{934a9ef8efa7448fa8ddf7b13cef0240.layer0.fields.facilityid.name}}",
+      fieldName: "{{934a9ef8efa7448fa8ddf7b13cef0240.layer0.fields.facilityid.name}}",
       nullLabel: "Null",
       blankLabel: "Blank",
       defaultColor: "#d6d6d6",
       nullColor: "#d6d6d6",
-      blankColor: "#d6d6d6"
+      blankColor: "#d6d6d6",
     },
     pie: {
       type: "pie",
@@ -2141,10 +2103,9 @@ export const expectedWidgets: any[] = [
       marginBottom: 0,
       marginLeft: 0,
       marginRight: 0,
-      groupedColor: "#d6d6d6"
+      groupedColor: "#d6d6d6",
     },
-    valueField:
-      "{{934a9ef8efa7448fa8ddf7b13cef0240.layer0.fields.numbeds.name}}",
+    valueField: "{{934a9ef8efa7448fa8ddf7b13cef0240.layer0.fields.numbeds.name}}",
     legend: {
       enabled: false,
       format: "percentage",
@@ -2153,20 +2114,20 @@ export const expectedWidgets: any[] = [
       markerType: "circle",
       align: "center",
       labelWidth: 100,
-      valueWidth: 50
+      valueWidth: 50,
     },
     showBalloon: true,
     valueFormat: {
       name: "value",
       type: "decimal",
       prefix: true,
-      pattern: "#,###.#"
+      pattern: "#,###.#",
     },
     percentageFormat: {
       name: "percentage",
       type: "decimal",
       prefix: false,
-      pattern: "#.##"
+      pattern: "#.##",
     },
     events: [
       {
@@ -2175,10 +2136,10 @@ export const expectedWidgets: any[] = [
           {
             type: "filter",
             by: "whereClause",
-            targetId: "79de7d45-0586-43fa-91e6-9d020c88d2d3#main"
-          }
-        ]
-      }
+            targetId: "79de7d45-0586-43fa-91e6-9d020c88d2d3#main",
+          },
+        ],
+      },
     ],
     selectionMode: "single",
     categoryType: "features",
@@ -2189,7 +2150,7 @@ export const expectedWidgets: any[] = [
           type: "featureServiceDataSource",
           itemId: "{{934a9ef8efa7448fa8ddf7b13cef0240.itemId}}",
           layerId: 0,
-          table: false
+          table: false,
         },
         filter: {
           type: "filterGroup",
@@ -2202,32 +2163,29 @@ export const expectedWidgets: any[] = [
                 {
                   type: "filterRule",
                   field: {
-                    name:
-                      "{{934a9ef8efa7448fa8ddf7b13cef0240.layer0.fields.name.name}}",
-                    type: "esriFieldTypeString"
+                    name: "{{934a9ef8efa7448fa8ddf7b13cef0240.layer0.fields.name.name}}",
+                    type: "esriFieldTypeString",
                   },
                   operator: "equal",
                   constraint: {
                     type: "value",
-                    value: "sad"
-                  }
-                }
-              ]
-            }
-          ]
+                    value: "sad",
+                  },
+                },
+              ],
+            },
+          ],
         },
         outFields: ["*"],
         groupByFields: [],
-        orderByFields: [
-          "{{934a9ef8efa7448fa8ddf7b13cef0240.layer0.fields.owner.name}} asc"
-        ],
+        orderByFields: ["{{934a9ef8efa7448fa8ddf7b13cef0240.layer0.fields.owner.name}} asc"],
         statisticDefinitions: [],
         maxFeatures: 20,
         querySpatialRelationship: "esriSpatialRelIntersects",
         returnGeometry: false,
         clientSideStatistics: false,
-        name: "main"
-      }
+        name: "main",
+      },
     ],
     id: "161e9532-317f-4ce2-acea-445b1c4dae59",
     name: "Pie Features",
@@ -2235,31 +2193,29 @@ export const expectedWidgets: any[] = [
     showLastUpdate: true,
     noDataVerticalAlignment: "middle",
     showCaptionWhenNoData: true,
-    showDescriptionWhenNoData: true
+    showDescriptionWhenNoData: true,
   },
   {
     type: "pieChartWidget",
     category: {
       sliceProperties: [
         {
-          key:
-            "{{4efe5f693de34620934787ead6693f19.layer2.fields.numbeds.name}}",
+          key: "{{4efe5f693de34620934787ead6693f19.layer2.fields.numbeds.name}}",
           label: "# of Beds Available",
-          color: "#ffaa00"
+          color: "#ffaa00",
         },
         {
-          key:
-            "{{4efe5f693de34620934787ead6693f19.layer2.fields.numbeds.name}}",
+          key: "{{4efe5f693de34620934787ead6693f19.layer2.fields.numbeds.name}}",
           label: "# of Beds Available",
-          color: "#ffff00"
-        }
+          color: "#ffff00",
+        },
       ],
       fieldName: "category",
       nullLabel: "Null",
       blankLabel: "Blank",
       defaultColor: "#d6d6d6",
       nullColor: "#d6d6d6",
-      blankColor: "#d6d6d6"
+      blankColor: "#d6d6d6",
     },
     pie: {
       type: "pie",
@@ -2281,7 +2237,7 @@ export const expectedWidgets: any[] = [
       marginBottom: 0,
       marginLeft: 0,
       marginRight: 0,
-      groupedColor: "#d6d6d6"
+      groupedColor: "#d6d6d6",
     },
     legend: {
       enabled: false,
@@ -2291,20 +2247,20 @@ export const expectedWidgets: any[] = [
       markerType: "circle",
       align: "center",
       labelWidth: 100,
-      valueWidth: 50
+      valueWidth: 50,
     },
     showBalloon: true,
     valueFormat: {
       name: "value",
       type: "decimal",
       prefix: true,
-      pattern: "#,###.#"
+      pattern: "#,###.#",
     },
     percentageFormat: {
       name: "percentage",
       type: "decimal",
       prefix: false,
-      pattern: "#.##"
+      pattern: "#.##",
     },
     selectionMode: "single",
     categoryType: "fields",
@@ -2312,8 +2268,7 @@ export const expectedWidgets: any[] = [
       {
         type: "serviceDataset",
         dataSource: {
-          id:
-            "b38e032d-bf0c-426f-8036-b86341eb3693#TestLayerForDashBoardMap_632"
+          id: "b38e032d-bf0c-426f-8036-b86341eb3693#TestLayerForDashBoardMap_632",
         },
         filter: {
           type: "filterGroup",
@@ -2326,17 +2281,16 @@ export const expectedWidgets: any[] = [
                 {
                   type: "filterRule",
                   field: {
-                    name:
-                      "{{4efe5f693de34620934787ead6693f19.layer2.fields.fulladdr.name}}",
-                    type: "esriFieldTypeString"
+                    name: "{{4efe5f693de34620934787ead6693f19.layer2.fields.fulladdr.name}}",
+                    type: "esriFieldTypeString",
                   },
                   operator: "equal",
                   constraint: {
                     type: "value",
-                    value: "123"
-                  }
-                }
-              ]
+                    value: "123",
+                  },
+                },
+              ],
             },
             {
               type: "filterGroup",
@@ -2345,45 +2299,40 @@ export const expectedWidgets: any[] = [
                 {
                   type: "filterRule",
                   field: {
-                    name:
-                      "{{4efe5f693de34620934787ead6693f19.layer2.fields.facilityid.name}}",
-                    type: "esriFieldTypeString"
+                    name: "{{4efe5f693de34620934787ead6693f19.layer2.fields.facilityid.name}}",
+                    type: "esriFieldTypeString",
                   },
                   operator: "equal",
                   constraint: {
                     type: "value",
-                    value: "12"
-                  }
-                }
-              ]
-            }
-          ]
+                    value: "12",
+                  },
+                },
+              ],
+            },
+          ],
         },
         outFields: ["*"],
         groupByFields: [],
         orderByFields: [],
         statisticDefinitions: [
           {
-            onStatisticField:
-              "{{4efe5f693de34620934787ead6693f19.layer2.fields.numbeds.name}}",
-            outStatisticFieldName:
-              "{{4efe5f693de34620934787ead6693f19.layer2.fields.numbeds.name}}",
-            statisticType: "avg"
+            onStatisticField: "{{4efe5f693de34620934787ead6693f19.layer2.fields.numbeds.name}}",
+            outStatisticFieldName: "{{4efe5f693de34620934787ead6693f19.layer2.fields.numbeds.name}}",
+            statisticType: "avg",
           },
           {
-            onStatisticField:
-              "{{4efe5f693de34620934787ead6693f19.layer2.fields.numbeds.name}}",
-            outStatisticFieldName:
-              "{{4efe5f693de34620934787ead6693f19.layer2.fields.numbeds.name}}",
-            statisticType: "avg"
-          }
+            onStatisticField: "{{4efe5f693de34620934787ead6693f19.layer2.fields.numbeds.name}}",
+            outStatisticFieldName: "{{4efe5f693de34620934787ead6693f19.layer2.fields.numbeds.name}}",
+            statisticType: "avg",
+          },
         ],
         maxFeatures: null,
         querySpatialRelationship: "esriSpatialRelIntersects",
         returnGeometry: false,
         clientSideStatistics: false,
-        name: "main"
-      }
+        name: "main",
+      },
     ],
     id: "2ccc8953-1958-40c0-b237-689a39d5904b",
     name: "Pie Chart (2)",
@@ -2391,7 +2340,7 @@ export const expectedWidgets: any[] = [
     showLastUpdate: true,
     noDataVerticalAlignment: "middle",
     showCaptionWhenNoData: true,
-    showDescriptionWhenNoData: true
+    showDescriptionWhenNoData: true,
   },
   {
     type: "serialChartWidget",
@@ -2400,20 +2349,19 @@ export const expectedWidgets: any[] = [
       byCategoryColors: false,
       labelsPlacement: "default",
       labelRotation: 0,
-      fieldName:
-        "{{934a9ef8efa7448fa8ddf7b13cef0240.layer0.fields.facilityid.name}}",
+      fieldName: "{{934a9ef8efa7448fa8ddf7b13cef0240.layer0.fields.facilityid.name}}",
       nullLabel: "Null",
       blankLabel: "Blank",
       defaultColor: "#d6d6d6",
       nullColor: "#d6d6d6",
-      blankColor: "#d6d6d6"
+      blankColor: "#d6d6d6",
     },
     graphs: [],
     guides: [],
     splitBy: {
       fieldName: "{{934a9ef8efa7448fa8ddf7b13cef0240.layer0.fields.name.name}}",
       defaultColor: "#d6d6d6",
-      seriesProperties: []
+      seriesProperties: [],
     },
     rotate: false,
     events: [
@@ -2423,15 +2371,15 @@ export const expectedWidgets: any[] = [
           {
             type: "filter",
             by: "whereClause",
-            targetId: "161e9532-317f-4ce2-acea-445b1c4dae59#main"
+            targetId: "161e9532-317f-4ce2-acea-445b1c4dae59#main",
           },
           {
             type: "filter",
             by: "whereClause",
-            targetId: "8830ce79-2010-408d-838c-93b1afd6308a#main"
-          }
-        ]
-      }
+            targetId: "8830ce79-2010-408d-838c-93b1afd6308a#main",
+          },
+        ],
+      },
     ],
     selectionMode: "multi",
     categoryType: "groupByValues",
@@ -2442,7 +2390,7 @@ export const expectedWidgets: any[] = [
           type: "featureServiceDataSource",
           itemId: "{{934a9ef8efa7448fa8ddf7b13cef0240.itemId}}",
           layerId: 0,
-          table: false
+          table: false,
         },
         filter: {
           type: "filterGroup",
@@ -2455,42 +2403,37 @@ export const expectedWidgets: any[] = [
                 {
                   type: "filterRule",
                   field: {
-                    name:
-                      "{{934a9ef8efa7448fa8ddf7b13cef0240.layer0.fields.facilityid.name}}",
-                    type: "esriFieldTypeString"
+                    name: "{{934a9ef8efa7448fa8ddf7b13cef0240.layer0.fields.facilityid.name}}",
+                    type: "esriFieldTypeString",
                   },
                   operator: "equal",
                   constraint: {
                     type: "value",
-                    value: "123"
-                  }
-                }
-              ]
-            }
-          ]
+                    value: "123",
+                  },
+                },
+              ],
+            },
+          ],
         },
         outFields: ["*"],
         groupByFields: [
           "{{934a9ef8efa7448fa8ddf7b13cef0240.layer0.fields.facilityid.name}}",
-          "{{934a9ef8efa7448fa8ddf7b13cef0240.layer0.fields.name.name}}"
+          "{{934a9ef8efa7448fa8ddf7b13cef0240.layer0.fields.name.name}}",
         ],
-        orderByFields: [
-          "{{934a9ef8efa7448fa8ddf7b13cef0240.layer0.fields.facilityid.name}} asc",
-          "value asc"
-        ],
+        orderByFields: ["{{934a9ef8efa7448fa8ddf7b13cef0240.layer0.fields.facilityid.name}} asc", "value asc"],
         statisticDefinitions: [
           {
-            onStatisticField:
-              "{{934a9ef8efa7448fa8ddf7b13cef0240.layer0.fields.objectid.name}}",
+            onStatisticField: "{{934a9ef8efa7448fa8ddf7b13cef0240.layer0.fields.objectid.name}}",
             outStatisticFieldName: "value",
-            statisticType: "count"
-          }
+            statisticType: "count",
+          },
         ],
         querySpatialRelationship: "esriSpatialRelIntersects",
         returnGeometry: false,
         clientSideStatistics: false,
-        name: "main"
-      }
+        name: "main",
+      },
     ],
     id: "ecf67bd0-3b15-4920-877a-7b02f28a9d4a",
     name: "Serial Chart (2)",
@@ -2498,22 +2441,20 @@ export const expectedWidgets: any[] = [
     showLastUpdate: true,
     noDataVerticalAlignment: "middle",
     showCaptionWhenNoData: true,
-    showDescriptionWhenNoData: true
+    showDescriptionWhenNoData: true,
   },
   {
     type: "serialChartWidget",
     category: {
       labelOverrides: [
         {
-          key:
-            "{{4efe5f693de34620934787ead6693f19.layer2.fields.numbeds.name}}",
-          label: "# of Beds Available"
+          key: "{{4efe5f693de34620934787ead6693f19.layer2.fields.numbeds.name}}",
+          label: "# of Beds Available",
         },
         {
-          key:
-            "{{4efe5f693de34620934787ead6693f19.layer2.fields.numbeds.name}}",
-          label: "# of Beds Available"
-        }
+          key: "{{4efe5f693de34620934787ead6693f19.layer2.fields.numbeds.name}}",
+          label: "# of Beds Available",
+        },
       ],
       byCategoryColors: false,
       labelsPlacement: "default",
@@ -2523,7 +2464,7 @@ export const expectedWidgets: any[] = [
       blankLabel: "Blank",
       defaultColor: "#d6d6d6",
       nullColor: "#d6d6d6",
-      blankColor: "#d6d6d6"
+      blankColor: "#d6d6d6",
     },
     graphs: [
       {
@@ -2540,13 +2481,13 @@ export const expectedWidgets: any[] = [
         bulletBorderAlpha: 0,
         bulletBorderThickness: 2,
         showBalloon: true,
-        bulletSize: 8
-      }
+        bulletSize: 8,
+      },
     ],
     guides: [],
     splitBy: {
       defaultColor: "#d6d6d6",
-      seriesProperties: []
+      seriesProperties: [],
     },
     rotate: false,
     selectionMode: "single",
@@ -2555,8 +2496,7 @@ export const expectedWidgets: any[] = [
       {
         type: "serviceDataset",
         dataSource: {
-          id:
-            "b38e032d-bf0c-426f-8036-b86341eb3693#TestLayerForDashBoardMap_632"
+          id: "b38e032d-bf0c-426f-8036-b86341eb3693#TestLayerForDashBoardMap_632",
         },
         filter: {
           type: "filterGroup",
@@ -2569,44 +2509,39 @@ export const expectedWidgets: any[] = [
                 {
                   type: "filterRule",
                   field: {
-                    name:
-                      "{{4efe5f693de34620934787ead6693f19.layer2.fields.fulladdr.name}}",
-                    type: "esriFieldTypeString"
+                    name: "{{4efe5f693de34620934787ead6693f19.layer2.fields.fulladdr.name}}",
+                    type: "esriFieldTypeString",
                   },
                   operator: "equal",
                   constraint: {
                     type: "value",
-                    value: "123"
-                  }
-                }
-              ]
-            }
-          ]
+                    value: "123",
+                  },
+                },
+              ],
+            },
+          ],
         },
         outFields: ["*"],
         groupByFields: [],
         orderByFields: [],
         statisticDefinitions: [
           {
-            onStatisticField:
-              "{{4efe5f693de34620934787ead6693f19.layer2.fields.numbeds.name}}",
-            outStatisticFieldName:
-              "{{4efe5f693de34620934787ead6693f19.layer2.fields.numbeds.name}}",
-            statisticType: "avg"
+            onStatisticField: "{{4efe5f693de34620934787ead6693f19.layer2.fields.numbeds.name}}",
+            outStatisticFieldName: "{{4efe5f693de34620934787ead6693f19.layer2.fields.numbeds.name}}",
+            statisticType: "avg",
           },
           {
-            onStatisticField:
-              "{{4efe5f693de34620934787ead6693f19.layer2.fields.numbeds.name}}",
-            outStatisticFieldName:
-              "{{4efe5f693de34620934787ead6693f19.layer2.fields.numbeds.name}}",
-            statisticType: "avg"
-          }
+            onStatisticField: "{{4efe5f693de34620934787ead6693f19.layer2.fields.numbeds.name}}",
+            outStatisticFieldName: "{{4efe5f693de34620934787ead6693f19.layer2.fields.numbeds.name}}",
+            statisticType: "avg",
+          },
         ],
         querySpatialRelationship: "esriSpatialRelIntersects",
         returnGeometry: false,
         clientSideStatistics: false,
-        name: "main"
-      }
+        name: "main",
+      },
     ],
     id: "c220e9bb-f0b9-4f0e-93e8-8baa3f39aa0c",
     name: "Serial Chart (3)",
@@ -2614,7 +2549,7 @@ export const expectedWidgets: any[] = [
     showLastUpdate: true,
     noDataVerticalAlignment: "middle",
     showCaptionWhenNoData: true,
-    showDescriptionWhenNoData: true
+    showDescriptionWhenNoData: true,
   },
   {
     type: "gaugeWidget",
@@ -2624,13 +2559,13 @@ export const expectedWidgets: any[] = [
       name: "value",
       type: "decimal",
       prefix: true,
-      pattern: "#,###.#"
+      pattern: "#,###.#",
     },
     percentageFormat: {
       name: "percentage",
       type: "decimal",
       prefix: false,
-      pattern: "#.#%"
+      pattern: "#.#%",
     },
     labels: [
       {
@@ -2638,8 +2573,8 @@ export const expectedWidgets: any[] = [
         align: "center",
         color: null,
         size: 12,
-        y: "40%"
-      }
+        y: "40%",
+      },
     ],
     noValueVerticalAlignment: "middle",
     showCaptionWhenNoValue: true,
@@ -2649,8 +2584,7 @@ export const expectedWidgets: any[] = [
       {
         type: "serviceDataset",
         dataSource: {
-          id:
-            "b38e032d-bf0c-426f-8036-b86341eb3693#TestLayerForDashBoardMap_632"
+          id: "b38e032d-bf0c-426f-8036-b86341eb3693#TestLayerForDashBoardMap_632",
         },
         filter: {
           type: "filterGroup",
@@ -2663,41 +2597,38 @@ export const expectedWidgets: any[] = [
                 {
                   type: "filterRule",
                   field: {
-                    name:
-                      "{{4efe5f693de34620934787ead6693f19.layer2.fields.facname.name}}",
-                    type: "esriFieldTypeString"
+                    name: "{{4efe5f693de34620934787ead6693f19.layer2.fields.facname.name}}",
+                    type: "esriFieldTypeString",
                   },
                   operator: "equal",
                   constraint: {
                     type: "value",
-                    value: "qwe"
-                  }
-                }
-              ]
-            }
-          ]
+                    value: "qwe",
+                  },
+                },
+              ],
+            },
+          ],
         },
         outFields: ["*"],
         groupByFields: [],
         orderByFields: [],
         statisticDefinitions: [
           {
-            onStatisticField:
-              "{{4efe5f693de34620934787ead6693f19.layer2.fields.objectid.name}}",
+            onStatisticField: "{{4efe5f693de34620934787ead6693f19.layer2.fields.objectid.name}}",
             outStatisticFieldName: "value",
-            statisticType: "count"
-          }
+            statisticType: "count",
+          },
         ],
         querySpatialRelationship: "esriSpatialRelIntersects",
         returnGeometry: false,
         clientSideStatistics: false,
-        name: "main"
+        name: "main",
       },
       {
         type: "serviceDataset",
         dataSource: {
-          id:
-            "b38e032d-bf0c-426f-8036-b86341eb3693#TestLayerForDashBoardMap_632"
+          id: "b38e032d-bf0c-426f-8036-b86341eb3693#TestLayerForDashBoardMap_632",
         },
         filter: {
           type: "filterGroup",
@@ -2710,41 +2641,38 @@ export const expectedWidgets: any[] = [
                 {
                   type: "filterRule",
                   field: {
-                    name:
-                      "{{4efe5f693de34620934787ead6693f19.layer2.fields.facname.name}}",
-                    type: "esriFieldTypeString"
+                    name: "{{4efe5f693de34620934787ead6693f19.layer2.fields.facname.name}}",
+                    type: "esriFieldTypeString",
                   },
                   operator: "equal",
                   constraint: {
                     type: "value",
-                    value: "2313"
-                  }
-                }
-              ]
-            }
-          ]
+                    value: "2313",
+                  },
+                },
+              ],
+            },
+          ],
         },
         outFields: ["*"],
         groupByFields: [],
         orderByFields: [],
         statisticDefinitions: [
           {
-            onStatisticField:
-              "{{4efe5f693de34620934787ead6693f19.layer2.fields.objectid.name}}",
+            onStatisticField: "{{4efe5f693de34620934787ead6693f19.layer2.fields.objectid.name}}",
             outStatisticFieldName: "value",
-            statisticType: "count"
-          }
+            statisticType: "count",
+          },
         ],
         querySpatialRelationship: "esriSpatialRelIntersects",
         returnGeometry: false,
         clientSideStatistics: false,
-        name: "min"
+        name: "min",
       },
       {
         type: "serviceDataset",
         dataSource: {
-          id:
-            "b38e032d-bf0c-426f-8036-b86341eb3693#TestLayerForDashBoardMap_632"
+          id: "b38e032d-bf0c-426f-8036-b86341eb3693#TestLayerForDashBoardMap_632",
         },
         filter: {
           type: "filterGroup",
@@ -2757,36 +2685,34 @@ export const expectedWidgets: any[] = [
                 {
                   type: "filterRule",
                   field: {
-                    name:
-                      "{{4efe5f693de34620934787ead6693f19.layer2.fields.fulladdr.name}}",
-                    type: "esriFieldTypeString"
+                    name: "{{4efe5f693de34620934787ead6693f19.layer2.fields.fulladdr.name}}",
+                    type: "esriFieldTypeString",
                   },
                   operator: "equal",
                   constraint: {
                     type: "value",
-                    value: "123"
-                  }
-                }
-              ]
-            }
-          ]
+                    value: "123",
+                  },
+                },
+              ],
+            },
+          ],
         },
         outFields: ["*"],
         groupByFields: [],
         orderByFields: [],
         statisticDefinitions: [
           {
-            onStatisticField:
-              "{{4efe5f693de34620934787ead6693f19.layer2.fields.objectid.name}}",
+            onStatisticField: "{{4efe5f693de34620934787ead6693f19.layer2.fields.objectid.name}}",
             outStatisticFieldName: "value",
-            statisticType: "count"
-          }
+            statisticType: "count",
+          },
         ],
         querySpatialRelationship: "esriSpatialRelIntersects",
         returnGeometry: false,
         clientSideStatistics: false,
-        name: "max"
-      }
+        name: "max",
+      },
     ],
     id: "27daba1f-9223-4013-8ca8-797388fd2116",
     name: "Gauge (3)",
@@ -2794,7 +2720,7 @@ export const expectedWidgets: any[] = [
     showLastUpdate: true,
     noDataVerticalAlignment: "middle",
     showCaptionWhenNoData: true,
-    showDescriptionWhenNoData: true
+    showDescriptionWhenNoData: true,
   },
   {
     events: [
@@ -2804,15 +2730,14 @@ export const expectedWidgets: any[] = [
           {
             type: "filter",
             by: "whereClause",
-            targetId:
-              "b38e032d-bf0c-426f-8036-b86341eb3693#TestLayerForDashBoardMap_632"
+            targetId: "b38e032d-bf0c-426f-8036-b86341eb3693#TestLayerForDashBoardMap_632",
           },
           {
             type: "identify",
-            targetId: "b38e032d-bf0c-426f-8036-b86341eb3693"
-          }
-        ]
-      }
+            targetId: "b38e032d-bf0c-426f-8036-b86341eb3693",
+          },
+        ],
+      },
     ],
     type: "listWidget",
     iconType: "symbol",
@@ -2821,8 +2746,7 @@ export const expectedWidgets: any[] = [
       {
         type: "serviceDataset",
         dataSource: {
-          id:
-            "b38e032d-bf0c-426f-8036-b86341eb3693#TestLayerForDashBoardMap_632"
+          id: "b38e032d-bf0c-426f-8036-b86341eb3693#TestLayerForDashBoardMap_632",
         },
         filter: {
           type: "filterGroup",
@@ -2835,33 +2759,32 @@ export const expectedWidgets: any[] = [
                 {
                   type: "filterRule",
                   field: {
-                    name:
-                      "{{4efe5f693de34620934787ead6693f19.layer2.fields.fulladdr.name}}",
-                    type: "esriFieldTypeString"
+                    name: "{{4efe5f693de34620934787ead6693f19.layer2.fields.fulladdr.name}}",
+                    type: "esriFieldTypeString",
                   },
                   operator: "equal",
                   constraint: {
                     type: "value",
-                    value: "asD"
-                  }
-                }
-              ]
-            }
-          ]
+                    value: "asD",
+                  },
+                },
+              ],
+            },
+          ],
         },
         outFields: ["*"],
         groupByFields: [],
         orderByFields: [
           "{{4efe5f693de34620934787ead6693f19.layer2.fields.facname.name}} asc",
-          "{{4efe5f693de34620934787ead6693f19.layer2.fields.organiz.name}} asc"
+          "{{4efe5f693de34620934787ead6693f19.layer2.fields.organiz.name}} asc",
         ],
         statisticDefinitions: [],
         maxFeatures: 25,
         querySpatialRelationship: "esriSpatialRelIntersects",
         returnGeometry: false,
         clientSideStatistics: false,
-        name: "main"
-      }
+        name: "main",
+      },
     ],
     id: "bd1eec15-c178-4929-b800-936be1e6789b",
     name: "List (1)",
@@ -2869,7 +2792,7 @@ export const expectedWidgets: any[] = [
     showLastUpdate: true,
     noDataVerticalAlignment: "middle",
     showCaptionWhenNoData: true,
-    showDescriptionWhenNoData: true
+    showDescriptionWhenNoData: true,
   },
   {
     type: "detailsWidget",
@@ -2881,8 +2804,7 @@ export const expectedWidgets: any[] = [
       {
         type: "serviceDataset",
         dataSource: {
-          id:
-            "b38e032d-bf0c-426f-8036-b86341eb3693#TestLayerForDashBoardMap_632"
+          id: "b38e032d-bf0c-426f-8036-b86341eb3693#TestLayerForDashBoardMap_632",
         },
         filter: {
           type: "filterGroup",
@@ -2895,32 +2817,29 @@ export const expectedWidgets: any[] = [
                 {
                   type: "filterRule",
                   field: {
-                    name:
-                      "{{4efe5f693de34620934787ead6693f19.layer2.fields.fulladdr.name}}",
-                    type: "esriFieldTypeString"
+                    name: "{{4efe5f693de34620934787ead6693f19.layer2.fields.fulladdr.name}}",
+                    type: "esriFieldTypeString",
                   },
                   operator: "equal",
                   constraint: {
                     type: "value",
-                    value: "QSAD"
-                  }
-                }
-              ]
-            }
-          ]
+                    value: "QSAD",
+                  },
+                },
+              ],
+            },
+          ],
         },
         outFields: ["*"],
         groupByFields: [],
-        orderByFields: [
-          "{{4efe5f693de34620934787ead6693f19.layer2.fields.facname.name}} asc"
-        ],
+        orderByFields: ["{{4efe5f693de34620934787ead6693f19.layer2.fields.facname.name}} asc"],
         statisticDefinitions: [],
         maxFeatures: 50,
         querySpatialRelationship: "esriSpatialRelIntersects",
         returnGeometry: false,
         clientSideStatistics: false,
-        name: "main"
-      }
+        name: "main",
+      },
     ],
     id: "be4aad77-c0c3-42f5-8a74-53dfc79f6558",
     name: "Details (1)",
@@ -2928,7 +2847,7 @@ export const expectedWidgets: any[] = [
     showLastUpdate: true,
     noDataVerticalAlignment: "middle",
     showCaptionWhenNoData: true,
-    showDescriptionWhenNoData: true
+    showDescriptionWhenNoData: true,
   },
   {
     type: "embeddedContentWidget",
@@ -2937,8 +2856,7 @@ export const expectedWidgets: any[] = [
       {
         type: "serviceDataset",
         dataSource: {
-          id:
-            "b38e032d-bf0c-426f-8036-b86341eb3693#TestLayerForDashBoardMap_632"
+          id: "b38e032d-bf0c-426f-8036-b86341eb3693#TestLayerForDashBoardMap_632",
         },
         filter: {
           type: "filterGroup",
@@ -2951,32 +2869,29 @@ export const expectedWidgets: any[] = [
                 {
                   type: "filterRule",
                   field: {
-                    name:
-                      "{{4efe5f693de34620934787ead6693f19.layer2.fields.facilityid.name}}",
-                    type: "esriFieldTypeString"
+                    name: "{{4efe5f693de34620934787ead6693f19.layer2.fields.facilityid.name}}",
+                    type: "esriFieldTypeString",
                   },
                   operator: "equal",
                   constraint: {
                     type: "value",
-                    value: "esf"
-                  }
-                }
-              ]
-            }
-          ]
+                    value: "esf",
+                  },
+                },
+              ],
+            },
+          ],
         },
         outFields: ["*"],
         groupByFields: [],
-        orderByFields: [
-          "{{4efe5f693de34620934787ead6693f19.layer2.fields.facname.name}} asc"
-        ],
+        orderByFields: ["{{4efe5f693de34620934787ead6693f19.layer2.fields.facname.name}} asc"],
         statisticDefinitions: [],
         maxFeatures: 50,
         querySpatialRelationship: "esriSpatialRelIntersects",
         returnGeometry: false,
         clientSideStatistics: false,
-        name: "main"
-      }
+        name: "main",
+      },
     ],
     id: "2f547ec0-cd71-4b05-b28a-a467793d7601",
     name: "Embedded Content (1)",
@@ -2984,93 +2899,91 @@ export const expectedWidgets: any[] = [
     showLastUpdate: true,
     noDataVerticalAlignment: "middle",
     showCaptionWhenNoData: true,
-    showDescriptionWhenNoData: true
+    showDescriptionWhenNoData: true,
   },
   {
-    "id": "a9406fa5-25e3-41d6-a0c6-a7b7c8256bc9",
-    "name": "Indicator (3)",
-    "showLastUpdate": false,
-    "noDataState": {
-      "verticalAlignment": "middle",
-      "showCaption": true,
-      "showDescription": true
+    id: "a9406fa5-25e3-41d6-a0c6-a7b7c8256bc9",
+    name: "Indicator (3)",
+    showLastUpdate: false,
+    noDataState: {
+      verticalAlignment: "middle",
+      showCaption: true,
+      showDescription: true,
     },
-    "noFilterState": {
-      "verticalAlignment": "middle",
-      "showCaption": true,
-      "showDescription": true
+    noFilterState: {
+      verticalAlignment: "middle",
+      showCaption: true,
+      showDescription: true,
     },
-    "datasets": [
-    {
-      "type": "serviceDataset",
-      "name": "main",
-      "dataSource": {
-        "type": "arcadeDataSource",
-        "itemId": "3f281598-2571-42c8-9fe7-fa7d18819bc3"
-      },
-      "groupByFields": [ ],
-      "orderByFields": [ ],
-      "statisticDefinitions": [
+    datasets: [
       {
-        "onStatisticField": "OBJECTID",
-        "outStatisticFieldName": "value",
-        "statisticType": "count"
-      }
+        type: "serviceDataset",
+        name: "main",
+        dataSource: {
+          type: "arcadeDataSource",
+          itemId: "3f281598-2571-42c8-9fe7-fa7d18819bc3",
+        },
+        groupByFields: [],
+        orderByFields: [],
+        statisticDefinitions: [
+          {
+            onStatisticField: "OBJECTID",
+            outStatisticFieldName: "value",
+            statisticType: "count",
+          },
         ],
-      "clientSideStatistics": false,
-      "outFields": [
-        "*"
-        ],
-      "returnDistinctValues": false,
-      "allowSourceDownload": false,
-      "allowSummaryDownload": false
-    }
-      ],
-    "type": "indicatorWidget",
-    "defaultSettings": {
-      "topSection": {
-        "fontSize": 80,
-        "textInfo": { }
+        clientSideStatistics: false,
+        outFields: ["*"],
+        returnDistinctValues: false,
+        allowSourceDownload: false,
+        allowSummaryDownload: false,
       },
-      "middleSection": {
-        "fontSize": 160,
-        "textInfo": {
-          "text": "{value}"
-        }
+    ],
+    type: "indicatorWidget",
+    defaultSettings: {
+      topSection: {
+        fontSize: 80,
+        textInfo: {},
       },
-      "bottomSection": {
-        "fontSize": 80,
-        "textInfo": { }
-      }
+      middleSection: {
+        fontSize: 160,
+        textInfo: {
+          text: "{value}",
+        },
+      },
+      bottomSection: {
+        fontSize: 80,
+        textInfo: {},
+      },
     },
-    "comparison": "none",
-    "valueFormat": {
-      "name": "value",
-      "prefix": true,
-      "style": "decimal",
-      "useGrouping": true,
-      "maximumFractionDigits": 1
+    comparison: "none",
+    valueFormat: {
+      name: "value",
+      prefix: true,
+      style: "decimal",
+      useGrouping: true,
+      maximumFractionDigits: 1,
     },
-    "percentageFormat": {
-      "name": "percentage",
-      "prefix": false,
-      "style": "percent",
-      "useGrouping": true
+    percentageFormat: {
+      name: "percentage",
+      prefix: false,
+      style: "percent",
+      useGrouping: true,
     },
-    "ratioFormat": {
-      "name": "ratio",
-      "prefix": false,
-      "style": "decimal",
-      "useGrouping": true,
-      "maximumFractionDigits": 2
+    ratioFormat: {
+      name: "ratio",
+      prefix: false,
+      style: "decimal",
+      useGrouping: true,
+      maximumFractionDigits: 2,
     },
-    "valueType": "statistic",
-    "noValueState": {
-      "verticalAlignment": "middle",
-      "showCaption": true,
-      "showDescription": true
-    }
-  }
+    valueType: "statistic",
+    noValueState: {
+      verticalAlignment: "middle",
+      showCaption: true,
+      showDescription: true,
+    },
+  },
 ];
 
 export const baseHeaderPanel: any = {
@@ -3089,12 +3002,12 @@ export const baseHeaderPanel: any = {
       type: "categorySelectorWidget",
       category: {
         type: "features",
-        itemText: "{FACILITYID}"
+        itemText: "{FACILITYID}",
       },
       selection: {
         type: "single",
         defaultSelection: "first",
-        operator: "equal"
+        operator: "equal",
       },
       preferredDisplayType: "dropdown",
       displayThreshold: 10,
@@ -3102,8 +3015,7 @@ export const baseHeaderPanel: any = {
         {
           type: "serviceDataset",
           dataSource: {
-            id:
-              "b38e032d-bf0c-426f-8036-b86341eb3693#TestLayerForDashBoardMap_632"
+            id: "b38e032d-bf0c-426f-8036-b86341eb3693#TestLayerForDashBoardMap_632",
           },
           filter: {
             type: "filterGroup",
@@ -3117,30 +3029,30 @@ export const baseHeaderPanel: any = {
                     type: "filterRule",
                     field: {
                       name: "FACNAME",
-                      type: "esriFieldTypeString"
+                      type: "esriFieldTypeString",
                     },
                     operator: "equal",
                     constraint: {
                       type: "field",
-                      value: "ORGANIZ"
-                    }
+                      value: "ORGANIZ",
+                    },
                   },
                   {
                     type: "filterRule",
                     field: {
                       name: "OBJECTID",
-                      type: "esriFieldTypeOID"
+                      type: "esriFieldTypeOID",
                     },
                     operator: "between",
                     constraint: {
                       type: "range",
                       startValue: "0",
-                      endValue: "100000"
-                    }
-                  }
-                ]
-              }
-            ]
+                      endValue: "100000",
+                    },
+                  },
+                ],
+              },
+            ],
           },
           outFields: ["*"],
           groupByFields: [],
@@ -3150,26 +3062,26 @@ export const baseHeaderPanel: any = {
           querySpatialRelationship: "esriSpatialRelIntersects",
           returnGeometry: false,
           clientSideStatistics: false,
-          name: "main"
-        }
+          name: "main",
+        },
       ],
       id: "f81f2270-e104-453d-9c09-045d8d1087c9",
       name: "Category Selector (1)",
       showLastUpdate: true,
       noDataVerticalAlignment: "middle",
       showCaptionWhenNoData: true,
-      showDescriptionWhenNoData: true
+      showDescriptionWhenNoData: true,
     },
     {
       type: "categorySelectorWidget",
       category: {
         type: "features",
-        itemText: "{FACILITYID}"
+        itemText: "{FACILITYID}",
       },
       selection: {
         type: "single",
         defaultSelection: "first",
-        operator: "equal"
+        operator: "equal",
       },
       preferredDisplayType: "dropdown",
       displayThreshold: 10,
@@ -3177,8 +3089,7 @@ export const baseHeaderPanel: any = {
         {
           type: "serviceDataset",
           dataSource: {
-            id:
-              "b38e032d-bf0c-426f-8036-b86341eb3693#TestLayerForDashBoardMap_632"
+            id: "b38e032d-bf0c-426f-8036-b86341eb3693#TestLayerForDashBoardMap_632",
           },
           outFields: ["*"],
           groupByFields: [],
@@ -3188,26 +3099,26 @@ export const baseHeaderPanel: any = {
           querySpatialRelationship: "esriSpatialRelIntersects",
           returnGeometry: false,
           clientSideStatistics: false,
-          name: "main"
-        }
+          name: "main",
+        },
       ],
       id: "90ebe87f-b8b4-4f1c-bc1c-313a2a799c80",
       name: "Category Selector (2)",
       showLastUpdate: true,
       noDataVerticalAlignment: "middle",
       showCaptionWhenNoData: true,
-      showDescriptionWhenNoData: true
+      showDescriptionWhenNoData: true,
     },
     {
       type: "categorySelectorWidget",
       category: {
         type: "features",
-        itemText: "{FACILITYID} {FACNAME} {POCPHONE}"
+        itemText: "{FACILITYID} {FACNAME} {POCPHONE}",
       },
       selection: {
         type: "single",
         defaultSelection: "first",
-        operator: "equal"
+        operator: "equal",
       },
       preferredDisplayType: "dropdown",
       displayThreshold: 10,
@@ -3215,8 +3126,7 @@ export const baseHeaderPanel: any = {
         {
           type: "serviceDataset",
           dataSource: {
-            id:
-              "b38e032d-bf0c-426f-8036-b86341eb3693#TestLayerForDashBoardMap_632"
+            id: "b38e032d-bf0c-426f-8036-b86341eb3693#TestLayerForDashBoardMap_632",
           },
           filter: {
             type: "filterGroup",
@@ -3230,41 +3140,41 @@ export const baseHeaderPanel: any = {
                     type: "filterRule",
                     field: {
                       name: "FACILITYID",
-                      type: "esriFieldTypeString"
+                      type: "esriFieldTypeString",
                     },
                     operator: "equal",
                     constraint: {
                       type: "value",
-                      value: "1"
-                    }
+                      value: "1",
+                    },
                   },
                   {
                     type: "filterRule",
                     field: {
                       name: "FACILITYID",
-                      type: "esriFieldTypeString"
+                      type: "esriFieldTypeString",
                     },
                     operator: "equal",
                     constraint: {
                       type: "value",
-                      value: "1"
-                    }
+                      value: "1",
+                    },
                   },
                   {
                     type: "filterRule",
                     field: {
                       name: "FULLADDR",
-                      type: "esriFieldTypeString"
+                      type: "esriFieldTypeString",
                     },
                     operator: "equal",
                     constraint: {
                       type: "value",
-                      value: "1"
-                    }
-                  }
-                ]
-              }
-            ]
+                      value: "1",
+                    },
+                  },
+                ],
+              },
+            ],
           },
           outFields: ["*"],
           groupByFields: [],
@@ -3274,25 +3184,25 @@ export const baseHeaderPanel: any = {
           querySpatialRelationship: "esriSpatialRelIntersects",
           returnGeometry: false,
           clientSideStatistics: false,
-          name: "main"
-        }
+          name: "main",
+        },
       ],
       id: "238a75d4-4a35-4747-918a-d2353b1698bd",
       name: "Category Selector (3)",
       showLastUpdate: true,
       noDataVerticalAlignment: "middle",
       showCaptionWhenNoData: true,
-      showDescriptionWhenNoData: true
+      showDescriptionWhenNoData: true,
     },
     {
       type: "categorySelectorWidget",
       category: {
-        type: "features"
+        type: "features",
       },
       selection: {
         type: "single",
         defaultSelection: "first",
-        operator: "equal"
+        operator: "equal",
       },
       preferredDisplayType: "dropdown",
       displayThreshold: 10,
@@ -3300,8 +3210,7 @@ export const baseHeaderPanel: any = {
         {
           type: "serviceDataset",
           dataSource: {
-            id:
-              "b38e032d-bf0c-426f-8036-b86341eb3693#TestLayerForDashBoardMap_632"
+            id: "b38e032d-bf0c-426f-8036-b86341eb3693#TestLayerForDashBoardMap_632",
           },
           filter: {
             type: "filterGroup",
@@ -3315,17 +3224,17 @@ export const baseHeaderPanel: any = {
                     type: "filterRule",
                     field: {
                       name: "FACILITYID",
-                      type: "esriFieldTypeString"
+                      type: "esriFieldTypeString",
                     },
                     operator: "equal",
                     constraint: {
                       type: "value",
-                      value: "12"
-                    }
-                  }
-                ]
-              }
-            ]
+                      value: "12",
+                    },
+                  },
+                ],
+              },
+            ],
           },
           outFields: ["*"],
           groupByFields: [],
@@ -3335,8 +3244,8 @@ export const baseHeaderPanel: any = {
           querySpatialRelationship: "esriSpatialRelIntersects",
           returnGeometry: false,
           clientSideStatistics: false,
-          name: "main"
-        }
+          name: "main",
+        },
       ],
       events: [
         {
@@ -3345,42 +3254,41 @@ export const baseHeaderPanel: any = {
             {
               type: "filter",
               by: "whereClause",
-              targetId:
-                "b38e032d-bf0c-426f-8036-b86341eb3693#TestLayerForDashBoardMap_632"
+              targetId: "b38e032d-bf0c-426f-8036-b86341eb3693#TestLayerForDashBoardMap_632",
             },
             {
               type: "filter",
               by: "whereClause",
-              targetId: "90ebe87f-b8b4-4f1c-bc1c-313a2a799c80#main"
+              targetId: "90ebe87f-b8b4-4f1c-bc1c-313a2a799c80#main",
             },
             {
               type: "flashGeometry",
-              targetId: "b38e032d-bf0c-426f-8036-b86341eb3693"
+              targetId: "b38e032d-bf0c-426f-8036-b86341eb3693",
             },
             {
               type: "identify",
-              targetId: "b38e032d-bf0c-426f-8036-b86341eb3693"
-            }
-          ]
-        }
+              targetId: "b38e032d-bf0c-426f-8036-b86341eb3693",
+            },
+          ],
+        },
       ],
       id: "bfbc8214-5549-4fe7-a919-d7857ce0ea16",
       name: "Category Selector (4)",
       showLastUpdate: true,
       noDataVerticalAlignment: "middle",
       showCaptionWhenNoData: true,
-      showDescriptionWhenNoData: true
+      showDescriptionWhenNoData: true,
     },
     {
       type: "categorySelectorWidget",
       category: {
         type: "features",
-        itemText: "{NAME}"
+        itemText: "{NAME}",
       },
       selection: {
         type: "single",
         defaultSelection: "first",
-        operator: "equal"
+        operator: "equal",
       },
       preferredDisplayType: "dropdown",
       displayThreshold: 10,
@@ -3391,7 +3299,7 @@ export const baseHeaderPanel: any = {
             type: "featureServiceDataSource",
             itemId: "934a9ef8efa7448fa8ddf7b13cef0240",
             layerId: 0,
-            table: false
+            table: false,
           },
           filter: {
             type: "filterGroup",
@@ -3405,29 +3313,29 @@ export const baseHeaderPanel: any = {
                     type: "filterRule",
                     field: {
                       name: "OWNTYPE",
-                      type: "esriFieldTypeString"
+                      type: "esriFieldTypeString",
                     },
                     operator: "equal",
                     constraint: {
                       type: "value",
-                      value: "1"
-                    }
+                      value: "1",
+                    },
                   },
                   {
                     type: "filterRule",
                     field: {
                       name: "FACILITYID",
-                      type: "esriFieldTypeString"
+                      type: "esriFieldTypeString",
                     },
                     operator: "equal",
                     constraint: {
                       type: "value",
-                      value: "1"
-                    }
-                  }
-                ]
-              }
-            ]
+                      value: "1",
+                    },
+                  },
+                ],
+              },
+            ],
           },
           outFields: ["*"],
           groupByFields: [],
@@ -3437,8 +3345,8 @@ export const baseHeaderPanel: any = {
           querySpatialRelationship: "esriSpatialRelIntersects",
           returnGeometry: false,
           clientSideStatistics: false,
-          name: "main"
-        }
+          name: "main",
+        },
       ],
       events: [
         {
@@ -3450,20 +3358,20 @@ export const baseHeaderPanel: any = {
               fieldMap: [
                 {
                   sourceName: "FACILITYID",
-                  targetName: "FULLADDR"
-                }
+                  targetName: "FULLADDR",
+                },
               ],
-              targetId: "f81f2270-e104-453d-9c09-045d8d1087c9#main"
-            }
-          ]
-        }
+              targetId: "f81f2270-e104-453d-9c09-045d8d1087c9#main",
+            },
+          ],
+        },
       ],
       id: "79de7d45-0586-43fa-91e6-9d020c88d2d3",
       name: "Category Selector (5)",
       showLastUpdate: true,
       noDataVerticalAlignment: "middle",
       showCaptionWhenNoData: true,
-      showDescriptionWhenNoData: true
+      showDescriptionWhenNoData: true,
     },
     {
       type: "dateSelectorWidget",
@@ -3472,7 +3380,7 @@ export const baseHeaderPanel: any = {
         type: "definedOptions",
         displayType: "dropdown",
         defaultSelection: "first",
-        namedFilters: []
+        namedFilters: [],
       },
       events: [
         {
@@ -3484,23 +3392,22 @@ export const baseHeaderPanel: any = {
               fieldMap: [
                 {
                   sourceName: "filterField",
-                  targetName: "CLOSEDDATE"
-                }
+                  targetName: "CLOSEDDATE",
+                },
               ],
-              targetId:
-                "b38e032d-bf0c-426f-8036-b86341eb3693#TestLayerForDashBoardMap_632"
-            }
-          ]
-        }
+              targetId: "b38e032d-bf0c-426f-8036-b86341eb3693#TestLayerForDashBoardMap_632",
+            },
+          ],
+        },
       ],
       id: "cdc451c3-846f-4ac9-afe7-c0292d35f1bd",
       name: "Date Selector (1)",
       showLastUpdate: true,
       noDataVerticalAlignment: "middle",
       showCaptionWhenNoData: true,
-      showDescriptionWhenNoData: true
-    }
-  ]
+      showDescriptionWhenNoData: true,
+    },
+  ],
 };
 
 export const expectedHeaderPanel: any = {
@@ -3519,13 +3426,12 @@ export const expectedHeaderPanel: any = {
       type: "categorySelectorWidget",
       category: {
         type: "features",
-        itemText:
-          "{{{4efe5f693de34620934787ead6693f19.layer2.fields.facilityid.name}}}"
+        itemText: "{{{4efe5f693de34620934787ead6693f19.layer2.fields.facilityid.name}}}",
       },
       selection: {
         type: "single",
         defaultSelection: "first",
-        operator: "equal"
+        operator: "equal",
       },
       preferredDisplayType: "dropdown",
       displayThreshold: 10,
@@ -3533,8 +3439,7 @@ export const expectedHeaderPanel: any = {
         {
           type: "serviceDataset",
           dataSource: {
-            id:
-              "b38e032d-bf0c-426f-8036-b86341eb3693#TestLayerForDashBoardMap_632"
+            id: "b38e032d-bf0c-426f-8036-b86341eb3693#TestLayerForDashBoardMap_632",
           },
           filter: {
             type: "filterGroup",
@@ -3547,66 +3452,60 @@ export const expectedHeaderPanel: any = {
                   {
                     type: "filterRule",
                     field: {
-                      name:
-                        "{{4efe5f693de34620934787ead6693f19.layer2.fields.facname.name}}",
-                      type: "esriFieldTypeString"
+                      name: "{{4efe5f693de34620934787ead6693f19.layer2.fields.facname.name}}",
+                      type: "esriFieldTypeString",
                     },
                     operator: "equal",
                     constraint: {
                       type: "field",
-                      value:
-                        "{{4efe5f693de34620934787ead6693f19.layer2.fields.organiz.name}}"
-                    }
+                      value: "{{4efe5f693de34620934787ead6693f19.layer2.fields.organiz.name}}",
+                    },
                   },
                   {
                     type: "filterRule",
                     field: {
-                      name:
-                        "{{4efe5f693de34620934787ead6693f19.layer2.fields.objectid.name}}",
-                      type: "esriFieldTypeOID"
+                      name: "{{4efe5f693de34620934787ead6693f19.layer2.fields.objectid.name}}",
+                      type: "esriFieldTypeOID",
                     },
                     operator: "between",
                     constraint: {
                       type: "range",
                       startValue: "0",
-                      endValue: "100000"
-                    }
-                  }
-                ]
-              }
-            ]
+                      endValue: "100000",
+                    },
+                  },
+                ],
+              },
+            ],
           },
           outFields: ["*"],
           groupByFields: [],
-          orderByFields: [
-            "{{4efe5f693de34620934787ead6693f19.layer2.fields.organiz.name}} asc"
-          ],
+          orderByFields: ["{{4efe5f693de34620934787ead6693f19.layer2.fields.organiz.name}} asc"],
           statisticDefinitions: [],
           maxFeatures: 50,
           querySpatialRelationship: "esriSpatialRelIntersects",
           returnGeometry: false,
           clientSideStatistics: false,
-          name: "main"
-        }
+          name: "main",
+        },
       ],
       id: "f81f2270-e104-453d-9c09-045d8d1087c9",
       name: "Category Selector (1)",
       showLastUpdate: true,
       noDataVerticalAlignment: "middle",
       showCaptionWhenNoData: true,
-      showDescriptionWhenNoData: true
+      showDescriptionWhenNoData: true,
     },
     {
       type: "categorySelectorWidget",
       category: {
         type: "features",
-        itemText:
-          "{{{4efe5f693de34620934787ead6693f19.layer2.fields.facilityid.name}}}"
+        itemText: "{{{4efe5f693de34620934787ead6693f19.layer2.fields.facilityid.name}}}",
       },
       selection: {
         type: "single",
         defaultSelection: "first",
-        operator: "equal"
+        operator: "equal",
       },
       preferredDisplayType: "dropdown",
       displayThreshold: 10,
@@ -3614,40 +3513,37 @@ export const expectedHeaderPanel: any = {
         {
           type: "serviceDataset",
           dataSource: {
-            id:
-              "b38e032d-bf0c-426f-8036-b86341eb3693#TestLayerForDashBoardMap_632"
+            id: "b38e032d-bf0c-426f-8036-b86341eb3693#TestLayerForDashBoardMap_632",
           },
           outFields: ["*"],
           groupByFields: [],
-          orderByFields: [
-            "{{4efe5f693de34620934787ead6693f19.layer2.fields.facname.name}} asc"
-          ],
+          orderByFields: ["{{4efe5f693de34620934787ead6693f19.layer2.fields.facname.name}} asc"],
           statisticDefinitions: [],
           maxFeatures: 50,
           querySpatialRelationship: "esriSpatialRelIntersects",
           returnGeometry: false,
           clientSideStatistics: false,
-          name: "main"
-        }
+          name: "main",
+        },
       ],
       id: "90ebe87f-b8b4-4f1c-bc1c-313a2a799c80",
       name: "Category Selector (2)",
       showLastUpdate: true,
       noDataVerticalAlignment: "middle",
       showCaptionWhenNoData: true,
-      showDescriptionWhenNoData: true
+      showDescriptionWhenNoData: true,
     },
     {
       type: "categorySelectorWidget",
       category: {
         type: "features",
         itemText:
-          "{{{4efe5f693de34620934787ead6693f19.layer2.fields.facilityid.name}}} {{{4efe5f693de34620934787ead6693f19.layer2.fields.facname.name}}} {{{4efe5f693de34620934787ead6693f19.layer2.fields.pocphone.name}}}"
+          "{{{4efe5f693de34620934787ead6693f19.layer2.fields.facilityid.name}}} {{{4efe5f693de34620934787ead6693f19.layer2.fields.facname.name}}} {{{4efe5f693de34620934787ead6693f19.layer2.fields.pocphone.name}}}",
       },
       selection: {
         type: "single",
         defaultSelection: "first",
-        operator: "equal"
+        operator: "equal",
       },
       preferredDisplayType: "dropdown",
       displayThreshold: 10,
@@ -3655,8 +3551,7 @@ export const expectedHeaderPanel: any = {
         {
           type: "serviceDataset",
           dataSource: {
-            id:
-              "b38e032d-bf0c-426f-8036-b86341eb3693#TestLayerForDashBoardMap_632"
+            id: "b38e032d-bf0c-426f-8036-b86341eb3693#TestLayerForDashBoardMap_632",
           },
           filter: {
             type: "filterGroup",
@@ -3669,45 +3564,42 @@ export const expectedHeaderPanel: any = {
                   {
                     type: "filterRule",
                     field: {
-                      name:
-                        "{{4efe5f693de34620934787ead6693f19.layer2.fields.facilityid.name}}",
-                      type: "esriFieldTypeString"
+                      name: "{{4efe5f693de34620934787ead6693f19.layer2.fields.facilityid.name}}",
+                      type: "esriFieldTypeString",
                     },
                     operator: "equal",
                     constraint: {
                       type: "value",
-                      value: "1"
-                    }
+                      value: "1",
+                    },
                   },
                   {
                     type: "filterRule",
                     field: {
-                      name:
-                        "{{4efe5f693de34620934787ead6693f19.layer2.fields.facilityid.name}}",
-                      type: "esriFieldTypeString"
+                      name: "{{4efe5f693de34620934787ead6693f19.layer2.fields.facilityid.name}}",
+                      type: "esriFieldTypeString",
                     },
                     operator: "equal",
                     constraint: {
                       type: "value",
-                      value: "1"
-                    }
+                      value: "1",
+                    },
                   },
                   {
                     type: "filterRule",
                     field: {
-                      name:
-                        "{{4efe5f693de34620934787ead6693f19.layer2.fields.fulladdr.name}}",
-                      type: "esriFieldTypeString"
+                      name: "{{4efe5f693de34620934787ead6693f19.layer2.fields.fulladdr.name}}",
+                      type: "esriFieldTypeString",
                     },
                     operator: "equal",
                     constraint: {
                       type: "value",
-                      value: "1"
-                    }
-                  }
-                ]
-              }
-            ]
+                      value: "1",
+                    },
+                  },
+                ],
+              },
+            ],
           },
           outFields: ["*"],
           groupByFields: [],
@@ -3717,25 +3609,25 @@ export const expectedHeaderPanel: any = {
           querySpatialRelationship: "esriSpatialRelIntersects",
           returnGeometry: false,
           clientSideStatistics: false,
-          name: "main"
-        }
+          name: "main",
+        },
       ],
       id: "238a75d4-4a35-4747-918a-d2353b1698bd",
       name: "Category Selector (3)",
       showLastUpdate: true,
       noDataVerticalAlignment: "middle",
       showCaptionWhenNoData: true,
-      showDescriptionWhenNoData: true
+      showDescriptionWhenNoData: true,
     },
     {
       type: "categorySelectorWidget",
       category: {
-        type: "features"
+        type: "features",
       },
       selection: {
         type: "single",
         defaultSelection: "first",
-        operator: "equal"
+        operator: "equal",
       },
       preferredDisplayType: "dropdown",
       displayThreshold: 10,
@@ -3743,8 +3635,7 @@ export const expectedHeaderPanel: any = {
         {
           type: "serviceDataset",
           dataSource: {
-            id:
-              "b38e032d-bf0c-426f-8036-b86341eb3693#TestLayerForDashBoardMap_632"
+            id: "b38e032d-bf0c-426f-8036-b86341eb3693#TestLayerForDashBoardMap_632",
           },
           filter: {
             type: "filterGroup",
@@ -3757,19 +3648,18 @@ export const expectedHeaderPanel: any = {
                   {
                     type: "filterRule",
                     field: {
-                      name:
-                        "{{4efe5f693de34620934787ead6693f19.layer2.fields.facilityid.name}}",
-                      type: "esriFieldTypeString"
+                      name: "{{4efe5f693de34620934787ead6693f19.layer2.fields.facilityid.name}}",
+                      type: "esriFieldTypeString",
                     },
                     operator: "equal",
                     constraint: {
                       type: "value",
-                      value: "12"
-                    }
-                  }
-                ]
-              }
-            ]
+                      value: "12",
+                    },
+                  },
+                ],
+              },
+            ],
           },
           outFields: ["*"],
           groupByFields: [],
@@ -3779,8 +3669,8 @@ export const expectedHeaderPanel: any = {
           querySpatialRelationship: "esriSpatialRelIntersects",
           returnGeometry: false,
           clientSideStatistics: false,
-          name: "main"
-        }
+          name: "main",
+        },
       ],
       events: [
         {
@@ -3789,43 +3679,41 @@ export const expectedHeaderPanel: any = {
             {
               type: "filter",
               by: "whereClause",
-              targetId:
-                "b38e032d-bf0c-426f-8036-b86341eb3693#TestLayerForDashBoardMap_632"
+              targetId: "b38e032d-bf0c-426f-8036-b86341eb3693#TestLayerForDashBoardMap_632",
             },
             {
               type: "filter",
               by: "whereClause",
-              targetId: "90ebe87f-b8b4-4f1c-bc1c-313a2a799c80#main"
+              targetId: "90ebe87f-b8b4-4f1c-bc1c-313a2a799c80#main",
             },
             {
               type: "flashGeometry",
-              targetId: "b38e032d-bf0c-426f-8036-b86341eb3693"
+              targetId: "b38e032d-bf0c-426f-8036-b86341eb3693",
             },
             {
               type: "identify",
-              targetId: "b38e032d-bf0c-426f-8036-b86341eb3693"
-            }
-          ]
-        }
+              targetId: "b38e032d-bf0c-426f-8036-b86341eb3693",
+            },
+          ],
+        },
       ],
       id: "bfbc8214-5549-4fe7-a919-d7857ce0ea16",
       name: "Category Selector (4)",
       showLastUpdate: true,
       noDataVerticalAlignment: "middle",
       showCaptionWhenNoData: true,
-      showDescriptionWhenNoData: true
+      showDescriptionWhenNoData: true,
     },
     {
       type: "categorySelectorWidget",
       category: {
         type: "features",
-        itemText:
-          "{{{934a9ef8efa7448fa8ddf7b13cef0240.layer0.fields.name.name}}}"
+        itemText: "{{{934a9ef8efa7448fa8ddf7b13cef0240.layer0.fields.name.name}}}",
       },
       selection: {
         type: "single",
         defaultSelection: "first",
-        operator: "equal"
+        operator: "equal",
       },
       preferredDisplayType: "dropdown",
       displayThreshold: 10,
@@ -3836,7 +3724,7 @@ export const expectedHeaderPanel: any = {
             type: "featureServiceDataSource",
             itemId: "{{934a9ef8efa7448fa8ddf7b13cef0240.itemId}}",
             layerId: 0,
-            table: false
+            table: false,
           },
           filter: {
             type: "filterGroup",
@@ -3849,32 +3737,30 @@ export const expectedHeaderPanel: any = {
                   {
                     type: "filterRule",
                     field: {
-                      name:
-                        "{{934a9ef8efa7448fa8ddf7b13cef0240.layer0.fields.owntype.name}}",
-                      type: "esriFieldTypeString"
+                      name: "{{934a9ef8efa7448fa8ddf7b13cef0240.layer0.fields.owntype.name}}",
+                      type: "esriFieldTypeString",
                     },
                     operator: "equal",
                     constraint: {
                       type: "value",
-                      value: "1"
-                    }
+                      value: "1",
+                    },
                   },
                   {
                     type: "filterRule",
                     field: {
-                      name:
-                        "{{934a9ef8efa7448fa8ddf7b13cef0240.layer0.fields.facilityid.name}}",
-                      type: "esriFieldTypeString"
+                      name: "{{934a9ef8efa7448fa8ddf7b13cef0240.layer0.fields.facilityid.name}}",
+                      type: "esriFieldTypeString",
                     },
                     operator: "equal",
                     constraint: {
                       type: "value",
-                      value: "1"
-                    }
-                  }
-                ]
-              }
-            ]
+                      value: "1",
+                    },
+                  },
+                ],
+              },
+            ],
           },
           outFields: ["*"],
           groupByFields: [],
@@ -3884,8 +3770,8 @@ export const expectedHeaderPanel: any = {
           querySpatialRelationship: "esriSpatialRelIntersects",
           returnGeometry: false,
           clientSideStatistics: false,
-          name: "main"
-        }
+          name: "main",
+        },
       ],
       events: [
         {
@@ -3896,23 +3782,21 @@ export const expectedHeaderPanel: any = {
               by: "whereClause",
               fieldMap: [
                 {
-                  sourceName:
-                    "{{934a9ef8efa7448fa8ddf7b13cef0240.layer0.fields.facilityid.name}}",
-                  targetName:
-                    "{{4efe5f693de34620934787ead6693f19.layer2.fields.fulladdr.name}}"
-                }
+                  sourceName: "{{934a9ef8efa7448fa8ddf7b13cef0240.layer0.fields.facilityid.name}}",
+                  targetName: "{{4efe5f693de34620934787ead6693f19.layer2.fields.fulladdr.name}}",
+                },
               ],
-              targetId: "f81f2270-e104-453d-9c09-045d8d1087c9#main"
-            }
-          ]
-        }
+              targetId: "f81f2270-e104-453d-9c09-045d8d1087c9#main",
+            },
+          ],
+        },
       ],
       id: "79de7d45-0586-43fa-91e6-9d020c88d2d3",
       name: "Category Selector (5)",
       showLastUpdate: true,
       noDataVerticalAlignment: "middle",
       showCaptionWhenNoData: true,
-      showDescriptionWhenNoData: true
+      showDescriptionWhenNoData: true,
     },
     {
       type: "dateSelectorWidget",
@@ -3921,7 +3805,7 @@ export const expectedHeaderPanel: any = {
         type: "definedOptions",
         displayType: "dropdown",
         defaultSelection: "first",
-        namedFilters: []
+        namedFilters: [],
       },
       events: [
         {
@@ -3933,24 +3817,22 @@ export const expectedHeaderPanel: any = {
               fieldMap: [
                 {
                   sourceName: "filterField",
-                  targetName:
-                    "{{4efe5f693de34620934787ead6693f19.layer2.fields.closeddate.name}}"
-                }
+                  targetName: "{{4efe5f693de34620934787ead6693f19.layer2.fields.closeddate.name}}",
+                },
               ],
-              targetId:
-                "b38e032d-bf0c-426f-8036-b86341eb3693#TestLayerForDashBoardMap_632"
-            }
-          ]
-        }
+              targetId: "b38e032d-bf0c-426f-8036-b86341eb3693#TestLayerForDashBoardMap_632",
+            },
+          ],
+        },
       ],
       id: "cdc451c3-846f-4ac9-afe7-c0292d35f1bd",
       name: "Date Selector (1)",
       showLastUpdate: true,
       noDataVerticalAlignment: "middle",
       showCaptionWhenNoData: true,
-      showDescriptionWhenNoData: true
-    }
-  ]
+      showDescriptionWhenNoData: true,
+    },
+  ],
 };
 
 export const baseLeftPanel: any = {
@@ -3960,12 +3842,12 @@ export const baseLeftPanel: any = {
       type: "categorySelectorWidget",
       category: {
         type: "features",
-        itemText: "{NAME}"
+        itemText: "{NAME}",
       },
       selection: {
         type: "single",
         defaultSelection: "first",
-        operator: "equal"
+        operator: "equal",
       },
       preferredDisplayType: "dropdown",
       displayThreshold: 10,
@@ -3976,7 +3858,7 @@ export const baseLeftPanel: any = {
             type: "featureServiceDataSource",
             itemId: "934a9ef8efa7448fa8ddf7b13cef0240",
             layerId: 0,
-            table: false
+            table: false,
           },
           filter: {
             type: "filterGroup",
@@ -3990,17 +3872,17 @@ export const baseLeftPanel: any = {
                     type: "filterRule",
                     field: {
                       name: "FACILITYID",
-                      type: "esriFieldTypeString"
+                      type: "esriFieldTypeString",
                     },
                     operator: "equal",
                     constraint: {
                       type: "value",
-                      value: "1"
-                    }
-                  }
-                ]
-              }
-            ]
+                      value: "1",
+                    },
+                  },
+                ],
+              },
+            ],
           },
           outFields: ["*"],
           groupByFields: [],
@@ -4010,8 +3892,8 @@ export const baseLeftPanel: any = {
           querySpatialRelationship: "esriSpatialRelIntersects",
           returnGeometry: false,
           clientSideStatistics: false,
-          name: "main"
-        }
+          name: "main",
+        },
       ],
       events: [
         {
@@ -4023,20 +3905,20 @@ export const baseLeftPanel: any = {
               fieldMap: [
                 {
                   sourceName: "FACILITYID",
-                  targetName: "FULLADDR"
-                }
+                  targetName: "FULLADDR",
+                },
               ],
-              targetId: "f81f2270-e104-453d-9c09-045d8d1087c9#main"
-            }
-          ]
-        }
+              targetId: "f81f2270-e104-453d-9c09-045d8d1087c9#main",
+            },
+          ],
+        },
       ],
       id: "0ef05811-5ef1-4079-b8c3-68671d1d2a77",
       name: "Category Selector (6)",
       showLastUpdate: true,
       noDataVerticalAlignment: "middle",
       showCaptionWhenNoData: true,
-      showDescriptionWhenNoData: true
+      showDescriptionWhenNoData: true,
     },
     {
       type: "dateSelectorWidget",
@@ -4045,7 +3927,7 @@ export const baseLeftPanel: any = {
         type: "definedOptions",
         displayType: "dropdown",
         defaultSelection: "first",
-        namedFilters: []
+        namedFilters: [],
       },
       events: [
         {
@@ -4057,31 +3939,30 @@ export const baseLeftPanel: any = {
               fieldMap: [
                 {
                   sourceName: "filterField",
-                  targetName: "CLOSEDDATE"
-                }
+                  targetName: "CLOSEDDATE",
+                },
               ],
-              targetId:
-                "b38e032d-bf0c-426f-8036-b86341eb3693#TestLayerForDashBoardMap_632"
-            }
-          ]
-        }
+              targetId: "b38e032d-bf0c-426f-8036-b86341eb3693#TestLayerForDashBoardMap_632",
+            },
+          ],
+        },
       ],
       id: "ed1704e5-1a5b-4155-b522-d702ee818e80",
       name: "Date Selector (2)",
       showLastUpdate: true,
       noDataVerticalAlignment: "middle",
       showCaptionWhenNoData: true,
-      showDescriptionWhenNoData: true
+      showDescriptionWhenNoData: true,
     },
     {
       type: "categorySelectorWidget",
       category: {
-        type: "static"
+        type: "static",
       },
       selection: {
         type: "single",
         defaultSelection: "first",
-        operator: "equal"
+        operator: "equal",
       },
       preferredDisplayType: "dropdown",
       displayThreshold: 10,
@@ -4091,10 +3972,10 @@ export const baseLeftPanel: any = {
           data: {
             type: "staticValues",
             dataType: "string",
-            values: []
+            values: [],
           },
-          name: "main"
-        }
+          name: "main",
+        },
       ],
       events: [
         {
@@ -4106,31 +3987,30 @@ export const baseLeftPanel: any = {
               fieldMap: [
                 {
                   sourceName: "filterField",
-                  targetName: "FACNAME"
-                }
+                  targetName: "FACNAME",
+                },
               ],
-              targetId:
-                "b38e032d-bf0c-426f-8036-b86341eb3693#TestLayerForDashBoardMap_632"
-            }
-          ]
-        }
+              targetId: "b38e032d-bf0c-426f-8036-b86341eb3693#TestLayerForDashBoardMap_632",
+            },
+          ],
+        },
       ],
       id: "38b8b9b2-0a0c-4c31-b24d-0f087229a0be",
       name: "Category Selector (7)",
       showLastUpdate: true,
       noDataVerticalAlignment: "middle",
       showCaptionWhenNoData: true,
-      showDescriptionWhenNoData: true
+      showDescriptionWhenNoData: true,
     },
     {
       type: "categorySelectorWidget",
       category: {
-        type: "static"
+        type: "static",
       },
       selection: {
         type: "single",
         defaultSelection: "first",
-        operator: "equal"
+        operator: "equal",
       },
       preferredDisplayType: "dropdown",
       displayThreshold: 10,
@@ -4140,10 +4020,10 @@ export const baseLeftPanel: any = {
           data: {
             type: "staticValues",
             dataType: "string",
-            values: []
+            values: [],
           },
-          name: "main"
-        }
+          name: "main",
+        },
       ],
       events: [
         {
@@ -4155,31 +4035,31 @@ export const baseLeftPanel: any = {
               fieldMap: [
                 {
                   sourceName: "filterField",
-                  targetName: "FULLADDR"
-                }
+                  targetName: "FULLADDR",
+                },
               ],
-              targetId: "7866f4bd-8361-4205-8fd7-f92da41fdb61#main"
-            }
-          ]
-        }
+              targetId: "7866f4bd-8361-4205-8fd7-f92da41fdb61#main",
+            },
+          ],
+        },
       ],
       id: "5dd48c85-d155-4ce1-a61e-59623aba6319",
       name: "Category Selector (8)",
       showLastUpdate: true,
       noDataVerticalAlignment: "middle",
       showCaptionWhenNoData: true,
-      showDescriptionWhenNoData: true
+      showDescriptionWhenNoData: true,
     },
     {
       type: "categorySelectorWidget",
       category: {
         type: "features",
-        itemText: "{FACILITYID}"
+        itemText: "{FACILITYID}",
       },
       selection: {
         type: "single",
         defaultSelection: "first",
-        operator: "equal"
+        operator: "equal",
       },
       preferredDisplayType: "dropdown",
       displayThreshold: 10,
@@ -4190,7 +4070,7 @@ export const baseLeftPanel: any = {
             type: "featureServiceDataSource",
             itemId: "934a9ef8efa7448fa8ddf7b13cef0240",
             layerId: 0,
-            table: false
+            table: false,
           },
           filter: {
             type: "filterGroup",
@@ -4204,17 +4084,17 @@ export const baseLeftPanel: any = {
                     type: "filterRule",
                     field: {
                       name: "FACILITYID",
-                      type: "esriFieldTypeString"
+                      type: "esriFieldTypeString",
                     },
                     operator: "equal",
                     constraint: {
                       type: "value",
-                      value: "34"
-                    }
-                  }
-                ]
-              }
-            ]
+                      value: "34",
+                    },
+                  },
+                ],
+              },
+            ],
           },
           outFields: ["*"],
           groupByFields: [],
@@ -4224,25 +4104,25 @@ export const baseLeftPanel: any = {
           querySpatialRelationship: "esriSpatialRelIntersects",
           returnGeometry: false,
           clientSideStatistics: false,
-          name: "main"
-        }
+          name: "main",
+        },
       ],
       id: "a78ee2ac-bfe2-4a4c-a477-1d4abb76419a",
       name: "Category Selector (9)",
       showLastUpdate: true,
       noDataVerticalAlignment: "middle",
       showCaptionWhenNoData: true,
-      showDescriptionWhenNoData: true
+      showDescriptionWhenNoData: true,
     },
     {
       type: "categorySelectorWidget",
       category: {
-        type: "static"
+        type: "static",
       },
       selection: {
         type: "single",
         defaultSelection: "first",
-        operator: "equal"
+        operator: "equal",
       },
       preferredDisplayType: "dropdown",
       displayThreshold: 10,
@@ -4252,10 +4132,10 @@ export const baseLeftPanel: any = {
           data: {
             type: "staticValues",
             dataType: "string",
-            values: []
+            values: [],
           },
-          name: "main"
-        }
+          name: "main",
+        },
       ],
       events: [
         {
@@ -4267,22 +4147,22 @@ export const baseLeftPanel: any = {
               fieldMap: [
                 {
                   sourceName: "filterField",
-                  targetName: "FULLADDR"
-                }
+                  targetName: "FULLADDR",
+                },
               ],
-              targetId: "c220e9bb-f0b9-4f0e-93e8-8baa3f39aa0c#main"
-            }
-          ]
-        }
+              targetId: "c220e9bb-f0b9-4f0e-93e8-8baa3f39aa0c#main",
+            },
+          ],
+        },
       ],
       id: "114026d5-93ff-4d11-9343-50b1e7f72eca",
       name: "Category Selector (10)",
       showLastUpdate: true,
       noDataVerticalAlignment: "middle",
       showCaptionWhenNoData: true,
-      showDescriptionWhenNoData: true
-    }
-  ]
+      showDescriptionWhenNoData: true,
+    },
+  ],
 };
 
 export const expectedLeftPanel: any = {
@@ -4292,13 +4172,12 @@ export const expectedLeftPanel: any = {
       type: "categorySelectorWidget",
       category: {
         type: "features",
-        itemText:
-          "{{{934a9ef8efa7448fa8ddf7b13cef0240.layer0.fields.name.name}}}"
+        itemText: "{{{934a9ef8efa7448fa8ddf7b13cef0240.layer0.fields.name.name}}}",
       },
       selection: {
         type: "single",
         defaultSelection: "first",
-        operator: "equal"
+        operator: "equal",
       },
       preferredDisplayType: "dropdown",
       displayThreshold: 10,
@@ -4309,7 +4188,7 @@ export const expectedLeftPanel: any = {
             type: "featureServiceDataSource",
             itemId: "{{934a9ef8efa7448fa8ddf7b13cef0240.itemId}}",
             layerId: 0,
-            table: false
+            table: false,
           },
           filter: {
             type: "filterGroup",
@@ -4322,19 +4201,18 @@ export const expectedLeftPanel: any = {
                   {
                     type: "filterRule",
                     field: {
-                      name:
-                        "{{934a9ef8efa7448fa8ddf7b13cef0240.layer0.fields.facilityid.name}}",
-                      type: "esriFieldTypeString"
+                      name: "{{934a9ef8efa7448fa8ddf7b13cef0240.layer0.fields.facilityid.name}}",
+                      type: "esriFieldTypeString",
                     },
                     operator: "equal",
                     constraint: {
                       type: "value",
-                      value: "1"
-                    }
-                  }
-                ]
-              }
-            ]
+                      value: "1",
+                    },
+                  },
+                ],
+              },
+            ],
           },
           outFields: ["*"],
           groupByFields: [],
@@ -4344,8 +4222,8 @@ export const expectedLeftPanel: any = {
           querySpatialRelationship: "esriSpatialRelIntersects",
           returnGeometry: false,
           clientSideStatistics: false,
-          name: "main"
-        }
+          name: "main",
+        },
       ],
       events: [
         {
@@ -4356,23 +4234,21 @@ export const expectedLeftPanel: any = {
               by: "whereClause",
               fieldMap: [
                 {
-                  sourceName:
-                    "{{934a9ef8efa7448fa8ddf7b13cef0240.layer0.fields.facilityid.name}}",
-                  targetName:
-                    "{{4efe5f693de34620934787ead6693f19.layer2.fields.fulladdr.name}}"
-                }
+                  sourceName: "{{934a9ef8efa7448fa8ddf7b13cef0240.layer0.fields.facilityid.name}}",
+                  targetName: "{{4efe5f693de34620934787ead6693f19.layer2.fields.fulladdr.name}}",
+                },
               ],
-              targetId: "f81f2270-e104-453d-9c09-045d8d1087c9#main"
-            }
-          ]
-        }
+              targetId: "f81f2270-e104-453d-9c09-045d8d1087c9#main",
+            },
+          ],
+        },
       ],
       id: "0ef05811-5ef1-4079-b8c3-68671d1d2a77",
       name: "Category Selector (6)",
       showLastUpdate: true,
       noDataVerticalAlignment: "middle",
       showCaptionWhenNoData: true,
-      showDescriptionWhenNoData: true
+      showDescriptionWhenNoData: true,
     },
     {
       type: "dateSelectorWidget",
@@ -4381,7 +4257,7 @@ export const expectedLeftPanel: any = {
         type: "definedOptions",
         displayType: "dropdown",
         defaultSelection: "first",
-        namedFilters: []
+        namedFilters: [],
       },
       events: [
         {
@@ -4393,32 +4269,30 @@ export const expectedLeftPanel: any = {
               fieldMap: [
                 {
                   sourceName: "filterField",
-                  targetName:
-                    "{{4efe5f693de34620934787ead6693f19.layer2.fields.closeddate.name}}"
-                }
+                  targetName: "{{4efe5f693de34620934787ead6693f19.layer2.fields.closeddate.name}}",
+                },
               ],
-              targetId:
-                "b38e032d-bf0c-426f-8036-b86341eb3693#TestLayerForDashBoardMap_632"
-            }
-          ]
-        }
+              targetId: "b38e032d-bf0c-426f-8036-b86341eb3693#TestLayerForDashBoardMap_632",
+            },
+          ],
+        },
       ],
       id: "ed1704e5-1a5b-4155-b522-d702ee818e80",
       name: "Date Selector (2)",
       showLastUpdate: true,
       noDataVerticalAlignment: "middle",
       showCaptionWhenNoData: true,
-      showDescriptionWhenNoData: true
+      showDescriptionWhenNoData: true,
     },
     {
       type: "categorySelectorWidget",
       category: {
-        type: "static"
+        type: "static",
       },
       selection: {
         type: "single",
         defaultSelection: "first",
-        operator: "equal"
+        operator: "equal",
       },
       preferredDisplayType: "dropdown",
       displayThreshold: 10,
@@ -4428,10 +4302,10 @@ export const expectedLeftPanel: any = {
           data: {
             type: "staticValues",
             dataType: "string",
-            values: []
+            values: [],
           },
-          name: "main"
-        }
+          name: "main",
+        },
       ],
       events: [
         {
@@ -4443,32 +4317,30 @@ export const expectedLeftPanel: any = {
               fieldMap: [
                 {
                   sourceName: "filterField",
-                  targetName:
-                    "{{4efe5f693de34620934787ead6693f19.layer2.fields.facname.name}}"
-                }
+                  targetName: "{{4efe5f693de34620934787ead6693f19.layer2.fields.facname.name}}",
+                },
               ],
-              targetId:
-                "b38e032d-bf0c-426f-8036-b86341eb3693#TestLayerForDashBoardMap_632"
-            }
-          ]
-        }
+              targetId: "b38e032d-bf0c-426f-8036-b86341eb3693#TestLayerForDashBoardMap_632",
+            },
+          ],
+        },
       ],
       id: "38b8b9b2-0a0c-4c31-b24d-0f087229a0be",
       name: "Category Selector (7)",
       showLastUpdate: true,
       noDataVerticalAlignment: "middle",
       showCaptionWhenNoData: true,
-      showDescriptionWhenNoData: true
+      showDescriptionWhenNoData: true,
     },
     {
       type: "categorySelectorWidget",
       category: {
-        type: "static"
+        type: "static",
       },
       selection: {
         type: "single",
         defaultSelection: "first",
-        operator: "equal"
+        operator: "equal",
       },
       preferredDisplayType: "dropdown",
       displayThreshold: 10,
@@ -4478,10 +4350,10 @@ export const expectedLeftPanel: any = {
           data: {
             type: "staticValues",
             dataType: "string",
-            values: []
+            values: [],
           },
-          name: "main"
-        }
+          name: "main",
+        },
       ],
       events: [
         {
@@ -4493,33 +4365,31 @@ export const expectedLeftPanel: any = {
               fieldMap: [
                 {
                   sourceName: "filterField",
-                  targetName:
-                    "{{4efe5f693de34620934787ead6693f19.layer2.fields.fulladdr.name}}"
-                }
+                  targetName: "{{4efe5f693de34620934787ead6693f19.layer2.fields.fulladdr.name}}",
+                },
               ],
-              targetId: "7866f4bd-8361-4205-8fd7-f92da41fdb61#main"
-            }
-          ]
-        }
+              targetId: "7866f4bd-8361-4205-8fd7-f92da41fdb61#main",
+            },
+          ],
+        },
       ],
       id: "5dd48c85-d155-4ce1-a61e-59623aba6319",
       name: "Category Selector (8)",
       showLastUpdate: true,
       noDataVerticalAlignment: "middle",
       showCaptionWhenNoData: true,
-      showDescriptionWhenNoData: true
+      showDescriptionWhenNoData: true,
     },
     {
       type: "categorySelectorWidget",
       category: {
         type: "features",
-        itemText:
-          "{{{934a9ef8efa7448fa8ddf7b13cef0240.layer0.fields.facilityid.name}}}"
+        itemText: "{{{934a9ef8efa7448fa8ddf7b13cef0240.layer0.fields.facilityid.name}}}",
       },
       selection: {
         type: "single",
         defaultSelection: "first",
-        operator: "equal"
+        operator: "equal",
       },
       preferredDisplayType: "dropdown",
       displayThreshold: 10,
@@ -4530,7 +4400,7 @@ export const expectedLeftPanel: any = {
             type: "featureServiceDataSource",
             itemId: "{{934a9ef8efa7448fa8ddf7b13cef0240.itemId}}",
             layerId: 0,
-            table: false
+            table: false,
           },
           filter: {
             type: "filterGroup",
@@ -4543,19 +4413,18 @@ export const expectedLeftPanel: any = {
                   {
                     type: "filterRule",
                     field: {
-                      name:
-                        "{{934a9ef8efa7448fa8ddf7b13cef0240.layer0.fields.facilityid.name}}",
-                      type: "esriFieldTypeString"
+                      name: "{{934a9ef8efa7448fa8ddf7b13cef0240.layer0.fields.facilityid.name}}",
+                      type: "esriFieldTypeString",
                     },
                     operator: "equal",
                     constraint: {
                       type: "value",
-                      value: "34"
-                    }
-                  }
-                ]
-              }
-            ]
+                      value: "34",
+                    },
+                  },
+                ],
+              },
+            ],
           },
           outFields: ["*"],
           groupByFields: [],
@@ -4565,25 +4434,25 @@ export const expectedLeftPanel: any = {
           querySpatialRelationship: "esriSpatialRelIntersects",
           returnGeometry: false,
           clientSideStatistics: false,
-          name: "main"
-        }
+          name: "main",
+        },
       ],
       id: "a78ee2ac-bfe2-4a4c-a477-1d4abb76419a",
       name: "Category Selector (9)",
       showLastUpdate: true,
       noDataVerticalAlignment: "middle",
       showCaptionWhenNoData: true,
-      showDescriptionWhenNoData: true
+      showDescriptionWhenNoData: true,
     },
     {
       type: "categorySelectorWidget",
       category: {
-        type: "static"
+        type: "static",
       },
       selection: {
         type: "single",
         defaultSelection: "first",
-        operator: "equal"
+        operator: "equal",
       },
       preferredDisplayType: "dropdown",
       displayThreshold: 10,
@@ -4593,10 +4462,10 @@ export const expectedLeftPanel: any = {
           data: {
             type: "staticValues",
             dataType: "string",
-            values: []
+            values: [],
           },
-          name: "main"
-        }
+          name: "main",
+        },
       ],
       events: [
         {
@@ -4608,23 +4477,22 @@ export const expectedLeftPanel: any = {
               fieldMap: [
                 {
                   sourceName: "filterField",
-                  targetName:
-                    "{{4efe5f693de34620934787ead6693f19.layer2.fields.fulladdr.name}}"
-                }
+                  targetName: "{{4efe5f693de34620934787ead6693f19.layer2.fields.fulladdr.name}}",
+                },
               ],
-              targetId: "c220e9bb-f0b9-4f0e-93e8-8baa3f39aa0c#main"
-            }
-          ]
-        }
+              targetId: "c220e9bb-f0b9-4f0e-93e8-8baa3f39aa0c#main",
+            },
+          ],
+        },
       ],
       id: "114026d5-93ff-4d11-9343-50b1e7f72eca",
       name: "Category Selector (10)",
       showLastUpdate: true,
       noDataVerticalAlignment: "middle",
       showCaptionWhenNoData: true,
-      showDescriptionWhenNoData: true
-    }
-  ]
+      showDescriptionWhenNoData: true,
+    },
+  ],
 };
 
 export const baseUrlParameters: any[] = [
@@ -4633,8 +4501,7 @@ export const baseUrlParameters: any[] = [
       {
         type: "serviceDataset",
         dataSource: {
-          id:
-            "b38e032d-bf0c-426f-8036-b86341eb3693#TestLayerForDashBoardMap_632"
+          id: "b38e032d-bf0c-426f-8036-b86341eb3693#TestLayerForDashBoardMap_632",
         },
         outFields: ["*"],
         groupByFields: [],
@@ -4643,8 +4510,8 @@ export const baseUrlParameters: any[] = [
         querySpatialRelationship: "esriSpatialRelIntersects",
         returnGeometry: false,
         clientSideStatistics: false,
-        name: "main"
-      }
+        name: "main",
+      },
     ],
     type: "feature",
     idFieldName: "FACILITYID",
@@ -4655,29 +4522,28 @@ export const baseUrlParameters: any[] = [
           {
             type: "filter",
             by: "whereClause",
-            targetId:
-              "b38e032d-bf0c-426f-8036-b86341eb3693#TestLayerForDashBoardMap_632"
+            targetId: "b38e032d-bf0c-426f-8036-b86341eb3693#TestLayerForDashBoardMap_632",
           },
           {
             type: "flashGeometry",
-            targetId: "b38e032d-bf0c-426f-8036-b86341eb3693"
+            targetId: "b38e032d-bf0c-426f-8036-b86341eb3693",
           },
           {
             type: "identify",
-            targetId: "b38e032d-bf0c-426f-8036-b86341eb3693"
+            targetId: "b38e032d-bf0c-426f-8036-b86341eb3693",
           },
           {
             type: "pan",
-            targetId: "b38e032d-bf0c-426f-8036-b86341eb3693"
+            targetId: "b38e032d-bf0c-426f-8036-b86341eb3693",
           },
           {
             type: "zoom",
-            targetId: "b38e032d-bf0c-426f-8036-b86341eb3693"
-          }
-        ]
-      }
+            targetId: "b38e032d-bf0c-426f-8036-b86341eb3693",
+          },
+        ],
+      },
     ],
-    label: "p_map_layer"
+    label: "p_map_layer",
   },
   {
     type: "category",
@@ -4693,16 +4559,15 @@ export const baseUrlParameters: any[] = [
             fieldMap: [
               {
                 sourceName: "filterField",
-                targetName: "FULLADDR"
-              }
+                targetName: "FULLADDR",
+              },
             ],
-            targetId:
-              "b38e032d-bf0c-426f-8036-b86341eb3693#TestLayerForDashBoardMap_632"
-          }
-        ]
-      }
+            targetId: "b38e032d-bf0c-426f-8036-b86341eb3693#TestLayerForDashBoardMap_632",
+          },
+        ],
+      },
     ],
-    label: "CatParam"
+    label: "CatParam",
   },
   {
     type: "numeric",
@@ -4718,16 +4583,15 @@ export const baseUrlParameters: any[] = [
             fieldMap: [
               {
                 sourceName: "filterField",
-                targetName: "NUMBEDS"
-              }
+                targetName: "NUMBEDS",
+              },
             ],
-            targetId:
-              "b38e032d-bf0c-426f-8036-b86341eb3693#TestLayerForDashBoardMap_632"
-          }
-        ]
-      }
+            targetId: "b38e032d-bf0c-426f-8036-b86341eb3693#TestLayerForDashBoardMap_632",
+          },
+        ],
+      },
     ],
-    label: "NumParam"
+    label: "NumParam",
   },
   {
     type: "date",
@@ -4744,16 +4608,15 @@ export const baseUrlParameters: any[] = [
             fieldMap: [
               {
                 sourceName: "filterField",
-                targetName: "CLOSEDDATE"
-              }
+                targetName: "CLOSEDDATE",
+              },
             ],
-            targetId:
-              "b38e032d-bf0c-426f-8036-b86341eb3693#TestLayerForDashBoardMap_632"
-          }
-        ]
-      }
+            targetId: "b38e032d-bf0c-426f-8036-b86341eb3693#TestLayerForDashBoardMap_632",
+          },
+        ],
+      },
     ],
-    label: "DateParam"
+    label: "DateParam",
   },
   {
     datasets: [
@@ -4763,7 +4626,7 @@ export const baseUrlParameters: any[] = [
           type: "featureServiceDataSource",
           itemId: "934a9ef8efa7448fa8ddf7b13cef0240",
           layerId: 0,
-          table: false
+          table: false,
         },
         outFields: ["*"],
         groupByFields: [],
@@ -4772,8 +4635,8 @@ export const baseUrlParameters: any[] = [
         querySpatialRelationship: "esriSpatialRelIntersects",
         returnGeometry: false,
         clientSideStatistics: false,
-        name: "main"
-      }
+        name: "main",
+      },
     ],
     type: "feature",
     idFieldName: "FACILITYID",
@@ -4787,28 +4650,27 @@ export const baseUrlParameters: any[] = [
             fieldMap: [
               {
                 sourceName: "FACILITYID",
-                targetName: "FACNAME"
-              }
+                targetName: "FACNAME",
+              },
             ],
-            targetId:
-              "b38e032d-bf0c-426f-8036-b86341eb3693#TestLayerForDashBoardMap_632"
+            targetId: "b38e032d-bf0c-426f-8036-b86341eb3693#TestLayerForDashBoardMap_632",
           },
           {
             type: "flashGeometry",
-            targetId: "b38e032d-bf0c-426f-8036-b86341eb3693"
+            targetId: "b38e032d-bf0c-426f-8036-b86341eb3693",
           },
           {
             type: "pan",
-            targetId: "b38e032d-bf0c-426f-8036-b86341eb3693"
+            targetId: "b38e032d-bf0c-426f-8036-b86341eb3693",
           },
           {
             type: "zoom",
-            targetId: "b38e032d-bf0c-426f-8036-b86341eb3693"
-          }
-        ]
-      }
+            targetId: "b38e032d-bf0c-426f-8036-b86341eb3693",
+          },
+        ],
+      },
     ],
-    label: "external_map_layer"
+    label: "external_map_layer",
   },
   {
     type: "geometry",
@@ -4819,20 +4681,20 @@ export const baseUrlParameters: any[] = [
         actions: [
           {
             type: "flashGeometry",
-            targetId: "b38e032d-bf0c-426f-8036-b86341eb3693"
+            targetId: "b38e032d-bf0c-426f-8036-b86341eb3693",
           },
           {
             type: "pan",
-            targetId: "b38e032d-bf0c-426f-8036-b86341eb3693"
+            targetId: "b38e032d-bf0c-426f-8036-b86341eb3693",
           },
           {
             type: "zoom",
-            targetId: "b38e032d-bf0c-426f-8036-b86341eb3693"
-          }
-        ]
-      }
+            targetId: "b38e032d-bf0c-426f-8036-b86341eb3693",
+          },
+        ],
+      },
     ],
-    label: "Geom1"
+    label: "Geom1",
   },
   {
     type: "geometry",
@@ -4844,18 +4706,17 @@ export const baseUrlParameters: any[] = [
           {
             type: "filter",
             by: "geometry",
-            targetId:
-              "b38e032d-bf0c-426f-8036-b86341eb3693#TestLayerForDashBoardMap_632"
+            targetId: "b38e032d-bf0c-426f-8036-b86341eb3693#TestLayerForDashBoardMap_632",
           },
           {
             type: "setExtent",
-            targetId: "b38e032d-bf0c-426f-8036-b86341eb3693"
-          }
-        ]
-      }
+            targetId: "b38e032d-bf0c-426f-8036-b86341eb3693",
+          },
+        ],
+      },
     ],
-    label: "GeomExtent"
-  }
+    label: "GeomExtent",
+  },
 ];
 
 export const expectedUrlParameters: any[] = [
@@ -4864,8 +4725,7 @@ export const expectedUrlParameters: any[] = [
       {
         type: "serviceDataset",
         dataSource: {
-          id:
-            "b38e032d-bf0c-426f-8036-b86341eb3693#TestLayerForDashBoardMap_632"
+          id: "b38e032d-bf0c-426f-8036-b86341eb3693#TestLayerForDashBoardMap_632",
         },
         outFields: ["*"],
         groupByFields: [],
@@ -4874,12 +4734,11 @@ export const expectedUrlParameters: any[] = [
         querySpatialRelationship: "esriSpatialRelIntersects",
         returnGeometry: false,
         clientSideStatistics: false,
-        name: "main"
-      }
+        name: "main",
+      },
     ],
     type: "feature",
-    idFieldName:
-      "{{4efe5f693de34620934787ead6693f19.layer2.fields.facilityid.name}}",
+    idFieldName: "{{4efe5f693de34620934787ead6693f19.layer2.fields.facilityid.name}}",
     events: [
       {
         type: "parameterChanged",
@@ -4887,29 +4746,28 @@ export const expectedUrlParameters: any[] = [
           {
             type: "filter",
             by: "whereClause",
-            targetId:
-              "b38e032d-bf0c-426f-8036-b86341eb3693#TestLayerForDashBoardMap_632"
+            targetId: "b38e032d-bf0c-426f-8036-b86341eb3693#TestLayerForDashBoardMap_632",
           },
           {
             type: "flashGeometry",
-            targetId: "b38e032d-bf0c-426f-8036-b86341eb3693"
+            targetId: "b38e032d-bf0c-426f-8036-b86341eb3693",
           },
           {
             type: "identify",
-            targetId: "b38e032d-bf0c-426f-8036-b86341eb3693"
+            targetId: "b38e032d-bf0c-426f-8036-b86341eb3693",
           },
           {
             type: "pan",
-            targetId: "b38e032d-bf0c-426f-8036-b86341eb3693"
+            targetId: "b38e032d-bf0c-426f-8036-b86341eb3693",
           },
           {
             type: "zoom",
-            targetId: "b38e032d-bf0c-426f-8036-b86341eb3693"
-          }
-        ]
-      }
+            targetId: "b38e032d-bf0c-426f-8036-b86341eb3693",
+          },
+        ],
+      },
     ],
-    label: "p_map_layer"
+    label: "p_map_layer",
   },
   {
     type: "category",
@@ -4925,17 +4783,15 @@ export const expectedUrlParameters: any[] = [
             fieldMap: [
               {
                 sourceName: "filterField",
-                targetName:
-                  "{{4efe5f693de34620934787ead6693f19.layer2.fields.fulladdr.name}}"
-              }
+                targetName: "{{4efe5f693de34620934787ead6693f19.layer2.fields.fulladdr.name}}",
+              },
             ],
-            targetId:
-              "b38e032d-bf0c-426f-8036-b86341eb3693#TestLayerForDashBoardMap_632"
-          }
-        ]
-      }
+            targetId: "b38e032d-bf0c-426f-8036-b86341eb3693#TestLayerForDashBoardMap_632",
+          },
+        ],
+      },
     ],
-    label: "CatParam"
+    label: "CatParam",
   },
   {
     type: "numeric",
@@ -4951,17 +4807,15 @@ export const expectedUrlParameters: any[] = [
             fieldMap: [
               {
                 sourceName: "filterField",
-                targetName:
-                  "{{4efe5f693de34620934787ead6693f19.layer2.fields.numbeds.name}}"
-              }
+                targetName: "{{4efe5f693de34620934787ead6693f19.layer2.fields.numbeds.name}}",
+              },
             ],
-            targetId:
-              "b38e032d-bf0c-426f-8036-b86341eb3693#TestLayerForDashBoardMap_632"
-          }
-        ]
-      }
+            targetId: "b38e032d-bf0c-426f-8036-b86341eb3693#TestLayerForDashBoardMap_632",
+          },
+        ],
+      },
     ],
-    label: "NumParam"
+    label: "NumParam",
   },
   {
     type: "date",
@@ -4978,17 +4832,15 @@ export const expectedUrlParameters: any[] = [
             fieldMap: [
               {
                 sourceName: "filterField",
-                targetName:
-                  "{{4efe5f693de34620934787ead6693f19.layer2.fields.closeddate.name}}"
-              }
+                targetName: "{{4efe5f693de34620934787ead6693f19.layer2.fields.closeddate.name}}",
+              },
             ],
-            targetId:
-              "b38e032d-bf0c-426f-8036-b86341eb3693#TestLayerForDashBoardMap_632"
-          }
-        ]
-      }
+            targetId: "b38e032d-bf0c-426f-8036-b86341eb3693#TestLayerForDashBoardMap_632",
+          },
+        ],
+      },
     ],
-    label: "DateParam"
+    label: "DateParam",
   },
   {
     datasets: [
@@ -4998,7 +4850,7 @@ export const expectedUrlParameters: any[] = [
           type: "featureServiceDataSource",
           itemId: "{{934a9ef8efa7448fa8ddf7b13cef0240.itemId}}",
           layerId: 0,
-          table: false
+          table: false,
         },
         outFields: ["*"],
         groupByFields: [],
@@ -5007,12 +4859,11 @@ export const expectedUrlParameters: any[] = [
         querySpatialRelationship: "esriSpatialRelIntersects",
         returnGeometry: false,
         clientSideStatistics: false,
-        name: "main"
-      }
+        name: "main",
+      },
     ],
     type: "feature",
-    idFieldName:
-      "{{934a9ef8efa7448fa8ddf7b13cef0240.layer0.fields.facilityid.name}}",
+    idFieldName: "{{934a9ef8efa7448fa8ddf7b13cef0240.layer0.fields.facilityid.name}}",
     events: [
       {
         type: "parameterChanged",
@@ -5022,31 +4873,28 @@ export const expectedUrlParameters: any[] = [
             by: "whereClause",
             fieldMap: [
               {
-                sourceName:
-                  "{{934a9ef8efa7448fa8ddf7b13cef0240.layer0.fields.facilityid.name}}",
-                targetName:
-                  "{{4efe5f693de34620934787ead6693f19.layer2.fields.facname.name}}"
-              }
+                sourceName: "{{934a9ef8efa7448fa8ddf7b13cef0240.layer0.fields.facilityid.name}}",
+                targetName: "{{4efe5f693de34620934787ead6693f19.layer2.fields.facname.name}}",
+              },
             ],
-            targetId:
-              "b38e032d-bf0c-426f-8036-b86341eb3693#TestLayerForDashBoardMap_632"
+            targetId: "b38e032d-bf0c-426f-8036-b86341eb3693#TestLayerForDashBoardMap_632",
           },
           {
             type: "flashGeometry",
-            targetId: "b38e032d-bf0c-426f-8036-b86341eb3693"
+            targetId: "b38e032d-bf0c-426f-8036-b86341eb3693",
           },
           {
             type: "pan",
-            targetId: "b38e032d-bf0c-426f-8036-b86341eb3693"
+            targetId: "b38e032d-bf0c-426f-8036-b86341eb3693",
           },
           {
             type: "zoom",
-            targetId: "b38e032d-bf0c-426f-8036-b86341eb3693"
-          }
-        ]
-      }
+            targetId: "b38e032d-bf0c-426f-8036-b86341eb3693",
+          },
+        ],
+      },
     ],
-    label: "external_map_layer"
+    label: "external_map_layer",
   },
   {
     type: "geometry",
@@ -5057,20 +4905,20 @@ export const expectedUrlParameters: any[] = [
         actions: [
           {
             type: "flashGeometry",
-            targetId: "b38e032d-bf0c-426f-8036-b86341eb3693"
+            targetId: "b38e032d-bf0c-426f-8036-b86341eb3693",
           },
           {
             type: "pan",
-            targetId: "b38e032d-bf0c-426f-8036-b86341eb3693"
+            targetId: "b38e032d-bf0c-426f-8036-b86341eb3693",
           },
           {
             type: "zoom",
-            targetId: "b38e032d-bf0c-426f-8036-b86341eb3693"
-          }
-        ]
-      }
+            targetId: "b38e032d-bf0c-426f-8036-b86341eb3693",
+          },
+        ],
+      },
     ],
-    label: "Geom1"
+    label: "Geom1",
   },
   {
     type: "geometry",
@@ -5082,18 +4930,17 @@ export const expectedUrlParameters: any[] = [
           {
             type: "filter",
             by: "geometry",
-            targetId:
-              "b38e032d-bf0c-426f-8036-b86341eb3693#TestLayerForDashBoardMap_632"
+            targetId: "b38e032d-bf0c-426f-8036-b86341eb3693#TestLayerForDashBoardMap_632",
           },
           {
             type: "setExtent",
-            targetId: "b38e032d-bf0c-426f-8036-b86341eb3693"
-          }
-        ]
-      }
+            targetId: "b38e032d-bf0c-426f-8036-b86341eb3693",
+          },
+        ],
+      },
     ],
-    label: "GeomExtent"
-  }
+    label: "GeomExtent",
+  },
 ];
 
 export const initialDashboardTemplate: any = {
@@ -5114,21 +4961,19 @@ export const initialDashboardTemplate: any = {
     thumbnail: "thumbnail/ago_downloaded.png",
     title: "Dashboard",
     typeKeywords: ["Dashboard", "Operations Dashboard"],
-    url: null
+    url: null,
   },
   data: {
     version: 27,
     headerPanel: baseHeaderPanel,
     leftPanel: baseLeftPanel,
     widgets: baseWidgets,
-    urlParameters: baseUrlParameters
+    urlParameters: baseUrlParameters,
   },
-  resources: [
-    "eff3f22d41ad42dcb6fe9015f26d40f4_info_thumbnail/ago_downloaded.png"
-  ],
+  resources: ["eff3f22d41ad42dcb6fe9015f26d40f4_info_thumbnail/ago_downloaded.png"],
   dependencies: [],
   properties: {},
-  estimatedDeploymentCostFactor: 2
+  estimatedDeploymentCostFactor: 2,
 };
 
 export const expectedTemplate: any = {
@@ -5149,22 +4994,17 @@ export const expectedTemplate: any = {
     thumbnail: "thumbnail/ago_downloaded.png",
     title: "Dashboard",
     typeKeywords: ["Dashboard", "Operations Dashboard"],
-    url: null
+    url: null,
   },
   data: {
     version: 27,
     headerPanel: expectedHeaderPanel,
     leftPanel: expectedLeftPanel,
     widgets: expectedWidgets,
-    urlParameters: expectedUrlParameters
+    urlParameters: expectedUrlParameters,
   },
-  resources: [
-    "eff3f22d41ad42dcb6fe9015f26d40f4_info_thumbnail/ago_downloaded.png"
-  ],
-  dependencies: [
-    "934a9ef8efa7448fa8ddf7b13cef0240",
-    "7e6c41c72d4548d9a312329e0c5a984f"
-  ],
+  resources: ["eff3f22d41ad42dcb6fe9015f26d40f4_info_thumbnail/ago_downloaded.png"],
+  dependencies: ["934a9ef8efa7448fa8ddf7b13cef0240", "7e6c41c72d4548d9a312329e0c5a984f"],
   properties: {},
-  estimatedDeploymentCostFactor: 2
+  estimatedDeploymentCostFactor: 2,
 };

@@ -18,15 +18,9 @@ import {
   _upgradeTwoDotZero,
   _convertIndicatorField,
   _convertIndicatorToDefinition,
-  _convertIndicatorsToDefinitions
+  _convertIndicatorsToDefinitions,
 } from "../../src/migrations/upgrade-two-dot-zero";
-import * as utils from "../mocks/utils";
-import {
-  ISolutionItem,
-  IItemGeneralized,
-  IItemTemplate
-} from "../../src/interfaces";
-const MOCK_USER_SESSION = utils.createRuntimeMockUserSession();
+import { ISolutionItem } from "../../src/interfaces";
 
 describe("_upgradeTwoDotZero :: ", () => {
   describe("upgrade :: ", () => {
@@ -34,220 +28,173 @@ describe("_upgradeTwoDotZero :: ", () => {
       const m = {
         item: {
           properties: {
-            schemaVersion: 2
-          }
-        }
+            schemaVersion: 2,
+          },
+        },
       } as ISolutionItem;
       const chk = _upgradeTwoDotZero(m);
       expect(chk).toBe(m, "should pass model through without cloning");
     });
 
     it("removes configurationSettings", () => {
-      const m = ({
+      const m = {
         item: {
           properties: {
-            schemaVersion: 1
-          }
+            schemaVersion: 1,
+          },
         },
         data: {
-          configurationSettings: []
-        }
-      } as unknown) as ISolutionItem;
+          configurationSettings: [],
+        },
+      } as unknown as ISolutionItem;
       const chk = _upgradeTwoDotZero(m);
       expect(chk).not.toBe(m, "should clone model");
-      expect(chk.item.properties.schemaVersion).toBe(
-        2,
-        "should set schemaVersion to 2"
-      );
-      expect(chk.data.configurationSettings).not.toBeDefined(
-        "should remove config settings"
-      );
+      expect(chk.item.properties.schemaVersion).toBe(2, "should set schemaVersion to 2");
+      expect(chk.data.configurationSettings).not.toBeDefined("should remove config settings");
     });
 
     it("handles missing configurationSettings", () => {
-      const m = ({
+      const m = {
         item: {
           properties: {
-            schemaVersion: 1
-          }
+            schemaVersion: 1,
+          },
         },
-        data: {}
-      } as unknown) as ISolutionItem;
+        data: {},
+      } as unknown as ISolutionItem;
       const chk = _upgradeTwoDotZero(m);
       expect(chk).not.toBe(m, "should clone model");
-      expect(chk.item.properties.schemaVersion).toBe(
-        2,
-        "should set schemaVersion to 2"
-      );
-      expect(chk.data.configurationSettings).not.toBeDefined(
-        "should remove config settings"
-      );
+      expect(chk.item.properties.schemaVersion).toBe(2, "should set schemaVersion to 2");
+      expect(chk.data.configurationSettings).not.toBeDefined("should remove config settings");
     });
 
     it("converts indicators", () => {
-      const m = ({
+      const m = {
         item: {
           properties: {
-            schemaVersion: 1
-          }
+            schemaVersion: 1,
+          },
         },
         data: {
           configurationSettings: [
             {
-              category: "Indicators"
-            }
-          ]
-        }
-      } as unknown) as ISolutionItem;
+              category: "Indicators",
+            },
+          ],
+        },
+      } as unknown as ISolutionItem;
       const chk = _upgradeTwoDotZero(m);
       expect(chk).not.toBe(m, "should clone model");
-      expect(chk.item.properties.schemaVersion).toBe(
-        2,
-        "should set schemaVersion to 2"
-      );
-      expect(chk.data.configurationSettings).not.toBeDefined(
-        "should remove config settings"
-      );
+      expect(chk.item.properties.schemaVersion).toBe(2, "should set schemaVersion to 2");
+      expect(chk.data.configurationSettings).not.toBeDefined("should remove config settings");
     });
   });
 
   describe("helper functions", () => {
-    it("can convert cas indicator to definition", done => {
+    it("can convert cas indicator to definition", () => {
       const ind = {
         label: "Collision Data",
         type: "layerAndFieldSelector",
         fieldName: "collisionLayer",
         layerOptions: {
-          geometryTypes: [
-            "esriGeometryPoint",
-            "esriGeometryLine",
-            "esriGeometryPolygon"
-          ],
-          supportedTypes: ["FeatureLayer", "FeatureCollection"]
+          geometryTypes: ["esriGeometryPoint", "esriGeometryLine", "esriGeometryPolygon"],
+          supportedTypes: ["FeatureLayer", "FeatureCollection"],
         },
         fields: [
           {
             tooltip: "Count of people…",
             label: "Number of Injuries",
             fieldName: "numInjuries",
-            supportedTypes: ["esriFieldTypeInteger"]
+            supportedTypes: ["esriFieldTypeInteger"],
           },
           {
             tooltip: "Count of deaths…",
             label: "Number of Fatalities",
             fieldName: "numFatalities",
-            supportedTypes: ["esriFieldTypeInteger"]
-          }
-        ]
+            supportedTypes: ["esriFieldTypeInteger"],
+          },
+        ],
       } as any;
       const c = _convertIndicatorToDefinition(ind);
       expect(c).not.toBe(ind, "returned field should not be the same object");
       expect(c.id).toEqual(ind.fieldName, "fieldName becomes id");
       expect(c.name).toEqual(ind.label, "label becomes name");
-      expect(c.definition.description).toEqual(
-        ind.label,
-        "label becomes description"
-      );
+      expect(c.definition.description).toEqual(ind.label, "label becomes description");
       expect(c.definition.supportedTypes.length).toEqual(
         ind.layerOptions.supportedTypes.length,
-        "supported types have same contents"
+        "supported types have same contents",
       );
       expect(c.definition.geometryTypes).not.toBe(
         ind.layerOptions.geometryTypes,
-        "geometryTypes should not be same instance"
+        "geometryTypes should not be same instance",
       );
       expect(c.definition.geometryTypes.length).toEqual(
         ind.layerOptions.geometryTypes.length,
-        "geometryTypes have same contents"
+        "geometryTypes have same contents",
       );
-      expect(c.definition.fields.length).toEqual(
-        ind.fields.length,
-        "fields have same contents"
-      );
-      done();
+      expect(c.definition.fields.length).toEqual(ind.fields.length, "fields have same contents");
     });
-    it("can convert cas indicator without label to definition", done => {
+
+    it("can convert cas indicator without label to definition", () => {
       const ind = {
         // label: "Collision Data",
         type: "layerAndFieldSelector",
         fieldName: "collisionLayer",
         layerOptions: {
-          geometryTypes: [
-            "esriGeometryPoint",
-            "esriGeometryLine",
-            "esriGeometryPolygon"
-          ],
-          supportedTypes: ["FeatureLayer", "FeatureCollection"]
+          geometryTypes: ["esriGeometryPoint", "esriGeometryLine", "esriGeometryPolygon"],
+          supportedTypes: ["FeatureLayer", "FeatureCollection"],
         },
         fields: [
           {
             tooltip: "Count of people…",
             label: "Number of Injuries",
             fieldName: "numInjuries",
-            supportedTypes: ["esriFieldTypeInteger"]
+            supportedTypes: ["esriFieldTypeInteger"],
           },
           {
             tooltip: "Count of deaths…",
             label: "Number of Fatalities",
             fieldName: "numFatalities",
-            supportedTypes: ["esriFieldTypeInteger"]
-          }
-        ]
+            supportedTypes: ["esriFieldTypeInteger"],
+          },
+        ],
       } as any;
       const c = _convertIndicatorToDefinition(ind);
       expect(c).not.toBe(ind, "returned field should not be the same object");
       expect(c.id).toEqual(ind.fieldName, "fieldName becomes id");
-      expect(c.name).toEqual(
-        ind.fieldName,
-        "fieldName becomes name if not label"
-      );
-      expect(c.definition.description).toEqual(
-        ind.fieldName,
-        "field becomes description if no label"
-      );
+      expect(c.name).toEqual(ind.fieldName, "fieldName becomes name if not label");
+      expect(c.definition.description).toEqual(ind.fieldName, "field becomes description if no label");
       expect(c.definition.supportedTypes.length).toEqual(
         ind.layerOptions.supportedTypes.length,
-        "supported types have same contents"
+        "supported types have same contents",
       );
       expect(c.definition.geometryTypes).not.toBe(
         ind.layerOptions.geometryTypes,
-        "geometryTypes should not be same instance"
+        "geometryTypes should not be same instance",
       );
       expect(c.definition.geometryTypes.length).toEqual(
         ind.layerOptions.geometryTypes.length,
-        "geometryTypes have same contents"
+        "geometryTypes have same contents",
       );
-      expect(c.definition.fields.length).toEqual(
-        ind.fields.length,
-        "fields have same contents"
-      );
-      done();
+      expect(c.definition.fields.length).toEqual(ind.fields.length, "fields have same contents");
     });
-    it("can convert cas field to definition field", done => {
+
+    it("can convert cas field to definition field", () => {
       const fld = {
         tooltip: "Count of people…",
         label: "Number of Injuries",
         fieldName: "numInjuries",
-        supportedTypes: ["esriFieldTypeInteger"]
+        supportedTypes: ["esriFieldTypeInteger"],
       } as any;
       const c = _convertIndicatorField(fld);
-      expect(c).not.toEqual(
-        fld,
-        "returned field should not be the same object"
-      );
+      expect(c).not.toEqual(fld, "returned field should not be the same object");
       expect(c.id).toEqual(fld.fieldName, "fieldName becomes id");
       expect(c.name).toEqual(fld.label, "label becomes name");
-      expect(c.supportedTypes).not.toBe(
-        fld.supportedTypes,
-        "supported types should not be same instance"
-      );
-      expect(c.supportedTypes.length).toEqual(
-        fld.supportedTypes.length,
-        "supported types have same contents"
-      );
-      done();
+      expect(c.supportedTypes).not.toBe(fld.supportedTypes, "supported types should not be same instance");
+      expect(c.supportedTypes.length).toEqual(fld.supportedTypes.length, "supported types have same contents");
     });
-    it("can convert configSettings indicator structure to indicators hash", done => {
+
+    it("can convert configSettings indicator structure to indicators hash", () => {
       const cs = {
         category: "Indicators",
         fields: [
@@ -256,50 +203,42 @@ describe("_upgradeTwoDotZero :: ", () => {
             label: "Collision Data",
             type: "layerAndFieldSelector",
             layerOptions: {
-              geometryTypes: [
-                "esriGeometryPoint",
-                "esriGeometryLine",
-                "esriGeometryPolygon"
-              ],
-              supportedTypes: ["FeatureLayer", "FeatureCollection"]
+              geometryTypes: ["esriGeometryPoint", "esriGeometryLine", "esriGeometryPolygon"],
+              supportedTypes: ["FeatureLayer", "FeatureCollection"],
             },
             fields: [
               {
                 tooltip: "Count of people…",
                 label: "Number of Injuries",
                 fieldName: "numInjuries",
-                supportedTypes: ["esriFieldTypeInteger"]
+                supportedTypes: ["esriFieldTypeInteger"],
               },
               {
                 tooltip: "Count of deaths…",
                 label: "Number of Fatalities",
                 fieldName: "numFatalities",
-                supportedTypes: ["esriFieldTypeInteger"]
-              }
-            ]
-          }
-        ]
+                supportedTypes: ["esriFieldTypeInteger"],
+              },
+            ],
+          },
+        ],
       } as any;
 
       // now pass this into the converter...
       const c = _convertIndicatorsToDefinitions(cs);
       expect(Array.isArray(c)).toBeTruthy("should return an array");
-      expect(c[0].id).toEqual(
-        "collisionLayer",
-        "collisionLayer should be the id of the first entry"
-      );
-      done();
+      expect(c[0].id).toEqual("collisionLayer", "collisionLayer should be the id of the first entry");
     });
-    it("handles configSettings with no fields", done => {
+
+    it("handles configSettings with no fields", () => {
       const cs = {
-        category: "Indicators"
+        category: "Indicators",
       } as any;
 
       // now pass this into the converter...
       const c = _convertIndicatorsToDefinitions(cs);
       expect(Array.isArray(c)).toBeTruthy("should return an array");
       expect(c.length).toEqual(0, "should have no entries");
-      done();
     });
   });
 });

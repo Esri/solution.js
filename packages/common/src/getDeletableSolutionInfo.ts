@@ -18,11 +18,7 @@
  * @module deleteSolution
  */
 
-import {
-  ISolutionItemPrecis,
-  ISolutionPrecis,
-  UserSession
-} from "./interfaces";
+import { ISolutionItemPrecis, ISolutionPrecis, UserSession } from "./interfaces";
 import * as getSolutionSummary from "./getSolutionSummary";
 import * as restHelpersGet from "./restHelpersGet";
 
@@ -39,7 +35,7 @@ import * as restHelpersGet from "./restHelpersGet";
  */
 export function getDeletableSolutionInfo(
   solutionItemId: string,
-  authentication: UserSession
+  authentication: UserSession,
 ): Promise<ISolutionPrecis> {
   let solutionSummary: ISolutionPrecis;
 
@@ -49,10 +45,8 @@ export function getDeletableSolutionInfo(
       .then((response: ISolutionPrecis) => {
         // Fetch each item's relationships back to Solution items
         solutionSummary = response;
-        const awaitAllItems: Array<Promise<
-          string[]
-        >> = solutionSummary.items.map((item: ISolutionItemPrecis) =>
-          restHelpersGet.getSolutionsRelatedToAnItem(item.id, authentication)
+        const awaitAllItems: Array<Promise<string[]>> = solutionSummary.items.map((item: ISolutionItemPrecis) =>
+          restHelpersGet.getSolutionsRelatedToAnItem(item.id, authentication),
         );
 
         // eslint-disable-next-line @typescript-eslint/no-floating-promises
@@ -61,8 +55,7 @@ export function getDeletableSolutionInfo(
       .then((responses: string[][]) => {
         // Filter out items that are shared with another Solution
         solutionSummary.items = solutionSummary.items.filter(
-          (item: ISolutionItemPrecis, index: number) =>
-            responses[index].length === 1
+          (item: ISolutionItemPrecis, index: number) => responses[index].length === 1,
         );
         resolve(solutionSummary);
       })

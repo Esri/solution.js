@@ -17,11 +17,7 @@
 import { _upgradeThreeDotOne } from "../../src/migrations/upgrade-three-dot-one";
 import { cloneObject, IItemTemplate } from "@esri/hub-common";
 import { ISolutionItem } from "../../src/interfaces";
-import * as utils from "../mocks/utils";
-import {
-  ISolutionResource,
-  SolutionResourceType
-} from "../../src/resources/solution-resource";
+import { ISolutionResource, SolutionResourceType } from "../../src/resources/solution-resource";
 
 describe("Upgrade 3.1 ::", () => {
   const defaultModel = {
@@ -29,8 +25,8 @@ describe("Upgrade 3.1 ::", () => {
       type: "Solution",
       typeKeywords: ["Solution", "Template"],
       properties: {
-        schemaVersion: 3.0
-      }
+        schemaVersion: 3.0,
+      },
     },
     data: {
       metadata: {},
@@ -38,15 +34,11 @@ describe("Upgrade 3.1 ::", () => {
         {
           item: {},
           data: {},
-          resources: [
-            "84095a0a06a04d1e9f9b40edb84e277f_jobs/ViewJob_1590513214593.json"
-          ]
-        }
-      ] as IItemTemplate[]
-    }
+          resources: ["84095a0a06a04d1e9f9b40edb84e277f_jobs/ViewJob_1590513214593.json"],
+        },
+      ] as IItemTemplate[],
+    },
   } as ISolutionItem;
-
-  const MOCK_USER_SESSION = utils.createRuntimeMockUserSession();
 
   it("returns same model if above 3", () => {
     const m = cloneObject(defaultModel);
@@ -57,30 +49,22 @@ describe("Upgrade 3.1 ::", () => {
 
   it("handles missing resource array", () => {
     const m = cloneObject(defaultModel);
-    delete m.data.templates[0].resources;
+    delete (m.data.templates[0] as any).resources;
     const chk = _upgradeThreeDotOne(m);
-    expect(chk).not.toBe(m, "should not return the exact same object");
-    expect(chk.item.properties.schemaVersion).toBe(
-      3.1,
-      "should update schema version"
-    );
+    expect(chk).withContext("should not return the exact same object").not.toBe(m);
+    expect(chk.item.properties.schemaVersion).toBe(3.1, "should update schema version");
     expect(chk.data.templates[0].resources.length).toBe(0);
   });
 
   it("updates resource structure", () => {
     const m = cloneObject(defaultModel);
     const chk = _upgradeThreeDotOne(m);
-    expect(chk).not.toBe(m, "should not return the exact same object");
-    expect(chk.item.properties.schemaVersion).toBe(
-      3.1,
-      "should update schema version"
-    );
+    expect(chk).withContext("should not return the exact same object").not.toBe(m);
+    expect(chk.item.properties.schemaVersion).toBe(3.1, "should update schema version");
     const tmplRes = chk.data.templates[0].resources[0] as ISolutionResource;
     expect(tmplRes.filename).toBe("ViewJob_1590513214593.json");
     expect(tmplRes.path).toBe("jobs");
     expect(tmplRes.type).toBe(SolutionResourceType.resource);
-    expect(tmplRes.sourceUrl).toBe(
-      "84095a0a06a04d1e9f9b40edb84e277f_jobs/ViewJob_1590513214593.json"
-    );
+    expect(tmplRes.sourceUrl).toBe("84095a0a06a04d1e9f9b40edb84e277f_jobs/ViewJob_1590513214593.json");
   });
 });

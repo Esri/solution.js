@@ -17,7 +17,6 @@
 import { _upgradeThreeDotZero } from "../../src/migrations/upgrade-three-dot-zero";
 import { cloneObject, IItemTemplate } from "@esri/hub-common";
 import { ISolutionItem } from "../../src/interfaces";
-import * as utils from "../../../common/test/mocks/utils";
 
 describe("Upgrade 3.0 ::", () => {
   const defaultModel = {
@@ -25,8 +24,8 @@ describe("Upgrade 3.0 ::", () => {
       type: "Solution",
       typeKeywords: ["Solution", "Template"],
       properties: {
-        schemaVersion: 3.0
-      }
+        schemaVersion: 3.0,
+      },
     },
     data: {
       metadata: {},
@@ -34,15 +33,11 @@ describe("Upgrade 3.0 ::", () => {
         {
           item: {},
           data: {},
-          resources: [
-            "84095a0a06a04d1e9f9b40edb84e277f_jobs/ViewJob_1590513214593.json"
-          ]
-        }
-      ] as IItemTemplate[]
-    }
+          resources: ["84095a0a06a04d1e9f9b40edb84e277f_jobs/ViewJob_1590513214593.json"],
+        },
+      ] as IItemTemplate[],
+    },
   } as ISolutionItem;
-
-  const MOCK_USER_SESSION = utils.createRuntimeMockUserSession();
 
   it("returns same model if above 3", () => {
     const m = cloneObject(defaultModel);
@@ -56,9 +51,6 @@ describe("Upgrade 3.0 ::", () => {
     delete m.item.properties.schemaVersion;
     const chk = _upgradeThreeDotZero(m);
     expect(chk).not.toBe(m, "should not return the exact same object");
-    expect(chk.item.properties.schemaVersion).toBe(
-      3,
-      "should add schema version"
-    );
+    expect(chk.item.properties.schemaVersion).toBe(3, "should add schema version");
   });
 });

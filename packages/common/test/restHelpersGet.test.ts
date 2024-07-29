@@ -39,18 +39,9 @@ beforeEach(() => {
   MOCK_USER_SESSION = utils.createRuntimeMockUserSession();
 });
 
-const SERVER_INFO = {
-  currentVersion: 10.1,
-  fullVersion: "10.1",
-  soapUrl: "http://server/arcgis/services",
-  secureSoapUrl: "https://server/arcgis/services",
-  owningSystemUrl: "https://myorg.maps.arcgis.com",
-  authInfo: {}
-};
-
 const noRelatedItemsResponse: portal.IGetRelatedItemsResponse = {
   total: 0,
-  relatedItems: []
+  relatedItems: [],
 };
 
 const noResourcesResponse: interfaces.IGetResourcesResponse = {
@@ -58,7 +49,7 @@ const noResourcesResponse: interfaces.IGetResourcesResponse = {
   start: 1,
   num: 0,
   nextStart: -1,
-  resources: []
+  resources: [],
 };
 
 afterEach(() => {
@@ -95,176 +86,123 @@ describe("Module `restHelpersGet`: common REST fetch functions shared across pac
   });
 
   describe("getUsername", () => {
-    it("can get the username from the authentication", done => {
+    it("can get the username from the authentication", async () => {
       const communitySelfResponse: any = utils.getUserResponse();
       communitySelfResponse.username = "casey";
-      fetchMock.get(
-        utils.PORTAL_SUBSET.restUrl + "/community/self?f=json&token=fake-token",
-        communitySelfResponse
-      );
-      restHelpersGet.getUsername(MOCK_USER_SESSION).then(
-        username => {
-          expect(username).toEqual(MOCK_USER_SESSION.username);
-          done();
-        },
-        () => done.fail()
-      );
+      fetchMock.get(utils.PORTAL_SUBSET.restUrl + "/community/self?f=json&token=fake-token", communitySelfResponse);
+
+      const username = await restHelpersGet.getUsername(MOCK_USER_SESSION);
+      expect(username).toEqual(MOCK_USER_SESSION.username);
     });
   });
 
   describe("getFoldersAndGroups", () => {
-    it("can handle an exception on get user content", done => {
+    it("can handle an exception on get user content", async () => {
       fetchMock
-        .get(
-          utils.PORTAL_SUBSET.restUrl +
-            "/content/users/casey?f=json&token=fake-token",
-          mockItems.get500Failure()
-        )
-        .get(
-          utils.PORTAL_SUBSET.restUrl +
-            "/community/users/casey?f=json&token=fake-token",
-          mockItems.get500Failure()
-        );
-      restHelpersGet.getFoldersAndGroups(MOCK_USER_SESSION).then(
-        () => done.fail(),
-        () => done()
+        .get(utils.PORTAL_SUBSET.restUrl + "/content/users/casey?f=json&token=fake-token", mockItems.get500Failure())
+        .get(utils.PORTAL_SUBSET.restUrl + "/community/users/casey?f=json&token=fake-token", mockItems.get500Failure());
+
+      return restHelpersGet.getFoldersAndGroups(MOCK_USER_SESSION).then(
+        () => fail(),
+        () => Promise.resolve(),
       );
     });
 
-    it("can handle undefined folders or groups", done => {
+    it("can handle undefined folders or groups", async () => {
       const response: any = utils.getSuccessResponse();
       fetchMock
-        .get(
-          utils.PORTAL_SUBSET.restUrl +
-            "/content/users/casey?f=json&token=fake-token",
-          response
-        )
-        .get(
-          utils.PORTAL_SUBSET.restUrl +
-            "/community/users/casey?f=json&token=fake-token",
-          response
-        );
+        .get(utils.PORTAL_SUBSET.restUrl + "/content/users/casey?f=json&token=fake-token", response)
+        .get(utils.PORTAL_SUBSET.restUrl + "/community/users/casey?f=json&token=fake-token", response);
       const expectedFolders: any = [];
       const expectedGroups: any = [];
-      restHelpersGet.getFoldersAndGroups(MOCK_USER_SESSION).then(actual => {
-        expect(actual.folders).toEqual(expectedFolders);
-        expect(actual.groups).toEqual(expectedGroups);
-        done();
-      }, done.fail);
+
+      const actual = await restHelpersGet.getFoldersAndGroups(MOCK_USER_SESSION);
+      expect(actual.folders).toEqual(expectedFolders);
+      expect(actual.groups).toEqual(expectedGroups);
     });
   });
 
   describe("getBlobAsFile", () => {
-    it("should ignore ignorable error", done => {
-      const url =
-        utils.PORTAL_SUBSET.restUrl +
-        "/content/items/itm1234567890?f=json&token=fake-token";
+    it("should ignore ignorable error", async () => {
+      const url = utils.PORTAL_SUBSET.restUrl + "/content/items/itm1234567890?f=json&token=fake-token";
       fetchMock.post(url, mockItems.get400Failure());
-      restHelpersGet
-        .getBlobAsFile(url, "myFile.png", MOCK_USER_SESSION, [400])
-        .then(file => {
-          expect(file).toBeNull();
-          done();
-        }, done.fail);
+
+      const file = await restHelpersGet.getBlobAsFile(url, "myFile.png", MOCK_USER_SESSION, [400]);
+      expect(file).toBeNull();
     });
 
-    it("should use supplied filename", done => {
-      const url =
-        utils.PORTAL_SUBSET.restUrl +
-        "/content/items/itm1234567890?f=json&token=fake-token";
+    it("should use supplied filename", async () => {
+      const url = utils.PORTAL_SUBSET.restUrl + "/content/items/itm1234567890?f=json&token=fake-token";
       fetchMock.post(url, utils.getSampleImageAsBlob(), {
-        sendAsJson: false
+        sendAsJson: false,
       });
-      restHelpersGet
-        .getBlobAsFile(url, "myFile.png", MOCK_USER_SESSION, [400])
-        .then(file => {
-          expect(file).not.toBeUndefined();
-          expect(file.type).toEqual("image/png");
-          expect(file.name).toEqual("myFile.png");
-          done();
-        }, done.fail);
+
+      const file = await restHelpersGet.getBlobAsFile(url, "myFile.png", MOCK_USER_SESSION, [400]);
+      expect(file).not.toBeUndefined();
+      expect(file.type).toEqual("image/png");
+      expect(file.name).toEqual("myFile.png");
     });
   });
 
   describe("getBlobCheckForError", () => {
-    it("should pass through an image file", done => {
-      const url =
-        utils.PORTAL_SUBSET.restUrl +
-        "/content/items/itm1234567890?f=json&token=fake-token";
+    it("should pass through an image file", async () => {
+      const url = utils.PORTAL_SUBSET.restUrl + "/content/items/itm1234567890?f=json&token=fake-token";
       fetchMock.post(url, utils.getSampleImageAsBlob(), {
-        sendAsJson: false
+        sendAsJson: false,
       });
-      restHelpersGet
-        .getBlobCheckForError(url, MOCK_USER_SESSION, [400])
-        .then(blob => {
-          expect(blob).not.toBeUndefined();
-          expect(blob.type).toEqual("image/png");
-          done();
-        }, done.fail);
+
+      const blob = await restHelpersGet.getBlobCheckForError(url, MOCK_USER_SESSION, [400]);
+      expect(blob).not.toBeUndefined();
+      expect(blob.type).toEqual("image/png");
     });
 
-    it("should pass through non-error JSON", done => {
-      const url =
-        utils.PORTAL_SUBSET.restUrl +
-        "/content/items/itm1234567890?f=json&token=fake-token";
+    it("should pass through non-error JSON", async () => {
+      const url = utils.PORTAL_SUBSET.restUrl + "/content/items/itm1234567890?f=json&token=fake-token";
       const testBlobContents = JSON.stringify({
         a: "a",
         b: 1,
         c: {
-          d: "d"
-        }
+          d: "d",
+        },
       });
       const testBlob = new Blob([testBlobContents], {
-        type: "application/json"
+        type: "application/json",
       });
       fetchMock.post(url, testBlob, { sendAsJson: false });
-      restHelpersGet.getBlobCheckForError(url, MOCK_USER_SESSION).then(blob => {
-        expect(blob).not.toBeUndefined();
-        expect(blob.type).toEqual("application/json");
-        done();
-      }, done.fail);
+
+      const blob = await restHelpersGet.getBlobCheckForError(url, MOCK_USER_SESSION);
+      expect(blob).not.toBeUndefined();
+      expect(blob.type).toEqual("application/json");
     });
 
-    it("should handle bad JSON by passing it through", done => {
-      const url =
-        utils.PORTAL_SUBSET.restUrl +
-        "/content/items/itm1234567890?f=json&token=fake-token";
+    it("should handle bad JSON by passing it through", async () => {
+      const url = utils.PORTAL_SUBSET.restUrl + "/content/items/itm1234567890?f=json&token=fake-token";
       const testBlob = new Blob(["badJson:{"], { type: "application/json" });
       fetchMock.post(url, testBlob, { sendAsJson: false });
-      restHelpersGet
-        .getBlobCheckForError(url, MOCK_USER_SESSION, [500])
-        .then(blob => {
-          expect(blob).not.toBeUndefined();
-          expect(blob.type).toEqual("application/json");
-          done();
-        }, done.fail);
+
+      const blob = await restHelpersGet.getBlobCheckForError(url, MOCK_USER_SESSION, [500]);
+      expect(blob).not.toBeUndefined();
+      expect(blob.type).toEqual("application/json");
     });
 
-    it("should ignore ignorable error", done => {
-      const url =
-        utils.PORTAL_SUBSET.restUrl +
-        "/content/items/itm1234567890?f=json&token=fake-token";
+    it("should ignore ignorable error", async () => {
+      const url = utils.PORTAL_SUBSET.restUrl + "/content/items/itm1234567890?f=json&token=fake-token";
       fetchMock.post(url, mockItems.get400Failure());
-      restHelpersGet
-        .getBlobCheckForError(url, MOCK_USER_SESSION, [400])
-        .then(blob => {
-          expect(blob).toBeNull();
-          done();
-        }, done.fail);
+
+      const blob = await restHelpersGet.getBlobCheckForError(url, MOCK_USER_SESSION, [400]);
+      expect(blob).toBeNull();
     });
 
-    it("should return significant error", done => {
-      const url =
-        utils.PORTAL_SUBSET.restUrl +
-        "/content/items/itm1234567890?f=json&token=fake-token";
+    it("should return significant error", async () => {
+      const url = utils.PORTAL_SUBSET.restUrl + "/content/items/itm1234567890?f=json&token=fake-token";
       fetchMock.post(url, mockItems.get400Failure());
-      restHelpersGet.getBlobCheckForError(url, MOCK_USER_SESSION, [500]).then(
-        () => done.fail(),
-        response => {
+
+      return restHelpersGet.getBlobCheckForError(url, MOCK_USER_SESSION, [500]).then(
+        () => fail(),
+        (response) => {
           expect(response).not.toBeUndefined();
           expect(response.error.code).toEqual(400);
-          done();
-        }
+        },
       );
     });
   });
@@ -273,41 +211,40 @@ describe("Module `restHelpersGet`: common REST fetch functions shared across pac
     it("fetches the servers", async () => {
       const portalRestUrl = utils.PORTAL_SUBSET.restUrl;
 
-      const serversJSON =
-      {
-        "servers": [
+      const serversJSON = {
+        servers: [
           {
-            "id": "abc",
-            "name": "serverABC.esri.com:11443",
-            "adminUrl": "https://serverABC.esri.com:11443/arcgis",
-            "url": "https://serverABC.ags.esri.com/gis",
-            "isHosted": false,
-            "serverType": "ARCGIS_NOTEBOOK_SERVER",
-            "serverRole": "FEDERATED_SERVER",
-            "serverFunction": "NotebookServer"
+            id: "abc",
+            name: "serverABC.esri.com:11443",
+            adminUrl: "https://serverABC.esri.com:11443/arcgis",
+            url: "https://serverABC.ags.esri.com/gis",
+            isHosted: false,
+            serverType: "ARCGIS_NOTEBOOK_SERVER",
+            serverRole: "FEDERATED_SERVER",
+            serverFunction: "NotebookServer",
           },
           {
-            "id": "def",
-            "name": "serverDEF.ags.esri.com",
-            "adminUrl": "https://serverDEF.ags.esri.com/video",
-            "url": "https://serverDEF.ags.esri.com/video",
-            "isHosted": false,
-            "serverType": "ARCGIS_VIDEO_SERVER",
-            "serverRole": "FEDERATED_SERVER",
-            "serverFunction": "VideoServer"
+            id: "def",
+            name: "serverDEF.ags.esri.com",
+            adminUrl: "https://serverDEF.ags.esri.com/video",
+            url: "https://serverDEF.ags.esri.com/video",
+            isHosted: false,
+            serverType: "ARCGIS_VIDEO_SERVER",
+            serverRole: "FEDERATED_SERVER",
+            serverFunction: "VideoServer",
           },
           {
-            "id": "ghi",
-            "name": "serverGHI.esri.com:6443",
-            "adminUrl": "https://serverGHI.esri.com:6443/arcgis",
-            "url": "https://serverGHI.ags.esri.com/server",
-            "isHosted": true,
-            "serverType": "ArcGIS",
-            "serverRole": "HOSTING_SERVER",
-            "serverFunction": "WorkflowManager"
-          }
-        ]
-      }
+            id: "ghi",
+            name: "serverGHI.esri.com:6443",
+            adminUrl: "https://serverGHI.esri.com:6443/arcgis",
+            url: "https://serverGHI.ags.esri.com/server",
+            isHosted: true,
+            serverType: "ArcGIS",
+            serverRole: "HOSTING_SERVER",
+            serverFunction: "WorkflowManager",
+          },
+        ],
+      };
       const getServersSpy = spyOn(request, "request").and.resolveTo(serversJSON);
 
       const actual = await restHelpersGet.getEnterpriseServers(portalRestUrl, MOCK_USER_SESSION);
@@ -315,35 +252,35 @@ describe("Module `restHelpersGet`: common REST fetch functions shared across pac
       expect(getServersSpy.calls.first().args[0]).toEqual(`${portalRestUrl}/portals/self/servers`);
       expect(actual).toEqual([
         {
-          "id": "abc",
-          "name": "serverABC.esri.com:11443",
-          "adminUrl": "https://serverABC.esri.com:11443/arcgis",
-          "url": "https://serverABC.ags.esri.com/gis",
-          "isHosted": false,
-          "serverType": "ARCGIS_NOTEBOOK_SERVER",
-          "serverRole": "FEDERATED_SERVER",
-          "serverFunction": "NotebookServer"
+          id: "abc",
+          name: "serverABC.esri.com:11443",
+          adminUrl: "https://serverABC.esri.com:11443/arcgis",
+          url: "https://serverABC.ags.esri.com/gis",
+          isHosted: false,
+          serverType: "ARCGIS_NOTEBOOK_SERVER",
+          serverRole: "FEDERATED_SERVER",
+          serverFunction: "NotebookServer",
         },
         {
-          "id": "def",
-          "name": "serverDEF.ags.esri.com",
-          "adminUrl": "https://serverDEF.ags.esri.com/video",
-          "url": "https://serverDEF.ags.esri.com/video",
-          "isHosted": false,
-          "serverType": "ARCGIS_VIDEO_SERVER",
-          "serverRole": "FEDERATED_SERVER",
-          "serverFunction": "VideoServer"
+          id: "def",
+          name: "serverDEF.ags.esri.com",
+          adminUrl: "https://serverDEF.ags.esri.com/video",
+          url: "https://serverDEF.ags.esri.com/video",
+          isHosted: false,
+          serverType: "ARCGIS_VIDEO_SERVER",
+          serverRole: "FEDERATED_SERVER",
+          serverFunction: "VideoServer",
         },
         {
-          "id": "ghi",
-          "name": "serverGHI.esri.com:6443",
-          "adminUrl": "https://serverGHI.esri.com:6443/arcgis",
-          "url": "https://serverGHI.ags.esri.com/server",
-          "isHosted": true,
-          "serverType": "ArcGIS",
-          "serverRole": "HOSTING_SERVER",
-          "serverFunction": "WorkflowManager"
-        }
+          id: "ghi",
+          name: "serverGHI.esri.com:6443",
+          adminUrl: "https://serverGHI.esri.com:6443/arcgis",
+          url: "https://serverGHI.ags.esri.com/server",
+          isHosted: true,
+          serverType: "ArcGIS",
+          serverRole: "HOSTING_SERVER",
+          serverFunction: "WorkflowManager",
+        },
       ]);
     });
   });
@@ -356,8 +293,7 @@ describe("Module `restHelpersGet`: common REST fetch functions shared across pac
     });
 
     it("extract name from url with query params", () => {
-      const url =
-        "https://myorg.arcgis.com//resources/image.png?w=400&token=fake-token";
+      const url = "https://myorg.arcgis.com//resources/image.png?w=400&token=fake-token";
       const expectedFilename = "image.png";
       expect(restHelpersGet.getFilenameFromUrl(url)).toEqual(expectedFilename);
     });
@@ -382,50 +318,40 @@ describe("Module `restHelpersGet`: common REST fetch functions shared across pac
   });
 
   describe("getGroupCategorySchema", () => {
-    it("should return group's category schema", done => {
+    it("should return group's category schema", async () => {
       const groupId = "grp1234567890";
 
       fetchMock.get(
-        utils.PORTAL_SUBSET.restUrl +
-          "/community/groups/grp1234567890/categorySchema?f=json&token=fake-token",
-        mockItems.getAGOLGroupCategorySchema()
+        utils.PORTAL_SUBSET.restUrl + "/community/groups/grp1234567890/categorySchema?f=json&token=fake-token",
+        mockItems.getAGOLGroupCategorySchema(),
       );
 
-      restHelpersGet
-        .getGroupCategorySchema(groupId, MOCK_USER_SESSION)
-        .then(schema => {
-          expect(schema).toEqual(mockItems.getAGOLGroupCategorySchema());
-          done();
-        }, done.fail);
+      const schema = await restHelpersGet.getGroupCategorySchema(groupId, MOCK_USER_SESSION);
+      expect(schema).toEqual(mockItems.getAGOLGroupCategorySchema());
     });
   });
 
   describe("getItemBase", () => {
-    it("item doesn't allow access to item", done => {
+    it("item doesn't allow access to item", async () => {
       const itemId = "itm1234567890";
-      const expected = {
+      const expected: any = {
         name: "ArcGISAuthError",
-        message:
-          "GWM_0003: You do not have permissions to access this resource or perform this operation.",
-        originalMessage:
-          "You do not have permissions to access this resource or perform this operation.",
+        message: "GWM_0003: You do not have permissions to access this resource or perform this operation.",
+        originalMessage: "You do not have permissions to access this resource or perform this operation.",
         code: "GWM_0003",
         response: {
           error: {
             code: 403,
             messageCode: "GWM_0003",
-            message:
-              "You do not have permissions to access this resource or perform this operation.",
-            details: [] as any[]
-          }
+            message: "You do not have permissions to access this resource or perform this operation.",
+            details: [] as any[],
+          },
         },
-        url:
-          utils.PORTAL_SUBSET.restUrl +
-          "/content/items/itm1234567890?f=json&token=fake-token",
+        url: utils.PORTAL_SUBSET.restUrl + "/content/items/itm1234567890?f=json&token=fake-token",
         options: {
           httpMethod: "GET",
           params: {
-            f: "json"
+            f: "json",
           },
           authentication: {
             clientId: "clientId",
@@ -438,45 +364,37 @@ describe("Module `restHelpersGet`: common REST fetch functions shared across pac
             portal: utils.PORTAL_SUBSET.restUrl,
             tokenDuration: 20160,
             redirectUri: "https://example-app.com/redirect-uri",
-            refreshTokenTTL: 1440
+            refreshTokenTTL: 1440,
           },
-          headers: {}
-        }
+          headers: {},
+        },
       };
 
       fetchMock.get(
-        utils.PORTAL_SUBSET.restUrl +
-          "/content/items/itm1234567890?f=json&token=fake-token",
-        JSON.stringify(expected)
+        utils.PORTAL_SUBSET.restUrl + "/content/items/itm1234567890?f=json&token=fake-token",
+        JSON.stringify(expected),
       );
-      restHelpersGet
-        .getItemBase(itemId, MOCK_USER_SESSION)
-        .then((response: any) => {
-          expect(response).toEqual(expected);
-          done();
-        }, done.fail);
+
+      const response = await restHelpersGet.getItemBase(itemId, MOCK_USER_SESSION);
+      expect(response).toEqual(expected);
     });
 
-    it("item is accessible", done => {
+    it("item is accessible", async () => {
       const itemId = "itm1234567890";
-      const expected = { values: { a: 1, b: "c" } };
+      const expected: any = { values: { a: 1, b: "c" } };
 
       fetchMock.get(
-        utils.PORTAL_SUBSET.restUrl +
-          "/content/items/itm1234567890?f=json&token=fake-token",
-        JSON.stringify(expected)
+        utils.PORTAL_SUBSET.restUrl + "/content/items/itm1234567890?f=json&token=fake-token",
+        JSON.stringify(expected),
       );
-      restHelpersGet
-        .getItemBase(itemId, MOCK_USER_SESSION)
-        .then((response: any) => {
-          expect(response).toEqual(expected);
-          done();
-        }, done.fail);
+
+      const response = await restHelpersGet.getItemBase(itemId, MOCK_USER_SESSION);
+      expect(response).toEqual(expected);
     });
   });
 
   describe("getItemDataAsFile", () => {
-    it("handles item without a data section", done => {
+    it("handles item without a data section", async () => {
       const itemId = "itm1234567890";
       const url = restHelpersGet.getItemDataBlobUrl(itemId, MOCK_USER_SESSION);
       fetchMock.post(url, {
@@ -484,36 +402,32 @@ describe("Module `restHelpersGet`: common REST fetch functions shared across pac
           code: 500,
           messageCode: "CONT_0004",
           message: "Item does not exist or is inaccessible.",
-          details: []
-        }
+          details: [],
+        },
       });
-      restHelpersGet
-        .getItemDataAsFile(itemId, "myFile.png", MOCK_USER_SESSION)
-        .then(
-          () => done(),
-          () => done.fail()
-        );
+
+      return restHelpersGet.getItemDataAsFile(itemId, "myFile.png", MOCK_USER_SESSION).then(
+        () => Promise.resolve(),
+        () => fail(),
+      );
     });
 
-    it("gets data section that's an image", done => {
+    it("gets data section that's an image", async () => {
       const itemId = "itm1234567890";
       const url = restHelpersGet.getItemDataBlobUrl(itemId, MOCK_USER_SESSION);
       fetchMock.post(url, utils.getSampleImageAsBlob(), {
-        sendAsJson: false
+        sendAsJson: false,
       });
-      restHelpersGet
-        .getItemDataAsFile(itemId, "myFile.png", MOCK_USER_SESSION)
-        .then(file => {
-          expect(file).not.toBeUndefined();
-          expect(file.type).toEqual("image/png");
-          expect(file.name).toEqual("myFile.png");
-          done();
-        }, done.fail);
+
+      const file = await restHelpersGet.getItemDataAsFile(itemId, "myFile.png", MOCK_USER_SESSION);
+      expect(file).not.toBeUndefined();
+      expect(file.type).toEqual("image/png");
+      expect(file.name).toEqual("myFile.png");
     });
   });
 
   describe("getItemDataAsJson", () => {
-    it("handles item without a data section", done => {
+    it("handles item without a data section", async () => {
       const itemId = "itm1234567890";
       const url = restHelpersGet.getItemDataBlobUrl(itemId, MOCK_USER_SESSION);
       fetchMock.post(url, {
@@ -521,59 +435,53 @@ describe("Module `restHelpersGet`: common REST fetch functions shared across pac
           code: 500,
           messageCode: "CONT_0004",
           message: "Item does not exist or is inaccessible.",
-          details: []
-        }
+          details: [],
+        },
       });
-      restHelpersGet.getItemDataAsJson(itemId, MOCK_USER_SESSION).then(
-        () => done(),
-        () => done.fail()
-      );
+
+      return restHelpersGet.getItemDataAsJson(itemId, MOCK_USER_SESSION);
     });
 
-    it("get data section that's JSON", done => {
+    it("get data section that's JSON", async () => {
       const itemId = "itm1234567890";
       const url = restHelpersGet.getItemDataBlobUrl(itemId, MOCK_USER_SESSION);
       const testBlobContents = {
         a: "a",
         b: 1,
         c: {
-          d: "d"
-        }
+          d: "d",
+        },
       };
       const testBlob = new Blob([JSON.stringify(testBlobContents)], {
-        type: "application/json"
+        type: "application/json",
       });
       fetchMock.post(url, testBlob, { sendAsJson: false });
-      restHelpersGet.getItemDataAsJson(itemId, MOCK_USER_SESSION).then(json => {
-        expect(json).not.toBeUndefined();
-        expect(json).toEqual(testBlobContents);
-        done();
-      }, done.fail);
+
+      const json = await restHelpersGet.getItemDataAsJson(itemId, MOCK_USER_SESSION);
+      expect(json).not.toBeUndefined();
+      expect(json).toEqual(testBlobContents);
     });
 
-    it("handles item that doesn't allow access to data", done => {
+    it("handles item that doesn't allow access to data", async () => {
       const itemId = "itm1234567890";
       const expected: any = {
         name: "ArcGISAuthError",
-        message:
-          "GWM_0003: You do not have permissions to access this resource or perform this operation.",
-        originalMessage:
-          "You do not have permissions to access this resource or perform this operation.",
+        message: "GWM_0003: You do not have permissions to access this resource or perform this operation.",
+        originalMessage: "You do not have permissions to access this resource or perform this operation.",
         code: "GWM_0003",
         response: {
           error: {
             code: 403,
             messageCode: "GWM_0003",
-            message:
-              "You do not have permissions to access this resource or perform this operation.",
-            details: [] as any[]
-          }
+            message: "You do not have permissions to access this resource or perform this operation.",
+            details: [] as any[],
+          },
         },
         url: utils.PORTAL_SUBSET.restUrl + "/content/items/itm1234567890/data",
         options: {
           httpMethod: "GET",
           params: {
-            f: "json"
+            f: "json",
           },
           authentication: {
             clientId: "clientId",
@@ -586,35 +494,27 @@ describe("Module `restHelpersGet`: common REST fetch functions shared across pac
             portal: utils.PORTAL_SUBSET.restUrl,
             tokenDuration: 20160,
             redirectUri: "https://example-app.com/redirect-uri",
-            refreshTokenTTL: 1440
+            refreshTokenTTL: 1440,
           },
-          headers: {}
-        }
+          headers: {},
+        },
       };
 
-      fetchMock.post(
-        utils.PORTAL_SUBSET.restUrl + "/content/items/itm1234567890/data",
-        expected
-      );
-      restHelpersGet
-        .getItemDataAsJson(itemId, MOCK_USER_SESSION)
-        .then((response: any) => {
-          expect(response).toEqual(expected);
-          done();
-        }, done.fail);
+      fetchMock.post(utils.PORTAL_SUBSET.restUrl + "/content/items/itm1234567890/data", expected);
+
+      const response = await restHelpersGet.getItemDataAsJson(itemId, MOCK_USER_SESSION);
+      expect(response).toEqual(expected);
     });
   });
 
   describe("getItemDataBlob", () => {
-    it("handles odd error code", done => {
+    it("handles odd error code", async () => {
       const itemId = "itm1234567890";
-      fetchMock.post(
-        utils.PORTAL_SUBSET.restUrl + "/content/items/itm1234567890/data",
-        { error: { code: 505 } }
-      );
-      restHelpersGet.getItemDataBlob(itemId, MOCK_USER_SESSION).then(
-        () => done(),
-        () => done()
+      fetchMock.post(utils.PORTAL_SUBSET.restUrl + "/content/items/itm1234567890/data", { error: { code: 505 } });
+
+      return restHelpersGet.getItemDataBlob(itemId, MOCK_USER_SESSION).then(
+        () => Promise.resolve(),
+        () => Promise.resolve(),
       );
     });
   });
@@ -623,93 +523,61 @@ describe("Module `restHelpersGet`: common REST fetch functions shared across pac
     it("gets the data blob url from the authentication", () => {
       const itemId = "itm1234567890";
       const url = restHelpersGet.getItemDataBlobUrl(itemId, MOCK_USER_SESSION);
-      expect(url).toEqual(
-        utils.PORTAL_SUBSET.restUrl + "/content/items/itm1234567890/data"
-      );
+      expect(url).toEqual(utils.PORTAL_SUBSET.restUrl + "/content/items/itm1234567890/data");
     });
   });
 
   describe("getItemMetadataAsFile", () => {
-    it("handles item without metadata", done => {
+    it("handles item without metadata", async () => {
       const itemId = "itm1234567890";
-      const url = restHelpersGet.getItemMetadataBlobUrl(
-        itemId,
-        MOCK_USER_SESSION
-      );
+      const url = restHelpersGet.getItemMetadataBlobUrl(itemId, MOCK_USER_SESSION);
       fetchMock.post(url, mockItems.get400Failure());
-      restHelpersGet
-        .getItemMetadataAsFile(itemId, MOCK_USER_SESSION)
-        .then((json: any) => {
-          expect(json).toBeNull();
-          done();
-        }, done.fail);
+
+      const json = await restHelpersGet.getItemMetadataAsFile(itemId, MOCK_USER_SESSION);
+      expect(json).toBeNull();
     });
 
-    it("handles server error", done => {
+    it("handles server error", async () => {
       const itemId = "itm1234567890";
-      const url = restHelpersGet.getItemMetadataBlobUrl(
-        itemId,
-        MOCK_USER_SESSION
-      );
+      const url = restHelpersGet.getItemMetadataBlobUrl(itemId, MOCK_USER_SESSION);
       fetchMock.post(url, mockItems.get500Failure());
-      restHelpersGet
-        .getItemMetadataAsFile(itemId, MOCK_USER_SESSION)
-        .then((json: any) => {
-          expect(json).toBeNull();
-          done();
-        }, done.fail);
+
+      const json = await restHelpersGet.getItemMetadataAsFile(itemId, MOCK_USER_SESSION);
+      expect(json).toBeNull();
     });
 
-    it("handles general error", done => {
+    it("handles general error", async () => {
       const itemId = "itm1234567890";
-      const url = restHelpersGet.getItemMetadataBlobUrl(
-        itemId,
-        MOCK_USER_SESSION
-      );
+      const url = restHelpersGet.getItemMetadataBlobUrl(itemId, MOCK_USER_SESSION);
       fetchMock.post(url, { value: "fred" });
-      restHelpersGet
-        .getItemMetadataAsFile(itemId, MOCK_USER_SESSION)
-        .then((json: any) => {
-          expect(json).toBeNull();
-          done();
-        }, done.fail);
+
+      const json = await restHelpersGet.getItemMetadataAsFile(itemId, MOCK_USER_SESSION);
+      expect(json).toBeNull();
     });
 
-    it("gets metadata", done => {
+    it("gets metadata", async () => {
       const itemId = "itm1234567890";
-      const url = restHelpersGet.getItemMetadataBlobUrl(
-        itemId,
-        MOCK_USER_SESSION
-      );
+      const url = restHelpersGet.getItemMetadataBlobUrl(itemId, MOCK_USER_SESSION);
       fetchMock.post(url, utils.getSampleMetadataAsFile(), {
-        sendAsJson: false
+        sendAsJson: false,
       });
-      restHelpersGet
-        .getItemMetadataAsFile(itemId, MOCK_USER_SESSION)
-        .then(file => {
-          expect(file).not.toBeUndefined();
-          expect(file.type).toEqual("text/xml");
-          done();
-        }, done.fail);
+
+      const file = await restHelpersGet.getItemMetadataAsFile(itemId, MOCK_USER_SESSION);
+      expect(file).not.toBeUndefined();
+      expect(file.type).toEqual("text/xml");
     });
   });
 
   describe("getItemMetadataBlobUrl", () => {
     it("gets the metadata blob url from the authentication", () => {
       const itemId = "itm1234567890";
-      const url = restHelpersGet.getItemMetadataBlobUrl(
-        itemId,
-        MOCK_USER_SESSION
-      );
-      expect(url).toEqual(
-        utils.PORTAL_SUBSET.restUrl +
-          "/content/items/itm1234567890/info/metadata/metadata.xml"
-      );
+      const url = restHelpersGet.getItemMetadataBlobUrl(itemId, MOCK_USER_SESSION);
+      expect(url).toEqual(utils.PORTAL_SUBSET.restUrl + "/content/items/itm1234567890/info/metadata/metadata.xml");
     });
   });
 
   describe("getItemRelatedItems", () => {
-    it("item doesn't have related items of a single type", done => {
+    it("item doesn't have related items of a single type", async () => {
       const itemId = "itm1234567890";
       const relationshipType = "Survey2Service";
       const direction = "forward";
@@ -727,28 +595,19 @@ describe("Module `restHelpersGet`: common REST fetch functions shared across pac
           "&token=fake-token",
         {
           aggregations: { total: { count: 0, name: "total" } },
-          nextkey: null, num: 100, ...expected
-        } as interfaces.IGetRelatedItemsResponseFull
+          nextkey: null,
+          num: 100,
+          ...expected,
+        } as interfaces.IGetRelatedItemsResponseFull,
       );
-      restHelpersGet
-        .getItemRelatedItems(
-          itemId,
-          relationshipType,
-          direction,
-          MOCK_USER_SESSION
-        )
-        .then((response: any) => {
-          expect(response).toEqual(expected);
-          done();
-        }, done.fail);
+
+      const response = await restHelpersGet.getItemRelatedItems(itemId, relationshipType, direction, MOCK_USER_SESSION);
+      expect(response).toEqual(expected);
     });
 
-    it("item doesn't have related items of multiple types", done => {
+    it("item doesn't have related items of multiple types", async () => {
       const itemId = "itm1234567890";
-      const relationshipType: portal.ItemRelationshipType[] = [
-        "Survey2Service",
-        "Service2Service"
-      ];
+      const relationshipType: portal.ItemRelationshipType[] = ["Survey2Service", "Service2Service"];
       const direction = "reverse";
       const expected = { total: 0, relatedItems: [] as any[] };
 
@@ -764,23 +623,17 @@ describe("Module `restHelpersGet`: common REST fetch functions shared across pac
           "&token=fake-token",
         {
           aggregations: { total: { count: 0, name: "total" } },
-          nextkey: null, num: 100, ...expected
-        } as interfaces.IGetRelatedItemsResponseFull
+          nextkey: null,
+          num: 100,
+          ...expected,
+        } as interfaces.IGetRelatedItemsResponseFull,
       );
-      restHelpersGet
-        .getItemRelatedItems(
-          itemId,
-          relationshipType,
-          direction,
-          MOCK_USER_SESSION
-        )
-        .then((response: any) => {
-          expect(response).toEqual(expected);
-          done();
-        }, done.fail);
+
+      const response = await restHelpersGet.getItemRelatedItems(itemId, relationshipType, direction, MOCK_USER_SESSION);
+      expect(response).toEqual(expected);
     });
 
-    it("item has one related item", done => {
+    it("item has one related item", async () => {
       const itemId = "itm1234567890";
       const relationshipType = "Survey2Service";
       const direction = "forward";
@@ -804,10 +657,9 @@ describe("Module `restHelpersGet`: common REST fetch functions shared across pac
               "Service",
               "Singlelayer",
               "source-010915baf8104a6e9103b4f625160581",
-              "Hosted Service"
+              "Hosted Service",
             ],
-            description:
-              "Suspected drug activity reported by the general public.",
+            description: "Suspected drug activity reported by the general public.",
             tags: [
               "Opioids",
               "Public Safety",
@@ -815,14 +667,14 @@ describe("Module `restHelpersGet`: common REST fetch functions shared across pac
               "Community Policing",
               "Drug Tips",
               "Police",
-              "Law Enforcement"
+              "Law Enforcement",
             ],
             snippet: "Suspected drug activity reported by the general public.",
             thumbnail: "thumbnail/Drug-Activity-Reporter.png",
             documentation: null as any,
             extent: [
               [-131.83000000020434, 16.22999999995342],
-              [-57.119999999894105, 58.49999999979133]
+              [-57.119999999894105, 58.49999999979133],
             ],
             categories: [] as string[],
             spatialReference: null as any,
@@ -830,8 +682,7 @@ describe("Module `restHelpersGet`: common REST fetch functions shared across pac
             licenseInfo: null as any,
             culture: "",
             properties: null as any,
-            url:
-              "https://services7.arcgis.com/piPfTFmr/arcgis/rest/services/service_75b7efa1d3cf/FeatureServer",
+            url: "https://services7.arcgis.com/piPfTFmr/arcgis/rest/services/service_75b7efa1d3cf/FeatureServer",
             proxyFilter: null as any,
             access: "public",
             size: 180224,
@@ -847,9 +698,9 @@ describe("Module `restHelpersGet`: common REST fetch functions shared across pac
             avgRating: 0,
             numViews: 610,
             scoreCompleteness: 70,
-            groupDesignations: null as any
-          }
-        ]
+            groupDesignations: null as any,
+          },
+        ],
       };
 
       fetchMock.get(
@@ -862,25 +713,19 @@ describe("Module `restHelpersGet`: common REST fetch functions shared across pac
           "&start=1&num=100&relationshipType=" +
           relationshipType +
           "&token=fake-token",
-          {
-            aggregations: { total: { count: 1, name: "total" } },
-            nextkey: null, num: 100, ...expected
-          } as interfaces.IGetRelatedItemsResponseFull
+        {
+          aggregations: { total: { count: 1, name: "total" } },
+          nextkey: null,
+          num: 100,
+          ...expected,
+        } as interfaces.IGetRelatedItemsResponseFull,
       );
-      restHelpersGet
-        .getItemRelatedItems(
-          itemId,
-          relationshipType,
-          direction,
-          MOCK_USER_SESSION
-        )
-        .then((response: any) => {
-          expect(response).toEqual(expected);
-          done();
-        }, done.fail);
+
+      const response = await restHelpersGet.getItemRelatedItems(itemId, relationshipType, direction, MOCK_USER_SESSION);
+      expect(response).toEqual(expected);
     });
 
-    it("can handle an exception from the REST endpoint portal.getRelatedItems", done => {
+    it("can handle an exception from the REST endpoint portal.getRelatedItems", async () => {
       const itemId = "itm1234567890";
       const relationshipType = "Survey2Service";
       const direction = "forward";
@@ -895,27 +740,16 @@ describe("Module `restHelpersGet`: common REST fetch functions shared across pac
           "&start=1&num=100&relationshipType=" +
           relationshipType +
           "&token=fake-token",
-        mockItems.get500Failure()
+        mockItems.get500Failure(),
       );
-      restHelpersGet
-        .getItemRelatedItems(
-          itemId,
-          relationshipType,
-          direction,
-          MOCK_USER_SESSION
-        )
-        .then(
-          response => {
-            expect(response).toEqual(noRelatedItemsResponse);
-            done();
-          },
-          (err: any) => done.fail(err)
-        );
+
+      const response = await restHelpersGet.getItemRelatedItems(itemId, relationshipType, direction, MOCK_USER_SESSION);
+      expect(response).toEqual(noRelatedItemsResponse);
     });
 
-    it("handles multiple batches of requests for related items", done => {
+    it("handles multiple batches of requests for related items", async () => {
       const itemId = "itm1234567890";
-      const expected = {
+      const expected: any = {
         total: 7,
         relatedItems: [
           { id: "471e7500ab364db5a4f074c704962650" },
@@ -924,67 +758,73 @@ describe("Module `restHelpersGet`: common REST fetch functions shared across pac
           { id: "5a7ca139565349e7813a7ed309717485" },
           { id: "7495ad9c27aa43bf860b9d0a5dab58ab" },
           { id: "6e5fb5d0f59b463cb17588caca8df246" },
-          { id: "cce1be82652e4238804c29f9cf2ea417" }
-        ]
+          { id: "cce1be82652e4238804c29f9cf2ea417" },
+        ],
       };
 
       fetchMock.get(
         utils.PORTAL_SUBSET.restUrl +
-        "/content/items/" + itemId +
-        "/relatedItems?f=json&direction=forward&start=1&num=3&relationshipType=Survey2Service&token=fake-token",
-          {
-            aggregations: { total: { count: 3, name: "total" } },
-            nextkey: "fred", num: 3, total: 3, relatedItems: [
-              { id: "471e7500ab364db5a4f074c704962650" },
-              { id: "db5962011a394e3e9952dd4ba4ad84ef" },
-              { id: "f11985a2217e49c8989c392adc63e27a" }
-            ]
-          } as interfaces.IGetRelatedItemsResponseFull
+          "/content/items/" +
+          itemId +
+          "/relatedItems?f=json&direction=forward&start=1&num=3&relationshipType=Survey2Service&token=fake-token",
+        {
+          aggregations: { total: { count: 3, name: "total" } },
+          nextkey: "fred",
+          num: 3,
+          total: 3,
+          relatedItems: [
+            { id: "471e7500ab364db5a4f074c704962650" },
+            { id: "db5962011a394e3e9952dd4ba4ad84ef" },
+            { id: "f11985a2217e49c8989c392adc63e27a" },
+          ],
+        } as interfaces.IGetRelatedItemsResponseFull,
       );
 
       fetchMock.get(
         utils.PORTAL_SUBSET.restUrl +
-          "/content/items/" + itemId +
+          "/content/items/" +
+          itemId +
           "/relatedItems?f=json&direction=forward&start=4&num=3&relationshipType=Survey2Service&nextkey=fred&token=fake-token",
-          {
-            aggregations: { total: { count: 3, name: "total" } },
-            nextkey: "ginger", num: 3, total: 3, relatedItems: [
-              { id: "5a7ca139565349e7813a7ed309717485" },
-              { id: "7495ad9c27aa43bf860b9d0a5dab58ab" },
-              { id: "6e5fb5d0f59b463cb17588caca8df246" }
-            ]
-          } as interfaces.IGetRelatedItemsResponseFull
+        {
+          aggregations: { total: { count: 3, name: "total" } },
+          nextkey: "ginger",
+          num: 3,
+          total: 3,
+          relatedItems: [
+            { id: "5a7ca139565349e7813a7ed309717485" },
+            { id: "7495ad9c27aa43bf860b9d0a5dab58ab" },
+            { id: "6e5fb5d0f59b463cb17588caca8df246" },
+          ],
+        } as interfaces.IGetRelatedItemsResponseFull,
       );
 
       fetchMock.get(
         utils.PORTAL_SUBSET.restUrl +
-        "/content/items/" + itemId +
-        "/relatedItems?f=json&direction=forward&start=7&num=3&relationshipType=Survey2Service&nextkey=ginger&token=fake-token",
-          {
-            aggregations: { total: { count: 1, name: "total" } },
-            nextkey: null, num: 3, total: 1, relatedItems: [
-              { id: "cce1be82652e4238804c29f9cf2ea417" }
-            ]
-          } as interfaces.IGetRelatedItemsResponseFull
+          "/content/items/" +
+          itemId +
+          "/relatedItems?f=json&direction=forward&start=7&num=3&relationshipType=Survey2Service&nextkey=ginger&token=fake-token",
+        {
+          aggregations: { total: { count: 1, name: "total" } },
+          nextkey: null,
+          num: 3,
+          total: 1,
+          relatedItems: [{ id: "cce1be82652e4238804c29f9cf2ea417" }],
+        } as interfaces.IGetRelatedItemsResponseFull,
       );
 
-      restHelpersGet
-        .getItemRelatedItems(
-          itemId,
-          "Survey2Service",
-          "forward",
-          MOCK_USER_SESSION,
-          3  // items per request
-        )
-        .then((response: any) => {
-          expect(response).toEqual(expected);
-          done();
-        }, done.fail);
+      const response = await restHelpersGet.getItemRelatedItems(
+        itemId,
+        "Survey2Service",
+        "forward",
+        MOCK_USER_SESSION,
+        3, // items per request
+      );
+      expect(response).toEqual(expected);
     });
   });
 
   describe("getItemRelatedItemsInSameDirection", () => {
-    it("gets the data blob url from the authentication", () => {
+    it("gets the data blob url from the authentication", async () => {
       const itemId = "itm1234567890";
       const relationshipTypes = [
         // from ItemRelationshipType
@@ -1013,341 +853,259 @@ describe("Module `restHelpersGet`: common REST fetch functions shared across pac
         "TrackView2Map",
         "WebStyle2DesktopStyle",
         "WMA2Code",
-        "WorkforceMap2FeatureService"
+        "WorkforceMap2FeatureService",
       ];
 
-      relationshipTypes.forEach(
-        relationshipType => {
-          const response = relationshipType === "Survey2Data"
-            ?
-              {
+      relationshipTypes.forEach((relationshipType) => {
+        const response =
+          relationshipType === "Survey2Data"
+            ? ({
                 aggregations: { total: { count: 1, name: "total" } },
-                nextkey: null, num: 100, total: 1, relatedItems: [{ id: "srv1234567890" }, { id: "abc1234567890" }]
-              } as interfaces.IGetRelatedItemsResponseFull
-            :
-              {
+                nextkey: null,
+                num: 100,
+                total: 1,
+                relatedItems: [{ id: "srv1234567890" }, { id: "abc1234567890" }],
+              } as interfaces.IGetRelatedItemsResponseFull)
+            : ({
                 aggregations: { total: { count: 0, name: "total" } },
-                nextkey: null, num: 100, total: 0, relatedItems: []
-              } as interfaces.IGetRelatedItemsResponseFull
-            ;
+                nextkey: null,
+                num: 100,
+                total: 0,
+                relatedItems: [],
+              } as interfaces.IGetRelatedItemsResponseFull);
+        fetchMock.get(
+          utils.PORTAL_SUBSET.restUrl +
+            "/content/items/" +
+            itemId +
+            "/relatedItems" +
+            "?f=json&direction=forward&start=1&num=100&relationshipType=" +
+            relationshipType +
+            "&token=fake-token",
+          response,
+        );
+      });
 
-          fetchMock.get(
-            utils.PORTAL_SUBSET.restUrl +
-              "/content/items/" +
-              itemId +
-              "/relatedItems" +
-              "?f=json&direction=forward&start=1&num=100&relationshipType=" +
-              relationshipType +
-              "&token=fake-token",
-            response
-          );
-        }
-      );
-
-      return restHelpersGet.getItemRelatedItemsInSameDirection(itemId, "forward", MOCK_USER_SESSION)
-      .then(
-        response => {
-          expect(response).toEqual([{ relationshipType: "Survey2Data", relatedItemIds: ["srv1234567890", "abc1234567890"] }]);
-        }
-      );
+      const response = await restHelpersGet.getItemRelatedItemsInSameDirection(itemId, "forward", MOCK_USER_SESSION);
+      expect(response).toEqual([
+        {
+          relationshipType: "Survey2Data",
+          relatedItemIds: ["srv1234567890", "abc1234567890"],
+        },
+      ]);
     });
   });
 
   describe("getItemResources", () => {
-    it("can handle a 500 error from the REST endpoint portal.getItemResources", done => {
+    it("can handle a 500 error from the REST endpoint portal.getItemResources", async () => {
       const itemId = "itm1234567890";
 
       fetchMock.post(
         utils.PORTAL_SUBSET.restUrl + "/content/items/" + itemId + "/resources",
-        mockItems.get500Failure()
+        mockItems.get500Failure(),
       );
-      restHelpersGet.getItemResources(itemId, MOCK_USER_SESSION).then(
-        response => {
-          expect(response).toEqual(noResourcesResponse);
-          done();
-        },
-        (err: any) => done.fail(err)
-      );
+
+      const response = await restHelpersGet.getItemResources(itemId, MOCK_USER_SESSION);
+      expect(response).toEqual(noResourcesResponse);
     });
   });
 
   describe("getItemResourcesFiles", () => {
-    it("handles an inaccessible item", done => {
+    it("handles an inaccessible item", async () => {
       const itemId = "itm1234567890";
-      const pagingParams: portal.IPagingParams = {
-        start: 1, // one-based
-        num: 10
-      };
 
-      fetchMock.post(
-        utils.PORTAL_SUBSET.restUrl + "/content/items/itm1234567890/resources",
-        mockItems.get400Failure()
-      );
-      restHelpersGet.getItemResourcesFiles(itemId, MOCK_USER_SESSION).then(
-        () => done.fail(),
-        ok => {
-          expect(ok.message).toEqual(
-            "CONT_0001: Item does not exist or is inaccessible."
-          );
-          done();
-        }
+      fetchMock.post(utils.PORTAL_SUBSET.restUrl + "/content/items/itm1234567890/resources", mockItems.get400Failure());
+
+      return restHelpersGet.getItemResourcesFiles(itemId, MOCK_USER_SESSION).then(
+        () => fail(),
+        (ok) => {
+          expect(ok.message).toEqual("CONT_0001: Item does not exist or is inaccessible.");
+          return Promise.resolve();
+        },
       );
     });
 
-    it("handles an item with no resources", done => {
+    it("handles an item with no resources", async () => {
       const itemId = "itm1234567890";
-      const pagingParams: portal.IPagingParams = {
-        start: 1, // one-based
-        num: 10
-      };
 
-      fetchMock.post(
-        utils.PORTAL_SUBSET.restUrl + "/content/items/itm1234567890/resources",
-        {
-          total: 0,
-          start: 1,
-          num: 0,
-          nextStart: -1,
-          resources: []
-        }
-      );
-      restHelpersGet
-        .getItemResourcesFiles(itemId, MOCK_USER_SESSION)
-        .then((ok: File[]) => {
-          expect(ok.length).toEqual(0);
-          done();
-        }, done.fail);
+      fetchMock.post(utils.PORTAL_SUBSET.restUrl + "/content/items/itm1234567890/resources", {
+        total: 0,
+        start: 1,
+        num: 0,
+        nextStart: -1,
+        resources: [],
+      });
+
+      const ok: File[] = await restHelpersGet.getItemResourcesFiles(itemId, MOCK_USER_SESSION);
+      expect(ok.length).toEqual(0);
     });
 
-    it("handles an item with one resource", done => {
+    it("handles an item with one resource", async () => {
       const itemId = "itm1234567890";
       fetchMock
+        .post(utils.PORTAL_SUBSET.restUrl + "/content/items/itm1234567890/resources", {
+          total: 1,
+          start: 1,
+          num: 1,
+          nextStart: -1,
+          resources: [
+            {
+              resource: "Jackson Lake.png",
+              created: 1568662976000,
+              size: 1231,
+            },
+          ],
+        })
         .post(
-          utils.PORTAL_SUBSET.restUrl +
-            "/content/items/itm1234567890/resources",
-          {
-            total: 1,
-            start: 1,
-            num: 1,
-            nextStart: -1,
-            resources: [
-              {
-                resource: "Jackson Lake.png",
-                created: 1568662976000,
-                size: 1231
-              }
-            ]
-          }
-        )
-        .post(
-          utils.PORTAL_SUBSET.restUrl +
-            "/content/items/itm1234567890/resources/Jackson%20Lake.png",
+          utils.PORTAL_SUBSET.restUrl + "/content/items/itm1234567890/resources/Jackson%20Lake.png",
           utils.getSampleImageAsBlob(),
-          { sendAsJson: false }
+          { sendAsJson: false },
         );
-      restHelpersGet
-        .getItemResourcesFiles(itemId, MOCK_USER_SESSION)
-        .then((ok: File[]) => {
-          expect(ok.length).toEqual(1);
-          done();
-        }, done.fail);
+
+      const ok: File[] = await restHelpersGet.getItemResourcesFiles(itemId, MOCK_USER_SESSION);
+      expect(ok.length).toEqual(1);
     });
   });
 
   describe("getItemsRelatedToASolution", () => {
-    it("gets items", done => {
+    it("gets items", async () => {
       const solutionId = "sol1234567890";
-      const getItemRelatedItemsSpy = spyOn(
-        portal,
-        "getRelatedItems"
-      ).and.resolveTo({
+      const getItemRelatedItemsSpy = spyOn(portal, "getRelatedItems").and.resolveTo({
         aggregations: {
           total: {
             count: 1,
-            name: "total"
-          }
+            name: "total",
+          },
         },
         nextkey: null,
         num: 100,
         relatedItems: [mockItems.getAGOLItem("Web Map")],
-        total: 1
+        total: 1,
       } as interfaces.IGetRelatedItemsResponseFull);
-      restHelpersGet
-        .getItemsRelatedToASolution(solutionId, MOCK_USER_SESSION)
-        .then((response: interfaces.IItem[]) => {
-          expect(response).toEqual([mockItems.getAGOLItem("Web Map")]);
-          expect(getItemRelatedItemsSpy.calls.count()).toEqual(1);
-          expect(getItemRelatedItemsSpy.calls.first().args).toEqual([
-            {
-              id: solutionId,
-              relationshipType: "Solution2Item",
-              authentication: MOCK_USER_SESSION,
-              params: { direction: "forward", start: 1, num: 100 }
-            } as portal.IItemRelationshipOptions
-          ]);
-          done();
-        }, done.fail);
+
+      const response: interfaces.IItem[] = await restHelpersGet.getItemsRelatedToASolution(
+        solutionId,
+        MOCK_USER_SESSION,
+      );
+      expect(response).toEqual([mockItems.getAGOLItem("Web Map")]);
+      expect(getItemRelatedItemsSpy.calls.count()).toEqual(1);
+      expect(getItemRelatedItemsSpy.calls.first().args).toEqual([
+        {
+          id: solutionId,
+          relationshipType: "Solution2Item",
+          authentication: MOCK_USER_SESSION,
+          params: { direction: "forward", start: 1, num: 100 },
+        } as portal.IItemRelationshipOptions,
+      ]);
     });
   });
 
   describe("getItemThumbnail", () => {
-    it("handle missing thumbnail for an item", done => {
-      restHelpersGet
-        .getItemThumbnail("itm1234567890", null, false, MOCK_USER_SESSION)
-        .then((ok: Blob) => {
-          expect(ok).toBeNull();
-          done();
-        }, done.fail);
+    it("handle missing thumbnail for an item", async () => {
+      const ok: Blob = await restHelpersGet.getItemThumbnail("itm1234567890", null, false, MOCK_USER_SESSION);
+      expect(ok).toBeNull();
     });
 
-    it("get thumbnail for an item", done => {
+    it("get thumbnail for an item", async () => {
       fetchMock.post(
-        utils.PORTAL_SUBSET.restUrl +
-          "/content/items/itm1234567890/info/thumbnail/ago_downloaded.png",
+        utils.PORTAL_SUBSET.restUrl + "/content/items/itm1234567890/info/thumbnail/ago_downloaded.png",
         utils.getSampleImageAsBlob(),
-        { sendAsJson: false }
+        { sendAsJson: false },
       );
 
-      restHelpersGet
-        .getItemThumbnail(
-          "itm1234567890",
-          "thumbnail/ago_downloaded.png",
-          false,
-          MOCK_USER_SESSION
-        )
-        .then((ok: Blob) => {
-          expect(ok.type).toEqual("image/png");
-          done();
-        }, done.fail);
+      const ok: Blob = await restHelpersGet.getItemThumbnail(
+        "itm1234567890",
+        "thumbnail/ago_downloaded.png",
+        false,
+        MOCK_USER_SESSION,
+      );
+      expect(ok.type).toEqual("image/png");
     });
   });
 
   describe("getItemThumbnailAsFile", () => {
-    it("get thumbnail for an item", done => {
+    it("get thumbnail for an item", async () => {
       fetchMock.post(
-        utils.PORTAL_SUBSET.restUrl +
-          "/content/items/itm1234567890/info/thumbnail/ago_downloaded.png",
+        utils.PORTAL_SUBSET.restUrl + "/content/items/itm1234567890/info/thumbnail/ago_downloaded.png",
         utils.getSampleImageAsBlob(),
-        { sendAsJson: false }
+        { sendAsJson: false },
       );
 
-      restHelpersGet
-        .getItemThumbnailAsFile(
-          "itm1234567890",
-          "thumbnail/ago_downloaded.png",
-          false,
-          MOCK_USER_SESSION
-        )
-        .then((ok: File) => {
-          expect(ok.type).toEqual("image/png");
-          done();
-        }, done.fail);
+      const ok: File = await restHelpersGet.getItemThumbnailAsFile(
+        "itm1234567890",
+        "thumbnail/ago_downloaded.png",
+        false,
+        MOCK_USER_SESSION,
+      );
+      expect(ok.type).toEqual("image/png");
     });
 
-    it("handles missing thumbnail info", done => {
-      restHelpersGet
-        .getItemThumbnailAsFile("itm1234567890", null, false, MOCK_USER_SESSION)
-        .then((ok: File) => {
-          expect(ok).toBeNull();
-          done();
-        }, done.fail);
+    it("handles missing thumbnail info", async () => {
+      const ok: File = await restHelpersGet.getItemThumbnailAsFile("itm1234567890", null, false, MOCK_USER_SESSION);
+      expect(ok).toBeNull();
     });
   });
 
   describe("getItemThumbnailUrl", () => {
     it("get thumbnail url for an item", () => {
       expect(
-        restHelpersGet.getItemThumbnailUrl(
-          "itm1234567890",
-          "thumbnail/ago_downloaded.png",
-          false,
-          MOCK_USER_SESSION
-        )
-      ).toEqual(
-        utils.PORTAL_SUBSET.restUrl +
-          "/content/items/itm1234567890/info/thumbnail/ago_downloaded.png"
-      );
+        restHelpersGet.getItemThumbnailUrl("itm1234567890", "thumbnail/ago_downloaded.png", false, MOCK_USER_SESSION),
+      ).toEqual(utils.PORTAL_SUBSET.restUrl + "/content/items/itm1234567890/info/thumbnail/ago_downloaded.png");
     });
 
     it("get thumbnail url for a group", () => {
       expect(
-        restHelpersGet.getItemThumbnailUrl(
-          "grp1234567890",
-          "thumbnail/ago_downloaded.png",
-          true,
-          MOCK_USER_SESSION
-        )
-      ).toEqual(
-        utils.PORTAL_SUBSET.restUrl +
-          "/community/groups/grp1234567890/info/thumbnail/ago_downloaded.png"
-      );
+        restHelpersGet.getItemThumbnailUrl("grp1234567890", "thumbnail/ago_downloaded.png", true, MOCK_USER_SESSION),
+      ).toEqual(utils.PORTAL_SUBSET.restUrl + "/community/groups/grp1234567890/info/thumbnail/ago_downloaded.png");
     });
   });
 
   describe("getJson", () => {
-    it("get JSON without authentication", () => {
+    it("get JSON without authentication", async () => {
       fetchMock
         .post("http://site.com/some.json/rest/info", {})
-        .get(
-          "https://myorg.maps.arcgis.com/sharing/rest/portals/self?f=json&token=fake-token",
-          {}
-        )
+        .get("https://myorg.maps.arcgis.com/sharing/rest/portals/self?f=json&token=fake-token", {})
         .get("http://site.com/some.json?f=json", utils.getSampleJsonAsBlob(), {
-          sendAsJson: false
+          sendAsJson: false,
         });
-      return restHelpersGet
-        .getJson("http://site.com/some.json", MOCK_USER_SESSION)
-        .then(json => {
-          expect(json).toEqual(utils.getSampleJson());
-        });
+      const json = await restHelpersGet.getJson("http://site.com/some.json", MOCK_USER_SESSION);
+      expect(json).toEqual(utils.getSampleJson());
     });
 
-    it("get JSON without authentication", () => {
+    it("get JSON without authentication", async () => {
       fetchMock
-        .get(
-          "https://myorg.maps.arcgis.com/sharing/rest/portals/self?f=json&token=fake-token",
-          {}
-        )
+        .get("https://myorg.maps.arcgis.com/sharing/rest/portals/self?f=json&token=fake-token", {})
         .get("http://site.com/some.json?f=json", utils.getSampleJsonAsBlob(), {
-          sendAsJson: false
+          sendAsJson: false,
         });
-      return restHelpersGet.getJson("http://site.com/some.json").then(json => {
-        expect(json).toEqual(utils.getSampleJson());
-      });
+
+      const json = await restHelpersGet.getJson("http://site.com/some.json");
+      expect(json).toEqual(utils.getSampleJson());
     });
 
-    it("handles non-JSON", () => {
+    it("handles non-JSON", async () => {
       fetchMock
-        .get(
-          "https://myorg.maps.arcgis.com/sharing/rest/portals/self?f=json&token=fake-token",
-          {}
-        )
+        .get("https://myorg.maps.arcgis.com/sharing/rest/portals/self?f=json&token=fake-token", {})
         .get("http://site.com/some.json?f=json", utils.getSampleImageAsBlob(), {
-          sendAsJson: false
+          sendAsJson: false,
         });
-      return restHelpersGet
-        .getJson("http://site.com/some.json")
-        .then(json => expect(json).toEqual(null));
+
+      const json = await restHelpersGet.getJson("http://site.com/some.json");
+      expect(json).toEqual(null);
     });
 
-    it("handles error", () => {
+    it("handles error", async () => {
       fetchMock
-        .get(
-          "https://myorg.maps.arcgis.com/sharing/rest/portals/self?f=json&token=fake-token",
-          {}
-        )
+        .get("https://myorg.maps.arcgis.com/sharing/rest/portals/self?f=json&token=fake-token", {})
         .get("http://site.com/some.json?f=json", mockItems.get400Failure());
-      return restHelpersGet
-        .getJson("http://site.com/some.json")
-        .then(json => expect(json).toEqual(mockItems.get400Failure()));
+
+      const json = await restHelpersGet.getJson("http://site.com/some.json");
+      expect(json).toEqual(mockItems.get400Failure());
     });
   });
 
   describe("getPortalSharingUrlFromAuth", () => {
     it("gets a default portal sharing url when there's no authentication", () => {
-      expect(
-        restHelpersGet.getPortalSharingUrlFromAuth(undefined)
-      ).toEqual("https://www.arcgis.com/sharing/rest");
+      expect(restHelpersGet.getPortalSharingUrlFromAuth(undefined)).toEqual("https://www.arcgis.com/sharing/rest");
     });
 
     it("gets a default portal sharing url with authentication but no portal", () => {
@@ -1360,17 +1118,16 @@ describe("Module `restHelpersGet`: common REST fetch functions shared across pac
         refreshTokenExpires: utils.TOMORROW,
         refreshTokenTTL: 1440,
         username: "casey",
-        password: "123456"
+        password: "123456",
       });
-      expect(
-        restHelpersGet.getPortalSharingUrlFromAuth(mockUserSession)
-      ).toEqual("https://www.arcgis.com/sharing/rest");
+
+      expect(restHelpersGet.getPortalSharingUrlFromAuth(mockUserSession)).toEqual(
+        "https://www.arcgis.com/sharing/rest",
+      );
     });
 
     it("gets portal sharing url from authentication", () => {
-      expect(
-        restHelpersGet.getPortalSharingUrlFromAuth(MOCK_USER_SESSION)
-      ).toEqual(utils.PORTAL_SUBSET.restUrl);
+      expect(restHelpersGet.getPortalSharingUrlFromAuth(MOCK_USER_SESSION)).toEqual(utils.PORTAL_SUBSET.restUrl);
     });
   });
 
@@ -1385,304 +1142,248 @@ describe("Module `restHelpersGet`: common REST fetch functions shared across pac
         refreshTokenExpires: utils.TOMORROW,
         refreshTokenTTL: 1440,
         username: "casey",
-        password: "123456"
+        password: "123456",
       });
-      expect(restHelpersGet.getPortalUrlFromAuth(mockUserSession)).toEqual(
-        "https://www.arcgis.com"
-      );
+      expect(restHelpersGet.getPortalUrlFromAuth(mockUserSession)).toEqual("https://www.arcgis.com");
     });
 
     it("gets portal url from authentication", () => {
-      expect(restHelpersGet.getPortalUrlFromAuth(MOCK_USER_SESSION)).toEqual(
-        "https://myorg.maps.arcgis.com"
-      );
+      expect(restHelpersGet.getPortalUrlFromAuth(MOCK_USER_SESSION)).toEqual("https://myorg.maps.arcgis.com");
     });
   });
 
   describe("getPortalUrls", () => {
-    it("handles failure to fetch", done => {
-      fetchMock
-      .get(
+    it("handles failure to fetch", async () => {
+      fetchMock.get(
         "https://myorg.maps.arcgis.com/sharing/rest/portals/self/urls?f=json&token=fake-token",
-        mockItems.get400Failure()
+        mockItems.get400Failure(),
       );
-      restHelpersGet.getPortalUrls(MOCK_USER_SESSION).then(
-        () => {
-          done();
-        }
-      );
+
+      return restHelpersGet.getPortalUrls(MOCK_USER_SESSION);
     });
   });
 
   describe("getSolutionsRelatedToAnItem", () => {
-    it("gets solutions", done => {
+    it("gets solutions", async () => {
       const solutionId = "sol1234567890";
-      const getItemRelatedItemsSpy = spyOn(
-        portal,
-        "getRelatedItems"
-      ).and.resolveTo({
+      const getItemRelatedItemsSpy = spyOn(portal, "getRelatedItems").and.resolveTo({
         aggregations: {
           total: {
             count: 1,
-            name: "total"
-          }
+            name: "total",
+          },
         },
         nextkey: null,
         num: 100,
         relatedItems: [mockItems.getAGOLItem("Solution")],
-        total: 1
+        total: 1,
       } as interfaces.IGetRelatedItemsResponseFull);
-      restHelpersGet
-        .getSolutionsRelatedToAnItem(solutionId, MOCK_USER_SESSION)
-        .then((response: string[]) => {
-          expect(response).toEqual(["sol1234567890"]);
-          expect(getItemRelatedItemsSpy.calls.count()).toEqual(1);
-          expect(getItemRelatedItemsSpy.calls.first().args).toEqual([
-            {
-              id: solutionId,
-              relationshipType: "Solution2Item",
-              authentication: MOCK_USER_SESSION,
-              params: { direction: "reverse", start: 1, num: 100 }
-            } as portal.IItemRelationshipOptions
-          ]);
-          done();
-        }, done.fail);
+
+      const response = await restHelpersGet.getSolutionsRelatedToAnItem(solutionId, MOCK_USER_SESSION);
+      expect(response).toEqual(["sol1234567890"]);
+      expect(getItemRelatedItemsSpy.calls.count()).toEqual(1);
+      expect(getItemRelatedItemsSpy.calls.first().args).toEqual([
+        {
+          id: solutionId,
+          relationshipType: "Solution2Item",
+          authentication: MOCK_USER_SESSION,
+          params: { direction: "reverse", start: 1, num: 100 },
+        } as portal.IItemRelationshipOptions,
+      ]);
     });
   });
 
   describe("getThumbnailFile", () => {
-    it("should handle error", done => {
-      const url =
-        utils.PORTAL_SUBSET.restUrl +
-        "/content/items/itm1234567890?f=json&token=fake-token";
+    it("should handle error", async () => {
+      const url = utils.PORTAL_SUBSET.restUrl + "/content/items/itm1234567890?f=json&token=fake-token";
       fetchMock.post(url, mockItems.get400Failure());
-      restHelpersGet
-        .getThumbnailFile(url, "sampleImage", MOCK_USER_SESSION)
-        .then(file => {
-          expect(file).toBeNull();
-          done();
-        }, done.fail);
+
+      const file = await restHelpersGet.getThumbnailFile(url, "sampleImage", MOCK_USER_SESSION);
+      expect(file).toBeNull();
     });
 
-    it("should get file", done => {
-      const url =
-        utils.PORTAL_SUBSET.restUrl +
-        "/content/items/itm1234567890?f=json&token=fake-token";
+    it("should get file", async () => {
+      const url = utils.PORTAL_SUBSET.restUrl + "/content/items/itm1234567890?f=json&token=fake-token";
       fetchMock.post(url, utils.getSampleImageAsFile(), {
-        sendAsJson: false
+        sendAsJson: false,
       });
-      restHelpersGet
-        .getThumbnailFile(url, "sampleImage", MOCK_USER_SESSION)
-        .then(file => {
-          expect(file).not.toBeUndefined();
-          expect(file.type).toEqual("image/png");
-          expect(file.name).toEqual("sampleImage");
-          done();
-        }, done.fail);
+
+      const file = await restHelpersGet.getThumbnailFile(url, "sampleImage", MOCK_USER_SESSION);
+      expect(file).not.toBeUndefined();
+      expect(file.type).toEqual("image/png");
+      expect(file.name).toEqual("sampleImage");
     });
   });
 
   describe("_fixTextBlobType", () => {
-    it("should pass application/json blobs through unchanged", done => {
+    it("should pass application/json blobs through unchanged", async () => {
       const testBlobType = "application/json";
       const testBlobContents = JSON.stringify({
         a: "a",
         b: 1,
         c: {
-          d: "d"
-        }
+          d: "d",
+        },
       });
       const testBlob = new Blob([testBlobContents], { type: testBlobType });
-      restHelpersGet._fixTextBlobType(testBlob).then((ok: Blob) => {
-        expect(ok.type).toEqual(testBlobType);
-        generalHelpers.blobToText(ok).then((text: string) => {
-          expect(text).toEqual(testBlobContents);
-          done();
-        }, done.fail);
-      }, done.fail);
+
+      const ok: Blob = await restHelpersGet._fixTextBlobType(testBlob);
+      expect(ok.type).toEqual(testBlobType);
+
+      const text: string = await generalHelpers.blobToText(ok);
+      expect(text).toEqual(testBlobContents);
     });
 
-    it("should pass image blobs through unchanged", done => {
+    it("should pass image blobs through unchanged", async () => {
       const testBlobType = "image/png";
       const testBlob = utils.getSampleImageAsBlob();
-      restHelpersGet._fixTextBlobType(testBlob).then((ok: Blob) => {
-        expect(ok.type).toEqual(testBlobType);
-        done();
-      }, done.fail);
+
+      const ok: Blob = await restHelpersGet._fixTextBlobType(testBlob);
+      expect(ok.type).toEqual(testBlobType);
     });
 
-    it("should pass text/xml blobs through unchanged", done => {
+    it("should pass text/xml blobs through unchanged", async () => {
       const testBlobType = "text/xml";
       const testBlob = utils.getSampleMetadataAsBlob();
-      restHelpersGet._fixTextBlobType(testBlob).then((ok: Blob) => {
-        expect(ok.type).toEqual(testBlobType);
-        const resultBlobContentsDef = generalHelpers.blobToText(ok);
-        const testBlobContentsDef = generalHelpers.blobToText(testBlob);
-        Promise.all([resultBlobContentsDef, testBlobContentsDef]).then(
-          results => {
-            const [resultBlobContents, testBlobContents] = results;
-            expect(resultBlobContents).toEqual(testBlobContents);
-            done();
-          },
-          done.fail
-        );
-      }, done.fail);
+
+      const ok: Blob = await restHelpersGet._fixTextBlobType(testBlob);
+      expect(ok.type).toEqual(testBlobType);
+
+      const resultBlobContents = await generalHelpers.blobToText(ok);
+      const testBlobContents = await generalHelpers.blobToText(testBlob);
+      expect(resultBlobContents).toEqual(testBlobContents);
     });
 
-    it("should pass truly text blobs through unchanged", done => {
+    it("should pass truly text blobs through unchanged", async () => {
       const testBlobType = "text/plain";
       const testBlobContents = "This is a block of text";
       const testBlob = new Blob([testBlobContents], { type: testBlobType });
-      restHelpersGet._fixTextBlobType(testBlob).then((ok: Blob) => {
-        expect(ok.type).toEqual(testBlobType);
-        generalHelpers.blobToText(ok).then((text: string) => {
-          expect(text).toEqual(testBlobContents);
-          done();
-        }, done.fail);
-      }, done.fail);
+
+      const ok: Blob = await restHelpersGet._fixTextBlobType(testBlob);
+      expect(ok.type).toEqual(testBlobType);
+
+      const text: string = await generalHelpers.blobToText(ok);
+      expect(text).toEqual(testBlobContents);
     });
 
-    it("should handle blob MIME text types with character-set suffix", done => {
+    it("should handle blob MIME text types with character-set suffix", async () => {
       const testBlobType = "text/plain; charset=utf-8";
       const testBlobContents = "This is a block of UTF8 text";
       const testBlob = new Blob([testBlobContents], { type: testBlobType });
-      restHelpersGet._fixTextBlobType(testBlob).then((ok: Blob) => {
-        expect(ok.type).toEqual(testBlobType);
-        generalHelpers.blobToText(ok).then((text: string) => {
-          expect(text).toEqual(testBlobContents);
-          done();
-        }, done.fail);
-      }, done.fail);
+
+      const ok: Blob = await restHelpersGet._fixTextBlobType(testBlob);
+      expect(ok.type).toEqual(testBlobType);
+
+      const text: string = await generalHelpers.blobToText(ok);
+      expect(text).toEqual(testBlobContents);
     });
 
-    it("should re-type application/json blobs claiming to be text/plain", done => {
+    it("should re-type application/json blobs claiming to be text/plain", async () => {
       const testBlobType = "text/plain";
       const realBlobType = "application/json";
       const testBlobContents = JSON.stringify({
         a: "a",
         b: 1,
         c: {
-          d: "d"
-        }
+          d: "d",
+        },
       });
       const testBlob = new Blob([testBlobContents], { type: testBlobType });
-      restHelpersGet._fixTextBlobType(testBlob).then((ok: Blob) => {
-        expect(ok.type).toEqual(realBlobType);
-        generalHelpers.blobToText(ok).then((text: string) => {
-          expect(text).toEqual(testBlobContents);
-          done();
-        }, done.fail);
-      }, done.fail);
+
+      const ok: Blob = await restHelpersGet._fixTextBlobType(testBlob);
+      expect(ok.type).toEqual(realBlobType);
+
+      const text: string = await generalHelpers.blobToText(ok);
+      expect(text).toEqual(testBlobContents);
     });
 
-    it("should re-type text/xml blobs claiming to be text/plain", done => {
+    it("should re-type text/xml blobs claiming to be text/plain", async () => {
       const testBlobType = "text/plain";
       const realBlobType = "text/xml";
       const testBlob = utils.getSampleMetadataAsBlob(testBlobType);
-      restHelpersGet._fixTextBlobType(testBlob).then((ok: Blob) => {
-        expect(ok.type).toEqual(realBlobType);
-        const resultBlobContentsDef = generalHelpers.blobToText(ok);
-        const testBlobContentsDef = generalHelpers.blobToText(testBlob);
-        Promise.all([resultBlobContentsDef, testBlobContentsDef]).then(
-          results => {
-            const [resultBlobContents, testBlobContents] = results;
-            expect(resultBlobContents).toEqual(testBlobContents);
-            done();
-          },
-          done.fail
-        );
-      }, done.fail);
+
+      const ok: Blob = await restHelpersGet._fixTextBlobType(testBlob);
+      expect(ok.type).toEqual(realBlobType);
+
+      const resultBlobContents = await generalHelpers.blobToText(ok);
+      const testBlobContents = await generalHelpers.blobToText(testBlob);
+      expect(resultBlobContents).toEqual(testBlobContents);
     });
 
-    it("should re-type application/zip blobs claiming to be text/plain", done => {
+    it("should re-type application/zip blobs claiming to be text/plain", async () => {
       const testBlobType = "text/plain";
       const realBlobType = "application/zip";
       const testBlob = utils.getSampleZip(testBlobType);
-      restHelpersGet._fixTextBlobType(testBlob).then((ok: Blob) => {
-        expect(ok.type).toEqual(realBlobType);
-        const resultBlobContentsDef = generalHelpers.blobToText(ok);
-        const testBlobContentsDef = generalHelpers.blobToText(testBlob);
-        Promise.all([resultBlobContentsDef, testBlobContentsDef]).then(
-          results => {
-            const [resultBlobContents, testBlobContents] = results;
-            expect(resultBlobContents).toEqual(testBlobContents);
-            done();
-          },
-          done.fail
-        );
-      }, done.fail);
+
+      const ok: Blob = await restHelpersGet._fixTextBlobType(testBlob);
+      expect(ok.type).toEqual(realBlobType);
+
+      const resultBlobContents = await generalHelpers.blobToText(ok);
+      const testBlobContents = await generalHelpers.blobToText(testBlob);
+      expect(resultBlobContents).toEqual(testBlobContents);
     });
   });
 
   describe("_getGroupContentsTranche", () => {
-    it("handles an inaccessible group", done => {
+    it("handles an inaccessible group", async () => {
       const groupId = "grp1234567890";
       const pagingParams: portal.IPagingParams = {
         start: 1, // one-based
-        num: 10
+        num: 10,
       };
 
       fetchMock.get(
-        utils.PORTAL_SUBSET.restUrl +
-          "/content/groups/grp1234567890?f=json&start=1&num=10&token=fake-token",
+        utils.PORTAL_SUBSET.restUrl + "/content/groups/grp1234567890?f=json&start=1&num=10&token=fake-token",
         {
           error: {
             code: 400,
             messageCode: "CONT_0006",
             message: "Group does not exist or is inaccessible.",
-            details: []
-          }
-        }
+            details: [],
+          },
+        },
       );
-      restHelpersGet
-        ._getGroupContentsTranche(groupId, pagingParams, MOCK_USER_SESSION)
-        .then(
-          () => done.fail(),
-          ok => {
-            expect(ok.message).toEqual(
-              "CONT_0006: Group does not exist or is inaccessible."
-            );
-            done();
-          }
-        );
+
+      return restHelpersGet._getGroupContentsTranche(groupId, pagingParams, MOCK_USER_SESSION).then(
+        () => fail(),
+        (ok) => {
+          expect(ok.message).toEqual("CONT_0006: Group does not exist or is inaccessible.");
+          return Promise.resolve();
+        },
+      );
     });
 
-    it("handles an empty group", done => {
+    it("handles an empty group", async () => {
       const groupId = "grp1234567890";
       const pagingParams: portal.IPagingParams = {
         start: 1, // one-based
-        num: 10
+        num: 10,
       };
 
       fetchMock.get(
-        utils.PORTAL_SUBSET.restUrl +
-          "/content/groups/grp1234567890?f=json&start=1&num=10&token=fake-token",
+        utils.PORTAL_SUBSET.restUrl + "/content/groups/grp1234567890?f=json&start=1&num=10&token=fake-token",
         {
           total: 0,
           start: 1,
           num: 0,
           nextStart: -1,
-          items: []
-        }
+          items: [],
+        },
       );
-      restHelpersGet
-        ._getGroupContentsTranche(groupId, pagingParams, MOCK_USER_SESSION)
-        .then((ok: string[]) => {
-          expect(ok.length).toEqual(0);
-          done();
-        }, done.fail);
+
+      const ok: string[] = await restHelpersGet._getGroupContentsTranche(groupId, pagingParams, MOCK_USER_SESSION);
+      expect(ok.length).toEqual(0);
     });
 
-    it("handles a group where contents can be retrieved via a single fetch", done => {
+    it("handles a group where contents can be retrieved via a single fetch", async () => {
       const groupId = "grp1234567890";
       const pagingParams: portal.IPagingParams = {
         start: 1, // one-based
-        num: 10
+        num: 10,
       };
 
       fetchMock.get(
-        utils.PORTAL_SUBSET.restUrl +
-          "/content/groups/grp1234567890?f=json&start=1&num=10&token=fake-token",
+        utils.PORTAL_SUBSET.restUrl + "/content/groups/grp1234567890?f=json&start=1&num=10&token=fake-token",
         {
           total: 2,
           start: 1,
@@ -1690,388 +1391,321 @@ describe("Module `restHelpersGet`: common REST fetch functions shared across pac
           nextStart: -1,
           items: [
             {
-              id: "itm1234567890"
+              id: "itm1234567890",
             },
             {
-              id: "itm1234567891"
-            }
-          ]
-        }
+              id: "itm1234567891",
+            },
+          ],
+        },
       );
-      restHelpersGet
-        ._getGroupContentsTranche(groupId, pagingParams, MOCK_USER_SESSION)
-        .then((ok: string[]) => {
-          expect(ok.length).toEqual(2);
-          expect(ok).toEqual(["itm1234567890", "itm1234567891"]);
-          done();
-        }, done.fail);
+
+      const ok: string[] = await restHelpersGet._getGroupContentsTranche(groupId, pagingParams, MOCK_USER_SESSION);
+      expect(ok.length).toEqual(2);
+      expect(ok).toEqual(["itm1234567890", "itm1234567891"]);
     });
 
-    it("handles a group where contents require two fetches", done => {
+    it("handles a group where contents require two fetches", async () => {
       const groupId = "grp1234567890";
       const pagingParams: portal.IPagingParams = {
         start: 1, // one-based
-        num: 2
+        num: 2,
       };
 
       fetchMock
-        .get(
-          utils.PORTAL_SUBSET.restUrl +
-            "/content/groups/grp1234567890?f=json&start=1&num=2&token=fake-token",
-          {
-            total: 4,
-            start: 1,
-            num: 2,
-            nextStart: 3,
-            items: [
-              {
-                id: "itm1234567890"
-              },
-              {
-                id: "itm1234567891"
-              }
-            ]
-          }
-        )
-        .get(
-          utils.PORTAL_SUBSET.restUrl +
-            "/content/groups/grp1234567890?f=json&start=3&num=2&token=fake-token",
-          {
-            total: 4,
-            start: 3,
-            num: 2,
-            nextStart: -1,
-            items: [
-              {
-                id: "itm1234567892"
-              },
-              {
-                id: "itm1234567893"
-              }
-            ]
-          }
-        );
-      restHelpersGet
-        ._getGroupContentsTranche(groupId, pagingParams, MOCK_USER_SESSION)
-        .then((ok: string[]) => {
-          expect(ok.length).toEqual(4);
-          expect(ok).toEqual([
-            "itm1234567890",
-            "itm1234567891",
-            "itm1234567892",
-            "itm1234567893"
-          ]);
-          done();
-        }, done.fail);
+        .get(utils.PORTAL_SUBSET.restUrl + "/content/groups/grp1234567890?f=json&start=1&num=2&token=fake-token", {
+          total: 4,
+          start: 1,
+          num: 2,
+          nextStart: 3,
+          items: [
+            {
+              id: "itm1234567890",
+            },
+            {
+              id: "itm1234567891",
+            },
+          ],
+        })
+        .get(utils.PORTAL_SUBSET.restUrl + "/content/groups/grp1234567890?f=json&start=3&num=2&token=fake-token", {
+          total: 4,
+          start: 3,
+          num: 2,
+          nextStart: -1,
+          items: [
+            {
+              id: "itm1234567892",
+            },
+            {
+              id: "itm1234567893",
+            },
+          ],
+        });
+
+      const ok: string[] = await restHelpersGet._getGroupContentsTranche(groupId, pagingParams, MOCK_USER_SESSION);
+      expect(ok.length).toEqual(4);
+      expect(ok).toEqual(["itm1234567890", "itm1234567891", "itm1234567892", "itm1234567893"]);
     });
 
-    it("handles a group where contents require multiple fetches", done => {
+    it("handles a group where contents require multiple fetches", async () => {
       const groupId = "grp1234567890";
       const pagingParams: portal.IPagingParams = {
         start: 1, // one-based
-        num: 2
+        num: 2,
       };
 
       fetchMock
-        .get(
-          utils.PORTAL_SUBSET.restUrl +
-            "/content/groups/grp1234567890?f=json&start=1&num=2&token=fake-token",
-          {
-            total: 5,
-            start: 1,
-            num: 2,
-            nextStart: 3,
-            items: [
-              {
-                id: "itm1234567890"
-              },
-              {
-                id: "itm1234567891"
-              }
-            ]
-          }
-        )
-        .get(
-          utils.PORTAL_SUBSET.restUrl +
-            "/content/groups/grp1234567890?f=json&start=3&num=2&token=fake-token",
-          {
-            total: 5,
-            start: 3,
-            num: 2,
-            nextStart: 5,
-            items: [
-              {
-                id: "itm1234567892"
-              },
-              {
-                id: "itm1234567893"
-              }
-            ]
-          }
-        )
-        .get(
-          utils.PORTAL_SUBSET.restUrl +
-            "/content/groups/grp1234567890?f=json&start=5&num=2&token=fake-token",
-          {
-            total: 5,
-            start: 5,
-            num: 1,
-            nextStart: -1,
-            items: [
-              {
-                id: "itm1234567894"
-              }
-            ]
-          }
-        );
-      restHelpersGet
-        ._getGroupContentsTranche(groupId, pagingParams, MOCK_USER_SESSION)
-        .then((ok: string[]) => {
-          expect(ok.length).toEqual(5);
-          expect(ok).toEqual([
-            "itm1234567890",
-            "itm1234567891",
-            "itm1234567892",
-            "itm1234567893",
-            "itm1234567894"
-          ]);
-          done();
-        }, done.fail);
+        .get(utils.PORTAL_SUBSET.restUrl + "/content/groups/grp1234567890?f=json&start=1&num=2&token=fake-token", {
+          total: 5,
+          start: 1,
+          num: 2,
+          nextStart: 3,
+          items: [
+            {
+              id: "itm1234567890",
+            },
+            {
+              id: "itm1234567891",
+            },
+          ],
+        })
+        .get(utils.PORTAL_SUBSET.restUrl + "/content/groups/grp1234567890?f=json&start=3&num=2&token=fake-token", {
+          total: 5,
+          start: 3,
+          num: 2,
+          nextStart: 5,
+          items: [
+            {
+              id: "itm1234567892",
+            },
+            {
+              id: "itm1234567893",
+            },
+          ],
+        })
+        .get(utils.PORTAL_SUBSET.restUrl + "/content/groups/grp1234567890?f=json&start=5&num=2&token=fake-token", {
+          total: 5,
+          start: 5,
+          num: 1,
+          nextStart: -1,
+          items: [
+            {
+              id: "itm1234567894",
+            },
+          ],
+        });
+
+      const ok: string[] = await restHelpersGet._getGroupContentsTranche(groupId, pagingParams, MOCK_USER_SESSION);
+      expect(ok.length).toEqual(5);
+      expect(ok).toEqual(["itm1234567890", "itm1234567891", "itm1234567892", "itm1234567893", "itm1234567894"]);
     });
   });
 
   describe("_getItemResourcesTranche", () => {
-    it("handles an inaccessible item", done => {
+    it("handles an inaccessible item", async () => {
       const itemId = "itm1234567890";
       const pagingParams: portal.IPagingParams = {
         start: 1, // one-based
-        num: 10
+        num: 10,
       };
 
-      fetchMock.post(
-        utils.PORTAL_SUBSET.restUrl + "/content/items/itm1234567890/resources",
-        mockItems.get400Failure()
+      fetchMock.post(utils.PORTAL_SUBSET.restUrl + "/content/items/itm1234567890/resources", mockItems.get400Failure());
+
+      return restHelpersGet._getItemResourcesTranche(itemId, pagingParams, MOCK_USER_SESSION).then(
+        () => fail(),
+        (ok) => {
+          expect(ok.message).toEqual("CONT_0001: Item does not exist or is inaccessible.");
+          return Promise.resolve();
+        },
       );
-      restHelpersGet
-        ._getItemResourcesTranche(itemId, pagingParams, MOCK_USER_SESSION)
-        .then(
-          () => done.fail(),
-          ok => {
-            expect(ok.message).toEqual(
-              "CONT_0001: Item does not exist or is inaccessible."
-            );
-            done();
-          }
-        );
     });
 
-    it("handles an item with no resources", done => {
+    it("handles an item with no resources", async () => {
       const itemId = "itm1234567890";
       const pagingParams: portal.IPagingParams = {
         start: 1, // one-based
-        num: 10
+        num: 10,
       };
 
-      fetchMock.post(
-        utils.PORTAL_SUBSET.restUrl + "/content/items/itm1234567890/resources",
-        {
-          total: 0,
+      fetchMock.post(utils.PORTAL_SUBSET.restUrl + "/content/items/itm1234567890/resources", {
+        total: 0,
+        start: 1,
+        num: 0,
+        nextStart: -1,
+        resources: [],
+      });
+
+      const ok: Array<Promise<File>> = await restHelpersGet._getItemResourcesTranche(
+        itemId,
+        pagingParams,
+        MOCK_USER_SESSION,
+      );
+      expect(ok.length).toEqual(0);
+    });
+
+    it("handles an item with one resource", async () => {
+      const itemId = "itm1234567890";
+      const pagingParams: portal.IPagingParams = {
+        start: 1, // one-based
+        num: 10,
+      };
+
+      fetchMock
+        .post(utils.PORTAL_SUBSET.restUrl + "/content/items/itm1234567890/resources", {
+          total: 1,
           start: 1,
-          num: 0,
+          num: 1,
           nextStart: -1,
-          resources: []
-        }
+          resources: [
+            {
+              resource: "Jackson Lake.png",
+              created: 1568662976000,
+              size: 1231,
+            },
+          ],
+        })
+        .post(
+          utils.PORTAL_SUBSET.restUrl + "/content/items/itm1234567890/resources/Jackson%20Lake.png",
+          utils.getSampleImageAsBlob(),
+          { sendAsJson: false },
+        );
+
+      const ok: Array<Promise<File>> = await restHelpersGet._getItemResourcesTranche(
+        itemId,
+        pagingParams,
+        MOCK_USER_SESSION,
       );
-      restHelpersGet
-        ._getItemResourcesTranche(itemId, pagingParams, MOCK_USER_SESSION)
-        .then((ok: Array<Promise<File>>) => {
-          expect(ok.length).toEqual(0);
-          done();
-        }, done.fail);
+      expect(ok.length).toEqual(1);
+
+      return Promise.all(ok);
     });
 
-    it("handles an item with one resource", done => {
+    it("handles an item with multiple resources where they can be retrieved via a single fetch", async () => {
       const itemId = "itm1234567890";
       const pagingParams: portal.IPagingParams = {
         start: 1, // one-based
-        num: 10
+        num: 10,
       };
 
       fetchMock
+        .post(utils.PORTAL_SUBSET.restUrl + "/content/items/itm1234567890/resources", {
+          total: 4,
+          start: 1,
+          num: 4,
+          nextStart: -1,
+          resources: [
+            {
+              resource: "Bradley & Taggart Lakes.png",
+              created: 1568662976000,
+              size: 1231,
+            },
+            {
+              resource: "Jackson Lake.png",
+              created: 1568662976000,
+              size: 1231,
+            },
+            {
+              resource: "Jenny Lake.png",
+              created: 1568662968000,
+              size: 1231,
+            },
+            {
+              resource: "Leigh Lake.png",
+              created: 1568662960000,
+              size: 1231,
+            },
+          ],
+        })
         .post(
-          utils.PORTAL_SUBSET.restUrl +
-            "/content/items/itm1234567890/resources",
-          {
-            total: 1,
-            start: 1,
-            num: 1,
-            nextStart: -1,
-            resources: [
-              {
-                resource: "Jackson Lake.png",
-                created: 1568662976000,
-                size: 1231
-              }
-            ]
-          }
+          utils.PORTAL_SUBSET.restUrl + "/content/items/itm1234567890/resources/Bradley%20&%20Taggart%20Lakes.png",
+          utils.getSampleImageAsBlob(),
+          { sendAsJson: false },
         )
         .post(
-          utils.PORTAL_SUBSET.restUrl +
-            "/content/items/itm1234567890/resources/Jackson%20Lake.png",
+          utils.PORTAL_SUBSET.restUrl + "/content/items/itm1234567890/resources/Jackson%20Lake.png",
           utils.getSampleImageAsBlob(),
-          { sendAsJson: false }
+          { sendAsJson: false },
+        )
+        .post(
+          utils.PORTAL_SUBSET.restUrl + "/content/items/itm1234567890/resources/Jenny%20Lake.png",
+          utils.getSampleImageAsBlob(),
+          { sendAsJson: false },
+        )
+        .post(
+          utils.PORTAL_SUBSET.restUrl + "/content/items/itm1234567890/resources/Leigh%20Lake.png",
+          utils.getSampleImageAsBlob(),
+          { sendAsJson: false },
         );
-      restHelpersGet
-        ._getItemResourcesTranche(itemId, pagingParams, MOCK_USER_SESSION)
-        .then((ok: Array<Promise<File>>) => {
-          expect(ok.length).toEqual(1);
-          Promise.all(ok).then(rsrcResponses => {
-            done();
-          }, done.fail);
-        }, done.fail);
+
+      const ok: Array<Promise<File>> = await restHelpersGet._getItemResourcesTranche(
+        itemId,
+        pagingParams,
+        MOCK_USER_SESSION,
+      );
+      expect(ok.length).toEqual(4);
+
+      return Promise.all(ok);
     });
 
-    it("handles an item with multiple resources where they can be retrieved via a single fetch", done => {
+    it("handles an item with multiple resources where they require multiple fetches", async () => {
       const itemId = "itm1234567890";
       const pagingParams: portal.IPagingParams = {
         start: 1, // one-based
-        num: 10
+        num: 1,
       };
 
-      fetchMock
-        .post(
-          utils.PORTAL_SUBSET.restUrl +
-            "/content/items/itm1234567890/resources",
-          {
-            total: 4,
-            start: 1,
-            num: 4,
-            nextStart: -1,
-            resources: [
-              {
-                resource: "Bradley & Taggart Lakes.png",
-                created: 1568662976000,
-                size: 1231
-              },
-              {
-                resource: "Jackson Lake.png",
-                created: 1568662976000,
-                size: 1231
-              },
-              {
-                resource: "Jenny Lake.png",
-                created: 1568662968000,
-                size: 1231
-              },
-              {
-                resource: "Leigh Lake.png",
-                created: 1568662960000,
-                size: 1231
-              }
-            ]
-          }
-        )
-        .post(
-          utils.PORTAL_SUBSET.restUrl +
-            "/content/items/itm1234567890/resources/Bradley%20&%20Taggart%20Lakes.png",
-          utils.getSampleImageAsBlob(),
-          { sendAsJson: false }
-        )
-        .post(
-          utils.PORTAL_SUBSET.restUrl +
-            "/content/items/itm1234567890/resources/Jackson%20Lake.png",
-          utils.getSampleImageAsBlob(),
-          { sendAsJson: false }
-        )
-        .post(
-          utils.PORTAL_SUBSET.restUrl +
-            "/content/items/itm1234567890/resources/Jenny%20Lake.png",
-          utils.getSampleImageAsBlob(),
-          { sendAsJson: false }
-        )
-        .post(
-          utils.PORTAL_SUBSET.restUrl +
-            "/content/items/itm1234567890/resources/Leigh%20Lake.png",
-          utils.getSampleImageAsBlob(),
-          { sendAsJson: false }
-        );
-      restHelpersGet
-        ._getItemResourcesTranche(itemId, pagingParams, MOCK_USER_SESSION)
-        .then((ok: Array<Promise<File>>) => {
-          expect(ok.length).toEqual(4);
-          Promise.all(ok).then(rsrcResponses => done(), done.fail);
-        }, done.fail);
-    });
-
-    it("handles an item with multiple resources where they require multiple fetches", done => {
-      const itemId = "itm1234567890";
-      const pagingParams: portal.IPagingParams = {
-        start: 1, // one-based
-        num: 1
-      };
-
-      const filenames = [
-        "Bradley & Taggart Lakes.png",
-        "Jackson Lake.png",
-        "Jenny Lake.png",
-        "Leigh Lake.png"
-      ];
+      const filenames = ["Bradley & Taggart Lakes.png", "Jackson Lake.png", "Jenny Lake.png", "Leigh Lake.png"];
       let imageNum = 0;
       fetchMock
+        .post(utils.PORTAL_SUBSET.restUrl + "/content/items/itm1234567890/resources", () => {
+          const i = imageNum++;
+          return {
+            total: 4,
+            start: i + 1,
+            num: 1,
+            nextStart: i < 3 ? i + 2 : -1,
+            resources: [
+              {
+                resource: filenames[i],
+                created: 1568662976000,
+                size: 1231,
+              },
+            ],
+          };
+        })
         .post(
-          utils.PORTAL_SUBSET.restUrl +
-            "/content/items/itm1234567890/resources",
-          () => {
-            const i = imageNum++;
-            return {
-              total: 4,
-              start: i + 1,
-              num: 1,
-              nextStart: i < 3 ? i + 2 : -1,
-              resources: [
-                {
-                  resource: filenames[i],
-                  created: 1568662976000,
-                  size: 1231
-                }
-              ]
-            };
-          }
+          utils.PORTAL_SUBSET.restUrl + "/content/items/itm1234567890/resources/Bradley%20&%20Taggart%20Lakes.png",
+          utils.getSampleImageAsBlob(),
+          { sendAsJson: false },
         )
         .post(
-          utils.PORTAL_SUBSET.restUrl +
-            "/content/items/itm1234567890/resources/Bradley%20&%20Taggart%20Lakes.png",
+          utils.PORTAL_SUBSET.restUrl + "/content/items/itm1234567890/resources/Jackson%20Lake.png",
           utils.getSampleImageAsBlob(),
-          { sendAsJson: false }
+          { sendAsJson: false },
         )
         .post(
-          utils.PORTAL_SUBSET.restUrl +
-            "/content/items/itm1234567890/resources/Jackson%20Lake.png",
+          utils.PORTAL_SUBSET.restUrl + "/content/items/itm1234567890/resources/Jenny%20Lake.png",
           utils.getSampleImageAsBlob(),
-          { sendAsJson: false }
+          { sendAsJson: false },
         )
         .post(
-          utils.PORTAL_SUBSET.restUrl +
-            "/content/items/itm1234567890/resources/Jenny%20Lake.png",
+          utils.PORTAL_SUBSET.restUrl + "/content/items/itm1234567890/resources/Leigh%20Lake.png",
           utils.getSampleImageAsBlob(),
-          { sendAsJson: false }
-        )
-        .post(
-          utils.PORTAL_SUBSET.restUrl +
-            "/content/items/itm1234567890/resources/Leigh%20Lake.png",
-          utils.getSampleImageAsBlob(),
-          { sendAsJson: false }
+          { sendAsJson: false },
         );
-      restHelpersGet
-        ._getItemResourcesTranche(itemId, pagingParams, MOCK_USER_SESSION)
-        .then((ok: Array<Promise<File>>) => {
-          expect(ok.length).toEqual(4);
-          Promise.all(ok).then(rsrcResponses => done(), done.fail);
-        }, done.fail);
+
+      const ok: Array<Promise<File>> = await restHelpersGet._getItemResourcesTranche(
+        itemId,
+        pagingParams,
+        MOCK_USER_SESSION,
+      );
+      expect(ok.length).toEqual(4);
+
+      return Promise.all(ok);
     });
   });
 
-  describe("getPortalDefaultBasemap", function() {
+  describe("getPortalDefaultBasemap", function () {
     const basemapGalleryGroupQuery = `title:"United States Basemaps" AND owner:Esri_cy_US`;
     const basemapTitle = "Topographic";
     let searchGroupsResponse: interfaces.ISearchResult<interfaces.IGroup>;
@@ -2080,112 +1714,82 @@ describe("Module `restHelpersGet`: common REST fetch functions shared across pac
     beforeEach(() => {
       searchGroupsResponse = utils.getGroupResponse(
         `title:"United States Basemaps" AND owner:Esri_cy_US`,
-        true
+        true,
       ) as interfaces.ISearchResult<interfaces.IGroup>;
       searchGroupContentsResponse = {
         results: [
           {
-            id: "14dba3d96cd94b358dff421661300286"
-          }
-        ]
+            id: "14dba3d96cd94b358dff421661300286",
+          },
+        ],
       } as interfaces.ISearchResult<interfaces.IItem>;
     });
 
-    it("should query for the default basemap group and default basemap", done => {
-      const searchGroupsSpy = spyOn(restHelpers, "searchGroups").and.resolveTo(
-        searchGroupsResponse
+    it("should query for the default basemap group and default basemap", async () => {
+      const searchGroupsSpy = spyOn(restHelpers, "searchGroups").and.resolveTo(searchGroupsResponse);
+      const searchGroupContentsSpy = spyOn(restHelpers, "searchGroupContents").and.resolveTo(
+        searchGroupContentsResponse,
       );
-      const searchGroupContentsSpy = spyOn(
-        restHelpers,
-        "searchGroupContents"
-      ).and.resolveTo(searchGroupContentsResponse);
-      restHelpersGet
-        .getPortalDefaultBasemap(
-          basemapGalleryGroupQuery,
-          basemapTitle,
-          MOCK_USER_SESSION
-        )
-        .then(results => {
-          expect(searchGroupsSpy.calls.count()).toEqual(1);
-          expect(searchGroupsSpy.calls.first().args).toEqual([
-            basemapGalleryGroupQuery,
-            MOCK_USER_SESSION,
-            { num: 1 }
-          ]);
-          expect(searchGroupContentsSpy.calls.count()).toEqual(1);
-          expect(searchGroupContentsSpy.calls.first().args).toEqual([
-            searchGroupsResponse.results[0].id,
-            `title:${basemapTitle}`,
-            MOCK_USER_SESSION,
-            { num: 1 }
-          ]);
-          const expected = searchGroupContentsResponse.results[0];
-          expect(results).toEqual(expected);
-          done();
-        })
-        .catch(done.fail);
+
+      const results = await restHelpersGet.getPortalDefaultBasemap(
+        basemapGalleryGroupQuery,
+        basemapTitle,
+        MOCK_USER_SESSION,
+      );
+      expect(searchGroupsSpy.calls.count()).toEqual(1);
+      expect(searchGroupsSpy.calls.first().args).toEqual([basemapGalleryGroupQuery, MOCK_USER_SESSION, { num: 1 }]);
+      expect(searchGroupContentsSpy.calls.count()).toEqual(1);
+      expect(searchGroupContentsSpy.calls.first().args).toEqual([
+        searchGroupsResponse.results[0].id,
+        `title:${basemapTitle}`,
+        MOCK_USER_SESSION,
+        { num: 1 },
+      ]);
+      const expected = searchGroupContentsResponse.results[0];
+      expect(results).toEqual(expected);
     });
 
-    it("should reject when no group is found", done => {
+    it("should reject when no group is found", async () => {
       searchGroupsResponse.results = [];
-      const searchGroupsSpy = spyOn(restHelpers, "searchGroups").and.resolveTo(
-        searchGroupsResponse
-      );
-      restHelpersGet
-        .getPortalDefaultBasemap(
-          basemapGalleryGroupQuery,
-          basemapTitle,
-          MOCK_USER_SESSION
-        )
-        .then(results => {
-          done.fail("Should have rejected");
+      const searchGroupsSpy = spyOn(restHelpers, "searchGroups").and.resolveTo(searchGroupsResponse);
+
+      return restHelpersGet
+        .getPortalDefaultBasemap(basemapGalleryGroupQuery, basemapTitle, MOCK_USER_SESSION)
+        .then(() => {
+          fail("Should have rejected");
         })
-        .catch(e => {
+        .catch((e) => {
           expect(searchGroupsSpy.calls.count()).toEqual(1);
-          expect(searchGroupsSpy.calls.first().args).toEqual([
-            basemapGalleryGroupQuery,
-            MOCK_USER_SESSION,
-            { num: 1 }
-          ]);
+          expect(searchGroupsSpy.calls.first().args).toEqual([basemapGalleryGroupQuery, MOCK_USER_SESSION, { num: 1 }]);
           expect(e.message).toEqual("No basemap group found");
-          done();
+          return Promise.resolve();
         });
     });
 
-    it("should reject when no basemap is found", done => {
+    it("should reject when no basemap is found", async () => {
       searchGroupContentsResponse.results = [];
-      const searchGroupsSpy = spyOn(restHelpers, "searchGroups").and.resolveTo(
-        searchGroupsResponse
+      const searchGroupsSpy = spyOn(restHelpers, "searchGroups").and.resolveTo(searchGroupsResponse);
+      const searchGroupContentsSpy = spyOn(restHelpers, "searchGroupContents").and.resolveTo(
+        searchGroupContentsResponse,
       );
-      const searchGroupContentsSpy = spyOn(
-        restHelpers,
-        "searchGroupContents"
-      ).and.resolveTo(searchGroupContentsResponse);
-      restHelpersGet
-        .getPortalDefaultBasemap(
-          basemapGalleryGroupQuery,
-          basemapTitle,
-          MOCK_USER_SESSION
-        )
-        .then(results => {
-          done.fail("Should have rejected");
+
+      return restHelpersGet
+        .getPortalDefaultBasemap(basemapGalleryGroupQuery, basemapTitle, MOCK_USER_SESSION)
+        .then(() => {
+          fail("Should have rejected");
         })
-        .catch(e => {
+        .catch((e) => {
           expect(searchGroupsSpy.calls.count()).toEqual(1);
-          expect(searchGroupsSpy.calls.first().args).toEqual([
-            basemapGalleryGroupQuery,
-            MOCK_USER_SESSION,
-            { num: 1 }
-          ]);
+          expect(searchGroupsSpy.calls.first().args).toEqual([basemapGalleryGroupQuery, MOCK_USER_SESSION, { num: 1 }]);
           expect(searchGroupContentsSpy.calls.count()).toEqual(1);
           expect(searchGroupContentsSpy.calls.first().args).toEqual([
             searchGroupsResponse.results[0].id,
             `title:${basemapTitle}`,
             MOCK_USER_SESSION,
-            { num: 1 }
+            { num: 1 },
           ]);
           expect(e.message).toEqual("No basemap found");
-          done();
+          return Promise.resolve();
         });
     });
   });

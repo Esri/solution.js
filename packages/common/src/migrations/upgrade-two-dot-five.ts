@@ -30,15 +30,13 @@ export function _upgradeTwoDotFive(model: ISolutionItem): ISolutionItem {
   } else {
     const clone: ISolutionItem = cloneObject(model);
 
-    clone.data.templates.forEach(template => {
+    clone.data.templates.forEach((template) => {
       if (template.type === "Form") {
         if (getProp(template, "properties.form.portalUrl")) {
           template.properties.form.portalUrl = "{{portalBaseUrl}}";
         }
 
-        const ver = parseFloat(
-          getProp(template, "properties.form.version") || "2.5"
-        );
+        const ver = parseFloat(getProp(template, "properties.form.version") || "2.5");
         const hasFormSchema = getProp(template, "properties.form");
         if (!hasFormSchema || ver >= 3.8) {
           return template;
@@ -55,15 +53,15 @@ export function _upgradeTwoDotFive(model: ISolutionItem): ISolutionItem {
             question.appearance.layout = "vertical";
           }
           return question;
-        }
+        };
         // replace whatever layout on all questions with vertical
         template.properties.form.questions = template.properties.form.questions.map((question: any) => {
           return !question.questions
             ? updateLayout(question)
             : {
-              ...question,
-              questions: question.questions.map(updateLayout)
-            };
+                ...question,
+                questions: question.questions.map(updateLayout),
+              };
         });
         template.properties.form.version = 3.8;
       }

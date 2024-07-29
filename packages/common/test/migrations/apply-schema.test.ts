@@ -15,43 +15,37 @@
  */
 
 import { _applySchema } from "../../src/migrations/apply-schema";
-import * as utils from "../mocks/utils";
-import {
-  ISolutionItem,
-  IItemGeneralized,
-  IItemTemplate
-} from "../../src/interfaces";
-const MOCK_USER_SESSION = utils.createRuntimeMockUserSession();
+import { ISolutionItem, IItemGeneralized, IItemTemplate } from "../../src/interfaces";
 
 describe("applySchema :: ", () => {
   it("passes same object through if schema >= 1", () => {
     const m = {
       item: {
         properties: {
-          schemaVersion: 1
-        }
-      }
+          schemaVersion: 1,
+        },
+      },
     } as ISolutionItem;
     const chk = _applySchema(m);
-    expect(chk).toBe(m, "should pass model through without cloning");
+    expect(chk).withContext("should pass model through without cloning").toBe(m);
   });
 
   it("adds properties if missing", () => {
     const m = {
       item: {},
-      data: {}
+      data: {},
     } as ISolutionItem;
     const chk = _applySchema(m);
     expect(chk).not.toBe(m, "should clone model");
-    expect(chk.item.properties).toBeDefined("should add item.properties");
+    expect(chk.item.properties).withContext("should add item.properties").toBeDefined();
   });
 
   it("converts template entries", () => {
-    const m = ({
+    const m = {
       item: {
         properties: {
-          otherProp: "exists"
-        }
+          otherProp: "exists",
+        },
       },
       data: {
         templates: [
@@ -59,64 +53,64 @@ describe("applySchema :: ", () => {
             fieldName: "becomesKey",
             type: "staysType",
             item: {
-              id: "staysItem"
+              id: "staysItem",
             } as IItemGeneralized,
-            data: {}
+            data: {},
           },
           {
             key: "remainsKey",
             type: "staysType",
             item: {
-              id: "staysItem"
+              id: "staysItem",
             } as IItemGeneralized,
             data: {},
-            resources: ["theresources"]
+            resources: ["theresources"],
           },
           {
             fieldName: "becomesKey",
             itemId: "remainsItemId",
             type: "staysType",
             item: {
-              id: "staysItem"
+              id: "staysItem",
             } as IItemGeneralized,
             data: {},
-            resources: ["theresources"]
-          }
-        ]
-      }
-    } as unknown) as ISolutionItem;
+            resources: ["theresources"],
+          },
+        ],
+      },
+    } as unknown as ISolutionItem;
     const chk = _applySchema(m);
     expect(chk).not.toBe(m, "should clone model");
-    expect(chk.item.properties).toBeDefined("should add item.properties");
+    expect(chk.item.properties).withContext("should add item.properties").toBeDefined();
     const tmpl0 = chk.data.templates[0];
     const convertedTmpl0 = {
       key: "becomesKey",
       type: "staysType",
-      item: ({ id: "staysItem" } as unknown) as IItemGeneralized,
+      item: { id: "staysItem" } as unknown as IItemGeneralized,
       data: {},
       itemId: "becomesKey",
-      resources: []
-    } as IItemTemplate;
-    expect(tmpl0).toEqual(convertedTmpl0, "should transform first template");
+      resources: [],
+    } as any;
+    expect(tmpl0).withContext("should transform first template").toEqual(convertedTmpl0);
     const tmpl1 = chk.data.templates[1];
     const convertedTmpl1 = {
       key: "remainsKey",
       type: "staysType",
-      item: ({ id: "staysItem" } as unknown) as IItemGeneralized,
+      item: { id: "staysItem" } as unknown as IItemGeneralized,
       data: {},
       itemId: "remainsKey",
-      resources: ["theresources"]
+      resources: ["theresources"],
     } as IItemTemplate;
-    expect(tmpl1).toEqual(convertedTmpl1, "should transform second template");
+    expect(tmpl1).withContext("should transform second template").toEqual(convertedTmpl1);
     const tmpl2 = chk.data.templates[2];
     const convertedTmpl2 = {
       key: "becomesKey",
       type: "staysType",
-      item: ({ id: "staysItem" } as unknown) as IItemGeneralized,
+      item: { id: "staysItem" } as unknown as IItemGeneralized,
       data: {},
       itemId: "remainsItemId",
-      resources: ["theresources"]
+      resources: ["theresources"],
     } as IItemTemplate;
-    expect(tmpl2).toEqual(convertedTmpl2, "should transform third template");
+    expect(tmpl2).withContext("should transform third template").toEqual(convertedTmpl2);
   });
 });

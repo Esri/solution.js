@@ -30,19 +30,16 @@ import { UserSession } from "../interfaces";
  * @param authentication Credentials for the request
  * @returns Promise that will resolve with the list of successfully deleted groups
  */
-export function deleteEmptyGroups(
-  groups: string[],
-  authentication: UserSession
-): Promise<string[]> {
+export function deleteEmptyGroups(groups: string[], authentication: UserSession): Promise<string[]> {
   if (groups.length === 0) {
     return Promise.resolve([]);
   }
 
   // Attempt to delete each group
-  return Promise.all(
-    groups.map(groupId => deleteGroupIfEmpty(groupId, authentication))
-  ).then((responses: boolean[]) => {
-    // Return just the group ids that succeeded
-    return groups.filter((groupId: string, index: number) => responses[index]);
-  });
+  return Promise.all(groups.map((groupId) => deleteGroupIfEmpty(groupId, authentication))).then(
+    (responses: boolean[]) => {
+      // Return just the group ids that succeeded
+      return groups.filter((groupId: string, index: number) => responses[index]);
+    },
+  );
 }

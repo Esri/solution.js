@@ -23,9 +23,7 @@ import { isGuid } from "@esri/hub-common";
  *
  * @param resourceStrings Array of resource paths
  */
-export function transformResourcePathsToSolutionResources(
-  resourceStrings: string[] = []
-): ISolutionResource[] {
+export function transformResourcePathsToSolutionResources(resourceStrings: string[] = []): ISolutionResource[] {
   return resourceStrings.map(transformResourcePathToSolutionResource);
 }
 
@@ -34,14 +32,12 @@ export function transformResourcePathsToSolutionResources(
  *
  * @param resourcePath String
  */
-export function transformResourcePathToSolutionResource(
-  resourcePath: string
-): ISolutionResource {
+export function transformResourcePathToSolutionResource(resourcePath: string): ISolutionResource {
   return {
     filename: _extractFilenameFromResourcePath(resourcePath),
     type: _getSolutionResourceTypeFromResourcePath(resourcePath),
     path: _extractPathFromResourcePath(resourcePath),
-    sourceUrl: resourcePath
+    sourceUrl: resourcePath,
   } as ISolutionResource;
 }
 
@@ -51,18 +47,12 @@ export function transformResourcePathToSolutionResource(
  * @param resourcePath String
  * @private
  */
-export function _getSolutionResourceTypeFromResourcePath(
-  resourcePath: string
-): SolutionResourceType {
+export function _getSolutionResourceTypeFromResourcePath(resourcePath: string): SolutionResourceType {
   let type = SolutionResourceType.resource;
 
-  const folder =
-    resourcePath
-      .split("/")
-      .slice(0, -1)
-      .join("/") || "";
+  const folder = resourcePath.split("/").slice(0, -1).join("/") || "";
 
-  PATH_TO_TYPE_MAP.forEach(entry => {
+  PATH_TO_TYPE_MAP.forEach((entry) => {
     if (folder.endsWith(entry.ending)) {
       type = entry.type;
     }
@@ -80,7 +70,7 @@ const PATH_TO_TYPE_MAP = [
   { ending: "_info_metadata", type: SolutionResourceType.metadata },
   { ending: "_info_data", type: SolutionResourceType.data },
   { ending: "_info_dataz", type: SolutionResourceType.fakezip },
-  { ending: "_info", type: SolutionResourceType.info }
+  { ending: "_info", type: SolutionResourceType.info },
 ];
 
 /**
@@ -120,11 +110,7 @@ export function _extractPathFromResourcePath(resourcePath: string): string {
   // default case
   let path = "";
   // parse up the path by splittins on `/` and dropping the last segment
-  const parsedPath =
-    resourcePath
-      .split("/")
-      .slice(0, -1)
-      .join("/") || "";
+  const parsedPath = resourcePath.split("/").slice(0, -1).join("/") || "";
   // if we got something...
   if (parsedPath) {
     // now we need to see if this has any of the well-known endings

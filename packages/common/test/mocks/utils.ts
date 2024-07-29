@@ -16,36 +16,33 @@
 
 import * as generalHelpers from "../../src/generalHelpers";
 import * as interfaces from "../../src/interfaces";
-//const fs = require('fs');
-//import JSZipUtils from "./jszip-utils.min";
-import path from "path";
 
 // -------------------------------------------------------------------------------------------------------------------//
 
 export const ORG_URL = "https://myorg.maps.arcgis.com";
 export const PORTAL_URL = "https://myorg.maps.arcgis.com";
 
-export const TOMORROW = (function() {
+export const TOMORROW = (function () {
   const now = new Date();
   now.setDate(now.getDate() + 1);
   return now;
 })();
 
-export const YESTERDAY = (function() {
+export const YESTERDAY = (function () {
   const now = new Date();
   now.setDate(now.getDate() - 1);
   return now;
 })();
 
 export const ArcgisRestSuccessFailSimple = {
-  success: false
+  success: false,
 };
 
 export const ArcgisRestSuccessFailStruct = {
   success: false,
   error: {
-    success: false
-  }
+    success: false,
+  },
 };
 
 export const SERVER_INFO = {
@@ -54,7 +51,7 @@ export const SERVER_INFO = {
   soapUrl: "http://server/arcgis/services",
   secureSoapUrl: "https://server/arcgis/services",
   owningSystemUrl: PORTAL_URL,
-  authInfo: {}
+  authInfo: {},
 };
 
 export const UTILITY_SERVER_INFO = {
@@ -65,8 +62,8 @@ export const UTILITY_SERVER_INFO = {
   authInfo: {
     isTokenBasedSecurity: true,
     tokenServicesUrl: "https://utility.arcgisonline.com/arcgis/tokens/",
-    shortLivedTokenValidity: 60
-  }
+    shortLivedTokenValidity: 60,
+  },
 };
 
 export const PORTAL_SUBSET = {
@@ -74,10 +71,10 @@ export const PORTAL_SUBSET = {
   id: "abCDefG123456",
   restUrl: PORTAL_URL + "/sharing/rest",
   portalUrl: PORTAL_URL,
-  urlKey: "deploymentTest"
+  urlKey: "deploymentTest",
 };
 
-export const ITEM_PROGRESS_CALLBACK: interfaces.IItemProgressCallback = function(
+export const ITEM_PROGRESS_CALLBACK: interfaces.IItemProgressCallback = function (
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   itemId: string,
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -85,18 +82,18 @@ export const ITEM_PROGRESS_CALLBACK: interfaces.IItemProgressCallback = function
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   costUsed: number,
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  createdItemId: string | undefined // supplied when status is EItemProgressStatus.Created or .Finished
+  createdItemId: string | undefined, // supplied when status is EItemProgressStatus.Created or .Finished
 ): boolean {
   return true;
 };
 
-export const SOLUTION_PROGRESS_CALLBACK: interfaces.ISolutionProgressCallback = function(
+export const SOLUTION_PROGRESS_CALLBACK: interfaces.ISolutionProgressCallback = function (
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   percentDone: number,
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   jobId: string | undefined,
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  progressEvent: interfaces.ISolutionProgressEvent | undefined
+  progressEvent: interfaces.ISolutionProgressEvent | undefined,
 ): void {};
 
 /**
@@ -105,11 +102,9 @@ export const SOLUTION_PROGRESS_CALLBACK: interfaces.ISolutionProgressCallback = 
  * @param callToFailOn 1-based call to fail on; before this call, function returns true
  * @return Callback function that tracks calls and fails when specified
  */
-export function createFailingItemProgressCallbackOnNthCall(
-  callToFailOn: number
-): interfaces.IItemProgressCallback {
+export function createFailingItemProgressCallbackOnNthCall(callToFailOn: number): interfaces.IItemProgressCallback {
   let numCalls = 0;
-  return function() {
+  return function () {
     return callToFailOn !== ++numCalls;
   };
 }
@@ -122,7 +117,7 @@ export function getSampleGroupToAdd(title: string): interfaces.IGroupAdd {
     tags: ["test"],
     description: "",
     thumbnail: undefined,
-    snippet: ""
+    snippet: "",
   };
 }
 
@@ -162,12 +157,9 @@ export function getSampleMetadataAsBlob(mimeType = "text/xml"): Blob {
   return xmlToBlob(xml, mimeType);
 }
 
-export function getSampleMetadataAsFile(
-  filename = "metadata.xml",
-  mimeType = "text/xml"
-): File {
+export function getSampleMetadataAsFile(filename = "metadata.xml", mimeType = "text/xml"): File {
   return new File([getSampleMetadataAsBlob(mimeType)], filename, {
-    type: mimeType
+    type: mimeType,
   });
 }
 
@@ -181,9 +173,7 @@ export function xmlToBlob(xml: any, mimeType = "text/xml"): Blob {
 
 export function getSampleImageAsBlob(): Blob {
   // Decode base-64 to binary, then binary to character codes as Uint8
-  return _imageDataToBlob(
-    _binaryToUint8CharCodes(atob(_imageAsDataUri(false)))
-  );
+  return _imageDataToBlob(_binaryToUint8CharCodes(atob(_imageAsDataUri(false))));
 }
 
 export function getSampleImageAsFile(filename = "sampleImage"): File {
@@ -203,8 +193,8 @@ export function getSampleJson(): any {
     a: "a",
     b: 1,
     c: {
-      d: "d"
-    }
+      d: "d",
+    },
   };
 }
 
@@ -212,58 +202,56 @@ export function getSampleJsonAsBlob(): Blob {
   return jsonToBlob(getSampleJson());
 }
 
-export function getSampleJsonAsFile(
-  filename: string,
-  mimeType = "application/json"
-): File {
+export function getSampleJsonAsFile(filename: string, mimeType = "application/json"): File {
   return new File([getSampleJsonAsBlob()], filename, {
-    type: mimeType
+    type: mimeType,
   });
 }
 
-export function getSampleQCJsonData(
-): any {
+export function getSampleQCJsonData(): any {
   return {
     application: {
       basemap: {
-          type: "Web Map",
-          itemId: "map1234567890",
-          mapAreas: [],
-          required: true,
-          useDefaultBasemap: false,
-          zoomLevel: null
-      }
-    },
-    name: "qc.project.json"
-  };
-}
-
-export function getSampleQCProjectJsonFile(
-): File {
-  return new File([jsonToBlob({
-    basemap: {
         type: "Web Map",
         itemId: "map1234567890",
         mapAreas: [],
         required: true,
         useDefaultBasemap: false,
-        zoomLevel: null
-    }
-  })], "qc.project.json", {
-    type: "application/json"
-  });
+        zoomLevel: null,
+      },
+    },
+    name: "qc.project.json",
+  };
+}
+
+export function getSampleQCProjectJsonFile(): File {
+  return new File(
+    [
+      jsonToBlob({
+        basemap: {
+          type: "Web Map",
+          itemId: "map1234567890",
+          mapAreas: [],
+          required: true,
+          useDefaultBasemap: false,
+          zoomLevel: null,
+        },
+      }),
+    ],
+    "qc.project.json",
+    {
+      type: "application/json",
+    },
+  );
 }
 
 export function getSampleTextAsBlob(mimeType = "text/plain"): Blob {
   return new Blob(["this is some text"], { type: mimeType });
 }
 
-export function getSampleTextAsFile(
-  filename: string,
-  mimeType = "text/plain"
-): File {
+export function getSampleTextAsFile(filename: string, mimeType = "text/plain"): File {
   return new File([getSampleTextAsBlob(mimeType)], filename, {
-    type: mimeType
+    type: mimeType,
   });
 }
 
@@ -288,7 +276,7 @@ EB352600 00002600 00000700 00006373\
 
 export function getSampleZipFile(name: string): File {
   return new File([getSampleZip()], name, {
-    type: "application/zip"
+    type: "application/zip",
   });
 }
 
@@ -301,9 +289,7 @@ export function getTokenResponse(token: string = "fake-token") {
 }
 
 export function getTransformationsResponse(hasTransformation: boolean = false) {
-  return hasTransformation
-    ? '{"transformations":[{wkid: 4326}]}'
-    : '{"transformations":[]}';
+  return hasTransformation ? '{"transformations":[{wkid: 4326}]}' : '{"transformations":[]}';
 }
 
 export function getProjectResponse() {
@@ -311,31 +297,27 @@ export function getProjectResponse() {
     geometries: [
       {
         x: -88.226,
-        y: 41.708
+        y: 41.708,
       },
       {
         x: -88.009,
-        y: 41.844
-      }
-    ]
+        y: 41.844,
+      },
+    ],
   };
 }
 
-export function getCreateFolderResponse(
-  folderId: string = "a4468da125a64526b359b70d8ba4a9dd"
-) {
+export function getCreateFolderResponse(folderId: string = "a4468da125a64526b359b70d8ba4a9dd") {
   return getSuccessResponse({
     folder: {
       username: "casey",
       id: folderId,
-      title: "Test Deployment"
-    }
+      title: "Test Deployment",
+    },
   });
 }
 
-export function getCreateGroupResponse(
-  id: string = "ebb41907d02742f2aef72adb6d393019"
-) {
+export function getCreateGroupResponse(id: string = "ebb41907d02742f2aef72adb6d393019") {
   return getSuccessResponse({
     group: {
       id: id,
@@ -364,9 +346,9 @@ export function getCreateGroupResponse(
       leavingDisallowed: false,
       hiddenMembers: false,
       displaySettings: {
-        itemTypes: ""
-      }
-    }
+        itemTypes: "",
+      },
+    },
   });
 }
 
@@ -383,7 +365,7 @@ export function getSuccessResponse(args?: any) {
 export function getShareResponse(id: string) {
   return {
     notSharedWith: [] as string[],
-    itemId: id
+    itemId: id,
   };
 }
 
@@ -398,17 +380,13 @@ export function checkForArcgisRestSuccessRequestError(error: any): boolean {
   );
 }
 
-export function createMockSettings(
-  solutionName = "",
-  folderId = "",
-  access = "private"
-): any {
+export function createMockSettings(solutionName = "", folderId = "", access = "private"): any {
   const settings: any = {
     organization: getPortalsSelfResponse(),
     portalBaseUrl: ORG_URL,
     solutionName,
     folderId,
-    access
+    access,
   };
 
   return settings;
@@ -417,7 +395,7 @@ export function createMockSettings(
 export function createRuntimeMockUserSession(
   now?: number,
   portalUrl?: string,
-  isEnterprise = false
+  isEnterprise = false,
 ): interfaces.UserSession {
   if (now === undefined) {
     now = Date.now();
@@ -433,7 +411,7 @@ export function createRuntimeMockUserSession(
     refreshTokenTTL: 1440,
     username: "casey",
     password: "123456",
-    portal: (portalUrl || PORTAL_URL) + "/sharing/rest"
+    portal: (portalUrl || PORTAL_URL) + "/sharing/rest",
   });
 
   (userSession as any).isEnterprise = isEnterprise;
@@ -442,7 +420,7 @@ export function createRuntimeMockUserSession(
     return (this as any).isEnterprise
       ? Promise.resolve({ portalHostname: "myOrg.ags.esri.com/portal" })
       : Promise.resolve({ urlKey: "myUrlKey" });
-  }
+  };
 
   return userSession;
 }
@@ -456,16 +434,11 @@ export function jsonClone(obj: any) {
  *
  * @param solutionTemplateItem Solution template
  */
-export function removeItemFcns(
-  solutionTemplateItem: interfaces.ISolutionItem
-): void {
-  const templates = generalHelpers.getProp(
-    solutionTemplateItem,
-    "data.templates"
-  );
+export function removeItemFcns(solutionTemplateItem: interfaces.ISolutionItem): void {
+  const templates = generalHelpers.getProp(solutionTemplateItem, "data.templates");
   if (templates) {
     if (Array.isArray(templates)) {
-      templates.forEach(template => {
+      templates.forEach((template) => {
         delete template.fcns;
       });
     } else {
@@ -497,27 +470,21 @@ export function getPortalsSelfResponse() {
     access: "public",
     allSSL: true,
     allowedRedirectUris: [] as string[],
-    analysisLayersGroupQuery:
-      'title:"Living Atlas Analysis Layers" AND owner:esri',
-    authorizedCrossOriginDomains: [
-      "https://ec2-18-219-57-96.us-east-2.compute.amazonaws.com"
-    ],
+    analysisLayersGroupQuery: 'title:"Living Atlas Analysis Layers" AND owner:esri',
+    authorizedCrossOriginDomains: ["https://ec2-18-219-57-96.us-east-2.compute.amazonaws.com"],
     backgroundImage: "images/arcgis_background.jpg",
-    basemapGalleryGroupQuery:
-      'title:"United States Basemaps" AND owner:Esri_cy_US',
+    basemapGalleryGroupQuery: 'title:"United States Basemaps" AND owner:Esri_cy_US',
     bingKey: "AmMpS0SyUPJSy2uXeMLn5aAEdhqKNSwWyBLsKEqF4Sb_knUpLbvjny8z1b2SoxXz",
     colorSetsGroupQuery: 'title:"Esri Colors" AND owner:esri_en',
     commentsEnabled: false,
-    contentCategorySetsGroupQuery:
-      'title:"ArcGIS Online Content Category Sets" AND owner:esri_en',
+    contentCategorySetsGroupQuery: 'title:"ArcGIS Online Content Category Sets" AND owner:esri_en',
     culture: "en",
     cultureFormat: "us",
     customBaseUrl: "maps.arcgis.com",
     defaultBasemap: {
       baseMapLayers: [
         {
-          url:
-            "https://services.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer",
+          url: "https://services.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer",
           layerType: "ArcGISTiledMapServiceLayer",
           resourceInfo: {
             currentVersion: 10.3,
@@ -531,13 +498,13 @@ export function getPortalsSelfResponse() {
                 defaultVisibility: false,
                 subLayerIds: "",
                 minScale: 0,
-                maxScale: 0
-              }
+                maxScale: 0,
+              },
             ],
             tables: [] as any[],
             spatialReference: {
               wkid: 102100,
-              latestWkid: 3857
+              latestWkid: 3857,
             },
             singleFusedMapCache: true,
             tileInfo: {
@@ -548,134 +515,134 @@ export function getPortalsSelfResponse() {
               compressionQuality: 90,
               origin: {
                 x: -20037508.342787,
-                y: 20037508.342787
+                y: 20037508.342787,
               },
               spatialReference: {
                 wkid: 102100,
-                latestWkid: 3857
+                latestWkid: 3857,
               },
               lods: [
                 {
                   level: 0,
                   resolution: 156543.03392800014,
-                  scale: 591657527.591555
+                  scale: 591657527.591555,
                 },
                 {
                   level: 1,
                   resolution: 78271.51696399994,
-                  scale: 295828763.795777
+                  scale: 295828763.795777,
                 },
                 {
                   level: 2,
                   resolution: 39135.75848200009,
-                  scale: 147914381.897889
+                  scale: 147914381.897889,
                 },
                 {
                   level: 3,
                   resolution: 19567.87924099992,
-                  scale: 73957190.948944
+                  scale: 73957190.948944,
                 },
                 {
                   level: 4,
                   resolution: 9783.93962049996,
-                  scale: 36978595.474472
+                  scale: 36978595.474472,
                 },
                 {
                   level: 5,
                   resolution: 4891.96981024998,
-                  scale: 18489297.737236
+                  scale: 18489297.737236,
                 },
                 {
                   level: 6,
                   resolution: 2445.98490512499,
-                  scale: 9244648.868618
+                  scale: 9244648.868618,
                 },
                 {
                   level: 7,
                   resolution: 1222.992452562495,
-                  scale: 4622324.434309
+                  scale: 4622324.434309,
                 },
                 {
                   level: 8,
                   resolution: 611.4962262813797,
-                  scale: 2311162.217155
+                  scale: 2311162.217155,
                 },
                 {
                   level: 9,
                   resolution: 305.74811314055756,
-                  scale: 1155581.108577
+                  scale: 1155581.108577,
                 },
                 {
                   level: 10,
                   resolution: 152.87405657041106,
-                  scale: 577790.554289
+                  scale: 577790.554289,
                 },
                 {
                   level: 11,
                   resolution: 76.43702828507324,
-                  scale: 288895.277144
+                  scale: 288895.277144,
                 },
                 {
                   level: 12,
                   resolution: 38.21851414253662,
-                  scale: 144447.638572
+                  scale: 144447.638572,
                 },
                 {
                   level: 13,
                   resolution: 19.10925707126831,
-                  scale: 72223.819286
+                  scale: 72223.819286,
                 },
                 {
                   level: 14,
                   resolution: 9.554628535634155,
-                  scale: 36111.909643
+                  scale: 36111.909643,
                 },
                 {
                   level: 15,
                   resolution: 4.77731426794937,
-                  scale: 18055.954822
+                  scale: 18055.954822,
                 },
                 {
                   level: 16,
                   resolution: 2.388657133974685,
-                  scale: 9027.977411
+                  scale: 9027.977411,
                 },
                 {
                   level: 17,
                   resolution: 1.1943285668550503,
-                  scale: 4513.988705
+                  scale: 4513.988705,
                 },
                 {
                   level: 18,
                   resolution: 0.5971642835598172,
-                  scale: 2256.994353
+                  scale: 2256.994353,
                 },
                 {
                   level: 19,
                   resolution: 0.29858214164761665,
-                  scale: 1128.497176
+                  scale: 1128.497176,
                 },
                 {
                   level: 20,
                   resolution: 0.14929107082380833,
-                  scale: 564.248588
+                  scale: 564.248588,
                 },
                 {
                   level: 21,
                   resolution: 0.07464553541190416,
-                  scale: 282.124294
+                  scale: 282.124294,
                 },
                 {
                   level: 22,
                   resolution: 0.03732276770595208,
-                  scale: 141.062147
+                  scale: 141.062147,
                 },
                 {
                   level: 23,
                   resolution: 0.01866138385297604,
-                  scale: 70.5310735
-                }
-              ]
+                  scale: 70.5310735,
+                },
+              ],
             },
             initialExtent: {
               xmin: -28848255.049479112,
@@ -684,8 +651,8 @@ export function getPortalsSelfResponse() {
               ymax: 16430757.376790084,
               spatialReference: {
                 wkid: 102100,
-                latestWkid: 3857
-              }
+                latestWkid: 3857,
+              },
             },
             fullExtent: {
               xmin: -20037507.067161843,
@@ -694,25 +661,24 @@ export function getPortalsSelfResponse() {
               ymax: 19971868.88040863,
               spatialReference: {
                 wkid: 102100,
-                latestWkid: 3857
-              }
+                latestWkid: 3857,
+              },
             },
             minScale: 591657527.591555,
             maxScale: 70.5310735,
             units: "esriMeters",
-            supportedImageFormatTypes:
-              "PNG32,PNG24,PNG,JPG,DIB,TIFF,EMF,PS,PDF,GIF,SVG,SVGZ,BMP",
+            supportedImageFormatTypes: "PNG32,PNG24,PNG,JPG,DIB,TIFF,EMF,PS,PDF,GIF,SVG,SVGZ,BMP",
             capabilities: "Map,Tilemap,Query,Data",
             supportedQueryFormats: "JSON, AMF",
             exportTilesAllowed: false,
             maxRecordCount: 100,
             maxImageHeight: 4096,
             maxImageWidth: 4096,
-            supportedExtensions: "KmlServer"
-          }
-        }
+            supportedExtensions: "KmlServer",
+          },
+        },
       ],
-      title: "Topographic"
+      title: "Topographic",
     },
     defaultExtent: {
       xmin: -9821384.714217981,
@@ -720,54 +686,52 @@ export function getPortalsSelfResponse() {
       xmax: -9797228.384715842,
       ymax: 5137789.39951188,
       spatialReference: {
-        wkid: 102100
-      }
+        wkid: 102100,
+      },
     },
     defaultVectorBasemap: {
       baseMapLayers: [
         {
           id: "World_Hillshade_3805",
           layerType: "ArcGISTiledMapServiceLayer",
-          url:
-            "https://services.arcgisonline.com/arcgis/rest/services/Elevation/World_Hillshade/MapServer",
+          url: "https://services.arcgisonline.com/arcgis/rest/services/Elevation/World_Hillshade/MapServer",
           visibility: true,
           opacity: 1,
-          title: "World Hillshade"
+          title: "World Hillshade",
         },
         {
           id: "VectorTile_2333",
           type: "VectorTileLayer",
           layerType: "VectorTileLayer",
           title: "World Topographic Map",
-          styleUrl:
-            "https://cdn.arcgis.com/sharing/rest/content/items/vts1234567890/resources/styles/root.json",
+          styleUrl: "https://cdn.arcgis.com/sharing/rest/content/items/vts1234567890/resources/styles/root.json",
           visibility: true,
-          opacity: 1
-        }
+          opacity: 1,
+        },
       ],
-      title: "Topographic"
+      title: "Topographic",
     },
     description: "<br>",
     eueiEnabled: false,
     featuredGroups: [
       {
         title: "Community Basemaps",
-        owner: "esri"
+        owner: "esri",
       },
       {
         title: "ArcGIS for Local Government",
-        owner: "ArcGISTeamLocalGov"
+        owner: "ArcGISTeamLocalGov",
       },
       {
         title: "ArcGIS for Local Government Try It Live Services",
         owner: "lind5149_lg",
-        id: "72b563693f6f402c9bcfb94d1be38916"
+        id: "72b563693f6f402c9bcfb94d1be38916",
       },
       {
         title: "Vector Basemap",
         owner: "chri4849_lg",
-        id: "09a0c2935b6841f381db54e0566a2aaa"
-      }
+        id: "09a0c2935b6841f381db54e0566a2aaa",
+      },
     ],
     featuredGroupsId: "",
     featuredItemsGroupQuery: "",
@@ -776,60 +740,49 @@ export function getPortalsSelfResponse() {
     helpBase: "https://doc.arcgis.com/en/arcgis-online/",
     helperServices: {
       asyncClosestFacility: {
-        url:
-          "https://logistics.arcgis.com/arcgis/rest/services/World/ClosestFacility/GPServer/FindClosestFacilities",
-        defaultTravelMode: "FEgifRtFndKNcJMJ"
+        url: "https://logistics.arcgis.com/arcgis/rest/services/World/ClosestFacility/GPServer/FindClosestFacilities",
+        defaultTravelMode: "FEgifRtFndKNcJMJ",
       },
       asyncLocationAllocation: {
-        url:
-          "https://logistics.arcgis.com/arcgis/rest/services/World/LocationAllocation/GPServer",
-        defaultTravelMode: "FEgifRtFndKNcJMJ"
+        url: "https://logistics.arcgis.com/arcgis/rest/services/World/LocationAllocation/GPServer",
+        defaultTravelMode: "FEgifRtFndKNcJMJ",
       },
       asyncODCostMatrix: {
-        url:
-          "https://logistics.arcgis.com/arcgis/rest/services/World/OriginDestinationCostMatrix/GPServer",
-        defaultTravelMode: "FEgifRtFndKNcJMJ"
+        url: "https://logistics.arcgis.com/arcgis/rest/services/World/OriginDestinationCostMatrix/GPServer",
+        defaultTravelMode: "FEgifRtFndKNcJMJ",
       },
       asyncRoute: {
-        url:
-          "https://logistics.arcgis.com/arcgis/rest/services/World/Route/GPServer",
-        defaultTravelMode: "FEgifRtFndKNcJMJ"
+        url: "https://logistics.arcgis.com/arcgis/rest/services/World/Route/GPServer",
+        defaultTravelMode: "FEgifRtFndKNcJMJ",
       },
       asyncServiceArea: {
-        url:
-          "https://logistics.arcgis.com/arcgis/rest/services/World/ServiceAreas/GPServer/GenerateServiceAreas",
-        defaultTravelMode: "FEgifRtFndKNcJMJ"
+        url: "https://logistics.arcgis.com/arcgis/rest/services/World/ServiceAreas/GPServer/GenerateServiceAreas",
+        defaultTravelMode: "FEgifRtFndKNcJMJ",
       },
       asyncVRP: {
-        url:
-          "https://logistics.arcgis.com/arcgis/rest/services/World/VehicleRoutingProblem/GPServer/SolveVehicleRoutingProblem",
-        defaultTravelMode: "FEgifRtFndKNcJMJ"
+        url: "https://logistics.arcgis.com/arcgis/rest/services/World/VehicleRoutingProblem/GPServer/SolveVehicleRoutingProblem",
+        defaultTravelMode: "FEgifRtFndKNcJMJ",
       },
       closestFacility: {
-        url:
-          "https://route.arcgis.com/arcgis/rest/services/World/ClosestFacility/NAServer/ClosestFacility_World",
-        defaultTravelMode: "FEgifRtFndKNcJMJ"
+        url: "https://route.arcgis.com/arcgis/rest/services/World/ClosestFacility/NAServer/ClosestFacility_World",
+        defaultTravelMode: "FEgifRtFndKNcJMJ",
       },
       defaultElevationLayers: [
         {
-          url:
-            "https://elevation3d.arcgis.com/arcgis/rest/services/WorldElevation3D/Terrain3D/ImageServer",
+          url: "https://elevation3d.arcgis.com/arcgis/rest/services/WorldElevation3D/Terrain3D/ImageServer",
           id: "globalElevation",
-          layerType: "ArcGISTiledElevationServiceLayer"
-        }
+          layerType: "ArcGISTiledElevationServiceLayer",
+        },
       ],
       elevation: {
-        url:
-          "https://elevation.arcgis.com/arcgis/rest/services/Tools/Elevation/GPServer"
+        url: "https://elevation.arcgis.com/arcgis/rest/services/Tools/Elevation/GPServer",
       },
       elevationSync: {
-        url:
-          "https://elevation.arcgis.com/arcgis/rest/services/Tools/ElevationSync/GPServer"
+        url: "https://elevation.arcgis.com/arcgis/rest/services/Tools/ElevationSync/GPServer",
       },
       geocode: [
         {
-          url:
-            "https://geocode.arcgis.com/arcgis/rest/services/World/GeocodeServer",
+          url: "https://geocode.arcgis.com/arcgis/rest/services/World/GeocodeServer",
           northLat: "Ymax",
           southLat: "Ymin",
           eastLon: "Xmax",
@@ -838,70 +791,57 @@ export function getPortalsSelfResponse() {
           zoomScale: 10000,
           suggest: true,
           placefinding: true,
-          batch: true
-        }
+          batch: true,
+        },
       ],
       geometry: {
-        url:
-          "https://utility.arcgisonline.com/arcgis/rest/services/Geometry/GeometryServer"
+        url: "https://utility.arcgisonline.com/arcgis/rest/services/Geometry/GeometryServer",
       },
       hydrology: {
-        url:
-          "https://hydro.arcgis.com/arcgis/rest/services/Tools/Hydrology/GPServer"
+        url: "https://hydro.arcgis.com/arcgis/rest/services/Tools/Hydrology/GPServer",
       },
       orthomappingElevation: {
-        url:
-          "https://elevation3d.arcgis.com/arcgis/rest/services/WorldElevation3D/Terrain3D/ImageServer"
+        url: "https://elevation3d.arcgis.com/arcgis/rest/services/WorldElevation3D/Terrain3D/ImageServer",
       },
       packaging: {
-        url:
-          "https://packaging.arcgis.com/arcgis/rest/services/OfflinePackaging/GPServer"
+        url: "https://packaging.arcgis.com/arcgis/rest/services/OfflinePackaging/GPServer",
       },
       printTask: {
-        url:
-          "https://utility.arcgisonline.com/arcgis/rest/services/Utilities/PrintingTools/GPServer/Export%20Web%20Map%20Task"
+        url: "https://utility.arcgisonline.com/arcgis/rest/services/Utilities/PrintingTools/GPServer/Export%20Web%20Map%20Task",
       },
       route: {
-        url:
-          "https://route.arcgis.com/arcgis/rest/services/World/Route/NAServer/Route_World",
-        defaultTravelMode: "FEgifRtFndKNcJMJ"
+        url: "https://route.arcgis.com/arcgis/rest/services/World/Route/NAServer/Route_World",
+        defaultTravelMode: "FEgifRtFndKNcJMJ",
       },
       routingUtilities: {
-        url:
-          "https://logistics.arcgis.com/arcgis/rest/services/World/Utilities/GPServer"
+        url: "https://logistics.arcgis.com/arcgis/rest/services/World/Utilities/GPServer",
       },
       serviceArea: {
-        url:
-          "https://route.arcgis.com/arcgis/rest/services/World/ServiceAreas/NAServer/ServiceArea_World",
-        defaultTravelMode: "FEgifRtFndKNcJMJ"
+        url: "https://route.arcgis.com/arcgis/rest/services/World/ServiceAreas/NAServer/ServiceArea_World",
+        defaultTravelMode: "FEgifRtFndKNcJMJ",
       },
       syncVRP: {
-        url:
-          "https://logistics.arcgis.com/arcgis/rest/services/World/VehicleRoutingProblemSync/GPServer/EditVehicleRoutingProblem",
-        defaultTravelMode: "FEgifRtFndKNcJMJ"
+        url: "https://logistics.arcgis.com/arcgis/rest/services/World/VehicleRoutingProblemSync/GPServer/EditVehicleRoutingProblem",
+        defaultTravelMode: "FEgifRtFndKNcJMJ",
       },
       traffic: {
-        url:
-          "https://traffic.arcgis.com/arcgis/rest/services/World/Traffic/MapServer"
+        url: "https://traffic.arcgis.com/arcgis/rest/services/World/Traffic/MapServer",
       },
       trafficData: {
-        url:
-          "https://traffic.arcgis.com/arcgis/rest/services/World/TrafficFeeds/GPServer"
+        url: "https://traffic.arcgis.com/arcgis/rest/services/World/TrafficFeeds/GPServer",
       },
       analysis: {
-        url: "https://analysis.arcgis.com/arcgis/rest/services/tasks/GPServer"
+        url: "https://analysis.arcgis.com/arcgis/rest/services/tasks/GPServer",
       },
       geoenrichment: {
-        url:
-          "https://geoenrich.arcgis.com/arcgis/rest/services/World/GeoenrichmentServer"
+        url: "https://geoenrich.arcgis.com/arcgis/rest/services/World/GeoenrichmentServer",
       },
       asyncGeocode: {
-        url: "https://analysis.arcgis.com/arcgis/rest/services/tasks/GPServer"
+        url: "https://analysis.arcgis.com/arcgis/rest/services/tasks/GPServer",
       },
       creditEstimation: {
-        url:
-          "https://analysis.arcgis.com/arcgis/rest/services/Estimate/GPServer"
-      }
+        url: "https://analysis.arcgis.com/arcgis/rest/services/Estimate/GPServer",
+      },
     },
     homePageFeaturedContent: "id:f292c6105dc243a2ad1377245722e312",
     homePageFeaturedContentCount: 12,
@@ -921,34 +861,34 @@ export function getPortalsSelfResponse() {
         settings: {
           groupId: "0472bb819e9741809373812a6400dade",
           migrations: {
-            siteToItems: true
+            siteToItems: true,
           },
-          appVersion: "2.1"
-        }
+          appVersion: "2.1",
+        },
       },
       sharedTheme: {
         logo: {
-          small: ""
+          small: "",
         },
         button: {
           background: "#ebebeb",
-          text: "#1a1a1a"
+          text: "#1a1a1a",
         },
         body: {
           link: "#004da8",
           background: "#ebebeb",
-          text: "#474747"
+          text: "#474747",
         },
         header: {
           background: "#999999",
-          text: "#242424"
-        }
+          text: "#242424",
+        },
       },
       links: {
         contactUs: {
           url: "mailto:arcgisteamlocalgov@esri.com",
-          visible: false
-        }
+          visible: false,
+        },
       },
       showSocialMediaLinks: true,
       hub: {
@@ -957,23 +897,22 @@ export function getPortalsSelfResponse() {
           orgType: "enterprise",
           communityOrg: {
             orgId: "hcOb9dpllCwWSJAh",
-            portalHostname: "gov-solutions.maps.arcgis.com"
-          }
-        }
+            portalHostname: "gov-solutions.maps.arcgis.com",
+          },
+        },
       },
       revertStdSqlEndDate: 1554993043785,
-      revertHttpsEndDate: 1558907781119
+      revertHttpsEndDate: 1558907781119,
     },
     portalThumbnail: "",
-    rasterFunctionTemplatesGroupQuery:
-      'title:"Raster Function Templates" AND owner:esri_en',
+    rasterFunctionTemplatesGroupQuery: 'title:"Raster Function Templates" AND owner:esri_en',
     region: "WO",
     rotatorPanels: [
       {
         id: "banner-3",
         innerHTML:
-          "<img src='images/banner-3.jpg' style='-webkit-border-radius:0 0 10px 10px; -moz-border-radius:0 0 10px 10px; -o-border-radius:0 0 10px 10px; border-radius:0 0 10px 10px; margin-top:0; width:960px; height:180px;'/><div style='position:absolute; bottom:80px; left:80px; max-height:65px; width:660px; margin:0;'><span style='position:absolute; bottom:0; margin-bottom:0; line-height:normal; font-family:HelveticaNeue,Verdana; font-weight:600; font-size:32px; color:#fff;'>ArcGIS Team Local Gov</span></div>"
-      }
+          "<img src='images/banner-3.jpg' style='-webkit-border-radius:0 0 10px 10px; -moz-border-radius:0 0 10px 10px; -o-border-radius:0 0 10px 10px; border-radius:0 0 10px 10px; margin-top:0; width:960px; height:180px;'/><div style='position:absolute; bottom:80px; left:80px; max-height:65px; width:660px; margin:0;'><span style='position:absolute; bottom:0; margin-bottom:0; line-height:normal; font-family:HelveticaNeue,Verdana; font-weight:600; font-size:32px; color:#fff;'>ArcGIS Team Local Gov</span></div>",
+      },
     ],
     showHomePageDescription: true,
     staticImagesUrl: "https://static.arcgis.com/images",
@@ -985,22 +924,21 @@ export function getPortalsSelfResponse() {
     units: "english",
     urlKey: "myorg",
     useVectorBasemaps: true,
-    vectorBasemapGalleryGroupQuery:
-      'title:"United States Vector Basemaps" AND owner:Esri_cy_US',
+    vectorBasemapGalleryGroupQuery: 'title:"United States Vector Basemaps" AND owner:Esri_cy_US',
     publicSubscriptionInfo: {
       companionOrganizations: [
         {
           type: "Community",
-          organizationUrl: "gov-solutions.maps.arcgis.com"
-        }
-      ]
+          organizationUrl: "gov-solutions.maps.arcgis.com",
+        },
+      ],
     },
     ipCntryCode: "US",
     httpPort: 80,
     httpsPort: 443,
     supportsOAuth: true,
     currentVersion: "7.2",
-    allowedOrigins: [] as any[]
+    allowedOrigins: [] as any[],
   };
 }
 
@@ -1094,7 +1032,7 @@ export function getUserResponse() {
       "premium:user:geocode",
       "premium:user:geoenrichment",
       "premium:user:networkanalysis",
-      "premium:user:spatialanalysis"
+      "premium:user:spatialanalysis",
     ],
     level: "2",
     userLicenseTypeId: "creatorUT",
@@ -1118,13 +1056,7 @@ export function getUserResponse() {
           "This group is required to configure the Crowdsource Manager application and used to share maps with health and human service personnel to manage reports of homeless individuals and encampments in the community.",
         snippet:
           "This group is required to configure the Crowdsource Manager application and used to share maps with health and human service personnel to manage reports of homeless individuals and encampments in the community.",
-        tags: [
-          "Homelessness",
-          "Health and Human Services",
-          "Public Safety",
-          "Homeless Activity",
-          "Encampments"
-        ],
+        tags: ["Homelessness", "Health and Human Services", "Public Safety", "Homeless Activity", "Encampments"],
         phone: null as any,
         sortField: "title",
         sortOrder: "asc",
@@ -1144,15 +1076,15 @@ export function getUserResponse() {
         leavingDisallowed: false,
         hiddenMembers: false,
         displaySettings: {
-          itemTypes: ""
+          itemTypes: "",
         },
         userMembership: {
           username: "casey",
           memberType: "owner",
-          applications: 0
-        }
-      }
-    ]
+          applications: 0,
+        },
+      },
+    ],
   };
 }
 
@@ -1206,10 +1138,10 @@ export function getContentUser() {
         avgRating: 0,
         numViews: 0,
         scoreCompleteness: 33,
-        groupDesignations: null as any
-      }
+        groupDesignations: null as any,
+      },
     ],
-    folders: [] as any[]
+    folders: [] as any[],
   };
 }
 
@@ -1238,12 +1170,11 @@ export function getGroupResponse(query: string, hasResult: boolean) {
             isFav: false,
             thumbnail: "test.jpg",
             created: 1258061693000,
-            access: "public"
-          }
-        ]
+            access: "public",
+          },
+        ],
   };
 }
-
 
 export function getSearchResponse<T extends interfaces.IItem | interfaces.IGroup | interfaces.IUser>(
   query: string,
@@ -1251,7 +1182,7 @@ export function getSearchResponse<T extends interfaces.IItem | interfaces.IGroup
   num: number,
   nextStart: number,
   total: number,
-  numOfResults: number
+  numOfResults: number,
 ): interfaces.ISearchResult<T> {
   return {
     query,
@@ -1259,18 +1190,16 @@ export function getSearchResponse<T extends interfaces.IItem | interfaces.IGroup
     num,
     nextStart,
     total,
-    results: Array(numOfResults).fill({ id: "1", title: "a" }) as T[]
+    results: Array(numOfResults).fill({ id: "1", title: "a" }) as T[],
   };
 }
 
 export function getCreateServiceResponse(
   url: string = "https://services123.arcgis.com/org1234567890/arcgis/rest/services/ROWPermits_publiccomment/FeatureServer",
   id: string = "svc1234567890",
-  isView: boolean = false
+  isView: boolean = false,
 ) {
-  const name: string = url
-    .replace(/.+services[/]/, "")
-    .replace("/FeatureServer", "");
+  const name: string = url.replace(/.+services[/]/, "").replace("/FeatureServer", "");
   return getSuccessResponse({
     encodedServiceURL: url,
     itemId: id,
@@ -1279,7 +1208,7 @@ export function getCreateServiceResponse(
     serviceurl: url,
     size: -1,
     type: "Feature Service",
-    isView: isView
+    isView: isView,
   });
 }
 
@@ -1295,10 +1224,10 @@ export function getCreateServiceResponse(
 export function returnOnNthCall(
   trigger: number,
   itemForNthCall: any,
-  itemBeforeNthCall: any
+  itemBeforeNthCall: any,
 ): interfaces.INoArgFunction {
   let numCalls = 0;
-  return function() {
+  return function () {
     return ++numCalls < trigger ? itemBeforeNthCall : itemForNthCall;
   };
 }
@@ -1332,7 +1261,7 @@ QmCC";
 }
 
 export function loadSampleXLSX(
-  filenameRoot: "09b843d27d8a441db4c88c1f03b8e9aa" | "c909d4ffd708476789e22664051629a0"
+  filenameRoot: "09b843d27d8a441db4c88c1f03b8e9aa" | "c909d4ffd708476789e22664051629a0",
 ): File {
   switch (filenameRoot) {
     case "09b843d27d8a441db4c88c1f03b8e9aa":
@@ -1341,9 +1270,16 @@ export function loadSampleXLSX(
         09b843d27d8a441db4c88c1f03b8e9aa
         774ac2524dad4bf38c369ac1950d8d97
       */
-      return new File([
-        _binaryToUint8CharCodes(atob("UEsDBBQABgAIAAAAIQBi7p1oXgEAAJAEAAATAAgCW0NvbnRlbnRfVHlwZXNdLnhtbCCiBAIooAACAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACslMtOwzAQRfdI/EPkLUrcskAINe2CxxIqUT7AxJPGqmNbnmlp/56J+xBCoRVqN7ESz9x7MvHNaLJubbaCiMa7UgyLgcjAVV4bNy/Fx+wlvxcZknJaWe+gFBtAMRlfX41mmwCYcbfDUjRE4UFKrBpoFRY+gOOd2sdWEd/GuQyqWqg5yNvB4E5W3hE4yqnTEOPRE9RqaSl7XvPjLUkEiyJ73BZ2XqVQIVhTKWJSuXL6l0u+cyi4M9VgYwLeMIaQvQ7dzt8Gu743Hk00GrKpivSqWsaQayu/fFx8er8ojov0UPq6NhVoXy1bnkCBIYLS2ABQa4u0Fq0ybs99xD8Vo0zL8MIg3fsl4RMcxN8bZLqej5BkThgibSzgpceeRE85NyqCfqfIybg4wE/tYxx8bqbRB+QERfj/FPYR6brzwEIQycAhJH2H7eDI6Tt77NDlW4Pu8ZbpfzL+BgAA//8DAFBLAwQUAAYACAAAACEAtVUwI/QAAABMAgAACwAIAl9yZWxzLy5yZWxzIKIEAiigAAIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAKySTU/DMAyG70j8h8j31d2QEEJLd0FIuyFUfoBJ3A+1jaMkG92/JxwQVBqDA0d/vX78ytvdPI3qyCH24jSsixIUOyO2d62Gl/pxdQcqJnKWRnGs4cQRdtX11faZR0p5KHa9jyqruKihS8nfI0bT8USxEM8uVxoJE6UchhY9mYFaxk1Z3mL4rgHVQlPtrYawtzeg6pPPm3/XlqbpDT+IOUzs0pkVyHNiZ9mufMhsIfX5GlVTaDlpsGKecjoieV9kbMDzRJu/E/18LU6cyFIiNBL4Ms9HxyWg9X9atDTxy515xDcJw6vI8MmCix+o3gEAAP//AwBQSwMEFAAGAAgAAAAhABsvpn2YAwAA6ggAAA8AAAB4bC93b3JrYm9vay54bWysVW1vozgQ/n7S/QfEd4rNWwA1XUEAXaV2VaXZ9k6KVLngBC6AOds0qar97zcmIW23p1Oue1Fix57h8TMzz5jzL7um1p4oFxVrpzo+Q7pG25wVVbue6t8WmeHrmpCkLUjNWjrVn6nQv1z8+sv5lvHNI2MbDQBaMdVLKbvQNEVe0oaIM9bRFiwrxhsiYcnXpug4JYUoKZVNbVoIeWZDqlbfI4T8FAy2WlU5TVjeN7SVexBOayKBviirToxoTX4KXEP4pu+MnDUdQDxWdSWfB1Bda/Lwct0yTh5rCHuHXW3H4evBDyMYrPEkMH04qqlyzgRbyTOANvekP8SPkYnxuxTsPubgNCTH5PSpUjU8suLeJ1l5RyzvFQyjn0bDIK1BKyEk75No7pGbpV+cr6qa3u2lq5Gu+0oaVala12oiZFpUkhZTfQJLtqXvNnjfxX1Vg9WaYMvTzYujnG+4VtAV6Wu5ACGP8NAZnhdYrvIEYUS1pLwlks5YK0GHh7h+VnMD9qxkoHBtTv/qK06hsUBfECuMJA/Jo7ghstR6Xk/1Wbj8JiD8ZVNtqOcEeEnWS8HqXjXD2Z9i2ZF8Q9ZULEGEDWuXErKwbFi+Ecs34iUfO+U/yJfkKicmJGVPfP//xwQBfx6OEr2RXIP/l8kVlOmWPEHRQBrFoacvoSrYfmhzHuKHFzTzYz/DqRGkTmY4aRAYAYpsw/PtKJ7Yseu43ncIhnthzkgvy4MeFPRUd6D4H0zXZDdaMAr7qnil8YIOH0PNPwyj7bsKWN18dxXdilflqKW2u6/agm2numG7wQTCej5uWAj0o20H+31VyBLiRIF93PuNVusSSGOMkWoVbilyU/3FzqLUxnFipC5yDMeDbPhRGhnYi5w0s3wvCYKBlPmG1XDNArth1tqhNW7V1YvhPlfzkGdd46E6g18WeKjj+FhO6hxaQU2DY4CRFSgPupNXQg4zqLACethB0QQFjoFS2zUcP7AM37EtY+YkVupO0iSNXVUi9ZoI/4/LcmiGcHz/KJYl4XLBQe3w1prTVUwEaGofEPB9SzZ2/RjZQNHJMOgJB8iIY88x3CSz3QlOZqmbvZJV4a8+eVX55vA0JbKHNlYdPKxDNWaH3ePmar9xqNO79gvnicr74el/c7yF6Gt6onN2d6Lj7Ov14vpE36t08XCfneocXcdJdLp/NJ9HfyzS38cjzH9MqDkUXI2DTM1RJhd/AwAA//8DAFBLAwQUAAYACAAAACEAgT6Ul/MAAAC6AgAAGgAIAXhsL19yZWxzL3dvcmtib29rLnhtbC5yZWxzIKIEASigAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAArFJNS8QwEL0L/ocwd5t2FRHZdC8i7FXrDwjJtCnbJiEzfvTfGyq6XVjWSy8Db4Z5783Hdvc1DuIDE/XBK6iKEgR6E2zvOwVvzfPNAwhi7a0egkcFExLs6uur7QsOmnMTuT6SyCyeFDjm+CglGYejpiJE9LnShjRqzjB1Mmpz0B3KTVney7TkgPqEU+ytgrS3tyCaKWbl/7lD2/YGn4J5H9HzGQlJPA15ANHo1CEr+MFF9gjyvPxmTXnOa8Gj+gzlHKtLHqo1PXyGdCCHyEcffymSc+WimbtV7+F0QvvKKb/b8izL9O9m5MnH1d8AAAD//wMAUEsDBBQABgAIAAAAIQCWTjGZkwIAANcEAAAYAAAAeGwvd29ya3NoZWV0cy9zaGVldDEueG1snJNLr5swEIX3lfofLO+JMQk0QSFXadKod1f1uXbMEKxgTG3npar/vWNQkkrZRFfCyDbDd+bgw/zlrBtyBOuUaQvKRzEl0EpTqnZX0B/fN9GUEudFW4rGtFDQCzj6snj/bn4ydu9qAE+Q0LqC1t53OWNO1qCFG5kOWnxSGauFx6XdMddZEGX/km5YEscZ00K1dCDk9hmGqSolYW3kQUPrB4iFRnjs39Wqc1eals/gtLD7QxdJoztEbFWj/KWHUqJl/rprjRXbBn2f+URIcrZ4JTjGV5l+/0FJK2mNM5UfIZkNPT/an7EZE/JGevT/FIZPmIWjCgd4RyVva4mnN1Zyh43fCMtusPC5bH5QZUH/bGKe8XQ6jpJstY4m2cdP0XI5nkXr7APHSPB1slr+pYt5qfCEgytioSrokufLhLLFvM/PTwUn99+ceLH9Bg1ID6jBKQnx3BqzD4WvuBUj0fUFgSikV0dYQdMgGJ2634NGL8BuCov5fX5V2/SB/mJJCZU4NP6rOX0Gtas9yqZoM+QkLy9rcBIDisKjJA1tS9MgAu9Eq/CnYcDEeWhVlb4u6HgySqYpTzOsJ1twfqMCkxJ5cN7oX0MVDyzWw/4BAAD//wAAAP//sinOSE0tcUksSbSzKcovVyiyVTJUUiguSMwrBrKsgOwKQ5PEZKuUSpfU4uTUvBJbJQM9I1MlO5tkkFpHoAKgUDGQX2ZnYKNfZmejnwzEQKPg5hmRYh5QMdw8QzTz9BFuBQAAAP//AAAA//+yKUhMT/VNLErPzCtWyElNK7FVMtAzV1IoykzPgLFL8gvAoqZKCkn5JSX5uTBeRmpiSmoRiGespJCWn18C4+jb2eiX5xdlF2ekppbYAQAAAP//AwBQSwMEFAAGAAgAAAAhAMEXEL5OBwAAxiAAABMAAAB4bC90aGVtZS90aGVtZTEueG1s7FnNixs3FL8X+j8Mc3f8NeOPJd7gz2yT3SRknZQctbbsUVYzMpK8GxMCJTn1UiikpZdCbz2U0kADDb30jwkktOkf0SfN2COt5SSbbEpadg2LR/69p6f3nn5683Tx0r2YekeYC8KSll++UPI9nIzYmCTTln9rOCg0fE9IlIwRZQlu+Qss/Evbn35yEW3JCMfYA/lEbKGWH0k52yoWxQiGkbjAZjiB3yaMx0jCI58Wxxwdg96YFiulUq0YI5L4XoJiUHt9MiEj7A2VSn97qbxP4TGRQg2MKN9XqrElobHjw7JCiIXoUu4dIdryYZ4xOx7ie9L3KBISfmj5Jf3nF7cvFtFWJkTlBllDbqD/MrlMYHxY0XPy6cFq0iAIg1p7pV8DqFzH9ev9Wr+20qcBaDSClaa22DrrlW6QYQ1Q+tWhu1fvVcsW3tBfXbO5HaqPhdegVH+whh8MuuBFC69BKT5cw4edZqdn69egFF9bw9dL7V5Qt/RrUERJcriGLoW1ane52hVkwuiOE94Mg0G9kinPUZANq+xSU0xYIjflWozuMj4AgAJSJEniycUMT9AIsriLKDngxNsl0wgSb4YSJmC4VCkNSlX4rz6B/qYjirYwMqSVXWCJWBtS9nhixMlMtvwroNU3IC+ePXv+8Onzh789f/To+cNfsrm1KktuByVTU+7Vj1///f0X3l+//vDq8Tfp1CfxwsS//PnLl7//8Tr1sOLcFS++ffLy6ZMX333150+PHdrbHB2Y8CGJsfCu4WPvJothgQ778QE/ncQwQsSSQBHodqjuy8gCXlsg6sJ1sO3C2xxYxgW8PL9r2bof8bkkjpmvRrEF3GOMdhh3OuCqmsvw8HCeTN2T87mJu4nQkWvuLkqsAPfnM6BX4lLZjbBl5g2KEommOMHSU7+xQ4wdq7tDiOXXPTLiTLCJ9O4Qr4OI0yVDcmAlUi60Q2KIy8JlIITa8s3eba/DqGvVPXxkI2FbIOowfoip5cbLaC5R7FI5RDE1Hb6LZOQycn/BRyauLyREeoop8/pjLIRL5jqH9RpBvwoM4w77Hl3ENpJLcujSuYsYM5E9dtiNUDxz2kySyMR+Jg4hRZF3g0kXfI/ZO0Q9QxxQsjHctwm2wv1mIrgF5GqalCeI+mXOHbG8jJm9Hxd0grCLZdo8tti1zYkzOzrzqZXauxhTdIzGGHu3PnNY0GEzy+e50VciYJUd7EqsK8jOVfWcYAFlkqpr1ilylwgrZffxlG2wZ29xgngWKIkR36T5GkTdSl045ZxUep2ODk3gNQLlH+SL0ynXBegwkru/SeuNCFlnl3oW7nxdcCt+b7PHYF/ePe2+BBl8ahkg9rf2zRBRa4I8YYYICgwX3YKIFf5cRJ2rWmzulJvYmzYPAxRGVr0Tk+SNxc+Jsif8d8oedwFzBgWPW/H7lDqbKGXnRIGzCfcfLGt6aJ7cwHCSrHPWeVVzXtX4//uqZtNePq9lzmuZ81rG9fb1QWqZvHyByibv8uieT7yx5TMhlO7LBcW7Qnd9BLzRjAcwqNtRuie5agHOIviaNZgs3JQjLeNxJj8nMtqP0AxaQ2XdwJyKTPVUeDMmoGOkh3UrFZ/QrftO83iPjdNOZ7msupqpCwWS+XgpXI1Dl0qm6Fo9796t1Ot+6FR3WZcGKNnTGGFMZhtRdRhRXw5CFF5nhF7ZmVjRdFjRUOqXoVpGceUKMG0VFXjl9uBFveWHQdpBhmYclOdjFae0mbyMrgrOmUZ6kzOpmQFQYi8zII90U9m6cXlqdWmqvUWkLSOMdLONMNIwghfhLDvNlvtZxrqZh9QyT7liuRtyM+qNDxFrRSInuIEmJlPQxDtu+bVqCLcqIzRr+RPoGMPXeAa5I9RbF6JTuHYZSZ5u+HdhlhkXsodElDpck07KBjGRmHuUxC1fLX+VDTTRHKJtK1eAED5a45pAKx+bcRB0O8h4MsEjaYbdGFGeTh+B4VOucP6qxd8drCTZHMK9H42PvQM65zcRpFhYLysHjomAi4Ny6s0xgZuwFZHl+XfiYMpo17yK0jmUjiM6i1B2ophknsI1ia7M0U8rHxhP2ZrBoesuPJiqA/a9T903H9XKcwZp5memxSrq1HST6Yc75A2r8kPUsiqlbv1OLXKuay65DhLVeUq84dR9iwPBMC2fzDJNWbxOw4qzs1HbtDMsCAxP1Db4bXVGOD3xric/yJ3MWnVALOtKnfj6yty81WYHd4E8enB/OKdS6FBCb5cjKPrSG8iUNmCL3JNZjQjfvDknLf9+KWwH3UrYLZQaYb8QVINSoRG2q4V2GFbL/bBc6nUqD+BgkVFcDtPr+gFcYdBFdmmvx9cu7uPlLc2FEYuLTF/MF7Xh+uK+XNl8ce8RIJ37tcqgWW12aoVmtT0oBL1Oo9Ds1jqFXq1b7w163bDRHDzwvSMNDtrVblDrNwq1crdbCGolZX6jWagHlUo7qLcb/aD9ICtjYOUpfWS+APdqu7b/AQAA//8DAFBLAwQUAAYACAAAACEAeaGAbKQCAABSBgAADQAAAHhsL3N0eWxlcy54bWykVW1r2zAQ/j7YfxD67sp24ywJtsvS1FDoxqAd7Ktiy4moXowkZ87G/vtOdl4cOrbRfolO59Nzz91zUtKbTgq0Y8ZyrTIcXYUYMVXqiqtNhr8+FcEMI+uoqqjQimV4zyy+yd+/S63bC/a4ZcwhgFA2w1vnmgUhttwySe2VbpiCL7U2kjrYmg2xjWG0sv6QFCQOwymRlCs8ICxk+T8gkprntglKLRvq+JoL7vY9FkayXNxvlDZ0LYBqF01oibpoamLUmWOS3vsij+Sl0VbX7gpwia5rXrKXdOdkTmh5RgLk1yFFCQnji9o780qkCTFsx718OE9rrZxFpW6VAzGBqG/B4lnp76rwn7xziMpT+wPtqABPhEmellpogxxIB53rPYpKNkTcUsHXhvuwmkou9oM79o5e7UOc5NB77ySex2GxcIgLcWIVewLgyFOQzzGjCtigg/20byC9gkkbYPq4f0RvDN1HcTI6QPqEebrWpoLJPvfj6MpTwWoHRA3fbP3qdAO/a+0cqJ+nFacbrajwpQwgJwPKKZkQj376v9UX2F2NVCsL6e6rDMM98k04mlDIwRzwho3HH6MN2G+GRV19iQ+II9oXpE/pkdc7w5/9dRUwOQcItG65cFz9gTBgVt25BaFXwPmr1zfnlAU6UbGatsI9nT5m+Gx/YhVvZXyK+sJ32vUQGT7bD16paOpzsM49WBgvWFFreIZ/3i0/zFd3RRzMwuUsmFyzJJgny1WQTG6Xq1UxD+Pw9tfoAXjD9e/fqzyFi7WwAh4Jcyj2UOLj2Zfh0Wag388o0B5zn8fT8GMShUFxHUbBZEpnwWx6nQRFEsWr6WR5lxTJiHvyymciJFE0PDiefLJwXDLB1VGro0JjL4gE278UQY5KkPOfQf4bAAD//wMAUEsDBBQABgAIAAAAIQCyptb50AAAAAABAAAUAAAAeGwvc2hhcmVkU3RyaW5ncy54bWxEj8FOxCAURfcm/gNh70ApM4UJMAsTv0A/4BVep01aqH3U6N9bY4zLk3vO4rrb5zKzD9xoKtnz5iQ5wxxLmvLd87fXlyfDGVXICeaS0fMvJH4Ljw+OqLKjzeT5WOt6FYLiiAvQqayYj2Uo2wL1wO0uaN0QEo2IdZmFkvIiFpgyZ7HsuXquONvz9L7j8x8HR1NwNUjbG90m1SUDWjep19GY2Ayy7Q1aACdqcOLH/fW7TkNUZ6UTJN0PrYntxUJs7Fkmk2z374vjQfgGAAD//wMAUEsDBBQABgAIAAAAIQCXGzMyQwEAAGkCAAARAAgBZG9jUHJvcHMvY29yZS54bWwgogQBKKAAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACMklFPwyAUhd9N/A8N7y20M9OQtkvU7MklJtZofCNwt5EVSoDZ7d9L261W54OPcM79OOeGfHFQdfQJ1slGFyhNCIpA80ZIvSnQa7WM71DkPNOC1Y2GAh3BoUV5fZVzQ3lj4dk2BqyX4KJA0o5yU6Ct94Zi7PgWFHNJcOggrhurmA9Hu8GG8R3bAM4ImWMFngnmGe6AsRmJ6IQUfESava17gOAYalCgvcNpkuJvrwer3J8DvTJxKumPJnQ6xZ2yBR/E0X1wcjS2bZu0sz5GyJ/i99XTS181lrrbFQdU5oJTboH5xpYruYOoCtvYC5njidAtsWbOr8K+1xLE/fGX91IP3L7GAAcRhWB0qHFW3mYPj9USlRnJbmIyi9O7Kp3TNKPk9qN7/sd8F3S4UKcQ/yfOKckmxDOgzPHF5yi/AAAA//8DAFBLAwQUAAYACAAAACEAYUkJEIkBAAARAwAAEAAIAWRvY1Byb3BzL2FwcC54bWwgogQBKKAAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACckkFv2zAMhe8D+h8M3Rs53VAMgaxiSFf0sGEBkrZnTaZjobIkiKyR7NePttHU2XrqjeR7ePpESd0cOl/0kNHFUInlohQFBBtrF/aVeNjdXX4VBZIJtfExQCWOgOJGX3xSmxwTZHKABUcErERLlFZSom2hM7hgObDSxNwZ4jbvZWwaZ+E22pcOAsmrsryWcCAINdSX6RQopsRVTx8NraMd+PBxd0wMrNW3lLyzhviW+qezOWJsqPh+sOCVnIuK6bZgX7Kjoy6VnLdqa42HNQfrxngEJd8G6h7MsLSNcRm16mnVg6WYC3R/eG1XovhtEAacSvQmOxOIsQbb1Iy1T0hZP8X8jC0AoZJsmIZjOffOa/dFL0cDF+fGIWACYeEccefIA/5qNibTO8TLOfHIMPFOONuBbzpzzjdemU/6J3sdu2TCkYVT9cOFZ3xIu3hrCF7XeT5U29ZkqPkFTus+DdQ9bzL7IWTdmrCH+tXzvzA8/uP0w/XyelF+LvldZzMl3/6y/gsAAP//AwBQSwECLQAUAAYACAAAACEAYu6daF4BAACQBAAAEwAAAAAAAAAAAAAAAAAAAAAAW0NvbnRlbnRfVHlwZXNdLnhtbFBLAQItABQABgAIAAAAIQC1VTAj9AAAAEwCAAALAAAAAAAAAAAAAAAAAJcDAABfcmVscy8ucmVsc1BLAQItABQABgAIAAAAIQAbL6Z9mAMAAOoIAAAPAAAAAAAAAAAAAAAAALwGAAB4bC93b3JrYm9vay54bWxQSwECLQAUAAYACAAAACEAgT6Ul/MAAAC6AgAAGgAAAAAAAAAAAAAAAACBCgAAeGwvX3JlbHMvd29ya2Jvb2sueG1sLnJlbHNQSwECLQAUAAYACAAAACEAlk4xmZMCAADXBAAAGAAAAAAAAAAAAAAAAAC0DAAAeGwvd29ya3NoZWV0cy9zaGVldDEueG1sUEsBAi0AFAAGAAgAAAAhAMEXEL5OBwAAxiAAABMAAAAAAAAAAAAAAAAAfQ8AAHhsL3RoZW1lL3RoZW1lMS54bWxQSwECLQAUAAYACAAAACEAeaGAbKQCAABSBgAADQAAAAAAAAAAAAAAAAD8FgAAeGwvc3R5bGVzLnhtbFBLAQItABQABgAIAAAAIQCyptb50AAAAAABAAAUAAAAAAAAAAAAAAAAAMsZAAB4bC9zaGFyZWRTdHJpbmdzLnhtbFBLAQItABQABgAIAAAAIQCXGzMyQwEAAGkCAAARAAAAAAAAAAAAAAAAAM0aAABkb2NQcm9wcy9jb3JlLnhtbFBLAQItABQABgAIAAAAIQBhSQkQiQEAABEDAAAQAAAAAAAAAAAAAAAAAEcdAABkb2NQcm9wcy9hcHAueG1sUEsFBgAAAAAKAAoAgAIAAAYgAAAAAA=="))
-      ], `xlsx/${filenameRoot}.xlsx`);
+      return new File(
+        [
+          _binaryToUint8CharCodes(
+            atob(
+              "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",
+            ),
+          ),
+        ],
+        `xlsx/${filenameRoot}.xlsx`,
+      );
       break;
     case "c909d4ffd708476789e22664051629a0":
       /*
@@ -1351,9 +1287,16 @@ export function loadSampleXLSX(
         c909d4ffd708476789e22664051629a0
         774ac2524dad4bf38c369ac1950d8d97
       */
-      return new File([
-        _binaryToUint8CharCodes(atob("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"))
-      ], `xlsx/${filenameRoot}.xlsx`);
+      return new File(
+        [
+          _binaryToUint8CharCodes(
+            atob(
+              "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",
+            ),
+          ),
+        ],
+        `xlsx/${filenameRoot}.xlsx`,
+      );
       break;
   }
 }

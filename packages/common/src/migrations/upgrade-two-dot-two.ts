@@ -38,7 +38,7 @@ export function _upgradeTwoDotTwo(model: ISolutionItem): ISolutionItem {
     { src: "{{initiative.extent}}", val: "{{organization.defaultExtentBBox}}" },
     {
       src: "{{initiative.collaborationGroupId",
-      val: "{{teams.collaborationGroupId"
+      val: "{{teams.collaborationGroupId",
     },
     { src: "{{initiative.openDataGroupId", val: "{{teams.contentGroupId" },
     { src: "{{initiative.contentGroupId", val: "{{teams.contentGroupId" },
@@ -47,14 +47,10 @@ export function _upgradeTwoDotTwo(model: ISolutionItem): ISolutionItem {
     { src: "{{contentGroupId", val: "{{teams.contentGroupId" },
     { src: "{{followersGroupId", val: "{{teams.followersGroupId" },
     { src: "{{initiative.id", val: "{{initiative.item.id" },
-    { src: "{{organization.portalBaseUrl", val: "{{portalBaseUrl" }
+    { src: "{{organization.portalBaseUrl", val: "{{portalBaseUrl" },
   ];
-  swaps.forEach(swap => {
-    clone.data = deepStringReplace(
-      clone.data,
-      swap.src,
-      swap.val
-    ) as ISolutionItemData;
+  swaps.forEach((swap) => {
+    clone.data = deepStringReplace(clone.data, swap.src, swap.val) as ISolutionItemData;
   });
   clone.item.properties.schemaVersion = 2.2;
   return clone;

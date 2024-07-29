@@ -18,12 +18,7 @@
  * @module removeItems
  */
 
-import {
-  EItemProgressStatus,
-  IDeleteSolutionOptions,
-  ISolutionPrecis,
-  UserSession
-} from "../interfaces";
+import { EItemProgressStatus, IDeleteSolutionOptions, ISolutionPrecis, UserSession } from "../interfaces";
 import * as reportProgress from "./reportProgress";
 import * as hubSites from "@esri/hub-sites";
 import * as portal from "@esri/arcgis-rest-portal";
@@ -53,24 +48,16 @@ export function removeItems(
   authentication: UserSession,
   percentDone: number,
   progressPercentStep: number,
-  deleteOptions: IDeleteSolutionOptions = {}
+  deleteOptions: IDeleteSolutionOptions = {},
 ): Promise<ISolutionPrecis[]> {
   let solutionDeletedSummary: ISolutionPrecis;
   let solutionFailureSummary: ISolutionPrecis;
   const itemToDelete = solutionSummary.items.shift();
-  const percentDoneReport =
-    percentDone + progressPercentStep * (solutionSummary.items.length + 1);
+  const percentDoneReport = percentDone + progressPercentStep * (solutionSummary.items.length + 1);
 
   if (itemToDelete) {
     // On to next item in list
-    return removeItems(
-      solutionSummary,
-      hubSiteItemIds,
-      authentication,
-      percentDone,
-      progressPercentStep,
-      deleteOptions
-    )
+    return removeItems(solutionSummary, hubSiteItemIds, authentication, percentDone, progressPercentStep, deleteOptions)
       .then((results: ISolutionPrecis[]) => {
         // Done with subsequent items in list; now delete the current item
         [solutionDeletedSummary, solutionFailureSummary] = results;
@@ -78,7 +65,7 @@ export function removeItems(
         // Remove any delete protection on item
         return portal.unprotectItem({
           id: itemToDelete.id,
-          authentication: authentication
+          authentication: authentication,
         });
       })
       .then(async () => {
@@ -86,7 +73,7 @@ export function removeItems(
         if (hubSiteItemIds.includes(itemToDelete.id)) {
           const options = await createHubRequestOptions(authentication);
           return hubSites.removeSite(itemToDelete.id, options);
-        } else if (itemToDelete.type === "Workflow")  {
+        } else if (itemToDelete.type === "Workflow") {
           const workflowBaseUrl = await workflowHelpers.getWorkflowBaseURL(authentication);
           return workflowHelpers.deleteWorkflowItem(itemToDelete.id, workflowBaseUrl, authentication);
         } else {
@@ -96,36 +83,18 @@ export function removeItems(
       .then(() => {
         // Successful deletion
         solutionDeletedSummary.items.push(itemToDelete);
-        reportProgress.reportProgress(
-          percentDoneReport,
-          deleteOptions,
-          itemToDelete.id,
-          EItemProgressStatus.Finished
-        );
+        reportProgress.reportProgress(percentDoneReport, deleteOptions, itemToDelete.id, EItemProgressStatus.Finished);
         return [solutionDeletedSummary, solutionFailureSummary];
       })
-      .catch(error => {
+      .catch((error) => {
         const errorMessage = error.error?.message || error.message;
-        if (
-          errorMessage &&
-          errorMessage.includes("Item does not exist or is inaccessible")
-        ) {
+        if (errorMessage && errorMessage.includes("Item does not exist or is inaccessible")) {
           // Filter out errors where the item doesn't exist, such as from a previous delete attempt
-          reportProgress.reportProgress(
-            percentDoneReport,
-            deleteOptions,
-            itemToDelete.id,
-            EItemProgressStatus.Ignored
-          );
+          reportProgress.reportProgress(percentDoneReport, deleteOptions, itemToDelete.id, EItemProgressStatus.Ignored);
         } else {
           // Otherwise, we have a real delete error, including where AGO simply returns "success: false"
           solutionFailureSummary.items.push(itemToDelete);
-          reportProgress.reportProgress(
-            percentDoneReport,
-            deleteOptions,
-            itemToDelete.id,
-            EItemProgressStatus.Failed
-          );
+          reportProgress.reportProgress(percentDoneReport, deleteOptions, itemToDelete.id, EItemProgressStatus.Failed);
         }
         return [solutionDeletedSummary, solutionFailureSummary];
       });
@@ -136,14 +105,14 @@ export function removeItems(
       title: solutionSummary.title,
       folder: solutionSummary.folder,
       items: [],
-      groups: []
+      groups: [],
     };
     solutionFailureSummary = {
       id: solutionSummary.id,
       title: solutionSummary.title,
       folder: solutionSummary.folder,
       items: [],
-      groups: []
+      groups: [],
     };
     return Promise.resolve([solutionDeletedSummary, solutionFailureSummary]);
   }

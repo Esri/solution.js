@@ -33,47 +33,53 @@ beforeEach(() => {
 });
 
 describe("Module `removeItems`: removing items from AGO", () => {
-
   it("handles defaulting all options", async () => {
     const solutionSummary: interfaces.ISolutionPrecis = {
       id: "sln1234567890",
       title: "Solution Title",
       folder: "fld1234567890",
-      items: [{
-        id: "itm1234567890",
-        type: "Workflow",
-        title: "Item Title",
-        modified: 1234567890,
-        owner: "fred"
-      }],
-      groups: []
+      items: [
+        {
+          id: "itm1234567890",
+          type: "Workflow",
+          title: "Item Title",
+          modified: 1234567890,
+          owner: "fred",
+        },
+      ],
+      groups: [],
     };
 
     spyOn(portal, "unprotectItem").and.resolveTo(utils.getSuccessResponse());
     spyOn(workflowHelpers, "deleteWorkflowItem").and.resolveTo(true);
     spyOn(workflowHelpers, "getWorkflowBaseURL").and.resolveTo("https://workflow.arcgis.com/workflow");
 
-    const expectedResult: interfaces.ISolutionPrecis[] = [{
-      // Successful deletions
-      id: "sln1234567890",
-      title: "Solution Title",
-      folder: "fld1234567890",
-      items: [{
-        id: "itm1234567890",
-        type: "Workflow",
-        title: "Item Title",
-        modified: 1234567890,
-        owner: "fred"
-      }],
-      groups: []
-    }, {
-      // Failed deletions
-      id: "sln1234567890",
-      title: "Solution Title",
-      folder: "fld1234567890",
-      items: [],
-      groups: []
-    }];
+    const expectedResult: interfaces.ISolutionPrecis[] = [
+      {
+        // Successful deletions
+        id: "sln1234567890",
+        title: "Solution Title",
+        folder: "fld1234567890",
+        items: [
+          {
+            id: "itm1234567890",
+            type: "Workflow",
+            title: "Item Title",
+            modified: 1234567890,
+            owner: "fred",
+          },
+        ],
+        groups: [],
+      },
+      {
+        // Failed deletions
+        id: "sln1234567890",
+        title: "Solution Title",
+        folder: "fld1234567890",
+        items: [],
+        groups: [],
+      },
+    ];
 
     const result: interfaces.ISolutionPrecis[] = await removeItems.removeItems(
       solutionSummary,
@@ -81,10 +87,9 @@ describe("Module `removeItems`: removing items from AGO", () => {
       MOCK_USER_SESSION,
       50, // percentDone
       10, // progressPercentStep
-      {} // deleteOptions
+      {}, // deleteOptions
     );
 
     expect(result).toEqual(expectedResult);
   });
-
 });

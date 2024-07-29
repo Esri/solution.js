@@ -74,11 +74,11 @@ export function migrateSchema(model: ISolutionItem): Promise<ISolutionItem> {
         _upgradeTwoDotFour,
         _upgradeTwoDotFive,
         _upgradeTwoDotSix,
-        _upgradeTwoDotSeven
+        _upgradeTwoDotSeven,
       );
       // Apply the 3.x upgrades
       schemaUpgrades.push(
-        _upgradeThreeDotZero
+        _upgradeThreeDotZero,
         // _upgradeThreeDotOne // Not ready for prod yet
       );
     }
@@ -86,9 +86,8 @@ export function migrateSchema(model: ISolutionItem): Promise<ISolutionItem> {
     // individual migrations are free to return either ISolutionItem
     // or Promise<ISolutionItem>
     return schemaUpgrades.reduce(
-      (promise, upgradeFn) =>
-        promise.then((updatedModel: ISolutionItem) => upgradeFn(updatedModel)),
-      Promise.resolve(model)
+      (promise, upgradeFn) => promise.then((updatedModel: ISolutionItem) => upgradeFn(updatedModel)),
+      Promise.resolve(model),
     );
   }
 }

@@ -35,13 +35,13 @@ import * as portal from "@esri/arcgis-rest-portal";
 export function deleteSolutionFolder(
   solutionIds: string[],
   folderId: string,
-  authentication: UserSession
+  authentication: UserSession,
 ): Promise<boolean> {
   // See if the deployment folder is empty and can be deleted; first, we need info about user
   // eslint-disable-next-line @typescript-eslint/no-floating-promises
   return authentication
     .getUser({ authentication })
-    .then(user => {
+    .then((user) => {
       // And then we need to be sure that the folder is empty
       const query = new portal.SearchQueryBuilder()
         .match(authentication.username)
@@ -55,7 +55,7 @@ export function deleteSolutionFolder(
 
       return portal.searchItems({
         q: query,
-        authentication
+        authentication,
       });
     })
     .then((searchResult: portal.ISearchResult<portal.IItem>) => {
@@ -63,8 +63,8 @@ export function deleteSolutionFolder(
       // successfully reporting a deletion and yet still returning the item in search results.
       // Filter the Solution items out of the search results.
       const nonSolutionItems = searchResult.results
-        .map(foundItem => foundItem.id)
-        .filter(foundItemId => !solutionIds.includes(foundItemId)); // only save non-solution items
+        .map((foundItem) => foundItem.id)
+        .filter((foundItemId) => !solutionIds.includes(foundItemId)); // only save non-solution items
 
       // If the list is empty, then there are no non-solution items
       if (nonSolutionItems.length === 0) {
@@ -72,14 +72,14 @@ export function deleteSolutionFolder(
         return portal.removeFolder({
           folderId: folderId,
           owner: authentication.username,
-          authentication
+          authentication,
         });
       } else {
         // A non-deployment item is in the folder, so leave it alone
         return Promise.resolve({ success: true });
       }
     })
-    .then(deleteFolderResponse => {
+    .then((deleteFolderResponse) => {
       // Extract the success property
       return deleteFolderResponse.success;
     });

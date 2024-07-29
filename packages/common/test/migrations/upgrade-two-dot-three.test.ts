@@ -17,7 +17,6 @@
 import { _upgradeTwoDotThree } from "../../src/migrations/upgrade-two-dot-three";
 import { cloneObject, IItemTemplate } from "@esri/hub-common";
 import { ISolutionItem } from "../../src/interfaces";
-import * as utils from "../../../common/test/mocks/utils";
 
 describe("Upgrade 2.3 ::", () => {
   const defaultModel = {
@@ -25,24 +24,22 @@ describe("Upgrade 2.3 ::", () => {
       type: "Solution",
       typeKeywords: ["Solution", "Template"],
       properties: {
-        schemaVersion: 2.1
-      }
+        schemaVersion: 2.1,
+      },
     },
     data: {
       metadata: {},
       templates: [
         {
           item: {},
-          resources: ["foo.jpg"]
+          resources: ["foo.jpg"],
         },
         {
-          item: {}
-        }
-      ] as IItemTemplate[]
-    }
+          item: {},
+        },
+      ] as IItemTemplate[],
+    },
   } as ISolutionItem;
-
-  const MOCK_USER_SESSION = utils.createRuntimeMockUserSession();
 
   it("returns same model if on or above 2.3", () => {
     const m = cloneObject(defaultModel);

@@ -31,10 +31,7 @@ describe("convertItemResourceToStorageResource, template version 0", () => {
   });
 
   it("handles files with N-level paths", () => {
-    const chk = convertItemResourceToStorageResource(
-      "3ef",
-      "images_widget_12/happy.png"
-    );
+    const chk = convertItemResourceToStorageResource("3ef", "images_widget_12/happy.png");
     expect(chk.folder).toBe("3ef_images_widget_12");
     expect(chk.filename).toBe("happy.png");
   });
@@ -48,21 +45,13 @@ describe("convertItemResourceToStorageResource, template version 1", () => {
   });
 
   it("handles files with single level paths", () => {
-    const chk = convertItemResourceToStorageResource(
-      "3ef",
-      "images/happy.png",
-      1
-    );
+    const chk = convertItemResourceToStorageResource("3ef", "images/happy.png", 1);
     expect(chk.folder).toBe("3ef/images");
     expect(chk.filename).toBe("happy.png");
   });
 
   it("handles files with N-level paths", () => {
-    const chk = convertItemResourceToStorageResource(
-      "3ef",
-      "images/widget_12/happy.png",
-      1
-    );
+    const chk = convertItemResourceToStorageResource("3ef", "images/widget_12/happy.png", 1);
     expect(chk.folder).toBe("3ef/images/widget_12");
     expect(chk.filename).toBe("happy.png");
   });
@@ -92,7 +81,7 @@ describe("convertItemResourceToStorageResource, file types", () => {
     expect(chk.folder).toBe("3ef_info_metadata");
     expect(chk.filename).toBe("happy.png");
   });
-  
+
   it("handles thumbnail", () => {
     const chk = convertItemResourceToStorageResource("3ef", "happy.png", 1, SolutionResourceType.thumbnail);
     expect(chk.folder).toBe("3ef_info_thumbnail");

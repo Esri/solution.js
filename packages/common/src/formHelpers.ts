@@ -32,13 +32,13 @@ import JSZip from "jszip";
 export async function updateItemWithZipObject(
   zipObject: JSZip,
   destinationItemId: string,
-  destinationAuthentication: UserSession
+  destinationAuthentication: UserSession,
 ): Promise<any> {
   // Update the item with the zip object
   const update: IItemUpdate = {
     id: destinationItemId,
-    data:  await zipUtils.zipObjectToZipFile(zipObject, `${destinationItemId}.zip`)
-  }
+    data: await zipUtils.zipObjectToZipFile(zipObject, `${destinationItemId}.zip`),
+  };
 
   return updateItem(update, destinationAuthentication);
 }

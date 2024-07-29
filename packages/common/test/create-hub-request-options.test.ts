@@ -19,78 +19,62 @@ import * as portalModule from "@esri/arcgis-rest-portal";
 const MOCK_USER_SESSION = utils.createRuntimeMockUserSession();
 
 describe("createHubRequestOptions", () => {
-  it("returns portal from templateDict", () => {
+  it("returns portal from templateDict", async () => {
     const td = {
       organization: {
         id: "somePortalId",
-        portalHostname: "www.arcgis.com"
+        portalHostname: "www.arcgis.com",
       },
       user: {
-        username: "rando"
-      }
+        username: "rando",
+      },
     };
 
-    const getUserSpy = spyOn(portalModule, "getUser").and.resolveTo({
-      username: MOCK_USER_SESSION.username
+    spyOn(portalModule, "getUser").and.resolveTo({
+      username: MOCK_USER_SESSION.username,
     });
 
-    return createHubRequestOptions(MOCK_USER_SESSION, td).then(hubRo => {
-      expect(hubRo.portalSelf.id).toBe(
-        "somePortalId",
-        "should copy organization to portalSelf"
-      );
-      expect(hubRo.portalSelf.user.username).toBe(
-        MOCK_USER_SESSION.username,
-        "use return user from getUser not templateDict"
-      );
-      expect(hubRo.authentication).toBe(
-        MOCK_USER_SESSION,
-        "should pass thru the auth"
-      );
-    });
+    const hubRo = await createHubRequestOptions(MOCK_USER_SESSION, td);
+    expect(hubRo.portalSelf?.id).withContext("should copy organization to portalSelf").toBe("somePortalId");
+    expect(hubRo.portalSelf?.user?.username)
+      .withContext("use return user from getUser not templateDict")
+      .toBe(MOCK_USER_SESSION.username);
+    expect(hubRo.authentication).toBe(MOCK_USER_SESSION, "should pass thru the auth");
   });
-  it("fetches org and user info", done => {
+
+  it("fetches org and user info", async () => {
     const portal = {
       id: "bc23",
       portalHostname: "www.arcgis.com",
       name: "somePortal",
-      isPortal: false
+      isPortal: false,
     } as portalModule.IPortal;
     const getSelfSpy = spyOn(portalModule, "getSelf").and.resolveTo(portal);
     const getUserSpy = spyOn(portalModule, "getUser").and.resolveTo({
-      username: MOCK_USER_SESSION.username
+      username: MOCK_USER_SESSION.username,
     });
 
-    createHubRequestOptions(MOCK_USER_SESSION).then(ro => {
-      expect(ro.hubApiUrl).toBe(
-        "https://hub.arcgis.com",
-        "should map up hub url"
-      );
-      expect(getSelfSpy.calls.count()).toBe(1, "should get self");
-      expect(getUserSpy.calls.count()).toBe(1, "should get user");
-      done();
-    });
+    const ro = await createHubRequestOptions(MOCK_USER_SESSION);
+    expect(ro.hubApiUrl).toBe("https://hub.arcgis.com", "should map up hub url");
+    expect(getSelfSpy.calls.count()).toBe(1, "should get self");
+    expect(getUserSpy.calls.count()).toBe(1, "should get user");
   });
 
-  it("does not set hubApiUrl if portal", done => {
+  it("does not set hubApiUrl if portal", async () => {
     const portal = {
       id: "bc23",
       portalHostname: "www.arcgis.com",
       name: "somePortal",
-      isPortal: true
+      isPortal: true,
     } as portalModule.IPortal;
     const getSelfSpy = spyOn(portalModule, "getSelf").and.resolveTo(portal);
     const getUserSpy = spyOn(portalModule, "getUser").and.resolveTo({
-      username: MOCK_USER_SESSION.username
+      username: MOCK_USER_SESSION.username,
     });
 
-    createHubRequestOptions(MOCK_USER_SESSION).then(ro => {
-      expect(ro.hubApiUrl).not.toBeDefined(
-        "should not return hubApiUrl for portal"
-      );
-      expect(getSelfSpy.calls.count()).toBe(1, "should get self");
-      expect(getUserSpy.calls.count()).toBe(1, "should get user");
-      done();
-    });
+    const ro = await createHubRequestOptions(MOCK_USER_SESSION);
+    expect(ro.hubApiUrl).not.toBeDefined("should not return hubApiUrl for portal");
+    expect(getSelfSpy.calls.count()).toBe(1, "should get self");
+    expect(getUserSpy.calls.count()).toBe(1, "should get user");
   });
 });

@@ -28,9 +28,7 @@ import { UserSession } from "./interfaces";
  * @param blob Blob to convert
  * @returns Promise resolving to zip object
  */
-export async function blobToZipObject(
-  blob: Blob
-): Promise<JSZip> {
+export async function blobToZipObject(blob: Blob): Promise<JSZip> {
   const zipObject = new JSZip();
   return zipObject.loadAsync(blob);
 }
@@ -42,10 +40,7 @@ export async function blobToZipObject(
  * @param authentication Credentials to zip file
  * @returns Promise resolving to zip object
  */
-export async function fetchZipObject(
-  formZipFilePath: string,
-  authentication: UserSession
-): Promise<JSZip> {
+export async function fetchZipObject(formZipFilePath: string, authentication: UserSession): Promise<JSZip> {
   return blobToZipObject(await getBlob(formZipFilePath, authentication));
 }
 
@@ -61,26 +56,24 @@ export async function fetchZipObject(
 export async function getZipObjectContents(
   zipObject: JSZip,
   filesOfInterest: string[] = [],
-  blobExtensions: string[] = ["png", "jpeg", "jpg", "gif", "svg", "xls", "xlsx"]
+  blobExtensions: string[] = ["png", "jpeg", "jpg", "gif", "svg", "xls", "xlsx"],
 ): Promise<interfaces.IZipObjectContentItem[]> {
   const extractedZipFiles: interfaces.IZipObjectContentItem[] = [];
   const fileContentsRetrievalPromises: Array<Promise<interfaces.TZipObjectContent>> = [];
-  zipObject.forEach(
-    (relativePath, file) => {
-      const getContents = async () => {
-        if (filesOfInterest.length === 0 || filesOfInterest.includes(relativePath)) {
-          const fileType = blobExtensions.includes(relativePath.split('.').pop()) ? 'blob' : 'string';
-          const fileContentsFetch = file.async(fileType);
-          fileContentsRetrievalPromises.push(fileContentsFetch);
-          extractedZipFiles.push({
-            file: relativePath,
-            content: await fileContentsFetch
-          });
-        }
-      };
-      void getContents();
-    }
-  );
+  zipObject.forEach((relativePath, file) => {
+    const getContents = async () => {
+      if (filesOfInterest.length === 0 || filesOfInterest.includes(relativePath)) {
+        const fileType = blobExtensions.includes(relativePath.split(".").pop()) ? "blob" : "string";
+        const fileContentsFetch = file.async(fileType);
+        fileContentsRetrievalPromises.push(fileContentsFetch);
+        extractedZipFiles.push({
+          file: relativePath,
+          content: await fileContentsFetch,
+        });
+      }
+    };
+    void getContents();
+  });
   await Promise.all(fileContentsRetrievalPromises);
 
   // Sort the files by name because the order of the files in the zip object is not guaranteed
@@ -93,9 +86,7 @@ export async function getZipObjectContents(
  * @param zippedFileJson JSON object to convert
  * @returns Created zip object
  */
-export function jsonFilesToZipObject(
-  zippedFileJson: any
-): JSZip {
+export function jsonFilesToZipObject(zippedFileJson: any): JSZip {
   const zipObject = new JSZip();
   Object.keys(zippedFileJson).forEach((key) => {
     zipObject.file(key, zippedFileJson[key]);
@@ -110,10 +101,7 @@ export function jsonFilesToZipObject(
  * @param zippedFileJson JSON object to convert
  * @returns Created zip object
  */
-export function jsonToZipObject(
-  zippedFileName: string,
-  zippedFileJson: any
-): JSZip {
+export function jsonToZipObject(zippedFileName: string, zippedFileJson: any): JSZip {
   const zipObject = new JSZip();
   zipObject.file(zippedFileName, JSON.stringify(zippedFileJson));
   return zipObject;
@@ -127,11 +115,7 @@ export function jsonToZipObject(
  * @param filename Name to use for zip file; ".zip" added if missing
  * @returns Promise resolving to zip file
  */
-export async function jsonToZipFile(
-  zippedFileName: string,
-  zippedFileJson: any,
-  filename: string
-): Promise<File> {
+export async function jsonToZipFile(zippedFileName: string, zippedFileJson: any, filename: string): Promise<File> {
   const zipObject = jsonToZipObject(zippedFileName, zippedFileJson);
   return zipObjectToZipFile(zipObject, filename);
 }
@@ -148,7 +132,7 @@ export async function jsonToZipFile(
 export async function modifyFilesinZipObject(
   modificationCallback: (zipContentStr: interfaces.IZipObjectContentItem) => interfaces.TZipObjectContent,
   zipObject: JSZip,
-  filesOfInterest: string[] = []
+  filesOfInterest: string[] = [],
 ): Promise<JSZip> {
   // Get the contents of the form.json file
   const extractedZipFiles = await getZipObjectContents(zipObject, filesOfInterest);
@@ -171,15 +155,12 @@ export async function modifyFilesinZipObject(
  * @param filename Name to use for zip file; ".zip" added if missing
  * @returns Promise resolving to zip file
  */
-export async function zipObjectToZipFile(
-  zipObject: JSZip,
-  filename: string
-): Promise<File> {
+export async function zipObjectToZipFile(zipObject: JSZip, filename: string): Promise<File> {
   const completeFilename = filename.endsWith(".zip") ? filename : `${filename}.zip`;
 
   return createMimeTypedFile({
     blob: await zipObject.generateAsync({ type: "blob" }),
     filename: completeFilename,
-    mimeType: "application/zip"
+    mimeType: "application/zip",
   });
 }

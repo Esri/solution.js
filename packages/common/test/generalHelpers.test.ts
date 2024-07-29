@@ -23,41 +23,34 @@ import * as hubCommon from "@esri/hub-common";
 import * as interfaces from "../src/interfaces";
 import * as mockItems from "../test/mocks/agolItems";
 import * as serviceAdmin from "@esri/arcgis-rest-service-admin";
-import * as utils from "../test/mocks/utils";
 
 describe("Module `generalHelpers`: common utility functions shared across packages", () => {
   describe("blobToJson", () => {
-    it("extracts JSON from a blob", done => {
+    it("extracts JSON from a blob", async () => {
       const srcJson: any = {
         a: "b",
-        c: 4
+        c: 4,
       };
       const blob: Blob = new Blob([JSON.stringify(srcJson)], {
-        type: "application/json"
+        type: "application/json",
       });
 
-      generalHelpers.blobToJson(blob).then(extractedJson => {
-        expect(extractedJson).toEqual(srcJson);
-        done();
-      }, done.fail);
+      const extractedJson = await generalHelpers.blobToJson(blob);
+      expect(extractedJson).toEqual(srcJson);
     });
 
-    it("fails to extract JSON from a blob 1", done => {
+    it("fails to extract JSON from a blob 1", async () => {
       const blob: Blob = new Blob([], { type: "application/json" });
 
-      generalHelpers.blobToJson(blob).then(extractedJson => {
-        expect(extractedJson).toBeNull();
-        done();
-      }, done.fail);
+      const extractedJson = await generalHelpers.blobToJson(blob);
+      expect(extractedJson).toBeNull();
     });
 
-    it("fails to extract JSON from a blob 2", done => {
+    it("fails to extract JSON from a blob 2", async () => {
       const blob: Blob = new Blob(["a"], { type: "application/json" });
 
-      generalHelpers.blobToJson(blob).then(extractedJson => {
-        expect(extractedJson).toBeNull();
-        done();
-      }, done.fail);
+      const extractedJson = await generalHelpers.blobToJson(blob);
+      expect(extractedJson).toBeNull();
     });
   });
 
@@ -117,9 +110,7 @@ describe("Module `generalHelpers`: common utility functions shared across packag
     });
 
     it("should remove template braces and itemId property", () => {
-      expect(generalHelpers.cleanItemId("{{itm1234567890.itemId}}")).toEqual(
-        "itm1234567890"
-      );
+      expect(generalHelpers.cleanItemId("{{itm1234567890.itemId}}")).toEqual("itm1234567890");
     });
   });
 
@@ -131,11 +122,9 @@ describe("Module `generalHelpers`: common utility functions shared across packag
     });
 
     it("handles a layer-templatized item id", () => {
-      expect(
-        generalHelpers.cleanLayerBasedItemId(
-          "{{934a9ef8efa7448fa8ddf7b13cef0240.layer0.itemId}}"
-        )
-      ).toEqual("934a9ef8efa7448fa8ddf7b13cef0240");
+      expect(generalHelpers.cleanLayerBasedItemId("{{934a9ef8efa7448fa8ddf7b13cef0240.layer0.itemId}}")).toEqual(
+        "934a9ef8efa7448fa8ddf7b13cef0240",
+      );
     });
   });
 
@@ -147,21 +136,9 @@ describe("Module `generalHelpers`: common utility functions shared across packag
     });
 
     it("handles a templatized layer id", () => {
-      expect(
-        generalHelpers.cleanLayerId(
-          "{{934a9ef8efa7448fa8ddf7b13cef0240.layer0.layerId}}"
-        )
-      ).toEqual(0);
-      expect(
-        generalHelpers.cleanLayerId(
-          "{{934a9ef8efa7448fa8ddf7b13cef0240.layer5.layerId}}"
-        )
-      ).toEqual(5);
-      expect(
-        generalHelpers.cleanLayerId(
-          "{{934a9ef8efa7448fa8ddf7b13cef0240.layer12.layerId}}"
-        )
-      ).toEqual(12);
+      expect(generalHelpers.cleanLayerId("{{934a9ef8efa7448fa8ddf7b13cef0240.layer0.layerId}}")).toEqual(0);
+      expect(generalHelpers.cleanLayerId("{{934a9ef8efa7448fa8ddf7b13cef0240.layer5.layerId}}")).toEqual(5);
+      expect(generalHelpers.cleanLayerId("{{934a9ef8efa7448fa8ddf7b13cef0240.layer12.layerId}}")).toEqual(12);
     });
   });
 
@@ -185,12 +162,12 @@ describe("Module `generalHelpers`: common utility functions shared across packag
     it("can clone a shallow object", () => {
       const obj = {
         color: "red",
-        length: 12
+        length: 12,
       } as any;
       const c = generalHelpers.cloneObject(obj);
       expect(c).not.toBe(obj);
 
-      ["color", "length"].map(prop => {
+      ["color", "length"].map((prop) => {
         expect(c[prop]).toEqual(obj[prop]);
       });
     });
@@ -201,17 +178,17 @@ describe("Module `generalHelpers`: common utility functions shared across packag
         length: 12,
         field: {
           name: "origin",
-          type: "string"
-        }
+          type: "string",
+        },
       } as any;
       const c = generalHelpers.cloneObject(obj);
       expect(c).not.toBe(obj);
       expect(c.field).not.toBe(obj.field);
 
-      ["color", "length"].map(prop => {
+      ["color", "length"].map((prop) => {
         expect(c[prop]).toEqual(obj[prop]);
       });
-      ["name", "type"].map(prop => {
+      ["name", "type"].map((prop) => {
         expect(c.field[prop]).toEqual(obj.field[prop]);
       });
     });
@@ -222,18 +199,18 @@ describe("Module `generalHelpers`: common utility functions shared across packag
         length: 12,
         field: {
           name: "origin",
-          type: null
-        }
+          type: null,
+        },
       } as any;
       const c = generalHelpers.cloneObject(obj);
       expect(c).not.toBe(obj);
       expect(c.field).not.toBe(obj.field);
       expect(c.field.type).toBe(null);
 
-      ["color", "length"].map(prop => {
+      ["color", "length"].map((prop) => {
         expect(c[prop]).toEqual(obj[prop]);
       });
-      ["name", "type"].map(prop => {
+      ["name", "type"].map((prop) => {
         expect(c.field[prop]).toEqual(obj.field[prop]);
       });
     });
@@ -244,26 +221,26 @@ describe("Module `generalHelpers`: common utility functions shared across packag
         length: 12,
         field: {
           name: "origin",
-          type: "string"
+          type: "string",
         },
         names: ["steve", "james", "bob"],
         deep: [
           {
-            things: ["one", "two", "red", "blue"]
-          }
+            things: ["one", "two", "red", "blue"],
+          },
         ],
         addresses: [
           {
             street: "123 main",
             city: "anytown",
-            zip: 82729
+            zip: 82729,
           },
           {
             street: "876 main",
             city: "anytown",
-            zip: 123992
-          }
-        ]
+            zip: 123992,
+          },
+        ],
       } as any;
 
       const c = generalHelpers.cloneObject(obj);
@@ -273,10 +250,10 @@ describe("Module `generalHelpers`: common utility functions shared across packag
       expect(c.names.length).toEqual(obj.names.length);
       expect(Array.isArray(c.deep)).toBeTruthy();
       expect(c.deep[0].things.length).toBe(4);
-      ["color", "length"].map(prop => {
+      ["color", "length"].map((prop) => {
         expect(c[prop]).toEqual(obj[prop]);
       });
-      ["name", "type"].map(prop => {
+      ["name", "type"].map((prop) => {
         expect(c.field[prop]).toEqual(obj.field[prop]);
       });
       // deep array...
@@ -286,7 +263,7 @@ describe("Module `generalHelpers`: common utility functions shared across packag
       c.addresses.forEach((entry: any, idx: number) => {
         const orig = obj.addresses[idx];
         expect(entry).not.toBe(orig);
-        ["street", "city", "zip"].map(prop => {
+        ["street", "city", "zip"].map((prop) => {
           expect(entry[prop]).toBe(orig[prop]);
         });
       });
@@ -325,7 +302,7 @@ describe("Module `generalHelpers`: common utility functions shared across packag
           screenshots: [],
           listed: false,
           groupDesignations: null,
-          id: "itm1234567890"
+          id: "itm1234567890",
         },
         data: {
           metadata: {},
@@ -333,10 +310,10 @@ describe("Module `generalHelpers`: common utility functions shared across packag
             {
               itemId: "geo1234567890",
               type: "GeoJson",
-              dependencies: []
-            }
-          ]
-        }
+              dependencies: [],
+            },
+          ],
+        },
       };
     });
 
@@ -350,15 +327,8 @@ describe("Module `generalHelpers`: common utility functions shared across packag
     });
 
     it("two single-level objects", () => {
-      expect(
-        generalHelpers.compareJSON(
-          { a: 1, b: 2, c: "3" },
-          { a: 1, b: 2, c: "3" }
-        )
-      ).toBeTruthy();
-      expect(
-        generalHelpers.compareJSON({ a: 1, b: 2, c: "3" }, { a: 1 })
-      ).toBeFalsy();
+      expect(generalHelpers.compareJSON({ a: 1, b: 2, c: "3" }, { a: 1, b: 2, c: "3" })).toBeTruthy();
+      expect(generalHelpers.compareJSON({ a: 1, b: 2, c: "3" }, { a: 1 })).toBeFalsy();
     });
 
     it("multiple-level objects", () => {
@@ -372,19 +342,13 @@ describe("Module `generalHelpers`: common utility functions shared across packag
         .toBeTruthy();
 
       generalHelpers.deleteItemProps(clone);
-      expect(generalHelpers.compareJSON({}, clone))
-        .withContext("compare {}, clone")
-        .toBeTruthy();
+      expect(generalHelpers.compareJSON({}, clone)).withContext("compare {}, clone").toBeTruthy();
       expect(generalHelpers.compareJSON(sampleItemTemplate, clone))
         .withContext("compare sampleItemTemplate, clone")
         .toBeFalsy();
 
-      clone = generalHelpers.deleteItemProps(
-        generalHelpers.cloneObject(sampleItemTemplate.item)
-      );
-      const sampleItemBase = generalHelpers.deleteItemProps(
-        generalHelpers.cloneObject(sampleItemTemplate.item)
-      );
+      clone = generalHelpers.deleteItemProps(generalHelpers.cloneObject(sampleItemTemplate.item));
+      const sampleItemBase = generalHelpers.deleteItemProps(generalHelpers.cloneObject(sampleItemTemplate.item));
       expect(generalHelpers.compareJSON(sampleItemBase, clone))
         .withContext("compare sampleItemBase, clone")
         .toBeTruthy();
@@ -393,12 +357,7 @@ describe("Module `generalHelpers`: common utility functions shared across packag
 
   describe("compareJSONNoEmptyStrings", () => {
     it("converts empty strings to null", () => {
-      expect(
-        generalHelpers.compareJSONNoEmptyStrings(
-          { a: 1, b: 2, c: "" },
-          { a: 1, b: 2, c: null }
-        )
-      ).toBeTruthy();
+      expect(generalHelpers.compareJSONNoEmptyStrings({ a: 1, b: 2, c: "" }, { a: 1, b: 2, c: null })).toBeTruthy();
     });
   });
 
@@ -412,12 +371,12 @@ describe("Module `generalHelpers`: common utility functions shared across packag
         phone: "",
         extent: [
           [-111.299, 43.4327],
-          [-109.7829, 44.1159]
+          [-109.7829, 44.1159],
         ],
         spatialReference: {
           wkid: 102100,
-          latestWkid: 3857
-        }
+          latestWkid: 3857,
+        },
       };
       const json2: ITestCompareJSONProperties = {
         isInvitationOnly: true,
@@ -427,12 +386,12 @@ describe("Module `generalHelpers`: common utility functions shared across packag
         phone: "",
         extent: [
           [-111.299, 43.4327],
-          [-109.7829, 44.1159]
+          [-109.7829, 44.1159],
         ],
         spatialReference: {
           wkid: 102100,
-          latestWkid: 3857
-        }
+          latestWkid: 3857,
+        },
       };
 
       const messages = generalHelpers.compareJSONProperties(json1, json2);
@@ -448,12 +407,12 @@ describe("Module `generalHelpers`: common utility functions shared across packag
         phone: "",
         extent: [
           [-111.299, 43.4327],
-          [-109.7829, 44.1159]
+          [-109.7829, 44.1159],
         ],
         spatialReference: {
           wkid: 102100,
-          latestWkid: 3857
-        }
+          latestWkid: 3857,
+        },
       };
       const json2: ITestCompareJSONProperties = {
         isInvitationOnly: false,
@@ -463,11 +422,11 @@ describe("Module `generalHelpers`: common utility functions shared across packag
         phone: "555-1212",
         extent: [
           [-111.299, 53],
-          [-109.7829, 44.1159]
+          [-109.7829, 44.1159],
         ],
         spatialReference: {
-          wkid: 4326
-        }
+          wkid: 4326,
+        },
       };
 
       const messages = generalHelpers.compareJSONProperties(json1, json2);
@@ -479,7 +438,7 @@ describe("Module `generalHelpers`: common utility functions shared across packag
         "Array length difference: [1] vs. [2]",
         'String difference: "" vs. "555-1212"',
         "Value difference: 43.4327 vs. 53",
-        'Props difference: ["wkid","latestWkid"] vs. ["wkid"]'
+        'Props difference: ["wkid","latestWkid"] vs. ["wkid"]',
       ]);
     });
 
@@ -492,19 +451,17 @@ describe("Module `generalHelpers`: common utility functions shared across packag
         phone: "",
         extent: [
           [-111.299, 43.4327],
-          [-109.7829, 44.1159]
+          [-109.7829, 44.1159],
         ],
         spatialReference: {
           wkid: 102100,
-          latestWkid: 3857
-        }
+          latestWkid: 3857,
+        },
       };
 
       const messages = generalHelpers.compareJSONProperties(json1, null);
       expect(messages.length).toEqual(1);
-      expect(messages).toEqual([
-        "Type difference: object vs. null"
-      ]);
+      expect(messages).toEqual(["Type difference: object vs. null"]);
     });
 
     it("should handle comparison with undefined", () => {
@@ -516,19 +473,17 @@ describe("Module `generalHelpers`: common utility functions shared across packag
         phone: "",
         extent: [
           [-111.299, 43.4327],
-          [-109.7829, 44.1159]
+          [-109.7829, 44.1159],
         ],
         spatialReference: {
           wkid: 102100,
-          latestWkid: 3857
-        }
+          latestWkid: 3857,
+        },
       };
 
       const messages = generalHelpers.compareJSONProperties(json1, undefined);
       expect(messages.length).toEqual(1);
-      expect(messages).toEqual([
-        "Type difference: object vs. undefined"
-      ]);
+      expect(messages).toEqual(["Type difference: object vs. undefined"]);
     });
 
     it("should ignore undefined vs. null", () => {
@@ -541,8 +496,8 @@ describe("Module `generalHelpers`: common utility functions shared across packag
     it("handles hub IModel without resources", () => {
       const model = {
         item: {
-          id: "FAKE3ef"
-        }
+          id: "FAKE3ef",
+        },
       } as unknown as hubCommon.IModel;
 
       const result: interfaces.IItemTemplate = generalHelpers.convertIModel(model);
@@ -553,12 +508,12 @@ describe("Module `generalHelpers`: common utility functions shared across packag
     it("handles hub IModel with resources", () => {
       const model = {
         item: {
-          id: "FAKE3ef"
+          id: "FAKE3ef",
         },
         resources: {
           a: "abc",
-          d: "def"
-        }
+          d: "def",
+        },
       } as unknown as hubCommon.IModel;
 
       const result: interfaces.IItemTemplate = generalHelpers.convertIModel(model);
@@ -591,20 +546,11 @@ describe("Module `generalHelpers`: common utility functions shared across packag
     });
 
     it("should handle list with no duplicates", () => {
-      expect(generalHelpers.dedupe(["a", "b", "c", "d"])).toEqual([
-        "a",
-        "b",
-        "c",
-        "d"
-      ]);
+      expect(generalHelpers.dedupe(["a", "b", "c", "d"])).toEqual(["a", "b", "c", "d"]);
     });
 
     it("should handle list with duplicates", () => {
-      expect(generalHelpers.dedupe(["a", "d", "c", "d"])).toEqual([
-        "a",
-        "d",
-        "c"
-      ]);
+      expect(generalHelpers.dedupe(["a", "d", "c", "d"])).toEqual(["a", "d", "c"]);
     });
   });
 
@@ -627,10 +573,10 @@ describe("Module `generalHelpers`: common utility functions shared across packag
     it("should delete a prop", () => {
       const testObject: any = {
         prop1: true,
-        prop2: true
+        prop2: true,
       };
       const expected: any = {
-        prop2: true
+        prop2: true,
       };
       generalHelpers.deleteProp(testObject, "prop1");
       expect(testObject).toEqual(expected);
@@ -638,27 +584,27 @@ describe("Module `generalHelpers`: common utility functions shared across packag
 
     it("handles empty path", () => {
       const obj: any = {
-        child: 1
+        child: 1,
       };
       generalHelpers.deleteProp(obj, "");
       expect(obj).toEqual({
-        child: 1
+        child: 1,
       });
     });
 
     it("handles non-existent property", () => {
       const obj: any = {
-        child: 1
+        child: 1,
       };
       generalHelpers.deleteProp(obj, "nephew");
       expect(obj).toEqual({
-        child: 1
+        child: 1,
       });
     });
 
     it("handles single-level property", () => {
       const obj: any = {
-        child: 1
+        child: 1,
       };
       generalHelpers.deleteProp(obj, "child");
       expect(obj).toEqual({});
@@ -668,14 +614,14 @@ describe("Module `generalHelpers`: common utility functions shared across packag
       const obj: any = {
         child: {
           grandchildA: "a",
-          grandchildB: "b"
-        }
+          grandchildB: "b",
+        },
       };
       generalHelpers.deleteProp(obj, "child.grandchildB");
       expect(obj).toEqual({
         child: {
-          grandchildA: "a"
-        }
+          grandchildA: "a",
+        },
       });
     });
 
@@ -685,16 +631,16 @@ describe("Module `generalHelpers`: common utility functions shared across packag
           grandchildA: "a",
           grandchildB: {
             greatGrandchildC: {
-              greatGreatGrandchildD: 4
-            }
-          }
-        }
+              greatGreatGrandchildD: 4,
+            },
+          },
+        },
       };
       generalHelpers.deleteProp(obj, "child.grandchildB");
       expect(obj).toEqual({
         child: {
-          grandchildA: "a"
-        }
+          grandchildA: "a",
+        },
       });
     });
 
@@ -704,17 +650,17 @@ describe("Module `generalHelpers`: common utility functions shared across packag
           grandchildA: "a",
           grandchildB: {
             greatGrandchildC: {
-              greatGreatGrandchildD: 4
-            }
-          }
-        }
+              greatGreatGrandchildD: 4,
+            },
+          },
+        },
       };
       generalHelpers.deleteProp(obj, "child.grandchildB.greatGrandchildC");
       expect(obj).toEqual({
         child: {
           grandchildA: "a",
-          grandchildB: {}
-        }
+          grandchildB: {},
+        },
       });
     });
 
@@ -722,21 +668,21 @@ describe("Module `generalHelpers`: common utility functions shared across packag
       const obj: any = {
         child: {
           grandchildA: "a",
-          grandchildB: "b"
-        }
+          grandchildB: "b",
+        },
       };
       generalHelpers.deleteProp(obj, "grandchildB");
       expect(obj).toEqual({
         child: {
           grandchildA: "a",
-          grandchildB: "b"
-        }
+          grandchildB: "b",
+        },
       });
     });
 
     it("handles level-one array", () => {
       const obj: any = {
-        child: ["a", "b"]
+        child: ["a", "b"],
       };
       generalHelpers.deleteProp(obj, "child");
       expect(obj).toEqual({});
@@ -746,14 +692,14 @@ describe("Module `generalHelpers`: common utility functions shared across packag
       const obj: any = {
         child: {
           grandchildA: ["a", "b"],
-          grandchildB: ["a", "b"]
-        }
+          grandchildB: ["a", "b"],
+        },
       };
       generalHelpers.deleteProp(obj, "child.grandchildA");
       expect(obj).toEqual({
         child: {
-          grandchildB: ["a", "b"]
-        }
+          grandchildB: ["a", "b"],
+        },
       });
     });
 
@@ -763,30 +709,30 @@ describe("Module `generalHelpers`: common utility functions shared across packag
           grandchildA: [
             {
               greatGrandchildC: ["a", "b"],
-              greatGrandchildD: ["a", "b"]
+              greatGrandchildD: ["a", "b"],
             },
             {
               greatGrandchildE: ["a", "b"],
-              greatGrandchildF: ["a", "b"]
-            }
+              greatGrandchildF: ["a", "b"],
+            },
           ],
-          grandchildB: ["a", "b"]
-        }
+          grandchildB: ["a", "b"],
+        },
       };
       generalHelpers.deleteProp(obj, "child.grandchildA.greatGrandchildD");
       expect(obj).toEqual({
         child: {
           grandchildA: [
             {
-              greatGrandchildC: ["a", "b"]
+              greatGrandchildC: ["a", "b"],
             },
             {
               greatGrandchildE: ["a", "b"],
-              greatGrandchildF: ["a", "b"]
-            }
+              greatGrandchildF: ["a", "b"],
+            },
           ],
-          grandchildB: ["a", "b"]
-        }
+          grandchildB: ["a", "b"],
+        },
       });
     });
 
@@ -797,10 +743,10 @@ describe("Module `generalHelpers`: common utility functions shared across packag
             {
               greatGrandchildC: [
                 {
-                  greatGreatGrandchildG: 10
-                }
+                  greatGreatGrandchildG: 10,
+                },
               ],
-              greatGrandchildD: ["a", "b"]
+              greatGrandchildD: ["a", "b"],
             },
             {
               greatGrandchildE: ["a", "b"],
@@ -808,41 +754,38 @@ describe("Module `generalHelpers`: common utility functions shared across packag
                 {
                   greatGreatGrandchildG: 10,
                   greatGreatGrandchildH: 15,
-                  greatGreatGrandchildI: 20
-                }
-              ]
-            }
+                  greatGreatGrandchildI: 20,
+                },
+              ],
+            },
           ],
-          grandchildB: ["a", "b"]
-        }
+          grandchildB: ["a", "b"],
+        },
       };
-      generalHelpers.deleteProp(
-        obj,
-        "child.grandchildA.greatGrandchildF.greatGreatGrandchildH"
-      );
+      generalHelpers.deleteProp(obj, "child.grandchildA.greatGrandchildF.greatGreatGrandchildH");
       expect(obj).toEqual({
         child: {
           grandchildA: [
             {
               greatGrandchildC: [
                 {
-                  greatGreatGrandchildG: 10
-                }
+                  greatGreatGrandchildG: 10,
+                },
               ],
-              greatGrandchildD: ["a", "b"]
+              greatGrandchildD: ["a", "b"],
             },
             {
               greatGrandchildE: ["a", "b"],
               greatGrandchildF: [
                 {
                   greatGreatGrandchildG: 10,
-                  greatGreatGrandchildI: 20
-                }
-              ]
-            }
+                  greatGreatGrandchildI: 20,
+                },
+              ],
+            },
           ],
-          grandchildB: ["a", "b"]
-        }
+          grandchildB: ["a", "b"],
+        },
       });
     });
 
@@ -853,10 +796,10 @@ describe("Module `generalHelpers`: common utility functions shared across packag
             {
               greatGrandchildC: [
                 {
-                  greatGreatGrandchildG: 10
-                }
+                  greatGreatGrandchildG: 10,
+                },
               ],
-              greatGrandchildD: ["a", "b"]
+              greatGrandchildD: ["a", "b"],
             },
             {
               greatGrandchildE: ["a", "b"],
@@ -864,24 +807,21 @@ describe("Module `generalHelpers`: common utility functions shared across packag
                 {
                   greatGreatGrandchildG: 10,
                   greatGreatGrandchildH: 15,
-                  greatGreatGrandchildI: 20
-                }
-              ]
-            }
+                  greatGreatGrandchildI: 20,
+                },
+              ],
+            },
           ],
-          grandchildB: ["a", "b"]
-        }
+          grandchildB: ["a", "b"],
+        },
       };
-      generalHelpers.deleteProp(
-        obj,
-        "child.grandchildA.greatGrandchildC.greatGreatGrandchildG"
-      );
+      generalHelpers.deleteProp(obj, "child.grandchildA.greatGrandchildC.greatGreatGrandchildG");
       expect(obj).toEqual({
         child: {
           grandchildA: [
             {
               greatGrandchildC: [{}],
-              greatGrandchildD: ["a", "b"]
+              greatGrandchildD: ["a", "b"],
             },
             {
               greatGrandchildE: ["a", "b"],
@@ -889,13 +829,13 @@ describe("Module `generalHelpers`: common utility functions shared across packag
                 {
                   greatGreatGrandchildG: 10,
                   greatGreatGrandchildH: 15,
-                  greatGreatGrandchildI: 20
-                }
-              ]
-            }
+                  greatGreatGrandchildI: 20,
+                },
+              ],
+            },
           ],
-          grandchildB: ["a", "b"]
-        }
+          grandchildB: ["a", "b"],
+        },
       });
     });
 
@@ -903,15 +843,15 @@ describe("Module `generalHelpers`: common utility functions shared across packag
       const obj: any = {
         child: {
           grandchildA: ["a", "b"],
-          grandchildB: ["a", "b"]
-        }
+          grandchildB: ["a", "b"],
+        },
       };
       generalHelpers.deleteProp(obj, "grandchildA");
       expect(obj).toEqual({
         child: {
           grandchildA: ["a", "b"],
-          grandchildB: ["a", "b"]
-        }
+          grandchildB: ["a", "b"],
+        },
       });
     });
 
@@ -928,7 +868,7 @@ describe("Module `generalHelpers`: common utility functions shared across packag
             listed: false,
             numComments: 0,
             numRatings: 0,
-            groupDesignations: null
+            groupDesignations: null,
           },
           {
             documentation: null,
@@ -936,9 +876,9 @@ describe("Module `generalHelpers`: common utility functions shared across packag
             listed: false,
             numComments: 0,
             numRatings: 0,
-            groupDesignations: null
-          }
-        ]
+            groupDesignations: null,
+          },
+        ],
       };
       generalHelpers.deleteProp(obj, "items.numComments");
       expect(obj).toEqual({
@@ -952,16 +892,16 @@ describe("Module `generalHelpers`: common utility functions shared across packag
             screenshots: [],
             listed: false,
             numRatings: 0,
-            groupDesignations: null
+            groupDesignations: null,
           },
           {
             documentation: null,
             screenshots: [],
             listed: false,
             numRatings: 0,
-            groupDesignations: null
-          }
-        ]
+            groupDesignations: null,
+          },
+        ],
       });
     });
   });
@@ -977,10 +917,10 @@ describe("Module `generalHelpers`: common utility functions shared across packag
       const testObject: any = {
         prop1: true,
         prop2: true,
-        prop3: true
+        prop3: true,
       };
       const expected: any = {
-        prop2: true
+        prop2: true,
       };
       generalHelpers.deleteProps(testObject, ["prop1", "prop3"]);
       expect(testObject).toEqual(expected);
@@ -1014,7 +954,7 @@ describe("Module `generalHelpers`: common utility functions shared across packag
       const expected: any = {
         success: false,
         itemIds,
-        error: "Error"
+        error: "Error",
       };
       expect(generalHelpers.failWithIds(itemIds, error)).toEqual(expected);
     });
@@ -1024,7 +964,7 @@ describe("Module `generalHelpers`: common utility functions shared across packag
       const error: any = undefined;
       const expected: any = {
         success: false,
-        itemIds
+        itemIds,
       };
       expect(generalHelpers.failWithIds(itemIds, error)).toEqual(expected);
     });
@@ -1038,14 +978,7 @@ describe("Module `generalHelpers`: common utility functions shared across packag
     });
 
     it("handles tags without group ids", () => {
-      const tags: string[] = [
-        "3D City",
-        "3D",
-        "ArcGIS Solutions",
-        "Buildings",
-        "Floors",
-        "Lidar"
-      ];
+      const tags: string[] = ["3D City", "3D", "ArcGIS Solutions", "Buildings", "Floors", "Lidar"];
       const expectedIds: string[] = [];
       expect(generalHelpers.getSubgroupIds(tags)).toEqual(expectedIds);
     });
@@ -1058,7 +991,7 @@ describe("Module `generalHelpers`: common utility functions shared across packag
         "Buildings",
         "Floors",
         "group.8d515625ee9f49d7b4f6c6cb2a389151",
-        "Lidar"
+        "Lidar",
       ];
       const expectedIds: string[] = ["8d515625ee9f49d7b4f6c6cb2a389151"];
       expect(generalHelpers.getSubgroupIds(tags)).toEqual(expectedIds);
@@ -1074,10 +1007,7 @@ describe("Module `generalHelpers`: common utility functions shared across packag
     });
 
     it("returns an empty response with id", () => {
-      const chk = generalHelpers.generateEmptyCreationResponse(
-        "Some Type",
-        "Some Id"
-      );
+      const chk = generalHelpers.generateEmptyCreationResponse("Some Type", "Some Id");
       expect(chk.id).toBe("Some Id", "id should be empty");
       expect(chk.type).toBe("Some Type", "type should be set");
       expect(chk.postProcess).toBe(false, "postProcess set to false");
@@ -1092,7 +1022,7 @@ describe("Module `generalHelpers`: common utility functions shared across packag
     });
 
     it("matches an id 2", () => {
-      const id = "\"bad3483e025c47338d43df308c117308\"";
+      const id = '"bad3483e025c47338d43df308c117308"';
       const match = id.match(generalHelpers.getAgoIdRegEx());
       expect(match).not.toBeNull();
     });
@@ -1131,7 +1061,7 @@ describe("Module `generalHelpers`: common utility functions shared across packag
     });
 
     it("matches a templatized id 2", () => {
-      const id = "\"{{bad3483e025c47338d43df308c117308}}\"";
+      const id = '"{{bad3483e025c47338d43df308c117308}}"';
       const match = id.match(generalHelpers.getAgoIdTemplateRegEx());
       expect(match).not.toBeNull();
     });
@@ -1155,7 +1085,7 @@ describe("Module `generalHelpers`: common utility functions shared across packag
     });
 
     it("doesn't match a string that's not a templatized id 3", () => {
-      const id = "bad3483e025c47338d43df308c117308";  // not templatized
+      const id = "bad3483e025c47338d43df308c117308"; // not templatized
       const match = id.match(generalHelpers.getAgoIdTemplateRegEx());
       expect(match).toBeNull();
     });
@@ -1177,7 +1107,7 @@ describe("Module `generalHelpers`: common utility functions shared across packag
 
     it("matches an word 2", () => {
       const word = "bad3483e025c47338d43df308c117308";
-      const test = "\"bad3483e025c47338d43df308c117308\"";
+      const test = '"bad3483e025c47338d43df308c117308"';
       const match = test.match(generalHelpers.getSpecifiedWordRegEx(word));
       expect(match).not.toBeNull();
     });
@@ -1212,7 +1142,8 @@ describe("Module `generalHelpers`: common utility functions shared across packag
 
     it("matches multiple instances of word", () => {
       const word = "bad3483e025c47338d43df308c117308";
-      const test = "bad3483e025c47338d43df308c117308, bad3483e025c47338d43df308c117309, bad3483e025c47338d43df308c117308,";
+      const test =
+        "bad3483e025c47338d43df308c117308, bad3483e025c47338d43df308c117309, bad3483e025c47338d43df308c117308,";
       const match = test.match(generalHelpers.getSpecifiedWordRegEx(word));
       expect(match).not.toBeNull();
       expect(match?.length).toEqual(2);
@@ -1230,47 +1161,36 @@ describe("Module `generalHelpers`: common utility functions shared across packag
       actual = generalHelpers.getIDs("=bad3483e025c47338d43df308c117308");
       expect(actual).toEqual(["bad3483e025c47338d43df308c117308"]);
 
-      actual = generalHelpers.getIDs(
-        "http://something/name_bad3483e025c47338d43df308c117308"
-      );
+      actual = generalHelpers.getIDs("http://something/name_bad3483e025c47338d43df308c117308");
+      expect(actual).toEqual([]);
+
+      actual = generalHelpers.getIDs("{{bad3483e025c47338d43df308c117308.itemId}}");
+      expect(actual).toEqual([]);
+
+      actual = generalHelpers.getIDs("bad3483e025c47338d43df308c117308bad3483e025c47338d43df308c117308");
       expect(actual).toEqual([]);
 
       actual = generalHelpers.getIDs(
-        "{{bad3483e025c47338d43df308c117308.itemId}}"
-      );
-      expect(actual).toEqual([]);
-
-      actual = generalHelpers.getIDs(
-        "bad3483e025c47338d43df308c117308bad3483e025c47338d43df308c117308"
-      );
-      expect(actual).toEqual([]);
-
-      actual = generalHelpers.getIDs(
-        "bad3483e025c47338d43df308c117308 {bad4483e025c47338d43df308c117308 =bad5483e025c47338d43df308c117308 http://something/name_bad6483e025c47338d43df308c117308 {{bad7483e025c47338d43df308c117308.itemId}}"
+        "bad3483e025c47338d43df308c117308 {bad4483e025c47338d43df308c117308 =bad5483e025c47338d43df308c117308 http://something/name_bad6483e025c47338d43df308c117308 {{bad7483e025c47338d43df308c117308.itemId}}",
       );
       expect(actual).toEqual([
         "bad3483e025c47338d43df308c117308",
         "bad4483e025c47338d43df308c117308",
-        "bad5483e025c47338d43df308c117308"
+        "bad5483e025c47338d43df308c117308",
       ]);
     });
   });
 
   describe("getProp", () => {
     it("should return a property given a path", () => {
-      expect(generalHelpers.getProp({ color: "red" }, "color")).toEqual(
-        "red",
-        "should return the prop"
-      );
+      expect(generalHelpers.getProp({ color: "red" }, "color")).toEqual("red", "should return the prop");
     });
 
     it("should return a deep property given a path", () => {
-      expect(
-        generalHelpers.getProp(
-          { color: { r: "ff", g: "00", b: "ff" } },
-          "color.r"
-        )
-      ).toEqual("ff", "should return the prop");
+      expect(generalHelpers.getProp({ color: { r: "ff", g: "00", b: "ff" } }, "color.r")).toEqual(
+        "ff",
+        "should return the prop",
+      );
     });
   });
 
@@ -1280,20 +1200,17 @@ describe("Module `generalHelpers`: common utility functions shared across packag
         one: {
           two: {
             three: {
-              color: "red"
+              color: "red",
             },
             threeB: {
-              color: "orange"
-            }
+              color: "orange",
+            },
           },
-          other: "value"
-        }
+          other: "value",
+        },
       };
 
-      const vals = generalHelpers.getProps(o, [
-        "one.two.three.color",
-        "one.two.threeB.color"
-      ]);
+      const vals = generalHelpers.getProps(o, ["one.two.three.color", "one.two.threeB.color"]);
       expect(vals.length).toEqual(2, "should return two values");
       expect(vals.indexOf("red")).toBeGreaterThan(-1, "should have red");
       expect(vals.indexOf("orange")).toBeGreaterThan(-1, "should have orange");
@@ -1303,8 +1220,8 @@ describe("Module `generalHelpers`: common utility functions shared across packag
       const o = {
         one: {
           two: ["a", "b"],
-          color: "red"
-        }
+          color: "red",
+        },
       };
       const vals = generalHelpers.getProps(o, ["one.two", "one.color"]);
       expect(vals.length).toEqual(2, "should return two values");
@@ -1315,14 +1232,10 @@ describe("Module `generalHelpers`: common utility functions shared across packag
       const o = {
         one: {
           two: ["a", "b"],
-          color: "red"
-        }
+          color: "red",
+        },
       };
-      const vals = generalHelpers.getProps(o, [
-        "one.two",
-        "one.color",
-        "thing.three"
-      ]);
+      const vals = generalHelpers.getProps(o, ["one.two", "one.color", "thing.three"]);
       expect(vals.length).toEqual(2, "should return two values");
       expect(vals.indexOf("red")).toBeGreaterThan(-1, "should have red");
     });
@@ -1330,36 +1243,28 @@ describe("Module `generalHelpers`: common utility functions shared across packag
 
   describe("getPropWithDefault", () => {
     it("should return a property given a path", () => {
-      expect(generalHelpers.getPropWithDefault({ color: "red" }, "color")).toEqual(
-        "red",
-        "should return the prop"
-      );
+      expect(generalHelpers.getPropWithDefault({ color: "red" }, "color")).toEqual("red", "should return the prop");
     });
 
     it("should return a deep property given a path", () => {
-      expect(
-        generalHelpers.getPropWithDefault(
-          { color: { r: "ff", g: "00", b: "ff" } },
-          "color.r"
-        )
-      ).toEqual("ff", "should return the prop");
+      expect(generalHelpers.getPropWithDefault({ color: { r: "ff", g: "00", b: "ff" } }, "color.r")).toEqual(
+        "ff",
+        "should return the prop",
+      );
     });
 
     it("should return a default property given a path", () => {
       expect(generalHelpers.getPropWithDefault({ size: "15" }, "color", "blue")).toEqual(
         "blue",
-        "should return the prop default"
+        "should return the prop default",
       );
     });
 
     it("should return a deep default property given a path", () => {
-      expect(
-        generalHelpers.getPropWithDefault(
-          { size: { width: "15", height: "15" } },
-          "color.r",
-          "77"
-        )
-      ).toEqual("77", "should return the prop default");
+      expect(generalHelpers.getPropWithDefault({ size: { width: "15", height: "15" } }, "color.r", "77")).toEqual(
+        "77",
+        "should return the prop default",
+      );
     });
   });
 
@@ -1397,16 +1302,12 @@ describe("Module `generalHelpers`: common utility functions shared across packag
       const title: string = "The Title";
       const templateDictionary: any = {
         user: {
-          folders: []
-        }
+          folders: [],
+        },
       };
       const path: string = "user.folders";
       const expected: string = "The Title";
-      const actual: string = generalHelpers.getUniqueTitle(
-        title,
-        templateDictionary,
-        path
-      );
+      const actual: string = generalHelpers.getUniqueTitle(title, templateDictionary, path);
       expect(actual).toEqual(expected);
     });
 
@@ -1416,18 +1317,14 @@ describe("Module `generalHelpers`: common utility functions shared across packag
         user: {
           folders: [
             {
-              title: "The Title"
-            }
-          ]
-        }
+              title: "The Title",
+            },
+          ],
+        },
       };
       const path: string = "user.folders";
       const expected: string = "The Title 1";
-      const actual: string = generalHelpers.getUniqueTitle(
-        title,
-        templateDictionary,
-        path
-      );
+      const actual: string = generalHelpers.getUniqueTitle(title, templateDictionary, path);
       expect(actual).toEqual(expected);
     });
 
@@ -1437,24 +1334,20 @@ describe("Module `generalHelpers`: common utility functions shared across packag
         user: {
           folders: [
             {
-              title: "The Title"
+              title: "The Title",
             },
             {
-              title: "The Title 1"
+              title: "The Title 1",
             },
             {
-              title: "The Title 3"
-            }
-          ]
-        }
+              title: "The Title 3",
+            },
+          ],
+        },
       };
       const path: string = "user.folders";
       const expected: string = "The Title 2";
-      const actual: string = generalHelpers.getUniqueTitle(
-        title,
-        templateDictionary,
-        path
-      );
+      const actual: string = generalHelpers.getUniqueTitle(title, templateDictionary, path);
       expect(actual).toEqual(expected);
     });
 
@@ -1464,18 +1357,14 @@ describe("Module `generalHelpers`: common utility functions shared across packag
         user: {
           folders: [
             {
-              title: "The Title"
-            }
-          ]
-        }
+              title: "The Title",
+            },
+          ],
+        },
       };
       const path: string = "user.folders";
       const expected: string = "The Title 1";
-      const actual: string = generalHelpers.getUniqueTitle(
-        title,
-        templateDictionary,
-        path
-      );
+      const actual: string = generalHelpers.getUniqueTitle(title, templateDictionary, path);
       expect(actual).toEqual(expected);
     });
   });
@@ -1495,33 +1384,23 @@ describe("Module `generalHelpers`: common utility functions shared across packag
       const pattern: string = "to be replaced";
       const patternRE: RegExp = new RegExp(pattern, "gi");
       const replacement: string = "replacement";
-      expect(
-        generalHelpers.globalStringReplace(obj, patternRE, replacement)
-      ).toBeNull();
+      expect(generalHelpers.globalStringReplace(obj, patternRE, replacement)).toBeNull();
     });
 
     it("handles an array object", () => {
-      const obj = [
-        "first item",
-        "second item containing to be replaced content"
-      ];
+      const obj = ["first item", "second item containing to be replaced content"];
       const pattern: string = "to be replaced";
       const patternRE: RegExp = new RegExp(pattern, "gi");
       const replacement: string = "replacement";
-      const expectedObj = [
-        "first item",
-        "second item containing replacement content"
-      ];
-      expect(
-        generalHelpers.globalStringReplace(obj, patternRE, replacement)
-      ).toEqual(expectedObj);
+      const expectedObj = ["first item", "second item containing replacement content"];
+      expect(generalHelpers.globalStringReplace(obj, patternRE, replacement)).toEqual(expectedObj);
     });
 
     it("handles a general object", () => {
       const obj = {
         first: "first item",
         second: "second item containing to be replaced content",
-        third: "third item to be replaced to be replaced"
+        third: "third item to be replaced to be replaced",
       };
       const pattern: string = "to be replaced";
       const patternRE: RegExp = new RegExp(pattern, "gi");
@@ -1529,25 +1408,23 @@ describe("Module `generalHelpers`: common utility functions shared across packag
       const expectedObj = {
         first: "first item",
         second: "second item containing replacement content",
-        third: "third item replacement replacement"
+        third: "third item replacement replacement",
       };
-      expect(
-        generalHelpers.globalStringReplace(obj, patternRE, replacement)
-      ).toEqual(expectedObj);
+      expect(generalHelpers.globalStringReplace(obj, patternRE, replacement)).toEqual(expectedObj);
     });
 
     it("handles a nested object", () => {
       const obj = {
         first: "first item",
         second: {
-          internal: "second item containing to be replaced content"
+          internal: "second item containing to be replaced content",
         },
         third: "third item to be replaced to be replaced",
         fourth: {
           a: 1,
-          b: 2
+          b: 2,
         },
-        fifth: null as any
+        fifth: null as any,
       };
       const pattern: string = "to be replaced";
       const patternRE: RegExp = new RegExp(pattern, "gi");
@@ -1555,18 +1432,16 @@ describe("Module `generalHelpers`: common utility functions shared across packag
       const expectedObj = {
         first: "first item",
         second: {
-          internal: "second item containing replacement content"
+          internal: "second item containing replacement content",
         },
         third: "third item replacement replacement",
         fourth: {
           a: 1,
-          b: 2
+          b: 2,
         },
-        fifth: null as any
+        fifth: null as any,
       };
-      expect(
-        generalHelpers.globalStringReplace(obj, patternRE, replacement)
-      ).toEqual(expectedObj);
+      expect(generalHelpers.globalStringReplace(obj, patternRE, replacement)).toEqual(expectedObj);
     });
   });
 
@@ -1581,8 +1456,8 @@ describe("Module `generalHelpers`: common utility functions shared across packag
     it("can handle empty keywords argument", () => {
       const model: any = {
         item: {
-          typeKeywords: ["A", "B", "C"]
-        }
+          typeKeywords: ["A", "B", "C"],
+        },
       };
       const keywords: string[] = [];
       const expected: boolean = false;
@@ -1592,8 +1467,8 @@ describe("Module `generalHelpers`: common utility functions shared across packag
     it("can test for a set of keywords from model.item.typeKeywords", () => {
       const model: any = {
         item: {
-          typeKeywords: ["A", "B", "C"]
-        }
+          typeKeywords: ["A", "B", "C"],
+        },
       };
       const keywords: string[] = ["A"];
       const expected: boolean = true;
@@ -1602,7 +1477,7 @@ describe("Module `generalHelpers`: common utility functions shared across packag
 
     it("can test for a set of keywords from model.typeKeywords", () => {
       const model: any = {
-        typeKeywords: ["A", "B", "C"]
+        typeKeywords: ["A", "B", "C"],
       };
       const keywords: string[] = ["C"];
       const expected: boolean = true;
@@ -1618,9 +1493,9 @@ describe("Module `generalHelpers`: common utility functions shared across packag
             "Online Map",
             "source-ed27522a057b466587ddd2ffabd33661",
             "WAB2D",
-            "Web AppBuilder"
-          ]
-        }
+            "Web AppBuilder",
+          ],
+        },
       };
       const keywords: string[] = ["WAB2D", "WAB3D", "Web AppBuilder"];
       const expected: boolean = true;
@@ -1639,13 +1514,9 @@ describe("Module `generalHelpers`: common utility functions shared across packag
         basePath: "",
         fields: [],
         relationships: [],
-        adminLayerInfo: {}
+        adminLayerInfo: {},
       };
-      const actual: boolean = generalHelpers.hasDatasource(
-        [datasource],
-        itemId,
-        layerId
-      );
+      const actual: boolean = generalHelpers.hasDatasource([datasource], itemId, layerId);
       expect(actual).toBe(true);
     });
 
@@ -1659,13 +1530,9 @@ describe("Module `generalHelpers`: common utility functions shared across packag
         basePath: "",
         fields: [],
         relationships: [],
-        adminLayerInfo: {}
+        adminLayerInfo: {},
       };
-      const actual: boolean = generalHelpers.hasDatasource(
-        [datasource],
-        itemId + "1",
-        layerId
-      );
+      const actual: boolean = generalHelpers.hasDatasource([datasource], itemId + "1", layerId);
       expect(actual).toBe(false);
     });
 
@@ -1679,13 +1546,9 @@ describe("Module `generalHelpers`: common utility functions shared across packag
         basePath: "",
         fields: [],
         relationships: [],
-        adminLayerInfo: {}
+        adminLayerInfo: {},
       };
-      const actual: boolean = generalHelpers.hasDatasource(
-        [datasource],
-        itemId,
-        1
-      );
+      const actual: boolean = generalHelpers.hasDatasource([datasource], itemId, 1);
       expect(actual).toBe(false);
     });
   });
@@ -1701,8 +1564,8 @@ describe("Module `generalHelpers`: common utility functions shared across packag
     it("can handle an object with item.typeKeywords", () => {
       const model: any = {
         item: {
-          typeKeywords: ["A", "B", "C"]
-        }
+          typeKeywords: ["A", "B", "C"],
+        },
       };
       const keyword: string = "A";
       const expected: boolean = true;
@@ -1711,7 +1574,7 @@ describe("Module `generalHelpers`: common utility functions shared across packag
 
     it("can handle an object with typeKeywords", () => {
       const model: any = {
-        typeKeywords: ["A", "B", "C"]
+        typeKeywords: ["A", "B", "C"],
       };
       const keyword: string = "B";
       const expected: boolean = true;
@@ -1720,37 +1583,29 @@ describe("Module `generalHelpers`: common utility functions shared across packag
   });
 
   describe("jsonToBlob", () => {
-    it("creates a blob with expected mime type", done => {
+    it("creates a blob with expected mime type", async () => {
       const json: any = { a: "abc", b: 123 };
       const blob = generalHelpers.jsonToBlob(json);
       expect(blob.type).toBe("application/octet-stream");
-      blob.text().then(text => {
-        expect(text).toEqual('{"a":"abc","b":123}');
-        done();
-      }, done.fail);
+      const text: string = await blob.text();
+      expect(text).toEqual('{"a":"abc","b":123}');
     });
   });
 
   describe("jsonToFile", () => {
-    it("creates a file with expected mime type", done => {
+    it("creates a file with expected mime type", async () => {
       const json: any = { a: "abc", b: 123 };
-      const file = generalHelpers.jsonToFile(
-        json,
-        "myFile.abc",
-        "application/octet-stream"
-      );
+      const file = generalHelpers.jsonToFile(json, "myFile.abc", "application/octet-stream");
       expect(file.type).toBe("application/octet-stream");
-      file.text().then(text => {
-        expect(text).toEqual('{"a":"abc","b":123}');
-        done();
-      }, done.fail);
+      const text: string = await file.text();
+      expect(text).toEqual('{"a":"abc","b":123}');
     });
   });
 
   describe("jsonToJson", () => {
     it("Makes a unique copy of JSON by stringifying and parsing", () => {
       const json = {
-        a: "an innocuous string"
+        a: "an innocuous string",
       };
       const jsonCopy = generalHelpers.jsonToJson(json);
       expect(jsonCopy).toEqual(json);
@@ -1764,10 +1619,10 @@ describe("Module `generalHelpers`: common utility functions shared across packag
   describe("sanitizeJSONAndReportChanges", () => {
     it("should not report if no property changed", () => {
       const json = {
-        a: "an innocuous string"
+        a: "an innocuous string",
       };
       const expectedSanitizedJSON = {
-        a: "an innocuous string"
+        a: "an innocuous string",
       };
 
       const messages = [] as string[];
@@ -1781,11 +1636,10 @@ describe("Module `generalHelpers`: common utility functions shared across packag
 
     it("should report changed property", () => {
       const json = {
-        a:
-          '<img src="https://example.com/fake-image.jpg" onerror="alert(1);" />'
+        a: '<img src="https://example.com/fake-image.jpg" onerror="alert(1);" />',
       };
       const expectedSanitizedJSON = {
-        a: '<img src="https://example.com/fake-image.jpg" />'
+        a: '<img src="https://example.com/fake-image.jpg" />',
       };
 
       const messages = [] as string[];
@@ -1801,19 +1655,18 @@ describe("Module `generalHelpers`: common utility functions shared across packag
           '<img src="https://example.com/fake-image.jpg" onerror="alert(1);" />' +
           '" vs. "' +
           '<img src="https://example.com/fake-image.jpg" />' +
-          '"'
+          '"',
       ]);
     });
 
     it("should report changed properties", () => {
       const json = {
-        a:
-          '<img src="https://example.com/fake-image.jpg" onerror="alert(1);" />',
-        b: "<IMG SRC=JaVaScRiPt:alert('XSS')>"
+        a: '<img src="https://example.com/fake-image.jpg" onerror="alert(1);" />',
+        b: "<IMG SRC=JaVaScRiPt:alert('XSS')>",
       };
       const expectedSanitizedJSON = {
         a: '<img src="https://example.com/fake-image.jpg" />',
-        b: "<img src>"
+        b: "<img src>",
       };
 
       const messages = [] as string[];
@@ -1830,11 +1683,7 @@ describe("Module `generalHelpers`: common utility functions shared across packag
           '" vs. "' +
           '<img src="https://example.com/fake-image.jpg" />' +
           '"',
-        '    String difference: "' +
-          "<IMG SRC=JaVaScRiPt:alert('XSS')>" +
-          '" vs. "' +
-          "<img src>" +
-          '"'
+        '    String difference: "' + "<IMG SRC=JaVaScRiPt:alert('XSS')>" + '" vs. "' + "<img src>" + '"',
       ]);
     });
   });
@@ -1866,7 +1715,7 @@ describe("Module `generalHelpers`: common utility functions shared across packag
 
     it("one-item path exists", () => {
       const obj = {
-        level1: "placeholder"
+        level1: "placeholder",
       } as any;
       generalHelpers.setCreateProp(obj, "level1", "value");
       expect(obj.level1).not.toBeUndefined();
@@ -1876,8 +1725,8 @@ describe("Module `generalHelpers`: common utility functions shared across packag
     it("two-item path exists", () => {
       const obj = {
         level1: {
-          level2: "placeholder"
-        }
+          level2: "placeholder",
+        },
       } as any;
       generalHelpers.setCreateProp(obj, "level1.level2", "value");
       expect(obj.level1).not.toBeUndefined();
@@ -1889,9 +1738,9 @@ describe("Module `generalHelpers`: common utility functions shared across packag
       const obj = {
         level1: {
           level2: {
-            level3: "placeholder"
-          }
-        }
+            level3: "placeholder",
+          },
+        },
       } as any;
       generalHelpers.setCreateProp(obj, "level1.level2.level3", "value");
       expect(obj.level1).not.toBeUndefined();
@@ -1906,24 +1755,24 @@ describe("Module `generalHelpers`: common utility functions shared across packag
           sibling1: 5,
           level2: {
             level3: "placeholder",
-            sibling3: 4
+            sibling3: 4,
           },
           sibling2: {
-            siblingChild: "child"
-          }
-        }
+            siblingChild: "child",
+          },
+        },
       } as any;
       const expectedObj = {
         level1: {
           sibling1: 5,
           level2: {
             level3: "value",
-            sibling3: 4
+            sibling3: 4,
           },
           sibling2: {
-            siblingChild: "child"
-          }
-        }
+            siblingChild: "child",
+          },
+        },
       } as any;
       generalHelpers.setCreateProp(obj, "level1.level2.level3", "value");
       expect(obj.level1).not.toBeUndefined();

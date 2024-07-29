@@ -25,14 +25,14 @@ import * as utils from "./utils";
 
 export function get200Failure(): any {
   return {
-    success: false
+    success: false,
   };
 }
 
 export function get200Success(itemId = "itm1234567890"): any {
   return {
     success: true,
-    id: itemId
+    id: itemId,
   };
 }
 
@@ -42,8 +42,8 @@ export function get400Failure(): any {
       code: 400,
       messageCode: "CONT_0001",
       message: "Item does not exist or is inaccessible.",
-      details: []
-    }
+      details: [],
+    },
   };
 }
 
@@ -54,30 +54,26 @@ export function get400SuccessFailure(): any {
       code: 400,
       messageCode: "CONT_0001",
       message: "Item does not exist or is inaccessible.",
-      details: []
-    }
+      details: [],
+    },
   };
 }
 
 export function get400FailureResponse(): any {
   return {
     name: "",
-    message:
-      "400: Item or group does not exist or is inaccessible: fail1234567890",
+    message: "400: Item or group does not exist or is inaccessible: fail1234567890",
     originalMessage: "",
     code: 400,
     response: {
       error: {
         code: 400,
-        message:
-          "Item or group does not exist or is inaccessible: fail1234567890",
-        details: [
-          "Item or group does not exist or is inaccessible: fail1234567890"
-        ]
-      }
+        message: "Item or group does not exist or is inaccessible: fail1234567890",
+        details: ["Item or group does not exist or is inaccessible: fail1234567890"],
+      },
     },
     url: "",
-    options: null
+    options: null,
   };
 }
 
@@ -86,8 +82,8 @@ export function get500Failure(): any {
     error: {
       code: 500,
       message: "Item does not have a file.",
-      details: []
-    }
+      details: [],
+    },
   };
 }
 
@@ -131,7 +127,7 @@ export function getAGOLItem(type?: string, url = "", itemId?: string): any {
       item = getAGOLItemFundamentals(
         type,
         url ||
-          "https://services123.arcgis.com/org1234567890/arcgis/rest/services/ROWPermits_publiccomment/FeatureServer"
+          "https://services123.arcgis.com/org1234567890/arcgis/rest/services/ROWPermits_publiccomment/FeatureServer",
       );
       break;
 
@@ -217,8 +213,7 @@ export function getAGOLItem(type?: string, url = "", itemId?: string): any {
     case "Web Mapping Application":
       item = getAGOLItemFundamentals(
         type,
-        url ||
-          "http://statelocaltryit.maps.arcgis.com/apps/CrowdsourcePolling/index.html?appid=wma1234567890"
+        url || "http://statelocaltryit.maps.arcgis.com/apps/CrowdsourcePolling/index.html?appid=wma1234567890",
       );
       break;
 
@@ -242,24 +237,19 @@ export function getAGOLItem(type?: string, url = "", itemId?: string): any {
   return item;
 }
 
-export function getAGOLItemPrecis(
-  type?: string,
-  url = ""
-): interfaces.ISolutionItemPrecis {
+export function getAGOLItemPrecis(type?: string, url = ""): interfaces.ISolutionItemPrecis {
   const item = getAGOLItem(type, url);
   const precis: interfaces.ISolutionItemPrecis = {
     id: item.id,
     type: item.type,
     title: item.title || "",
     modified: item.modified,
-    owner: item.owner
+    owner: item.owner,
   };
   return precis;
 }
 
-export function getCompleteMockItem(
-  type = "Web Mapping Application"
-): interfaces.ICompleteItem {
+export function getCompleteMockItem(type = "Web Mapping Application"): interfaces.ICompleteItem {
   const item = {
     base: getAGOLItem(type),
     data: generalHelpers.jsonToFile(getAGOLItemData(type), ""),
@@ -267,7 +257,7 @@ export function getCompleteMockItem(
     metadata: utils.getSampleMetadataAsFile(),
     resources: [] as File[],
     fwdRelatedItems: [] as interfaces.IRelatedItems[],
-    revRelatedItems: [] as interfaces.IRelatedItems[]
+    revRelatedItems: [] as interfaces.IRelatedItems[],
   } as interfaces.ICompleteItem;
   if (type === "Feature Service") {
     item.featureServiceProperties = {} as interfaces.IFeatureServiceProperties;
@@ -289,30 +279,28 @@ export function getCompleteDeployedSolutionItem(): interfaces.ICompleteItem {
           itemId: "wma1234567890",
           type: "Web Mapping Application",
           dependencies: ["map1234567890"],
-          groups: []
+          groups: [],
         },
         {
           itemId: "map1234567890",
           type: "Web Map",
           dependencies: [],
-          groups: []
-        }
-      ]
+          groups: [],
+        },
+      ],
     },
-    ""
+    "",
   );
   item.fwdRelatedItems = [
     {
       relationshipType: "Solution2Item",
-      relatedItemIds: ["wma1234567890", "map1234567890"]
-    }
+      relatedItemIds: ["wma1234567890", "map1234567890"],
+    },
   ];
   return item;
 }
 
-export function getCompleteDeployedSolutionItemVersioned(
-  version = interfaces.DeployedSolutionFormatVersion
-): any {
+export function getCompleteDeployedSolutionItemVersioned(version = interfaces.DeployedSolutionFormatVersion): any {
   const item: any = getCompleteMockItem("Solution");
   item.base.typeKeywords.push("Solution");
   item.base.typeKeywords.push("Deployed");
@@ -328,8 +316,8 @@ export function getCompleteDeployedSolutionItemVersioned(
           dependencies: ["map1234567890"],
           groups: [],
           item: {
-            typeKeywords: []
-          }
+            typeKeywords: [],
+          },
         },
         {
           itemId: "map1234567890",
@@ -337,15 +325,15 @@ export function getCompleteDeployedSolutionItemVersioned(
           dependencies: [],
           groups: [],
           item: {
-            typeKeywords: []
-          }
-        }
-      ]
+            typeKeywords: [],
+          },
+        },
+      ],
     };
   } else {
     item.data = {
       metadata: {
-        version
+        version,
       },
       templates: [
         {
@@ -354,8 +342,8 @@ export function getCompleteDeployedSolutionItemVersioned(
           dependencies: [],
           groups: [],
           item: {
-            typeKeywords: []
-          }
+            typeKeywords: [],
+          },
         },
         {
           itemId: "wma1234567890",
@@ -363,18 +351,18 @@ export function getCompleteDeployedSolutionItemVersioned(
           dependencies: ["map1234567890"],
           groups: [],
           item: {
-            typeKeywords: []
-          }
-        }
-      ]
+            typeKeywords: [],
+          },
+        },
+      ],
     };
   }
 
   item.fwdRelatedItems = [
     {
       relationshipType: "Solution2Item",
-      relatedItemIds: ["wma1234567890", "map1234567890"]
-    }
+      relatedItemIds: ["wma1234567890", "map1234567890"],
+    },
   ];
   return item;
 }
@@ -394,14 +382,14 @@ export function getSolutionItem(): any {
 
 export function getSolutionPrecis(
   items: interfaces.ISolutionItemPrecis[] = [],
-  groups: string[] = []
+  groups: string[] = [],
 ): interfaces.ISolutionPrecis {
   return {
     id: "sol1234567890",
     title: "An AGOL item",
     folder: "fld1234567890",
     items,
-    groups
+    groups,
   };
 }
 
@@ -455,15 +443,15 @@ export function getAGOLItemData(type?: string, itemId?: string): any {
             label: "Snow Routes",
             schemaTransformation: {},
             properties: {
-              ui: {
+              "ui": {
                 top: 10,
                 left: 10,
                 width: 240,
-                height: 70
+                height: 70,
               },
               "feature-layer.portalItemId": "ad6893904c4d4191b5c2312e60e8def7",
-              "feature-layer.outSR": "4326"
-            }
+              "feature-layer.outSR": "4326",
+            },
           },
           {
             id: "9b2a43f6-f207-0e8c-812d-f63ec6a95227",
@@ -471,17 +459,17 @@ export function getAGOLItemData(type?: string, itemId?: string): any {
             label: "WWO1_Simulation_Combined_Fleet_with_Service_Status",
             schemaTransformation: {},
             properties: {
-              ui: {
+              "ui": {
                 top: 140,
                 left: 10,
                 width: 240,
-                height: 70
+                height: 70,
               },
               "feature-layer.portalItemId": "a8d8e6ee3e7d4c889d3e95ad6a99198c",
               "feature-layer.timestampField": "datetimeprocessed",
-              "feature-layer.outSR": "4326"
-            }
-          }
+              "feature-layer.outSR": "4326",
+            },
+          },
         ],
         tools: [],
         outputs: [
@@ -494,19 +482,19 @@ export function getAGOLItemData(type?: string, itemId?: string): any {
               "feat-lyr-new.aggregationStyles": [],
               "feat-lyr-new.editorTrackingEnabled": false,
               "feat-lyr-new.updateExistingFeatures": true,
-              "feat-lyr-new.name": "SnowRoutesLastServicedFox"
-            }
-          }
+              "feat-lyr-new.name": "SnowRoutesLastServicedFox",
+            },
+          },
         ],
         pipeline: [],
         recurrence: {
           expression: "0/3 * * * *",
-          timeZone: "America/New_York"
+          timeZone: "America/New_York",
         },
         properties: {
-          mode: "model"
+          mode: "model",
         },
-        status: {}
+        status: {},
       };
       break;
 
@@ -523,16 +511,16 @@ export function getAGOLItemData(type?: string, itemId?: string): any {
           rootElement: {
             type: "stackLayoutElement",
             orientation: "col",
-            elements: []
-          }
+            elements: [],
+          },
         },
         headerPanel: {
-          type: "headerPanel"
+          type: "headerPanel",
         },
         leftPanel: {
           type: "leftPanel",
           title: "<p>left panel description</p>\n",
-          selectors: []
+          selectors: [],
         },
         widgets: [
           {
@@ -542,8 +530,8 @@ export function getAGOLItemData(type?: string, itemId?: string): any {
             itemId: "map1234567890",
             mapTools: [
               {
-                type: "bookmarksTool"
-              }
+                type: "bookmarksTool",
+              },
             ],
             type: "mapWidget",
             showPopup: true,
@@ -551,37 +539,37 @@ export function getAGOLItemData(type?: string, itemId?: string): any {
               {
                 type: "featureLayerDataSource",
                 layerId: "ROWPermitApplication_4605",
-                name: "ROW Permits"
-              }
+                name: "ROW Permits",
+              },
             ],
             id: "1200f3f1-8f72-4ea6-af16-14f19e9a4517",
-            name: "ROW Permit Map"
+            name: "ROW Permit Map",
           },
           {
             type: "indicatorWidget",
             id: "3e796f16-722b-437f-89a4-e3787e105b24",
-            name: "ROW Permit Count"
+            name: "ROW Permit Count",
           },
           {
             type: "listWidget",
             id: "0f994268-e553-4d11-b8d1-afecf0818841",
-            name: "ROW Permit List"
+            name: "ROW Permit List",
           },
           {
             type: "serialChartWidget",
             id: "ff698ea5-2812-4ba5-a0ba-d89fc302f8f4",
-            name: "Permit Type"
+            name: "Permit Type",
           },
           {
             type: "serialChartWidget",
             id: "d2e11f43-8d61-422c-b7fe-00dc8a9c2b14",
-            name: "Submission Date"
-          }
+            name: "Submission Date",
+          },
         ],
         settings: {
-          maxPaginationRecords: 50000
+          maxPaginationRecords: 50000,
         },
-        theme: "light"
+        theme: "light",
       };
       break;
 
@@ -603,21 +591,21 @@ export function getAGOLItemData(type?: string, itemId?: string): any {
           {
             id: 1,
             popupInfo: {
-              title: "table 1"
-            }
-          }
+              title: "table 1",
+            },
+          },
         ],
         layers: [
           {
             id: 0,
             popupInfo: {
-              title: "layer 0"
+              title: "layer 0",
             },
             layerDefinition: {
-              defaultVisibility: true
-            }
-          }
-        ]
+              defaultVisibility: true,
+            },
+          },
+        ],
       };
       break;
 
@@ -642,11 +630,11 @@ export function getAGOLItemData(type?: string, itemId?: string): any {
           kernelspec: {
             name: "python3",
             display_name: "Python 3",
-            language: "python"
+            language: "python",
           },
           esriNotebookRuntime: {
             notebookRuntimeName: "ArcGIS Notebook Python 3 Advanced",
-            notebookRuntimeVersion: "3.0"
+            notebookRuntimeVersion: "3.0",
           },
           language_info: {
             name: "python",
@@ -654,26 +642,26 @@ export function getAGOLItemData(type?: string, itemId?: string): any {
             mimetype: "text/x-python",
             codemirror_mode: {
               name: "ipython",
-              version: 3
+              version: 3,
             },
             pygments_lexer: "ipython3",
             nbconvert_exporter: "python",
-            file_extension: ".py"
-          }
+            file_extension: ".py",
+          },
         },
         cells: [
           {
             metadata: {
-              trusted: true
+              trusted: true,
             },
             cell_type: "code",
             source: "3b927de78a784a5aa3981469d85cf45d",
             execution_count: null,
-            outputs: []
-          }
+            outputs: [],
+          },
         ],
         nbformat: 4,
-        nbformat_minor: 2
+        nbformat_minor: 2,
       };
       break;
 
@@ -688,10 +676,8 @@ export function getAGOLItemData(type?: string, itemId?: string): any {
           Name: "OIC_002",
           Description: "OIC_002",
           Tags: "OIC",
-          ServiceURL:
-            "https://services.arcgis.com/64491f8c348a51cf/arcgis/rest/services/OIC_FL_002/FeatureServer/0",
-          OverviewURL:
-            "https://services.arcgis.com/64491f8c348a51cf/arcgis/rest/services/OIC_FL_002/FeatureServer/0",
+          ServiceURL: "https://services.arcgis.com/64491f8c348a51cf/arcgis/rest/services/OIC_FL_002/FeatureServer/0",
+          OverviewURL: "https://services.arcgis.com/64491f8c348a51cf/arcgis/rest/services/OIC_FL_002/FeatureServer/0",
           DefaultAttributes: {
             CamHeading: "",
             CamPitch: "90",
@@ -708,7 +694,7 @@ export function getAGOLItemData(type?: string, itemId?: string): any {
             ImgPyramids: "",
             DepthImg: "",
             ExternalViewer: "",
-            ImgRot: ""
+            ImgRot: "",
           },
           About: "",
           ImageField: "image_",
@@ -720,18 +706,18 @@ export function getAGOLItemData(type?: string, itemId?: string): any {
           DEMPrefix: "",
           Credentials: {
             Username: "",
-            Password: ""
+            Password: "",
           },
           Variables: {},
           Filters: {},
           Copyright: {
             text: "",
-            url: ""
+            url: "",
           },
           PointsSource: "",
           CoverageSource: "",
-          imageField: "Image_"
-        }
+          imageField: "Image_",
+        },
       };
       break;
 
@@ -752,25 +738,23 @@ export function getAGOLItemData(type?: string, itemId?: string): any {
             {
               featureServiceItemId: "4efe5f693de34620934787ead6693f10",
               dataSourceId: "1d4de1e4-ef58-4e02-9159-7a6e6701cada",
-              url:
-                "https://services7.arcgis.com/org1234567890/arcgis/rest/services/TestLayerForDashBoardMap/FeatureServer/0"
+              url: "https://services7.arcgis.com/org1234567890/arcgis/rest/services/TestLayerForDashBoardMap/FeatureServer/0",
             },
             {
               featureServiceItemId: "4efe5f693de34620934787ead6693f10",
               dataSourceId: "1687a71b-cf77-48ed-b948-c66e228a0f74",
-              url:
-                "https://services7.arcgis.com/org1234567890/arcgis/rest/services/TestLayerForDashBoardMap/FeatureServer/1"
-            }
+              url: "https://services7.arcgis.com/org1234567890/arcgis/rest/services/TestLayerForDashBoardMap/FeatureServer/1",
+            },
           ],
           itemId: "9da79c91fc7642ebb4c0bbacfbacd510",
           preferences: {
-            adminEmail: "jhauck@esri.com"
+            adminEmail: "jhauck@esri.com",
           },
           templateGroups: [],
           userInputs: [],
-          version: 0.1
+          version: 0.1,
         },
-        name: "qc.project.json"
+        name: "qc.project.json",
       };
       break;
 
@@ -787,23 +771,23 @@ export function getAGOLItemData(type?: string, itemId?: string): any {
             schemaTransformation: {},
             properties: {
               "feature-layer.portalItemId": itemId,
-              "feature-layer.outSR": "4326"
-            }
-          }
+              "feature-layer.outSR": "4326",
+            },
+          },
         ],
         feeds: [
           {
             id: "bbb9398bcf8c4dc5a50cceaa59baf513",
             label: "WWO Simulation Provider AVL Feed",
             name: "simulator",
-            properties: {}
+            properties: {},
           },
           {
             id: "ccc6347e0c4f4dc8909da399418cafbe",
             label: "WWO Simulation ArcGIS Tracking Feed",
             name: "simulator",
-            properties: {}
-          }
+            properties: {},
+          },
         ],
         outputs: [
           {
@@ -815,11 +799,9 @@ export function getAGOLItemData(type?: string, itemId?: string): any {
               "feat-lyr-new.updateExistingFeatures": true,
               "feat-lyr-new.name": "Custom Velocity Update",
               "feat-lyr-new.useSpatiotemporal": true,
-              "feat-lyr-new.portal.featureServicePortalItemID":
-                "e620910ed73b4780b5407112d8f1ce30",
-              "feat-lyr-new.portal.mapServicePortalItemID":
-                "d17c3732ceb04e62917d9444863a6c28"
-            }
+              "feat-lyr-new.portal.featureServicePortalItemID": "e620910ed73b4780b5407112d8f1ce30",
+              "feat-lyr-new.portal.mapServicePortalItemID": "d17c3732ceb04e62917d9444863a6c28",
+            },
           },
           {
             id: "02aacfd0-754d-3ac0-bb8d-aa3814b32fbf",
@@ -829,10 +811,10 @@ export function getAGOLItemData(type?: string, itemId?: string): any {
               "feat-lyr-new.editorTrackingEnabled": false,
               "feat-lyr-new.updateExistingFeatures": true,
               "stream-lyr-new.name": "Custom Stream",
-              "feat-lyr-new.useSpatiotemporal": false
-            }
-          }
-        ]
+              "feat-lyr-new.useSpatiotemporal": false,
+            },
+          },
+        ],
       };
       break;
 
@@ -853,29 +835,22 @@ export function getAGOLItemData(type?: string, itemId?: string): any {
               tags: ["test"],
               thumbnail: null,
               title: "Basic Viewer",
-              typeKeywords: [
-                "JavaScript",
-                "Map",
-                "Mapping Site",
-                "Online Map",
-                "Web Map"
-              ],
-              url:
-                "{{portalBaseUrl}}/apps/View/index.html?appid={{wma1234567890.itemId}}"
+              typeKeywords: ["JavaScript", "Map", "Mapping Site", "Online Map", "Web Map"],
+              url: "{{portalBaseUrl}}/apps/View/index.html?appid={{wma1234567890.itemId}}",
             },
             data: {
               source: "tmp1234567890",
               folderId: null,
               values: {
-                webmap: "{{map1234567890.itemId}}"
-              }
+                webmap: "{{map1234567890.itemId}}",
+              },
             },
             resources: ["wma1234567890_info_thumbnail/ago_downloaded.png"],
             dependencies: ["map1234567890"],
             groups: [],
             properties: {},
             estimatedDeploymentCostFactor: 2,
-            relatedItems: []
+            relatedItems: [],
           },
           {
             itemId: "map1234567890",
@@ -898,10 +873,9 @@ export function getAGOLItemData(type?: string, itemId?: string): any {
                 "Metadata",
                 "Offline",
                 "Online Map",
-                "Web Map"
+                "Web Map",
               ],
-              url:
-                "{{portalBaseUrl}}/home/webmap/viewer.html?webmap={{map1234567890.itemId}}"
+              url: "{{portalBaseUrl}}/home/webmap/viewer.html?webmap={{map1234567890.itemId}}",
             },
             data: {
               operationalLayers: [],
@@ -910,34 +884,33 @@ export function getAGOLItemData(type?: string, itemId?: string): any {
                   {
                     id: "defaultBasemap_0",
                     layerType: "ArcGISTiledMapServiceLayer",
-                    url:
-                      "https://services.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer",
+                    url: "https://services.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer",
                     visibility: true,
                     opacity: 1,
-                    title: "World_Topo_Map"
-                  }
+                    title: "World_Topo_Map",
+                  },
                 ],
-                title: "Topographic"
+                title: "Topographic",
               },
               spatialReference: {
                 wkid: 102100,
-                latestWkid: 3857
+                latestWkid: 3857,
               },
               authoringApp: "WebMapViewer",
               authoringAppVersion: "7.3",
-              version: "2.15"
+              version: "2.15",
             },
             resources: [
               "map1234567890_info_metadata/metadata.xml",
-              "map1234567890_info_thumbnail/thumbnail1572976699636.png"
+              "map1234567890_info_thumbnail/thumbnail1572976699636.png",
             ],
             dependencies: [],
             groups: [],
             properties: {},
             estimatedDeploymentCostFactor: 2,
-            relatedItems: []
-          }
-        ]
+            relatedItems: [],
+          },
+        ],
       };
       break;
 
@@ -953,35 +926,31 @@ export function getAGOLItemData(type?: string, itemId?: string): any {
             title: "ROW Permits",
             itemId: "svc1234567890",
             popupInfo: {},
-            capabilities: "Query"
-          }
+            capabilities: "Query",
+          },
         ],
         baseMap: {
           baseMapLayers: [
             {
               id: "World_Hillshade_3689",
               layerType: "ArcGISTiledMapServiceLayer",
-              url:
-                "http://services.arcgisonline.com/arcgis/rest/services/Elevation/World_Hillshade/MapServer",
-              title: "World Hillshade"
+              url: "http://services.arcgisonline.com/arcgis/rest/services/Elevation/World_Hillshade/MapServer",
+              title: "World Hillshade",
             },
             {
               id: "VectorTile_6451",
               type: "VectorTileLayer",
               layerType: "VectorTileLayer",
               title: "World Topographic Map",
-              styleUrl:
-                utils.PORTAL_SUBSET.restUrl +
-                "/content/items/" +
-                "vts1234567890/resources/styles/root.json",
-              itemId: "vts1234567890"
-            }
+              styleUrl: utils.PORTAL_SUBSET.restUrl + "/content/items/" + "vts1234567890/resources/styles/root.json",
+              itemId: "vts1234567890",
+            },
           ],
-          title: "Topographic"
+          title: "Topographic",
         },
         spatialReference: {
           wkid: 102100,
-          latestWkid: 3857
+          latestWkid: 3857,
         },
         tables: [
           {
@@ -992,9 +961,9 @@ export function getAGOLItemData(type?: string, itemId?: string): any {
             title: "ROW Permit Comment",
             layerDefinition: {},
             itemId: "svc1234567890",
-            popupInfo: {}
-          }
-        ]
+            popupInfo: {},
+          },
+        ],
       };
       break;
 
@@ -1012,9 +981,9 @@ export function getAGOLItemData(type?: string, itemId?: string): any {
             fields: [
               {
                 id: "sortField",
-                fields: ["submitdt"]
-              }
-            ]
+                fields: ["submitdt"],
+              },
+            ],
           },
           showAllFeatures: "true",
           customUrlLayer: {
@@ -1022,12 +991,12 @@ export function getAGOLItemData(type?: string, itemId?: string): any {
             fields: [
               {
                 id: "urlField",
-                fields: ["OBJECTID"]
-              }
-            ]
+                fields: ["OBJECTID"],
+              },
+            ],
           },
-          customUrlParam: "id"
-        }
+          customUrlParam: "id",
+        },
       };
       break;
 
@@ -1037,25 +1006,21 @@ export function getAGOLItemData(type?: string, itemId?: string): any {
         dispatcherWebMapId: "abc26a244163430590151395821fb845",
         dispatchers: {
           serviceItemId: "abc302ec12b74d2f9f2b3cc549420086",
-          url:
-            "https://services123.arcgis.com/org1234567890/arcgis/rest/services/dispatchers_47bb15c2df2b466da05577776e82d044/FeatureServer/0"
+          url: "https://services123.arcgis.com/org1234567890/arcgis/rest/services/dispatchers_47bb15c2df2b466da05577776e82d044/FeatureServer/0",
         },
         assignments: {
           serviceItemId: "abc4494043c3459faabcfd0e1ab557fc",
-          url:
-            "https://services123.arcgis.com/org1234567890/arcgis/rest/services/assignments_47bb15c2df2b466da05577776e82d044/FeatureServer/0"
+          url: "https://services123.arcgis.com/org1234567890/arcgis/rest/services/assignments_47bb15c2df2b466da05577776e82d044/FeatureServer/0",
         },
         workers: {
           serviceItemId: "abc5dd4bdd18437f8d5ff1aa2d25fd7c",
-          url:
-            "https://services123.arcgis.com/org1234567890/arcgis/rest/services/workers_47bb15c2df2b466da05577776e82d044/FeatureServer/0"
+          url: "https://services123.arcgis.com/org1234567890/arcgis/rest/services/workers_47bb15c2df2b466da05577776e82d044/FeatureServer/0",
         },
         tracks: {
           serviceItemId: "abc64329e69144c59f69f3f3e0d45269",
-          url:
-            "https://services123.arcgis.com/org1234567890/arcgis/rest/services/location_47bb15c2df2b466da05577776e82d044/FeatureServer/0",
+          url: "https://services123.arcgis.com/org1234567890/arcgis/rest/services/location_47bb15c2df2b466da05577776e82d044/FeatureServer/0",
           enabled: true,
-          updateInterval: 300
+          updateInterval: 300,
         },
         version: "1.2.0",
         groupId: "abc715c2df2b466da05577776e82d044",
@@ -1071,11 +1036,11 @@ export function getAGOLItemData(type?: string, itemId?: string): any {
               {
                 // placeholder urlTemplates until I get an legitimate one
                 urlTemplate:
-                  "arcgis-navigator://?stop=${assignment.latitude},{itemID=cad3483e025c47338d43df308c117308},${assignment.longitude}&stopname=${assignment.location}&callback=arcgis-workforce://&callbackprompt={itemID=bad3483e025c47338d43df308c117308}://Workforce"
-              }
-            ]
-          }
-        ]
+                  "arcgis-navigator://?stop=${assignment.latitude},{itemID=cad3483e025c47338d43df308c117308},${assignment.longitude}&stopname=${assignment.location}&callback=arcgis-workforce://&callbackprompt={itemID=bad3483e025c47338d43df308c117308}://Workforce",
+              },
+            ],
+          },
+        ],
       };
       break;
 
@@ -1120,7 +1085,7 @@ export function getAGOLItemResources(testCase?: string): any {
         start: 1,
         num: 0,
         nextStart: -1,
-        resources: []
+        resources: [],
       };
       break;
 
@@ -1135,9 +1100,9 @@ export function getAGOLItemResources(testCase?: string): any {
             resource: "anImage.png",
             created: 1551117331000,
             size: 236838,
-            access: "inherit"
-          }
-        ]
+            access: "inherit",
+          },
+        ],
       };
       break;
 
@@ -1152,9 +1117,9 @@ export function getAGOLItemResources(testCase?: string): any {
             resource: "aFolder/anImage.png",
             created: 1551117331000,
             size: 236838,
-            access: "inherit"
-          }
-        ]
+            access: "inherit",
+          },
+        ],
       };
       break;
 
@@ -1164,7 +1129,7 @@ export function getAGOLItemResources(testCase?: string): any {
         start: 1,
         num: 1,
         nextStart: -1,
-        resources: [utils.getSampleZip()]
+        resources: [utils.getSampleZip()],
       };
       break;
   }
@@ -1201,9 +1166,9 @@ export function getAGOLGroup(id?: string, owner?: string): any {
     userMembership: {
       username: "ArcGISTeamLocalGovOrg",
       memberType: "owner",
-      applications: 0
+      applications: 0,
     },
-    collaborationInfo: {}
+    collaborationInfo: {},
   };
 }
 
@@ -1225,16 +1190,13 @@ export function getAGOLUser(username: string): interfaces.IUser {
     provider: "arcgis",
     region: "US",
     units: "metric",
-    username: username
+    username: username,
   };
 }
 
 export function getAGOLItemWithId(type: string, idOffset: number): any {
   const item = getAGOLItem(type);
-  item.id = item.item =
-    getItemTypeAbbrev.getItemTypeAbbrev(type) +
-    1234567890 +
-    idOffset.toString(16).toLowerCase();
+  item.id = item.item = getItemTypeAbbrev.getItemTypeAbbrev(type) + 1234567890 + idOffset.toString(16).toLowerCase();
   return item;
 }
 
@@ -1251,40 +1213,31 @@ export function getAGOLGroupCategorySchema(): interfaces.IGroupCategorySchema {
               { title: "Partner Basemap" },
               {
                 title: "Esri Basemaps",
-                categories: [
-                  { title: "Esri Raster Basemap" },
-                  { title: "Esri Vector Basemap" }
-                ]
-              }
-            ]
+                categories: [{ title: "Esri Raster Basemap" }, { title: "Esri Vector Basemap" }],
+              },
+            ],
           },
           {
             title: "Imagery",
-            categories: [
-              { title: "Multispectral Imagery" },
-              { title: "Temporal Imagery" }
-            ]
-          }
-        ]
+            categories: [{ title: "Multispectral Imagery" }, { title: "Temporal Imagery" }],
+          },
+        ],
       },
       {
         title: "Region",
-        categories: [{ title: "US" }, { title: "World" }]
-      }
-    ]
+        categories: [{ title: "US" }, { title: "World" }],
+      },
+    ],
   };
 }
 
-export function getAGOLGroupContentsList(
-  numToPutIntoGroup: number,
-  type: string = ""
-): any {
+export function getAGOLGroupContentsList(numToPutIntoGroup: number, type: string = ""): any {
   const group = {
     total: 0,
     start: 1,
     num: 0,
     nextStart: -1,
-    items: [] as string[]
+    items: [] as string[],
   };
   while (group.items.length < numToPutIntoGroup) {
     group.items.push(getAGOLItemWithId(type, group.total++));
@@ -1300,26 +1253,22 @@ export function getAGOLGroupContentsListByType(typesList: string[]): any {
     start: 1,
     num: 0,
     nextStart: -1,
-    items: [] as string[]
+    items: [] as string[],
   };
-  typesList.forEach(itemType => {
+  typesList.forEach((itemType) => {
     group.items.push(getAGOLItemWithId(itemType, group.total++));
     group.num++;
   });
   return group;
 }
 
-export function getAGOLService(
-  layers = [] as any,
-  tables = [] as any,
-  isView?: boolean
-): any {
+export function getAGOLService(layers = [] as any, tables = [] as any, isView?: boolean): any {
   const service: any = {
     adminServiceInfo: {
       name: "a feature service",
       type: "FeatureServer",
       cacheMaxAge: 60,
-      status: "Started"
+      status: "Started",
     },
     currentVersion: 10.61,
     serviceItemId: "svc1234567890",
@@ -1338,7 +1287,7 @@ export function getAGOLService(
     copyrightText: "",
     spatialReference: {
       wkid: 102100,
-      latestWkid: 3857
+      latestWkid: 3857,
     },
     initialExtent: {
       xmin: -14999999.999989873,
@@ -1347,8 +1296,8 @@ export function getAGOLService(
       ymax: 6499999.99999407,
       spatialReference: {
         wkid: 102100,
-        latestWkid: 3857
-      }
+        latestWkid: 3857,
+      },
     },
     fullExtent: {
       xmin: -14999999.999989873,
@@ -1357,8 +1306,8 @@ export function getAGOLService(
       ymax: 6499999.99999407,
       spatialReference: {
         wkid: 102100,
-        latestWkid: 3857
-      }
+        latestWkid: 3857,
+      },
     },
     allowGeometryUpdates: true,
     units: "esriMeters",
@@ -1373,13 +1322,13 @@ export function getAGOLService(
       allowOthersToDelete: true,
       allowAnonymousToQuery: true,
       allowAnonymousToUpdate: true,
-      allowAnonymousToDelete: true
+      allowAnonymousToDelete: true,
     },
     xssPreventionInfo: {
       xssPreventionEnabled: true,
       xssPreventionRule: "InputOnly",
-      xssInputRule: "rejectInvalid"
-    }
+      xssInputRule: "rejectInvalid",
+    },
   };
 
   if (layers.length > 0 || tables.length > 0) {
@@ -1396,9 +1345,9 @@ export function getAGOLServiceSources(): any {
     services: [
       {
         serviceItemId: "svc1234567890",
-        name: "OtherSourceServiceName"
-      }
-    ]
+        name: "OtherSourceServiceName",
+      },
+    ],
   };
 
   return sources;
@@ -1409,7 +1358,7 @@ export function getAGOLLayerOrTable(
   name: string,
   type: string,
   relationships = [] as any,
-  isView?: boolean
+  isView?: boolean,
 ): any {
   return {
     currentVersion: 10.61,
@@ -1428,10 +1377,10 @@ export function getAGOLLayerOrTable(
       creationDateField: "CreationDate",
       creatorField: "Creator",
       editDateField: "EditDate",
-      editorField: "Editor"
+      editorField: "Editor",
     },
     editingInfo: {
-      lastEditDate: 1538579807130
+      lastEditDate: 1538579807130,
     },
     fields: [
       {
@@ -1444,7 +1393,7 @@ export function getAGOLLayerOrTable(
         editable: true,
         visible: true,
         domain: null,
-        defaultValue: null
+        defaultValue: null,
       },
       {
         name: "BoardReview",
@@ -1456,7 +1405,7 @@ export function getAGOLLayerOrTable(
         editable: true,
         visible: true,
         domain: null,
-        defaultValue: null
+        defaultValue: null,
       },
       {
         name: "globalid",
@@ -1468,7 +1417,7 @@ export function getAGOLLayerOrTable(
         editable: true,
         visible: true,
         domain: null,
-        defaultValue: null
+        defaultValue: null,
       },
       {
         name: "CreationDate",
@@ -1480,7 +1429,7 @@ export function getAGOLLayerOrTable(
         editable: true,
         visible: true,
         domain: null,
-        defaultValue: null
+        defaultValue: null,
       },
       {
         name: "Creator",
@@ -1492,7 +1441,7 @@ export function getAGOLLayerOrTable(
         editable: true,
         visible: true,
         domain: null,
-        defaultValue: null
+        defaultValue: null,
       },
       {
         name: "EditDate",
@@ -1504,7 +1453,7 @@ export function getAGOLLayerOrTable(
         editable: true,
         visible: true,
         domain: null,
-        defaultValue: null
+        defaultValue: null,
       },
       {
         name: "Editor",
@@ -1516,7 +1465,7 @@ export function getAGOLLayerOrTable(
         editable: true,
         visible: true,
         domain: null,
-        defaultValue: null
+        defaultValue: null,
       },
       {
         name: "OBJECTID",
@@ -1528,8 +1477,8 @@ export function getAGOLLayerOrTable(
         editable: false,
         visible: true,
         domain: null,
-        defaultValue: null
-      }
+        defaultValue: null,
+      },
     ],
     relationships: relationships,
     geometryType: "esriGeometryPoint",
@@ -1542,8 +1491,8 @@ export function getAGOLLayerOrTable(
       ymax: 6499999.99999407,
       spatialReference: {
         wkid: 102100,
-        latestWkid: 3857
-      }
+        latestWkid: 3857,
+      },
     },
     allowGeometryUpdates: true,
     hasAttachments: true,
@@ -1551,50 +1500,45 @@ export function getAGOLLayerOrTable(
     attachmentProperties: [
       {
         name: "name",
-        isEnabled: true
+        isEnabled: true,
       },
       {
         name: "size",
-        isEnabled: true
+        isEnabled: true,
       },
       {
         name: "contentType",
-        isEnabled: true
+        isEnabled: true,
       },
       {
         name: "keywords",
-        isEnabled: true
-      }
+        isEnabled: true,
+      },
     ],
     objectIdField: "OBJECTID",
     uniqueIdField: {
       name: "OBJECTID",
-      isSystemMaintained: true
+      isSystemMaintained: true,
     },
     globalIdField: "globalid",
     capabilities: "Create,Query,Editing",
     viewDefinitionQuery: "status = 'BoardReview'",
     definitionQuery: "status = 'BoardReview'",
-    typeIdField: "BoardReview"
+    typeIdField: "BoardReview",
   };
 }
 
-export function createAGOLRelationship(
-  id: number,
-  relatedTableId: number,
-  role: string
-): any {
+export function createAGOLRelationship(id: number, relatedTableId: number, role: string): any {
   const relationship: any = {
-    id: id,
-    name: "",
-    relatedTableId: relatedTableId,
-    cardinality: "esriRelCardinalityOneToMany",
-    role: role,
+    "id": id,
+    "name": "",
+    "relatedTableId": relatedTableId,
+    "cardinality": "esriRelCardinalityOneToMany",
+    "role": role,
     "": "globalid",
-    composite: true
+    "composite": true,
   };
-  relationship.keyField =
-    role === "esriRelRoleOrigin" ? "globalid" : "parentglobalid";
+  relationship.keyField = role === "esriRelRoleOrigin" ? "globalid" : "parentglobalid";
   return relationship;
 }
 
@@ -1643,7 +1587,7 @@ function getAGOLItemFundamentals(type: string, url = "", itemId?: string): any {
     avgRating: 0,
     numViews: 690,
     scoreCompleteness: 78,
-    groupDesignations: null
+    groupDesignations: null,
   };
 }
 
@@ -1658,21 +1602,21 @@ export function getAGOLSubscriptionInfo(hasVelocity: boolean): any {
       creatorUT: 50,
       insightsAnalystUT: 50,
       storytellerUT: 50,
-      viewerUT: 0
+      viewerUT: 0,
     },
     maxUsersPerLevel: {
       "1": 0,
-      "2": 200
+      "2": 200,
     },
     maxUsers: 200,
     availableCredits: 21190.238,
     collaborationSettings: {
       level: "4",
       maxItemSizeInMB: 1024,
-      maxReplicationPackageSizeInMB: 5120
+      maxReplicationPackageSizeInMB: 5120,
     },
     hubSettings: {
-      enabled: true
+      enabled: true,
     },
     companionOrganizations: [
       {
@@ -1683,8 +1627,8 @@ export function getAGOLSubscriptionInfo(hasVelocity: boolean): any {
         canSignInArcGIS: true,
         canSignInIDP: true,
         canSignInSocial: true,
-        canSignInOIDC: true
-      }
+        canSignInOIDC: true,
+      },
     ],
     orgCapabilities: hasVelocity
       ? [
@@ -1697,13 +1641,12 @@ export function getAGOLSubscriptionInfo(hasVelocity: boolean): any {
             endDate: 1632700800000,
             itemUnits: 0,
             computeUnits: 0,
-            velocityUrl:
-              "https://us-iot.arcgis.com/usadvanced00/faKetfmrv9d1divn",
-            storageUnits: 0
-          }
+            velocityUrl: "https://us-iot.arcgis.com/usadvanced00/faKetfmrv9d1divn",
+            storageUnits: 0,
+          },
         ]
       : [{}],
-    storageRegion: "us1"
+    storageRegion: "us1",
   };
 }
 
@@ -1711,7 +1654,7 @@ export const urlsResponse = {
   urls: {
     notebooks: {
       http: ["notebookservice"],
-      https: ["notebookservice"]
-    }
-  }
-}
+      https: ["notebookservice"],
+    },
+  },
+};

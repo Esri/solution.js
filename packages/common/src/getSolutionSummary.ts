@@ -24,7 +24,7 @@ import {
   IItemTemplate,
   ISolutionItemData,
   ISolutionPrecis,
-  UserSession
+  UserSession,
 } from "./interfaces";
 import * as reconstructBuildOrderIds from "./deleteHelpers/reconstructBuildOrderIds";
 import * as portal from "@esri/arcgis-rest-portal";
@@ -40,16 +40,13 @@ import * as templatization from "./templatization";
  * @param authentication Credentials for the request
  * @returns Promise resolving to a summary of the deployed Solution
  */
-export function getSolutionSummary(
-  solutionItemId: string,
-  authentication: UserSession
-): Promise<ISolutionPrecis> {
+export function getSolutionSummary(solutionItemId: string, authentication: UserSession): Promise<ISolutionPrecis> {
   const solutionSummary: ISolutionPrecis = {
     id: solutionItemId,
     title: "",
     folder: "",
     items: [],
-    groups: []
+    groups: [],
   };
   let templates: IItemTemplate[] = [];
   let deployedSolutionVersion = DeployedSolutionFormatVersion;
@@ -57,7 +54,7 @@ export function getSolutionSummary(
 
   return Promise.all([
     restHelpersGet.getItemBase(solutionItemId, authentication),
-    restHelpersGet.getItemDataAsJson(solutionItemId, authentication)
+    restHelpersGet.getItemDataAsJson(solutionItemId, authentication),
   ])
     .then((response: any) => {
       const itemBase: IItemGeneralized = response[0];
@@ -66,14 +63,9 @@ export function getSolutionSummary(
       // Make sure that the item is a deployed Solution
       if (
         itemBase.type !== "Solution" ||
-        !(
-          itemBase.typeKeywords.includes("Solution") &&
-          itemBase.typeKeywords.includes("Deployed")
-        )
+        !(itemBase.typeKeywords.includes("Solution") && itemBase.typeKeywords.includes("Deployed"))
       ) {
-        throw new Error(
-          "Item " + solutionItemId + " is not a deployed Solution"
-        );
+        throw new Error("Item " + solutionItemId + " is not a deployed Solution");
       }
 
       solutionSummary.title = itemBase.title;
@@ -82,19 +74,16 @@ export function getSolutionSummary(
       templates = itemData.templates;
 
       // Get the forward Solution2Item relationships
-      return restHelpersGet.getItemsRelatedToASolution(
-        solutionItemId,
-        authentication
-      );
+      return restHelpersGet.getItemsRelatedToASolution(solutionItemId, authentication);
     })
     .then((relatedItems: portal.IItem[]) => {
-      solutionSummary.items = relatedItems.map(relatedItem => {
+      solutionSummary.items = relatedItems.map((relatedItem) => {
         return {
           id: relatedItem.id,
           type: relatedItem.type,
           title: relatedItem.title,
           modified: relatedItem.modified,
-          owner: relatedItem.owner
+          owner: relatedItem.owner,
         };
       });
 
@@ -102,9 +91,7 @@ export function getSolutionSummary(
       let buildOrderIds = [] as string[];
       if (deployedSolutionVersion < 1) {
         // Version 0
-        buildOrderIds = reconstructBuildOrderIds.reconstructBuildOrderIds(
-          templates
-        );
+        buildOrderIds = reconstructBuildOrderIds.reconstructBuildOrderIds(templates);
       } else {
         // Version ≥ 1
         buildOrderIds = templates.map((template: any) => template.itemId);
@@ -112,21 +99,16 @@ export function getSolutionSummary(
 
       // Get the dependent groups in the items to be deleted
       let dependentGroups = new Set<string>();
-      itemData.templates.forEach(item => {
-        item.groups.forEach(groupId => {
+      itemData.templates.forEach((item) => {
+        item.groups.forEach((groupId) => {
           dependentGroups = dependentGroups.add(groupId);
         });
       });
       solutionSummary.groups = [];
-      dependentGroups.forEach((value: string) =>
-        solutionSummary.groups.push(value)
-      );
+      dependentGroups.forEach((value: string) => solutionSummary.groups.push(value));
 
       // Sort the related items into build order
-      solutionSummary.items.sort(
-        (first, second) =>
-          buildOrderIds.indexOf(first.id) - buildOrderIds.indexOf(second.id)
-      );
+      solutionSummary.items.sort((first, second) => buildOrderIds.indexOf(first.id) - buildOrderIds.indexOf(second.id));
 
       return solutionSummary;
     });

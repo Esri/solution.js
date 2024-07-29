@@ -15,25 +15,18 @@
  */
 
 import { IVelocityInfo, UserSession } from "./interfaces";
-import {
-  getSubscriptionInfo,
-  ISubscriptionInfo
-} from "./get-subscription-info";
+import { getSubscriptionInfo, ISubscriptionInfo } from "./get-subscription-info";
 import { getProp } from "./generalHelpers";
 
 // Known base names if output, source, or feed name is missing
-export const BASE_NAMES: string[] = [
-  "feat-lyr-new",
-  "feat-lyr-existing",
-  "stream-lyr-new"
-];
+export const BASE_NAMES: string[] = ["feat-lyr-new", "feat-lyr-existing", "stream-lyr-new"];
 
 // Known prop paths that can contain item Ids
-export const PROP_NAMES: string [] = [
+export const PROP_NAMES: string[] = [
   ".portal.mapServicePortalItemID",
   ".portal.featureServicePortalItemID",
   ".portal.streamServicePortalItemID",
-  ".portalItemId"
+  ".portalItemId",
 ];
 
 /**
@@ -49,19 +42,16 @@ export const PROP_NAMES: string [] = [
  * @returns a promise that will resolve with the velocity url or an empty string when the org does not support velocity
  *
  */
-export function getVelocityUrlBase(
-  authentication: UserSession,
-  templateDictionary: any
-): Promise<string> {
+export function getVelocityUrlBase(authentication: UserSession, templateDictionary: any): Promise<string> {
   // if we already have the base url no need to make any additional requests
   if (templateDictionary.hasOwnProperty("velocityUrl")) {
     return Promise.resolve(templateDictionary.velocityUrl);
   } else {
-    return getVelocityInfo(authentication).then(velocityInfo => {
+    return getVelocityInfo(authentication).then((velocityInfo) => {
       // add the base url to the templateDictionary for reuse
       templateDictionary.velocityUrl = velocityInfo.velocityUrl;
       return Promise.resolve(velocityInfo.velocityUrl);
-    })
+    });
   }
 }
 
@@ -74,32 +64,28 @@ export function getVelocityUrlBase(
  * @returns a promise that will resolve with a hasVelocity boolean flag and the velocity url or an empty string when the org does not support velocity
  *
  */
-export function getVelocityInfo(
-  authentication: UserSession
-): Promise<IVelocityInfo> {
+export function getVelocityInfo(authentication: UserSession): Promise<IVelocityInfo> {
   // get the url from the orgs subscription info
-  return getSubscriptionInfo({ authentication }).then(
-    (subscriptionInfo: ISubscriptionInfo) => {
-      let velocityUrl = "";
-      let hasVelocity = false;
-      const orgCapabilities = getProp(subscriptionInfo, "orgCapabilities");
-      /* istanbul ignore else */
-      if (Array.isArray(orgCapabilities)) {
-        orgCapabilities.some(c => {
-          hasVelocity = c.id === "velocity" ? true : hasVelocity;
-          /* istanbul ignore else */
-          if (hasVelocity && c.status === "active" && c.velocityUrl) {
-            velocityUrl = c.velocityUrl;
-          }
-          return velocityUrl;
-        });
-      }
-      return Promise.resolve({
-        velocityUrl,
-        hasVelocity
+  return getSubscriptionInfo({ authentication }).then((subscriptionInfo: ISubscriptionInfo) => {
+    let velocityUrl = "";
+    let hasVelocity = false;
+    const orgCapabilities = getProp(subscriptionInfo, "orgCapabilities");
+    /* istanbul ignore else */
+    if (Array.isArray(orgCapabilities)) {
+      orgCapabilities.some((c) => {
+        hasVelocity = c.id === "velocity" ? true : hasVelocity;
+        /* istanbul ignore else */
+        if (hasVelocity && c.status === "active" && c.velocityUrl) {
+          velocityUrl = c.velocityUrl;
+        }
+        return velocityUrl;
       });
     }
-  );
+    return Promise.resolve({
+      velocityUrl,
+      hasVelocity,
+    });
+  });
 }
 
 /**
@@ -115,15 +101,11 @@ export function getVelocityInfo(
  * @returns an updated instance of the data object that was supplied.
  *
  */
-export function updateVelocityReferences(
-  data: any,
-  type: string,
-  templateDictionary: any
-): any {
+export function updateVelocityReferences(data: any, type: string, templateDictionary: any): any {
   const velocityUrl: any = templateDictionary.velocityUrl;
   if (data && type === "Web Map" && velocityUrl) {
     const layersAndTables: any[] = (data.operationalLayers || []).concat(data.tables || []);
-    (layersAndTables).forEach((l: any) => {
+    layersAndTables.forEach((l: any) => {
       if (l.url && l.url.indexOf(velocityUrl) > -1 && l.itemId) {
         delete l.itemId;
       }
@@ -146,10 +128,7 @@ export function _replaceVelocityUrls(data: any, velocityUrl: string): any {
   let dataString: string = JSON.stringify(data);
   if (dataString.indexOf(velocityUrl) > -1) {
     // replace any instance of the velocity base url
-    dataString = dataString.replace(
-      new RegExp(`${velocityUrl}`, "gi"),
-      "{{velocityUrl}}"
-    );
+    dataString = dataString.replace(new RegExp(`${velocityUrl}`, "gi"), "{{velocityUrl}}");
 
     // add solutionItemId to any velocity service names
     const regex = new RegExp("{{velocityUrl}}.+?(?=/[A-Za-z]+Server)", "gi");
@@ -157,14 +136,11 @@ export function _replaceVelocityUrls(data: any, velocityUrl: string): any {
     /* istanbul ignore else */
     if (results) {
       const uniqueResults = results.filter((v, i, self) => self.indexOf(v) === i);
-      uniqueResults.forEach(result => {
+      uniqueResults.forEach((result) => {
         // these names can contain reserved characters for regex
         // for example: http://something/name(something else)
         // TypeScript for es2015 doesn't have a definition for `replaceAll`
-        dataString = (dataString as any).replaceAll(
-          result,
-          `${result}_{{solutionItemId}}`
-        );
+        dataString = (dataString as any).replaceAll(result, `${result}_{{solutionItemId}}`);
       });
     }
     return JSON.parse(dataString);

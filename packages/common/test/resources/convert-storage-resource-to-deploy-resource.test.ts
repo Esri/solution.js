@@ -24,19 +24,17 @@ describe("convertStorageResourceToItemResource, template version 0", () => {
     const expected: IDeployFilename = {
       type: EFileType.Resource,
       folder: "",
-      filename: "gtnp2.jpg"
+      filename: "gtnp2.jpg",
     };
     expect(actual).toEqual(expected);
   });
 
   it("handles image file in folder", () => {
-    const actual = convertStorageResourceToItemResource(
-      "87f_aFolder/git_merge.png"
-    );
+    const actual = convertStorageResourceToItemResource("87f_aFolder/git_merge.png");
     const expected: IDeployFilename = {
       type: EFileType.Resource,
       folder: "aFolder",
-      filename: "git_merge.png"
+      filename: "git_merge.png",
     };
     expect(actual).toEqual(expected);
   });
@@ -46,56 +44,48 @@ describe("convertStorageResourceToItemResource, template version 0", () => {
     const expected: IDeployFilename = {
       type: EFileType.Resource,
       folder: "",
-      filename: "87f-git_merge.png"
+      filename: "87f-git_merge.png",
     };
 
     expect(actual).toEqual(expected);
   });
 
   it("handles metadata file", () => {
-    const actual = convertStorageResourceToItemResource(
-      "87f_info_metadata/metadata.xml"
-    );
+    const actual = convertStorageResourceToItemResource("87f_info_metadata/metadata.xml");
     const expected: IDeployFilename = {
       type: EFileType.Metadata,
       folder: "",
-      filename: "metadata.xml"
+      filename: "metadata.xml",
     };
     expect(actual).toEqual(expected);
   });
 
   it("handles thumbnail", () => {
-    const actual = convertStorageResourceToItemResource(
-      "87f_info_thumbnail/thumbnail.png"
-    );
+    const actual = convertStorageResourceToItemResource("87f_info_thumbnail/thumbnail.png");
     const expected: IDeployFilename = {
       type: EFileType.Thumbnail,
       folder: "",
-      filename: "thumbnail.png"
+      filename: "thumbnail.png",
     };
     expect(actual).toEqual(expected);
   });
 
   it("handles data file supported by AGO for resources", () => {
-    const actual = convertStorageResourceToItemResource(
-      "87f_info_data/data.zip"
-    );
+    const actual = convertStorageResourceToItemResource("87f_info_data/data.zip");
     const expected: IDeployFilename = {
       type: EFileType.Data,
       folder: "",
-      filename: "data.zip"
+      filename: "data.zip",
     };
     expect(actual).toEqual(expected);
   });
 
   it("handles data file unsupported by AGO for resources and thus masquerading as a ZIP file", () => {
-    const actual = convertStorageResourceToItemResource(
-      "87f_info_dataz/data.pkg.zip"
-    );
+    const actual = convertStorageResourceToItemResource("87f_info_dataz/data.pkg.zip");
     const expected: IDeployFilename = {
       type: EFileType.Data,
       folder: "",
-      filename: "data.pkg"
+      filename: "data.pkg",
     };
 
     expect(actual).toEqual(expected);
@@ -108,20 +98,17 @@ describe("convertStorageResourceToItemResource, template version 1", () => {
     const expected: IDeployFilename = {
       type: EFileType.Resource,
       folder: "",
-      filename: "gtnp2.jpg"
+      filename: "gtnp2.jpg",
     };
     expect(actual).toEqual(expected);
   });
 
   it("handles image file in folder", () => {
-    const actual = convertStorageResourceToItemResource(
-      "87f/aFolder/git_merge.png",
-      1
-    );
+    const actual = convertStorageResourceToItemResource("87f/aFolder/git_merge.png", 1);
     const expected: IDeployFilename = {
       type: EFileType.Resource,
       folder: "aFolder",
-      filename: "git_merge.png"
+      filename: "git_merge.png",
     };
     expect(actual).toEqual(expected);
   });
@@ -131,60 +118,48 @@ describe("convertStorageResourceToItemResource, template version 1", () => {
     const expected: IDeployFilename = {
       type: EFileType.Resource,
       folder: "",
-      filename: "87f-git_merge.png"
+      filename: "87f-git_merge.png",
     };
 
     expect(actual).toEqual(expected);
   });
 
   it("handles metadata file", () => {
-    const actual = convertStorageResourceToItemResource(
-      "87f_info_metadata/metadata.xml",
-      1
-    );
+    const actual = convertStorageResourceToItemResource("87f_info_metadata/metadata.xml", 1);
     const expected: IDeployFilename = {
       type: EFileType.Metadata,
       folder: "",
-      filename: "metadata.xml"
+      filename: "metadata.xml",
     };
     expect(actual).toEqual(expected);
   });
 
   it("handles thumbnail", () => {
-    const actual = convertStorageResourceToItemResource(
-      "87f_info_thumbnail/thumbnail.png",
-      1
-    );
+    const actual = convertStorageResourceToItemResource("87f_info_thumbnail/thumbnail.png", 1);
     const expected: IDeployFilename = {
       type: EFileType.Thumbnail,
       folder: "",
-      filename: "thumbnail.png"
+      filename: "thumbnail.png",
     };
     expect(actual).toEqual(expected);
   });
 
   it("handles data file supported by AGO for resources", () => {
-    const actual = convertStorageResourceToItemResource(
-      "87f_info_data/data.zip",
-      1
-    );
+    const actual = convertStorageResourceToItemResource("87f_info_data/data.zip", 1);
     const expected: IDeployFilename = {
       type: EFileType.Data,
       folder: "",
-      filename: "data.zip"
+      filename: "data.zip",
     };
     expect(actual).toEqual(expected);
   });
 
   it("handles data file unsupported by AGO for resources and thus masquerading as a ZIP file", () => {
-    const actual = convertStorageResourceToItemResource(
-      "87f_info_dataz/data.pkg.zip",
-      1
-    );
+    const actual = convertStorageResourceToItemResource("87f_info_dataz/data.pkg.zip", 1);
     const expected: IDeployFilename = {
       type: EFileType.Data,
       folder: "",
-      filename: "data.pkg"
+      filename: "data.pkg",
     };
 
     expect(actual).toEqual(expected);

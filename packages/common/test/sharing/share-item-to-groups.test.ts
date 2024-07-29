@@ -27,18 +27,15 @@ describe("shareItemToGroups", () => {
   });
   it("it does not share if no groups sent", () => {
     const shareSpy = spyOn(portal, "shareItemWithGroup").and.resolveTo({
-      itemId: "3ef"
+      itemId: "3ef",
     });
     return shareItemToGroups([], "3ef", MOCK_USER_SESSION).then(() => {
-      expect(shareSpy.calls.count()).toBe(
-        0,
-        "should not share if no groups passed"
-      );
+      expect(shareSpy.calls.count()).toBe(0, "should not share if no groups passed");
     });
   });
   it("it shares a item to a single group", () => {
     const shareSpy = spyOn(portal, "shareItemWithGroup").and.resolveTo({
-      itemId: "3ef"
+      itemId: "3ef",
     });
     return shareItemToGroups(["bc1"], "3ef", MOCK_USER_SESSION).then(() => {
       expect(shareSpy.calls.count()).toBe(1, "call shareItemToGroups once");
@@ -46,17 +43,15 @@ describe("shareItemToGroups", () => {
   });
   it("it shares a item to a single group", () => {
     const shareSpy = spyOn(portal, "shareItemWithGroup").and.resolveTo({
-      itemId: "3ef"
+      itemId: "3ef",
     });
-    return shareItemToGroups(["bc1", "bc2"], "3ef", MOCK_USER_SESSION).then(
-      () => {
-        expect(shareSpy.calls.count()).toBe(2, "call shareItemToGroups twice");
-      }
-    );
+    return shareItemToGroups(["bc1", "bc2"], "3ef", MOCK_USER_SESSION).then(() => {
+      expect(shareSpy.calls.count()).toBe(2, "call shareItemToGroups twice");
+    });
   });
   it("it sets owner when provided", () => {
     const shareSpy = spyOn(portal, "shareItemWithGroup").and.resolveTo({
-      itemId: "3ef"
+      itemId: "3ef",
     });
     return shareItemToGroups(["bc1"], "3ef", MOCK_USER_SESSION, "LocationTrackingServiceOwner").then(() => {
       expect(shareSpy.calls.count()).toBe(1, "call shareItemToGroups once");

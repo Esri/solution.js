@@ -30,7 +30,6 @@ afterEach(() => {
   fetchMock.restore();
 });
 
-
 describe("Module `velocityHelpers`: common functions", () => {
   describe("updateVelocityReferences", () => {
     it("defaults to a version 0 solution", () => {
@@ -38,10 +37,9 @@ describe("Module `velocityHelpers`: common functions", () => {
       const data: any = mockItems.getAGOLItemData(type);
 
       const subscriptionInfo: any = mockItems.getAGOLSubscriptionInfo(true);
-      const velocityUrl: string =
-        subscriptionInfo.orgCapabilities[0].velocityUrl;
+      const velocityUrl: string = subscriptionInfo.orgCapabilities[0].velocityUrl;
       const templateDictionary = {
-        velocityUrl
+        velocityUrl,
       };
 
       data.operationalLayers.push({
@@ -51,14 +49,10 @@ describe("Module `velocityHelpers`: common functions", () => {
         title: "ROW Permits",
         itemId: "svc1234567890",
         popupInfo: {},
-        capabilities: "Query"
+        capabilities: "Query",
       });
 
-      const actual: any = updateVelocityReferences(
-        data,
-        type,
-        templateDictionary
-      );
+      const actual: any = updateVelocityReferences(data, type, templateDictionary);
       const opLayer: any = actual.operationalLayers[1];
       const expected: string =
         "{{velocityUrl}}/maps/arcgis/rest/services/RouteStatus_{{solutionItemId}}/FeatureServer/0";
@@ -68,18 +62,16 @@ describe("Module `velocityHelpers`: common functions", () => {
   });
 
   describe("getVelocityInfo", () => {
-    it("handles missing velocity id", done => {
+    it("handles missing velocity id", async () => {
       const subscriptionInfo: any = mockItems.getAGOLSubscriptionInfo(false);
       fetchMock.get(
         "https://myorg.maps.arcgis.com/sharing/rest/portals/self/subscriptioninfo?f=json&token=fake-token",
-        subscriptionInfo
+        subscriptionInfo,
       );
 
-      getVelocityInfo(MOCK_USER_SESSION).then(actual => {
-        expect(actual.velocityUrl).toEqual("");
-        expect(actual.hasVelocity).toEqual(false);
-        done();
-      });
+      const actual = await getVelocityInfo(MOCK_USER_SESSION);
+      expect(actual.velocityUrl).toEqual("");
+      expect(actual.hasVelocity).toEqual(false);
     });
   });
 });

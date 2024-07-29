@@ -17,7 +17,6 @@
 import { _upgradeTwoDotTwo } from "../../src/migrations/upgrade-two-dot-two";
 import { cloneObject, IItemTemplate } from "@esri/hub-common";
 import { ISolutionItem } from "../../src/interfaces";
-import * as utils from "../../../common/test/mocks/utils";
 
 describe("Upgrade 2.2 ::", () => {
   const defaultModel = {
@@ -25,16 +24,14 @@ describe("Upgrade 2.2 ::", () => {
       type: "Solution",
       typeKeywords: ["Solution", "Template"],
       properties: {
-        schemaVersion: 2.1
-      }
+        schemaVersion: 2.1,
+      },
     },
     data: {
       metadata: {},
-      templates: [] as IItemTemplate[]
-    }
+      templates: [] as IItemTemplate[],
+    },
   } as ISolutionItem;
-
-  const MOCK_USER_SESSION = utils.createRuntimeMockUserSession();
 
   it("returns same model if on or above 2.2", () => {
     const m = cloneObject(defaultModel);
@@ -47,13 +44,10 @@ describe("Upgrade 2.2 ::", () => {
     const m = cloneObject(defaultModel);
     // add something with one of the old tags into the .data
     m.data.metadata.chk = {
-      solName: "{{solution.name}}"
+      solName: "{{solution.name}}",
     };
     const chk = _upgradeTwoDotTwo(m);
     expect(chk).not.toBe(m, "should not return the exact same object");
-    expect(chk.data.metadata.chk.solName).toBe(
-      "{{solution.title}}",
-      "should do a swap"
-    );
+    expect(chk.data.metadata.chk.solName).toBe("{{solution.title}}", "should do a swap");
   });
 });

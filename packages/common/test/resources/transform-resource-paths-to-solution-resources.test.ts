@@ -19,7 +19,7 @@ import {
   transformResourcePathToSolutionResource,
   _extractFilenameFromResourcePath,
   _extractPathFromResourcePath,
-  _getSolutionResourceTypeFromResourcePath
+  _getSolutionResourceTypeFromResourcePath,
 } from "../../src/resources/transform-resource-paths-to-solution-resources";
 
 import { SolutionResourceType } from "../../src/resources/solution-resource";
@@ -32,7 +32,7 @@ describe("convert-resource-paths-to-objects", () => {
         "8f5de09cc93740af9002a093bcb9b809/notebook_preview.json",
         "05eca652ff234bab831d75956fd1965c_info_dataz/FacilitySource.csv.zip",
         "84095a0a06a04d1e9f9b40edb84e277f_jobs/ViewJob_1590513214593.json",
-        "84095a0a06a04d1e9f9b40edb84e277f-how-hub-does-it.json"
+        "84095a0a06a04d1e9f9b40edb84e277f-how-hub-does-it.json",
       ];
 
       const chk = transformResourcePathsToSolutionResources(resources);
@@ -42,32 +42,32 @@ describe("convert-resource-paths-to-objects", () => {
           filename: "Dashboard.png",
           type: SolutionResourceType.thumbnail,
           path: "",
-          sourceUrl: resources[0]
+          sourceUrl: resources[0],
         },
         {
           filename: "notebook_preview.json",
           type: SolutionResourceType.resource,
           path: "",
-          sourceUrl: resources[1]
+          sourceUrl: resources[1],
         },
         {
           filename: "FacilitySource.csv.zip",
           type: SolutionResourceType.fakezip,
           path: "",
-          sourceUrl: resources[2]
+          sourceUrl: resources[2],
         },
         {
           filename: "ViewJob_1590513214593.json",
           type: SolutionResourceType.resource,
           path: "jobs",
-          sourceUrl: resources[3]
+          sourceUrl: resources[3],
         },
         {
           filename: "how-hub-does-it.json",
           type: SolutionResourceType.resource,
           path: "",
-          sourceUrl: resources[4]
-        }
+          sourceUrl: resources[4],
+        },
       ];
 
       expect(chk).toEqual(expected, "should convert paths to objects");
@@ -82,11 +82,9 @@ describe("convert-resource-paths-to-objects", () => {
     // Since the sub-functions have so much coverage, this can be pretty simple
     it("works", () => {
       const chk = transformResourcePathToSolutionResource(
-        "243258b1ef224cf293448d3426a49453_info_thumbnail/Dashboard.png"
+        "243258b1ef224cf293448d3426a49453_info_thumbnail/Dashboard.png",
       );
-      expect(chk.sourceUrl).toBe(
-        "243258b1ef224cf293448d3426a49453_info_thumbnail/Dashboard.png"
-      );
+      expect(chk.sourceUrl).toBe("243258b1ef224cf293448d3426a49453_info_thumbnail/Dashboard.png");
       expect(chk.filename).toBe("Dashboard.png");
       expect(chk.type).toBe(SolutionResourceType.thumbnail);
       expect(chk.path).toBe("");
@@ -99,36 +97,36 @@ describe("convert-resource-paths-to-objects", () => {
         {
           in: "red.png",
           chk: "red.png",
-          msg: "should work for a naked string"
+          msg: "should work for a naked string",
         },
         {
           in: "red-hat.png",
           chk: "red-hat.png",
-          msg: "should work for a naked string iwth a dash"
+          msg: "should work for a naked string iwth a dash",
         },
         {
           in: "/red.png",
           chk: "red.png",
-          msg: "should work for a relative string"
+          msg: "should work for a relative string",
         },
         {
           in: "/some/deep/path/red.png",
           chk: "red.png",
-          msg: "should work for a deep path"
+          msg: "should work for a deep path",
         },
         {
           in: "https://foo.com/bar/baz/red.png",
           chk: "red.png",
-          msg: "should work for a url"
+          msg: "should work for a url",
         },
         {
           in: "84095a0a06a04d1e9f9b40edb84e277f-how-hub-does-it.json",
           chk: "how-hub-does-it.json",
-          msg: "should work for hub structure"
-        }
+          msg: "should work for hub structure",
+        },
       ];
 
-      tests.forEach(e => {
+      tests.forEach((e) => {
         expect(_extractFilenameFromResourcePath(e.in)).toBe(e.chk, e.msg);
       });
     });
@@ -143,51 +141,51 @@ describe("convert-resource-paths-to-objects", () => {
         {
           in: "NOTGUID58b1ef224cf293448d3426a49/red.png",
           chk: "NOTGUID58b1ef224cf293448d3426a49",
-          msg: "non-guid works"
+          msg: "non-guid works",
         },
         {
           in: "243258b1ef224cf293448d3426a49453/red.png",
           chk: "",
-          msg: "remove itemId paths"
+          msg: "remove itemId paths",
         },
         {
           in: "243258b1ef224cf293448d3426a49453_info/red.png",
           chk: "",
-          msg: "remove _info paths"
+          msg: "remove _info paths",
         },
         {
           in: "243258b1ef224cf293448d3426a49453_info_thumbnail/red.png",
           chk: "",
-          msg: "remove _info* paths"
+          msg: "remove _info* paths",
         },
         {
           in: "243258b1ef224cf293448d3426a49453_info_metadata/red.png",
           chk: "",
-          msg: "remove _info* paths"
+          msg: "remove _info* paths",
         },
         {
           in: "243258b1ef224cf293448d3426a49453_info_data/red.png",
           chk: "",
-          msg: "remove _info* paths"
+          msg: "remove _info* paths",
         },
         {
           in: "243258b1ef224cf293448d3426a49453_info_dataz/red.png",
           chk: "",
-          msg: "remove _info* paths"
+          msg: "remove _info* paths",
         },
         {
           in: "243258b1ef224cf293448d3426a49453_jobs/red.png",
           chk: "jobs",
-          msg: "keep other paths"
+          msg: "keep other paths",
         },
         {
           in: "https://foo.com/bar/baz/red.png",
           chk: "",
-          msg: "should work for a url"
-        }
+          msg: "should work for a url",
+        },
       ];
 
-      tests.forEach(e => {
+      tests.forEach((e) => {
         expect(_extractPathFromResourcePath(e.in)).toBe(e.chk, e.msg);
       });
     });
@@ -199,55 +197,52 @@ describe("convert-resource-paths-to-objects", () => {
         {
           in: "red.png",
           chk: SolutionResourceType.resource,
-          msg: "should work for a naked string"
+          msg: "should work for a naked string",
         },
         {
           in: "/red.png",
           chk: SolutionResourceType.resource,
-          msg: "should work for a relative string"
+          msg: "should work for a relative string",
         },
         {
           in: "/some/deep/path/red.png",
           chk: SolutionResourceType.resource,
-          msg: "should work for a deep path"
+          msg: "should work for a deep path",
         },
         {
           in: "/folder_info/red.png",
           chk: SolutionResourceType.info,
-          msg: "_info path"
+          msg: "_info path",
         },
         {
           in: "/folder_info_thumbnail/red.png",
           chk: SolutionResourceType.thumbnail,
-          msg: "thumbnail path"
+          msg: "thumbnail path",
         },
         {
           in: "/folder_info_metadata/thing.xml",
           chk: SolutionResourceType.metadata,
-          msg: "metadata path"
+          msg: "metadata path",
         },
         {
           in: "/folder_info_data/red.json",
           chk: SolutionResourceType.data,
-          msg: "data path"
+          msg: "data path",
         },
         {
           in: "/folder_info_dataz/red.zip",
           chk: SolutionResourceType.fakezip,
-          msg: "fake zip path"
+          msg: "fake zip path",
         },
         {
           in: "https://foo.com/bar/baz/red.png",
           chk: SolutionResourceType.resource,
-          msg: "should work for a url"
-        }
+          msg: "should work for a url",
+        },
       ];
 
-      tests.forEach(e => {
-        expect(_getSolutionResourceTypeFromResourcePath(e.in)).toBe(
-          e.chk,
-          e.msg
-        );
+      tests.forEach((e) => {
+        expect(_getSolutionResourceTypeFromResourcePath(e.in)).toBe(e.chk, e.msg);
       });
     });
   });
