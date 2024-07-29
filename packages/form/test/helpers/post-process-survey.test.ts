@@ -38,7 +38,7 @@ describe("postProcessHubSurvey", () => {
   beforeEach(() => {
     orgExtent = [
       [-134.7472926179282, 23.560962423770285],
-      [-55.69554761541033, 50.309217030289695]
+      [-55.69554761541033, 50.309217030289695],
     ];
     formId = "2c36d3679e7f4934ac599051df22daf6";
     MOCK_USER_SESSION = utils.createRuntimeMockUserSession();
@@ -46,22 +46,22 @@ describe("postProcessHubSurvey", () => {
     itemInfos = [{ id: formId }];
     templateDictionary = {
       "3c36d3679e7f4934ac599051df22daf6": {
-        itemId: "4c36d3679e7f4934ac599051df22daf6"
+        itemId: "4c36d3679e7f4934ac599051df22daf6",
       },
-      folderId: "h7bf45f98d114c3ab85fd63bb44e240d"
+      "folderId": "h7bf45f98d114c3ab85fd63bb44e240d",
     };
     interpolatedTemplate = {
       ...template,
       title: "interpolated title",
       snippet: "interpolated snippet",
       extent: orgExtent,
-      culture: "interpolated culture"
+      culture: "interpolated culture",
     };
     featureServiceSourceBase = {
       ...agolItems.getAGOLItem("Feature Service"),
       id: "3c36d3679e7f4934ac599051df22daf6",
       title: "fs base title",
-      typeKeywords: ["fsBaseTypekeywords"]
+      typeKeywords: ["fsBaseTypekeywords"],
     };
     featureServiceResultBase = {
       ...agolItems.getAGOLItem("Feature Service"),
@@ -69,7 +69,7 @@ describe("postProcessHubSurvey", () => {
       title: "original title",
       snippet: "original snippet",
       culture: "original-culture",
-      ownerFolder: "g7bf45f98d114c3ab85fd63bb44e240d"
+      ownerFolder: "g7bf45f98d114c3ab85fd63bb44e240d",
     };
     const formTemplateBase = mockTemplates.getItemTemplate("Form");
     formTemplate = {
@@ -78,100 +78,67 @@ describe("postProcessHubSurvey", () => {
         ...formTemplateBase.properties,
         info: {
           serviceInfo: {
-            itemId: "3c36d3679e7f4934ac599051df22daf6"
-          }
-        }
-      }
+            itemId: "3c36d3679e7f4934ac599051df22daf6",
+          },
+        },
+      },
     };
     featureServiceTemplate = mockTemplates.getItemTemplate("Feature Service");
     templates = [formTemplate];
   });
 
-  it("should post process the survey", done => {
-    const replaceInTemplateSpy = spyOn(
-      common,
-      "replaceInTemplate"
-    ).and.returnValue(interpolatedTemplate);
-    const getItemBaseSpy = spyOn(common, "getItemBase").and.returnValue(
-      Promise.resolve(featureServiceResultBase)
-    );
+  it("should post process the survey", async () => {
+    const replaceInTemplateSpy = spyOn(common, "replaceInTemplate").and.returnValue(interpolatedTemplate);
+    const getItemBaseSpy = spyOn(common, "getItemBase").and.returnValue(Promise.resolve(featureServiceResultBase));
     const updateItemSpy = spyOn(common, "updateItem").and.resolveTo();
-    const createInitializedItemTemplateSpy = spyOn(
-      common,
-      "createInitializedItemTemplate"
-    ).and.returnValue(featureServiceTemplate);
+    const createInitializedItemTemplateSpy = spyOn(common, "createInitializedItemTemplate").and.returnValue(
+      featureServiceTemplate,
+    );
     const moveItemSpy = spyOn(restPortal, "moveItem").and.resolveTo();
     const removeFolderSpy = spyOn(common, "removeFolder").and.resolveTo();
-    postProcessHubSurvey(
+    const results = await postProcessHubSurvey(
       formId,
       "Form",
       itemInfos,
       formTemplate,
       templates,
       templateDictionary,
-      MOCK_USER_SESSION
-    )
-      .then(results => {
-        expect(replaceInTemplateSpy.calls.count()).toEqual(1);
-        expect(replaceInTemplateSpy.calls.first().args).toEqual([
-          formTemplate,
-          templateDictionary
-        ]);
-        expect(getItemBaseSpy.calls.count()).toEqual(1);
-        expect(getItemBaseSpy.calls.argsFor(0)).toEqual([
-          featureServiceResultBase.id,
-          MOCK_USER_SESSION
-        ]);
-        expect(updateItemSpy.calls.count()).toEqual(2);
-        expect(updateItemSpy.calls.argsFor(0)).toEqual([
-          {
-            id: formId,
-            title: interpolatedTemplate.item.title,
-            snippet: interpolatedTemplate.item.snippet,
-            extent: interpolatedTemplate.item.extent,
-            culture: interpolatedTemplate.item.culture
-          },
-          MOCK_USER_SESSION
-        ]);
-        expect(updateItemSpy.calls.argsFor(1)).toEqual([
-          {
-            id: featureServiceResultBase.id,
-            extent: interpolatedTemplate.item.extent,
-            typeKeywords: [`source-${featureServiceSourceBase.id}`].concat(
-              featureServiceResultBase.typeKeywords
-            )
-          },
-          MOCK_USER_SESSION
-        ]);
-        expect(moveItemSpy.calls.count()).toEqual(2);
-        expect(moveItemSpy.calls.argsFor(0)[0].itemId).toBe(formId);
-        expect(moveItemSpy.calls.argsFor(0)[0].folderId).toBe(
-          templateDictionary.folderId
-        );
-        expect(moveItemSpy.calls.argsFor(1)[0].itemId).toBe(
-          featureServiceResultBase.id
-        );
-        expect(moveItemSpy.calls.argsFor(1)[0].folderId).toBe(
-          templateDictionary.folderId
-        );
-        expect(removeFolderSpy.calls.count()).toEqual(1);
-        expect(removeFolderSpy.calls.first().args).toEqual([
-          featureServiceResultBase.ownerFolder,
-          MOCK_USER_SESSION
-        ]);
-        expect(createInitializedItemTemplateSpy.calls.count()).toEqual(1);
-        expect(createInitializedItemTemplateSpy.calls.first().args).toEqual([
-          featureServiceResultBase
-        ]);
-        expect(templates).toEqual([formTemplate, featureServiceTemplate]);
-        expect(results).toBeTrue();
-        expect(
-          formTemplate.dependencies.includes(featureServiceResultBase.id)
-        ).toBeTrue();
-        done();
-      })
-      .catch(e => {
-        done.fail(e);
-      });
+      MOCK_USER_SESSION,
+    );
+    expect(replaceInTemplateSpy.calls.count()).toEqual(1);
+    expect(replaceInTemplateSpy.calls.first().args).toEqual([formTemplate, templateDictionary]);
+    expect(getItemBaseSpy.calls.count()).toEqual(1);
+    expect(getItemBaseSpy.calls.argsFor(0)).toEqual([featureServiceResultBase.id, MOCK_USER_SESSION]);
+    expect(updateItemSpy.calls.count()).toEqual(2);
+    expect(updateItemSpy.calls.argsFor(0)).toEqual([
+      {
+        id: formId,
+        title: interpolatedTemplate.item.title,
+        snippet: interpolatedTemplate.item.snippet,
+        extent: interpolatedTemplate.item.extent,
+        culture: interpolatedTemplate.item.culture,
+      },
+      MOCK_USER_SESSION,
+    ]);
+    expect(updateItemSpy.calls.argsFor(1)).toEqual([
+      {
+        id: featureServiceResultBase.id,
+        extent: interpolatedTemplate.item.extent,
+        typeKeywords: [`source-${featureServiceSourceBase.id}`].concat(featureServiceResultBase.typeKeywords ?? []),
+      },
+      MOCK_USER_SESSION,
+    ]);
+    expect(moveItemSpy.calls.count()).toEqual(2);
+    expect(moveItemSpy.calls.argsFor(0)[0].itemId).toBe(formId);
+    expect(moveItemSpy.calls.argsFor(0)[0].folderId).toBe(templateDictionary.folderId);
+    expect(moveItemSpy.calls.argsFor(1)[0].itemId).toBe(featureServiceResultBase.id);
+    expect(moveItemSpy.calls.argsFor(1)[0].folderId).toBe(templateDictionary.folderId);
+    expect(removeFolderSpy.calls.count()).toEqual(1);
+    expect(removeFolderSpy.calls.first().args).toEqual([featureServiceResultBase.ownerFolder, MOCK_USER_SESSION]);
+    expect(createInitializedItemTemplateSpy.calls.count()).toEqual(1);
+    expect(createInitializedItemTemplateSpy.calls.first().args).toEqual([featureServiceResultBase]);
+    expect(templates).toEqual([formTemplate, featureServiceTemplate]);
+    expect(results).toBeTrue();
+    expect(formTemplate.dependencies.includes(featureServiceResultBase.id)).toBeTrue();
   });
 });

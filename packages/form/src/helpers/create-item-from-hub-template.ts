@@ -24,7 +24,7 @@ import {
   updateItemExtended,
   ISurvey123CreateParams,
   ISurvey123CreateResult,
-  getItemBase
+  getItemBase,
 } from "@esri/solution-common";
 import { createSurvey } from "./create-survey";
 import { buildCreateParams } from "./build-create-params";
@@ -49,16 +49,12 @@ export function createItemFromHubTemplate(
   template: IItemTemplate,
   templateDictionary: any,
   destinationAuthentication: UserSession,
-  itemProgressCallback: IItemProgressCallback
+  itemProgressCallback: IItemProgressCallback,
 ): Promise<ICreateItemFromTemplateResponse> {
   const interpolatedTemplate = replaceInTemplate(template, templateDictionary);
   const { survey123Url } = templateDictionary;
 
-  return buildCreateParams(
-    interpolatedTemplate,
-    templateDictionary,
-    destinationAuthentication
-  )
+  return buildCreateParams(interpolatedTemplate, templateDictionary, destinationAuthentication)
     .then((params: ISurvey123CreateParams) => {
       return createSurvey(params, survey123Url);
     })
@@ -69,49 +65,38 @@ export function createItemFromHubTemplate(
       let thumbDef: Promise<any> = Promise.resolve(null);
       /* istanbul ignore else */
       if (template.item.thumbnail) {
-        thumbDef = updateItemExtended(
-          { id: formId },
-          null,
-          destinationAuthentication,
-          template.item.thumbnail
-        );
+        thumbDef = updateItemExtended({ id: formId }, null, destinationAuthentication, template.item.thumbnail);
       }
 
       return thumbDef
         .then(() => getItemBase(formId, destinationAuthentication))
-        .then(item => {
+        .then((item) => {
           templateDictionary[interpolatedTemplate.itemId] = {
-            itemId: formId
+            itemId: formId,
           };
-          templateDictionary[
-            interpolatedTemplate.properties.info.serviceInfo.itemId
-          ] = {
-            itemId: featureServiceId
+          templateDictionary[interpolatedTemplate.properties.info.serviceInfo.itemId] = {
+            itemId: featureServiceId,
           };
           itemProgressCallback(
             interpolatedTemplate.itemId,
             EItemProgressStatus.Finished,
             interpolatedTemplate.estimatedDeploymentCostFactor,
-            formId
+            formId,
           );
           return {
             item: {
               ...template,
               item,
-              itemId: formId
+              itemId: formId,
             },
             id: formId,
             type: "Form",
-            postProcess: true
+            postProcess: true,
           };
         });
     })
-    .catch(e => {
-      itemProgressCallback(
-        interpolatedTemplate.itemId,
-        EItemProgressStatus.Failed,
-        0
-      );
+    .catch((e) => {
+      itemProgressCallback(interpolatedTemplate.itemId, EItemProgressStatus.Failed, 0);
       throw e;
     });
 }

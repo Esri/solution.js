@@ -24,7 +24,7 @@ import {
   UserSession,
   IItemTemplate,
   IItemProgressCallback,
-  ICreateItemFromTemplateResponse
+  ICreateItemFromTemplateResponse,
 } from "@esri/solution-common";
 import { simpleTypes } from "@esri/solution-simple-types";
 import { isHubFormTemplate } from "./helpers/is-hub-form-template";
@@ -43,16 +43,11 @@ export function createItemFromTemplate(
   template: IItemTemplate,
   templateDictionary: any,
   destinationAuthentication: UserSession,
-  itemProgressCallback: IItemProgressCallback
+  itemProgressCallback: IItemProgressCallback,
 ): Promise<ICreateItemFromTemplateResponse> {
   // Hub Form template custom processing
   if (isHubFormTemplate(template)) {
-    return createItemFromHubTemplate(
-      template,
-      templateDictionary,
-      destinationAuthentication,
-      itemProgressCallback
-    );
+    return createItemFromHubTemplate(template, templateDictionary, destinationAuthentication, itemProgressCallback);
   }
 
   // otherwise delegate to simple types
@@ -60,6 +55,6 @@ export function createItemFromTemplate(
     template,
     templateDictionary,
     destinationAuthentication,
-    itemProgressCallback
+    itemProgressCallback,
   );
 }

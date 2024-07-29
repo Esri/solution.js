@@ -14,10 +14,7 @@
  * limitations under the License.
  */
 
-import {
-  ISurvey123CreateParams,
-  ISurvey123CreateResult
-} from "@esri/solution-common";
+import { ISurvey123CreateParams, ISurvey123CreateResult } from "@esri/solution-common";
 import { encodeFormData } from "@esri/arcgis-rest-request";
 
 /**
@@ -36,7 +33,7 @@ import { encodeFormData } from "@esri/arcgis-rest-request";
  */
 export function createSurvey(
   params: ISurvey123CreateParams,
-  survey123Url = "https://survey123.arcgis.com"
+  survey123Url = "https://survey123.arcgis.com",
 ): Promise<ISurvey123CreateResult> {
   const createUrl = `${survey123Url}/api/survey/create`;
   const ro = {
@@ -45,24 +42,24 @@ export function createSurvey(
     body: encodeFormData(
       {
         f: "json",
-        ...params
+        ...params,
       },
-      true
-    )
+      true,
+    ),
   };
   // Using @esri/arcgis-request "request" method was resulting in a 404 for
   // a CORS preflight request related to this request, but calling fetch directly
   // circumvents the issue.
   return fetch(createUrl, ro)
-    .then(response => response.json())
-    .then(response => {
+    .then((response) => response.json())
+    .then((response) => {
       if (!response.success) {
         throw new Error(`Failed to create survey: ${response.error.message}`);
       }
       return {
         formId: response.id,
         featureServiceId: response.featureService.source.itemId,
-        folderId: response.formItemInfo.ownerFolder
+        folderId: response.formItemInfo.ownerFolder,
       };
     });
 }

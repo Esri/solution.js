@@ -24,28 +24,27 @@ describe("encodeSurveyForm", () => {
   beforeEach(() => {
     form = {
       header: {
-        encoded:
-          "%3Cp%20title%3D'Whos%20the%20best%20cat'%3EWhos%20the%20best%20cat%3C%2Fp%3E",
-        content: "<p title='Whos the best cat'>Whos the best cat</p>"
+        encoded: "%3Cp%20title%3D'Whos%20the%20best%20cat'%3EWhos%20the%20best%20cat%3C%2Fp%3E",
+        content: "<p title='Whos the best cat'>Whos the best cat</p>",
       },
       subHeader: {
         encoded: "This%20is%20encoded",
-        content: "This is encoded"
+        content: "This is encoded",
       },
       footer: {
         encoded: "This%20is%20encoded",
-        content: "This is encoded"
+        content: "This is encoded",
       },
       questions: [
         {
           encoded: "This%20is%20encoded",
-          description: "This is encoded"
-        }
+          description: "This is encoded",
+        },
       ],
       settings: {
         encoded: "This%20is%20encoded",
-        thankYouScreenContent: "This is encoded"
-      }
+        thankYouScreenContent: "This is encoded",
+      },
     };
   });
   it("should encode specific property values", () => {
@@ -55,22 +54,19 @@ describe("encodeSurveyForm", () => {
       { contentPath: "footer.content", verifyPath: "footer.encoded" },
       {
         contentPath: "settings.thankYouScreenContent",
-        verifyPath: "settings.encoded"
-      }
+        verifyPath: "settings.encoded",
+      },
     ];
     const results = encodeSurveyForm(form);
     expect(form).not.toEqual(results, "should not mutate the passed in form");
-    checks.forEach(e => {
+    checks.forEach((e) => {
       expect(getProp(results, e.contentPath)).toEqual(
         getProp(results, e.verifyPath),
-        `${e.contentPath} should be encoded`
+        `${e.contentPath} should be encoded`,
       );
     });
     const question = results.questions[0];
-    expect(question.description).toEqual(
-      question.encoded,
-      "Question descriptions should be encoded"
-    );
+    expect(question.description).toEqual(question.encoded, "Question descriptions should be encoded");
   });
 
   it("should encode pages", () => {
@@ -81,22 +77,19 @@ describe("encodeSurveyForm", () => {
       { contentPath: "footer.content", verifyPath: "footer.encoded" },
       {
         contentPath: "settings.thankYouScreenContent",
-        verifyPath: "settings.encoded"
-      }
+        verifyPath: "settings.encoded",
+      },
     ];
     const results = encodeSurveyForm(form);
     expect(form).not.toEqual(results, "should not mutate the passed in form");
-    checks.forEach(e => {
+    checks.forEach((e) => {
       expect(getProp(results, e.contentPath)).toEqual(
         getProp(results, e.verifyPath),
-        `${e.contentPath} should be encoded`
+        `${e.contentPath} should be encoded`,
       );
     });
     const question = results.questions[0].questions[0];
-    expect(question.description).toEqual(
-      question.encoded,
-      "Question descriptions should be encoded"
-    );
+    expect(question.description).toEqual(question.encoded, "Question descriptions should be encoded");
   });
 
   it("should set questions to an empty array when the property is missing", () => {
@@ -109,17 +102,17 @@ describe("encodeSurveyForm", () => {
     const checks = [
       { contentPath: "header.content", verifyPath: "header.encoded" },
       { contentPath: "subHeader.content", verifyPath: "subHeader.encoded" },
-      { contentPath: "footer.content", verifyPath: "footer.encoded" }
+      { contentPath: "footer.content", verifyPath: "footer.encoded" },
     ];
     const cloned = cloneObject(form);
     const expected = cloneObject(form);
     delete cloned.settings;
     delete expected.settings;
     const results = encodeSurveyForm(cloned);
-    checks.forEach(e => {
+    checks.forEach((e) => {
       expect(getProp(results, e.contentPath)).toEqual(
         getProp(results, e.verifyPath),
-        `${e.contentPath} should be encoded`
+        `${e.contentPath} should be encoded`,
       );
     });
     expect(results.settings).toBeUndefined();
