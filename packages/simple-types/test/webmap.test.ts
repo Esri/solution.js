@@ -935,6 +935,15 @@ describe("Module `webmap`: manages the creation and deployment of web map item t
   });
 
   describe("_templatizeWebmapLayerIdsAndUrls", () => {
+    it("handles no layers", () => {
+      let layerList;
+      const urlHash = {};
+
+      webmap._templatizeWebmapLayerIdsAndUrls(undefined, urlHash, {});
+
+      expect(layerList).toBeUndefined();
+    });
+
     it("handles no analysis layers", () => {
       const layerList = [
         {
@@ -963,21 +972,21 @@ describe("Module `webmap`: manages the creation and deployment of web map item t
       const expectedLayerListTemplate = [
         {
           id: "layer0",
-          itemId: "{{vts01234567890.itemId}}",
+          itemId: "vts01234567890",
           layerType: "VectorTileLayer",
           styleUrl: utils.PORTAL_SUBSET.restUrl + "/content/items/vts01234567890/resources/styles/root.json",
         },
         {
           itemId: "layer1",
-          url: "http://services.arcgis.com/myOrg/ArcGIS/rest/services/myService/FeatureServer/{{layer1.layer1.url}}",
+          url: "http://services.arcgis.com/myOrg/ArcGIS/rest/services/myService/FeatureServer/1",
         },
         {
           itemId: "layer2",
-          url: "http://services.arcgis.com/myOrg/ArcGIS/rest/services/myService/FeatureServer/{{layer2.layer2.url}}",
+          url: "http://services.arcgis.com/myOrg/ArcGIS/rest/services/myService/FeatureServer/2",
         },
         {
           itemId: "layer4",
-          url: "http://services.arcgis.com/myOrg/ArcGIS/rest/services/myService/FeatureServer/{{layer4.layer4.url}}",
+          url: "http://services.arcgis.com/myOrg/ArcGIS/rest/services/myService/FeatureServer/4",
         },
       ];
       expect(layerList).toEqual(expectedLayerListTemplate);
@@ -1001,8 +1010,9 @@ describe("Module `webmap`: manages the creation and deployment of web map item t
           url: "http://services.arcgis.com/myOrg/ArcGIS/rest/services/myService/FeatureServer/4",
         },
       ];
+
       const urlHash = {
-        "http://services.arcgis.com/myOrg/ArcGIS/rest/services/myService/FeatureServer/3": "layer3",
+        "http://services.arcgis.com/myOrg/ArcGIS/rest/services/myService/FeatureServer/3": "layer3hash",
       };
 
       webmap._templatizeWebmapLayerIdsAndUrls(layerList, urlHash, {});
@@ -1010,18 +1020,19 @@ describe("Module `webmap`: manages the creation and deployment of web map item t
       const expectedLayerListTemplate = [
         {
           itemId: "layer1",
-          url: "http://services.arcgis.com/myOrg/ArcGIS/rest/services/myService/FeatureServer/{{layer1.layer1.url}}",
+          url: "http://services.arcgis.com/myOrg/ArcGIS/rest/services/myService/FeatureServer/1",
         },
         {
           itemId: "layer2",
-          url: "http://services.arcgis.com/myOrg/ArcGIS/rest/services/myService/FeatureServer/{{layer2.layer2.url}}",
+          url: "http://services.arcgis.com/myOrg/ArcGIS/rest/services/myService/FeatureServer/2",
         },
         {
-          url: "http://services.arcgis.com/myOrg/ArcGIS/rest/services/myService/FeatureServer/{{layer3.layer2.url}}",
+          itemId: "{{layer3hash.layer3.itemId}}",
+          url: "{{layer3hash.layer3.url}}",
         },
         {
           itemId: "layer4",
-          url: "http://services.arcgis.com/myOrg/ArcGIS/rest/services/myService/FeatureServer/{{layer4.layer4.url}}",
+          url: "http://services.arcgis.com/myOrg/ArcGIS/rest/services/myService/FeatureServer/4",
         },
       ];
       expect(layerList).toEqual(expectedLayerListTemplate);
@@ -1044,7 +1055,7 @@ describe("Module `webmap`: manages the creation and deployment of web map item t
       const expectedLayerListTemplate = [
         {
           itemId: "layer1",
-          url: "http://services.arcgis.com/myOrg/ArcGIS/rest/services/myService/FeatureServer/{{layer1.layer1.url}}",
+          url: "http://services.arcgis.com/myOrg/ArcGIS/rest/services/myService/FeatureServer/1",
         },
         {
           url: "http://services.arcgis.com/myOrg/ArcGIS/rest/services/myService/FeatureServer/3",
@@ -1072,7 +1083,8 @@ describe("Module `webmap`: manages the creation and deployment of web map item t
       const expectedLayerListTemplate = [
         {
           itemId: "{{layer1.itemId}}",
-          url: "http://services.arcgis.com/myOrg/ArcGIS/rest/services/myService/FeatureServer/{{layer1.layer1.url}}",
+          layerType: "VectorTileLayer",
+          url: "http://services.arcgis.com/myOrg/ArcGIS/rest/services/myService/FeatureServer/1",
         },
         {
           url: "http://services.arcgis.com/myOrg/ArcGIS/rest/services/myService/FeatureServer/3",
