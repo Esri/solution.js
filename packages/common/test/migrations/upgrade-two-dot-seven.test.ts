@@ -21,20 +21,20 @@ describe("Upgrade 2.7 ::", () => {
     const m = cloneObject(defaultModel);
     m.item.properties.schemaVersion = 2.7;
     const chk = _upgradeTwoDotSeven(m);
-    expect(chk).toBe(m, "should return the exact same object");
+    expect(chk).withContext("should return the exact same object").toBe(m);
   });
   it("adds missing ids, dependencies", () => {
     const m = cloneObject(defaultModel);
     const chk = _upgradeTwoDotSeven(m);
     const tmpls = chk.data.templates;
-    expect(tmpls[0].itemId).toBeDefined("add itemId to first template");
-    expect(tmpls[0].dependencies).toBeDefined("add dependencies to first template");
-    expect(Array.isArray(tmpls[0].dependencies)).toBe(true, "add dependencies array to first template");
-    expect(tmpls[0].dependencies.length).toBe(0, "should not add entries to dependencies on first template");
-    expect(tmpls[1].dependencies).toBeDefined("add dependencies to second template");
-    expect(Array.isArray(tmpls[1].dependencies)).toBe(true, "add dependencies array to second template");
-    expect(tmpls[1].dependencies.length).toBe(1, "should add entries to dependencies on second template");
-    expect(tmpls[2].dependencies.length).toBe(1, "should add entries to dependencies on third template");
+    expect(tmpls[0].itemId).withContext("add itemId to first template").toBeDefined();
+    expect(tmpls[0].dependencies).withContext("add dependencies to first template").toBeDefined();
+    expect(Array.isArray(tmpls[0].dependencies)).withContext("add dependencies array to first template").toBe(true);
+    expect(tmpls[0].dependencies.length).withContext("should not add entries to dependencies on first template").toBe(0);
+    expect(tmpls[1].dependencies).withContext("add dependencies to second template").toBeDefined();
+    expect(Array.isArray(tmpls[1].dependencies)).withContext("add dependencies array to second template").toBe(true);
+    expect(tmpls[1].dependencies.length).withContext("should add entries to dependencies on second template").toBe(1);
+    expect(tmpls[2].dependencies.length).withContext("should add entries to dependencies on third template").toBe(1);
   });
 });
 

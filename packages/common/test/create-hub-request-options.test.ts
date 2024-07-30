@@ -39,7 +39,7 @@ describe("createHubRequestOptions", () => {
     expect(hubRo.portalSelf?.user?.username)
       .withContext("use return user from getUser not templateDict")
       .toBe(MOCK_USER_SESSION.username);
-    expect(hubRo.authentication).toBe(MOCK_USER_SESSION, "should pass thru the auth");
+    expect(hubRo.authentication).withContext("should pass thru the auth").toBe(MOCK_USER_SESSION);
   });
 
   it("fetches org and user info", async () => {
@@ -55,9 +55,9 @@ describe("createHubRequestOptions", () => {
     });
 
     const ro = await createHubRequestOptions(MOCK_USER_SESSION);
-    expect(ro.hubApiUrl).toBe("https://hub.arcgis.com", "should map up hub url");
-    expect(getSelfSpy.calls.count()).toBe(1, "should get self");
-    expect(getUserSpy.calls.count()).toBe(1, "should get user");
+    expect(ro.hubApiUrl).withContext("should map up hub url").toBe("https://hub.arcgis.com");
+    expect(getSelfSpy.calls.count()).withContext("should get self").toBe(1);
+    expect(getUserSpy.calls.count()).withContext("should get user").toBe(1);
   });
 
   it("does not set hubApiUrl if portal", async () => {
@@ -73,8 +73,8 @@ describe("createHubRequestOptions", () => {
     });
 
     const ro = await createHubRequestOptions(MOCK_USER_SESSION);
-    expect(ro.hubApiUrl).not.toBeDefined("should not return hubApiUrl for portal");
-    expect(getSelfSpy.calls.count()).toBe(1, "should get self");
-    expect(getUserSpy.calls.count()).toBe(1, "should get user");
+    expect(ro.hubApiUrl).withContext("should not return hubApiUrl for portal").not.toBeDefined();
+    expect(getSelfSpy.calls.count()).withContext("should get self").toBe(1);
+    expect(getUserSpy.calls.count()).withContext("should get user").toBe(1);
   });
 });

@@ -45,7 +45,7 @@ describe("Module `notebook`: manages the creation and deployment of notebook pro
         return true;
       };
       await notebookProcessor.createItemFromTemplate({} as common.IItemTemplate, {}, MOCK_USER_SESSION, cb);
-      expect(createSpy.calls.count()).toBe(1, "should delegate");
+      expect(createSpy.calls.count()).withContext("should delegate").toBe(1);
     });
   });
 
@@ -53,7 +53,7 @@ describe("Module `notebook`: manages the creation and deployment of notebook pro
     it("delegated to helper", async () => {
       const convertSpy = spyOn(convertHelper, "convertItemToTemplate").and.resolveTo();
       await notebookProcessor.convertItemToTemplate({}, MOCK_USER_SESSION, MOCK_USER_SESSION, {});
-      expect(convertSpy.calls.count()).toBe(1, "should delegate");
+      expect(convertSpy.calls.count()).withContext("should delegate").toBe(1);
     });
   });
 

@@ -59,7 +59,7 @@ describe("Upgrade 2.5 ::", () => {
     const model = cloneObject(defaultModel);
     model.item.properties.schemaVersion = 2.5;
     const results = _upgradeTwoDotFive(model);
-    expect(results).toBe(model, "should return the exact same object");
+    expect(results).withContext("should return the exact same object").toBe(model);
   });
 
   it("only upgrades the schema version for non-Form templates", () => {

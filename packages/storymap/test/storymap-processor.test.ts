@@ -49,9 +49,9 @@ describe("Module `storymap`: ", () => {
         MOCK_USER_SESSION,
         MOCK_USER_SESSION,
       );
-      expect(resp).toBe(tmpl, "should return the template");
-      expect(getDataSpy.calls.count()).toBe(1, "should get the data");
-      expect(createTmplSpy.calls.count()).toBe(1, "should delegate to createTemplate fn");
+      expect(resp).withContext("should return the template").toBe(tmpl);
+      expect(getDataSpy.calls.count()).withContext("should get the data").toBe(1);
+      expect(createTmplSpy.calls.count()).withContext("should delegate to createTemplate fn").toBe(1);
     });
   });
 
@@ -83,7 +83,7 @@ describe("Module `storymap`: ", () => {
     const cb = () => true;
 
     it("exists", () => {
-      expect(StorymapProcessor.createItemFromTemplate).toBeDefined("Should have createItemFromTemplate method");
+      expect(StorymapProcessor.createItemFromTemplate).withContext("Should have createItemFromTemplate method").toBeDefined();
     });
 
     it("happy-path", async () => {
@@ -94,11 +94,11 @@ describe("Module `storymap`: ", () => {
       const createSpy = spyOn(createStoryMapModule, "createStoryMap").and.resolveTo(fakeStoryMap);
 
       const result = await StorymapProcessor.createItemFromTemplate(tmpl, td, MOCK_USER_SESSION, cb);
-      expect(result.id).toBe("FAKE3ef", "should return the created item id");
-      expect(result.type).toBe("StoryMap", "should return the type");
-      expect(result.postProcess).toBe(false, "should not postProcess");
-      expect(createFromTmplSpy.calls.count()).toBe(1, "should call createFromTemplate");
-      expect(createSpy.calls.count()).toBe(1, "should call createStoryMap");
+      expect(result.id).withContext("should return the created item id").toBe("FAKE3ef");
+      expect(result.type).withContext("should return the type").toBe("StoryMap");
+      expect(result.postProcess).withContext("should not postProcess").toBe(false);
+      expect(createFromTmplSpy.calls.count()).withContext("should call createFromTemplate").toBe(1);
+      expect(createSpy.calls.count()).withContext("should call createStoryMap").toBe(1);
     });
 
     it("accepts and empty solution hash", async () => {
@@ -109,19 +109,19 @@ describe("Module `storymap`: ", () => {
       delete (myTd as any).solution;
 
       const result = await StorymapProcessor.createItemFromTemplate(tmpl, myTd, MOCK_USER_SESSION, cb);
-      expect(result.id).toBe("FAKE3ef", "should return the created item id");
-      expect(result.type).toBe("StoryMap", "should return the type");
-      expect(result.postProcess).toBe(false, "should not postProcess");
-      expect(createFromTmplSpy.calls.count()).toBe(1, "should call createFromTemplate");
-      expect(createSpy.calls.count()).toBe(1, "should call createStoryMap");
+      expect(result.id).withContext("should return the created item id").toBe("FAKE3ef");
+      expect(result.type).withContext("should return the type").toBe("StoryMap");
+      expect(result.postProcess).withContext("should not postProcess").toBe(false);
+      expect(createFromTmplSpy.calls.count()).withContext("should call createFromTemplate").toBe(1);
+      expect(createSpy.calls.count()).withContext("should call createStoryMap").toBe(1);
     });
 
     it("early-exits correctly", async () => {
       const cbFalse = () => false;
 
       const result = await StorymapProcessor.createItemFromTemplate(tmpl, td, MOCK_USER_SESSION, cbFalse);
-      expect(result.id).toBe("", "should return empty result");
-      expect(result.postProcess).toBe(false, "should return postProcess false");
+      expect(result.id).withContext("should return empty result").toBe("");
+      expect(result.postProcess).withContext("should return postProcess false").toBe(false);
     });
 
     it("callsback on exception", async () => {
@@ -130,7 +130,7 @@ describe("Module `storymap`: ", () => {
       return StorymapProcessor.createItemFromTemplate(tmpl, td, MOCK_USER_SESSION, cb)
         .then(() => fail())
         .catch((ex) => {
-          expect(ex).toBe("booom", "should re-throw");
+          expect(ex).withContext("should re-throw").toBe("booom");
           return Promise.resolve();
         });
     });
@@ -156,12 +156,12 @@ describe("Module `storymap`: ", () => {
       });
 
       const result = await StorymapProcessor.createItemFromTemplate(tmpl, td, MOCK_USER_SESSION, createCb());
-      expect(result.id).toBe("", "should return empty result");
-      expect(result.postProcess).toBe(false, "should return postProcess false");
-      expect(result.type).toBe("StoryMap", "should return the type");
-      expect(createFromTmplSpy.calls.count()).toBe(1, "should call createFromTemplate");
-      expect(createSpy.calls.count()).toBe(1, "should call createStoryMap");
-      expect(removeSpy.calls.count()).toBe(1, "should remove the item");
+      expect(result.id).withContext("should return empty result").toBe("");
+      expect(result.postProcess).withContext("should return postProcess false").toBe(false);
+      expect(result.type).withContext("should return the type").toBe("StoryMap");
+      expect(createFromTmplSpy.calls.count()).withContext("should call createFromTemplate").toBe(1);
+      expect(createSpy.calls.count()).withContext("should call createStoryMap").toBe(1);
+      expect(removeSpy.calls.count()).withContext("should remove the item").toBe(1);
     });
   });
 

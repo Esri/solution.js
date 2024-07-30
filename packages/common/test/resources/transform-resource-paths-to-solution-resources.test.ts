@@ -127,7 +127,7 @@ describe("convert-resource-paths-to-objects", () => {
       ];
 
       tests.forEach((e) => {
-        expect(_extractFilenameFromResourcePath(e.in)).toBe(e.chk, e.msg);
+        expect(_extractFilenameFromResourcePath(e.in)).withContext(e.msg).toBe(e.chk);
       });
     });
   });
@@ -186,7 +186,7 @@ describe("convert-resource-paths-to-objects", () => {
       ];
 
       tests.forEach((e) => {
-        expect(_extractPathFromResourcePath(e.in)).toBe(e.chk, e.msg);
+        expect(_extractPathFromResourcePath(e.in)).withContext(e.msg).toBe(e.chk);
       });
     });
   });
@@ -242,7 +242,7 @@ describe("convert-resource-paths-to-objects", () => {
       ];
 
       tests.forEach((e) => {
-        expect(_getSolutionResourceTypeFromResourcePath(e.in)).toBe(e.chk, e.msg);
+        expect(_getSolutionResourceTypeFromResourcePath(e.in)).withContext(e.msg).toBe(e.chk);
       });
     });
   });

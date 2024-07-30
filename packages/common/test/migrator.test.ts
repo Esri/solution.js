@@ -43,22 +43,22 @@ describe("Schema Migrator", () => {
       templates: [] as IItemTemplate[],
     },
   } as ISolutionItem;
+
   it("returns model if current schema", async () => {
     const m = cloneObject(defaultModel);
     const chk = await migrateSchema(m);
     expect(chk).toBe(m, "should return the exact same object");
   });
+
   it("upgrades schemaless to current", async () => {
     const m = cloneObject(defaultModel);
     // kill the item properties
     delete m.item.properties;
     const chk = await migrateSchema(m);
     expect(chk).not.toBe(m, "should return the exact same object");
-    expect(chk.item.properties.schemaVersion).toBe(
-      CURRENT_SCHEMA_VERSION,
-      `should upgrade to ${CURRENT_SCHEMA_VERSION} if no schema`,
-    );
+    expect(chk.item.properties.schemaVersion).withContext(`should upgrade to ${CURRENT_SCHEMA_VERSION} if no schema`).toBe(CURRENT_SCHEMA_VERSION);
   });
+
   it("upgrades legacy Solutions", async () => {
     const m = cloneObject(defaultModel);
     // kill the schema version
@@ -101,21 +101,18 @@ describe("Schema Migrator", () => {
       return cloneObject(model);
     });
     const chk = await migrateSchema(m);
-    expect(as.calls.count()).toBe(1, "should apply schema");
-    expect(sp20.calls.count()).toBe(1, "should apply 2.0");
-    expect(sp21.calls.count()).toBe(1, "should apply 2.1");
-    expect(sp1.calls.count()).toBe(1, "should call first upgrade");
-    expect(sp2.calls.count()).toBe(1, "should call second upgrade");
-    expect(sp3.calls.count()).toBe(1, "should call third upgrade");
-    expect(sp4.calls.count()).toBe(1, "should call fourth upgrade");
-    expect(sp5.calls.count()).toBe(1, "should call fifth upgrade");
-    expect(sp6.calls.count()).toBe(1, "should call sixth upgrade");
-    expect(threeZeroUpgradeSpy.calls.count()).toBe(1, "should call 3.0 upgrade");
-    // expect(threeOneUpgradeSpy.calls.count()).toBe(
-    //   1,
-    //   "should call 3.1 upgrade"
-    // );
-    expect(chk).not.toBe(m, "should not return the exact same object");
+    expect(as.calls.count()).withContext("should apply schema").toBe(1);
+    expect(sp20.calls.count()).withContext("should apply 2.0").toBe(1);
+    expect(sp21.calls.count()).withContext("should apply 2.1").toBe(1);
+    expect(sp1.calls.count()).withContext("should call first upgrade").toBe(1);
+    expect(sp2.calls.count()).withContext("should call second upgrade").toBe(1);
+    expect(sp3.calls.count()).withContext("should call third upgrade").toBe(1);
+    expect(sp4.calls.count()).withContext("should call fourth upgrade").toBe(1);
+    expect(sp5.calls.count()).withContext("should call fifth upgrade").toBe(1);
+    expect(sp6.calls.count()).withContext("should call sixth upgrade").toBe(1);
+    expect(threeZeroUpgradeSpy.calls.count()).withContext("should call 3.0 upgrade").toBe(1);
+    // expect(threeOneUpgradeSpy.calls.count()).withContext("should call 3.1 upgrade"t.oBe(1);
+    expect(chk).withContext("should not return the exact same object").not.toBe(m);
     // since the upgrades are all spies, we don't make assertions on the schemaVersion
   });
 
@@ -130,9 +127,9 @@ describe("Schema Migrator", () => {
       return cloneObject(model);
     });
     return migrateSchema(m).then((chk) => {
-      expect(threeZeroUpgradeSpy.calls.count()).toBe(1, "should call 3.0 upgrade");
-      expect(threeOneUpgradeSpy.calls.count()).toBe(1, "should call 3.1 upgrade");
-      expect(chk).not.toBe(m, "should not return the exact same object");
+      expect(threeZeroUpgradeSpy.calls.count()).withContext("should call 3.0 upgrade).toBe(1");
+      expect(threeOneUpgradeSpy.calls.count()).withContext("should call 3.1 upgrade").toBe(1);
+      expect(chk).withContext("should not return the exact same object").not.toBe(m);
       // since the upgrades are all spies, we don't make assertions on the schemaVersion
     });
   });
@@ -142,7 +139,7 @@ describe("Schema Migrator", () => {
     const m = cloneObject(defaultModel);
     m.item.properties.schemaVersion = 3.1;
     const chk = await migrateSchema(m);
-    expect(chk).toBe(m, "should return the exact same object");
-    expect(chk.item.properties.schemaVersion).toBe(3.1, "should not change version");
+    expect(chk).withContext("should return the exact same object").toBe(m);
+    expect(chk.item.properties.schemaVersion).withContext("should not change version").toBe(3.1);
   });
 });

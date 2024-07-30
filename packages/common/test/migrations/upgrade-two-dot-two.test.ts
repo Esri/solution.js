@@ -37,7 +37,7 @@ describe("Upgrade 2.2 ::", () => {
     const m = cloneObject(defaultModel);
     m.item.properties.schemaVersion = 2.3;
     const chk = _upgradeTwoDotTwo(m);
-    expect(chk).toBe(m, "should return the exact same object");
+    expect(chk).withContext("should return the exact same object").toBe(m);
   });
 
   it("replaces old tokens with new ones", () => {
@@ -47,7 +47,7 @@ describe("Upgrade 2.2 ::", () => {
       solName: "{{solution.name}}",
     };
     const chk = _upgradeTwoDotTwo(m);
-    expect(chk).not.toBe(m, "should not return the exact same object");
-    expect(chk.data.metadata.chk.solName).toBe("{{solution.title}}", "should do a swap");
+    expect(chk).withContext("should not return the exact same object").not.toBe(m);
+    expect(chk.data.metadata.chk.solName).withContext("should do a swap").toBe("{{solution.title}}");
   });
 });

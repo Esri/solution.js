@@ -21,6 +21,7 @@ import { IUpdateItemResponse } from "@esri/arcgis-rest-portal";
 
 describe("_postProcessPage :: ", () => {
   let model: hubCommon.IModel;
+
   beforeEach(() => {
     model = {
       item: {
@@ -32,14 +33,15 @@ describe("_postProcessPage :: ", () => {
       data: {},
     } as hubCommon.IModel;
   });
+
   it("does second-pass interpolatin", () => {
     const fakeRo = {} as hubCommon.IHubUserRequestOptions;
     const updatePageSpy = spyOn(hubSites, "updatePage").and.resolveTo({} as IUpdateItemResponse);
     return postProcessPageModule._postProcessPage(model, [], { bc66: { itemId: "ef66" } }, fakeRo).then((result) => {
-      expect(result).toBe(true, "should return true");
-      expect(updatePageSpy.calls.count()).toBe(1, "should update the site");
+      expect(result).withContext("should return true").toBe(true);
+      expect(updatePageSpy.calls.count()).withContext("should update the site").toBe(1);
       const updateModel = updatePageSpy.calls.argsFor(0)[0];
-      expect(updateModel.item.properties.chk).toBe("ef66", "it should do a second pass interpolation before updating");
+      expect(updateModel.item.properties.chk).withContext("it should do a second pass interpolation before updating").toBe("ef66");
       expect(updatePageSpy.calls.argsFor(0)[1]).toEqual({
         ...fakeRo,
         allowList: [],

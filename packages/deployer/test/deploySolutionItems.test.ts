@@ -1817,7 +1817,7 @@ describe("Module `deploySolutionItems`", () => {
       const tmpl = {} as common.IItemTemplate;
       // TODO: refactor target function to return a Promise vs an array of promises
       return Promise.all(deploySolution._getGroupUpdates(tmpl, MOCK_USER_SESSION, {})).then(() => {
-        expect(shareSpy.calls.count()).toBe(0, "should not make share calls if no groups");
+        expect(shareSpy.calls.count()).withContext("should not make share calls if no groups").toBe(0);
       });
     });
 
@@ -1837,7 +1837,7 @@ describe("Module `deploySolutionItems`", () => {
       };
       // TODO: refactor target function to return a Promise vs an array of promises
       return Promise.all(deploySolution._getGroupUpdates(tmpl, MOCK_USER_SESSION, td)).then(() => {
-        expect(shareSpy.calls.count()).toBe(2, "should share to both groups");
+        expect(shareSpy.calls.count()).withContext("should share to both groups").toBe(2);
         expect(shareSpy.calls.argsFor(0)[0]).toBe("bc6");
         expect(shareSpy.calls.argsFor(0)[1]).toBe("3ef");
         expect(shareSpy.calls.argsFor(1)[0]).toBe("bc7");

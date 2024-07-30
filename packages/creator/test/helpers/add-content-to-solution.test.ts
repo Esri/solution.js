@@ -324,13 +324,13 @@ describe("_postProcessGroupDependencies", () => {
       } as common.IItemTemplate,
     ];
     const result = _postProcessGroupDependencies(tmpls);
-    expect(result.length).toBe(5, "should have 5 templates");
+    expect(result.length).withContext("should have 5 templates").toBe(5);
     const webappEntry = findBy(result, "itemId", "3ef-webapp");
-    expect(webappEntry.groups.length).toBe(0, "should not add group to web app");
+    expect(webappEntry.groups.length).withContext("should not add group to web app").toBe(0);
     const siteEntry = findBy(result, "itemId", "3ef-site");
-    expect(siteEntry.groups.length).toBe(0, "should not add groups site");
+    expect(siteEntry.groups.length).withContext("should not add groups site").toBe(0);
     const mapEntry = findBy(result, "itemId", "3ef-webmap");
-    expect(mapEntry.groups.length).toBe(1, "should add groups map");
+    expect(mapEntry.groups.length).withContext("should add groups map").toBe(1);
   });
 
   it("add group dependencies to groups array", () => {

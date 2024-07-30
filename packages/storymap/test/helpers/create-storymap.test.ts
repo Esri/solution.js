@@ -64,18 +64,18 @@ describe("createStoryMap ::", () => {
     });
 
     await createStoryMap(model, "fakefolderid", {}, MOCK_USER_SESSION);
-    expect(createItemSpy.calls.count()).toBe(1, "should create the item");
+    expect(createItemSpy.calls.count()).withContext("should create the item").toBe(1);
 
-    expect(interpolateIdSpy.calls.count()).toBe(1, "should call interpolateId");
-    expect(updateItemSpy.calls.count()).toBe(1, "should call updateItem");
-    expect(addResSpy.calls.count()).toBe(4, "should add four resources");
+    expect(interpolateIdSpy.calls.count()).withContext("should call interpolateId").toBe(1);
+    expect(updateItemSpy.calls.count()).withContext("should call updateItem").toBe(1);
+    expect(addResSpy.calls.count()).withContext("should add four resources").toBe(4);
     if (typeof Blob !== "undefined") {
       const draftArgs = addResSpy.calls.argsFor(0)[0];
-      expect(draftArgs.resource instanceof Blob).toBe(true, "should send a blob");
+      expect(draftArgs.resource instanceof Blob).withContext("should send a blob").toBe(true);
     }
-    expect(moveItemSpy.calls.count()).toBe(1, "should move the item");
+    expect(moveItemSpy.calls.count()).withContext("should move the item").toBe(1);
     const moveOpts = moveItemSpy.calls.argsFor(0)[0];
-    expect(moveOpts.folderId).toBe("fakefolderid", "should pass the folderid into create item");
+    expect(moveOpts.folderId).withContext("should pass the folderid into create item").toBe("fakefolderid");
   });
 
   it("happy-path with thumbnail", async () => {
@@ -121,19 +121,19 @@ describe("createStoryMap ::", () => {
     });
 
     await createStoryMap(model, "fakefolderid", {}, MOCK_USER_SESSION);
-    expect(createItemSpy.calls.count()).toBe(1, "should create the item");
+    expect(createItemSpy.calls.count()).withContext("should create the item").toBe(1);
     expect(createItemSpy.calls.argsFor(0)[0].item.thumbnail).not.toBeDefined();
     expect(createItemSpy.calls.argsFor(0)[0].params?.thumbnail).toEqual("yoda");
 
-    expect(interpolateIdSpy.calls.count()).toBe(1, "should call interpolateId");
-    expect(updateItemSpy.calls.count()).toBe(1, "should call updateItem");
-    expect(addResSpy.calls.count()).toBe(4, "should add four resources");
+    expect(interpolateIdSpy.calls.count()).withContext("should call interpolateId").toBe(1);
+    expect(updateItemSpy.calls.count()).withContext("should call updateItem").toBe(1);
+    expect(addResSpy.calls.count()).withContext("should add four resources").toBe(4);
     if (typeof Blob !== "undefined") {
       const draftArgs = addResSpy.calls.argsFor(0)[0];
-      expect(draftArgs.resource instanceof Blob).toBe(true, "should send a blob");
+      expect(draftArgs.resource instanceof Blob).withContext("should send a blob").toBe(true);
     }
-    expect(moveItemSpy.calls.count()).toBe(1, "should move the item");
+    expect(moveItemSpy.calls.count()).withContext("should move the item").toBe(1);
     const moveOpts = moveItemSpy.calls.argsFor(0)[0];
-    expect(moveOpts.folderId).toBe("fakefolderid", "should pass the folderid into create item");
+    expect(moveOpts.folderId).withContext("should pass the folderid into create item").toBe("fakefolderid");
   });
 });

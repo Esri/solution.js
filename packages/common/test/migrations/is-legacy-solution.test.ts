@@ -35,16 +35,16 @@ describe("isLegacySolution", () => {
 
   it("returns false for a Solution", () => {
     const m = cloneObject(defaultModel);
-    expect(_isLegacySolution(m)).toBe(false, "should return false for Solution");
+    expect(_isLegacySolution(m)).withContext("should return false for Solution").toBe(false);
   });
   it("returns false for an item that lacks keywords", () => {
     const m = cloneObject(defaultModel);
     delete m.item.typeKeywords;
-    expect(_isLegacySolution(m)).toBe(false, "should return false for model w/o keywords");
+    expect(_isLegacySolution(m)).withContext("should return false for model w/o keywords").toBe(false);
   });
   it("returns true for a hub solution", () => {
     const m = cloneObject(defaultModel);
     m.item.typeKeywords = ["hubSolutionTemplate", "solutionTemplate"];
-    expect(_isLegacySolution(m)).toBe(true, "should return true for hub solution");
+    expect(_isLegacySolution(m)).withContext("should return true for hub solution").toBe(true);
   });
 });

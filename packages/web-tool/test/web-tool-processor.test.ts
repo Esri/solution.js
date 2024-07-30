@@ -61,13 +61,15 @@ describe("Module `web-tool-processor`: ", () => {
         MOCK_USER_SESSION,
         {},
       );
-      expect(convertSpy.calls.count()).toBe(1, "delegate to simple types");
+      expect(convertSpy.calls.count()).withContext("delegate to simple types").toBe(1);
     });
   });
 
   describe("createItemFromTemplate", () => {
-    it("it exists", async () => {
-      expect(WebToolProcessor.createItemFromTemplate).toBeDefined("Should have createItemFromTemplate method");
+    it("it exists", () => {
+      expect(WebToolProcessor.createItemFromTemplate)
+        .withContext("Should have createItemFromTemplate method")
+        .toBeDefined();
     });
 
     const tmpl = {
@@ -94,8 +96,8 @@ describe("Module `web-tool-processor`: ", () => {
       const cbFalse = () => false;
 
       const result = await WebToolProcessor.createItemFromTemplate(tmpl, td, MOCK_USER_SESSION, cbFalse);
-      expect(result.id).toBe("", "should return empty result");
-      expect(result.postProcess).toBe(false, "should return postProcess false");
+      expect(result.id).withContext("should return empty result").toBe("");
+      expect(result.postProcess).withContext("should return postProcess false").toBe(false);
     });
 
     it("can create Web Tool Geoprocessing Service", async () => {
@@ -513,7 +515,7 @@ describe("Module `web-tool-processor`: ", () => {
     });
 
     it("should reject if missing portalUrls", async () => {
-      WebToolProcessor.createWebTool(
+      return WebToolProcessor.createWebTool(
         {
           id: "bc3",
           type: "Geoprocessing Service",

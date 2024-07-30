@@ -50,7 +50,7 @@ describe("Upgrade 3.0 ::", () => {
     const m = cloneObject(defaultModel);
     delete m.item.properties.schemaVersion;
     const chk = _upgradeThreeDotZero(m);
-    expect(chk).not.toBe(m, "should not return the exact same object");
-    expect(chk.item.properties.schemaVersion).toBe(3, "should add schema version");
+    expect(chk).withContext("should not return the exact same object").not.toBe(m);
+    expect(chk.item.properties.schemaVersion).withContext("should add schema version").toBe(3);
   });
 });

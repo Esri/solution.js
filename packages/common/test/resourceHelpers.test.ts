@@ -269,9 +269,9 @@ describe("Module `resourceHelpers`: common functions involving the management of
         storageAuthentication,
         tmpl,
       );
-      expect(resourceHelpersSpy.calls.count()).toBe(1, "should call copyFilesFromStorageItem once");
+      expect(resourceHelpersSpy.calls.count()).withContext("should call copyFilesFromStorageItem once").toBe(1);
       const secondArg = resourceHelpersSpy.calls.argsFor(0)[1];
-      expect(secondArg[0].url).toBe(filePaths[0].url, "url 0 should be the same");
+      expect(secondArg[0].url).withContext("url 0 should be the same").toBe(filePaths[0].url);
     });
 
     it("copies a single data file", async () => {

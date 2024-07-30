@@ -36,7 +36,7 @@ describe("applySchema :: ", () => {
       data: {},
     } as ISolutionItem;
     const chk = _applySchema(m);
-    expect(chk).not.toBe(m, "should clone model");
+    expect(chk).withContext("should clone model").not.toBe(m);
     expect(chk.item.properties).withContext("should add item.properties").toBeDefined();
   });
 
@@ -80,7 +80,7 @@ describe("applySchema :: ", () => {
       },
     } as unknown as ISolutionItem;
     const chk = _applySchema(m);
-    expect(chk).not.toBe(m, "should clone model");
+    expect(chk).withContext("should clone model").not.toBe(m);
     expect(chk.item.properties).withContext("should add item.properties").toBeDefined();
     const tmpl0 = chk.data.templates[0];
     const convertedTmpl0 = {

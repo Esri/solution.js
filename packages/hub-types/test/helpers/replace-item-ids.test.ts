@@ -39,7 +39,7 @@ describe("replaceItemIds :: ", () => {
   it("works with deps", () => {
     const model = cloneObject(m);
     const chk = replaceItemIds(model);
-    expect(chk).not.withContext("should return a clone").toBe(model);
+    expect(chk).withContext("should return a clone").not.toBe(model);
     expect(chk.item.description)
       .withContext("should interpolate into a string")
       .toBe("in the {{ef1.itemId}} middle and {{ef1.itemId}} end");
@@ -51,7 +51,7 @@ describe("replaceItemIds :: ", () => {
     const model = cloneObject(m);
     model.dependencies = [];
     const chk = replaceItemIds(model);
-    expect(chk).not.withContext("should return a clone").toBe(model);
+    expect(chk).withContext("should return a clone").not.toBe(model);
     expect(chk.item.description)
       .withContext("NOT should interpolate into a string")
       .toBe("in the ef1 middle and ef1 end");
@@ -63,7 +63,7 @@ describe("replaceItemIds :: ", () => {
     const model = cloneObject(m);
     delete model.dependencies;
     const chk = replaceItemIds(model);
-    expect(chk).not.withContext("should return a clone").toBe(model);
+    expect(chk).withContext("should return a clone").not.toBe(model);
     expect(chk.item.description)
       .withContext("NOT should interpolate into a string")
       .toBe("in the ef1 middle and ef1 end");
@@ -75,7 +75,7 @@ describe("replaceItemIds :: ", () => {
     const model = cloneObject(m);
     delete model.properties;
     const chk = replaceItemIds(model);
-    expect(chk).not.withContext("should return a clone").toBe(model);
+    expect(chk).withContext("should return a clone").not.toBe(model);
     expect(chk.item.description)
       .withContext("should interpolate into a string")
       .toBe("in the {{ef1.itemId}} middle and {{ef1.itemId}} end");

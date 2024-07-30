@@ -21,7 +21,7 @@ describe("getWebExperiencepUrlTemplate ::", () => {
   it("for ago returns templated url", () => {
     const subdomainSpy = spyOn(getSubdomainModule, "getExperienceSubdomain").and.returnValue("experienceqa");
     const url = getWebExperiencepUrlTemplate({} as UserSession);
-    expect(url).toBe("https://experienceqa.arcgis.com/experience/{{appid}}", "should construct the ago url");
+    expect(url).withContext("should construct the ago url").toBe("https://experienceqa.arcgis.com/experience/{{appid}}");
     expect(subdomainSpy.calls.count()).withContext("should get the subdomain").toBe(1);
   });
 
@@ -33,6 +33,6 @@ describe("getWebExperiencepUrlTemplate ::", () => {
     expect(url)
       .withContext("should construct the portal url")
       .toBe("https://dev0004025.esri.com/portal/apps/experiencebuilder/?id={{appid}}");
-    expect(subdomainSpy.calls.count()).toBe(1, "should get the subdomain");
+    expect(subdomainSpy.calls.count()).withContext("should get the subdomain").toBe(1);
   });
 });

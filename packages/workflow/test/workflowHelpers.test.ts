@@ -299,9 +299,8 @@ describe("Module `workflowHelpers`", () => {
         },
       };
 
-      await workflowHelpers
-        .updateTemplateDictionaryForWorkforce(sourceId, newId, templateDictionary, authentication);
-          expect(templateDictionary).toEqual(expected);
+      await workflowHelpers.updateTemplateDictionaryForWorkforce(sourceId, newId, templateDictionary, authentication);
+      expect(templateDictionary).toEqual(expected);
     });
   });
 });

@@ -45,15 +45,15 @@ describe("Upgrade 2.3 ::", () => {
     const m = cloneObject(defaultModel);
     m.item.properties.schemaVersion = 2.3;
     const chk = _upgradeTwoDotThree(m);
-    expect(chk).toBe(m, "should return the exact same object");
+    expect(chk).withContext("should return the exact same object").toBe(m);
   });
 
   it("swaps resources to assets", () => {
     const m = cloneObject(defaultModel);
     const chk = _upgradeTwoDotThree(m);
-    expect(chk).not.toBe(m, "should not return the exact same object");
+    expect(chk).withContext("should not return the exact same object").not.toBe(m);
     const tmpl = chk.data.templates[0];
-    expect(tmpl.assets.length).toBe(1, "should add assets array");
-    expect(tmpl.resources).not.toBeDefined("should remove resources array");
+    expect(tmpl.assets.length).withContext("should add assets array").toBe(1);
+    expect(tmpl.resources).withContext("should remove resources array").not.toBeDefined();
   });
 });

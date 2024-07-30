@@ -58,11 +58,8 @@ describe("getItemResourcesPaths :: ", () => {
       itemTemplate.type = "Web Mapping Application";
 
       return getItemResourcesPaths(itemTemplate, "4de", MOCK_USER_SESSION).then((response) => {
-        expect(Array.isArray(response)).toBe(true, "should return an array");
-        expect(response.length).toBe(
-          3, // metadata.xml is added automatically
-          "filter out empty responses from copyFilesToStorageItem",
-        );
+        expect(Array.isArray(response)).withContext("should return an array").toBe(true);
+        expect(response.length).withContext("filter out empty responses from copyFilesToStorageItem").toBe(3); // metadata.xml is added automatically
 
         expect(response).toEqual(
           [
@@ -87,8 +84,8 @@ describe("getItemResourcesPaths :: ", () => {
           ],
           "should return full path of the file in the storage item",
         );
-        expect(getResSpy.calls.count()).toBe(1, "should get resources");
-        expect(getResSpy.calls.argsFor(0)[0]).toBe("bc3", "should get resources for template item");
+        expect(getResSpy.calls.count()).withContext("should get resources").toBe(1);
+        expect(getResSpy.calls.argsFor(0)[0]).withContext("should get resources for template item").toBe("bc3");
       });
     });
 
@@ -128,11 +125,8 @@ describe("getItemResourcesPaths :: ", () => {
       itemTemplate.type = "Hub Site Application";
 
       return getItemResourcesPaths(itemTemplate, "4de", MOCK_USER_SESSION, 1).then((response) => {
-        expect(Array.isArray(response)).toBe(true, "should return an array");
-        expect(response.length).toBe(
-          3, // metadata.xml is added automatically
-          "filter out config/config.json",
-        );
+        expect(Array.isArray(response)).withContext("should return an array").toBe(true);
+        expect(response.length).withContext("filter out config/config.json").toBe(3); // metadata.xml is added automatically
 
         expect(response).toEqual(
           [
@@ -157,8 +151,8 @@ describe("getItemResourcesPaths :: ", () => {
           ],
           "should return full path of the file in the storage item",
         );
-        expect(getResSpy.calls.count()).toBe(1, "should get resources");
-        expect(getResSpy.calls.argsFor(0)[0]).toBe("bc3", "should get resources for template item");
+        expect(getResSpy.calls.count()).withContext("should get resources").toBe(1);
+        expect(getResSpy.calls.argsFor(0)[0]).withContext("should get resources for template item").toBe("bc3");
       });
     });
 
@@ -211,11 +205,8 @@ describe("getItemResourcesPaths :: ", () => {
       itemTemplate.type = "StoryMap";
 
       return getItemResourcesPaths(itemTemplate, "4de", MOCK_USER_SESSION).then((response) => {
-        expect(Array.isArray(response)).toBe(true, "should return an array");
-        expect(response.length).toBe(
-          2, // metadata.xml is added automatically
-          "filter out unwanted storymap files",
-        );
+        expect(Array.isArray(response)).withContext("should return an array").toBe(true);
+        expect(response.length).withContext("filter out unwanted storymap files").toBe(2); // metadata.xml is added automatically
 
         expect(response).toEqual(
           [
@@ -234,8 +225,8 @@ describe("getItemResourcesPaths :: ", () => {
           ],
           "should return full path of the file in the storage item",
         );
-        expect(getResSpy.calls.count()).toBe(1, "should get resources");
-        expect(getResSpy.calls.argsFor(0)[0]).toBe("bc3", "should get resources for template item");
+        expect(getResSpy.calls.count()).withContext("should get resources").toBe(1);
+        expect(getResSpy.calls.argsFor(0)[0]).withContext("should get resources for template item").toBe("bc3");
       });
     });
 
@@ -275,11 +266,8 @@ describe("getItemResourcesPaths :: ", () => {
       itemTemplate.type = "Web Experience";
 
       return getItemResourcesPaths(itemTemplate, "4de", MOCK_USER_SESSION, 1).then((response) => {
-        expect(Array.isArray(response)).toBe(true, "should return an array");
-        expect(response.length).toBe(
-          3, // metadata.xml is added automatically
-          "filter out config/config.json",
-        );
+        expect(Array.isArray(response)).withContext("should return an array").toBe(true);
+        expect(response.length).withContext("filter out config/config.json").toBe(3); // metadata.xml is added automatically
 
         expect(response).toEqual(
           [
@@ -304,8 +292,8 @@ describe("getItemResourcesPaths :: ", () => {
           ],
           "should return full path of the file in the storage item",
         );
-        expect(getResSpy.calls.count()).toBe(1, "should get resources");
-        expect(getResSpy.calls.argsFor(0)[0]).toBe("bc3", "should get resources for template item");
+        expect(getResSpy.calls.count()).withContext("should get resources").toBe(1);
+        expect(getResSpy.calls.argsFor(0)[0]).withContext("should get resources for template item").toBe("bc3");
       });
     });
   });

@@ -1119,7 +1119,7 @@ describe("Module `deleteSolution`: functions for deleting a deployed Solution it
 
       reportProgress.reportProgress(percentDone, deleteOptions);
 
-      expect(consoleSpy.calls.count()).toBe(1, "should call console.log once");
+      expect(consoleSpy.calls.count()).withContext("should call console.log once").toBe(1);
       expect(consoleSpy.calls.argsFor(0)[0]).toBe(now);
       expect(consoleSpy.calls.argsFor(0)[1]).toBe("");
       expect(consoleSpy.calls.argsFor(0)[2]).toBe("");
@@ -1143,7 +1143,7 @@ describe("Module `deleteSolution`: functions for deleting a deployed Solution it
 
       reportProgress.reportProgress(percentDone, deleteOptions, deletedItemId, status);
 
-      expect(consoleSpy.calls.count()).toBe(1, "should call console.log once");
+      expect(consoleSpy.calls.count()).withContext("should call console.log once").toBe(1);
       expect(consoleSpy.calls.argsFor(0)[0]).toBe(now);
       expect(consoleSpy.calls.argsFor(0)[1]).toBe(deletedItemId);
       expect(consoleSpy.calls.argsFor(0)[2]).toBe("Ginger");

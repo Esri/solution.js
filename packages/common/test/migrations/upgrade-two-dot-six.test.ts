@@ -76,7 +76,7 @@ describe("Upgrade 2.6 ::", () => {
     const model = cloneObject(defaultModel);
     model.item.properties.schemaVersion = 2.6;
     const results = _upgradeTwoDotSix(model);
-    expect(results).toBe(model, "should resolve the same object");
+    expect(results).withContext("should resolve the same object").toBe(model);
   });
 
   it("only updates the version when no form templates exist", () => {

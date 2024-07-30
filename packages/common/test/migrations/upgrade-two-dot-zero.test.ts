@@ -33,7 +33,7 @@ describe("_upgradeTwoDotZero :: ", () => {
         },
       } as ISolutionItem;
       const chk = _upgradeTwoDotZero(m);
-      expect(chk).toBe(m, "should pass model through without cloning");
+      expect(chk).withContext("should pass model through without cloning").toBe(m);
     });
 
     it("removes configurationSettings", () => {
@@ -48,9 +48,9 @@ describe("_upgradeTwoDotZero :: ", () => {
         },
       } as unknown as ISolutionItem;
       const chk = _upgradeTwoDotZero(m);
-      expect(chk).not.toBe(m, "should clone model");
-      expect(chk.item.properties.schemaVersion).toBe(2, "should set schemaVersion to 2");
-      expect(chk.data.configurationSettings).not.toBeDefined("should remove config settings");
+      expect(chk).withContext("should clone model").not.toBe(m);
+      expect(chk.item.properties.schemaVersion).withContext("should set schemaVersion to 2).toBe(2");
+      expect(chk.data.configurationSettings).withContext("should remove config settings").not.toBeDefined();
     });
 
     it("handles missing configurationSettings", () => {
@@ -63,9 +63,9 @@ describe("_upgradeTwoDotZero :: ", () => {
         data: {},
       } as unknown as ISolutionItem;
       const chk = _upgradeTwoDotZero(m);
-      expect(chk).not.toBe(m, "should clone model");
-      expect(chk.item.properties.schemaVersion).toBe(2, "should set schemaVersion to 2");
-      expect(chk.data.configurationSettings).not.toBeDefined("should remove config settings");
+      expect(chk).withContext("should clone model").not.toBe(m);
+      expect(chk.item.properties.schemaVersion).withContext("should set schemaVersion to 2").toBe(2);
+      expect(chk.data.configurationSettings).withContext("should remove config settings").not.toBeDefined();
     });
 
     it("converts indicators", () => {
@@ -84,9 +84,9 @@ describe("_upgradeTwoDotZero :: ", () => {
         },
       } as unknown as ISolutionItem;
       const chk = _upgradeTwoDotZero(m);
-      expect(chk).not.toBe(m, "should clone model");
-      expect(chk.item.properties.schemaVersion).toBe(2, "should set schemaVersion to 2");
-      expect(chk.data.configurationSettings).not.toBeDefined("should remove config settings");
+      expect(chk).withContext("should clone model").not.toBe(m);
+      expect(chk.item.properties.schemaVersion).withContext("should set schemaVersion to 2").toBe(2);
+      expect(chk.data.configurationSettings).withContext("should remove config settings").not.toBeDefined();
     });
   });
 
@@ -116,22 +116,13 @@ describe("_upgradeTwoDotZero :: ", () => {
         ],
       } as any;
       const c = _convertIndicatorToDefinition(ind);
-      expect(c).not.toBe(ind, "returned field should not be the same object");
-      expect(c.id).toEqual(ind.fieldName, "fieldName becomes id");
-      expect(c.name).toEqual(ind.label, "label becomes name");
-      expect(c.definition.description).toEqual(ind.label, "label becomes description");
-      expect(c.definition.supportedTypes.length).toEqual(
-        ind.layerOptions.supportedTypes.length,
-        "supported types have same contents",
-      );
-      expect(c.definition.geometryTypes).not.toBe(
-        ind.layerOptions.geometryTypes,
-        "geometryTypes should not be same instance",
-      );
-      expect(c.definition.geometryTypes.length).toEqual(
-        ind.layerOptions.geometryTypes.length,
-        "geometryTypes have same contents",
-      );
+      expect(c).withContext("returned field should not be the same object").not.toBe(ind);
+      expect(c.id).withContext("fieldName becomes id").toEqual(ind.fieldName);
+      expect(c.name).withContext("label becomes name").toEqual(ind.label);
+      expect(c.definition.description).withContext("label becomes description").toEqual(ind.label);
+      expect(c.definition.supportedTypes.length).withContext("supported types have same contents").toEqual(ind.layerOptions.supportedTypes.length);
+      expect(c.definition.geometryTypes).withContext("geometryTypes should not be same instance").not.toBe(ind.layerOptions.geometryTypes);
+      expect(c.definition.geometryTypes.length).withContext("geometryTypes have same contents").toEqual(ind.layerOptions.geometryTypes.length);
       expect(c.definition.fields.length).toEqual(ind.fields.length, "fields have same contents");
     });
 
@@ -160,7 +151,7 @@ describe("_upgradeTwoDotZero :: ", () => {
         ],
       } as any;
       const c = _convertIndicatorToDefinition(ind);
-      expect(c).not.toBe(ind, "returned field should not be the same object");
+      expect(c).withContext("returned field should not be the same object").not.toBe(ind);
       expect(c.id).toEqual(ind.fieldName, "fieldName becomes id");
       expect(c.name).toEqual(ind.fieldName, "fieldName becomes name if not label");
       expect(c.definition.description).toEqual(ind.fieldName, "field becomes description if no label");
@@ -168,10 +159,7 @@ describe("_upgradeTwoDotZero :: ", () => {
         ind.layerOptions.supportedTypes.length,
         "supported types have same contents",
       );
-      expect(c.definition.geometryTypes).not.toBe(
-        ind.layerOptions.geometryTypes,
-        "geometryTypes should not be same instance",
-      );
+      expect(c.definition.geometryTypes).withContext("geometryTypes should not be same instance").not.toBe(ind.layerOptions.geometryTypes);
       expect(c.definition.geometryTypes.length).toEqual(
         ind.layerOptions.geometryTypes.length,
         "geometryTypes have same contents",
@@ -190,7 +178,7 @@ describe("_upgradeTwoDotZero :: ", () => {
       expect(c).not.toEqual(fld, "returned field should not be the same object");
       expect(c.id).toEqual(fld.fieldName, "fieldName becomes id");
       expect(c.name).toEqual(fld.label, "label becomes name");
-      expect(c.supportedTypes).not.toBe(fld.supportedTypes, "supported types should not be same instance");
+      expect(c.supportedTypes).withContext("supported types should not be same instance").not.toBe(fld.supportedTypes);
       expect(c.supportedTypes.length).toEqual(fld.supportedTypes.length, "supported types have same contents");
     });
 
@@ -226,8 +214,8 @@ describe("_upgradeTwoDotZero :: ", () => {
 
       // now pass this into the converter...
       const c = _convertIndicatorsToDefinitions(cs);
-      expect(Array.isArray(c)).toBeTruthy("should return an array");
-      expect(c[0].id).toEqual("collisionLayer", "collisionLayer should be the id of the first entry");
+      expect(Array.isArray(c)).withContext("should return an array").toBeTruthy();
+      expect(c[0].id).toEqual("collisionLayer");
     });
 
     it("handles configSettings with no fields", () => {
@@ -237,8 +225,8 @@ describe("_upgradeTwoDotZero :: ", () => {
 
       // now pass this into the converter...
       const c = _convertIndicatorsToDefinitions(cs);
-      expect(Array.isArray(c)).toBeTruthy("should return an array");
-      expect(c.length).toEqual(0, "should have no entries");
+      expect(Array.isArray(c)).withContext("collisionLayer should be the id of the first entry").toBeTruthy("should return an array");
+      expect(c.length).withContext("should have no entries").toEqual(0);
     });
   });
 });

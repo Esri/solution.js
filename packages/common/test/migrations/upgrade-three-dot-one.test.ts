@@ -52,7 +52,7 @@ describe("Upgrade 3.1 ::", () => {
     delete (m.data.templates[0] as any).resources;
     const chk = _upgradeThreeDotOne(m);
     expect(chk).withContext("should not return the exact same object").not.toBe(m);
-    expect(chk.item.properties.schemaVersion).toBe(3.1, "should update schema version");
+    expect(chk.item.properties.schemaVersion).withContext("should update schema version").toBe(3.1);
     expect(chk.data.templates[0].resources.length).toBe(0);
   });
 
@@ -60,7 +60,7 @@ describe("Upgrade 3.1 ::", () => {
     const m = cloneObject(defaultModel);
     const chk = _upgradeThreeDotOne(m);
     expect(chk).withContext("should not return the exact same object").not.toBe(m);
-    expect(chk.item.properties.schemaVersion).toBe(3.1, "should update schema version");
+    expect(chk.item.properties.schemaVersion).withContext("should update schema version").toBe(3.1);
     const tmplRes = chk.data.templates[0].resources[0] as ISolutionResource;
     expect(tmplRes.filename).toBe("ViewJob_1590513214593.json");
     expect(tmplRes.path).toBe("jobs");

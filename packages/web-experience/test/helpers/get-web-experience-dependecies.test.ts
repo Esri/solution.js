@@ -41,8 +41,8 @@ describe("getWebExperienceDependencies :: ", () => {
 
     const chk = getWebExperienceDependencies(input);
 
-    expect(Array.isArray(chk)).toBe(true, "should return an array");
-    expect(chk.length).toBe(2, "should have two entries");
+    expect(Array.isArray(chk)).withContext("should return an array").toBe(true);
+    expect(chk.length).withContext("should have two entries").toBe(2);
     expect(chk.indexOf("bc1")).withContext("should have bc1").toBeGreaterThan(-1);
     expect(chk.indexOf("bc2")).withContext("should have bc2").toBeGreaterThan(-1);
   });

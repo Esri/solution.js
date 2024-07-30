@@ -39,7 +39,7 @@ describe("shareItemsToGroups", () => {
       },
     };
     return shareTemplatesToGroups([tmpl], tmplDict, MOCK_USER_SESSION).then(() => {
-      expect(shareSpy.calls.count()).toBe(1, "call shareItemToGroups once");
+      expect(shareSpy.calls.count()).withContext("call shareItemToGroups once").toBe(1);
     });
   });
 
@@ -68,7 +68,7 @@ describe("shareItemsToGroups", () => {
       },
     };
     return shareTemplatesToGroups([tmpl], tmplDict, MOCK_USER_SESSION).then(() => {
-      expect(shareSpy.calls.count()).toBe(1, "call shareItemToGroups once");
+      expect(shareSpy.calls.count()).withContext("call shareItemToGroups once").toBe(1);
     });
   });
 
@@ -97,7 +97,7 @@ describe("shareItemsToGroups", () => {
       },
     };
     return shareTemplatesToGroups([tmpl], tmplDict, MOCK_USER_SESSION).then(() => {
-      expect(shareSpy.calls.count()).toBe(2, "call shareItemToGroups once");
+      expect(shareSpy.calls.count()).withContext("call shareItemToGroups once").toBe(2);
     });
   });
 
@@ -125,7 +125,7 @@ describe("shareItemsToGroups", () => {
       },
     };
     return shareTemplatesToGroups(tmpls, tmplDict, MOCK_USER_SESSION).then(() => {
-      expect(shareSpy.calls.count()).toBe(2, "call shareItemToGroups twice");
+      expect(shareSpy.calls.count()).withContext("call shareItemToGroups twice").toBe(2);
     });
   });
 
@@ -135,7 +135,7 @@ describe("shareItemsToGroups", () => {
       itemId: "3ef",
     } as common.IItemTemplate;
     return shareTemplatesToGroups([tmpl], {}, MOCK_USER_SESSION).then(() => {
-      expect(shareSpy.calls.count()).toBe(0, "should not attempt to share");
+      expect(shareSpy.calls.count()).withContext("should not attempt to share").toBe(0);
     });
   });
 
@@ -146,7 +146,7 @@ describe("shareItemsToGroups", () => {
       groups: [],
     } as any;
     return shareTemplatesToGroups([tmpl], {}, MOCK_USER_SESSION).then(() => {
-      expect(shareSpy.calls.count()).toBe(0, "should not attempt to share");
+      expect(shareSpy.calls.count()).withContext("should not attempt to share").toBe(0);
     });
   });
 });

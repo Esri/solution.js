@@ -1001,16 +1001,16 @@ describe("Module `generalHelpers`: common utility functions shared across packag
   describe("generateEmptyCreationResponse", () => {
     it("returns an empty response", () => {
       const chk = generalHelpers.generateEmptyCreationResponse("Some Type");
-      expect(chk.id).toBe("", "id should be empty");
-      expect(chk.type).toBe("Some Type", "type should be set");
-      expect(chk.postProcess).toBe(false, "postProcess set to false");
+      expect(chk.id).withContext("id should be empty").toBe("");
+      expect(chk.type).withContext("type should be set").toBe("Some Type");
+      expect(chk.postProcess).withContext("postProcess set to false").toBe(false);
     });
 
     it("returns an empty response with id", () => {
       const chk = generalHelpers.generateEmptyCreationResponse("Some Type", "Some Id");
-      expect(chk.id).toBe("Some Id", "id should be empty");
-      expect(chk.type).toBe("Some Type", "type should be set");
-      expect(chk.postProcess).toBe(false, "postProcess set to false");
+      expect(chk.id).withContext("id should be empty").toBe("Some Id");
+      expect(chk.type).withContext("type should be set").toBe("Some Type");
+      expect(chk.postProcess).withContext("postProcess set to false").toBe(false);
     });
   });
 
@@ -1211,9 +1211,9 @@ describe("Module `generalHelpers`: common utility functions shared across packag
       };
 
       const vals = generalHelpers.getProps(o, ["one.two.three.color", "one.two.threeB.color"]);
-      expect(vals.length).toEqual(2, "should return two values");
-      expect(vals.indexOf("red")).toBeGreaterThan(-1, "should have red");
-      expect(vals.indexOf("orange")).toBeGreaterThan(-1, "should have orange");
+      expect(vals.length).withContext("should return two values").toEqual(2);
+      expect(vals.indexOf("red")).withContext("should have red").toBeGreaterThan(-1);
+      expect(vals.indexOf("orange")).withContext("should have orange").toBeGreaterThan(-1);
     });
 
     it("should push an array into the return values", () => {
@@ -1224,8 +1224,8 @@ describe("Module `generalHelpers`: common utility functions shared across packag
         },
       };
       const vals = generalHelpers.getProps(o, ["one.two", "one.color"]);
-      expect(vals.length).toEqual(2, "should return two values");
-      expect(vals.indexOf("red")).toBeGreaterThan(-1, "should have red");
+      expect(vals.length).withContext("should return two values").toEqual(2);
+      expect(vals.indexOf("red")).withContext("should have red").toBeGreaterThan(-1);
     });
 
     it("should handle missing props", () => {
@@ -1236,8 +1236,8 @@ describe("Module `generalHelpers`: common utility functions shared across packag
         },
       };
       const vals = generalHelpers.getProps(o, ["one.two", "one.color", "thing.three"]);
-      expect(vals.length).toEqual(2, "should return two values");
-      expect(vals.indexOf("red")).toBeGreaterThan(-1, "should have red");
+      expect(vals.length).withContext("should return two values").toEqual(2);
+      expect(vals.indexOf("red")).withContext("should have red").toBeGreaterThan(-1);
     });
   });
 
