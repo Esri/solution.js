@@ -120,9 +120,15 @@ describe("_upgradeTwoDotZero :: ", () => {
       expect(c.id).withContext("fieldName becomes id").toEqual(ind.fieldName);
       expect(c.name).withContext("label becomes name").toEqual(ind.label);
       expect(c.definition.description).withContext("label becomes description").toEqual(ind.label);
-      expect(c.definition.supportedTypes.length).withContext("supported types have same contents").toEqual(ind.layerOptions.supportedTypes.length);
-      expect(c.definition.geometryTypes).withContext("geometryTypes should not be same instance").not.toBe(ind.layerOptions.geometryTypes);
-      expect(c.definition.geometryTypes.length).withContext("geometryTypes have same contents").toEqual(ind.layerOptions.geometryTypes.length);
+      expect(c.definition.supportedTypes.length)
+        .withContext("supported types have same contents")
+        .toEqual(ind.layerOptions.supportedTypes.length);
+      expect(c.definition.geometryTypes)
+        .withContext("geometryTypes should not be same instance")
+        .not.toBe(ind.layerOptions.geometryTypes);
+      expect(c.definition.geometryTypes.length)
+        .withContext("geometryTypes have same contents")
+        .toEqual(ind.layerOptions.geometryTypes.length);
       expect(c.definition.fields.length).toEqual(ind.fields.length, "fields have same contents");
     });
 
@@ -159,7 +165,9 @@ describe("_upgradeTwoDotZero :: ", () => {
         ind.layerOptions.supportedTypes.length,
         "supported types have same contents",
       );
-      expect(c.definition.geometryTypes).withContext("geometryTypes should not be same instance").not.toBe(ind.layerOptions.geometryTypes);
+      expect(c.definition.geometryTypes)
+        .withContext("geometryTypes should not be same instance")
+        .not.toBe(ind.layerOptions.geometryTypes);
       expect(c.definition.geometryTypes.length).toEqual(
         ind.layerOptions.geometryTypes.length,
         "geometryTypes have same contents",
@@ -225,7 +233,9 @@ describe("_upgradeTwoDotZero :: ", () => {
 
       // now pass this into the converter...
       const c = _convertIndicatorsToDefinitions(cs);
-      expect(Array.isArray(c)).withContext("collisionLayer should be the id of the first entry").toBeTruthy("should return an array");
+      expect(Array.isArray(c))
+        .withContext("collisionLayer should be the id of the first entry")
+        .toBeTruthy("should return an array");
       expect(c.length).withContext("should have no entries").toEqual(0);
     });
   });

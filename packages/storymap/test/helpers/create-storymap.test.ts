@@ -71,7 +71,9 @@ describe("createStoryMap ::", () => {
     expect(addResSpy.calls.count()).withContext("should add four resources").toBe(4);
     if (typeof Blob !== "undefined") {
       const draftArgs = addResSpy.calls.argsFor(0)[0];
-      expect(draftArgs.resource instanceof Blob).withContext("should send a blob").toBe(true);
+      expect(draftArgs.resource instanceof Blob)
+        .withContext("should send a blob")
+        .toBe(true);
     }
     expect(moveItemSpy.calls.count()).withContext("should move the item").toBe(1);
     const moveOpts = moveItemSpy.calls.argsFor(0)[0];
@@ -130,7 +132,9 @@ describe("createStoryMap ::", () => {
     expect(addResSpy.calls.count()).withContext("should add four resources").toBe(4);
     if (typeof Blob !== "undefined") {
       const draftArgs = addResSpy.calls.argsFor(0)[0];
-      expect(draftArgs.resource instanceof Blob).withContext("should send a blob").toBe(true);
+      expect(draftArgs.resource instanceof Blob)
+        .withContext("should send a blob")
+        .toBe(true);
     }
     expect(moveItemSpy.calls.count()).withContext("should move the item").toBe(1);
     const moveOpts = moveItemSpy.calls.argsFor(0)[0];

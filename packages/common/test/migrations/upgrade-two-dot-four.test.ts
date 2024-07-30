@@ -60,8 +60,12 @@ describe("Upgrade 2.4 ::", () => {
     };
     const chk = _upgradeTwoDotFour(m);
     expect(chk).withContext("should not return the exact same object").not.toBe(m);
-    expect(chk.data.metadata.chk1).withContext("should swap key.item.id => id.itemId").toBe("behold {{fakeId.itemId}} it changed");
-    expect(chk.data.metadata.chk2).withContext("should swap multiple entries in the same string").toBe("{{fakeId.itemId}} {{fakeId2.itemId}}");
+    expect(chk.data.metadata.chk1)
+      .withContext("should swap key.item.id => id.itemId")
+      .toBe("behold {{fakeId.itemId}} it changed");
+    expect(chk.data.metadata.chk2)
+      .withContext("should swap multiple entries in the same string")
+      .toBe("{{fakeId.itemId}} {{fakeId2.itemId}}");
   });
   it("reworks hub asset names", () => {
     const m = cloneObject(defaultModel);
@@ -79,13 +83,19 @@ describe("Upgrade 2.4 ::", () => {
     const tmpl = chk.data.templates[0];
     expect(Array.isArray(tmpl.resources)).withContext("should add resources").toBe(true);
     expect(Array.isArray(tmpl.assets)).withContext("should leave assets").toBe(true);
-    expect(tmpl.resources[0]).withContext("should strip the old id and thumbnail folder out of the filename").toBe("fakeId-somefile.png");
-    expect(tmpl.resources[1]).withContext("should strip the old id and folder out of the filename").toBe("fakeId-foo.png");
+    expect(tmpl.resources[0])
+      .withContext("should strip the old id and thumbnail folder out of the filename")
+      .toBe("fakeId-somefile.png");
+    expect(tmpl.resources[1])
+      .withContext("should strip the old id and folder out of the filename")
+      .toBe("fakeId-foo.png");
   });
   it("adds estimatedDeploymentCostFactor", () => {
     const m = cloneObject(defaultModel);
     m.data.templates[0].estimatedDeploymentCostFactor = 2;
     const chk = _upgradeTwoDotFour(m);
-    expect(chk.data.templates[1].estimatedDeploymentCostFactor).withContext("should add cost factor of 1 if missing").toBe(1);
+    expect(chk.data.templates[1].estimatedDeploymentCostFactor)
+      .withContext("should add cost factor of 1 if missing")
+      .toBe(1);
   });
 });

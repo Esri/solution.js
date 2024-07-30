@@ -30,7 +30,9 @@ describe("Upgrade 2.7 ::", () => {
     expect(tmpls[0].itemId).withContext("add itemId to first template").toBeDefined();
     expect(tmpls[0].dependencies).withContext("add dependencies to first template").toBeDefined();
     expect(Array.isArray(tmpls[0].dependencies)).withContext("add dependencies array to first template").toBe(true);
-    expect(tmpls[0].dependencies.length).withContext("should not add entries to dependencies on first template").toBe(0);
+    expect(tmpls[0].dependencies.length)
+      .withContext("should not add entries to dependencies on first template")
+      .toBe(0);
     expect(tmpls[1].dependencies).withContext("add dependencies to second template").toBeDefined();
     expect(Array.isArray(tmpls[1].dependencies)).withContext("add dependencies array to second template").toBe(true);
     expect(tmpls[1].dependencies.length).withContext("should add entries to dependencies on second template").toBe(1);

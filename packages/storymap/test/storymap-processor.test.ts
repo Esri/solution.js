@@ -83,7 +83,9 @@ describe("Module `storymap`: ", () => {
     const cb = () => true;
 
     it("exists", () => {
-      expect(StorymapProcessor.createItemFromTemplate).withContext("Should have createItemFromTemplate method").toBeDefined();
+      expect(StorymapProcessor.createItemFromTemplate)
+        .withContext("Should have createItemFromTemplate method")
+        .toBeDefined();
     });
 
     it("happy-path", async () => {

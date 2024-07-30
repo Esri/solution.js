@@ -41,7 +41,9 @@ describe("_postProcessPage :: ", () => {
       expect(result).withContext("should return true").toBe(true);
       expect(updatePageSpy.calls.count()).withContext("should update the site").toBe(1);
       const updateModel = updatePageSpy.calls.argsFor(0)[0];
-      expect(updateModel.item.properties.chk).withContext("it should do a second pass interpolation before updating").toBe("ef66");
+      expect(updateModel.item.properties.chk)
+        .withContext("it should do a second pass interpolation before updating")
+        .toBe("ef66");
       expect(updatePageSpy.calls.argsFor(0)[1]).toEqual({
         ...fakeRo,
         allowList: [],

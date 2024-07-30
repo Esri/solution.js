@@ -56,7 +56,9 @@ describe("Schema Migrator", () => {
     delete m.item.properties;
     const chk = await migrateSchema(m);
     expect(chk).not.toBe(m, "should return the exact same object");
-    expect(chk.item.properties.schemaVersion).withContext(`should upgrade to ${CURRENT_SCHEMA_VERSION} if no schema`).toBe(CURRENT_SCHEMA_VERSION);
+    expect(chk.item.properties.schemaVersion)
+      .withContext(`should upgrade to ${CURRENT_SCHEMA_VERSION} if no schema`)
+      .toBe(CURRENT_SCHEMA_VERSION);
   });
 
   it("upgrades legacy Solutions", async () => {
