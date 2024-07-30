@@ -40,11 +40,8 @@ afterEach(() => {
 
 describe("Module `workforce`: manages the creation and deployment of workforce project item types", () => {
   describe("convertItemToTemplate", () => {
-    it("should extract dependencies 1", done => {
-      const itemTemplate: common.IItemTemplate = mockItems.getAGOLItem(
-        "Workforce Project",
-        null
-      );
+    it("should extract dependencies 1", async () => {
+      const itemTemplate: common.IItemTemplate = mockItems.getAGOLItem("Workforce Project", undefined);
       itemTemplate.data = mockItems.getAGOLItemData("Workforce Project");
 
       const expectedDependencies: string[] = [
@@ -56,27 +53,25 @@ describe("Module `workforce`: manages the creation and deployment of workforce p
         "abc64329e69144c59f69f3f3e0d45269",
         "abc715c2df2b466da05577776e82d044",
         "cad3483e025c47338d43df308c117308",
-        "bad3483e025c47338d43df308c117308"
+        "bad3483e025c47338d43df308c117308",
       ];
 
-      workforce
-        .convertItemToTemplate(itemTemplate, MOCK_USER_SESSION, MOCK_USER_SESSION, {})
-        .then(newItemTemplate => {
-          const newDependencies: string[] = newItemTemplate.dependencies;
-          expect(newDependencies.length).toEqual(expectedDependencies.length);
+      const newItemTemplate = await workforce.convertItemToTemplate(
+        itemTemplate,
+        MOCK_USER_SESSION,
+        MOCK_USER_SESSION,
+        {},
+      );
+      const newDependencies: string[] = newItemTemplate.dependencies;
+      expect(newDependencies.length).toEqual(expectedDependencies.length);
 
-          expectedDependencies.forEach(d => {
-            expect(newDependencies.indexOf(d)).toBeGreaterThan(-1);
-          });
-          done();
-        }, done.fail);
+      expectedDependencies.forEach((d) => {
+        expect(newDependencies.indexOf(d)).toBeGreaterThan(-1);
+      });
     });
 
-    it("should extract dependencies 2", done => {
-      const itemTemplate: common.IItemTemplate = mockItems.getAGOLItem(
-        "Workforce Project",
-        null
-      );
+    it("should extract dependencies 2", async () => {
+      const itemTemplate: common.IItemTemplate = mockItems.getAGOLItem("Workforce Project", undefined);
       itemTemplate.data = mockItems.getAGOLItemData("Workforce Project");
 
       const expectedDependencies: string[] = [
@@ -88,34 +83,32 @@ describe("Module `workforce`: manages the creation and deployment of workforce p
         "abc64329e69144c59f69f3f3e0d45269",
         "abc715c2df2b466da05577776e82d044",
         "cad3483e025c47338d43df308c117308",
-        "bad3483e025c47338d43df308c117308"
+        "bad3483e025c47338d43df308c117308",
       ];
 
-      workforce
-        .convertItemToTemplate(itemTemplate, MOCK_USER_SESSION, MOCK_USER_SESSION, {})
-        .then(newItemTemplate => {
-          const newDependencies: string[] = newItemTemplate.dependencies;
-          expect(newDependencies.length).toEqual(expectedDependencies.length);
+      const newItemTemplate = await workforce.convertItemToTemplate(
+        itemTemplate,
+        MOCK_USER_SESSION,
+        MOCK_USER_SESSION,
+        {},
+      );
+      const newDependencies: string[] = newItemTemplate.dependencies;
+      expect(newDependencies.length).toEqual(expectedDependencies.length);
 
-          expectedDependencies.forEach(d => {
-            expect(newDependencies.indexOf(d)).toBeGreaterThan(-1);
-          });
-          done();
-        }, done.fail);
+      expectedDependencies.forEach((d) => {
+        expect(newDependencies.indexOf(d)).toBeGreaterThan(-1);
+      });
     });
 
-    it("should templatize key properties in the template", done => {
-      const itemTemplate: common.IItemTemplate = mockItems.getAGOLItem(
-        "Workforce Project",
-        null
-      );
+    it("should templatize key properties in the template", async () => {
+      const itemTemplate: common.IItemTemplate = mockItems.getAGOLItem("Workforce Project", undefined);
       itemTemplate.data = mockItems.getAGOLItemData("Workforce Project");
       itemTemplate.data.assignmentIntegrations = [
         {
           id: "default-navigator",
           prompt: "Navigate to Assignment",
           urlTemplate:
-            "arcgis-navigator://?stop=${assignment.latitude},${assignment.longitude}&stopname=${assignment.location}&callback=arcgis-workforce://&callbackprompt=Workforce"
+            "arcgis-navigator://?stop=${assignment.latitude},${assignment.longitude}&stopname=${assignment.location}&callback=arcgis-workforce://&callbackprompt=Workforce",
         },
         {
           id: "default-collector",
@@ -123,19 +116,19 @@ describe("Module `workforce`: manages the creation and deployment of workforce p
           assignmentTypes: {
             "1": {
               urlTemplate:
-                "arcgis-collector://?itemID=b5142b618da74f92af9e84f7459b64a8&center=${assignment.latitude},${assignment.longitude}"
+                "arcgis-collector://?itemID=b5142b618da74f92af9e84f7459b64a8&center=${assignment.latitude},${assignment.longitude}",
             },
             "2": {
               urlTemplate:
-                "arcgis-collector://?itemID=b5142b618da74f92af9e84f7459b64a8&center=${assignment.latitude},${assignment.longitude}&featureSourceURL=https://services123.arcgis.com/org1234567890/arcgis/rest/services/ProposedSiteAddress_field/FeatureServer/0&featureAttributes=%7B%22placename%22:%22${assignment.location}%22%7D"
-            }
-          }
-        }
+                "arcgis-collector://?itemID=b5142b618da74f92af9e84f7459b64a8&center=${assignment.latitude},${assignment.longitude}&featureSourceURL=https://services123.arcgis.com/org1234567890/arcgis/rest/services/ProposedSiteAddress_field/FeatureServer/0&featureAttributes=%7B%22placename%22:%22${assignment.location}%22%7D",
+            },
+          },
+        },
       ];
 
       itemTemplate.item = {
         id: "abc0cab401af4828a25cc6eaeb59fb69",
-        type: "Workforce Project"
+        type: "Workforce Project",
       };
 
       const expectedTemplateData: any = {
@@ -143,21 +136,21 @@ describe("Module `workforce`: manages the creation and deployment of workforce p
         dispatcherWebMapId: "{{abc26a244163430590151395821fb845.itemId}}",
         dispatchers: {
           serviceItemId: "{{abc302ec12b74d2f9f2b3cc549420086.layer0.itemId}}",
-          url: "{{abc302ec12b74d2f9f2b3cc549420086.layer0.url}}"
+          url: "{{abc302ec12b74d2f9f2b3cc549420086.layer0.url}}",
         },
         assignments: {
           serviceItemId: "{{abc4494043c3459faabcfd0e1ab557fc.layer0.itemId}}",
-          url: "{{abc4494043c3459faabcfd0e1ab557fc.layer0.url}}"
+          url: "{{abc4494043c3459faabcfd0e1ab557fc.layer0.url}}",
         },
         workers: {
           serviceItemId: "{{abc5dd4bdd18437f8d5ff1aa2d25fd7c.layer0.itemId}}",
-          url: "{{abc5dd4bdd18437f8d5ff1aa2d25fd7c.layer0.url}}"
+          url: "{{abc5dd4bdd18437f8d5ff1aa2d25fd7c.layer0.url}}",
         },
         tracks: {
           serviceItemId: "{{abc64329e69144c59f69f3f3e0d45269.layer0.itemId}}",
           url: "{{abc64329e69144c59f69f3f3e0d45269.layer0.url}}",
           enabled: true,
-          updateInterval: 300
+          updateInterval: 300,
         },
         version: "1.2.0",
         groupId: "{{abc715c2df2b466da05577776e82d044.itemId}}",
@@ -167,7 +160,7 @@ describe("Module `workforce`: manages the creation and deployment of workforce p
             id: "default-navigator",
             prompt: "Navigate to Assignment",
             urlTemplate:
-              "arcgis-navigator://?stop=${assignment.latitude},${assignment.longitude}&stopname=${assignment.location}&callback=arcgis-workforce://&callbackprompt=Workforce"
+              "arcgis-navigator://?stop=${assignment.latitude},${assignment.longitude}&stopname=${assignment.location}&callback=arcgis-workforce://&callbackprompt=Workforce",
           },
           {
             id: "default-collector",
@@ -175,50 +168,47 @@ describe("Module `workforce`: manages the creation and deployment of workforce p
             assignmentTypes: {
               "1": {
                 urlTemplate:
-                  "arcgis-collector://?itemID={{b5142b618da74f92af9e84f7459b64a8.itemId}}&center=${assignment.latitude},${assignment.longitude}"
+                  "arcgis-collector://?itemID={{b5142b618da74f92af9e84f7459b64a8.itemId}}&center=${assignment.latitude},${assignment.longitude}",
               },
               "2": {
                 urlTemplate:
-                  "arcgis-collector://?itemID={{b5142b618da74f92af9e84f7459b64a8.itemId}}&center=${assignment.latitude},${assignment.longitude}&featureSourceURL={{bb142b618da74f92af9e84f7459b64a8.layer0.url}}&featureAttributes=%7B%22placename%22:%22${assignment.location}%22%7D"
-              }
-            }
-          }
-        ]
+                  "arcgis-collector://?itemID={{b5142b618da74f92af9e84f7459b64a8.itemId}}&center=${assignment.latitude},${assignment.longitude}&featureSourceURL={{bb142b618da74f92af9e84f7459b64a8.layer0.url}}&featureAttributes=%7B%22placename%22:%22${assignment.location}%22%7D",
+              },
+            },
+          },
+        ],
       };
 
       fetchMock.post(
         "https://services123.arcgis.com/org1234567890/arcgis/rest/services/ProposedSiteAddress_field/FeatureServer/0",
         {
-          serviceItemId: "bb142b618da74f92af9e84f7459b64a8"
-        }
+          serviceItemId: "bb142b618da74f92af9e84f7459b64a8",
+        },
       );
 
-      workforce
-        .convertItemToTemplate(itemTemplate, MOCK_USER_SESSION, MOCK_USER_SESSION, {})
-        .then(newItemTemplate => {
-          expect(newItemTemplate.data).toEqual(expectedTemplateData);
-          done();
-        }, done.fail);
+      const newItemTemplate = await workforce.convertItemToTemplate(
+        itemTemplate,
+        MOCK_USER_SESSION,
+        MOCK_USER_SESSION,
+        {},
+      );
+      expect(newItemTemplate.data).toEqual(expectedTemplateData);
     });
 
-    it("should handle workforce projects without data", done => {
-      const itemTemplate: common.IItemTemplate = mockItems.getAGOLItem(
-        "Workforce Project"
-      );
+    it("should handle workforce projects without data", async () => {
+      const itemTemplate: common.IItemTemplate = mockItems.getAGOLItem("Workforce Project");
 
-      workforce
-        .convertItemToTemplate(itemTemplate, MOCK_USER_SESSION, MOCK_USER_SESSION, {})
-        .then(newItemTemplate => {
-          expect(newItemTemplate.data).not.toBeDefined();
-          done();
-        }, done.fail);
+      const newItemTemplate = await workforce.convertItemToTemplate(
+        itemTemplate,
+        MOCK_USER_SESSION,
+        MOCK_USER_SESSION,
+        {},
+      );
+      expect(newItemTemplate.data).not.toBeDefined();
     });
 
-    it("should handle error on extract dependencies", done => {
-      const itemTemplate: common.IItemTemplate = mockItems.getAGOLItem(
-        "Workforce Project",
-        null
-      );
+    it("should handle error on extract dependencies", async () => {
+      const itemTemplate: common.IItemTemplate = mockItems.getAGOLItem("Workforce Project", undefined);
       itemTemplate.data = mockItems.getAGOLItemData("Workforce Project");
       itemTemplate.data.assignmentIntegrations = [
         {
@@ -227,39 +217,30 @@ describe("Module `workforce`: manages the creation and deployment of workforce p
           assignmentTypes: {
             "1": {
               urlTemplate:
-                "arcgis-collector://?itemID=b5142b618da74f92af9e84f7459b64a8&center=${assignment.latitude},${assignment.longitude}&featureSourceURL=https://services123.arcgis.com/org1234567890/arcgis/rest/services/ProposedSiteAddress_field/FeatureServer&featureAttributes=%7B%22placename%22:%22${assignment.location}%22%7D"
-            }
-          }
-        }
+                "arcgis-collector://?itemID=b5142b618da74f92af9e84f7459b64a8&center=${assignment.latitude},${assignment.longitude}&featureSourceURL=https://services123.arcgis.com/org1234567890/arcgis/rest/services/ProposedSiteAddress_field/FeatureServer&featureAttributes=%7B%22placename%22:%22${assignment.location}%22%7D",
+            },
+          },
+        },
       ];
 
       itemTemplate.item = {
         id: "abc0cab401af4828a25cc6eaeb59fb69",
-        type: "Workforce Project"
+        type: "Workforce Project",
       };
 
       fetchMock.post(
         "https://services123.arcgis.com/org1234567890/arcgis/rest/services/ProposedSiteAddress_field/FeatureServer",
-        mockItems.get400Failure()
+        mockItems.get400Failure(),
       );
 
-      workforce
-        .convertItemToTemplate(itemTemplate, MOCK_USER_SESSION, MOCK_USER_SESSION, {})
-        .then(
-          () => {
-            done.fail();
-          },
-          () => {
-            done();
-          }
-        );
+      return workforce.convertItemToTemplate(itemTemplate, MOCK_USER_SESSION, MOCK_USER_SESSION, {}).then(
+        () => fail(),
+        () => Promise.resolve(),
+      );
     });
 
-    it("should handle url without layer id", done => {
-      const itemTemplate: common.IItemTemplate = mockItems.getAGOLItem(
-        "Workforce Project",
-        null
-      );
+    it("should handle url without layer id", async () => {
+      const itemTemplate: common.IItemTemplate = mockItems.getAGOLItem("Workforce Project", undefined);
       itemTemplate.data = mockItems.getAGOLItemData("Workforce Project");
       itemTemplate.data.assignmentIntegrations = [
         {
@@ -268,15 +249,15 @@ describe("Module `workforce`: manages the creation and deployment of workforce p
           assignmentTypes: {
             "1": {
               urlTemplate:
-                "arcgis-collector://?itemID=b5142b618da74f92af9e84f7459b64a8&center=${assignment.latitude},${assignment.longitude}&featureSourceURL=https://services123.arcgis.com/org1234567890/arcgis/rest/services/ProposedSiteAddress_field/FeatureServer&featureAttributes=%7B%22placename%22:%22${assignment.location}%22%7D"
-            }
-          }
-        }
+                "arcgis-collector://?itemID=b5142b618da74f92af9e84f7459b64a8&center=${assignment.latitude},${assignment.longitude}&featureSourceURL=https://services123.arcgis.com/org1234567890/arcgis/rest/services/ProposedSiteAddress_field/FeatureServer&featureAttributes=%7B%22placename%22:%22${assignment.location}%22%7D",
+            },
+          },
+        },
       ];
 
       itemTemplate.item = {
         id: "abc0cab401af4828a25cc6eaeb59fb69",
-        type: "Workforce Project"
+        type: "Workforce Project",
       };
 
       const expectedTemplateData: any = {
@@ -284,21 +265,21 @@ describe("Module `workforce`: manages the creation and deployment of workforce p
         dispatcherWebMapId: "{{abc26a244163430590151395821fb845.itemId}}",
         dispatchers: {
           serviceItemId: "{{abc302ec12b74d2f9f2b3cc549420086.layer0.itemId}}",
-          url: "{{abc302ec12b74d2f9f2b3cc549420086.layer0.url}}"
+          url: "{{abc302ec12b74d2f9f2b3cc549420086.layer0.url}}",
         },
         assignments: {
           serviceItemId: "{{abc4494043c3459faabcfd0e1ab557fc.layer0.itemId}}",
-          url: "{{abc4494043c3459faabcfd0e1ab557fc.layer0.url}}"
+          url: "{{abc4494043c3459faabcfd0e1ab557fc.layer0.url}}",
         },
         workers: {
           serviceItemId: "{{abc5dd4bdd18437f8d5ff1aa2d25fd7c.layer0.itemId}}",
-          url: "{{abc5dd4bdd18437f8d5ff1aa2d25fd7c.layer0.url}}"
+          url: "{{abc5dd4bdd18437f8d5ff1aa2d25fd7c.layer0.url}}",
         },
         tracks: {
           serviceItemId: "{{abc64329e69144c59f69f3f3e0d45269.layer0.itemId}}",
           url: "{{abc64329e69144c59f69f3f3e0d45269.layer0.url}}",
           enabled: true,
-          updateInterval: 300
+          updateInterval: 300,
         },
         version: "1.2.0",
         groupId: "{{abc715c2df2b466da05577776e82d044.itemId}}",
@@ -310,311 +291,200 @@ describe("Module `workforce`: manages the creation and deployment of workforce p
             assignmentTypes: {
               "1": {
                 urlTemplate:
-                  "arcgis-collector://?itemID={{b5142b618da74f92af9e84f7459b64a8.itemId}}&center=${assignment.latitude},${assignment.longitude}&featureSourceURL={{bb142b618da74f92af9e84f7459b64a8.url}}&featureAttributes=%7B%22placename%22:%22${assignment.location}%22%7D"
-              }
-            }
-          }
-        ]
+                  "arcgis-collector://?itemID={{b5142b618da74f92af9e84f7459b64a8.itemId}}&center=${assignment.latitude},${assignment.longitude}&featureSourceURL={{bb142b618da74f92af9e84f7459b64a8.url}}&featureAttributes=%7B%22placename%22:%22${assignment.location}%22%7D",
+              },
+            },
+          },
+        ],
       };
 
       fetchMock.post(
         "https://services123.arcgis.com/org1234567890/arcgis/rest/services/ProposedSiteAddress_field/FeatureServer",
         {
-          serviceItemId: "bb142b618da74f92af9e84f7459b64a8"
-        }
+          serviceItemId: "bb142b618da74f92af9e84f7459b64a8",
+        },
       );
 
-      workforce
-        .convertItemToTemplate(itemTemplate, MOCK_USER_SESSION, MOCK_USER_SESSION, {})
-        .then(newItemTemplate => {
-          expect(newItemTemplate.data).toEqual(expectedTemplateData);
-          done();
-        }, done.fail);
+      const newItemTemplate = await workforce.convertItemToTemplate(
+        itemTemplate,
+        MOCK_USER_SESSION,
+        MOCK_USER_SESSION,
+        {},
+      );
+      expect(newItemTemplate.data).toEqual(expectedTemplateData);
     });
   });
 
   describe("fineTuneCreatedItem", () => {
-    it("should update dispatchers service", done => {
+    it("should update dispatchers service", async () => {
       const communitySelfResponse: any = utils.getUserResponse();
-      const itemTemplate: common.IItemTemplate = mockItems.getAGOLItem(
-        "Workforce Project",
-        null
-      );
+      const itemTemplate: common.IItemTemplate = mockItems.getAGOLItem("Workforce Project", undefined);
       itemTemplate.data = mockItems.getAGOLItemData("Workforce Project");
 
-      const userUrl: string =
-        utils.PORTAL_SUBSET.restUrl +
-        "/community/users/casey?f=json&token=fake-token";
       const queryUrl: string =
         "https://services123.arcgis.com/org1234567890/arcgis/rest/services/dispatchers_47bb15c2df2b466da05577776e82d044/FeatureServer/0/query?f=json&where=userId%20%3D%20%27LocalGovDeployCasey%27&outFields=*&token=fake-token";
       const addUrl: string =
         "https://services123.arcgis.com/org1234567890/arcgis/rest/services/dispatchers_47bb15c2df2b466da05577776e82d044/FeatureServer/0/applyEdits";
 
       fetchMock
-        .get(
-          utils.PORTAL_SUBSET.restUrl +
-            "/community/self?f=json&token=fake-token",
-          communitySelfResponse
-        )
+        .get(utils.PORTAL_SUBSET.restUrl + "/community/self?f=json&token=fake-token", communitySelfResponse)
         .get(queryUrl, {
-          features: []
+          features: [],
         })
         .post(addUrl, {
-          addResults: [{}]
+          addResults: [{}],
         });
 
-      workforce
-        .fineTuneCreatedItem(itemTemplate, MOCK_USER_SESSION, false)
-        .then(r => {
-          expect(r).toEqual({ success: true });
-          done();
-        }, done.fail);
+      const r = await workforce.fineTuneCreatedItem(itemTemplate, MOCK_USER_SESSION, false);
+      expect(r).toEqual({ success: true });
     });
 
-    it("should update dispatchers service even with default names", done => {
-      const itemTemplate: common.IItemTemplate = mockItems.getAGOLItem(
-        "Workforce Project",
-        null
-      );
+    it("should update dispatchers service even with default names", async () => {
+      const itemTemplate: common.IItemTemplate = mockItems.getAGOLItem("Workforce Project", undefined);
       itemTemplate.data = mockItems.getAGOLItemData("Workforce Project");
 
-      const userUrl: string =
-        utils.PORTAL_SUBSET.restUrl +
-        "/community/users/casey?f=json&token=fake-token";
       const queryUrl: string =
         "https://services123.arcgis.com/org1234567890/arcgis/rest/services/dispatchers_47bb15c2df2b466da05577776e82d044/FeatureServer/0/query?f=json&where=userId%20%3D%20%27%27&outFields=*&token=fake-token";
       const addUrl: string =
         "https://services123.arcgis.com/org1234567890/arcgis/rest/services/dispatchers_47bb15c2df2b466da05577776e82d044/FeatureServer/0/applyEdits";
 
       fetchMock
-        .get(
-          utils.PORTAL_SUBSET.restUrl +
-            "/community/self?f=json&token=fake-token",
-          {}
-        )
+        .get(utils.PORTAL_SUBSET.restUrl + "/community/self?f=json&token=fake-token", {})
         .get(queryUrl, {
-          features: []
+          features: [],
         })
         .post(addUrl, {
-          addResults: [{}]
+          addResults: [{}],
         });
 
-      workforce
-        .fineTuneCreatedItem(itemTemplate, MOCK_USER_SESSION, false)
-        .then(r => {
-          expect(r).toEqual({ success: true });
-          done();
-        }, done.fail);
+      const r = await workforce.fineTuneCreatedItem(itemTemplate, MOCK_USER_SESSION, false);
+      expect(r).toEqual({ success: true });
     });
 
-    it("should handle error on update dispatchers", done => {
+    it("should handle error on update dispatchers", async () => {
       const communitySelfResponse: any = utils.getUserResponse();
-      const itemTemplate: common.IItemTemplate = mockItems.getAGOLItem(
-        "Workforce Project",
-        null
-      );
+      const itemTemplate: common.IItemTemplate = mockItems.getAGOLItem("Workforce Project", undefined);
       itemTemplate.data = mockItems.getAGOLItemData("Workforce Project");
 
-      const userUrl: string =
-        utils.PORTAL_SUBSET.restUrl +
-        "/community/users/casey?f=json&token=fake-token";
       const queryUrl: string =
         "https://services123.arcgis.com/org1234567890/arcgis/rest/services/dispatchers_47bb15c2df2b466da05577776e82d044/FeatureServer/0/query?f=json&where=userId%20%3D%20%27LocalGovDeployCasey%27&outFields=*&token=fake-token";
 
       fetchMock
-        .get(
-          utils.PORTAL_SUBSET.restUrl +
-            "/community/self?f=json&token=fake-token",
-          communitySelfResponse
-        )
+        .get(utils.PORTAL_SUBSET.restUrl + "/community/self?f=json&token=fake-token", communitySelfResponse)
         .get(queryUrl, mockItems.get400Failure());
 
-      workforce
-        .fineTuneCreatedItem(itemTemplate, MOCK_USER_SESSION, {})
-        .then(
-          () => {
-            done.fail();
-          },
-          () => {
-            done();
-          }
-        );
+      return workforce.fineTuneCreatedItem(itemTemplate, MOCK_USER_SESSION, {}).then(
+        () => fail(),
+        () => Promise.resolve(),
+      );
     });
 
-    it("should handle error on getUser", done => {
-      const communitySelfResponse: any = utils.getUserResponse();
-      const itemTemplate: common.IItemTemplate = mockItems.getAGOLItem(
-        "Workforce Project",
-        null
-      );
+    it("should handle error on getUser", async () => {
+      const itemTemplate: common.IItemTemplate = mockItems.getAGOLItem("Workforce Project", undefined);
       itemTemplate.data = mockItems.getAGOLItemData("Workforce Project");
 
-      const userUrl: string =
-        "https://services123.arcgis.com/org1234567890/arcgis/rest/services/dispatchers_47bb15c2df2b466da05577776e82d044/FeatureServer/0/query?f=json&where=userId%20%3D%20%27LocalGovDeployCasey%27&outFields=*&token=fake-token";
+      fetchMock.get(utils.PORTAL_SUBSET.restUrl + "/community/self?f=json&token=fake-token", mockItems.get400Failure());
 
-      fetchMock.get(
-        utils.PORTAL_SUBSET.restUrl + "/community/self?f=json&token=fake-token",
-        mockItems.get400Failure()
+      return workforce.fineTuneCreatedItem(itemTemplate, MOCK_USER_SESSION, {}).then(
+        () => fail(),
+        () => Promise.resolve(),
       );
-
-      workforce
-        .fineTuneCreatedItem(itemTemplate, MOCK_USER_SESSION, {})
-        .then(
-          () => {
-            done.fail();
-          },
-          () => {
-            done();
-          }
-        );
     });
 
-    it("should not update dispatchers service if it contains records", done => {
+    it("should not update dispatchers service if it contains records", async () => {
       const communitySelfResponse: any = utils.getUserResponse();
-      const itemTemplate: common.IItemTemplate = mockItems.getAGOLItem(
-        "Workforce Project",
-        null
-      );
+      const itemTemplate: common.IItemTemplate = mockItems.getAGOLItem("Workforce Project", undefined);
       itemTemplate.data = mockItems.getAGOLItemData("Workforce Project");
 
-      const userUrl: string =
-        utils.PORTAL_SUBSET.restUrl +
-        "/community/users/casey?f=json&token=fake-token";
       const queryUrl: string =
         "https://services123.arcgis.com/org1234567890/arcgis/rest/services/dispatchers_47bb15c2df2b466da05577776e82d044/FeatureServer/0/query?f=json&where=userid%20%3D%20%27LocalGovDeployCasey%27&outFields=*&token=fake-token";
 
       fetchMock
-        .get(
-          utils.PORTAL_SUBSET.restUrl +
-            "/community/self?f=json&token=fake-token",
-          communitySelfResponse
-        )
+        .get(utils.PORTAL_SUBSET.restUrl + "/community/self?f=json&token=fake-token", communitySelfResponse)
         .get(queryUrl, {
-          features: [{}]
+          features: [{}],
         });
 
-      workforce
-        .fineTuneCreatedItem(itemTemplate, MOCK_USER_SESSION, {
-          isPortal: true
-        })
-        .then(r => {
-          expect(r).toEqual({
-            success: true
-          });
-          done();
-        }, done.fail);
+      const r = await workforce.fineTuneCreatedItem(itemTemplate, MOCK_USER_SESSION, {
+        isPortal: true,
+      });
+      expect(r).toEqual({
+        success: true,
+      });
     });
 
-    it("should handle failure to add features", done => {
+    it("should handle failure to add features", async () => {
       const communitySelfResponse: any = utils.getUserResponse();
-      const itemTemplate: common.IItemTemplate = mockItems.getAGOLItem(
-        "Workforce Project",
-        null
-      );
+      const itemTemplate: common.IItemTemplate = mockItems.getAGOLItem("Workforce Project", undefined);
       itemTemplate.data = mockItems.getAGOLItemData("Workforce Project");
 
-      const userUrl: string =
-        utils.PORTAL_SUBSET.restUrl +
-        "/community/users/casey?f=json&token=fake-token";
       const queryUrl: string =
         "https://services123.arcgis.com/org1234567890/arcgis/rest/services/dispatchers_47bb15c2df2b466da05577776e82d044/FeatureServer/0/query?f=json&where=userid%20%3D%20%27LocalGovDeployCasey%27&outFields=*&token=fake-token";
       const addUrl: string =
         "https://services123.arcgis.com/org1234567890/arcgis/rest/services/dispatchers_47bb15c2df2b466da05577776e82d044/FeatureServer/0/applyEdits";
 
       fetchMock
-        .get(
-          utils.PORTAL_SUBSET.restUrl +
-            "/community/self?f=json&token=fake-token",
-          communitySelfResponse
-        )
+        .get(utils.PORTAL_SUBSET.restUrl + "/community/self?f=json&token=fake-token", communitySelfResponse)
         .get(queryUrl, {
-          features: []
+          features: [],
         })
         .post(addUrl, {});
 
-      workforce
+      return workforce
         .fineTuneCreatedItem(itemTemplate, MOCK_USER_SESSION, {
-          isPortal: true
+          isPortal: true,
         })
-        .then(done.fail, e => {
+        .then(fail, (e) => {
           expect(e).toEqual({
             success: false,
-            error: { success: false, message: "Failed to add dispatch record." }
+            error: { success: false, message: "Failed to add dispatch record." },
           });
-          done();
+          return Promise.resolve();
         });
     });
 
-    it("should handle error on add dispatcher features", done => {
+    it("should handle error on add dispatcher features", async () => {
       const communitySelfResponse: any = utils.getUserResponse();
-      const itemTemplate: common.IItemTemplate = mockItems.getAGOLItem(
-        "Workforce Project",
-        null
-      );
+      const itemTemplate: common.IItemTemplate = mockItems.getAGOLItem("Workforce Project", undefined);
       itemTemplate.data = mockItems.getAGOLItemData("Workforce Project");
 
-      const userUrl: string =
-        utils.PORTAL_SUBSET.restUrl +
-        "/community/users/casey?f=json&token=fake-token";
       const queryUrl: string =
         "https://services123.arcgis.com/org1234567890/arcgis/rest/services/dispatchers_47bb15c2df2b466da05577776e82d044/FeatureServer/0/query?f=json&where=userId%20%3D%20%27LocalGovDeployCasey%27&outFields=*&token=fake-token";
       const addUrl: string =
         "https://services123.arcgis.com/org1234567890/arcgis/rest/services/dispatchers_47bb15c2df2b466da05577776e82d044/FeatureServer/0/applyEdits";
 
       fetchMock
-        .get(
-          utils.PORTAL_SUBSET.restUrl +
-            "/community/self?f=json&token=fake-token",
-          communitySelfResponse
-        )
+        .get(utils.PORTAL_SUBSET.restUrl + "/community/self?f=json&token=fake-token", communitySelfResponse)
         .get(queryUrl, {
-          features: []
+          features: [],
         })
         .post(addUrl, mockItems.get400Failure());
 
-      workforce.fineTuneCreatedItem(itemTemplate, MOCK_USER_SESSION, {}).then(
-        r => {
-          done.fail();
-        },
-        e => {
-          done();
-        }
+      return workforce.fineTuneCreatedItem(itemTemplate, MOCK_USER_SESSION, {}).then(
+        () => fail(),
+        () => Promise.resolve(),
       );
     });
 
-    it("should have success === false when query does not return a features property", done => {
+    it("should have success === false when query does not return a features property", async () => {
       const communitySelfResponse: any = utils.getUserResponse();
-      const itemTemplate: common.IItemTemplate = mockItems.getAGOLItem(
-        "Workforce Project",
-        null
-      );
+      const itemTemplate: common.IItemTemplate = mockItems.getAGOLItem("Workforce Project", undefined);
       itemTemplate.data = mockItems.getAGOLItemData("Workforce Project");
 
-      const userUrl: string =
-        utils.PORTAL_SUBSET.restUrl +
-        "/community/users/casey?f=json&token=fake-token";
       const queryUrl: string =
         "https://services123.arcgis.com/org1234567890/arcgis/rest/services/dispatchers_47bb15c2df2b466da05577776e82d044/FeatureServer/0/query?f=json&where=userId%20%3D%20%27LocalGovDeployCasey%27&outFields=*&token=fake-token";
 
       fetchMock
-        .get(
-          utils.PORTAL_SUBSET.restUrl +
-            "/community/self?f=json&token=fake-token",
-          communitySelfResponse
-        )
+        .get(utils.PORTAL_SUBSET.restUrl + "/community/self?f=json&token=fake-token", communitySelfResponse)
         .get(queryUrl, {});
 
-      workforce
-        .fineTuneCreatedItem(itemTemplate, MOCK_USER_SESSION, {})
-        .then(r => {
-          expect(r).toEqual({
-            success: false
-          });
-          done();
-        }, done.fail);
+      const r = await workforce.fineTuneCreatedItem(itemTemplate, MOCK_USER_SESSION, {});
+      expect(r).toEqual({
+        success: false,
+      });
     });
 
-    // it("should have success === false when dispatchers does not have url", done => {
+    // it("should have success === false when dispatchers does not have url", Promise.resolve => {
     //   const communitySelfResponse: any = utils.getUserResponse();
     //   const itemTemplate: common.IItemTemplate = mockItems.getAGOLItem(
     //     "Workforce Project",
@@ -646,8 +516,8 @@ describe("Module `workforce`: manages the creation and deployment of workforce p
     //     expect(r).toEqual({
     //       success: false
     //     });
-    //     done();
-    //   }, done.fail);
+    //     Promise.resolve();
+    //   }, fail);
     // });
   });
 });

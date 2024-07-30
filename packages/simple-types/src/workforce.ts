@@ -29,7 +29,7 @@ export function convertItemToTemplate(
   itemTemplate: common.IItemTemplate,
   destAuthentication: common.UserSession,
   srcAuthentication: common.UserSession,
-  templateDictionary: any
+  templateDictionary: any,
 ): Promise<common.IItemTemplate> {
   return common.convertWorkforceItemToTemplate(itemTemplate, srcAuthentication, templateDictionary);
 }
@@ -44,12 +44,7 @@ export function convertItemToTemplate(
 export function fineTuneCreatedItem(
   newlyCreatedItem: common.IItemTemplate,
   destinationAuthentication: common.UserSession,
-  templateDictionary: any
+  templateDictionary: any,
 ): Promise<any> {
-  return common.fineTuneCreatedWorkforceItem(
-    newlyCreatedItem,
-    destinationAuthentication,
-    "",
-    templateDictionary
-  );
+  return common.fineTuneCreatedWorkforceItem(newlyCreatedItem, destinationAuthentication, "", templateDictionary);
 }

@@ -32,17 +32,12 @@ export function convertItemToTemplate(
   itemInfo: any,
   destAuthentication: common.UserSession,
   srcAuthentication: common.UserSession,
-  templateDictionary: any
+  templateDictionary: any,
 ): Promise<common.IItemTemplate> {
   // Delegate back to simple-types, which will in-turn delegate
   // to convertNotebookToTemplate at the correct point in the process
   // This is a temporary refactor step
-  return quickcaptureHelpers.convertItemToTemplate(
-    itemInfo,
-    destAuthentication,
-    srcAuthentication,
-    templateDictionary
-  );
+  return quickcaptureHelpers.convertItemToTemplate(itemInfo, destAuthentication, srcAuthentication, templateDictionary);
 }
 
 /**
@@ -51,11 +46,8 @@ export function convertItemToTemplate(
  * @param itemTemplate template for the quick capture project item
  * @returns templatized itemTemplate
  */
-export function convertQuickCaptureToTemplate(
-  itemTemplate: common.IItemTemplate
-): common.IItemTemplate {
-  common.setProp(itemTemplate, "data.application",
-    _templatizeApplication(itemTemplate.data.application, itemTemplate));
+export function convertQuickCaptureToTemplate(itemTemplate: common.IItemTemplate): common.IItemTemplate {
+  common.setProp(itemTemplate, "data.application", _templatizeApplication(itemTemplate.data.application, itemTemplate));
   return itemTemplate;
 }
 
@@ -67,10 +59,7 @@ export function convertQuickCaptureToTemplate(
  * @returns templatized itemTemplate
  * @private
  */
-export function _templatizeApplication(
-  data: any,
-  itemTemplate: common.IItemTemplate
-): any {
+export function _templatizeApplication(data: any, itemTemplate: common.IItemTemplate): any {
   // Quick Project item id
   _templatizeId(data, "itemId");
 
@@ -80,7 +69,7 @@ export function _templatizeApplication(
   // datasource item id and url
   const dataSources: common.IQuickCaptureDatasource[] = data?.dataSources;
   if (dataSources && Array.isArray(dataSources)) {
-    dataSources.forEach(ds => {
+    dataSources.forEach((ds) => {
       const id: string = ds.featureServiceItemId;
       if (id) {
         _updateDependencies(id, itemTemplate);
@@ -111,10 +100,7 @@ export function _templatizeAdminEmail(data: any): void {
  * @param itemTemplate template for the quick capture project item
  * @returns templatized itemTemplate
  */
-export function _updateDependencies(
-  id: string,
-  itemTemplate: common.IItemTemplate
-): void {
+export function _updateDependencies(id: string, itemTemplate: common.IItemTemplate): void {
   if (itemTemplate.dependencies.indexOf(id) === -1) {
     itemTemplate.dependencies.push(id);
   }
@@ -128,20 +114,12 @@ export function _updateDependencies(
  * @param urlPath the path to the url property
  * @private
  */
-export function _templatizeUrl(
-  obj: any,
-  idPath: string,
-  urlPath: string
-): void {
+export function _templatizeUrl(obj: any, idPath: string, urlPath: string): void {
   const id: any = common.getProp(obj, idPath);
   const url: string = common.getProp(obj, urlPath);
   if (url) {
     const layerId = url.substr(url.lastIndexOf("/") + 1);
-    common.setProp(
-      obj,
-      urlPath,
-      common.templatizeTerm(id, id, ".layer" + layerId + ".url")
-    );
+    common.setProp(obj, urlPath, common.templatizeTerm(id, id, ".layer" + layerId + ".url"));
   }
 }
 
@@ -169,13 +147,13 @@ export function createItemFromTemplate(
   template: common.IItemTemplate,
   templateDictionary: any,
   destinationAuthentication: common.UserSession,
-  itemProgressCallback: common.IItemProgressCallback
+  itemProgressCallback: common.IItemProgressCallback,
 ): Promise<common.ICreateItemFromTemplateResponse> {
   return quickcaptureHelpers.createItemFromTemplate(
     template,
     templateDictionary,
     destinationAuthentication,
-    itemProgressCallback
+    itemProgressCallback,
   );
 }
 

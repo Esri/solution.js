@@ -31,7 +31,7 @@ export function convertItemToTemplate(
   itemTemplate: common.IItemTemplate,
   destAuthentication: common.UserSession,
   srcAuthentication: common.UserSession,
-  templateDictionary: any
+  templateDictionary: any,
 ): Promise<common.IItemTemplate> {
   return new Promise<common.IItemTemplate>((resolve, reject) => {
     // Remove org base URL and app id, e.g.,
@@ -45,16 +45,10 @@ export function convertItemToTemplate(
       const iSep = templatizedUrl.indexOf("//");
       itemTemplate.item.url =
         common.placeholder(common.SERVER_NAME) + // add placeholder server name
-        templatizedUrl.substring(
-          templatizedUrl.indexOf("/", iSep + 2),
-          templatizedUrl.lastIndexOf("=") + 1
-        ) +
+        templatizedUrl.substring(templatizedUrl.indexOf("/", iSep + 2), templatizedUrl.lastIndexOf("=") + 1) +
         itemTemplate.item.id; // templatized id
 
-      portalUrl = templatizedUrl.replace(
-        templatizedUrl.substring(templatizedUrl.indexOf("/", iSep + 2)),
-        ""
-      );
+      portalUrl = templatizedUrl.replace(templatizedUrl.substring(templatizedUrl.indexOf("/", iSep + 2)), "");
     }
 
     // Extract dependencies
@@ -67,7 +61,7 @@ export function convertItemToTemplate(
       "data.map.itemId",
       "data.map.appProxy.mapItemId",
       "data.values.webmap",
-      "data.values.group"
+      "data.values.group",
     ]);
 
     // force the appItemId to be pulled directly from the template item
@@ -76,57 +70,32 @@ export function convertItemToTemplate(
 
     setValues(
       itemTemplate,
-      [
-        "data.logo",
-        "data.map.portalUrl",
-        "data.portalUrl",
-        "data.httpProxy.url"
-      ],
-      common.placeholder(common.SERVER_NAME)
+      ["data.logo", "data.map.portalUrl", "data.portalUrl", "data.httpProxy.url"],
+      common.placeholder(common.SERVER_NAME),
     );
 
-    common.setProp(
-      itemTemplate,
-      "data.geometryService",
-      common.placeholder(common.GEOMETRY_SERVER_NAME)
-    );
+    common.setProp(itemTemplate, "data.geometryService", common.placeholder(common.GEOMETRY_SERVER_NAME));
 
     templatizeDatasources(itemTemplate, srcAuthentication, portalUrl, templateDictionary).then(
       () => {
-        templatizeWidgets(
-          itemTemplate,
-          srcAuthentication,
-          portalUrl,
-          "data.widgetPool.widgets"
-        ).then(
-          _itemTemplate => {
-            templatizeWidgets(
-              _itemTemplate,
-              srcAuthentication,
-              portalUrl,
-              "data.widgetOnScreen.widgets",
-              true
-            ).then(
-              updatedItemTemplate => {
-                templatizeValues(
-                  updatedItemTemplate,
-                  srcAuthentication,
-                  portalUrl,
-                  "data.values"
-                ).then(
-                  _updatedItemTemplate => {
+        templatizeWidgets(itemTemplate, srcAuthentication, portalUrl, "data.widgetPool.widgets").then(
+          (_itemTemplate) => {
+            templatizeWidgets(_itemTemplate, srcAuthentication, portalUrl, "data.widgetOnScreen.widgets", true).then(
+              (updatedItemTemplate) => {
+                templatizeValues(updatedItemTemplate, srcAuthentication, portalUrl, "data.values").then(
+                  (_updatedItemTemplate) => {
                     resolve(_updatedItemTemplate);
                   },
-                  e => reject(common.fail(e))
+                  (e) => reject(common.fail(e)),
                 );
               },
-              e => reject(common.fail(e))
+              (e) => reject(common.fail(e)),
             );
           },
-          e => reject(common.fail(e))
+          (e) => reject(common.fail(e)),
         );
       },
-      e => reject(common.fail(e))
+      (e) => reject(common.fail(e)),
     );
   });
 }
@@ -144,52 +113,33 @@ export function templatizeDatasources(
   itemTemplate: common.IItemTemplate,
   authentication: common.UserSession,
   portalUrl: string,
-  templateDictionary: any
+  templateDictionary: any,
 ): Promise<common.IItemTemplate> {
   return new Promise<common.IItemTemplate>((resolve, reject) => {
-    const dataSources: any = common.getProp(
-      itemTemplate,
-      "data.dataSource.dataSources"
-    );
+    const dataSources: any = common.getProp(itemTemplate, "data.dataSource.dataSources");
     if (dataSources && Object.keys(dataSources).length > 0) {
       const pendingRequests = new Array<Promise<void>>();
-      Object.keys(dataSources).forEach(k => {
+      Object.keys(dataSources).forEach((k) => {
         const ds: any = dataSources[k];
         common.setProp(ds, "portalUrl", common.placeholder(common.SERVER_NAME));
         const itemId: any = common.getProp(ds, "itemId");
         if (common.getProp(ds, "url")) {
           if (itemId) {
-            const layerId = ds.url.substr(
-              (ds.url as string).lastIndexOf("/") + 1
-            );
+            const layerId = ds.url.substr((ds.url as string).lastIndexOf("/") + 1);
             common.cacheLayerInfo(layerId.toString(), itemId, ds.url, templateDictionary);
-            ds.itemId = common.templatizeTerm(
-              itemId,
-              itemId,
-              ".layer" + layerId + ".itemId"
-            );
+            ds.itemId = common.templatizeTerm(itemId, itemId, ".layer" + layerId + ".itemId");
           }
-          const urlResults: any = findUrls(
-            ds.url,
-            portalUrl,
-            [],
-            [],
-            authentication
-          );
+          const urlResults: any = findUrls(ds.url, portalUrl, [], [], authentication);
           pendingRequests.push(
             new Promise<void>((resolveReq, rejectReq) => {
-              handleServiceRequests(
-                urlResults.serviceRequests,
-                urlResults.requestUrls,
-                urlResults.testString
-              ).then(
-                response => {
+              handleServiceRequests(urlResults.serviceRequests, urlResults.requestUrls, urlResults.testString).then(
+                (response) => {
                   ds.url = response;
                   resolveReq();
                 },
-                e => rejectReq(common.fail(e))
+                (e) => rejectReq(common.fail(e)),
               );
-            })
+            }),
           );
         } else {
           if (itemId) {
@@ -199,7 +149,7 @@ export function templatizeDatasources(
       });
       Promise.all(pendingRequests).then(
         () => resolve(itemTemplate),
-        e => reject(common.fail(e))
+        (e) => reject(common.fail(e)),
       );
     } else {
       resolve(itemTemplate);
@@ -212,7 +162,7 @@ export function templatizeWidgets(
   authentication: common.UserSession,
   portalUrl: string,
   widgetPath: string,
-  isOnScreen = false
+  isOnScreen = false,
 ): Promise<common.IItemTemplate> {
   return new Promise<common.IItemTemplate>((resolve, reject) => {
     // update widgets
@@ -220,7 +170,7 @@ export function templatizeWidgets(
     let serviceRequests: any[] = [];
     let requestUrls: string[] = [];
 
-    widgets.forEach(widget => {
+    widgets.forEach((widget) => {
       /* istanbul ignore else */
       if (!isOnScreen && common.getProp(widget, "icon")) {
         setValues(widget, ["icon"], common.placeholder(common.SERVER_NAME));
@@ -228,13 +178,7 @@ export function templatizeWidgets(
       const config: any = widget.config;
       if (config) {
         const sConfig: string = JSON.stringify(config);
-        const urlResults: any = findUrls(
-          sConfig,
-          portalUrl,
-          requestUrls,
-          serviceRequests,
-          authentication
-        );
+        const urlResults: any = findUrls(sConfig, portalUrl, requestUrls, serviceRequests, authentication);
 
         widget.config = JSON.parse(urlResults.testString);
         serviceRequests = urlResults.serviceRequests;
@@ -245,11 +189,11 @@ export function templatizeWidgets(
     if (serviceRequests.length > 0) {
       const sWidgets: string = JSON.stringify(widgets);
       handleServiceRequests(serviceRequests, requestUrls, sWidgets).then(
-        response => {
+        (response) => {
           common.setProp(itemTemplate, widgetPath, JSON.parse(response));
           resolve(itemTemplate);
         },
-        e => reject(common.fail(e))
+        (e) => reject(common.fail(e)),
       );
     } else {
       resolve(itemTemplate);
@@ -261,7 +205,7 @@ export function templatizeValues(
   itemTemplate: common.IItemTemplate,
   authentication: common.UserSession,
   portalUrl: string,
-  widgetPath: string
+  widgetPath: string,
 ): Promise<common.IItemTemplate> {
   return new Promise<common.IItemTemplate>((resolve, reject) => {
     // update properties of values collection for web app templates
@@ -275,13 +219,7 @@ export function templatizeValues(
       }
 
       const sConfig: string = JSON.stringify(values);
-      const urlResults: any = findUrls(
-        sConfig,
-        portalUrl,
-        requestUrls,
-        serviceRequests,
-        authentication
-      );
+      const urlResults: any = findUrls(sConfig, portalUrl, requestUrls, serviceRequests, authentication);
 
       values = JSON.parse(urlResults.testString);
       serviceRequests = urlResults.serviceRequests;
@@ -291,11 +229,11 @@ export function templatizeValues(
     if (serviceRequests.length > 0) {
       const sWidgets: string = JSON.stringify(values);
       handleServiceRequests(serviceRequests, requestUrls, sWidgets).then(
-        response => {
+        (response) => {
           common.setProp(itemTemplate, widgetPath, JSON.parse(response));
           resolve(itemTemplate);
         },
-        e => reject(common.fail(e))
+        (e) => reject(common.fail(e)),
       );
     } else {
       resolve(itemTemplate);
@@ -306,34 +244,27 @@ export function templatizeValues(
 export function handleServiceRequests(
   serviceRequests: any[],
   requestUrls: string[],
-  objString: string
+  objString: string,
 ): Promise<string> {
   return new Promise<string>((resolve, reject) => {
     if (serviceRequests && serviceRequests.length > 0) {
       let i: number = 0;
       Promise.all(serviceRequests).then(
-        serviceResponses => {
-          serviceResponses.forEach(serviceResponse => {
+        (serviceResponses) => {
+          serviceResponses.forEach((serviceResponse) => {
             if (common.getProp(serviceResponse, "serviceItemId")) {
               const serviceTemplate: string =
                 "{{" +
                 serviceResponse.serviceItemId +
-                (serviceResponse.hasOwnProperty("id")
-                  ? ".layer" + serviceResponse.id
-                  : "") +
+                (serviceResponse.hasOwnProperty("id") ? ".layer" + serviceResponse.id : "") +
                 ".url}}";
-              objString = replaceUrl(
-                objString,
-                requestUrls[i],
-                serviceTemplate,
-                true
-              );
+              objString = replaceUrl(objString, requestUrls[i], serviceTemplate, true);
             }
             i++;
           });
           resolve(objString);
         },
-        e => reject(common.fail(e))
+        (e) => reject(common.fail(e)),
       );
     } else {
       resolve(objString);
@@ -346,34 +277,22 @@ export function findUrls(
   portalUrl: string,
   requestUrls: string[],
   serviceRequests: any[],
-  authentication: common.UserSession
+  authentication: common.UserSession,
 ) {
   const options: any = {
     f: "json",
-    authentication: authentication
+    authentication: authentication,
   };
   // test for URLs
   const results = testString.match(/(\bhttps?:\/\/[-A-Z0-9/._]*)/gim);
   if (results && results.length) {
     results.forEach((url: string) => {
       if (url.indexOf("NAServer") > -1) {
-        testString = replaceUrl(
-          testString,
-          url,
-          common.placeholder(common.NA_SERVER_NAME)
-        );
+        testString = replaceUrl(testString, url, common.placeholder(common.NA_SERVER_NAME));
       } else if (url.indexOf("GeocodeServer") > -1) {
-        testString = replaceUrl(
-          testString,
-          url,
-          common.placeholder(common.GEOCODE_SERVER_NAME)
-        );
+        testString = replaceUrl(testString, url, common.placeholder(common.GEOCODE_SERVER_NAME));
       } else if (portalUrl && url.indexOf(portalUrl) > -1) {
-        testString = replaceUrl(
-          testString,
-          portalUrl,
-          common.placeholder(common.SERVER_NAME)
-        );
+        testString = replaceUrl(testString, portalUrl, common.placeholder(common.SERVER_NAME));
       } else if (url.indexOf("FeatureServer") > -1) {
         if (requestUrls.indexOf(url) === -1) {
           requestUrls.push(url);
@@ -385,7 +304,7 @@ export function findUrls(
   return {
     testString,
     requestUrls,
-    serviceRequests
+    serviceRequests,
   };
 }
 
@@ -400,33 +319,18 @@ export function findUrls(
  *
  * @returns the obj with any instances of the url replaced
  */
-export function replaceUrl(
-  obj: string,
-  url: string,
-  newUrl: string,
-  validateFullUrl: boolean = false
-) {
+export function replaceUrl(obj: string, url: string, newUrl: string, validateFullUrl: boolean = false) {
   const enforceFullUrl: boolean = validateFullUrl && obj.indexOf('"') > -1;
   const re = new RegExp(enforceFullUrl ? '"' + url + '"' : url, "gmi");
   return obj.replace(re, enforceFullUrl ? '"' + newUrl + '"' : newUrl);
 }
 
-export function setValues(
-  itemTemplate: common.IItemTemplate,
-  paths: string[],
-  base: string
-) {
-  paths.forEach(path => {
+export function setValues(itemTemplate: common.IItemTemplate, paths: string[], base: string) {
+  paths.forEach((path) => {
     const url: string = common.getProp(itemTemplate, path);
     if (url) {
-      const subString: string = url.substring(
-        url.indexOf("/", url.indexOf("//") + 2)
-      );
-      common.setProp(
-        itemTemplate,
-        path,
-        subString !== url ? base + subString : base
-      );
+      const subString: string = url.substring(url.indexOf("/", url.indexOf("//") + 2));
+      common.setProp(itemTemplate, path, subString !== url ? base + subString : base);
     }
   });
 }
@@ -435,27 +339,18 @@ export function fineTuneCreatedItem(
   originalTemplate: common.IItemTemplate,
   newlyCreatedItem: common.IItemTemplate,
   templateDictionary: any,
-  destinationAuthentication: common.UserSession
+  destinationAuthentication: common.UserSession,
 ): Promise<void> {
-  return new Promise<void>(resolve => {
+  return new Promise<void>((resolve) => {
     // If this is a Web AppBuilder application, we will create a Code Attachment for downloading
-    if (
-      common.hasAnyKeyword(originalTemplate, [
-        "WAB2D",
-        "WAB3D",
-        "Web AppBuilder"
-      ])
-    ) {
+    if (common.hasAnyKeyword(originalTemplate, ["WAB2D", "WAB3D", "Web AppBuilder"])) {
       // Update item so properties like appItemId can now be set now that we know the new apps ID
       const updateOptions: common.IItemUpdate = {
         id: newlyCreatedItem.itemId,
         url: newlyCreatedItem.item.url,
-        data: newlyCreatedItem.data
+        data: newlyCreatedItem.data,
       };
-      const updateDef = common.updateItem(
-        updateOptions,
-        destinationAuthentication
-      );
+      const updateDef = common.updateItem(updateOptions, destinationAuthentication);
 
       const itemInfo = {
         tags: originalTemplate.item.tags,
@@ -466,26 +361,23 @@ export function fineTuneCreatedItem(
         originItemId: newlyCreatedItem.itemId,
         url:
           common.checkUrlPathTermination(
-            common.replaceInTemplate(
-              common.placeholder(common.SERVER_NAME),
-              templateDictionary
-            )
+            common.replaceInTemplate(common.placeholder(common.SERVER_NAME), templateDictionary),
           ) +
           "sharing/rest/content/items/" +
           newlyCreatedItem.itemId +
-          "/package"
+          "/package",
       };
 
       const createItemWithDataDef = common.createItemWithData(
         itemInfo,
         {},
         destinationAuthentication,
-        templateDictionary.folderId
+        templateDictionary.folderId,
       );
 
       Promise.all([updateDef, createItemWithDataDef]).then(
         () => resolve(null),
-        () => resolve(null)
+        () => resolve(null),
       );
     } else {
       // Otherwise, nothing extra needed
@@ -538,7 +430,7 @@ export function _getWABDependencies(model: any): string[] {
   }
   const dataSources = common.getProp(model, "data.dataSource.dataSources");
   if (dataSources) {
-    Object.keys(dataSources).forEach(k => {
+    Object.keys(dataSources).forEach((k) => {
       const ds: any = dataSources[k];
       if (ds.itemId) {
         deps.push(ds.itemId);
@@ -555,11 +447,8 @@ export function _getWABDependencies(model: any): string[] {
  * @param paths A list of property paths that contain ids
  * @private
  */
-export function _templatizeIdPaths(
-  itemTemplate: common.IItemTemplate,
-  paths: string[]
-) {
-  paths.forEach(path => {
+export function _templatizeIdPaths(itemTemplate: common.IItemTemplate, paths: string[]) {
+  paths.forEach((path) => {
     const id: any = common.getProp(itemTemplate, path);
     _templatizeIdPath(itemTemplate, path, id);
   });
@@ -573,11 +462,7 @@ export function _templatizeIdPaths(
  * @param id The base id to use when templatizing
  * @private
  */
-export function _templatizeIdPath(
-  itemTemplate: common.IItemTemplate,
-  path: string,
-  id: string
-) {
+export function _templatizeIdPath(itemTemplate: common.IItemTemplate, path: string, id: string) {
   common.setProp(itemTemplate, path, common.templatizeTerm(id, id, ".itemId"));
 }
 
@@ -590,49 +475,31 @@ export function _templatizeIdPath(
  */
 export function postProcessFieldReferences(
   solutionTemplate: common.IItemTemplate,
-  datasourceInfos: common.IDatasourceInfo[]
+  datasourceInfos: common.IDatasourceInfo[],
 ): common.IItemTemplate {
   // handle datasources common for WAB apps
-  const dataSources: any = common.getProp(
-    solutionTemplate,
-    "data.dataSource.dataSources"
-  );
+  const dataSources: any = common.getProp(solutionTemplate, "data.dataSource.dataSources");
   if (dataSources && Object.keys(dataSources).length > 0) {
-    Object.keys(dataSources).forEach(k => {
+    Object.keys(dataSources).forEach((k) => {
       const ds: any = dataSources[k];
       dataSources[k] = _templatizeObject(ds, datasourceInfos);
     });
-    common.setProp(
-      solutionTemplate,
-      "data.dataSource.dataSources",
-      dataSources
-    );
+    common.setProp(solutionTemplate, "data.dataSource.dataSources", dataSources);
   }
 
   // handle widgets common for WAB apps
-  const paths: string[] = [
-    "data.widgetPool.widgets",
-    "data.widgetOnScreen.widgets"
-  ];
-  paths.forEach(path => {
+  const paths: string[] = ["data.widgetPool.widgets", "data.widgetOnScreen.widgets"];
+  paths.forEach((path) => {
     const widgets = common.getProp(solutionTemplate, path);
     if (widgets) {
-      common.setProp(
-        solutionTemplate,
-        path,
-        _templatizeObjectArray(widgets, datasourceInfos)
-      );
+      common.setProp(solutionTemplate, path, _templatizeObjectArray(widgets, datasourceInfos));
     }
   });
 
   // handle values common for web app templates
   const values: any = common.getProp(solutionTemplate, "data.values");
   if (values) {
-    common.setProp(
-      solutionTemplate,
-      "data.values",
-      _templatizeObject(values, datasourceInfos)
-    );
+    common.setProp(solutionTemplate, "data.values", _templatizeObject(values, datasourceInfos));
   }
 
   return solutionTemplate;
@@ -649,20 +516,12 @@ export function postProcessFieldReferences(
 export function _templatizeObject(
   obj: any,
   datasourceInfos: common.IDatasourceInfo[],
-  templatizeKeys: boolean = false
+  templatizeKeys: boolean = false,
 ): any {
   obj = _prioritizedTests(obj, datasourceInfos, templatizeKeys);
-  const replaceOrder: common.IDatasourceInfo[] = _getReplaceOrder(
-    obj,
-    datasourceInfos
-  );
-  replaceOrder.forEach(ds => {
-    obj = common.templatizeFieldReferences(
-      obj,
-      ds.fields,
-      ds.basePath,
-      templatizeKeys
-    );
+  const replaceOrder: common.IDatasourceInfo[] = _getReplaceOrder(obj, datasourceInfos);
+  replaceOrder.forEach((ds) => {
+    obj = common.templatizeFieldReferences(obj, ds.fields, ds.basePath, templatizeKeys);
   });
   return obj;
 }
@@ -675,20 +534,13 @@ export function _templatizeObject(
  * @returns The widgets with templatized field references
  * @private
  */
-export function _templatizeObjectArray(
-  objects: any[],
-  datasourceInfos: common.IDatasourceInfo[]
-): any {
+export function _templatizeObjectArray(objects: any[], datasourceInfos: common.IDatasourceInfo[]): any {
   const updateKeyObjects: string[] = ["SmartEditor", "Screening"];
-  return objects.map(obj => {
+  return objects.map((obj) => {
     // only templatize the config and lower
     if (obj.config) {
       const templatizeKeys: boolean = updateKeyObjects.indexOf(obj.name) > -1;
-      obj.config = _templatizeObject(
-        obj.config,
-        datasourceInfos,
-        templatizeKeys
-      );
+      obj.config = _templatizeObject(obj.config, datasourceInfos, templatizeKeys);
     }
     return obj;
   });
@@ -704,16 +556,11 @@ export function _templatizeObjectArray(
  * @returns A list of datasourceInfo objects sorted based on the presence of a layers url or id
  * @private
  */
-export function _getReplaceOrder(
-  obj: any,
-  datasourceInfos: common.IDatasourceInfo[]
-) {
+export function _getReplaceOrder(obj: any, datasourceInfos: common.IDatasourceInfo[]) {
   const objString: string = JSON.stringify(obj);
 
   // If we don't find any layer url, web map layer id, service url, agol itemId then remove the datasource.
-  const _datasourceInfos: common.IDatasourceInfo[] = datasourceInfos.filter(
-    ds => _getSortOrder(ds, objString) < 4
-  );
+  const _datasourceInfos: common.IDatasourceInfo[] = datasourceInfos.filter((ds) => _getSortOrder(ds, objString) < 4);
   return _datasourceInfos.sort((a, b) => {
     return _getSortOrder(a, objString) - _getSortOrder(b, objString);
   });
@@ -728,10 +575,7 @@ export function _getReplaceOrder(
  * @returns The prioritized order for testing
  * @private
  */
-export function _getSortOrder(
-  datasourceInfo: common.IDatasourceInfo,
-  testString: string
-): number {
+export function _getSortOrder(datasourceInfo: common.IDatasourceInfo, testString: string): number {
   const url = datasourceInfo.url;
   const itemId = datasourceInfo.itemId;
   const layerId = datasourceInfo.layerId;
@@ -740,16 +584,13 @@ export function _getSortOrder(
   // else if we find the maps layer id prioritze it first
   let layerUrlTest: any;
   if (url && !isNaN(layerId)) {
-    layerUrlTest = new RegExp(
-      url.replace(/[.]/, ".layer" + layerId + "."),
-      "gm"
-    );
+    layerUrlTest = new RegExp(url.replace(/[.]/, ".layer" + layerId + "."), "gm");
   }
   if (layerUrlTest && layerUrlTest.test(testString)) {
     return 1;
   } else if (datasourceInfo.ids.length > 0) {
     if (
-      datasourceInfo.ids.some(id => {
+      datasourceInfo.ids.some((id) => {
         const layerMapIdTest: any = new RegExp(id, "gm");
         return layerMapIdTest.test(testString);
       })
@@ -787,24 +628,17 @@ export function _getSortOrder(
  * @returns An updated instance of the dataSource or widget with as many field references templatized as possible.
  * @private
  */
-export function _prioritizedTests(
-  obj: any,
-  datasourceInfos: common.IDatasourceInfo[],
-  templatizeKeys: boolean
-): any {
+export function _prioritizedTests(obj: any, datasourceInfos: common.IDatasourceInfo[], templatizeKeys: boolean): any {
   const objString: string = JSON.stringify(obj);
-  const hasDatasources = datasourceInfos.filter(ds => {
+  const hasDatasources = datasourceInfos.filter((ds) => {
     let urlTest: any;
     if (ds.url && !isNaN(ds.layerId)) {
-      urlTest = new RegExp(
-        ds.url.replace(/[.]/, ".layer" + ds.layerId + "."),
-        "gm"
-      );
+      urlTest = new RegExp(ds.url.replace(/[.]/, ".layer" + ds.layerId + "."), "gm");
     }
 
     let hasMapLayerId: boolean = false;
     if (ds.ids.length > 0) {
-      hasMapLayerId = ds.ids.some(id => {
+      hasMapLayerId = ds.ids.some((id) => {
         const idTest: any = new RegExp(id, "gm");
         return idTest.test(objString);
       });
@@ -815,12 +649,12 @@ export function _prioritizedTests(
     }
   });
   if (hasDatasources.length > 0) {
-    hasDatasources.forEach(ds => {
+    hasDatasources.forEach((ds) => {
       // specific url reference is the most common
       obj = _templatizeParentByURL(obj, ds, templatizeKeys);
       if (ds.ids.length > 0) {
         // the second most common is to use the layerId from the webmap
-        ds.ids.forEach(id => {
+        ds.ids.forEach((id) => {
           obj = _templatizeParentByWebMapLayerId(obj, ds, id, templatizeKeys);
         });
       }
@@ -842,7 +676,7 @@ export function _prioritizedTests(
 export function _templatizeParentByURL(
   obj: { [index: string]: any },
   ds: common.IDatasourceInfo,
-  templatizeKeys: boolean
+  templatizeKeys: boolean,
 ): any {
   let clone: { [index: string]: any } = {};
   const url = ds.url;
@@ -854,7 +688,7 @@ export function _templatizeParentByURL(
   }
 
   if (Array.isArray(obj)) {
-    clone = obj.map(c => {
+    clone = obj.map((c) => {
       return _templatizeParentByURL(c, ds, templatizeKeys);
     });
   } else if (typeof obj === "object") {
@@ -863,12 +697,7 @@ export function _templatizeParentByURL(
         clone[i] = _templatizeParentByURL(obj[i], ds, templatizeKeys);
       } else {
         if (urlTest && urlTest.test(obj[i])) {
-          obj = common.templatizeFieldReferences(
-            obj,
-            ds.fields,
-            ds.basePath,
-            templatizeKeys
-          );
+          obj = common.templatizeFieldReferences(obj, ds.fields, ds.basePath, templatizeKeys);
         }
         clone[i] = obj[i];
       }
@@ -894,12 +723,12 @@ export function _templatizeParentByWebMapLayerId(
   obj: { [index: string]: any },
   ds: common.IDatasourceInfo,
   id: string,
-  templatizeKeys: boolean
+  templatizeKeys: boolean,
 ): any {
   let clone: { [index: string]: any } = {};
   const idTest: any = new RegExp(id, "gm");
   if (Array.isArray(obj)) {
-    clone = obj.map(c => {
+    clone = obj.map((c) => {
       return _templatizeParentByWebMapLayerId(c, ds, id, templatizeKeys);
     });
   } else if (typeof obj === "object") {
@@ -916,33 +745,16 @@ export function _templatizeParentByWebMapLayerId(
           parsedProp = undefined;
         }
         if (parsedProp && typeof parsedProp === "object") {
-          clone[i] = JSON.stringify(
-            _templatizeParentByWebMapLayerId(parsedProp, ds, id, templatizeKeys)
-          );
+          clone[i] = JSON.stringify(_templatizeParentByWebMapLayerId(parsedProp, ds, id, templatizeKeys));
         } else if (typeof obj[i] === "object") {
           // some widgets store the layerId as a key to a collection of details that contain field references
           if (idTest.test(i) && templatizeKeys) {
-            obj[i] = common.templatizeFieldReferences(
-              obj[i],
-              ds.fields,
-              ds.basePath,
-              templatizeKeys
-            );
+            obj[i] = common.templatizeFieldReferences(obj[i], ds.fields, ds.basePath, templatizeKeys);
           }
-          clone[i] = _templatizeParentByWebMapLayerId(
-            obj[i],
-            ds,
-            id,
-            templatizeKeys
-          );
+          clone[i] = _templatizeParentByWebMapLayerId(obj[i], ds, id, templatizeKeys);
         } else {
           if (idTest.test(obj[i])) {
-            obj = common.templatizeFieldReferences(
-              obj,
-              ds.fields,
-              ds.basePath,
-              templatizeKeys
-            );
+            obj = common.templatizeFieldReferences(obj, ds.fields, ds.basePath, templatizeKeys);
           }
           clone[i] = obj[i];
         }
