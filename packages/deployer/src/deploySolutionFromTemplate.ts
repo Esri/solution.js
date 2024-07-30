@@ -242,7 +242,7 @@ export async function deploySolutionFromTemplate(
 
   solutionTemplateData.templates = _updateGroupReferences(solutionTemplateData.templates, templateDictionary);
 
-  solutionTemplateData.templates = common.updateWorkflowTemplateIds(templateDictionary, solutionTemplateData.templates);
+  solutionTemplateData.templates = common.updateWorkflowTemplateIds(solutionTemplateData.templates, templateDictionary);
 
   // Update solution items data using template dictionary, and then update the
   // itemId & dependencies in each item template
