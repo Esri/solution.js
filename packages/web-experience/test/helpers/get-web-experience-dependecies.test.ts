@@ -25,36 +25,36 @@ describe("getWebExperienceDependencies :: ", () => {
       data: {
         dataSources: {
           one: {
-            itemId: "bc1"
+            itemId: "bc1",
           },
           two: {
-            itemId: "bc2"
+            itemId: "bc2",
           },
           three: {
             other: {
-              itemId: "notincluded"
-            }
-          }
-        }
-      }
+              itemId: "notincluded",
+            },
+          },
+        },
+      },
     } as IModel;
 
     const chk = getWebExperienceDependencies(input);
 
     expect(Array.isArray(chk)).toBe(true, "should return an array");
     expect(chk.length).toBe(2, "should have two entries");
-    expect(chk.indexOf("bc1")).toBeGreaterThan(-1, "should have bc1");
-    expect(chk.indexOf("bc2")).toBeGreaterThan(-1, "should have bc2");
+    expect(chk.indexOf("bc1")).withContext("should have bc1").toBeGreaterThan(-1);
+    expect(chk.indexOf("bc2")).withContext("should have bc2").toBeGreaterThan(-1);
   });
 
   it("returns empty array if no datasources", () => {
     const input = {
       item: {} as IItem,
-      data: {}
+      data: {},
     } as IModel;
 
     const chk = getWebExperienceDependencies(input);
-    expect(Array.isArray(chk)).toBe(true, "should return an array");
-    expect(chk.length).toBe(0, "should have no entries");
+    expect(Array.isArray(chk)).withContext("should return an array").toBe(true);
+    expect(chk.length).withContext("should have no entries").toBe(0);
   });
 });

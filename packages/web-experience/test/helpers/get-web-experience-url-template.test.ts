@@ -16,32 +16,23 @@
 import * as getSubdomainModule from "../../src/helpers/get-experience-subdomain";
 import { getWebExperiencepUrlTemplate } from "../../src/helpers/get-web-experience-url-template";
 import { UserSession } from "@esri/solution-common";
+
 describe("getWebExperiencepUrlTemplate ::", () => {
   it("for ago returns templated url", () => {
-    const subdomainSpy = spyOn(
-      getSubdomainModule,
-      "getExperienceSubdomain"
-    ).and.returnValue("experienceqa");
+    const subdomainSpy = spyOn(getSubdomainModule, "getExperienceSubdomain").and.returnValue("experienceqa");
     const url = getWebExperiencepUrlTemplate({} as UserSession);
-    expect(url).toBe(
-      "https://experienceqa.arcgis.com/experience/{{appid}}",
-      "should construct the ago url"
-    );
-    expect(subdomainSpy.calls.count()).toBe(1, "should get the subdomain");
+    expect(url).toBe("https://experienceqa.arcgis.com/experience/{{appid}}", "should construct the ago url");
+    expect(subdomainSpy.calls.count()).withContext("should get the subdomain").toBe(1);
   });
 
   it("for portal, returns templated url", () => {
-    const subdomainSpy = spyOn(
-      getSubdomainModule,
-      "getExperienceSubdomain"
-    ).and.returnValue(null);
+    const subdomainSpy = spyOn(getSubdomainModule, "getExperienceSubdomain").and.returnValue(null as any);
     const url = getWebExperiencepUrlTemplate({
-      portal: "https://dev0004025.esri.com/portal/sharing/rest"
+      portal: "https://dev0004025.esri.com/portal/sharing/rest",
     } as UserSession);
-    expect(url).toBe(
-      "https://dev0004025.esri.com/portal/apps/experiencebuilder/?id={{appid}}",
-      "should construct the portal url"
-    );
+    expect(url)
+      .withContext("should construct the portal url")
+      .toBe("https://dev0004025.esri.com/portal/apps/experiencebuilder/?id={{appid}}");
     expect(subdomainSpy.calls.count()).toBe(1, "should get the subdomain");
   });
 });

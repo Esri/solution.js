@@ -29,7 +29,7 @@ export function createWebExperienceModelFromTemplate(
   templateModel: IModelTemplate,
   settings: any,
   transforms: any,
-  authentication: UserSession
+  authentication: UserSession,
 ): Promise<any> {
   // get the experience base url
   settings.experienceUrlTemplate = getWebExperiencepUrlTemplate(authentication);

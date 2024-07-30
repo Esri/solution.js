@@ -26,16 +26,17 @@ describe("getExperienceSubdomain :: ", () => {
       { portal: "https://dc.mapsdevext.arcgis.com", expected: "experiencedev" },
       { portal: "https://www.arcgis.com", expected: "experience" },
       { portal: "https://dc.maps.arcgis.com", expected: "experience" },
-      { portal: "https://some.com/portal", expected: undefined },
-      { portal: undefined, expected: "experience" }
+      { portal: undefined, expected: "experience" },
     ];
 
-    data.forEach(entry => {
+    data.forEach((entry) => {
       const us = { portal: entry.portal } as UserSession;
-      expect(getExperienceSubdomain(us)).toBe(
-        entry.expected,
-        `Should convert ${entry.portal} to ${entry.expected}`
-      );
+      expect(getExperienceSubdomain(us))
+        .withContext(`Should convert ${entry.portal} to ${entry.expected}`)
+        .toBe(entry.expected);
     });
+    expect(getExperienceSubdomain({ portal: "https://some.com/portal" } as UserSession))
+      .withContext(`Should return 'undefined" for "https://some.com/portal"`)
+      .toBeUndefined();
   });
 });

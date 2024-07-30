@@ -30,132 +30,92 @@ describe("createWebExperience :: ", () => {
     createItemSpy = spyOn(portalModule, "createItem").and.resolveTo({
       id: "bc3",
       folder: "fakefolderid",
-      success: true
+      success: true,
     });
-    interpolateIdSpy = spyOn(
-      hubCommonModule,
-      "interpolateItemId"
-    ).and.callThrough();
+    interpolateIdSpy = spyOn(hubCommonModule, "interpolateItemId").and.callThrough();
     updateItemSpy = spyOn(portalModule, "updateItem").and.resolveTo({
       id: "bc3",
-      success: true
+      success: true,
     });
     addResSpy = spyOn(portalModule, "addItemResource").and.resolveTo({
       itemId: "bc3",
       owner: "casey",
       folder: "",
-      success: true
+      success: true,
     });
     moveItemSpy = spyOn(portalModule, "moveItem").and.resolveTo({
       success: true,
       folder: "3ef",
       owner: "casey",
-      itemId: "bc3"
+      itemId: "bc3",
     });
   });
 
-  it("happy-path", () => {
+  it("happy-path", async () => {
     const model = {
       item: {} as portalModule.IItem,
       data: {
-        some: "properties" // we don't care much what's in here
+        some: "properties", // we don't care much what's in here
       },
       properties: {
         imageResourcesList: {
-          another: "property" // again, can be whatever
-        }
-      }
+          another: "property", // again, can be whatever
+        },
+      },
     } as hubCommonModule.IModel;
 
-    return createWebExperience(
-      model,
-      "fakefolderid",
-      {},
-      MOCK_USER_SESSION
-    ).then(result => {
-      expect(createItemSpy.calls.count()).toBe(1, "should create the item");
-      expect(interpolateIdSpy.calls.count()).toBe(
-        1,
-        "should call interpolateId"
-      );
-      expect(updateItemSpy.calls.count()).toBe(1, "should call updateItem");
-      expect(addResSpy.calls.count()).toBe(2, "should add three resources");
-      expect(moveItemSpy.calls.count()).toBe(1, "should move the item");
-      const moveOpts = moveItemSpy.calls.argsFor(0)[0];
-      expect(moveOpts.folderId).toBe(
-        "fakefolderid",
-        "should pass the folderid into create item"
-      );
-    });
+    await createWebExperience(model, "fakefolderid", {}, MOCK_USER_SESSION);
+    expect(createItemSpy.calls.count()).withContext("should create the item").toBe(1);
+    expect(interpolateIdSpy.calls.count()).withContext("should call interpolateId").toBe(1);
+    expect(updateItemSpy.calls.count()).withContext("should call updateItem").toBe(1);
+    expect(addResSpy.calls.count()).withContext("should add three resources").toBe(2);
+    expect(moveItemSpy.calls.count()).withContext("should move the item").toBe(1);
+    const moveOpts = moveItemSpy.calls.argsFor(0)[0];
+    expect(moveOpts.folderId).withContext("should pass the folderid into create item").toBe("fakefolderid");
   });
 
-  it("happy-path with thumbnail", () => {
+  it("happy-path with thumbnail", async () => {
     const model = {
       item: {
-        thumbnail: "yoda"
+        thumbnail: "yoda",
       } as any,
       data: {
-        some: "properties" // we don't care much what's in here
+        some: "properties", // we don't care much what's in here
       },
       properties: {
         imageResourcesList: {
-          another: "property" // again, can be whatever
-        }
-      }
+          another: "property", // again, can be whatever
+        },
+      },
     } as hubCommonModule.IModel;
 
-    return createWebExperience(
-      model,
-      "fakefolderid",
-      {},
-      MOCK_USER_SESSION
-    ).then(result => {
-      expect(createItemSpy.calls.count()).toBe(1, "should create the item");
-      expect(
-        createItemSpy.calls.argsFor(0)[0].item.thumbnail
-      ).not.toBeDefined();
-      expect(createItemSpy.calls.argsFor(0)[0].params.thumbnail).toEqual(
-        "yoda"
-      );
+    await createWebExperience(model, "fakefolderid", {}, MOCK_USER_SESSION);
+    expect(createItemSpy.calls.count()).withContext("should create the item").toBe(1);
+    expect(createItemSpy.calls.argsFor(0)[0].item.thumbnail).not.toBeDefined();
+    expect(createItemSpy.calls.argsFor(0)[0].params.thumbnail).toEqual("yoda");
 
-      expect(interpolateIdSpy.calls.count()).toBe(
-        1,
-        "should call interpolateId"
-      );
-      expect(updateItemSpy.calls.count()).toBe(1, "should call updateItem");
-      expect(addResSpy.calls.count()).toBe(2, "should add three resources");
-      expect(moveItemSpy.calls.count()).toBe(1, "should move the item");
-      const moveOpts = moveItemSpy.calls.argsFor(0)[0];
-      expect(moveOpts.folderId).toBe(
-        "fakefolderid",
-        "should pass the folderid into create item"
-      );
-    });
+    expect(interpolateIdSpy.calls.count()).withContext("should call interpolateId").toBe(1);
+    expect(updateItemSpy.calls.count()).withContext("should call updateItem").toBe(1);
+    expect(addResSpy.calls.count()).withContext("should add three resources").toBe(2);
+    expect(moveItemSpy.calls.count()).withContext("should move the item").toBe(1);
+    const moveOpts = moveItemSpy.calls.argsFor(0)[0];
+    expect(moveOpts.folderId).withContext("should pass the folderid into create item").toBe("fakefolderid");
   });
 
-  it("no image resources", () => {
+  it("no image resources", async () => {
     const model = {
       item: {} as portalModule.IItem,
       data: {
-        some: "properties" // we don't care much what's in here
+        some: "properties", // we don't care much what's in here
       },
-      properties: {}
+      properties: {},
     } as hubCommonModule.IModel;
 
-    return createWebExperience(
-      model,
-      "fakefolderid",
-      {},
-      MOCK_USER_SESSION
-    ).then(result => {
-      expect(createItemSpy.calls.count()).toBe(1, "should create the item");
-      expect(interpolateIdSpy.calls.count()).toBe(
-        1,
-        "should call interpolateId"
-      );
-      expect(updateItemSpy.calls.count()).toBe(1, "should call updateItem");
-      expect(addResSpy.calls.count()).toBe(1, "should add one resources");
-      expect(moveItemSpy.calls.count()).toBe(1, "should move the item");
-    });
+    await createWebExperience(model, "fakefolderid", {}, MOCK_USER_SESSION);
+    expect(createItemSpy.calls.count()).withContext("should create the item").toBe(1);
+    expect(interpolateIdSpy.calls.count()).withContext("should call interpolateId").toBe(1);
+    expect(updateItemSpy.calls.count()).withContext("should call updateItem").toBe(1);
+    expect(addResSpy.calls.count()).withContext("should add one resources").toBe(1);
+    expect(moveItemSpy.calls.count()).withContext("should move the item").toBe(1);
   });
 });

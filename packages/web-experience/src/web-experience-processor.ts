@@ -29,7 +29,7 @@ import {
   IUpdateItemResponse,
   convertIModel,
   generateEmptyCreationResponse,
-  updateItemTemplateFromDictionary
+  updateItemTemplateFromDictionary,
 } from "@esri/solution-common";
 import { IModel, failSafe } from "@esri/hub-common";
 import { getItemData, removeItem } from "@esri/arcgis-rest-portal";
@@ -48,15 +48,15 @@ import { convertWebExperienceToTemplate } from "./helpers/convert-web-experience
 export function convertItemToTemplate(
   itemInfo: any,
   destAuthentication: UserSession,
-  srcAuthentication: UserSession
+  srcAuthentication: UserSession,
 ): Promise<IItemTemplate> {
   // use the itemInfo to setup a model
   const model = {
     item: itemInfo,
-    data: {}
+    data: {},
   } as IModel;
   // fetch the data.json
-  return getItemData(itemInfo.id, { authentication: srcAuthentication }).then(data => {
+  return getItemData(itemInfo.id, { authentication: srcAuthentication }).then((data) => {
     // append into the model
     model.data = data;
     // and use that to create a template
@@ -76,14 +76,10 @@ export function createItemFromTemplate(
   template: IItemTemplate,
   templateDictionary: any,
   destinationAuthentication: UserSession,
-  itemProgressCallback: IItemProgressCallback
+  itemProgressCallback: IItemProgressCallback,
 ): Promise<ICreateItemFromTemplateResponse> {
   // let the progress system know we've started...
-  const startStatus = itemProgressCallback(
-    template.itemId,
-    EItemProgressStatus.Started,
-    0
-  );
+  const startStatus = itemProgressCallback(template.itemId, EItemProgressStatus.Started, 0);
 
   // and if it returned false, just resolve out
   if (!startStatus) {
@@ -91,35 +87,25 @@ export function createItemFromTemplate(
   }
 
   let exbModel: IModel;
-  return createWebExperienceModelFromTemplate(
-    template,
-    templateDictionary,
-    {},
-    destinationAuthentication
-  )
-    .then(model => {
+  return createWebExperienceModelFromTemplate(template, templateDictionary, {}, destinationAuthentication)
+    .then((model) => {
       exbModel = model;
-      return createWebExperience(
-        model,
-        templateDictionary.folderId,
-        {},
-        destinationAuthentication
-      );
+      return createWebExperience(model, templateDictionary.folderId, {}, destinationAuthentication);
     })
-    .then(createdModel => {
+    .then((createdModel) => {
       exbModel.item.id = createdModel.item.id;
       exbModel.item.url = createdModel.item.url;
       // Update the template dictionary
       // TODO: This should be done in whatever recieves
       // the outcome of this promise chain
       templateDictionary[template.itemId] = {
-        itemId: createdModel.item.id
+        itemId: createdModel.item.id,
       };
       const finalStatus = itemProgressCallback(
         template.itemId,
         EItemProgressStatus.Finished,
         template.estimatedDeploymentCostFactor || 2,
-        createdModel.item.id
+        createdModel.item.id,
       );
 
       if (!finalStatus) {
@@ -127,7 +113,7 @@ export function createItemFromTemplate(
         const failSafeRemove = failSafe(removeItem, { success: true });
         return failSafeRemove({
           id: exbModel.item.id,
-          authentication: destinationAuthentication
+          authentication: destinationAuthentication,
         }).then(() => {
           return Promise.resolve(generateEmptyCreationResponse(template.type));
         });
@@ -136,11 +122,11 @@ export function createItemFromTemplate(
         const response: ICreateItemFromTemplateResponse = {
           item: {
             ...template,
-            ...convertIModel(exbModel)
+            ...convertIModel(exbModel),
           },
           id: exbModel.item.id,
           type: template.type,
-          postProcess: false
+          postProcess: false,
         };
         response.item.itemId = exbModel.item.id;
         return response;
@@ -165,11 +151,7 @@ export function postProcess(
   template: IItemTemplate,
   templates: IItemTemplate[],
   templateDictionary: any,
-  authentication: UserSession
+  authentication: UserSession,
 ): Promise<IUpdateItemResponse> {
-  return updateItemTemplateFromDictionary(
-    itemId,
-    templateDictionary,
-    authentication
-  );
+  return updateItemTemplateFromDictionary(itemId, templateDictionary, authentication);
 }
