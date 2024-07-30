@@ -18,6 +18,15 @@
     "dist/**"
   ],
   "devDependencies": {
+    "@esri/arcgis-rest-types": "^3.7.0",
+    "@types/jasmine": "^5.1.4",
+    "fetch-mock": "^7.7.3",
+    "jasmine": "^5.1.0",
+    "jasmine-core": "^5.1.2",
+    "npm-check-updates": "^16.14.20",
+    "sinon": "^15.2.0"
+  },
+  "dependencies": {
     "@esri/arcgis-rest-auth": "^3.7.0",
     "@esri/arcgis-rest-feature-layer": "^3.7.0",
     "@esri/arcgis-rest-portal": "^3.7.0",
@@ -39,15 +48,6 @@
     "@esri/solution-web-experience": "^5.5.0",
     "@esri/solution-web-tool": "^5.5.0",
     "@esri/solution-workflow": "^5.5.0",
-    "@types/jasmine": "^5.1.4",
-    "fetch-mock": "^7.7.3",
-    "jasmine": "^5.1.0",
-    "jasmine-core": "^5.1.2",
-    "npm-check-updates": "^16.14.20",
-    "sinon": "^15.2.0"
-  },
-  "dependencies": {
-    "@esri/arcgis-rest-types": "^3.7.0",
     "tslib": "1.14.1"
   },
   "scripts": {

@@ -18,15 +18,7 @@
     "dist/**"
   ],
   "devDependencies": {
-    "@esri/arcgis-rest-auth": "^3.7.0",
-    "@esri/arcgis-rest-feature-layer": "^3.7.0",
-    "@esri/arcgis-rest-portal": "^3.7.0",
-    "@esri/arcgis-rest-request": "^3.7.0",
-    "@esri/arcgis-rest-service-admin": "^3.7.0",
-    "@esri/hub-common": "^14.157.0",
-    "@esri/hub-initiatives": "^14.0.0",
-    "@esri/hub-sites": "^15.0.0",
-    "@esri/hub-teams": "^14.1.1",
+    "@esri/arcgis-rest-types": "^3.7.0",
     "@types/adlib": "^3.0.4",
     "@types/jasmine": "^5.1.4",
     "fetch-mock": "^7.7.3",
@@ -37,7 +29,15 @@
   },
   "dependencies": {
     "@esri/arcgis-html-sanitizer": "3.0.1",
-    "@esri/arcgis-rest-types": "^3.7.0",
+    "@esri/arcgis-rest-auth": "^3.7.0",
+    "@esri/arcgis-rest-feature-layer": "^3.7.0",
+    "@esri/arcgis-rest-portal": "^3.7.0",
+    "@esri/arcgis-rest-request": "^3.7.0",
+    "@esri/arcgis-rest-service-admin": "^3.7.0",
+    "@esri/hub-common": "^14.157.0",
+    "@esri/hub-initiatives": "^14.0.0",
+    "@esri/hub-sites": "^15.0.0",
+    "@esri/hub-teams": "^14.1.1",
     "adlib": "3.0.8",
     "jszip": "3.10.1",
     "tslib": "1.14.1"
