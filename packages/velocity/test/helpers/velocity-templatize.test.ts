@@ -13,13 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import {
-  templatizeVelocity,
-  _templatize,
-  _templatizeDatasources,
-  _templatizeFeed,
-  _templatizeFeeds
-} from "../../src/helpers/velocity-templatize";
+import { templatizeVelocity, _templatizeFeed, _templatizeFeeds } from "../../src/helpers/velocity-templatize";
 import * as templates from "../../../common/test/mocks/templates";
 import * as agolItems from "../../../common/test/mocks/agolItems";
 
@@ -36,23 +30,13 @@ describe("templatizeVelocity", () => {
 
     templatizeVelocity(t);
 
-    expect(t.data.sources[0].properties["feature-layer.portalItemId"]).toEqual(
-      `{{${itemId}.itemId}}`
-    );
+    expect(t.data.sources[0].properties["feature-layer.portalItemId"]).toEqual(`{{${itemId}.itemId}}`);
 
-    expect(t.data.feeds[0].id).toEqual(
-      "{{bbb9398bcf8c4dc5a50cceaa59baf513.itemId}}"
-    );
-    expect(t.data.feeds[0].label).toEqual(
-      "{{bbb9398bcf8c4dc5a50cceaa59baf513.label}}"
-    );
+    expect(t.data.feeds[0].id).toEqual("{{bbb9398bcf8c4dc5a50cceaa59baf513.itemId}}");
+    expect(t.data.feeds[0].label).toEqual("{{bbb9398bcf8c4dc5a50cceaa59baf513.label}}");
 
-    expect(t.data.feeds[1].id).toEqual(
-      "{{ccc6347e0c4f4dc8909da399418cafbe.itemId}}"
-    );
-    expect(t.data.feeds[1].label).toEqual(
-      "{{ccc6347e0c4f4dc8909da399418cafbe.label}}"
-    );
+    expect(t.data.feeds[1].id).toEqual("{{ccc6347e0c4f4dc8909da399418cafbe.itemId}}");
+    expect(t.data.feeds[1].label).toEqual("{{ccc6347e0c4f4dc8909da399418cafbe.label}}");
   });
 });
 
@@ -60,7 +44,7 @@ describe("_templatizeFeeds", () => {
   it("does not change feed values with missing id", () => {
     const feed: any = {
       id: undefined,
-      label: "A"
+      label: "A",
     };
     const feeds: any[] = [feed];
     const actual = _templatizeFeeds(feeds);
@@ -70,13 +54,13 @@ describe("_templatizeFeeds", () => {
   it("updates id and label", () => {
     const feed: any = {
       id: "ABC133",
-      label: "A"
+      label: "A",
     };
     const feeds: any[] = [feed];
     const actual = _templatizeFeeds(feeds);
     const expected = {
       label: `{{ABC133.label}}`,
-      id: `{{ABC133.itemId}}`
+      id: `{{ABC133.itemId}}`,
     };
     expect(actual[0]).toEqual(expected);
   });
@@ -88,15 +72,15 @@ describe("_templatizeFeed", () => {
     const feed: any = {
       properties: {
         "feature-layer.layerId": 0,
-        "feature-layer.portalItemId": id
-      }
+        "feature-layer.portalItemId": id,
+      },
     };
     const actual = _templatizeFeed(feed);
     const expected = {
       properties: {
         "feature-layer.layerId": `{{${id}.layer0.layerId}}`,
-        "feature-layer.portalItemId": `{{${id}.itemId}}`
-      }
+        "feature-layer.portalItemId": `{{${id}.itemId}}`,
+      },
     };
     expect(actual).toEqual(expected);
   });
