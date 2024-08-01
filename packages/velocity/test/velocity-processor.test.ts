@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import { convertItemToTemplate, createItemFromTemplate, postProcess } from "../src/velocity-processor";
-import * as fetchMock from "fetch-mock";
+const fetchMock = require('fetch-mock');
 import * as interfaces from "../../common/src/interfaces";
 import * as utils from "../../common/test/mocks/utils";
 import * as templates from "../../common/test/mocks/templates";

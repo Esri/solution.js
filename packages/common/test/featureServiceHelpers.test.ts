@@ -89,7 +89,7 @@ import * as restHelpers from "../../common/src/restHelpers";
 import * as interfaces from "../src/interfaces";
 import * as utils from "../../common/test/mocks/utils";
 
-import * as fetchMock from "fetch-mock";
+const fetchMock = require('fetch-mock');
 import * as mockItems from "../../common/test/mocks/agolItems";
 import * as templates from "../../common/test/mocks/templates";
 import { setCreateProp } from "../src/generalHelpers";

@@ -24,7 +24,7 @@ import * as templates from "../../common/test/mocks/templates";
 import * as utils from "../../common/test/mocks/utils";
 import * as workflowHelpers from "../src/workflowHelpers";
 import * as restRequest from "@esri/arcgis-rest-request";
-import * as fetchMock from "fetch-mock";
+const fetchMock = require('fetch-mock');
 
 // ------------------------------------------------------------------------------------------------------------------ //
 

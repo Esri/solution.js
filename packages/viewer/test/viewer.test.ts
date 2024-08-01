@@ -19,7 +19,7 @@
  */
 
 import * as common from "@esri/solution-common";
-import * as fetchMock from "fetch-mock";
+const fetchMock = require('fetch-mock');
 import * as mockItems from "../../common/test/mocks/agolItems";
 import * as utils from "../../common/test/mocks/utils";
 import * as viewer from "../src/viewer";

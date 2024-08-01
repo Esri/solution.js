@@ -24,7 +24,7 @@ import {
   getUniqueTitle,
 } from "../../src/helpers/velocity-helpers";
 import * as interfaces from "../../../common/src/interfaces";
-import * as fetchMock from "fetch-mock";
+const fetchMock = require('fetch-mock');
 import * as templates from "../../../common/test/mocks/templates";
 import * as utils from "../../../common/test/mocks/utils";
 

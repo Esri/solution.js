@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import * as fetchMock from "fetch-mock";
+const fetchMock = require('fetch-mock');
 import * as utils from "../mocks/utils";
 import * as interfaces from "../../src/interfaces";
 import { getBlob } from "../../src/resources/get-blob";

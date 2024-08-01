@@ -24,7 +24,7 @@ import * as request from "@esri/arcgis-rest-request";
 import * as resourceHelpers from "../src/resourceHelpers";
 
 import * as utils from "./mocks/utils";
-import * as fetchMock from "fetch-mock";
+const fetchMock = require('fetch-mock');
 import * as addResourceFromBlobModule from "../src/resources/add-resource-from-blob";
 
 // ------------------------------------------------------------------------------------------------------------------ //
@@ -70,8 +70,8 @@ describe("Module `resourceHelpers`: common functions involving the management of
         MOCK_USER_SESSION,
       );
       expect(response).toEqual(expected);
-      const options: fetchMock.MockOptions = fetchMock.lastOptions(updateUrl);
-      const fetchBody = (options as fetchMock.MockResponseObject).body;
+      const options: any = fetchMock.lastOptions(updateUrl);
+      const fetchBody = options.body;
       expect(typeof fetchBody).toEqual("object");
       const form = fetchBody as FormData;
       expect(form.get("fileName")).toEqual(filename);
@@ -111,8 +111,8 @@ describe("Module `resourceHelpers`: common functions involving the management of
         MOCK_USER_SESSION,
       );
       expect(response).toEqual(expected);
-      const options: fetchMock.MockOptions = fetchMock.lastOptions(updateUrl);
-      const fetchBody = (options as fetchMock.MockResponseObject).body;
+      const options: any = fetchMock.lastOptions(updateUrl);
+      const fetchBody = options.body;
       expect(typeof fetchBody).toEqual("object");
       const form = fetchBody as FormData;
       expect(form.get("resourcesPrefix")).toEqual(folder);
@@ -133,8 +133,8 @@ describe("Module `resourceHelpers`: common functions involving the management of
 
       const response: any = await resourceHelpers.addThumbnailFromBlob(blob, itemId, MOCK_USER_SESSION);
       expect(response).toEqual(expected);
-      const options: fetchMock.MockOptions = fetchMock.lastOptions(updateUrl);
-      const fetchBody = (options as fetchMock.MockResponseObject).body;
+      const options: any = fetchMock.lastOptions(updateUrl);
+      const fetchBody = options.body;
       expect(typeof fetchBody).toEqual("object");
     });
 
@@ -150,8 +150,8 @@ describe("Module `resourceHelpers`: common functions involving the management of
 
       const response: any = await resourceHelpers.addThumbnailFromBlob(blob, itemId, MOCK_USER_SESSION, true);
       expect(response).toEqual(expected);
-      const options: fetchMock.MockOptions = fetchMock.lastOptions(updateUrl);
-      const fetchBody = (options as fetchMock.MockResponseObject).body;
+      const options: any = fetchMock.lastOptions(updateUrl);
+      const fetchBody = options.body;
       expect(typeof fetchBody).toEqual("object");
     });
   });

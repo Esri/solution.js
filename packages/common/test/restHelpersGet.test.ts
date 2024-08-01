@@ -26,7 +26,7 @@ import * as restHelpers from "../src/restHelpers";
 import * as restHelpersGet from "../src/restHelpersGet";
 
 import * as utils from "./mocks/utils";
-import * as fetchMock from "fetch-mock";
+const fetchMock = require('fetch-mock');
 import * as mockItems from "../test/mocks/agolItems";
 
 // ------------------------------------------------------------------------------------------------------------------ //

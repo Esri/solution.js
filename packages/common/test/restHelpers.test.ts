@@ -19,7 +19,7 @@
  */
 
 import * as admin from "@esri/arcgis-rest-service-admin";
-import * as fetchMock from "fetch-mock";
+const fetchMock = require('fetch-mock');
 import * as generalHelpers from "../src/generalHelpers";
 import * as interfaces from "../src/interfaces";
 import * as mockItems from "../test/mocks/agolItems";
@@ -255,8 +255,8 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
         },
       ]);
 
-      const options: fetchMock.MockOptions = fetchMock.lastOptions(addRelationshipUrl);
-      const fetchBody = (options as fetchMock.MockResponseObject).body;
+      const options: any = fetchMock.lastOptions(addRelationshipUrl);
+      const fetchBody = options.body;
       expect(fetchBody).toEqual(
         "f=json&originItemId=itm1234567890&destinationItemId=itm1234567891&relationshipType=Survey2Service&token=fake-token",
       );
@@ -3472,8 +3472,8 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
         MOCK_USER_SESSION,
       );
       expect(response.success).toBeTruthy();
-      const options: fetchMock.MockOptions = fetchMock.lastOptions(url);
-      const fetchBody = (options as fetchMock.MockResponseObject).body;
+      const options: any = fetchMock.lastOptions(url);
+      const fetchBody = options.body;
       expect(fetchBody).toEqual("f=json&id=itm1234567890&text=this%20is%20some%20text&token=fake-token");
     });
 
@@ -3488,8 +3488,8 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
         MOCK_USER_SESSION,
       );
       expect(response.success).toBeTruthy();
-      const options: fetchMock.MockOptions = fetchMock.lastOptions(url);
-      const fetchBody = (options as fetchMock.MockResponseObject).body;
+      const options: any = fetchMock.lastOptions(url);
+      const fetchBody = options.body;
       expect(fetchBody).toEqual(
         "f=json&id=itm1234567890&text=%7B%22a%22%3A%22a%22%2C%22b%22%3A1%2C%22c%22%3A%7B%22d%22%3A%22d%22%7D%7D&token=fake-token",
       );
@@ -3507,8 +3507,8 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
 
       const response = await restHelpers._addItemDataFile(itemId, utils.getSampleMetadataAsFile(), MOCK_USER_SESSION);
       expect(response.success).withContext("response.success").toBeTruthy();
-      const options: fetchMock.MockOptions = fetchMock.lastOptions(url);
-      const fetchBody = (options as fetchMock.MockResponseObject).body;
+      const options: any = fetchMock.lastOptions(url);
+      const fetchBody = options.body;
       (fetchBody as FormData).forEach((value: FormDataEntryValue, key: string) => {
         switch (key) {
           case "f":

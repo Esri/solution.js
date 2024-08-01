@@ -20,7 +20,7 @@
 
 import * as common from "@esri/solution-common";
 import * as creator from "../src/creator";
-import * as fetchMock from "fetch-mock";
+const fetchMock = require('fetch-mock');
 import * as hubCommon from "@esri/hub-common";
 import * as mockItems from "../../common/test/mocks/agolItems";
 import * as staticRelatedItemsMocks from "../../common/test/mocks/staticRelatedItemsMocks";
@@ -877,8 +877,8 @@ describe("Module `creator`", () => {
 
       const solutionId = await creator._createSolutionItem(authentication);
       expect(solutionId).toEqual(expectedSolutionId);
-      const options: fetchMock.MockOptions = fetchMock.lastOptions(url);
-      const fetchBody = (options as fetchMock.MockResponseObject).body;
+      const options: any = fetchMock.lastOptions(url);
+      const fetchBody = options.body;
       expect(fetchBody).toEqual(expectedFetchBody);
     });
 
@@ -912,8 +912,8 @@ describe("Module `creator`", () => {
 
       const solutionId = await creator._createSolutionItem(authentication, options);
       expect(solutionId).toEqual(expectedSolutionId);
-      const fetchOptions: fetchMock.MockOptions = fetchMock.lastOptions(url);
-      const fetchBody = (fetchOptions as fetchMock.MockResponseObject).body;
+      const fetchOptions: any = fetchMock.lastOptions(url);
+      const fetchBody = fetchOptions.body;
       expect(fetchBody).toEqual(
         "f=json&title=" +
           encodeURIComponent(options.title as any) +
@@ -956,8 +956,8 @@ describe("Module `creator`", () => {
         () => fail(),
         (error) => {
           expect(error.success).toBeFalsy();
-          const options: fetchMock.MockOptions = fetchMock.lastOptions(url);
-          const fetchBody = (options as fetchMock.MockResponseObject).body;
+          const options: any = fetchMock.lastOptions(url);
+          const fetchBody = options.body;
           expect(fetchBody).toEqual(expectedFetchBody);
           return Promise.resolve();
         },

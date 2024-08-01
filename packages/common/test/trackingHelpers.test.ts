@@ -15,7 +15,7 @@
  */
 
 import * as mockTemplates from "./mocks/templates";
-import * as fetchMock from "fetch-mock";
+const fetchMock = require('fetch-mock');
 import * as interfaces from "../src/interfaces";
 import {
   getTackingServiceOwner,

@@ -25,7 +25,7 @@
  * Long term...would like to work these into the standard mocks.
  */
 
-import * as fetchMock from "fetch-mock";
+const fetchMock = require('fetch-mock');
 import * as interfaces from "../../src/interfaces";
 import * as utils from "./utils";
 

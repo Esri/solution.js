@@ -29,7 +29,7 @@ import {
   _simplifyUrlsInItemDescriptions,
   _templatizeWorkflowConfig,
 } from "../../src/helpers/add-content-to-solution";
-import * as fetchMock from "fetch-mock";
+const fetchMock = require('fetch-mock');
 import * as createItemTemplateModule from "../../src/createItemTemplate";
 import * as common from "@esri/solution-common";
 import * as mockItems from "../../../common/test/mocks/agolItems";

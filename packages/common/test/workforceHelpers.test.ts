@@ -21,7 +21,7 @@
 import * as workforceHelpers from "../src/workforceHelpers";
 import * as interfaces from "../src/interfaces";
 import * as mockItems from "../../common/test/mocks/agolItems";
-import * as fetchMock from "fetch-mock";
+const fetchMock = require('fetch-mock');
 import * as utils from "../../common/test/mocks/utils";
 import * as templates from "../../common/test/mocks/templates";
 
