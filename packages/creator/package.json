@@ -20,8 +20,8 @@
   "devDependencies": {
     "@esri/arcgis-rest-types": "^3.7.0",
     "@types/jasmine": "^5.1.4",
-    "jasmine": "^5.1.0",
-    "jasmine-core": "^5.1.2",
+    "jasmine": "^5.2.0",
+    "jasmine-core": "^5.2.0",
     "npm-check-updates": "^16.14.20",
     "sinon": "^15.2.0"
   },
