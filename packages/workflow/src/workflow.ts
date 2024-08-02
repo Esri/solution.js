@@ -64,7 +64,12 @@ export async function convertItemToTemplate(
   const configPromise = common.getWorkflowConfigurationZip(
     itemInfo.id, templateDictionary.workflowBaseUrl, srcAuthentication);
 
-  const [relatedItems, configZip] = await Promise.all([relatedPromise, configPromise]);
+  // Request its data
+  const dataPromise = common.getItemDataAsJson(itemInfo.id, srcAuthentication);
+
+  const [relatedItems, configZip, data] = await Promise.all([relatedPromise, configPromise, dataPromise]);
+
+  itemTemplate.data = data;
 
   // Save the mappings to related items & add those items to the dependencies, but not WMA Code Attachments
   itemTemplate.dependencies = [] as string[];
@@ -120,6 +125,8 @@ export async function createItemFromTemplate(
     return Promise.resolve(common.generateEmptyCreationResponse(template.type));
   }
 
+  template.data = {};
+
   // Replace the templatized symbols in a copy of the template
   let newItemTemplate: common.IItemTemplate = common.cloneObject(template);
   newItemTemplate = common.replaceInTemplate(
@@ -162,6 +169,13 @@ export async function createItemFromTemplate(
     templateDictionary[template.itemId] = {
       itemId: createdWorkflowItemId
     };
+
+    await workflowHelpers.updateTemplateDictionaryForWorkforce(
+      template.itemId,
+      createdWorkflowItemId,
+      templateDictionary,
+      destinationAuthentication
+    );
 
     // Detempletize the workflow configuration
     newItemTemplate.properties.configuration = common.replaceInTemplate(

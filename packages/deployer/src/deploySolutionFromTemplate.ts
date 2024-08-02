@@ -42,6 +42,13 @@ export async function deploySolutionFromTemplate(
   // TODO: Extract all templateDictionary prep into a separate function
   const templateDictionary = options.templateDictionary ?? {};
 
+  const preProcessResponse = common.preprocessWorkflowTemplates(
+    solutionTemplateData.templates,
+    templateDictionary
+  );
+
+  solutionTemplateData.templates = preProcessResponse.deployTemplates;
+
   _applySourceToDeployOptions(
     options,
     solutionTemplateBase,
@@ -305,7 +312,14 @@ export async function deploySolutionFromTemplate(
       _purgeTemplateProperties(itemTemplate)
   );
 
+  _handleWorkflowManagedTemplates(preProcessResponse, solutionTemplateData);
+
   solutionTemplateData.templates = _updateGroupReferences(
+    solutionTemplateData.templates,
+    templateDictionary
+  );
+
+  solutionTemplateData.templates = common.updateWorkflowTemplateIds(
     solutionTemplateData.templates,
     templateDictionary
   );
@@ -330,6 +344,23 @@ export async function deploySolutionFromTemplate(
   );
 
   return solutionTemplateBase.id;
+}
+
+/**
+ * Add templates for the items that were automatically created by workflow
+ *
+ * @param preProcessResponse response from pre processing of workflow items
+ * @param solutionTemplateData the current solution template data that will be used to show item details
+ */
+export function _handleWorkflowManagedTemplates(
+  preProcessResponse: common.IPreProcessWorkflowTemplatesResponse,
+  solutionTemplateData: any
+): void {
+  preProcessResponse.workflowManagedTemplates.forEach(
+    (itemTemplate: common.IItemTemplate) => {
+      solutionTemplateData.templates.push(_purgeTemplateProperties(itemTemplate));
+    }
+  );
 }
 
 /**

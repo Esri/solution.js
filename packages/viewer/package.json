@@ -1,6 +1,6 @@
 {
   "name": "@esri/solution-viewer",
-  "version": "5.4.2",
+  "version": "5.5.1",
   "description": "Simplifies access to @esri/solution.js.",
   "main": "dist/cjs/index.js",
   "module": "dist/esm/index.js",
@@ -18,6 +18,13 @@
     "dist/**"
   ],
   "devDependencies": {
+    "@types/jasmine": "^5.1.4",
+    "fetch-mock": "^7.7.3",
+    "jasmine": "^5.1.0",
+    "jasmine-core": "^5.1.2",
+    "npm-check-updates": "^16.14.20"
+  },
+  "dependencies": {
     "@esri/arcgis-rest-auth": "^3.7.0",
     "@esri/arcgis-rest-feature-layer": "^3.7.0",
     "@esri/arcgis-rest-portal": "^3.7.0",
@@ -27,14 +34,7 @@
     "@esri/hub-initiatives": "^14.0.0",
     "@esri/hub-sites": "^14.2.4",
     "@esri/hub-teams": "^14.1.0",
-    "@esri/solution-common": "^5.4.2",
-    "@types/jasmine": "^5.1.4",
-    "fetch-mock": "^7.7.3",
-    "jasmine": "^5.1.0",
-    "jasmine-core": "^5.1.2",
-    "npm-check-updates": "^16.14.20"
-  },
-  "dependencies": {
+    "@esri/solution-common": "^5.5.1",
     "tslib": "1.14.1"
   },
   "scripts": {
@@ -88,5 +88,5 @@
     "esri",
     "ES6"
   ],
-  "gitHead": "806b1271b7567d25d288b4c67acfb348c47c6536"
+  "gitHead": "a4d13aab10cac4cfb9fb8fd8e4674bfcf0c954f5"
 }
