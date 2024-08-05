@@ -21,7 +21,7 @@
 import * as common from "@esri/solution-common";
 import * as featureLayer from "../src/feature-layer";
 import * as utils from "../../common/test/mocks/utils";
-const fetchMock = require('fetch-mock');
+const fetchMock = require("fetch-mock");
 import * as mockItems from "../../common/test/mocks/agolItems";
 import * as mockSolutions from "../../common/test/mocks/templates";
 

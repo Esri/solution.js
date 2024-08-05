@@ -19,7 +19,7 @@
  */
 
 import * as admin from "@esri/arcgis-rest-service-admin";
-const fetchMock = require('fetch-mock');
+const fetchMock = require("fetch-mock");
 import * as generalHelpers from "../src/generalHelpers";
 import * as interfaces from "../src/interfaces";
 import * as mockItems from "../test/mocks/agolItems";
@@ -2573,16 +2573,20 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
 
     it("can get workflow configuration using supplied server", async () => {
       const itemId = "1234567890";
-      const requestSpy = spyOn(request, "request")
-        .and.returnValue(zipUtils.jsonToZipFile("jobConfig.json", {"jobTemplates": "abc" }, "config"));
+      const requestSpy = spyOn(request, "request").and.returnValue(
+        zipUtils.jsonToZipFile("jobConfig.json", { jobTemplates: "abc" }, "config"),
+      );
 
       const response = await restHelpers.getWorkflowConfigurationZip(
-        itemId, "https://workflow.arcgis.com", MOCK_USER_SESSION);
+        itemId,
+        "https://workflow.arcgis.com",
+        MOCK_USER_SESSION,
+      );
 
       expect(requestSpy.calls.count()).toEqual(1);
       expect(requestSpy.calls.argsFor(0)[0]).toEqual(`https://workflow.arcgis.com/admin/${itemId}/export`);
-      expect(response).toEqual(await zipUtils.jsonToZipFile("jobConfig.json", {"jobTemplates": "abc" }, "config"));
-    })
+      expect(response).toEqual(await zipUtils.jsonToZipFile("jobConfig.json", { jobTemplates: "abc" }, "config"));
+    });
   });
 
   describe("setWorkflowConfigurationZip", () => {

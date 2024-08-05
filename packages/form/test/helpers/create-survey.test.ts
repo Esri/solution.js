@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-const fetchMock = require('fetch-mock');
+const fetchMock = require("fetch-mock");
 import { ISurvey123CreateSuccess, ISurvey123CreateParams, ISurvey123CreateError } from "@esri/solution-common";
 import * as restRequest from "@esri/arcgis-rest-request";
 import { createSurvey } from "../../src/helpers/create-survey";

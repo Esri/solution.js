@@ -20,7 +20,7 @@
 
 import * as common from "@esri/solution-common";
 import * as deploySolution from "../src/deploySolutionItems";
-const fetchMock = require('fetch-mock');
+const fetchMock = require("fetch-mock");
 import * as mockItems from "../../common/test/mocks/agolItems";
 import * as simpleTypes from "@esri/solution-simple-types";
 import * as templates from "../../common/test/mocks/templates";

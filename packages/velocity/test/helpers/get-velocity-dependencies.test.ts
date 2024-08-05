@@ -16,7 +16,7 @@
 
 import { getVelocityDependencies, _getDependencies } from "../../src/helpers/get-velocity-dependencies";
 import * as interfaces from "../../../common/src/interfaces";
-const fetchMock = require('fetch-mock');
+const fetchMock = require("fetch-mock");
 import * as templates from "../../../common/test/mocks/templates";
 import * as utils from "../../../common/test/mocks/utils";
 import * as agolItems from "../../../common/test/mocks/agolItems";

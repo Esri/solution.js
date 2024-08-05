@@ -20,7 +20,7 @@
 
 import * as common from "@esri/solution-common";
 import * as utils from "../../common/test/mocks/utils";
-const fetchMock = require('fetch-mock');
+const fetchMock = require("fetch-mock");
 import * as templates from "../../common/test/mocks/templates";
 import * as updateHelper from "../src/helpers/update-notebook-data";
 import * as createHelper from "../src/helpers/create-item-from-template";

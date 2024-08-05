@@ -40,7 +40,10 @@ import * as templatization from "./templatization";
  * @param authentication Credentials for the request
  * @returns Promise resolving to a summary of the deployed Solution
  */
-export async function getSolutionSummary(solutionItemId: string, authentication: UserSession): Promise<ISolutionPrecis> {
+export async function getSolutionSummary(
+  solutionItemId: string,
+  authentication: UserSession,
+): Promise<ISolutionPrecis> {
   const solutionSummary: ISolutionPrecis = {
     id: solutionItemId,
     title: "",

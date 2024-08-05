@@ -23,7 +23,7 @@ import * as common from "@esri/solution-common";
 import * as hubCommon from "@esri/hub-common";
 import * as postProcessSiteModule from "../src/helpers/_post-process-site";
 import * as replacerModule from "../src/helpers/replace-item-ids";
-const fetchMock = require('fetch-mock');
+const fetchMock = require("fetch-mock");
 
 describe("HubSiteProcessor: ", () => {
   afterEach(() => {

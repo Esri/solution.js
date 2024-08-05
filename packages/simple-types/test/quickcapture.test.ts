@@ -21,7 +21,7 @@
 import * as common from "@esri/solution-common";
 import * as createHelper from "../src/helpers/create-item-from-template";
 import * as convertHelper from "../src/helpers/convert-item-to-template";
-const fetchMock = require('fetch-mock');
+const fetchMock = require("fetch-mock");
 import * as quickcapture from "../src/quickcapture";
 import * as mockItems from "../../common/test/mocks/agolItems";
 import * as utils from "../../common/test/mocks/utils";
