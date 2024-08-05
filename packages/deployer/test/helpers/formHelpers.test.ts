@@ -34,7 +34,7 @@ beforeEach(() => {
   MOCK_USER_SESSION = utils.createRuntimeMockUserSession();
 });
 
-describe("Module `zip-utils`", () => {
+describe("Module `formHelpers`", () => {
   describe("swizzleFormData", () => {
     const org1 = "org1234567890";
     const itemId1 = "2f56b3b59cdc4ac8b8f5de0399887e1e";

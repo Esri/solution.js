@@ -27,7 +27,7 @@ const MOCK_USER_SESSION = utils.createRuntimeMockUserSession();
 
 // ------------------------------------------------------------------------------------------------------------------ //
 
-describe("Module `ClassicStorymapProcessor`: ", () => {
+describe("Module `classic-storymap`: ", () => {
   describe("convertItemToTemplate :: ", () => {
     it("recognizes Classic StoryMap", async () => {
       return ClassicStorymapProcessor.convertItemToTemplate({

@@ -27,7 +27,7 @@ import * as utils from "../../common/test/mocks/utils";
 
 // ------------------------------------------------------------------------------------------------------------------ //
 
-describe("Module `webmap`: manages the creation and deployment of OIC (Oriented Imagery Catalog) item types", () => {
+describe("Module `oic`: manages the creation and deployment of OIC (Oriented Imagery Catalog) item types", () => {
   let MOCK_USER_SESSION: common.UserSession;
 
   beforeEach(() => {
