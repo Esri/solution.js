@@ -40,7 +40,7 @@ import * as templatization from "./templatization";
  * @param authentication Credentials for the request
  * @returns Promise resolving to a summary of the deployed Solution
  */
-export function getSolutionSummary(solutionItemId: string, authentication: UserSession): Promise<ISolutionPrecis> {
+export async function getSolutionSummary(solutionItemId: string, authentication: UserSession): Promise<ISolutionPrecis> {
   const solutionSummary: ISolutionPrecis = {
     id: solutionItemId,
     title: "",
@@ -50,66 +50,67 @@ export function getSolutionSummary(solutionItemId: string, authentication: UserS
   };
   let templates: IItemTemplate[] = [];
   let deployedSolutionVersion = DeployedSolutionFormatVersion;
-  let itemData: ISolutionItemData;
 
-  return Promise.all([
+  const completeItem: any = await Promise.all([
     restHelpersGet.getItemBase(solutionItemId, authentication),
     restHelpersGet.getItemDataAsJson(solutionItemId, authentication),
-  ])
-    .then((response: any) => {
-      const itemBase: IItemGeneralized = response[0];
-      itemData = response[1];
+  ]);
 
-      // Make sure that the item is a deployed Solution
-      if (
-        itemBase.type !== "Solution" ||
-        !(itemBase.typeKeywords.includes("Solution") && itemBase.typeKeywords.includes("Deployed"))
-      ) {
-        throw new Error("Item " + solutionItemId + " is not a deployed Solution");
-      }
+  const itemBase: IItemGeneralized = completeItem[0];
+  const itemData: ISolutionItemData = completeItem[1];
 
-      solutionSummary.title = itemBase.title;
-      solutionSummary.folder = itemBase.ownerFolder;
-      deployedSolutionVersion = templatization.extractSolutionVersion(itemData);
-      templates = itemData.templates;
+  // Make sure that the item is a deployed Solution
+  if (
+    itemBase.type !== "Solution" ||
+    !(itemBase.typeKeywords.includes("Solution") && itemBase.typeKeywords.includes("Deployed"))
+  ) {
+    throw new Error("Item " + solutionItemId + " is not a deployed Solution");
+  }
 
-      // Get the forward Solution2Item relationships
-      return restHelpersGet.getItemsRelatedToASolution(solutionItemId, authentication);
-    })
-    .then((relatedItems: portal.IItem[]) => {
-      solutionSummary.items = relatedItems.map((relatedItem) => {
-        return {
-          id: relatedItem.id,
-          type: relatedItem.type,
-          title: relatedItem.title,
-          modified: relatedItem.modified,
-          owner: relatedItem.owner,
-        };
+  solutionSummary.title = itemBase.title;
+  solutionSummary.folder = itemBase.ownerFolder || "";
+  deployedSolutionVersion = templatization.extractSolutionVersion(itemData);
+  templates = itemData.templates;
+
+  // Get the forward Solution2Item relationships
+  const relatedItems: portal.IItem[] = await restHelpersGet.getItemsRelatedToASolution(solutionItemId, authentication);
+
+  solutionSummary.items = relatedItems.map((relatedItem) => {
+    return {
+      id: relatedItem.id,
+      type: relatedItem.type,
+      title: relatedItem.title,
+      modified: relatedItem.modified,
+      owner: relatedItem.owner,
+    };
+  });
+
+  // Get the build order
+  let buildOrderIds = [] as string[];
+  if (deployedSolutionVersion < 1) {
+    // Version 0
+    buildOrderIds = reconstructBuildOrderIds.reconstructBuildOrderIds(templates);
+  } else {
+    // Version ≥ 1
+    buildOrderIds = templates.map((template: any) => template.itemId);
+  }
+
+  // Get the dependent groups in the items to be deleted; use a Set to de-duplicate
+  let dependentGroups = new Set<string>();
+  itemData.templates.forEach((item) => {
+    if (item.type === "Group") {
+      dependentGroups.add(item.itemId);
+    } else if (item.groups) {
+      item.groups.forEach((groupId) => {
+        dependentGroups = dependentGroups.add(groupId);
       });
+    }
+  });
+  solutionSummary.groups = [];
+  dependentGroups.forEach((value: string) => solutionSummary.groups.push(value));
 
-      // Get the build order
-      let buildOrderIds = [] as string[];
-      if (deployedSolutionVersion < 1) {
-        // Version 0
-        buildOrderIds = reconstructBuildOrderIds.reconstructBuildOrderIds(templates);
-      } else {
-        // Version ≥ 1
-        buildOrderIds = templates.map((template: any) => template.itemId);
-      }
+  // Sort the related items into build order
+  solutionSummary.items.sort((first, second) => buildOrderIds.indexOf(first.id) - buildOrderIds.indexOf(second.id));
 
-      // Get the dependent groups in the items to be deleted
-      let dependentGroups = new Set<string>();
-      itemData.templates.forEach((item) => {
-        item.groups.forEach((groupId) => {
-          dependentGroups = dependentGroups.add(groupId);
-        });
-      });
-      solutionSummary.groups = [];
-      dependentGroups.forEach((value: string) => solutionSummary.groups.push(value));
-
-      // Sort the related items into build order
-      solutionSummary.items.sort((first, second) => buildOrderIds.indexOf(first.id) - buildOrderIds.indexOf(second.id));
-
-      return solutionSummary;
-    });
+  return solutionSummary;
 }
