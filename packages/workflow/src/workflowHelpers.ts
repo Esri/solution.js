@@ -37,7 +37,7 @@ import * as restRequest from "@esri/arcgis-rest-request";
 export async function addWorkflowItem(
   item: common.IItemTemplate,
   workflowBaseUrl: string,
-  authentication: common.UserSession
+  authentication: common.UserSession,
 ): Promise<string> {
   // Add the workflow item
   const url = `${workflowBaseUrl}/admin/createWorkflowItem?name=${item.item.title}`;
@@ -45,14 +45,14 @@ export async function addWorkflowItem(
   const options: restRequest.IRequestOptions = {
     authentication: authentication,
     headers: {
-      Accept: "application/json",
-      Authorization: `Bearer ${authentication.token}`,
+      "Accept": "application/json",
+      "Authorization": `Bearer ${authentication.token}`,
       "Content-Type": "application/json",
-      "X-Esri-Authorization": `Bearer ${authentication.token}`
+      "X-Esri-Authorization": `Bearer ${authentication.token}`,
     },
     params: {
-      name: `${item.item.title}`
-    }
+      name: `${item.item.title}`,
+    },
   };
   const createdWorkflowResponse = await restRequest.request(url, options);
 
@@ -68,7 +68,7 @@ export async function addWorkflowItem(
  */
 export async function fetchAuxiliaryItems(
   workflowItemId: string,
-  authentication: common.UserSession
+  authentication: common.UserSession,
 ): Promise<string[]> {
   const workflowItemName = `workflow_${workflowItemId}`;
   const workflowLocationsItemName = `WorkflowLocations_${workflowItemId}`;
@@ -76,9 +76,9 @@ export async function fetchAuxiliaryItems(
 
   const auxiliaryItemsResults = await common.searchItems({
     q: `title:${workflowItemName} OR title:${workflowLocationsItemName} OR title:${workflowViewsItemName}`,
-    authentication: authentication
+    authentication: authentication,
   });
-  return Promise.resolve(auxiliaryItemsResults.results.map(item => item.id));
+  return Promise.resolve(auxiliaryItemsResults.results.map((item) => item.id));
 }
 
 /**
@@ -94,14 +94,20 @@ export async function updateTemplateDictionaryForWorkforce(
   sourceId: string,
   newId: string,
   templateDictionary: any,
-  authentication: common.UserSession
+  authentication: common.UserSession,
 ): Promise<void> {
   const workflowData = await common.getItemDataAsJson(newId, authentication);
 
   const workflowLookup = common.getProp(templateDictionary, `workflows.${sourceId}`);
   if (workflowLookup) {
     await updateTempDictWorkflowId(templateDictionary, "viewSchema", workflowLookup, workflowData, authentication);
-    await updateTempDictWorkflowId(templateDictionary, "workflowLocations", workflowLookup, workflowData, authentication);
+    await updateTempDictWorkflowId(
+      templateDictionary,
+      "workflowLocations",
+      workflowLookup,
+      workflowData,
+      authentication,
+    );
     await updateTempDictWorkflowId(templateDictionary, "workflowSchema", workflowLookup, workflowData, authentication);
   }
 }
@@ -122,7 +128,7 @@ export async function updateTempDictWorkflowId(
   key: string,
   workflowLookup: any,
   workflowData: any,
-  authentication: common.UserSession
+  authentication: common.UserSession,
 ): Promise<void> {
   const id = workflowLookup[key];
   const itemId = common.getProp(workflowData, `${key}.itemId`);
@@ -156,16 +162,16 @@ export function _cacheLayerDetails(
   templateDictionary: any,
   baseUrl: string,
   srcId: string,
-  itemId: string
+  itemId: string,
 ): void {
   if (layers) {
-    layers.forEach(layer => {
+    layers.forEach((layer) => {
       const fields = layer.fields.reduce((prev, cur) => {
         prev[cur.name.toLowerCase()] = {
           alias: cur.alias,
           name: cur.name,
-          type: cur.type
-        }
+          type: cur.type,
+        };
         return prev;
       }, {});
       const layerId = layer.id;
@@ -174,7 +180,7 @@ export function _cacheLayerDetails(
         fields,
         itemId,
         layerId,
-        url
+        url,
       };
     });
   }

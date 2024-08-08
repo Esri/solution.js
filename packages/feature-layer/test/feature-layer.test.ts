@@ -21,7 +21,7 @@
 import * as common from "@esri/solution-common";
 import * as featureLayer from "../src/feature-layer";
 import * as utils from "../../common/test/mocks/utils";
-import * as fetchMock from "fetch-mock";
+const fetchMock = require('fetch-mock');
 import * as mockItems from "../../common/test/mocks/agolItems";
 import * as mockSolutions from "../../common/test/mocks/templates";
 
@@ -35,7 +35,7 @@ beforeEach(() => {
   itemTemplate = mockSolutions.getItemTemplate(
     "Feature Service",
     [],
-    "https://services123.arcgis.com/org1234567890/arcgis/rest/services/ROWPermits_publiccomment/FeatureServer"
+    "https://services123.arcgis.com/org1234567890/arcgis/rest/services/ROWPermits_publiccomment/FeatureServer",
   );
 });
 
@@ -45,7 +45,7 @@ const _organization: any = utils.getPortalsSelfResponse();
 
 const _solutionItemExtent: any = [
   [0, 0],
-  [1, 1]
+  [1, 1],
 ];
 
 afterEach(() => {
@@ -54,7 +54,7 @@ afterEach(() => {
 
 describe("Module `feature-layer`: manages the creation and deployment of feature service types", () => {
   describe("convertItemToTemplate", () => {
-    it("templatize common properties", done => {
+    it("templatize common properties", async () => {
       const id: string = "svc1234567890";
       const url: string =
         "https://services123.arcgis.com/org1234567890/arcgis/rest/services/ROWPermits_publiccomment/FeatureServer";
@@ -64,15 +64,11 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
 
       const expectedId: string = "{{" + id + ".itemId}}";
       const keyField: string = "globalid";
-      const expectedLayerKeyField: string =
-        "{{" + id + ".layer0.fields.globalid.name}}";
-      const expectedTableKeyField: string =
-        "{{" + id + ".layer1.fields.globalid.name}}";
+      const expectedLayerKeyField: string = "{{" + id + ".layer0.fields.globalid.name}}";
+      const expectedTableKeyField: string = "{{" + id + ".layer1.fields.globalid.name}}";
       const defQuery: string = "status = 'BoardReview'";
-      const expectedLayerDefQuery: string =
-        "status = '{{" + id + ".layer0.fields.boardreview.name}}'";
-      const expectedTableDefQuery: string =
-        "status = '{{" + id + ".layer1.fields.boardreview.name}}'";
+      const expectedLayerDefQuery: string = "status = '{{" + id + ".layer0.fields.boardreview.name}}'";
+      const expectedTableDefQuery: string = "status = '{{" + id + ".layer1.fields.boardreview.name}}'";
 
       const layer0 = mockItems.getAGOLLayerOrTable(0, "A", "Feature Layer");
       layer0.relationships = [{}];
@@ -89,8 +85,7 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
       itemTemplate.itemId = id;
       itemTemplate.item.id = id;
       itemTemplate.properties.service.serviceItemId = id;
-      itemTemplate.properties.service.cacheMaxAge =
-        serviceResponse.adminServiceInfo.cacheMaxAge;
+      itemTemplate.properties.service.cacheMaxAge = serviceResponse.adminServiceInfo.cacheMaxAge;
       itemTemplate.properties.layers[0] = layer0;
       itemTemplate.properties.tables[0] = table0;
       delete itemTemplate.item.item;
@@ -98,93 +93,58 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
       // verify the state up front
       expect(itemTemplate.item.id).toEqual(id);
       expect(itemTemplate.item.url).toEqual(url);
-      expect(itemTemplate.item.modified).toEqual(1522178539000);  // feature service's modified date
+      expect(itemTemplate.item.modified).toEqual(1522178539000); // feature service's modified date
       expect(itemTemplate.dependencies.length).toEqual(0);
       expect(itemTemplate.data.layers).toBeDefined();
       expect(itemTemplate.data.tables).toBeDefined();
       expect(itemTemplate.properties.service.serviceItemId).toEqual(id);
 
       expect(itemTemplate.properties.layers[0].serviceItemId).toEqual(id);
-      expect(
-        itemTemplate.properties.layers[0].relationships[0].keyField
-      ).toEqual(keyField);
-      expect(itemTemplate.properties.layers[0].viewDefinitionQuery).toEqual(
-        defQuery
-      );
-      expect(itemTemplate.properties.layers[0].definitionQuery).toEqual(
-        defQuery
-      );
+      expect(itemTemplate.properties.layers[0].relationships[0].keyField).toEqual(keyField);
+      expect(itemTemplate.properties.layers[0].viewDefinitionQuery).toEqual(defQuery);
+      expect(itemTemplate.properties.layers[0].definitionQuery).toEqual(defQuery);
 
       expect(itemTemplate.properties.tables[0].serviceItemId).toEqual(id);
-      expect(
-        itemTemplate.properties.tables[0].relationships[0].keyField
-      ).toEqual(keyField);
-      expect(itemTemplate.properties.tables[0].viewDefinitionQuery).toEqual(
-        defQuery
-      );
-      expect(itemTemplate.properties.tables[0].definitionQuery).toEqual(
-        defQuery
-      );
+      expect(itemTemplate.properties.tables[0].relationships[0].keyField).toEqual(keyField);
+      expect(itemTemplate.properties.tables[0].viewDefinitionQuery).toEqual(defQuery);
+      expect(itemTemplate.properties.tables[0].definitionQuery).toEqual(defQuery);
 
       fetchMock
         .post(adminUrl + "?f=json", serviceResponse)
         .post(url + "/sources?f=json", mockItems.getAGOLServiceSources())
-        .post(
-          utils.PORTAL_SUBSET.restUrl + "/content/items/svc1234567890/data",
-          mockItems.get500Failure()
-        );
+        .post(utils.PORTAL_SUBSET.restUrl + "/content/items/svc1234567890/data", mockItems.get500Failure());
 
-      featureLayer
-        .convertItemToTemplate(itemTemplate.item, MOCK_USER_SESSION, MOCK_USER_SESSION)
-        .then(r => {
-          // verify the state up front
-          expect(r.item.id).toEqual(expectedId);
-          expect(r.item.url).toEqual(expectedUrl);
-          expect(r.item.modified).toEqual(1538579807130);  // from layer or table, later than item's modified date
-          expect(r.dependencies.length).toEqual(1);
-          expect(r.data).toBeNull();
-          expect(r.properties.service.serviceItemId).toEqual(expectedId);
-          expect(r.properties.layers[0].serviceItemId).toEqual(expectedId);
-          expect(r.properties.tables[0].serviceItemId).toEqual(expectedId);
+      const r = await featureLayer.convertItemToTemplate(itemTemplate.item, MOCK_USER_SESSION, MOCK_USER_SESSION);
+      // verify the state up front
+      expect(r.item.id).toEqual(expectedId);
+      expect(r.item.url).toEqual(expectedUrl);
+      expect(r.item.modified).toEqual(1538579807130); // from layer or table, later than item's modified date
+      expect(r.dependencies.length).toEqual(1);
+      expect(r.data).toBeNull();
+      expect(r.properties.service.serviceItemId).toEqual(expectedId);
+      expect(r.properties.layers[0].serviceItemId).toEqual(expectedId);
+      expect(r.properties.tables[0].serviceItemId).toEqual(expectedId);
 
-          // Templatize layer & table fields
-          common.templatize(
-            r,
-            [{ id: "svc1234567890", name: "OtherSourceServiceName" }],
-            true
-          );
+      // Templatize layer & table fields
+      common.templatize(r, [{ id: "svc1234567890", name: "OtherSourceServiceName" }], true);
 
-          expect(r.properties.layers[0].relationships[0].keyField).toEqual(
-            expectedLayerKeyField
-          );
-          expect(r.properties.layers[0].viewDefinitionQuery).toEqual(
-            expectedLayerDefQuery
-          );
-          expect(r.properties.layers[0].definitionQuery).toEqual(
-            expectedLayerDefQuery
-          );
+      expect(r.properties.layers[0].relationships[0].keyField).toEqual(expectedLayerKeyField);
+      expect(r.properties.layers[0].viewDefinitionQuery).toEqual(expectedLayerDefQuery);
+      expect(r.properties.layers[0].definitionQuery).toEqual(expectedLayerDefQuery);
 
-          expect(r.properties.tables[0].relationships[0].keyField).toEqual(
-            expectedTableKeyField
-          );
-          expect(r.properties.tables[0].viewDefinitionQuery).toEqual(
-            expectedTableDefQuery
-          );
-          expect(r.properties.tables[0].definitionQuery).toEqual(
-            expectedTableDefQuery
-          );
-          done();
-        }, done.fail);
+      expect(r.properties.tables[0].relationships[0].keyField).toEqual(expectedTableKeyField);
+      expect(r.properties.tables[0].viewDefinitionQuery).toEqual(expectedTableDefQuery);
+      expect(r.properties.tables[0].definitionQuery).toEqual(expectedTableDefQuery);
     });
 
-    it("handle invalid group designations", done => {
+    it("handle invalid group designations", async () => {
       const id: string = "svc1234567890";
       const url: string =
         "https://services123.arcgis.com/org1234567890/arcgis/rest/services/ROWPermits_publiccomment/FeatureServer";
 
       const serviceResponse = mockItems.getAGOLService(
         [mockItems.getAGOLLayerOrTable(0, "A", "Feature Layer")],
-        [mockItems.getAGOLLayerOrTable(1, "B", "Table")]
+        [mockItems.getAGOLLayerOrTable(1, "B", "Table")],
       );
 
       itemTemplate.itemId = id;
@@ -200,32 +160,28 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
           fields: {},
           url: url + "/0",
           layerId: "0",
-          itemId: id
+          itemId: id,
         },
         layer1: {
           fields: {},
           url: url + "/1",
           layerId: "1",
-          itemId: id
-        }
+          itemId: id,
+        },
       };
 
-      featureLayer
-        .convertItemToTemplate(itemTemplate.item, MOCK_USER_SESSION, MOCK_USER_SESSION)
-        .then(r => {
-          // verify the state after
-          expect(r.item.id).toEqual(id);
-          expect(r.item.url).toEqual(url);
-          expect(r.dependencies).toEqual([]);
-          expect(r.properties).toEqual({
-            hasInvalidDesignations: true
-          });
-          expect(r.data).toEqual(expected);
-          done();
-        }, done.fail);
+      const r = await featureLayer.convertItemToTemplate(itemTemplate.item, MOCK_USER_SESSION, MOCK_USER_SESSION);
+      // verify the state after
+      expect(r.item.id).toEqual(id);
+      expect(r.item.url).toEqual(url);
+      expect(r.dependencies).toEqual([]);
+      expect(r.properties).toEqual({
+        hasInvalidDesignations: true,
+      });
+      expect(r.data).toEqual(expected);
     });
 
-    it("handle error on updateTemplateForInvalidDesignations", done => {
+    it("handle error on updateTemplateForInvalidDesignations", async () => {
       const id: string = "svc1234567890";
       const url: string =
         "https://services123.arcgis.com/org1234567890/arcgis/rest/services/ROWPermits_publiccomment/FeatureServer";
@@ -236,15 +192,13 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
 
       fetchMock.post(url + "?f=json", mockItems.get400Failure());
 
-      featureLayer
-        .convertItemToTemplate(itemTemplate.item, MOCK_USER_SESSION, MOCK_USER_SESSION, true)
-        .then(
-          () => done.fail(),
-          () => done()
-        );
+      return featureLayer.convertItemToTemplate(itemTemplate.item, MOCK_USER_SESSION, MOCK_USER_SESSION, true).then(
+        () => fail(),
+        () => Promise.resolve(),
+      );
     });
 
-    it("handle template item with missing url for invalid group designations", done => {
+    it("handle template item with missing url for invalid group designations", async () => {
       const id: string = "svc1234567890";
 
       itemTemplate.itemId = id;
@@ -252,20 +206,16 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
       itemTemplate.item.groupDesignations = "livingatlas";
       delete itemTemplate.item.url;
 
-      featureLayer
-        .convertItemToTemplate(itemTemplate.item, MOCK_USER_SESSION, MOCK_USER_SESSION)
-        .then(r => {
-          // verify the state after
-          expect(r.item.id).toEqual(id);
-          expect(r.dependencies).toEqual([]);
-          expect(r.properties).toEqual({
-            hasInvalidDesignations: true
-          });
-          done();
-        }, done.fail);
+      const r = await featureLayer.convertItemToTemplate(itemTemplate.item, MOCK_USER_SESSION, MOCK_USER_SESSION);
+      // verify the state after
+      expect(r.item.id).toEqual(id);
+      expect(r.dependencies).toEqual([]);
+      expect(r.properties).toEqual({
+        hasInvalidDesignations: true,
+      });
     });
 
-    it("handle invalid service data for invalid group designations", done => {
+    it("handle invalid service data for invalid group designations", async () => {
       const id: string = "svc1234567890";
       const url: string =
         "https://services123.arcgis.com/org1234567890/arcgis/rest/services/ROWPermits_publiccomment/FeatureServer";
@@ -278,28 +228,23 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
 
       fetchMock.post(url + "?f=json", serviceResponse);
 
-      featureLayer
-        .convertItemToTemplate(itemTemplate.item, MOCK_USER_SESSION, MOCK_USER_SESSION)
-        .then(r => {
-          // verify the state after
-          expect(r.item.id).toEqual(id);
-          expect(r.item.url).toEqual(url);
-          expect(r.dependencies).toEqual([]);
-          expect(r.properties).toEqual({
-            hasInvalidDesignations: true
-          });
-          done();
-        }, done.fail);
+      const r = await featureLayer.convertItemToTemplate(itemTemplate.item, MOCK_USER_SESSION, MOCK_USER_SESSION);
+      // verify the state after
+      expect(r.item.id).toEqual(id);
+      expect(r.item.url).toEqual(url);
+      expect(r.dependencies).toEqual([]);
+      expect(r.properties).toEqual({
+        hasInvalidDesignations: true,
+      });
     });
 
-    it("should handle error on extractDependencies", done => {
+    it("should handle error on extractDependencies", async () => {
       const id: string = "svc1234567890";
       const url: string =
         "https://services123.arcgis.com/org1234567890/arcgis/rest/services/ROWPermits_publiccomment/FeatureServer";
       const adminUrl: string =
         "https://services123.arcgis.com/org1234567890/arcgis/rest/admin/services/ROWPermits_publiccomment/FeatureServer";
-      const itemDataUrl: string =
-        utils.PORTAL_SUBSET.restUrl + "/content/items/svc1234567890/data";
+      const itemDataUrl: string = utils.PORTAL_SUBSET.restUrl + "/content/items/svc1234567890/data";
 
       const keyField: string = "globalid";
       const defQuery: string = "status = 'BoardReview'";
@@ -319,8 +264,7 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
       itemTemplate.itemId = id;
       itemTemplate.item.id = id;
       itemTemplate.properties.service.serviceItemId = id;
-      itemTemplate.properties.service.cacheMaxAge =
-        serviceResponse.adminServiceInfo.cacheMaxAge;
+      itemTemplate.properties.service.cacheMaxAge = serviceResponse.adminServiceInfo.cacheMaxAge;
       itemTemplate.properties.layers[0] = layer0;
       itemTemplate.properties.tables[0] = table0;
       delete itemTemplate.item.item;
@@ -331,31 +275,21 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
         .post(url + "/sources?f=json", mockItems.get400Failure());
 
       const templateDictionary = {};
-      featureLayer
-        .convertItemToTemplate(
-          itemTemplate.item,
-          MOCK_USER_SESSION,
-          MOCK_USER_SESSION,
-          templateDictionary
-        )
+      return featureLayer
+        .convertItemToTemplate(itemTemplate.item, MOCK_USER_SESSION, MOCK_USER_SESSION, templateDictionary)
         .then(
-          () => {
-            done.fail();
-          },
-          () => {
-            done();
-          }
+          () => fail(),
+          () => Promise.resolve(),
         );
     });
 
-    it("should handle error on getItemData", done => {
+    it("should handle error on getItemData", async () => {
       const id: string = "svc1234567890";
       const url: string =
         "https://services123.arcgis.com/org1234567890/arcgis/rest/services/ROWPermits_publiccomment/FeatureServer";
       const adminUrl: string =
         "https://services123.arcgis.com/org1234567890/arcgis/rest/admin/services/ROWPermits_publiccomment/FeatureServer";
-      const itemDataUrl: string =
-        utils.PORTAL_SUBSET.restUrl + "/content/items/svc1234567890/data";
+      const itemDataUrl: string = utils.PORTAL_SUBSET.restUrl + "/content/items/svc1234567890/data";
 
       itemTemplate.itemId = id;
       itemTemplate.item.id = id;
@@ -382,31 +316,21 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
         .post(itemDataUrl, mockItems.get400Failure());
 
       const templateDictionary = {};
-      featureLayer
-        .convertItemToTemplate(
-          itemTemplate.item,
-          MOCK_USER_SESSION,
-          MOCK_USER_SESSION,
-          templateDictionary
-        )
-        .then(
-          () => {
-            done();
-          },
-          e => {
-            done.fail(e);
-          }
-        );
+      return featureLayer.convertItemToTemplate(
+        itemTemplate.item,
+        MOCK_USER_SESSION,
+        MOCK_USER_SESSION,
+        templateDictionary,
+      );
     });
 
-    it("should handle error on getServiceLayersAndTables", done => {
+    it("should handle error on getServiceLayersAndTables", async () => {
       const id: string = "svc1234567890";
       const url: string =
         "https://services123.arcgis.com/org1234567890/arcgis/rest/services/ROWPermits_publiccomment/FeatureServer";
       const adminUrl: string =
         "https://services123.arcgis.com/org1234567890/arcgis/rest/admin/services/ROWPermits_publiccomment/FeatureServer";
-      const itemDataUrl: string =
-        utils.PORTAL_SUBSET.restUrl + "/content/items/svc1234567890/data";
+      const itemDataUrl: string = utils.PORTAL_SUBSET.restUrl + "/content/items/svc1234567890/data";
 
       const keyField: string = "globalid";
       const defQuery: string = "status = 'BoardReview'";
@@ -430,45 +354,40 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
         .post(url + "/sources?f=json", mockItems.get400Failure());
 
       const templateDictionary = {};
-      featureLayer
-        .convertItemToTemplate(
-          itemTemplate.item,
-          MOCK_USER_SESSION,
-          MOCK_USER_SESSION,
-          templateDictionary
-        )
+      return featureLayer
+        .convertItemToTemplate(itemTemplate.item, MOCK_USER_SESSION, MOCK_USER_SESSION, templateDictionary)
         .then(
-          () => {
-            done.fail();
-          },
-          () => {
-            done();
-          }
+          () => fail(),
+          () => Promise.resolve(),
         );
     });
 
     it("gets the most recently-edited layer/table", () => {
-      const layers = [{
-        editingInfo: { lastEditDate: 12345 }
-      }, {
-        editingInfo: { lastEditDate: 1234 }
-      }];
+      const layers = [
+        {
+          editingInfo: { lastEditDate: 12345 },
+        },
+        {
+          editingInfo: { lastEditDate: 1234 },
+        },
+      ];
       expect(featureLayer._mostRecentlyEditedLayer(layers)).toEqual(12345);
     });
 
     it("handles missing editingInfo for most recently-edited check", () => {
-      const layers = [{
-      }, {
-      }];
+      const layers = [{}, {}];
       expect(featureLayer._mostRecentlyEditedLayer(layers)).toEqual(0);
     });
 
     it("handles missing lastEditDate for most recently-edited check", () => {
-      const layers = [{
-        editingInfo: {}
-      }, {
-        editingInfo: {}
-      }];
+      const layers = [
+        {
+          editingInfo: {},
+        },
+        {
+          editingInfo: {},
+        },
+      ];
       expect(featureLayer._mostRecentlyEditedLayer(layers)).toEqual(0);
     });
 
@@ -479,7 +398,7 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
   });
 
   describe("createItemFromTemplate", () => {
-    it("should create a solution from a template for portal", done => {
+    it("should create a solution from a template for portal", async () => {
       const expectedId: string = "svc1234567890";
       const id: string = "{{" + expectedId + ".itemId}}";
 
@@ -490,14 +409,10 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
       const adminUrl: string =
         "https://services123.arcgis.com/org1234567890/arcgis/rest/admin/services/ROWPermits_publiccomment/FeatureServer";
 
-      const layerKeyField: string =
-        "{{" + expectedId + ".layer0.fields.globalid.name}}";
-      const tableKeyField: string =
-        "{{" + expectedId + ".layer1.fields.globalid.name}}";
-      const layerDefQuery: string =
-        "status = '{{" + expectedId + ".layer0.fields.boardreview.name}}'";
-      const tableDefQuery: string =
-        "status = '{{" + expectedId + ".layer1.fields.boardreview.name}}'";
+      const layerKeyField: string = "{{" + expectedId + ".layer0.fields.globalid.name}}";
+      const tableKeyField: string = "{{" + expectedId + ".layer1.fields.globalid.name}}";
+      const layerDefQuery: string = "status = '{{" + expectedId + ".layer0.fields.boardreview.name}}'";
+      const tableDefQuery: string = "status = '{{" + expectedId + ".layer1.fields.boardreview.name}}'";
 
       itemTemplate.properties.layers[0].relationships[0].keyField = layerKeyField;
       itemTemplate.properties.layers[0].definitionQuery = layerDefQuery;
@@ -508,18 +423,10 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
       itemTemplate.properties.tables[0].viewDefinitionQuery = tableDefQuery;
 
       // verify the state up front
-      expect(itemTemplate.item.id)
-        .withContext("up-front id check")
-        .toEqual(id);
-      expect(itemTemplate.item.url)
-        .withContext("up-front url check")
-        .toEqual(expectedUrl);
-      expect(itemTemplate.dependencies.length)
-        .withContext("up-front dependencies check")
-        .toEqual(0);
-      expect(itemTemplate.properties.service.serviceItemId)
-        .withContext("up-front serviceItemId check")
-        .toEqual(id);
+      expect(itemTemplate.item.id).withContext("up-front id check").toEqual(id);
+      expect(itemTemplate.item.url).withContext("up-front url check").toEqual(expectedUrl);
+      expect(itemTemplate.dependencies.length).withContext("up-front dependencies check").toEqual(0);
+      expect(itemTemplate.properties.service.serviceItemId).withContext("up-front serviceItemId check").toEqual(id);
 
       expect(itemTemplate.properties.layers[0].serviceItemId)
         .withContext("up-front layers serviceItemId check")
@@ -550,13 +457,11 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
       const createResponse: any = mockItems.getAGOLService([], [], true);
       createResponse.success = true;
 
-      const expectedClone: common.IItemTemplate = common.cloneObject(
-        itemTemplate
-      );
+      const expectedClone: common.IItemTemplate = common.cloneObject(itemTemplate);
       expectedClone.item.id = "svc1234567890";
       expectedClone.item.extent = [
         [0, 0],
-        [1, 1]
+        [1, 1],
       ];
       expectedClone.properties.service.serviceItemId = "svc1234567890";
       expectedClone.properties.layers[0].serviceItemId = "svc1234567890";
@@ -581,68 +486,54 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
         .post(adminUrl + "/0?f=json", itemTemplate.properties.layers[0])
         .post(adminUrl + "/1?f=json", itemTemplate.properties.tables[0])
         .post(url + "/sources?f=json", mockItems.getAGOLServiceSources())
-        .post(
-          utils.PORTAL_SUBSET.restUrl + "/content/users/casey/createService",
-          createResponse
-        )
+        .post(utils.PORTAL_SUBSET.restUrl + "/content/users/casey/createService", createResponse)
         .post(
           "https://services123.arcgis.com/org1234567890/arcgis/rest/admin/services/ROWPermits_publiccomment/FeatureServer/addToDefinition",
-          '{"success":true}'
+          '{"success":true}',
         )
         .post(
           "https://services123.arcgis.com/org1234567890/arcgis/rest/admin/services/ROWPermits_publiccomment/FeatureServer/refresh",
-          '{"success":true}'
+          '{"success":true}',
         )
         .post(
           "https://services123.arcgis.com/org1234567890/arcgis/rest/admin/services/ROWPermits_publiccomment/FeatureServer/0/updateDefinition",
-          '{"success":true}'
+          '{"success":true}',
         )
         .post(
           "https://services123.arcgis.com/org1234567890/arcgis/rest/admin/services/ROWPermits_publiccomment/FeatureServer/1/updateDefinition",
-          '{"success":true}'
+          '{"success":true}',
         )
         .post(
           "https://services123.arcgis.com/org1234567890/arcgis/rest/admin/services/ROWPermits_publiccomment/FeatureServer/updateDefinition",
-          '{"success":true}'
+          '{"success":true}',
         )
-        .post(
-          utils.PORTAL_SUBSET.restUrl +
-            "/content/users/casey/items/svc1234567890/update",
-          '{"success":true}'
-        )
+        .post(utils.PORTAL_SUBSET.restUrl + "/content/users/casey/items/svc1234567890/update", '{"success":true}')
         .get(
           "https://myorg.maps.arcgis.com/sharing/rest/content/items/svc1234567890?f=json&token=fake-token",
-          expectedClone.item
+          expectedClone.item,
         );
 
-      // eslint-disable-next-line @typescript-eslint/no-floating-promises
-      featureLayer
-        .createItemFromTemplate(
-          itemTemplate,
-          {
-            svc1234567890: {},
-            organization: _organization,
-            solutionItemExtent: _solutionItemExtent,
-            isPortal: true
-          },
-          MOCK_USER_SESSION,
-          utils.ITEM_PROGRESS_CALLBACK
-        )
-        .then(r => {
-          expectedClone.item.url = expectedUrl + "/";
-          expect(r)
-            .withContext("results")
-            .toEqual({
-              item: expectedClone,
-              id: "svc1234567890",
-              type: itemTemplate.type,
-              postProcess: false
-            });
-          done();
-        });
+      const r = await featureLayer.createItemFromTemplate(
+        itemTemplate,
+        {
+          svc1234567890: {},
+          organization: _organization,
+          solutionItemExtent: _solutionItemExtent,
+          isPortal: true,
+        },
+        MOCK_USER_SESSION,
+        utils.ITEM_PROGRESS_CALLBACK,
+      );
+      expectedClone.item.url = expectedUrl + "/";
+      expect(r).withContext("results").toEqual({
+        item: expectedClone,
+        id: "svc1234567890",
+        type: itemTemplate.type,
+        postProcess: false,
+      });
     });
 
-    it("should create a solution from a template", done => {
+    it("should create a solution from a template", async () => {
       const expectedId: string = "svc1234567890";
       const id: string = "{{" + expectedId + ".itemId}}";
 
@@ -653,10 +544,8 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
       const adminUrl: string =
         "https://services123.arcgis.com/org1234567890/arcgis/rest/admin/services/ROWPermits_publiccomment/FeatureServer";
 
-      const layerDefQuery: string =
-        "status = '{{" + expectedId + ".layer0.fields.boardreview.name}}'";
-      const tableDefQuery: string =
-        "status = '{{" + expectedId + ".layer1.fields.boardreview.name}}'";
+      const layerDefQuery: string = "status = '{{" + expectedId + ".layer0.fields.boardreview.name}}'";
+      const tableDefQuery: string = "status = '{{" + expectedId + ".layer1.fields.boardreview.name}}'";
 
       itemTemplate.properties.service.isView = false;
       itemTemplate.properties.service.size = 1009;
@@ -668,18 +557,10 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
       itemTemplate.properties.tables[0].viewDefinitionQuery = tableDefQuery;
 
       // verify the state up front
-      expect(itemTemplate.item.id)
-        .withContext("up-front id check")
-        .toEqual(id);
-      expect(itemTemplate.item.url)
-        .withContext("up-front url check")
-        .toEqual(expectedUrl);
-      expect(itemTemplate.dependencies.length)
-        .withContext("up-front dependencies check")
-        .toEqual(0);
-      expect(itemTemplate.properties.service.serviceItemId)
-        .withContext("up-front serviceItemId check")
-        .toEqual(id);
+      expect(itemTemplate.item.id).withContext("up-front id check").toEqual(id);
+      expect(itemTemplate.item.url).withContext("up-front url check").toEqual(expectedUrl);
+      expect(itemTemplate.dependencies.length).withContext("up-front dependencies check").toEqual(0);
+      expect(itemTemplate.properties.service.serviceItemId).withContext("up-front serviceItemId check").toEqual(id);
 
       expect(itemTemplate.properties.layers[0].serviceItemId)
         .withContext("up-front layers serviceItemId check")
@@ -704,24 +585,20 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
       const createResponse: any = mockItems.getAGOLService([], [], true);
       createResponse.success = true;
 
-      const expectedClone: common.IItemTemplate = common.cloneObject(
-        itemTemplate
-      );
+      const expectedClone: common.IItemTemplate = common.cloneObject(itemTemplate);
       expectedClone.item.id = "svc1234567890";
       expectedClone.item.extent = [
         [0, 0],
-        [1, 1]
+        [1, 1],
       ];
       expectedClone.properties.service.serviceItemId = "svc1234567890";
       expectedClone.properties.layers[0].serviceItemId = "svc1234567890";
       expectedClone.properties.layers[0].relationships = null;
-      expectedClone.properties.layers[0].viewDefinitionQuery =
-        "status = 'BoardReview'";
+      expectedClone.properties.layers[0].viewDefinitionQuery = "status = 'BoardReview'";
       delete expectedClone.properties.layers[0].definitionQuery;
       expectedClone.properties.tables[0].serviceItemId = "svc1234567890";
       expectedClone.properties.tables[0].relationships = null;
-      expectedClone.properties.tables[0].viewDefinitionQuery =
-        "status = 'BoardReview'";
+      expectedClone.properties.tables[0].viewDefinitionQuery = "status = 'BoardReview'";
       delete expectedClone.properties.tables[0].definitionQuery;
       expectedClone.item.thumbnail = "thumbnail/ago_downloaded.png";
       delete expectedClone.item.spatialReference;
@@ -732,55 +609,41 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
         .post(adminUrl + "/0?f=json", itemTemplate.properties.layers[0])
         .post(adminUrl + "/1?f=json", itemTemplate.properties.tables[0])
         .post(url + "/sources?f=json", mockItems.getAGOLServiceSources())
-        .post(
-          utils.PORTAL_SUBSET.restUrl + "/content/users/casey/createService",
-          createResponse
-        )
+        .post(utils.PORTAL_SUBSET.restUrl + "/content/users/casey/createService", createResponse)
         .post(
           "https://services123.arcgis.com/org1234567890/arcgis/rest/admin/services/ROWPermits_publiccomment/FeatureServer/addToDefinition",
-          '{"success":true}'
+          '{"success":true}',
         )
         .post(
           "https://services123.arcgis.com/org1234567890/arcgis/rest/admin/services/ROWPermits_publiccomment/FeatureServer/refresh",
-          '{"success":true}'
+          '{"success":true}',
         )
-        .post(
-          utils.PORTAL_SUBSET.restUrl +
-            "/content/users/casey/items/svc1234567890/update",
-          '{"success":true}'
-        )
+        .post(utils.PORTAL_SUBSET.restUrl + "/content/users/casey/items/svc1234567890/update", '{"success":true}')
         .get(
           "https://myorg.maps.arcgis.com/sharing/rest/content/items/svc1234567890?f=json&token=fake-token",
-          expectedClone.item
+          expectedClone.item,
         );
 
-      // eslint-disable-next-line @typescript-eslint/no-floating-promises
-      featureLayer
-        .createItemFromTemplate(
-          itemTemplate,
-          {
-            svc1234567890: {},
-            organization: _organization,
-            solutionItemExtent: _solutionItemExtent
-          },
-          MOCK_USER_SESSION,
-          utils.ITEM_PROGRESS_CALLBACK
-        )
-        .then(r => {
-          expectedClone.item.url = expectedUrl + "/";
-          expect(r)
-            .withContext("results")
-            .toEqual({
-              item: expectedClone,
-              id: "svc1234567890",
-              type: itemTemplate.type,
-              postProcess: false
-            });
-          done();
-        });
+      const r = await featureLayer.createItemFromTemplate(
+        itemTemplate,
+        {
+          svc1234567890: {},
+          organization: _organization,
+          solutionItemExtent: _solutionItemExtent,
+        },
+        MOCK_USER_SESSION,
+        utils.ITEM_PROGRESS_CALLBACK,
+      );
+      expectedClone.item.url = expectedUrl + "/";
+      expect(r).withContext("results").toEqual({
+        item: expectedClone,
+        id: "svc1234567890",
+        type: itemTemplate.type,
+        postProcess: false,
+      });
     });
 
-    it("should create a solution with FS from a template", done => {
+    it("should create a solution with FS from a template", async () => {
       const expectedId: string = "svc1234567890";
       const id: string = "{{" + expectedId + ".itemId}}";
 
@@ -791,10 +654,8 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
       const adminUrl: string =
         "https://services123.arcgis.com/org1234567890/arcgis/rest/admin/services/ROWPermits_publiccomment/FeatureServer";
 
-      const layerDefQuery: string =
-        "status = '{{" + expectedId + ".layer0.fields.boardreview.name}}'";
-      const tableDefQuery: string =
-        "status = '{{" + expectedId + ".layer1.fields.boardreview.name}}'";
+      const layerDefQuery: string = "status = '{{" + expectedId + ".layer0.fields.boardreview.name}}'";
+      const tableDefQuery: string = "status = '{{" + expectedId + ".layer1.fields.boardreview.name}}'";
 
       itemTemplate.properties.service.isView = false;
 
@@ -807,18 +668,10 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
       itemTemplate.properties.tables[0].viewDefinitionQuery = tableDefQuery;
 
       // verify the state up front
-      expect(itemTemplate.item.id)
-        .withContext("up-front id check")
-        .toEqual(id);
-      expect(itemTemplate.item.url)
-        .withContext("up-front url check")
-        .toEqual(expectedUrl);
-      expect(itemTemplate.dependencies.length)
-        .withContext("up-front dependencies check")
-        .toEqual(0);
-      expect(itemTemplate.properties.service.serviceItemId)
-        .withContext("up-front serviceItemId check")
-        .toEqual(id);
+      expect(itemTemplate.item.id).withContext("up-front id check").toEqual(id);
+      expect(itemTemplate.item.url).withContext("up-front url check").toEqual(expectedUrl);
+      expect(itemTemplate.dependencies.length).withContext("up-front dependencies check").toEqual(0);
+      expect(itemTemplate.properties.service.serviceItemId).withContext("up-front serviceItemId check").toEqual(id);
 
       expect(itemTemplate.properties.layers[0].serviceItemId)
         .withContext("up-front layers serviceItemId check")
@@ -843,28 +696,22 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
       const createResponse: any = mockItems.getAGOLService([], [], true);
       createResponse.success = true;
 
-      const expectedClone: common.IItemTemplate = common.cloneObject(
-        itemTemplate
-      );
+      const expectedClone: common.IItemTemplate = common.cloneObject(itemTemplate);
       expectedClone.item.id = "svc1234567890";
       expectedClone.item.extent = [
         [0, 0],
-        [1, 1]
+        [1, 1],
       ];
       expectedClone.properties.service.serviceItemId = "svc1234567890";
       expectedClone.properties.layers[0].serviceItemId = "svc1234567890";
       expectedClone.properties.layers[0].relationships = null;
-      expectedClone.properties.layers[0].viewDefinitionQuery =
-        "status = 'BoardReview'";
-      expectedClone.properties.layers[0].definitionQuery =
-        "status = 'BoardReview'";
+      expectedClone.properties.layers[0].viewDefinitionQuery = "status = 'BoardReview'";
+      expectedClone.properties.layers[0].definitionQuery = "status = 'BoardReview'";
 
       expectedClone.properties.tables[0].serviceItemId = "svc1234567890";
       expectedClone.properties.tables[0].relationships = null;
-      expectedClone.properties.tables[0].viewDefinitionQuery =
-        "status = 'BoardReview'";
-      expectedClone.properties.tables[0].definitionQuery =
-        "status = 'BoardReview'";
+      expectedClone.properties.tables[0].viewDefinitionQuery = "status = 'BoardReview'";
+      expectedClone.properties.tables[0].definitionQuery = "status = 'BoardReview'";
       expectedClone.item.thumbnail = "thumbnail/ago_downloaded.png";
       delete expectedClone.item.spatialReference;
 
@@ -873,55 +720,41 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
         .post(adminUrl + "/0?f=json", itemTemplate.properties.layers[0])
         .post(adminUrl + "/1?f=json", itemTemplate.properties.tables[0])
         .post(url + "/sources?f=json", mockItems.getAGOLServiceSources())
-        .post(
-          utils.PORTAL_SUBSET.restUrl + "/content/users/casey/createService",
-          createResponse
-        )
+        .post(utils.PORTAL_SUBSET.restUrl + "/content/users/casey/createService", createResponse)
         .post(
           "https://services123.arcgis.com/org1234567890/arcgis/rest/admin/services/ROWPermits_publiccomment/FeatureServer/addToDefinition",
-          '{"success":true}'
+          '{"success":true}',
         )
         .post(
           "https://services123.arcgis.com/org1234567890/arcgis/rest/admin/services/ROWPermits_publiccomment/FeatureServer/refresh",
-          '{"success":true}'
+          '{"success":true}',
         )
-        .post(
-          utils.PORTAL_SUBSET.restUrl +
-            "/content/users/casey/items/svc1234567890/update",
-          '{"success":true}'
-        )
+        .post(utils.PORTAL_SUBSET.restUrl + "/content/users/casey/items/svc1234567890/update", '{"success":true}')
         .get(
           "https://myorg.maps.arcgis.com/sharing/rest/content/items/svc1234567890?f=json&token=fake-token",
-          expectedClone.item
+          expectedClone.item,
         );
 
-      // eslint-disable-next-line @typescript-eslint/no-floating-promises
-      featureLayer
-        .createItemFromTemplate(
-          itemTemplate,
-          {
-            svc1234567890: {},
-            organization: _organization,
-            solutionItemExtent: _solutionItemExtent
-          },
-          MOCK_USER_SESSION,
-          utils.ITEM_PROGRESS_CALLBACK
-        )
-        .then(r => {
-          expectedClone.item.url = expectedUrl + "/";
-          expect(r)
-            .withContext("results")
-            .toEqual({
-              item: expectedClone,
-              id: "svc1234567890",
-              type: itemTemplate.type,
-              postProcess: false
-            });
-          done();
-        });
+      const r = await featureLayer.createItemFromTemplate(
+        itemTemplate,
+        {
+          svc1234567890: {},
+          organization: _organization,
+          solutionItemExtent: _solutionItemExtent,
+        },
+        MOCK_USER_SESSION,
+        utils.ITEM_PROGRESS_CALLBACK,
+      );
+      expectedClone.item.url = expectedUrl + "/";
+      expect(r).withContext("results").toEqual({
+        item: expectedClone,
+        id: "svc1234567890",
+        type: itemTemplate.type,
+        postProcess: false,
+      });
     });
 
-    it("should set postProcess to true when the item has unprocessed interpolation tokens", done => {
+    it("should set postProcess to true when the item has unprocessed interpolation tokens", async () => {
       const expectedId: string = "svc1234567890";
       const id: string = "{{" + expectedId + ".itemId}}";
 
@@ -932,10 +765,8 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
       const adminUrl: string =
         "https://services123.arcgis.com/org1234567890/arcgis/rest/admin/services/ROWPermits_publiccomment/FeatureServer";
 
-      const layerDefQuery: string =
-        "status = '{{" + expectedId + ".layer0.fields.boardreview.name}}'";
-      const tableDefQuery: string =
-        "status = '{{" + expectedId + ".layer1.fields.boardreview.name}}'";
+      const layerDefQuery: string = "status = '{{" + expectedId + ".layer0.fields.boardreview.name}}'";
+      const tableDefQuery: string = "status = '{{" + expectedId + ".layer1.fields.boardreview.name}}'";
 
       itemTemplate.properties.layers[0].relationships = null;
       itemTemplate.properties.layers[0].definitionQuery = layerDefQuery;
@@ -949,18 +780,10 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
       itemTemplate.properties.service.isView = false;
 
       // verify the state up front
-      expect(itemTemplate.item.id)
-        .withContext("up-front id check")
-        .toEqual(id);
-      expect(itemTemplate.item.url)
-        .withContext("up-front url check")
-        .toEqual(expectedUrl);
-      expect(itemTemplate.dependencies.length)
-        .withContext("up-front dependencies check")
-        .toEqual(0);
-      expect(itemTemplate.properties.service.serviceItemId)
-        .withContext("up-front serviceItemId check")
-        .toEqual(id);
+      expect(itemTemplate.item.id).withContext("up-front id check").toEqual(id);
+      expect(itemTemplate.item.url).withContext("up-front url check").toEqual(expectedUrl);
+      expect(itemTemplate.dependencies.length).withContext("up-front dependencies check").toEqual(0);
+      expect(itemTemplate.properties.service.serviceItemId).withContext("up-front serviceItemId check").toEqual(id);
 
       expect(itemTemplate.properties.layers[0].serviceItemId)
         .withContext("up-front layers serviceItemId check")
@@ -985,22 +808,18 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
       const createResponse: any = mockItems.getAGOLService([], [], true);
       createResponse.success = true;
 
-      const expectedClone: common.IItemTemplate = common.cloneObject(
-        itemTemplate
-      );
+      const expectedClone: common.IItemTemplate = common.cloneObject(itemTemplate);
       expectedClone.item.id = "svc1234567890";
       expectedClone.item.extent = [
         [0, 0],
-        [1, 1]
+        [1, 1],
       ];
       expectedClone.properties.service.serviceItemId = "svc1234567890";
       expectedClone.properties.layers[0].serviceItemId = "svc1234567890";
-      expectedClone.properties.layers[0].viewDefinitionQuery =
-        "status = 'BoardReview'";
+      expectedClone.properties.layers[0].viewDefinitionQuery = "status = 'BoardReview'";
       delete expectedClone.properties.layers[0].definitionQuery;
       expectedClone.properties.tables[0].serviceItemId = "svc1234567890";
-      expectedClone.properties.tables[0].viewDefinitionQuery =
-        "status = 'BoardReview'";
+      expectedClone.properties.tables[0].viewDefinitionQuery = "status = 'BoardReview'";
       delete expectedClone.properties.tables[0].definitionQuery;
       expectedClone.item.thumbnail = "thumbnail/ago_downloaded.png";
       delete expectedClone.item.spatialReference;
@@ -1010,53 +829,41 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
         .post(adminUrl + "/0?f=json", itemTemplate.properties.layers[0])
         .post(adminUrl + "/1?f=json", itemTemplate.properties.tables[0])
         .post(url + "/sources?f=json", mockItems.getAGOLServiceSources())
-        .post(
-          utils.PORTAL_SUBSET.restUrl + "/content/users/casey/createService",
-          createResponse
-        )
+        .post(utils.PORTAL_SUBSET.restUrl + "/content/users/casey/createService", createResponse)
         .post(
           "https://services123.arcgis.com/org1234567890/arcgis/rest/admin/services/ROWPermits_publiccomment/FeatureServer/addToDefinition",
-          '{"success":true}'
+          '{"success":true}',
         )
         .post(
           "https://services123.arcgis.com/org1234567890/arcgis/rest/admin/services/ROWPermits_publiccomment/FeatureServer/refresh",
-          '{"success":true}'
+          '{"success":true}',
         )
-        .post(
-          utils.PORTAL_SUBSET.restUrl +
-            "/content/users/casey/items/svc1234567890/update",
-          '{"success":true}'
-        )
+        .post(utils.PORTAL_SUBSET.restUrl + "/content/users/casey/items/svc1234567890/update", '{"success":true}')
         .get(
           "https://myorg.maps.arcgis.com/sharing/rest/content/items/svc1234567890?f=json&token=fake-token",
-          expectedClone.item
+          expectedClone.item,
         );
 
-      // eslint-disable-next-line @typescript-eslint/no-floating-promises
-      featureLayer
-        .createItemFromTemplate(
-          itemTemplate,
-          {
-            svc1234567890: {},
-            organization: _organization,
-            solutionItemExtent: _solutionItemExtent
-          },
-          MOCK_USER_SESSION,
-          utils.ITEM_PROGRESS_CALLBACK
-        )
-        .then(r => {
-          expectedClone.item.url = expectedUrl + "/";
-          expect(r).toEqual({
-            item: expectedClone,
-            id: "svc1234567890",
-            type: itemTemplate.type,
-            postProcess: true
-          });
-          done();
-        });
+      const r = await featureLayer.createItemFromTemplate(
+        itemTemplate,
+        {
+          svc1234567890: {},
+          organization: _organization,
+          solutionItemExtent: _solutionItemExtent,
+        },
+        MOCK_USER_SESSION,
+        utils.ITEM_PROGRESS_CALLBACK,
+      );
+      expectedClone.item.url = expectedUrl + "/";
+      expect(r).toEqual({
+        item: expectedClone,
+        id: "svc1234567890",
+        type: itemTemplate.type,
+        postProcess: true,
+      });
     });
 
-    it("should set postProcess to true when the item data has unprocessed interpolation tokens", done => {
+    it("should set postProcess to true when the item data has unprocessed interpolation tokens", async () => {
       const expectedId: string = "svc1234567890";
       const id: string = "{{" + expectedId + ".itemId}}";
 
@@ -1067,10 +874,8 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
       const adminUrl: string =
         "https://services123.arcgis.com/org1234567890/arcgis/rest/admin/services/ROWPermits_publiccomment/FeatureServer";
 
-      const layerDefQuery: string =
-        "status = '{{" + expectedId + ".layer0.fields.boardreview.name}}'";
-      const tableDefQuery: string =
-        "status = '{{" + expectedId + ".layer1.fields.boardreview.name}}'";
+      const layerDefQuery: string = "status = '{{" + expectedId + ".layer0.fields.boardreview.name}}'";
+      const tableDefQuery: string = "status = '{{" + expectedId + ".layer1.fields.boardreview.name}}'";
 
       itemTemplate.properties.layers[0].definitionQuery = layerDefQuery;
       itemTemplate.properties.layers[0].viewDefinitionQuery = layerDefQuery;
@@ -1083,18 +888,10 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
       itemTemplate.data.other = "{{unprocessed.itemId}}";
 
       // verify the state up front
-      expect(itemTemplate.item.id)
-        .withContext("up-front id check")
-        .toEqual(id);
-      expect(itemTemplate.item.url)
-        .withContext("up-front url check")
-        .toEqual(expectedUrl);
-      expect(itemTemplate.dependencies.length)
-        .withContext("up-front dependencies check")
-        .toEqual(0);
-      expect(itemTemplate.properties.service.serviceItemId)
-        .withContext("up-front serviceItemId check")
-        .toEqual(id);
+      expect(itemTemplate.item.id).withContext("up-front id check").toEqual(id);
+      expect(itemTemplate.item.url).withContext("up-front url check").toEqual(expectedUrl);
+      expect(itemTemplate.dependencies.length).withContext("up-front dependencies check").toEqual(0);
+      expect(itemTemplate.properties.service.serviceItemId).withContext("up-front serviceItemId check").toEqual(id);
 
       expect(itemTemplate.properties.layers[0].serviceItemId)
         .withContext("up-front layers serviceItemId check")
@@ -1119,24 +916,20 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
       const createResponse: any = mockItems.getAGOLService([], [], true);
       createResponse.success = true;
 
-      const expectedClone: common.IItemTemplate = common.cloneObject(
-        itemTemplate
-      );
+      const expectedClone: common.IItemTemplate = common.cloneObject(itemTemplate);
       expectedClone.item.id = "svc1234567890";
       expectedClone.item.extent = [
         [0, 0],
-        [1, 1]
+        [1, 1],
       ];
       expectedClone.properties.service.serviceItemId = "svc1234567890";
       expectedClone.properties.layers[0].serviceItemId = "svc1234567890";
       expectedClone.properties.layers[0].relationships = null;
-      expectedClone.properties.layers[0].viewDefinitionQuery =
-        "status = 'BoardReview'";
+      expectedClone.properties.layers[0].viewDefinitionQuery = "status = 'BoardReview'";
       delete expectedClone.properties.layers[0].definitionQuery;
       expectedClone.properties.tables[0].serviceItemId = "svc1234567890";
       expectedClone.properties.tables[0].relationships = null;
-      expectedClone.properties.tables[0].viewDefinitionQuery =
-        "status = 'BoardReview'";
+      expectedClone.properties.tables[0].viewDefinitionQuery = "status = 'BoardReview'";
       delete expectedClone.properties.tables[0].definitionQuery;
       expectedClone.item.thumbnail = "thumbnail/ago_downloaded.png";
       delete expectedClone.item.spatialReference;
@@ -1146,56 +939,41 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
         .post(adminUrl + "/0?f=json", itemTemplate.properties.layers[0])
         .post(adminUrl + "/1?f=json", itemTemplate.properties.tables[0])
         .post(url + "/sources?f=json", mockItems.getAGOLServiceSources())
-        .post(
-          utils.PORTAL_SUBSET.restUrl + "/content/users/casey/createService",
-          createResponse
-        )
+        .post(utils.PORTAL_SUBSET.restUrl + "/content/users/casey/createService", createResponse)
         .post(
           "https://services123.arcgis.com/org1234567890/arcgis/rest/admin/services/ROWPermits_publiccomment/FeatureServer/addToDefinition",
-          '{"success":true}'
+          '{"success":true}',
         )
         .post(
           "https://services123.arcgis.com/org1234567890/arcgis/rest/admin/services/ROWPermits_publiccomment/FeatureServer/refresh",
-          '{"success":true}'
+          '{"success":true}',
         )
-        .post(
-          utils.PORTAL_SUBSET.restUrl +
-            "/content/users/casey/items/svc1234567890/update",
-          '{"success":true}'
-        )
+        .post(utils.PORTAL_SUBSET.restUrl + "/content/users/casey/items/svc1234567890/update", '{"success":true}')
         .get(
           "https://myorg.maps.arcgis.com/sharing/rest/content/items/svc1234567890?f=json&token=fake-token",
-          expectedClone.item
+          expectedClone.item,
         );
 
-      // eslint-disable-next-line @typescript-eslint/no-floating-promises
-      featureLayer
-        .createItemFromTemplate(
-          itemTemplate,
-          {
-            svc1234567890: {},
-            organization: _organization,
-            solutionItemExtent: _solutionItemExtent
-          },
-          MOCK_USER_SESSION,
-          utils.ITEM_PROGRESS_CALLBACK
-        )
-        .then(r => {
-          expectedClone.item.url = expectedUrl + "/";
-          expect(r)
-            .withContext("results")
-            .withContext("result")
-            .toEqual({
-              item: expectedClone,
-              id: "svc1234567890",
-              type: itemTemplate.type,
-              postProcess: true
-            });
-          done();
-        });
+      const r = await featureLayer.createItemFromTemplate(
+        itemTemplate,
+        {
+          svc1234567890: {},
+          organization: _organization,
+          solutionItemExtent: _solutionItemExtent,
+        },
+        MOCK_USER_SESSION,
+        utils.ITEM_PROGRESS_CALLBACK,
+      );
+      expectedClone.item.url = expectedUrl + "/";
+      expect(r).withContext("results").withContext("result").toEqual({
+        item: expectedClone,
+        id: "svc1234567890",
+        type: itemTemplate.type,
+        postProcess: true,
+      });
     });
 
-    it("should create a solution from a template in portal", done => {
+    it("should create a solution from a template in portal", async () => {
       const expectedId: string = "svc1234567890";
       const id: string = "{{" + expectedId + ".itemId}}";
 
@@ -1206,14 +984,10 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
       const adminUrl: string =
         "https://services123.arcgis.com/org1234567890/arcgis/rest/admin/services/ROWPermits_publiccomment/FeatureServer";
 
-      const layerKeyField: string =
-        "{{" + expectedId + ".layer0.fields.globalid.name}}";
-      const tableKeyField: string =
-        "{{" + expectedId + ".layer1.fields.globalid.name}}";
-      const layerDefQuery: string =
-        "status = '{{" + expectedId + ".layer0.fields.boardreview.name}}'";
-      const tableDefQuery: string =
-        "status = '{{" + expectedId + ".layer1.fields.boardreview.name}}'";
+      const layerKeyField: string = "{{" + expectedId + ".layer0.fields.globalid.name}}";
+      const tableKeyField: string = "{{" + expectedId + ".layer1.fields.globalid.name}}";
+      const layerDefQuery: string = "status = '{{" + expectedId + ".layer0.fields.boardreview.name}}'";
+      const tableDefQuery: string = "status = '{{" + expectedId + ".layer1.fields.boardreview.name}}'";
 
       itemTemplate.properties.layers[0].relationships[0].keyField = layerKeyField;
       itemTemplate.properties.layers[0].definitionQuery = layerDefQuery;
@@ -1223,22 +997,14 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
       itemTemplate.properties.tables[0].definitionQuery = tableDefQuery;
       itemTemplate.properties.tables[0].viewDefinitionQuery = tableDefQuery;
       itemTemplate.properties.tables[0].adminLayerInfo = {
-        geometryField: {}
+        geometryField: {},
       };
 
       // verify the state up front
-      expect(itemTemplate.item.id)
-        .withContext("up-front id check")
-        .toEqual(id);
-      expect(itemTemplate.item.url)
-        .withContext("up-front url check")
-        .toEqual(expectedUrl);
-      expect(itemTemplate.dependencies.length)
-        .withContext("up-front dependencies check")
-        .toEqual(0);
-      expect(itemTemplate.properties.service.serviceItemId)
-        .withContext("up-front serviceItemId check")
-        .toEqual(id);
+      expect(itemTemplate.item.id).withContext("up-front id check").toEqual(id);
+      expect(itemTemplate.item.url).withContext("up-front url check").toEqual(expectedUrl);
+      expect(itemTemplate.dependencies.length).withContext("up-front dependencies check").toEqual(0);
+      expect(itemTemplate.properties.service.serviceItemId).withContext("up-front serviceItemId check").toEqual(id);
 
       expect(itemTemplate.properties.layers[0].serviceItemId)
         .withContext("up-front layers serviceItemId check")
@@ -1271,25 +1037,20 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
       settings.isPortal = true;
       settings[expectedId] = {
         id: expectedId,
-        url: expectedUrl
+        url: expectedUrl,
       };
 
-      settings.organization = Object.assign(
-        settings.organization || {},
-        _organization
-      );
+      settings.organization = Object.assign(settings.organization || {}, _organization);
       settings.solutionItemExtent = _solutionItemExtent;
 
       const createResponse: any = mockItems.getAGOLService([], [], true);
       createResponse.success = true;
 
-      const expectedClone: common.IItemTemplate = common.cloneObject(
-        itemTemplate
-      );
+      const expectedClone: common.IItemTemplate = common.cloneObject(itemTemplate);
       expectedClone.item.id = "svc1234567890";
       expectedClone.item.extent = [
         [0, 0],
-        [1, 1]
+        [1, 1],
       ];
       expectedClone.properties.service.serviceItemId = "svc1234567890";
       expectedClone.properties.layers[0].serviceItemId = "svc1234567890";
@@ -1314,66 +1075,50 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
         .post(adminUrl + "/0?f=json", itemTemplate.properties.layers[0])
         .post(adminUrl + "/1?f=json", itemTemplate.properties.tables[0])
         .post(url + "/sources?f=json", mockItems.getAGOLServiceSources())
-        .post(
-          utils.PORTAL_SUBSET.restUrl +
-            "/content/users/casey/fld1234567890/createService",
-          createResponse
-        )
+        .post(utils.PORTAL_SUBSET.restUrl + "/content/users/casey/fld1234567890/createService", createResponse)
         .post(
           "https://services123.arcgis.com/org1234567890/arcgis/rest/admin/services/ROWPermits_publiccomment/FeatureServer/addToDefinition",
-          '{"success":true}'
+          '{"success":true}',
         )
         .post(
           "https://services123.arcgis.com/org1234567890/arcgis/rest/admin/services/ROWPermits_publiccomment/FeatureServer/refresh",
-          '{"success":true}'
+          '{"success":true}',
         )
         .post(
           "https://services123.arcgis.com/org1234567890/arcgis/rest/admin/services/ROWPermits_publiccomment/FeatureServer/0/updateDefinition",
-          '{"success":true}'
+          '{"success":true}',
         )
         .post(
           "https://services123.arcgis.com/org1234567890/arcgis/rest/admin/services/ROWPermits_publiccomment/FeatureServer/1/updateDefinition",
-          '{"success":true}'
+          '{"success":true}',
         )
         .post(
           "https://services123.arcgis.com/org1234567890/arcgis/rest/admin/services/ROWPermits_publiccomment/FeatureServer/updateDefinition",
-          '{"success":true}'
+          '{"success":true}',
         )
-        .post(
-          utils.PORTAL_SUBSET.restUrl +
-            "/content/users/casey/items/svc1234567890/update",
-          '{"success":true}'
-        )
+        .post(utils.PORTAL_SUBSET.restUrl + "/content/users/casey/items/svc1234567890/update", '{"success":true}')
         .get(
           "https://myorg.maps.arcgis.com/sharing/rest/content/items/svc1234567890?f=json&token=fake-token",
-          expectedClone.item
+          expectedClone.item,
         );
 
-      // eslint-disable-next-line @typescript-eslint/no-floating-promises
-      featureLayer
-        .createItemFromTemplate(
-          itemTemplate,
-          settings,
-          MOCK_USER_SESSION,
-          utils.ITEM_PROGRESS_CALLBACK
-        )
-        .then(r => {
-          expectedClone.item.url = expectedUrl + "/";
-          expect(r)
-            .withContext("result")
-            .toEqual({
-              item: expectedClone,
-              id: "svc1234567890",
-              type: itemTemplate.type,
-              postProcess: false
-            });
-          done();
-        });
+      const r = await featureLayer.createItemFromTemplate(
+        itemTemplate,
+        settings,
+        MOCK_USER_SESSION,
+        utils.ITEM_PROGRESS_CALLBACK,
+      );
+      expectedClone.item.url = expectedUrl + "/";
+      expect(r).withContext("result").toEqual({
+        item: expectedClone,
+        id: "svc1234567890",
+        type: itemTemplate.type,
+        postProcess: false,
+      });
     });
 
-    it("should handle error on updateItem", done => {
+    it("should handle error on updateItem", async () => {
       const expectedId: string = "svc1234567890";
-      const id: string = "{{" + expectedId + ".itemId}}";
 
       const expectedUrl: string =
         "https://services123.arcgis.com/org1234567890/arcgis/rest/services/ROWPermits_publiccomment/FeatureServer/";
@@ -1382,14 +1127,10 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
       const adminUrl: string =
         "https://services123.arcgis.com/org1234567890/arcgis/rest/admin/services/ROWPermits_publiccomment/FeatureServer";
 
-      const layerKeyField: string =
-        "{{" + expectedId + ".layer0.fields.globalid.name}}";
-      const tableKeyField: string =
-        "{{" + expectedId + ".layer1.fields.globalid.name}}";
-      const layerDefQuery: string =
-        "status = '{{" + expectedId + ".layer0.fields.boardreview.name}}'";
-      const tableDefQuery: string =
-        "status = '{{" + expectedId + ".layer1.fields.boardreview.name}}'";
+      const layerKeyField: string = "{{" + expectedId + ".layer0.fields.globalid.name}}";
+      const tableKeyField: string = "{{" + expectedId + ".layer1.fields.globalid.name}}";
+      const layerDefQuery: string = "status = '{{" + expectedId + ".layer0.fields.boardreview.name}}'";
+      const tableDefQuery: string = "status = '{{" + expectedId + ".layer1.fields.boardreview.name}}'";
 
       itemTemplate.properties.service.fullExtent = {};
       itemTemplate.properties.service.initialExtent = {};
@@ -1406,7 +1147,7 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
       settings.folderId = "fld1234567890";
       settings[expectedId] = {
         id: expectedId,
-        url: expectedUrl
+        url: expectedUrl,
       };
 
       const createResponse: any = mockItems.getAGOLService([], [], true);
@@ -1417,67 +1158,52 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
         .post(adminUrl + "/0?f=json", itemTemplate.properties.layers[0])
         .post(adminUrl + "/1?f=json", itemTemplate.properties.tables[0])
         .post(url + "/sources?f=json", mockItems.getAGOLServiceSources())
-        .post(
-          utils.PORTAL_SUBSET.restUrl + "/content/users/casey/createService",
-          createResponse
-        )
+        .post(utils.PORTAL_SUBSET.restUrl + "/content/users/casey/createService", createResponse)
         .post(
           "https://services123.arcgis.com/org1234567890/arcgis/rest/admin/services/ROWPermits_publiccomment/FeatureServer/addToDefinition",
-          '{"success":true}'
+          '{"success":true}',
         )
         .post(
           "https://services123.arcgis.com/org1234567890/arcgis/rest/admin/services/ROWPermits_publiccomment/FeatureServer/refresh",
-          '{"success":true}'
+          '{"success":true}',
         )
         .post(
           "https://services123.arcgis.com/org1234567890/arcgis/rest/admin/services/ROWPermits_publiccomment/FeatureServer/0/updateDefinition",
-          '{"success":true}'
+          '{"success":true}',
         )
         .post(
           "https://services123.arcgis.com/org1234567890/arcgis/rest/admin/services/ROWPermits_publiccomment/FeatureServer/1/updateDefinition",
-          '{"success":true}'
+          '{"success":true}',
         )
         .post(
           "https://services123.arcgis.com/org1234567890/arcgis/rest/admin/services/ROWPermits_publiccomment/FeatureServer/updateDefinition",
-          '{"success":true}'
+          '{"success":true}',
         )
-        .post(
-          utils.PORTAL_SUBSET.restUrl +
-            "/content/users/casey/items/svc1234567890/update",
-          '{"success":true}'
-        )
+        .post(utils.PORTAL_SUBSET.restUrl + "/content/users/casey/items/svc1234567890/update", '{"success":true}')
         .get(
           "https://myorg.maps.arcgis.com/sharing/rest/content/items/svc1234567890?f=json&token=fake-token",
-          mockItems.get400Failure()
+          mockItems.get400Failure(),
         )
         .post(
           "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/items/svc1234567890/delete",
-          '{"success":true}'
+          '{"success":true}',
         );
 
-      // eslint-disable-next-line @typescript-eslint/no-floating-promises
-      featureLayer
-        .createItemFromTemplate(
-          itemTemplate,
-          {
-            organization: _organization,
-            svc1234567890: {},
-            solutionItemExtent: _solutionItemExtent
-          },
-          MOCK_USER_SESSION,
-          utils.ITEM_PROGRESS_CALLBACK
-        )
-        .then(response => {
-          expect(response).toEqual(
-            mockSolutions.getFailedItem(itemTemplate.type)
-          );
-          done();
-        });
+      const response = await featureLayer.createItemFromTemplate(
+        itemTemplate,
+        {
+          organization: _organization,
+          svc1234567890: {},
+          solutionItemExtent: _solutionItemExtent,
+        },
+        MOCK_USER_SESSION,
+        utils.ITEM_PROGRESS_CALLBACK,
+      );
+      expect(response).toEqual(mockSolutions.getFailedItem(itemTemplate.type));
     });
 
-    it("should handle error deleting item after error on updateItem", done => {
+    it("should handle error deleting item after error on updateItem", async () => {
       const expectedId: string = "svc1234567890";
-      const id: string = "{{" + expectedId + ".itemId}}";
 
       const expectedUrl: string =
         "https://services123.arcgis.com/org1234567890/arcgis/rest/services/ROWPermits_publiccomment/FeatureServer/";
@@ -1486,14 +1212,10 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
       const adminUrl: string =
         "https://services123.arcgis.com/org1234567890/arcgis/rest/admin/services/ROWPermits_publiccomment/FeatureServer";
 
-      const layerKeyField: string =
-        "{{" + expectedId + ".layer0.fields.globalid.name}}";
-      const tableKeyField: string =
-        "{{" + expectedId + ".layer1.fields.globalid.name}}";
-      const layerDefQuery: string =
-        "status = '{{" + expectedId + ".layer0.fields.boardreview.name}}'";
-      const tableDefQuery: string =
-        "status = '{{" + expectedId + ".layer1.fields.boardreview.name}}'";
+      const layerKeyField: string = "{{" + expectedId + ".layer0.fields.globalid.name}}";
+      const tableKeyField: string = "{{" + expectedId + ".layer1.fields.globalid.name}}";
+      const layerDefQuery: string = "status = '{{" + expectedId + ".layer0.fields.boardreview.name}}'";
+      const tableDefQuery: string = "status = '{{" + expectedId + ".layer1.fields.boardreview.name}}'";
 
       itemTemplate.properties.service.fullExtent = {};
       itemTemplate.properties.service.initialExtent = {};
@@ -1510,7 +1232,7 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
       settings.folderId = "fld1234567890";
       settings[expectedId] = {
         id: expectedId,
-        url: expectedUrl
+        url: expectedUrl,
       };
 
       const createResponse: any = mockItems.getAGOLService([], [], true);
@@ -1521,67 +1243,52 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
         .post(adminUrl + "/0?f=json", itemTemplate.properties.layers[0])
         .post(adminUrl + "/1?f=json", itemTemplate.properties.tables[0])
         .post(url + "/sources?f=json", mockItems.getAGOLServiceSources())
-        .post(
-          utils.PORTAL_SUBSET.restUrl + "/content/users/casey/createService",
-          createResponse
-        )
+        .post(utils.PORTAL_SUBSET.restUrl + "/content/users/casey/createService", createResponse)
         .post(
           "https://services123.arcgis.com/org1234567890/arcgis/rest/admin/services/ROWPermits_publiccomment/FeatureServer/addToDefinition",
-          '{"success":true}'
+          '{"success":true}',
         )
         .post(
           "https://services123.arcgis.com/org1234567890/arcgis/rest/admin/services/ROWPermits_publiccomment/FeatureServer/refresh",
-          '{"success":true}'
+          '{"success":true}',
         )
         .post(
           "https://services123.arcgis.com/org1234567890/arcgis/rest/admin/services/ROWPermits_publiccomment/FeatureServer/0/updateDefinition",
-          '{"success":true}'
+          '{"success":true}',
         )
         .post(
           "https://services123.arcgis.com/org1234567890/arcgis/rest/admin/services/ROWPermits_publiccomment/FeatureServer/1/updateDefinition",
-          '{"success":true}'
+          '{"success":true}',
         )
         .post(
           "https://services123.arcgis.com/org1234567890/arcgis/rest/admin/services/ROWPermits_publiccomment/FeatureServer/updateDefinition",
-          '{"success":true}'
+          '{"success":true}',
         )
-        .post(
-          utils.PORTAL_SUBSET.restUrl +
-            "/content/users/casey/items/svc1234567890/update",
-          '{"success":true}'
-        )
+        .post(utils.PORTAL_SUBSET.restUrl + "/content/users/casey/items/svc1234567890/update", '{"success":true}')
         .get(
           "https://myorg.maps.arcgis.com/sharing/rest/content/items/svc1234567890?f=json&token=fake-token",
-          mockItems.get400Failure()
+          mockItems.get400Failure(),
         )
         .post(
           "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/items/svc1234567890/delete",
-          utils.getFailureResponse({ itemId: itemTemplate.itemId })
+          utils.getFailureResponse({ itemId: itemTemplate.itemId }),
         );
 
-      // eslint-disable-next-line @typescript-eslint/no-floating-promises
-      featureLayer
-        .createItemFromTemplate(
-          itemTemplate,
-          {
-            organization: _organization,
-            svc1234567890: {},
-            solutionItemExtent: _solutionItemExtent
-          },
-          MOCK_USER_SESSION,
-          utils.ITEM_PROGRESS_CALLBACK
-        )
-        .then(response => {
-          expect(response).toEqual(
-            mockSolutions.getFailedItem(itemTemplate.type)
-          );
-          done();
-        });
+      const response = await featureLayer.createItemFromTemplate(
+        itemTemplate,
+        {
+          organization: _organization,
+          svc1234567890: {},
+          solutionItemExtent: _solutionItemExtent,
+        },
+        MOCK_USER_SESSION,
+        utils.ITEM_PROGRESS_CALLBACK,
+      );
+      expect(response).toEqual(mockSolutions.getFailedItem(itemTemplate.type));
     });
 
-    it("should handle error fetching updated item", done => {
+    it("should handle error fetching updated item", async () => {
       const expectedId: string = "svc1234567890";
-      const id: string = "{{" + expectedId + ".itemId}}";
 
       const expectedUrl: string =
         "https://services123.arcgis.com/org1234567890/arcgis/rest/services/ROWPermits_publiccomment/FeatureServer/";
@@ -1590,14 +1297,10 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
       const adminUrl: string =
         "https://services123.arcgis.com/org1234567890/arcgis/rest/admin/services/ROWPermits_publiccomment/FeatureServer";
 
-      const layerKeyField: string =
-        "{{" + expectedId + ".layer0.fields.globalid.name}}";
-      const tableKeyField: string =
-        "{{" + expectedId + ".layer1.fields.globalid.name}}";
-      const layerDefQuery: string =
-        "status = '{{" + expectedId + ".layer0.fields.boardreview.name}}'";
-      const tableDefQuery: string =
-        "status = '{{" + expectedId + ".layer1.fields.boardreview.name}}'";
+      const layerKeyField: string = "{{" + expectedId + ".layer0.fields.globalid.name}}";
+      const tableKeyField: string = "{{" + expectedId + ".layer1.fields.globalid.name}}";
+      const layerDefQuery: string = "status = '{{" + expectedId + ".layer0.fields.boardreview.name}}'";
+      const tableDefQuery: string = "status = '{{" + expectedId + ".layer1.fields.boardreview.name}}'";
 
       itemTemplate.properties.service.fullExtent = {};
       itemTemplate.properties.service.initialExtent = {};
@@ -1614,7 +1317,7 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
       settings.folderId = "fld1234567890";
       settings[expectedId] = {
         id: expectedId,
-        url: expectedUrl
+        url: expectedUrl,
       };
 
       const createResponse: any = mockItems.getAGOLService([], [], true);
@@ -1625,64 +1328,48 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
         .post(adminUrl + "/0?f=json", itemTemplate.properties.layers[0])
         .post(adminUrl + "/1?f=json", itemTemplate.properties.tables[0])
         .post(url + "/sources?f=json", mockItems.getAGOLServiceSources())
-        .post(
-          utils.PORTAL_SUBSET.restUrl + "/content/users/casey/createService",
-          createResponse
-        )
+        .post(utils.PORTAL_SUBSET.restUrl + "/content/users/casey/createService", createResponse)
         .post(
           "https://services123.arcgis.com/org1234567890/arcgis/rest/admin/services/ROWPermits_publiccomment/FeatureServer/addToDefinition",
-          '{"success":true}'
+          '{"success":true}',
         )
         .post(
           "https://services123.arcgis.com/org1234567890/arcgis/rest/admin/services/ROWPermits_publiccomment/FeatureServer/refresh",
-          '{"success":true}'
+          '{"success":true}',
         )
         .post(
           "https://services123.arcgis.com/org1234567890/arcgis/rest/admin/services/ROWPermits_publiccomment/FeatureServer/0/updateDefinition",
-          '{"success":true}'
+          '{"success":true}',
         )
         .post(
           "https://services123.arcgis.com/org1234567890/arcgis/rest/admin/services/ROWPermits_publiccomment/FeatureServer/1/updateDefinition",
-          '{"success":true}'
+          '{"success":true}',
         )
         .post(
           "https://services123.arcgis.com/org1234567890/arcgis/rest/admin/services/ROWPermits_publiccomment/FeatureServer/updateDefinition",
-          '{"success":true}'
+          '{"success":true}',
         )
         .post(
-          utils.PORTAL_SUBSET.restUrl +
-            "/content/users/casey/items/svc1234567890/update",
-          mockItems.get400Failure()
+          utils.PORTAL_SUBSET.restUrl + "/content/users/casey/items/svc1234567890/update",
+          mockItems.get400Failure(),
         )
-        .post(
-          utils.PORTAL_SUBSET.restUrl +
-            "/content/users/casey/items/svc1234567890/delete",
-          '{"success":true}'
-        );
+        .post(utils.PORTAL_SUBSET.restUrl + "/content/users/casey/items/svc1234567890/delete", '{"success":true}');
 
-      // eslint-disable-next-line @typescript-eslint/no-floating-promises
-      featureLayer
-        .createItemFromTemplate(
-          itemTemplate,
-          {
-            organization: _organization,
-            svc1234567890: {},
-            solutionItemExtent: _solutionItemExtent
-          },
-          MOCK_USER_SESSION,
-          utils.ITEM_PROGRESS_CALLBACK
-        )
-        .then(response => {
-          expect(response).toEqual(
-            mockSolutions.getFailedItem(itemTemplate.type)
-          );
-          done();
-        });
+      const response = await featureLayer.createItemFromTemplate(
+        itemTemplate,
+        {
+          organization: _organization,
+          svc1234567890: {},
+          solutionItemExtent: _solutionItemExtent,
+        },
+        MOCK_USER_SESSION,
+        utils.ITEM_PROGRESS_CALLBACK,
+      );
+      expect(response).toEqual(mockSolutions.getFailedItem(itemTemplate.type));
     });
 
-    it("should handle error deleting item after error fetching updated item", done => {
+    it("should handle error deleting item after error fetching updated item", async () => {
       const expectedId: string = "svc1234567890";
-      const id: string = "{{" + expectedId + ".itemId}}";
 
       const expectedUrl: string =
         "https://services123.arcgis.com/org1234567890/arcgis/rest/services/ROWPermits_publiccomment/FeatureServer/";
@@ -1691,14 +1378,10 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
       const adminUrl: string =
         "https://services123.arcgis.com/org1234567890/arcgis/rest/admin/services/ROWPermits_publiccomment/FeatureServer";
 
-      const layerKeyField: string =
-        "{{" + expectedId + ".layer0.fields.globalid.name}}";
-      const tableKeyField: string =
-        "{{" + expectedId + ".layer1.fields.globalid.name}}";
-      const layerDefQuery: string =
-        "status = '{{" + expectedId + ".layer0.fields.boardreview.name}}'";
-      const tableDefQuery: string =
-        "status = '{{" + expectedId + ".layer1.fields.boardreview.name}}'";
+      const layerKeyField: string = "{{" + expectedId + ".layer0.fields.globalid.name}}";
+      const tableKeyField: string = "{{" + expectedId + ".layer1.fields.globalid.name}}";
+      const layerDefQuery: string = "status = '{{" + expectedId + ".layer0.fields.boardreview.name}}'";
+      const tableDefQuery: string = "status = '{{" + expectedId + ".layer1.fields.boardreview.name}}'";
 
       itemTemplate.properties.service.fullExtent = {};
       itemTemplate.properties.service.initialExtent = {};
@@ -1715,7 +1398,7 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
       settings.folderId = "fld1234567890";
       settings[expectedId] = {
         id: expectedId,
-        url: expectedUrl
+        url: expectedUrl,
       };
 
       const createResponse: any = mockItems.getAGOLService([], [], true);
@@ -1726,64 +1409,51 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
         .post(adminUrl + "/0?f=json", itemTemplate.properties.layers[0])
         .post(adminUrl + "/1?f=json", itemTemplate.properties.tables[0])
         .post(url + "/sources?f=json", mockItems.getAGOLServiceSources())
-        .post(
-          utils.PORTAL_SUBSET.restUrl + "/content/users/casey/createService",
-          createResponse
-        )
+        .post(utils.PORTAL_SUBSET.restUrl + "/content/users/casey/createService", createResponse)
         .post(
           "https://services123.arcgis.com/org1234567890/arcgis/rest/admin/services/ROWPermits_publiccomment/FeatureServer/addToDefinition",
-          '{"success":true}'
+          '{"success":true}',
         )
         .post(
           "https://services123.arcgis.com/org1234567890/arcgis/rest/admin/services/ROWPermits_publiccomment/FeatureServer/refresh",
-          '{"success":true}'
+          '{"success":true}',
         )
         .post(
           "https://services123.arcgis.com/org1234567890/arcgis/rest/admin/services/ROWPermits_publiccomment/FeatureServer/0/updateDefinition",
-          '{"success":true}'
+          '{"success":true}',
         )
         .post(
           "https://services123.arcgis.com/org1234567890/arcgis/rest/admin/services/ROWPermits_publiccomment/FeatureServer/1/updateDefinition",
-          '{"success":true}'
+          '{"success":true}',
         )
         .post(
           "https://services123.arcgis.com/org1234567890/arcgis/rest/admin/services/ROWPermits_publiccomment/FeatureServer/updateDefinition",
-          '{"success":true}'
+          '{"success":true}',
         )
         .post(
-          utils.PORTAL_SUBSET.restUrl +
-            "/content/users/casey/items/svc1234567890/update",
-          mockItems.get400Failure()
+          utils.PORTAL_SUBSET.restUrl + "/content/users/casey/items/svc1234567890/update",
+          mockItems.get400Failure(),
         )
         .post(
-          utils.PORTAL_SUBSET.restUrl +
-            "/content/users/casey/items/svc1234567890/delete",
-          utils.getFailureResponse({ itemId: itemTemplate.itemId })
+          utils.PORTAL_SUBSET.restUrl + "/content/users/casey/items/svc1234567890/delete",
+          utils.getFailureResponse({ itemId: itemTemplate.itemId }),
         );
 
-      // eslint-disable-next-line @typescript-eslint/no-floating-promises
-      featureLayer
-        .createItemFromTemplate(
-          itemTemplate,
-          {
-            organization: _organization,
-            svc1234567890: {},
-            solutionItemExtent: _solutionItemExtent
-          },
-          MOCK_USER_SESSION,
-          utils.ITEM_PROGRESS_CALLBACK
-        )
-        .then(response => {
-          expect(response).toEqual(
-            mockSolutions.getFailedItem(itemTemplate.type)
-          );
-          done();
-        });
+      const response = await featureLayer.createItemFromTemplate(
+        itemTemplate,
+        {
+          organization: _organization,
+          svc1234567890: {},
+          solutionItemExtent: _solutionItemExtent,
+        },
+        MOCK_USER_SESSION,
+        utils.ITEM_PROGRESS_CALLBACK,
+      );
+      expect(response).toEqual(mockSolutions.getFailedItem(itemTemplate.type));
     });
 
-    it("should handle error on addFeatureServiceLayersAndTables with successful cancellation", done => {
+    it("should handle error on addFeatureServiceLayersAndTables with successful cancellation", async () => {
       const expectedId: string = "svc1234567890";
-      const id: string = "{{" + expectedId + ".itemId}}";
 
       const expectedUrl: string =
         "https://services123.arcgis.com/org1234567890/arcgis/rest/services/ROWPermits_publiccomment/FeatureServer/";
@@ -1792,14 +1462,10 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
       const adminUrl: string =
         "https://services123.arcgis.com/org1234567890/arcgis/rest/admin/services/ROWPermits_publiccomment/FeatureServer";
 
-      const layerKeyField: string =
-        "{{" + expectedId + ".layer0.fields.globalid.name}}";
-      const tableKeyField: string =
-        "{{" + expectedId + ".layer1.fields.globalid.name}}";
-      const layerDefQuery: string =
-        "status = '{{" + expectedId + ".layer0.fields.boardreview.name}}'";
-      const tableDefQuery: string =
-        "status = '{{" + expectedId + ".layer1.fields.boardreview.name}}'";
+      const layerKeyField: string = "{{" + expectedId + ".layer0.fields.globalid.name}}";
+      const tableKeyField: string = "{{" + expectedId + ".layer1.fields.globalid.name}}";
+      const layerDefQuery: string = "status = '{{" + expectedId + ".layer0.fields.boardreview.name}}'";
+      const tableDefQuery: string = "status = '{{" + expectedId + ".layer1.fields.boardreview.name}}'";
 
       itemTemplate.properties.layers[0].relationships[0].keyField = layerKeyField;
       itemTemplate.properties.layers[0].definitionQuery = layerDefQuery;
@@ -1813,7 +1479,7 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
       settings.folderId = "fld1234567890";
       settings[expectedId] = {
         id: expectedId,
-        url: expectedUrl
+        url: expectedUrl,
       };
 
       const createResponse: any = mockItems.getAGOLService([], [], true);
@@ -1824,43 +1490,31 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
         .post(adminUrl + "/0?f=json", itemTemplate.properties.layers[0])
         .post(adminUrl + "/1?f=json", itemTemplate.properties.tables[0])
         .post(url + "/sources?f=json", mockItems.getAGOLServiceSources())
-        .post(
-          utils.PORTAL_SUBSET.restUrl + "/content/users/casey/createService",
-          createResponse
-        )
+        .post(utils.PORTAL_SUBSET.restUrl + "/content/users/casey/createService", createResponse)
         .post(
           "https://services123.arcgis.com/org1234567890/arcgis/rest/admin/services/ROWPermits_publiccomment/FeatureServer/addToDefinition",
-          mockItems.get400Failure()
+          mockItems.get400Failure(),
         )
         .post(
-          utils.PORTAL_SUBSET.restUrl +
-            "/content/users/casey/items/svc1234567890/delete",
-          utils.getSuccessResponse({ itemId: itemTemplate.itemId })
+          utils.PORTAL_SUBSET.restUrl + "/content/users/casey/items/svc1234567890/delete",
+          utils.getSuccessResponse({ itemId: itemTemplate.itemId }),
         );
 
-      // eslint-disable-next-line @typescript-eslint/no-floating-promises
-      featureLayer
-        .createItemFromTemplate(
-          itemTemplate,
-          {
-            svc1234567890: {},
-            organization: _organization,
-            solutionItemExtent: _solutionItemExtent
-          },
-          MOCK_USER_SESSION,
-          utils.ITEM_PROGRESS_CALLBACK
-        )
-        .then(response => {
-          expect(response).toEqual(
-            mockSolutions.getFailedItem(itemTemplate.type)
-          );
-          done();
-        });
+      const response = await featureLayer.createItemFromTemplate(
+        itemTemplate,
+        {
+          svc1234567890: {},
+          organization: _organization,
+          solutionItemExtent: _solutionItemExtent,
+        },
+        MOCK_USER_SESSION,
+        utils.ITEM_PROGRESS_CALLBACK,
+      );
+      expect(response).toEqual(mockSolutions.getFailedItem(itemTemplate.type));
     });
 
-    it("should handle error on addFeatureServiceLayersAndTables with failed cancellation", done => {
+    it("should handle error on addFeatureServiceLayersAndTables with failed cancellation", async () => {
       const expectedId: string = "svc1234567890";
-      const id: string = "{{" + expectedId + ".itemId}}";
 
       const expectedUrl: string =
         "https://services123.arcgis.com/org1234567890/arcgis/rest/services/ROWPermits_publiccomment/FeatureServer/";
@@ -1869,14 +1523,10 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
       const adminUrl: string =
         "https://services123.arcgis.com/org1234567890/arcgis/rest/admin/services/ROWPermits_publiccomment/FeatureServer";
 
-      const layerKeyField: string =
-        "{{" + expectedId + ".layer0.fields.globalid.name}}";
-      const tableKeyField: string =
-        "{{" + expectedId + ".layer1.fields.globalid.name}}";
-      const layerDefQuery: string =
-        "status = '{{" + expectedId + ".layer0.fields.boardreview.name}}'";
-      const tableDefQuery: string =
-        "status = '{{" + expectedId + ".layer1.fields.boardreview.name}}'";
+      const layerKeyField: string = "{{" + expectedId + ".layer0.fields.globalid.name}}";
+      const tableKeyField: string = "{{" + expectedId + ".layer1.fields.globalid.name}}";
+      const layerDefQuery: string = "status = '{{" + expectedId + ".layer0.fields.boardreview.name}}'";
+      const tableDefQuery: string = "status = '{{" + expectedId + ".layer1.fields.boardreview.name}}'";
 
       itemTemplate.properties.layers[0].relationships[0].keyField = layerKeyField;
       itemTemplate.properties.layers[0].definitionQuery = layerDefQuery;
@@ -1890,7 +1540,7 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
       settings.folderId = "fld1234567890";
       settings[expectedId] = {
         id: expectedId,
-        url: expectedUrl
+        url: expectedUrl,
       };
 
       const createResponse: any = mockItems.getAGOLService([], [], true);
@@ -1901,43 +1551,31 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
         .post(adminUrl + "/0?f=json", itemTemplate.properties.layers[0])
         .post(adminUrl + "/1?f=json", itemTemplate.properties.tables[0])
         .post(url + "/sources?f=json", mockItems.getAGOLServiceSources())
-        .post(
-          utils.PORTAL_SUBSET.restUrl + "/content/users/casey/createService",
-          createResponse
-        )
+        .post(utils.PORTAL_SUBSET.restUrl + "/content/users/casey/createService", createResponse)
         .post(
           "https://services123.arcgis.com/org1234567890/arcgis/rest/admin/services/ROWPermits_publiccomment/FeatureServer/addToDefinition",
-          mockItems.get400Failure()
+          mockItems.get400Failure(),
         )
         .post(
-          utils.PORTAL_SUBSET.restUrl +
-            "/content/users/casey/items/svc1234567890/delete",
-          utils.getFailureResponse({ itemId: itemTemplate.itemId })
+          utils.PORTAL_SUBSET.restUrl + "/content/users/casey/items/svc1234567890/delete",
+          utils.getFailureResponse({ itemId: itemTemplate.itemId }),
         );
 
-      // eslint-disable-next-line @typescript-eslint/no-floating-promises
-      featureLayer
-        .createItemFromTemplate(
-          itemTemplate,
-          {
-            svc1234567890: {},
-            organization: _organization,
-            solutionItemExtent: _solutionItemExtent
-          },
-          MOCK_USER_SESSION,
-          utils.ITEM_PROGRESS_CALLBACK
-        )
-        .then(response => {
-          expect(response).toEqual(
-            mockSolutions.getFailedItem(itemTemplate.type)
-          );
-          done();
-        });
+      const response = await featureLayer.createItemFromTemplate(
+        itemTemplate,
+        {
+          svc1234567890: {},
+          organization: _organization,
+          solutionItemExtent: _solutionItemExtent,
+        },
+        MOCK_USER_SESSION,
+        utils.ITEM_PROGRESS_CALLBACK,
+      );
+      expect(response).toEqual(mockSolutions.getFailedItem(itemTemplate.type));
     });
 
-    it("should handle error on createService", done => {
+    it("should handle error on createService", async () => {
       const expectedId: string = "svc1234567890";
-      const id: string = "{{" + expectedId + ".itemId}}";
 
       const expectedUrl: string =
         "https://services123.arcgis.com/org1234567890/arcgis/rest/services/ROWPermits_publiccomment/FeatureServer/";
@@ -1946,14 +1584,10 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
       const adminUrl: string =
         "https://services123.arcgis.com/org1234567890/arcgis/rest/admin/services/ROWPermits_publiccomment/FeatureServer";
 
-      const layerKeyField: string =
-        "{{" + expectedId + ".layer0.fields.globalid.name}}";
-      const tableKeyField: string =
-        "{{" + expectedId + ".layer1.fields.globalid.name}}";
-      const layerDefQuery: string =
-        "status = '{{" + expectedId + ".layer0.fields.boardreview.name}}'";
-      const tableDefQuery: string =
-        "status = '{{" + expectedId + ".layer1.fields.boardreview.name}}'";
+      const layerKeyField: string = "{{" + expectedId + ".layer0.fields.globalid.name}}";
+      const tableKeyField: string = "{{" + expectedId + ".layer1.fields.globalid.name}}";
+      const layerDefQuery: string = "status = '{{" + expectedId + ".layer0.fields.boardreview.name}}'";
+      const tableDefQuery: string = "status = '{{" + expectedId + ".layer1.fields.boardreview.name}}'";
 
       itemTemplate.properties.layers[0].relationships[0].keyField = layerKeyField;
       itemTemplate.properties.layers[0].definitionQuery = layerDefQuery;
@@ -1967,7 +1601,7 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
       settings.folderId = "fld1234567890";
       settings[expectedId] = {
         id: expectedId,
-        url: expectedUrl
+        url: expectedUrl,
       };
 
       const createResponse: any = mockItems.getAGOLService([], [], true);
@@ -1978,34 +1612,23 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
         .post(adminUrl + "/0?f=json", itemTemplate.properties.layers[0])
         .post(adminUrl + "/1?f=json", itemTemplate.properties.tables[0])
         .post(url + "/sources?f=json", mockItems.getAGOLServiceSources())
-        .post(
-          utils.PORTAL_SUBSET.restUrl + "/content/users/casey/createService",
-          mockItems.get400Failure()
-        );
+        .post(utils.PORTAL_SUBSET.restUrl + "/content/users/casey/createService", mockItems.get400Failure());
 
-      // eslint-disable-next-line @typescript-eslint/no-floating-promises
-      featureLayer
-        .createItemFromTemplate(
-          itemTemplate,
-          {
-            organization: _organization,
-            svc1234567890: {},
-            solutionItemExtent: _solutionItemExtent
-          },
-          MOCK_USER_SESSION,
-          utils.ITEM_PROGRESS_CALLBACK
-        )
-        .then(response => {
-          expect(response).toEqual(
-            mockSolutions.getFailedItem(itemTemplate.type)
-          );
-          done();
-        });
+      const response = await featureLayer.createItemFromTemplate(
+        itemTemplate,
+        {
+          organization: _organization,
+          svc1234567890: {},
+          solutionItemExtent: _solutionItemExtent,
+        },
+        MOCK_USER_SESSION,
+        utils.ITEM_PROGRESS_CALLBACK,
+      );
+      expect(response).toEqual(mockSolutions.getFailedItem(itemTemplate.type));
     });
 
-    it("should handle createService success === false", done => {
+    it("should handle createService success === false", async () => {
       const expectedId: string = "svc1234567890";
-      const id: string = "{{" + expectedId + ".itemId}}";
 
       const expectedUrl: string =
         "https://services123.arcgis.com/org1234567890/arcgis/rest/services/ROWPermits_publiccomment/FeatureServer/";
@@ -2018,7 +1641,7 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
       settings.folderId = "fld1234567890";
       settings[expectedId] = {
         id: expectedId,
-        url: expectedUrl
+        url: expectedUrl,
       };
 
       const createResponse: any = mockItems.getAGOLService([], [], true);
@@ -2029,34 +1652,23 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
         .post(adminUrl + "/0?f=json", itemTemplate.properties.layers[0])
         .post(adminUrl + "/1?f=json", itemTemplate.properties.tables[0])
         .post(url + "/sources?f=json", mockItems.getAGOLServiceSources())
-        .post(
-          utils.PORTAL_SUBSET.restUrl + "/content/users/casey/createService",
-          createResponse
-        );
+        .post(utils.PORTAL_SUBSET.restUrl + "/content/users/casey/createService", createResponse);
 
-      // eslint-disable-next-line @typescript-eslint/no-floating-promises
-      featureLayer
-        .createItemFromTemplate(
-          itemTemplate,
-          {
-            svc1234567890: {},
-            organization: _organization,
-            solutionItemExtent: _solutionItemExtent
-          },
-          MOCK_USER_SESSION,
-          utils.ITEM_PROGRESS_CALLBACK
-        )
-        .then(response => {
-          expect(response).toEqual(
-            mockSolutions.getFailedItem(itemTemplate.type)
-          );
-          done();
-        });
+      const response = await featureLayer.createItemFromTemplate(
+        itemTemplate,
+        {
+          svc1234567890: {},
+          organization: _organization,
+          solutionItemExtent: _solutionItemExtent,
+        },
+        MOCK_USER_SESSION,
+        utils.ITEM_PROGRESS_CALLBACK,
+      );
+      expect(response).toEqual(mockSolutions.getFailedItem(itemTemplate.type));
     });
 
-    it("should handle error on updateItem", done => {
+    it("should handle error on updateItem", async () => {
       const expectedId: string = "svc1234567890";
-      const id: string = "{{" + expectedId + ".itemId}}";
 
       const expectedUrl: string =
         "https://services123.arcgis.com/org1234567890/arcgis/rest/services/ROWPermits_publiccomment/FeatureServer/";
@@ -2065,14 +1677,10 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
       const adminUrl: string =
         "https://services123.arcgis.com/org1234567890/arcgis/rest/admin/services/ROWPermits_publiccomment/FeatureServer";
 
-      const layerKeyField: string =
-        "{{" + expectedId + ".layer0.fields.globalid.name}}";
-      const tableKeyField: string =
-        "{{" + expectedId + ".layer1.fields.globalid.name}}";
-      const layerDefQuery: string =
-        "status = '{{" + expectedId + ".layer0.fields.boardreview.name}}'";
-      const tableDefQuery: string =
-        "status = '{{" + expectedId + ".layer1.fields.boardreview.name}}'";
+      const layerKeyField: string = "{{" + expectedId + ".layer0.fields.globalid.name}}";
+      const tableKeyField: string = "{{" + expectedId + ".layer1.fields.globalid.name}}";
+      const layerDefQuery: string = "status = '{{" + expectedId + ".layer0.fields.boardreview.name}}'";
+      const tableDefQuery: string = "status = '{{" + expectedId + ".layer1.fields.boardreview.name}}'";
 
       itemTemplate.properties.service.fullExtent = {};
       itemTemplate.properties.service.initialExtent = {};
@@ -2089,7 +1697,7 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
       settings.folderId = "fld1234567890";
       settings[expectedId] = {
         id: expectedId,
-        url: expectedUrl
+        url: expectedUrl,
       };
 
       const createResponse: any = mockItems.getAGOLService([], [], true);
@@ -2100,64 +1708,51 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
         .post(adminUrl + "/0?f=json", itemTemplate.properties.layers[0])
         .post(adminUrl + "/1?f=json", itemTemplate.properties.tables[0])
         .post(url + "/sources?f=json", mockItems.getAGOLServiceSources())
-        .post(
-          utils.PORTAL_SUBSET.restUrl + "/content/users/casey/createService",
-          createResponse
-        )
+        .post(utils.PORTAL_SUBSET.restUrl + "/content/users/casey/createService", createResponse)
         .post(
           "https://services123.arcgis.com/org1234567890/arcgis/rest/admin/services/ROWPermits_publiccomment/FeatureServer/addToDefinition",
-          '{"success":true}'
+          '{"success":true}',
         )
         .post(
           "https://services123.arcgis.com/org1234567890/arcgis/rest/admin/services/ROWPermits_publiccomment/FeatureServer/refresh",
-          '{"success":true}'
+          '{"success":true}',
         )
         .post(
           "https://services123.arcgis.com/org1234567890/arcgis/rest/admin/services/ROWPermits_publiccomment/FeatureServer/0/updateDefinition",
-          '{"success":true}'
+          '{"success":true}',
         )
         .post(
           "https://services123.arcgis.com/org1234567890/arcgis/rest/admin/services/ROWPermits_publiccomment/FeatureServer/1/updateDefinition",
-          mockItems.get400Failure()
+          mockItems.get400Failure(),
         )
         .post(
           "https://services123.arcgis.com/org1234567890/arcgis/rest/admin/services/ROWPermits_publiccomment/FeatureServer/updateDefinition",
-          '{"success":true}'
+          '{"success":true}',
         )
         .post(
-          utils.PORTAL_SUBSET.restUrl +
-            "/content/users/casey/items/svc1234567890/update",
-          mockItems.get400Failure()
+          utils.PORTAL_SUBSET.restUrl + "/content/users/casey/items/svc1234567890/update",
+          mockItems.get400Failure(),
         )
         .post(
-          utils.PORTAL_SUBSET.restUrl +
-            "/content/users/casey/items/svc1234567890/delete",
-          utils.getFailureResponse({ itemId: itemTemplate.itemId })
+          utils.PORTAL_SUBSET.restUrl + "/content/users/casey/items/svc1234567890/delete",
+          utils.getFailureResponse({ itemId: itemTemplate.itemId }),
         );
 
-      // eslint-disable-next-line @typescript-eslint/no-floating-promises
-      featureLayer
-        .createItemFromTemplate(
-          itemTemplate,
-          {
-            organization: _organization,
-            svc1234567890: {},
-            solutionItemExtent: _solutionItemExtent
-          },
-          MOCK_USER_SESSION,
-          utils.ITEM_PROGRESS_CALLBACK
-        )
-        .then(response => {
-          expect(response).toEqual(
-            mockSolutions.getFailedItem(itemTemplate.type)
-          );
-          done();
-        });
+      const response = await featureLayer.createItemFromTemplate(
+        itemTemplate,
+        {
+          organization: _organization,
+          svc1234567890: {},
+          solutionItemExtent: _solutionItemExtent,
+        },
+        MOCK_USER_SESSION,
+        utils.ITEM_PROGRESS_CALLBACK,
+      );
+      expect(response).toEqual(mockSolutions.getFailedItem(itemTemplate.type));
     });
 
-    it("should handle error on updateDefinition", done => {
+    it("should handle error on updateDefinition", async () => {
       const expectedId: string = "svc1234567890";
-      const id: string = "{{" + expectedId + ".itemId}}";
 
       const expectedUrl: string =
         "https://services123.arcgis.com/org1234567890/arcgis/rest/services/ROWPermits_publiccomment/FeatureServer/";
@@ -2166,14 +1761,10 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
       const adminUrl: string =
         "https://services123.arcgis.com/org1234567890/arcgis/rest/admin/services/ROWPermits_publiccomment/FeatureServer";
 
-      const layerKeyField: string =
-        "{{" + expectedId + ".layer0.fields.globalid.name}}";
-      const tableKeyField: string =
-        "{{" + expectedId + ".layer1.fields.globalid.name}}";
-      const layerDefQuery: string =
-        "status = '{{" + expectedId + ".layer0.fields.boardreview.name}}'";
-      const tableDefQuery: string =
-        "status = '{{" + expectedId + ".layer1.fields.boardreview.name}}'";
+      const layerKeyField: string = "{{" + expectedId + ".layer0.fields.globalid.name}}";
+      const tableKeyField: string = "{{" + expectedId + ".layer1.fields.globalid.name}}";
+      const layerDefQuery: string = "status = '{{" + expectedId + ".layer0.fields.boardreview.name}}'";
+      const tableDefQuery: string = "status = '{{" + expectedId + ".layer1.fields.boardreview.name}}'";
 
       itemTemplate.properties.layers[0].relationships[0].keyField = layerKeyField;
       itemTemplate.properties.layers[0].definitionQuery = layerDefQuery;
@@ -2188,7 +1779,7 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
       settings.folderId = "fld1234567890";
       settings[expectedId] = {
         id: expectedId,
-        url: expectedUrl
+        url: expectedUrl,
       };
 
       const createResponse: any = mockItems.getAGOLService([], [], true);
@@ -2199,55 +1790,43 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
         .post(adminUrl + "/0?f=json", mockItems.get400Failure())
         .post(adminUrl + "/1?f=json", itemTemplate.properties.tables[0])
         .post(url + "/sources?f=json", mockItems.getAGOLServiceSources())
-        .post(
-          utils.PORTAL_SUBSET.restUrl + "/content/users/casey/createService",
-          createResponse
-        )
+        .post(utils.PORTAL_SUBSET.restUrl + "/content/users/casey/createService", createResponse)
         .post(
           "https://services123.arcgis.com/org1234567890/arcgis/rest/admin/services/ROWPermits_publiccomment/FeatureServer/addToDefinition",
-          '{"success":true}'
+          '{"success":true}',
         )
         .post(
           "https://services123.arcgis.com/org1234567890/arcgis/rest/admin/services/ROWPermits_publiccomment/FeatureServer/refresh",
-          '{"success":true}'
+          '{"success":true}',
         )
         .post(
           "https://services123.arcgis.com/org1234567890/arcgis/rest/admin/services/ROWPermits_publiccomment/FeatureServer/0/updateDefinition",
-          '{"success":true}'
+          '{"success":true}',
         )
         .post(
           "https://services123.arcgis.com/org1234567890/arcgis/rest/admin/services/ROWPermits_publiccomment/FeatureServer/1/updateDefinition",
-          mockItems.get400Failure()
+          mockItems.get400Failure(),
         )
         .post(
           "https://services123.arcgis.com/org1234567890/arcgis/rest/admin/services/ROWPermits_publiccomment/FeatureServer/updateDefinition",
-          '{"success":true}'
+          '{"success":true}',
         )
         .post(
-          utils.PORTAL_SUBSET.restUrl +
-            "/content/users/casey/items/svc1234567890/update",
-          mockItems.get400Failure()
+          utils.PORTAL_SUBSET.restUrl + "/content/users/casey/items/svc1234567890/update",
+          mockItems.get400Failure(),
         );
 
-      // eslint-disable-next-line @typescript-eslint/no-floating-promises
-      featureLayer
-        .createItemFromTemplate(
-          itemTemplate,
-          {},
-          MOCK_USER_SESSION,
-          utils.ITEM_PROGRESS_CALLBACK
-        )
-        .then(response => {
-          expect(response).toEqual(
-            mockSolutions.getFailedItem(itemTemplate.type)
-          );
-          done();
-        });
+      const response = await featureLayer.createItemFromTemplate(
+        itemTemplate,
+        {},
+        MOCK_USER_SESSION,
+        utils.ITEM_PROGRESS_CALLBACK,
+      );
+      expect(response).toEqual(mockSolutions.getFailedItem(itemTemplate.type));
     });
 
-    it("should handle empty layers and tables", done => {
+    it("should handle empty layers and tables", async () => {
       const expectedId: string = "svc1234567890";
-      const id: string = "{{" + expectedId + ".itemId}}";
 
       const expectedUrl: string =
         "https://services123.arcgis.com/org1234567890/arcgis/rest/services/ROWPermits_publiccomment/FeatureServer/";
@@ -2265,7 +1844,7 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
       settings.folderId = "fld1234567890";
       settings[expectedId] = {
         id: expectedId,
-        url: expectedUrl
+        url: expectedUrl,
       };
 
       const createResponse: any = mockItems.getAGOLService([], [], true);
@@ -2276,82 +1855,60 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
         .post(adminUrl + "/0?f=json", mockItems.get400Failure())
         .post(adminUrl + "/1?f=json", mockItems.get400Failure())
         .post(url + "/sources?f=json", mockItems.getAGOLServiceSources())
-        .post(
-          utils.PORTAL_SUBSET.restUrl + "/content/users/casey/createService",
-          createResponse
-        )
+        .post(utils.PORTAL_SUBSET.restUrl + "/content/users/casey/createService", createResponse)
         .post(
           "https://services123.arcgis.com/org1234567890/arcgis/rest/admin/services/ROWPermits_publiccomment/FeatureServer/addToDefinition",
-          '{"success":true}'
+          '{"success":true}',
         )
         .post(
           "https://services123.arcgis.com/org1234567890/arcgis/rest/admin/services/ROWPermits_publiccomment/FeatureServer/refresh",
-          '{"success":true}'
+          '{"success":true}',
         )
         .post(
           "https://services123.arcgis.com/org1234567890/arcgis/rest/admin/services/ROWPermits_publiccomment/FeatureServer/0/updateDefinition",
-          '{"success":true}'
+          '{"success":true}',
         )
         .post(
           "https://services123.arcgis.com/org1234567890/arcgis/rest/admin/services/ROWPermits_publiccomment/FeatureServer/1/updateDefinition",
-          mockItems.get400Failure()
+          mockItems.get400Failure(),
         )
         .post(
-          utils.PORTAL_SUBSET.restUrl +
-            "/content/users/casey/items/svc1234567890/update",
-          mockItems.get400Failure()
+          utils.PORTAL_SUBSET.restUrl + "/content/users/casey/items/svc1234567890/update",
+          mockItems.get400Failure(),
         );
 
-      // eslint-disable-next-line @typescript-eslint/no-floating-promises
-      featureLayer
-        .createItemFromTemplate(
-          itemTemplate,
-          {},
-          MOCK_USER_SESSION,
-          utils.ITEM_PROGRESS_CALLBACK
-        )
-        .then(response => {
-          expect(response).toEqual(
-            mockSolutions.getFailedItem(itemTemplate.type)
-          );
-          done();
-        });
+      const response = await featureLayer.createItemFromTemplate(
+        itemTemplate,
+        {},
+        MOCK_USER_SESSION,
+        utils.ITEM_PROGRESS_CALLBACK,
+      );
+      expect(response).toEqual(mockSolutions.getFailedItem(itemTemplate.type));
     });
 
-    it("should handle cancellation before deployment of item starts", done => {
+    it("should handle cancellation before deployment of item starts", async () => {
       const templateDictionary: any = {};
 
-      // eslint-disable-next-line @typescript-eslint/no-floating-promises
-      featureLayer
-        .createItemFromTemplate(
-          itemTemplate,
-          templateDictionary,
-          MOCK_USER_SESSION,
-          utils.createFailingItemProgressCallbackOnNthCall(1)
-        )
-        .then(response => {
-          expect(response).toEqual(
-            mockSolutions.getFailedItem(itemTemplate.type)
-          );
-          done();
-        }, done.fail);
+      const response = await featureLayer.createItemFromTemplate(
+        itemTemplate,
+        templateDictionary,
+        MOCK_USER_SESSION,
+        utils.createFailingItemProgressCallbackOnNthCall(1),
+      );
+      expect(response).toEqual(mockSolutions.getFailedItem(itemTemplate.type));
     });
 
-    it("should handle cancellation after deployed item is created", done => {
+    it("should handle cancellation after deployed item is created", async () => {
       const expectedId: string = "svc1234567890";
       const url: string = "{{" + expectedId + ".url}}";
 
       const adminUrl: string =
         "https://services123.arcgis.com/org1234567890/arcgis/rest/admin/services/ROWPermits_publiccomment/FeatureServer";
 
-      const layerKeyField: string =
-        "{{" + expectedId + ".layer0.fields.globalid.name}}";
-      const tableKeyField: string =
-        "{{" + expectedId + ".layer1.fields.globalid.name}}";
-      const layerDefQuery: string =
-        "status = '{{" + expectedId + ".layer0.fields.boardreview.name}}'";
-      const tableDefQuery: string =
-        "status = '{{" + expectedId + ".layer1.fields.boardreview.name}}'";
+      const layerKeyField: string = "{{" + expectedId + ".layer0.fields.globalid.name}}";
+      const tableKeyField: string = "{{" + expectedId + ".layer1.fields.globalid.name}}";
+      const layerDefQuery: string = "status = '{{" + expectedId + ".layer0.fields.boardreview.name}}'";
+      const tableDefQuery: string = "status = '{{" + expectedId + ".layer1.fields.boardreview.name}}'";
 
       itemTemplate.properties.layers[0].relationships[0].keyField = layerKeyField;
       itemTemplate.properties.layers[0].definitionQuery = layerDefQuery;
@@ -2369,76 +1926,57 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
         .post(adminUrl + "/0?f=json", itemTemplate.properties.layers[0])
         .post(adminUrl + "/1?f=json", itemTemplate.properties.tables[0])
         .post(url + "/sources?f=json", mockItems.getAGOLServiceSources())
-        .post(
-          utils.PORTAL_SUBSET.restUrl + "/content/users/casey/createService",
-          createResponse
-        )
+        .post(utils.PORTAL_SUBSET.restUrl + "/content/users/casey/createService", createResponse)
         .post(
           "https://services123.arcgis.com/org1234567890/arcgis/rest/admin/services/ROWPermits_publiccomment/FeatureServer/addToDefinition",
-          '{"success":true}'
+          '{"success":true}',
         )
         .post(
           "https://services123.arcgis.com/org1234567890/arcgis/rest/admin/services/ROWPermits_publiccomment/FeatureServer/refresh",
-          '{"success":true}'
+          '{"success":true}',
         )
         .post(
           "https://services123.arcgis.com/org1234567890/arcgis/rest/admin/services/ROWPermits_publiccomment/FeatureServer/0/updateDefinition",
-          '{"success":true}'
+          '{"success":true}',
         )
         .post(
           "https://services123.arcgis.com/org1234567890/arcgis/rest/admin/services/ROWPermits_publiccomment/FeatureServer/1/updateDefinition",
-          '{"success":true}'
+          '{"success":true}',
         )
         .post(
           "https://services123.arcgis.com/org1234567890/arcgis/rest/admin/services/ROWPermits_publiccomment/FeatureServer/updateDefinition",
-          '{"success":true}'
+          '{"success":true}',
         )
+        .post(utils.PORTAL_SUBSET.restUrl + "/content/users/casey/items/svc1234567890/update", '{"success":true}')
         .post(
-          utils.PORTAL_SUBSET.restUrl +
-            "/content/users/casey/items/svc1234567890/update",
-          '{"success":true}'
-        )
-        .post(
-          utils.PORTAL_SUBSET.restUrl +
-            "/content/users/casey/items/svc1234567890/delete",
-          utils.getSuccessResponse({ itemId: itemTemplate.itemId })
+          utils.PORTAL_SUBSET.restUrl + "/content/users/casey/items/svc1234567890/delete",
+          utils.getSuccessResponse({ itemId: itemTemplate.itemId }),
         );
 
-      // eslint-disable-next-line @typescript-eslint/no-floating-promises
-      featureLayer
-        .createItemFromTemplate(
-          itemTemplate,
-          {
-            svc1234567890: {},
-            organization: _organization,
-            solutionItemExtent: _solutionItemExtent
-          },
-          MOCK_USER_SESSION,
-          utils.createFailingItemProgressCallbackOnNthCall(2)
-        )
-        .then(response => {
-          expect(response).toEqual(
-            mockSolutions.getFailedItem(itemTemplate.type)
-          );
-          done();
-        });
+      const response = await featureLayer.createItemFromTemplate(
+        itemTemplate,
+        {
+          svc1234567890: {},
+          organization: _organization,
+          solutionItemExtent: _solutionItemExtent,
+        },
+        MOCK_USER_SESSION,
+        utils.createFailingItemProgressCallbackOnNthCall(2),
+      );
+      expect(response).toEqual(mockSolutions.getFailedItem(itemTemplate.type));
     });
 
-    it("should handle cancellation failure after deployed item is created", done => {
+    it("should handle cancellation failure after deployed item is created", async () => {
       const expectedId: string = "svc1234567890";
       const url: string = "{{" + expectedId + ".url}}";
 
       const adminUrl: string =
         "https://services123.arcgis.com/org1234567890/arcgis/rest/admin/services/ROWPermits_publiccomment/FeatureServer";
 
-      const layerKeyField: string =
-        "{{" + expectedId + ".layer0.fields.globalid.name}}";
-      const tableKeyField: string =
-        "{{" + expectedId + ".layer1.fields.globalid.name}}";
-      const layerDefQuery: string =
-        "status = '{{" + expectedId + ".layer0.fields.boardreview.name}}'";
-      const tableDefQuery: string =
-        "status = '{{" + expectedId + ".layer1.fields.boardreview.name}}'";
+      const layerKeyField: string = "{{" + expectedId + ".layer0.fields.globalid.name}}";
+      const tableKeyField: string = "{{" + expectedId + ".layer1.fields.globalid.name}}";
+      const layerDefQuery: string = "status = '{{" + expectedId + ".layer0.fields.boardreview.name}}'";
+      const tableDefQuery: string = "status = '{{" + expectedId + ".layer1.fields.boardreview.name}}'";
 
       itemTemplate.properties.layers[0].relationships[0].keyField = layerKeyField;
       itemTemplate.properties.layers[0].definitionQuery = layerDefQuery;
@@ -2456,76 +1994,57 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
         .post(adminUrl + "/0?f=json", itemTemplate.properties.layers[0])
         .post(adminUrl + "/1?f=json", itemTemplate.properties.tables[0])
         .post(url + "/sources?f=json", mockItems.getAGOLServiceSources())
-        .post(
-          utils.PORTAL_SUBSET.restUrl + "/content/users/casey/createService",
-          createResponse
-        )
+        .post(utils.PORTAL_SUBSET.restUrl + "/content/users/casey/createService", createResponse)
         .post(
           "https://services123.arcgis.com/org1234567890/arcgis/rest/admin/services/ROWPermits_publiccomment/FeatureServer/addToDefinition",
-          '{"success":true}'
+          '{"success":true}',
         )
         .post(
           "https://services123.arcgis.com/org1234567890/arcgis/rest/admin/services/ROWPermits_publiccomment/FeatureServer/refresh",
-          '{"success":true}'
+          '{"success":true}',
         )
         .post(
           "https://services123.arcgis.com/org1234567890/arcgis/rest/admin/services/ROWPermits_publiccomment/FeatureServer/0/updateDefinition",
-          '{"success":true}'
+          '{"success":true}',
         )
         .post(
           "https://services123.arcgis.com/org1234567890/arcgis/rest/admin/services/ROWPermits_publiccomment/FeatureServer/1/updateDefinition",
-          '{"success":true}'
+          '{"success":true}',
         )
         .post(
           "https://services123.arcgis.com/org1234567890/arcgis/rest/admin/services/ROWPermits_publiccomment/FeatureServer/updateDefinition",
-          '{"success":true}'
+          '{"success":true}',
         )
+        .post(utils.PORTAL_SUBSET.restUrl + "/content/users/casey/items/svc1234567890/update", '{"success":true}')
         .post(
-          utils.PORTAL_SUBSET.restUrl +
-            "/content/users/casey/items/svc1234567890/update",
-          '{"success":true}'
-        )
-        .post(
-          utils.PORTAL_SUBSET.restUrl +
-            "/content/users/casey/items/svc1234567890/delete",
-          utils.getFailureResponse({ itemId: itemTemplate.itemId })
+          utils.PORTAL_SUBSET.restUrl + "/content/users/casey/items/svc1234567890/delete",
+          utils.getFailureResponse({ itemId: itemTemplate.itemId }),
         );
 
-      // eslint-disable-next-line @typescript-eslint/no-floating-promises
-      featureLayer
-        .createItemFromTemplate(
-          itemTemplate,
-          {
-            svc1234567890: {},
-            organization: _organization,
-            solutionItemExtent: _solutionItemExtent
-          },
-          MOCK_USER_SESSION,
-          utils.createFailingItemProgressCallbackOnNthCall(2)
-        )
-        .then(response => {
-          expect(response).toEqual(
-            mockSolutions.getFailedItem(itemTemplate.type)
-          );
-          done();
-        });
+      const response = await featureLayer.createItemFromTemplate(
+        itemTemplate,
+        {
+          svc1234567890: {},
+          organization: _organization,
+          solutionItemExtent: _solutionItemExtent,
+        },
+        MOCK_USER_SESSION,
+        utils.createFailingItemProgressCallbackOnNthCall(2),
+      );
+      expect(response).toEqual(mockSolutions.getFailedItem(itemTemplate.type));
     });
 
-    it("should handle cancellation after deployed item is finished", done => {
+    it("should handle cancellation after deployed item is finished", async () => {
       const expectedId: string = "svc1234567890";
       const url: string = "{{" + expectedId + ".url}}";
 
       const adminUrl: string =
         "https://services123.arcgis.com/org1234567890/arcgis/rest/admin/services/ROWPermits_publiccomment/FeatureServer";
 
-      const layerKeyField: string =
-        "{{" + expectedId + ".layer0.fields.globalid.name}}";
-      const tableKeyField: string =
-        "{{" + expectedId + ".layer1.fields.globalid.name}}";
-      const layerDefQuery: string =
-        "status = '{{" + expectedId + ".layer0.fields.boardreview.name}}'";
-      const tableDefQuery: string =
-        "status = '{{" + expectedId + ".layer1.fields.boardreview.name}}'";
+      const layerKeyField: string = "{{" + expectedId + ".layer0.fields.globalid.name}}";
+      const tableKeyField: string = "{{" + expectedId + ".layer1.fields.globalid.name}}";
+      const layerDefQuery: string = "status = '{{" + expectedId + ".layer0.fields.boardreview.name}}'";
+      const tableDefQuery: string = "status = '{{" + expectedId + ".layer1.fields.boardreview.name}}'";
 
       itemTemplate.properties.layers[0].relationships[0].keyField = layerKeyField;
       itemTemplate.properties.layers[0].definitionQuery = layerDefQuery;
@@ -2543,76 +2062,57 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
         .post(adminUrl + "/0?f=json", itemTemplate.properties.layers[0])
         .post(adminUrl + "/1?f=json", itemTemplate.properties.tables[0])
         .post(url + "/sources?f=json", mockItems.getAGOLServiceSources())
-        .post(
-          utils.PORTAL_SUBSET.restUrl + "/content/users/casey/createService",
-          createResponse
-        )
+        .post(utils.PORTAL_SUBSET.restUrl + "/content/users/casey/createService", createResponse)
         .post(
           "https://services123.arcgis.com/org1234567890/arcgis/rest/admin/services/ROWPermits_publiccomment/FeatureServer/addToDefinition",
-          '{"success":true}'
+          '{"success":true}',
         )
         .post(
           "https://services123.arcgis.com/org1234567890/arcgis/rest/admin/services/ROWPermits_publiccomment/FeatureServer/refresh",
-          '{"success":true}'
+          '{"success":true}',
         )
         .post(
           "https://services123.arcgis.com/org1234567890/arcgis/rest/admin/services/ROWPermits_publiccomment/FeatureServer/0/updateDefinition",
-          '{"success":true}'
+          '{"success":true}',
         )
         .post(
           "https://services123.arcgis.com/org1234567890/arcgis/rest/admin/services/ROWPermits_publiccomment/FeatureServer/1/updateDefinition",
-          '{"success":true}'
+          '{"success":true}',
         )
         .post(
           "https://services123.arcgis.com/org1234567890/arcgis/rest/admin/services/ROWPermits_publiccomment/FeatureServer/updateDefinition",
-          '{"success":true}'
+          '{"success":true}',
         )
+        .post(utils.PORTAL_SUBSET.restUrl + "/content/users/casey/items/svc1234567890/update", '{"success":true}')
         .post(
-          utils.PORTAL_SUBSET.restUrl +
-            "/content/users/casey/items/svc1234567890/update",
-          '{"success":true}'
-        )
-        .post(
-          utils.PORTAL_SUBSET.restUrl +
-            "/content/users/casey/items/svc1234567890/delete",
-          utils.getSuccessResponse({ itemId: itemTemplate.itemId })
+          utils.PORTAL_SUBSET.restUrl + "/content/users/casey/items/svc1234567890/delete",
+          utils.getSuccessResponse({ itemId: itemTemplate.itemId }),
         );
 
-      // eslint-disable-next-line @typescript-eslint/no-floating-promises
-      featureLayer
-        .createItemFromTemplate(
-          itemTemplate,
-          {
-            svc1234567890: {},
-            organization: _organization,
-            solutionItemExtent: _solutionItemExtent
-          },
-          MOCK_USER_SESSION,
-          utils.createFailingItemProgressCallbackOnNthCall(3)
-        )
-        .then(response => {
-          expect(response).toEqual(
-            mockSolutions.getFailedItem(itemTemplate.type)
-          );
-          done();
-        });
+      const response = await featureLayer.createItemFromTemplate(
+        itemTemplate,
+        {
+          svc1234567890: {},
+          organization: _organization,
+          solutionItemExtent: _solutionItemExtent,
+        },
+        MOCK_USER_SESSION,
+        utils.createFailingItemProgressCallbackOnNthCall(3),
+      );
+      expect(response).toEqual(mockSolutions.getFailedItem(itemTemplate.type));
     });
 
-    it("should handle cancellation failure after deployed item is finished", done => {
+    it("should handle cancellation failure after deployed item is finished", async () => {
       const expectedId: string = "svc1234567890";
       const url: string = "{{" + expectedId + ".url}}";
 
       const adminUrl: string =
         "https://services123.arcgis.com/org1234567890/arcgis/rest/admin/services/ROWPermits_publiccomment/FeatureServer";
 
-      const layerKeyField: string =
-        "{{" + expectedId + ".layer0.fields.globalid.name}}";
-      const tableKeyField: string =
-        "{{" + expectedId + ".layer1.fields.globalid.name}}";
-      const layerDefQuery: string =
-        "status = '{{" + expectedId + ".layer0.fields.boardreview.name}}'";
-      const tableDefQuery: string =
-        "status = '{{" + expectedId + ".layer1.fields.boardreview.name}}'";
+      const layerKeyField: string = "{{" + expectedId + ".layer0.fields.globalid.name}}";
+      const tableKeyField: string = "{{" + expectedId + ".layer1.fields.globalid.name}}";
+      const layerDefQuery: string = "status = '{{" + expectedId + ".layer0.fields.boardreview.name}}'";
+      const tableDefQuery: string = "status = '{{" + expectedId + ".layer1.fields.boardreview.name}}'";
 
       itemTemplate.properties.layers[0].relationships[0].keyField = layerKeyField;
       itemTemplate.properties.layers[0].definitionQuery = layerDefQuery;
@@ -2630,64 +2130,49 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
         .post(adminUrl + "/0?f=json", itemTemplate.properties.layers[0])
         .post(adminUrl + "/1?f=json", itemTemplate.properties.tables[0])
         .post(url + "/sources?f=json", mockItems.getAGOLServiceSources())
-        .post(
-          utils.PORTAL_SUBSET.restUrl + "/content/users/casey/createService",
-          createResponse
-        )
+        .post(utils.PORTAL_SUBSET.restUrl + "/content/users/casey/createService", createResponse)
         .post(
           "https://services123.arcgis.com/org1234567890/arcgis/rest/admin/services/ROWPermits_publiccomment/FeatureServer/addToDefinition",
-          '{"success":true}'
+          '{"success":true}',
         )
         .post(
           "https://services123.arcgis.com/org1234567890/arcgis/rest/admin/services/ROWPermits_publiccomment/FeatureServer/refresh",
-          '{"success":true}'
+          '{"success":true}',
         )
         .post(
           "https://services123.arcgis.com/org1234567890/arcgis/rest/admin/services/ROWPermits_publiccomment/FeatureServer/0/updateDefinition",
-          '{"success":true}'
+          '{"success":true}',
         )
         .post(
           "https://services123.arcgis.com/org1234567890/arcgis/rest/admin/services/ROWPermits_publiccomment/FeatureServer/1/updateDefinition",
-          '{"success":true}'
+          '{"success":true}',
         )
         .post(
           "https://services123.arcgis.com/org1234567890/arcgis/rest/admin/services/ROWPermits_publiccomment/FeatureServer/updateDefinition",
-          '{"success":true}'
+          '{"success":true}',
         )
+        .post(utils.PORTAL_SUBSET.restUrl + "/content/users/casey/items/svc1234567890/update", '{"success":true}')
         .post(
-          utils.PORTAL_SUBSET.restUrl +
-            "/content/users/casey/items/svc1234567890/update",
-          '{"success":true}'
-        )
-        .post(
-          utils.PORTAL_SUBSET.restUrl +
-            "/content/users/casey/items/svc1234567890/delete",
-          utils.getFailureResponse({ itemId: itemTemplate.itemId })
+          utils.PORTAL_SUBSET.restUrl + "/content/users/casey/items/svc1234567890/delete",
+          utils.getFailureResponse({ itemId: itemTemplate.itemId }),
         );
 
-      // eslint-disable-next-line @typescript-eslint/no-floating-promises
-      featureLayer
-        .createItemFromTemplate(
-          itemTemplate,
-          {
-            svc1234567890: {},
-            organization: _organization,
-            solutionItemExtent: _solutionItemExtent
-          },
-          MOCK_USER_SESSION,
-          utils.createFailingItemProgressCallbackOnNthCall(3)
-        )
-        .then(response => {
-          expect(response).toEqual(
-            mockSolutions.getFailedItem(itemTemplate.type)
-          );
-          done();
-        });
+      const response = await featureLayer.createItemFromTemplate(
+        itemTemplate,
+        {
+          svc1234567890: {},
+          organization: _organization,
+          solutionItemExtent: _solutionItemExtent,
+        },
+        MOCK_USER_SESSION,
+        utils.createFailingItemProgressCallbackOnNthCall(3),
+      );
+      expect(response).toEqual(mockSolutions.getFailedItem(itemTemplate.type));
     });
   });
 
   describe("postProcess", () => {
-    it("fetch and update the item and data", done => {
+    it("fetch and update the item and data", async () => {
       const item: common.IItem = {
         id: "a369baed619441cfb5e862694d33d44c",
         owner: "brubble",
@@ -2698,10 +2183,10 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
         size: 50,
         title: "My Form",
         type: "Form",
-        typeKeywords: ["{{a369baed619441cfb5e862694d33d44c.itemId}}"]
+        typeKeywords: ["{{a369baed619441cfb5e862694d33d44c.itemId}}"],
       };
       const data = {
-        someProp: "{{a369baed619441cfb5e862694d33d44c.itemId}}"
+        someProp: "{{a369baed619441cfb5e862694d33d44c.itemId}}",
       };
       const templates = [itemTemplate];
       const itemInfos = [
@@ -2709,98 +2194,65 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
           item: itemTemplate,
           id: itemTemplate.id,
           type: itemTemplate.type,
-          postProcess: true
-        }
+          postProcess: true,
+        },
       ];
       const templateDictionary = {
         a369baed619441cfb5e862694d33d44c: {
-          itemId: "b369baed619441cfb5e862694d33d44c"
-        }
+          itemId: "b369baed619441cfb5e862694d33d44c",
+        },
       };
       const expected = {
         item: {
           ...item,
-          typeKeywords: ["b369baed619441cfb5e862694d33d44c"]
+          typeKeywords: ["b369baed619441cfb5e862694d33d44c"],
         },
         data: {
           ...data,
-          someProp: "b369baed619441cfb5e862694d33d44c"
-        }
+          someProp: "b369baed619441cfb5e862694d33d44c",
+        },
       };
 
       const updateUrl =
-        utils.PORTAL_SUBSET.restUrl +
-        "/content/users/brubble/items/a369baed619441cfb5e862694d33d44c/update";
+        utils.PORTAL_SUBSET.restUrl + "/content/users/brubble/items/a369baed619441cfb5e862694d33d44c/update";
       fetchMock
         .get(
-          utils.PORTAL_SUBSET.restUrl +
-            "/content/items/a369baed619441cfb5e862694d33d44c?f=json&token=fake-token",
-          item
+          utils.PORTAL_SUBSET.restUrl + "/content/items/a369baed619441cfb5e862694d33d44c?f=json&token=fake-token",
+          item,
         )
-        .post(
-          utils.PORTAL_SUBSET.restUrl +
-            "/content/items/a369baed619441cfb5e862694d33d44c/data",
-          data
-        )
+        .post(utils.PORTAL_SUBSET.restUrl + "/content/items/a369baed619441cfb5e862694d33d44c/data", data)
         .post(updateUrl, utils.getSuccessResponse({ id: item.id }));
 
-      const replaceInTemplateSpy = spyOn(
-        common,
-        "replaceInTemplate"
-      ).and.returnValue(expected);
-      featureLayer
-        .postProcess(
-          item.id,
-          item.type,
-          itemInfos,
-          itemTemplate,
-          templates,
-          templateDictionary,
-          MOCK_USER_SESSION
-        )
-        .then(
-          result => {
-            expect(result).toEqual(utils.getSuccessResponse({ id: item.id }));
+      spyOn(common, "replaceInTemplate").and.returnValue(expected);
+      const result = await featureLayer.postProcess(
+        item.id,
+        item.type,
+        itemInfos,
+        itemTemplate,
+        templates,
+        templateDictionary,
+        MOCK_USER_SESSION,
+      );
+      expect(result).toEqual(utils.getSuccessResponse({ id: item.id }));
 
-            const callBody = fetchMock.calls(updateUrl)[0][1].body as string;
-            expect(callBody).toEqual(
-              "f=json&text=%7B%22someProp%22%3A%22b369baed619441cfb5e862694d33d44c%22%7D&id=a369baed619441cfb5e862" +
-                "694d33d44c&owner=brubble&tags=tag1&created=1590520700158&modified=1590520700158&numViews=10&size=50" +
-                "&title=My%20Form&type=Form&typeKeywords=b369baed619441cfb5e862694d33d44c&token=fake-token"
-            );
-            done();
-          },
-          e => {
-            done.fail(e);
-          }
-        );
+      const callBody = fetchMock.calls(updateUrl)[0][1].body as string;
+      expect(callBody).toEqual(
+        "f=json&text=%7B%22someProp%22%3A%22b369baed619441cfb5e862694d33d44c%22%7D&id=a369baed619441cfb5e862" +
+          "694d33d44c&owner=brubble&tags=tag1&created=1590520700158&modified=1590520700158&numViews=10&size=50" +
+          "&title=My%20Form&type=Form&typeKeywords=b369baed619441cfb5e862694d33d44c&token=fake-token",
+      );
     });
 
-    it("will fine tune workforce service project", done => {
+    it("will fine tune workforce service project", async () => {
       // the fineTuneCreatedWorkforceItem function is tested in workforce helpers
       const template: common.IItemTemplate = mockSolutions.getItemTemplateSkeleton();
       template.item.typeKeywords = ["Workforce Project"];
 
-      const fineTuneCreatedWorkforceItemSpy = spyOn(
-        common,
-        "fineTuneCreatedWorkforceItem"
-      ).and.resolveTo(undefined);
+      spyOn(common, "fineTuneCreatedWorkforceItem").and.resolveTo(undefined);
 
-      const updateItemTemplateFromDictionarySpy = spyOn(
-        common,
-        "updateItemTemplateFromDictionary"
-      ).and.resolveTo(undefined);
+      spyOn(common, "updateItemTemplateFromDictionary").and.resolveTo(undefined);
 
-      featureLayer
-        .postProcess("", "", [], template, [], {}, MOCK_USER_SESSION)
-        .then(
-          () => {
-            done();
-          },
-          e => {
-            done.fail(e);
-          }
-        );
+      return featureLayer.postProcess("", "", [], template, [], {}, MOCK_USER_SESSION);
     });
   });
 });

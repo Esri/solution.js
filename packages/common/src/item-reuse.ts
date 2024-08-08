@@ -17,7 +17,7 @@
  */
 
 import { UserSession } from "./interfaces";
-import { getItemData, IItem, ISearchResult, searchItems, SearchQueryBuilder} from "@esri/arcgis-rest-portal";
+import { getItemData, IItem, ISearchResult, searchItems, SearchQueryBuilder } from "@esri/arcgis-rest-portal";
 
 export interface ISourceItem {
   /**
@@ -117,14 +117,10 @@ export interface ISolutionInfo {
  *
  * @param authentication Credentials for the request
  */
-export function getDeployedSolutionsAndItems(
-  authentication: UserSession
-): Promise<ISolutionInfos> {
-  return getDeployedSolutions(authentication).then(
-    (searchResults: ISearchResult<IItem>) => {
-      return getSolutionItemsFromDeployedSolutions(authentication, searchResults);
-    }
-  );
+export function getDeployedSolutionsAndItems(authentication: UserSession): Promise<ISolutionInfos> {
+  return getDeployedSolutions(authentication).then((searchResults: ISearchResult<IItem>) => {
+    return getSolutionItemsFromDeployedSolutions(authentication, searchResults);
+  });
 }
 
 /**
@@ -132,29 +128,29 @@ export function getDeployedSolutionsAndItems(
  *
  * @param authentication Credentials for the request
  */
-export function getDeployedSolutions(
-  authentication: UserSession
-): Promise<ISearchResult<IItem>> {
+export function getDeployedSolutions(authentication: UserSession): Promise<ISearchResult<IItem>> {
   const query = new SearchQueryBuilder()
-  .match(authentication.username).in("owner").and()
-  .match("Solution").in("type").and()
-  .match("Deployed").in("typekeywords");
+    .match(authentication.username)
+    .in("owner")
+    .and()
+    .match("Solution")
+    .in("type")
+    .and()
+    .match("Deployed")
+    .in("typekeywords");
   return searchItems({
     q: query,
     num: 100,
-    authentication
-  })
-  .then((searchResponse: ISearchResult<IItem>) => {
+    authentication,
+  }).then((searchResponse: ISearchResult<IItem>) => {
     // Sort the results by title and then id
-    searchResponse.results.sort(
-      (e1, e2) => {
-        if (e1.title !== e2.title) {
-          return e1.title < e2.title ? -1 : 1;
-        } else {
-          return e1.id < e2.id ? -1 : 1;
-        }
+    searchResponse.results.sort((e1, e2) => {
+      if (e1.title !== e2.title) {
+        return e1.title < e2.title ? -1 : 1;
+      } else {
+        return e1.id < e2.id ? -1 : 1;
       }
-    );
+    });
     return searchResponse;
   });
 }
@@ -167,31 +163,31 @@ export function getDeployedSolutions(
  */
 export function getSolutionItemsFromDeployedSolutions(
   authentication: UserSession,
-  searchResults: ISearchResult<IItem>
+  searchResults: ISearchResult<IItem>,
 ): Promise<ISolutionInfos> {
   const promises = [];
   const itemIds = [];
   const solutions = {};
   if (searchResults.results.length > 0) {
     searchResults.results.forEach((r) => {
-      const versionKeywords = r.typeKeywords.filter(v => /solutionversion-.+/.exec(v));
+      const versionKeywords = r.typeKeywords.filter((v) => /solutionversion-.+/.exec(v));
       const version = versionKeywords.length > 0 ? versionKeywords[0] : "";
       itemIds.push(r.id);
       solutions[r.id] = {
         created: r.created,
         title: r.title,
-        version
-      }
+        version,
+      };
       promises.push(getItemData(r.id, { authentication }));
     });
   }
 
-  return Promise.all(promises).then(results => {
+  return Promise.all(promises).then((results) => {
     return results.reduce((prev, cur, i) => {
       const id = itemIds[i];
       prev[id] = {
-        templates: cur.templates.map(template => template.itemId),
-        solutionInfo: solutions[id]
+        templates: cur.templates.map((template) => template.itemId),
+        solutionInfo: solutions[id],
       };
       return prev;
     }, {});
@@ -203,13 +199,10 @@ export function getSolutionItemsFromDeployedSolutions(
  *
  * @param authentication Credentials for the request
  */
-export function getIdsFromSolutionTemplates(
-  id: string,
-  authentication: UserSession
-): Promise<string[]> {
-  return getItemData(id, { authentication }).then(data => {;
-    return data.templates.map(t => t.itemId);
-  })
+export function getIdsFromSolutionTemplates(id: string, authentication: UserSession): Promise<string[]> {
+  return getItemData(id, { authentication }).then((data) => {
+    return data.templates.map((t) => t.itemId);
+  });
 }
 
 /**
@@ -219,28 +212,25 @@ export function getIdsFromSolutionTemplates(
  * @param id The id of the solution that will be deployed
  * @param authentication Credentials for the request
  */
-export function findReusableSolutionsAndItems(
-  id: string,
-  authentication: UserSession
-): Promise<ISourceItem> {
-  return getItemHash(id, authentication).then(itemHash => {
-    return getDeployedSolutionsAndItems(authentication).then(results => {
+export function findReusableSolutionsAndItems(id: string, authentication: UserSession): Promise<ISourceItem> {
+  return getItemHash(id, authentication).then((itemHash) => {
+    return getDeployedSolutionsAndItems(authentication).then((results) => {
       const sourceIds = Object.keys(itemHash);
-      Object.keys(results).forEach(solutionId => {
+      Object.keys(results).forEach((solutionId) => {
         const solution = results[solutionId];
-        sourceIds.forEach(sourceId => {
+        sourceIds.forEach((sourceId) => {
           const itemKeys = Object.keys(itemHash[sourceId]);
-          itemKeys.forEach(deployedId => {
+          itemKeys.forEach((deployedId) => {
             const item = itemHash[sourceId][deployedId];
             if (solution.templates.indexOf(deployedId) > -1 && Object.keys(item.solutions).indexOf(solutionId) < 0) {
               item.solutions[solutionId] = solution.solutionInfo;
             }
           });
-        })
+        });
       });
       return itemHash;
     });
-  })
+  });
 }
 
 /**
@@ -249,22 +239,19 @@ export function findReusableSolutionsAndItems(
  * @param id The id of the solution that will be deployed
  * @param authentication Credentials for the request
  */
-export function getItemHash(
-  id: string,
-  authentication: UserSession
-): Promise<ISourceItem> {
-  return getIdsFromSolutionTemplates(id, authentication).then(ids => {
+export function getItemHash(id: string, authentication: UserSession): Promise<ISourceItem> {
+  return getIdsFromSolutionTemplates(id, authentication).then((ids) => {
     // search for existing items that reference any of these ids in their typeKeywords
-    const promises = ids.map(id => {
+    const promises = ids.map((id) => {
       const q = `typekeywords:source-${id} owner:${authentication.username}`;
       const searchOptions = {
         q,
-        authentication
+        authentication,
       };
       return searchItems(searchOptions);
     });
 
-    return Promise.all(promises).then(results => {
+    return Promise.all(promises).then((results) => {
       // if we have a result from the typeKeyword search we need to understand what solution it came from and what its id is
       return results.reduce((prev: any, cur: any, i: number) => {
         // key is source id and value is any ids for items that were deployed based on this source
@@ -273,8 +260,8 @@ export function getItemHash(
             created: cur.created,
             solutions: {},
             title: cur.title,
-            type: cur.type
-          }
+            type: cur.type,
+          };
           return prev;
         }, {});
         return prev;

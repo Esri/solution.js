@@ -25,18 +25,18 @@ import * as common from "@esri/solution-common";
  */
 export function getSolutionTemplateItem(
   idOrObject: any,
-  authentication: common.UserSession
+  authentication: common.UserSession,
 ): Promise<common.ISolutionItem> {
   if (typeof idOrObject === "string") {
     // get the item + data
     return Promise.all([
       common.getItemBase(idOrObject, authentication),
-      common.getItemDataAsJson(idOrObject, authentication)
+      common.getItemDataAsJson(idOrObject, authentication),
     ]).then(([item, data]) => {
       // format into a model and migrate the schema
       return common.migrateSchema({
         item,
-        data
+        data,
       });
     });
   } else {
@@ -45,11 +45,7 @@ export function getSolutionTemplateItem(
       // run migrations
       return common.migrateSchema(idOrObject);
     } else {
-      return Promise.reject(
-        common.fail(
-          `getSolutionTemplateItem must be passed an item id or a model object`
-        )
-      );
+      return Promise.reject(common.fail(`getSolutionTemplateItem must be passed an item id or a model object`));
     }
   }
 }
@@ -62,11 +58,7 @@ export function getSolutionTemplateItem(
  * @param item
  * @param authentication
  */
-export function updateDeployOptions(
-  deployOptions: any,
-  item: common.IItem,
-  authentication: common.UserSession
-): any {
+export function updateDeployOptions(deployOptions: any, item: common.IItem, authentication: common.UserSession): any {
   deployOptions.jobId = deployOptions.jobId ?? item.id;
   deployOptions.title = deployOptions.title ?? item.title;
   deployOptions.snippet = deployOptions.snippet ?? item.snippet;
@@ -90,10 +82,7 @@ export function _isModel(obj: any): boolean {
   let result = false as boolean;
   // TODO Hoist into common?
   const isNotStringOrArray = (v: any): boolean =>
-    v != null &&
-    typeof v !== "string" &&
-    !Array.isArray(v) &&
-    typeof v === "object";
+    v != null && typeof v !== "string" && !Array.isArray(v) && typeof v === "object";
 
   if (isNotStringOrArray(obj)) {
     result = ["item", "data"].reduce((acc, prop) => {
@@ -117,10 +106,7 @@ export function isSolutionTemplateItem(item: common.IItem): boolean {
   // Solution items
   let result = false;
   if (item.type === "Solution") {
-    if (
-      kwds.indexOf("Solution") > -1 &&
-      (kwds.indexOf("Template") > -1 || kwds.indexOf("solutionTemplate") > -1)
-    ) {
+    if (kwds.indexOf("Solution") > -1 && (kwds.indexOf("Template") > -1 || kwds.indexOf("solutionTemplate") > -1)) {
       result = true;
     }
   }

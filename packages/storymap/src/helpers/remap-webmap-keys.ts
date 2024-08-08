@@ -31,7 +31,7 @@ export function remapWebmapKeys(resources: any = {}): any[] {
       if (key !== `webmap${webmapCounter}`) {
         acc.push({
           original: key,
-          updated: `webmap${webmapCounter}`
+          updated: `webmap${webmapCounter}`,
         });
         webmapCounter++;
       }

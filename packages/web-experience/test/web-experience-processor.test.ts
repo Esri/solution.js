@@ -38,129 +38,89 @@ beforeEach(() => {
 
 describe("Module `web-experience`: ", () => {
   describe("convertItemToTemplate :: ", () => {
-    it("should fetch the data and delegate to convertToTemplate", () => {
+    it("should fetch the data and delegate to convertToTemplate", async () => {
       const getItemDataSpy = spyOn(portalModule, "getItemData").and.resolveTo({
-        some: "prop"
+        some: "prop",
       });
       const tmpl = {
         item: {},
-        data: {}
+        data: {},
       } as common.IItemTemplate;
-      const convertSpy = spyOn(
-        convertToTmplModule,
-        "convertWebExperienceToTemplate"
-      ).and.resolveTo(tmpl);
+      const convertSpy = spyOn(convertToTmplModule, "convertWebExperienceToTemplate").and.resolveTo(tmpl);
 
-      return WebExperienceProcessor.convertItemToTemplate(
-        { id: "bc3" },
-        MOCK_USER_SESSION,
-        MOCK_USER_SESSION
-      ).then(result => {
-        expect(getItemDataSpy.calls.count()).toBe(1, "should get the data");
-        expect(convertSpy.calls.count()).toBe(
-          1,
-          "should convert the model to template"
-        );
-      });
+      await WebExperienceProcessor.convertItemToTemplate({ id: "bc3" }, MOCK_USER_SESSION, MOCK_USER_SESSION);
+      expect(getItemDataSpy.calls.count()).withContext("should get the data").toBe(1);
+      expect(convertSpy.calls.count()).withContext("should convert the model to template").toBe(1);
     });
   });
 
   describe("createItemFromTemplate", () => {
     it("it exists", () => {
-      expect(WebExperienceProcessor.createItemFromTemplate).toBeDefined(
-        "Should have createItemFromTemplate method"
-      );
+      expect(WebExperienceProcessor.createItemFromTemplate)
+        .withContext("Should have createItemFromTemplate method")
+        .toBeDefined();
     });
 
     // objects used in following tests
     const fakeExB = {
       item: {
-        id: "FAKE3ef"
-      }
+        id: "FAKE3ef",
+      },
     } as hubCommon.IModel;
     const tmpl = {
       itemId: "bc8",
       type: "Web Experience",
-      item: {}
+      item: {},
     } as common.IItemTemplate;
     const td = {
       organization: {
         id: "somePortalId",
-        portalHostname: "www.arcgis.com"
+        portalHostname: "www.arcgis.com",
       },
       user: {
-        username: "vader"
+        username: "vader",
       },
       solutionItemExtent: "10,10,20,20",
       solution: {
-        title: "Some Title"
-      }
+        title: "Some Title",
+      },
     };
     const cb = () => true;
 
-    it("happy-path", () => {
-      const createFromTmplSpy = spyOn(
-        createFromTemplateModule,
-        "createWebExperienceModelFromTemplate"
-      ).and.resolveTo({ item: {} });
+    it("happy-path", async () => {
+      const createFromTmplSpy = spyOn(createFromTemplateModule, "createWebExperienceModelFromTemplate").and.resolveTo({
+        item: {},
+      });
 
-      const createSpy = spyOn(
-        createExperienceModule,
-        "createWebExperience"
-      ).and.resolveTo(fakeExB);
-      return WebExperienceProcessor.createItemFromTemplate(
-        tmpl,
-        td,
-        MOCK_USER_SESSION,
-        cb
-      ).then(result => {
-        expect(result.id).toBe("FAKE3ef", "should return the created item id");
-        expect(result.type).toBe("Web Experience", "should return the type");
-        expect(result.postProcess).toBe(false, "should not postProcess");
-        expect(createFromTmplSpy.calls.count()).toBe(
-          1,
-          "should call createFromTemplate"
-        );
-        expect(createSpy.calls.count()).toBe(
-          1,
-          "should call createWebExperience"
-        );
-      });
+      const createSpy = spyOn(createExperienceModule, "createWebExperience").and.resolveTo(fakeExB);
+
+      const result = await WebExperienceProcessor.createItemFromTemplate(tmpl, td, MOCK_USER_SESSION, cb);
+      expect(result.id).withContext("should return the created item id").toBe("FAKE3ef");
+      expect(result.type).withContext("should return the type").toBe("Web Experience");
+      expect(result.postProcess).withContext("should not postProcess").toBe(false);
+      expect(createFromTmplSpy.calls.count()).withContext("should call createFromTemplate").toBe(1);
+      expect(createSpy.calls.count()).withContext("should call createWebExperience").toBe(1);
     });
-    it("early-exits correctly", () => {
+
+    it("early-exits correctly", async () => {
       const cbFalse = () => false;
-      return WebExperienceProcessor.createItemFromTemplate(
-        tmpl,
-        td,
-        MOCK_USER_SESSION,
-        cbFalse
-      ).then(result => {
-        expect(result.id).toBe("", "should return empty result");
-        expect(result.postProcess).toBe(
-          false,
-          "should return postProcess false"
-        );
-      });
+
+      const result = await WebExperienceProcessor.createItemFromTemplate(tmpl, td, MOCK_USER_SESSION, cbFalse);
+      expect(result.id).withContext("should return empty result").toBe("");
+      expect(result.postProcess).withContext("should return postProcess false").toBe(false);
     });
-    it("callsback on exception", done => {
-      spyOn(createExperienceModule, "createWebExperience").and.rejectWith(
-        "booom"
-      );
-      WebExperienceProcessor.createItemFromTemplate(
-        tmpl,
-        td,
-        MOCK_USER_SESSION,
-        cb
-      )
-        .then(result => {
-          done.fail();
-        })
-        .catch(ex => {
-          expect(ex).toBe("booom", "should re-throw");
-          done();
+
+    it("callsback on exception", async () => {
+      spyOn(createExperienceModule, "createWebExperience").and.rejectWith("booom");
+
+      return WebExperienceProcessor.createItemFromTemplate(tmpl, td, MOCK_USER_SESSION, cb)
+        .then(() => fail())
+        .catch((ex) => {
+          expect(ex).withContext("should re-throw").toBe("booom");
+          return Promise.resolve();
         });
     });
-    it("cleans up if job is cancelled late", () => {
+    it("cleans up if job is cancelled late", async () => {
       // fn that returns a fn that closes over a counter so that
       // it can return false after the first call
       const createCb = () => {
@@ -170,71 +130,58 @@ describe("Module `web-experience`: ", () => {
           return calls < 2;
         };
       };
-      const createFromTmplSpy = spyOn(
-        createFromTemplateModule,
-        "createWebExperienceModelFromTemplate"
-      ).and.resolveTo({ item: {} });
+      const createFromTmplSpy = spyOn(createFromTemplateModule, "createWebExperienceModelFromTemplate").and.resolveTo({
+        item: {},
+      });
 
-      const createSpy = spyOn(
-        createExperienceModule,
-        "createWebExperience"
-      ).and.resolveTo(fakeExB);
+      const createSpy = spyOn(createExperienceModule, "createWebExperience").and.resolveTo(fakeExB);
       const removeSpy = spyOn(portalModule, "removeItem").and.resolveTo({
         success: true,
-        itemId: "3ef"
+        itemId: "3ef",
       });
-      return WebExperienceProcessor.createItemFromTemplate(
-        tmpl,
-        td,
-        MOCK_USER_SESSION,
-        createCb()
-      ).then(result => {
-        expect(result.id).toBe("", "should return empty result");
-        expect(result.postProcess).toBe(
-          false,
-          "should return postProcess false"
-        );
-        expect(result.type).toBe("Web Experience", "should return the type");
-        expect(createFromTmplSpy.calls.count()).toBe(
-          1,
-          "should call createFromTemplate"
-        );
-        expect(createSpy.calls.count()).toBe(
-          1,
-          "should call createWebExperience"
-        );
-        expect(removeSpy.calls.count()).toBe(1, "should remove the item");
-      });
+
+      const result = await WebExperienceProcessor.createItemFromTemplate(tmpl, td, MOCK_USER_SESSION, createCb());
+      expect(result.id).withContext("should return empty result").toBe("");
+      expect(result.postProcess).withContext("should return postProcess false").toBe(false);
+      expect(result.type).withContext("should return the type").toBe("Web Experience");
+      expect(createFromTmplSpy.calls.count()).withContext("should call createFromTemplate").toBe(1);
+      expect(createSpy.calls.count()).withContext("should call createWebExperience").toBe(1);
+      expect(removeSpy.calls.count()).withContext("should remove the item").toBe(1);
     });
   });
 
   describe("postProcess :: ", () => {
-    it("should call updateItemTemplateFromDictionary", () => {
+    it("should call updateItemTemplateFromDictionary", async () => {
       const td = {
         organization: {
           id: "somePortalId",
-          portalHostname: "www.arcgis.com"
+          portalHostname: "www.arcgis.com",
         },
         user: {
-          username: "vader"
+          username: "vader",
         },
         solutionItemExtent: "10,10,20,20",
         solution: {
-          title: "Some Title"
-        }
+          title: "Some Title",
+        },
       };
       const returnValue: common.IUpdateItemResponse = {
         success: true,
-        id: "abc"
-      }
+        id: "abc",
+      };
       spyOn(common, "updateItemTemplateFromDictionary").and.resolveTo(returnValue);
 
-      return WebExperienceProcessor.postProcess(
-        "abc", "Web Experience", [], null, [], td, MOCK_USER_SESSION
-      ).then(result => {
-        expect(result.success).toBeTruthy();
-        expect(result.id).toBe("abc");
-      });
+      const result = await WebExperienceProcessor.postProcess(
+        "abc",
+        "Web Experience",
+        [],
+        null as any,
+        [],
+        td,
+        MOCK_USER_SESSION,
+      );
+      expect(result.success).toBeTruthy();
+      expect(result.id).toBe("abc");
     });
   });
 });

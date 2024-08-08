@@ -27,20 +27,16 @@ import { updateItem } from "@esri/arcgis-rest-portal";
  * @param authentication Credentials for the request
  * @returns Promise resolving to JSON containing success boolean
  */
-export function addMetadataFromBlob(
-  blob: Blob,
-  itemId: string,
-  authentication: UserSession
-): Promise<any> {
+export function addMetadataFromBlob(blob: Blob, itemId: string, authentication: UserSession): Promise<any> {
   const updateOptions: any = {
     item: {
-      id: itemId
+      id: itemId,
     },
     params: {
       // Pass metadata in via params because item property is serialized, which discards a blob
-      metadata: blob
+      metadata: blob,
     },
-    authentication: authentication
+    authentication: authentication,
   };
   return updateItem(updateOptions);
 }

@@ -31,16 +31,12 @@ export function addResourceFromBlob(
   itemId: string,
   folder: string,
   filename: string,
-  authentication: UserSession
+  authentication: UserSession,
 ): Promise<any> {
   // Check that the filename has an extension because it is required by the addResources call
   if (filename && filename.indexOf(".") < 0) {
     return new Promise((resolve, reject) => {
-      reject(
-        new ArcGISAuthError(
-          "Filename must have an extension indicating its type"
-        )
-      );
+      reject(new ArcGISAuthError("Filename must have an extension indicating its type"));
     });
   }
 
@@ -49,11 +45,11 @@ export function addResourceFromBlob(
     resource: blob,
     name: filename,
     authentication: authentication,
-    params: {}
+    params: {},
   };
   if (folder) {
     addRsrcOptions.params = {
-      resourcesPrefix: folder
+      resourcesPrefix: folder,
     };
   }
   return addItemResource(addRsrcOptions);

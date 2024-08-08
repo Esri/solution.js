@@ -24,10 +24,8 @@ import {
   deleteViewProps,
   cacheContingentValues,
   cacheFieldInfos,
-  _cacheFieldInfo,
   cacheLayerInfo,
   cachePopupInfos,
-  _cachePopupInfo,
   updateTemplate,
   getLayerSettings,
   setNamesAndTitles,
@@ -44,36 +42,24 @@ import {
   updatePopupInfo,
   _templatize,
   _templatizeProperty,
-  _templatizeLayer,
-  _templatizeLayerFieldReferences,
   _templatizeAdminLayerInfo,
   _processAdminObject,
   _templatizeSourceServiceName,
   _templatizeAdminLayerInfoFields,
   _getDependantItemId,
-  _templatizeAdminSourceLayerFields,
   _templatizeTopFilter,
   _templatizeRelationshipFields,
   _templatizePopupInfo,
   _templatizeName,
-  _templatizePopupInfoFieldInfos,
-  _templatizeFieldName,
-  _templatizeExpressionInfos,
-  _templatizePopupElements,
   _templatizeMediaInfos,
   _templatizeDefinitionEditor,
   _templatizeDefinitionExpression,
   _templatizeSimpleName,
   _templatizeDrawingInfo,
-  _templatizeRenderer,
-  _templatizeGenRenderer,
-  _templatizeTemporalRenderer,
-  _templatizeAuthoringInfo,
   _templatizeArcadeExpressions,
   _templatizeLabelingInfo,
   _templatizeTemplates,
   _templatizeTypeTemplates,
-  _templatizeKeys,
   _templatizeTimeInfo,
   _templatizeDefinitionQuery,
   _getNameMapping,
@@ -94,18 +80,16 @@ import {
   _validateTemplatesFields,
   _validateTypesTemplates,
   _validateEditFieldsInfo,
-  IPopupInfos
+  IPopupInfos,
 } from "../src/featureServiceHelpers";
 import * as rest_feature_layer from "@esri/arcgis-rest-feature-layer";
 
-import * as restHelpers from '../../common/src/restHelpers';
+import * as restHelpers from "../../common/src/restHelpers";
 
 import * as interfaces from "../src/interfaces";
 import * as utils from "../../common/test/mocks/utils";
 
-import { IUserRequestOptions } from "@esri/arcgis-rest-auth";
-
-import * as fetchMock from "fetch-mock";
+const fetchMock = require('fetch-mock');
 import * as mockItems from "../../common/test/mocks/agolItems";
 import * as templates from "../../common/test/mocks/templates";
 import { setCreateProp } from "../src/generalHelpers";
@@ -121,22 +105,18 @@ const _organization: any = {
     xmax: 1,
     ymax: 1,
     spatialReference: {
-      wkid: 102100
-    }
+      wkid: 102100,
+    },
   },
   spatialReference: {
-    wkid: 102100
-  }
+    wkid: 102100,
+  },
 };
 
 let MOCK_USER_SESSION: interfaces.UserSession;
-let MOCK_USER_REQOPTS: IUserRequestOptions;
 
 beforeEach(() => {
   MOCK_USER_SESSION = utils.createRuntimeMockUserSession();
-  MOCK_USER_REQOPTS = {
-    authentication: MOCK_USER_SESSION
-  };
 
   itemTemplate = {
     itemId: "",
@@ -149,27 +129,27 @@ beforeEach(() => {
           xmax: 1,
           ymin: -1,
           ymax: 1,
-          spatialReference: { wkid: 123456 }
-        }
+          spatialReference: { wkid: 123456 },
+        },
       },
       layers: [
         {
-          fields: []
-        }
+          fields: [],
+        },
       ],
-      tables: []
+      tables: [],
     },
     type: "",
     item: {
       id: "",
       type: "",
-      typeKeywords: []
+      typeKeywords: [],
     },
     data: {},
     resources: [],
     dependencies: [],
     groups: [],
-    estimatedDeploymentCostFactor: 0
+    estimatedDeploymentCostFactor: 0,
   };
 });
 
@@ -185,20 +165,17 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
       const url = "http://test/FeatureServer";
       const relationshipId = 0;
 
-      const queryRelatedSpy = spyOn(rest_feature_layer, "queryRelated").and.resolveTo(null);
+      const queryRelatedSpy = spyOn(rest_feature_layer, "queryRelated").and.resolveTo(undefined);
       const requestOptions = {
         url: url + "/0",
         relationshipId,
-        objectIds: undefined
-      }
+        objectIds: undefined,
+      };
 
-      return getFeatureServiceRelatedRecords(url, relationshipId)
-      .then(
-        response => {
-          expect(queryRelatedSpy.calls.argsFor(0)[0]).toEqual(requestOptions);
-          return Promise.resolve(response);
-        }
-      );
+      return getFeatureServiceRelatedRecords(url, relationshipId).then((response) => {
+        expect(queryRelatedSpy.calls.argsFor(0)[0]).toEqual(requestOptions);
+        return Promise.resolve(response);
+      });
     });
 
     it("asks for specific objects", () => {
@@ -206,20 +183,17 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
       const relationshipId = 0;
       const objectIds = [1, 2, 3];
 
-      const queryRelatedSpy = spyOn(rest_feature_layer, "queryRelated").and.resolveTo(null);
+      const queryRelatedSpy = spyOn(rest_feature_layer, "queryRelated").and.resolveTo(undefined);
       const requestOptions = {
         url: url + "/0",
         relationshipId,
-        objectIds
-      }
+        objectIds,
+      };
 
-      return getFeatureServiceRelatedRecords(url, relationshipId, objectIds)
-      .then(
-        response => {
-          expect(queryRelatedSpy.calls.argsFor(0)[0]).toEqual(requestOptions);
-          return Promise.resolve(response);
-        }
-      );
+      return getFeatureServiceRelatedRecords(url, relationshipId, objectIds).then((response) => {
+        expect(queryRelatedSpy.calls.argsFor(0)[0]).toEqual(requestOptions);
+        return Promise.resolve(response);
+      });
     });
   });
 
@@ -238,12 +212,12 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
             serviceItemId: "{{DEF456.itemId}}",
             fullExtent: "{{ABC123.solutionExtent}}",
             initialExtent: "{{ABC123.solutionExtent}}",
-            spatialReference: { wkid: 123456 }
+            spatialReference: { wkid: 123456 },
           },
           layers: [
             {
-              fields: []
-            }
+              fields: [],
+            },
           ],
           tables: [],
           defaultExtent: {
@@ -251,21 +225,21 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
             xmax: 1,
             ymin: -1,
             ymax: 1,
-            spatialReference: { wkid: 123456 }
-          }
+            spatialReference: { wkid: 123456 },
+          },
         },
         type: "",
         item: {
           id: "{{ABC123.itemId}}",
           type: "",
           url: "{{ABC123.url}}",
-          typeKeywords: []
+          typeKeywords: [],
         },
         data: {},
         resources: [],
         dependencies: [],
         groups: [],
-        estimatedDeploymentCostFactor: 0
+        estimatedDeploymentCostFactor: 0,
       };
       const templateDictionary = {};
       templatize(itemTemplate, dependencies, true, templateDictionary);
@@ -287,15 +261,15 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
             layers: [
               {
                 id: 0,
-                prop: "A"
-              }
+                prop: "A",
+              },
             ],
             tables: [
               {
                 id: 1,
-                prop: "B"
-              }
-            ]
+                prop: "B",
+              },
+            ],
           },
           layers: [
             {
@@ -303,16 +277,16 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
               serviceItemId: "ab766cba0dd44ec080420acc10990282",
               adminLayerInfo: {
                 xssTrustedFields: [],
-                tableName: "ABC"
+                tableName: "ABC",
               },
               displayField: "A",
               fields: [
                 {
-                  name: "A"
-                }
+                  name: "A",
+                },
               ],
-              hasZ: true
-            }
+              hasZ: true,
+            },
           ],
           tables: [
             {
@@ -320,19 +294,19 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
               serviceItemId: "ab766cba0dd44ec080420acc10990282",
               fields: [
                 {
-                  name: "B"
-                }
-              ]
-            }
+                  name: "B",
+                },
+              ],
+            },
           ],
-          defaultExtent: {}
+          defaultExtent: {},
         },
         type: "",
         item: {
           extent: "",
           id: "ab766cba0dd44ec080420acc10990282",
           type: "",
-          typeKeywords: ["ab766cba0dd44ec080420acc10990282", "typeKeyword2"]
+          typeKeywords: ["ab766cba0dd44ec080420acc10990282", "typeKeyword2"],
         },
         data: {
           layers: [
@@ -341,26 +315,26 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
               displayField: "A",
               fields: [
                 {
-                  name: "A"
-                }
-              ]
-            }
+                  name: "A",
+                },
+              ],
+            },
           ],
           tables: [
             {
               id: "1",
               fields: [
                 {
-                  name: "B"
-                }
-              ]
-            }
-          ]
+                  name: "B",
+                },
+              ],
+            },
+          ],
         },
         resources: [],
         dependencies: [],
         groups: [],
-        estimatedDeploymentCostFactor: 0
+        estimatedDeploymentCostFactor: 0,
       };
       const expected: any = {
         itemId: "ab766cba0dd44ec080420acc10990282",
@@ -369,22 +343,21 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
           service: {
             serviceItemId: "{{ab766cba0dd44ec080420acc10990282.itemId}}",
             fullExtent: "{{ab766cba0dd44ec080420acc10990282.solutionExtent}}",
-            initialExtent:
-              "{{ab766cba0dd44ec080420acc10990282.solutionExtent}}",
+            initialExtent: "{{ab766cba0dd44ec080420acc10990282.solutionExtent}}",
             layers: [
               {
                 id: 0,
-                prop: "A"
-              }
+                prop: "A",
+              },
             ],
             tables: [
               {
                 id: 1,
-                prop: "B"
-              }
+                prop: "B",
+              },
             ],
             enableZDefaults: true,
-            zDefault: 0
+            zDefault: 0,
           },
           layers: [
             {
@@ -394,11 +367,11 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
               displayField: "A",
               fields: [
                 {
-                  name: "A"
-                }
+                  name: "A",
+                },
               ],
-              hasZ: true
-            }
+              hasZ: true,
+            },
           ],
           tables: [
             {
@@ -407,12 +380,12 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
               displayField: "B",
               fields: [
                 {
-                  name: "B"
-                }
-              ]
-            }
+                  name: "B",
+                },
+              ],
+            },
           ],
-          defaultExtent: {}
+          defaultExtent: {},
         },
         type: "",
         item: {
@@ -420,10 +393,7 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
           id: "{{ab766cba0dd44ec080420acc10990282.itemId}}",
           type: "",
           url: "{{ab766cba0dd44ec080420acc10990282.url}}",
-          typeKeywords: [
-            "{{ab766cba0dd44ec080420acc10990282.itemId}}",
-            "typeKeyword2"
-          ]
+          typeKeywords: ["{{ab766cba0dd44ec080420acc10990282.itemId}}", "typeKeyword2"],
         },
         data: {
           layers: [
@@ -432,26 +402,26 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
               displayField: "A",
               fields: [
                 {
-                  name: "A"
-                }
-              ]
-            }
+                  name: "A",
+                },
+              ],
+            },
           ],
           tables: [
             {
               id: "1",
               fields: [
                 {
-                  name: "B"
-                }
-              ]
-            }
-          ]
+                  name: "B",
+                },
+              ],
+            },
+          ],
         },
         resources: [],
         dependencies: [],
         groups: [],
-        estimatedDeploymentCostFactor: 0
+        estimatedDeploymentCostFactor: 0,
       };
       const templateDictionary = {};
       templatize(itemTemplate, dependencies, true, templateDictionary);
@@ -467,22 +437,22 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
           service: {
             serviceItemId: "ab766cba0dd44ec080420acc10990282",
             fullExtent: {},
-            initialExtent: {}
+            initialExtent: {},
           },
-          defaultExtent: {}
+          defaultExtent: {},
         },
         type: "",
         item: {
           extent: "",
           id: "ab766cba0dd44ec080420acc10990282",
           type: "",
-          typeKeywords: ["ab766cba0dd44ec080420acc10990282", "two"]
+          typeKeywords: ["ab766cba0dd44ec080420acc10990282", "two"],
         },
         data: {},
         resources: [],
         dependencies: [],
         groups: [],
-        estimatedDeploymentCostFactor: 0
+        estimatedDeploymentCostFactor: 0,
       };
       const expected: any = {
         itemId: "ab766cba0dd44ec080420acc10990282",
@@ -491,9 +461,9 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
           service: {
             serviceItemId: "{{ab766cba0dd44ec080420acc10990282.itemId}}",
             fullExtent: "{{ab766cba0dd44ec080420acc10990282.solutionExtent}}",
-            initialExtent: "{{ab766cba0dd44ec080420acc10990282.solutionExtent}}"
+            initialExtent: "{{ab766cba0dd44ec080420acc10990282.solutionExtent}}",
           },
-          defaultExtent: {}
+          defaultExtent: {},
         },
         type: "",
         item: {
@@ -501,13 +471,13 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
           id: "{{ab766cba0dd44ec080420acc10990282.itemId}}",
           type: "",
           url: "{{ab766cba0dd44ec080420acc10990282.url}}",
-          typeKeywords: ["{{ab766cba0dd44ec080420acc10990282.itemId}}", "two"]
+          typeKeywords: ["{{ab766cba0dd44ec080420acc10990282.itemId}}", "two"],
         },
         data: {},
         resources: [],
         dependencies: [],
         groups: [],
-        estimatedDeploymentCostFactor: 0
+        estimatedDeploymentCostFactor: 0,
       };
       const templateDictionary = {};
       templatize(itemTemplate, dependencies, true, templateDictionary);
@@ -527,22 +497,22 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
               xmax: 10,
               ymin: -10,
               ymax: 10,
-              spatialReference: { wkid: 123456 }
-            }
-          }
+              spatialReference: { wkid: 123456 },
+            },
+          },
         },
         type: "",
         item: {
           extent: "",
           id: "ab766cba0dd44ec080420acc10990282",
           type: "",
-          typeKeywords: ["ab766cba0dd44ec080420acc10990282", "two"]
+          typeKeywords: ["ab766cba0dd44ec080420acc10990282", "two"],
         },
         data: {},
         resources: [],
         dependencies: [],
         groups: [],
-        estimatedDeploymentCostFactor: 0
+        estimatedDeploymentCostFactor: 0,
       };
       const expected: any = {
         itemId: "ab766cba0dd44ec080420acc10990282",
@@ -551,15 +521,15 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
           service: {
             serviceItemId: "{{ab766cba0dd44ec080420acc10990282.itemId}}",
             fullExtent: "{{ab766cba0dd44ec080420acc10990282.solutionExtent}}",
-            spatialReference: { wkid: 123456 }
+            spatialReference: { wkid: 123456 },
           },
           defaultExtent: {
             xmin: -10,
             xmax: 10,
             ymin: -10,
             ymax: 10,
-            spatialReference: { wkid: 123456 }
-          }
+            spatialReference: { wkid: 123456 },
+          },
         },
         type: "",
         item: {
@@ -567,13 +537,13 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
           id: "{{ab766cba0dd44ec080420acc10990282.itemId}}",
           type: "",
           url: "{{ab766cba0dd44ec080420acc10990282.url}}",
-          typeKeywords: ["{{ab766cba0dd44ec080420acc10990282.itemId}}", "two"]
+          typeKeywords: ["{{ab766cba0dd44ec080420acc10990282.itemId}}", "two"],
         },
         data: {},
         resources: [],
         dependencies: [],
         groups: [],
-        estimatedDeploymentCostFactor: 0
+        estimatedDeploymentCostFactor: 0,
       };
       const templateDictionary = {};
       templatize(itemTemplate, dependencies, true, templateDictionary);
@@ -605,33 +575,33 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
         fields: [
           {
             name: "A",
-            type: "string"
+            type: "string",
           },
           {
             name: "B",
-            type: "string"
-          }
+            type: "string",
+          },
         ],
         displayField: "DisplayField",
         editFieldsInfo: ["CreateDate"],
         templates: [
           {
             A: null,
-            B: null
-          }
+            B: null,
+          },
         ],
         relationships: [
           {
-            relatedId: 0
-          }
+            relatedId: 0,
+          },
         ],
         drawingInfo: {
           renderer: {
-            type: "simple"
-          }
+            type: "simple",
+          },
         },
         type: "layer",
-        viewDefinitionQuery: "viewDefinitionQuery"
+        viewDefinitionQuery: "viewDefinitionQuery",
       };
 
       const expectedLayer: any = {
@@ -639,29 +609,29 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
         fields: [
           {
             name: "A",
-            type: "string"
+            type: "string",
           },
           {
             name: "B",
-            type: "string"
-          }
+            type: "string",
+          },
         ],
         displayField: "DisplayField",
         editFieldsInfo: ["CreateDate"],
         templates: [
           {
             A: null,
-            B: null
-          }
+            B: null,
+          },
         ],
         relationships: null,
         drawingInfo: {
           renderer: {
-            type: "simple"
-          }
+            type: "simple",
+          },
         },
         type: "layer",
-        viewDefinitionQuery: "viewDefinitionQuery"
+        viewDefinitionQuery: "viewDefinitionQuery",
       };
 
       const expectedFieldInfos: any = {
@@ -670,33 +640,33 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
           sourceFields: [
             {
               name: "A",
-              type: "string"
+              type: "string",
             },
             {
               name: "B",
-              type: "string"
-            }
+              type: "string",
+            },
           ],
           editFieldsInfo: ["CreateDate"],
           templates: [
             {
               A: null,
-              B: null
-            }
+              B: null,
+            },
           ],
           relationships: [
             {
-              relatedId: 0
-            }
+              relatedId: 0,
+            },
           ],
           drawingInfo: {
             renderer: {
-              type: "simple"
-            }
+              type: "simple",
+            },
           },
           type: "layer",
-          viewDefinitionQuery: "viewDefinitionQuery"
-        }
+          viewDefinitionQuery: "viewDefinitionQuery",
+        },
       };
 
       fieldInfos = cacheFieldInfos(layer, fieldInfos);
@@ -712,9 +682,9 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
       fieldInfos[id] = {};
       itemTemplate.properties.contingentValues = {};
       itemTemplate.properties.contingentValues[id] = {
-        "contingentValuesDefinition": {
-          "fieldGroups": []
-        }
+        contingentValuesDefinition: {
+          fieldGroups: [],
+        },
       };
       fieldInfos = cacheContingentValues(id, fieldInfos, itemTemplate);
       expect(fieldInfos[id].contingentValues).toEqual(itemTemplate.properties.contingentValues[id]);
@@ -724,7 +694,8 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
   describe("cacheLayerInfo", () => {
     it("should skip id layer id is missing", () => {
       const itemId = "dd59d3b4a8c44100914458dd722f054f";
-      const url = "https://myserver.arcgis.com/abc123/arcgis/rest/services/NOAA_METAR_current_wind_speed_direction_v1/FeatureServer";
+      const url =
+        "https://myserver.arcgis.com/abc123/arcgis/rest/services/NOAA_METAR_current_wind_speed_direction_v1/FeatureServer";
       const templateDictionary = {};
 
       cacheLayerInfo("", itemId, url, templateDictionary);
@@ -734,7 +705,8 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
     it("should not overwrite with missing url", () => {
       const layerId = "0";
       const itemId = "dd59d3b4a8c44100914458dd722f054f";
-      const url = "https://myserver.arcgis.com/abc123/arcgis/rest/services/NOAA_METAR_current_wind_speed_direction_v1/FeatureServer/0";
+      const url =
+        "https://myserver.arcgis.com/abc123/arcgis/rest/services/NOAA_METAR_current_wind_speed_direction_v1/FeatureServer/0";
       const templateDictionary = {
         unreachable: {
           dd59d3b4a8c44100914458dd722f054f: {
@@ -742,10 +714,10 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
             layer0: {
               itemId,
               layerId,
-              url
-            }
-          }
-        }
+              url,
+            },
+          },
+        },
       };
       const _templateDictionary = {
         unreachable: {
@@ -754,10 +726,10 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
             layer0: {
               itemId,
               layerId,
-              url
-            }
-          }
-        }
+              url,
+            },
+          },
+        },
       };
 
       cacheLayerInfo("0", itemId, "", templateDictionary);
@@ -767,8 +739,10 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
     it("should not overwrite existing unreachable", () => {
       const layerId = "0";
       const itemId = "dd59d3b4a8c44100914458dd722f054f";
-      const url = "https://myserver.arcgis.com/abc123/arcgis/rest/services/NOAA_METAR_current_wind_speed_direction_v1/FeatureServer/0";
-      const url2 = "https://myserver.arcgis.com/abc123/arcgis/rest/services/NOAA_METAR_current_wind_speed_direction_v2/FeatureServer/0";
+      const url =
+        "https://myserver.arcgis.com/abc123/arcgis/rest/services/NOAA_METAR_current_wind_speed_direction_v1/FeatureServer/0";
+      const url2 =
+        "https://myserver.arcgis.com/abc123/arcgis/rest/services/NOAA_METAR_current_wind_speed_direction_v2/FeatureServer/0";
       const templateDictionary = {
         unreachable: {
           cc59d3b4a8c44100914458dd722f054f: {
@@ -776,10 +750,10 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
             layer0: {
               itemId,
               layerId,
-              url2
-            }
-          }
-        }
+              url2,
+            },
+          },
+        },
       };
       const _templateDictionary = {
         unreachable: {
@@ -788,18 +762,18 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
             layer0: {
               itemId,
               layerId,
-              url
-            }
+              url,
+            },
           },
           cc59d3b4a8c44100914458dd722f054f: {
             itemId: "cc59d3b4a8c44100914458dd722f054f",
             layer0: {
               itemId,
               layerId,
-              url2
-            }
-          }
-        }
+              url2,
+            },
+          },
+        },
       };
 
       cacheLayerInfo("0", itemId, url, templateDictionary);
@@ -812,7 +786,7 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
       const popupInfos: IPopupInfos = cachePopupInfos(itemTemplate);
       const expected: any = {
         layers: {},
-        tables: {}
+        tables: {},
       };
       expect(popupInfos).toEqual(expected);
     });
@@ -825,79 +799,79 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
           service: {},
           layers: [
             {
-              fields: []
-            }
+              fields: [],
+            },
           ],
-          tables: []
+          tables: [],
         },
         type: "",
         item: {
           id: "",
-          type: ""
+          type: "",
         },
         data: {
           layers: [
             {
-              id: 0
+              id: 0,
             },
             {
               id: 1,
               popupInfo: {
-                property: {}
-              }
-            }
+                property: {},
+              },
+            },
           ],
           tables: [
             {
-              id: 2
+              id: 2,
             },
             {
               id: 637,
               popupInfo: {
-                property: {}
-              }
-            }
-          ]
+                property: {},
+              },
+            },
+          ],
         },
         resources: [],
         dependencies: [],
         groups: [],
-        estimatedDeploymentCostFactor: 0
+        estimatedDeploymentCostFactor: 0,
       };
 
       const popupInfos: IPopupInfos = cachePopupInfos(itemTemplate.data);
       const expectedPopupInfos: any = {
         layers: {
           1: {
-            property: {}
-          }
+            property: {},
+          },
         },
         tables: {
           637: {
-            property: {}
-          }
-        }
+            property: {},
+          },
+        },
       };
 
       const expectedData: any = {
         layers: [
           {
-            id: 0
+            id: 0,
           },
           {
             id: 1,
-            popupInfo: {}
-          }
+            popupInfo: {},
+          },
         ],
         tables: [
           {
-            id: 2
+            id: 2,
           },
           {
             id: 637,
-            popupInfo: {}
-          }
-        ]
+            popupInfo: {},
+          },
+        ],
       };
       // popupInfos should be hydrated for layers with popupInfo
       expect(popupInfos).toEqual(expectedPopupInfos);
@@ -912,20 +886,16 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
       const createResponse: any = {
         serviceItemId: "DDDEEEFFF456",
         serviceurl: "http://test/FeatureServer",
-        name: "TheService"
+        name: "TheService",
       };
       itemTemplate.itemId = "AAABBBCCC123";
       itemTemplate.item = {
         id: "{{AAABBBCCC123.itemId}}",
         type: "",
-        url: "{{AAABBBCCC123.url}}"
+        url: "{{AAABBBCCC123.url}}",
       };
 
-      const updatedTemplate: any = updateTemplate(
-        itemTemplate,
-        settings,
-        createResponse
-      );
+      const updatedTemplate: any = updateTemplate(itemTemplate, settings, createResponse);
 
       const expectedTemplate: any = {
         itemId: "DDDEEEFFF456",
@@ -939,36 +909,36 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
               xmax: 1,
               ymax: 1,
               spatialReference: {
-                wkid: 123456
-              }
-            }
+                wkid: 123456,
+              },
+            },
           },
           layers: [
             {
-              fields: []
-            }
+              fields: [],
+            },
           ],
-          tables: []
+          tables: [],
         },
         type: "",
         item: {
           id: "DDDEEEFFF456",
           type: "",
-          url: "http://test/FeatureServer/"
+          url: "http://test/FeatureServer/",
         },
         data: {},
         resources: [],
         dependencies: [],
         groups: [],
-        estimatedDeploymentCostFactor: 0
+        estimatedDeploymentCostFactor: 0,
       };
 
       const expectedSettings: any = {
         AAABBBCCC123: {
           itemId: "DDDEEEFFF456",
           url: "http://test/FeatureServer/",
-          name: "TheService"
-        }
+          name: "TheService",
+        },
       };
 
       expect(updatedTemplate).toEqual(expectedTemplate);
@@ -981,7 +951,7 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
       itemTemplate.item.typeKeywords = ["A", "B"];
 
       const createResponse: any = {
-        typeKeywords: ["C"]
+        typeKeywords: ["C"],
       };
 
       const expecetd: string[] = ["A", "B", "C"];
@@ -995,7 +965,7 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
       itemTemplate.item.typeKeywords = ["A", "B"];
 
       const createResponse: any = {
-        typeKeywords: []
+        typeKeywords: [],
       };
 
       const expecetd: string[] = ["A", "B"];
@@ -1015,93 +985,93 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
             {
               name: "A",
               alias: "A",
-              type: "fieldTypeA"
+              type: "fieldTypeA",
             },
             {
               name: "B",
               alias: "B",
-              type: "fieldTypeB"
+              type: "fieldTypeB",
             },
             {
               name: "CreateDate",
               alias: "CreateDate",
-              type: "fieldTypeDate"
-            }
+              type: "fieldTypeDate",
+            },
           ],
           sourceFields: [
             {
               name: "A",
               alias: "A",
-              type: "fieldTypeA"
+              type: "fieldTypeA",
             },
             {
               name: "B",
               alias: "B",
-              type: "fieldTypeB"
+              type: "fieldTypeB",
             },
             {
               name: "CreateDate",
               alias: "CreateDate",
-              type: "fieldTypeDate"
-            }
+              type: "fieldTypeDate",
+            },
           ],
           otherProperty: {
-            test: "test"
+            test: "test",
           },
           editFieldsInfo: {
-            createDateField: "CreateDate"
+            createDateField: "CreateDate",
           },
           newEditFieldsInfo: {
-            createDateField: "CreateDate"
+            createDateField: "CreateDate",
           },
-          sourceSchemaChangesAllowed: true
+          sourceSchemaChangesAllowed: true,
         },
         "1": {
           newFields: [
             {
               name: "C",
               alias: "C",
-              type: "fieldTypeC"
+              type: "fieldTypeC",
             },
             {
               name: "D",
               alias: "D",
-              type: "fieldTypeD"
+              type: "fieldTypeD",
             },
             {
               name: "CreateDate",
               alias: "CreateDate",
-              type: "fieldTypeDate"
-            }
+              type: "fieldTypeDate",
+            },
           ],
           sourceFields: [
             {
               name: "C",
               alias: "C",
-              type: "fieldTypeC"
+              type: "fieldTypeC",
             },
             {
               name: "D",
               alias: "D",
-              type: "fieldTypeD"
+              type: "fieldTypeD",
             },
             {
               name: "CreateDate",
               alias: "CreateDate",
-              type: "fieldTypeDate"
-            }
+              type: "fieldTypeDate",
+            },
           ],
           otherProperty: {
-            test: "test"
+            test: "test",
           },
           editFieldsInfo: {
-            createDateField: "CreateDate"
+            createDateField: "CreateDate",
           },
           newEditFieldsInfo: {
-            createDateField: "CreateDate"
+            createDateField: "CreateDate",
           },
-          sourceSchemaChangesAllowed: true
-        }
+          sourceSchemaChangesAllowed: true,
+        },
       };
       const expectedSettings: any = {
         layer0: {
@@ -1112,19 +1082,19 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
             a: {
               name: "A",
               alias: "A",
-              type: "fieldTypeA"
+              type: "fieldTypeA",
             },
             b: {
               name: "B",
               alias: "B",
-              type: "fieldTypeB"
+              type: "fieldTypeB",
             },
             createdate: {
               name: "CreateDate",
               alias: "CreateDate",
-              type: "fieldTypeDate"
-            }
-          }
+              type: "fieldTypeDate",
+            },
+          },
         },
         layer1: {
           itemId: "33298a2612ba4899adc41180c435425f",
@@ -1134,38 +1104,34 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
             c: {
               name: "C",
               alias: "C",
-              type: "fieldTypeC"
+              type: "fieldTypeC",
             },
             d: {
               name: "D",
               alias: "D",
-              type: "fieldTypeD"
+              type: "fieldTypeD",
             },
             createdate: {
               name: "CreateDate",
               alias: "CreateDate",
-              type: "fieldTypeDate"
-            }
-          }
-        }
+              type: "fieldTypeDate",
+            },
+          },
+        },
       };
       const expectedFieldInfos: any = {
         "0": {
           otherProperty: {
-            test: "test"
-          }
+            test: "test",
+          },
         },
         "1": {
           otherProperty: {
-            test: "test"
-          }
-        }
+            test: "test",
+          },
+        },
       };
-      const settings = getLayerSettings(
-        fieldInfos,
-        serviceUrl,
-        "33298a2612ba4899adc41180c435425f"
-      );
+      const settings = getLayerSettings(fieldInfos, serviceUrl, "33298a2612ba4899adc41180c435425f");
       expect(fieldInfos).toEqual(expectedFieldInfos);
       expect(settings).toEqual(expectedSettings);
     });
@@ -1180,47 +1146,47 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
             {
               name: "A",
               alias: "A",
-              type: "fieldTypeA"
+              type: "fieldTypeA",
             },
             {
               name: "B",
               alias: "B",
-              type: "fieldTypeB"
+              type: "fieldTypeB",
             },
             {
               name: "CreateDate",
               alias: "CreateDate",
-              type: "fieldTypeDate"
-            }
+              type: "fieldTypeDate",
+            },
           ],
           sourceFields: [
             {
               name: "A",
               alias: "A",
-              type: "fieldTypeA"
+              type: "fieldTypeA",
             },
             {
               name: "B",
               alias: "B",
-              type: "fieldTypeB"
+              type: "fieldTypeB",
             },
             {
               name: "CreateDate",
               alias: "CreateDate",
-              type: "fieldTypeDate"
-            }
+              type: "fieldTypeDate",
+            },
           ],
           otherProperty: {
-            test: "test"
+            test: "test",
           },
           editFieldsInfo: {
-            createDateField: "CreateDate"
+            createDateField: "CreateDate",
           },
           newEditFieldsInfo: {
-            createDateField: "CreateDate"
+            createDateField: "CreateDate",
           },
-          sourceSchemaChangesAllowed: true
-        }
+          sourceSchemaChangesAllowed: true,
+        },
       };
       fieldInfos["1"] = {
         item: {
@@ -1229,73 +1195,73 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
             {
               name: "C",
               alias: "C",
-              type: "fieldTypeC"
+              type: "fieldTypeC",
             },
             {
               name: "D",
               alias: "D",
-              type: "fieldTypeD"
+              type: "fieldTypeD",
             },
             {
               name: "CreateDate",
               alias: "CreateDate",
-              type: "fieldTypeDate"
-            }
+              type: "fieldTypeDate",
+            },
           ],
           sourceFields: [
             {
               name: "C",
               alias: "C",
-              type: "fieldTypeC"
+              type: "fieldTypeC",
             },
             {
               name: "D",
               alias: "D",
-              type: "fieldTypeD"
+              type: "fieldTypeD",
             },
             {
               name: "CreateDate",
               alias: "CreateDate",
-              type: "fieldTypeDate"
-            }
+              type: "fieldTypeDate",
+            },
           ],
           otherProperty: {
-            test: "test"
+            test: "test",
           },
           editFieldsInfo: {
-            createDateField: "CreateDate"
+            createDateField: "CreateDate",
           },
           newEditFieldsInfo: {
-            createDateField: "CreateDate"
+            createDateField: "CreateDate",
           },
-          sourceSchemaChangesAllowed: true
-        }
+          sourceSchemaChangesAllowed: true,
+        },
       };
 
       const enterpriseIDMapping = {
         "0": "0001",
-        "1": "1000"
+        "1": "1000",
       };
       const expectedSettings: any = {
         layer0: {
           itemId: "33298a2612ba4899adc41180c435425f",
           url: serviceUrl + "/" + "0001",
           layerId: "0001",
-          fields: {}
+          fields: {},
         },
         layer1: {
           itemId: "33298a2612ba4899adc41180c435425f",
           url: serviceUrl + "/" + 1000,
           layerId: "1000",
-          fields: {}
-        }
+          fields: {},
+        },
       };
 
       const settings = getLayerSettings(
         fieldInfos,
         serviceUrl,
         "33298a2612ba4899adc41180c435425f",
-        enterpriseIDMapping
+        enterpriseIDMapping,
       );
       expect(settings).toEqual(expectedSettings);
     });
@@ -1308,126 +1274,126 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
             {
               name: "a0",
               alias: "A_a",
-              type: "fieldTypeA"
+              type: "fieldTypeA",
             },
             {
               name: "b",
               alias: "B",
-              type: "fieldTypeB"
+              type: "fieldTypeB",
             },
             {
               name: "createdate",
               alias: "Create Date",
-              type: "fieldTypeDate"
+              type: "fieldTypeDate",
             },
             {
               name: "create_date",
               alias: "Create Date",
-              type: "fieldTypeDate"
+              type: "fieldTypeDate",
             },
             {
               name: "editdate",
               alias: "EditDate",
-              type: "fieldTypeDate"
-            }
+              type: "fieldTypeDate",
+            },
           ],
           sourceFields: [
             {
               name: "A",
               alias: "A_a",
-              type: "fieldTypeA"
+              type: "fieldTypeA",
             },
             {
               name: "B",
               alias: "B",
-              type: "fieldTypeB"
+              type: "fieldTypeB",
             },
             {
               name: "CreateDate",
               alias: "Create Date",
-              type: "fieldTypeDate"
+              type: "fieldTypeDate",
             },
             {
               name: "EditDate",
               alias: "EditDate",
-              type: "fieldTypeDate"
-            }
+              type: "fieldTypeDate",
+            },
           ],
           otherProperty: {
-            test: "test"
+            test: "test",
           },
           editFieldsInfo: {
             createDateField: "CreateDate",
-            editDateField: "EditDate"
+            editDateField: "EditDate",
           },
           newEditFieldsInfo: {
             createDateField: "create_date",
-            editDateField: "editdate"
+            editDateField: "editdate",
           },
-          sourceSchemaChangesAllowed: true
+          sourceSchemaChangesAllowed: true,
         },
         "1": {
           newFields: [
             {
               name: "c",
               alias: "C",
-              type: "fieldTypeC"
+              type: "fieldTypeC",
             },
             {
               name: "d",
               alias: "D",
-              type: "fieldTypeD"
+              type: "fieldTypeD",
             },
             {
               name: "createdate",
               alias: "Create Date",
-              type: "fieldTypeDate"
+              type: "fieldTypeDate",
             },
             {
               name: "create_date",
               alias: "Create Date",
-              type: "fieldTypeDate"
+              type: "fieldTypeDate",
             },
             {
               name: "editdate",
               alias: "EditDate",
-              type: "fieldTypeDate"
-            }
+              type: "fieldTypeDate",
+            },
           ],
           sourceFields: [
             {
               name: "C",
               alias: "C",
-              type: "fieldTypeC"
+              type: "fieldTypeC",
             },
             {
               name: "D",
               alias: "D",
-              type: "fieldTypeD"
+              type: "fieldTypeD",
             },
             {
               name: "CreateDate",
               alias: "Create Date",
-              type: "fieldTypeDate"
+              type: "fieldTypeDate",
             },
             {
               name: "EditDate",
               alias: "EditDate",
-              type: "fieldTypeDate"
-            }
+              type: "fieldTypeDate",
+            },
           ],
           otherProperty: {
-            test: "test"
+            test: "test",
           },
           editFieldsInfo: {
-            createDateField: "CreateDate"
+            createDateField: "CreateDate",
           },
           newEditFieldsInfo: {
             createDateField: "create_date",
-            editDateField: "editdate"
+            editDateField: "editdate",
           },
-          sourceSchemaChangesAllowed: true
-        }
+          sourceSchemaChangesAllowed: true,
+        },
       };
       const expectedSettings: any = {
         layer0: {
@@ -1438,24 +1404,24 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
             a: {
               name: "a0",
               alias: "A_a",
-              type: "fieldTypeA"
+              type: "fieldTypeA",
             },
             b: {
               name: "b",
               alias: "B",
-              type: "fieldTypeB"
+              type: "fieldTypeB",
             },
             createdate: {
               name: "create_date",
               alias: "Create Date",
-              type: "fieldTypeDate"
+              type: "fieldTypeDate",
             },
             editdate: {
               name: "editdate",
               alias: "EditDate",
-              type: "fieldTypeDate"
-            }
-          }
+              type: "fieldTypeDate",
+            },
+          },
         },
         layer1: {
           itemId: "33298a2612ba4899adc41180c435425f",
@@ -1465,45 +1431,41 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
             c: {
               name: "c",
               alias: "C",
-              type: "fieldTypeC"
+              type: "fieldTypeC",
             },
             d: {
               name: "d",
               alias: "D",
-              type: "fieldTypeD"
+              type: "fieldTypeD",
             },
             createdate: {
               name: "create_date",
               alias: "Create Date",
-              type: "fieldTypeDate"
+              type: "fieldTypeDate",
             },
             editdate: {
               name: "editdate",
               alias: "EditDate",
-              type: "fieldTypeDate"
-            }
-          }
-        }
+              type: "fieldTypeDate",
+            },
+          },
+        },
       };
       const expectedFieldInfos = {
         "0": {
           otherProperty: {
-            test: "test"
+            test: "test",
           },
-          deleteFields: ["createdate"]
+          deleteFields: ["createdate"],
         },
         "1": {
           otherProperty: {
-            test: "test"
+            test: "test",
           },
-          deleteFields: ["createdate"]
-        }
+          deleteFields: ["createdate"],
+        },
       };
-      const settings: any = getLayerSettings(
-        fieldInfos,
-        serviceUrl,
-        "33298a2612ba4899adc41180c435425f"
-      );
+      const settings: any = getLayerSettings(fieldInfos, serviceUrl, "33298a2612ba4899adc41180c435425f");
       expect(fieldInfos).toEqual(expectedFieldInfos);
       expect(settings).toEqual(expectedSettings);
     });
@@ -1516,128 +1478,128 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
             {
               name: "a0",
               alias: "A_a",
-              type: "fieldTypeA"
+              type: "fieldTypeA",
             },
             {
               name: "b",
               alias: "B",
-              type: "fieldTypeB"
+              type: "fieldTypeB",
             },
             {
               name: "createdate",
               alias: "Create Date",
-              type: "fieldTypeDate"
+              type: "fieldTypeDate",
             },
             {
               name: "create_date",
               alias: "Create Date",
-              type: "fieldTypeDate"
+              type: "fieldTypeDate",
             },
             {
               name: "editdate",
               alias: "EditDate",
-              type: "fieldTypeDate"
-            }
+              type: "fieldTypeDate",
+            },
           ],
           sourceFields: [
             {
               name: "A",
               alias: "A_a",
-              type: "fieldTypeA"
+              type: "fieldTypeA",
             },
             {
               name: "B",
               alias: "B",
-              type: "fieldTypeB"
+              type: "fieldTypeB",
             },
             {
               name: "CreateDate",
               alias: "Create Date",
-              type: "fieldTypeDate"
+              type: "fieldTypeDate",
             },
             {
               name: "EditDate",
               alias: "EditDate",
-              type: "fieldTypeDate"
-            }
+              type: "fieldTypeDate",
+            },
           ],
           otherProperty: {
-            test: "test"
+            test: "test",
           },
           editFieldsInfo: {
             createDateField: "CreateDate",
-            editDateField: "EditDate"
+            editDateField: "EditDate",
           },
           newEditFieldsInfo: {
             createDateField: "create_date",
-            editDateField: "editdate"
+            editDateField: "editdate",
           },
           sourceSchemaChangesAllowed: true,
-          isView: true
+          isView: true,
         },
         "1": {
           newFields: [
             {
               name: "c",
               alias: "C",
-              type: "fieldTypeC"
+              type: "fieldTypeC",
             },
             {
               name: "d",
               alias: "D",
-              type: "fieldTypeD"
+              type: "fieldTypeD",
             },
             {
               name: "createdate",
               alias: "Create Date",
-              type: "fieldTypeDate"
+              type: "fieldTypeDate",
             },
             {
               name: "create_date",
               alias: "Create Date",
-              type: "fieldTypeDate"
+              type: "fieldTypeDate",
             },
             {
               name: "editdate",
               alias: "EditDate",
-              type: "fieldTypeDate"
-            }
+              type: "fieldTypeDate",
+            },
           ],
           sourceFields: [
             {
               name: "C",
               alias: "C",
-              type: "fieldTypeC"
+              type: "fieldTypeC",
             },
             {
               name: "D",
               alias: "D",
-              type: "fieldTypeD"
+              type: "fieldTypeD",
             },
             {
               name: "CreateDate",
               alias: "Create Date",
-              type: "fieldTypeDate"
+              type: "fieldTypeDate",
             },
             {
               name: "EditDate",
               alias: "EditDate",
-              type: "fieldTypeDate"
-            }
+              type: "fieldTypeDate",
+            },
           ],
           otherProperty: {
-            test: "test"
+            test: "test",
           },
           editFieldsInfo: {
-            createDateField: "CreateDate"
+            createDateField: "CreateDate",
           },
           newEditFieldsInfo: {
             createDateField: "create_date",
-            editDateField: "editdate"
+            editDateField: "editdate",
           },
           sourceSchemaChangesAllowed: true,
-          isView: true
-        }
+          isView: true,
+        },
       };
       const expectedSettings: any = {
         layer0: {
@@ -1648,24 +1610,24 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
             a: {
               name: "a0",
               alias: "A_a",
-              type: "fieldTypeA"
+              type: "fieldTypeA",
             },
             b: {
               name: "b",
               alias: "B",
-              type: "fieldTypeB"
+              type: "fieldTypeB",
             },
             createdate: {
               name: "create_date",
               alias: "Create Date",
-              type: "fieldTypeDate"
+              type: "fieldTypeDate",
             },
             editdate: {
               name: "editdate",
               alias: "EditDate",
-              type: "fieldTypeDate"
-            }
-          }
+              type: "fieldTypeDate",
+            },
+          },
         },
         layer1: {
           itemId: "33298a2612ba4899adc41180c435425f",
@@ -1675,43 +1637,39 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
             c: {
               name: "c",
               alias: "C",
-              type: "fieldTypeC"
+              type: "fieldTypeC",
             },
             d: {
               name: "d",
               alias: "D",
-              type: "fieldTypeD"
+              type: "fieldTypeD",
             },
             createdate: {
               name: "create_date",
               alias: "Create Date",
-              type: "fieldTypeDate"
+              type: "fieldTypeDate",
             },
             editdate: {
               name: "editdate",
               alias: "EditDate",
-              type: "fieldTypeDate"
-            }
-          }
-        }
+              type: "fieldTypeDate",
+            },
+          },
+        },
       };
       const expectedFieldInfos = {
         "0": {
           otherProperty: {
-            test: "test"
-          }
+            test: "test",
+          },
         },
         "1": {
           otherProperty: {
-            test: "test"
-          }
-        }
+            test: "test",
+          },
+        },
       };
-      const settings: any = getLayerSettings(
-        fieldInfos,
-        serviceUrl,
-        "33298a2612ba4899adc41180c435425f"
-      );
+      const settings: any = getLayerSettings(fieldInfos, serviceUrl, "33298a2612ba4899adc41180c435425f");
       expect(fieldInfos).toEqual(expectedFieldInfos);
       expect(settings).toEqual(expectedSettings);
     });
@@ -1731,10 +1689,7 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
       expectedTemplate.item.title = "TheName";
       const expected: interfaces.IItemTemplate[] = [expectedTemplate];
 
-      const actual: interfaces.IItemTemplate[] = setNamesAndTitles(
-        _templates,
-        itemId
-      );
+      const actual: interfaces.IItemTemplate[] = setNamesAndTitles(_templates, itemId);
       expect(actual).toEqual(expected);
     });
 
@@ -1757,15 +1712,9 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
       expectedTemplate2.item.type = "Feature Service";
       expectedTemplate2.item.name = `TheName_${itemId}_1`;
       expectedTemplate2.item.title = "TheName_88ac87b220fd45038fc92ba10843886d";
-      const expected: interfaces.IItemTemplate[] = [
-        expectedTemplate,
-        expectedTemplate2
-      ];
+      const expected: interfaces.IItemTemplate[] = [expectedTemplate, expectedTemplate2];
 
-      const actual: interfaces.IItemTemplate[] = setNamesAndTitles(
-        _templates,
-        itemId
-      );
+      const actual: interfaces.IItemTemplate[] = setNamesAndTitles(_templates, itemId);
       expect(actual).toEqual(expected);
     });
 
@@ -1782,18 +1731,14 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
       expectedTemplate.item.title = "TheName";
       const expected: interfaces.IItemTemplate[] = [expectedTemplate];
 
-      const actual: interfaces.IItemTemplate[] = setNamesAndTitles(
-        _templates,
-        itemId
-      );
+      const actual: interfaces.IItemTemplate[] = setNamesAndTitles(_templates, itemId);
       expect(actual).toEqual(expected);
     });
 
     it("should limit the base name to 50 chars and handle existing guid in the name", () => {
       const t: interfaces.IItemTemplate = templates.getItemTemplateSkeleton();
       t.item.type = "Feature Service";
-      t.item.name =
-        "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaab_aa766cba0dd44ec080420acc10990282";
+      t.item.name = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaab_aa766cba0dd44ec080420acc10990282";
       t.item.title = "TheName";
       const _templates: interfaces.IItemTemplate[] = [t];
 
@@ -1803,10 +1748,7 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
       expectedTemplate.item.title = "TheName";
       const expected: interfaces.IItemTemplate[] = [expectedTemplate];
 
-      const actual: interfaces.IItemTemplate[] = setNamesAndTitles(
-        _templates,
-        itemId
-      );
+      const actual: interfaces.IItemTemplate[] = setNamesAndTitles(_templates, itemId);
       expect(actual).toEqual(expected);
     });
   });
@@ -1816,88 +1758,88 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
       const layer0 = {
         fields: {
           objectid: {
-            name: "OBJECTID"
+            name: "OBJECTID",
           },
           jurisdictionname: {
-            name: "jurisdictionname"
+            name: "jurisdictionname",
           },
           jurisdictiontype: {
-            name: "jurisdictiontype"
+            name: "jurisdictiontype",
           },
           regvoters: {
-            name: "regvoters"
+            name: "regvoters",
           },
           ballotscast: {
-            name: "ballotscast"
+            name: "ballotscast",
           },
           ballotsnotcast: {
-            name: "ballotsnotcast"
+            name: "ballotsnotcast",
           },
           globalid: {
-            name: "GlobalID"
+            name: "GlobalID",
           },
           creationdate: {
-            name: "CreationDate"
+            name: "CreationDate",
           },
           creator: {
-            name: "Creator"
+            name: "Creator",
           },
           editdate: {
-            name: "EditDate"
+            name: "EditDate",
           },
           editor: {
-            name: "Editor"
-          }
-        }
+            name: "Editor",
+          },
+        },
       };
       const layer1 = {
         fields: {
           objectid: {
-            name: "OBJECTID"
+            name: "OBJECTID",
           },
           contest: {
-            name: "contest"
+            name: "contest",
           },
           category: {
-            name: "category"
+            name: "category",
           },
           jurisdictionname: {
-            name: "jurisdictionname"
+            name: "jurisdictionname",
           },
           candidate: {
-            name: "candidate"
+            name: "candidate",
           },
           party: {
-            name: "party"
+            name: "party",
           },
           numvotes: {
-            name: "numvotes"
+            name: "numvotes",
           },
           percvote: {
-            name: "percvote"
+            name: "percvote",
           },
           globalid: {
-            name: "GlobalID"
+            name: "GlobalID",
           },
           creationdate: {
-            name: "CreationDate"
+            name: "CreationDate",
           },
           creator: {
-            name: "Creator"
+            name: "Creator",
           },
           editdate: {
-            name: "EditDate"
+            name: "EditDate",
           },
           editor: {
-            name: "Editor"
-          }
-        }
+            name: "Editor",
+          },
+        },
       };
 
       const item0 = {
         itemId: "svc0123456789",
         url: "",
-        name: "ElectionResults_20190425_2018_51947"
+        name: "ElectionResults_20190425_2018_51947",
       };
 
       const item1 = {
@@ -1908,8 +1850,8 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
         layer1: layer1,
         fieldInfos: {
           "0": layer0.fields,
-          "1": layer1.fields
-        }
+          "1": layer1.fields,
+        },
       };
 
       const expectedItem0 = {
@@ -1919,8 +1861,8 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
         layer0: layer0,
         layer1: layer1,
         sourceServiceFields: {
-          svc9876543210_org: item1.fieldInfos
-        }
+          svc9876543210_org: item1.fieldInfos,
+        },
       };
 
       const settings: any = {
@@ -1929,7 +1871,7 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
         organization: {},
         isPortal: false,
         svc0123456789_org: item0,
-        svc9876543210_org: item1
+        svc9876543210_org: item1,
       };
 
       itemTemplate = {
@@ -1938,14 +1880,14 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
         key: "ixxi7v97b",
         item: {
           id: "svc0123456789",
-          type: "Feature Service"
+          type: "Feature Service",
         },
         dependencies: ["svc9876543210_org"],
         groups: [],
         estimatedDeploymentCostFactor: 5,
         data: {},
         resources: [],
-        properties: {}
+        properties: {},
       };
 
       const expectedSettings: any = {
@@ -1954,7 +1896,7 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
         organization: {},
         isPortal: false,
         svc0123456789_org: expectedItem0,
-        svc9876543210_org: item1
+        svc9876543210_org: item1,
       };
 
       // test that the settings transfer
@@ -1966,101 +1908,101 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
       const layer0 = {
         fields: {
           objectid: {
-            name: "OBJECTID"
+            name: "OBJECTID",
           },
           jurisdictionname: {
-            name: "jurisdictionname"
+            name: "jurisdictionname",
           },
           jurisdictiontype: {
-            name: "jurisdictiontype"
+            name: "jurisdictiontype",
           },
           regvoters: {
-            name: "regvoters"
+            name: "regvoters",
           },
           ballotscast: {
-            name: "ballotscast"
+            name: "ballotscast",
           },
           ballotsnotcast: {
-            name: "ballotsnotcast"
+            name: "ballotsnotcast",
           },
           globalid: {
-            name: "GlobalID"
+            name: "GlobalID",
           },
           creationdate: {
-            name: "CreationDate"
+            name: "CreationDate",
           },
           creator: {
-            name: "Creator"
+            name: "Creator",
           },
           editdate: {
-            name: "EditDate"
+            name: "EditDate",
           },
           editor: {
-            name: "Editor"
-          }
-        }
+            name: "Editor",
+          },
+        },
       };
       const layer1 = {
         fields: {
           objectid: {
-            name: "OBJECTID"
+            name: "OBJECTID",
           },
           contest: {
-            name: "contest"
+            name: "contest",
           },
           category: {
-            name: "category"
+            name: "category",
           },
           jurisdictionname: {
-            name: "jurisdictionname"
+            name: "jurisdictionname",
           },
           candidate: {
-            name: "candidate"
+            name: "candidate",
           },
           party: {
-            name: "party"
+            name: "party",
           },
           numvotes: {
-            name: "numvotes"
+            name: "numvotes",
           },
           percvote: {
-            name: "percvote"
+            name: "percvote",
           },
           globalid: {
-            name: "GlobalID"
+            name: "GlobalID",
           },
           creationdate: {
-            name: "CreationDate"
+            name: "CreationDate",
           },
           creator: {
-            name: "Creator"
+            name: "Creator",
           },
           editdate: {
-            name: "EditDate"
+            name: "EditDate",
           },
           editor: {
-            name: "Editor"
-          }
-        }
+            name: "Editor",
+          },
+        },
       };
 
       const settings: any = {
-        solutionName: "test",
-        folderId: "4437cab3aa154f5f85fa35dca36ddccb",
-        organization: {},
-        isPortal: false,
+        "solutionName": "test",
+        "folderId": "4437cab3aa154f5f85fa35dca36ddccb",
+        "organization": {},
+        "isPortal": false,
         "0998341a7a2a4e9c86c553287a1f3e94": {
           id: "166657ce19f34c32846cd12022e2c33a",
           url: "",
           name: "ElectionResults_20190425_2018_51947",
           layer0: layer0,
-          layer1: layer1
+          layer1: layer1,
         },
-        ab766cba0dd44ec080420acc10990282: {
+        "ab766cba0dd44ec080420acc10990282": {
           id: "ebe7e53cc218423c9225ceb783d412b5",
           url: "",
-          name: "ElectionResults_join_20190425_2019_12456"
-        }
+          name: "ElectionResults_join_20190425_2019_12456",
+        },
       };
 
       itemTemplate = {
@@ -2069,33 +2011,33 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
         key: "ixxi7v97b",
         item: {
           id: "ebe7e53cc218423c9225ceb783d412b5",
-          type: "Feature Service"
+          type: "Feature Service",
         },
         dependencies: [],
         groups: [],
         estimatedDeploymentCostFactor: 5,
         data: {},
         resources: [],
-        properties: {}
+        properties: {},
       };
 
       const expectedSettings: any = {
-        solutionName: "test",
-        folderId: "4437cab3aa154f5f85fa35dca36ddccb",
-        organization: {},
-        isPortal: false,
+        "solutionName": "test",
+        "folderId": "4437cab3aa154f5f85fa35dca36ddccb",
+        "organization": {},
+        "isPortal": false,
         "0998341a7a2a4e9c86c553287a1f3e94": {
           id: "166657ce19f34c32846cd12022e2c33a",
           url: "",
           name: "ElectionResults_20190425_2018_51947",
           layer0: layer0,
-          layer1: layer1
+          layer1: layer1,
         },
-        ab766cba0dd44ec080420acc10990282: {
+        "ab766cba0dd44ec080420acc10990282": {
           id: "ebe7e53cc218423c9225ceb783d412b5",
           url: "",
-          name: "ElectionResults_join_20190425_2019_12456"
-        }
+          name: "ElectionResults_join_20190425_2019_12456",
+        },
       };
 
       updateSettingsFieldInfos(itemTemplate, settings);
@@ -2106,82 +2048,82 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
       const layer0 = {
         fields: {
           objectid: {
-            name: "OBJECTID"
+            name: "OBJECTID",
           },
           jurisdictionname: {
-            name: "jurisdictionname"
+            name: "jurisdictionname",
           },
           jurisdictiontype: {
-            name: "jurisdictiontype"
+            name: "jurisdictiontype",
           },
           regvoters: {
-            name: "regvoters"
+            name: "regvoters",
           },
           ballotscast: {
-            name: "ballotscast"
+            name: "ballotscast",
           },
           ballotsnotcast: {
-            name: "ballotsnotcast"
+            name: "ballotsnotcast",
           },
           globalid: {
-            name: "GlobalID"
+            name: "GlobalID",
           },
           creationdate: {
-            name: "CreationDate"
+            name: "CreationDate",
           },
           creator: {
-            name: "Creator"
+            name: "Creator",
           },
           editdate: {
-            name: "EditDate"
+            name: "EditDate",
           },
           editor: {
-            name: "Editor"
-          }
-        }
+            name: "Editor",
+          },
+        },
       };
       const layer1 = {
         fields: {
           objectid: {
-            name: "OBJECTID"
+            name: "OBJECTID",
           },
           contest: {
-            name: "contest"
+            name: "contest",
           },
           category: {
-            name: "category"
+            name: "category",
           },
           jurisdictionname: {
-            name: "jurisdictionname"
+            name: "jurisdictionname",
           },
           candidate: {
-            name: "candidate"
+            name: "candidate",
           },
           party: {
-            name: "party"
+            name: "party",
           },
           numvotes: {
-            name: "numvotes"
+            name: "numvotes",
           },
           percvote: {
-            name: "percvote"
+            name: "percvote",
           },
           globalid: {
-            name: "GlobalID"
+            name: "GlobalID",
           },
           creationdate: {
-            name: "CreationDate"
+            name: "CreationDate",
           },
           creator: {
-            name: "Creator"
+            name: "Creator",
           },
           editdate: {
-            name: "EditDate"
+            name: "EditDate",
           },
           editor: {
-            name: "Editor"
-          }
-        }
+            name: "Editor",
+          },
+        },
       };
 
       const item0 = {
@@ -2190,9 +2132,9 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
         name: "ElectionResults_20190425_2018_51947",
         sourceServiceFields: {
           svc9876543210_org1: {
-            "2": [{ name: "A" }]
-          }
-        }
+            "2": [{ name: "A" }],
+          },
+        },
       };
 
       const item1 = {
@@ -2203,8 +2145,8 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
         layer1: layer1,
         fieldInfos: {
           "0": layer0.fields,
-          "1": layer1.fields
-        }
+          "1": layer1.fields,
+        },
       };
 
       const expectedItem0 = {
@@ -2216,9 +2158,9 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
         sourceServiceFields: {
           svc9876543210_org: item1.fieldInfos,
           svc9876543210_org1: {
-            "2": [{ name: "A" }]
-          }
-        }
+            "2": [{ name: "A" }],
+          },
+        },
       };
 
       const settings: any = {
@@ -2227,7 +2169,7 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
         organization: {},
         isPortal: false,
         svc0123456789_org: item0,
-        svc9876543210_org: item1
+        svc9876543210_org: item1,
       };
 
       itemTemplate = {
@@ -2236,14 +2178,14 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
         key: "ixxi7v97b",
         item: {
           id: "svc0123456789",
-          type: "Feature Service"
+          type: "Feature Service",
         },
         dependencies: ["svc9876543210_org"],
         groups: [],
         estimatedDeploymentCostFactor: 5,
         data: {},
         resources: [],
-        properties: {}
+        properties: {},
       };
 
       const expectedSettings: any = {
@@ -2252,7 +2194,7 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
         organization: {},
         isPortal: false,
         svc0123456789_org: expectedItem0,
-        svc9876543210_org: item1
+        svc9876543210_org: item1,
       };
 
       // test that the settings transfer
@@ -2265,8 +2207,7 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
     it("should detemplatize field references", () => {
       const fieldInfos: any = {
         "0": {
-          displayField:
-            "{{ab766cba0dd44ec080420acc10990282.layer0.fields.jurisdictionname.name}}",
+          displayField: "{{ab766cba0dd44ec080420acc10990282.layer0.fields.jurisdictionname.name}}",
           templates: [
             {
               prototype: {
@@ -2275,27 +2216,25 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
                   "{{ab766cba0dd44ec080420acc10990282.layer0.fields.jurisdictiontype.name}}": null,
                   "{{ab766cba0dd44ec080420acc10990282.layer0.fields.regvoters.name}}": null,
                   "{{ab766cba0dd44ec080420acc10990282.layer0.fields.ballotscast.name}}": null,
-                  "{{ab766cba0dd44ec080420acc10990282.layer0.fields.ballotsnotcast.name}}": null
-                }
-              }
-            }
+                  "{{ab766cba0dd44ec080420acc10990282.layer0.fields.ballotsnotcast.name}}": null,
+                },
+              },
+            },
           ],
           relationships: [],
           drawingInfo: {
             renderer: {
               visualVariables: [
                 {
-                  field:
-                    "{{ab766cba0dd44ec080420acc10990282.layer0.fields.percvote.name}}"
-                }
+                  field: "{{ab766cba0dd44ec080420acc10990282.layer0.fields.percvote.name}}",
+                },
               ],
               authoringInfo: {},
               type: "uniqueValue",
-              field1:
-                "{{ab766cba0dd44ec080420acc10990282.layer0.fields.party.name}}",
+              field1: "{{ab766cba0dd44ec080420acc10990282.layer0.fields.party.name}}",
               defaultSymbol: {},
-              uniqueValueInfos: []
-            }
+              uniqueValueInfos: [],
+            },
           },
           types: [
             {
@@ -2303,11 +2242,11 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
               name: "-",
               domains: {
                 "{{ab766cba0dd44ec080420acc10990282.layer0.fields.jurisdictionname.name}}": {
-                  type: "inherited"
+                  type: "inherited",
                 },
                 "{{ab766cba0dd44ec080420acc10990282.layer0.fields.jurisdictiontype.name}}": {
-                  type: "inherited"
-                }
+                  type: "inherited",
+                },
               },
               templates: [
                 {
@@ -2317,12 +2256,12 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
                   prototype: {
                     attributes: {
                       "{{ab766cba0dd44ec080420acc10990282.layer0.fields.jurisdictionname.name}}": null,
-                      "{{ab766cba0dd44ec080420acc10990282.layer0.fields.jurisdictiontype.name}}": null
-                    }
-                  }
-                }
-              ]
-            }
+                      "{{ab766cba0dd44ec080420acc10990282.layer0.fields.jurisdictiontype.name}}": null,
+                    },
+                  },
+                },
+              ],
+            },
           ],
           adminLayerInfo: [
             {
@@ -2330,76 +2269,58 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
               sourceServiceName: "ElectionResults_20190425_2115_55512",
               sourceLayerId: 1,
               topFilter: {
-                orderByFields:
-                  "{{ab766cba0dd44ec080420acc10990282.layer1.fields.numvotes.name}} DESC",
+                orderByFields: "{{ab766cba0dd44ec080420acc10990282.layer1.fields.numvotes.name}} DESC",
                 groupByFields:
-                  "{{ab766cba0dd44ec080420acc10990282.layer1.fields.jurisdictionname.name}},{{ab766cba0dd44ec080420acc10990282.layer1.fields.contest.name}}"
+                  "{{ab766cba0dd44ec080420acc10990282.layer1.fields.jurisdictionname.name}},{{ab766cba0dd44ec080420acc10990282.layer1.fields.contest.name}}",
               },
               sourceLayerFields: [
                 {
-                  source:
-                    "{{ab766cba0dd44ec080420acc10990282.layer1.fields.contest.name}}"
+                  source: "{{ab766cba0dd44ec080420acc10990282.layer1.fields.contest.name}}",
                 },
                 {
-                  source:
-                    "{{ab766cba0dd44ec080420acc10990282.layer1.fields.category.name}}"
+                  source: "{{ab766cba0dd44ec080420acc10990282.layer1.fields.category.name}}",
                 },
                 {
-                  source:
-                    "{{ab766cba0dd44ec080420acc10990282.layer1.fields.jurisdictionname.name}}"
+                  source: "{{ab766cba0dd44ec080420acc10990282.layer1.fields.jurisdictionname.name}}",
                 },
                 {
-                  source:
-                    "{{ab766cba0dd44ec080420acc10990282.layer1.fields.candidate.name}}"
+                  source: "{{ab766cba0dd44ec080420acc10990282.layer1.fields.candidate.name}}",
                 },
                 {
-                  source:
-                    "{{ab766cba0dd44ec080420acc10990282.layer1.fields.party.name}}"
+                  source: "{{ab766cba0dd44ec080420acc10990282.layer1.fields.party.name}}",
                 },
                 {
-                  source:
-                    "{{ab766cba0dd44ec080420acc10990282.layer1.fields.numvotes.name}}"
+                  source: "{{ab766cba0dd44ec080420acc10990282.layer1.fields.numvotes.name}}",
                 },
                 {
-                  source:
-                    "{{ab766cba0dd44ec080420acc10990282.layer1.fields.percvote.name}}"
+                  source: "{{ab766cba0dd44ec080420acc10990282.layer1.fields.percvote.name}}",
                 },
                 {
-                  source:
-                    "{{ab766cba0dd44ec080420acc10990282.layer1.fields.globalid.name}}"
+                  source: "{{ab766cba0dd44ec080420acc10990282.layer1.fields.globalid.name}}",
                 },
                 {
-                  source:
-                    "{{ab766cba0dd44ec080420acc10990282.layer1.fields.creationdate.name}}"
+                  source: "{{ab766cba0dd44ec080420acc10990282.layer1.fields.creationdate.name}}",
                 },
                 {
-                  source:
-                    "{{ab766cba0dd44ec080420acc10990282.layer1.fields.creator.name}}"
+                  source: "{{ab766cba0dd44ec080420acc10990282.layer1.fields.creator.name}}",
                 },
                 {
-                  source:
-                    "{{ab766cba0dd44ec080420acc10990282.layer1.fields.editdate.name}}"
+                  source: "{{ab766cba0dd44ec080420acc10990282.layer1.fields.editdate.name}}",
                 },
                 {
-                  source:
-                    "{{ab766cba0dd44ec080420acc10990282.layer1.fields.editor.name}}"
-                }
+                  source: "{{ab766cba0dd44ec080420acc10990282.layer1.fields.editor.name}}",
+                },
               ],
-              parentKeyFields: [
-                "{{ab766cba0dd44ec080420acc10990282.layer0.fields.jurisdictionname.name}}"
-              ],
-              keyFields: [
-                "{{ab766cba0dd44ec080420acc10990282.layer1.fields.jurisdictionname.name}}"
-              ]
-            }
-          ]
+              parentKeyFields: ["{{ab766cba0dd44ec080420acc10990282.layer0.fields.jurisdictionname.name}}"],
+              keyFields: ["{{ab766cba0dd44ec080420acc10990282.layer1.fields.jurisdictionname.name}}"],
+            },
+          ],
         },
         "1": {
-          displayField:
-            "{{ab766cba0dd44ec080420acc10990282.layer1.fields.jurisdictionname.name}}",
+          displayField: "{{ab766cba0dd44ec080420acc10990282.layer1.fields.jurisdictionname.name}}",
           templates: [],
-          relationships: []
-        }
+          relationships: [],
+        },
       };
 
       const popupInfos: any = {
@@ -2408,100 +2329,77 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
             title: "",
             fieldInfos: [
               {
-                fieldName:
-                  "{{ab766cba0dd44ec080420acc10990282.layer0.fields.objectid.name}}"
+                fieldName: "{{ab766cba0dd44ec080420acc10990282.layer0.fields.objectid.name}}",
               },
               {
-                fieldName:
-                  "{{ab766cba0dd44ec080420acc10990282.layer0.fields.contest.name}}"
+                fieldName: "{{ab766cba0dd44ec080420acc10990282.layer0.fields.contest.name}}",
               },
               {
-                fieldName:
-                  "{{ab766cba0dd44ec080420acc10990282.layer0.fields.category.name}}"
+                fieldName: "{{ab766cba0dd44ec080420acc10990282.layer0.fields.category.name}}",
               },
               {
-                fieldName:
-                  "{{ab766cba0dd44ec080420acc10990282.layer0.fields.jurisdictionname.name}}"
+                fieldName: "{{ab766cba0dd44ec080420acc10990282.layer0.fields.jurisdictionname.name}}",
               },
               {
-                fieldName:
-                  "{{ab766cba0dd44ec080420acc10990282.layer0.fields.jurisdictiontype.name}}"
+                fieldName: "{{ab766cba0dd44ec080420acc10990282.layer0.fields.jurisdictiontype.name}}",
               },
               {
-                fieldName:
-                  "{{ab766cba0dd44ec080420acc10990282.layer0.fields.candidate.name}}"
+                fieldName: "{{ab766cba0dd44ec080420acc10990282.layer0.fields.candidate.name}}",
               },
               {
-                fieldName:
-                  "{{ab766cba0dd44ec080420acc10990282.layer0.fields.party.name}}"
+                fieldName: "{{ab766cba0dd44ec080420acc10990282.layer0.fields.party.name}}",
               },
               {
-                fieldName:
-                  "{{ab766cba0dd44ec080420acc10990282.layer0.fields.numvotes.name}}"
+                fieldName: "{{ab766cba0dd44ec080420acc10990282.layer0.fields.numvotes.name}}",
               },
               {
-                fieldName:
-                  "{{ab766cba0dd44ec080420acc10990282.layer0.fields.percvote.name}}"
+                fieldName: "{{ab766cba0dd44ec080420acc10990282.layer0.fields.percvote.name}}",
               },
               {
-                fieldName:
-                  "{{ab766cba0dd44ec080420acc10990282.layer0.fields.regvoters.name}}"
+                fieldName: "{{ab766cba0dd44ec080420acc10990282.layer0.fields.regvoters.name}}",
               },
               {
-                fieldName:
-                  "{{ab766cba0dd44ec080420acc10990282.layer0.fields.ballotscast.name}}"
+                fieldName: "{{ab766cba0dd44ec080420acc10990282.layer0.fields.ballotscast.name}}",
               },
               {
-                fieldName:
-                  "{{ab766cba0dd44ec080420acc10990282.layer0.fields.ballotsnotcast.name}}"
+                fieldName: "{{ab766cba0dd44ec080420acc10990282.layer0.fields.ballotsnotcast.name}}",
               },
               {
-                fieldName: "expression/expr0"
+                fieldName: "expression/expr0",
               },
               {
-                fieldName:
-                  "{{ab766cba0dd44ec080420acc10990282.layer0.fields.globalid.name}}"
+                fieldName: "{{ab766cba0dd44ec080420acc10990282.layer0.fields.globalid.name}}",
               },
               {
-                fieldName:
-                  "{{ab766cba0dd44ec080420acc10990282.layer0.fields.creationdate.name}}"
+                fieldName: "{{ab766cba0dd44ec080420acc10990282.layer0.fields.creationdate.name}}",
               },
               {
-                fieldName:
-                  "{{ab766cba0dd44ec080420acc10990282.layer0.fields.creator.name}}"
+                fieldName: "{{ab766cba0dd44ec080420acc10990282.layer0.fields.creator.name}}",
               },
               {
-                fieldName:
-                  "{{ab766cba0dd44ec080420acc10990282.layer0.fields.editdate.name}}"
+                fieldName: "{{ab766cba0dd44ec080420acc10990282.layer0.fields.editdate.name}}",
               },
               {
-                fieldName:
-                  "{{ab766cba0dd44ec080420acc10990282.layer0.fields.editor.name}}"
+                fieldName: "{{ab766cba0dd44ec080420acc10990282.layer0.fields.editor.name}}",
               },
               {
-                fieldName:
-                  "{{ab766cba0dd44ec080420acc10990282.layer0.fields.jurisdictionname_1552494094382.name}}"
+                fieldName: "{{ab766cba0dd44ec080420acc10990282.layer0.fields.jurisdictionname_1552494094382.name}}",
               },
               {
-                fieldName:
-                  "{{ab766cba0dd44ec080420acc10990282.layer0.fields.globalid_1552494094382.name}}"
+                fieldName: "{{ab766cba0dd44ec080420acc10990282.layer0.fields.globalid_1552494094382.name}}",
               },
               {
-                fieldName:
-                  "{{ab766cba0dd44ec080420acc10990282.layer0.fields.creationdate_1552494094382.name}}"
+                fieldName: "{{ab766cba0dd44ec080420acc10990282.layer0.fields.creationdate_1552494094382.name}}",
               },
               {
-                fieldName:
-                  "{{ab766cba0dd44ec080420acc10990282.layer0.fields.creator_1552494094382.name}}"
+                fieldName: "{{ab766cba0dd44ec080420acc10990282.layer0.fields.creator_1552494094382.name}}",
               },
               {
-                fieldName:
-                  "{{ab766cba0dd44ec080420acc10990282.layer0.fields.editdate_1552494094382.name}}"
+                fieldName: "{{ab766cba0dd44ec080420acc10990282.layer0.fields.editdate_1552494094382.name}}",
               },
               {
-                fieldName:
-                  "{{ab766cba0dd44ec080420acc10990282.layer0.fields.editor_1552494094382.name}}"
-              }
+                fieldName: "{{ab766cba0dd44ec080420acc10990282.layer0.fields.editor_1552494094382.name}}",
+              },
             ],
             description:
               "<table cellpadding='0' style='text-align: center; border-collapse: collapse; border-spacing: 0px; width: 100%; table-layout: fixed; margin: 0px -1px'>\n\t<tbody>\n\t\t<tr>\n\t\t\t<td style='background-color: {expression/expr0}; color: #FFFFFF; min-width:0%; max-width:100%; width:initial; text-align:center; vertical-align: middle; font-weight: normal; padding: 5px 0px; font-size:14px'>{{ab766cba0dd44ec080420acc10990282.layer0.fields.contest.name}}\n\t\t\t</td>\n\t\t</tr>\n\t\t<tr>\n\t\t\t<td style='text-align: center; width: 50%; max-width: 100%; padding-left: 0px;'>\n\t\t\t<br /><b>{{ab766cba0dd44ec080420acc10990282.layer0.fields.candidate.name}}</b> received the most votes in {{ab766cba0dd44ec080420acc10990282.layer0.fields.jurisdictionname.name}}.<br />\n\t\t\t</td>\n\t\t</tr>\n\t</tbody>\n\t</table>\n\t\n\t<table style='font-weight: normal; width: 100%; margin: 8px 0px; border-collapse: separate; border-spacing: 0px 8px; table-layout: fixed;'>\n\t<tbody>\n\t\t<tr>\n\t\t\t<td style='text-align: center; width: 100%; max-width: 100%; padding-left: 0px; padding-bottom: 10px'><b>Votes:</b><br /><font>{{ab766cba0dd44ec080420acc10990282.layer0.fields.numvotes.name}}<br /></font></td>\n\t\t\t\n\t\t\t<td style='text-align: center; width: 100%; max-width: 100%; padding-left: 0px; padding-bottom: 10px'><font><b>Percent:</b><br />{{ab766cba0dd44ec080420acc10990282.layer0.fields.percvote.name}}%\n\t\t\t</font></td>\n\t\t</tr>\n\t</tbody>\n</table>",
@@ -2511,67 +2409,57 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
                 title: "Banner Color",
                 expression:
                   "if ($feature.{{ab766cba0dd44ec080420acc10990282.layer0.fields.party.name}} == 'Constitution'){\n    return '#A900E6';\n}\nelse if ($feature.{{ab766cba0dd44ec080420acc10990282.layer0.fields.party.name}} == 'Democratic'){\n    return '#244078';\n}\n    \nelse if ($feature.{{ab766cba0dd44ec080420acc10990282.layer0.fields.party.name}} == 'Green'){\n    return '#17AA5C';\n}\n\nelse if ($feature.{{ab766cba0dd44ec080420acc10990282.layer0.fields.party.name}} == 'Libertarian'){\n    return '#F9D334';\n}\n\nelse if ($feature.{{ab766cba0dd44ec080420acc10990282.layer0.fields.party.name}} == 'Republican'){\n    return '#B0301C';\n}\n \nelse if ($feature.{{ab766cba0dd44ec080420acc10990282.layer0.fields.party.name}} == 'Write In'){\n    return '#FFAA00';\n}\n    \nreturn '#D6D6D6';\n",
-                returnType: "string"
-              }
-            ]
-          }
+                returnType: "string",
+              },
+            ],
+          },
         },
-        tables: {}
+        tables: {},
       };
 
       const adminLayerInfos: any = {
         "0": {
           geometryField: {
-            name: "ElectionResults_20190425_2115_55512.Shape"
+            name: "ElectionResults_20190425_2115_55512.Shape",
           },
           viewLayerDefinition: {
             table: {
               sourceLayerId: 0,
               sourceLayerFields: [
                 {
-                  source:
-                    "{{ab766cba0dd44ec080420acc10990282.layer0.fields.jurisdictionname.name}}"
+                  source: "{{ab766cba0dd44ec080420acc10990282.layer0.fields.jurisdictionname.name}}",
                 },
                 {
-                  source:
-                    "{{ab766cba0dd44ec080420acc10990282.layer0.fields.jurisdictiontype.name}}"
+                  source: "{{ab766cba0dd44ec080420acc10990282.layer0.fields.jurisdictiontype.name}}",
                 },
                 {
-                  source:
-                    "{{ab766cba0dd44ec080420acc10990282.layer0.fields.regvoters.name}}"
+                  source: "{{ab766cba0dd44ec080420acc10990282.layer0.fields.regvoters.name}}",
                 },
                 {
-                  source:
-                    "{{ab766cba0dd44ec080420acc10990282.layer0.fields.ballotscast.name}}"
+                  source: "{{ab766cba0dd44ec080420acc10990282.layer0.fields.ballotscast.name}}",
                 },
                 {
-                  source:
-                    "{{ab766cba0dd44ec080420acc10990282.layer0.fields.ballotsnotcast.name}}"
+                  source: "{{ab766cba0dd44ec080420acc10990282.layer0.fields.ballotsnotcast.name}}",
                 },
                 {
-                  source:
-                    "{{ab766cba0dd44ec080420acc10990282.layer0.fields.globalid.name}}"
+                  source: "{{ab766cba0dd44ec080420acc10990282.layer0.fields.globalid.name}}",
                 },
                 {
-                  source:
-                    "{{ab766cba0dd44ec080420acc10990282.layer0.fields.creationdate.name}}"
+                  source: "{{ab766cba0dd44ec080420acc10990282.layer0.fields.creationdate.name}}",
                 },
                 {
-                  source:
-                    "{{ab766cba0dd44ec080420acc10990282.layer0.fields.creator.name}}"
+                  source: "{{ab766cba0dd44ec080420acc10990282.layer0.fields.creator.name}}",
                 },
                 {
-                  source:
-                    "{{ab766cba0dd44ec080420acc10990282.layer0.fields.editdate.name}}"
+                  source: "{{ab766cba0dd44ec080420acc10990282.layer0.fields.editdate.name}}",
                 },
                 {
-                  source:
-                    "{{ab766cba0dd44ec080420acc10990282.layer0.fields.editor.name}}"
-                }
+                  source: "{{ab766cba0dd44ec080420acc10990282.layer0.fields.editor.name}}",
+                },
               ],
-              relatedTables: []
-            }
-          }
+              relatedTables: [],
+            },
+          },
         },
         "1": {
           geometryField: null,
@@ -2582,53 +2470,41 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
               sourceLayerId: 1,
               sourceLayerFields: [
                 {
-                  source:
-                    "{{ab766cba0dd44ec080420acc10990282.layer1.fields.contest.name}}"
+                  source: "{{ab766cba0dd44ec080420acc10990282.layer1.fields.contest.name}}",
                 },
                 {
-                  source:
-                    "{{ab766cba0dd44ec080420acc10990282.layer1.fields.category.name}}"
+                  source: "{{ab766cba0dd44ec080420acc10990282.layer1.fields.category.name}}",
                 },
                 {
-                  source:
-                    "{{ab766cba0dd44ec080420acc10990282.layer1.fields.jurisdictionname.name}}"
+                  source: "{{ab766cba0dd44ec080420acc10990282.layer1.fields.jurisdictionname.name}}",
                 },
                 {
-                  source:
-                    "{{ab766cba0dd44ec080420acc10990282.layer1.fields.candidate.name}}"
+                  source: "{{ab766cba0dd44ec080420acc10990282.layer1.fields.candidate.name}}",
                 },
                 {
-                  source:
-                    "{{ab766cba0dd44ec080420acc10990282.layer1.fields.party.name}}"
+                  source: "{{ab766cba0dd44ec080420acc10990282.layer1.fields.party.name}}",
                 },
                 {
-                  source:
-                    "{{ab766cba0dd44ec080420acc10990282.layer1.fields.numvotes.name}}"
+                  source: "{{ab766cba0dd44ec080420acc10990282.layer1.fields.numvotes.name}}",
                 },
                 {
-                  source:
-                    "{{ab766cba0dd44ec080420acc10990282.layer1.fields.percvote.name}}"
+                  source: "{{ab766cba0dd44ec080420acc10990282.layer1.fields.percvote.name}}",
                 },
                 {
-                  source:
-                    "{{ab766cba0dd44ec080420acc10990282.layer1.fields.globalid.name}}"
+                  source: "{{ab766cba0dd44ec080420acc10990282.layer1.fields.globalid.name}}",
                 },
                 {
-                  source:
-                    "{{ab766cba0dd44ec080420acc10990282.layer1.fields.creationdate.name}}"
+                  source: "{{ab766cba0dd44ec080420acc10990282.layer1.fields.creationdate.name}}",
                 },
                 {
-                  source:
-                    "{{ab766cba0dd44ec080420acc10990282.layer1.fields.creator.name}}"
+                  source: "{{ab766cba0dd44ec080420acc10990282.layer1.fields.creator.name}}",
                 },
                 {
-                  source:
-                    "{{ab766cba0dd44ec080420acc10990282.layer1.fields.editdate.name}}"
+                  source: "{{ab766cba0dd44ec080420acc10990282.layer1.fields.editdate.name}}",
                 },
                 {
-                  source:
-                    "{{ab766cba0dd44ec080420acc10990282.layer1.fields.editor.name}}"
-                }
+                  source: "{{ab766cba0dd44ec080420acc10990282.layer1.fields.editor.name}}",
+                },
               ],
               relatedTables: [
                 {
@@ -2637,302 +2513,288 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
                   sourceLayerId: 0,
                   sourceLayerFields: [
                     {
-                      source:
-                        "{{ab766cba0dd44ec080420acc10990282.layer0.fields.jurisdictionname.name}}"
+                      source: "{{ab766cba0dd44ec080420acc10990282.layer0.fields.jurisdictionname.name}}",
                     },
                     {
-                      source:
-                        "{{ab766cba0dd44ec080420acc10990282.layer0.fields.jurisdictiontype.name}}"
+                      source: "{{ab766cba0dd44ec080420acc10990282.layer0.fields.jurisdictiontype.name}}",
                     },
                     {
-                      source:
-                        "{{ab766cba0dd44ec080420acc10990282.layer0.fields.regvoters.name}}"
+                      source: "{{ab766cba0dd44ec080420acc10990282.layer0.fields.regvoters.name}}",
                     },
                     {
-                      source:
-                        "{{ab766cba0dd44ec080420acc10990282.layer0.fields.ballotscast.name}}"
+                      source: "{{ab766cba0dd44ec080420acc10990282.layer0.fields.ballotscast.name}}",
                     },
                     {
-                      source:
-                        "{{ab766cba0dd44ec080420acc10990282.layer0.fields.ballotsnotcast.name}}"
+                      source: "{{ab766cba0dd44ec080420acc10990282.layer0.fields.ballotsnotcast.name}}",
                     },
                     {
-                      source:
-                        "{{ab766cba0dd44ec080420acc10990282.layer0.fields.globalid.name}}"
+                      source: "{{ab766cba0dd44ec080420acc10990282.layer0.fields.globalid.name}}",
                     },
                     {
-                      source:
-                        "{{ab766cba0dd44ec080420acc10990282.layer0.fields.creationdate.name}}"
+                      source: "{{ab766cba0dd44ec080420acc10990282.layer0.fields.creationdate.name}}",
                     },
                     {
-                      source:
-                        "{{ab766cba0dd44ec080420acc10990282.layer0.fields.creator.name}}"
+                      source: "{{ab766cba0dd44ec080420acc10990282.layer0.fields.creator.name}}",
                     },
                     {
-                      source:
-                        "{{ab766cba0dd44ec080420acc10990282.layer0.fields.editdate.name}}"
+                      source: "{{ab766cba0dd44ec080420acc10990282.layer0.fields.editdate.name}}",
                     },
                     {
-                      source:
-                        "{{ab766cba0dd44ec080420acc10990282.layer0.fields.editor.name}}"
-                    }
+                      source: "{{ab766cba0dd44ec080420acc10990282.layer0.fields.editor.name}}",
+                    },
                   ],
                   type: "INNER",
-                  parentKeyFields: [
-                    "{{ab766cba0dd44ec080420acc10990282.layer1.fields.jurisdictionname.name}}"
-                  ],
-                  keyFields: [
-                    "{{ab766cba0dd44ec080420acc10990282.layer0.fields.jurisdictionname.name}}"
-                  ]
-                }
-              ]
-            }
-          }
-        }
+                  parentKeyFields: ["{{ab766cba0dd44ec080420acc10990282.layer1.fields.jurisdictionname.name}}"],
+                  keyFields: ["{{ab766cba0dd44ec080420acc10990282.layer0.fields.jurisdictionname.name}}"],
+                },
+              ],
+            },
+          },
+        },
       };
 
       const layerZero0 = {
         fields: {
           objectid: {
-            name: "OBJECTID"
+            name: "OBJECTID",
           },
           jurisdictionname: {
-            name: "jurisdictionname"
+            name: "jurisdictionname",
           },
           jurisdictiontype: {
-            name: "jurisdictiontype"
+            name: "jurisdictiontype",
           },
           regvoters: {
-            name: "regvoters"
+            name: "regvoters",
           },
           ballotscast: {
-            name: "ballotscast"
+            name: "ballotscast",
           },
           ballotsnotcast: {
-            name: "ballotsnotcast"
+            name: "ballotsnotcast",
           },
           globalid: {
-            name: "GlobalID"
+            name: "GlobalID",
           },
           creationdate: {
-            name: "CreationDate"
+            name: "CreationDate",
           },
           creator: {
-            name: "Creator"
+            name: "Creator",
           },
           editdate: {
-            name: "EditDate"
+            name: "EditDate",
           },
           editor: {
-            name: "Editor"
-          }
-        }
+            name: "Editor",
+          },
+        },
       };
       const layerOne0 = {
         fields: {
           objectid: {
-            name: "OBJECTID"
+            name: "OBJECTID",
           },
           contest: {
-            name: "contest"
+            name: "contest",
           },
           category: {
-            name: "category"
+            name: "category",
           },
           jurisdictionname: {
-            name: "jurisdictionname"
+            name: "jurisdictionname",
           },
           candidate: {
-            name: "candidate"
+            name: "candidate",
           },
           party: {
-            name: "party"
+            name: "party",
           },
           numvotes: {
-            name: "numvotes"
+            name: "numvotes",
           },
           percvote: {
-            name: "percvote"
+            name: "percvote",
           },
           globalid: {
-            name: "GlobalID"
+            name: "GlobalID",
           },
           creationdate: {
-            name: "CreationDate"
+            name: "CreationDate",
           },
           creator: {
-            name: "Creator"
+            name: "Creator",
           },
           editdate: {
-            name: "EditDate"
+            name: "EditDate",
           },
           editor: {
-            name: "Editor"
-          }
-        }
+            name: "Editor",
+          },
+        },
       };
 
       const layerZero1 = {
         fields: {
           jurisdictionname: {
-            name: "jurisdictionname"
+            name: "jurisdictionname",
           },
           jurisdictiontype: {
-            name: "jurisdictiontype"
+            name: "jurisdictiontype",
           },
           regvoters: {
-            name: "regvoters"
+            name: "regvoters",
           },
           ballotscast: {
-            name: "ballotscast"
+            name: "ballotscast",
           },
           ballotsnotcast: {
-            name: "ballotsnotcast"
+            name: "ballotsnotcast",
           },
           globalid: {
-            name: "GlobalID"
+            name: "GlobalID",
           },
           creationdate: {
-            name: "CreationDate"
+            name: "CreationDate",
           },
           creator: {
-            name: "Creator"
+            name: "Creator",
           },
           editdate: {
-            name: "EditDate"
+            name: "EditDate",
           },
           editor: {
-            name: "Editor"
+            name: "Editor",
           },
           contest: {
-            name: "contest"
+            name: "contest",
           },
           category: {
-            name: "category"
+            name: "category",
           },
           jurisdictionname_1552494094382: {
-            name: "jurisdictionname_1552494094382"
+            name: "jurisdictionname_1552494094382",
           },
           candidate: {
-            name: "candidate"
+            name: "candidate",
           },
           party: {
-            name: "party"
+            name: "party",
           },
           numvotes: {
-            name: "numvotes"
+            name: "numvotes",
           },
           percvote: {
-            name: "percvote"
+            name: "percvote",
           },
           globalid_1552494094382: {
-            name: "GlobalID_1552494094382"
+            name: "GlobalID_1552494094382",
           },
           creationdate_1552494094382: {
-            name: "CreationDate_1552494094382"
+            name: "CreationDate_1552494094382",
           },
           creator_1552494094382: {
-            name: "Creator_1552494094382"
+            name: "Creator_1552494094382",
           },
           editdate_1552494094382: {
-            name: "EditDate_1552494094382"
+            name: "EditDate_1552494094382",
           },
           editor_1552494094382: {
-            name: "Editor_1552494094382"
+            name: "Editor_1552494094382",
           },
           objectid: {
-            name: "ObjectId"
-          }
-        }
+            name: "ObjectId",
+          },
+        },
       };
       const layerOne1 = {
         fields: {
           contest: {
-            name: "contest"
+            name: "contest",
           },
           category: {
-            name: "category"
+            name: "category",
           },
           jurisdictionname: {
-            name: "jurisdictionname"
+            name: "jurisdictionname",
           },
           candidate: {
-            name: "candidate"
+            name: "candidate",
           },
           party: {
-            name: "party"
+            name: "party",
           },
           numvotes: {
-            name: "numvotes"
+            name: "numvotes",
           },
           percvote: {
-            name: "percvote"
+            name: "percvote",
           },
           globalid: {
-            name: "GlobalID"
+            name: "GlobalID",
           },
           creationdate: {
-            name: "CreationDate"
+            name: "CreationDate",
           },
           creator: {
-            name: "Creator"
+            name: "Creator",
           },
           editdate: {
-            name: "EditDate"
+            name: "EditDate",
           },
           editor: {
-            name: "Editor"
+            name: "Editor",
           },
           jurisdictionname_1552493773603: {
-            name: "jurisdictionname_1552493773603"
+            name: "jurisdictionname_1552493773603",
           },
           jurisdictiontype: {
-            name: "jurisdictiontype"
+            name: "jurisdictiontype",
           },
           regvoters: {
-            name: "regvoters"
+            name: "regvoters",
           },
           ballotscast: {
-            name: "ballotscast"
+            name: "ballotscast",
           },
           ballotsnotcast: {
-            name: "ballotsnotcast"
+            name: "ballotsnotcast",
           },
           globalid_1552493773603: {
-            name: "GlobalID_1552493773603"
+            name: "GlobalID_1552493773603",
           },
           creationdate_1552493773603: {
-            name: "CreationDate_1552493773603"
+            name: "CreationDate_1552493773603",
           },
           creator_1552493773603: {
-            name: "Creator_1552493773603"
+            name: "Creator_1552493773603",
           },
           editdate_1552493773603: {
-            name: "EditDate_1552493773603"
+            name: "EditDate_1552493773603",
           },
           editor_1552493773603: {
-            name: "Editor_1552493773603"
+            name: "Editor_1552493773603",
           },
           objectid: {
-            name: "ObjectId"
-          }
-        }
+            name: "ObjectId",
+          },
+        },
       };
 
       const settings: any = {
-        solutionName: "test",
-        isPortal: false,
+        "solutionName": "test",
+        "isPortal": false,
         "0998341a7a2a4e9c86c553287a1f3e94": {
           id: "82ed3b6c2236429d885c872b3e188ead",
           name: "ElectionResults_20190425_2115_55512",
           layer0: layerZero0,
-          layer1: layerOne0
+          layer1: layerOne0,
         },
-        ab766cba0dd44ec080420acc10990282: {
+        "ab766cba0dd44ec080420acc10990282": {
           id: "b3c3021ef3e5409dbb2a35c8f111d1de",
           layer0: layerZero1,
-          layer1: layerOne1
-        }
+          layer1: layerOne1,
+        },
       };
 
       const expectedFieldInfos: any = {
@@ -2946,25 +2808,25 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
                   jurisdictiontype: null,
                   regvoters: null,
                   ballotscast: null,
-                  ballotsnotcast: null
-                }
-              }
-            }
+                  ballotsnotcast: null,
+                },
+              },
+            },
           ],
           relationships: [],
           drawingInfo: {
             renderer: {
               visualVariables: [
                 {
-                  field: "percvote"
-                }
+                  field: "percvote",
+                },
               ],
               authoringInfo: {},
               type: "uniqueValue",
               field1: "party",
               defaultSymbol: {},
-              uniqueValueInfos: []
-            }
+              uniqueValueInfos: [],
+            },
           },
           types: [
             {
@@ -2972,11 +2834,11 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
               name: "-",
               domains: {
                 jurisdictionname: {
-                  type: "inherited"
+                  type: "inherited",
                 },
                 jurisdictiontype: {
-                  type: "inherited"
-                }
+                  type: "inherited",
+                },
               },
               templates: [
                 {
@@ -2986,19 +2848,19 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
                   prototype: {
                     attributes: {
                       jurisdictionname: null,
-                      jurisdictiontype: null
-                    }
-                  }
-                }
-              ]
-            }
-          ]
+                      jurisdictiontype: null,
+                    },
+                  },
+                },
+              ],
+            },
+          ],
         },
         "1": {
           displayField: "jurisdictionname",
           templates: [],
-          relationships: []
-        }
+          relationships: [],
+        },
       };
 
       const expectedPopup: any = {
@@ -3007,77 +2869,77 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
             title: "",
             fieldInfos: [
               {
-                fieldName: "ObjectId"
+                fieldName: "ObjectId",
               },
               {
-                fieldName: "contest"
+                fieldName: "contest",
               },
               {
-                fieldName: "category"
+                fieldName: "category",
               },
               {
-                fieldName: "jurisdictionname"
+                fieldName: "jurisdictionname",
               },
               {
-                fieldName: "jurisdictiontype"
+                fieldName: "jurisdictiontype",
               },
               {
-                fieldName: "candidate"
+                fieldName: "candidate",
               },
               {
-                fieldName: "party"
+                fieldName: "party",
               },
               {
-                fieldName: "numvotes"
+                fieldName: "numvotes",
               },
               {
-                fieldName: "percvote"
+                fieldName: "percvote",
               },
               {
-                fieldName: "regvoters"
+                fieldName: "regvoters",
               },
               {
-                fieldName: "ballotscast"
+                fieldName: "ballotscast",
               },
               {
-                fieldName: "ballotsnotcast"
+                fieldName: "ballotsnotcast",
               },
               {
-                fieldName: "expression/expr0"
+                fieldName: "expression/expr0",
               },
               {
-                fieldName: "GlobalID"
+                fieldName: "GlobalID",
               },
               {
-                fieldName: "CreationDate"
+                fieldName: "CreationDate",
               },
               {
-                fieldName: "Creator"
+                fieldName: "Creator",
               },
               {
-                fieldName: "EditDate"
+                fieldName: "EditDate",
               },
               {
-                fieldName: "Editor"
+                fieldName: "Editor",
               },
               {
-                fieldName: "jurisdictionname_1552494094382"
+                fieldName: "jurisdictionname_1552494094382",
               },
               {
-                fieldName: "GlobalID_1552494094382"
+                fieldName: "GlobalID_1552494094382",
               },
               {
-                fieldName: "CreationDate_1552494094382"
+                fieldName: "CreationDate_1552494094382",
               },
               {
-                fieldName: "Creator_1552494094382"
+                fieldName: "Creator_1552494094382",
               },
               {
-                fieldName: "EditDate_1552494094382"
+                fieldName: "EditDate_1552494094382",
               },
               {
-                fieldName: "Editor_1552494094382"
-              }
+                fieldName: "Editor_1552494094382",
+              },
             ],
             description:
               "<table cellpadding='0' style='text-align: center; border-collapse: collapse; border-spacing: 0px; width: 100%; table-layout: fixed; margin: 0px -1px'>\n\t<tbody>\n\t\t<tr>\n\t\t\t<td style='background-color: {expression/expr0}; color: #FFFFFF; min-width:0%; max-width:100%; width:initial; text-align:center; vertical-align: middle; font-weight: normal; padding: 5px 0px; font-size:14px'>contest\n\t\t\t</td>\n\t\t</tr>\n\t\t<tr>\n\t\t\t<td style='text-align: center; width: 50%; max-width: 100%; padding-left: 0px;'>\n\t\t\t<br /><b>candidate</b> received the most votes in jurisdictionname.<br />\n\t\t\t</td>\n\t\t</tr>\n\t</tbody>\n\t</table>\n\t\n\t<table style='font-weight: normal; width: 100%; margin: 8px 0px; border-collapse: separate; border-spacing: 0px 8px; table-layout: fixed;'>\n\t<tbody>\n\t\t<tr>\n\t\t\t<td style='text-align: center; width: 100%; max-width: 100%; padding-left: 0px; padding-bottom: 10px'><b>Votes:</b><br /><font>numvotes<br /></font></td>\n\t\t\t\n\t\t\t<td style='text-align: center; width: 100%; max-width: 100%; padding-left: 0px; padding-bottom: 10px'><font><b>Percent:</b><br />percvote%\n\t\t\t</font></td>\n\t\t</tr>\n\t</tbody>\n</table>",
@@ -3087,53 +2949,53 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
                 title: "Banner Color",
                 expression:
                   "if ($feature.party == 'Constitution'){\n    return '#A900E6';\n}\nelse if ($feature.party == 'Democratic'){\n    return '#244078';\n}\n    \nelse if ($feature.party == 'Green'){\n    return '#17AA5C';\n}\n\nelse if ($feature.party == 'Libertarian'){\n    return '#F9D334';\n}\n\nelse if ($feature.party == 'Republican'){\n    return '#B0301C';\n}\n \nelse if ($feature.party == 'Write In'){\n    return '#FFAA00';\n}\n    \nreturn '#D6D6D6';\n",
-                returnType: "string"
-              }
-            ]
-          }
+                returnType: "string",
+              },
+            ],
+          },
         },
-        tables: {}
+        tables: {},
       };
 
       const expectedAdminLayerInfos: any = {
         "0": {
           geometryField: {
-            name: "ElectionResults_20190425_2115_55512.Shape"
+            name: "ElectionResults_20190425_2115_55512.Shape",
           },
           viewLayerDefinition: {
             table: {
               sourceLayerId: 0,
               sourceLayerFields: [
                 {
-                  source: "jurisdictionname"
+                  source: "jurisdictionname",
                 },
                 {
-                  source: "jurisdictiontype"
+                  source: "jurisdictiontype",
                 },
                 {
-                  source: "regvoters"
+                  source: "regvoters",
                 },
                 {
-                  source: "ballotscast"
+                  source: "ballotscast",
                 },
                 {
-                  source: "ballotsnotcast"
+                  source: "ballotsnotcast",
                 },
                 {
-                  source: "GlobalID"
+                  source: "GlobalID",
                 },
                 {
-                  source: "CreationDate"
+                  source: "CreationDate",
                 },
                 {
-                  source: "Creator"
+                  source: "Creator",
                 },
                 {
-                  source: "EditDate"
+                  source: "EditDate",
                 },
                 {
-                  source: "Editor"
-                }
+                  source: "Editor",
+                },
               ],
               relatedTables: [
                 {
@@ -3142,52 +3004,52 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
                   sourceLayerId: 1,
                   topFilter: {
                     orderByFields: "numvotes DESC",
-                    groupByFields: "jurisdictionname,contest"
+                    groupByFields: "jurisdictionname,contest",
                   },
                   sourceLayerFields: [
                     {
-                      source: "contest"
+                      source: "contest",
                     },
                     {
-                      source: "category"
+                      source: "category",
                     },
                     {
-                      source: "jurisdictionname"
+                      source: "jurisdictionname",
                     },
                     {
-                      source: "candidate"
+                      source: "candidate",
                     },
                     {
-                      source: "party"
+                      source: "party",
                     },
                     {
-                      source: "numvotes"
+                      source: "numvotes",
                     },
                     {
-                      source: "percvote"
+                      source: "percvote",
                     },
                     {
-                      source: "GlobalID"
+                      source: "GlobalID",
                     },
                     {
-                      source: "CreationDate"
+                      source: "CreationDate",
                     },
                     {
-                      source: "Creator"
+                      source: "Creator",
                     },
                     {
-                      source: "EditDate"
+                      source: "EditDate",
                     },
                     {
-                      source: "Editor"
-                    }
+                      source: "Editor",
+                    },
                   ],
                   parentKeyFields: ["jurisdictionname"],
-                  keyFields: ["jurisdictionname"]
-                }
-              ]
-            }
-          }
+                  keyFields: ["jurisdictionname"],
+                },
+              ],
+            },
+          },
         },
         "1": {
           geometryField: null,
@@ -3198,41 +3060,41 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
               sourceLayerId: 1,
               sourceLayerFields: [
                 {
-                  source: "contest"
+                  source: "contest",
                 },
                 {
-                  source: "category"
+                  source: "category",
                 },
                 {
-                  source: "jurisdictionname"
+                  source: "jurisdictionname",
                 },
                 {
-                  source: "candidate"
+                  source: "candidate",
                 },
                 {
-                  source: "party"
+                  source: "party",
                 },
                 {
-                  source: "numvotes"
+                  source: "numvotes",
                 },
                 {
-                  source: "percvote"
+                  source: "percvote",
                 },
                 {
-                  source: "GlobalID"
+                  source: "GlobalID",
                 },
                 {
-                  source: "CreationDate"
+                  source: "CreationDate",
                 },
                 {
-                  source: "Creator"
+                  source: "Creator",
                 },
                 {
-                  source: "EditDate"
+                  source: "EditDate",
                 },
                 {
-                  source: "Editor"
-                }
+                  source: "Editor",
+                },
               ],
               relatedTables: [
                 {
@@ -3241,52 +3103,47 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
                   sourceLayerId: 0,
                   sourceLayerFields: [
                     {
-                      source: "jurisdictionname"
+                      source: "jurisdictionname",
                     },
                     {
-                      source: "jurisdictiontype"
+                      source: "jurisdictiontype",
                     },
                     {
-                      source: "regvoters"
+                      source: "regvoters",
                     },
                     {
-                      source: "ballotscast"
+                      source: "ballotscast",
                     },
                     {
-                      source: "ballotsnotcast"
+                      source: "ballotsnotcast",
                     },
                     {
-                      source: "GlobalID"
+                      source: "GlobalID",
                     },
                     {
-                      source: "CreationDate"
+                      source: "CreationDate",
                     },
                     {
-                      source: "Creator"
+                      source: "Creator",
                     },
                     {
-                      source: "EditDate"
+                      source: "EditDate",
                     },
                     {
-                      source: "Editor"
-                    }
+                      source: "Editor",
+                    },
                   ],
                   type: "INNER",
                   parentKeyFields: ["jurisdictionname"],
-                  keyFields: ["jurisdictionname"]
-                }
-              ]
-            }
-          }
-        }
+                  keyFields: ["jurisdictionname"],
+                },
+              ],
+            },
+          },
+        },
       };
 
-      const results: any = deTemplatizeFieldInfos(
-        fieldInfos,
-        popupInfos,
-        adminLayerInfos,
-        settings
-      );
+      const results: any = deTemplatizeFieldInfos(fieldInfos, popupInfos, adminLayerInfos, settings);
       expect(results.fieldInfos).toEqual(expectedFieldInfos);
       expect(results.popupInfos).toEqual(expectedPopup);
       expect(results.adminLayerInfos).toEqual(expectedAdminLayerInfos);
@@ -3297,17 +3154,17 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
     it("should handle only layers", () => {
       itemTemplate.properties.layers = [
         {
-          id: 0
-        }
+          id: 0,
+        },
       ];
       const layersAndTables: any = getLayersAndTables(itemTemplate);
       const expecetd: any[] = [
         {
           item: {
-            id: 0
+            id: 0,
           },
-          type: "layer"
-        }
+          type: "layer",
+        },
       ];
       expect(layersAndTables).toEqual(expecetd);
     });
@@ -3316,17 +3173,17 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
       itemTemplate.properties.layers = [];
       itemTemplate.properties.tables = [
         {
-          id: 1
-        }
+          id: 1,
+        },
       ];
       const layersAndTables: any = getLayersAndTables(itemTemplate);
       const expected: any[] = [
         {
           item: {
-            id: 1
+            id: 1,
           },
-          type: "table"
-        }
+          type: "table",
+        },
       ];
       expect(layersAndTables).toEqual(expected);
     });
@@ -3334,28 +3191,28 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
     it("should handle layers and tables", () => {
       itemTemplate.properties.layers = [
         {
-          id: 0
-        }
+          id: 0,
+        },
       ];
       itemTemplate.properties.tables = [
         {
-          id: 1
-        }
+          id: 1,
+        },
       ];
       const layersAndTables: any = getLayersAndTables(itemTemplate);
       const expected: any[] = [
         {
           item: {
-            id: 0
+            id: 0,
           },
-          type: "layer"
+          type: "layer",
         },
         {
           item: {
-            id: 1
+            id: 1,
           },
-          type: "table"
-        }
+          type: "table",
+        },
       ];
       expect(layersAndTables).toEqual(expected);
     });
@@ -3370,7 +3227,7 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
   });
 
   describe("getExistingLayersAndTables", () => {
-    it("will fetch each existing layer and table", done => {
+    it("will fetch each existing layer and table", async () => {
       const url: string =
         "https://services123.arcgis.com/org1234567890/arcgis/rest/services/ROWPermits_publiccomment/FeatureServer";
       const ids: number[] = [0, 1];
@@ -3379,37 +3236,27 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
         .post(url + "/0", mockItems.getAGOLLayerOrTable(0, "test0", "layer"))
         .post(url + "/1", mockItems.getAGOLLayerOrTable(1, "test1", "layer"));
 
-      const actual = getExistingLayersAndTables(url, ids, MOCK_USER_SESSION);
-
-      actual.then(results => {
-        expect(results.length === 2);
-        done();
-      });
+      const results = await getExistingLayersAndTables(url, ids, MOCK_USER_SESSION);
+      expect(results.length === 2);
     });
 
-    it("suppresses and resolves errors", done => {
+    it("suppresses and resolves errors", async () => {
       const url: string =
         "https://services123.arcgis.com/org1234567890/arcgis/rest/services/ROWPermits_publiccomment/FeatureServer";
       const ids: number[] = [0, 1];
       const layer0Result = mockItems.getAGOLLayerOrTable(0, "test0", "layer");
       const layer1Error = new Error("some error");
 
-      fetchMock
-        .post(url + "/0", layer0Result)
-        .post(url + "/1", { throws: layer1Error });
+      fetchMock.post(url + "/0", layer0Result).post(url + "/1", { throws: layer1Error });
 
-      const actual = getExistingLayersAndTables(url, ids, MOCK_USER_SESSION);
-
-      actual.then(results => {
-        expect(results.length === 2);
-        expect(results).toEqual([layer0Result, layer1Error]);
-        done();
-      });
+      const results = await getExistingLayersAndTables(url, ids, MOCK_USER_SESSION);
+      expect(results.length === 2);
+      expect(results).toEqual([layer0Result, layer1Error]);
     });
   });
 
   describe("addFeatureServiceLayersAndTables", () => {
-    it("should handle error when adding layers and/or tables", done => {
+    it("should handle error when adding layers and/or tables", async () => {
       const expectedId: string = "svc1234567890";
       const id: string = "{{" + expectedId + ".itemId}}";
 
@@ -3420,26 +3267,18 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
       const adminUrl: string =
         "https://services123.arcgis.com/org1234567890/arcgis/rest/admin/services/ROWPermits_publiccomment/FeatureServer";
 
-      const layerKeyField: string =
-        "{{" + expectedId + ".layer0.fields.globalid.name}}";
-      const tableKeyField: string =
-        "{{" + expectedId + ".layer1.fields.globalid.name}}";
-      const layerDefQuery: string =
-        "status = '{{" + expectedId + ".layer0.fields.boardreview.name}}'";
-      const tableDefQuery: string =
-        "status = '{{" + expectedId + ".layer1.fields.boardreview.name}}'";
+      const layerKeyField: string = "{{" + expectedId + ".layer0.fields.globalid.name}}";
+      const tableKeyField: string = "{{" + expectedId + ".layer1.fields.globalid.name}}";
+      const layerDefQuery: string = "status = '{{" + expectedId + ".layer0.fields.boardreview.name}}'";
+      const tableDefQuery: string = "status = '{{" + expectedId + ".layer1.fields.boardreview.name}}'";
 
-      itemTemplate = templates.getItemTemplate(
-        "Feature Service",
-        [],
-        expectedUrl
-      );
+      itemTemplate = templates.getItemTemplate("Feature Service", [], expectedUrl);
       itemTemplate.itemId = expectedId;
       itemTemplate.item.id = id;
       itemTemplate.estimatedDeploymentCostFactor = 0;
       itemTemplate.properties.service.serviceItemId = id;
       itemTemplate.properties.service.spatialReference = {
-        wkid: 102100
+        wkid: 102100,
       };
 
       itemTemplate.properties.layers[0].serviceItemId = id;
@@ -3458,7 +3297,7 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
       settings[expectedId] = {
         id: expectedId,
         url: expectedUrl,
-        organization: _organization
+        organization: _organization,
       };
 
       const createResponse: any = mockItems.getAGOLService([], [], true);
@@ -3467,47 +3306,39 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
       fetchMock
         .post(adminUrl + "?f=json", itemTemplate.properties.service)
         .post(url + "/sources?f=json", mockItems.getAGOLServiceSources())
-        .post(
-          utils.PORTAL_SUBSET.restUrl + "/content/users/casey/createService",
-          createResponse
-        )
+        .post(utils.PORTAL_SUBSET.restUrl + "/content/users/casey/createService", createResponse)
         .post(
           "https://services123.arcgis.com/org1234567890/arcgis/rest/admin/services/ROWPermits_publiccomment/FeatureServer/addToDefinition",
-          mockItems.get400Failure()
+          mockItems.get400Failure(),
         );
 
-      addFeatureServiceLayersAndTables(
-        itemTemplate,
-        settings,
-        {
-          layers: [],
-          tables: []
-        },
-        MOCK_USER_SESSION
-      ).then(
-        () => done.fail(),
-        () => done()
-      );
+      await expectAsync(
+        addFeatureServiceLayersAndTables(
+          itemTemplate,
+          settings,
+          {
+            layers: [],
+            tables: [],
+          },
+          MOCK_USER_SESSION,
+        ),
+      ).toBeRejected();
     });
 
-    it("should handle error on getLayersAndTables", done => {
+    it("should handle error on getLayersAndTables", async () => {
       const expectedId: string = "svc1234567890";
       const id: string = "{{" + expectedId + ".itemId}}";
 
       const expectedUrl: string =
         "https://services123.arcgis.com/org1234567890/arcgis/rest/services/ROWPermits_publiccomment/FeatureServer";
 
-      itemTemplate = templates.getItemTemplate(
-        "Feature Service",
-        [],
-        expectedUrl
-      );
+      itemTemplate = templates.getItemTemplate("Feature Service", [], expectedUrl);
       itemTemplate.itemId = expectedId;
       itemTemplate.item.id = id;
       itemTemplate.estimatedDeploymentCostFactor = 0;
       itemTemplate.properties.service.serviceItemId = id;
       itemTemplate.properties.service.spatialReference = {
-        wkid: 102100
+        wkid: 102100,
       };
 
       itemTemplate.properties.layers = [];
@@ -3519,51 +3350,42 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
       settings[expectedId] = {
         id: expectedId,
         url: expectedUrl,
-        organization: _organization
+        organization: _organization,
       };
 
-      addFeatureServiceLayersAndTables(
+      await addFeatureServiceLayersAndTables(
         itemTemplate,
         settings,
         {
           layers: [],
-          tables: []
+          tables: [],
         },
-        MOCK_USER_SESSION
-      ).then(() => done(), done.fail);
+        MOCK_USER_SESSION,
+      );
     });
 
-    it("should handle error on layer updates", done => {
+    it("should handle error on layer updates", async () => {
       const expectedId: string = "svc1234567890";
       const id: string = "{{" + expectedId + ".itemId}}";
 
       const expectedUrl: string =
         "https://services123.arcgis.com/org1234567890/arcgis/rest/services/ROWPermits_publiccomment/FeatureServer";
-      const url: string = "{{" + expectedId + ".url}}";
 
       const adminUrl: string =
         "https://services123.arcgis.com/org1234567890/arcgis/rest/admin/services/ROWPermits_publiccomment/FeatureServer";
 
-      const layerKeyField: string =
-        "{{" + expectedId + ".layer0.fields.globalid.name}}";
-      const tableKeyField: string =
-        "{{" + expectedId + ".layer1.fields.globalid.name}}";
-      const layerDefQuery: string =
-        "status = '{{" + expectedId + ".layer0.fields.boardreview.name}}'";
-      const tableDefQuery: string =
-        "status = '{{" + expectedId + ".layer1.fields.boardreview.name}}'";
+      const layerKeyField: string = "{{" + expectedId + ".layer0.fields.globalid.name}}";
+      const tableKeyField: string = "{{" + expectedId + ".layer1.fields.globalid.name}}";
+      const layerDefQuery: string = "status = '{{" + expectedId + ".layer0.fields.boardreview.name}}'";
+      const tableDefQuery: string = "status = '{{" + expectedId + ".layer1.fields.boardreview.name}}'";
 
-      itemTemplate = templates.getItemTemplate(
-        "Feature Service",
-        [],
-        expectedUrl
-      );
+      itemTemplate = templates.getItemTemplate("Feature Service", [], expectedUrl);
       itemTemplate.itemId = expectedId;
       itemTemplate.item.id = id;
       itemTemplate.estimatedDeploymentCostFactor = 0;
       itemTemplate.properties.service.serviceItemId = id;
       itemTemplate.properties.service.spatialReference = {
-        wkid: 102100
+        wkid: 102100,
       };
 
       itemTemplate.properties.layers[0].serviceItemId = id;
@@ -3582,7 +3404,7 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
       settings[expectedId] = {
         id: expectedId,
         url: expectedUrl,
-        organization: _organization
+        organization: _organization,
       };
 
       const createResponse: any = mockItems.getAGOLService([], [], true);
@@ -3594,45 +3416,37 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
         .post(adminUrl + "/deleteFromDefinition", mockItems.get400Failure())
         .post(
           "https://services123.arcgis.com/org1234567890/arcgis/rest/admin/services/ROWPermits_publiccomment/FeatureServer/addToDefinition",
-          '{"success": "true"}'
+          '{"success": "true"}',
         );
 
-      spyOn(
-        restHelpers,
-        "getLayerUpdates"
-      ).and.returnValue([
-        { url: adminUrl + "/deleteFromDefinition", params: {}, args: {} }
+      spyOn(restHelpers, "getLayerUpdates").and.returnValue([
+        { url: adminUrl + "/deleteFromDefinition", params: {}, args: {} },
       ] as interfaces.IUpdate[]);
 
-      addFeatureServiceLayersAndTables(
-        itemTemplate,
-        settings,
-        {
-          layers: [],
-          tables: []
-        },
-        MOCK_USER_SESSION
-      ).then(
-        () => done.fail(),
-        () => done()
-      );
+      await expectAsync(
+        addFeatureServiceLayersAndTables(
+          itemTemplate,
+          settings,
+          {
+            layers: [],
+            tables: [],
+          },
+          MOCK_USER_SESSION,
+        ),
+      ).toBeRejected();
     });
 
-    it("should handle absence of item url", done => {
+    it("should handle absence of item url", async () => {
       const expectedId: string = "svc1234567890";
       const id: string = "{{" + expectedId + ".itemId}}";
 
       const adminUrl: string =
         "https://services123.arcgis.com/org1234567890/arcgis/rest/admin/services/ROWPermits_publiccomment/FeatureServer";
 
-      const layerKeyField: string =
-        "{{" + expectedId + ".layer0.fields.globalid.name}}";
-      const tableKeyField: string =
-        "{{" + expectedId + ".layer1.fields.globalid.name}}";
-      const layerDefQuery: string =
-        "status = '{{" + expectedId + ".layer0.fields.boardreview.name}}'";
-      const tableDefQuery: string =
-        "status = '{{" + expectedId + ".layer1.fields.boardreview.name}}'";
+      const layerKeyField: string = "{{" + expectedId + ".layer0.fields.globalid.name}}";
+      const tableKeyField: string = "{{" + expectedId + ".layer1.fields.globalid.name}}";
+      const layerDefQuery: string = "status = '{{" + expectedId + ".layer0.fields.boardreview.name}}'";
+      const tableDefQuery: string = "status = '{{" + expectedId + ".layer1.fields.boardreview.name}}'";
 
       itemTemplate = templates.getItemTemplate("Feature Service");
       itemTemplate.itemId = expectedId;
@@ -3640,7 +3454,7 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
       itemTemplate.estimatedDeploymentCostFactor = 0;
       itemTemplate.properties.service.serviceItemId = id;
       itemTemplate.properties.service.spatialReference = {
-        wkid: 102100
+        wkid: 102100,
       };
       itemTemplate.properties.service.hasViews = true;
 
@@ -3654,13 +3468,13 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
       itemTemplate.properties.tables[0].definitionQuery = tableDefQuery;
       itemTemplate.properties.tables[0].viewDefinitionQuery = tableDefQuery;
       delete itemTemplate.item.item;
-      itemTemplate.item.url = null;
+      itemTemplate.item.url = undefined;
 
       const settings = utils.createMockSettings();
       settings.folderId = "fld1234567890";
       settings[expectedId] = {
         id: expectedId,
-        organization: _organization
+        organization: _organization,
       };
 
       const createResponse: any = mockItems.getAGOLService([], [], true);
@@ -3672,97 +3486,70 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
         .post(adminUrl + "/refresh", mockItems.get400Failure())
         .post(
           "https://services123.arcgis.com/org1234567890/arcgis/rest/admin/services/ROWPermits_publiccomment/FeatureServer/addToDefinition",
-          '{"success": "true"}'
+          '{"success": "true"}',
         );
 
-      addFeatureServiceLayersAndTables(
-        itemTemplate,
-        settings,
-        {
-          layers: [],
-          tables: []
-        },
-        MOCK_USER_SESSION
-      ).then(
-        () => done.fail(),
-        () => done()
-      );
+      await expectAsync(
+        addFeatureServiceLayersAndTables(
+          itemTemplate,
+          settings,
+          {
+            layers: [],
+            tables: [],
+          },
+          MOCK_USER_SESSION,
+        ),
+      ).toBeRejected();
     });
 
-    it("should skip tracking view", done => {
+    it("should skip tracking view", async () => {
       const expectedUrl: string =
         "https://services123.arcgis.com/org1234567890/arcgis/rest/services/ROWPermits_publiccomment/FeatureServer";
 
-      itemTemplate = templates.getItemTemplate(
-        "Feature Service",
-        [],
-        expectedUrl
-      );
+      itemTemplate = templates.getItemTemplate("Feature Service", [], expectedUrl);
       itemTemplate.item.typeKeywords = ["Location Tracking View"];
       itemTemplate.item.properties = {
-        "trackViewGroup": "grp123"
+        trackViewGroup: "grp123",
       };
 
-      addFeatureServiceLayersAndTables(
+      await addFeatureServiceLayersAndTables(
         itemTemplate,
         {},
         {
           layers: [],
-          tables: []
+          tables: [],
         },
-        MOCK_USER_SESSION
-      ).then((response) => {
-        expect(response).toBeNull();
-        done();
-      }, done.fail);
+        MOCK_USER_SESSION,
+      );
     });
   });
 
   describe("addFeatureServiceDefinition", () => {
-    it("should skip tracking view", done => {
+    it("should skip tracking view", async () => {
       const expectedUrl: string =
         "https://services123.arcgis.com/org1234567890/arcgis/rest/services/ROWPermits_publiccomment/FeatureServer";
 
-      itemTemplate = templates.getItemTemplate(
-        "Feature Service",
-        [],
-        expectedUrl
-      );
+      itemTemplate = templates.getItemTemplate("Feature Service", [], expectedUrl);
       itemTemplate.item.typeKeywords = ["Location Tracking View"];
       itemTemplate.item.properties = {
-        "trackViewGroup": "grp123"
+        trackViewGroup: "grp123",
       };
 
-      addFeatureServiceDefinition(
-        expectedUrl,
-        [],
-        {},
-        MOCK_USER_SESSION,
-        "",
-        {},
-        {},
-        itemTemplate
-      ).then(actual => {
-        expect(actual).toBeNull();
-        done();
-      }, done.fail)
+      await addFeatureServiceDefinition(expectedUrl, [], {}, MOCK_USER_SESSION, "", {}, {}, itemTemplate);
     });
   });
 
   describe("updateLayerFieldReferences", () => {
-    it("should handle error from postProcessFields", done => {
+    it("should handle error from postProcessFields", async () => {
       itemTemplate = templates.getItemTemplate("Feature Service");
-      itemTemplate.item.url = null;
+      itemTemplate.item.url = undefined;
 
-      updateLayerFieldReferences(itemTemplate, null, null, null, null).then(
-        () => done.fail(),
-        () => done()
-      );
+      await expectAsync(updateLayerFieldReferences(itemTemplate, null, null as any, null, null)).toBeRejected();
     });
   });
 
   describe("postProcessFields", () => {
-    it("should update fieldInfos, settings, and layerInfos", done => {
+    it("should update fieldInfos, settings, and layerInfos", async () => {
       const url: string =
         "https://services123.arcgis.com/org1234567890/arcgis/rest/services/ROWPermits_publiccomment/FeatureServer";
       const adminUrl: string =
@@ -3775,31 +3562,22 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
       settings.folderId = "fld1234567890";
       settings[itemTemplate.itemId] = {
         itemId: itemTemplate.itemId,
-        url: url
+        url: url,
       };
 
       expect(settings[itemTemplate.itemId]).toBeDefined();
       expect(settings[itemTemplate.itemId].fieldInfos).toBeUndefined();
 
-      const layer0 = mockItems.getAGOLLayerOrTable(
-        0,
-        "ROW Permits",
-        "Feature Layer",
-        [mockItems.createAGOLRelationship(0, 1, "esriRelRoleOrigin")]
-      );
+      const layer0 = mockItems.getAGOLLayerOrTable(0, "ROW Permits", "Feature Layer", [
+        mockItems.createAGOLRelationship(0, 1, "esriRelRoleOrigin"),
+      ]);
 
-      const layer1 = mockItems.getAGOLLayerOrTable(
-        1,
-        "ROW Permit Comment",
-        "Table",
-        [mockItems.createAGOLRelationship(0, 1, "esriRelRoleDestination")]
-      );
-      const fieldInfos = cacheFieldInfos(
-        layer1,
-        cacheFieldInfos(layer0, {}),
-      );
+      const layer1 = mockItems.getAGOLLayerOrTable(1, "ROW Permit Comment", "Table", [
+        mockItems.createAGOLRelationship(0, 1, "esriRelRoleDestination"),
+      ]);
+      const fieldInfos = cacheFieldInfos(layer1, cacheFieldInfos(layer0, {}));
 
-      Object.keys(fieldInfos).forEach(k => {
+      Object.keys(fieldInfos).forEach((k) => {
         fieldInfos[k].sourceFields[1].visible = false;
         fieldInfos[k].sourceFields[2].visible = false;
       });
@@ -3807,262 +3585,258 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
       // modify the popupInfo with something to detemplatize
       const layer0Popup: any = itemTemplate.data.layers[0];
       layer0Popup.popupInfo.title =
-        "{{" +
-        itemTemplate.itemId +
-        ".layer" +
-        layer0Popup.id +
-        ".fields." +
-        layer0.fields[0].name +
-        ".name}}";
+        "{{" + itemTemplate.itemId + ".layer" + layer0Popup.id + ".fields." + layer0.fields[0].name + ".name}}";
 
       const layer1Popup: any = itemTemplate.data.tables[0];
       layer1Popup.popupInfo.title =
-        "{{" +
-        itemTemplate.itemId +
-        ".layer" +
-        layer1Popup.id +
-        ".fields." +
-        layer1.fields[0].name +
-        ".name}}";
+        "{{" + itemTemplate.itemId + ".layer" + layer1Popup.id + ".fields." + layer1.fields[0].name + ".name}}";
 
       const popupInfos: IPopupInfos = cachePopupInfos(itemTemplate.data);
       const adminLayerInfos: any = {};
 
-      fetchMock
-        .post(adminUrl + "/0?f=json", layer0)
-        .post(adminUrl + "/1?f=json", layer1);
+      fetchMock.post(adminUrl + "/0?f=json", layer0).post(adminUrl + "/1?f=json", layer1);
 
-      postProcessFields(
-        itemTemplate,
-        fieldInfos,
-        popupInfos,
-        adminLayerInfos,
-        settings
-      ).then(
-        (layerInfos: any) => {
-          // verify that fieldInfos are set
-          expect(layerInfos).toBeDefined();
-          expect(layerInfos.fieldInfos).toBeDefined();
+      const layerInfos: any = await postProcessFields(itemTemplate, fieldInfos, popupInfos, adminLayerInfos, settings);
+      // verify that fieldInfos are set
+      expect(layerInfos).toBeDefined();
+      expect(layerInfos.fieldInfos).toBeDefined();
 
-          // verify the field info have been added to settings
-          expect(settings[itemTemplate.itemId].layer0).toBeDefined();
-          expect(settings[itemTemplate.itemId].layer1).toBeDefined();
+      // verify the field info have been added to settings
+      expect(settings[itemTemplate.itemId].layer0).toBeDefined();
+      expect(settings[itemTemplate.itemId].layer1).toBeDefined();
 
-          // verify popup infos
-          expect(layerInfos.popupInfos).toBeDefined();
-          expect(layerInfos.popupInfos.layers[layer0.id].title).toBeDefined();
-          expect(layerInfos.popupInfos.layers[layer0.id].title).toEqual(
-            layer0.fields[0].name
-          );
+      // verify popup infos
+      expect(layerInfos.popupInfos).toBeDefined();
+      expect(layerInfos.popupInfos.layers[layer0.id].title).toBeDefined();
+      expect(layerInfos.popupInfos.layers[layer0.id].title).toEqual(layer0.fields[0].name);
 
-          expect(layerInfos.popupInfos.tables[layer1.id].title).toBeDefined();
-          expect(layerInfos.popupInfos.tables[layer1.id].title).toEqual(
-            layer1.fields[0].name
-          );
+      expect(layerInfos.popupInfos.tables[layer1.id].title).toBeDefined();
+      expect(layerInfos.popupInfos.tables[layer1.id].title).toEqual(layer1.fields[0].name);
 
-          expect(layerInfos.adminLayerInfos).toBeDefined();
-          done();
-        },
-        error => done.fail(error)
-      );
+      expect(layerInfos.adminLayerInfos).toBeDefined();
     });
 
-    it("should handle missing url", done => {
+    it("should handle missing url", async () => {
       itemTemplate = templates.getItemTemplate("Feature Service");
-      itemTemplate.item.url = null;
+      itemTemplate.item.url = undefined;
 
-      postProcessFields(itemTemplate, null, null, null, null).then(
-        () => done.fail(),
-        error => {
-          expect(error).toEqual(
-            utils.getFailureResponse({
-              error:
-                "Feature layer " + itemTemplate.itemId + " does not have a URL"
-            })
-          );
-          done();
-        }
+      await expectAsync(postProcessFields(itemTemplate, null, null, null, null)).toBeRejectedWith(
+        utils.getFailureResponse({
+          error: "Feature layer " + itemTemplate.itemId + " does not have a URL",
+        }),
       );
     });
 
-    it("should handle missing layers and tables", done => {
+    it("should handle missing layers and tables", async () => {
       const url: string =
         "https://services123.arcgis.com/org1234567890/arcgis/rest/services/ROWPermits_publiccomment/FeatureServer";
-      const adminUrl: string =
-        "https://services123.arcgis.com/org1234567890/arcgis/rest/admin/services/ROWPermits_publiccomment/FeatureServer";
 
-      itemTemplate = templates.getItemTemplate("Feature Service", null, url);
+      itemTemplate = templates.getItemTemplate("Feature Service", undefined, url);
       itemTemplate.data = {
         tables: [],
-        layers: []
+        layers: [],
       };
       itemTemplate.properties.layers = [];
       itemTemplate.properties.tables = [];
 
-      postProcessFields(
-        itemTemplate,
-        {},
-        cachePopupInfos(itemTemplate.data),
-        {},
-        {}
-      ).then(layerInfos => {
-        expect(layerInfos).toEqual({
-          popupInfos: {
-            layers: {},
-            tables: {}
-          },
-          fieldInfos: {},
-          adminLayerInfos: {}
-        });
-        done();
-      }, done.fail);
+      const layerInfos = await postProcessFields(itemTemplate, {}, cachePopupInfos(itemTemplate.data), {}, {});
+      expect(layerInfos).toEqual({
+        popupInfos: {
+          layers: {},
+          tables: {},
+        },
+        fieldInfos: {},
+        adminLayerInfos: {},
+      });
     });
   });
 
   describe("processContingentValues", () => {
-    it("restructure and store fetched contingent values", done => {
+    it("restructure and store fetched contingent values", async () => {
       const contingentValues = {
-        "typeCodes": [
-          "Unknown", "Any", "Null", "Code", "Range"
+        typeCodes: ["Unknown", "Any", "Null", "Code", "Range"],
+        stringDicts: [
+          {
+            domain: "CommonName",
+            entries: ["Norway Maple"],
+          },
         ],
-        "stringDicts": [{
-          "domain": "CommonName",
-          "entries": ["Norway Maple"]
-        }],
-        "contingentValuesDefinition": {
-          "layerID": 0,
-          "layerName": "Trees",
-          "geometryType": "esriGeometryPoint",
-          "hasSubType": false,
-          "fieldGroups": [{
-            "name": "Tree Type",
-            "restrictive": false,
-            "fields": [{
-              "id": 0,
-              "name": "commonname",
-              "fieldType": "esriFieldTypeString"
-            }],
-            "domains": { "commonname": "CommonName", "genus": "Genus", "species": "Species" },
-            "contingentValues": [{
-              "id": 1, "types": [3, 3, 3],
-              "values": [0, 0, 0]
-            }]
-          }, {
-            "name": "Space Info",
-            "restrictive": false,
-            "fields": [{
-              "id": 0, "name": "spacestatus", "fieldType": "esriFieldTypeString"
-            }],
-            "domains": {
-              "spacestatus": "SpaceStatus", "spacetype": "SpaceType"
+        contingentValuesDefinition: {
+          layerID: 0,
+          layerName: "Trees",
+          geometryType: "esriGeometryPoint",
+          hasSubType: false,
+          fieldGroups: [
+            {
+              name: "Tree Type",
+              restrictive: false,
+              fields: [
+                {
+                  id: 0,
+                  name: "commonname",
+                  fieldType: "esriFieldTypeString",
+                },
+              ],
+              domains: {
+                commonname: "CommonName",
+                genus: "Genus",
+                species: "Species",
+              },
+              contingentValues: [
+                {
+                  id: 1,
+                  types: [3, 3, 3],
+                  values: [0, 0, 0],
+                },
+              ],
             },
-            "contingentValues": [{
-              "id": 9, "types": [3, 3, 3], "values": [0, 0, 0]
-            }]
-          }]
-        }
+            {
+              name: "Space Info",
+              restrictive: false,
+              fields: [
+                {
+                  id: 0,
+                  name: "spacestatus",
+                  fieldType: "esriFieldTypeString",
+                },
+              ],
+              domains: {
+                spacestatus: "SpaceStatus",
+                spacetype: "SpaceType",
+              },
+              contingentValues: [
+                {
+                  id: 9,
+                  types: [3, 3, 3],
+                  values: [0, 0, 0],
+                },
+              ],
+            },
+          ],
+        },
       };
       const properties: interfaces.IFeatureServiceProperties = {
         service: {},
-        layers: [{
-          id: "0",
-          hasContingentValuesDefinition: true
-        }],
-        tables: [{
-          id: "1",
-          hasContingentValuesDefinition: true
-        },{
-          id: "2",
-          hasContingentValuesDefinition: false
-        }]
+        layers: [
+          {
+            id: "0",
+            hasContingentValuesDefinition: true,
+          },
+        ],
+        tables: [
+          {
+            id: "1",
+            hasContingentValuesDefinition: true,
+          },
+          {
+            id: "2",
+            hasContingentValuesDefinition: false,
+          },
+        ],
       };
       const adminUrl = "https://test.arcgis.com/org1234567890/arcgis/rest/admin/services/R/FeatureServer";
       const authentication = MOCK_USER_SESSION;
 
       const expectedContingentValues = {
-        "contingentValuesDefinition": {
-          "fieldGroups": [{
-            "name": "Tree Type",
-            "restrictive": false,
-            "fields": [{
-              "id": 0,
-              "name": "commonname",
-              "fieldType": "esriFieldTypeString"
-            }],
-            "domains": { "commonname": "CommonName", "genus": "Genus", "species": "Species" },
-            "contingentValues": [{
-              "id": 1, "types": [3, 3, 3],
-              "values": [0, 0, 0]
-            }]
-          }, {
-            "name": "Space Info",
-            "restrictive": false,
-            "fields": [{
-              "id": 0, "name": "spacestatus", "fieldType": "esriFieldTypeString"
-            }],
-            "domains": {
-              "spacestatus": "SpaceStatus", "spacetype": "SpaceType"
+        contingentValuesDefinition: {
+          fieldGroups: [
+            {
+              name: "Tree Type",
+              restrictive: false,
+              fields: [
+                {
+                  id: 0,
+                  name: "commonname",
+                  fieldType: "esriFieldTypeString",
+                },
+              ],
+              domains: {
+                commonname: "CommonName",
+                genus: "Genus",
+                species: "Species",
+              },
+              contingentValues: [
+                {
+                  id: 1,
+                  types: [3, 3, 3],
+                  values: [0, 0, 0],
+                },
+              ],
             },
-            "contingentValues": [{
-              "id": 9, "types": [3, 3, 3], "values": [0, 0, 0]
-            }]
-          }],
-          "stringDicts": [{
-            "domain": "CommonName",
-            "entries": ["Norway Maple"]
-          }]
-        }
+            {
+              name: "Space Info",
+              restrictive: false,
+              fields: [
+                {
+                  id: 0,
+                  name: "spacestatus",
+                  fieldType: "esriFieldTypeString",
+                },
+              ],
+              domains: {
+                spacestatus: "SpaceStatus",
+                spacetype: "SpaceType",
+              },
+              contingentValues: [
+                {
+                  id: 9,
+                  types: [3, 3, 3],
+                  values: [0, 0, 0],
+                },
+              ],
+            },
+          ],
+          stringDicts: [
+            {
+              domain: "CommonName",
+              entries: ["Norway Maple"],
+            },
+          ],
+        },
       };
 
       const expected = {
         "0": expectedContingentValues,
-        "1": expectedContingentValues
-      }
+        "1": expectedContingentValues,
+      };
 
       fetchMock
         .post(adminUrl + "/0/contingentValues?f=json", contingentValues)
         .post(adminUrl + "/1/contingentValues?f=json", contingentValues);
 
-      processContingentValues(properties, adminUrl, authentication).then(() => {
-        expect(properties.contingentValues).toEqual(expected);
-        done();
-      }, done.fail);
+      await processContingentValues(properties, adminUrl, authentication);
+      expect(properties.contingentValues).toEqual(expected);
     });
 
-    it("handles error fetching contingent values", done => {
+    it("handles error fetching contingent values", async () => {
       const properties: interfaces.IFeatureServiceProperties = {
         service: {},
-        layers: [{
-          id: "0",
-          hasContingentValuesDefinition: true
-        }],
-        tables: []
+        layers: [
+          {
+            id: "0",
+            hasContingentValuesDefinition: true,
+          },
+        ],
+        tables: [],
       };
       const adminUrl = "https://test.arcgis.com/org1234567890/arcgis/rest/admin/services/R/FeatureServer";
       const authentication = MOCK_USER_SESSION;
 
-      fetchMock
-        .post(adminUrl + "/0/contingentValues?f=json", mockItems.get400Failure());
+      fetchMock.post(adminUrl + "/0/contingentValues?f=json", mockItems.get400Failure());
 
-      processContingentValues(properties, adminUrl, authentication)
-      .then(
-        () => done.fail(),
-        () => done()
-      );
+      await expectAsync(processContingentValues(properties, adminUrl, authentication)).toBeRejected();
     });
 
-    it("handles undefined layers and tables", done => {
+    it("handles undefined layers and tables", async () => {
       const properties = {
         service: {},
         layers: undefined,
-        tables: undefined
+        tables: undefined,
       };
       const adminUrl = "https://test.arcgis.com/org1234567890/arcgis/rest/admin/services/R/FeatureServer";
       const authentication = MOCK_USER_SESSION;
 
-      processContingentValues(properties, adminUrl, authentication).then(() => {
-        done();
-      }, done.fail);
+      await processContingentValues(properties as any, adminUrl, authentication);
     });
   });
 
@@ -4070,11 +3844,11 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
     it("will remove multiScaleGeometryInfo", () => {
       const actual: any = {
         a: "A",
-        multiScaleGeometryInfo: []
+        multiScaleGeometryInfo: [],
       };
 
       const expected: any = {
-        a: "A"
+        a: "A",
       };
 
       removeLayerOptimization(actual);
@@ -4087,49 +3861,27 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
       const dataWithProp: any = {
         layers: [
           {
-            id: 0
+            id: 0,
           },
           {
             id: 1,
             popupInfo: {
-              someProperty: {}
-            }
-          }
+              someProperty: {},
+            },
+          },
         ],
         tables: [
           {
-            id: 2
+            id: 2,
           },
           {
             id: 637,
             popupInfo: {
-              someProperty: {}
-            }
-          }
-        ]
-      };
-      // data with popupInfo without property on some
-      const dataNoProp: any = {
-        layers: [
-          {
-            id: 0
+              someProperty: {},
+            },
           },
-          {
-            id: 1,
-            popupInfo: {}
-          }
         ],
-        tables: [
-          {
-            id: 2
-          },
-          {
-            id: 637,
-            popupInfo: {}
-          }
-        ]
       };
-
       // Test with popups
       itemTemplate = {
         itemId: "",
@@ -4138,22 +3890,22 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
           service: {},
           layers: [
             {
-              fields: []
-            }
+              fields: [],
+            },
           ],
-          tables: []
+          tables: [],
         },
         type: "",
         item: {
           id: "",
           type: "",
-          text: {}
+          text: {},
         },
         data: dataWithProp,
         resources: [],
         dependencies: [],
         groups: [],
-        estimatedDeploymentCostFactor: 0
+        estimatedDeploymentCostFactor: 0,
       };
 
       const popupInfos = cachePopupInfos(itemTemplate.data);
@@ -4162,27 +3914,27 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
         layers: [
           {
             id: 0,
-            popupInfo: {}
+            popupInfo: {},
           },
           {
             id: 1,
             popupInfo: {
-              someProperty: {}
-            }
-          }
+              someProperty: {},
+            },
+          },
         ],
         tables: [
           {
             id: 2,
-            popupInfo: {}
+            popupInfo: {},
           },
           {
             id: 637,
             popupInfo: {
-              someProperty: {}
-            }
-          }
-        ]
+              someProperty: {},
+            },
+          },
+        ],
       };
 
       updatePopupInfo(itemTemplate, popupInfos);
@@ -4214,6 +3966,7 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
     it("should templatize an object property", () => {
       const propName = "someProp";
 
+      // eslint-disable-next-line prefer-const
       let obj: any;
       _templatizeProperty(obj, propName, basePath, "name");
       expect(obj).toBeUndefined();
@@ -4225,7 +3978,7 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
       obj[propName] = "NaMe123";
       _templatizeProperty(obj, propName, basePath, "name");
       expect(obj).toEqual({
-        someProp: "{{" + basePath + ".name123.name}}"
+        someProp: "{{" + basePath + ".name123.name}}",
       });
     });
   });
@@ -4236,11 +3989,7 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
       const dependencies: interfaces.IDependency[] = [];
       const templateDictionary: any = {};
 
-      const adminLayerInfo = _templatizeAdminLayerInfo(
-        layer,
-        dependencies,
-        templateDictionary
-      );
+      const adminLayerInfo = _templatizeAdminLayerInfo(layer, dependencies, templateDictionary);
       expect(adminLayerInfo).toEqual({});
     });
 
@@ -4248,7 +3997,7 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
       const layer: any = {
         adminLayerInfo: {
           geometryField: {
-            name: "Shape"
+            name: "Shape",
           },
           xssTrustedFields: [],
           tableName: "ABC",
@@ -4261,26 +4010,26 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
               relatedTables: [
                 {
                   sourceId: "4818_3",
-                  sourceServiceName: "SomeName_3"
-                }
-              ]
-            }
-          }
-        }
+                  sourceServiceName: "SomeName_3",
+                },
+              ],
+            },
+          },
+        },
       };
       const dependencies: interfaces.IDependency[] = [
         {
           id: "ab766cba0dd44ec080420acc10990282",
-          name: "SomeName"
+          name: "SomeName",
         },
         {
           id: "bc766cba0dd44ec080420acc10990282",
-          name: "SomeName_3"
-        }
+          name: "SomeName_3",
+        },
       ];
       const expected: any = {
         geometryField: {
-          name: "Shape"
+          name: "Shape",
         },
         viewLayerDefinition: {
           sourceServiceName: "{{ab766cba0dd44ec080420acc10990282.name}}",
@@ -4288,19 +4037,15 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
             sourceServiceName: "{{ab766cba0dd44ec080420acc10990282.name}}",
             relatedTables: [
               {
-                sourceServiceName: "{{bc766cba0dd44ec080420acc10990282.name}}"
-              }
-            ]
-          }
-        }
+                sourceServiceName: "{{bc766cba0dd44ec080420acc10990282.name}}",
+              },
+            ],
+          },
+        },
       };
 
       const templateDictionary: any = {};
-      const adminLayerInfo = _templatizeAdminLayerInfo(
-        layer,
-        dependencies,
-        templateDictionary
-      );
+      const adminLayerInfo = _templatizeAdminLayerInfo(layer, dependencies, templateDictionary);
       expect(adminLayerInfo).toEqual(expected);
     });
 
@@ -4309,7 +4054,7 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
         isMultiServicesView: true,
         adminLayerInfo: {
           geometryField: {
-            name: "Shape"
+            name: "Shape",
           },
           xssTrustedFields: [],
           tableName: "ABC",
@@ -4322,26 +4067,26 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
               relatedTables: [
                 {
                   sourceId: "4818_3",
-                  sourceServiceName: "SomeName_3"
-                }
-              ]
-            }
-          }
-        }
+                  sourceServiceName: "SomeName_3",
+                },
+              ],
+            },
+          },
+        },
       };
       const dependencies: interfaces.IDependency[] = [
         {
           id: "ab766cba0dd44ec080420acc10990282",
-          name: "SomeName"
+          name: "SomeName",
         },
         {
           id: "bc766cba0dd44ec080420acc10990282",
-          name: "SomeName_3"
-        }
+          name: "SomeName_3",
+        },
       ];
       const expected: any = {
         geometryField: {
-          name: "Shape"
+          name: "Shape",
         },
         viewLayerDefinition: {
           sourceServiceName: "{{ab766cba0dd44ec080420acc10990282.name}}",
@@ -4349,19 +4094,15 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
             sourceServiceName: "{{ab766cba0dd44ec080420acc10990282.name}}",
             relatedTables: [
               {
-                sourceServiceName: "{{bc766cba0dd44ec080420acc10990282.name}}"
-              }
-            ]
-          }
-        }
+                sourceServiceName: "{{bc766cba0dd44ec080420acc10990282.name}}",
+              },
+            ],
+          },
+        },
       };
 
       const templateDictionary: any = {};
-      const adminLayerInfo = _templatizeAdminLayerInfo(
-        layer,
-        dependencies,
-        templateDictionary
-      );
+      const adminLayerInfo = _templatizeAdminLayerInfo(layer, dependencies, templateDictionary);
       expect(adminLayerInfo).toEqual(expected);
     });
   });
@@ -4377,7 +4118,7 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
 
     it("should handle sourceId", () => {
       const object: any = {
-        sourceId: "4818"
+        sourceId: "4818",
       };
       const dependencies: any[] = [];
       _processAdminObject(object, dependencies);
@@ -4389,24 +4130,24 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
       const object: any = {
         sourceId: "4818",
         otherProp: {},
-        sourceServiceName: "SomeName"
+        sourceServiceName: "SomeName",
       };
       const dependencies: any[] = [
         {
           id: "ab766cba0dd44ec080420acc10990282",
-          name: "SomeName"
-        }
+          name: "SomeName",
+        },
       ];
 
       const expectedObject: any = {
         otherProp: {},
-        sourceServiceName: "{{ab766cba0dd44ec080420acc10990282.name}}"
+        sourceServiceName: "{{ab766cba0dd44ec080420acc10990282.name}}",
       };
       const expectedDependencies: any[] = [
         {
           id: "ab766cba0dd44ec080420acc10990282",
-          name: "SomeName"
-        }
+          name: "SomeName",
+        },
       ];
 
       _processAdminObject(object, dependencies);
@@ -4442,18 +4183,18 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
               relatedTables: [
                 {
                   sourceServiceName: "Table",
-                  sourceLayerId: 1
-                }
-              ]
-            }
-          }
-        }
+                  sourceLayerId: 1,
+                },
+              ],
+            },
+          },
+        },
       };
       const dependencies = [
         {
           name: "Table",
-          id: "cd766cba0dd44ec080420acc10990282"
-        }
+          id: "cd766cba0dd44ec080420acc10990282",
+        },
       ];
 
       const expected: any = {
@@ -4467,12 +4208,12 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
                   sourceServiceName: "Table",
                   sourceLayerId: 1,
                   parentKeyFields: [],
-                  keyFields: []
-                }
-              ]
-            }
-          }
-        }
+                  keyFields: [],
+                },
+              ],
+            },
+          },
+        },
       };
 
       _templatizeAdminLayerInfoFields(layer, dependencies);
@@ -4489,22 +4230,22 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
               sourceLayerFields: [
                 {
                   name: "A",
-                  source: "A"
+                  source: "A",
                 },
                 {
                   name: "B",
-                  source: "B"
-                }
-              ]
-            }
-          }
-        }
+                  source: "B",
+                },
+              ],
+            },
+          },
+        },
       };
       const dependencies = [
         {
           name: "Table",
-          id: "cd766cba0dd44ec080420acc10990282"
-        }
+          id: "cd766cba0dd44ec080420acc10990282",
+        },
       ];
 
       const expected: any = {
@@ -4516,16 +4257,16 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
               sourceLayerFields: [
                 {
                   name: "A",
-                  source: "{{" + basePath + ".a.name}}"
+                  source: "{{" + basePath + ".a.name}}",
                 },
                 {
                   name: "B",
-                  source: "{{" + basePath + ".b.name}}"
-                }
-              ]
-            }
-          }
-        }
+                  source: "{{" + basePath + ".b.name}}",
+                },
+              ],
+            },
+          },
+        },
       };
 
       _templatizeAdminLayerInfoFields(layer, dependencies);
@@ -4543,12 +4284,12 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
               sourceLayerFields: [
                 {
                   name: "A",
-                  source: "A"
+                  source: "A",
                 },
                 {
                   name: "B",
-                  source: "B"
-                }
+                  source: "B",
+                },
               ],
               relatedTables: [
                 {
@@ -4556,31 +4297,31 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
                   sourceLayerId: 1,
                   topFilter: {
                     orderByFields: "AA DESC",
-                    groupByFields: "BB"
+                    groupByFields: "BB",
                   },
                   sourceLayerFields: [
                     {
                       name: "AA",
-                      source: "AA"
+                      source: "AA",
                     },
                     {
                       name: "BB",
-                      source: "BB"
-                    }
+                      source: "BB",
+                    },
                   ],
                   parentKeyFields: ["A"],
-                  keyFields: ["AA"]
-                }
-              ]
-            }
-          }
-        }
+                  keyFields: ["AA"],
+                },
+              ],
+            },
+          },
+        },
       };
       const dependencies = [
         {
           name: "Table",
-          id: "cd766cba0dd44ec080420acc10990282"
-        }
+          id: "cd766cba0dd44ec080420acc10990282",
+        },
       ];
 
       const expected: any = {
@@ -4592,12 +4333,12 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
               sourceLayerFields: [
                 {
                   name: "A",
-                  source: "{{" + basePath + ".a.name}}"
+                  source: "{{" + basePath + ".a.name}}",
                 },
                 {
                   name: "B",
-                  source: "{{" + basePath + ".b.name}}"
-                }
+                  source: "{{" + basePath + ".b.name}}",
+                },
               ],
               relatedTables: [
                 {
@@ -4605,25 +4346,25 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
                   sourceLayerId: 1,
                   topFilter: {
                     orderByFields: "{{" + relatedBasePath + ".aa.name}} DESC",
-                    groupByFields: "{{" + relatedBasePath + ".bb.name}}"
+                    groupByFields: "{{" + relatedBasePath + ".bb.name}}",
                   },
                   sourceLayerFields: [
                     {
                       name: "AA",
-                      source: "{{" + relatedBasePath + ".aa.name}}"
+                      source: "{{" + relatedBasePath + ".aa.name}}",
                     },
                     {
                       name: "BB",
-                      source: "{{" + relatedBasePath + ".bb.name}}"
-                    }
+                      source: "{{" + relatedBasePath + ".bb.name}}",
+                    },
                   ],
                   parentKeyFields: ["{{" + basePath + ".a.name}}"],
-                  keyFields: ["{{" + relatedBasePath + ".aa.name}}"]
-                }
-              ]
-            }
-          }
-        }
+                  keyFields: ["{{" + relatedBasePath + ".aa.name}}"],
+                },
+              ],
+            },
+          },
+        },
       };
 
       _templatizeAdminLayerInfoFields(layer, dependencies);
@@ -4657,11 +4398,11 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
 
     it("should not fail with no relationships", () => {
       const layer: any = {
-        relationships: []
+        relationships: [],
       };
 
       const expected: any = {
-        relationships: []
+        relationships: [],
       };
 
       _templatizeRelationshipFields(layer, itemId);
@@ -4675,18 +4416,18 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
         relationships: [
           {
             relatedTableId: id,
-            keyField: "AA"
-          }
-        ]
+            keyField: "AA",
+          },
+        ],
       };
       const expected: any = {
         id: "0",
         relationships: [
           {
             relatedTableId: id,
-            keyField: "{{" + itemId + ".layer0.fields.aa.name}}"
-          }
-        ]
+            keyField: "{{" + itemId + ".layer0.fields.aa.name}}",
+          },
+        ],
       };
 
       _templatizeRelationshipFields(layer, itemId);
@@ -4699,13 +4440,7 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
       const layerDefinition: any = undefined;
       const layer: any = undefined;
       const fieldNames: any = undefined;
-      _templatizePopupInfo(
-        layerDefinition,
-        layer,
-        basePath,
-        itemId,
-        fieldNames
-      );
+      _templatizePopupInfo(layerDefinition, layer, basePath, itemId, fieldNames);
       expect(layerDefinition).toBeUndefined();
       expect(layer).toBeUndefined();
       expect(fieldNames).toBeUndefined();
@@ -4715,13 +4450,7 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
       const layerDefinition: any = {};
       const layer: any = {};
       const fieldNames: any = ["A", "B", "AA", "BB", "name"];
-      _templatizePopupInfo(
-        layerDefinition,
-        layer,
-        basePath,
-        itemId,
-        fieldNames
-      );
+      _templatizePopupInfo(layerDefinition, layer, basePath, itemId, fieldNames);
       expect(layerDefinition).toEqual({});
       expect(layer).toEqual({});
     });
@@ -4730,13 +4459,7 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
       const layerDefinition: any = { popupInfo: {} };
       const layer: any = {};
       const fieldNames: any = ["A", "B", "AA", "BB", "name"];
-      _templatizePopupInfo(
-        layerDefinition,
-        layer,
-        basePath,
-        itemId,
-        fieldNames
-      );
+      _templatizePopupInfo(layerDefinition, layer, basePath, itemId, fieldNames);
       expect(layerDefinition).toEqual({ popupInfo: {} });
       expect(layer).toEqual({});
     });
@@ -4753,7 +4476,7 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
               isEditable: false,
               visible: false,
               statisticType: "count",
-              stringFieldOption: "textbox"
+              stringFieldOption: "textbox",
             },
             {
               fieldName: "A",
@@ -4761,7 +4484,7 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
               isEditable: false,
               visible: false,
               statisticType: "count",
-              stringFieldOption: "textbox"
+              stringFieldOption: "textbox",
             },
             {
               fieldName: "expression/expr2",
@@ -4769,27 +4492,27 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
               isEditable: false,
               visible: false,
               statisticType: "count",
-              stringFieldOption: "textbox"
-            }
+              stringFieldOption: "textbox",
+            },
           ],
           expressionInfos: [
             {
               name: "expr1",
               title: "Population (Expr)",
               expression: "$feature.A",
-              returnType: "number"
+              returnType: "number",
             },
             {
               name: "expr2",
               title: "Name (Abbr) (Expr)",
               expression: "$feature.A + ' (' + $feature.B + ')'",
-              returnType: "string"
-            }
+              returnType: "string",
+            },
           ],
           popupElements: [
             {
               type: "text",
-              text: "Some descriptive text describing the popup."
+              text: "Some descriptive text describing the popup.",
             },
             {
               type: "fields",
@@ -4800,9 +4523,9 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
                   isEditable: false,
                   visible: false,
                   statisticType: "count",
-                  stringFieldOption: "textbox"
-                }
-              ]
+                  stringFieldOption: "textbox",
+                },
+              ],
             },
             {
               type: "media",
@@ -4814,15 +4537,15 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
                   value: {
                     fields: ["relationships/0/AA"],
                     tooltipField: "relationships/0/AA",
-                    normalizeField: "AA"
-                  }
-                }
-              ]
+                    normalizeField: "AA",
+                  },
+                },
+              ],
             },
             {
               type: "attachments",
-              displayType: "list"
-            }
+              displayType: "list",
+            },
           ],
           mediaInfos: [
             {
@@ -4832,11 +4555,11 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
               value: {
                 fields: ["relationships/0/BB", "A"],
                 tooltipField: "relationships/0/AA",
-                normalizeField: "AA"
-              }
-            }
-          ]
-        }
+                normalizeField: "AA",
+              },
+            },
+          ],
+        },
       };
 
       const relatedTableId: string = "1";
@@ -4848,12 +4571,12 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
             table: {
               relatedTables: [
                 {
-                  sourceLayerId: relatedTableId
-                }
-              ]
-            }
-          }
-        }
+                  sourceLayerId: relatedTableId,
+                },
+              ],
+            },
+          },
+        },
       };
 
       const fieldNames: string[] = ["A", "B", "name"];
@@ -4871,7 +4594,7 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
               isEditable: false,
               visible: false,
               statisticType: "count",
-              stringFieldOption: "textbox"
+              stringFieldOption: "textbox",
             },
             {
               fieldName: "{{" + basePath + ".a.name}}",
@@ -4879,7 +4602,7 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
               isEditable: false,
               visible: false,
               statisticType: "count",
-              stringFieldOption: "textbox"
+              stringFieldOption: "textbox",
             },
             {
               fieldName: "expression/expr2",
@@ -4887,46 +4610,40 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
               isEditable: false,
               visible: false,
               statisticType: "count",
-              stringFieldOption: "textbox"
-            }
+              stringFieldOption: "textbox",
+            },
           ],
           expressionInfos: [
             {
               name: "expr1",
               title: "Population (Expr)",
               expression: "$feature.{{" + basePath + ".a.name}}",
-              returnType: "number"
+              returnType: "number",
             },
             {
               name: "expr2",
               title: "Name (Abbr) (Expr)",
-              expression:
-                "$feature.{{" +
-                basePath +
-                ".a.name}} + ' (' + $feature.{{" +
-                basePath +
-                ".b.name}} + ')'",
-              returnType: "string"
-            }
+              expression: "$feature.{{" + basePath + ".a.name}} + ' (' + $feature.{{" + basePath + ".b.name}} + ')'",
+              returnType: "string",
+            },
           ],
           popupElements: [
             {
               type: "text",
-              text: "Some descriptive text describing the popup."
+              text: "Some descriptive text describing the popup.",
             },
             {
               type: "fields",
               fieldInfos: [
                 {
-                  fieldName:
-                    "relationships/0/{{" + relatedBasePath + ".bb.name}}",
+                  fieldName: "relationships/0/{{" + relatedBasePath + ".bb.name}}",
                   label: "Postcode",
                   isEditable: false,
                   visible: false,
                   statisticType: "count",
-                  stringFieldOption: "textbox"
-                }
-              ]
+                  stringFieldOption: "textbox",
+                },
+              ],
             },
             {
               type: "media",
@@ -4936,20 +4653,17 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
                   type: "barchart",
                   caption: "For a better idea...",
                   value: {
-                    fields: [
-                      "relationships/0/{{" + relatedBasePath + ".aa.name}}"
-                    ],
-                    tooltipField:
-                      "relationships/0/{{" + relatedBasePath + ".aa.name}}",
-                    normalizeField: "{{" + basePath + ".aa.name}}"
-                  }
-                }
-              ]
+                    fields: ["relationships/0/{{" + relatedBasePath + ".aa.name}}"],
+                    tooltipField: "relationships/0/{{" + relatedBasePath + ".aa.name}}",
+                    normalizeField: "{{" + basePath + ".aa.name}}",
+                  },
+                },
+              ],
             },
             {
               type: "attachments",
-              displayType: "list"
-            }
+              displayType: "list",
+            },
           ],
           mediaInfos: [
             {
@@ -4957,17 +4671,13 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
               type: "barchart",
               caption: "For a better idea...",
               value: {
-                fields: [
-                  "relationships/0/{{" + relatedBasePath + ".bb.name}}",
-                  "{{" + basePath + ".a.name}}"
-                ],
-                tooltipField:
-                  "relationships/0/{{" + relatedBasePath + ".aa.name}}",
-                normalizeField: "{{" + basePath + ".aa.name}}"
-              }
-            }
-          ]
-        }
+                fields: ["relationships/0/{{" + relatedBasePath + ".bb.name}}", "{{" + basePath + ".a.name}}"],
+                tooltipField: "relationships/0/{{" + relatedBasePath + ".aa.name}}",
+                normalizeField: "{{" + basePath + ".aa.name}}",
+              },
+            },
+          ],
+        },
       };
 
       const expectedLayer: any = {
@@ -4977,23 +4687,17 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
             table: {
               relatedTables: [
                 {
-                  sourceLayerId: relatedTableId
-                }
-              ]
-            }
-          }
-        }
+                  sourceLayerId: relatedTableId,
+                },
+              ],
+            },
+          },
+        },
       };
 
       const expectedFieldNames: string[] = ["A", "B", "name"];
 
-      _templatizePopupInfo(
-        layerDefinition,
-        layer,
-        basePath,
-        itemId,
-        fieldNames
-      );
+      _templatizePopupInfo(layerDefinition, layer, basePath, itemId, fieldNames);
       expect(layerDefinition).toEqual(expectedLayerDef);
       // should be untouched
       expect(layer).toEqual(expectedLayer);
@@ -5017,7 +4721,7 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
               isEditable: false,
               visible: false,
               statisticType: "count",
-              stringFieldOption: "textbox"
+              stringFieldOption: "textbox",
             },
             {
               fieldName: "A",
@@ -5025,27 +4729,27 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
               isEditable: false,
               visible: false,
               statisticType: "count",
-              stringFieldOption: "textbox"
-            }
+              stringFieldOption: "textbox",
+            },
           ],
           expressionInfos: [
             {
               name: "expr1",
               title: "Population (Expr)",
               expression: "$feature.A",
-              returnType: "number"
+              returnType: "number",
             },
             {
               name: "expr2",
               title: "Name (Abbr) (Expr)",
               expression: "$feature.A + ' (' + $feature.B + ')'",
-              returnType: "string"
-            }
+              returnType: "string",
+            },
           ],
           popupElements: [
             {
               type: "text",
-              text: "Some descriptive text describing the popup."
+              text: "Some descriptive text describing the popup.",
             },
             {
               type: "fields",
@@ -5056,9 +4760,9 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
                   isEditable: false,
                   visible: false,
                   statisticType: "count",
-                  stringFieldOption: "textbox"
-                }
-              ]
+                  stringFieldOption: "textbox",
+                },
+              ],
             },
             {
               type: "media",
@@ -5069,15 +4773,15 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
                   caption: "For a better idea...",
                   value: {
                     fields: ["relationships/0/AA"],
-                    tooltipField: "relationships/0/AA"
-                  }
-                }
-              ]
+                    tooltipField: "relationships/0/AA",
+                  },
+                },
+              ],
             },
             {
               type: "attachments",
-              displayType: "list"
-            }
+              displayType: "list",
+            },
           ],
           mediaInfos: [
             {
@@ -5086,20 +4790,20 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
               caption: "For a better idea...",
               value: {
                 fields: ["relationships/0/BB", "A"],
-                tooltipField: "relationships/0/AA"
-              }
-            }
-          ]
-        }
+                tooltipField: "relationships/0/AA",
+              },
+            },
+          ],
+        },
       };
 
       const layer: any = {
         isView: false,
         relationships: [
           {
-            relatedTableId: relatedTableId
-          }
-        ]
+            relatedTableId: relatedTableId,
+          },
+        ],
       };
 
       const fieldNames: string[] = ["A", "B", "name"];
@@ -5115,7 +4819,7 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
               isEditable: false,
               visible: false,
               statisticType: "count",
-              stringFieldOption: "textbox"
+              stringFieldOption: "textbox",
             },
             {
               fieldName: "{{" + basePath + ".a.name}}",
@@ -5123,46 +4827,40 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
               isEditable: false,
               visible: false,
               statisticType: "count",
-              stringFieldOption: "textbox"
-            }
+              stringFieldOption: "textbox",
+            },
           ],
           expressionInfos: [
             {
               name: "expr1",
               title: "Population (Expr)",
               expression: "$feature.{{" + basePath + ".a.name}}",
-              returnType: "number"
+              returnType: "number",
             },
             {
               name: "expr2",
               title: "Name (Abbr) (Expr)",
-              expression:
-                "$feature.{{" +
-                basePath +
-                ".a.name}} + ' (' + $feature.{{" +
-                basePath +
-                ".b.name}} + ')'",
-              returnType: "string"
-            }
+              expression: "$feature.{{" + basePath + ".a.name}} + ' (' + $feature.{{" + basePath + ".b.name}} + ')'",
+              returnType: "string",
+            },
           ],
           popupElements: [
             {
               type: "text",
-              text: "Some descriptive text describing the popup."
+              text: "Some descriptive text describing the popup.",
             },
             {
               type: "fields",
               fieldInfos: [
                 {
-                  fieldName:
-                    "relationships/0/{{" + relatedBasePath + ".bb.name}}",
+                  fieldName: "relationships/0/{{" + relatedBasePath + ".bb.name}}",
                   label: "Postcode",
                   isEditable: false,
                   visible: false,
                   statisticType: "count",
-                  stringFieldOption: "textbox"
-                }
-              ]
+                  stringFieldOption: "textbox",
+                },
+              ],
             },
             {
               type: "media",
@@ -5172,19 +4870,16 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
                   type: "barchart",
                   caption: "For a better idea...",
                   value: {
-                    fields: [
-                      "relationships/0/{{" + relatedBasePath + ".aa.name}}"
-                    ],
-                    tooltipField:
-                      "relationships/0/{{" + relatedBasePath + ".aa.name}}"
-                  }
-                }
-              ]
+                    fields: ["relationships/0/{{" + relatedBasePath + ".aa.name}}"],
+                    tooltipField: "relationships/0/{{" + relatedBasePath + ".aa.name}}",
+                  },
+                },
+              ],
             },
             {
               type: "attachments",
-              displayType: "list"
-            }
+              displayType: "list",
+            },
           ],
           mediaInfos: [
             {
@@ -5192,34 +4887,24 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
               type: "barchart",
               caption: "For a better idea...",
               value: {
-                fields: [
-                  "relationships/0/{{" + relatedBasePath + ".bb.name}}",
-                  "{{" + basePath + ".a.name}}"
-                ],
-                tooltipField:
-                  "relationships/0/{{" + relatedBasePath + ".aa.name}}"
-              }
-            }
-          ]
-        }
+                fields: ["relationships/0/{{" + relatedBasePath + ".bb.name}}", "{{" + basePath + ".a.name}}"],
+                tooltipField: "relationships/0/{{" + relatedBasePath + ".aa.name}}",
+              },
+            },
+          ],
+        },
       };
 
       const expectedLayer: any = {
         isView: false,
         relationships: [
           {
-            relatedTableId: relatedTableId
-          }
-        ]
+            relatedTableId: relatedTableId,
+          },
+        ],
       };
 
-      _templatizePopupInfo(
-        layerDefinition,
-        layer,
-        basePath,
-        itemId,
-        fieldNames
-      );
+      _templatizePopupInfo(layerDefinition, layer, basePath, itemId, fieldNames);
       expect(layerDefinition).toEqual(expectedLayerDef);
       // should be untouched
       expect(layer).toEqual(expectedLayer);
@@ -5237,7 +4922,7 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
 
     it("should handle value", () => {
       const obj: any = {
-        propName: "SomeAwords and SomeBwords and A and B and C and stuff"
+        propName: "SomeAwords and SomeBwords and A and B and C and stuff",
       };
       const prop: string = "propName";
       const fieldNames: string[] = ["A", "B", "C", "name"];
@@ -5249,7 +4934,7 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
           basePath +
           ".b.name}} and {{" +
           basePath +
-          ".c.name}} and stuff"
+          ".c.name}} and stuff",
       };
       _templatizeName(obj, prop, fieldNames, basePath);
       expect(obj).toEqual(expected);
@@ -5260,8 +4945,8 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
     it("should not fail when a mediaInfo value doesn't have fields", () => {
       const mediaInfos: any = [
         {
-          value: {}
-        }
+          value: {},
+        },
       ];
       const fieldNames: string[] = [];
       const layer: any = null;
@@ -5287,10 +4972,10 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
     it("should not fail with empty definitionEditor", () => {
       const fieldNames: string[] = ["A", "B", "C", "name"];
       const layer: any = {
-        definitionEditor: {}
+        definitionEditor: {},
       };
       const expected: any = {
-        definitionEditor: {}
+        definitionEditor: {},
       };
       _templatizeDefinitionEditor(layer, basePath, fieldNames);
       expect(layer).toEqual(expected);
@@ -5300,13 +4985,13 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
       const fieldNames: string[] = ["A", "B", "C", "name"];
       const layer: any = {
         definitionEditor: {
-          parameterizedExpression: undefined
-        }
+          parameterizedExpression: undefined,
+        },
       };
       const expected: any = {
         definitionEditor: {
-          parameterizedExpression: ""
-        }
+          parameterizedExpression: "",
+        },
       };
       _templatizeDefinitionEditor(layer, basePath, fieldNames);
       expect(layer).toEqual(expected);
@@ -5316,8 +5001,7 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
       const fieldNames: string[] = ["A", "B", "C", "name"];
       const layer: any = {
         definitionEditor: {
-          parameterizedExpression:
-            "A BETWEEN {0} AND {1} or B = 23 or C LIKE '{2}%'",
+          parameterizedExpression: "A BETWEEN {0} AND {1} or B = 23 or C LIKE '{2}%'",
           inputs: [
             {
               hint: "Enter square miles.",
@@ -5327,15 +5011,15 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
                   type: "esriFieldTypeInteger",
                   fieldName: "A",
                   parameterId: 0,
-                  defaultValue: 10
+                  defaultValue: 10,
                 },
                 {
                   type: "esriFieldTypeInteger",
                   fieldName: "B",
                   parameterId: 1,
-                  defaultValue: 100
-                }
-              ]
+                  defaultValue: 100,
+                },
+              ],
             },
             {
               hint: "Enter your name.",
@@ -5345,12 +5029,12 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
                   type: "esriFieldTypeString",
                   fieldName: "C",
                   parameterId: 2,
-                  defaultValue: "Jack"
-                }
-              ]
-            }
-          ]
-        }
+                  defaultValue: "Jack",
+                },
+              ],
+            },
+          ],
+        },
       };
 
       const expected: any = {
@@ -5372,15 +5056,15 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
                   type: "esriFieldTypeInteger",
                   fieldName: "{{" + basePath + ".a.name}}",
                   parameterId: 0,
-                  defaultValue: 10
+                  defaultValue: 10,
                 },
                 {
                   type: "esriFieldTypeInteger",
                   fieldName: "{{" + basePath + ".b.name}}",
                   parameterId: 1,
-                  defaultValue: 100
-                }
-              ]
+                  defaultValue: 100,
+                },
+              ],
             },
             {
               hint: "Enter your name.",
@@ -5390,12 +5074,12 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
                   type: "esriFieldTypeString",
                   fieldName: "{{" + basePath + ".c.name}}",
                   parameterId: 2,
-                  defaultValue: "Jack"
-                }
-              ]
-            }
-          ]
-        }
+                  defaultValue: "Jack",
+                },
+              ],
+            },
+          ],
+        },
       };
 
       _templatizeDefinitionEditor(layer, basePath, fieldNames);
@@ -5422,10 +5106,10 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
     it("should not fail with empty definitionExpression", () => {
       const fieldNames: any[] = ["A", "B", "C", "name"];
       const layer: any = {
-        definitionExpression: ""
+        definitionExpression: "",
       };
       const expected: any = {
-        definitionExpression: ""
+        definitionExpression: "",
       };
 
       _templatizeDefinitionExpression(layer, basePath, fieldNames);
@@ -5435,17 +5119,11 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
     it("should templatize field references within definitionExpression", () => {
       const fieldNames: any[] = ["A", "B", "C", "name"];
       const layer: any = {
-        definitionExpression: "A IS ABC AND B LIKE C"
+        definitionExpression: "A IS ABC AND B LIKE C",
       };
       const expected: any = {
         definitionExpression:
-          "{{" +
-          basePath +
-          ".a.name}} IS ABC AND {{" +
-          basePath +
-          ".b.name}} LIKE {{" +
-          basePath +
-          ".c.name}}"
+          "{{" + basePath + ".a.name}} IS ABC AND {{" + basePath + ".b.name}} LIKE {{" + basePath + ".c.name}}",
       };
       _templatizeDefinitionExpression(layer, basePath, fieldNames);
       expect(layer).toEqual(expected);
@@ -5456,24 +5134,15 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
     it("should not fail with undefined", () => {
       const fieldNames: any[] = ["A", "B", "C", "D", "name"];
       let expression;
-      expression = _templatizeSimpleName(
-        expression,
-        basePath,
-        fieldNames,
-        "name"
-      );
+      // eslint-disable-next-line prefer-const
+      expression = _templatizeSimpleName(expression, basePath, fieldNames, "name");
       expect(expression).toBeUndefined();
     });
 
     it("should not fail with empty expression", () => {
       const fieldNames: any[] = ["A", "B", "C", "D", "name"];
       let expression: string = "";
-      expression = _templatizeSimpleName(
-        expression,
-        basePath,
-        fieldNames,
-        "name"
-      );
+      expression = _templatizeSimpleName(expression, basePath, fieldNames, "name");
       expect(expression).toEqual("");
     });
 
@@ -5481,14 +5150,8 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
       const fieldNames: any[] = ["A", "B", "C", "D", "name"];
 
       // test case in expression
-      let expression =
-        "(a LIKE b AND c LIKE d) AND (A LIKE B AND C LIKE D SOMEOTHERABC)";
-      expression = _templatizeSimpleName(
-        expression,
-        basePath,
-        fieldNames,
-        "name"
-      );
+      let expression = "(a LIKE b AND c LIKE d) AND (A LIKE B AND C LIKE D SOMEOTHERABC)";
+      expression = _templatizeSimpleName(expression, basePath, fieldNames, "name");
       expect(expression).toEqual(
         "(a LIKE b AND c LIKE d) AND ({{" +
           basePath +
@@ -5498,20 +5161,14 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
           basePath +
           ".c.name}} LIKE {{" +
           basePath +
-          ".d.name}} SOMEOTHERABC)"
+          ".d.name}} SOMEOTHERABC)",
       );
     });
 
     it("should not templatize .name}} when we have a field called name", () => {
       const fieldNames: any[] = ["A", "B", "name", "C", "D"];
-      const expression: string =
-        "(A = N'{0}') AND (B = N'{1}') AND (C = N'{2}') AND (D = N'{3}')";
-      const actual: string = _templatizeSimpleName(
-        expression,
-        basePath,
-        fieldNames,
-        "name"
-      );
+      const expression: string = "(A = N'{0}') AND (B = N'{1}') AND (C = N'{2}') AND (D = N'{3}')";
+      const actual: string = _templatizeSimpleName(expression, basePath, fieldNames, "name");
 
       const expected: string =
         "({{" +
@@ -5539,7 +5196,7 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
         "POP50_CY",
         "POP60_CY",
         "Inclination",
-        "name"
+        "name",
       ];
 
       const layer: any = undefined;
@@ -5558,7 +5215,7 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
         "POP50_CY",
         "POP60_CY",
         "Inclination",
-        "name"
+        "name",
       ];
       const layer: any = { drawingInfo: {} };
       const expected: any = { drawingInfo: {} };
@@ -5577,7 +5234,7 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
         "POP50_CY",
         "POP60_CY",
         "Inclination",
-        "name"
+        "name",
       ];
 
       const layer: any = {
@@ -5587,15 +5244,15 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
               {
                 type: "colorInfo",
                 field: "POPULATION",
-                stops: []
-              }
+                stops: [],
+              },
             ],
             type: "classBreaks",
             field: "POPULATION",
             minValue: -9007199254740991,
-            classBreakInfos: []
-          }
-        }
+            classBreakInfos: [],
+          },
+        },
       };
 
       const expected: any = {
@@ -5605,15 +5262,15 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
               {
                 type: "colorInfo",
                 field: "{{" + basePath + ".population.name}}",
-                stops: []
-              }
+                stops: [],
+              },
             ],
             type: "classBreaks",
             field: "{{" + basePath + ".population.name}}",
             minValue: -9007199254740991,
-            classBreakInfos: []
-          }
-        }
+            classBreakInfos: [],
+          },
+        },
       };
 
       _templatizeDrawingInfo(layer, basePath, fieldNames);
@@ -5631,7 +5288,7 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
         "POP50_CY",
         "POP60_CY",
         "Inclination",
-        "name"
+        "name",
       ];
 
       const layer: any = {
@@ -5642,9 +5299,9 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
             colorStops: [],
             field: "TEST",
             maxPixelIntensity: 1249.2897582229123,
-            minPixelIntensity: 0
-          }
-        }
+            minPixelIntensity: 0,
+          },
+        },
       };
 
       const expected: any = {
@@ -5655,9 +5312,9 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
             colorStops: [],
             field: "{{" + basePath + ".test.name}}",
             maxPixelIntensity: 1249.2897582229123,
-            minPixelIntensity: 0
-          }
-        }
+            minPixelIntensity: 0,
+          },
+        },
       };
 
       _templatizeDrawingInfo(layer, basePath, fieldNames);
@@ -5675,7 +5332,7 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
         "POP50_CY",
         "POP60_CY",
         "Inclination",
-        "name"
+        "name",
       ];
 
       const layer: any = {
@@ -5687,32 +5344,26 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
                 valueExpression:
                   'var fieldNames = ["POP10_CY", "POP40_CY", "POP60_CY", "POP20_CY", "POP30_CY"];\nvar numFields = 5;\nvar maxValueField = null;\nvar maxValue = -Infinity;\nvar value, i, totalValue = null;\nfor(i = 0; i < numFields; i++) {\nvalue = $feature[fieldNames[i]];\nif(value > 0) {\nif(value > maxValue) {\nmaxValue = value;\nmaxValueField = fieldNames[i];\n}\nelse if (value == maxValue) {\nmaxValueField = null;\n}\n}\nif(value != null && value >= 0) {\nif (totalValue == null) { totalValue = 0; }\ntotalValue = totalValue + value;\n}\n}\nvar strength = null;\nif (maxValueField != null && totalValue > 0) {\nstrength = (maxValue / totalValue) * 100;\n}\nreturn strength;',
                 stops: [],
-                legendOptions: {}
+                legendOptions: {},
               },
               {
                 type: "sizeInfo",
                 target: "outline",
                 expression: "view.scale",
-                stops: []
-              }
+                stops: [],
+              },
             ],
             authoringInfo: {
               type: "predominance",
-              fields: [
-                "POP10_CY",
-                "POP40_CY",
-                "POP60_CY",
-                "POP20_CY",
-                "POP30_CY"
-              ],
-              visualVariables: { endTime: "POP30_CY" }
+              fields: ["POP10_CY", "POP40_CY", "POP60_CY", "POP20_CY", "POP30_CY"],
+              visualVariables: { endTime: "POP30_CY" },
             },
             type: "uniqueValue",
             valueExpression:
               'var fieldNames = ["POP10_CY", "POP40_CY", "POP60_CY", "POP20_CY", "POP30_CY"];\nvar numFields = 5;\nvar maxValueField = null;\nvar maxValue = -Infinity;\nvar value, i, totalValue = null;\nfor(i = 0; i < numFields; i++) {\nvalue = $feature[fieldNames[i]];\nif(value > 0) {\nif(value > maxValue) {\nmaxValue = value;\nmaxValueField = fieldNames[i];\n}\nelse if (value == maxValue) {\nmaxValueField = null;\n}\n}\n}\nreturn maxValueField;',
-            uniqueValueInfos: []
-          }
-        }
+            uniqueValueInfos: [],
+          },
+        },
       };
 
       const expected: any = {
@@ -5734,14 +5385,14 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
                   basePath +
                   '.pop30_cy.name}}"];\nvar numFields = 5;\nvar maxValueField = null;\nvar maxValue = -Infinity;\nvar value, i, totalValue = null;\nfor(i = 0; i < numFields; i++) {\nvalue = $feature[fieldNames[i]];\nif(value > 0) {\nif(value > maxValue) {\nmaxValue = value;\nmaxValueField = fieldNames[i];\n}\nelse if (value == maxValue) {\nmaxValueField = null;\n}\n}\nif(value != null && value >= 0) {\nif (totalValue == null) { totalValue = 0; }\ntotalValue = totalValue + value;\n}\n}\nvar strength = null;\nif (maxValueField != null && totalValue > 0) {\nstrength = (maxValue / totalValue) * 100;\n}\nreturn strength;',
                 stops: [],
-                legendOptions: {}
+                legendOptions: {},
               },
               {
                 type: "sizeInfo",
                 target: "outline",
                 expression: "view.scale",
-                stops: []
-              }
+                stops: [],
+              },
             ],
             authoringInfo: {
               type: "predominance",
@@ -5750,11 +5401,11 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
                 "{{" + basePath + ".pop40_cy.name}}",
                 "{{" + basePath + ".pop60_cy.name}}",
                 "{{" + basePath + ".pop20_cy.name}}",
-                "{{" + basePath + ".pop30_cy.name}}"
+                "{{" + basePath + ".pop30_cy.name}}",
               ],
               visualVariables: {
-                endTime: "{{" + basePath + ".pop30_cy.name}}"
-              }
+                endTime: "{{" + basePath + ".pop30_cy.name}}",
+              },
             },
             type: "uniqueValue",
             valueExpression:
@@ -5769,9 +5420,9 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
               '.pop20_cy.name}}", "{{' +
               basePath +
               '.pop30_cy.name}}"];\nvar numFields = 5;\nvar maxValueField = null;\nvar maxValue = -Infinity;\nvar value, i, totalValue = null;\nfor(i = 0; i < numFields; i++) {\nvalue = $feature[fieldNames[i]];\nif(value > 0) {\nif(value > maxValue) {\nmaxValue = value;\nmaxValueField = fieldNames[i];\n}\nelse if (value == maxValue) {\nmaxValueField = null;\n}\n}\n}\nreturn maxValueField;',
-            uniqueValueInfos: []
-          }
-        }
+            uniqueValueInfos: [],
+          },
+        },
       };
 
       _templatizeDrawingInfo(layer, basePath, fieldNames);
@@ -5789,7 +5440,7 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
         "POP50_CY",
         "POP60_CY",
         "Inclination",
-        "name"
+        "name",
       ];
 
       const layer: any = {
@@ -5797,9 +5448,9 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
           renderer: {
             type: "simple",
             rotationExpression: "[TEST]",
-            symbol: {}
-          }
-        }
+            symbol: {},
+          },
+        },
       };
 
       const expected: any = {
@@ -5807,9 +5458,9 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
           renderer: {
             type: "simple",
             rotationExpression: "[{{" + basePath + ".test.name}}]",
-            symbol: {}
-          }
-        }
+            symbol: {},
+          },
+        },
       };
 
       _templatizeDrawingInfo(layer, basePath, fieldNames);
@@ -5827,7 +5478,7 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
         "POP50_CY",
         "POP60_CY",
         "Inclination",
-        "name"
+        "name",
       ];
 
       const layer: any = {
@@ -5839,29 +5490,29 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
                 {
                   field: "Inclination",
                   rotationType: "geographic",
-                  type: "rotationInfo"
-                }
+                  type: "rotationInfo",
+                },
               ],
               type: "simple",
-              symbol: {}
+              symbol: {},
             },
             latestObservationRenderer: {
               visualVariables: [
                 {
                   field: "Inclination",
                   rotationType: "geographic",
-                  type: "rotationInfo"
-                }
+                  type: "rotationInfo",
+                },
               ],
               type: "simple",
-              symbol: {}
+              symbol: {},
             },
             trackRenderer: {
               type: "simple",
-              symbol: {}
-            }
-          }
-        }
+              symbol: {},
+            },
+          },
+        },
       };
 
       const expected: any = {
@@ -5873,29 +5524,29 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
                 {
                   field: "{{" + basePath + ".inclination.name}}",
                   rotationType: "geographic",
-                  type: "rotationInfo"
-                }
+                  type: "rotationInfo",
+                },
               ],
               type: "simple",
-              symbol: {}
+              symbol: {},
             },
             latestObservationRenderer: {
               visualVariables: [
                 {
                   field: "{{" + basePath + ".inclination.name}}",
                   rotationType: "geographic",
-                  type: "rotationInfo"
-                }
+                  type: "rotationInfo",
+                },
               ],
               type: "simple",
-              symbol: {}
+              symbol: {},
             },
             trackRenderer: {
               type: "simple",
-              symbol: {}
-            }
-          }
-        }
+              symbol: {},
+            },
+          },
+        },
       };
 
       _templatizeDrawingInfo(layer, basePath, fieldNames);
@@ -5913,7 +5564,7 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
         "POP50_CY",
         "POP60_CY",
         "Inclination",
-        "name"
+        "name",
       ];
 
       const layer: any = {
@@ -5921,9 +5572,9 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
           renderer: {
             type: "uniqueValue",
             field1: "COUNTRY",
-            uniqueValueInfos: []
-          }
-        }
+            uniqueValueInfos: [],
+          },
+        },
       };
 
       const expected: any = {
@@ -5931,9 +5582,9 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
           renderer: {
             type: "uniqueValue",
             field1: "{{" + basePath + ".country.name}}",
-            uniqueValueInfos: []
-          }
-        }
+            uniqueValueInfos: [],
+          },
+        },
       };
 
       _templatizeDrawingInfo(layer, basePath, fieldNames);
@@ -5943,7 +5594,9 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
 
   describe("_templatizeArcadeExpressions", () => {
     it("should not fail with undefined text", () => {
-      let text: string;
+      // eslint-disable-next-line no-undef-init
+      let text: any = undefined;
+      // eslint-disable-next-line prefer-const
       text = _templatizeArcadeExpressions(text, "", basePath);
       expect(text).toBeUndefined();
     });
@@ -5956,8 +5609,7 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
 
     it("should handle $feature. notation", () => {
       const fieldNames: string[] = ["POP_16UP", "EMP_CY", "POP_16UP", "name"];
-      let text: string =
-        "Round((($feature.POP_16UP - $feature.EMP_CY)/$feature.POP_16UP)*100,2) + '%'";
+      let text: string = "Round((($feature.POP_16UP - $feature.EMP_CY)/$feature.POP_16UP)*100,2) + '%'";
       let expected: string =
         "Round((($feature.{{" +
         basePath +
@@ -6018,17 +5670,13 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
       fieldNames.forEach((name: string) => {
         text = _templatizeArcadeExpressions(text, name, basePath);
       });
-      expect(text).toEqual(
-        '$feature["COUNTY_ID.{{' + basePath + '.emp_cy.name}}"]'
-      );
+      expect(text).toEqual('$feature["COUNTY_ID.{{' + basePath + '.emp_cy.name}}"]');
 
       text = "$feature['COUNTY_ID.EMP_CY']";
       fieldNames.forEach((name: string) => {
         text = _templatizeArcadeExpressions(text, name, basePath);
       });
-      expect(text).toEqual(
-        "$feature['COUNTY_ID.{{" + basePath + ".emp_cy.name}}']"
-      );
+      expect(text).toEqual("$feature['COUNTY_ID.{{" + basePath + ".emp_cy.name}}']");
     });
 
     it('should handle "fieldName" notation', () => {
@@ -6049,25 +5697,13 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
       fieldNames.forEach((name: string) => {
         text = _templatizeArcadeExpressions(text, name, basePath);
       });
-      expect(text).toEqual(
-        'var names = [ "{{' +
-          basePath +
-          '.emp_cy.name}}", "{{' +
-          basePath +
-          '.pop_16up.name}}" ]'
-      );
+      expect(text).toEqual('var names = [ "{{' + basePath + '.emp_cy.name}}", "{{' + basePath + '.pop_16up.name}}" ]');
 
       text = "var names = [ 'EMP_CY', 'POP_16UP' ]";
       fieldNames.forEach((name: string) => {
         text = _templatizeArcadeExpressions(text, name, basePath);
       });
-      expect(text).toEqual(
-        "var names = [ '{{" +
-          basePath +
-          ".emp_cy.name}}', '{{" +
-          basePath +
-          ".pop_16up.name}}' ]"
-      );
+      expect(text).toEqual("var names = [ '{{" + basePath + ".emp_cy.name}}', '{{" + basePath + ".pop_16up.name}}' ]");
     });
   });
 
@@ -6092,8 +5728,8 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
           maxScale: 0,
           minScale: 0,
           labelPlacement: "esriServerPointLabelPlacementAboveLeft",
-          symbol: {}
-        }
+          symbol: {},
+        },
       ];
       const expected: any[] = [
         {
@@ -6104,8 +5740,8 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
           maxScale: 0,
           minScale: 0,
           labelPlacement: "esriServerPointLabelPlacementAboveLeft",
-          symbol: {}
-        }
+          symbol: {},
+        },
       ];
 
       _templatizeLabelingInfo(labelingInfo, basePath, fieldNames);
@@ -6118,16 +5754,15 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
         {
           labelExpression: null,
           labelExpressionInfo: {
-            value:
-              'return $feature["{STATE_NAME}"] + $feature["{ACRES}"] + " (arcade)";'
+            value: 'return $feature["{STATE_NAME}"] + $feature["{ACRES}"] + " (arcade)";',
           },
           fieldInfos: [],
           useCodedValues: false,
           maxScale: 0,
           minScale: 0,
           labelPlacement: "esriServerPointLabelPlacementAboveLeft",
-          symbol: {}
-        }
+          symbol: {},
+        },
       ];
 
       const expected: any[] = [
@@ -6139,15 +5774,15 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
               basePath +
               '.state_name.name}}}"] + $feature["{{{' +
               basePath +
-              '.acres.name}}}"] + " (arcade)";'
+              '.acres.name}}}"] + " (arcade)";',
           },
           fieldInfos: [],
           useCodedValues: false,
           maxScale: 0,
           minScale: 0,
           labelPlacement: "esriServerPointLabelPlacementAboveLeft",
-          symbol: {}
-        }
+          symbol: {},
+        },
       ];
 
       _templatizeLabelingInfo(labelingInfo, basePath, fieldNames);
@@ -6161,53 +5796,47 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
           labelExpression: "[Description]",
           labelExpressionInfo: {
             value: 'return $feature["STATE_NAME"] + " (arcade)";',
-            expression: 'return $feature["STATE_NAME"] + " (arcade)";'
+            expression: 'return $feature["STATE_NAME"] + " (arcade)";',
           },
           fieldInfos: [
             {
               fieldName: "ACRES",
               format: {
                 places: 2,
-                digitSeparator: true
-              }
-            }
+                digitSeparator: true,
+              },
+            },
           ],
           useCodedValues: false,
           maxScale: 0,
           minScale: 0,
           labelPlacement: "esriServerPointLabelPlacementAboveLeft",
-          symbol: {}
-        }
+          symbol: {},
+        },
       ];
 
       const expected: any[] = [
         {
           labelExpression: "[{{" + basePath + ".description.name}}]",
           labelExpressionInfo: {
-            value:
-              'return $feature["{{' +
-              basePath +
-              '.state_name.name}}"] + " (arcade)";',
-            expression:
-              'return $feature["{{' +
-              basePath +
-              '.state_name.name}}"] + " (arcade)";'
+            value: 'return $feature["{{' + basePath + '.state_name.name}}"] + " (arcade)";',
+            expression: 'return $feature["{{' + basePath + '.state_name.name}}"] + " (arcade)";',
           },
           fieldInfos: [
             {
               fieldName: "{{" + basePath + ".acres.name}}",
               format: {
                 places: 2,
-                digitSeparator: true
-              }
-            }
+                digitSeparator: true,
+              },
+            },
           ],
           useCodedValues: false,
           maxScale: 0,
           minScale: 0,
           labelPlacement: "esriServerPointLabelPlacementAboveLeft",
-          symbol: {}
-        }
+          symbol: {},
+        },
       ];
 
       _templatizeLabelingInfo(labelingInfo, basePath, fieldNames);
@@ -6229,28 +5858,24 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
             prototype: {
               attributes: {
                 A: null,
-                B: null
-              }
-            }
-          }
-        ]
+                B: null,
+              },
+            },
+          },
+        ],
       };
 
       const expected: any = {
         templates: [
           {
             prototype: {
-              attributes: {}
-            }
-          }
-        ]
+              attributes: {},
+            },
+          },
+        ],
       };
-      expected.templates[0].prototype.attributes[
-        "{{" + basePath + ".a.name}}"
-      ] = null;
-      expected.templates[0].prototype.attributes[
-        "{{" + basePath + ".b.name}}"
-      ] = null;
+      expected.templates[0].prototype.attributes["{{" + basePath + ".a.name}}"] = null;
+      expected.templates[0].prototype.attributes["{{" + basePath + ".b.name}}"] = null;
 
       _templatizeTemplates(layer, basePath);
       expect(layer).toEqual(expected);
@@ -6274,20 +5899,20 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
           {
             domains: {
               A: "A",
-              B: "B"
+              B: "B",
             },
             templates: [
               {
                 prototype: {
                   attributes: {
                     A: "A",
-                    B: "B"
-                  }
-                }
-              }
-            ]
-          }
-        ]
+                    B: "B",
+                  },
+                },
+              },
+            ],
+          },
+        ],
       };
       const expectedDomains: any = {};
       expectedDomains["{{" + path + ".a.name}}"] = "A";
@@ -6302,12 +5927,12 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
             templates: [
               {
                 prototype: {
-                  attributes: expectedTemplates
-                }
-              }
-            ]
-          }
-        ]
+                  attributes: expectedTemplates,
+                },
+              },
+            ],
+          },
+        ],
       };
       _templatizeTypeTemplates(layer, path);
       expect(layer).toEqual(expectedLayer);
@@ -6329,15 +5954,15 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
         timeInfo: {
           endTimeField: "",
           startTimeField: "",
-          trackIdField: ""
-        }
+          trackIdField: "",
+        },
       };
       const expected: any = {
         timeInfo: {
           endTimeField: null,
           startTimeField: null,
-          trackIdField: null
-        }
+          trackIdField: null,
+        },
       };
       _templatizeTimeInfo(layer, path);
       expect(layer).toEqual(expected);
@@ -6349,15 +5974,15 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
         timeInfo: {
           endTimeField: "A",
           startTimeField: "B",
-          trackIdField: "C"
-        }
+          trackIdField: "C",
+        },
       };
       const expected: any = {
         timeInfo: {
           endTimeField: "{{" + path + ".a.name}}",
           startTimeField: "{{" + path + ".b.name}}",
-          trackIdField: "{{" + path + ".c.name}}"
-        }
+          trackIdField: "{{" + path + ".c.name}}",
+        },
       };
       _templatizeTimeInfo(layer, path);
       expect(layer).toEqual(expected);
@@ -6374,11 +5999,11 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
 
     it("should not fail with empty viewDefinitionQuery", () => {
       const layer: any = {
-        viewDefinitionQuery: ""
+        viewDefinitionQuery: "",
       };
       const fieldNames: any = [];
       const expected: any = {
-        viewDefinitionQuery: ""
+        viewDefinitionQuery: "",
       };
       _templatizeDefinitionQuery(layer, basePath, fieldNames);
       expect(layer).toEqual(expected);
@@ -6390,11 +6015,11 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
 
     it("should not fail with empty definitionQuery", () => {
       const layer: any = {
-        definitionQuery: ""
+        definitionQuery: "",
       };
       const fieldNames: any = [];
       const expected: any = {
-        definitionQuery: ""
+        definitionQuery: "",
       };
       _templatizeDefinitionQuery(layer, basePath, fieldNames);
       expect(layer).toEqual(expected);
@@ -6406,7 +6031,7 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
 
     it("should templatize field references in viewDefinitionQuery", () => {
       const layer: any = {
-        viewDefinitionQuery: "a is not A is B isNot but BB is and CCC"
+        viewDefinitionQuery: "a is not A is B isNot but BB is and CCC",
       };
       const fieldNames: any = ["A", "BB", "CCC", "name"];
       const expected: any = {
@@ -6417,7 +6042,7 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
           basePath +
           ".bb.name}} is and {{" +
           basePath +
-          ".ccc.name}}"
+          ".ccc.name}}",
       };
       _templatizeDefinitionQuery(layer, basePath, fieldNames);
       expect(layer).toEqual(expected);
@@ -6426,98 +6051,122 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
 
   describe("_updateOrder", () => {
     it("will sort when self referential", () => {
-      const layersAndTables = [{
-        item: {
-          id: 4
-        }
-      }, {
-        item: {
-          id: 3
-        }
-      }, {
-        item: {
-          id: 1
-        }
-      }, {
-        item: {
-          id: 2
-        }
-      }, {
-        item: {
-          id: 0
-        }
-      }];
+      const layersAndTables = [
+        {
+          item: {
+            id: 4,
+          },
+        },
+        {
+          item: {
+            id: 3,
+          },
+        },
+        {
+          item: {
+            id: 1,
+          },
+        },
+        {
+          item: {
+            id: 2,
+          },
+        },
+        {
+          item: {
+            id: 0,
+          },
+        },
+      ];
 
-      const expected = [{
-        item: {
-          id: 0
-        }
-      }, {
-        item: {
-          id: 1
-        }
-      }, {
-        item: {
-          id: 2
-        }
-      }, {
-        item: {
-          id: 3
-        }
-      }, {
-        item: {
-          id: 4
-        }
-      }];
+      const expected = [
+        {
+          item: {
+            id: 0,
+          },
+        },
+        {
+          item: {
+            id: 1,
+          },
+        },
+        {
+          item: {
+            id: 2,
+          },
+        },
+        {
+          item: {
+            id: 3,
+          },
+        },
+        {
+          item: {
+            id: 4,
+          },
+        },
+      ];
       const _itemTemplate: interfaces.IItemTemplate = templates.getItemTemplateSkeleton();
       const actual = _updateOrder(layersAndTables, true, _itemTemplate);
       expect(actual).toEqual(expected);
     });
 
     it("will sort multisource", () => {
-      const layersAndTables = [{
-        item: {
-          id: 4
-        }
-      }, {
-        item: {
-          id: 3
-        }
-      }, {
-        item: {
-          id: 1
-        }
-      }, {
-        item: {
-          id: 2
-        }
-      }, {
-        item: {
-          id: 0
-        }
-      }];
+      const layersAndTables = [
+        {
+          item: {
+            id: 4,
+          },
+        },
+        {
+          item: {
+            id: 3,
+          },
+        },
+        {
+          item: {
+            id: 1,
+          },
+        },
+        {
+          item: {
+            id: 2,
+          },
+        },
+        {
+          item: {
+            id: 0,
+          },
+        },
+      ];
 
-      const expected = [{
-        item: {
-          id: 0
-        }
-      }, {
-        item: {
-          id: 1
-        }
-      }, {
-        item: {
-          id: 2
-        }
-      }, {
-        item: {
-          id: 3
-        }
-      }, {
-        item: {
-          id: 4
-        }
-      }];
+      const expected = [
+        {
+          item: {
+            id: 0,
+          },
+        },
+        {
+          item: {
+            id: 1,
+          },
+        },
+        {
+          item: {
+            id: 2,
+          },
+        },
+        {
+          item: {
+            id: 3,
+          },
+        },
+        {
+          item: {
+            id: 4,
+          },
+        },
+      ];
 
       const _itemTemplate: interfaces.IItemTemplate = templates.getItemTemplateSkeleton();
       setCreateProp(_itemTemplate, "properties.service.isMultiServicesView", true);
@@ -6529,28 +6178,26 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
   describe("_updateAddOptions", () => {
     it("will not create new array when isMultiServicesView is false", () => {
       const startOptions: any = {
-        layers: [{
-          props: []
-        }],
-        tables: [{
-            props: []
-        }],
-        MOCK_USER_SESSION
+        layers: [
+          {
+            props: [],
+          },
+        ],
+        tables: [
+          {
+            props: [],
+          },
+        ],
+        MOCK_USER_SESSION,
       };
 
       itemTemplate.properties.service = {
-        isMultiServicesView: false
+        isMultiServicesView: false,
       };
 
       const layerChunks: any[] = [];
 
-      const actual: any = _updateAddOptions(
-        itemTemplate,
-        startOptions,
-        layerChunks,
-        false,
-        MOCK_USER_SESSION
-      );
+      const actual: any = _updateAddOptions(itemTemplate, startOptions, layerChunks, false, MOCK_USER_SESSION);
       expect(actual.layers).toEqual(startOptions.layers);
       expect(actual.tables).toEqual(startOptions.tables);
       expect(layerChunks).toEqual([]);
@@ -6560,55 +6207,44 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
       const startOptions: any = {
         layers: [
           {
-            props: []
-          }
+            props: [],
+          },
         ],
         tables: [],
-        MOCK_USER_SESSION
+        MOCK_USER_SESSION,
       };
 
       itemTemplate.properties.service = {
-        isMultiServicesView: true
+        isMultiServicesView: true,
       };
 
       const layerChunks: any[] = [];
 
-      const actual: any = _updateAddOptions(
-        itemTemplate,
-        startOptions,
-        layerChunks,
-        false,
-        MOCK_USER_SESSION
-      );
+      const actual: any = _updateAddOptions(itemTemplate, startOptions, layerChunks, false, MOCK_USER_SESSION);
 
       expect(actual.layers).toEqual([]);
       expect(actual.tables).toEqual([]);
       expect(layerChunks).toEqual([startOptions]);
     });
 
-
     it("will create new tables array when isMultiServicesView is true", () => {
       const startOptions: any = {
         layers: [],
-        tables: [{
-          props: []
-        }],
-        MOCK_USER_SESSION
+        tables: [
+          {
+            props: [],
+          },
+        ],
+        MOCK_USER_SESSION,
       };
 
       itemTemplate.properties.service = {
-        isMultiServicesView: true
+        isMultiServicesView: true,
       };
 
       const layerChunks: any[] = [];
 
-      const actual: any = _updateAddOptions(
-        itemTemplate,
-        startOptions,
-        layerChunks,
-        false,
-        MOCK_USER_SESSION
-      );
+      const actual: any = _updateAddOptions(itemTemplate, startOptions, layerChunks, false, MOCK_USER_SESSION);
 
       expect(actual.layers).toEqual([]);
       expect(actual.tables).toEqual([]);
@@ -6618,24 +6254,29 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
 
   describe("_isSelfReferential", () => {
     it("will return true when a layer references another layer from the same service", () => {
-      const layersAndTables = [{
-        item: {
-          adminLayerInfo: {
-            viewLayerDefinition: {
-              table: {
-                relatedTables: [{
-                  name: "A"
-                }]
-              }
-            }
+      const layersAndTables = [
+        {
+          item: {
+            adminLayerInfo: {
+              viewLayerDefinition: {
+                table: {
+                  relatedTables: [
+                    {
+                      name: "A",
+                    },
+                  ],
+                },
+              },
+            },
+            name: "B",
           },
-          name: "B"
-        }
-      }, {
-        item: {
-          name: "A"
-        }
-      }];
+        },
+        {
+          item: {
+            name: "A",
+          },
+        },
+      ];
 
       const expected = true;
       const actual = _isSelfReferential(layersAndTables);
@@ -6643,24 +6284,29 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
     });
 
     it("will return false when a layer does not reference another layer from the same service", () => {
-      const layersAndTables = [{
-        item: {
-          adminLayerInfo: {
-            viewLayerDefinition: {
-              table: {
-                relatedTables: [{
-                  name: "C"
-                }]
-              }
-            }
+      const layersAndTables = [
+        {
+          item: {
+            adminLayerInfo: {
+              viewLayerDefinition: {
+                table: {
+                  relatedTables: [
+                    {
+                      name: "C",
+                    },
+                  ],
+                },
+              },
+            },
+            name: "B",
           },
-          name: "B"
-        }
-      }, {
-        item: {
-          name: "A"
-        }
-      }];
+        },
+        {
+          item: {
+            name: "A",
+          },
+        },
+      ];
 
       const expected = false;
       const actual = _isSelfReferential(layersAndTables);
@@ -6668,46 +6314,50 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
     });
 
     it("will return true when items have multiple references to the same layer", () => {
-      const layersAndTables = [{
-        item: {
-          adminLayerInfo: {
-            viewLayerDefinition: {
-              table: {
-                name: "C_1",
-                sourceServiceName: "C",
-                sourceLayerId: 0
-              }
-            }
+      const layersAndTables = [
+        {
+          item: {
+            adminLayerInfo: {
+              viewLayerDefinition: {
+                table: {
+                  name: "C_1",
+                  sourceServiceName: "C",
+                  sourceLayerId: 0,
+                },
+              },
+            },
+            name: "B",
           },
-          name: "B"
-        }
-      }, {
-        item: {
-          adminLayerInfo: {
-            viewLayerDefinition: {
-              table: {
-                name: "C_3",
-                sourceServiceName: "C",
-                sourceLayerId: 1
-              }
-            }
+        },
+        {
+          item: {
+            adminLayerInfo: {
+              viewLayerDefinition: {
+                table: {
+                  name: "C_3",
+                  sourceServiceName: "C",
+                  sourceLayerId: 1,
+                },
+              },
+            },
+            name: "C",
           },
-          name: "C"
-        }
-      }, {
-        item: {
-          adminLayerInfo: {
-            viewLayerDefinition: {
-              table: {
-                name: "C_2",
-                sourceServiceName: "C",
-                sourceLayerId: 0
-              }
-            }
+        },
+        {
+          item: {
+            adminLayerInfo: {
+              viewLayerDefinition: {
+                table: {
+                  name: "C_2",
+                  sourceServiceName: "C",
+                  sourceLayerId: 0,
+                },
+              },
+            },
+            name: "A",
           },
-          name: "A"
-        }
-      }];
+        },
+      ];
 
       const expected = true;
       const actual = _isSelfReferential(layersAndTables);
@@ -6721,12 +6371,12 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
         id: "",
         type: "",
         isView: true,
-        sourceSchemaChangesAllowed: true
+        sourceSchemaChangesAllowed: true,
       };
       const expected = {
         id: "",
         type: "",
-        sourceSchemaChangesAllowed: true
+        sourceSchemaChangesAllowed: true,
       };
       const _itemTemplate: interfaces.IItemTemplate = templates.getItemTemplateSkeleton();
       const actual = _updateForPortal(item, _itemTemplate, {});
@@ -6748,12 +6398,12 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
               sourceLayerFields: [
                 {
                   name: "a",
-                  source: "aa"
+                  source: "aa",
                 },
                 {
                   name: "b",
-                  source: "bb"
-                }
+                  source: "bb",
+                },
               ],
               relatedTables: [
                 {
@@ -6762,18 +6412,18 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
                   sourceLayerFields: [
                     {
                       name: "a1",
-                      source: "aa1"
+                      source: "aa1",
                     },
                     {
                       name: "b1",
-                      source: "bb1"
-                    }
-                  ]
-                }
-              ]
-            }
-          }
-        }
+                      source: "bb1",
+                    },
+                  ],
+                },
+              ],
+            },
+          },
+        },
       };
       const expected = {
         id: "",
@@ -6787,8 +6437,8 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
               sourceLayerFields: [
                 {
                   name: "a",
-                  source: "aa"
-                }
+                  source: "aa",
+                },
               ],
               relatedTables: [
                 {
@@ -6797,38 +6447,35 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
                   sourceLayerFields: [
                     {
                       name: "b1",
-                      source: "bb1"
-                    }
-                  ]
-                }
-              ]
-            }
-          }
-        }
+                      source: "bb1",
+                    },
+                  ],
+                },
+              ],
+            },
+          },
+        },
       };
       const _itemTemplate: interfaces.IItemTemplate = templates.getItemTemplateSkeleton();
-      _itemTemplate.dependencies = [
-        "44507dff46f54656a74032ac12acd977",
-        "54507dff46f54656a74032ac12acd977"
-      ];
+      _itemTemplate.dependencies = ["44507dff46f54656a74032ac12acd977", "54507dff46f54656a74032ac12acd977"];
 
       const templateDictionary: any = {
         "44507dff46f54656a74032ac12acd977": {
           name: "Snowmass",
           layer0: {
             fields: {
-              aa: { name: "aa" }
-            }
-          }
+              aa: { name: "aa" },
+            },
+          },
         },
         "54507dff46f54656a74032ac12acd977": {
           name: "Hagerman",
           layer4: {
             fields: {
-              bb1: { name: "bb1" }
-            }
-          }
-        }
+              bb1: { name: "bb1" },
+            },
+          },
+        },
       };
       const actual = _updateForPortal(item, _itemTemplate, templateDictionary);
 
@@ -6845,12 +6492,12 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
         serviceItemId: "55507dff46f54656a74032ac12acd977",
         fields: [
           {
-            name: "aa"
+            name: "aa",
           },
           {
-            name: "bb"
-          }
-        ]
+            name: "bb",
+          },
+        ],
       };
       const expected = {
         id: 0,
@@ -6860,15 +6507,12 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
         serviceItemId: "55507dff46f54656a74032ac12acd977",
         fields: [
           {
-            name: "aa"
-          }
-        ]
+            name: "aa",
+          },
+        ],
       };
       const _itemTemplate: interfaces.IItemTemplate = templates.getItemTemplateSkeleton();
-      _itemTemplate.dependencies = [
-        "44507dff46f54656a74032ac12acd977",
-        "54507dff46f54656a74032ac12acd977"
-      ];
+      _itemTemplate.dependencies = ["44507dff46f54656a74032ac12acd977", "54507dff46f54656a74032ac12acd977"];
 
       const templateDictionary: any = {
         "44507dff46f54656a74032ac12acd977": {
@@ -6877,11 +6521,11 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
           layer0: {
             fields: [
               {
-                name: "aa"
-              }
-            ]
-          }
-        }
+                name: "aa",
+              },
+            ],
+          },
+        },
       };
       const actual = _updateForPortal(item, _itemTemplate, templateDictionary);
 
@@ -6898,12 +6542,12 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
         serviceItemId: "55507dff46f54656a74032ac12acd977",
         fields: [
           {
-            name: "aa"
+            name: "aa",
           },
           {
-            name: "bb"
-          }
-        ]
+            name: "bb",
+          },
+        ],
       };
       const expected = {
         id: 0,
@@ -6913,9 +6557,9 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
         serviceItemId: "55507dff46f54656a74032ac12acd977",
         fields: [
           {
-            name: "aa"
-          }
-        ]
+            name: "aa",
+          },
+        ],
       };
       const _itemTemplate: interfaces.IItemTemplate = templates.getItemTemplateSkeleton();
 
@@ -6926,11 +6570,11 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
           layer0: {
             fields: {
               aa: {
-                name: "aa"
-              }
-            }
-          }
-        }
+                name: "aa",
+              },
+            },
+          },
+        },
       };
       const actual = _updateForPortal(item, _itemTemplate, templateDictionary);
 
@@ -6942,7 +6586,7 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
     it("cen get field names from array", () => {
       const table: any = {
         sourceLayerId: 0,
-        sourceServiceName: "ABC123"
+        sourceServiceName: "ABC123",
       };
       const template: interfaces.IItemTemplate = templates.getItemTemplateSkeleton();
       template.dependencies = ["ab766cba0dd44ec080420acc10990282"];
@@ -6952,26 +6596,22 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
           layer0: {
             fields: [
               {
-                name: "A"
-              }
-            ]
-          }
-        }
+                name: "A",
+              },
+            ],
+          },
+        },
       };
 
       const expected: string[] = ["A"];
-      const actual: string[] = _getFieldNames(
-        table,
-        template,
-        templateDictionary
-      );
+      const actual: string[] = _getFieldNames(table, template, templateDictionary);
       expect(actual).toEqual(expected);
     });
 
     it("cen get field names from object", () => {
       const table: any = {
         sourceLayerId: 0,
-        sourceServiceName: "ABC123"
+        sourceServiceName: "ABC123",
       };
       const template: interfaces.IItemTemplate = templates.getItemTemplateSkeleton();
       template.dependencies = ["ab766cba0dd44ec080420acc10990282"];
@@ -6981,19 +6621,15 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
           layer0: {
             fields: {
               a: {
-                name: "A"
-              }
-            }
-          }
-        }
+                name: "A",
+              },
+            },
+          },
+        },
       };
 
       const expected: string[] = ["a"];
-      const actual: string[] = _getFieldNames(
-        table,
-        template,
-        templateDictionary
-      );
+      const actual: string[] = _getFieldNames(table, template, templateDictionary);
       expect(actual).toEqual(expected);
     });
   });
@@ -7001,47 +6637,48 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
   describe("_getDynamicFieldNames", () => {
     it("will keep expression fields", () => {
       const table = {
-        "name": "Cemeteries_1678394615385_StatsTable",
-        "sourceServiceName": "Cemeteries_9eb657cfc34545038ee388071b3f730f",
-        "sourceLayerId": 5,
-        "sourceLayerFields": [
+        name: "Cemeteries_1678394615385_StatsTable",
+        sourceServiceName: "Cemeteries_9eb657cfc34545038ee388071b3f730f",
+        sourceLayerId: 5,
+        sourceLayerFields: [
           {
-            "name": "burialcount",
-            "alias": "Burial Count",
-            "source": "parentglobalid",
-            "statisticType": "COUNT"
+            name: "burialcount",
+            alias: "Burial Count",
+            source: "parentglobalid",
+            statisticType: "COUNT",
           },
           {
-            "name": "fullname1",
-            "alias": "Full Name 1",
-            "source": "fullname",
-            "statisticType": "MIN"
+            name: "fullname1",
+            alias: "Full Name 1",
+            source: "fullname",
+            statisticType: "MIN",
           },
           {
-            "name": "fullname2",
-            "alias": "Full Name 2",
-            "source": "fullname",
-            "statisticType": "MAX"
+            name: "fullname2",
+            alias: "Full Name 2",
+            source: "fullname",
+            statisticType: "MAX",
           },
           {
-            "name": "population",
-            "alias": "Population",
-            "source": "population"
+            name: "population",
+            alias: "Population",
+            source: "population",
           },
           {
-            "name": "area",
-            "alias": "Area",
-            "source": "area"
-          }, {
-            "name": "density",
-            "alias": "Density",
-            "expression": "population / area",
-            "type": "esriFieldTypeDouble",
-            "source": "population"
-          }
+            name: "area",
+            alias: "Area",
+            source: "area",
+          },
+          {
+            name: "density",
+            alias: "Density",
+            expression: "population / area",
+            type: "esriFieldTypeDouble",
+            source: "population",
+          },
         ],
-        "groupBy": "parentglobalid",
-        "materialized": false
+        groupBy: "parentglobalid",
+        materialized: false,
       };
 
       const actual = _getDynamicFieldNames(table);
@@ -7058,26 +6695,26 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
         id: 0,
         fields: [
           {
-            name: "field1"
+            name: "field1",
           },
           {
-            name: "field2"
+            name: "field2",
           },
           {
-            name: "field3"
-          }
+            name: "field3",
+          },
         ],
         indexes: [
           {
-            fields: "field1"
+            fields: "field1",
           },
           {
-            fields: "field2"
+            fields: "field2",
           },
           {
-            fields: "field3"
-          }
-        ]
+            fields: "field3",
+          },
+        ],
       };
 
       const fieldNames: string[] = ["field1", "field3"];
@@ -7087,20 +6724,20 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
         id: 0,
         fields: [
           {
-            name: "field1"
+            name: "field1",
           },
           {
-            name: "field3"
-          }
+            name: "field3",
+          },
         ],
         indexes: [
           {
-            fields: "field1"
+            fields: "field1",
           },
           {
-            fields: "field3"
-          }
-        ]
+            fields: "field3",
+          },
+        ],
       };
 
       const actual: any = _updateItemFields(item, fieldNames);
@@ -7113,18 +6750,18 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
       const item: any = {
         adminLayerInfo: {
           geometryField: {
-            name: "Shape"
+            name: "Shape",
           },
           viewLayerDefinition: {
             table: {
-              name: "ABC_123"
-            }
-          }
-        }
+              name: "ABC_123",
+            },
+          },
+        },
       };
 
       const templateDictionary: any = {
-        isPortal: true
+        isPortal: true,
       };
       _updateGeomFieldName(item.adminLayerInfo, templateDictionary);
 
@@ -7136,18 +6773,18 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
       const item: any = {
         adminLayerInfo: {
           geometryField: {
-            name: "Shape"
+            name: "Shape",
           },
           viewLayerDefinition: {
             table: {
-              name: "ABC_123"
-            }
-          }
-        }
+              name: "ABC_123",
+            },
+          },
+        },
       };
 
       const templateDictionary: any = {
-        isPortal: false
+        isPortal: false,
       };
       _updateGeomFieldName(item.adminLayerInfo, templateDictionary);
 
@@ -7159,18 +6796,18 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
       const item: any = {
         adminLayerInfo: {
           geometryField: {
-            name: "ABC_123.Shape"
+            name: "ABC_123.Shape",
           },
           viewLayerDefinition: {
             table: {
-              name: "ABC_123"
-            }
-          }
-        }
+              name: "ABC_123",
+            },
+          },
+        },
       };
 
       const templateDictionary: any = {
-        isPortal: false
+        isPortal: false,
       };
       _updateGeomFieldName(item.adminLayerInfo, templateDictionary);
 
@@ -7183,14 +6820,12 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
     it("should update the template dictionary with field info", () => {
       const template: interfaces.IItemTemplate = templates.getItemTemplateSkeleton();
       template.itemId = "svc987654321";
-      template.properties.layers = [
-        mockItems.getAGOLLayerOrTable(0, "A", "Feature Layer", [{}])
-      ];
+      template.properties.layers = [mockItems.getAGOLLayerOrTable(0, "A", "Feature Layer", [{}])];
       template.properties.tables = [];
       const templateDictionary = {
         svc0123456789: {
-          itemId: "svc987654321"
-        }
+          itemId: "svc987654321",
+        },
       };
       _updateTemplateDictionaryFields(template, templateDictionary);
 
@@ -7198,9 +6833,9 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
         svc0123456789: {
           itemId: "svc987654321",
           fieldInfos: {
-            "0": template.properties.layers[0].fields
-          }
-        }
+            "0": template.properties.layers[0].fields,
+          },
+        },
       };
 
       expect(templateDictionary).toEqual(expected);
@@ -7209,14 +6844,12 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
     it("should update the template dictionary with field info for existing", () => {
       const template: interfaces.IItemTemplate = templates.getItemTemplateSkeleton();
       template.itemId = "svc0123456789";
-      template.properties.layers = [
-        mockItems.getAGOLLayerOrTable(0, "A", "Feature Layer", [{}])
-      ];
+      template.properties.layers = [mockItems.getAGOLLayerOrTable(0, "A", "Feature Layer", [{}])];
       template.properties.tables = [];
       const templateDictionary = {
         svc0123456789: {
-          itemId: "svc987654321"
-        }
+          itemId: "svc987654321",
+        },
       };
       _updateTemplateDictionaryFields(template, templateDictionary, false);
 
@@ -7224,9 +6857,9 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
         svc0123456789: {
           itemId: "svc987654321",
           fieldInfos: {
-            "0": template.properties.layers[0].fields
-          }
-        }
+            "0": template.properties.layers[0].fields,
+          },
+        },
       };
 
       expect(templateDictionary).toEqual(expected);
@@ -7246,12 +6879,12 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
   describe("_validateDisplayField", () => {
     it("should update primary display field if casing doesn't match", () => {
       const actual: any = {
-        displayField: "A"
+        displayField: "A",
       };
       const fieldNames: string[] = ["a"];
 
       const expected: any = {
-        displayField: "a"
+        displayField: "a",
       };
       _validateDisplayField(actual, fieldNames);
 
@@ -7262,18 +6895,18 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
       const actual: any = {
         displayField: "doesnotexist",
         uniqueIdField: {
-          name: "OID"
+          name: "OID",
         },
-        globalIdField: "GLOBALID"
+        globalIdField: "GLOBALID",
       };
       const fieldNames: string[] = ["OID", "GLOBALID", "A", "B"];
 
       const expected: any = {
         displayField: "A",
         uniqueIdField: {
-          name: "OID"
+          name: "OID",
         },
-        globalIdField: "GLOBALID"
+        globalIdField: "GLOBALID",
       };
       _validateDisplayField(actual, fieldNames);
 
@@ -7286,21 +6919,21 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
       const actual: any = {
         indexes: [
           {
-            fields: "a"
+            fields: "a",
           },
           {
-            fields: "b"
-          }
-        ]
+            fields: "b",
+          },
+        ],
       };
       const fieldNames: string[] = ["a"];
 
       const expected: any = {
         indexes: [
           {
-            fields: "a"
-          }
-        ]
+            fields: "a",
+          },
+        ],
       };
       _validateIndexes(actual, fieldNames);
 
@@ -7312,16 +6945,16 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
         indexes: [
           {
             fields: "a",
-            name: "a"
+            name: "a",
           },
           {
             fields: "a",
-            name: "a1"
+            name: "a1",
           },
           {
-            fields: "b"
-          }
-        ]
+            fields: "b",
+          },
+        ],
       };
       const fieldNames: string[] = ["a", "b"];
 
@@ -7329,12 +6962,12 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
         indexes: [
           {
             fields: "a",
-            name: "a"
+            name: "a",
           },
           {
-            fields: "b"
-          }
-        ]
+            fields: "b",
+          },
+        ],
       };
       _validateIndexes(actual, fieldNames);
 
@@ -7350,22 +6983,22 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
             prototype: {
               attributes: {
                 a: null,
-                b: null
-              }
-            }
-          }
-        ]
+                b: null,
+              },
+            },
+          },
+        ],
       };
       const expected: any = {
         templates: [
           {
             prototype: {
               attributes: {
-                a: null
-              }
-            }
-          }
-        ]
+                a: null,
+              },
+            },
+          },
+        ],
       };
       const fieldNames: string[] = ["a"];
       _validateTemplatesFields(actual, fieldNames);
@@ -7384,13 +7017,13 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
                 prototype: {
                   attributes: {
                     a: null,
-                    b: null
-                  }
-                }
-              }
-            ]
-          }
-        ]
+                    b: null,
+                  },
+                },
+              },
+            ],
+          },
+        ],
       };
 
       const expected: any = {
@@ -7400,13 +7033,13 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
               {
                 prototype: {
                   attributes: {
-                    a: null
-                  }
-                }
-              }
-            ]
-          }
-        ]
+                    a: null,
+                  },
+                },
+              },
+            ],
+          },
+        ],
       };
       const fieldNames: string[] = ["a"];
       _validateTypesTemplates(actual, fieldNames);
@@ -7420,15 +7053,15 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
       const actual: any = {
         editFieldsInfo: {
           editField: "A",
-          otherEditField: "b"
-        }
+          otherEditField: "b",
+        },
       };
 
       const expected: any = {
         editFieldsInfo: {
           editField: "a",
-          otherEditField: "b"
-        }
+          otherEditField: "b",
+        },
       };
       const fieldNames: string[] = ["a", "b"];
       _validateEditFieldsInfo(actual, fieldNames);
@@ -7443,12 +7076,12 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
         service: {
           isView: true,
           spatialReference: {
-            wkid: 4326
+            wkid: 4326,
           },
           fullExtent: {
-            xmin: 1
-          }
-        }
+            xmin: 1,
+          },
+        },
       };
 
       itemTemplate.dependencies = ["aaec7d5e113e4252bf1dcdfbcd8400f9"];
@@ -7456,19 +7089,15 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
       const templateDictionary: any = {
         aaec7d5e113e4252bf1dcdfbcd8400f9: {
           defaultSpatialReference: {
-            wkid: 102100
+            wkid: 102100,
           },
           defaultExtent: {
-            xmin: 0
-          }
-        }
+            xmin: 0,
+          },
+        },
       };
 
-      validateSpatialReferenceAndExtent(
-        serviceInfo,
-        itemTemplate,
-        templateDictionary
-      );
+      validateSpatialReferenceAndExtent(serviceInfo, itemTemplate, templateDictionary);
       expect(serviceInfo.service.spatialReference.wkid).toEqual(102100);
       expect(serviceInfo.defaultExtent.xmin).toEqual(0);
     });
@@ -7478,32 +7107,35 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
         service: {
           isView: true,
           spatialReference: {
-            wkid: 4326
+            wkid: 4326,
           },
           fullExtent: {
-            xmin: 1
-          }
-        },
-        layers: [{
-          name: "A",
-          adminLayerInfo: {
-            viewLayerDefinition: {
-              table: {
-                sourceServiceName: "source_A"
-              }
-            }
-          }
-        }, {
-          name: "B",
-          adminLayerInfo: {
-            viewLayerDefinition: {
-              table: {
-                sourceServiceName: "source_B"
-              }
-            }
+            xmin: 1,
           },
-          geometryType: "point"
-        }]
+        },
+        layers: [
+          {
+            name: "A",
+            adminLayerInfo: {
+              viewLayerDefinition: {
+                table: {
+                  sourceServiceName: "source_A",
+                },
+              },
+            },
+          },
+          {
+            name: "B",
+            adminLayerInfo: {
+              viewLayerDefinition: {
+                table: {
+                  sourceServiceName: "source_B",
+                },
+              },
+            },
+            geometryType: "point",
+          },
+        ],
       };
 
       itemTemplate.dependencies = ["aaec7d5e113e4252bf1dcdfbcd8400f9", "bbec7d5e113e4252bf1dcdfbcd8400f9"];
@@ -7511,29 +7143,25 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
       const templateDictionary: any = {
         aaec7d5e113e4252bf1dcdfbcd8400f9: {
           defaultSpatialReference: {
-            wkid: 4326
+            wkid: 4326,
           },
           defaultExtent: {
-            xmin: 0
+            xmin: 0,
           },
-          name: "source_A"
+          name: "source_A",
         },
         bbec7d5e113e4252bf1dcdfbcd8400f9: {
           defaultSpatialReference: {
-            wkid: 102100
+            wkid: 102100,
           },
           defaultExtent: {
-            xmin: 2
+            xmin: 2,
           },
-          name: "source_B"
-        }
+          name: "source_B",
+        },
       };
 
-      validateSpatialReferenceAndExtent(
-        serviceInfo,
-        itemTemplate,
-        templateDictionary
-      );
+      validateSpatialReferenceAndExtent(serviceInfo, itemTemplate, templateDictionary);
       expect(serviceInfo.service.spatialReference.wkid).toEqual(102100);
       expect(serviceInfo.defaultExtent.xmin).toEqual(2);
     });
@@ -7543,10 +7171,10 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
     it("should remove key props from view layer", () => {
       const layer: any = {
         someProp: "A",
-        definitionQuery: "definitionQuery"
+        definitionQuery: "definitionQuery",
       };
       const expected: any = {
-        someProp: "A"
+        someProp: "A",
       };
       deleteViewProps(layer);
 
@@ -7555,10 +7183,10 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
 
     it("should not fail when view does not contain key props", () => {
       const layer: any = {
-        someProp: "A"
+        someProp: "A",
       };
       const expected: any = {
-        someProp: "A"
+        someProp: "A",
       };
       deleteViewProps(layer);
 
@@ -7573,72 +7201,72 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
           newFields: [
             {
               name: "a0",
-              alias: "A"
+              alias: "A",
             },
             {
-              name: "b"
+              name: "b",
             },
             {
-              name: "createdate"
+              name: "createdate",
             },
             {
-              name: "create_date"
+              name: "create_date",
             },
             {
-              name: "editdate"
-            }
+              name: "editdate",
+            },
           ],
           sourceFields: [
             {
               name: "A",
-              alias: "A"
+              alias: "A",
             },
             {
-              name: "B"
+              name: "B",
             },
             {
-              name: "CreateDate"
+              name: "CreateDate",
             },
             {
-              name: "EditDate"
-            }
+              name: "EditDate",
+            },
           ],
           otherProperty: {
-            test: "test"
+            test: "test",
           },
           editFieldsInfo: {
             createDateField: "CreateDate",
-            editDateField: "EditDate"
+            editDateField: "EditDate",
           },
           newEditFieldsInfo: {
             createDateField: "create_date",
-            editDateField: "editdate"
+            editDateField: "editdate",
           },
-          sourceSchemaChangesAllowed: true
-        }
+          sourceSchemaChangesAllowed: true,
+        },
       };
 
       const expected = {
         a: {
           name: "a0",
           alias: "A",
-          type: ""
+          type: "",
         },
         b: {
           name: "b",
           alias: "",
-          type: ""
+          type: "",
         },
         createdate: {
           name: "create_date",
           alias: "",
-          type: ""
+          type: "",
         },
         editdate: {
           name: "editdate",
           alias: "",
-          type: ""
-        }
+          type: "",
+        },
       };
 
       const actual = _getNameMapping(fieldInfos, itemId);

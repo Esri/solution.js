@@ -24,9 +24,7 @@ import * as common from "@esri/solution-common";
 
 // ------------------------------------------------------------------------------------------------------------------ //
 
-export function convertItemToTemplate(
-  itemInfo: any
-): Promise<common.IItemTemplate> {
+export function convertItemToTemplate(itemInfo: any): Promise<common.IItemTemplate> {
   return new Promise<common.IItemTemplate>((resolve, reject) => {
     if (isAStoryMap(itemInfo.type, itemInfo.url)) {
       reject(common.fail("Classic StoryMap is not yet implemented"));
@@ -40,24 +38,16 @@ export function createItemFromTemplate(
   template: common.IItemTemplate,
   templateDictionary: any,
   destinationAuthentication: common.UserSession,
-  itemProgressCallback: common.IItemProgressCallback
+  itemProgressCallback: common.IItemProgressCallback,
 ): Promise<common.ICreateItemFromTemplateResponse> {
-  return new Promise<common.ICreateItemFromTemplateResponse>(resolve => {
+  return new Promise<common.ICreateItemFromTemplateResponse>((resolve) => {
     if (isAStoryMap(template.type, template.item.url)) {
       // Not yet implemented
-      itemProgressCallback(
-        template.itemId,
-        common.EItemProgressStatus.Failed,
-        0
-      );
+      itemProgressCallback(template.itemId, common.EItemProgressStatus.Failed, 0);
       resolve(common.generateEmptyCreationResponse(template.type));
     } else {
       // Not valid
-      itemProgressCallback(
-        template.itemId,
-        common.EItemProgressStatus.Failed,
-        0
-      );
+      itemProgressCallback(template.itemId, common.EItemProgressStatus.Failed, 0);
       resolve(common.generateEmptyCreationResponse(template.type));
     }
   });
@@ -73,8 +63,8 @@ export function isAStoryMap(itemType: string, itemUrl?: string): boolean {
       /\/apps\/Shortlist\//i,
       /\/apps\/StoryMap\//i,
       /\/apps\/StoryMapBasic\//i,
-      /\/apps\/StorytellingSwipe\//i
-    ].some(pattern => pattern.test(itemUrl));
+      /\/apps\/StorytellingSwipe\//i,
+    ].some((pattern) => pattern.test(itemUrl));
   }
   return false;
 }

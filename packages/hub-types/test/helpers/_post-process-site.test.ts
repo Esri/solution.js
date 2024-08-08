@@ -29,90 +29,70 @@ describe("_postProcessSite :: ", () => {
         properties: {
           collaborationGroupId: "bc1-collab",
           contentGroupId: "bc1-collab",
-          chk: "{{bc66.itemId}}"
-        }
+          chk: "{{bc66.itemId}}",
+        },
       },
       data: {
-        values: {}
-      }
+        values: {},
+      },
     } as unknown as hubCommon.IModel;
     infos = [
       { id: "ef1", type: "Web Map" },
       { id: "ef2", type: "Web Mapping Application" },
       { id: "ef3", type: "Hub Page" },
-      { id: "3ef", type: "Hub Site" }
+      { id: "3ef", type: "Hub Site" },
     ];
   });
-  it("shared items to site teams", () => {
+
+  it("shared items to site teams", async () => {
     const fakeRo = {} as hubCommon.IHubUserRequestOptions;
-    const shareSpy = spyOn(hubSites, "shareItemsToSiteGroups").and.callFake(
-      (m, nfos, ro) => {
-        return Promise.all(
-          nfos.map(i => {
-            return Promise.resolve({ itemId: i.itemId });
-          })
-        );
-      }
-    );
-    const updatePageSpy = spyOn(
-      updateSitePagesModule,
-      "_updateSitePages"
-    ).and.resolveTo([]);
-    const updateSiteSpy = spyOn(hubSites, "updateSite").and.resolveTo(
-      {} as IUpdateItemResponse
-    );
-    return postProcessSiteModule
-      ._postProcessSite(model, infos, { bc66: { itemId: "ef66" } }, fakeRo)
-      .then(result => {
-        expect(result).toBe(true, "should return true");
-        expect(shareSpy.calls.count()).toBe(1, "should call share fn once");
-        expect(shareSpy.calls.argsFor(0)[1].length).toBe(
-          3,
-          "should share three pseudo models"
-        );
-        expect(updatePageSpy.calls.count()).toBe(
-          1,
-          "should call _updateSitePages"
-        );
-        expect(updateSiteSpy.calls.count()).toBe(1, "should update the site");
-        const updateModel = updateSiteSpy.calls.argsFor(0)[0];
-        expect(updateModel.item.properties.chk).toBe(
-          "ef66",
-          "it should do a second pass interpolation before updating"
-        );
-        expect(updateSiteSpy.calls.argsFor(0)[1]).toEqual({
-          ...fakeRo,
-          allowList: null
-        });
-      });
+    const shareSpy = spyOn(hubSites, "shareItemsToSiteGroups").and.callFake((m, nfos) => {
+      return Promise.all(
+        nfos.map((i) => {
+          return Promise.resolve({ itemId: i.itemId });
+        }),
+      );
+    });
+    const updatePageSpy = spyOn(updateSitePagesModule, "_updateSitePages").and.resolveTo([]);
+    const updateSiteSpy = spyOn(hubSites, "updateSite").and.resolveTo({} as IUpdateItemResponse);
+
+    const result = await postProcessSiteModule._postProcessSite(model, infos, { bc66: { itemId: "ef66" } }, fakeRo);
+    expect(result).withContext("should return true").toBe(true);
+    expect(shareSpy.calls.count()).withContext("should call share fn once").toBe(1);
+    expect(shareSpy.calls.argsFor(0)[1].length).withContext("should share three pseudo models").toBe(3);
+    expect(updatePageSpy.calls.count()).withContext("should call _updateSitePages").toBe(1);
+    expect(updateSiteSpy.calls.count()).withContext("should update the site").toBe(1);
+    const updateModel = updateSiteSpy.calls.argsFor(0)[0];
+    expect(updateModel.item.properties.chk)
+      .withContext("it should do a second pass interpolation before updating")
+      .toBe("ef66");
+    expect(updateSiteSpy.calls.argsFor(0)[1]).toEqual({
+      ...fakeRo,
+      allowList: undefined,
+    });
   });
 
-  it("excludes site id from children array", () => {
+  it("excludes site id from children array", async () => {
     const fakeRo = {} as hubCommon.IHubUserRequestOptions;
-    spyOn(hubSites, "shareItemsToSiteGroups").and.callFake((m, nfos, ro) => {
+    spyOn(hubSites, "shareItemsToSiteGroups").and.callFake((m, nfos) => {
       return Promise.all(
-        nfos.map(i => {
+        nfos.map((i) => {
           return Promise.resolve({ itemId: i.itemId });
-        })
+        }),
       );
     });
     spyOn(updateSitePagesModule, "_updateSitePages").and.resolveTo([]);
-    const updateSiteSpy = spyOn(hubSites, "updateSite").and.resolveTo(
-      {} as IUpdateItemResponse
-    );
-    return postProcessSiteModule
-      ._postProcessSite(model, infos, { bc66: { itemId: "ef66" } }, fakeRo)
-      .then(_ => {
-        expect(updateSiteSpy.calls.count()).toBe(1, "should update the site");
-        const updateModel = updateSiteSpy.calls.argsFor(0)[0];
-        expect(updateModel.item.properties.children).toEqual(
-          ["ef1", "ef2", "ef3"],
-          "it should populate children array and exclude site"
-        );
-        expect(updateSiteSpy.calls.argsFor(0)[1]).toEqual({
-          ...fakeRo,
-          allowList: null
-        });
-      });
+    const updateSiteSpy = spyOn(hubSites, "updateSite").and.resolveTo({} as IUpdateItemResponse);
+
+    await postProcessSiteModule._postProcessSite(model, infos, { bc66: { itemId: "ef66" } }, fakeRo);
+    expect(updateSiteSpy.calls.count()).withContext("should update the site").toBe(1);
+    const updateModel = updateSiteSpy.calls.argsFor(0)[0];
+    expect(updateModel.item.properties.children)
+      .withContext("it should populate children array and exclude site")
+      .toEqual(["ef1", "ef2", "ef3"]);
+    expect(updateSiteSpy.calls.argsFor(0)[1]).toEqual({
+      ...fakeRo,
+      allowList: undefined,
+    });
   });
 });

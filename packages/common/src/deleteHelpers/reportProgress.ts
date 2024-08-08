@@ -18,11 +18,7 @@
  * @module reportProgress
  */
 
-import {
-  EItemProgressStatus,
-  SItemProgressStatus,
-  IDeleteSolutionOptions
-} from "../interfaces";
+import { EItemProgressStatus, SItemProgressStatus, IDeleteSolutionOptions } from "../interfaces";
 
 // ------------------------------------------------------------------------------------------------------------------ //
 
@@ -37,7 +33,7 @@ export function reportProgress(
   percentDone: number,
   deleteOptions: IDeleteSolutionOptions,
   deletedItemId = "",
-  status = EItemProgressStatus.Started
+  status = EItemProgressStatus.Started,
 ): void {
   const iPercentDone = Math.round(percentDone);
 
@@ -45,18 +41,12 @@ export function reportProgress(
   if (deleteOptions.progressCallback) {
     deleteOptions.progressCallback(iPercentDone, deleteOptions.jobId, {
       event: "",
-      data: deletedItemId
+      data: deletedItemId,
     });
   }
 
   /* istanbul ignore else */
   if (deleteOptions.consoleProgress) {
-    console.log(
-      Date.now(),
-      deletedItemId,
-      deleteOptions.jobId ?? "",
-      SItemProgressStatus[status],
-      iPercentDone + "%"
-    );
+    console.log(Date.now(), deletedItemId, deleteOptions.jobId ?? "", SItemProgressStatus[status], iPercentDone + "%");
   }
 }

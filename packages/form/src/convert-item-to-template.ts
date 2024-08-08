@@ -36,13 +36,8 @@ export function convertItemToTemplate(
   itemInfo: any,
   destAuthentication: UserSession,
   srcAuthentication: UserSession,
-  templateDictionary: any
+  templateDictionary: any,
 ): Promise<IItemTemplate> {
   // Delegate to simple types
-  return simpleTypes.convertItemToTemplate(
-    itemInfo,
-    destAuthentication,
-    srcAuthentication,
-    templateDictionary
-  );
+  return simpleTypes.convertItemToTemplate(itemInfo, destAuthentication, srcAuthentication, templateDictionary);
 }

@@ -28,16 +28,14 @@ export interface ISubscriptionInfo {
  *
  * @param requestOptions
  */
-export function getSubscriptionInfo(
-  requestOptions: IRequestOptions
-): Promise<ISubscriptionInfo> {
+export function getSubscriptionInfo(requestOptions: IRequestOptions): Promise<ISubscriptionInfo> {
   // construct the search url
   const url = `${getPortalUrl(requestOptions)}/portals/self/subscriptioninfo`;
 
   // default to a GET request
   const options: IRequestOptions = {
     ...{ httpMethod: "GET" },
-    ...requestOptions
+    ...requestOptions,
   };
 
   // send the request

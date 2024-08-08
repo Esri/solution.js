@@ -23,7 +23,7 @@ import {
   getProp,
   fail,
   BASE_NAMES,
-  PROP_NAMES
+  PROP_NAMES,
 } from "@esri/solution-common";
 
 /**
@@ -48,16 +48,16 @@ export function getVelocityUrl(
   id: string = "",
   isDeploy: boolean = false,
   urlPrefix: string = "",
-  urlSuffix: string = ""
+  urlSuffix: string = "",
 ): Promise<string> {
-  return getVelocityUrlBase(authentication, templateDictionary).then(url => {
+  return getVelocityUrlBase(authentication, templateDictionary).then((url) => {
     if (url) {
       const _type: string =
         type === "Real Time Analytic"
           ? "analytics/realtime"
           : type === "Big Data Analytic"
-          ? "analytics/bigdata"
-          : type.toLowerCase();
+            ? "analytics/bigdata"
+            : type.toLowerCase();
 
       const suffix: string = urlSuffix ? `/${urlSuffix}` : "";
       const prefix: string = urlPrefix ? `/${urlPrefix}` : "";
@@ -66,8 +66,8 @@ export function getVelocityUrl(
         isDeploy
           ? `${url}/iot/${_type}${prefix}${suffix}`
           : id
-          ? `${url}/iot/${_type}${prefix}/${id}${suffix}/?f=json&token=${authentication.token}`
-          : `${url}/iot/${_type}${prefix}${suffix}/?f=json&token=${authentication.token}`
+            ? `${url}/iot/${_type}${prefix}/${id}${suffix}/?f=json&token=${authentication.token}`
+            : `${url}/iot/${_type}${prefix}${suffix}/?f=json&token=${authentication.token}`,
       );
     } else {
       return Promise.resolve(url);
@@ -92,15 +92,9 @@ export function postVelocityData(
   template: IItemTemplate,
   data: any,
   templateDictionary: any,
-  autoStart: boolean = false
+  autoStart: boolean = false,
 ): Promise<any> {
-  return getVelocityUrl(
-    authentication,
-    templateDictionary,
-    template.type,
-    undefined,
-    true
-  ).then(url => {
+  return getVelocityUrl(authentication, templateDictionary, template.type, undefined, true).then((url) => {
     if (url) {
       return getTitle(authentication, data.label, url).then((titleInfo: IVelocityTitle) => {
         const titles: any[] = titleInfo.titles;
@@ -111,14 +105,14 @@ export function postVelocityData(
         const dataOutputs: any[] = (data.outputs ? data.outputs : data.output ? [data.output] : []).map((o: any) => {
           return {
             id: o.id,
-            name: o.properties[`${o.name}.name`]
+            name: o.properties[`${o.name}.name`],
           };
         });
 
-        const feeds = (body.feeds ? body.feeds : body.feed ? [body.feed] : []).map((o:any) => {
+        const feeds = (body.feeds ? body.feeds : body.feed ? [body.feed] : []).map((o: any) => {
           return {
             id: o.id ? o.id : o.properties[`${o.name}.portalItemId`] || "",
-            name: o.label ? o.label : data.label
+            name: o.label ? o.label : data.label,
           };
         });
 
@@ -129,9 +123,9 @@ export function postVelocityData(
           body,
           titles,
           dataOutputs,
-          feeds
-        ).then(updatedBody => {
-          return _fetch(authentication, url, "POST", updatedBody).then(rr => {
+          feeds,
+        ).then((updatedBody) => {
+          return _fetch(authentication, url, "POST", updatedBody).then((rr) => {
             template.item.url = `${url}/${rr.id}`;
             template.item.title = data.label;
 
@@ -144,16 +138,11 @@ export function postVelocityData(
               item: replaceInTemplate(template.item, templateDictionary),
               id: rr.id,
               type: template.type,
-              postProcess: false
+              postProcess: false,
             };
 
             if (autoStart) {
-              return _validateAndStart(
-                authentication,
-                templateDictionary,
-                template,
-                rr.id
-              ).then(() => {
+              return _validateAndStart(authentication, templateDictionary, template, rr.id).then(() => {
                 return Promise.resolve(finalResult);
               });
             } else {
@@ -179,22 +168,16 @@ export function postVelocityData(
  * @returns a promise that will resolve a unique title
  *
  */
-export function getTitle(
-  authentication: UserSession,
-  label: string,
-  url: string
-): Promise<IVelocityTitle> {
-  return _fetch(authentication, `${url}StatusList?view=admin`, "GET").then(
-    items => {
-      const titles: any[] =
-        items && Array.isArray(items)
-          ? items.map(item => {
-              return { title: item.label };
-            })
-          : [];
-      return Promise.resolve({label: getUniqueTitle(label, { titles }, "titles"), titles: titles.map(t => t.title)});
-    }
-  );
+export function getTitle(authentication: UserSession, label: string, url: string): Promise<IVelocityTitle> {
+  return _fetch(authentication, `${url}StatusList?view=admin`, "GET").then((items) => {
+    const titles: any[] =
+      items && Array.isArray(items)
+        ? items.map((item) => {
+            return { title: item.label };
+          })
+        : [];
+    return Promise.resolve({ label: getUniqueTitle(label, { titles }, "titles"), titles: titles.map((t) => t.title) });
+  });
 }
 
 /**
@@ -222,35 +205,25 @@ export function _validateOutputs(
   data: any,
   titles: any[],
   dataOutputs: any[] = [],
-  feeds: any[] = []
+  feeds: any[] = [],
 ): Promise<any> {
   if (dataOutputs.length > 0 || feeds.length > 0) {
-    return validate(authentication, templateDictionary, type, "", data).then(
-      (validateResults: any) => {
-        const names: string[] = _validateMessages(validateResults);
-        if (names.length > 0) {
-          /* istanbul ignore else */
-          if (dataOutputs.length > 0) {
-            _updateDataOutput(dataOutputs, data, names);
-          }
-          /* istanbul ignore else */
-          if (feeds.length > 0) {
-            _updateFeed(feeds, data, names.concat(titles));
-          }
-          return _validateOutputs(
-            authentication,
-            templateDictionary,
-            type,
-            data,
-            titles,
-            dataOutputs,
-            feeds
-          );
-        } else {
-          return Promise.resolve(data);
+    return validate(authentication, templateDictionary, type, "", data).then((validateResults: any) => {
+      const names: string[] = _validateMessages(validateResults);
+      if (names.length > 0) {
+        /* istanbul ignore else */
+        if (dataOutputs.length > 0) {
+          _updateDataOutput(dataOutputs, data, names);
         }
+        /* istanbul ignore else */
+        if (feeds.length > 0) {
+          _updateFeed(feeds, data, names.concat(titles));
+        }
+        return _validateOutputs(authentication, templateDictionary, type, data, titles, dataOutputs, feeds);
+      } else {
+        return Promise.resolve(data);
       }
-    );
+    });
   } else {
     return Promise.resolve(data);
   }
@@ -265,25 +238,21 @@ export function _validateOutputs(
  *
  * @private
  */
-export function _validateMessages(
-  validateResults: any
-): string[] {
+export function _validateMessages(validateResults: any): string[] {
   let messages: any[] = getProp(validateResults, "validation.messages");
 
   const nodes: any[] = getProp(validateResults, "nodes");
   /* istanbul ignore else */
   if (nodes && Array.isArray(nodes)) {
-    nodes.forEach(node => {
-      messages = messages.concat(
-        getProp(node, "validation.messages") || []
-      );
+    nodes.forEach((node) => {
+      messages = messages.concat(getProp(node, "validation.messages") || []);
     });
   }
 
   let names: string[] = [];
   /* istanbul ignore else */
   if (messages && Array.isArray(messages)) {
-    messages.forEach(message => {
+    messages.forEach((message) => {
       // I don't see a way to ask for all output names that exist
       // velocityUrl + /outputs/ just gives you generic defaults not what currently exists
       const nameErrors = [
@@ -292,7 +261,7 @@ export function _validateMessages(
         "ITEM_MANAGER__CREATE_ANALYTIC_FAILED_DUPLICATE_OUTPUT_NAMES_IN_ORGANIZATION_NOT_ALLOWED",
         "ITEM_MANAGER__CREATE_BIG_DATA_ANALYTIC_FAILED_DUPLICATE_NAMES_NOT_ALLOWED",
         "ITEM_MANAGER__CREATE_REAL_TIME_ANALYTIC_FAILED_DUPLICATE_NAMES_NOT_ALLOWED",
-        "ITEM_MANAGER__CREATE_FEED_FAILED_DUPLICATE_NAME"
+        "ITEM_MANAGER__CREATE_FEED_FAILED_DUPLICATE_NAME",
       ];
       // The names returned here seem to replace " " with "_" so they do not match exactly
       /* istanbul ignore else */
@@ -313,12 +282,8 @@ export function _validateMessages(
  *
  * @private
  */
-export function _updateFeed(
-  feeds: any[],
-  data: any,
-  names: string[]
-): void {
-  feeds.forEach(f => {
+export function _updateFeed(feeds: any[], data: any, names: string[]): void {
+  feeds.forEach((f) => {
     const update = _getOutputLabel(names, f);
     /* istanbul ignore else */
     if (update) {
@@ -337,12 +302,8 @@ export function _updateFeed(
  *
  * @private
  */
-export function _updateDataOutput(
-  dataOutputs: any[],
-  data: any,
-  names: string[]
-): void {
-  dataOutputs.forEach(dataOutput => {
+export function _updateDataOutput(dataOutputs: any[], data: any, names: string[]): void {
+  dataOutputs.forEach((dataOutput) => {
     const update = _getOutputLabel(names, dataOutput);
     /* istanbul ignore else */
     if (update) {
@@ -393,7 +354,7 @@ export function _getOutputLabel(names: any[], dataOutput: any): any {
   return label !== dataOutput.name
     ? {
         label,
-        id: dataOutput.id
+        id: dataOutput.id,
       }
     : undefined;
 }
@@ -413,24 +374,17 @@ export function _getOutputLabel(names: any[], dataOutput: any): any {
  * @returns string The unique title to use
  *
  */
-export function getUniqueTitle(
-  title: string,
-  templateDictionary: any,
-  path: string
-): string {
+export function getUniqueTitle(title: string, templateDictionary: any, path: string): string {
   title = title ? title.trim() : "_";
   const objs: any[] = getProp(templateDictionary, path) || [];
-  const titles: string[] = objs.map(obj => {
+  const titles: string[] = objs.map((obj) => {
     return obj.title;
   });
   let newTitle: string = title;
   let i: number = 0;
   // replace added for velocitcy
   // validation seems to add "_" to names listed in outputs..so  no way to compare without hacking the name
-  while (
-    titles.indexOf(newTitle) > -1 ||
-    titles.indexOf(newTitle.replace(/ /g, "_")) > -1
-  ) {
+  while (titles.indexOf(newTitle) > -1 || titles.indexOf(newTitle.replace(/ /g, "_")) > -1) {
     i++;
     newTitle = title + " " + i;
   }
@@ -454,17 +408,15 @@ export function _validateAndStart(
   authentication: UserSession,
   templateDictionary: any,
   template: IItemTemplate,
-  id: string
+  id: string,
 ): Promise<any> {
-  return validate(authentication, templateDictionary, template.type, id).then(
-    validateResult => {
-      if (validateResult.executable) {
-        return start(authentication, templateDictionary, template.type, id);
-      } else {
-        return Promise.resolve(validateResult);
-      }
+  return validate(authentication, templateDictionary, template.type, id).then((validateResult) => {
+    if (validateResult.executable) {
+      return start(authentication, templateDictionary, template.type, id);
+    } else {
+      return Promise.resolve(validateResult);
     }
-  );
+  });
 }
 
 /**
@@ -486,20 +438,12 @@ export function validate(
   templateDictionary: any,
   type: string,
   id?: string,
-  body?: any
+  body?: any,
 ): Promise<any> {
   // /iot/feed/validate/{id}/
   // /iot/analytics/realtime/validate/{id}/
-  return getVelocityUrl(
-    authentication,
-    templateDictionary,
-    type,
-    id,
-    false,
-    "validate",
-    ""
-  ).then(url => {
-    return _fetch(authentication, url, "POST", body).then(result => {
+  return getVelocityUrl(authentication, templateDictionary, type, id, false, "validate", "").then((url) => {
+    return _fetch(authentication, url, "POST", body).then((result) => {
       return Promise.resolve(result);
     });
   });
@@ -516,24 +460,11 @@ export function validate(
  * @returns a promise that will resolve with the result of the start call
  *
  */
-export function start(
-  authentication: UserSession,
-  templateDictionary: any,
-  type: string,
-  id?: string
-): Promise<any> {
+export function start(authentication: UserSession, templateDictionary: any, type: string, id?: string): Promise<any> {
   // /iot/feed/{id}/start/
   // /iot/analytics/realtime/{id}/start/
-  return getVelocityUrl(
-    authentication,
-    templateDictionary,
-    type,
-    id,
-    false,
-    "",
-    "start"
-  ).then(url => {
-    return _fetch(authentication, url, "GET").then(result => {
+  return getVelocityUrl(authentication, templateDictionary, type, id, false, "", "start").then((url) => {
+    return _fetch(authentication, url, "GET").then((result) => {
       return Promise.resolve(result);
     });
   });
@@ -549,17 +480,14 @@ export function start(
  *
  * @private
  */
-export function _getRequestOpts(
-  authentication: UserSession,
-  method: string
-): RequestInit {
+export function _getRequestOpts(authentication: UserSession, method: string): RequestInit {
   return {
     headers: {
-      Accept: "application/json",
+      "Accept": "application/json",
       "Content-Type": "application/json",
-      Authorization: "token=" + authentication.token
+      "Authorization": "token=" + authentication.token,
     },
-    method
+    method,
   };
 }
 
@@ -579,14 +507,14 @@ export function _fetch(
   authentication: UserSession,
   url: string,
   method: string, // GET or POST
-  body?: any
+  body?: any,
 ): Promise<any> {
   const requestOpts: any = _getRequestOpts(authentication, method);
   /* istanbul ignore else */
   if (body) {
     requestOpts.body = JSON.stringify(body);
   }
-  return fetch(url, requestOpts).then(r => Promise.resolve(r.json()));
+  return fetch(url, requestOpts).then((r) => Promise.resolve(r.json()));
 }
 
 /**
@@ -596,23 +524,20 @@ export function _fetch(
  * @param template The template that for the velocity item
  *
  */
-export function cleanDataSourcesAndFeeds(
-  template: IItemTemplate,
-  velocityUrl: string
-): void {
+export function cleanDataSourcesAndFeeds(template: IItemTemplate, velocityUrl: string): void {
   const dependencies: string[] = template.dependencies;
 
   [
     getProp(template, "data.sources") ? template.data.sources : [],
     getProp(template, "data.source") ? [template.data.source] : [],
     getProp(template, "data.feeds") ? template.data.feeds : [],
-    getProp(template, "data.feed") ? [template.data.feed] : []
-  ].forEach(d => _removeIdProps(d, dependencies, velocityUrl));
+    getProp(template, "data.feed") ? [template.data.feed] : [],
+  ].forEach((d) => _removeIdProps(d, dependencies, velocityUrl));
 
   [
     getProp(template, "data.outputs") ? template.data.outputs : [],
-    getProp(template, "data.output") ? [template.data.output] : []
-  ].forEach(outputs => _removeIdPropsAndSetName(outputs, dependencies));
+    getProp(template, "data.output") ? [template.data.output] : [],
+  ].forEach((outputs) => _removeIdPropsAndSetName(outputs, dependencies));
 }
 
 /**
@@ -623,14 +548,10 @@ export function cleanDataSourcesAndFeeds(
  *
  * @private
  */
-export function _removeIdProps(
-  sourcesOrFeeds: any[],
-  dependencies: string[],
-  velocityUrl: string
-): void {
-  sourcesOrFeeds.forEach(dataSource => {
+export function _removeIdProps(sourcesOrFeeds: any[], dependencies: string[], velocityUrl: string): void {
+  sourcesOrFeeds.forEach((dataSource) => {
     const idProp: string = "feature-layer.portalItemId";
-    const layerIdProp: string = "feature-layer.layerId"
+    const layerIdProp: string = "feature-layer.layerId";
     /* istanbul ignore else */
     if (dataSource.properties) {
       /* istanbul ignore else */
@@ -649,7 +570,7 @@ export function _removeIdProps(
       // otherwise we will leave as is with no templatization
       /* istanbul ignore else */
       if (url && url.indexOf(velocityUrl) > -1) {
-        delete dataSource.properties[urlProp]
+        delete dataSource.properties[urlProp];
       }
     }
   });
@@ -663,16 +584,13 @@ export function _removeIdProps(
  *
  * @private
  */
-export function _removeIdPropsAndSetName(
-  outputs: any[],
-  dependencies: string[]
-): void {
-  outputs.forEach(output => {
+export function _removeIdPropsAndSetName(outputs: any[], dependencies: string[]): void {
+  outputs.forEach((output) => {
     /* istanbul ignore else */
     if (output.properties) {
       const names: string[] = getProp(output, "name") ? [output.name] : BASE_NAMES;
-      names.forEach(n => {
-        PROP_NAMES.forEach(p => _removeProp(output.properties, n + p, dependencies));
+      names.forEach((n) => {
+        PROP_NAMES.forEach((p) => _removeProp(output.properties, n + p, dependencies));
       });
 
       _updateName(output.properties);
@@ -689,11 +607,7 @@ export function _removeIdPropsAndSetName(
  *
  * @private
  */
-export function _removeProp(
-  props: any,
-  prop: string,
-  dependencies: string[]
-): void {
+export function _removeProp(props: any, prop: string, dependencies: string[]): void {
   const id: string = props[prop];
   /* istanbul ignore else */
   if (id && dependencies.indexOf(id) < 0) {
@@ -709,11 +623,7 @@ export function _removeProp(
  * @private
  */
 export function _updateName(props: any): void {
-  [
-    "feat-lyr-new.name",
-    "stream-lyr-new.name",
-    "feat-lyr-existing.name"
-  ].forEach(n => {
+  ["feat-lyr-new.name", "stream-lyr-new.name", "feat-lyr-existing.name"].forEach((n) => {
     const name: string = props[n];
     /* istanbul ignore else */
     if (name && name.indexOf("{{solutionItemId}}") < 0) {

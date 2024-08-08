@@ -14,62 +14,53 @@
  * limitations under the License.
  */
 import { _upgradeTwoDotOne } from "../../src/migrations/upgrade-two-dot-one";
-import * as utils from "../mocks/utils";
-import {
-  ISolutionItem,
-  IItemGeneralized,
-  IItemTemplate
-} from "../../src/interfaces";
-const MOCK_USER_SESSION = utils.createRuntimeMockUserSession();
+import { ISolutionItem } from "../../src/interfaces";
 
 describe("upgradeTwoDotOne :: ", () => {
   it("passes same object through if schema >= 2.1", () => {
     const m = {
       item: {
         properties: {
-          schemaVersion: 2.1
-        }
-      }
+          schemaVersion: 2.1,
+        },
+      },
     } as ISolutionItem;
     const chk = _upgradeTwoDotOne(m);
-    expect(chk).toBe(m, "should pass model through without cloning");
+    expect(chk).withContext("should pass model through without cloning").toBe(m);
   });
 
   it("remaps templates", () => {
-    const m = ({
+    const m = {
       item: {
         properties: {
-          schemaVersion: 2.0
-        }
+          schemaVersion: 2.0,
+        },
       },
       data: {
         templates: [
           {
-            fieldName: "becomesKey"
-          },
-          {
-            key: "staysKey"
+            fieldName: "becomesKey",
           },
           {
             key: "staysKey",
-            itemId: "staysItemId"
-          }
-        ]
-      }
-    } as unknown) as ISolutionItem;
+          },
+          {
+            key: "staysKey",
+            itemId: "staysItemId",
+          },
+        ],
+      },
+    } as unknown as ISolutionItem;
     const chk = _upgradeTwoDotOne(m);
-    expect(chk.item.properties.schemaVersion).toBe(
-      2.1,
-      "should set schemaVersion to 2.1"
-    );
+    expect(chk.item.properties.schemaVersion).withContext("should set schemaVersion to 2.1").toBe(2.1);
     const chkTmpl0 = chk.data.templates[0];
-    expect(chkTmpl0.key).toBe("becomesKey", "should use fieldName if present");
-    expect(chkTmpl0.itemId).toBe("becomesKey", "should use key if present");
+    expect(chkTmpl0.key).withContext("should use fieldName if present").toBe("becomesKey");
+    expect(chkTmpl0.itemId).withContext("should use key if present").toBe("becomesKey");
     const chkTmpl1 = chk.data.templates[1];
-    expect(chkTmpl1.key).toBe("staysKey", "should keep key if present");
-    expect(chkTmpl1.itemId).toBe("staysKey", "should use key if present");
+    expect(chkTmpl1.key).withContext("should keep key if present").toBe("staysKey");
+    expect(chkTmpl1.itemId).withContext("should use key if present").toBe("staysKey");
     const chkTmpl2 = chk.data.templates[2];
-    expect(chkTmpl2.key).toBe("staysKey", "should keep key if present");
-    expect(chkTmpl2.itemId).toBe("staysItemId", "should use itemId if present");
+    expect(chkTmpl2.key).withContext("should keep key if present").toBe("staysKey");
+    expect(chkTmpl2.itemId).withContext("should use itemId if present").toBe("staysItemId");
   });
 });

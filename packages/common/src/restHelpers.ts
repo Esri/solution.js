@@ -24,7 +24,7 @@ import {
   removeLayerOptimization,
   setDefaultSpatialReference,
   validateSpatialReferenceAndExtent,
-  processContingentValues
+  processContingentValues,
 } from "./featureServiceHelpers";
 import {
   appendQueryParam,
@@ -36,7 +36,7 @@ import {
   fail,
   getProp,
   getUniqueTitle,
-  setCreateProp
+  setCreateProp,
 } from "./generalHelpers";
 import {
   IAddFolderResponse,
@@ -60,7 +60,7 @@ import {
   ItemRelationshipType,
   IUpdate,
   IUpdateItemResponse,
-  UserSession
+  UserSession,
 } from "./interfaces";
 import { createZip } from "./libConnectors";
 import { getItemBase, getItemDataAsJson } from "./restHelpersGet";
@@ -104,24 +104,17 @@ import {
   shareItemWithGroup,
   updateItem as portalUpdateItem,
   updateGroup as portalUpdateGroup,
-  IUpdateGroupOptions
+  IUpdateGroupOptions,
 } from "@esri/arcgis-rest-portal";
 import { IParams, IRequestOptions, request } from "@esri/arcgis-rest-request";
 import {
   ICreateServiceParams,
   addToServiceDefinition as svcAdminAddToServiceDefinition,
-  createFeatureService as svcAdminCreateFeatureService
+  createFeatureService as svcAdminCreateFeatureService,
 } from "@esri/arcgis-rest-service-admin";
-import {
-  getWorkforceDependencies,
-  isWorkforceProject,
-  getWorkforceServiceInfo
-} from "./workforceHelpers";
+import { getWorkforceDependencies, isWorkforceProject, getWorkforceServiceInfo } from "./workforceHelpers";
 import { hasUnresolvedVariables, replaceInTemplate } from "./templatization";
-import {
-  isTrackingViewTemplate,
-  setTrackingOptions
-} from "./trackingHelpers";
+import { isTrackingViewTemplate, setTrackingOptions } from "./trackingHelpers";
 
 // ------------------------------------------------------------------------------------------------------------------ //
 
@@ -129,18 +122,14 @@ export { request as rest_request } from "@esri/arcgis-rest-request";
 
 // ------------------------------------------------------------------------------------------------------------------ //
 
-export function addItemData(
-  id: string,
-  data: any,
-  authentication: UserSession
-): Promise<IUpdateItemResponse> {
+export function addItemData(id: string, data: any, authentication: UserSession): Promise<IUpdateItemResponse> {
   const addDataOptions: IAddItemDataOptions = {
     id,
     data,
-    authentication
+    authentication,
   };
   return portalAddItemData(addDataOptions);
-};
+}
 
 /**
  * Creates a UserSession via a function so that the global arcgisSolution variable can access authentication.
@@ -148,9 +137,7 @@ export function addItemData(
  * @param options See https://esri.github.io/arcgis-rest-js/api/auth/IUserSessionOptions/
  * @returns UserSession
  */
-export function getUserSession(
-  options: IUserSessionOptions = {}
-): UserSession {
+export function getUserSession(options: IUserSessionOptions = {}): UserSession {
   return new UserSession(options);
 }
 
@@ -167,28 +154,28 @@ export function addForwardItemRelationship(
   originItemId: string,
   destinationItemId: string,
   relationshipType: ItemRelationshipType,
-  authentication: UserSession
+  authentication: UserSession,
 ): Promise<IStatusResponse> {
-  return new Promise<IStatusResponse>(resolve => {
+  return new Promise<IStatusResponse>((resolve) => {
     const requestOptions: IManageItemRelationshipOptions = {
       originItemId,
       destinationItemId,
       relationshipType,
-      authentication
+      authentication,
     };
     addItemRelationship(requestOptions).then(
-      response => {
+      (response) => {
         resolve({
           success: response.success,
-          itemId: originItemId
+          itemId: originItemId,
         } as IStatusResponse);
       },
       () => {
         resolve({
           success: false,
-          itemId: originItemId
+          itemId: originItemId,
         } as IStatusResponse);
-      }
+      },
     );
   });
 }
@@ -204,27 +191,25 @@ export function addForwardItemRelationship(
 export function addForwardItemRelationships(
   originItemId: string,
   destinationRelationships: IRelatedItems[],
-  authentication: UserSession
+  authentication: UserSession,
 ): Promise<IStatusResponse[]> {
-  return new Promise<IStatusResponse[]>(resolve => {
+  return new Promise<IStatusResponse[]>((resolve) => {
     // Set up relationships using updated relationship information
     const relationshipPromises = new Array<Promise<IStatusResponse>>();
-    destinationRelationships.forEach(relationship => {
-      relationship.relatedItemIds.forEach(relatedItemId => {
+    destinationRelationships.forEach((relationship) => {
+      relationship.relatedItemIds.forEach((relatedItemId) => {
         relationshipPromises.push(
           addForwardItemRelationship(
             originItemId,
             relatedItemId,
             relationship.relationshipType as ItemRelationshipType,
-            authentication
-          )
+            authentication,
+          ),
         );
       });
     });
     // eslint-disable-next-line @typescript-eslint/no-floating-promises
-    Promise.all(relationshipPromises).then((responses: IStatusResponse[]) =>
-      resolve(responses)
-    );
+    Promise.all(relationshipPromises).then((responses: IStatusResponse[]) => resolve(responses));
   });
 }
 
@@ -236,23 +221,20 @@ export function addForwardItemRelationships(
  * @returns A promise that will resolve with the supplied URL with `token=&lt;token&gt;` added to its query params
  * unless either the URL doesn't exist or the token can't be generated
  */
-export function addTokenToUrl(
-  url: string,
-  authentication: UserSession
-): Promise<string> {
-  return new Promise<string>(resolve => {
+export function addTokenToUrl(url: string, authentication: UserSession): Promise<string> {
+  return new Promise<string>((resolve) => {
     if (!url || !authentication) {
       resolve(url);
     } else {
       authentication.getToken(url).then(
-        token => {
+        (token) => {
           /* istanbul ignore else */
           if (token) {
             url = appendQueryParam(url, "token=" + token);
           }
           resolve(url);
         },
-        () => resolve(url)
+        () => resolve(url),
       );
     }
   });
@@ -275,7 +257,7 @@ export function addToServiceDefinition(
   url: string,
   options: any,
   skipRetry: boolean = false,
-  useAsync: boolean = false
+  useAsync: boolean = false,
 ): Promise<void> {
   /* istanbul ignore else */
   if (useAsync) {
@@ -286,19 +268,19 @@ export function addToServiceDefinition(
       (result: any) => {
         checkRequestStatus(result, options.authentication).then(
           () => resolve(null),
-          e => reject(fail(e))
+          (e) => reject(fail(e)),
         );
       },
-      e => {
+      (e) => {
         if (!skipRetry) {
           addToServiceDefinition(url, options, true, true).then(
             () => resolve(null),
-            e => reject(e)
+            (e) => reject(e),
           );
         } else {
           reject(fail(e));
         }
-      }
+      },
     );
   });
 }
@@ -311,16 +293,13 @@ export function addToServiceDefinition(
  * @param authentication Credentials to be used to generate token for URL
  * @returns A promise that will resolve when the request has completed
  */
-export function checkRequestStatus(
-  result: any,
-  authentication: any
-): Promise<void> {
+export function checkRequestStatus(result: any, authentication: any): Promise<void> {
   return new Promise((resolve, reject) => {
     const url = result.statusURL || result.statusUrl;
     if (url) {
       const checkStatus = setInterval(() => {
         request(url, { authentication }).then(
-          r => {
+          (r) => {
             /* istanbul ignore else */
             if (["completed", "success"].indexOf(r.status.toLowerCase()) > -1) {
               clearInterval(checkStatus);
@@ -330,10 +309,10 @@ export function checkRequestStatus(
               reject(r);
             }
           },
-          e => {
+          (e) => {
             clearInterval(checkStatus);
             reject(e);
-          }
+          },
         );
       }, 2000);
     } else {
@@ -348,29 +327,26 @@ export function checkRequestStatus(
  * @param search Search specified in one of three ways
  * @returns Recast search
  */
-export function convertToISearchOptions(
-  search: string | ISearchOptions | SearchQueryBuilder
-): ISearchOptions {
+export function convertToISearchOptions(search: string | ISearchOptions | SearchQueryBuilder): ISearchOptions {
   // Convert the search into an ISearchOptions
   let searchOptions: ISearchOptions = {
     q: "",
     start: 1,
-    num: 100
+    num: 100,
   };
 
   if (typeof search === "string") {
     // Insert query into defaults
     searchOptions.q = search;
-
   } else if (search instanceof SearchQueryBuilder) {
     // Insert query into defaults
     searchOptions.q = search.toParam();
-
-  } else { // search is ISearchOptions
+  } else {
+    // search is ISearchOptions
     searchOptions = {
       ...searchOptions, // defaults
-      ...search // request
-    }
+      ...search, // request
+    };
   }
 
   // Remove the sortField if it's "relevance"; that's the default option and is not meant to be specified
@@ -427,7 +403,7 @@ export function convertExtentWithFallback(
   fallbackExtent: any,
   outSR: ISpatialReference,
   geometryServiceUrl: string,
-  authentication: UserSession
+  authentication: UserSession,
 ): Promise<any> {
   return new Promise((resolve, reject) => {
     const defaultExtent = {
@@ -435,15 +411,10 @@ export function convertExtentWithFallback(
       xmax: 179,
       ymin: -89,
       ymax: 89,
-      spatialReference: { wkid: 4326 }
+      spatialReference: { wkid: 4326 },
     };
-    convertExtent(
-      _validateExtent(extent),
-      outSR,
-      geometryServiceUrl,
-      authentication
-    ).then(
-      extentResponse => {
+    convertExtent(_validateExtent(extent), outSR, geometryServiceUrl, authentication).then(
+      (extentResponse) => {
         // in some cases project will complete successfully but return "NaN" values
         // check for this and call convert again if it does
         const extentResponseString = JSON.stringify(extentResponse);
@@ -451,23 +422,15 @@ export function convertExtentWithFallback(
         if (extentResponseString === validatedExtent) {
           resolve(extentResponse);
         } else {
-          convertExtent(
-            fallbackExtent || defaultExtent,
-            outSR,
-            geometryServiceUrl,
-            authentication
-          ).then(resolve, e => reject(fail(e)));
+          convertExtent(fallbackExtent || defaultExtent, outSR, geometryServiceUrl, authentication).then(resolve, (e) =>
+            reject(fail(e)),
+          );
         }
       },
       // if convert fails try again with default global extent
       () => {
-        convertExtent(
-          defaultExtent,
-          outSR,
-          geometryServiceUrl,
-          authentication
-        ).then(resolve, e => reject(fail(e)));
-      }
+        convertExtent(defaultExtent, outSR, geometryServiceUrl, authentication).then(resolve, (e) => reject(fail(e)));
+      },
     );
   });
 }
@@ -485,7 +448,7 @@ export function convertExtent(
   extent: IExtent,
   outSR: ISpatialReference,
   geometryServiceUrl: string,
-  authentication: UserSession
+  authentication: UserSession,
 ): Promise<any> {
   const _requestOptions: any = { authentication };
   return new Promise<any>((resolve, reject) => {
@@ -496,25 +459,19 @@ export function convertExtent(
         f: "json",
         inSR: extent.spatialReference.wkid,
         outSR: outSR.wkid,
-        extentOfInterest: JSON.stringify(extent)
+        extentOfInterest: JSON.stringify(extent),
       };
-      request(
-        checkUrlPathTermination(geometryServiceUrl) + "findTransformations",
-        _requestOptions
-      ).then(
-        response => {
-          const transformations =
-            response && response.transformations
-              ? response.transformations
-              : undefined;
+      request(checkUrlPathTermination(geometryServiceUrl) + "findTransformations", _requestOptions).then(
+        (response) => {
+          const transformations = response && response.transformations ? response.transformations : undefined;
           let transformation: any;
           if (transformations && transformations.length > 0) {
             // if a forward single transformation is found use that...otherwise check for and use composite
             transformation = transformations[0].wkid
               ? transformations[0].wkid
               : transformations[0].geoTransforms
-              ? transformations[0]
-              : undefined;
+                ? transformations[0]
+                : undefined;
           }
 
           _requestOptions.params = {
@@ -525,36 +482,30 @@ export function convertExtent(
               geometryType: "esriGeometryPoint",
               geometries: [
                 { x: extent.xmin, y: extent.ymin },
-                { x: extent.xmax, y: extent.ymax }
-              ]
+                { x: extent.xmax, y: extent.ymax },
+              ],
             },
-            transformation: transformation
+            transformation: transformation,
           };
-          request(
-            checkUrlPathTermination(geometryServiceUrl) + "project",
-            _requestOptions
-          ).then(
-            projectResponse => {
-              const projectGeom: any =
-                projectResponse.geometries.length === 2
-                  ? projectResponse.geometries
-                  : undefined;
+          request(checkUrlPathTermination(geometryServiceUrl) + "project", _requestOptions).then(
+            (projectResponse) => {
+              const projectGeom: any = projectResponse.geometries.length === 2 ? projectResponse.geometries : undefined;
               if (projectGeom) {
                 resolve({
                   xmin: projectGeom[0].x,
                   ymin: projectGeom[0].y,
                   xmax: projectGeom[1].x,
                   ymax: projectGeom[1].y,
-                  spatialReference: outSR
+                  spatialReference: outSR,
                 });
               } else {
                 resolve(undefined);
               }
             },
-            e => reject(fail(e))
+            (e) => reject(fail(e)),
           );
         },
-        e => reject(fail(e))
+        (e) => reject(fail(e)),
       );
     }
   });
@@ -571,27 +522,23 @@ export function convertExtent(
 export function createFeatureService(
   newItemTemplate: IItemTemplate,
   authentication: UserSession,
-  templateDictionary: any
+  templateDictionary: any,
 ): Promise<ICreateServiceResult> {
   return new Promise((resolve, reject) => {
     // Create item
-    _getCreateServiceOptions(
-      newItemTemplate,
-      authentication,
-      templateDictionary
-    ).then(
-      createOptions => {
+    _getCreateServiceOptions(newItemTemplate, authentication, templateDictionary).then(
+      (createOptions) => {
         svcAdminCreateFeatureService(createOptions).then(
-          createResponse => {
+          (createResponse) => {
             // Federated servers may have inconsistent casing, so lowerCase it
             createResponse.encodedServiceURL = _lowercaseDomain(createResponse.encodedServiceURL);
             createResponse.serviceurl = _lowercaseDomain(createResponse.serviceurl);
             resolve(createResponse);
           },
-          e => reject(fail(e))
+          (e) => reject(fail(e)),
         );
       },
-      e => reject(fail(e))
+      (e) => reject(fail(e)),
     );
   });
 }
@@ -620,124 +567,96 @@ export function createFullItem(
   dataFile?: File,
   metadataFile?: File,
   resourcesFiles?: File[],
-  access = "private"
+  access = "private",
 ): Promise<ICreateItemResponse> {
   return new Promise((resolve, reject) => {
     // Create item
     const createOptions: ICreateItemOptions = {
       item: {
-        ...itemInfo
+        ...itemInfo,
       },
       folderId,
-      authentication: destinationAuthentication
+      authentication: destinationAuthentication,
     };
 
     // eslint-disable-next-line @typescript-eslint/no-floating-promises
-    addTokenToUrl(itemThumbnailUrl, itemThumbnailAuthentication).then(
-      updatedThumbnailUrl => {
-        /* istanbul ignore else */
-        if (updatedThumbnailUrl) {
-          createOptions.item.thumbnailUrl = appendQueryParam(
-            updatedThumbnailUrl,
-            "w=400"
-          );
-        }
-
-        createItemInFolder(createOptions).then(
-          createResponse => {
-            if (createResponse.success) {
-              let accessDef: Promise<ISharingResponse>;
-
-              // Set access if it is not AGOL default
-              // Set the access manually since the access value in createItem appears to be ignored
-              // Need to run serially; will not work reliably if done in parallel with adding the data section
-              if (access !== "private") {
-                const accessOptions: ISetAccessOptions = {
-                  id: createResponse.id,
-                  access: access === "public" ? "public" : "org", // need to use constants rather than string
-                  authentication: destinationAuthentication
-                };
-                accessDef = setItemAccess(accessOptions);
-              } else {
-                accessDef = Promise.resolve({
-                  itemId: createResponse.id
-                } as ISharingResponse);
-              }
-
-              // Now add attached items
-              accessDef.then(
-                () => {
-                  const updateDefs: Array<Promise<any>> = [];
-
-                  // Add the data section
-                  if (dataFile) {
-                    updateDefs.push(
-                      _addItemDataFile(
-                        createResponse.id,
-                        dataFile,
-                        destinationAuthentication
-                      )
-                    );
-                  }
-
-                  // Add the resources via a zip because AGO sometimes loses resources if many are added at the
-                  // same time to the same item
-                  if (
-                    Array.isArray(resourcesFiles) &&
-                    resourcesFiles.length > 0
-                  ) {
-                    updateDefs.push(
-                      new Promise<IItemResourceResponse>(
-                        (rsrcResolve, rsrcReject) => {
-                          createZip("resources.zip", resourcesFiles).then(
-                            (zipfile: File) => {
-                              const addResourceOptions: IItemResourceOptions = {
-                                id: createResponse.id,
-                                resource: zipfile,
-                                authentication: destinationAuthentication,
-                                params: {
-                                  archive: true
-                                }
-                              };
-                              addItemResource(addResourceOptions).then(
-                                rsrcResolve,
-                                rsrcReject
-                              );
-                            },
-                            rsrcReject
-                          );
-                        }
-                      )
-                    );
-                  }
-
-                  // Add the metadata section
-                  if (metadataFile) {
-                    updateDefs.push(
-                      _addItemMetadataFile(
-                        createResponse.id,
-                        metadataFile,
-                        destinationAuthentication
-                      )
-                    );
-                  }
-
-                  // Wait until all adds are done
-                  Promise.all(updateDefs).then(
-                    () => resolve(createResponse),
-                    e => reject(fail(e))
-                  );
-                },
-                e => reject(fail(e))
-              );
-            } else {
-              reject(fail());
-            }
-          },
-          e => reject(fail(e))
-        );
+    addTokenToUrl(itemThumbnailUrl, itemThumbnailAuthentication).then((updatedThumbnailUrl) => {
+      /* istanbul ignore else */
+      if (updatedThumbnailUrl) {
+        createOptions.item.thumbnailUrl = appendQueryParam(updatedThumbnailUrl, "w=400");
       }
-    );
+
+      createItemInFolder(createOptions).then(
+        (createResponse) => {
+          if (createResponse.success) {
+            let accessDef: Promise<ISharingResponse>;
+
+            // Set access if it is not AGOL default
+            // Set the access manually since the access value in createItem appears to be ignored
+            // Need to run serially; will not work reliably if done in parallel with adding the data section
+            if (access !== "private") {
+              const accessOptions: ISetAccessOptions = {
+                id: createResponse.id,
+                access: access === "public" ? "public" : "org", // need to use constants rather than string
+                authentication: destinationAuthentication,
+              };
+              accessDef = setItemAccess(accessOptions);
+            } else {
+              accessDef = Promise.resolve({
+                itemId: createResponse.id,
+              } as ISharingResponse);
+            }
+
+            // Now add attached items
+            accessDef.then(
+              () => {
+                const updateDefs: Array<Promise<any>> = [];
+
+                // Add the data section
+                if (dataFile) {
+                  updateDefs.push(_addItemDataFile(createResponse.id, dataFile, destinationAuthentication));
+                }
+
+                // Add the resources via a zip because AGO sometimes loses resources if many are added at the
+                // same time to the same item
+                if (Array.isArray(resourcesFiles) && resourcesFiles.length > 0) {
+                  updateDefs.push(
+                    new Promise<IItemResourceResponse>((rsrcResolve, rsrcReject) => {
+                      createZip("resources.zip", resourcesFiles).then((zipfile: File) => {
+                        const addResourceOptions: IItemResourceOptions = {
+                          id: createResponse.id,
+                          resource: zipfile,
+                          authentication: destinationAuthentication,
+                          params: {
+                            archive: true,
+                          },
+                        };
+                        addItemResource(addResourceOptions).then(rsrcResolve, rsrcReject);
+                      }, rsrcReject);
+                    }),
+                  );
+                }
+
+                // Add the metadata section
+                if (metadataFile) {
+                  updateDefs.push(_addItemMetadataFile(createResponse.id, metadataFile, destinationAuthentication));
+                }
+
+                // Wait until all adds are done
+                Promise.all(updateDefs).then(
+                  () => resolve(createResponse),
+                  (e) => reject(fail(e)),
+                );
+              },
+              (e) => reject(fail(e)),
+            );
+          } else {
+            reject(fail());
+          }
+        },
+        (e) => reject(fail(e)),
+      );
+    });
   });
 }
 
@@ -757,7 +676,7 @@ export function createItemWithData(
   dataInfo: any,
   authentication: UserSession,
   folderId: string | undefined,
-  access = "private"
+  access = "private",
 ): Promise<ICreateItemResponse> {
   return new Promise((resolve, reject) => {
     // Create item
@@ -765,22 +684,22 @@ export function createItemWithData(
       item: {
         title: "_", // provide backup title
         ...itemInfo,
-        data: dataInfo
+        data: dataInfo,
       },
       folderId,
-      authentication: authentication
+      authentication: authentication,
     };
 
     if (itemInfo.thumbnail) {
       createOptions.params = {
         // Pass thumbnail file in via params because item property is serialized, which discards a blob
-        thumbnail: itemInfo.thumbnail
+        thumbnail: itemInfo.thumbnail,
       };
       delete createOptions.item.thumbnail;
     }
 
     createItemInFolder(createOptions).then(
-      createResponse => {
+      (createResponse) => {
         if (createResponse.success) {
           if (access !== "private") {
             // Set access if it is not AGOL default
@@ -788,30 +707,30 @@ export function createItemWithData(
             const accessOptions: ISetAccessOptions = {
               id: createResponse.id,
               access: access === "public" ? "public" : "org", // need to use constants rather than string
-              authentication: authentication
+              authentication: authentication,
             };
             setItemAccess(accessOptions).then(
               () => {
                 resolve({
                   folder: createResponse.folder,
                   id: createResponse.id,
-                  success: true
+                  success: true,
                 });
               },
-              e => reject(fail(e))
+              (e) => reject(fail(e)),
             );
           } else {
             resolve({
               folder: createResponse.folder,
               id: createResponse.id,
-              success: true
+              success: true,
             });
           }
         } else {
           reject(fail());
         }
       },
-      e => reject(fail(e))
+      (e) => reject(fail(e)),
     );
   });
 }
@@ -829,27 +748,22 @@ export function createItemWithData(
 export function createUniqueFolder(
   title: string,
   templateDictionary: any,
-  authentication: UserSession
+  authentication: UserSession,
 ): Promise<IAddFolderResponse> {
   return new Promise<IAddFolderResponse>((resolve, reject) => {
     // Get a title that is not already in use
-    const folderTitle: string = getUniqueTitle(
-      title,
-      templateDictionary,
-      "user.folders"
-    );
+    const folderTitle: string = getUniqueTitle(title, templateDictionary, "user.folders");
     const folderCreationParam = {
       title: folderTitle,
-      authentication: authentication
+      authentication: authentication,
     };
     createFolder(folderCreationParam).then(
-      ok => resolve(ok),
-      err => {
+      (ok) => resolve(ok),
+      (err) => {
         // If the name already exists, we'll try again
         const errorDetails = getProp(err, "response.error.details") as string[];
         if (Array.isArray(errorDetails) && errorDetails.length > 0) {
-          const nameNotAvailMsg =
-            "Folder title '" + folderTitle + "' not available.";
+          const nameNotAvailMsg = "Folder title '" + folderTitle + "' not available.";
           if (errorDetails.indexOf(nameNotAvailMsg) >= 0) {
             // Create the user.folders property if it doesn't exist
             /* istanbul ignore else */
@@ -857,12 +771,9 @@ export function createUniqueFolder(
               setCreateProp(templateDictionary, "user.folders", []);
             }
             templateDictionary.user.folders.push({
-              title: folderTitle
+              title: folderTitle,
             });
-            createUniqueFolder(title, templateDictionary, authentication).then(
-              resolve,
-              reject
-            );
+            createUniqueFolder(title, templateDictionary, authentication).then(resolve, reject);
           } else {
             reject(err);
           }
@@ -870,7 +781,7 @@ export function createUniqueFolder(
           // Otherwise, error out
           reject(err);
         }
-      }
+      },
     );
   });
 }
@@ -892,7 +803,7 @@ export function createUniqueGroup(
   groupItem: IGroupAdd,
   templateDictionary: any,
   authentication: UserSession,
-  owner?: string
+  owner?: string,
 ): Promise<IAddGroupResponse> {
   return new Promise<IAddGroupResponse>((resolve, reject) => {
     let groupsPromise: Promise<any>;
@@ -905,43 +816,37 @@ export function createUniqueGroup(
     }
 
     // first get the tracker owner groups
-    groupsPromise.then(groups => {
-      templateDictionary["allGroups"] =
-        groups.concat(getProp(templateDictionary, "user.groups"));
+    groupsPromise.then(
+      (groups) => {
+        templateDictionary["allGroups"] = groups.concat(getProp(templateDictionary, "user.groups"));
 
-      // Get a title that is not already in use
-      groupItem.title = getUniqueTitle(title, templateDictionary, "allGroups");
-      const groupCreationParam = {
-        group: groupItem,
-        authentication: authentication
-      };
-      createGroup(groupCreationParam).then(resolve, err => {
-        // If the name already exists, we'll try again
-        const errorDetails = getProp(err, "response.error.details") as string[];
-        if (Array.isArray(errorDetails) && errorDetails.length > 0) {
-          const nameNotAvailMsg =
-            "You already have a group named '" +
-            groupItem.title +
-            "'. Try a different name.";
-          if (errorDetails.indexOf(nameNotAvailMsg) >= 0) {
-            templateDictionary.user.groups.push({
-              title: groupItem.title
-            });
-            createUniqueGroup(
-              title,
-              groupItem,
-              templateDictionary,
-              authentication
-            ).then(resolve, reject);
+        // Get a title that is not already in use
+        groupItem.title = getUniqueTitle(title, templateDictionary, "allGroups");
+        const groupCreationParam = {
+          group: groupItem,
+          authentication: authentication,
+        };
+        createGroup(groupCreationParam).then(resolve, (err) => {
+          // If the name already exists, we'll try again
+          const errorDetails = getProp(err, "response.error.details") as string[];
+          if (Array.isArray(errorDetails) && errorDetails.length > 0) {
+            const nameNotAvailMsg = "You already have a group named '" + groupItem.title + "'. Try a different name.";
+            if (errorDetails.indexOf(nameNotAvailMsg) >= 0) {
+              templateDictionary.user.groups.push({
+                title: groupItem.title,
+              });
+              createUniqueGroup(title, groupItem, templateDictionary, authentication).then(resolve, reject);
+            } else {
+              reject(err);
+            }
           } else {
+            // Otherwise, error out
             reject(err);
           }
-        } else {
-          // Otherwise, error out
-          reject(err);
-        }
-      });
-    }, e => reject(e));
+        });
+      },
+      (e) => reject(e),
+    );
   });
 }
 
@@ -953,34 +858,28 @@ export function createUniqueGroup(
  * @param authentication Credentials for the request
  * @returns A promise that will resolve a list of dependencies
  */
-export function extractDependencies(
-  itemTemplate: IItemTemplate,
-  authentication?: UserSession
-): Promise<IDependency[]> {
+export function extractDependencies(itemTemplate: IItemTemplate, authentication?: UserSession): Promise<IDependency[]> {
   const dependencies: any[] = [];
   return new Promise((resolve, reject) => {
     // Get service dependencies when the item is a view
     // This step is skipped for tracker views as they will already have a source service in the org
     if (itemTemplate.properties.service.isView && itemTemplate.item.url && !isTrackingViewTemplate(itemTemplate)) {
-      request(
-        checkUrlPathTermination(itemTemplate.item.url) + "sources?f=json",
-        {
-          authentication: authentication
-        }
-      ).then(
-        response => {
+      request(checkUrlPathTermination(itemTemplate.item.url) + "sources?f=json", {
+        authentication: authentication,
+      }).then(
+        (response) => {
           /* istanbul ignore else */
           if (response && response.services) {
             response.services.forEach((layer: any) => {
               dependencies.push({
                 id: layer.serviceItemId,
-                name: layer.name
+                name: layer.name,
               });
             });
           }
           resolve(dependencies);
         },
-        e => reject(fail(e))
+        (e) => reject(fail(e)),
       );
     } else if (isWorkforceProject(itemTemplate)) {
       resolve(getWorkforceDependencies(itemTemplate, dependencies));
@@ -998,11 +897,7 @@ export function extractDependencies(
  * @param authentication Credentials for the request
  * @returns A promise that will resolve a list of dependencies
  */
-export function getLayers(
-  serviceUrl: string,
-  layerList: any[],
-  authentication: UserSession
-): Promise<any[]> {
+export function getLayers(serviceUrl: string, layerList: any[], authentication: UserSession): Promise<any[]> {
   return new Promise<any[]>((resolve, reject) => {
     if (layerList.length === 0) {
       resolve([]);
@@ -1012,22 +907,17 @@ export function getLayers(
     serviceUrl = serviceUrl.replace("/rest/services", "/rest/admin/services");
 
     const requestsDfd: Array<Promise<any>> = [];
-    layerList.forEach(layer => {
+    layerList.forEach((layer) => {
       const requestOptions: IRequestOptions = {
-        authentication: authentication
+        authentication: authentication,
       };
-      requestsDfd.push(
-        request(
-          checkUrlPathTermination(serviceUrl) + layer["id"] + "?f=json",
-          requestOptions
-        )
-      );
+      requestsDfd.push(request(checkUrlPathTermination(serviceUrl) + layer["id"] + "?f=json", requestOptions));
     });
 
     // Wait until all layers are heard from
     Promise.all(requestsDfd).then(
-      layers => resolve(layers),
-      e => reject(fail(e))
+      (layers) => resolve(layers),
+      (e) => reject(fail(e)),
     );
   });
 }
@@ -1041,19 +931,13 @@ export function getLayers(
  * @returns An array of update instructions
  * @private
  */
-export function getLayerUpdates(
-  args: IPostProcessArgs,
-  isPortal: boolean
-): IUpdate[] {
-  const adminUrl: string = args.itemTemplate.item.url.replace(
-    "rest/services",
-    "rest/admin/services"
-  );
+export function getLayerUpdates(args: IPostProcessArgs, isPortal: boolean): IUpdate[] {
+  const adminUrl: string = args.itemTemplate.item.url.replace("rest/services", "rest/admin/services");
 
   const updates: IUpdate[] = [];
   const refresh: any = _getUpdate(adminUrl, null, null, args, "refresh");
   updates.push(refresh);
-  Object.keys(args.objects).forEach(id => {
+  Object.keys(args.objects).forEach((id) => {
     const obj: any = Object.assign({}, args.objects[id]);
     // These properties cannot be set in the update definition when working with portal
     if (isPortal) {
@@ -1075,7 +959,7 @@ export function getLayerUpdates(
       message: "updated layer relationships",
       objects: args.objects,
       itemTemplate: args.itemTemplate,
-      authentication: args.authentication
+      authentication: args.authentication,
     });
     // issue: #724
     // In portal the order the relationships are added needs to follow the layer order
@@ -1083,7 +967,7 @@ export function getLayerUpdates(
     relUpdates.layers = _sortRelationships(
       args.itemTemplate.properties.layers,
       args.itemTemplate.properties.tables,
-      relUpdates
+      relUpdates,
     );
     /* istanbul ignore else */
     if (relUpdates.layers.length > 0) {
@@ -1096,12 +980,12 @@ export function getLayerUpdates(
       message: "add layer contingent values",
       objects: args.objects,
       itemTemplate: args.itemTemplate,
-      authentication: args.authentication
+      authentication: args.authentication,
     });
 
     /* istanbul ignore else */
     if (contingentValuesUpdates.length > 0) {
-      contingentValuesUpdates.forEach(conUpdate => {
+      contingentValuesUpdates.forEach((conUpdate) => {
         updates.push(_getUpdate(adminUrl + conUpdate.id, null, conUpdate.contingentValues, args, "add"));
       });
     }
@@ -1120,12 +1004,12 @@ export function getLayerUpdates(
 export async function moveItemToFolder(
   itemId: string,
   folderId: string,
-  authentication: UserSession
+  authentication: UserSession,
 ): Promise<IMoveItemResponse> {
   const moveOptions: IMoveItemOptions = {
     itemId,
     folderId,
-    authentication
+    authentication,
   };
 
   return portalMoveItem(moveOptions);
@@ -1145,7 +1029,7 @@ export async function moveItemsToFolder(
   authentication: UserSession,
 ): Promise<IMoveItemResponse[]> {
   const movePromises = new Array<Promise<IMoveItemResponse>>();
-  itemIds.forEach(itemId => {
+  itemIds.forEach((itemId) => {
     movePromises.push(moveItemToFolder(itemId, folderId, authentication));
   });
   return Promise.all(movePromises);
@@ -1161,19 +1045,15 @@ export async function moveItemsToFolder(
  * @returns An array with relationships that have been sorted
  * @private
  */
-export function _sortRelationships(
-  layers: any[],
-  tables: any[],
-  relUpdates: any
-): any[] {
+export function _sortRelationships(layers: any[], tables: any[], relUpdates: any): any[] {
   const ids: number[] = [].concat(
     layers.map((l: any) => l.id),
-    tables.map((t: any) => t.id)
+    tables.map((t: any) => t.id),
   );
   // In portal the order the relationships are added needs to follow the layer order
   // otherwise the relationship IDs will be reset
   const _relUpdateLayers: any[] = [];
-  ids.forEach(id => {
+  ids.forEach((id) => {
     relUpdates.layers.some((relUpdate: any) => {
       if (id === relUpdate.id) {
         _relUpdateLayers.push(relUpdate);
@@ -1198,15 +1078,11 @@ export function _sortRelationships(
  * @private
  */
 /* istanbul ignore else */
-export function getRequest(
-  update: IUpdate,
-  skipRetry: boolean = false,
-  useAsync: boolean = false
-): Promise<void> {
+export function getRequest(update: IUpdate, skipRetry: boolean = false, useAsync: boolean = false): Promise<void> {
   return new Promise((resolve, reject) => {
     const options: IRequestOptions = {
       params: update.params,
-      authentication: update.args.authentication
+      authentication: update.args.authentication,
     };
     /* istanbul ignore else */
     if (
@@ -1217,22 +1093,22 @@ export function getRequest(
       options.params = { ...options.params, async: true };
     }
     request(update.url, options).then(
-      result => {
+      (result) => {
         checkRequestStatus(result, options.authentication).then(
           () => resolve(null),
-          e => reject(fail(e))
+          (e) => reject(fail(e)),
         );
       },
       (e: any) => {
         if (!skipRetry) {
           getRequest(update, true, true).then(
             () => resolve(),
-            e => reject(e)
+            (e) => reject(e),
           );
         } else {
           reject(e);
         }
-      }
+      },
     );
   });
 }
@@ -1247,7 +1123,7 @@ export function getRequest(
  */
 export function getServiceLayersAndTables(
   itemTemplate: IItemTemplate,
-  authentication: UserSession
+  authentication: UserSession,
 ): Promise<IItemTemplate> {
   return new Promise<IItemTemplate>((resolve, reject) => {
     // To have enough information for reconstructing the service, we'll supplement
@@ -1259,16 +1135,12 @@ export function getServiceLayersAndTables(
 
     // Get the service description
     if (itemTemplate.item.url) {
-      getFeatureServiceProperties(
-        itemTemplate.item.url,
-        authentication,
-        isWorkforceService
-      ).then(
-        properties => {
+      getFeatureServiceProperties(itemTemplate.item.url, authentication, isWorkforceService).then(
+        (properties) => {
           itemTemplate.properties = properties;
           resolve(itemTemplate);
         },
-        e => reject(fail(e))
+        (e) => reject(fail(e)),
       );
     } else {
       resolve(itemTemplate);
@@ -1288,13 +1160,13 @@ export function getServiceLayersAndTables(
 export function getFeatureServiceProperties(
   serviceUrl: string,
   authentication: UserSession,
-  workforceService: boolean = false
+  workforceService: boolean = false,
 ): Promise<IFeatureServiceProperties> {
   return new Promise<IFeatureServiceProperties>((resolve, reject) => {
     const properties: IFeatureServiceProperties = {
       service: {},
       layers: [],
-      tables: []
+      tables: [],
     };
 
     // get the admin URL
@@ -1302,17 +1174,16 @@ export function getFeatureServiceProperties(
 
     // Get the service description
     request(serviceUrl + "?f=json", {
-      authentication: authentication
+      authentication: authentication,
     }).then(
-      serviceData => {
+      (serviceData) => {
         properties.service = _parseAdminServiceData(serviceData);
 
         // Copy cacheMaxAge to top level so that AGO sees it when deploying the service
         // serviceData may have set it if there isn't an adminServiceInfo
         /* istanbul ignore else */
         if (serviceData.adminServiceInfo?.cacheMaxAge) {
-          properties.service.cacheMaxAge =
-            serviceData.adminServiceInfo.cacheMaxAge;
+          properties.service.cacheMaxAge = serviceData.adminServiceInfo.cacheMaxAge;
         }
 
         // Move the layers and tables out of the service's data section
@@ -1322,7 +1193,7 @@ export function getFeatureServiceProperties(
 
           // Fill in properties that the service layer doesn't provide
           // and remove properties that should not exist in the template
-          properties.layers.forEach(layer => {
+          properties.layers.forEach((layer) => {
             layer.serviceItemId = properties.service.serviceItemId;
             layer.extent = null;
             removeLayerOptimization(layer);
@@ -1335,7 +1206,7 @@ export function getFeatureServiceProperties(
           properties.tables = serviceData.tables;
 
           // Fill in properties that the service layer doesn't provide
-          properties.tables.forEach(table => {
+          properties.tables.forEach((table) => {
             table.serviceItemId = properties.service.serviceItemId;
             table.extent = null;
           });
@@ -1345,20 +1216,18 @@ export function getFeatureServiceProperties(
         // Ensure solution items have unique indexes on relationship key fields
         _updateIndexesForRelationshipKeyFields(properties);
 
-        processContingentValues(properties, serviceUrl, authentication).then(() => {
-          if (workforceService) {
-            getWorkforceServiceInfo(properties, serviceUrl, authentication).then(
-              resolve,
-              reject
-            );
-          } else {
-            resolve(properties);
-          }
-        },
-          (e: any) => reject(fail(e))
+        processContingentValues(properties, serviceUrl, authentication).then(
+          () => {
+            if (workforceService) {
+              getWorkforceServiceInfo(properties, serviceUrl, authentication).then(resolve, reject);
+            } else {
+              resolve(properties);
+            }
+          },
+          (e: any) => reject(fail(e)),
         );
       },
-      (e: any) => reject(fail(e))
+      (e: any) => reject(fail(e)),
     );
   });
 }
@@ -1375,20 +1244,20 @@ export function getFeatureServiceProperties(
 export async function getWorkflowConfigurationZip(
   itemId: string,
   workflowBaseUrl: string,
-  authentication: UserSession
+  authentication: UserSession,
 ): Promise<File> {
   const url = `${workflowBaseUrl}/admin/${itemId}/export`;
 
   return request(url, {
     authentication,
     headers: {
-      Accept: "application/octet-stream",
-      Authorization: `Bearer ${authentication.token}`,
-      "X-Esri-Authorization": `Bearer ${authentication.token}`
+      "Accept": "application/octet-stream",
+      "Authorization": `Bearer ${authentication.token}`,
+      "X-Esri-Authorization": `Bearer ${authentication.token}`,
     },
     params: {
-      f: "zip"
-    }
+      f: "zip",
+    },
   });
 }
 
@@ -1406,20 +1275,20 @@ export async function setWorkflowConfigurationZip(
   itemId: string,
   configurationZipFile: File,
   workflowBaseUrl: string,
-  authentication: UserSession
-  ): Promise<IStatusResponse> {
+  authentication: UserSession,
+): Promise<IStatusResponse> {
   const url = `${workflowBaseUrl}/admin/${itemId}/import`;
 
   return request(url, {
     authentication,
     headers: {
-      Accept: "application/octet-stream",
-      Authorization: `Bearer ${authentication.token}`,
-      "X-Esri-Authorization": `Bearer ${authentication.token}`
+      "Accept": "application/octet-stream",
+      "Authorization": `Bearer ${authentication.token}`,
+      "X-Esri-Authorization": `Bearer ${authentication.token}`,
     },
     params: {
-      file: configurationZipFile
-    }
+      file: configurationZipFile,
+    },
   });
 }
 
@@ -1437,15 +1306,11 @@ export function _parseAdminServiceData(adminData: any): any {
   setCreateProp(
     adminData,
     "layers",
-    layers.filter(l => l.type === "Feature Layer")
+    layers.filter((l) => l.type === "Feature Layer"),
   );
   // TODO understand if the concat is necessary.
   // Not sure if the admin api will ever actually return a tables collection here.
-  setCreateProp(
-    adminData,
-    "tables",
-    tables.concat(layers.filter(l => l.type === "Table"))
-  );
+  setCreateProp(adminData, "tables", tables.concat(layers.filter((l) => l.type === "Table")));
   return adminData;
 }
 
@@ -1456,13 +1321,9 @@ export function _parseAdminServiceData(adminData: any): any {
  * @param groupDesignations the items group designations to evaluate
  * @returns A boolean indicating if the invalid designation is found in the item info
  */
-export function hasInvalidGroupDesignations(
-  groupDesignations: string
-): boolean {
+export function hasInvalidGroupDesignations(groupDesignations: string): boolean {
   const invalidGroupDesignations: string[] = ["livingatlas"];
-  return groupDesignations
-    ? invalidGroupDesignations.indexOf(groupDesignations) > -1
-    : false;
+  return groupDesignations ? invalidGroupDesignations.indexOf(groupDesignations) > -1 : false;
 }
 
 /**
@@ -1472,19 +1333,13 @@ export function hasInvalidGroupDesignations(
  * @param authentication Credentials for the request to AGO
  * @returns A promise that will resolve with the result of the request
  */
-export function removeFolder(
-  folderId: string,
-  authentication: UserSession
-): Promise<IFolderStatusResponse> {
+export function removeFolder(folderId: string, authentication: UserSession): Promise<IFolderStatusResponse> {
   return new Promise<IFolderStatusResponse>((resolve, reject) => {
     const requestOptions: IFolderIdOptions = {
       folderId: folderId,
-      authentication: authentication
+      authentication: authentication,
     };
-    portalRemoveFolder(requestOptions).then(
-      result => (result.success ? resolve(result) : reject(result)),
-      reject
-    );
+    portalRemoveFolder(requestOptions).then((result) => (result.success ? resolve(result) : reject(result)), reject);
   });
 }
 
@@ -1495,19 +1350,13 @@ export function removeFolder(
  * @param authentication Credentials for the request to AGO
  * @returns A promise that will resolve with the result of the request
  */
-export function removeGroup(
-  groupId: string,
-  authentication: UserSession
-): Promise<IStatusResponse> {
+export function removeGroup(groupId: string, authentication: UserSession): Promise<IStatusResponse> {
   return new Promise<IStatusResponse>((resolve, reject) => {
     const requestOptions: IUserGroupOptions = {
       id: groupId,
-      authentication: authentication
+      authentication: authentication,
     };
-    portalRemoveGroup(requestOptions).then(
-      result => (result.success ? resolve(result) : reject(result)),
-      reject
-    );
+    portalRemoveGroup(requestOptions).then((result) => (result.success ? resolve(result) : reject(result)), reject);
   });
 }
 
@@ -1523,20 +1372,17 @@ export function removeGroup(
 export function removeItem(
   itemId: string,
   authentication: UserSession,
-  permanentDelete = true
+  permanentDelete = true,
 ): Promise<IStatusResponse> {
   return new Promise<IStatusResponse>((resolve, reject) => {
     const requestOptions: IUserItemOptions = {
       id: itemId,
       authentication: authentication,
       params: {
-        permanentDelete
-      }
+        permanentDelete,
+      },
     };
-    portalRemoveItem(requestOptions).then(
-      result => (result.success ? resolve(result) : reject(result)),
-      reject
-    );
+    portalRemoveItem(requestOptions).then((result) => (result.success ? resolve(result) : reject(result)), reject);
   });
 }
 
@@ -1552,10 +1398,10 @@ export function removeItem(
 export function removeItemOrGroup(
   itemId: string,
   authentication: UserSession,
-  permanentDelete = true
+  permanentDelete = true,
 ): Promise<IStatusResponse> {
   return new Promise<IStatusResponse>((resolve, reject) => {
-    removeItem(itemId, authentication, permanentDelete).then(resolve, error => {
+    removeItem(itemId, authentication, permanentDelete).then(resolve, (error) => {
       removeGroup(itemId, authentication).then(resolve, () => reject(error));
     });
   });
@@ -1568,9 +1414,7 @@ export function removeItemOrGroup(
  * @returns Promise resolving with search results
  * @see https://developers.arcgis.com/rest/users-groups-and-items/search.htm
  */
-export function searchItems(
-  search: string | ISearchOptions | SearchQueryBuilder
-): Promise<ISearchResult<IItem>> {
+export function searchItems(search: string | ISearchOptions | SearchQueryBuilder): Promise<ISearchResult<IItem>> {
   return portalSearchItems(search);
 }
 
@@ -1584,24 +1428,26 @@ export function searchItems(
  */
 export function searchAllItems(
   search: string | ISearchOptions | SearchQueryBuilder,
-  accumulatedResponse?: ISearchResult<IItem>
+  accumulatedResponse?: ISearchResult<IItem>,
 ): Promise<ISearchResult<IItem>> {
   // Convert the search into an ISearchOptions
   const searchOptions = convertToISearchOptions(search);
 
   // Provide a base into which results can be concatenated
-  const completeResponse: ISearchResult<IItem> = accumulatedResponse ? accumulatedResponse : {
-    query: searchOptions.q,
-    start: 1,
-    num: 100,
-    nextStart: -1,
-    total: 0,
-    results: [] as IItem[]
-  } as ISearchResult<IItem>;
+  const completeResponse: ISearchResult<IItem> = accumulatedResponse
+    ? accumulatedResponse
+    : ({
+        query: searchOptions.q,
+        start: 1,
+        num: 100,
+        nextStart: -1,
+        total: 0,
+        results: [] as IItem[],
+      } as ISearchResult<IItem>);
 
   return new Promise<ISearchResult<IItem>>((resolve, reject) => {
     searchItems(search).then(
-      response => {
+      (response) => {
         completeResponse.results = completeResponse.results.concat(response.results);
         completeResponse.num = completeResponse.total = completeResponse.results.length;
         if (response.nextStart > 0) {
@@ -1612,7 +1458,7 @@ export function searchAllItems(
           resolve(completeResponse);
         }
       },
-      e => reject(e)
+      (e) => reject(e),
     );
   });
 }
@@ -1631,14 +1477,14 @@ export function searchAllItems(
 export function searchGroups(
   searchString: string,
   authentication: UserSession,
-  additionalSearchOptions?: IAdditionalGroupSearchOptions
+  additionalSearchOptions?: IAdditionalGroupSearchOptions,
 ): Promise<ISearchResult<IGroup>> {
   const searchOptions: ISearchOptions = {
     q: searchString,
     params: {
-      ...additionalSearchOptions
+      ...additionalSearchOptions,
     },
-    authentication: authentication
+    authentication: authentication,
   };
   return portalSearchGroups(searchOptions);
 }
@@ -1657,36 +1503,35 @@ export function searchAllGroups(
   searchString: string,
   authentication: UserSession,
   groups?: IGroup[],
-  inPagingParams? : IPagingParams
+  inPagingParams?: IPagingParams,
 ): Promise<IGroup[]> {
-  const pagingParams: IPagingParams = inPagingParams ? inPagingParams : {
-    start: 1,
-    num: 24
-  };
+  const pagingParams: IPagingParams = inPagingParams
+    ? inPagingParams
+    : {
+        start: 1,
+        num: 24,
+      };
   const additionalSearchOptions = {
     sortField: "title",
     sortOrder: "asc",
-    ...pagingParams
+    ...pagingParams,
   };
 
   // Provide a base onto which results can be concatenated
   let finalResults: IGroup[] = groups ? groups : [];
 
   return new Promise<IGroup[]>((resolve, reject) => {
-    searchGroups(
-      searchString,
-      authentication,
-      additionalSearchOptions
-    ).then(
-      response => {
+    searchGroups(searchString, authentication, additionalSearchOptions).then(
+      (response) => {
         finalResults = finalResults.concat(response.results);
-        if (response.nextStart > 0){
+        if (response.nextStart > 0) {
           pagingParams.start = response.nextStart;
           resolve(searchAllGroups(searchString, authentication, finalResults, pagingParams));
         } else {
           resolve(finalResults);
         }
-      }, e => reject(e)
+      },
+      (e) => reject(e),
     );
   });
 }
@@ -1712,20 +1557,21 @@ export function searchGroupAllContents(
   authentication: UserSession,
   additionalSearchOptions?: IAdditionalGroupSearchOptions,
   portalUrl?: string,
-  accumulatedResponse?: ISearchResult<IItem>
+  accumulatedResponse?: ISearchResult<IItem>,
 ): Promise<ISearchResult<IItem>> {
   additionalSearchOptions = additionalSearchOptions ? additionalSearchOptions : {};
 
   // Provide a base into which results can be concatenated
-  const completeResponse: ISearchResult<IItem> = accumulatedResponse ? accumulatedResponse : {
-    query: searchString,
-    start: 1,
-    num: 100,
-    nextStart: -1,
-    total: 0,
-    results: [] as IItem[]
-  } as ISearchResult<IItem>;
-
+  const completeResponse: ISearchResult<IItem> = accumulatedResponse
+    ? accumulatedResponse
+    : ({
+        query: searchString,
+        start: 1,
+        num: 100,
+        nextStart: -1,
+        total: 0,
+        results: [] as IItem[],
+      } as ISearchResult<IItem>);
 
   // Remove the sortField if it's "relevance"; that's the default option and is not meant to be specified
   if (additionalSearchOptions.sortField === "relevance") {
@@ -1733,25 +1579,27 @@ export function searchGroupAllContents(
   }
 
   return new Promise<ISearchResult<IItem>>((resolve, reject) => {
-    searchGroupContents(
-      groupId,
-      searchString,
-      authentication,
-      additionalSearchOptions,
-      portalUrl
-    ).then(
-      response => {
+    searchGroupContents(groupId, searchString, authentication, additionalSearchOptions, portalUrl).then(
+      (response) => {
         completeResponse.results = completeResponse.results.concat(response.results);
         completeResponse.num = completeResponse.total = completeResponse.results.length;
         if (response.nextStart > 0) {
           additionalSearchOptions.start = response.nextStart;
-          resolve(searchGroupAllContents(groupId, searchString, authentication, additionalSearchOptions,
-            portalUrl, completeResponse));
+          resolve(
+            searchGroupAllContents(
+              groupId,
+              searchString,
+              authentication,
+              additionalSearchOptions,
+              portalUrl,
+              completeResponse,
+            ),
+          );
         } else {
           resolve(completeResponse);
         }
       },
-      e => reject(e)
+      (e) => reject(e),
     );
   });
 }
@@ -1775,27 +1623,25 @@ export function searchGroupContents(
   searchString: string,
   authentication: UserSession,
   additionalSearchOptions?: IAdditionalGroupSearchOptions,
-  portalUrl?: string
+  portalUrl?: string,
 ): Promise<ISearchResult<IItem>> {
   const searchOptions: ISearchGroupContentOptions = {
     groupId,
     q: searchString,
     params: Object.assign(
       {
-        num: 100
+        num: 100,
       },
-      additionalSearchOptions
+      additionalSearchOptions,
     ),
     authentication: authentication,
-    portal: portalUrl
+    portal: portalUrl,
   };
 
   // If search options include `categories`, switch to new arcgis-rest-js format
   /* istanbul ignore else */
   if (Array.isArray(searchOptions.params.categories)) {
-    searchOptions.params.categories = searchOptions.params.categories.map(
-      andGroup => andGroup.split(",")
-    );
+    searchOptions.params.categories = searchOptions.params.categories.map((andGroup) => andGroup.split(","));
   }
 
   return searchGroupContent(searchOptions);
@@ -1811,21 +1657,14 @@ export function searchGroupContents(
  * @returns A promise that will resolve after the group ownership has been assigned
  *
  */
-export function reassignGroup(
-  groupId: string,
-  userName: string,
-  authentication: UserSession
-): Promise<any> {
+export function reassignGroup(groupId: string, userName: string, authentication: UserSession): Promise<any> {
   const requestOptions: IRequestOptions = {
     authentication: authentication,
     params: {
-      targetUsername: userName
-    }
+      targetUsername: userName,
+    },
   };
-  return request(
-    `${authentication.portal}/community/groups/${groupId}/reassign`,
-    requestOptions
-  );
+  return request(`${authentication.portal}/community/groups/${groupId}/reassign`, requestOptions);
 }
 
 /**
@@ -1838,15 +1677,11 @@ export function reassignGroup(
  * @returns A promise that will resolve after the users have been removed
  *
  */
-export function removeUsers(
-  groupId: string,
-  users: string[],
-  authentication: UserSession
-): Promise<any> {
+export function removeUsers(groupId: string, users: string[], authentication: UserSession): Promise<any> {
   return portalRemoveGroupUsers({
     id: groupId,
     users,
-    authentication
+    authentication,
   });
 }
 
@@ -1865,13 +1700,13 @@ export function shareItem(
   groupId: string,
   id: string,
   destinationAuthentication: UserSession,
-  owner?: string
+  owner?: string,
 ): Promise<void> {
   return new Promise((resolve, reject) => {
     const shareOptions: IGroupSharingOptions = {
       groupId,
       id,
-      authentication: destinationAuthentication
+      authentication: destinationAuthentication,
     };
 
     /* istanbul ignore else */
@@ -1881,7 +1716,7 @@ export function shareItem(
 
     shareItemWithGroup(shareOptions).then(
       () => resolve(null),
-      (e: any) => reject(fail(e))
+      (e: any) => reject(fail(e)),
     );
   });
 }
@@ -1900,7 +1735,7 @@ export function updateItem(
   itemInfo: IItemUpdate,
   authentication: UserSession,
   folderId?: string,
-  additionalParams?: any
+  additionalParams?: any,
 ): Promise<IUpdateItemResponse> {
   return new Promise((resolve, reject) => {
     const updateOptions: IUpdateItemOptions = {
@@ -1908,12 +1743,12 @@ export function updateItem(
       folderId: folderId,
       authentication: authentication,
       params: {
-        ...(additionalParams ?? {})
-      }
+        ...(additionalParams ?? {}),
+      },
     };
     portalUpdateItem(updateOptions).then(
-      response => (response.success ? resolve(response) : reject(response)),
-      err => reject(err)
+      (response) => (response.success ? resolve(response) : reject(response)),
+      (err) => reject(err),
     );
   });
 }
@@ -1927,23 +1762,23 @@ export function updateItem(
  * @param additionalParams Updates that are put under the `params` property, which is not serialized
  * @returns A Promise that will resolve with the success/failure status of the request
  */
- export function updateGroup(
+export function updateGroup(
   groupInfo: IGroup,
   authentication: UserSession,
-  additionalParams?: any
+  additionalParams?: any,
 ): Promise<{ success: boolean; groupId: string }> {
   return new Promise((resolve, reject) => {
     const updateOptions: IUpdateGroupOptions = {
       group: groupInfo,
       authentication,
       params: {
-        ...(additionalParams ?? {})
-      }
+        ...(additionalParams ?? {}),
+      },
     };
 
     portalUpdateGroup(updateOptions).then(
-      response => (response.success ? resolve(response) : reject(response)),
-      err => reject(err)
+      (response) => (response.success ? resolve(response) : reject(response)),
+      (err) => reject(err),
     );
   });
 }
@@ -1964,15 +1799,15 @@ export function updateItemExtended(
   authentication: UserSession,
   thumbnail?: File,
   access?: string | undefined,
-  templateDictionary?: any
+  templateDictionary?: any,
 ): Promise<IUpdateItemResponse> {
   return new Promise<IUpdateItemResponse>((resolve, reject) => {
     const updateOptions: IUpdateItemOptions = {
       item: itemInfo,
       params: {
-        text: data || {} // AGO ignores update if `data` is empty
+        text: data || {}, // AGO ignores update if `data` is empty
       },
-      authentication: authentication
+      authentication: authentication,
     };
     if (thumbnail) {
       updateOptions.params.thumbnail = thumbnail;
@@ -1981,24 +1816,24 @@ export function updateItemExtended(
       updateOptions.owner = templateDictionary.locationTracking.owner;
     }
     portalUpdateItem(updateOptions).then(
-      result => {
+      (result) => {
         if (access && access !== "private") {
           // Set access if it is not AGOL default
           // Set the access manually since the access value in createItem appears to be ignored
           const accessOptions: ISetAccessOptions = {
             id: itemInfo.id,
             access: access === "public" ? "public" : "org", // need to use constants rather than string
-            authentication: authentication
+            authentication: authentication,
           };
           setItemAccess(accessOptions).then(
             () => resolve(result),
-            e => reject(fail(e))
+            (e) => reject(fail(e)),
           );
         } else {
           resolve(result);
         }
       },
-      e => reject(fail(e))
+      (e) => reject(fail(e)),
     );
   });
 }
@@ -2014,22 +1849,16 @@ export function updateItemExtended(
 export function updateItemTemplateFromDictionary(
   itemId: string,
   templateDictionary: any,
-  authentication: UserSession
+  authentication: UserSession,
 ): Promise<IUpdateItemResponse> {
   return new Promise<IUpdateItemResponse>((resolve, reject) => {
     // Fetch the items as stored in AGO
-    Promise.all([
-      getItemBase(itemId, authentication),
-      getItemDataAsJson(itemId, authentication)
-    ])
+    Promise.all([getItemBase(itemId, authentication), getItemDataAsJson(itemId, authentication)])
       .then(([item, data]) => {
         // Do they have any variables?
         if (hasUnresolvedVariables(item) || hasUnresolvedVariables(data)) {
           // Update if so
-          const { item: updatedItem, data: updatedData } = replaceInTemplate(
-            { item, data },
-            templateDictionary
-          );
+          const { item: updatedItem, data: updatedData } = replaceInTemplate({ item, data }, templateDictionary);
           _reportVariablesInItem(itemId, item.type, updatedItem, updatedData);
 
           return updateItemExtended(updatedItem, updatedData, authentication);
@@ -2037,12 +1866,12 @@ export function updateItemTemplateFromDictionary(
           // Shortcut out if not
           return Promise.resolve({
             success: true,
-            id: itemId
+            id: itemId,
           } as IUpdateItemResponse);
         }
       })
-      .then(result => resolve(result))
-      .catch(error => reject(error));
+      .then((result) => resolve(result))
+      .catch((error) => reject(error));
   });
 }
 
@@ -2055,11 +1884,7 @@ export function updateItemTemplateFromDictionary(
  * @returns A promise that will resolve with the item id when the item has been updated or an AGO-style JSON failure
  *         response
  */
-export function updateItemURL(
-  id: string,
-  url: string,
-  authentication: UserSession
-): Promise<string> {
+export function updateItemURL(id: string, url: string, authentication: UserSession): Promise<string> {
   const numAttempts = 3;
   return _updateItemURL(id, url, authentication, numAttempts);
 }
@@ -2078,7 +1903,7 @@ export function updateItemURL(
 export function _addItemDataFile(
   itemId: string,
   dataFile: File,
-  authentication: UserSession
+  authentication: UserSession,
 ): Promise<IUpdateItemResponse> {
   return new Promise<IUpdateItemResponse>((resolve, reject) => {
     const _addItemData: (data: any) => void = (data: any) => {
@@ -2108,18 +1933,18 @@ export function _addItemDataFile(
 export function _addItemMetadataFile(
   itemId: string,
   metadataFile: File,
-  authentication: UserSession
+  authentication: UserSession,
 ): Promise<IUpdateItemResponse> {
   return new Promise<IUpdateItemResponse>((resolve, reject) => {
     const addMetadataOptions: IUpdateItemOptions = {
       item: {
-        id: itemId
+        id: itemId,
       },
       params: {
         // Pass metadata in via params because item property is serialized, which discards a blob
-        metadata: metadataFile
+        metadata: metadataFile,
       },
-      authentication: authentication
+      authentication: authentication,
     };
 
     portalUpdateItem(addMetadataOptions).then(resolve, reject);
@@ -2135,8 +1960,7 @@ export function _addItemMetadataFile(
  */
 export function _countRelationships(layers: any[]): number {
   const reducer = (accumulator: number, currentLayer: any) =>
-    accumulator +
-    (currentLayer.relationships ? currentLayer.relationships.length : 0);
+    accumulator + (currentLayer.relationships ? currentLayer.relationships.length : 0);
 
   return layers.reduce(reducer, 0);
 }
@@ -2153,7 +1977,7 @@ export function _countRelationships(layers: any[]): number {
 export function _getCreateServiceOptions(
   newItemTemplate: IItemTemplate,
   authentication: UserSession,
-  templateDictionary: any
+  templateDictionary: any,
 ): Promise<any> {
   return new Promise((resolve, reject) => {
     const serviceInfo: any = newItemTemplate.properties;
@@ -2161,45 +1985,32 @@ export function _getCreateServiceOptions(
     const isPortal: boolean = templateDictionary.isPortal;
     const itemId: string = newItemTemplate.itemId;
 
-    validateSpatialReferenceAndExtent(
-      serviceInfo,
-      newItemTemplate,
-      templateDictionary
-    );
+    validateSpatialReferenceAndExtent(serviceInfo, newItemTemplate, templateDictionary);
 
-    const fallbackExtent: any = _getFallbackExtent(
-      serviceInfo,
-      templateDictionary
-    );
+    const fallbackExtent: any = _getFallbackExtent(serviceInfo, templateDictionary);
 
     const params: IParams = {};
 
     const itemInfo: any = {
       title: newItemTemplate.item.title,
-      name: newItemTemplate.item.name
+      name: newItemTemplate.item.name,
     };
 
     const _item: ICreateServiceParams = {
       ...itemInfo,
-      preserveLayerIds: true
+      preserveLayerIds: true,
     };
 
     const createOptions = {
       item: _item,
       folderId,
       params,
-      authentication: authentication
+      authentication: authentication,
     };
 
-    createOptions.item = !isTrackingViewTemplate(newItemTemplate) ?
-      _setItemProperties(
-        createOptions.item,
-        newItemTemplate,
-        serviceInfo,
-        params,
-        isPortal
-      ) :
-      setTrackingOptions(newItemTemplate, createOptions, templateDictionary);
+    createOptions.item = !isTrackingViewTemplate(newItemTemplate)
+      ? _setItemProperties(createOptions.item, newItemTemplate, serviceInfo, params, isPortal)
+      : setTrackingOptions(newItemTemplate, createOptions, templateDictionary);
 
     // project the portals extent to match that of the service
     convertExtentWithFallback(
@@ -2207,23 +2018,13 @@ export function _getCreateServiceOptions(
       fallbackExtent,
       serviceInfo.service.spatialReference,
       templateDictionary.organization.helperServices.geometry.url,
-      authentication
+      authentication,
     ).then(
-      extent => {
+      (extent) => {
         templateDictionary[itemId].solutionExtent = extent;
-        setDefaultSpatialReference(
-          templateDictionary,
-          itemId,
-          extent.spatialReference
-        );
-        createOptions.item = replaceInTemplate(
-          createOptions.item,
-          templateDictionary
-        );
-        createOptions.params = replaceInTemplate(
-          createOptions.params,
-          templateDictionary
-        );
+        setDefaultSpatialReference(templateDictionary, itemId, extent.spatialReference);
+        createOptions.item = replaceInTemplate(createOptions.item, templateDictionary);
+        createOptions.params = replaceInTemplate(createOptions.params, templateDictionary);
 
         if (newItemTemplate.item.thumbnail) {
           // Pass thumbnail file in via params because item property is serialized, which discards a blob
@@ -2232,7 +2033,7 @@ export function _getCreateServiceOptions(
 
         resolve(createOptions);
       },
-      e => reject(fail(e))
+      (e) => reject(fail(e)),
     );
   });
 }
@@ -2249,24 +2050,15 @@ export function _getCreateServiceOptions(
  * @returns the extent to use as the fallback
  * @private
  */
-export function _getFallbackExtent(
-  serviceInfo: any,
-  templateDictionary: any
-): any {
+export function _getFallbackExtent(serviceInfo: any, templateDictionary: any): any {
   const serviceSR: any = serviceInfo.service.spatialReference;
-  const serviceInfoWkid = getProp(
-    serviceInfo,
-    "defaultExtent.spatialReference.wkid"
-  );
-  const customDefaultExtent = getProp(
-    templateDictionary,
-    "params.defaultExtent"
-  );
+  const serviceInfoWkid = getProp(serviceInfo, "defaultExtent.spatialReference.wkid");
+  const customDefaultExtent = getProp(templateDictionary, "params.defaultExtent");
   return serviceInfoWkid && serviceInfoWkid === serviceSR.wkid
     ? serviceInfo.defaultExtent
     : customDefaultExtent
-    ? customDefaultExtent
-    : serviceInfo.defaultExtent;
+      ? customDefaultExtent
+      : serviceInfo.defaultExtent;
 }
 
 /**
@@ -2278,7 +2070,7 @@ export function _getFallbackExtent(
  */
 export function _getRelationshipUpdates(args: IPostProcessArgs): any {
   const rels: any = {
-    layers: []
+    layers: [],
   };
   Object.keys(args.objects).forEach((k: any) => {
     const obj: any = args.objects[k];
@@ -2286,7 +2078,7 @@ export function _getRelationshipUpdates(args: IPostProcessArgs): any {
     if (obj.relationships && obj.relationships.length > 0) {
       rels.layers.push({
         id: obj.id,
-        relationships: obj.relationships
+        relationships: obj.relationships,
       });
     }
     deleteProp(obj, "relationships");
@@ -2301,7 +2093,7 @@ export function _getRelationshipUpdates(args: IPostProcessArgs): any {
  * @returns Any contingent values that should be added to the service.
  * @private
  */
- export function _getContingentValuesUpdates(args: IPostProcessArgs): any {
+export function _getContingentValuesUpdates(args: IPostProcessArgs): any {
   const contingentValues: any[] = [];
   Object.keys(args.objects).forEach((k: any) => {
     const obj: any = args.objects[k];
@@ -2309,7 +2101,7 @@ export function _getRelationshipUpdates(args: IPostProcessArgs): any {
     if (obj.contingentValues) {
       contingentValues.push({
         id: obj.id,
-        contingentValues: obj.contingentValues
+        contingentValues: obj.contingentValues,
       });
     }
     deleteProp(obj, "contingentValues");
@@ -2333,44 +2125,41 @@ export function _getUpdate(
   id: any,
   obj: any,
   args: any,
-  type: "delete" | "update" | "add" | "refresh"
+  type: "delete" | "update" | "add" | "refresh",
 ): IUpdate {
   const ops: any = {
     delete: {
       url: checkUrlPathTermination(url) + id + "/deleteFromDefinition",
       params: {
         deleteFromDefinition: {
-          fields:
-            obj && obj.hasOwnProperty("deleteFields") ? obj.deleteFields : []
-        }
-      }
+          fields: obj && obj.hasOwnProperty("deleteFields") ? obj.deleteFields : [],
+        },
+      },
     },
     update: {
-      url:
-        checkUrlPathTermination(url) +
-        (id ? `${id}/updateDefinition` : "updateDefinition"),
+      url: checkUrlPathTermination(url) + (id ? `${id}/updateDefinition` : "updateDefinition"),
       params: {
-        updateDefinition: obj
-      }
+        updateDefinition: obj,
+      },
     },
     add: {
       url: checkUrlPathTermination(url) + "addToDefinition",
       params: {
-        addToDefinition: obj
-      }
+        addToDefinition: obj,
+      },
     },
     refresh: {
       url: checkUrlPathTermination(url) + "refresh",
       params: {
-        f: "json"
-      }
-    }
+        f: "json",
+      },
+    },
   };
 
   return {
     url: ops[type].url,
     params: ops[type].params,
-    args: args
+    args: args,
   };
 }
 
@@ -2382,15 +2171,13 @@ export function _getUpdate(
  * @see From `getServerRootUrl` in arcgis-rest-js' ArcGISIdentityManager.ts
  * @private
  */
-export function _lowercaseDomain(
-  url: string
-): string {
+export function _lowercaseDomain(url: string): string {
   if (!url) {
     return url;
   }
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const [_, protocol, domainAndPath ] = url.match(/(https?:\/\/)(.+)/);
+  const [_, protocol, domainAndPath] = url.match(/(https?:\/\/)(.+)/);
   const [domain, ...path] = domainAndPath.split("/");
 
   // Only the domain is lowercased because in some cases an org id might be
@@ -2405,12 +2192,7 @@ export function _lowercaseDomain(
  * @param data Item's data section
  * @private
  */
-export function _reportVariablesInItem(
-  itemId: string,
-  itemType: string,
-  base: any,
-  data: any
-): void {
+export function _reportVariablesInItem(itemId: string, itemType: string, base: any, data: any): void {
   const getUnresolved = (v: any) => {
     return JSON.stringify(v).match(/{{.+?}}/gim);
   };
@@ -2418,23 +2200,11 @@ export function _reportVariablesInItem(
   // Provide feedback about any remaining unresolved variables
   /* istanbul ignore else */
   if (base && hasUnresolvedVariables(base)) {
-    console.log(
-      itemId +
-        " (" +
-        itemType +
-        ") contains variables in base: " +
-        JSON.stringify(getUnresolved(base))
-    );
+    console.log(itemId + " (" + itemType + ") contains variables in base: " + JSON.stringify(getUnresolved(base)));
   }
   /* istanbul ignore else */
   if (data && hasUnresolvedVariables(data)) {
-    console.log(
-      itemId +
-        " (" +
-        itemType +
-        ") contains variables in data: " +
-        JSON.stringify(getUnresolved(data))
-    );
+    console.log(itemId + " (" + itemType + ") contains variables in data: " + JSON.stringify(getUnresolved(data)));
   }
 }
 
@@ -2454,22 +2224,12 @@ export function _setItemProperties(
   itemTemplate: IItemTemplate,
   serviceInfo: any,
   params: IParams,
-  isPortal: boolean
+  isPortal: boolean,
 ): any {
   // Set the capabilities
-  const portalCapabilities = [
-    "Create",
-    "Query",
-    "Editing",
-    "Update",
-    "Delete",
-    "Uploads",
-    "Sync",
-    "Extract"
-  ];
+  const portalCapabilities = ["Create", "Query", "Editing", "Update", "Delete", "Uploads", "Sync", "Extract"];
 
-  const capabilities =
-    getProp(serviceInfo, "service.capabilities") || (isPortal ? "" : []);
+  const capabilities = getProp(serviceInfo, "service.capabilities") || (isPortal ? "" : []);
 
   item.capabilities = isPortal
     ? capabilities
@@ -2491,7 +2251,7 @@ export function _setItemProperties(
     "sourceSchemaChangesAllowed",
     "isUpdatableView",
     "capabilities",
-    "isMultiServicesView"
+    "isMultiServicesView",
   ];
   const deleteKeys: string[] = ["layers", "tables"];
   /* istanbul ignore else */
@@ -2501,7 +2261,7 @@ export function _setItemProperties(
   }
   const itemKeys: string[] = Object.keys(item);
   const serviceKeys: string[] = Object.keys(serviceInfo.service);
-  serviceKeys.forEach(k => {
+  serviceKeys.forEach((k) => {
     /* istanbul ignore else */
     if (itemKeys.indexOf(k) === -1 && deleteKeys.indexOf(k) < 0) {
       item[k] = serviceInfo.service[k];
@@ -2516,10 +2276,7 @@ export function _setItemProperties(
 
   // Enable editor tracking on layer with related tables is not supported.
   /* istanbul ignore else */
-  if (
-    item.isMultiServicesView &&
-    getProp(item, "editorTrackingInfo.enableEditorTracking")
-  ) {
+  if (item.isMultiServicesView && getProp(item, "editorTrackingInfo.enableEditorTracking")) {
     item.editorTrackingInfo.enableEditorTracking = false;
     params["editorTrackingInfo"] = item.editorTrackingInfo;
   }
@@ -2529,10 +2286,7 @@ export function _setItemProperties(
     // portal will fail when initialExtent is defined but null
     // removed for issue #449 causing FS to fail to create on portal
     /* istanbul ignore else */
-    if (
-      Object.keys(item).indexOf("initialExtent") > -1 &&
-      !item.initialExtent
-    ) {
+    if (Object.keys(item).indexOf("initialExtent") > -1 && !item.initialExtent) {
       deleteProp(item, "initialExtent");
     }
   }
@@ -2547,34 +2301,23 @@ export function _setItemProperties(
  * @private
  */
 export function _updateIndexesForRelationshipKeyFields(serviceInfo: any): void {
-  const layersAndTables: any[] = (serviceInfo.layers || []).concat(
-    serviceInfo.tables || []
-  );
-  layersAndTables.forEach(item => {
+  const layersAndTables: any[] = (serviceInfo.layers || []).concat(serviceInfo.tables || []);
+  layersAndTables.forEach((item) => {
     const relationships: any[] = item.relationships;
     const indexes: any[] = item.indexes;
     /* istanbul ignore else */
-    if (
-      relationships &&
-      relationships.length > 0 &&
-      indexes &&
-      indexes.length > 0
-    ) {
+    if (relationships && relationships.length > 0 && indexes && indexes.length > 0) {
       const keyFields: string[] = relationships.reduce((acc, v) => {
         /* istanbul ignore else */
-        if (
-          v.role === "esriRelRoleOrigin" &&
-          v.keyField &&
-          acc.indexOf(v.keyField) < 0
-        ) {
+        if (v.role === "esriRelRoleOrigin" && v.keyField && acc.indexOf(v.keyField) < 0) {
           acc.push(v.keyField);
         }
         return acc;
       }, []);
-      indexes.map(i => {
+      indexes.map((i) => {
         /* istanbul ignore else */
         if (
-          keyFields.some(k => {
+          keyFields.some((k) => {
             const regEx: RegExp = new RegExp(`\\b${k}\\b`);
             return regEx.test(i.fields);
           })
@@ -2598,12 +2341,7 @@ export function _updateIndexesForRelationshipKeyFields(serviceInfo: any): void {
  *         response
  * @private
  */
-export function _updateItemURL(
-  id: string,
-  url: string,
-  authentication: UserSession,
-  numAttempts = 1
-): Promise<string> {
+export function _updateItemURL(id: string, url: string, authentication: UserSession, numAttempts = 1): Promise<string> {
   // Introduce a lag because AGO update appears to choke with rapid subsequent calls
   const msLag = 1000;
 
@@ -2612,7 +2350,7 @@ export function _updateItemURL(
     const options = { item: { id, url }, authentication: authentication };
 
     portalUpdateItem(options).then(
-      result => {
+      (result) => {
         if (!result.success) {
           reject(fail(result));
         } else {
@@ -2620,12 +2358,10 @@ export function _updateItemURL(
           // has a timing problem with URL updates
           setTimeout(() => {
             getItem(id, { authentication: authentication }).then(
-              item => {
+              (item) => {
                 const iBrace = item.url.indexOf("{");
                 if (iBrace > -1) {
-                  console.warn(
-                    id + " has template variable: " + item.url.substr(iBrace)
-                  );
+                  console.warn(id + " has template variable: " + item.url.substr(iBrace));
                 }
 
                 if (url === item.url) {
@@ -2633,32 +2369,21 @@ export function _updateItemURL(
                 } else {
                   // If it fails, try again if we have sufficient attempts remaining
                   const errorMsg =
-                    "URL not updated for " +
-                    item.type +
-                    " " +
-                    item.id +
-                    ": " +
-                    item.url +
-                    " (" +
-                    numAttempts +
-                    ")";
+                    "URL not updated for " + item.type + " " + item.id + ": " + item.url + " (" + numAttempts + ")";
                   if (--numAttempts > 0) {
-                    _updateItemURL(id, url, authentication, numAttempts).then(
-                      resolve,
-                      reject
-                    );
+                    _updateItemURL(id, url, authentication, numAttempts).then(resolve, reject);
                   } else {
                     console.error(id + ": " + errorMsg + "; FAILED");
                     reject(errorMsg);
                   }
                 }
               },
-              e => reject(fail(e))
+              (e) => reject(fail(e)),
             );
           }, msLag);
         }
       },
-      e => reject(fail(e))
+      (e) => reject(fail(e)),
     );
   });
 }

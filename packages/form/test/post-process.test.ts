@@ -41,10 +41,14 @@ describe("post-process", () => {
       const formId = "frm1234567890";
       const expectedResults = { success: true };
 
-      const getItemDataSpy = spyOn(common, "getItemDataAsFile").and.resolveTo(await zipHelpers.getSampleFormZipFile(formId, "form"));
+      const getItemDataSpy = spyOn(common, "getItemDataAsFile").and.resolveTo(
+        await zipHelpers.getSampleFormZipFile(formId, "form"),
+      );
       const updateItemDataSpy = spyOn(common, "updateItemWithZipObject").and.resolveTo({ success: true });
       const isHubFormTemplateSpy = spyOn(hubFormTemplateHelpers, "isHubFormTemplate").and.returnValue(true);
-      const postProcessHubSurveySpy = spyOn(hubFormProcessingHelpers, "postProcessHubSurvey").and.resolveTo(expectedResults);
+      const postProcessHubSurveySpy = spyOn(hubFormProcessingHelpers, "postProcessHubSurvey").and.resolveTo(
+        expectedResults,
+      );
 
       const results = await postProcessor.postProcess(
         template.id,
@@ -53,7 +57,7 @@ describe("post-process", () => {
         template,
         [template],
         templateDictionary,
-        MOCK_USER_SESSION
+        MOCK_USER_SESSION,
       );
 
       expect(getItemDataSpy.calls.count()).toBe(1);
@@ -68,7 +72,7 @@ describe("post-process", () => {
         template,
         [template],
         templateDictionary,
-        MOCK_USER_SESSION
+        MOCK_USER_SESSION,
       ]);
       expect(results).toEqual(expectedResults);
     });
@@ -77,10 +81,15 @@ describe("post-process", () => {
       const formId = "frm1234567890";
       const expectedResults = utils.getSuccessResponse({ id: "itm1234567890" });
 
-      const getItemDataSpy = spyOn(common, "getItemDataAsFile").and.resolveTo(await zipHelpers.getSampleFormZipFile(formId, "form"));
+      const getItemDataSpy = spyOn(common, "getItemDataAsFile").and.resolveTo(
+        await zipHelpers.getSampleFormZipFile(formId, "form"),
+      );
       const updateItemDataSpy = spyOn(common, "updateItemWithZipObject").and.resolveTo({ success: true });
       const isHubFormTemplateSpy = spyOn(hubFormTemplateHelpers, "isHubFormTemplate").and.returnValue(false);
-      const postProcessSpy = spyOn(common, "updateItemTemplateFromDictionary").and.resolveTo({ success: true, id: "itm1234567890" });
+      const postProcessSpy = spyOn(common, "updateItemTemplateFromDictionary").and.resolveTo({
+        success: true,
+        id: "itm1234567890",
+      });
 
       const results = await postProcessor.postProcess(
         template.id,
@@ -89,7 +98,7 @@ describe("post-process", () => {
         template,
         [template],
         templateDictionary,
-        MOCK_USER_SESSION
+        MOCK_USER_SESSION,
       );
 
       expect(getItemDataSpy.calls.count()).toBe(1);
@@ -109,12 +118,15 @@ describe("post-process", () => {
           igetItemDataAsFile++;
           return Promise.resolve(null);
         } else {
-          return await zipHelpers.getSampleFormZipFile(formId, "form");
+          return zipHelpers.getSampleFormZipFile(formId, "form");
         }
       });
       const updateItemDataSpy = spyOn(common, "updateItemWithZipObject").and.resolveTo({ success: true });
       const isHubFormTemplateSpy = spyOn(hubFormTemplateHelpers, "isHubFormTemplate").and.returnValue(false);
-      const postProcessSpy = spyOn(common, "updateItemTemplateFromDictionary").and.resolveTo({ success: true, id: "itm1234567890" });
+      const postProcessSpy = spyOn(common, "updateItemTemplateFromDictionary").and.resolveTo({
+        success: true,
+        id: "itm1234567890",
+      });
 
       const results = await postProcessor.postProcess(
         template.id,
@@ -123,7 +135,7 @@ describe("post-process", () => {
         template,
         [template],
         templateDictionary,
-        MOCK_USER_SESSION
+        MOCK_USER_SESSION,
       );
 
       expect(getItemDataSpy.calls.count()).toBe(2);
@@ -136,26 +148,29 @@ describe("post-process", () => {
 
   describe("postProcessFormItems", () => {
     it("should call postProcess for each item", async () => {
-      const templates: any[] = [{
-        itemId: "frm1234567890",
-        type: "Form",
-        item: {
-          name: "item1"
+      const templates: any[] = [
+        {
+          itemId: "frm1234567890",
+          type: "Form",
+          item: {
+            name: "item1",
+          },
+          data: await zipHelpers.getSampleFormZipFile("frm1234567890", "form"),
+          resources: [],
         },
-        data: await zipHelpers.getSampleFormZipFile("frm1234567890", "form"),
-        resources: []
-      }, {
-        itemId: "map1234567890",
-        type: "Web Map",
-        item: {
-          name: "item2"
+        {
+          itemId: "map1234567890",
+          type: "Web Map",
+          item: {
+            name: "item2",
+          },
+          data: {},
+          resources: [],
         },
-        data: {},
-        resources: []
-      }];
+      ];
       const templateDictionary: any = {};
 
-      const templatizedFormData = await zipHelpers.generateFormZipObject("frm1234567890");
+      const templatizedFormData = zipHelpers.generateFormZipObject("frm1234567890");
       const templatizeFormDataSpy = spyOn(formUtils, "templatizeFormData").and.resolveTo(templatizedFormData);
 
       const result = await postProcessor.postProcessFormItems(templates, templateDictionary);
@@ -165,31 +180,29 @@ describe("post-process", () => {
       result[0].dataFile.file = null;
       expect(result).toEqual([
         {
-          "itemId": "frm1234567890",
-          "type": "Form",
-          "item": {
-            "name": "item1"
+          itemId: "frm1234567890",
+          type: "Form",
+          item: {
+            name: "item1",
           },
-          "data": null,
-          "resources": [
-            "frm1234567890_info_data/item1"
-          ],
-          "dataFile": {
-            "itemId": "frm1234567890",
-            "file": null,
-            "folder": "frm1234567890_info_data",
-            "filename": "item1"
-          }
+          data: null,
+          resources: ["frm1234567890_info_data/item1"],
+          dataFile: {
+            itemId: "frm1234567890",
+            file: null,
+            folder: "frm1234567890_info_data",
+            filename: "item1",
+          },
         },
         {
-          "itemId": "map1234567890",
-          "type": "Web Map",
-          "item": {
-            "name": "item2"
+          itemId: "map1234567890",
+          type: "Web Map",
+          item: {
+            name: "item2",
           },
-          "data": {},
-          "resources": []
-        }
+          data: {},
+          resources: [],
+        },
       ] as any[]);
     });
   });
@@ -215,7 +228,7 @@ describe("post-process", () => {
       const itemName = "";
       const dataFilename = "undefined";
       const itemIdAsName = "itemIdAsName";
-      const formDataName = postProcessor._getFormDataFilename(itemName, dataFilename, itemIdAsName);
+      postProcessor._getFormDataFilename(itemName, dataFilename, itemIdAsName);
       expect(itemIdAsName).toEqual(itemIdAsName);
     });
 
@@ -223,7 +236,7 @@ describe("post-process", () => {
       const itemName = "";
       const dataFilename = "";
       const itemIdAsName = "itemIdAsName";
-      const formDataName = postProcessor._getFormDataFilename(itemName, dataFilename, itemIdAsName);
+      postProcessor._getFormDataFilename(itemName, dataFilename, itemIdAsName);
       expect(itemIdAsName).toEqual(itemIdAsName);
     });
   });

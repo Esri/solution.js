@@ -20,7 +20,7 @@
 
 import * as group from "../src/group";
 import * as utils from "../../common/test/mocks/utils";
-import * as fetchMock from "fetch-mock";
+const fetchMock = require('fetch-mock');
 import * as mockItems from "../../common/test/mocks/agolItems";
 import * as templates from "../../common/test/mocks/templates";
 import * as common from "@esri/solution-common";
@@ -32,7 +32,7 @@ const resourcesResponse: any = {
   start: 1,
   num: 0,
   nextStart: -1,
-  resources: []
+  resources: [],
 };
 
 let MOCK_USER_SESSION: common.UserSession;
@@ -50,10 +50,10 @@ afterEach(() => {
 
 describe("Module `group`: manages the creation and deployment of groups", () => {
   describe("convertItemToTemplate", () => {
-    it("should handle error on getGroupBase", done => {
+    it("should handle error on getGroupBase", async () => {
       const itemTemplate: common.IItemTemplate = templates.getItemTemplateSkeleton();
       itemTemplate.itemId = "abc0cab401af4828a25cc6eaeb59fb69";
-      itemTemplate.item = mockItems.getAGOLItem("Group", null);
+      itemTemplate.item = mockItems.getAGOLItem("Group", undefined);
       itemTemplate.item.tags = [];
 
       const groupResource: any = mockItems.get400Failure();
@@ -69,50 +69,37 @@ describe("Module `group`: manages the creation and deployment of groups", () => 
           title: "An AGOL group",
           tags: [],
           thumbnail: "ROWPermitManager.png",
-          typeKeywords: []
+          typeKeywords: [],
         },
         data: {},
         resources: [],
         dependencies: [],
         groups: [],
         properties: {},
-        estimatedDeploymentCostFactor: 2
+        estimatedDeploymentCostFactor: 2,
       };
 
       fetchMock
         .get(
-          utils.PORTAL_SUBSET.restUrl +
-            "/content/groups/grp1234567890?f=json&start=1&num=100&token=fake-token",
-          groupResource
+          utils.PORTAL_SUBSET.restUrl + "/content/groups/grp1234567890?f=json&start=1&num=100&token=fake-token",
+          groupResource,
         )
-        .get(
-          utils.PORTAL_SUBSET.restUrl +
-            "/community/groups/grp1234567890?f=json&token=fake-token",
-          groupResource
-        )
-        .post(
-          utils.PORTAL_SUBSET.restUrl +
-            "/content/items/grp1234567890/resources",
-          resourcesResponse
-        );
+        .get(utils.PORTAL_SUBSET.restUrl + "/community/groups/grp1234567890?f=json&token=fake-token", groupResource)
+        .post(utils.PORTAL_SUBSET.restUrl + "/content/items/grp1234567890/resources", resourcesResponse);
 
-      group
-        .convertItemToTemplate(
-          itemTemplate.item,
-          MOCK_USER_SESSION,
-          MOCK_USER_SESSION
-        )
-        .then(newItemTemplate => {
-          delete newItemTemplate.key;
-          expect(newItemTemplate).toEqual(expectedTemplate);
-          done();
-        }, done.fail);
+      const newItemTemplate = await group.convertItemToTemplate(
+        itemTemplate.item,
+        MOCK_USER_SESSION,
+        MOCK_USER_SESSION,
+      );
+      delete (newItemTemplate as any).key;
+      expect(newItemTemplate).toEqual(expectedTemplate);
     });
 
-    it("should handle error on portal getGroupBase", done => {
+    it("should handle error on portal getGroupBase", async () => {
       const itemTemplate: common.IItemTemplate = templates.getItemTemplateSkeleton();
       itemTemplate.itemId = "abc0cab401af4828a25cc6eaeb59fb69";
-      itemTemplate.item = mockItems.getAGOLItem("Group", null);
+      itemTemplate.item = mockItems.getAGOLItem("Group", undefined);
       itemTemplate.item.tags = [];
 
       const groupResource: any = {
@@ -145,7 +132,7 @@ describe("Module `group`: manages the creation and deployment of groups", () => 
               "Service",
               "Service template",
               "Template",
-              "Hosted Service"
+              "Hosted Service",
             ],
             description:
               "A feature layer used in the Dam Inspection Assignments Workforce for ArcGIS project to store a record for each point location logged while location tracking is enabled.",
@@ -156,7 +143,7 @@ describe("Module `group`: manages the creation and deployment of groups", () => 
             documentation: null,
             extent: [
               [-131.82999999999555, 16.22999999999945],
-              [-57.11999999999807, 58.49999999999802]
+              [-57.11999999999807, 58.49999999999802],
             ],
             categories: [],
             spatialReference: null,
@@ -164,8 +151,7 @@ describe("Module `group`: manages the creation and deployment of groups", () => 
             licenseInfo: null,
             culture: "",
             properties: null,
-            url:
-              "https://services7.arcgis.com/org1234567890/arcgis/rest/services/location_9402a6f176f54415ad4b8cb07598f42d/FeatureServer",
+            url: "https://services7.arcgis.com/org1234567890/arcgis/rest/services/location_9402a6f176f54415ad4b8cb07598f42d/FeatureServer",
             proxyFilter: null,
             access: "public",
             size: 0,
@@ -182,9 +168,9 @@ describe("Module `group`: manages the creation and deployment of groups", () => 
             numViews: 106,
             groupCategories: [],
             scoreCompleteness: 78,
-            groupDesignations: null
-          }
-        ]
+            groupDesignations: null,
+          },
+        ],
       };
 
       const expectedTemplate: any = {
@@ -198,50 +184,40 @@ describe("Module `group`: manages the creation and deployment of groups", () => 
           title: "An AGOL group",
           tags: [],
           thumbnail: "ROWPermitManager.png",
-          typeKeywords: []
+          typeKeywords: [],
         },
         data: {},
         resources: [],
         dependencies: [],
         groups: [],
         properties: {},
-        estimatedDeploymentCostFactor: 2
+        estimatedDeploymentCostFactor: 2,
       };
 
       fetchMock
         .get(
-          utils.PORTAL_SUBSET.restUrl +
-            "/content/groups/grp1234567890?f=json&start=1&num=100&token=fake-token",
-          groupResource
+          utils.PORTAL_SUBSET.restUrl + "/content/groups/grp1234567890?f=json&start=1&num=100&token=fake-token",
+          groupResource,
         )
         .get(
-          utils.PORTAL_SUBSET.restUrl +
-            "/community/groups/grp1234567890?f=json&token=fake-token",
-          mockItems.get400Failure()
+          utils.PORTAL_SUBSET.restUrl + "/community/groups/grp1234567890?f=json&token=fake-token",
+          mockItems.get400Failure(),
         )
-        .post(
-          utils.PORTAL_SUBSET.restUrl +
-            "/content/items/grp1234567890/resources",
-          resourcesResponse
-        );
+        .post(utils.PORTAL_SUBSET.restUrl + "/content/items/grp1234567890/resources", resourcesResponse);
 
-      group
-        .convertItemToTemplate(
-          itemTemplate.item,
-          MOCK_USER_SESSION,
-          MOCK_USER_SESSION
-        )
-        .then(newItemTemplate => {
-          delete newItemTemplate.key;
-          expect(newItemTemplate).toEqual(expectedTemplate);
-          done();
-        }, done.fail);
+      const newItemTemplate = await group.convertItemToTemplate(
+        itemTemplate.item,
+        MOCK_USER_SESSION,
+        MOCK_USER_SESSION,
+      );
+      delete (newItemTemplate as any).key;
+      expect(newItemTemplate).toEqual(expectedTemplate);
     });
 
-    it("should handle a group", done => {
+    it("should handle a group", async () => {
       const itemTemplate: common.IItemTemplate = templates.getItemTemplateSkeleton();
       itemTemplate.itemId = "abc0cab401af4828a25cc6eaeb59fb69";
-      itemTemplate.item = mockItems.getAGOLItem("Group", null);
+      itemTemplate.item = mockItems.getAGOLItem("Group", undefined);
 
       const groupResource: any = {
         total: 7,
@@ -273,7 +249,7 @@ describe("Module `group`: manages the creation and deployment of groups", () => 
               "Service",
               "Service template",
               "Template",
-              "Hosted Service"
+              "Hosted Service",
             ],
             description:
               "A feature layer used in the Dam Inspection Assignments Workforce for ArcGIS project to store a record for each point location logged while location tracking is enabled.",
@@ -284,7 +260,7 @@ describe("Module `group`: manages the creation and deployment of groups", () => 
             documentation: null,
             extent: [
               [-131.82999999999555, 16.22999999999945],
-              [-57.11999999999807, 58.49999999999802]
+              [-57.11999999999807, 58.49999999999802],
             ],
             categories: [],
             spatialReference: null,
@@ -292,8 +268,7 @@ describe("Module `group`: manages the creation and deployment of groups", () => 
             licenseInfo: null,
             culture: "",
             properties: null,
-            url:
-              "https://services7.arcgis.com/org1234567890/arcgis/rest/services/location_9402a6f176f54415ad4b8cb07598f42d/FeatureServer",
+            url: "https://services7.arcgis.com/org1234567890/arcgis/rest/services/location_9402a6f176f54415ad4b8cb07598f42d/FeatureServer",
             proxyFilter: null,
             access: "public",
             size: 0,
@@ -310,9 +285,9 @@ describe("Module `group`: manages the creation and deployment of groups", () => 
             numViews: 106,
             groupCategories: [],
             scoreCompleteness: 78,
-            groupDesignations: null
-          }
-        ]
+            groupDesignations: null,
+          },
+        ],
       };
 
       resourcesResponse.resources.push({ resource: "name.png" });
@@ -351,7 +326,7 @@ describe("Module `group`: manages the creation and deployment of groups", () => 
                 "Service",
                 "Service template",
                 "Template",
-                "Hosted Service"
+                "Hosted Service",
               ],
               description:
                 "A feature layer used in the Dam Inspection Assignments Workforce for ArcGIS project to store a record for each point location logged while location tracking is enabled.",
@@ -362,7 +337,7 @@ describe("Module `group`: manages the creation and deployment of groups", () => 
               documentation: null,
               extent: [
                 [-131.82999999999555, 16.22999999999945],
-                [-57.11999999999807, 58.49999999999802]
+                [-57.11999999999807, 58.49999999999802],
               ],
               categories: [],
               spatialReference: null,
@@ -370,8 +345,7 @@ describe("Module `group`: manages the creation and deployment of groups", () => 
               licenseInfo: null,
               culture: "",
               properties: null,
-              url:
-                "https://services7.arcgis.com/org1234567890/arcgis/rest/services/location_9402a6f176f54415ad4b8cb07598f42d/FeatureServer",
+              url: "https://services7.arcgis.com/org1234567890/arcgis/rest/services/location_9402a6f176f54415ad4b8cb07598f42d/FeatureServer",
               proxyFilter: null,
               access: "public",
               size: 0,
@@ -388,67 +362,44 @@ describe("Module `group`: manages the creation and deployment of groups", () => 
               numViews: 106,
               groupCategories: [],
               scoreCompleteness: 78,
-              groupDesignations: null
-            }
+              groupDesignations: null,
+            },
           ],
-          id: "{{grp1234567890.itemId}}"
+          id: "{{grp1234567890.itemId}}",
         },
         data: {},
         resources: [],
         dependencies: ["156bf2715e9e4098961c4a2a6848fa20"],
         groups: [],
         properties: {},
-        estimatedDeploymentCostFactor: 2
+        estimatedDeploymentCostFactor: 2,
       };
 
       const blob = new Blob(["fake-blob"], { type: "text/plain" });
 
       fetchMock
         .get(
-          utils.PORTAL_SUBSET.restUrl +
-            "/content/groups/grp1234567890?f=json&start=1&num=100&token=fake-token",
-          groupResource
+          utils.PORTAL_SUBSET.restUrl + "/content/groups/grp1234567890?f=json&start=1&num=100&token=fake-token",
+          groupResource,
         )
-        .get(
-          utils.PORTAL_SUBSET.restUrl +
-            "/community/groups/grp1234567890?f=json&token=fake-token",
-          groupResource
-        )
-        .post(
-          utils.PORTAL_SUBSET.restUrl +
-            "/content/items/grp1234567890/resources",
-          resourcesResponse
-        )
-        .post(
-          utils.PORTAL_SUBSET.restUrl +
-            "/content/items/grp1234567890/resources/name.png",
-          blob,
-          { sendAsJson: false }
-        )
-        .post(
-          utils.PORTAL_SUBSET.restUrl +
-            "/community/groups/grp1234567890/info/metadata/metadata.xml",
-          blob,
-          { sendAsJson: false }
-        );
+        .get(utils.PORTAL_SUBSET.restUrl + "/community/groups/grp1234567890?f=json&token=fake-token", groupResource)
+        .post(utils.PORTAL_SUBSET.restUrl + "/content/items/grp1234567890/resources", resourcesResponse)
+        .post(utils.PORTAL_SUBSET.restUrl + "/content/items/grp1234567890/resources/name.png", blob, {
+          sendAsJson: false,
+        })
+        .post(utils.PORTAL_SUBSET.restUrl + "/community/groups/grp1234567890/info/metadata/metadata.xml", blob, {
+          sendAsJson: false,
+        });
 
-      group
-        .convertItemToTemplate(
-          itemTemplate.item,
-          MOCK_USER_SESSION,
-          MOCK_USER_SESSION
-        )
-        .then(actual => {
-          delete actual.key; // key is randomly generated, and so is not testable
-          expect(actual).toEqual(expectedTemplate);
-          done();
-        }, done.fail);
+      const actual = await group.convertItemToTemplate(itemTemplate.item, MOCK_USER_SESSION, MOCK_USER_SESSION);
+      delete (actual as any).key; // key is randomly generated, and so is not testable
+      expect(actual).toEqual(expectedTemplate);
     });
 
-    it("should handle error on getItemResources", done => {
+    it("should handle error on getItemResources", async () => {
       const itemTemplate: common.IItemTemplate = templates.getItemTemplateSkeleton();
       itemTemplate.itemId = "abc0cab401af4828a25cc6eaeb59fb69";
-      itemTemplate.item = mockItems.getAGOLItem("Group", null);
+      itemTemplate.item = mockItems.getAGOLItem("Group", undefined);
 
       const groupResource: any = {
         type: "Group",
@@ -481,7 +432,7 @@ describe("Module `group`: manages the creation and deployment of groups", () => 
               "Service",
               "Service template",
               "Template",
-              "Hosted Service"
+              "Hosted Service",
             ],
             description:
               "A feature layer used in the Dam Inspection Assignments Workforce for ArcGIS project to store a record for each point location logged while location tracking is enabled.",
@@ -492,7 +443,7 @@ describe("Module `group`: manages the creation and deployment of groups", () => 
             documentation: null,
             extent: [
               [-131.82999999999555, 16.22999999999945],
-              [-57.11999999999807, 58.49999999999802]
+              [-57.11999999999807, 58.49999999999802],
             ],
             categories: [],
             spatialReference: null,
@@ -500,8 +451,7 @@ describe("Module `group`: manages the creation and deployment of groups", () => 
             licenseInfo: null,
             culture: "",
             properties: null,
-            url:
-              "https://services7.arcgis.com/org1234567890/arcgis/rest/services/location_9402a6f176f54415ad4b8cb07598f42d/FeatureServer",
+            url: "https://services7.arcgis.com/org1234567890/arcgis/rest/services/location_9402a6f176f54415ad4b8cb07598f42d/FeatureServer",
             proxyFilter: null,
             access: "public",
             size: 0,
@@ -518,9 +468,9 @@ describe("Module `group`: manages the creation and deployment of groups", () => 
             numViews: 106,
             groupCategories: [],
             scoreCompleteness: 78,
-            groupDesignations: null
-          }
-        ]
+            groupDesignations: null,
+          },
+        ],
       };
 
       resourcesResponse.resources.push({ resource: "name.png" });
@@ -559,7 +509,7 @@ describe("Module `group`: manages the creation and deployment of groups", () => 
                 "Service",
                 "Service template",
                 "Template",
-                "Hosted Service"
+                "Hosted Service",
               ],
               description:
                 "A feature layer used in the Dam Inspection Assignments Workforce for ArcGIS project to store a record for each point location logged while location tracking is enabled.",
@@ -570,7 +520,7 @@ describe("Module `group`: manages the creation and deployment of groups", () => 
               documentation: null,
               extent: [
                 [-131.82999999999555, 16.22999999999945],
-                [-57.11999999999807, 58.49999999999802]
+                [-57.11999999999807, 58.49999999999802],
               ],
               categories: [],
               spatialReference: null,
@@ -578,8 +528,7 @@ describe("Module `group`: manages the creation and deployment of groups", () => 
               licenseInfo: null,
               culture: "",
               properties: null,
-              url:
-                "https://services7.arcgis.com/org1234567890/arcgis/rest/services/location_9402a6f176f54415ad4b8cb07598f42d/FeatureServer",
+              url: "https://services7.arcgis.com/org1234567890/arcgis/rest/services/location_9402a6f176f54415ad4b8cb07598f42d/FeatureServer",
               proxyFilter: null,
               access: "public",
               size: 0,
@@ -596,53 +545,40 @@ describe("Module `group`: manages the creation and deployment of groups", () => 
               numViews: 106,
               groupCategories: [],
               scoreCompleteness: 78,
-              groupDesignations: null
-            }
+              groupDesignations: null,
+            },
           ],
-          id: "{{grp1234567890.itemId}}"
+          id: "{{grp1234567890.itemId}}",
         },
         data: {},
         resources: [],
         dependencies: ["156bf2715e9e4098961c4a2a6848fa20"],
         groups: [],
         properties: {},
-        estimatedDeploymentCostFactor: 2
+        estimatedDeploymentCostFactor: 2,
       };
 
       fetchMock
         .get(
-          utils.PORTAL_SUBSET.restUrl +
-            "/content/groups/grp1234567890?f=json&start=1&num=100&token=fake-token",
-          groupResource
+          utils.PORTAL_SUBSET.restUrl + "/content/groups/grp1234567890?f=json&start=1&num=100&token=fake-token",
+          groupResource,
         )
-        .get(
-          utils.PORTAL_SUBSET.restUrl +
-            "/community/groups/grp1234567890?f=json&token=fake-token",
-          groupResource
-        );
+        .get(utils.PORTAL_SUBSET.restUrl + "/community/groups/grp1234567890?f=json&token=fake-token", groupResource);
 
       spyOn(common, "getItemResources").and.callFake(() => Promise.reject());
 
-      group
-        .convertItemToTemplate(
-          itemTemplate.item,
-          MOCK_USER_SESSION,
-          MOCK_USER_SESSION
-        )
-        .then(actual => {
-          delete actual.key; // key is randomly generated, and so is not testable
-          expect(actual).toEqual(expectedTemplate);
-          done();
-        }, done.fail);
+      const actual = await group.convertItemToTemplate(itemTemplate.item, MOCK_USER_SESSION, MOCK_USER_SESSION);
+      delete (actual as any).key; // key is randomly generated, and so is not testable
+      expect(actual).toEqual(expectedTemplate);
     });
   });
 
   describe("createItemFromTemplate", () => {
-    it("should create group", done => {
+    it("should create group", async () => {
       const itemId: string = "abc9cab401af4828a25cc6eaeb59fb69";
       const newItemID: string = "abc8cab401af4828a25cc6eaeb59fb69";
       const user: any = {
-        groups: []
+        groups: [],
       };
       const templateDictionary: any = { user };
 
@@ -653,50 +589,43 @@ describe("Module `group`: manages the creation and deployment of groups", () => 
 
       const expected: any = { user, allGroups: [] };
       expected[itemId] = {
-        itemId: newItemID
+        itemId: newItemID,
       };
 
       fetchMock.post(utils.PORTAL_SUBSET.restUrl + "/community/createGroup", {
         success: true,
-        group: { id: newItemID }
+        group: { id: newItemID },
       });
 
-      const expectedClone: common.IItemTemplate = common.cloneObject(
-        itemTemplate
-      );
+      const expectedClone: common.IItemTemplate = common.cloneObject(itemTemplate);
       expectedClone.itemId = newItemID;
       expectedClone.item.thumbnail = undefined;
 
-      // eslint-disable-next-line @typescript-eslint/no-floating-promises
-      group
-        .createItemFromTemplate(
-          itemTemplate,
-          templateDictionary,
-          MOCK_USER_SESSION,
-          utils.ITEM_PROGRESS_CALLBACK
-        )
-        .then(response => {
-          expect(response).toEqual({
-            item: expectedClone,
-            id: newItemID,
-            type: itemTemplate.type,
-            postProcess: false
-          });
-          expect(templateDictionary).toEqual(expected);
-          done();
-        });
+      const response = await group.createItemFromTemplate(
+        itemTemplate,
+        templateDictionary,
+        MOCK_USER_SESSION,
+        utils.ITEM_PROGRESS_CALLBACK,
+      );
+      expect(response).toEqual({
+        item: expectedClone,
+        id: newItemID,
+        type: itemTemplate.type,
+        postProcess: false,
+      });
+      expect(templateDictionary).toEqual(expected);
     });
 
-    it("should create tracker group", done => {
+    it("should create tracker group", async () => {
       const itemId: string = "abc9cab401af4828a25cc6eaeb59fb69";
       const newItemID: string = "abc8cab401af4828a25cc6eaeb59fb69";
       const user: any = {
-        groups: []
+        groups: [],
       };
       const owner: string = "TrackingServiceOwner";
       const locationTracking: any = { owner };
       const organization: any = {
-        id: "orgid"
+        id: "orgid",
       };
       const templateDictionary: any = { user, locationTracking, organization };
 
@@ -708,61 +637,55 @@ describe("Module `group`: manages the creation and deployment of groups", () => 
 
       const expected: any = { user, allGroups: [], locationTracking, organization };
       expected[itemId] = {
-        itemId: newItemID
+        itemId: newItemID,
       };
 
-      fetchMock.post(utils.PORTAL_SUBSET.restUrl + "/community/createGroup", {
-        success: true,
-        group: { id: newItemID }
-      })
-      .get(`${utils.PORTAL_SUBSET.restUrl}/community/groups?f=json&sortField=title&sortOrder=asc&start=1&num=24&q=(owner%3A${owner})%20orgid%3A${organization.id}&token=fake-token`,
-        { results: [], nextStart: -1 }
-      )
-      .post(
-        "https://myorg.maps.arcgis.com/sharing/rest/community/groups/abc8cab401af4828a25cc6eaeb59fb69/reassign",
-        { success: true }
-      )
-      .post(
-        "https://myorg.maps.arcgis.com/sharing/rest/community/groups/abc8cab401af4828a25cc6eaeb59fb69/removeUsers",
-        { notRemoved: [] }
-      );
+      fetchMock
+        .post(utils.PORTAL_SUBSET.restUrl + "/community/createGroup", {
+          success: true,
+          group: { id: newItemID },
+        })
+        .get(
+          `${utils.PORTAL_SUBSET.restUrl}/community/groups?f=json&sortField=title&sortOrder=asc&start=1&num=24&q=(owner%3A${owner})%20orgid%3A${organization.id}&token=fake-token`,
+          { results: [], nextStart: -1 },
+        )
+        .post("https://myorg.maps.arcgis.com/sharing/rest/community/groups/abc8cab401af4828a25cc6eaeb59fb69/reassign", {
+          success: true,
+        })
+        .post(
+          "https://myorg.maps.arcgis.com/sharing/rest/community/groups/abc8cab401af4828a25cc6eaeb59fb69/removeUsers",
+          { notRemoved: [] },
+        );
 
-      const expectedClone: common.IItemTemplate = common.cloneObject(
-        itemTemplate
-      );
+      const expectedClone: common.IItemTemplate = common.cloneObject(itemTemplate);
       expectedClone.itemId = newItemID;
       expectedClone.item.thumbnail = undefined;
 
-      // eslint-disable-next-line @typescript-eslint/no-floating-promises
-      group
-        .createItemFromTemplate(
-          itemTemplate,
-          templateDictionary,
-          MOCK_USER_SESSION,
-          utils.ITEM_PROGRESS_CALLBACK
-        )
-        .then(response => {
-          expect(response).toEqual({
-            item: expectedClone,
-            id: newItemID,
-            type: itemTemplate.type,
-            postProcess: false
-          });
-          expect(templateDictionary).toEqual(expected);
-          done();
-        });
+      const response = await group.createItemFromTemplate(
+        itemTemplate,
+        templateDictionary,
+        MOCK_USER_SESSION,
+        utils.ITEM_PROGRESS_CALLBACK,
+      );
+      expect(response).toEqual({
+        item: expectedClone,
+        id: newItemID,
+        type: itemTemplate.type,
+        postProcess: false,
+      });
+      expect(templateDictionary).toEqual(expected);
     });
 
-    it("should handle error checking user groups", done => {
+    it("should handle error checking user groups", async () => {
       const itemId: string = "abc9cab401af4828a25cc6eaeb59fb69";
       const newItemID: string = "abc8cab401af4828a25cc6eaeb59fb69";
       const user: any = {
-        groups: []
+        groups: [],
       };
       const owner: string = "TrackingServiceOwner";
       const locationTracking: any = { owner };
       const organization: any = {
-        id: "orgid"
+        id: "orgid",
       };
       const templateDictionary: any = { user, locationTracking, organization };
 
@@ -774,54 +697,48 @@ describe("Module `group`: manages the creation and deployment of groups", () => 
 
       const expected: any = { user, allGroups: [], locationTracking, organization };
       expected[itemId] = {
-        itemId: newItemID
+        itemId: newItemID,
       };
 
-      fetchMock.post(utils.PORTAL_SUBSET.restUrl + "/community/createGroup", {
-        success: true,
-        group: { id: newItemID }
-      })
-      .get(`${utils.PORTAL_SUBSET.restUrl}/community/groups?f=json&sortField=title&sortOrder=asc&start=1&num=24&q=(owner%3A${owner})%20orgid%3A${organization.id}&token=fake-token`,
-        mockItems.get400Failure()
-      )
-      .post(
-        "https://myorg.maps.arcgis.com/sharing/rest/community/groups/abc8cab401af4828a25cc6eaeb59fb69/reassign",
-        { success: true }
-      )
-      .post(
-        "https://myorg.maps.arcgis.com/sharing/rest/community/groups/abc8cab401af4828a25cc6eaeb59fb69/removeUsers",
-        { notRemoved: [] }
-      );
+      fetchMock
+        .post(utils.PORTAL_SUBSET.restUrl + "/community/createGroup", {
+          success: true,
+          group: { id: newItemID },
+        })
+        .get(
+          `${utils.PORTAL_SUBSET.restUrl}/community/groups?f=json&sortField=title&sortOrder=asc&start=1&num=24&q=(owner%3A${owner})%20orgid%3A${organization.id}&token=fake-token`,
+          mockItems.get400Failure(),
+        )
+        .post("https://myorg.maps.arcgis.com/sharing/rest/community/groups/abc8cab401af4828a25cc6eaeb59fb69/reassign", {
+          success: true,
+        })
+        .post(
+          "https://myorg.maps.arcgis.com/sharing/rest/community/groups/abc8cab401af4828a25cc6eaeb59fb69/removeUsers",
+          { notRemoved: [] },
+        );
 
-      const expectedClone: common.IItemTemplate = common.cloneObject(
-        itemTemplate
-      );
+      const expectedClone: common.IItemTemplate = common.cloneObject(itemTemplate);
       expectedClone.itemId = newItemID;
       expectedClone.item.thumbnail = undefined;
 
-      // eslint-disable-next-line @typescript-eslint/no-floating-promises
-      group
-        .createItemFromTemplate(
-          itemTemplate,
-          templateDictionary,
-          MOCK_USER_SESSION,
-          utils.ITEM_PROGRESS_CALLBACK
-        )
-        .then(() => {
-          done();
-        }, done.fail);
+      return group.createItemFromTemplate(
+        itemTemplate,
+        templateDictionary,
+        MOCK_USER_SESSION,
+        utils.ITEM_PROGRESS_CALLBACK,
+      );
     });
 
-    it("should handle reassign failure on create tracker group", done => {
+    it("should handle reassign failure on create tracker group", async () => {
       const itemId: string = "abc9cab401af4828a25cc6eaeb59fb69";
       const newItemID: string = "abc8cab401af4828a25cc6eaeb59fb69";
       const user: any = {
-        groups: []
+        groups: [],
       };
       const owner: string = "TrackingServiceOwner";
       const locationTracking: any = { owner };
       const organization: any = {
-        id: "orgid"
+        id: "orgid",
       };
       const templateDictionary: any = { user, locationTracking, organization };
 
@@ -833,51 +750,45 @@ describe("Module `group`: manages the creation and deployment of groups", () => 
 
       const expected: any = { user, allGroups: [], locationTracking, organization };
       expected[itemId] = {
-        itemId: newItemID
+        itemId: newItemID,
       };
 
-      fetchMock.post(utils.PORTAL_SUBSET.restUrl + "/community/createGroup", {
-        success: true,
-        group: { id: newItemID }
-      })
-      .get(`${utils.PORTAL_SUBSET.restUrl}/community/groups?f=json&sortField=title&sortOrder=asc&start=1&num=24&q=(owner%3A${owner})%20orgid%3A${organization.id}&token=fake-token`,
-        { results: [], nextStart: 0 }
-      )
-      .post(
-        "https://myorg.maps.arcgis.com/sharing/rest/community/groups/abc8cab401af4828a25cc6eaeb59fb69/reassign",
-        { success: false }
-      );
+      fetchMock
+        .post(utils.PORTAL_SUBSET.restUrl + "/community/createGroup", {
+          success: true,
+          group: { id: newItemID },
+        })
+        .get(
+          `${utils.PORTAL_SUBSET.restUrl}/community/groups?f=json&sortField=title&sortOrder=asc&start=1&num=24&q=(owner%3A${owner})%20orgid%3A${organization.id}&token=fake-token`,
+          { results: [], nextStart: 0 },
+        )
+        .post("https://myorg.maps.arcgis.com/sharing/rest/community/groups/abc8cab401af4828a25cc6eaeb59fb69/reassign", {
+          success: false,
+        });
 
-      const expectedClone: common.IItemTemplate = common.cloneObject(
-        itemTemplate
-      );
+      const expectedClone: common.IItemTemplate = common.cloneObject(itemTemplate);
       expectedClone.itemId = newItemID;
       expectedClone.item.thumbnail = undefined;
 
-      // eslint-disable-next-line @typescript-eslint/no-floating-promises
-      group
-        .createItemFromTemplate(
-          itemTemplate,
-          templateDictionary,
-          MOCK_USER_SESSION,
-          utils.ITEM_PROGRESS_CALLBACK
-        )
-        .then(response => {
-          expect(response).toEqual(templates.getFailedItem("Group"));
-          done();
-        });
+      const response = await group.createItemFromTemplate(
+        itemTemplate,
+        templateDictionary,
+        MOCK_USER_SESSION,
+        utils.ITEM_PROGRESS_CALLBACK,
+      );
+      expect(response).toEqual(templates.getFailedItem("Group"));
     });
 
-    it("should handle cancellation after reassign on create tracker group", done => {
+    it("should handle cancellation after reassign on create tracker group", async () => {
       const itemId: string = "abc9cab401af4828a25cc6eaeb59fb69";
       const newItemID: string = "abc8cab401af4828a25cc6eaeb59fb69";
       const user: any = {
-        groups: []
+        groups: [],
       };
       const owner: string = "TrackingServiceOwner";
       const locationTracking: any = { owner };
       const organization: any = {
-        id: "orgid"
+        id: "orgid",
       };
       const templateDictionary: any = { user, locationTracking, organization };
 
@@ -889,54 +800,48 @@ describe("Module `group`: manages the creation and deployment of groups", () => 
 
       const expected: any = { user, allGroups: [], locationTracking, organization };
       expected[itemId] = {
-        itemId: newItemID
+        itemId: newItemID,
       };
 
-      fetchMock.post(utils.PORTAL_SUBSET.restUrl + "/community/createGroup", {
-        success: true,
-        group: { id: newItemID }
-      })
-      .get(`${utils.PORTAL_SUBSET.restUrl}/community/groups?f=json&sortField=title&sortOrder=asc&start=1&num=24&q=(owner%3A${owner})%20orgid%3A${organization.id}&token=fake-token`,
-        { results: [], nextStart: 0 }
-      )
-      .post(
-        "https://myorg.maps.arcgis.com/sharing/rest/community/groups/abc8cab401af4828a25cc6eaeb59fb69/reassign",
-        { success: true }
-      )
-      .post("https://myorg.maps.arcgis.com/sharing/rest/community/groups/abc8cab401af4828a25cc6eaeb59fb69/delete",
-        { success: true }
-      );
+      fetchMock
+        .post(utils.PORTAL_SUBSET.restUrl + "/community/createGroup", {
+          success: true,
+          group: { id: newItemID },
+        })
+        .get(
+          `${utils.PORTAL_SUBSET.restUrl}/community/groups?f=json&sortField=title&sortOrder=asc&start=1&num=24&q=(owner%3A${owner})%20orgid%3A${organization.id}&token=fake-token`,
+          { results: [], nextStart: 0 },
+        )
+        .post("https://myorg.maps.arcgis.com/sharing/rest/community/groups/abc8cab401af4828a25cc6eaeb59fb69/reassign", {
+          success: true,
+        })
+        .post("https://myorg.maps.arcgis.com/sharing/rest/community/groups/abc8cab401af4828a25cc6eaeb59fb69/delete", {
+          success: true,
+        });
 
-      const expectedClone: common.IItemTemplate = common.cloneObject(
-        itemTemplate
-      );
+      const expectedClone: common.IItemTemplate = common.cloneObject(itemTemplate);
       expectedClone.itemId = newItemID;
       expectedClone.item.thumbnail = undefined;
 
-      // eslint-disable-next-line @typescript-eslint/no-floating-promises
-      group
-        .createItemFromTemplate(
-          itemTemplate,
-          templateDictionary,
-          MOCK_USER_SESSION,
-          utils.createFailingItemProgressCallbackOnNthCall(4)
-        )
-        .then(response => {
-          expect(response).toEqual(templates.getFailedItem("Group"));
-          done();
-        });
+      const response = await group.createItemFromTemplate(
+        itemTemplate,
+        templateDictionary,
+        MOCK_USER_SESSION,
+        utils.createFailingItemProgressCallbackOnNthCall(4),
+      );
+      expect(response).toEqual(templates.getFailedItem("Group"));
     });
 
-    it("should handle cancellation failure after reassign on create tracker group", done => {
+    it("should handle cancellation failure after reassign on create tracker group", async () => {
       const itemId: string = "abc9cab401af4828a25cc6eaeb59fb69";
       const newItemID: string = "abc8cab401af4828a25cc6eaeb59fb69";
       const user: any = {
-        groups: []
+        groups: [],
       };
       const owner: string = "TrackingServiceOwner";
       const locationTracking: any = { owner };
       const organization: any = {
-        id: "orgid"
+        id: "orgid",
       };
       const templateDictionary: any = { user, locationTracking, organization };
 
@@ -948,54 +853,49 @@ describe("Module `group`: manages the creation and deployment of groups", () => 
 
       const expected: any = { user, allGroups: [], locationTracking, organization };
       expected[itemId] = {
-        itemId: newItemID
+        itemId: newItemID,
       };
 
-      fetchMock.post(utils.PORTAL_SUBSET.restUrl + "/community/createGroup", {
-        success: true,
-        group: { id: newItemID }
-      })
-      .get(`${utils.PORTAL_SUBSET.restUrl}/community/groups?f=json&sortField=title&sortOrder=asc&start=1&num=24&q=(owner%3A${owner})%20orgid%3A${organization.id}&token=fake-token`,
-        { results: [], nextStart: 0 }
-      )
-      .post(
-        "https://myorg.maps.arcgis.com/sharing/rest/community/groups/abc8cab401af4828a25cc6eaeb59fb69/reassign",
-        { success: true }
-      )
-      .post("https://myorg.maps.arcgis.com/sharing/rest/community/groups/abc8cab401af4828a25cc6eaeb59fb69/delete",
-        utils.getFailureResponse({ groupId: itemTemplate.itemId })
-      );
+      fetchMock
+        .post(utils.PORTAL_SUBSET.restUrl + "/community/createGroup", {
+          success: true,
+          group: { id: newItemID },
+        })
+        .get(
+          `${utils.PORTAL_SUBSET.restUrl}/community/groups?f=json&sortField=title&sortOrder=asc&start=1&num=24&q=(owner%3A${owner})%20orgid%3A${organization.id}&token=fake-token`,
+          { results: [], nextStart: 0 },
+        )
+        .post("https://myorg.maps.arcgis.com/sharing/rest/community/groups/abc8cab401af4828a25cc6eaeb59fb69/reassign", {
+          success: true,
+        })
+        .post(
+          "https://myorg.maps.arcgis.com/sharing/rest/community/groups/abc8cab401af4828a25cc6eaeb59fb69/delete",
+          utils.getFailureResponse({ groupId: itemTemplate.itemId }),
+        );
 
-      const expectedClone: common.IItemTemplate = common.cloneObject(
-        itemTemplate
-      );
+      const expectedClone: common.IItemTemplate = common.cloneObject(itemTemplate);
       expectedClone.itemId = newItemID;
       expectedClone.item.thumbnail = undefined;
 
-      // eslint-disable-next-line @typescript-eslint/no-floating-promises
-      group
-        .createItemFromTemplate(
-          itemTemplate,
-          templateDictionary,
-          MOCK_USER_SESSION,
-          utils.createFailingItemProgressCallbackOnNthCall(4)
-        )
-        .then(response => {
-          expect(response).toEqual(templates.getFailedItem("Group"));
-          done();
-        });
+      const response = await group.createItemFromTemplate(
+        itemTemplate,
+        templateDictionary,
+        MOCK_USER_SESSION,
+        utils.createFailingItemProgressCallbackOnNthCall(4),
+      );
+      expect(response).toEqual(templates.getFailedItem("Group"));
     });
 
-    it("should handle failure to remove users on create tracker group", done => {
+    it("should handle failure to remove users on create tracker group", async () => {
       const itemId: string = "abc9cab401af4828a25cc6eaeb59fb69";
       const newItemID: string = "abc8cab401af4828a25cc6eaeb59fb69";
       const user: any = {
-        groups: []
+        groups: [],
       };
       const owner: string = "TrackingServiceOwner";
       const locationTracking: any = { owner };
       const organization: any = {
-        id: "orgid"
+        id: "orgid",
       };
       const templateDictionary: any = { user, locationTracking, organization };
 
@@ -1007,55 +907,49 @@ describe("Module `group`: manages the creation and deployment of groups", () => 
 
       const expected: any = { user, allGroups: [], locationTracking, organization };
       expected[itemId] = {
-        itemId: newItemID
+        itemId: newItemID,
       };
 
-      fetchMock.post(utils.PORTAL_SUBSET.restUrl + "/community/createGroup", {
-        success: true,
-        group: { id: newItemID }
-      })
-      .get(`${utils.PORTAL_SUBSET.restUrl}/community/groups?f=json&sortField=title&sortOrder=asc&start=1&num=24&q=(owner%3A${owner})%20orgid%3A${organization.id}&token=fake-token`,
-        { results: [], nextStart: 0 }
-      )
-      .post(
-        "https://myorg.maps.arcgis.com/sharing/rest/community/groups/abc8cab401af4828a25cc6eaeb59fb69/reassign",
-        { success: true }
-      )
-      .post(
-        "https://myorg.maps.arcgis.com/sharing/rest/community/groups/abc8cab401af4828a25cc6eaeb59fb69/removeUsers",
-        { notRemoved: [itemId] }
-      );
+      fetchMock
+        .post(utils.PORTAL_SUBSET.restUrl + "/community/createGroup", {
+          success: true,
+          group: { id: newItemID },
+        })
+        .get(
+          `${utils.PORTAL_SUBSET.restUrl}/community/groups?f=json&sortField=title&sortOrder=asc&start=1&num=24&q=(owner%3A${owner})%20orgid%3A${organization.id}&token=fake-token`,
+          { results: [], nextStart: 0 },
+        )
+        .post("https://myorg.maps.arcgis.com/sharing/rest/community/groups/abc8cab401af4828a25cc6eaeb59fb69/reassign", {
+          success: true,
+        })
+        .post(
+          "https://myorg.maps.arcgis.com/sharing/rest/community/groups/abc8cab401af4828a25cc6eaeb59fb69/removeUsers",
+          { notRemoved: [itemId] },
+        );
 
-      const expectedClone: common.IItemTemplate = common.cloneObject(
-        itemTemplate
-      );
+      const expectedClone: common.IItemTemplate = common.cloneObject(itemTemplate);
       expectedClone.itemId = newItemID;
       expectedClone.item.thumbnail = undefined;
 
-      // eslint-disable-next-line @typescript-eslint/no-floating-promises
-      group
-        .createItemFromTemplate(
-          itemTemplate,
-          templateDictionary,
-          MOCK_USER_SESSION,
-          utils.ITEM_PROGRESS_CALLBACK
-        )
-        .then(response => {
-          expect(response).toEqual(templates.getFailedItem("Group"));
-          done();
-        });
+      const response = await group.createItemFromTemplate(
+        itemTemplate,
+        templateDictionary,
+        MOCK_USER_SESSION,
+        utils.ITEM_PROGRESS_CALLBACK,
+      );
+      expect(response).toEqual(templates.getFailedItem("Group"));
     });
 
-    it("should handle cancellation after remove users on create tracker group", done => {
+    it("should handle cancellation after remove users on create tracker group", async () => {
       const itemId: string = "abc9cab401af4828a25cc6eaeb59fb69";
       const newItemID: string = "abc8cab401af4828a25cc6eaeb59fb69";
       const user: any = {
-        groups: []
+        groups: [],
       };
       const owner: string = "TrackingServiceOwner";
       const locationTracking: any = { owner };
       const organization: any = {
-        id: "orgid"
+        id: "orgid",
       };
       const templateDictionary: any = { user, locationTracking, organization };
 
@@ -1067,59 +961,52 @@ describe("Module `group`: manages the creation and deployment of groups", () => 
 
       const expected: any = { user, allGroups: [], locationTracking, organization };
       expected[itemId] = {
-        itemId: newItemID
+        itemId: newItemID,
       };
 
-      fetchMock.post(utils.PORTAL_SUBSET.restUrl + "/community/createGroup", {
-        success: true,
-        group: { id: newItemID }
-      })
-      .get(`${utils.PORTAL_SUBSET.restUrl}/community/groups?f=json&sortField=title&sortOrder=asc&start=1&num=24&q=(owner%3A${owner})%20orgid%3A${organization.id}&token=fake-token`,
-        { results: [], nextStart: 0 }
-      )
-      .post(
-        "https://myorg.maps.arcgis.com/sharing/rest/community/groups/abc8cab401af4828a25cc6eaeb59fb69/reassign",
-        { success: true }
-      )
-      .post(
-        "https://myorg.maps.arcgis.com/sharing/rest/community/groups/abc8cab401af4828a25cc6eaeb59fb69/removeUsers",
-        { notRemoved: [] }
-      )
-      .post(
-        "https://myorg.maps.arcgis.com/sharing/rest/community/groups/abc8cab401af4828a25cc6eaeb59fb69/delete",
-        { success: true }
-      );
+      fetchMock
+        .post(utils.PORTAL_SUBSET.restUrl + "/community/createGroup", {
+          success: true,
+          group: { id: newItemID },
+        })
+        .get(
+          `${utils.PORTAL_SUBSET.restUrl}/community/groups?f=json&sortField=title&sortOrder=asc&start=1&num=24&q=(owner%3A${owner})%20orgid%3A${organization.id}&token=fake-token`,
+          { results: [], nextStart: 0 },
+        )
+        .post("https://myorg.maps.arcgis.com/sharing/rest/community/groups/abc8cab401af4828a25cc6eaeb59fb69/reassign", {
+          success: true,
+        })
+        .post(
+          "https://myorg.maps.arcgis.com/sharing/rest/community/groups/abc8cab401af4828a25cc6eaeb59fb69/removeUsers",
+          { notRemoved: [] },
+        )
+        .post("https://myorg.maps.arcgis.com/sharing/rest/community/groups/abc8cab401af4828a25cc6eaeb59fb69/delete", {
+          success: true,
+        });
 
-      const expectedClone: common.IItemTemplate = common.cloneObject(
-        itemTemplate
-      );
+      const expectedClone: common.IItemTemplate = common.cloneObject(itemTemplate);
       expectedClone.itemId = newItemID;
       expectedClone.item.thumbnail = undefined;
 
-      // eslint-disable-next-line @typescript-eslint/no-floating-promises
-      group
-        .createItemFromTemplate(
-          itemTemplate,
-          templateDictionary,
-          MOCK_USER_SESSION,
-          utils.createFailingItemProgressCallbackOnNthCall(5)
-        )
-        .then(response => {
-          expect(response).toEqual(templates.getFailedItem("Group"));
-          done();
-        });
+      const response = await group.createItemFromTemplate(
+        itemTemplate,
+        templateDictionary,
+        MOCK_USER_SESSION,
+        utils.createFailingItemProgressCallbackOnNthCall(5),
+      );
+      expect(response).toEqual(templates.getFailedItem("Group"));
     });
 
-    it("should handle cancellation failure after remove users on create tracker group", done => {
+    it("should handle cancellation failure after remove users on create tracker group", async () => {
       const itemId: string = "abc9cab401af4828a25cc6eaeb59fb69";
       const newItemID: string = "abc8cab401af4828a25cc6eaeb59fb69";
       const user: any = {
-        groups: []
+        groups: [],
       };
       const owner: string = "TrackingServiceOwner";
       const locationTracking: any = { owner };
       const organization: any = {
-        id: "orgid"
+        id: "orgid",
       };
       const templateDictionary: any = { user, locationTracking, organization };
 
@@ -1131,54 +1018,48 @@ describe("Module `group`: manages the creation and deployment of groups", () => 
 
       const expected: any = { user, allGroups: [], locationTracking, organization };
       expected[itemId] = {
-        itemId: newItemID
+        itemId: newItemID,
       };
 
-      fetchMock.post(utils.PORTAL_SUBSET.restUrl + "/community/createGroup", {
-        success: true,
-        group: { id: newItemID }
-      })
-      .get(`${utils.PORTAL_SUBSET.restUrl}/community/groups?f=json&sortField=title&sortOrder=asc&start=1&num=24&q=(owner%3A${owner})%20orgid%3A${organization.id}&token=fake-token`,
-        { results: [], nextStart: 0 }
-      )
-      .post(
-        "https://myorg.maps.arcgis.com/sharing/rest/community/groups/abc8cab401af4828a25cc6eaeb59fb69/reassign",
-        { success: true }
-      )
-      .post(
-        "https://myorg.maps.arcgis.com/sharing/rest/community/groups/abc8cab401af4828a25cc6eaeb59fb69/removeUsers",
-        { notRemoved: [] }
-      )
-      .post(
-        "https://myorg.maps.arcgis.com/sharing/rest/community/groups/abc8cab401af4828a25cc6eaeb59fb69/delete",
-        utils.getFailureResponse({ groupId: itemTemplate.itemId })
-      );
+      fetchMock
+        .post(utils.PORTAL_SUBSET.restUrl + "/community/createGroup", {
+          success: true,
+          group: { id: newItemID },
+        })
+        .get(
+          `${utils.PORTAL_SUBSET.restUrl}/community/groups?f=json&sortField=title&sortOrder=asc&start=1&num=24&q=(owner%3A${owner})%20orgid%3A${organization.id}&token=fake-token`,
+          { results: [], nextStart: 0 },
+        )
+        .post("https://myorg.maps.arcgis.com/sharing/rest/community/groups/abc8cab401af4828a25cc6eaeb59fb69/reassign", {
+          success: true,
+        })
+        .post(
+          "https://myorg.maps.arcgis.com/sharing/rest/community/groups/abc8cab401af4828a25cc6eaeb59fb69/removeUsers",
+          { notRemoved: [] },
+        )
+        .post(
+          "https://myorg.maps.arcgis.com/sharing/rest/community/groups/abc8cab401af4828a25cc6eaeb59fb69/delete",
+          utils.getFailureResponse({ groupId: itemTemplate.itemId }),
+        );
 
-      const expectedClone: common.IItemTemplate = common.cloneObject(
-        itemTemplate
-      );
+      const expectedClone: common.IItemTemplate = common.cloneObject(itemTemplate);
       expectedClone.itemId = newItemID;
       expectedClone.item.thumbnail = undefined;
 
-      // eslint-disable-next-line @typescript-eslint/no-floating-promises
-      group
-        .createItemFromTemplate(
-          itemTemplate,
-          templateDictionary,
-          MOCK_USER_SESSION,
-          utils.createFailingItemProgressCallbackOnNthCall(5)
-        )
-        .then(response => {
-          expect(response).toEqual(templates.getFailedItem("Group"));
-          done();
-        });
+      const response = await group.createItemFromTemplate(
+        itemTemplate,
+        templateDictionary,
+        MOCK_USER_SESSION,
+        utils.createFailingItemProgressCallbackOnNthCall(5),
+      );
+      expect(response).toEqual(templates.getFailedItem("Group"));
     });
 
-    it("should create group with thumbnail", done => {
+    it("should create group with thumbnail", async () => {
       const itemId: string = "abc9cab401af4828a25cc6eaeb59fb69";
       const newItemID: string = "abc8cab401af4828a25cc6eaeb59fb69";
       const user: any = {
-        groups: []
+        groups: [],
       };
       const templateDictionary: any = { user };
 
@@ -1186,12 +1067,11 @@ describe("Module `group`: manages the creation and deployment of groups", () => 
       itemTemplate.itemId = itemId;
       itemTemplate.type = "Group";
       itemTemplate.item.title = "Dam Inspection Assignments";
-      itemTemplate.item.thumbnailurl =
-        "abc9cab401af4828a25cc6eaeb59fb69_info_thumbnail/ago_downloaded.png";
+      itemTemplate.item.thumbnailurl = "abc9cab401af4828a25cc6eaeb59fb69_info_thumbnail/ago_downloaded.png";
 
       const expected: any = { user, allGroups: [] };
       expected[itemId] = {
-        itemId: newItemID
+        itemId: newItemID,
       };
 
       fetchMock
@@ -1199,74 +1079,61 @@ describe("Module `group`: manages the creation and deployment of groups", () => 
           utils.PORTAL_SUBSET.restUrl +
             "/content/items/abc9cab401af4828a25cc6eaeb59fb69/resources/" +
             itemTemplate.item.thumbnail,
-          utils.getSampleImageAsBlob()
+          utils.getSampleImageAsBlob(),
         )
         .post(utils.PORTAL_SUBSET.restUrl + "/community/createGroup", {
           success: true,
-          group: { id: newItemID }
+          group: { id: newItemID },
         });
 
-      const expectedClone: common.IItemTemplate = common.cloneObject(
-        itemTemplate
-      );
+      const expectedClone: common.IItemTemplate = common.cloneObject(itemTemplate);
       expectedClone.itemId = newItemID;
       expectedClone.item.thumbnail = undefined;
 
-      // eslint-disable-next-line @typescript-eslint/no-floating-promises
-      group
-        .createItemFromTemplate(
-          itemTemplate,
-          templateDictionary,
-          MOCK_USER_SESSION,
-          utils.ITEM_PROGRESS_CALLBACK
-        )
-        .then(response => {
-          expect(response).toEqual({
-            item: expectedClone,
-            id: newItemID,
-            type: itemTemplate.type,
-            postProcess: false
-          });
-          expect(templateDictionary).toEqual(expected);
-          done();
-        });
+      const response = await group.createItemFromTemplate(
+        itemTemplate,
+        templateDictionary,
+        MOCK_USER_SESSION,
+        utils.ITEM_PROGRESS_CALLBACK,
+      );
+      expect(response).toEqual({
+        item: expectedClone,
+        id: newItemID,
+        type: itemTemplate.type,
+        postProcess: false,
+      });
+      expect(templateDictionary).toEqual(expected);
     });
 
-    it("should handle success === false on create group", done => {
+    it("should handle success === false on create group", async () => {
       const itemId: string = "abc9cab401af4828a25cc6eaeb59fb69";
-      const newItemID: string = "abc8cab401af4828a25cc6eaeb59fb69";
       const user: any = {
-        groups: []
+        groups: [],
       };
       const templateDictionary: any = { user };
 
       const itemTemplate: common.IItemTemplate = templates.getItemTemplateSkeleton();
       itemTemplate.itemId = itemId;
       itemTemplate.type = "Group";
-      itemTemplate.item.title = null;
+      itemTemplate.item.title = undefined;
 
       fetchMock.post(utils.PORTAL_SUBSET.restUrl + "/community/createGroup", {
-        success: false
+        success: false,
       });
 
-      // eslint-disable-next-line @typescript-eslint/no-floating-promises
-      group
-        .createItemFromTemplate(
-          itemTemplate,
-          templateDictionary,
-          MOCK_USER_SESSION,
-          utils.ITEM_PROGRESS_CALLBACK
-        )
-        .then(response => {
-          expect(response).toEqual(templates.getFailedItem("Group"));
-          done();
-        });
+      const response = await group.createItemFromTemplate(
+        itemTemplate,
+        templateDictionary,
+        MOCK_USER_SESSION,
+        utils.ITEM_PROGRESS_CALLBACK,
+      );
+      expect(response).toEqual(templates.getFailedItem("Group"));
     });
 
-    it("should handle error on create group", done => {
+    it("should handle error on create group", async () => {
       const itemId: string = "abc9cab401af4828a25cc6eaeb59fb69";
       const user: any = {
-        groups: []
+        groups: [],
       };
       const templateDictionary: any = { user };
 
@@ -1275,178 +1142,141 @@ describe("Module `group`: manages the creation and deployment of groups", () => 
       itemTemplate.type = "Group";
       itemTemplate.item.title = "Dam Inspection Assignments";
 
-      fetchMock.post(
-        utils.PORTAL_SUBSET.restUrl + "/community/createGroup",
-        mockItems.get400Failure()
-      );
+      fetchMock.post(utils.PORTAL_SUBSET.restUrl + "/community/createGroup", mockItems.get400Failure());
 
-      // eslint-disable-next-line @typescript-eslint/no-floating-promises
-      group
-        .createItemFromTemplate(
-          itemTemplate,
-          templateDictionary,
-          MOCK_USER_SESSION,
-          utils.ITEM_PROGRESS_CALLBACK
-        )
-        .then(response => {
-          expect(response).toEqual(templates.getFailedItem("Group"));
-          done();
-        });
+      const response = await group.createItemFromTemplate(
+        itemTemplate,
+        templateDictionary,
+        MOCK_USER_SESSION,
+        utils.ITEM_PROGRESS_CALLBACK,
+      );
+      expect(response).toEqual(templates.getFailedItem("Group"));
     });
 
-    it("should handle cancellation before deployment of group starts", done => {
+    it("should handle cancellation before deployment of group starts", async () => {
       const itemTemplate: common.IItemTemplate = templates.getGroupTemplatePart();
       const templateDictionary: any = {};
 
-      // eslint-disable-next-line @typescript-eslint/no-floating-promises
-      group
-        .createItemFromTemplate(
-          itemTemplate,
-          templateDictionary,
-          MOCK_USER_SESSION,
-          utils.createFailingItemProgressCallbackOnNthCall(1)
-        )
-        .then(response => {
-          expect(response).toEqual(templates.getFailedItem(itemTemplate.type));
-          done();
-        }, done.fail);
+      const response = await group.createItemFromTemplate(
+        itemTemplate,
+        templateDictionary,
+        MOCK_USER_SESSION,
+        utils.createFailingItemProgressCallbackOnNthCall(1),
+      );
+      expect(response).toEqual(templates.getFailedItem(itemTemplate.type));
     });
 
-    it("should handle cancellation after deployed group is created", done => {
+    it("should handle cancellation after deployed group is created", async () => {
       const itemTemplate: common.IItemTemplate = templates.getGroupTemplatePart();
       const templateDictionary: any = {
         user: {
-          groups: []
-        }
+          groups: [],
+        },
       };
 
       fetchMock
         .post(utils.PORTAL_SUBSET.restUrl + "/community/createGroup", {
           success: true,
-          group: { id: itemTemplate.itemId }
+          group: { id: itemTemplate.itemId },
         })
         .post(
-          utils.PORTAL_SUBSET.restUrl +
-            "/community/groups/grp1234567890/delete",
-          utils.getSuccessResponse({ groupId: itemTemplate.itemId })
+          utils.PORTAL_SUBSET.restUrl + "/community/groups/grp1234567890/delete",
+          utils.getSuccessResponse({ groupId: itemTemplate.itemId }),
         );
 
-      // eslint-disable-next-line @typescript-eslint/no-floating-promises
-      group
-        .createItemFromTemplate(
-          itemTemplate,
-          templateDictionary,
-          MOCK_USER_SESSION,
-          utils.createFailingItemProgressCallbackOnNthCall(2)
-        )
-        .then(response => {
-          expect(response).toEqual(templates.getFailedItem(itemTemplate.type));
-          done();
-        });
+      const response = await group.createItemFromTemplate(
+        itemTemplate,
+        templateDictionary,
+        MOCK_USER_SESSION,
+        utils.createFailingItemProgressCallbackOnNthCall(2),
+      );
+      expect(response).toEqual(templates.getFailedItem(itemTemplate.type));
     });
 
-    it("should handle cancellation failure after deployed group is created", done => {
+    it("should handle cancellation failure after deployed group is created", async () => {
       const itemTemplate: common.IItemTemplate = templates.getGroupTemplatePart();
       const templateDictionary: any = {
         user: {
-          groups: []
-        }
+          groups: [],
+        },
       };
 
       fetchMock
         .post(utils.PORTAL_SUBSET.restUrl + "/community/createGroup", {
           success: true,
-          group: { id: itemTemplate.itemId }
+          group: { id: itemTemplate.itemId },
         })
         .post(
-          utils.PORTAL_SUBSET.restUrl +
-            "/community/groups/grp1234567890/delete",
-          utils.getFailureResponse({ groupId: itemTemplate.itemId })
+          utils.PORTAL_SUBSET.restUrl + "/community/groups/grp1234567890/delete",
+          utils.getFailureResponse({ groupId: itemTemplate.itemId }),
         );
 
-      // eslint-disable-next-line @typescript-eslint/no-floating-promises
-      group
-        .createItemFromTemplate(
-          itemTemplate,
-          templateDictionary,
-          MOCK_USER_SESSION,
-          utils.createFailingItemProgressCallbackOnNthCall(2)
-        )
-        .then(response => {
-          expect(response).toEqual(templates.getFailedItem(itemTemplate.type));
-          done();
-        });
+      const response = await group.createItemFromTemplate(
+        itemTemplate,
+        templateDictionary,
+        MOCK_USER_SESSION,
+        utils.createFailingItemProgressCallbackOnNthCall(2),
+      );
+      expect(response).toEqual(templates.getFailedItem(itemTemplate.type));
     });
 
-    it("should handle cancellation after deployed group is finished", done => {
+    it("should handle cancellation after deployed group is finished", async () => {
       const itemTemplate: common.IItemTemplate = templates.getGroupTemplatePart();
       const templateDictionary: any = {
         user: {
-          groups: []
-        }
+          groups: [],
+        },
       };
 
       fetchMock
         .post(utils.PORTAL_SUBSET.restUrl + "/community/createGroup", {
           success: true,
-          group: { id: itemTemplate.itemId }
+          group: { id: itemTemplate.itemId },
         })
         .post(
-          utils.PORTAL_SUBSET.restUrl +
-            "/community/groups/grp1234567890/delete",
-          utils.getSuccessResponse({ groupId: itemTemplate.itemId })
+          utils.PORTAL_SUBSET.restUrl + "/community/groups/grp1234567890/delete",
+          utils.getSuccessResponse({ groupId: itemTemplate.itemId }),
         );
 
-      // eslint-disable-next-line @typescript-eslint/no-floating-promises
-      group
-        .createItemFromTemplate(
-          itemTemplate,
-          templateDictionary,
-          MOCK_USER_SESSION,
-          utils.createFailingItemProgressCallbackOnNthCall(3)
-        )
-        .then(response => {
-          expect(response).toEqual(templates.getFailedItem(itemTemplate.type));
-          done();
-        });
+      const response = await group.createItemFromTemplate(
+        itemTemplate,
+        templateDictionary,
+        MOCK_USER_SESSION,
+        utils.createFailingItemProgressCallbackOnNthCall(3),
+      );
+      expect(response).toEqual(templates.getFailedItem(itemTemplate.type));
     });
 
-    it("should handle cancellation after deployed group is finished", done => {
+    it("should handle cancellation after deployed group is finished", async () => {
       const itemTemplate: common.IItemTemplate = templates.getGroupTemplatePart();
       const templateDictionary: any = {
         user: {
-          groups: []
-        }
+          groups: [],
+        },
       };
 
       fetchMock
         .post(utils.PORTAL_SUBSET.restUrl + "/community/createGroup", {
           success: true,
-          group: { id: itemTemplate.itemId }
+          group: { id: itemTemplate.itemId },
         })
         .post(
-          utils.PORTAL_SUBSET.restUrl +
-            "/community/groups/grp1234567890/delete",
-          utils.getFailureResponse({ groupId: itemTemplate.itemId })
+          utils.PORTAL_SUBSET.restUrl + "/community/groups/grp1234567890/delete",
+          utils.getFailureResponse({ groupId: itemTemplate.itemId }),
         );
 
-      // eslint-disable-next-line @typescript-eslint/no-floating-promises
-      group
-        .createItemFromTemplate(
-          itemTemplate,
-          templateDictionary,
-          MOCK_USER_SESSION,
-          utils.createFailingItemProgressCallbackOnNthCall(3)
-        )
-        .then(response => {
-          expect(response).toEqual(templates.getFailedItem(itemTemplate.type));
-          done();
-        });
+      const response = await group.createItemFromTemplate(
+        itemTemplate,
+        templateDictionary,
+        MOCK_USER_SESSION,
+        utils.createFailingItemProgressCallbackOnNthCall(3),
+      );
+      expect(response).toEqual(templates.getFailedItem(itemTemplate.type));
     });
 
-    it("should handle post process of group", done => {
+    it("should handle post process of group", async () => {
       const itemId: string = "abc9cab401af4828a25cc6eaeb59fb69";
-      const templateDictionary: any = { "bbb9cab401af4828a25cc6eaeb59fb69": { url: "http://correct"} };
+      const templateDictionary: any = { bbb9cab401af4828a25cc6eaeb59fb69: { url: "http://correct" } };
 
       const itemTemplate: common.IItemTemplate = templates.getItemTemplateSkeleton();
       itemTemplate.itemId = itemId;
@@ -1454,29 +1284,27 @@ describe("Module `group`: manages the creation and deployment of groups", () => 
       itemTemplate.item.title = "Dam Inspection Assignments";
       itemTemplate.item.description = "A path {{bbb9cab401af4828a25cc6eaeb59fb69.url}}";
       itemTemplate.item.id = itemId;
-      const itemInfos = [{id: itemId, item: itemTemplate}];
+      const itemInfos = [{ id: itemId, item: itemTemplate }];
 
       fetchMock.post(`${utils.PORTAL_SUBSET.restUrl}/community/groups/${itemId}/update`, {
         success: true,
-        group: { id: itemId }
+        group: { id: itemId },
       });
 
-      group.postProcess(
+      return group.postProcess(
         itemId,
         "Group",
         itemInfos,
         itemTemplate,
         [itemTemplate],
         templateDictionary,
-        MOCK_USER_SESSION
-      ).then(() => {
-        done();
-      }, done.fail)
+        MOCK_USER_SESSION,
+      );
     });
 
-    it("should handle failure to post process group", done => {
+    it("should handle failure to post process group", async () => {
       const itemId: string = "abc9cab401af4828a25cc6eaeb59fb69";
-      const templateDictionary: any = { "bbb9cab401af4828a25cc6eaeb59fb69": { url: "http://correct"} };
+      const templateDictionary: any = { bbb9cab401af4828a25cc6eaeb59fb69: { url: "http://correct" } };
 
       const itemTemplate: common.IItemTemplate = templates.getItemTemplateSkeleton();
       itemTemplate.itemId = itemId;
@@ -1484,25 +1312,22 @@ describe("Module `group`: manages the creation and deployment of groups", () => 
       itemTemplate.item.title = "Dam Inspection Assignments";
       itemTemplate.item.description = "A path {{bbb9cab401af4828a25cc6eaeb59fb69.url}}";
       itemTemplate.item.id = itemId;
-      const itemInfos = [{id: itemId, item: itemTemplate}];
+      const itemInfos = [{ id: itemId, item: itemTemplate }];
 
       fetchMock.post(`${utils.PORTAL_SUBSET.restUrl}/community/groups/${itemId}/update`, {
         success: false,
-        groupId: itemId
+        groupId: itemId,
       });
 
-      group.postProcess(
-        itemId,
-        "Group",
-        itemInfos,
-        itemTemplate,
-        [itemTemplate],
-        templateDictionary,
-        MOCK_USER_SESSION
-      ).then(() => done.fail, e => {
-        expect(e.success).toEqual(false);
-        done();
-      })
+      return group
+        .postProcess(itemId, "Group", itemInfos, itemTemplate, [itemTemplate], templateDictionary, MOCK_USER_SESSION)
+        .then(
+          () => fail(),
+          (e) => {
+            expect(e.success).toEqual(false);
+            return Promise.resolve();
+          },
+        );
     });
   });
 
@@ -1513,8 +1338,8 @@ describe("Module `group`: manages the creation and deployment of groups", () => 
         type: "Group",
 
         access: "private",
-        title: "title property"
-      }
+        title: "title property",
+      };
 
       const newGroup = group._initializeNewGroup(sourceGroup);
 
@@ -1526,8 +1351,8 @@ describe("Module `group`: manages the creation and deployment of groups", () => 
         tags: undefined,
         thumbnail: undefined,
         title: "title property",
-        typeKeywords: undefined
-      }
+        typeKeywords: undefined,
+      };
       expect(newGroup).toEqual(expectedNewGroup);
     });
 
@@ -1543,8 +1368,8 @@ describe("Module `group`: manages the creation and deployment of groups", () => 
         tags: ["tags property 1", "tags property 2"],
         thumbnail: "thumbnail property",
         title: "title property",
-        typeKeywords: ["typeKeywords property 1", "typeKeywords property 2"]
-      }
+        typeKeywords: ["typeKeywords property 1", "typeKeywords property 2"],
+      };
 
       const newGroup = group._initializeNewGroup(sourceGroup);
 
@@ -1556,8 +1381,8 @@ describe("Module `group`: manages the creation and deployment of groups", () => 
         tags: ["tags property 1", "tags property 2"],
         thumbnail: "thumbnail property",
         title: "title property",
-        typeKeywords: ["typeKeywords property 1", "typeKeywords property 2"]
-      }
+        typeKeywords: ["typeKeywords property 1", "typeKeywords property 2"],
+      };
       expect(newGroup).toEqual(expectedNewGroup);
     });
 
@@ -1567,27 +1392,27 @@ describe("Module `group`: manages the creation and deployment of groups", () => 
         type: "Group",
 
         access: "org",
-        description: null,
-        owner: null,
-        snippet: null,
-        tags: null,
-        thumbnail: null,
+        description: undefined,
+        owner: undefined,
+        snippet: undefined,
+        tags: undefined,
+        thumbnail: undefined,
         title: "title property",
-        typeKeywords: null
-      }
+        typeKeywords: undefined,
+      };
 
       const newGroup = group._initializeNewGroup(sourceGroup);
 
       const expectedNewGroup: common.IGroupAdd = {
         access: "private",
-        description: null,
-        owner: null,
-        snippet: null,
-        tags: null,
-        thumbnail: null,
+        description: undefined,
+        owner: undefined,
+        snippet: undefined,
+        tags: undefined,
+        thumbnail: undefined,
         title: "title property",
-        typeKeywords: null
-      }
+        typeKeywords: undefined,
+      };
       expect(newGroup).toEqual(expectedNewGroup);
     });
 
@@ -1597,11 +1422,11 @@ describe("Module `group`: manages the creation and deployment of groups", () => 
         type: "Group",
 
         access: "public",
-        description: null,
-        owner: null,
-        snippet: null,
-        tags: null,
-        thumbnail: null,
+        description: undefined,
+        owner: undefined,
+        snippet: undefined,
+        tags: undefined,
+        thumbnail: undefined,
         title: "title property",
         typeKeywords: ["typeKeywords property 1", "typeKeywords property 2"],
 
@@ -1612,27 +1437,27 @@ describe("Module `group`: manages the creation and deployment of groups", () => 
         isViewOnly: true,
         membershipAccess: "membershipAccess property",
         properties: {
-          "featuredItemIds": [
+          featuredItemIds: [
             "{{312f7d21b9024e8cb977709541ae6a16.itemId}}",
             "{{f35c3102c054414c81760958b726be3a.itemId}}",
             "{{d8e86c5937da4691a09a050eefc65bb6.itemId}}",
-            "{{e0eccb81ee0c47eb8fd9189a3edb1fae.itemId}}"
+            "{{e0eccb81ee0c47eb8fd9189a3edb1fae.itemId}}",
           ],
-          "isFeatured": true
+          isFeatured: true,
         },
         sortField: "modified",
-        sortOrder: "asc"
-      }
+        sortOrder: "asc",
+      };
 
       const newGroup = group._initializeNewGroup(sourceGroup);
 
       const expectedNewGroup: common.IGroupAdd = {
         access: "private",
-        description: null,
-        owner: null,
-        snippet: null,
-        tags: null,
-        thumbnail: null,
+        description: undefined,
+        owner: undefined,
+        snippet: undefined,
+        tags: undefined,
+        thumbnail: undefined,
         title: "title property",
         typeKeywords: ["typeKeywords property 1", "typeKeywords property 2"],
 
@@ -1643,17 +1468,17 @@ describe("Module `group`: manages the creation and deployment of groups", () => 
         isViewOnly: true,
         membershipAccess: "membershipAccess property",
         properties: {
-          "featuredItemIds": [
+          featuredItemIds: [
             "{{312f7d21b9024e8cb977709541ae6a16.itemId}}",
             "{{f35c3102c054414c81760958b726be3a.itemId}}",
             "{{d8e86c5937da4691a09a050eefc65bb6.itemId}}",
-            "{{e0eccb81ee0c47eb8fd9189a3edb1fae.itemId}}"
+            "{{e0eccb81ee0c47eb8fd9189a3edb1fae.itemId}}",
           ],
-          "isFeatured": true
+          isFeatured: true,
         },
         sortField: "modified",
-        sortOrder: "asc"
-      }
+        sortOrder: "asc",
+      };
       expect(newGroup).toEqual(expectedNewGroup);
     });
 
@@ -1663,11 +1488,11 @@ describe("Module `group`: manages the creation and deployment of groups", () => 
         type: "Group",
 
         access: "public",
-        description: null,
-        owner: null,
-        snippet: null,
-        tags: null,
-        thumbnail: null,
+        description: undefined,
+        owner: undefined,
+        snippet: undefined,
+        tags: undefined,
+        thumbnail: undefined,
         title: "title property",
         typeKeywords: ["typeKeywords property 1", "typeKeywords property 2"],
 
@@ -1677,25 +1502,25 @@ describe("Module `group`: manages the creation and deployment of groups", () => 
 
         unwanted1: "unwanted property 1",
         unwanted2: "unwanted property 2",
-        unwanted3: "unwanted property 3"
-      }
+        unwanted3: "unwanted property 3",
+      };
 
       const newGroup = group._initializeNewGroup(sourceGroup);
 
       const expectedNewGroup: common.IGroupAdd = {
         access: "private",
-        description: null,
-        owner: null,
-        snippet: null,
-        tags: null,
-        thumbnail: null,
+        description: undefined,
+        owner: undefined,
+        snippet: undefined,
+        tags: undefined,
+        thumbnail: undefined,
         title: "title property",
         typeKeywords: ["typeKeywords property 1", "typeKeywords property 2"],
 
         autoJoin: true,
         displaySettings: true,
-        isInvitationOnly: true
-      }
+        isInvitationOnly: true,
+      };
       expect(newGroup).toEqual(expectedNewGroup);
     });
   });

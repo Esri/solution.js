@@ -35,12 +35,12 @@ export function _upgradeTwoDotThree(model: ISolutionItem) {
   // this has landed in Hub, so we have actual items like this :(
   // we will have another schema upgrade that will re-create the
   // resources array
-  clone.data.templates = clone.data.templates.map(tmpl => {
+  clone.data.templates = clone.data.templates.map((tmpl) => {
     if (tmpl.resources) {
-      tmpl.assets = tmpl.resources.map(r => {
+      tmpl.assets = tmpl.resources.map((r) => {
         return {
           name: r,
-          type: "resource"
+          type: "resource",
         };
       });
       delete tmpl.resources;

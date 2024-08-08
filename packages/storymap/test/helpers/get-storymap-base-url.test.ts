@@ -19,30 +19,20 @@ import { UserSession } from "@esri/solution-common";
 
 describe("getStoryMapBaseUrl :: ", () => {
   it("for ago, returns the env specific base url", () => {
-    const subdomainSpy = spyOn(
-      getSubdomainModule,
-      "getStoryMapSubdomain"
-    ).and.returnValue("storymapsqa");
+    const subdomainSpy = spyOn(getSubdomainModule, "getStoryMapSubdomain").and.returnValue("storymapsqa");
     const url = getStoryMapBaseUrl({} as UserSession);
-    expect(url).toBe(
-      "https://storymapsqa.arcgis.com",
-      "should construct the ago url"
-    );
-    expect(subdomainSpy.calls.count()).toBe(1, "should get the subdomain");
+    expect(url).withContext("should construct the ago url").toBe("https://storymapsqa.arcgis.com");
+    expect(subdomainSpy.calls.count()).withContext("should get the subdomain").toBe(1);
   });
 
   it("for portal, returns the correct url", () => {
-    const subdomainSpy = spyOn(
-      getSubdomainModule,
-      "getStoryMapSubdomain"
-    ).and.returnValue(null);
+    const subdomainSpy = spyOn(getSubdomainModule, "getStoryMapSubdomain").and.returnValue(null as any);
     const url = getStoryMapBaseUrl({
-      portal: "https://dev0004025.esri.com/portal/sharing/rest"
+      portal: "https://dev0004025.esri.com/portal/sharing/rest",
     } as UserSession);
-    expect(url).toBe(
-      "https://dev0004025.esri.com/portal/apps/storymaps",
-      "should construct the portal url"
-    );
-    expect(subdomainSpy.calls.count()).toBe(1, "should get the subdomain");
+    expect(url)
+      .withContext("should construct the portal url")
+      .toBe("https://dev0004025.esri.com/portal/apps/storymaps");
+    expect(subdomainSpy.calls.count()).withContext("should get the subdomain").toBe(1);
   });
 });

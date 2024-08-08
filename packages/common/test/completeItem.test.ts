@@ -42,7 +42,7 @@ beforeEach(() => {
 
 describe("Module `completeItem`: functions for accessing a complete item", () => {
   describe("getCompleteItem", () => {
-    it("should get an item", done => {
+    it("should get an item", async () => {
       const itemId = "abc";
 
       spyOn(restHelpers, "getFeatureServiceProperties").and.resolveTo({} as interfaces.IFeatureServiceProperties);
@@ -52,28 +52,26 @@ describe("Module `completeItem`: functions for accessing a complete item", () =>
       spyOn(restHelpersGet, "getItemRelatedItemsInSameDirection").and.resolveTo([] as interfaces.IRelatedItems[]);
       spyOn(restHelpersGet, "getItemResourcesFiles").and.resolveTo([] as File[]);
       spyOn(restHelpersGet, "getItemThumbnailAsFile").and.resolveTo(utils.getSampleImageAsFile());
-      spyOn(restHelpersGet, "getUser").and.resolveTo({ orgId: "abcdefghij" } as any);
+      spyOn(restHelpersGet, "getUser").and.resolveTo({
+        orgId: "abcdefghij",
+      } as any);
 
-      completeItem
-        .getCompleteItem(itemId, MOCK_USER_SESSION)
-        .then((item: interfaces.ICompleteItem) => {
-          // base: IItem; text/plain JSON
-          // data: File; */*
-          // thumbnail: File; image/*
-          // metadata: File; application/xml
-          // resources: File[]; list of */*
-          // fwdRelatedItems: IRelatedItems[]; list of forward relationshipType/relatedItems[] pairs
-          // revRelatedItems: IRelatedItems[]; list of reverse relationshipType/relatedItems[] pairs
-          expect(item).not.toBeNull();
-          expect(item.base.id).toEqual("wma1234567890");
-          expect((item.data as any).source).toEqual("tpl1234567890");
-          expect(item.thumbnail.name).toEqual("sampleImage");
-          expect(item.metadata.name).toEqual("metadata.xml");
-          done();
-        });
+      const item: interfaces.ICompleteItem = await completeItem.getCompleteItem(itemId, MOCK_USER_SESSION);
+      // base: IItem; text/plain JSON
+      // data: File; */*
+      // thumbnail: File; image/*
+      // metadata: File; application/xml
+      // resources: File[]; list of */*
+      // fwdRelatedItems: IRelatedItems[]; list of forward relationshipType/relatedItems[] pairs
+      // revRelatedItems: IRelatedItems[]; list of reverse relationshipType/relatedItems[] pairs
+      expect(item).not.toBeNull();
+      expect(item.base.id).toEqual("wma1234567890");
+      expect((item.data as any).source).toEqual("tpl1234567890");
+      expect(item.thumbnail.name).toEqual("sampleImage");
+      expect(item.metadata.name).toEqual("metadata.xml");
     });
 
-    it("should get a feature service item", done => {
+    it("should get a feature service item", async () => {
       const itemId = "abc";
 
       spyOn(restHelpers, "getFeatureServiceProperties").and.resolveTo({} as interfaces.IFeatureServiceProperties);
@@ -83,32 +81,30 @@ describe("Module `completeItem`: functions for accessing a complete item", () =>
       spyOn(restHelpersGet, "getItemRelatedItemsInSameDirection").and.resolveTo([] as interfaces.IRelatedItems[]);
       spyOn(restHelpersGet, "getItemResourcesFiles").and.resolveTo([] as File[]);
       spyOn(restHelpersGet, "getItemThumbnailAsFile").and.resolveTo(utils.getSampleImageAsFile());
-      spyOn(restHelpersGet, "getUser").and.resolveTo({ orgId: "abcdefghij" } as any);
+      spyOn(restHelpersGet, "getUser").and.resolveTo({
+        orgId: "abcdefghij",
+      } as any);
 
-      completeItem
-        .getCompleteItem(itemId, MOCK_USER_SESSION)
-        .then((item: interfaces.ICompleteItem) => {
-          // base: IItem; text/plain JSON
-          // data: File; */*
-          // thumbnail: File; image/*
-          // metadata: File; application/xml
-          // resources: File[]; list of */*
-          // fwdRelatedItems: IRelatedItems[]; list of forward relationshipType/relatedItems[] pairs
-          // revRelatedItems: IRelatedItems[]; list of reverse relationshipType/relatedItems[] pairs
-          // featureServiceProperties?: IFeatureServiceProperties (only if item is a feature service)
-          expect(item).not.toBeNull();
-          expect(item.base.id).toEqual("svc1234567890");
-          expect((item.data as any).layers[0].id).toEqual(0);
-          expect((item.data as any).tables[0].id).toEqual(1);
-          expect(item.thumbnail.name).toEqual("sampleImage");
-          expect(item.metadata.name).toEqual("metadata.xml");
-          done();
-        });
+      const item: interfaces.ICompleteItem = await completeItem.getCompleteItem(itemId, MOCK_USER_SESSION);
+      // base: IItem; text/plain JSON
+      // data: File; */*
+      // thumbnail: File; image/*
+      // metadata: File; application/xml
+      // resources: File[]; list of */*
+      // fwdRelatedItems: IRelatedItems[]; list of forward relationshipType/relatedItems[] pairs
+      // revRelatedItems: IRelatedItems[]; list of reverse relationshipType/relatedItems[] pairs
+      // featureServiceProperties?: IFeatureServiceProperties (only if item is a feature service)
+      expect(item).not.toBeNull();
+      expect(item.base.id).toEqual("svc1234567890");
+      expect((item.data as any).layers[0].id).toEqual(0);
+      expect((item.data as any).tables[0].id).toEqual(1);
+      expect(item.thumbnail.name).toEqual("sampleImage");
+      expect(item.metadata.name).toEqual("metadata.xml");
     });
 
     it("should get a workflow item on arcgis.com", async () => {
       const itemId = "abc";
-      const config = await zipUtils.jsonToZipFile("jobConfig.json", {"jobTemplates": "abc" }, "config");
+      const config = await zipUtils.jsonToZipFile("jobConfig.json", { jobTemplates: "abc" }, "config");
 
       spyOn(workflowHelpers, "getWorkflowBaseURL").and.resolveTo("https://myorg.maps.arcgis.com/myorgid");
       spyOn(restHelpers, "getWorkflowConfigurationZip").and.resolveTo(config);
@@ -118,8 +114,12 @@ describe("Module `completeItem`: functions for accessing a complete item", () =>
       spyOn(restHelpersGet, "getItemRelatedItemsInSameDirection").and.resolveTo([] as interfaces.IRelatedItems[]);
       spyOn(restHelpersGet, "getItemResourcesFiles").and.resolveTo([] as File[]);
       spyOn(restHelpersGet, "getItemThumbnailAsFile").and.resolveTo(utils.getSampleImageAsFile());
-      spyOn(restHelpersGet, "getUser").and.resolveTo({ orgId: "abcdefghij" } as any);
-      spyOn(workflowHelpers, "extractWorkflowFromZipFile").and.resolveTo({ "jobTemplates": "abc" } as any);
+      spyOn(restHelpersGet, "getUser").and.resolveTo({
+        orgId: "abcdefghij",
+      } as any);
+      spyOn(workflowHelpers, "extractWorkflowFromZipFile").and.resolveTo({
+        jobTemplates: "abc",
+      } as any);
 
       const item: interfaces.ICompleteItem = await completeItem.getCompleteItem(itemId, MOCK_USER_SESSION);
       // base: IItem; text/plain JSON
@@ -138,7 +138,7 @@ describe("Module `completeItem`: functions for accessing a complete item", () =>
 
     it("should get a workflow item on esri.com", async () => {
       const itemId = "abc";
-      const config = await zipUtils.jsonToZipFile("jobConfig.json", {"jobTemplates": "abc" }, "config");
+      const config = await zipUtils.jsonToZipFile("jobConfig.json", { jobTemplates: "abc" }, "config");
 
       spyOn(workflowHelpers, "getWorkflowBaseURL").and.resolveTo("https://myorg.maps.esri.com/myorgid");
       spyOn(restHelpers, "getWorkflowConfigurationZip").and.resolveTo(config);
@@ -148,8 +148,12 @@ describe("Module `completeItem`: functions for accessing a complete item", () =>
       spyOn(restHelpersGet, "getItemRelatedItemsInSameDirection").and.resolveTo([] as interfaces.IRelatedItems[]);
       spyOn(restHelpersGet, "getItemResourcesFiles").and.resolveTo([] as File[]);
       spyOn(restHelpersGet, "getItemThumbnailAsFile").and.resolveTo(utils.getSampleImageAsFile());
-      spyOn(restHelpersGet, "getUser").and.resolveTo({ orgId: "abcdefghij" } as any);
-      spyOn(workflowHelpers, "extractWorkflowFromZipFile").and.resolveTo({ "jobTemplates": "abc" } as any);
+      spyOn(restHelpersGet, "getUser").and.resolveTo({
+        orgId: "abcdefghij",
+      } as any);
+      spyOn(workflowHelpers, "extractWorkflowFromZipFile").and.resolveTo({
+        jobTemplates: "abc",
+      } as any);
 
       const userSession = utils.createRuntimeMockUserSession(undefined, "https://myorg.maps.esri.com");
 
@@ -170,7 +174,7 @@ describe("Module `completeItem`: functions for accessing a complete item", () =>
 
     it("should get a workflow item on Enterprise", async () => {
       const itemId = "abc";
-      const config = await zipUtils.jsonToZipFile("jobConfig.json", {"jobTemplates": "abc" }, "config");
+      const config = await zipUtils.jsonToZipFile("jobConfig.json", { jobTemplates: "abc" }, "config");
 
       spyOn(workflowHelpers, "getWorkflowBaseURL").and.resolveTo("https://gisserver.domain.com/server/workflow");
       spyOn(restHelpers, "getWorkflowConfigurationZip").and.resolveTo(config);
@@ -180,8 +184,12 @@ describe("Module `completeItem`: functions for accessing a complete item", () =>
       spyOn(restHelpersGet, "getItemRelatedItemsInSameDirection").and.resolveTo([] as interfaces.IRelatedItems[]);
       spyOn(restHelpersGet, "getItemResourcesFiles").and.resolveTo([] as File[]);
       spyOn(restHelpersGet, "getItemThumbnailAsFile").and.resolveTo(utils.getSampleImageAsFile());
-      spyOn(restHelpersGet, "getUser").and.resolveTo({ orgId: "abcdefghij" } as any);
-      spyOn(workflowHelpers, "extractWorkflowFromZipFile").and.resolveTo({ "jobTemplates": "abc" } as any);
+      spyOn(restHelpersGet, "getUser").and.resolveTo({
+        orgId: "abcdefghij",
+      } as any);
+      spyOn(workflowHelpers, "extractWorkflowFromZipFile").and.resolveTo({
+        jobTemplates: "abc",
+      } as any);
 
       const userSession = utils.createRuntimeMockUserSession(undefined, "https://gisserver.domain.com/server");
 
@@ -200,7 +208,7 @@ describe("Module `completeItem`: functions for accessing a complete item", () =>
       expect(item.metadata.name).toEqual("metadata.xml");
     });
 
-    it("should handle failure to get an item", done => {
+    it("should handle failure to get an item", async () => {
       const itemId = "abc";
 
       spyOn(restHelpers, "getFeatureServiceProperties").and.resolveTo({} as interfaces.IFeatureServiceProperties);
@@ -210,14 +218,16 @@ describe("Module `completeItem`: functions for accessing a complete item", () =>
       spyOn(restHelpersGet, "getItemRelatedItemsInSameDirection").and.resolveTo([] as interfaces.IRelatedItems[]);
       spyOn(restHelpersGet, "getItemResourcesFiles").and.resolveTo([] as File[]);
       spyOn(restHelpersGet, "getItemThumbnailAsFile").and.resolveTo(mockItems.get400Failure());
-      spyOn(restHelpersGet, "getUser").and.resolveTo({ orgId: "abcdefghij" } as any);
+      spyOn(restHelpersGet, "getUser").and.resolveTo({
+        orgId: "abcdefghij",
+      } as any);
 
-      completeItem.getCompleteItem(itemId, MOCK_USER_SESSION).then(
-        () => done.fail(),
-        error => {
+      return completeItem.getCompleteItem(itemId, MOCK_USER_SESSION).then(
+        () => fail(),
+        (error) => {
           expect(error.error.code).toEqual(400);
-          done();
-        }
+          return Promise.resolve();
+        },
       );
     });
   });

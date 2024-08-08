@@ -21,13 +21,13 @@ export function _postProcessPage(
   pageModel: IModel,
   itemInfos: any[],
   templateDictionary: any,
-  hubRequestOptions: IHubUserRequestOptions
+  hubRequestOptions: IHubUserRequestOptions,
 ): Promise<boolean> {
   // re-interpolate the siteModel using the itemInfos; no patches supplied
   pageModel = interpolate(pageModel, templateDictionary, {});
   return updatePage(pageModel, {
     ...hubRequestOptions,
-    allowList: []
+    allowList: [],
   }).then(() => {
     return true;
   });

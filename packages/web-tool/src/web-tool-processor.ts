@@ -37,15 +37,10 @@ export function convertItemToTemplate(
   itemInfo: any,
   destAuthentication: common.UserSession,
   srcAuthentication: common.UserSession,
-  templateDictionary: any
+  templateDictionary: any,
 ): Promise<common.IItemTemplate> {
   // Delegate to simple types
-  return simpleTypes.convertItemToTemplate(
-    itemInfo,
-    destAuthentication,
-    srcAuthentication,
-    templateDictionary
-  );
+  return simpleTypes.convertItemToTemplate(itemInfo, destAuthentication, srcAuthentication, templateDictionary);
 }
 
 /**
@@ -61,211 +56,120 @@ export function createItemFromTemplate(
   template: common.IItemTemplate,
   templateDictionary: any,
   destinationAuthentication: common.UserSession,
-  itemProgressCallback: common.IItemProgressCallback
+  itemProgressCallback: common.IItemProgressCallback,
 ): Promise<common.ICreateItemFromTemplateResponse> {
-  return new Promise<common.ICreateItemFromTemplateResponse>(resolve => {
+  return new Promise<common.ICreateItemFromTemplateResponse>((resolve) => {
     // Interrupt process if progress callback returns `false`
-    if (
-      !itemProgressCallback(
-        template.itemId,
-        common.EItemProgressStatus.Started,
-        0
-      )
-    ) {
-      itemProgressCallback(
-        template.itemId,
-        common.EItemProgressStatus.Ignored,
-        0
-      );
+    if (!itemProgressCallback(template.itemId, common.EItemProgressStatus.Started, 0)) {
+      itemProgressCallback(template.itemId, common.EItemProgressStatus.Ignored, 0);
       resolve(common.generateEmptyCreationResponse(template.type));
     } else {
       // Replace the templatized symbols in a copy of the template
       let newItemTemplate: common.IItemTemplate = common.cloneObject(template);
-      newItemTemplate = common.replaceInTemplate(
-        newItemTemplate,
-        templateDictionary
-      );
+      newItemTemplate = common.replaceInTemplate(newItemTemplate, templateDictionary);
 
       if (template.item.thumbnail) {
         newItemTemplate.item.thumbnail = template.item.thumbnail;
       }
 
-      createWebTool(
-        newItemTemplate,
-        templateDictionary,
-        destinationAuthentication
-      ).then(
-        createResponse => {
+      createWebTool(newItemTemplate, templateDictionary, destinationAuthentication).then(
+        (createResponse) => {
           // Interrupt process if progress callback returns `false`
           if (
             !itemProgressCallback(
               template.itemId,
               common.EItemProgressStatus.Created,
               template.estimatedDeploymentCostFactor / 2,
-              createResponse.itemId
+              createResponse.itemId,
             )
           ) {
-            itemProgressCallback(
-              template.itemId,
-              common.EItemProgressStatus.Cancelled,
-              0
+            itemProgressCallback(template.itemId, common.EItemProgressStatus.Cancelled, 0);
+            common.removeItem(createResponse.itemId, destinationAuthentication).then(
+              () => resolve(common.generateEmptyCreationResponse(template.type)),
+              () => resolve(common.generateEmptyCreationResponse(template.type)),
             );
-            common
-              .removeItem(createResponse.itemId, destinationAuthentication)
-              .then(
-                () =>
-                  resolve(
-                    common.generateEmptyCreationResponse(template.type)
-                  ),
-                () =>
-                  resolve(common.generateEmptyCreationResponse(template.type))
-              );
           } else {
             // Add the new item to the settings
             templateDictionary[template.itemId] = {
               itemId: createResponse.itemId,
-              itemUrl: (templateDictionary["portalBaseUrl"] as string) + "/sharing/rest/content/items/" + createResponse.itemId
-            }
+              itemUrl:
+                (templateDictionary["portalBaseUrl"] as string) +
+                "/sharing/rest/content/items/" +
+                createResponse.itemId,
+            };
             newItemTemplate.itemId = createResponse.itemId;
             newItemTemplate.item.id = createResponse.itemId;
             newItemTemplate.data = {};
             delete newItemTemplate.item.thumbnail;
 
             // Update the template again now that we have the new item id
-            newItemTemplate = common.replaceInTemplate(
-              newItemTemplate,
-              templateDictionary
-            );
+            newItemTemplate = common.replaceInTemplate(newItemTemplate, templateDictionary);
 
             // Update the item with snippet, description, popupInfo, etc.
-            common.updateItemExtended(
-              {
-                ...newItemTemplate.item
-              },
-              newItemTemplate.data,
-              destinationAuthentication,
-              template.item.thumbnail,
-              undefined,
-              templateDictionary
-            ).then(
-              () => {
-                // Interrupt process if progress callback returns `false`
-                if (
-                  !itemProgressCallback(
-                    template.itemId,
-                    common.EItemProgressStatus.Finished,
-                    template.estimatedDeploymentCostFactor / 2,
-                    createResponse.itemId
-                  )
-                ) {
-                  itemProgressCallback(
-                    template.itemId,
-                    common.EItemProgressStatus.Cancelled,
-                    0
-                  );
-                  common
-                    .removeItem(
+            common
+              .updateItemExtended(
+                {
+                  ...newItemTemplate.item,
+                },
+                newItemTemplate.data,
+                destinationAuthentication,
+                template.item.thumbnail,
+                undefined,
+                templateDictionary,
+              )
+              .then(
+                () => {
+                  // Interrupt process if progress callback returns `false`
+                  if (
+                    !itemProgressCallback(
+                      template.itemId,
+                      common.EItemProgressStatus.Finished,
+                      template.estimatedDeploymentCostFactor / 2,
                       createResponse.itemId,
-                      destinationAuthentication
                     )
-                    .then(
-                      () =>
-                        resolve(
-                          common.generateEmptyCreationResponse(
-                            template.type
-                          )
-                        ),
-                      () =>
-                        resolve(
-                          common.generateEmptyCreationResponse(
-                            template.type
-                          )
-                        )
+                  ) {
+                    itemProgressCallback(template.itemId, common.EItemProgressStatus.Cancelled, 0);
+                    common.removeItem(createResponse.itemId, destinationAuthentication).then(
+                      () => resolve(common.generateEmptyCreationResponse(template.type)),
+                      () => resolve(common.generateEmptyCreationResponse(template.type)),
                     );
-                } else {
-                  // Update the template to match what we've stored in AGO
-                  common
-                    .getItemBase(
-                      newItemTemplate.itemId,
-                      destinationAuthentication
-                    )
-                    .then(
-                      updatedItem => {
+                  } else {
+                    // Update the template to match what we've stored in AGO
+                    common.getItemBase(newItemTemplate.itemId, destinationAuthentication).then(
+                      (updatedItem) => {
                         newItemTemplate.item = updatedItem;
 
                         resolve({
                           item: newItemTemplate,
                           id: createResponse.itemId,
                           type: newItemTemplate.type,
-                          postProcess: false
+                          postProcess: false,
                         });
                       },
                       () => {
-                        itemProgressCallback(
-                          template.itemId,
-                          common.EItemProgressStatus.Failed,
-                          0
+                        itemProgressCallback(template.itemId, common.EItemProgressStatus.Failed, 0);
+                        common.removeItem(createResponse.itemId, destinationAuthentication).then(
+                          () => resolve(common.generateEmptyCreationResponse(template.type)),
+                          () => resolve(common.generateEmptyCreationResponse(template.type)),
                         );
-                        common
-                          .removeItem(
-                            createResponse.itemId,
-                            destinationAuthentication
-                          )
-                          .then(
-                            () =>
-                              resolve(
-                                common.generateEmptyCreationResponse(
-                                  template.type
-                                )
-                              ),
-                            () =>
-                              resolve(
-                                common.generateEmptyCreationResponse(
-                                  template.type
-                                )
-                              )
-                          );
-                      } // fails to update item
+                      }, // fails to update item
                     );
-                }
-              },
-              () => {
-                itemProgressCallback(
-                  template.itemId,
-                  common.EItemProgressStatus.Failed,
-                  0
-                );
-                common
-                  .removeItem(
-                    createResponse.itemId,
-                    destinationAuthentication
-                  )
-                  .then(
-                    () =>
-                      resolve(
-                        common.generateEmptyCreationResponse(
-                          template.type
-                        )
-                      ),
-                    () =>
-                      resolve(
-                        common.generateEmptyCreationResponse(
-                          template.type
-                        )
-                      )
+                  }
+                },
+                () => {
+                  itemProgressCallback(template.itemId, common.EItemProgressStatus.Failed, 0);
+                  common.removeItem(createResponse.itemId, destinationAuthentication).then(
+                    () => resolve(common.generateEmptyCreationResponse(template.type)),
+                    () => resolve(common.generateEmptyCreationResponse(template.type)),
                   );
-              } // fails to update item
-            );
+                }, // fails to update item
+              );
           }
         },
         () => {
-          itemProgressCallback(
-            template.itemId,
-            common.EItemProgressStatus.Failed,
-            0
-          );
+          itemProgressCallback(template.itemId, common.EItemProgressStatus.Failed, 0);
           resolve(common.generateEmptyCreationResponse(template.type)); // fails to create item
-        }
+        },
       );
     }
   });
@@ -290,19 +194,21 @@ export function createWebTool(
       const url = `https://${notebookUrl}/admin/services/createService?f=json&request.preventCache=${Date.now()}`;
 
       const params = {
-        "serviceProperties": {
-          "description": template.item.description,
-          "provider": "notebooks",
-          "type": "GPServer",
-          "jsonProperties": {
-            "title": template.item.title,
-            "notebookId": template.data.notebookId,
-            "tasks": [{
-              "type": "notebook",
-              "name": template.data.name
-            }]
-          }
-        }
+        serviceProperties: {
+          description: template.item.description,
+          provider: "notebooks",
+          type: "GPServer",
+          jsonProperties: {
+            title: template.item.title,
+            notebookId: template.data.notebookId,
+            tasks: [
+              {
+                type: "notebook",
+                name: template.data.name,
+              },
+            ],
+          },
+        },
       };
 
       const requestOptions = {
@@ -310,18 +216,21 @@ export function createWebTool(
         authentication: destinationAuthentication,
         params,
         headers: {
-          Accept: "application/json",
-          Authorization: `Bearer ${destinationAuthentication.token}`,
+          "Accept": "application/json",
+          "Authorization": `Bearer ${destinationAuthentication.token}`,
           "Content-Type": "application/json",
-          "X-Esri-Authorization": `Bearer ${destinationAuthentication.token}`
+          "X-Esri-Authorization": `Bearer ${destinationAuthentication.token}`,
         },
       } as IRequestOptions;
 
-      request(url, requestOptions).then((response) => {
-        resolve(response);
-      }, e => {
-        reject(e);
-      });
+      request(url, requestOptions).then(
+        (response) => {
+          resolve(response);
+        },
+        (e) => {
+          reject(e);
+        },
+      );
     } else {
       reject();
     }

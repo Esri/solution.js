@@ -26,15 +26,12 @@ import {
   ISourceFile,
   IZipCopyResults,
   IZipInfo,
-  UserSession
+  UserSession,
 } from "../interfaces";
 import { chunkArray } from "@esri/hub-common";
 import { copyDataIntoItem } from "./copyDataIntoItem";
 import { copyMetadataIntoItem } from "./copyMetadataIntoItem";
-import {
-  copyResourceIntoZip,
-  copyResourceIntoZipFromInfo
-} from "./copyResourceIntoZip";
+import { copyResourceIntoZip, copyResourceIntoZipFromInfo } from "./copyResourceIntoZip";
 import { copyZipIntoItem } from "./copyZipIntoItem";
 import { createCopyResults } from "./createCopyResults";
 import { blobToJson, jsonToFile } from "../generalHelpers";
@@ -57,9 +54,9 @@ export function copyFilesAsResources(
   files: ISourceFile[],
   destinationItemId: string,
   destinationAuthentication: UserSession,
-  filesPerZip = 40
+  filesPerZip = 40,
 ): Promise<IAssociatedFileCopyResults[]> {
-  return new Promise<IAssociatedFileCopyResults[]>(resolve => {
+  return new Promise<IAssociatedFileCopyResults[]>((resolve) => {
     let awaitAllItems: IAssociatedFileCopyResults[] = [];
 
     const zipInfos: IZipInfo[] = [];
@@ -75,46 +72,37 @@ export function copyFilesAsResources(
         const zipInfo: IZipInfo = {
           filename: `resources${index}.zip`,
           zip: new JSZip(),
-          filelist: [] as IAssociatedFileInfo[]
+          filelist: [] as IAssociatedFileInfo[],
         };
-        awaitAllItems = awaitAllItems.concat(
-          chunk.map(file => copyResourceIntoZip(file, zipInfo))
-        );
+        awaitAllItems = awaitAllItems.concat(chunk.map((file) => copyResourceIntoZip(file, zipInfo)));
         zipInfos.push(zipInfo);
       });
     }
 
     if (awaitAllItems.length > 0) {
       // Wait until the Resource zip file(s) are prepared
-      void Promise.all(awaitAllItems).then(
-        (results: IAssociatedFileCopyResults[]) => {
-          // We have three types of results:
-          // | fetchedFromSource | copiedToDestination |             interpretation            |        |
-          // +-------------------+---------------------+------------------------------------------------+
-          // |       false       |          *          | could not fetch file from source               |
-          // |       true        |        true         | file has been fetched and sent to AGO          |
-          // |       true        |      undefined      | file has been fetched and will be sent via zip |
+      void Promise.all(awaitAllItems).then((results: IAssociatedFileCopyResults[]) => {
+        // We have three types of results:
+        // | fetchedFromSource | copiedToDestination |             interpretation            |        |
+        // +-------------------+---------------------+------------------------------------------------+
+        // |       false       |          *          | could not fetch file from source               |
+        // |       true        |        true         | file has been fetched and sent to AGO          |
+        // |       true        |      undefined      | file has been fetched and will be sent via zip |
 
-          // Filter out copiedToDestination===undefined; we'll get their status when we send their zip
-          results = results.filter(
-            (result: IAssociatedFileCopyResults) =>
-              !(
-                result.fetchedFromSource &&
-                typeof result.copiedToDestination === "undefined"
-              )
-          );
+        // Filter out copiedToDestination===undefined; we'll get their status when we send their zip
+        results = results.filter(
+          (result: IAssociatedFileCopyResults) =>
+            !(result.fetchedFromSource && typeof result.copiedToDestination === "undefined"),
+        );
 
-          // Now send the resources to AGO
-          // eslint-disable-next-line @typescript-eslint/no-floating-promises
-          _copyAssociatedFileZips(
-            zipInfos,
-            destinationItemId,
-            destinationAuthentication
-          ).then((zipResults: IAssociatedFileCopyResults[]) => {
+        // Now send the resources to AGO
+        // eslint-disable-next-line @typescript-eslint/no-floating-promises
+        _copyAssociatedFileZips(zipInfos, destinationItemId, destinationAuthentication).then(
+          (zipResults: IAssociatedFileCopyResults[]) => {
             resolve(results.concat(zipResults));
-          });
-        }
-      );
+          },
+        );
+      });
     } else {
       // No data, metadata, or resources to send; we're done
       resolve([]);
@@ -143,20 +131,16 @@ export async function copyAssociatedFilesByType(
   destinationItemId: string,
   destinationAuthentication: UserSession,
   template: any = {},
-  templateDictionary: any = {}
+  templateDictionary: any = {},
 ): Promise<IAssociatedFileCopyResults[]> {
-  return new Promise<IAssociatedFileCopyResults[]>(resolve => {
+  return new Promise<IAssociatedFileCopyResults[]>((resolve) => {
     let awaitAllItems: Array<Promise<IAssociatedFileCopyResults>> = [];
     let resourceFileInfos = fileInfos;
 
     // eslint-disable-next-line @typescript-eslint/no-floating-promises
     awaitAllItems = fileInfos
-      .filter(
-        fileInfo =>
-          fileInfo.type === EFileType.Data ||
-          fileInfo.type === EFileType.Metadata
-      )
-      .map(fileInfo => {
+      .filter((fileInfo) => fileInfo.type === EFileType.Data || fileInfo.type === EFileType.Metadata)
+      .map((fileInfo) => {
         // Handle Data and Metadata first
         switch (fileInfo.type) {
           case EFileType.Data:
@@ -164,32 +148,21 @@ export async function copyAssociatedFilesByType(
             // item is in a folder, the zip file is moved to the item's folder after being written.
             // Without the folder information in the URL, AGO writes the zip to the root folder,
             // which causes a conflict if an item with the same data is already in that root folder.
-            return copyDataIntoItem(
-              fileInfo,
-              sourceAuthentication,
-              destinationItemId,
-              destinationAuthentication
-            );
+            return copyDataIntoItem(fileInfo, sourceAuthentication, destinationItemId, destinationAuthentication);
 
           case EFileType.Metadata:
-            return copyMetadataIntoItem(
-              fileInfo,
-              sourceAuthentication,
-              destinationItemId,
-              destinationAuthentication
-            );
+            return copyMetadataIntoItem(fileInfo, sourceAuthentication, destinationItemId, destinationAuthentication);
         }
       });
 
     // Now add in the Resources
     resourceFileInfos = fileInfos.filter(
-      fileInfo =>
-        fileInfo.type === EFileType.Info || fileInfo.type === EFileType.Resource
+      (fileInfo) => fileInfo.type === EFileType.Info || fileInfo.type === EFileType.Resource,
     );
 
     const zipInfos: IZipInfo[] = [];
     // eslint-disable-next-line @typescript-eslint/no-floating-promises
-    const awaitAllResources = new Promise<void>(resolve2 => {
+    const awaitAllResources = new Promise<void>((resolve2) => {
       if (resourceFileInfos.length > 0) {
         // De-templatize as needed in files before adding them to the zip
         // eslint-disable-next-line @typescript-eslint/no-floating-promises
@@ -199,9 +172,8 @@ export async function copyAssociatedFilesByType(
           template,
           resourceFileInfos,
           destinationAuthentication,
-          templateDictionary
+          templateDictionary,
         ).then(() => {
-
           // Bundle the resources into chunked zip updates because AGO tends to have problems with
           // many updates in a row to the same item: it claims success despite randomly failing.
           // Note that AGO imposes a limit of 50 files per zip, so we break the list of resource
@@ -213,17 +185,13 @@ export async function copyAssociatedFilesByType(
             const zipInfo: IZipInfo = {
               filename: `resources${index}.zip`,
               zip: new JSZip(),
-              filelist: [] as IAssociatedFileInfo[]
+              filelist: [] as IAssociatedFileInfo[],
             };
             // eslint-disable-next-line @typescript-eslint/no-floating-promises
             awaitAllItems = awaitAllItems.concat(
-              chunk.map(fileInfo => {
-                return copyResourceIntoZipFromInfo(
-                  fileInfo,
-                  sourceAuthentication,
-                  zipInfo
-                );
-              })
+              chunk.map((fileInfo) => {
+                return copyResourceIntoZipFromInfo(fileInfo, sourceAuthentication, zipInfo);
+              }),
             );
             zipInfos.push(zipInfo);
           });
@@ -238,35 +206,28 @@ export async function copyAssociatedFilesByType(
     void awaitAllResources.then(() => {
       if (awaitAllItems.length > 0) {
         // Wait until all Data and Metadata files have been copied
-        void Promise.all(awaitAllItems).then(
-          (results: IAssociatedFileCopyResults[]) => {
-            // We have three types of results:
-            // | fetchedFromSource | copiedToDestination |             interpretation            |        |
-            // +-------------------+---------------------+------------------------------------------------+
-            // |       false       |          *          | could not fetch file from source               |
-            // |       true        |        true         | file has been fetched and sent to AGO          |
-            // |       true        |      undefined      | file has been fetched and will be sent via zip |
+        void Promise.all(awaitAllItems).then((results: IAssociatedFileCopyResults[]) => {
+          // We have three types of results:
+          // | fetchedFromSource | copiedToDestination |             interpretation            |        |
+          // +-------------------+---------------------+------------------------------------------------+
+          // |       false       |          *          | could not fetch file from source               |
+          // |       true        |        true         | file has been fetched and sent to AGO          |
+          // |       true        |      undefined      | file has been fetched and will be sent via zip |
 
-            // Filter out copiedToDestination===undefined; we'll get their status when we send their zip
-            results = results.filter(
-              (result: IAssociatedFileCopyResults) =>
-                !(
-                  result.fetchedFromSource &&
-                  typeof result.copiedToDestination === "undefined"
-                )
-            );
+          // Filter out copiedToDestination===undefined; we'll get their status when we send their zip
+          results = results.filter(
+            (result: IAssociatedFileCopyResults) =>
+              !(result.fetchedFromSource && typeof result.copiedToDestination === "undefined"),
+          );
 
-            // Now send the resources to AGO
-            // eslint-disable-next-line @typescript-eslint/no-floating-promises
-            _copyAssociatedFileZips(
-              zipInfos,
-              destinationItemId,
-              destinationAuthentication
-            ).then((zipResults: IAssociatedFileCopyResults[]) => {
+          // Now send the resources to AGO
+          // eslint-disable-next-line @typescript-eslint/no-floating-promises
+          _copyAssociatedFileZips(zipInfos, destinationItemId, destinationAuthentication).then(
+            (zipResults: IAssociatedFileCopyResults[]) => {
               resolve(results.concat(zipResults));
-            });
-          }
-        );
+            },
+          );
+        });
       } else {
         // No data, metadata, or resources to send; we're done
         resolve([]);
@@ -287,26 +248,22 @@ export async function copyAssociatedFilesByType(
 export function _copyAssociatedFileZips(
   zipInfos: IZipInfo[],
   destinationItemId: string,
-  destinationAuthentication: UserSession
+  destinationAuthentication: UserSession,
 ): Promise<IAssociatedFileCopyResults[]> {
-  return new Promise<IAssociatedFileCopyResults[]>(resolve => {
+  return new Promise<IAssociatedFileCopyResults[]>((resolve) => {
     const results: IAssociatedFileCopyResults[] = [];
 
     // Filter out empty zips, which can happen when none of the files in the chunk going into a zip
     // can be fetched; e.g., the only file is metadata.xml, and the source item doesn't have metadata
-    const nonEmptyZipInfos = zipInfos.filter(
-      (zipInfo: IZipInfo) => Object.keys(zipInfo.zip.files).length > 0
-    );
+    const nonEmptyZipInfos = zipInfos.filter((zipInfo: IZipInfo) => Object.keys(zipInfo.zip.files).length > 0);
 
     if (nonEmptyZipInfos.length > 0) {
       // Send the zip(s) to AGO
-      void _sendZipsSeriallyToItem(
-        nonEmptyZipInfos,
-        destinationItemId,
-        destinationAuthentication
-      ).then((zipResults: IAssociatedFileCopyResults[]) => {
-        resolve(zipResults);
-      });
+      void _sendZipsSeriallyToItem(nonEmptyZipInfos, destinationItemId, destinationAuthentication).then(
+        (zipResults: IAssociatedFileCopyResults[]) => {
+          resolve(zipResults);
+        },
+      );
     } else {
       // No resources to send; we're done
       resolve(results);
@@ -333,39 +290,31 @@ export function _detemplatizeResources(
   itemTemplate: IItemTemplate,
   fileInfos: IAssociatedFileInfo[],
   destinationAuthentication: UserSession,
-  templateDictionary: any = {}
+  templateDictionary: any = {},
 ): Promise<void[]> {
   const synchronizePromises: Array<Promise<void>> = [];
 
   if (itemTemplate.type === "Vector Tile Service") {
     // Get the root.json files
-    const rootJsonResources = fileInfos.filter(file => file.filename === "root.json");
+    const rootJsonResources = fileInfos.filter((file) => file.filename === "root.json");
 
     const templatizedResourcePath = "{{" + sourceItemId + ".url}}";
     const resourcePath = destinationAuthentication.portal + "/content/items/" + itemTemplate.itemId;
     const replacer = new RegExp(templatizedResourcePath, "g");
 
     // Templatize the paths in the files that reference the source item id
-    rootJsonResources.forEach(
-      rootFileResource => {
-        // eslint-disable-next-line @typescript-eslint/no-floating-promises
-        synchronizePromises.push(new Promise(resolve => {
+    rootJsonResources.forEach((rootFileResource) => {
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
+      synchronizePromises.push(
+        new Promise((resolve) => {
           // Fetch the file
           // eslint-disable-next-line @typescript-eslint/no-floating-promises
-          getBlobAsFile(rootFileResource.url, rootFileResource.filename, sourceAuthentication).then(
-            (file: any) => {
-
+          getBlobAsFile(rootFileResource.url, rootFileResource.filename, sourceAuthentication).then((file: any) => {
             // Read the file
             // eslint-disable-next-line @typescript-eslint/no-floating-promises
-            blobToJson(file)
-            .then(fileJson => {
-
+            blobToJson(file).then((fileJson) => {
               // Templatize by turning JSON into string, replacing paths with template, and re-JSONing
-              const updatedFileJson =
-                JSON.parse(
-                  JSON.stringify(fileJson)
-                    .replace(replacer, resourcePath)
-                );
+              const updatedFileJson = JSON.parse(JSON.stringify(fileJson).replace(replacer, resourcePath));
 
               // Write the changes back into the file
               rootFileResource.file = jsonToFile(updatedFileJson, rootFileResource.filename);
@@ -374,32 +323,29 @@ export function _detemplatizeResources(
               resolve(null);
             });
           });
-        }));
-      }
-    );
+        }),
+      );
+    });
   } else if (itemTemplate.type === "Geoprocessing Service") {
     const paths = {};
     paths[`{{${sourceItemId}.itemId}}`] = itemTemplate.itemId;
-    itemTemplate.dependencies.forEach(id => {
+    itemTemplate.dependencies.forEach((id) => {
       paths[`{{${id}.itemId}}`] = templateDictionary[id].itemId;
     });
 
-    fileInfos.forEach(
-      fileResource => {
-        // eslint-disable-next-line @typescript-eslint/no-floating-promises
-        synchronizePromises.push(new Promise(resolve => {
+    fileInfos.forEach((fileResource) => {
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
+      synchronizePromises.push(
+        new Promise((resolve) => {
           // Fetch the file
           // eslint-disable-next-line @typescript-eslint/no-floating-promises
-          getBlobAsFile(fileResource.url, fileResource.filename, sourceAuthentication).then(
-            (file: any) => {
-
+          getBlobAsFile(fileResource.url, fileResource.filename, sourceAuthentication).then((file: any) => {
             // Read the file
             // eslint-disable-next-line @typescript-eslint/no-floating-promises
-            blobToJson(file)
-            .then(fileJson => {
+            blobToJson(file).then((fileJson) => {
               // DeTemplatize by turning JSON into string, replacing paths with new value, and re-JSONing
               let fileString = JSON.stringify(fileJson);
-              Object.keys(paths).forEach(k => {
+              Object.keys(paths).forEach((k) => {
                 const replacer = new RegExp(k, "g");
                 fileString = fileString.replace(replacer, paths[k]);
               });
@@ -413,9 +359,9 @@ export function _detemplatizeResources(
               resolve(null);
             });
           });
-        }));
-      }
-    );
+        }),
+      );
+    });
   }
 
   return Promise.all(synchronizePromises);
@@ -432,9 +378,9 @@ export function _detemplatizeResources(
 function _sendZipsSeriallyToItem(
   zipInfos: IZipInfo[],
   destinationItemId: string,
-  destinationAuthentication: UserSession
+  destinationAuthentication: UserSession,
 ): Promise<IAssociatedFileCopyResults[]> {
-  return new Promise<IAssociatedFileCopyResults[]>(resolve => {
+  return new Promise<IAssociatedFileCopyResults[]>((resolve) => {
     let allResults: IAssociatedFileCopyResults[] = [];
 
     // Remove zip from bottom of list
@@ -443,38 +389,26 @@ function _sendZipsSeriallyToItem(
     // Send predecessors in list
     let sendOthersPromise = Promise.resolve([] as IAssociatedFileCopyResults[]);
     if (zipInfos.length > 0) {
-      sendOthersPromise = _sendZipsSeriallyToItem(
-        zipInfos,
-        destinationItemId,
-        destinationAuthentication
-      );
+      sendOthersPromise = _sendZipsSeriallyToItem(zipInfos, destinationItemId, destinationAuthentication);
     }
     void sendOthersPromise
       .then((response: IAssociatedFileCopyResults[]) => {
         allResults = response;
 
         // Stall a little to give AGO time to catch up
-        return new Promise<void>(resolveSleep => {
+        return new Promise<void>((resolveSleep) => {
           setTimeout(() => resolveSleep(), 1000);
         });
       })
       .then(() => {
         // Now send the zip removed from bottom of the input list
-        return copyZipIntoItem(
-          zipInfoToSend,
-          destinationItemId,
-          destinationAuthentication
-        );
+        return copyZipIntoItem(zipInfoToSend, destinationItemId, destinationAuthentication);
       })
       .then((zipResult: IZipCopyResults) => {
         // Save the result of copying this zip as a status for each of the files that it contains
         zipResult.filelist.forEach((fileInfo: IAssociatedFileInfo) => {
           allResults.push(
-            createCopyResults(
-              fileInfo,
-              true,
-              zipResult.copiedToDestination
-            ) as IAssociatedFileCopyResults
+            createCopyResults(fileInfo, true, zipResult.copiedToDestination) as IAssociatedFileCopyResults,
           );
         });
 

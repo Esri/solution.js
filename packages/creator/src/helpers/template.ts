@@ -14,10 +14,7 @@
  * limitations under the License.
  */
 
-import {
-  IItemTemplate,
-  ISourceFile
-} from "@esri/solution-common";
+import { IItemTemplate, ISourceFile } from "@esri/solution-common";
 
 /**
  * Extracts resource data files from templates.
@@ -26,18 +23,14 @@ import {
  *
  * @return List of resource data files found in supplied templates
  */
-export function getDataFilesFromTemplates(
-  templates: IItemTemplate[]
-): ISourceFile[] {
+export function getDataFilesFromTemplates(templates: IItemTemplate[]): ISourceFile[] {
   const resourceItemFiles: ISourceFile[] = [];
 
-  templates.forEach(
-    (template: IItemTemplate) => {
-      if (template.dataFile) {
-        resourceItemFiles.push(template.dataFile);
-      }
+  templates.forEach((template: IItemTemplate) => {
+    if (template.dataFile) {
+      resourceItemFiles.push(template.dataFile);
     }
-  );
+  });
 
   return resourceItemFiles;
 }
@@ -47,14 +40,10 @@ export function getDataFilesFromTemplates(
  *
  * @param templates List of templates to modify
  */
-export function removeDataFilesFromTemplates(
-  templates: IItemTemplate[]
-): void {
-  templates.forEach(
-    (template: IItemTemplate) => {
-      if (template.dataFile) {
-        delete template.dataFile;
-      }
+export function removeDataFilesFromTemplates(templates: IItemTemplate[]): void {
+  templates.forEach((template: IItemTemplate) => {
+    if (template.dataFile) {
+      delete template.dataFile;
     }
-  );
+  });
 }

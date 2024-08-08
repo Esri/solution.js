@@ -16,14 +16,12 @@
 
 import { IItemTemplate, cloneObject } from "@esri/hub-common";
 import { _upgradeTwoDotSix } from "../../src/migrations/upgrade-two-dot-six";
-import * as utils from "../../../common/test/mocks/utils";
-import { ISolutionItem, UserSession } from "../../src/interfaces";
+import { ISolutionItem } from "../../src/interfaces";
 
 describe("Upgrade 2.6 ::", () => {
   let mapQuestion: any;
   let otherQuestion: any;
   let defaultModel: ISolutionItem;
-  let MOCK_USER_SESSION: UserSession;
 
   beforeEach(() => {
     mapQuestion = {
@@ -32,14 +30,14 @@ describe("Upgrade 2.6 ::", () => {
       maps: [
         {
           type: "webmap",
-          itemId: "{{05dba3d96cd94b358dff421661300286.itemId}}"
-        }
-      ]
+          itemId: "{{05dba3d96cd94b358dff421661300286.itemId}}",
+        },
+      ],
     };
 
     otherQuestion = {
       id: "other_question",
-      label: "what's your favorite color?"
+      label: "what's your favorite color?",
     };
 
     defaultModel = {
@@ -47,8 +45,8 @@ describe("Upgrade 2.6 ::", () => {
         type: "Solution",
         typeKeywords: ["Solution", "Template"],
         properties: {
-          schemaVersion: 2.5
-        }
+          schemaVersion: 2.5,
+        },
       },
       data: {
         templates: [
@@ -56,31 +54,29 @@ describe("Upgrade 2.6 ::", () => {
             type: "Form",
             properties: {
               form: {
-                questions: [mapQuestion, otherQuestion]
-              }
+                questions: [mapQuestion, otherQuestion],
+              },
             },
-            dependencies: ["05dba3d96cd94b358dff421661300286"]
+            dependencies: ["05dba3d96cd94b358dff421661300286"],
           },
           {
             type: "Web Map",
-            itemId: "05dba3d96cd94b358dff421661300286"
+            itemId: "05dba3d96cd94b358dff421661300286",
           },
           {
             type: "Web Map",
-            itemId: "15dba3d96cd94b358dff421661300286"
-          }
-        ] as IItemTemplate[]
-      }
+            itemId: "15dba3d96cd94b358dff421661300286",
+          },
+        ] as IItemTemplate[],
+      },
     } as ISolutionItem;
-
-    MOCK_USER_SESSION = utils.createRuntimeMockUserSession();
   });
 
   it("resolves the same model if on or above 2.6", () => {
     const model = cloneObject(defaultModel);
     model.item.properties.schemaVersion = 2.6;
     const results = _upgradeTwoDotSix(model);
-    expect(results).toBe(model, "should resolve the same object");
+    expect(results).withContext("should resolve the same object").toBe(model);
   });
 
   it("only updates the version when no form templates exist", () => {
@@ -97,22 +93,14 @@ describe("Upgrade 2.6 ::", () => {
     const results = _upgradeTwoDotSix(model);
     expect(results.data.templates.length).toBe(2);
     expect(results.data.templates[0].type).toEqual("Form");
-    expect(
-      results.data.templates[0].dependencies.includes(
-        "05dba3d96cd94b358dff421661300286"
-      )
-    ).toBeFalse();
+    expect(results.data.templates[0].dependencies.includes("05dba3d96cd94b358dff421661300286")).toBeFalse();
     expect(results.data.templates[0].properties.form.questions.length).toBe(2);
-    expect(
-      results.data.templates[0].properties.form.questions[0].maps.length
-    ).toBe(1);
-    expect(
-      results.data.templates[0].properties.form.questions[0].maps[0].itemId
-    ).toEqual("{{05dba3d96cd94b358dff421661300286.itemId}}");
-    expect(results.data.templates[1].type).toEqual("Web Map");
-    expect(results.data.templates[1].itemId).toEqual(
-      "15dba3d96cd94b358dff421661300286"
+    expect(results.data.templates[0].properties.form.questions[0].maps.length).toBe(1);
+    expect(results.data.templates[0].properties.form.questions[0].maps[0].itemId).toEqual(
+      "{{05dba3d96cd94b358dff421661300286.itemId}}",
     );
+    expect(results.data.templates[1].type).toEqual("Web Map");
+    expect(results.data.templates[1].itemId).toEqual("15dba3d96cd94b358dff421661300286");
     expect(results.item.properties.schemaVersion).toEqual(2.6);
   });
 
@@ -121,11 +109,7 @@ describe("Upgrade 2.6 ::", () => {
     delete model.data.templates[0].properties.form;
     const results = _upgradeTwoDotSix(model);
     expect(results.data.templates.length).toBe(3);
-    expect(
-      results.data.templates[0].dependencies.includes(
-        "05dba3d96cd94b358dff421661300286"
-      )
-    ).toBeTrue();
+    expect(results.data.templates[0].dependencies.includes("05dba3d96cd94b358dff421661300286")).toBeTrue();
     expect(results.item.properties.schemaVersion).toEqual(2.6);
   });
 });

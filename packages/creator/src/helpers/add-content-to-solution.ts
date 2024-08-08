@@ -38,18 +38,12 @@ import {
   postProcessWorkforceTemplates,
   UNREACHABLE,
   updateItem,
-  UserSession
+  UserSession,
 } from "@esri/solution-common";
 import { getProp, getWithDefault } from "@esri/hub-common";
-import {
-  createItemTemplate,
-  postProcessFieldReferences
-} from "../createItemTemplate";
+import { createItemTemplate, postProcessFieldReferences } from "../createItemTemplate";
 import * as form from "@esri/solution-form";
-import {
-  getDataFilesFromTemplates,
-  removeDataFilesFromTemplates
-} from "./template";
+import { getDataFilesFromTemplates, removeDataFilesFromTemplates } from "./template";
 
 // ------------------------------------------------------------------------------------------------------------------ //
 
@@ -67,7 +61,7 @@ export function addContentToSolution(
   solutionItemId: string,
   options: ICreateSolutionOptions,
   srcAuthentication: UserSession,
-  destAuthentication: UserSession
+  destAuthentication: UserSession,
 ): Promise<string> {
   return new Promise((resolve, reject) => {
     if (!options.itemIds || options.itemIds.length === 0) {
@@ -86,7 +80,7 @@ export function addContentToSolution(
     const itemProgressCallback: IItemProgressCallback = (
       itemId: string,
       status: EItemProgressStatus,
-      costUsed: number
+      costUsed: number,
     ) => {
       // ---------------------------------------------------------------------------------------------------------------
       if (options.itemIds.indexOf(itemId) < 0) {
@@ -95,8 +89,7 @@ export function addContentToSolution(
         options.itemIds.push(itemId);
 
         totalEstimatedCost += 2;
-        progressPercentStep =
-          (95 - percentDone) / (totalEstimatedCost - totalExpended);
+        progressPercentStep = (95 - percentDone) / (totalEstimatedCost - totalExpended);
       }
 
       totalExpended += costUsed;
@@ -113,13 +106,13 @@ export function addContentToSolution(
           options.jobId ?? "",
           SItemProgressStatus[status],
           percentDone.toFixed(0) + "%",
-          costUsed
+          costUsed,
         );
       }
 
       if (status === EItemProgressStatus.Failed) {
         let error = "";
-        solutionTemplates.some(t => {
+        solutionTemplates.some((t) => {
           /* istanbul ignore else */
           if (t.itemId === itemId) {
             /* istanbul ignore else */
@@ -156,7 +149,7 @@ export function addContentToSolution(
     // Handle a list of one or more AGO ids by stepping through the list
     // and calling this function recursively
     const getItemsPromise: Array<Promise<ISourceFile[]>> = [];
-    options.itemIds.forEach(itemId => {
+    options.itemIds.forEach((itemId) => {
       const createDef = createItemTemplate(
         solutionItemId,
         itemId,
@@ -164,107 +157,83 @@ export function addContentToSolution(
         srcAuthentication,
         destAuthentication,
         solutionTemplates,
-        itemProgressCallback
+        itemProgressCallback,
       );
       getItemsPromise.push(createDef);
     });
 
     // eslint-disable-next-line @typescript-eslint/no-floating-promises
-    Promise.all(getItemsPromise).then(
-      async (multipleResourceItemFiles: ISourceFile[][]) => {
-        if (failedItemIds.length > 0) {
-          reject(
-            failWithIds(
-              failedItemIds,
-              "One or more items cannot be converted into templates"
-            )
+    Promise.all(getItemsPromise).then(async (multipleResourceItemFiles: ISourceFile[][]) => {
+      if (failedItemIds.length > 0) {
+        reject(failWithIds(failedItemIds, "One or more items cannot be converted into templates"));
+      } else {
+        if (solutionTemplates.length > 0) {
+          // Coalesce the resource file paths from the created templates
+          let resourceItemFiles: ISourceFile[] = multipleResourceItemFiles.reduce(
+            (accumulator, currentValue) => accumulator.concat(currentValue),
+            [] as ISourceFile[],
           );
-        } else {
-          if (solutionTemplates.length > 0) {
-            // Coalesce the resource file paths from the created templates
-            let resourceItemFiles: ISourceFile[] = multipleResourceItemFiles.reduce(
-              (accumulator, currentValue) => accumulator.concat(currentValue),
-              [] as ISourceFile[]
-            );
 
-            // test for and update group dependencies and other post-processing
-            solutionTemplates = await form.postProcessFormItems(
-              solutionTemplates, templateDictionary
-            );
-            solutionTemplates = _postProcessGroupDependencies(
-              solutionTemplates
-            );
-            solutionTemplates = postProcessWorkforceTemplates(
-              solutionTemplates
-            );
+          // test for and update group dependencies and other post-processing
+          solutionTemplates = await form.postProcessFormItems(solutionTemplates, templateDictionary);
+          solutionTemplates = _postProcessGroupDependencies(solutionTemplates);
+          solutionTemplates = postProcessWorkforceTemplates(solutionTemplates);
 
-            // Filter out any resources from items that have been removed from the templates, such as
-            // Living Atlas layers
-            solutionTemplates = _postProcessIgnoredItems(solutionTemplates, templateDictionary);
-            const templateIds = solutionTemplates.map(
-              template => template.itemId
-            );
+          // Filter out any resources from items that have been removed from the templates, such as
+          // Living Atlas layers
+          solutionTemplates = _postProcessIgnoredItems(solutionTemplates, templateDictionary);
+          const templateIds = solutionTemplates.map((template) => template.itemId);
 
-            // Extract resource data files from templates
-            resourceItemFiles = resourceItemFiles.concat(getDataFilesFromTemplates(solutionTemplates));
+          // Extract resource data files from templates
+          resourceItemFiles = resourceItemFiles.concat(getDataFilesFromTemplates(solutionTemplates));
 
-            // Coalesce the resource file paths from the created templates
-            resourceItemFiles = resourceItemFiles.filter(file =>
-              templateIds.includes(file.itemId)
-            );
+          // Coalesce the resource file paths from the created templates
+          resourceItemFiles = resourceItemFiles.filter((file) => templateIds.includes(file.itemId));
 
-            // Send the accumulated resources to the solution item
-            // eslint-disable-next-line @typescript-eslint/no-floating-promises
-            copyFilesToStorageItem(
-              resourceItemFiles,
-              solutionItemId,
-              destAuthentication
-            ).then(() => {
-              // Remove data files from templates--no longer needed
-              removeDataFilesFromTemplates(solutionTemplates);
+          // Send the accumulated resources to the solution item
+          // eslint-disable-next-line @typescript-eslint/no-floating-promises
+          copyFilesToStorageItem(resourceItemFiles, solutionItemId, destAuthentication).then(() => {
+            // Remove data files from templates--no longer needed
+            removeDataFilesFromTemplates(solutionTemplates);
 
-              _templatizeSolutionIds(solutionTemplates);
-              _simplifyUrlsInItemDescriptions(solutionTemplates);
-              solutionTemplates.forEach(
-                template => {
-                  if (template.type !== "Vector Tile Service") {
-                    _replaceDictionaryItemsInObject(templateDictionary, template);
-                  }
-                }
-              );
-
-              // Get the org's URL
-              _getOrgUrl(destAuthentication).then(
-                orgUrl => {
-                  // Templatizes occurrences of the URL to the user's organization in the `item` and `data` template sections
-                  templateDictionary.portalBaseUrl = orgUrl;
-                  const solutionTemplates2 = _templatizeOrgUrl(solutionTemplates, orgUrl);
-
-                  // Templatize any references to AGO ids in the workflow configuration
-                  _templatizeWorkflowConfig(solutionTemplates, templateDictionary);
-
-                  // Update solution item with its data JSON
-                  const solutionData: ISolutionItemData = {
-                    metadata: { version: SolutionTemplateFormatVersion },
-                    templates: options.templatizeFields
-                      ? postProcessFieldReferences(solutionTemplates2)
-                      : solutionTemplates2
-                  };
-                  const itemInfo: IItemUpdate = {
-                    id: solutionItemId,
-                    text: solutionData
-                  };
-                  updateItem(itemInfo, destAuthentication).then(() => {
-                    resolve(solutionItemId);
-                  }, reject);
-                }, reject);
+            _templatizeSolutionIds(solutionTemplates);
+            _simplifyUrlsInItemDescriptions(solutionTemplates);
+            solutionTemplates.forEach((template) => {
+              if (template.type !== "Vector Tile Service") {
+                _replaceDictionaryItemsInObject(templateDictionary, template);
+              }
             });
-          } else {
-            resolve(solutionItemId);
-          }
+
+            // Get the org's URL
+            _getOrgUrl(destAuthentication).then((orgUrl) => {
+              // Templatizes occurrences of the URL to the user's organization in the `item` and `data` template sections
+              templateDictionary.portalBaseUrl = orgUrl;
+              const solutionTemplates2 = _templatizeOrgUrl(solutionTemplates, orgUrl);
+
+              // Templatize any references to AGO ids in the workflow configuration
+              _templatizeWorkflowConfig(solutionTemplates, templateDictionary);
+
+              // Update solution item with its data JSON
+              const solutionData: ISolutionItemData = {
+                metadata: { version: SolutionTemplateFormatVersion },
+                templates: options.templatizeFields
+                  ? postProcessFieldReferences(solutionTemplates2)
+                  : solutionTemplates2,
+              };
+              const itemInfo: IItemUpdate = {
+                id: solutionItemId,
+                text: solutionData,
+              };
+              updateItem(itemInfo, destAuthentication).then(() => {
+                resolve(solutionItemId);
+              }, reject);
+            }, reject);
+          });
+        } else {
+          resolve(solutionItemId);
         }
       }
-    );
+    });
   });
 }
 
@@ -280,9 +249,7 @@ export function addContentToSolution(
 export function _getDependencies(template: IItemTemplate): string[] {
   // Get all dependencies
   let deps = template.dependencies.concat(
-    _getIdsOutOfTemplateVariables(
-      _getTemplateVariables(JSON.stringify(template.data))
-    )
+    _getIdsOutOfTemplateVariables(_getTemplateVariables(JSON.stringify(template.data))),
   );
 
   // Remove duplicates and self-references
@@ -309,7 +276,7 @@ export function _getDependencies(template: IItemTemplate): string[] {
  */
 export function _getIdsOutOfTemplateVariables(variables: string[]): string[] {
   return variables
-    .map(variable => {
+    .map((variable) => {
       const idList = variable.match(/[0-9A-F]{32}/i); // is it a guid?
       if (idList) {
         return idList[0];
@@ -317,7 +284,7 @@ export function _getIdsOutOfTemplateVariables(variables: string[]): string[] {
         return null;
       }
     })
-    .filter(variable => !!variable);
+    .filter((variable) => !!variable);
 }
 
 /**
@@ -327,9 +294,7 @@ export function _getIdsOutOfTemplateVariables(variables: string[]): string[] {
  * @returns Promise resolving with the organization's URL
  * @private
  */
-export async function _getOrgUrl(
-  destAuthentication: UserSession
-): Promise<string> {
+export async function _getOrgUrl(destAuthentication: UserSession): Promise<string> {
   // Get the org's URL
   const org = await getPortal(null, destAuthentication);
   const orgUrl = "https://" + org.urlKey + "." + org.customBaseUrl;
@@ -345,7 +310,7 @@ export async function _getOrgUrl(
  */
 export function _getSolutionItemUrls(templates: IItemTemplate[]): string[][] {
   const solutionUrls: string[][] = [];
-  templates.forEach(template => {
+  templates.forEach((template) => {
     /* istanbul ignore else */
     if (template.item.origUrl) {
       solutionUrls.push([template.itemId, template.item.origUrl]);
@@ -363,7 +328,7 @@ export function _getSolutionItemUrls(templates: IItemTemplate[]): string[][] {
  */
 export function _getTemplateVariables(text: string): string[] {
   return (text.match(/{{[a-z0-9.]*}}/gi) || []) // find variable
-    .map(variable => variable.substring(2, variable.length - 2)); // remove "{{" & "}}"
+    .map((variable) => variable.substring(2, variable.length - 2)); // remove "{{" & "}}"
 }
 
 /**
@@ -373,29 +338,20 @@ export function _getTemplateVariables(text: string): string[] {
  * @returns Updated version of the templates
  * @private
  */
-export function _postProcessGroupDependencies(
-  templates: IItemTemplate[]
-): IItemTemplate[] {
+export function _postProcessGroupDependencies(templates: IItemTemplate[]): IItemTemplate[] {
   return templates.map((template: IItemTemplate) => {
     if (template.type === "Group") {
       const id: string = template.itemId;
       // remove group dependencies if we find a circular dependency with one of its items
       let removeDependencies: boolean = false;
       // before we remove update each dependants groups array
-      template.dependencies.forEach(dependencyId => {
-        const dependantTemplate: IItemTemplate = getTemplateById(
-          templates,
-          dependencyId
-        );
+      template.dependencies.forEach((dependencyId) => {
+        const dependantTemplate: IItemTemplate = getTemplateById(templates, dependencyId);
         // Not all items shared to the group will exist in the templates array
         // i.e. Hub Initiative items or any other unsupported types
         if (dependantTemplate) {
           // check if the group is in the dependantTemplate's list of dependencies
-          const gIndex = getWithDefault(
-            dependantTemplate,
-            "dependencies",
-            []
-          ).indexOf(id);
+          const gIndex = getWithDefault(dependantTemplate, "dependencies", []).indexOf(id);
 
           /* istanbul ignore else */
           if (gIndex > -1) {
@@ -428,10 +384,7 @@ export function _postProcessGroupDependencies(
  * @returns Updated version of the templates
  * @private
  */
-export function _postProcessIgnoredItems(
-  templates: IItemTemplate[],
-  templateDictionary: any
-): IItemTemplate[] {
+export function _postProcessIgnoredItems(templates: IItemTemplate[], templateDictionary: any): IItemTemplate[] {
   // replace in template
   const updateDictionary: any = templates.reduce((result, template) => {
     const invalidDes = template.properties.hasInvalidDesignations;
@@ -441,10 +394,10 @@ export function _postProcessIgnoredItems(
     }
     return invalidDes ? Object.assign(result, template.data) : result;
   }, {});
-  Object.keys(updateDictionary).forEach(k => {
+  Object.keys(updateDictionary).forEach((k) => {
     removeTemplate(templates, k);
-    templates = templates.map(t => {
-      t.dependencies = t.dependencies.filter(id => id !== k);
+    templates = templates.map((t) => {
+      t.dependencies = t.dependencies.filter((id) => id !== k);
       return replaceInTemplate(t, updateDictionary);
     });
   });
@@ -462,7 +415,7 @@ export function _postProcessIgnoredItems(
 export function _replaceDictionaryItemsInObject(hash: any, obj: any): any {
   /* istanbul ignore else */
   if (obj) {
-    Object.keys(obj).forEach(prop => {
+    Object.keys(obj).forEach((prop) => {
       const propObj = obj[prop];
       if (propObj) {
         if (typeof propObj === "object") {
@@ -486,7 +439,7 @@ export function _replaceDictionaryItemsInObject(hash: any, obj: any): any {
 export function _replaceRemainingIdsInObject(ids: string[], obj: any): any {
   /* istanbul ignore else */
   if (obj) {
-    Object.keys(obj).forEach(prop => {
+    Object.keys(obj).forEach((prop) => {
       const propObj = obj[prop];
       if (propObj) {
         if (typeof propObj === "object") {
@@ -508,20 +461,15 @@ export function _replaceRemainingIdsInObject(ids: string[], obj: any): any {
  * @returns A copy of the source string with any templatization changes
  * @private
  */
-export function _replaceRemainingIdsInString(
-  ids: string[],
-  str: string
-): string {
+export function _replaceRemainingIdsInString(ids: string[], str: string): string {
   let updatedStr = str;
   const untemplatizedIds = getIDs(str);
   if (untemplatizedIds.length > 0) {
-    untemplatizedIds.forEach(id => {
+    untemplatizedIds.forEach((id) => {
       if (ids.includes(id)) {
         const re = new RegExp("({*)" + id, "gi");
-        updatedStr = updatedStr.replace(re, match =>
-          match.indexOf("{{") < 0
-            ? "{{" + id.replace("{", "") + ".itemId}}"
-            : match
+        updatedStr = updatedStr.replace(re, (match) =>
+          match.indexOf("{{") < 0 ? "{{" + id.replace("{", "") + ".itemId}}" : match,
         );
       }
     });
@@ -535,29 +483,23 @@ export function _replaceRemainingIdsInString(
  * @param templates The array of templates to evaluate, modified in place
  * @private
  */
-export function _simplifyUrlsInItemDescriptions(
-  templates: IItemTemplate[]
-): void {
+export function _simplifyUrlsInItemDescriptions(templates: IItemTemplate[]): void {
   // Get the urls in the solution along with their item ids & convert the id into the form
   // "{{fcb2bf2837a6404ebb418a1f805f976a.url}}"
-  const solutionUrls = _getSolutionItemUrls(templates).map(idUrl => [
-    "{{" + idUrl[0] + ".url}}",
-    idUrl[1]
-  ]);
+  const solutionUrls = _getSolutionItemUrls(templates).map((idUrl) => ["{{" + idUrl[0] + ".url}}", idUrl[1]]);
 
   /* istanbul ignore else */
   if (solutionUrls.length > 0) {
     // Make the replacements
-    templates.forEach(template => {
+    templates.forEach((template) => {
       solutionUrls.forEach(
         // TypeScript for es2015 doesn't have a definition for `replaceAll`
-        idUrl => {
+        (idUrl) => {
           /* istanbul ignore else */
           if (template.item.description) {
-            template.item.description = (template.item
-              .description as any).replaceAll(idUrl[1], idUrl[0]);
+            template.item.description = (template.item.description as any).replaceAll(idUrl[1], idUrl[0]);
           }
-        }
+        },
       );
     });
   }
@@ -571,24 +513,13 @@ export function _simplifyUrlsInItemDescriptions(
  * @returns Updated templates
  * @private
  */
-export function _templatizeOrgUrl(
-  templates: IItemTemplate[],
-  orgUrl: string
-): IItemTemplate[] {
+export function _templatizeOrgUrl(templates: IItemTemplate[], orgUrl: string): IItemTemplate[] {
   const templatizedOrgUrl = "{{portalBaseUrl}}";
 
   // Cycle through each of the items in the template and scan the `item` and `data` sections of each for replacements
   templates.forEach((template: IItemTemplate) => {
-    globalStringReplace(
-      template.item,
-      new RegExp(orgUrl, "gi"),
-      templatizedOrgUrl
-    );
-    globalStringReplace(
-      template.data,
-      new RegExp(orgUrl, "gi"),
-      templatizedOrgUrl
-    );
+    globalStringReplace(template.item, new RegExp(orgUrl, "gi"), templatizedOrgUrl);
+    globalStringReplace(template.data, new RegExp(orgUrl, "gi"), templatizedOrgUrl);
   });
 
   // Handle encoded URLs
@@ -596,11 +527,7 @@ export function _templatizeOrgUrl(
 
   // Cycle through each of the items in the template and scan the `data` sections of each for replacements
   templates.forEach((template: IItemTemplate) => {
-    globalStringReplace(
-      template.data,
-      new RegExp(orgUrl, "gi"),
-      templatizedOrgUrl
-    );
+    globalStringReplace(template.data, new RegExp(orgUrl, "gi"), templatizedOrgUrl);
   });
 
   return templates;
@@ -614,9 +541,7 @@ export function _templatizeOrgUrl(
  */
 export function _templatizeSolutionIds(templates: IItemTemplate[]): void {
   // Get the ids in the solution
-  const solutionIds: string[] = templates.map(
-    (template: IItemTemplate) => template.itemId
-  );
+  const solutionIds: string[] = templates.map((template: IItemTemplate) => template.itemId);
 
   // Cycle through each of the items in the template and
   // 1. templatize untemplatized ids in our solution in the `item` and `data` sections;
@@ -638,10 +563,7 @@ export function _templatizeSolutionIds(templates: IItemTemplate[]): void {
  * modified in place
  * @param templateDictionary Hash of key details used for variable replacement
  */
-export function _templatizeWorkflowConfig(
-  templates: IItemTemplate[],
-  templateDictionary: any
-): void {
+export function _templatizeWorkflowConfig(templates: IItemTemplate[], templateDictionary: any): void {
   // Cycle through each of the items in the template and templatize each workflow configuration
   templates.forEach((template: IItemTemplate) => {
     if (template.type === "Workflow") {
@@ -669,10 +591,7 @@ export function _templatizeWorkflowConfig(
       });
 
       // Replace the organization's URL in the configuration
-      configStr = configStr.replace(
-        new RegExp(`${templateDictionary.portalBaseUrl}`, "g"),
-        "{{portalBaseUrl}}"
-      );
+      configStr = configStr.replace(new RegExp(`${templateDictionary.portalBaseUrl}`, "g"), "{{portalBaseUrl}}");
 
       // Update configuration
       template.properties.configuration = JSON.parse(configStr);

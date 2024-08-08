@@ -32,7 +32,7 @@ export function convertItemResourceToStorageResource(
   prefix: string,
   sourceResourceFilename: string,
   storageVersion = 0,
-  storageFileType?: SolutionResourceType
+  storageFileType?: SolutionResourceType,
 ): {
   folder: string;
   filename: string;

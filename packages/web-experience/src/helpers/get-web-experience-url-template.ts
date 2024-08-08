@@ -21,9 +21,7 @@ import { getExperienceSubdomain } from "./get-experience-subdomain";
  *
  * @param authentication
  */
-export function getWebExperiencepUrlTemplate(
-  authentication: UserSession
-): string {
+export function getWebExperiencepUrlTemplate(authentication: UserSession): string {
   let baseUrl = "";
 
   const subdomain = getExperienceSubdomain(authentication);

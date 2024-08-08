@@ -31,17 +31,12 @@ export function convertItemToTemplate(
   itemInfo: any,
   destAuthentication: common.UserSession,
   srcAuthentication: common.UserSession,
-  templateDictionary: any
+  templateDictionary: any,
 ): Promise<common.IItemTemplate> {
   // Delegate back to simple-types, which will in-turn delegate
   // to convertNotebookToTemplate at the correct point in the process
   // This is a temporary refactor step
-  return notebookHelpers.convertItemToTemplate(
-    itemInfo,
-    destAuthentication,
-    srcAuthentication,
-    templateDictionary
-  );
+  return notebookHelpers.convertItemToTemplate(itemInfo, destAuthentication, srcAuthentication, templateDictionary);
 }
 
 // Delegate back to simple-types
@@ -50,13 +45,13 @@ export function createItemFromTemplate(
   template: common.IItemTemplate,
   templateDictionary: any,
   destinationAuthentication: common.UserSession,
-  itemProgressCallback: common.IItemProgressCallback
+  itemProgressCallback: common.IItemProgressCallback,
 ): Promise<common.ICreateItemFromTemplateResponse> {
   return notebookHelpers.createItemFromTemplate(
     template,
     templateDictionary,
     destinationAuthentication,
-    itemProgressCallback
+    itemProgressCallback,
   );
 }
 
@@ -69,7 +64,7 @@ export function createItemFromTemplate(
  */
 export function convertNotebookToTemplate(
   itemTemplate: common.IItemTemplate,
-  srcAuthentication: common.UserSession
+  srcAuthentication: common.UserSession,
 ): Promise<common.IItemTemplate> {
   return new Promise<common.IItemTemplate>((resolve, reject) => {
     // The templates data to process
@@ -84,7 +79,7 @@ export function convertNotebookToTemplate(
       const promises = [];
       const verifiedIds: string[] = [];
       const idLookup = [];
-      ids.forEach(id => {
+      ids.forEach((id) => {
         if (verifiedIds.indexOf(id) === -1) {
           promises.push(common.isItem(id, srcAuthentication));
           idLookup.push(id);
@@ -94,26 +89,27 @@ export function convertNotebookToTemplate(
         }
       });
 
-      Promise.all(promises).then((
-        results
-      ) => {
-        results.forEach((isValid, i) => {
-          const id = idLookup[i];
-          if (isValid && verifiedIds.indexOf(id) < 0) {
-            verifiedIds.push(id);
-            // templatize the itemId--but only once per unique id
-            const regEx = new RegExp(id, "gm");
-            dataString = dataString.replace(regEx, "{{" + id + ".itemId}}");
+      Promise.all(promises).then(
+        (results) => {
+          results.forEach((isValid, i) => {
+            const id = idLookup[i];
+            if (isValid && verifiedIds.indexOf(id) < 0) {
+              verifiedIds.push(id);
+              // templatize the itemId--but only once per unique id
+              const regEx = new RegExp(id, "gm");
+              dataString = dataString.replace(regEx, "{{" + id + ".itemId}}");
 
-            // update the dependencies
-            if (itemTemplate.dependencies.indexOf(id) === -1) {
-              itemTemplate.dependencies.push(id);
+              // update the dependencies
+              if (itemTemplate.dependencies.indexOf(id) === -1) {
+                itemTemplate.dependencies.push(id);
+              }
             }
-          }
-        });
-        itemTemplate.data = JSON.parse(dataString);
-        resolve(itemTemplate);
-      }, (error: any) => reject(JSON.stringify(error)));
+          });
+          itemTemplate.data = JSON.parse(dataString);
+          resolve(itemTemplate);
+        },
+        (error: any) => reject(JSON.stringify(error)),
+      );
     }
   });
 }
@@ -126,9 +122,7 @@ export function convertNotebookToTemplate(
  * @param data The notebooks data object
  *
  */
-export function deleteProps(
-  data:any
-): void {
+export function deleteProps(data: any): void {
   /* istanbul ignore else */
   if (data) {
     const props: string[] = ["metadata.interpreter", "metadata.papermill"];
@@ -153,20 +147,15 @@ export function fineTuneCreatedItem(
   originalTemplate: common.IItemTemplate,
   newlyCreatedItem: common.IItemTemplate,
   templateDictionary: any,
-  authentication: common.UserSession
+  authentication: common.UserSession,
 ): Promise<void> {
   return new Promise<void>((resolve, reject) => {
     const updateOptions: common.IItemUpdate = {
       id: newlyCreatedItem.itemId,
       url: newlyCreatedItem.item.url,
-      data: common.jsonToFile(
-        newlyCreatedItem.data,
-        newlyCreatedItem.itemId + ".ipynb"
-      )
+      data: common.jsonToFile(newlyCreatedItem.data, newlyCreatedItem.itemId + ".ipynb"),
     };
-    common
-      .updateItem(updateOptions, authentication)
-      .then(() => resolve(null), reject);
+    common.updateItem(updateOptions, authentication).then(() => resolve(null), reject);
   });
 }
 
@@ -187,11 +176,7 @@ export function postProcess(
   template: common.IItemTemplate,
   templates: common.IItemTemplate[],
   templateDictionary: any,
-  authentication: common.UserSession
+  authentication: common.UserSession,
 ): Promise<any> {
-  return common.updateItemTemplateFromDictionary(
-    itemId,
-    templateDictionary,
-    authentication
-  );
+  return common.updateItemTemplateFromDictionary(itemId, templateDictionary, authentication);
 }

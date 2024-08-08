@@ -45,7 +45,7 @@ export async function postProcess(
   template: common.IItemTemplate,
   templates: common.IItemTemplate[],
   templateDictionary: any,
-  authentication: common.UserSession
+  authentication: common.UserSession,
 ): Promise<any> {
   // Fetch the form's zip file
   const formDataResponse = await common.getItemDataAsFile(itemId, "Form", authentication);
@@ -57,7 +57,6 @@ export async function postProcess(
 
     // Update the form
     void common.updateItemWithZipObject(updatedZipObject, itemId, authentication);
-
   } else {
     // If the form data is not found, AGO is slow storing the data; try again
     await common.delay(5000);
@@ -66,23 +65,11 @@ export async function postProcess(
 
   // If this is a Hub form, post-process it as such
   if (isHubFormTemplate(template)) {
-    return postProcessHubSurvey(
-      itemId,
-      type,
-      itemInfos,
-      template,
-      templates,
-      templateDictionary,
-      authentication
-    );
+    return postProcessHubSurvey(itemId, type, itemInfos, template, templates, templateDictionary, authentication);
   }
 
   // Update the item's template
-  return common.updateItemTemplateFromDictionary(
-    itemId,
-    templateDictionary,
-    authentication
-  );
+  return common.updateItemTemplateFromDictionary(itemId, templateDictionary, authentication);
 }
 
 /**
@@ -94,7 +81,7 @@ export async function postProcess(
  */
 export async function postProcessFormItems(
   templates: common.IItemTemplate[],
-  templateDictionary: any
+  templateDictionary: any,
 ): Promise<common.IItemTemplate[]> {
   for (const template of templates) {
     if (template.type === "Form") {
@@ -110,7 +97,9 @@ export async function postProcessFormItems(
         zipObject = await formUtils.templatizeFormData(zipObject, templateDictionary);
 
         template.item.name = _getFormDataFilename(
-          template.item.name, (formData as File).name, `${template.itemId}.zip`
+          template.item.name,
+          (formData as File).name,
+          `${template.itemId}.zip`,
         );
         const templatizedFormData: File = await common.zipObjectToZipFile(zipObject, template.item.name);
 
@@ -119,21 +108,19 @@ export async function postProcessFormItems(
           template.itemId,
           template.item.name,
           common.SolutionTemplateFormatVersion,
-          common.SolutionResourceType.data
+          common.SolutionResourceType.data,
         );
 
         const dataFile: common.ISourceFile = {
           itemId: template.itemId,
           file: templatizedFormData,
           folder: storageName.folder,
-          filename: template.item.name
-        }
+          filename: template.item.name,
+        };
         template.dataFile = dataFile;
 
         // Update the template's resources
-        template.resources.push(
-          storageName.folder + "/" + storageName.filename
-        );
+        template.resources.push(storageName.folder + "/" + storageName.filename);
       }
     }
   }
@@ -153,15 +140,8 @@ export async function postProcessFormItems(
  *
  * @return A name for the data file
  */
-export function _getFormDataFilename(
-  itemName: string,
-  dataFilename: string,
-  itemIdAsName: string
-): string {
+export function _getFormDataFilename(itemName: string, dataFilename: string, itemIdAsName: string): string {
   const originalFilename = itemName || dataFilename;
-  const filename =
-    originalFilename && originalFilename !== "undefined"
-      ? originalFilename
-      : itemIdAsName;
+  const filename = originalFilename && originalFilename !== "undefined" ? originalFilename : itemIdAsName;
   return filename;
 }

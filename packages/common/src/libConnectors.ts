@@ -32,11 +32,7 @@ export { Sanitizer } from "@esri/arcgis-html-sanitizer";
  * @param folder Folder to contain the files
  * @returns Promise resolving to a zip File
  */
-export function createZip(
-  zipFilename: string,
-  files: File[],
-  folder?: string
-): Promise<File> {
+export function createZip(zipFilename: string, files: File[], folder?: string): Promise<File> {
   return new Promise<File>((resolve, reject) => {
     const zip = new JSZip();
     let container = zip;
@@ -45,16 +41,12 @@ export function createZip(
     }
 
     // Add the files
-    files.forEach(file => container.file(file.name, file, { binary: true }));
+    files.forEach((file) => container.file(file.name, file, { binary: true }));
 
     // Create the ZIP
     zip
       .generateAsync({ type: "blob" })
-      .then(
-        (content: Blob) =>
-          resolve(blobToFile(content, zipFilename, "application/zip")),
-        reject
-      );
+      .then((content: Blob) => resolve(blobToFile(content, zipFilename, "application/zip")), reject);
   });
 }
 
@@ -116,10 +108,7 @@ export function sanitizeJSON(json: any, sanitizer?: Sanitizer): any {
  * @returns Sanitized version of `url`
  * @see https://github.com/esri/arcgis-html-sanitizer#sanitize-urls
  */
-export function sanitizeURLProtocol(
-  url: string,
-  sanitizer?: Sanitizer
-): string {
+export function sanitizeURLProtocol(url: string, sanitizer?: Sanitizer): string {
   if (!sanitizer) {
     sanitizer = new Sanitizer();
   }
@@ -136,10 +125,7 @@ export function sanitizeURLProtocol(
  * as well as the sanitized version of `html`
  * @see https://github.com/esri/arcgis-html-sanitizer#basic-usage
  */
-export function validateHTML(
-  html: string,
-  sanitizer?: Sanitizer
-): IValidationResult {
+export function validateHTML(html: string, sanitizer?: Sanitizer): IValidationResult {
   if (!sanitizer) {
     sanitizer = new Sanitizer();
   }

@@ -27,7 +27,7 @@ import * as zipUtils from "./zip-utils";
 import { removeGroup } from "./restHelpers";
 import { getEnterpriseServers, getItemDataAsJson } from "./restHelpersGet";
 import { createMimeTypedFile } from "./resources/copyDataIntoItem";
-import { getProp } from "./generalHelpers"
+import { getProp } from "./generalHelpers";
 import JSZip from "jszip";
 
 // ------------------------------------------------------------------------------------------------------------------ //
@@ -38,9 +38,7 @@ import JSZip from "jszip";
  * @param workflowConfig Workflow configuration
  * @returns Promise resolving with a zip file
  */
-export async function compressWorkflowIntoZipFile(
-  workflowConfig: any
-): Promise<File> {
+export async function compressWorkflowIntoZipFile(workflowConfig: any): Promise<File> {
   const zip = new JSZip();
   Object.keys(workflowConfig).forEach((key: string) => {
     zip.file(key, workflowConfig[key]);
@@ -49,8 +47,8 @@ export async function compressWorkflowIntoZipFile(
   const zipFile = createMimeTypedFile({
     blob: await zip.generateAsync({ type: "blob" }),
     filename: `workflow_configuration.zip`,
-    mimeType: "application/zip"
-  })
+    mimeType: "application/zip",
+  });
 
   return Promise.resolve(zipFile);
 }
@@ -78,14 +76,14 @@ export async function deleteWorkflowItem(
   const options: request.IRequestOptions = {
     authentication,
     headers: {
-      Accept: "application/json",
-      Authorization: `Bearer ${authentication.token}`,
-      "X-Esri-Authorization": `Bearer ${authentication.token}`
+      "Accept": "application/json",
+      "Authorization": `Bearer ${authentication.token}`,
+      "X-Esri-Authorization": `Bearer ${authentication.token}`,
     },
     httpMethod: "DELETE" as any,
     params: {
-      f: "json"
-    }
+      f: "json",
+    },
   };
 
   const response = await request.request(url, options);
@@ -104,9 +102,7 @@ export async function deleteWorkflowItem(
  * @param zipFile Zip file containing a workflow configuration
  * @returns Promise resolving with a workflow configuration as JSON object, with each file being a key
  */
-export async function extractWorkflowFromZipFile(
-  zipFile: File
-): Promise<any> {
+export async function extractWorkflowFromZipFile(zipFile: File): Promise<any> {
   const zippedFiles = await zipUtils.getZipObjectContents(await zipUtils.blobToZipObject(zipFile));
 
   const workflowConfig: any = {};
@@ -127,7 +123,7 @@ export async function extractWorkflowFromZipFile(
  */
 export async function getWorkflowManagerAuthorized(
   workflowBaseUrl: string,
-  authentication: interfaces.UserSession
+  authentication: interfaces.UserSession,
 ): Promise<boolean> {
   try {
     const url = `${workflowBaseUrl}/checkStatus`;
@@ -136,8 +132,8 @@ export async function getWorkflowManagerAuthorized(
       authentication,
       httpMethod: "GET",
       params: {
-        f: "json"
-      }
+        f: "json",
+      },
     };
 
     const response = await request.request(url, options);
@@ -161,7 +157,7 @@ export async function getWorkflowManagerAuthorized(
 export async function getWorkflowBaseURL(
   authentication: interfaces.UserSession,
   portalResponse?: interfaces.IPortal,
-  orgId?: string
+  orgId?: string,
 ): Promise<string> {
   let workflowServerUrl: string;
 
@@ -183,11 +179,7 @@ export async function getWorkflowBaseURL(
     workflowServerUrl = portalResponse.helperServices?.workflowManager?.url ?? portalURL;
   }
 
-  return Promise.resolve(
-    orgId
-    ? `${workflowServerUrl}/${orgId}`
-    : `${workflowServerUrl}/workflow`
-  );
+  return Promise.resolve(orgId ? `${workflowServerUrl}/${orgId}` : `${workflowServerUrl}/workflow`);
 }
 
 /**
@@ -200,15 +192,13 @@ export async function getWorkflowBaseURL(
  */
 export async function getWorkflowEnterpriseServerRootURL(
   portalRestUrl: string,
-  authentication: interfaces.UserSession
+  authentication: interfaces.UserSession,
 ): Promise<string> {
   // Get the servers
   const servers = await getEnterpriseServers(portalRestUrl, authentication);
 
   // Find the Workflow Manager server
-  const workflowServer = servers.find(
-    (server: any) => server.serverFunction === "WorkflowManager"
-  );
+  const workflowServer = servers.find((server: any) => server.serverFunction === "WorkflowManager");
   if (!workflowServer) {
     return "";
   }
@@ -229,9 +219,9 @@ export async function getWorkflowEnterpriseServerRootURL(
  */
 export function preprocessWorkflowTemplates(
   templates: interfaces.IItemTemplate[],
-  templateDictionary: any
+  templateDictionary: any,
 ): interfaces.IPreProcessWorkflowTemplatesResponse {
-  const workflowItems = templates.filter(t => t.type === "Workflow");
+  const workflowItems = templates.filter((t) => t.type === "Workflow");
 
   const serviceIds = workflowItems.reduce((prev, cur) => {
     templateDictionary.workflows = { ...templateDictionary.workflows };
@@ -244,7 +234,7 @@ export function preprocessWorkflowTemplates(
     return prev;
   }, []);
   const workflowManagedTemplates = [];
-  const deployTemplates = templates.filter(t => {
+  const deployTemplates = templates.filter((t) => {
     if (serviceIds.indexOf(t.itemId) < 0) {
       return true;
     } else {
@@ -254,8 +244,8 @@ export function preprocessWorkflowTemplates(
 
   return {
     deployTemplates,
-    workflowManagedTemplates
-  }
+    workflowManagedTemplates,
+  };
 }
 
 /**
@@ -271,7 +261,7 @@ export function storeKeyWorkflowServiceId(
   key: string,
   templateDictionary: any,
   template: interfaces.IItemTemplate,
-  ids: string[]
+  ids: string[],
 ): void {
   const id = getProp(template, `data.${key}.itemId`).replace("{{", "").replace(".itemId}}", "");
   if (id && ids.indexOf(id) < 0) {
@@ -291,10 +281,10 @@ export function storeKeyWorkflowServiceId(
  */
 export function updateWorkflowTemplateIds(
   templates: interfaces.IItemTemplate[],
-  templateDictionary: any
+  templateDictionary: any,
 ): interfaces.IItemTemplate[] {
   if (templateDictionary.workflows) {
-    Object.keys(templateDictionary.workflows).forEach(k => {
+    Object.keys(templateDictionary.workflows).forEach((k) => {
       // the ids retained here are that of the source items
       // we justr need to swap them out in the templates arrey
       const workflowHash = templateDictionary.workflows[k];
@@ -304,9 +294,9 @@ export function updateWorkflowTemplateIds(
 
       const workflowIds = [viewSchemaId, workflowLocationsId, workflowSchemaId];
 
-      templates = templates.map(t => {
+      templates = templates.map((t) => {
         if (workflowIds.indexOf(t.itemId) > -1) {
-          t.dependencies = t.dependencies.map(d => {
+          t.dependencies = t.dependencies.map((d) => {
             if (workflowIds.indexOf(d) > -1) {
               d = templateDictionary[d].itemId;
             }

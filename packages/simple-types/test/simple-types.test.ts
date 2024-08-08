@@ -22,20 +22,12 @@ import * as simpleTypes from "../src/simple-types";
 import * as utils from "../../common/test/mocks/utils";
 import * as staticDashboardMocks from "../../common/test/mocks/staticDashboardMocks";
 import * as staticRelatedItemsMocks from "../../common/test/mocks/staticRelatedItemsMocks";
-import * as fetchMock from "fetch-mock";
+const fetchMock = require('fetch-mock');
 import * as mockItems from "../../common/test/mocks/agolItems";
 import * as templates from "../../common/test/mocks/templates";
 import * as common from "@esri/solution-common";
 
 jasmine.DEFAULT_TIMEOUT_INTERVAL = 20000; // default is 5000 ms
-
-const noResourcesResponse: any = {
-  total: 0,
-  start: 1,
-  num: 0,
-  nextStart: -1,
-  resources: []
-};
 
 let MOCK_USER_SESSION: common.UserSession;
 
@@ -51,8 +43,7 @@ afterEach(() => {
 
 describe("Module `simple-types`: manages the creation and deployment of simple item types", () => {
   describe("convertItemToTemplate", () => {
-    it("should handle error on getResources", done => {
-      const solutionItemId = "sln1234567890";
+    it("should handle error on getResources", async () => {
       const item: any = mockItems.getAGOLItem("Workforce Project");
       item.title = "Dam Inspection Assignments";
       item.thumbnail = null;
@@ -65,7 +56,7 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
         "abc5dd4bdd18437f8d5ff1aa2d25fd7c",
         "abc64329e69144c59f69f3f3e0d45269",
         "cad3483e025c47338d43df308c117308",
-        "bad3483e025c47338d43df308c117308"
+        "bad3483e025c47338d43df308c117308",
       ]);
       expectedTemplate.item.extent = [];
       expectedTemplate.item.thumbnail = item.thumbnail;
@@ -73,84 +64,65 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
       expectedTemplate.estimatedDeploymentCostFactor = 2;
 
       fetchMock
-        .post(
-          utils.PORTAL_SUBSET.restUrl +
-            "/content/items/wrk1234567890/resources",
-          mockItems.get400Failure()
-        )
+        .post(utils.PORTAL_SUBSET.restUrl + "/content/items/wrk1234567890/resources", mockItems.get400Failure())
         .post(
           utils.PORTAL_SUBSET.restUrl + "/content/items/wrk1234567890/data",
-          mockItems.getAGOLItemData("Workforce Project")
+          mockItems.getAGOLItemData("Workforce Project"),
         )
         .post(
-          utils.PORTAL_SUBSET.restUrl +
-            "/content/items/wrk1234567890/info/metadata/metadata.xml",
-          mockItems.get500Failure()
+          utils.PORTAL_SUBSET.restUrl + "/content/items/wrk1234567890/info/metadata/metadata.xml",
+          mockItems.get500Failure(),
         )
         .post(
-          utils.PORTAL_SUBSET.restUrl +
-            "/content/users/casey/items/sln1234567890/addResources",
-          utils.getSuccessResponse()
+          utils.PORTAL_SUBSET.restUrl + "/content/users/casey/items/sln1234567890/addResources",
+          utils.getSuccessResponse(),
         );
       staticRelatedItemsMocks.fetchMockRelatedItems("wrk1234567890", {
         total: 0,
-        relatedItems: []
+        relatedItems: [],
       });
 
-      simpleTypes
-        .convertItemToTemplate(item, MOCK_USER_SESSION, MOCK_USER_SESSION, {})
-        .then(newItemTemplate => {
-          newItemTemplate.key = expectedTemplate.key;
-          expect(newItemTemplate).toEqual(expectedTemplate);
-          expect(newItemTemplate.resources).toEqual([]);
-          done();
-        }, done.fail);
+      const newItemTemplate = await simpleTypes.convertItemToTemplate(item, MOCK_USER_SESSION, MOCK_USER_SESSION, {});
+      newItemTemplate.key = expectedTemplate.key;
+      expect(newItemTemplate).toEqual(expectedTemplate);
+      expect(newItemTemplate.resources).toEqual([]);
     });
 
-    it("should handle error on dataPromise", done => {
-      const solutionItemId = "sln1234567890";
+    it("should handle error on dataPromise", async () => {
       const itemId: string = "abc0cab401af4828a25cc6eaeb59fb69";
       const item = {
         id: itemId,
         type: "Web Mapping Application",
-        title: "Dam Inspection Assignments"
+        title: "Dam Inspection Assignments",
       };
 
       const url = common.getItemDataBlobUrl(itemId, MOCK_USER_SESSION);
       fetchMock
         .post(url, mockItems.get400Failure())
         .post(
-          utils.PORTAL_SUBSET.restUrl +
-            "/content/items/abc0cab401af4828a25cc6eaeb59fb69/resources",
-          mockItems.get400Failure()
+          utils.PORTAL_SUBSET.restUrl + "/content/items/abc0cab401af4828a25cc6eaeb59fb69/resources",
+          mockItems.get400Failure(),
         )
         .post(
-          utils.PORTAL_SUBSET.restUrl +
-            "/content/items/abc0cab401af4828a25cc6eaeb59fb69/info/metadata/metadata.xml",
-          mockItems.get500Failure()
+          utils.PORTAL_SUBSET.restUrl + "/content/items/abc0cab401af4828a25cc6eaeb59fb69/info/metadata/metadata.xml",
+          mockItems.get500Failure(),
         )
         .post(
-          utils.PORTAL_SUBSET.restUrl +
-            "/content/users/casey/items/sln1234567890/addResources",
-          utils.getSuccessResponse()
+          utils.PORTAL_SUBSET.restUrl + "/content/users/casey/items/sln1234567890/addResources",
+          utils.getSuccessResponse(),
         );
-      staticRelatedItemsMocks.fetchMockRelatedItems(
-        "abc0cab401af4828a25cc6eaeb59fb69",
-        { total: 0, relatedItems: [] }
-      );
+      staticRelatedItemsMocks.fetchMockRelatedItems("abc0cab401af4828a25cc6eaeb59fb69", { total: 0, relatedItems: [] });
 
-      simpleTypes
-        .convertItemToTemplate(item, MOCK_USER_SESSION, MOCK_USER_SESSION, {})
-        .then(
-          () => done(),
-          () => done.fail()
-        );
+      return simpleTypes.convertItemToTemplate(item, MOCK_USER_SESSION, MOCK_USER_SESSION, {});
     });
 
-    it("should handle item resource", done => {
+    it("should handle item resource", async () => {
       const solutionItemId = "sln1234567890";
       const itemTemplate: common.IItemTemplate = templates.getItemTemplateSkeleton();
-      itemTemplate.item = mockItems.getAGOLItem("Web Map", "https://myorg.arcgis.com/home/webmap/viewer.html?webmap=map1234567890");
+      itemTemplate.item = mockItems.getAGOLItem(
+        "Web Map",
+        "https://myorg.arcgis.com/home/webmap/viewer.html?webmap=map1234567890",
+      );
       itemTemplate.item.item = itemTemplate.itemId = itemTemplate.item.id;
       itemTemplate.item.thumbnail = "thumbnail/banner.png";
 
@@ -178,10 +150,9 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
           title: "An AGOL item",
           typeKeywords: ["JavaScript"],
           origUrl: undefined,
-          url:
-            "{{portalBaseUrl}}/home/webmap/viewer.html?webmap={{map1234567890.itemId}}",
+          url: "{{portalBaseUrl}}/home/webmap/viewer.html?webmap={{map1234567890.itemId}}",
           created: 1520968147000,
-          modified: 1522178539000
+          modified: 1522178539000,
         },
         data: null,
         resources: [],
@@ -189,36 +160,27 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
         relatedItems: [],
         groups: [],
         properties: {},
-        estimatedDeploymentCostFactor: 2
+        estimatedDeploymentCostFactor: 2,
       };
 
       fetchMock
+        .post(utils.PORTAL_SUBSET.restUrl + "/content/items/" + itemTemplate.itemId + "/resources", {
+          total: 1,
+          start: 1,
+          num: 1,
+          nextStart: -1,
+          resources: [
+            {
+              resource: "image/banner.png",
+              created: 1522711362000,
+              size: 56945,
+            },
+          ],
+        })
         .post(
-          utils.PORTAL_SUBSET.restUrl +
-            "/content/items/" +
-            itemTemplate.itemId +
-            "/resources",
-          {
-            total: 1,
-            start: 1,
-            num: 1,
-            nextStart: -1,
-            resources: [
-              {
-                resource: "image/banner.png",
-                created: 1522711362000,
-                size: 56945
-              }
-            ]
-          }
-        )
-        .post(
-          utils.PORTAL_SUBSET.restUrl +
-            "/content/items/" +
-            itemTemplate.itemId +
-            "/resources/image/banner.png",
+          utils.PORTAL_SUBSET.restUrl + "/content/items/" + itemTemplate.itemId + "/resources/image/banner.png",
           expectedFetch,
-          { sendAsJson: false }
+          { sendAsJson: false },
         )
         .post(
           utils.PORTAL_SUBSET.restUrl +
@@ -231,101 +193,91 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
             success: true,
             itemId: solutionItemId,
             owner: MOCK_USER_SESSION.username,
-            folder: null
-          }
+            folder: null,
+          },
         )
         .post(
-          utils.PORTAL_SUBSET.restUrl +
-            "/content/items/" +
-            itemTemplate.itemId +
-            "/info/thumbnail/banner.png",
+          utils.PORTAL_SUBSET.restUrl + "/content/items/" + itemTemplate.itemId + "/info/thumbnail/banner.png",
           expectedFetch,
-          { sendAsJson: false }
+          { sendAsJson: false },
         )
         .post(
-          utils.PORTAL_SUBSET.restUrl +
-            "/content/items/" +
-            itemTemplate.itemId +
-            "/data",
-          mockItems.get500Failure()
+          utils.PORTAL_SUBSET.restUrl + "/content/items/" + itemTemplate.itemId + "/data",
+          mockItems.get500Failure(),
         )
         .post(
-          utils.PORTAL_SUBSET.restUrl +
-            "/content/items/" +
-            itemTemplate.itemId +
-            "/info/metadata/metadata.xml",
-          mockItems.get400Failure()
+          utils.PORTAL_SUBSET.restUrl + "/content/items/" + itemTemplate.itemId + "/info/metadata/metadata.xml",
+          mockItems.get400Failure(),
         );
       staticRelatedItemsMocks.fetchMockRelatedItems("map1234567890", {
         total: 0,
-        relatedItems: []
+        relatedItems: [],
       });
 
-      simpleTypes
-        .convertItemToTemplate(
-          itemTemplate.item,
-          MOCK_USER_SESSION,
-          MOCK_USER_SESSION,
-          {}
-        )
-        .then(newItemTemplate => {
-          delete newItemTemplate.key; // key is randomly generated, and so is not testable
-          expect(newItemTemplate).toEqual(expectedTemplate);
-          done();
-        }, done.fail);
+      const newItemTemplate = await simpleTypes.convertItemToTemplate(
+        itemTemplate.item,
+        MOCK_USER_SESSION,
+        MOCK_USER_SESSION,
+        {},
+      );
+      delete (newItemTemplate as any).key; // key is randomly generated, and so is not testable
+      expect(newItemTemplate).toEqual(expectedTemplate);
     });
 
-    it("should catch fetch errors", done => {
+    it("should catch fetch errors", async () => {
       // TODO resolve Karma internal error triggered by this test
       const solutionItemId = "sln1234567890";
       const itemTemplate: common.IItemTemplate = templates.getItemTemplateSkeleton();
-      itemTemplate.item = mockItems.getAGOLItem("Form", null);
+      itemTemplate.item = mockItems.getAGOLItem("Form", undefined);
       itemTemplate.itemId = itemTemplate.item.id;
       itemTemplate.item.thumbnail = null;
 
       fetchMock
         .post(
-          utils.PORTAL_SUBSET.restUrl +
-            "/content/items/frm1234567890/info/metadata/metadata.xml",
-          mockItems.get500Failure()
+          utils.PORTAL_SUBSET.restUrl + "/content/items/frm1234567890/info/metadata/metadata.xml",
+          mockItems.get500Failure(),
         )
-        .post(
-          utils.PORTAL_SUBSET.restUrl +
-            "/content/items/frm1234567890/resources",
-          mockItems.get500Failure()
-        )
-        .post(
-          utils.PORTAL_SUBSET.restUrl + "/content/items/frm1234567890/data",
-          mockItems.get500Failure()
-        )
-        .post(
-          utils.PORTAL_SUBSET.restUrl +
-            "/content/users/casey/items/" +
-            solutionItemId +
-            "/addResources",
-          { success: true, id: solutionItemId }
-        );
-      staticRelatedItemsMocks.fetchMockRelatedItems(
-        "frm1234567890",
-        mockItems.get500Failure()
-      );
+        .post(utils.PORTAL_SUBSET.restUrl + "/content/items/frm1234567890/resources", mockItems.get500Failure())
+        .post(utils.PORTAL_SUBSET.restUrl + "/content/items/frm1234567890/data", mockItems.get500Failure())
+        .post(utils.PORTAL_SUBSET.restUrl + "/content/users/casey/items/" + solutionItemId + "/addResources", {
+          success: true,
+          id: solutionItemId,
+        });
+      staticRelatedItemsMocks.fetchMockRelatedItems("frm1234567890", mockItems.get500Failure());
 
-      simpleTypes
-        .convertItemToTemplate(
-          itemTemplate.item,
-          MOCK_USER_SESSION,
-          MOCK_USER_SESSION,
-          {}
-        )
-        .then(
-          () => done(),
-          () => done.fail()
-        );
+      return simpleTypes.convertItemToTemplate(itemTemplate.item, MOCK_USER_SESSION, MOCK_USER_SESSION, {});
     });
   });
 
   describe("createItemFromTemplate", () => {
-    it("should handle error on addItem", done => {
+    it("should handle error on addItem", async () => {
+      const itemId: string = "abc0cab401af4828a25cc6eaeb59fb69";
+      const templateDictionary: any = {};
+
+      const itemTemplate: common.IItemTemplate = templates.getItemTemplateSkeleton();
+      itemTemplate.itemId = itemId;
+      itemTemplate.type = "Web Map";
+      itemTemplate.item = {
+        id: itemId,
+        type: itemTemplate.type,
+      };
+
+      fetchMock
+        .post(utils.PORTAL_SUBSET.restUrl + "/content/users/casey/addItem", mockItems.get400Failure())
+        .post(
+          utils.PORTAL_SUBSET.restUrl + "/content/users/casey/items/map1234567890/delete",
+          utils.getSuccessResponse({ itemId: "map1234567890" }),
+        );
+
+      return simpleTypes.createItemFromTemplate(
+        itemTemplate,
+        templateDictionary,
+        MOCK_USER_SESSION,
+        utils.ITEM_PROGRESS_CALLBACK,
+      );
+    });
+
+    it("should handle success === false", async () => {
       const itemId: string = "abc0cab401af4828a25cc6eaeb59fb69";
       const newItemID: string = "abc1cab401af4828a25cc6eaeb59fb69";
       const templateDictionary: any = {};
@@ -335,255 +287,162 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
       itemTemplate.type = "Web Map";
       itemTemplate.item = {
         id: itemId,
-        type: itemTemplate.type
+        type: itemTemplate.type,
       };
 
       fetchMock
         .post(
           utils.PORTAL_SUBSET.restUrl + "/content/users/casey/addItem",
-          mockItems.get400Failure()
+          utils.getFailureResponse({ id: newItemID, folder: null }),
         )
         .post(
-          utils.PORTAL_SUBSET.restUrl +
-            "/content/users/casey/items/map1234567890/delete",
-          utils.getSuccessResponse({ itemId: "map1234567890" })
+          utils.PORTAL_SUBSET.restUrl + "/content/users/casey/items/map1234567890/delete",
+          utils.getSuccessResponse({ itemId: "map1234567890" }),
         );
 
-      // eslint-disable-next-line @typescript-eslint/no-floating-promises
-      simpleTypes
-        .createItemFromTemplate(
-          itemTemplate,
-          templateDictionary,
-          MOCK_USER_SESSION,
-          utils.ITEM_PROGRESS_CALLBACK
-        )
-        .then(response => {
-          done();
-        });
+      return simpleTypes.createItemFromTemplate(
+        itemTemplate,
+        templateDictionary,
+        MOCK_USER_SESSION,
+        utils.ITEM_PROGRESS_CALLBACK,
+      );
     });
 
-    it("should handle success === false", done => {
-      const itemId: string = "abc0cab401af4828a25cc6eaeb59fb69";
-      const newItemID: string = "abc1cab401af4828a25cc6eaeb59fb69";
+    it("should handle cancellation before deployment of item starts", async () => {
+      const itemTemplate: common.IItemTemplate = templates.getItemTemplate("Web Map");
       const templateDictionary: any = {};
 
-      const itemTemplate: common.IItemTemplate = templates.getItemTemplateSkeleton();
-      itemTemplate.itemId = itemId;
-      itemTemplate.type = "Web Map";
-      itemTemplate.item = {
-        id: itemId,
-        type: itemTemplate.type
-      };
-
-      fetchMock
-        .post(
-          utils.PORTAL_SUBSET.restUrl + "/content/users/casey/addItem",
-          utils.getFailureResponse({ id: newItemID, folder: null })
-        )
-        .post(
-          utils.PORTAL_SUBSET.restUrl +
-            "/content/users/casey/items/map1234567890/delete",
-          utils.getSuccessResponse({ itemId: "map1234567890" })
-        );
-
-      // eslint-disable-next-line @typescript-eslint/no-floating-promises
-      simpleTypes
-        .createItemFromTemplate(
-          itemTemplate,
-          templateDictionary,
-          MOCK_USER_SESSION,
-          utils.ITEM_PROGRESS_CALLBACK
-        )
-        .then(response => {
-          done();
-        });
+      const response = await simpleTypes.createItemFromTemplate(
+        itemTemplate,
+        templateDictionary,
+        MOCK_USER_SESSION,
+        utils.createFailingItemProgressCallbackOnNthCall(1),
+      );
+      expect(response).toEqual(templates.getFailedItem(itemTemplate.type));
     });
 
-    it("should handle cancellation before deployment of item starts", done => {
-      const itemTemplate: common.IItemTemplate = templates.getItemTemplate(
-        "Web Map"
-      );
-      const templateDictionary: any = {};
-
-      simpleTypes
-        .createItemFromTemplate(
-          itemTemplate,
-          templateDictionary,
-          MOCK_USER_SESSION,
-          utils.createFailingItemProgressCallbackOnNthCall(1)
-        )
-        .then(response => {
-          expect(response).toEqual(templates.getFailedItem(itemTemplate.type));
-          done();
-        }, done.fail);
-    });
-
-    it("should handle cancellation after deployed item is created", done => {
-      const itemTemplate: common.IItemTemplate = templates.getItemTemplate(
-        "Web Map"
-      );
+    it("should handle cancellation after deployed item is created", async () => {
+      const itemTemplate: common.IItemTemplate = templates.getItemTemplate("Web Map");
       const templateDictionary: any = {};
 
       fetchMock
         .post(
           utils.PORTAL_SUBSET.restUrl + "/content/users/casey/addItem",
-          utils.getSuccessResponse({ id: itemTemplate.itemId, folder: null })
+          utils.getSuccessResponse({ id: itemTemplate.itemId, folder: null }),
         )
         .post(
-          utils.PORTAL_SUBSET.restUrl +
-            "/content/users/casey/items/map1234567890/delete",
-          utils.getSuccessResponse({ itemId: itemTemplate.itemId })
+          utils.PORTAL_SUBSET.restUrl + "/content/users/casey/items/map1234567890/delete",
+          utils.getSuccessResponse({ itemId: itemTemplate.itemId }),
         );
 
-      simpleTypes
-        .createItemFromTemplate(
-          itemTemplate,
-          templateDictionary,
-          MOCK_USER_SESSION,
-          utils.createFailingItemProgressCallbackOnNthCall(2)
-        )
-        .then(response => {
-          expect(response).toEqual(templates.getFailedItem(itemTemplate.type));
-          done();
-        }, done.fail);
+      const response = await simpleTypes.createItemFromTemplate(
+        itemTemplate,
+        templateDictionary,
+        MOCK_USER_SESSION,
+        utils.createFailingItemProgressCallbackOnNthCall(2),
+      );
+      expect(response).toEqual(templates.getFailedItem(itemTemplate.type));
     });
 
-    it("should handle cancellation failure after deployed item is created", done => {
-      const itemTemplate: common.IItemTemplate = templates.getItemTemplate(
-        "Web Map"
-      );
+    it("should handle cancellation failure after deployed item is created", async () => {
+      const itemTemplate: common.IItemTemplate = templates.getItemTemplate("Web Map");
       const templateDictionary: any = {};
 
       fetchMock
         .post(
           utils.PORTAL_SUBSET.restUrl + "/content/users/casey/addItem",
-          utils.getSuccessResponse({ id: itemTemplate.itemId, folder: null })
+          utils.getSuccessResponse({ id: itemTemplate.itemId, folder: null }),
         )
         .post(
-          utils.PORTAL_SUBSET.restUrl +
-            "/content/users/casey/items/map1234567890/delete",
-          utils.getFailureResponse({ itemId: itemTemplate.itemId })
+          utils.PORTAL_SUBSET.restUrl + "/content/users/casey/items/map1234567890/delete",
+          utils.getFailureResponse({ itemId: itemTemplate.itemId }),
         );
 
-      simpleTypes
-        .createItemFromTemplate(
-          itemTemplate,
-          templateDictionary,
-          MOCK_USER_SESSION,
-          utils.createFailingItemProgressCallbackOnNthCall(2)
-        )
-        .then(response => {
-          expect(response).toEqual(templates.getFailedItem(itemTemplate.type));
-          done();
-        }, done.fail);
+      const response = await simpleTypes.createItemFromTemplate(
+        itemTemplate,
+        templateDictionary,
+        MOCK_USER_SESSION,
+        utils.createFailingItemProgressCallbackOnNthCall(2),
+      );
+      expect(response).toEqual(templates.getFailedItem(itemTemplate.type));
     });
 
-    it("should handle cancellation after deployed item is finished", done => {
-      const itemTemplate: common.IItemTemplate = templates.getItemTemplate(
-        "Web Map"
-      );
+    it("should handle cancellation after deployed item is finished", async () => {
+      const itemTemplate: common.IItemTemplate = templates.getItemTemplate("Web Map");
       const templateDictionary: any = {
-        portalBaseUrl: utils.PORTAL_SUBSET.portalUrl
+        portalBaseUrl: utils.PORTAL_SUBSET.portalUrl,
       };
 
       const updatedItem = mockItems.getAGOLItem(
         "Web Map",
-        "https://myorg.maps.arcgis.com/home/webmap/viewer.html?webmap=map1234567890"
+        "https://myorg.maps.arcgis.com/home/webmap/viewer.html?webmap=map1234567890",
       );
 
       fetchMock
         .post(
           utils.PORTAL_SUBSET.restUrl + "/content/users/casey/addItem",
-          utils.getSuccessResponse({ id: itemTemplate.itemId, folder: null })
+          utils.getSuccessResponse({ id: itemTemplate.itemId, folder: null }),
         )
+        .post(utils.PORTAL_SUBSET.restUrl + "/content/users/casey/items/map1234567890/update", {
+          success: true,
+          id: itemTemplate.itemId,
+        })
+        .get(utils.PORTAL_SUBSET.restUrl + "/content/items/map1234567890?f=json&token=fake-token", updatedItem)
         .post(
-          utils.PORTAL_SUBSET.restUrl +
-            "/content/users/casey/items/map1234567890/update",
-          { success: true, id: itemTemplate.itemId }
-        )
-        .get(
-          utils.PORTAL_SUBSET.restUrl +
-            "/content/items/map1234567890?f=json&token=fake-token",
-          updatedItem
-        )
-        .post(
-          utils.PORTAL_SUBSET.restUrl +
-            "/content/users/casey/items/map1234567890/delete",
-          utils.getSuccessResponse({ itemId: itemTemplate.itemId })
+          utils.PORTAL_SUBSET.restUrl + "/content/users/casey/items/map1234567890/delete",
+          utils.getSuccessResponse({ itemId: itemTemplate.itemId }),
         );
 
-      simpleTypes
-        .createItemFromTemplate(
-          itemTemplate,
-          templateDictionary,
-          MOCK_USER_SESSION,
-          utils.createFailingItemProgressCallbackOnNthCall(3)
-        )
-        .then(response => {
-          expect(response).toEqual(templates.getFailedItem(itemTemplate.type));
-          done();
-        }, done.fail);
+      const response = await simpleTypes.createItemFromTemplate(
+        itemTemplate,
+        templateDictionary,
+        MOCK_USER_SESSION,
+        utils.createFailingItemProgressCallbackOnNthCall(3),
+      );
+      expect(response).toEqual(templates.getFailedItem(itemTemplate.type));
     });
 
-    it("should handle cancellation failure after deployed item is finished", done => {
-      const itemTemplate: common.IItemTemplate = templates.getItemTemplate(
-        "Web Map"
-      );
+    it("should handle cancellation failure after deployed item is finished", async () => {
+      const itemTemplate: common.IItemTemplate = templates.getItemTemplate("Web Map");
       const templateDictionary: any = {
-        portalBaseUrl: utils.PORTAL_SUBSET.portalUrl
+        portalBaseUrl: utils.PORTAL_SUBSET.portalUrl,
       };
 
       const updatedItem = mockItems.getAGOLItem(
         "Web Map",
-        "https://myorg.maps.arcgis.com/home/webmap/viewer.html?webmap=map1234567890"
+        "https://myorg.maps.arcgis.com/home/webmap/viewer.html?webmap=map1234567890",
       );
 
       fetchMock
         .post(
           utils.PORTAL_SUBSET.restUrl + "/content/users/casey/addItem",
-          utils.getSuccessResponse({ id: itemTemplate.itemId, folder: null })
+          utils.getSuccessResponse({ id: itemTemplate.itemId, folder: null }),
         )
+        .post(utils.PORTAL_SUBSET.restUrl + "/content/users/casey/items/map1234567890/update", {
+          success: true,
+          id: itemTemplate.itemId,
+        })
+        .get(utils.PORTAL_SUBSET.restUrl + "/content/items/map1234567890?f=json&token=fake-token", updatedItem)
         .post(
-          utils.PORTAL_SUBSET.restUrl +
-            "/content/users/casey/items/map1234567890/update",
-          { success: true, id: itemTemplate.itemId }
-        )
-        .get(
-          utils.PORTAL_SUBSET.restUrl +
-            "/content/items/map1234567890?f=json&token=fake-token",
-          updatedItem
-        )
-        .post(
-          utils.PORTAL_SUBSET.restUrl +
-            "/content/users/casey/items/map1234567890/delete",
-          utils.getFailureResponse({ itemId: itemTemplate.itemId })
+          utils.PORTAL_SUBSET.restUrl + "/content/users/casey/items/map1234567890/delete",
+          utils.getFailureResponse({ itemId: itemTemplate.itemId }),
         );
 
-      simpleTypes
-        .createItemFromTemplate(
-          itemTemplate,
-          templateDictionary,
-          MOCK_USER_SESSION,
-          utils.createFailingItemProgressCallbackOnNthCall(3)
-        )
-        .then(response => {
-          expect(response).toEqual(templates.getFailedItem(itemTemplate.type));
-          done();
-        }, done.fail);
+      const response = await simpleTypes.createItemFromTemplate(
+        itemTemplate,
+        templateDictionary,
+        MOCK_USER_SESSION,
+        utils.createFailingItemProgressCallbackOnNthCall(3),
+      );
+      expect(response).toEqual(templates.getFailedItem(itemTemplate.type));
     });
   });
 
   describe("postProcessFieldReferences", () => {
     it("should process dashboard field references", () => {
-      const template: common.IItemTemplate = common.cloneObject(
-        staticDashboardMocks.initialDashboardTemplate
-      );
-      const datasourceInfos: common.IDatasourceInfo[] = common.cloneObject(
-        staticDashboardMocks.datasourceInfos
-      );
-      const expected: common.IItemTemplate = common.cloneObject(
-        staticDashboardMocks.expectedTemplate
-      );
+      const template: common.IItemTemplate = common.cloneObject(staticDashboardMocks.initialDashboardTemplate);
+      const datasourceInfos: common.IDatasourceInfo[] = common.cloneObject(staticDashboardMocks.datasourceInfos);
+      const expected: common.IItemTemplate = common.cloneObject(staticDashboardMocks.expectedTemplate);
 
       // we don't first convert the item to template so the itemIds are not templatized
       // clean those out for this test.
@@ -591,75 +450,69 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
 
       // Clean datasource itemIds
       expected.data.headerPanel.selectors[4].datasets[0].dataSource.itemId = common.cleanItemId(
-        expected.data.headerPanel.selectors[4].datasets[0].dataSource.itemId
+        expected.data.headerPanel.selectors[4].datasets[0].dataSource.itemId,
       );
       expected.data.leftPanel.selectors[0].datasets[0].dataSource.itemId = common.cleanItemId(
-        expected.data.leftPanel.selectors[0].datasets[0].dataSource.itemId
+        expected.data.leftPanel.selectors[0].datasets[0].dataSource.itemId,
       );
       expected.data.leftPanel.selectors[4].datasets[0].dataSource.itemId = common.cleanItemId(
-        expected.data.leftPanel.selectors[4].datasets[0].dataSource.itemId
+        expected.data.leftPanel.selectors[4].datasets[0].dataSource.itemId,
       );
       expected.data.widgets[3].datasets[1].dataSource.itemId = common.cleanItemId(
-        expected.data.widgets[3].datasets[1].dataSource.itemId
+        expected.data.widgets[3].datasets[1].dataSource.itemId,
       );
       expected.data.widgets[3].datasets[2].dataSource.itemId = common.cleanItemId(
-        expected.data.widgets[3].datasets[2].dataSource.itemId
+        expected.data.widgets[3].datasets[2].dataSource.itemId,
       );
       expected.data.widgets[4].datasets[0].dataSource.itemId = common.cleanItemId(
-        expected.data.widgets[4].datasets[0].dataSource.itemId
+        expected.data.widgets[4].datasets[0].dataSource.itemId,
       );
       expected.data.widgets[6].datasets[0].dataSource.itemId = common.cleanItemId(
-        expected.data.widgets[6].datasets[0].dataSource.itemId
+        expected.data.widgets[6].datasets[0].dataSource.itemId,
       );
       expected.data.widgets[8].datasets[0].dataSource.itemId = common.cleanItemId(
-        expected.data.widgets[8].datasets[0].dataSource.itemId
+        expected.data.widgets[8].datasets[0].dataSource.itemId,
       );
       expected.data.urlParameters[4].datasets[0].dataSource.itemId = common.cleanItemId(
-        expected.data.urlParameters[4].datasets[0].dataSource.itemId
+        expected.data.urlParameters[4].datasets[0].dataSource.itemId,
       );
 
       // clean map itemId
-      expected.data.widgets[0].itemId = common.cleanItemId(
-        expected.data.widgets[0].itemId
-      );
+      expected.data.widgets[0].itemId = common.cleanItemId(expected.data.widgets[0].itemId);
 
       // clean layerIds
       expected.data.headerPanel.selectors[4].datasets[0].dataSource.layerId = common.cleanLayerId(
-        expected.data.headerPanel.selectors[4].datasets[0].dataSource.layerId
+        expected.data.headerPanel.selectors[4].datasets[0].dataSource.layerId,
       );
       expected.data.leftPanel.selectors[0].datasets[0].dataSource.layerId = common.cleanLayerId(
-        expected.data.leftPanel.selectors[0].datasets[0].dataSource.layerId
+        expected.data.leftPanel.selectors[0].datasets[0].dataSource.layerId,
       );
       expected.data.leftPanel.selectors[4].datasets[0].dataSource.layerId = common.cleanLayerId(
-        expected.data.leftPanel.selectors[4].datasets[0].dataSource.layerId
+        expected.data.leftPanel.selectors[4].datasets[0].dataSource.layerId,
       );
       expected.data.widgets[3].datasets[1].dataSource.layerId = common.cleanLayerId(
-        expected.data.widgets[3].datasets[1].dataSource.layerId
+        expected.data.widgets[3].datasets[1].dataSource.layerId,
       );
       expected.data.widgets[3].datasets[2].dataSource.layerId = common.cleanLayerId(
-        expected.data.widgets[3].datasets[2].dataSource.layerId
+        expected.data.widgets[3].datasets[2].dataSource.layerId,
       );
       expected.data.widgets[4].datasets[0].dataSource.layerId = common.cleanLayerId(
-        expected.data.widgets[4].datasets[0].dataSource.layerId
+        expected.data.widgets[4].datasets[0].dataSource.layerId,
       );
       expected.data.widgets[6].datasets[0].dataSource.layerId = common.cleanLayerId(
-        expected.data.widgets[6].datasets[0].dataSource.layerId
+        expected.data.widgets[6].datasets[0].dataSource.layerId,
       );
       expected.data.widgets[8].datasets[0].dataSource.layerId = common.cleanLayerId(
-        expected.data.widgets[8].datasets[0].dataSource.layerId
+        expected.data.widgets[8].datasets[0].dataSource.layerId,
       );
       expected.data.urlParameters[4].datasets[0].dataSource.layerId = common.cleanLayerId(
-        expected.data.urlParameters[4].datasets[0].dataSource.layerId
+        expected.data.urlParameters[4].datasets[0].dataSource.layerId,
       );
 
       // clean dependencies
       expected.dependencies = [];
 
-      const actual = simpleTypes.postProcessFieldReferences(
-        template,
-        datasourceInfos,
-        "Dashboard"
-      );
+      const actual = simpleTypes.postProcessFieldReferences(template, datasourceInfos, "Dashboard");
       expect(actual).toEqual(expected);
     });
   });
@@ -669,9 +522,7 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
       const itemId = "itm1234567890";
       const status = common.EItemProgressStatus.Started;
       const costUsed = 0;
-      const progressCallback = utils.createFailingItemProgressCallbackOnNthCall(
-        1
-      );
+      const progressCallback = utils.createFailingItemProgressCallbackOnNthCall(1);
       expect(progressCallback(itemId, status, costUsed)).toBeFalsy();
     });
 
@@ -679,9 +530,7 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
       const itemId = "itm1234567890";
       const status = common.EItemProgressStatus.Started;
       const costUsed = 0;
-      const progressCallback = utils.createFailingItemProgressCallbackOnNthCall(
-        2
-      );
+      const progressCallback = utils.createFailingItemProgressCallbackOnNthCall(2);
       expect(progressCallback(itemId, status, costUsed)).toBeTruthy();
       expect(progressCallback(itemId, status, costUsed)).toBeFalsy();
     });
@@ -690,9 +539,7 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
       const itemId = "itm1234567890";
       const status = common.EItemProgressStatus.Started;
       const costUsed = 0;
-      const progressCallback = utils.createFailingItemProgressCallbackOnNthCall(
-        3
-      );
+      const progressCallback = utils.createFailingItemProgressCallbackOnNthCall(3);
       expect(progressCallback(itemId, status, costUsed)).toBeTruthy();
       expect(progressCallback(itemId, status, costUsed)).toBeTruthy();
       expect(progressCallback(itemId, status, costUsed)).toBeFalsy();
@@ -700,89 +547,52 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
   });
 
   describe("postProcess hook", () => {
-    it("fetch, interpolate and share", () => {
+    it("fetch, interpolate and share", async () => {
       const template = templates.getItemTemplate("Web Map");
       template.item.id = template.itemId = "3ef";
       const td = { owner: "Luke Skywalker" };
 
-      const updateUrl =
-        utils.PORTAL_SUBSET.restUrl + "/content/users/casey/items/3ef/update";
+      const updateUrl = utils.PORTAL_SUBSET.restUrl + "/content/users/casey/items/3ef/update";
       fetchMock
-        .get(
-          utils.PORTAL_SUBSET.restUrl +
-            "/content/items/3ef?f=json&token=fake-token",
-          template.item
-        )
+        .get(utils.PORTAL_SUBSET.restUrl + "/content/items/3ef?f=json&token=fake-token", template.item)
         .post(utils.PORTAL_SUBSET.restUrl + "/content/items/3ef/data", {
-          value: "{{owner}}"
+          value: "{{owner}}",
         })
         .post(updateUrl, utils.getSuccessResponse({ id: template.item.id }));
 
       spyOn(console, "log").and.callFake(() => {});
-      return simpleTypes
-        .postProcess(
-          "3ef",
-          "Web Map",
-          [],
-          template,
-          [template],
-          td,
-          MOCK_USER_SESSION
-        )
-        .then(result => {
-          expect(result).toEqual(
-            utils.getSuccessResponse({ id: template.item.id })
-          );
 
-          const callBody = fetchMock.calls(updateUrl)[0][1].body as string;
-          expect(callBody).toEqual(
-            "f=json&text=%7B%22value%22%3A%22Luke%20Skywalker%22%7D&id=3ef&name=Name%20of%20an%20AGOL%20item&" +
-              "title=An%20AGOL%20item&type=Web%20Map&typeKeywords=JavaScript&description=Description%20of%20an%20" +
-              "AGOL%20item&tags=test&snippet=Snippet%20of%20an%20AGOL%20item&thumbnail=https%3A%2F%2F" +
-              "myorg.maps.arcgis.com%2Fsharing%2Frest%2Fcontent%2Fitems%2Fmap1234567890%2Finfo%2Fthumbnail%2F" +
-              "ago_downloaded.png&extent=%7B%7BsolutionItemExtent%7D%7D&categories=&accessInformation=Esri%2C%20" +
-              "Inc.&origUrl=%7B%7BportalBaseUrl%7D%7D%2Fhome%2Fwebmap%2Fviewer.html%3Fwebmap%3D%7B%7B" +
-              "map1234567890.itemId%7D%7D&culture=en-us&url=%7B%7BportalBaseUrl%7D%7D%2Fhome%2Fwebmap%2F" +
-              "viewer.html%3Fwebmap%3D%7B%7Bmap1234567890.itemId%7D%7D&created=1520968147000&modified=1522178539000" +
-              "&token=fake-token"
-          );
-        });
-    });
-    it("should update only if interpolation needed", () => {
-      const template = templates.getItemTemplate(
-        "Web Map",
-        [],
-        "http://www.esri.com"
+      const result = await simpleTypes.postProcess("3ef", "Web Map", [], template, [template], td, MOCK_USER_SESSION);
+      expect(result).toEqual(utils.getSuccessResponse({ id: template.item.id }));
+
+      const callBody = fetchMock.calls(updateUrl)[0][1].body as string;
+      expect(callBody).toEqual(
+        "f=json&text=%7B%22value%22%3A%22Luke%20Skywalker%22%7D&id=3ef&name=Name%20of%20an%20AGOL%20item&" +
+          "title=An%20AGOL%20item&type=Web%20Map&typeKeywords=JavaScript&description=Description%20of%20an%20" +
+          "AGOL%20item&tags=test&snippet=Snippet%20of%20an%20AGOL%20item&thumbnail=https%3A%2F%2F" +
+          "myorg.maps.arcgis.com%2Fsharing%2Frest%2Fcontent%2Fitems%2Fmap1234567890%2Finfo%2Fthumbnail%2F" +
+          "ago_downloaded.png&extent=%7B%7BsolutionItemExtent%7D%7D&categories=&accessInformation=Esri%2C%20" +
+          "Inc.&origUrl=%7B%7BportalBaseUrl%7D%7D%2Fhome%2Fwebmap%2Fviewer.html%3Fwebmap%3D%7B%7B" +
+          "map1234567890.itemId%7D%7D&culture=en-us&url=%7B%7BportalBaseUrl%7D%7D%2Fhome%2Fwebmap%2F" +
+          "viewer.html%3Fwebmap%3D%7B%7Bmap1234567890.itemId%7D%7D&created=1520968147000&modified=1522178539000" +
+          "&token=fake-token",
       );
+    });
+
+    it("should update only if interpolation needed", async () => {
+      const template = templates.getItemTemplate("Web Map", [], "http://www.esri.com");
       template.item.id = template.itemId = "3ef";
-      template.item.extent = null;
+      template.item.extent = undefined;
       const td = { owner: "Luke Skywalker" };
 
       fetchMock
-        .get(
-          utils.PORTAL_SUBSET.restUrl +
-            "/content/items/3ef?f=json&token=fake-token",
-          template.item
-        )
+        .get(utils.PORTAL_SUBSET.restUrl + "/content/items/3ef?f=json&token=fake-token", template.item)
         .post(utils.PORTAL_SUBSET.restUrl + "/content/items/3ef/data", {
-          value: "Larry"
+          value: "Larry",
         });
 
-      return simpleTypes
-        .postProcess(
-          "3ef",
-          "Web Map",
-          [],
-          template,
-          [template],
-          td,
-          MOCK_USER_SESSION
-        )
-        .then(result => {
-          expect(result).toEqual(
-            utils.getSuccessResponse({ id: template.item.id })
-          );
-        });
+      const result = await simpleTypes.postProcess("3ef", "Web Map", [], template, [template], td, MOCK_USER_SESSION);
+      expect(result).toEqual(utils.getSuccessResponse({ id: template.item.id }));
     });
   });
 });

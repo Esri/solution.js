@@ -19,7 +19,7 @@ import {
   IAssociatedFileInfo,
   IFileMimeTyped,
   IItemUpdate,
-  UserSession
+  UserSession,
 } from "../interfaces";
 import { createCopyResults } from "./createCopyResults";
 import { getBlob } from "./get-blob";
@@ -40,47 +40,26 @@ export function copyDataIntoItem(
   fileInfo: IAssociatedFileInfo,
   sourceAuthentication: UserSession,
   destinationItemId: string,
-  destinationAuthentication: UserSession
+  destinationAuthentication: UserSession,
 ): Promise<IAssociatedFileCopyResults> {
-  return new Promise<IAssociatedFileCopyResults>(resolve => {
+  return new Promise<IAssociatedFileCopyResults>((resolve) => {
     getBlob(fileInfo.url, sourceAuthentication).then(
-      blob => {
+      (blob) => {
         const update: IItemUpdate = {
           id: destinationItemId,
           data: createMimeTypedFile({
             blob: blob,
             filename: fileInfo.filename,
-            mimeType: fileInfo.mimeType || blob.type
-          })
+            mimeType: fileInfo.mimeType || blob.type,
+          }),
         };
 
-        helpersUpdateItem(
-          update,
-          destinationAuthentication,
-          fileInfo.folder
-        ).then(
-          () =>
-            resolve(
-              createCopyResults(
-                fileInfo,
-                true,
-                true
-              ) as IAssociatedFileCopyResults
-            ),
-          () =>
-            resolve(
-              createCopyResults(
-                fileInfo,
-                true,
-                false
-              ) as IAssociatedFileCopyResults
-            ) // unable to add resource
+        helpersUpdateItem(update, destinationAuthentication, fileInfo.folder).then(
+          () => resolve(createCopyResults(fileInfo, true, true) as IAssociatedFileCopyResults),
+          () => resolve(createCopyResults(fileInfo, true, false) as IAssociatedFileCopyResults), // unable to add resource
         );
       },
-      () =>
-        resolve(
-          createCopyResults(fileInfo, false) as IAssociatedFileCopyResults
-        ) // unable to get resource
+      () => resolve(createCopyResults(fileInfo, false) as IAssociatedFileCopyResults), // unable to get resource
     );
   });
 }
@@ -93,6 +72,6 @@ export function copyDataIntoItem(
  */
 export function createMimeTypedFile(fileDescription: IFileMimeTyped): File {
   return new File([fileDescription.blob], fileDescription.filename, {
-    type: fileDescription.mimeType
+    type: fileDescription.mimeType,
   });
 }

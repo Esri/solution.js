@@ -29,7 +29,7 @@ import * as common from "@esri/solution-common";
 export function convertItemToTemplate(
   itemTemplate: common.IItemTemplate,
   destAuthentication: common.UserSession,
-  srcAuthentication: common.UserSession
+  srcAuthentication: common.UserSession,
 ): Promise<common.IItemTemplate> {
   return new Promise<common.IItemTemplate>((resolve, reject) => {
     // Extract dependencies
@@ -42,17 +42,17 @@ export function convertItemToTemplate(
         if (itemTemplate.data?.properties) {
           itemTemplate.data.properties.ServiceURL = _templatizeOicLayerUrl(
             itemTemplate.data.properties.ServiceURL,
-            results.urlHash
+            results.urlHash,
           );
           itemTemplate.data.properties.OverviewURL = _templatizeOicLayerUrl(
             itemTemplate.data.properties.OverviewURL,
-            results.urlHash
+            results.urlHash,
           );
         }
 
         resolve(itemTemplate);
       },
-      e => reject(common.fail(e))
+      (e) => reject(common.fail(e)),
     );
   });
 }
@@ -67,7 +67,7 @@ export function convertItemToTemplate(
  */
 export function _extractDependencies(
   itemTemplate: common.IItemTemplate,
-  authentication: common.UserSession
+  authentication: common.UserSession,
 ): Promise<any> {
   return new Promise<any>((resolve, reject) => {
     const dependencies: string[] = [];
@@ -80,21 +80,20 @@ export function _extractDependencies(
       /* istanbul ignore else */
       if (
         itemTemplate.data.properties.OverviewURL &&
-        itemTemplate.data.properties.OverviewURL !==
-          itemTemplate.data.properties.ServiceURL
+        itemTemplate.data.properties.OverviewURL !== itemTemplate.data.properties.ServiceURL
       ) {
         layerURLs.push(itemTemplate.data.properties.OverviewURL);
       }
       _getLayerIds(layerURLs, dependencies, authentication).then(
-        results => {
+        (results) => {
           resolve(results);
         },
-        e => reject(common.fail(e))
+        (e) => reject(common.fail(e)),
       );
     } else {
       resolve({
         dependencies: dependencies,
-        urlHash: {}
+        urlHash: {},
       });
     }
   });
@@ -112,22 +111,21 @@ export function _extractDependencies(
 export function _getLayerIds(
   layerURLs: string[],
   dependencies: string[],
-  authentication: common.UserSession
+  authentication: common.UserSession,
 ): Promise<any> {
   return new Promise<any>((resolve, reject) => {
     const urlHash: any = {};
 
     const options: any = {
       f: "json",
-      authentication: authentication
+      authentication: authentication,
     };
     const layerPromises: Array<Promise<any>> = [];
     const layerChecks: any = {};
-    const filteredLayerURLs: any[] = layerURLs.filter(layerURL => {
+    const filteredLayerURLs: any[] = layerURLs.filter((layerURL) => {
       if (layerURL) {
         const results: any = /.+FeatureServer/g.exec(layerURL);
-        const baseUrl: string =
-          Array.isArray(results) && results.length > 0 ? results[0] : undefined;
+        const baseUrl: string = Array.isArray(results) && results.length > 0 ? results[0] : undefined;
         if (baseUrl) {
           // avoid redundant checks when we have a layer with subLayers
           /* istanbul ignore else */
@@ -146,7 +144,7 @@ export function _getLayerIds(
 
     if (layerPromises.length > 0) {
       Promise.all(layerPromises).then(
-        serviceResponses => {
+        (serviceResponses) => {
           serviceResponses.forEach((serviceResponse, i) => {
             /* istanbul ignore else */
             if (common.getProp(serviceResponse, "serviceItemId")) {
@@ -160,15 +158,15 @@ export function _getLayerIds(
           });
           resolve({
             dependencies: dependencies,
-            urlHash: urlHash
+            urlHash: urlHash,
           });
         },
-        e => reject(common.fail(e))
+        (e) => reject(common.fail(e)),
       );
     } else {
       resolve({
         dependencies: dependencies,
-        urlHash: urlHash
+        urlHash: urlHash,
       });
     }
   });
@@ -188,17 +186,11 @@ export function _templatizeOicLayerUrl(layerURL: string, urlHash: any): string {
     const id: any = urlHash[layerURL];
     if (id) {
       const layerId = layerURL.substr(layerURL.lastIndexOf("/") + 1);
-      templatizedURL = common.templatizeTerm(
-        id,
-        id,
-        ".layer" + layerId + ".url"
-      );
+      templatizedURL = common.templatizeTerm(id, id, ".layer" + layerId + ".url");
     }
 
     // replace everything up until /home with portalBaseUrl var and templatize the itemId
-    templatizedURL = common.templatizeIds(
-      templatizedURL.replace(/.+?(?=\/home)/, "{{portalBaseUrl}}")
-    );
+    templatizedURL = common.templatizeIds(templatizedURL.replace(/.+?(?=\/home)/, "{{portalBaseUrl}}"));
   }
   return templatizedURL;
 }

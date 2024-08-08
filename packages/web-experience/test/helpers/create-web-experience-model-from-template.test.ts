@@ -17,13 +17,11 @@
 import { createWebExperienceModelFromTemplate } from "../../src/helpers/create-web-experience-model-from-template";
 import * as hubModule from "@esri/hub-common";
 
-import * as utils from "@esri/solution-common/test/mocks/utils";
-import { IItem } from "@esri/solution-common";
-import { IItemTemplate } from "@esri/hub-common";
+import * as utils from "../../../common/test/mocks/utils";
 const MOCK_USER_SESSION = utils.createRuntimeMockUserSession();
 
 describe("createWebExperienceModelFromTemplate :: ", () => {
-  it("interpolates values", () => {
+  it("interpolates values", async () => {
     const adlibSpy = spyOn(hubModule, "interpolate").and.callThrough();
     const tmpl = {
       itemId: "bc3",
@@ -32,31 +30,22 @@ describe("createWebExperienceModelFromTemplate :: ", () => {
       item: {
         thumbnail: "thumbnail",
         properties: {
-          key: "{{val}}"
-        }
+          key: "{{val}}",
+        },
       } as any,
       data: {
-        chk: `{{val2}}`
-      }
+        chk: `{{val2}}`,
+      },
     } as hubModule.IModelTemplate;
 
     const settings = {
       val: "rabbit",
-      val2: "cat"
+      val2: "cat",
     };
-    return createWebExperienceModelFromTemplate(
-      tmpl,
-      settings,
-      {},
-      MOCK_USER_SESSION
-    ).then(model => {
-      expect(model.item.thumbnail).toEqual("thumbnail");
-      expect(model.item.properties.key).toBe(
-        "rabbit",
-        "should interpolate item"
-      );
-      expect(model.data.chk).toBe("cat", "should interpolate data");
-      expect(adlibSpy.calls.count()).toBe(1, "should interpolate");
-    });
+    const model = await createWebExperienceModelFromTemplate(tmpl, settings, {}, MOCK_USER_SESSION);
+    expect(model.item.thumbnail).toEqual("thumbnail");
+    expect(model.item.properties.key).withContext("should interpolate item").toBe("rabbit");
+    expect(model.data.chk).withContext("should interpolate data").toBe("cat");
+    expect(adlibSpy.calls.count()).withContext("should interpolate").toBe(1);
   });
 });

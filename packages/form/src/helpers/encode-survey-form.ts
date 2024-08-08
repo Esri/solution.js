@@ -35,12 +35,9 @@ export const encodeSurveyForm = function encodeForm(form: any) {
     ["header", "content"],
     ["subHeader", "content"],
     ["footer", "content"],
-    ["settings", "thankYouScreenContent"]
+    ["settings", "thankYouScreenContent"],
   ];
-  const encode = (
-    obj: { [key: string]: string },
-    key: string
-  ): { [key: string]: string } => {
+  const encode = (obj: { [key: string]: string }, key: string): { [key: string]: string } => {
     if (obj && obj[key]) {
       obj[key] = encodeURIComponent(obj[key]);
     }
@@ -57,9 +54,9 @@ export const encodeSurveyForm = function encodeForm(form: any) {
     !question.questions
       ? encodeQuestion(question)
       : {
-        ...question,
-        questions: question.questions.map(encodeQuestion)
-      }
+          ...question,
+          questions: question.questions.map(encodeQuestion),
+        },
   );
 
   return clone;

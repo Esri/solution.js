@@ -30,20 +30,20 @@ export function shareItemToGroups(
   groupIds: string[],
   itemId: string,
   authentication: UserSession,
-  owner?: string
+  owner?: string,
 ): Promise<any> {
   return Promise.all(
-    groupIds.map(groupId => {
+    groupIds.map((groupId) => {
       const requestOptions: IGroupSharingOptions = {
         id: itemId,
         groupId,
-        authentication
+        authentication,
       };
       /* istanbul ignore else */
       if (owner) {
         requestOptions.owner = owner;
       }
       return shareItemWithGroup(requestOptions);
-    })
+    }),
   );
 }

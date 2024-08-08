@@ -29,10 +29,7 @@ export function _isLegacySolution(model: ISolutionItem): boolean {
   // if it does not have the `Template` keyword BUT does have `hubSolutionTemplate` it is legacy
   const keywords = getProp(model, "item.typeKeywords") || [];
   if (!keywords.includes("Template")) {
-    if (
-      keywords.includes("hubSolutionTemplate") &&
-      keywords.includes("solutionTemplate")
-    ) {
+    if (keywords.includes("hubSolutionTemplate") && keywords.includes("solutionTemplate")) {
       result = true;
     }
   }

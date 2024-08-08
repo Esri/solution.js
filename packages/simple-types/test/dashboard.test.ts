@@ -24,23 +24,19 @@ import * as staticMocks from "../../common/test/mocks/staticDashboardMocks";
 import * as utils from "../../common/test/mocks/utils";
 import * as templates from "../../common/test/mocks/templates";
 
-const date = new Date(Date.UTC(2019, 2, 4, 5, 6, 7)); // 0-based month
-const now = date.getTime();
-
 jasmine.DEFAULT_TIMEOUT_INTERVAL = 20000; // default is 5000 ms
 
 let initialDashboardTemplate: any;
 let expectedTemplate: any;
 let datasourceInfos: common.IDatasourceInfo[];
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 let MOCK_USER_SESSION: common.UserSession;
 
 beforeEach(() => {
   MOCK_USER_SESSION = utils.createRuntimeMockUserSession();
 
-  initialDashboardTemplate = common.cloneObject(
-    staticMocks.initialDashboardTemplate
-  );
+  initialDashboardTemplate = common.cloneObject(staticMocks.initialDashboardTemplate);
   expectedTemplate = common.cloneObject(staticMocks.expectedTemplate);
   datasourceInfos = common.cloneObject(staticMocks.datasourceInfos);
 });
@@ -50,65 +46,29 @@ beforeEach(() => {
 describe("Module `dashboard`: manages the creation and deployment of dashboard item type", () => {
   describe("convertItemToTemplate", () => {
     it("should templatize webmap ids and external datasource ids", () => {
-      const actualTemplate = dashboard.convertItemToTemplate(
-        initialDashboardTemplate,
-        {}
-      );
+      const actualTemplate = dashboard.convertItemToTemplate(initialDashboardTemplate, {});
 
-      const actualHS: any = common.getProp(
-        actualTemplate,
-        "data.headerPanel.selectors"
-      );
-      const expectedHS: any = common.getProp(
-        expectedTemplate,
-        "data.headerPanel.selectors"
-      );
-      expect(actualHS[4].datasets[0].dataSource.itemId).toEqual(
-        expectedHS[4].datasets[0].dataSource.itemId
-      );
+      const actualHS: any = common.getProp(actualTemplate, "data.headerPanel.selectors");
+      const expectedHS: any = common.getProp(expectedTemplate, "data.headerPanel.selectors");
+      expect(actualHS[4].datasets[0].dataSource.itemId).toEqual(expectedHS[4].datasets[0].dataSource.itemId);
 
-      const actualLPS: any = common.getProp(
-        actualTemplate,
-        "data.leftPanel.selectors"
-      );
-      const expectedLPS: any = common.getProp(
-        expectedTemplate,
-        "data.leftPanel.selectors"
-      );
-      expect(actualLPS[0].datasets[0].dataSource.itemId).toEqual(
-        expectedLPS[0].datasets[0].dataSource.itemId
-      );
-      expect(actualLPS[4].datasets[0].dataSource.itemId).toEqual(
-        expectedLPS[4].datasets[0].dataSource.itemId
-      );
+      const actualLPS: any = common.getProp(actualTemplate, "data.leftPanel.selectors");
+      const expectedLPS: any = common.getProp(expectedTemplate, "data.leftPanel.selectors");
+      expect(actualLPS[0].datasets[0].dataSource.itemId).toEqual(expectedLPS[0].datasets[0].dataSource.itemId);
+      expect(actualLPS[4].datasets[0].dataSource.itemId).toEqual(expectedLPS[4].datasets[0].dataSource.itemId);
 
       const actualW: any = common.getProp(actualTemplate, "data.widgets");
       const expectedW: any = common.getProp(expectedTemplate, "data.widgets");
       expect(actualW[0].itemId).toEqual(expectedW[0].itemId);
-      expect(actualW[3].datasets[1].dataSource.itemId).toEqual(
-        expectedW[3].datasets[1].dataSource.itemId
-      );
-      expect(actualW[3].datasets[2].dataSource.itemId).toEqual(
-        expectedW[3].datasets[2].dataSource.itemId
-      );
-      expect(actualW[4].datasets[0].dataSource.itemId).toEqual(
-        expectedW[4].datasets[0].dataSource.itemId
-      );
-      expect(actualW[6].datasets[0].dataSource.itemId).toEqual(
-        expectedW[6].datasets[0].dataSource.itemId
-      );
-      expect(actualW[8].datasets[0].dataSource.itemId).toEqual(
-        expectedW[8].datasets[0].dataSource.itemId
-      );
+      expect(actualW[3].datasets[1].dataSource.itemId).toEqual(expectedW[3].datasets[1].dataSource.itemId);
+      expect(actualW[3].datasets[2].dataSource.itemId).toEqual(expectedW[3].datasets[2].dataSource.itemId);
+      expect(actualW[4].datasets[0].dataSource.itemId).toEqual(expectedW[4].datasets[0].dataSource.itemId);
+      expect(actualW[6].datasets[0].dataSource.itemId).toEqual(expectedW[6].datasets[0].dataSource.itemId);
+      expect(actualW[8].datasets[0].dataSource.itemId).toEqual(expectedW[8].datasets[0].dataSource.itemId);
 
       const actualP: any = common.getProp(actualTemplate, "data.urlParameters");
-      const expectedP: any = common.getProp(
-        expectedTemplate,
-        "data.urlParameters"
-      );
-      expect(actualP[4].datasets[0].dataSource.itemId).toEqual(
-        expectedP[4].datasets[0].dataSource.itemId
-      );
+      const expectedP: any = common.getProp(expectedTemplate, "data.urlParameters");
+      expect(actualP[4].datasets[0].dataSource.itemId).toEqual(expectedP[4].datasets[0].dataSource.itemId);
     });
   });
 
@@ -123,27 +83,25 @@ describe("Module `dashboard`: manages the creation and deployment of dashboard i
     it("handles defaulting to .itemId", () => {
       const obj: any = {
         dataSource: {
-          itemId: "{{934a9ef8efa7448fa8ddf7b13cef0240.itemId}}"
+          itemId: "{{934a9ef8efa7448fa8ddf7b13cef0240.itemId}}",
         },
         datasets: [
           {
             dataSource: {
-              itemId: "AAABBBCCC123"
+              itemId: "AAABBBCCC123",
             },
-            type: "serviceDataset"
+            type: "serviceDataset",
           },
           {
             dataSource: {
-              itemId: "AAABBBCCC123"
+              itemId: "AAABBBCCC123",
             },
-            type: "serviceDataset"
-          }
-        ]
+            type: "serviceDataset",
+          },
+        ],
       };
 
-      const itemTemplate: common.IItemTemplate = templates.getItemTemplate(
-        "Dashboard"
-      );
+      const itemTemplate: common.IItemTemplate = templates.getItemTemplate("Dashboard");
 
       expect(itemTemplate.dependencies).toEqual([]);
       dashboard._getDatasourceDependencies(obj, itemTemplate, {});
@@ -155,10 +113,7 @@ describe("Module `dashboard`: manages the creation and deployment of dashboard i
     it("should templatize field references", () => {
       // need to the dependencies
       const actual = dashboard.convertItemToTemplate(initialDashboardTemplate, {});
-      const actualTemplate: common.IItemTemplate = dashboard.postProcessFieldReferences(
-        actual,
-        datasourceInfos
-      );
+      const actualTemplate: common.IItemTemplate = dashboard.postProcessFieldReferences(actual, datasourceInfos);
       expect(actualTemplate).toEqual(expectedTemplate);
     });
   });
@@ -172,19 +127,19 @@ describe("Module `dashboard`: manages the creation and deployment of dashboard i
             {
               dataSource: {
                 itemId: "AAABBBCCC123",
-                layerId: 1
+                layerId: 1,
               },
-              type: "serviceDataset"
+              type: "serviceDataset",
             },
             {
               dataSource: {
                 itemId: "AAABBBCCC123",
-                layerId: 0
+                layerId: 0,
               },
-              type: "serviceDataset"
-            }
-          ]
-        }
+              type: "serviceDataset",
+            },
+          ],
+        },
       ];
 
       const dsInfos: common.IDatasourceInfo[] = [
@@ -195,7 +150,7 @@ describe("Module `dashboard`: manages the creation and deployment of dashboard i
           layerId: 0,
           fields: [],
           relationships: [],
-          adminLayerInfo: {}
+          adminLayerInfo: {},
         },
         {
           basePath: "",
@@ -204,23 +159,23 @@ describe("Module `dashboard`: manages the creation and deployment of dashboard i
           layerId: 1,
           fields: [],
           relationships: [],
-          adminLayerInfo: {}
-        }
+          adminLayerInfo: {},
+        },
       ];
 
       dashboard._updateDatasourceReferences(objs, dsInfos);
 
-      expect(dsInfos[0].references.length).toEqual(1);
-      expect(dsInfos[0].references[0]).toEqual("map0");
+      expect(dsInfos[0].references?.length).toEqual(1);
+      expect(dsInfos[0].references && dsInfos[0].references[0]).toEqual("map0");
 
-      expect(dsInfos[1].references.length).toEqual(1);
-      expect(dsInfos[1].references[0]).toEqual("map0");
+      expect(dsInfos[1].references?.length).toEqual(1);
+      expect(dsInfos[1].references && dsInfos[1].references[0]).toEqual("map0");
     });
   });
 
   describe("_templatizeByDatasource", () => {
     it("ignores supplied objs if it is not defined", () => {
-      const updatedList = dashboard._templatizeByDatasource(null, null);
+      const updatedList = dashboard._templatizeByDatasource(null as any, null as any);
       expect(updatedList).toBeNull();
     });
   });
@@ -229,8 +184,8 @@ describe("Module `dashboard`: manages the creation and deployment of dashboard i
     it("handles dataSource.id", () => {
       const obj: any = {
         dataSource: {
-          id: "widget#id"
-        }
+          id: "widget#id",
+        },
       };
 
       const dsInfos: common.IDatasourceInfo[] = [
@@ -241,7 +196,7 @@ describe("Module `dashboard`: manages the creation and deployment of dashboard i
           layerId: 0,
           fields: [],
           relationships: [],
-          adminLayerInfo: {}
+          adminLayerInfo: {},
         },
         {
           basePath: "",
@@ -250,8 +205,8 @@ describe("Module `dashboard`: manages the creation and deployment of dashboard i
           layerId: 1,
           fields: [],
           relationships: [],
-          adminLayerInfo: {}
-        }
+          adminLayerInfo: {},
+        },
       ];
 
       const info = dashboard._getDatasourceInfo(obj, dsInfos);
@@ -261,8 +216,8 @@ describe("Module `dashboard`: manages the creation and deployment of dashboard i
     it("handles dataSource.id without match in datasourceInfos", () => {
       const obj: any = {
         dataSource: {
-          id: "widget#id"
-        }
+          id: "widget#id",
+        },
       };
 
       const dsInfos: common.IDatasourceInfo[] = [
@@ -273,7 +228,7 @@ describe("Module `dashboard`: manages the creation and deployment of dashboard i
           layerId: 0,
           fields: [],
           relationships: [],
-          adminLayerInfo: {}
+          adminLayerInfo: {},
         },
         {
           basePath: "",
@@ -282,44 +237,12 @@ describe("Module `dashboard`: manages the creation and deployment of dashboard i
           layerId: 1,
           fields: [],
           relationships: [],
-          adminLayerInfo: {}
-        }
+          adminLayerInfo: {},
+        },
       ];
 
       const info = dashboard._getDatasourceInfo(obj, dsInfos);
       expect(info).toBeUndefined();
-    });
-
-    it("handles dataSource.itemId", () => {
-      const obj: any = {
-        dataSource: {
-          itemId: "{{934a9ef8efa7448fa8ddf7b13cef0240.itemId}}",
-          layerId: "layer0"
-        }
-      };
-
-      const dsInfos: common.IDatasourceInfo[] = [
-        {
-          basePath: "",
-          itemId: "AAABBBCCC123",
-          ids: [],
-          layerId: 0,
-          fields: [],
-          relationships: [],
-          adminLayerInfo: {}
-        },
-        {
-          basePath: "",
-          itemId: "AAABBBCCC123",
-          ids: [],
-          layerId: 1,
-          fields: [],
-          relationships: [],
-          adminLayerInfo: {}
-        }
-      ];
-
-      const info = dashboard._getDatasourceInfo(obj, dsInfos);
     });
   });
 });
