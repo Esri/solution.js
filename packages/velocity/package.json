@@ -1,6 +1,6 @@
 {
   "name": "@esri/solution-velocity",
-  "version": "5.5.1",
+  "version": "5.6.0",
   "description": "Manages the creation and deployment of Velocity item types for @esri/solution.js.",
   "main": "dist/cjs/index.js",
   "module": "dist/esm/index.js",
@@ -33,8 +33,8 @@
     "@esri/hub-initiatives": "^14.0.0",
     "@esri/hub-sites": "^14.2.4",
     "@esri/hub-teams": "^14.1.0",
-    "@esri/solution-common": "^5.5.1",
-    "@esri/solution-simple-types": "^5.5.1",
+    "@esri/solution-common": "^5.6.0",
+    "@esri/solution-simple-types": "^5.6.0",
     "tslib": "1.14.1"
   },
   "scripts": {
