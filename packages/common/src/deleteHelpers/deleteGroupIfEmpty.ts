@@ -30,10 +30,7 @@ import * as portal from "@esri/arcgis-rest-portal";
  * @param authentication Credentials for the request
  * @returns Promise indicating if group was deleted
  */
-export function deleteGroupIfEmpty(
-  groupId: string,
-  authentication: UserSession
-): Promise<boolean> {
+export function deleteGroupIfEmpty(groupId: string, authentication: UserSession): Promise<boolean> {
   let username: string;
   let isGroupProtected: boolean;
 
@@ -41,7 +38,7 @@ export function deleteGroupIfEmpty(
   // eslint-disable-next-line @typescript-eslint/no-floating-promises
   return authentication
     .getUsername()
-    .then(response => {
+    .then((response) => {
       username = response;
 
       // We need to know the owner and protection status of the group
@@ -56,9 +53,9 @@ export function deleteGroupIfEmpty(
       // Get the number of items in the group
       const groupContentOptions: portal.IGetGroupContentOptions = {
         paging: {
-          num: 1 // only need 1 item to show that group is not empty
+          num: 1, // only need 1 item to show that group is not empty
         },
-        authentication
+        authentication,
       };
       return portal.getGroupContent(groupId, groupContentOptions);
     })
@@ -73,19 +70,19 @@ export function deleteGroupIfEmpty(
       if (isGroupProtected) {
         const groupOptions: portal.IUserGroupOptions = {
           id: groupId,
-          authentication
+          authentication,
         };
         return portal.unprotectGroup(groupOptions);
       } else {
         return Promise.resolve({ success: true });
       }
     })
-    .then(response => {
+    .then((response) => {
       if (response.success) {
         // All is good so far: we own the group, it's empty, and it's unprotected; proceed with deletion
         const groupOptions: portal.IUserGroupOptions = {
           id: groupId,
-          authentication
+          authentication,
         };
         return portal.removeGroup(groupOptions);
       } else {

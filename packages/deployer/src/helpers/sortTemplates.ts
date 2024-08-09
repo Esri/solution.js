@@ -21,13 +21,9 @@ import { IItemTemplate } from "@esri/solution-common";
  * @param templates List of templates in a Solution
  * @param sortOrderIds List of template ids in the desired sort order
  */
-export function sortTemplates(
-  templates: IItemTemplate[],
-  sortOrderIds: string[]
-): void {
+export function sortTemplates(templates: IItemTemplate[], sortOrderIds: string[]): void {
   templates.sort(
     (template1: IItemTemplate, template2: IItemTemplate) =>
-      sortOrderIds.indexOf(template1.itemId) -
-      sortOrderIds.indexOf(template2.itemId)
+      sortOrderIds.indexOf(template1.itemId) - sortOrderIds.indexOf(template2.itemId),
   );
 }

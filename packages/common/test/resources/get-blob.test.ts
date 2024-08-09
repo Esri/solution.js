@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import * as fetchMock from "fetch-mock";
+const fetchMock = require("fetch-mock");
 import * as utils from "../mocks/utils";
 import * as interfaces from "../../src/interfaces";
 import { getBlob } from "../../src/resources/get-blob";
@@ -31,11 +31,11 @@ const SERVER_INFO = {
   soapUrl: "http://server/arcgis/services",
   secureSoapUrl: "https://server/arcgis/services",
   owningSystemUrl: "https://myorg.maps.arcgis.com",
-  authInfo: {}
+  authInfo: {},
 };
 
 describe("getBlob", () => {
-  it("can get a blob from a URL", done => {
+  it("can get a blob from a URL", async () => {
     const url: string = "https://myserver/images/thumbnail.png";
 
     const getUrl = "https://myserver/images/thumbnail.png";
@@ -44,19 +44,17 @@ describe("getBlob", () => {
     fetchMock
       .get(
         "https://myorg.maps.arcgis.com/sharing/rest/portals/self?f=json&token=fake-token",
-        utils.getPortalsSelfResponse()
+        utils.getPortalsSelfResponse(),
       )
       .post(utils.PORTAL_SUBSET.restUrl + "/info", expectedServerInfo)
       .post(getUrl + "/rest/info", expectedServerInfo)
       .post(getUrl, expected, { sendAsJson: false });
 
-    getBlob(url, MOCK_USER_SESSION).then(response => {
-      expect(response).toEqual(expected);
-      done();
-    }, done.fail);
+    const response = await getBlob(url, MOCK_USER_SESSION);
+    expect(response).toEqual(expected);
   });
 
-  it("can handle an error from the REST endpoint request.request", done => {
+  it("can handle an error from the REST endpoint request.request", async () => {
     const url: string = "https://myserver/images/thumbnail.png";
 
     const getUrl = "https://myserver/images/thumbnail.png";
@@ -64,20 +62,21 @@ describe("getBlob", () => {
     fetchMock
       .get(
         "https://myorg.maps.arcgis.com/sharing/rest/portals/self?f=json&token=fake-token",
-        utils.getPortalsSelfResponse()
+        utils.getPortalsSelfResponse(),
       )
       .post(utils.PORTAL_SUBSET.restUrl + "/info", expectedServerInfo)
       .post(getUrl + "/rest/info", expectedServerInfo)
       .post(getUrl, 503);
-    getBlob(url, MOCK_USER_SESSION).then(
-      () => done.fail(),
-      () => done()
+
+    return getBlob(url, MOCK_USER_SESSION).then(
+      () => fail(),
+      () => Promise.resolve(),
     );
   });
-  it("handles undefined url", done => {
-    getBlob(undefined, MOCK_USER_SESSION).then(
-      () => done.fail(),
-      () => done()
+  it("handles undefined url", async () => {
+    return getBlob(undefined as any, MOCK_USER_SESSION).then(
+      () => fail(),
+      () => Promise.resolve(),
     );
   });
 });

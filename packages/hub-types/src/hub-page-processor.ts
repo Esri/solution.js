@@ -28,24 +28,11 @@ import {
   UserSession,
   convertIModel,
   createHubRequestOptions,
-  generateEmptyCreationResponse
+  generateEmptyCreationResponse,
 } from "@esri/solution-common";
 import { IUpdateItemOptions, updateItem } from "@esri/arcgis-rest-portal";
-import {
-  IModel,
-  IModelTemplate,
-  failSafe,
-  getModel,
-  IHubUserRequestOptions,
-  getProp,
-  without
-} from "@esri/hub-common";
-import {
-  createPageModelFromTemplate,
-  createPage,
-  removePage,
-  convertPageToTemplate
-} from "@esri/hub-sites";
+import { IModel, IModelTemplate, failSafe, getModel, IHubUserRequestOptions, getProp, without } from "@esri/hub-common";
+import { createPageModelFromTemplate, createPage, removePage, convertPageToTemplate } from "@esri/hub-sites";
 
 import { _postProcessPage } from "./helpers/_post-process-page";
 import { replaceItemIds } from "./helpers/replace-item-ids";
@@ -62,7 +49,7 @@ import { moveModelToFolder } from "./helpers/move-model-to-folder";
 export function convertItemToTemplate(
   itemInfo: any,
   destAuthentication: UserSession,
-  srcAuthentication: UserSession = null // eslint-disable-line @typescript-eslint/no-unused-vars
+  srcAuthentication: UserSession = null, // eslint-disable-line @typescript-eslint/no-unused-vars
 ): Promise<IItemTemplate> {
   let created: number = 0;
   let modified: number = 0;
@@ -70,7 +57,7 @@ export function convertItemToTemplate(
   // get the page model and hubRequestOptions
   return Promise.all([
     getModel(itemInfo.id, { authentication: destAuthentication }),
-    createHubRequestOptions(destAuthentication)
+    createHubRequestOptions(destAuthentication),
   ])
     .then(([pageModel, ro]) => {
       // We need to save these properties in order to restore them after hub.js deletes them
@@ -78,7 +65,7 @@ export function convertItemToTemplate(
       modified = pageModel.item.modified;
       return convertPageToTemplate(pageModel, ro);
     })
-    .then(tmpl => {
+    .then((tmpl) => {
       // add in some stuff Hub.js does not yet add
       tmpl.item.created = created;
       tmpl.item.modified = modified;
@@ -110,14 +97,10 @@ export function createItemFromTemplate(
   template: IItemTemplate,
   templateDictionary: any,
   destinationAuthentication: UserSession,
-  itemProgressCallback: IItemProgressCallback
+  itemProgressCallback: IItemProgressCallback,
 ): Promise<ICreateItemFromTemplateResponse> {
   // let the progress system know we've started...
-  const startStatus = itemProgressCallback(
-    template.itemId,
-    EItemProgressStatus.Started,
-    0
-  );
+  const startStatus = itemProgressCallback(template.itemId, EItemProgressStatus.Started, 0);
 
   // and if it returned false, just resolve out
   if (!startStatus) {
@@ -135,7 +118,7 @@ export function createItemFromTemplate(
     const parts = templateDictionary.solutionItemExtent.split(",");
     templateDictionary.organization.defaultExtentBBox = [
       [parts[0], parts[1]],
-      [parts[2], parts[3]]
+      [parts[2], parts[3]],
     ];
   }
 
@@ -149,14 +132,9 @@ export function createItemFromTemplate(
   let hubRo: IHubUserRequestOptions;
   const thumbnail: File = template.item.thumbnail; // createPageModelFromTemplate trashes thumbnail
   return createHubRequestOptions(destinationAuthentication, templateDictionary)
-    .then(ro => {
+    .then((ro) => {
       hubRo = ro;
-      return createPageModelFromTemplate(
-        template,
-        templateDictionary,
-        transforms,
-        hubRo
-      );
+      return createPageModelFromTemplate(template, templateDictionary, transforms, hubRo);
     })
     .then((interpolated: unknown) => {
       // --------------------------------------------
@@ -164,33 +142,29 @@ export function createItemFromTemplate(
       // then remove this silliness
       const modelTmpl = interpolated as IModelTemplate;
       const options = {
-        assets: modelTmpl.assets || []
+        assets: modelTmpl.assets || [],
       } as unknown;
       // --------------------------------------------
       return createPage(modelTmpl, options, hubRo);
     })
-    .then(page => {
+    .then((page) => {
       pageModel = page;
       // Move the site and initiative to the solution folder
       // this is essentially fire and forget. We fail-safe the actual moveItem
       // call since it's not critical to the outcome
-      return moveModelToFolder(
-        page,
-        templateDictionary.folderId,
-        destinationAuthentication
-      );
+      return moveModelToFolder(page, templateDictionary.folderId, destinationAuthentication);
     })
     .then(() => {
       // Fix the thumbnail
       const updateOptions: IUpdateItemOptions = {
         item: {
-          id: pageModel.item.id
+          id: pageModel.item.id,
         },
         params: {
           // Pass thumbnail in via params because item property is serialized, which discards a blob
-          thumbnail
+          thumbnail,
         },
-        authentication: destinationAuthentication
+        authentication: destinationAuthentication,
       };
       return updateItem(updateOptions);
     })
@@ -199,14 +173,14 @@ export function createItemFromTemplate(
       // TODO: This should be done in whatever recieves
       // the outcome of this promise chain
       templateDictionary[template.itemId] = {
-        itemId: pageModel.item.id
+        itemId: pageModel.item.id,
       };
       // call the progress callback, which also mutates templateDictionary
       const finalStatus = itemProgressCallback(
         template.itemId,
         EItemProgressStatus.Finished,
         template.estimatedDeploymentCostFactor || 2,
-        pageModel.item.id
+        pageModel.item.id,
       );
       if (!finalStatus) {
         // clean up the site we just created
@@ -219,17 +193,17 @@ export function createItemFromTemplate(
         const response: ICreateItemFromTemplateResponse = {
           item: {
             ...template,
-            ...convertIModel(pageModel)
+            ...convertIModel(pageModel),
           },
           id: pageModel.item.id,
           type: template.type,
-          postProcess: true
+          postProcess: true,
         };
         response.item.itemId = pageModel.item.id;
         return response;
       }
     })
-    .catch(ex => {
+    .catch((ex) => {
       itemProgressCallback(template.itemId, EItemProgressStatus.Failed, 0);
       throw ex;
     });
@@ -254,18 +228,18 @@ export function postProcess(
   template: any,
   templates: IItemTemplate[],
   templateDictionary: any,
-  authentication: UserSession
+  authentication: UserSession,
 ): Promise<boolean> {
   // create the requestOptions
   let hubRo: IHubUserRequestOptions;
   // get hubRequestOptions
   return createHubRequestOptions(authentication)
-    .then(ro => {
+    .then((ro) => {
       hubRo = ro;
       // get the site model
       return getModel(id, { authentication });
     })
-    .then(pageModel => {
+    .then((pageModel) => {
       // post process the page
       return _postProcessPage(pageModel, itemInfos, templateDictionary, hubRo);
     });

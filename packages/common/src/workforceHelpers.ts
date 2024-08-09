@@ -21,19 +21,8 @@
  */
 
 import { applyEdits, queryFeatures } from "@esri/arcgis-rest-feature-layer";
-import {
-  getIDs,
-  getProp,
-  fail,
-  idTest,
-  regExTest,
-  setProp
-} from "./generalHelpers";
-import {
-  IItemTemplate,
-  IFeatureServiceProperties,
-  UserSession
-} from "./interfaces";
+import { getIDs, getProp, fail, idTest, regExTest, setProp } from "./generalHelpers";
+import { IItemTemplate, IFeatureServiceProperties, UserSession } from "./interfaces";
 import { rest_request } from "./restHelpers";
 import { templatizeTerm, replaceInTemplate } from "./templatization";
 import { cacheLayerInfo } from "./featureServiceHelpers";
@@ -51,7 +40,7 @@ import { cacheLayerInfo } from "./featureServiceHelpers";
 export function convertWorkforceItemToTemplate(
   itemTemplate: IItemTemplate,
   authentication: UserSession,
-  templateDictionary: any
+  templateDictionary: any,
 ): Promise<IItemTemplate> {
   return new Promise<IItemTemplate>((resolve, reject) => {
     // This function is specific to workforce v1 project structure
@@ -64,18 +53,13 @@ export function convertWorkforceItemToTemplate(
     if (data) {
       // Extract dependencies
       extractWorkforceDependencies(data, keyProperties, authentication).then(
-        results => {
+        (results) => {
           itemTemplate.dependencies = results.dependencies;
           // templatize key properties
-          itemTemplate.data = templatizeWorkforce(
-            data,
-            keyProperties,
-            results.urlHash,
-            templateDictionary
-          );
+          itemTemplate.data = templatizeWorkforce(data, keyProperties, results.urlHash, templateDictionary);
           resolve(itemTemplate);
         },
-        e => reject(fail(e))
+        (e) => reject(fail(e)),
       );
     } else {
       resolve(itemTemplate);
@@ -94,14 +78,14 @@ export function convertWorkforceItemToTemplate(
 export function extractWorkforceDependencies(
   data: any,
   keyProperties: string[],
-  authentication: UserSession
+  authentication: UserSession,
 ): Promise<any> {
   return new Promise<any>((resolve, reject) => {
     const deps: string[] = [];
 
     // get the ids for the service dependencies
     // "workerWebMapId" and "dispatcherWebMapId" are already IDs and don't have a serviceItemId
-    keyProperties.forEach(p => {
+    keyProperties.forEach((p) => {
       const serviceItemId: string = getProp(data, p + ".serviceItemId");
       const v: string = getProp(data, p);
       if (serviceItemId) {
@@ -119,16 +103,13 @@ export function extractWorkforceDependencies(
       data.assignmentIntegrations.forEach((ai: any) => {
         if (ai.assignmentTypes) {
           const assignmentKeys: string[] = Object.keys(ai.assignmentTypes);
-          assignmentKeys.forEach(k => {
+          assignmentKeys.forEach((k) => {
             const urlTemplate: any = ai.assignmentTypes[k].urlTemplate;
             idTest(urlTemplate, deps);
             const serviceRequests: any = urlTest(urlTemplate, authentication);
-            if (
-              Array.isArray(serviceRequests.requests) &&
-              serviceRequests.requests.length > 0
-            ) {
-            // eslint-disable-next-line @typescript-eslint/no-floating-promises
-            requests = requests.concat(serviceRequests.requests);
+            if (Array.isArray(serviceRequests.requests) && serviceRequests.requests.length > 0) {
+              // eslint-disable-next-line @typescript-eslint/no-floating-promises
+              requests = requests.concat(serviceRequests.requests);
               urls = urls.concat(serviceRequests.urls);
             }
           });
@@ -137,7 +118,7 @@ export function extractWorkforceDependencies(
 
       if (requests.length > 0) {
         Promise.all(requests).then(
-          results => {
+          (results) => {
             const urlHash: any = {};
             // Get the serviceItemId for the url
             /* istanbul ignore else */
@@ -155,21 +136,21 @@ export function extractWorkforceDependencies(
             }
             resolve({
               dependencies: deps,
-              urlHash: urlHash
+              urlHash: urlHash,
             });
           },
-          e => reject(fail(e))
+          (e) => reject(fail(e)),
         );
       } else {
         resolve({
           dependencies: deps,
-          urlHash: {}
+          urlHash: {},
         });
       }
     } else {
       resolve({
         dependencies: deps,
-        urlHash: {}
+        urlHash: {},
       });
     }
   });
@@ -184,13 +165,8 @@ export function extractWorkforceDependencies(
  * @param templateDictionary Hash of key details used for variable replacement
  * @returns an updated data object to be stored in the template
  */
-export function templatizeWorkforce(
-  data: any,
-  keyProperties: string[],
-  urlHash: any,
-  templateDictionary: any
-): any {
-  keyProperties.forEach(p => {
+export function templatizeWorkforce(data: any, keyProperties: string[], urlHash: any, templateDictionary: any): any {
+  keyProperties.forEach((p) => {
     /* istanbul ignore else */
     if (getProp(data, p)) {
       if (getProp(data[p], "serviceItemId")) {
@@ -202,11 +178,7 @@ export function templatizeWorkforce(
         if (getProp(data[p], "url")) {
           const layerId = getLayerId(data[p].url);
           cacheLayerInfo(layerId, id, data[p].url, templateDictionary);
-          data[p].url = templatizeTerm(
-            id,
-            id,
-            getReplaceValue(layerId, ".url")
-          );
+          data[p].url = templatizeTerm(id, id, getReplaceValue(layerId, ".url"));
           serviceItemIdSuffix = getReplaceValue(layerId, serviceItemIdSuffix);
         }
         data[p].serviceItemId = templatizeTerm(id, id, serviceItemIdSuffix);
@@ -221,12 +193,12 @@ export function templatizeWorkforce(
 
   // templatize app integrations
   const integrations: any[] = data.assignmentIntegrations || [];
-  integrations.forEach(i => {
+  integrations.forEach((i) => {
     _templatizeUrlTemplate(i, urlHash);
     /* istanbul ignore else */
     if (i.assignmentTypes) {
       const assignmentKeys: string[] = Object.keys(i.assignmentTypes);
-      assignmentKeys.forEach(k => {
+      assignmentKeys.forEach((k) => {
         _templatizeUrlTemplate(i.assignmentTypes[k], urlHash);
       });
     }
@@ -243,13 +215,10 @@ export function templatizeWorkforce(
  * @param dependencies list of the items dependencies
  * @returns an array of objects with dependency ids
  */
-export function getWorkforceDependencies(
-  itemTemplate: IItemTemplate,
-  dependencies: any[]
-): any {
+export function getWorkforceDependencies(itemTemplate: IItemTemplate, dependencies: any[]): any {
   const properties: any = itemTemplate.item.properties || {};
   const keyProperties: string[] = getKeyWorkforceProperties(2);
-  dependencies = keyProperties.reduce(function(acc, v) {
+  dependencies = keyProperties.reduce(function (acc, v) {
     /* istanbul ignore else */
     if (properties[v] && dependencies.indexOf(properties[v]) < 0) {
       acc.push(properties[v]);
@@ -258,10 +227,7 @@ export function getWorkforceDependencies(
   }, dependencies);
 
   // We also need the dependencies listed in the Assignment Integrations table
-  const infos: any = getProp(
-    itemTemplate,
-    "properties.workforceInfos.assignmentIntegrationInfos"
-  );
+  const infos: any = getProp(itemTemplate, "properties.workforceInfos.assignmentIntegrationInfos");
   /* istanbul ignore else */
   if (infos && infos.length > 0) {
     infos.forEach((info: any) => {
@@ -278,7 +244,7 @@ export function getWorkforceDependencies(
     });
   }
 
-  return dependencies.map(d => {
+  return dependencies.map((d) => {
     return { id: d, name: "" };
   });
 }
@@ -286,7 +252,7 @@ export function getWorkforceDependencies(
 export function getWorkforceServiceInfo(
   properties: IFeatureServiceProperties,
   url: string,
-  authentication: UserSession
+  authentication: UserSession,
 ): Promise<IFeatureServiceProperties> {
   return new Promise<IFeatureServiceProperties>((resolve, reject) => {
     url = url.replace("/rest/admin/services", "/rest/services");
@@ -295,36 +261,33 @@ export function getWorkforceServiceInfo(
       queryFeatures({
         url: `${url}3`,
         where: "1=1",
-        authentication
+        authentication,
       }),
       queryFeatures({
         url: `${url}4`,
         where: "1=1",
-        authentication
-      })
+        authentication,
+      }),
     ];
 
     Promise.all(requests).then(
-      responses => {
+      (responses) => {
         const [assignmentTypes, assignmentIntegrations] = responses;
 
         properties.workforceInfos = {
-          assignmentTypeInfos: _getAssignmentTypeInfos(assignmentTypes)
+          assignmentTypeInfos: _getAssignmentTypeInfos(assignmentTypes),
         };
 
-        _getAssignmentIntegrationInfos(
-          assignmentIntegrations,
-          authentication
-        ).then(
-          results => {
+        _getAssignmentIntegrationInfos(assignmentIntegrations, authentication).then(
+          (results) => {
             properties.workforceInfos["assignmentIntegrationInfos"] = results;
             _updateGlobalIdAndAssignmentType(properties.workforceInfos);
             resolve(properties);
           },
-          e => reject(fail(e))
+          (e) => reject(fail(e)),
         );
       },
-      e => reject(fail(e))
+      (e) => reject(fail(e)),
     );
   });
 }
@@ -339,9 +302,7 @@ export function getWorkforceServiceInfo(
  * @param workforceInfos the object that stores the integration and type info with global ids
  * @private
  */
-export function _updateGlobalIdAndAssignmentType(
-  workforceInfos: any
-): void {
+export function _updateGlobalIdAndAssignmentType(workforceInfos: any): void {
   const updateId = (i: any) => {
     /* istanbul ignore else */
     if (i["GlobalID"]) {
@@ -357,21 +318,13 @@ export function _updateGlobalIdAndAssignmentType(
   const assignmentIntegrationInfos: any = getProp(workforceInfos, "assignmentIntegrationInfos");
   /* istanbul ignore else */
   if (assignmentIntegrationInfos && Array.isArray(assignmentIntegrationInfos)) {
-    setProp(
-      workforceInfos,
-      "assignmentIntegrationInfos",
-      assignmentIntegrationInfos.map(updateId)
-    );
+    setProp(workforceInfos, "assignmentIntegrationInfos", assignmentIntegrationInfos.map(updateId));
   }
 
   const assignmentTypeInfos: any = getProp(workforceInfos, "assignmentTypeInfos");
   /* istanbul ignore else */
   if (assignmentTypeInfos && Array.isArray(assignmentTypeInfos)) {
-    setProp(
-      workforceInfos,
-      "assignmentTypeInfos",
-      assignmentTypeInfos.map(updateId)
-    );
+    setProp(workforceInfos, "assignmentTypeInfos", assignmentTypeInfos.map(updateId));
   }
 }
 
@@ -379,13 +332,10 @@ export function _updateGlobalIdAndAssignmentType(
 export function _getAssignmentTypeInfos(assignmentTypes: any): any[] {
   // Assignment Types
   const assignmentTypeInfos: any[] = [];
-  const keyAssignmentTypeProps = [
-    "description",
-    assignmentTypes.globalIdFieldName
-  ];
+  const keyAssignmentTypeProps = ["description", assignmentTypes.globalIdFieldName];
   assignmentTypes.features.forEach((f: any) => {
     const info = {};
-    keyAssignmentTypeProps.forEach(p => {
+    keyAssignmentTypeProps.forEach((p) => {
       info[p] = f.attributes[p];
     });
     assignmentTypeInfos.push(info);
@@ -394,10 +344,7 @@ export function _getAssignmentTypeInfos(assignmentTypes: any): any[] {
 }
 
 //TODO: function doc
-export function _getAssignmentIntegrationInfos(
-  assignmentIntegrations: any,
-  authentication: UserSession
-): Promise<any> {
+export function _getAssignmentIntegrationInfos(assignmentIntegrations: any, authentication: UserSession): Promise<any> {
   return new Promise<any>((resolve, reject) => {
     let requests: Array<Promise<any>> = [];
     let urls: string[] = [];
@@ -407,11 +354,11 @@ export function _getAssignmentIntegrationInfos(
       assignmentIntegrations.globalIdFieldName,
       "prompt",
       "urltemplate",
-      "assignmenttype"
+      "assignmenttype",
     ];
     assignmentIntegrations.features.forEach((f: any) => {
       const info = {};
-      keyAssignmentIntegrationsProps.forEach(p => {
+      keyAssignmentIntegrationsProps.forEach((p) => {
         info[p] = f.attributes[p];
         /* istanbul ignore else */
         if (p === "urltemplate") {
@@ -420,10 +367,7 @@ export function _getAssignmentIntegrationInfos(
           info["dependencies"] = ids;
           const serviceRequests: any = urlTest(urlTemplate, authentication);
           /* istanbul ignore else */
-          if (
-            Array.isArray(serviceRequests.requests) &&
-            serviceRequests.requests.length > 0
-          ) {
+          if (Array.isArray(serviceRequests.requests) && serviceRequests.requests.length > 0) {
             // eslint-disable-next-line @typescript-eslint/no-floating-promises
             requests = requests.concat(serviceRequests.requests);
             urls = urls.concat(serviceRequests.urls);
@@ -434,27 +378,24 @@ export function _getAssignmentIntegrationInfos(
     });
 
     getUrlDependencies(requests, urls).then(
-      results => {
-        assignmentIntegrationInfos.forEach(ai => {
+      (results) => {
+        assignmentIntegrationInfos.forEach((ai) => {
           _templatizeUrlTemplate(ai, results.urlHash);
         });
 
         resolve(assignmentIntegrationInfos);
       },
-      e => reject(fail(e))
+      (e) => reject(fail(e)),
     );
   });
 }
 
-export function getUrlDependencies(
-  requests: Array<Promise<any>>,
-  urls: string[]
-): Promise<any> {
+export function getUrlDependencies(requests: Array<Promise<any>>, urls: string[]): Promise<any> {
   return new Promise<any>((resolve, reject) => {
     const dependencies: any[] = [];
     if (requests.length > 0) {
       Promise.all(requests).then(
-        results => {
+        (results) => {
           const urlHash: any = {};
           // Get the serviceItemId for the url
           /* istanbul ignore else */
@@ -472,15 +413,15 @@ export function getUrlDependencies(
           }
           resolve({
             dependencies,
-            urlHash
+            urlHash,
           });
         },
-        e => reject(fail(e))
+        (e) => reject(fail(e)),
       );
     } else {
       resolve({
         dependencies,
-        urlHash: {}
+        urlHash: {},
       });
     }
   });
@@ -496,34 +437,26 @@ export function getUrlDependencies(
 export function _templatizeUrlTemplate(item: any, urlHash: any): void {
   // v1 uses urlTemplate
   // v2 uses urltemplate
-  const urlTemplateVar = getProp(item, "urlTemplate")
-    ? "urlTemplate"
-    : "urltemplate";
+  const urlTemplateVar = getProp(item, "urlTemplate") ? "urlTemplate" : "urltemplate";
   let urlTemplate = getProp(item, urlTemplateVar);
 
   /* istanbul ignore else */
   if (urlTemplate) {
     const ids: string[] = getIDs(urlTemplate);
-    ids.forEach(id => {
+    ids.forEach((id) => {
       urlTemplate = urlTemplate.replace(id, templatizeTerm(id, id, ".itemId"));
     });
 
     const urls: string[] = _getURLs(urlTemplate);
-    urls.forEach(url => {
+    urls.forEach((url) => {
       const layerId = getLayerId(url);
       const replaceValue: string = getReplaceValue(layerId, ".url");
       const id = urlHash[url];
       /* istanbul ignore else */
-      if (
-        Array.isArray(item.dependencies) &&
-        item.dependencies.indexOf(id) < 0
-      ) {
+      if (Array.isArray(item.dependencies) && item.dependencies.indexOf(id) < 0) {
         item.dependencies.push(id);
       }
-      urlTemplate = urlTemplate.replace(
-        url,
-        templatizeTerm(id, id, replaceValue)
-      );
+      urlTemplate = urlTemplate.replace(url, templatizeTerm(id, id, replaceValue));
     });
 
     setProp(item, urlTemplateVar, urlTemplate);
@@ -531,22 +464,16 @@ export function _templatizeUrlTemplate(item: any, urlHash: any): void {
 }
 
 export function getLayerId(url: string): any {
-  return url.indexOf("FeatureServer/") > -1
-    ? url.substr(url.lastIndexOf("/") + 1)
-    : undefined;
+  return url.indexOf("FeatureServer/") > -1 ? url.substr(url.lastIndexOf("/") + 1) : undefined;
 }
 
 export function getReplaceValue(layerId: any, suffix: string): string {
-  return isNaN(Number.parseInt(layerId, 10))
-    ? `${suffix}`
-    : `.layer${layerId}${suffix}`;
+  return isNaN(Number.parseInt(layerId, 10)) ? `${suffix}` : `.layer${layerId}${suffix}`;
 }
 
-export function postProcessWorkforceTemplates(
-  templates: IItemTemplate[]
-): IItemTemplate[] {
+export function postProcessWorkforceTemplates(templates: IItemTemplate[]): IItemTemplate[] {
   const groupUpdates: any = {};
-  const _templates = templates.map(t => {
+  const _templates = templates.map((t) => {
     // templatize Workforce Project
     t = _templatizeWorkforceProject(t, groupUpdates);
 
@@ -559,7 +486,7 @@ export function postProcessWorkforceTemplates(
     return t;
   });
 
-  return _templates.map(t => {
+  return _templates.map((t) => {
     if (groupUpdates[t.itemId]) {
       t.dependencies = t.dependencies.concat(groupUpdates[t.itemId]);
     }
@@ -568,10 +495,7 @@ export function postProcessWorkforceTemplates(
 }
 
 //TODO: function doc
-export function _templatizeWorkforceProject(
-  t: IItemTemplate,
-  groupUpdates: any
-): any {
+export function _templatizeWorkforceProject(t: IItemTemplate, groupUpdates: any): any {
   /* istanbul ignore else */
   if (isWorkforceProject(t)) {
     const properties: any = t.item.properties || {};
@@ -587,24 +511,18 @@ export function _templatizeWorkforceProject(
         if (id !== groupId) {
           shuffleIds.push(id);
         }
-        t.item.properties[p] = templatizeTerm(
-          properties[p],
-          properties[p],
-          ".itemId"
-        );
+        t.item.properties[p] = templatizeTerm(properties[p], properties[p], ".itemId");
       }
     });
 
     // update the dependencies
-    t.dependencies = t.dependencies.filter(
-      (d: string) => d !== groupId && shuffleIds.indexOf(d) < 0
-    );
+    t.dependencies = t.dependencies.filter((d: string) => d !== groupId && shuffleIds.indexOf(d) < 0);
 
     // shuffle and cleanup
     const workforceInfos = getProp(t, "properties.workforceInfos");
     /* istanbul ignore else */
     if (workforceInfos) {
-      Object.keys(workforceInfos).forEach(k => {
+      Object.keys(workforceInfos).forEach((k) => {
         workforceInfos[k].forEach((wInfo: any) => {
           /* istanbul ignore else */
           if (wInfo.dependencies) {
@@ -632,21 +550,14 @@ export function _templatizeWorkforceProject(
 }
 
 //TODO: function doc
-export function _templatizeWorkforceDispatcherOrWorker(
-  t: IItemTemplate,
-  type: string
-): IItemTemplate {
+export function _templatizeWorkforceDispatcherOrWorker(t: IItemTemplate, type: string): IItemTemplate {
   /* istanbul ignore else */
   if ((t.item.typeKeywords || []).indexOf(type) > -1) {
     const properties: any = t.item.properties || {};
     const fsId = properties["workforceFeatureServiceId"];
     /* istanbul ignore else */
     if (fsId) {
-      t.item.properties["workforceFeatureServiceId"] = templatizeTerm(
-        fsId,
-        fsId,
-        ".itemId"
-      );
+      t.item.properties["workforceFeatureServiceId"] = templatizeTerm(fsId, fsId, ".itemId");
     }
   }
   return t;
@@ -654,27 +565,13 @@ export function _templatizeWorkforceDispatcherOrWorker(
 
 // Helpers
 export function isWorkforceProject(itemTemplate: IItemTemplate): boolean {
-  return (
-    (itemTemplate.item.typeKeywords || []).indexOf("Workforce Project") > -1
-  );
+  return (itemTemplate.item.typeKeywords || []).indexOf("Workforce Project") > -1;
 }
 
 export function getKeyWorkforceProperties(version: number): string[] {
   return version === 1
-    ? [
-        "groupId",
-        "workerWebMapId",
-        "dispatcherWebMapId",
-        "dispatchers",
-        "assignments",
-        "workers",
-        "tracks"
-      ]
-    : [
-        "workforceDispatcherMapId",
-        "workforceProjectGroupId",
-        "workforceWorkerMapId"
-      ];
+    ? ["groupId", "workerWebMapId", "dispatcherWebMapId", "dispatchers", "assignments", "workers", "tracks"]
+    : ["workforceDispatcherMapId", "workforceProjectGroupId", "workforceWorkerMapId"];
 }
 
 /**
@@ -687,24 +584,22 @@ export function getKeyWorkforceProperties(version: number): string[] {
 export function urlTest(v: any, authentication: UserSession): any {
   const urls: any[] = _getURLs(v);
   const requests: Array<Promise<any>> = [];
-  urls.forEach(url => {
+  urls.forEach((url) => {
     const options: any = {
       f: "json",
-      authentication: authentication
+      authentication: authentication,
     };
     requests.push(rest_request(url, options));
   });
   return {
     requests: requests,
-    urls: urls
+    urls: urls,
   };
 }
 
 //TODO: function doc
 export function _getURLs(v: string): string[] {
-  return regExTest(v, /=(http.*?FeatureServer.*?(?=&|$))/gi).map(_v =>
-    _v.replace("=", "")
-  );
+  return regExTest(v, /=(http.*?FeatureServer.*?(?=&|$))/gi).map((_v) => _v.replace("=", ""));
 }
 
 //#region Deploy Process ---------------------------------------------------------------------------------------//
@@ -720,11 +615,11 @@ export function fineTuneCreatedWorkforceItem(
   newlyCreatedItem: IItemTemplate,
   destinationAuthentication: UserSession,
   url: string,
-  templateDictionary: any
+  templateDictionary: any,
 ): Promise<any> {
   return new Promise<any>((resolve, reject) => {
     destinationAuthentication.getUser().then(
-      user => {
+      (user) => {
         // update url with slash if necessary
         url = _updateUrl(url);
         // Dispatchers...index 2 for workforce v2
@@ -736,99 +631,81 @@ export function fineTuneCreatedWorkforceItem(
           user.username || "",
           user.fullName || "",
           destinationAuthentication,
-          templateDictionary.isPortal
+          templateDictionary.isPortal,
         ).then(
-          results => {
+          (results) => {
             // for workforce v2 we storce the key details from the workforce service as workforceInfos
             // now we need to detemplatize it and update the workforce service
-            let workforceInfos: any = getProp(
-              newlyCreatedItem,
-              "properties.workforceInfos"
-            );
+            let workforceInfos: any = getProp(newlyCreatedItem, "properties.workforceInfos");
             if (workforceInfos && url) {
-              workforceInfos = replaceInTemplate(
-                workforceInfos,
-                templateDictionary
-              );
+              workforceInfos = replaceInTemplate(workforceInfos, templateDictionary);
 
               _getFields(url, [2, 3, 4], destinationAuthentication).then(
-                fields => {
+                (fields) => {
                   // Assignment Types...index 3
                   const assignmentTypeUrl = `${url}3`;
-                  const assignmentTypeInfos =
-                    workforceInfos.assignmentTypeInfos;
-                  const assignmentTypeFeatures = _getAddFeatures(
-                    assignmentTypeInfos,
-                    fields[assignmentTypeUrl]
-                  );
+                  const assignmentTypeInfos = workforceInfos.assignmentTypeInfos;
+                  const assignmentTypeFeatures = _getAddFeatures(assignmentTypeInfos, fields[assignmentTypeUrl]);
 
                   const assignmentTypePromise = _applyEdits(
                     assignmentTypeUrl,
                     assignmentTypeFeatures,
                     destinationAuthentication,
-                    true
+                    true,
                   );
 
                   // Assignment Integrations...index 4
                   const assignmentIntegrationUrl = `${url}4`;
-                  const assignmentIntegrationInfos =
-                    workforceInfos.assignmentIntegrationInfos;
+                  const assignmentIntegrationInfos = workforceInfos.assignmentIntegrationInfos;
                   const assignmentIntegrationFeatures = _getAddFeatures(
                     assignmentIntegrationInfos,
-                    fields[assignmentIntegrationUrl]
+                    fields[assignmentIntegrationUrl],
                   );
                   const assignmentIntegrationPromise = _applyEdits(
                     assignmentIntegrationUrl,
                     assignmentIntegrationFeatures,
                     destinationAuthentication,
-                    true
+                    true,
                   );
 
-                  Promise.all([
-                    assignmentTypePromise,
-                    assignmentIntegrationPromise
-                  ]).then(resolve, reject);
+                  Promise.all([assignmentTypePromise, assignmentIntegrationPromise]).then(resolve, reject);
                 },
-                e => reject(fail(e))
+                (e) => reject(fail(e)),
               );
             } else {
               resolve({ success: results });
             }
           },
-          e => reject(fail(e))
+          (e) => reject(fail(e)),
         );
       },
-      e => reject(fail(e))
+      (e) => reject(fail(e)),
     );
   });
 }
 
 //TODO: function doc
-export function _getFields(
-  url: string,
-  ids: number[],
-  authentication: UserSession
-): Promise<any> {
+export function _getFields(url: string, ids: number[], authentication: UserSession): Promise<any> {
   return new Promise<any>((resolve, reject) => {
     const options: any = {
       f: "json",
       fields: "*",
-      authentication: authentication
+      authentication: authentication,
     };
     url = _updateUrl(url);
     const promises: any[] = [];
-    ids.forEach(id => {
+    ids.forEach((id) => {
       promises.push(rest_request(`${url}${id}`, options));
     });
     Promise.all(promises).then(
-      results => {
+      (results) => {
         const finalResult: any = {};
-        results.forEach(r => {
+        results.forEach((r) => {
           finalResult[`${url}${r.id}`] = r.fields.map((f: any) => f.name);
         });
         resolve(finalResult);
       },
-      e => reject(fail(e))
+      (e) => reject(fail(e)),
     );
   });
 }
@@ -844,7 +721,7 @@ export function _getAddFeatures(updateInfos: any, fields: any[]): any {
   const features: any[] = [];
   updateInfos.forEach((update: any) => {
     const f = {};
-    Object.keys(update).forEach(k => {
+    Object.keys(update).forEach((k) => {
       const fieldName = _getField(k, fields);
       f[fieldName] = update[k];
     });
@@ -855,7 +732,7 @@ export function _getAddFeatures(updateInfos: any, fields: any[]): any {
 
 //TODO: function doc
 export function _getField(name: string, fields: string[]): string {
-  return fields.filter(f => f.toLowerCase() === name.toLowerCase())[0];
+  return fields.filter((f) => f.toLowerCase() === name.toLowerCase())[0];
 }
 
 /**
@@ -873,7 +750,7 @@ export function _updateDispatchers(
   name: string,
   fullName: string,
   authentication: UserSession,
-  isPortal: boolean
+  isPortal: boolean,
 ): Promise<boolean> {
   return new Promise<boolean>((resolve, reject) => {
     if (url) {
@@ -881,7 +758,7 @@ export function _updateDispatchers(
       queryFeatures({
         url,
         where: `${fieldName} = '${name}'`,
-        authentication
+        authentication,
       }).then(
         (results: any) => {
           if (results && results.features) {
@@ -889,9 +766,9 @@ export function _updateDispatchers(
               const features = [
                 {
                   attributes: {
-                    name: fullName
-                  }
-                }
+                    name: fullName,
+                  },
+                },
               ];
               features[0].attributes[fieldName] = name;
               _applyEdits(url, features, authentication).then(resolve, reject);
@@ -902,7 +779,7 @@ export function _updateDispatchers(
             resolve(false);
           }
         },
-        e => reject(fail(e))
+        (e) => reject(fail(e)),
       );
     } else {
       resolve(false);
@@ -915,7 +792,7 @@ export function _applyEdits(
   url: string,
   adds: any[],
   authentication: UserSession,
-  useGlobalIds: boolean = false // only set when contains a globalid
+  useGlobalIds: boolean = false, // only set when contains a globalid
 ): any {
   return new Promise<boolean>((resolve, reject) => {
     if (adds.length > 0) {
@@ -923,28 +800,28 @@ export function _applyEdits(
         url,
         adds,
         useGlobalIds,
-        authentication
+        authentication,
       }).then(
-        addResults => {
+        (addResults) => {
           if (addResults && addResults.addResults) {
             resolve(true);
           } else {
             reject(
               fail({
                 success: false,
-                message: "Failed to add dispatch record."
-              })
+                message: "Failed to add dispatch record.",
+              }),
             );
           }
         },
-        e =>
+        (e) =>
           reject(
             fail({
               success: false,
               message: "Failed to add dispatch record.",
-              error: e
-            })
-          )
+              error: e,
+            }),
+          ),
       );
     } else {
       resolve(true);

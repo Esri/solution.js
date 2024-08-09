@@ -27,7 +27,7 @@ import {
   EItemProgressStatus,
   UserSession,
   convertIModel,
-  generateEmptyCreationResponse
+  generateEmptyCreationResponse,
 } from "@esri/solution-common";
 import { IModel, failSafe } from "@esri/hub-common";
 import { getItemData, removeItem } from "@esri/arcgis-rest-portal";
@@ -45,21 +45,21 @@ import { createStoryMap } from "./helpers/create-storymap";
 export function convertItemToTemplate(
   itemInfo: any,
   destAuthentication: UserSession,
-  srcAuthentication: UserSession
+  srcAuthentication: UserSession,
 ): Promise<IItemTemplate> {
   const model = {
     item: itemInfo,
-    data: {}
+    data: {},
   } as IModel;
   // fetch the data.json
   return getItemData(itemInfo.id, { authentication: srcAuthentication })
-    .then(data => {
+    .then((data) => {
       // append into the model
       model.data = data;
       // and use that to create a template
       return convertStoryMapToTemplate(model);
     })
-    .then(tmpl => {
+    .then((tmpl) => {
       return tmpl;
     });
 }
@@ -76,14 +76,10 @@ export function createItemFromTemplate(
   template: IItemTemplate,
   templateDictionary: any,
   destinationAuthentication: UserSession,
-  itemProgressCallback: IItemProgressCallback
+  itemProgressCallback: IItemProgressCallback,
 ): Promise<ICreateItemFromTemplateResponse> {
   // let the progress system know we've started...
-  const startStatus = itemProgressCallback(
-    template.itemId,
-    EItemProgressStatus.Started,
-    0
-  );
+  const startStatus = itemProgressCallback(template.itemId, EItemProgressStatus.Started, 0);
 
   // and if it returned false, just resolve out
   if (!startStatus) {
@@ -107,44 +103,34 @@ export function createItemFromTemplate(
   // Create the "siteModel" from the template. Does not save the site item yet
   // Note: depending on licensing and user privs, will also create the team groups
   // and initiative item.
-  return createStoryMapModelFromTemplate(
-    template,
-    templateDictionary,
-    transforms,
-    destinationAuthentication
-  )
-    .then(interpolated => {
+  return createStoryMapModelFromTemplate(template, templateDictionary, transforms, destinationAuthentication)
+    .then((interpolated) => {
       const options = {
-        assets: interpolated.assets || []
+        assets: interpolated.assets || [],
       };
-      return createStoryMap(
-        interpolated,
-        templateDictionary.folderId,
-        options,
-        destinationAuthentication
-      );
+      return createStoryMap(interpolated, templateDictionary.folderId, options, destinationAuthentication);
     })
-    .then(createdModel => {
+    .then((createdModel) => {
       model = createdModel;
       // Update the template dictionary
       // TODO: This should be done in whatever receives
       // the outcome of this promise chain
       templateDictionary[template.itemId] = {
-        itemId: model.item.id
+        itemId: model.item.id,
       };
       // call the progress callback, which also mutates templateDictionary
       const finalStatus = itemProgressCallback(
         template.itemId,
         EItemProgressStatus.Finished,
         template.estimatedDeploymentCostFactor || 2,
-        model.item.id
+        model.item.id,
       );
       if (!finalStatus) {
         // clean up the site we just created
         const failSafeRemove = failSafe(removeItem, { success: true });
         return failSafeRemove({
           id: model.item.id,
-          authentication: destinationAuthentication
+          authentication: destinationAuthentication,
         }).then(() => {
           return Promise.resolve(generateEmptyCreationResponse(template.type));
         });
@@ -153,17 +139,17 @@ export function createItemFromTemplate(
         const response: ICreateItemFromTemplateResponse = {
           item: {
             ...template,
-            ...convertIModel(model)
+            ...convertIModel(model),
           },
           id: model.item.id,
           type: template.type,
-          postProcess: false
+          postProcess: false,
         };
         response.item.itemId = model.item.id;
         return response;
       }
     })
-    .catch(ex => {
+    .catch((ex) => {
       itemProgressCallback(template.itemId, EItemProgressStatus.Failed, 0);
       throw ex;
     });

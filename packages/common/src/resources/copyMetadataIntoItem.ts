@@ -14,11 +14,7 @@
  * limitations under the License.
  */
 
-import {
-  IAssociatedFileCopyResults,
-  IAssociatedFileInfo,
-  UserSession
-} from "../interfaces";
+import { IAssociatedFileCopyResults, IAssociatedFileInfo, UserSession } from "../interfaces";
 import { addMetadataFromBlob } from "./addMetadataFromBlob";
 import { createCopyResults } from "./createCopyResults";
 import { getBlob } from "./get-blob";
@@ -38,44 +34,21 @@ export function copyMetadataIntoItem(
   fileInfo: IAssociatedFileInfo,
   sourceAuthentication: UserSession,
   destinationItemId: string,
-  destinationAuthentication: UserSession
+  destinationAuthentication: UserSession,
 ): Promise<IAssociatedFileCopyResults> {
-  return new Promise<IAssociatedFileCopyResults>(resolve => {
+  return new Promise<IAssociatedFileCopyResults>((resolve) => {
     getBlob(fileInfo.url, sourceAuthentication).then(
-      blob => {
+      (blob) => {
         if (blob.type !== "text/xml" && blob.type !== "application/xml") {
-          resolve(
-            createCopyResults(fileInfo, false) as IAssociatedFileCopyResults
-          ); // unable to get resource
+          resolve(createCopyResults(fileInfo, false) as IAssociatedFileCopyResults); // unable to get resource
           return;
         }
-        addMetadataFromBlob(
-          blob,
-          destinationItemId,
-          destinationAuthentication
-        ).then(
-          () =>
-            resolve(
-              createCopyResults(
-                fileInfo,
-                true,
-                true
-              ) as IAssociatedFileCopyResults
-            ),
-          () =>
-            resolve(
-              createCopyResults(
-                fileInfo,
-                true,
-                false
-              ) as IAssociatedFileCopyResults
-            ) // unable to add resource
+        addMetadataFromBlob(blob, destinationItemId, destinationAuthentication).then(
+          () => resolve(createCopyResults(fileInfo, true, true) as IAssociatedFileCopyResults),
+          () => resolve(createCopyResults(fileInfo, true, false) as IAssociatedFileCopyResults), // unable to add resource
         );
       },
-      () =>
-        resolve(
-          createCopyResults(fileInfo, false) as IAssociatedFileCopyResults
-        ) // unable to get resource
+      () => resolve(createCopyResults(fileInfo, false) as IAssociatedFileCopyResults), // unable to get resource
     );
   });
 }

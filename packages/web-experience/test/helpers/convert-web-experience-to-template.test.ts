@@ -17,51 +17,40 @@
 import { cloneObject, without } from "@esri/hub-common";
 
 import { convertWebExperienceToTemplate } from "../../src/helpers/convert-web-experience-to-template";
-import * as utils from "../../../common/test/mocks/utils";
 
 import { ExBee } from "../fixtures/exb-map-and-images";
 
-const MOCK_USER_SESSION = utils.createRuntimeMockUserSession();
-
 describe("convertWebExperienceToTemplate :: ", () => {
-  it("converts to a template and extracts dependencies", () => {
+  it("converts to a template and extracts dependencies", async () => {
     const model = cloneObject(ExBee);
 
-    return convertWebExperienceToTemplate(model).then(tmpl => {
-      ["itemId", "type", "item", "data", "dependencies"].forEach(p => {
+    return convertWebExperienceToTemplate(model).then((tmpl) => {
+      ["itemId", "type", "item", "data", "dependencies"].forEach((p) => {
         expect(tmpl[p]).toBeDefined(`should have ${p} prop defined`);
       });
-      expect(
-        tmpl.item.typeKeywords.indexOf(`status: Published`)
-      ).toBeGreaterThan(-1, "should have published keyword");
-      expect(tmpl.item.typeKeywords.indexOf(`status: Changed`)).toBe(
-        -1,
-        "should not have changed keyword"
-      );
-      expect(tmpl.dependencies.length).toBe(1, "should extract the webmap");
-      expect(tmpl.dependencies[0]).toBe(
-        "8644de121e434a368a6221c0498e4e47",
-        "should extract the webmap id"
-      );
+      expect((tmpl.item.typeKeywords as any).indexOf(`status: Published`))
+        .withContext("should have published keyword")
+        .toBeGreaterThan(-1);
+      expect((tmpl.item.typeKeywords as any).indexOf(`status: Changed`))
+        .withContext("should not have changed keyword")
+        .toBe(-1);
+      expect(tmpl.dependencies.length).withContext("should extract the webmap").toBe(1);
+      expect(tmpl.dependencies[0]).withContext("should extract the webmap id").toBe("8644de121e434a368a6221c0498e4e47");
     });
   });
 
-  it("other keyword paths", () => {
+  it("other keyword paths", async () => {
     const model = cloneObject(ExBee);
     // ExB's will always have either status: Changed OR status: Published
-    model.item.typeKeywords = without(
-      model.item.typeKeywords,
-      "status: Changed"
-    );
+    model.item.typeKeywords = without(model.item.typeKeywords ?? [], "status: Changed");
     model.item.typeKeywords.push("status: Published");
-    return convertWebExperienceToTemplate(model).then(tmpl => {
-      expect(
-        tmpl.item.typeKeywords.indexOf(`status: Published`)
-      ).toBeGreaterThan(-1, "should have published keyword");
-      expect(tmpl.item.typeKeywords.indexOf(`status: Changed`)).toBe(
-        -1,
-        "should not have changed keyword"
-      );
+    return convertWebExperienceToTemplate(model).then((tmpl) => {
+      expect((tmpl.item.typeKeywords as any).indexOf(`status: Published`))
+        .withContext("should have published keyword")
+        .toBeGreaterThan(-1);
+      expect((tmpl.item.typeKeywords as any).indexOf(`status: Changed`))
+        .withContext("should not have changed keyword")
+        .toBe(-1);
     });
   });
 });

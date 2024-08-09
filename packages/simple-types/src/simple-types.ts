@@ -31,7 +31,7 @@ import {
   IItemTemplate,
   IUpdateItemResponse,
   updateItemTemplateFromDictionary,
-  UserSession
+  UserSession,
 } from "@esri/solution-common";
 
 // Need to import collectively to enable spying
@@ -50,14 +50,9 @@ export function convertItemToTemplate(
   itemInfo: any,
   destAuthentication: UserSession,
   srcAuthentication: UserSession,
-  templateDictionary: any
+  templateDictionary: any,
 ): Promise<IItemTemplate> {
-  return simpleTypeHelpers.convertItemToTemplate(
-    itemInfo,
-    destAuthentication,
-    srcAuthentication,
-    templateDictionary
-  );
+  return simpleTypeHelpers.convertItemToTemplate(itemInfo, destAuthentication, srcAuthentication, templateDictionary);
 }
 
 /**
@@ -72,13 +67,13 @@ export function createItemFromTemplate(
   template: IItemTemplate,
   templateDictionary: any,
   destinationAuthentication: UserSession,
-  itemProgressCallback: IItemProgressCallback
+  itemProgressCallback: IItemProgressCallback,
 ): Promise<ICreateItemFromTemplateResponse> {
   return simpleTypeHelpers.createItemFromTemplate(
     template,
     templateDictionary,
     destinationAuthentication,
-    itemProgressCallback
+    itemProgressCallback,
   );
 }
 
@@ -94,14 +89,11 @@ export function createItemFromTemplate(
 export function postProcessFieldReferences(
   solutionTemplate: IItemTemplate,
   datasourceInfos: IDatasourceInfo[],
-  type: string
+  type: string,
 ): IItemTemplate {
   switch (type) {
     case "Web Mapping Application":
-      webmappingapplication.postProcessFieldReferences(
-        solutionTemplate,
-        datasourceInfos
-      );
+      webmappingapplication.postProcessFieldReferences(solutionTemplate, datasourceInfos);
       break;
     case "Dashboard":
       dashboard.postProcessFieldReferences(solutionTemplate, datasourceInfos);
@@ -130,11 +122,7 @@ export function postProcess(
   template: IItemTemplate,
   templates: IItemTemplate[],
   templateDictionary: any,
-  authentication: UserSession
+  authentication: UserSession,
 ): Promise<IUpdateItemResponse> {
-  return updateItemTemplateFromDictionary(
-    itemId,
-    templateDictionary,
-    authentication
-  );
+  return updateItemTemplateFromDictionary(itemId, templateDictionary, authentication);
 }

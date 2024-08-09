@@ -16,8 +16,7 @@
 import { UserSession } from "@esri/solution-common";
 
 export function getPortalEnv(authentication: UserSession): string {
-  const portalUrl =
-    authentication.portal || "https://www.arcgis.com/sharing/rest";
+  const portalUrl = authentication.portal || "https://www.arcgis.com/sharing/rest";
   let result = "portal";
   if (portalUrl.match(/(qaext|\.mapsqa)\.arcgis.com/)) {
     result = "qaext";

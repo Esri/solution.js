@@ -1,6 +1,6 @@
 {
   "name": "@esri/solution-velocity",
-  "version": "5.5.0",
+  "version": "5.6.0",
   "description": "Manages the creation and deployment of Velocity item types for @esri/solution.js.",
   "main": "dist/cjs/index.js",
   "module": "dist/esm/index.js",
@@ -18,6 +18,12 @@
     "dist/**"
   ],
   "devDependencies": {
+    "@types/jasmine": "^5.1.4",
+    "jasmine": "^5.2.0",
+    "jasmine-core": "^5.2.0",
+    "npm-check-updates": "^16.14.20"
+  },
+  "dependencies": {
     "@esri/arcgis-rest-auth": "^3.7.0",
     "@esri/arcgis-rest-feature-layer": "^3.7.0",
     "@esri/arcgis-rest-portal": "^3.7.0",
@@ -27,15 +33,8 @@
     "@esri/hub-initiatives": "^14.0.0",
     "@esri/hub-sites": "^14.2.4",
     "@esri/hub-teams": "^14.1.0",
-    "@esri/solution-common": "^5.5.0",
-    "@esri/solution-simple-types": "^5.5.0",
-    "@types/jasmine": "^5.1.4",
-    "fetch-mock": "^7.7.3",
-    "jasmine": "^5.1.0",
-    "jasmine-core": "^5.1.2",
-    "npm-check-updates": "^16.14.20"
-  },
-  "dependencies": {
+    "@esri/solution-common": "^5.6.0",
+    "@esri/solution-simple-types": "^5.6.0",
     "tslib": "1.14.1"
   },
   "scripts": {
@@ -82,5 +81,5 @@
     "esri",
     "ES6"
   ],
-  "gitHead": "6d48b8b37743558c05dcb55775043a756d589c50"
+  "gitHead": "c6d0e558d919035883389ee28e15ea6e2fc07201"
 }

@@ -37,7 +37,7 @@ export const ExBee = {
       "Web Experience",
       "Web Mapping Application",
       "Web Page",
-      "Web Site"
+      "Web Site",
     ],
     description: null,
     tags: [],
@@ -53,7 +53,7 @@ export const ExBee = {
     properties: {
       parentId: "dd1fe4c8772f477fb2b3d9bf0a15689f",
       source: "dd1fe4c8772f477fb2b3d9bf0a15689f",
-      children: ["8644de121e434a368a6221c0498e4e47"]
+      children: ["8644de121e434a368a6221c0498e4e47"],
     },
     url: null,
     proxyFilter: null,
@@ -75,7 +75,7 @@ export const ExBee = {
     numViews: 8,
     itemControl: "admin",
     scoreCompleteness: 16,
-    groupDesignations: null
+    groupDesignations: null,
   },
   data: {
     pages: {
@@ -85,13 +85,13 @@ export const ExBee = {
         layout: {
           LARGE: "home-layout-large",
           SMALL: "layout_5",
-          MEDIUM: "layout_10"
+          MEDIUM: "layout_10",
         },
         isVisible: true,
         id: "home",
         isDefault: true,
-        label: "Page 1"
-      }
+        label: "Page 1",
+      },
     },
     layouts: {
       "home-layout-large": {
@@ -105,16 +105,16 @@ export const ExBee = {
               top: "0px",
               width: "71.3715%",
               height: "60px",
-              right: "0px"
+              right: "0px",
             },
             widgetId: "widget_1",
             setting: {
               vCenter: false,
               hCenter: false,
               autoProps: {
-                width: true
-              }
-            }
+                width: true,
+              },
+            },
           },
           "1": {
             type: "WIDGET",
@@ -124,7 +124,7 @@ export const ExBee = {
               width: "76.6101%",
               height: "92.5000%",
               right: "299px",
-              bottom: 0
+              bottom: 0,
             },
             widgetId: "widget_6",
             setting: {
@@ -132,15 +132,15 @@ export const ExBee = {
                 width: true,
                 height: true,
                 left: false,
-                bottom: false
+                bottom: false,
               },
               vCenter: false,
               hCenter: false,
               order: 0,
               lockParent: false,
-              lockLayout: false
+              lockLayout: false,
             },
-            isPending: true
+            isPending: true,
           },
           "2": {
             type: "WIDGET",
@@ -150,7 +150,7 @@ export const ExBee = {
               width: "43.0469%",
               height: "62.5000%",
               right: 61,
-              bottom: 144
+              bottom: 144,
             },
             widgetId: "widget_11",
             setting: {
@@ -160,15 +160,15 @@ export const ExBee = {
                 bottom: false,
                 top: false,
                 height: true,
-                width: true
+                width: true,
               },
               vCenter: false,
               hCenter: false,
               order: 0,
               lockParent: false,
-              lockLayout: false
+              lockLayout: false,
             },
-            isPending: true
+            isPending: true,
           },
           "3": {
             type: "WIDGET",
@@ -178,7 +178,7 @@ export const ExBee = {
               width: "23.4375%",
               height: "37.5000%",
               right: 0,
-              bottom: "55.0000%"
+              bottom: "55.0000%",
             },
             widgetId: "widget_12",
             setting: {
@@ -186,12 +186,12 @@ export const ExBee = {
                 right: false,
                 left: true,
                 top: false,
-                bottom: true
+                bottom: true,
               },
               vCenter: false,
-              hCenter: false
+              hCenter: false,
             },
-            isPending: false
+            isPending: false,
           },
           "4": {
             type: "WIDGET",
@@ -201,7 +201,7 @@ export const ExBee = {
               width: "76.7340%",
               height: "82.5283%",
               bottom: "9.9717%",
-              right: 297.8046875
+              right: 297.8046875,
             },
             widgetId: "widget_13",
             setting: {
@@ -209,16 +209,16 @@ export const ExBee = {
                 right: true,
                 left: false,
                 top: false,
-                bottom: true
+                bottom: true,
               },
               order: 0,
               lockParent: false,
-              lockLayout: false
-            }
-          }
-        }
+              lockLayout: false,
+            },
+          },
+        },
       },
-      layout_1: {
+      "layout_1": {
         type: "FIXED",
         order: ["0", "1", "2", "3"],
         content: {
@@ -228,14 +228,14 @@ export const ExBee = {
               left: "14px",
               top: "11px",
               width: "36px",
-              height: "36px"
+              height: "36px",
             },
             widgetId: "widget_2",
             isPending: false,
             setting: {
               vCenter: true,
-              hCenter: false
-            }
+              hCenter: false,
+            },
           },
           "1": {
             type: "WIDGET",
@@ -244,12 +244,12 @@ export const ExBee = {
               top: "0px",
               width: "279px",
               height: "42px",
-              bottom: "0px"
+              bottom: "0px",
             },
             widgetId: "widget_3",
             setting: {
-              vCenter: true
-            }
+              vCenter: true,
+            },
           },
           "2": {
             type: "WIDGET",
@@ -258,14 +258,14 @@ export const ExBee = {
               top: "0px",
               width: "210px",
               height: "32px",
-              bottom: "0px"
+              bottom: "0px",
             },
             widgetId: "widget_4",
             isPending: false,
             setting: {
               vCenter: true,
-              hCenter: false
-            }
+              hCenter: false,
+            },
           },
           "3": {
             type: "WIDGET",
@@ -275,37 +275,37 @@ export const ExBee = {
               width: "300px",
               height: "50px",
               right: "0px",
-              bottom: "0px"
+              bottom: "0px",
             },
             widgetId: "widget_5",
             setting: {
               autoProps: {
                 left: true,
-                height: true
-              }
-            }
-          }
+                height: true,
+              },
+            },
+          },
         },
-        label: "Default"
+        label: "Default",
       },
-      layout_2: {
+      "layout_2": {
         type: "FIXED",
         order: ["0", "1"],
         content: {
           "0": {
             type: "WIDGET",
             bbox: {},
-            widgetId: "widget_8"
+            widgetId: "widget_8",
           },
           "1": {
             type: "WIDGET",
             bbox: {},
-            widgetId: "widget_9"
-          }
+            widgetId: "widget_9",
+          },
         },
-        label: "Controller layout"
+        label: "Controller layout",
       },
-      layout_3: {
+      "layout_3": {
         content: {
           "0": {
             type: "WIDGET",
@@ -313,18 +313,18 @@ export const ExBee = {
               left: 0,
               top: 0,
               bottom: 0,
-              right: 0
-            }
-          }
+              right: 0,
+            },
+          },
         },
         order: ["0"],
-        label: "Open widget layout"
+        label: "Open widget layout",
       },
-      layout_4: {
+      "layout_4": {
         type: "FIXED",
-        label: "Map FixedLayout"
+        label: "Map FixedLayout",
       },
-      layout_5: {
+      "layout_5": {
         type: "FIXED",
         content: {
           "0": {
@@ -334,16 +334,16 @@ export const ExBee = {
               top: "0px",
               width: "71.3715%",
               height: "60px",
-              right: "0px"
+              right: "0px",
             },
             widgetId: "widget_7",
             setting: {
               vCenter: false,
               hCenter: false,
               autoProps: {
-                width: true
-              }
-            }
+                width: true,
+              },
+            },
           },
           "1": {
             type: "WIDGET",
@@ -353,24 +353,24 @@ export const ExBee = {
               width: "31.2500%",
               height: "52%",
               right: "0px",
-              bottom: "0px"
+              bottom: "0px",
             },
             widgetId: "widget_6",
             setting: {
               autoProps: {
                 width: true,
-                height: true
-              }
-            }
-          }
+                height: true,
+              },
+            },
+          },
         },
-        order: ["0", "1"]
+        order: ["0", "1"],
       },
-      layout_6: {
+      "layout_6": {
         type: "FIXED",
-        label: "Map FixedLayout"
+        label: "Map FixedLayout",
       },
-      layout_7: {
+      "layout_7": {
         type: "FIXED",
         content: {
           "0": {
@@ -379,14 +379,14 @@ export const ExBee = {
               left: "14px",
               top: "11px",
               width: "36px",
-              height: "36px"
+              height: "36px",
             },
             widgetId: "widget_2",
             isPending: false,
             setting: {
               vCenter: true,
-              hCenter: false
-            }
+              hCenter: false,
+            },
           },
           "1": {
             type: "WIDGET",
@@ -395,16 +395,16 @@ export const ExBee = {
               top: "3px",
               width: "279px",
               height: "48px",
-              bottom: "1px"
+              bottom: "1px",
             },
             widgetId: "widget_3",
             setting: {
               autoProps: {
-                height: true
+                height: true,
               },
-              hCenter: false
+              hCenter: false,
             },
-            isPending: true
+            isPending: true,
           },
           "2": {
             type: "WIDGET",
@@ -413,7 +413,7 @@ export const ExBee = {
               top: "0px",
               width: "210px",
               height: "48px",
-              bottom: "0px"
+              bottom: "0px",
             },
             widgetId: "widget_4",
             isPending: true,
@@ -421,9 +421,9 @@ export const ExBee = {
               vCenter: false,
               hCenter: false,
               autoProps: {
-                height: true
-              }
-            }
+                height: true,
+              },
+            },
           },
           "3": {
             type: "WIDGET",
@@ -433,41 +433,41 @@ export const ExBee = {
               width: "200px",
               height: "46px",
               right: "0px",
-              bottom: "0px"
+              bottom: "0px",
             },
             widgetId: "widget_5",
             setting: {
               autoProps: {
                 left: true,
-                height: true
+                height: true,
               },
               hCenter: false,
-              vCenter: false
+              vCenter: false,
             },
-            isPending: false
-          }
+            isPending: false,
+          },
         },
         order: ["0", "1", "2", "3"],
-        label: "Default"
+        label: "Default",
       },
-      layout_8: {
+      "layout_8": {
         type: "FIXED",
         order: ["0", "1"],
         content: {
           "0": {
             type: "WIDGET",
             bbox: {},
-            widgetId: "widget_8"
+            widgetId: "widget_8",
           },
           "1": {
             type: "WIDGET",
             bbox: {},
-            widgetId: "widget_9"
-          }
+            widgetId: "widget_9",
+          },
         },
-        label: "Controller layout"
+        label: "Controller layout",
       },
-      layout_9: {
+      "layout_9": {
         content: {
           "0": {
             type: "WIDGET",
@@ -475,14 +475,14 @@ export const ExBee = {
               left: 0,
               top: 0,
               bottom: 0,
-              right: 0
-            }
-          }
+              right: 0,
+            },
+          },
         },
         order: ["0"],
-        label: "Open widget layout"
+        label: "Open widget layout",
       },
-      layout_10: {
+      "layout_10": {
         type: "FIXED",
         content: {
           "0": {
@@ -492,16 +492,16 @@ export const ExBee = {
               top: "0px",
               width: "71.3715%",
               height: "60px",
-              right: "0px"
+              right: "0px",
             },
             widgetId: "widget_10",
             setting: {
               vCenter: false,
               hCenter: false,
               autoProps: {
-                width: true
-              }
-            }
+                width: true,
+              },
+            },
           },
           "1": {
             type: "WIDGET",
@@ -511,24 +511,24 @@ export const ExBee = {
               width: "31.2500%",
               height: "52%",
               right: "0px",
-              bottom: "0px"
+              bottom: "0px",
             },
             widgetId: "widget_6",
             setting: {
               autoProps: {
                 width: true,
-                height: true
-              }
-            }
-          }
+                height: true,
+              },
+            },
+          },
         },
-        order: ["0", "1"]
+        order: ["0", "1"],
       },
-      layout_11: {
+      "layout_11": {
         type: "FIXED",
-        label: "Map FixedLayout"
+        label: "Map FixedLayout",
       },
-      layout_12: {
+      "layout_12": {
         type: "FIXED",
         content: {
           "0": {
@@ -537,14 +537,14 @@ export const ExBee = {
               left: "14px",
               top: "11px",
               width: "36px",
-              height: "36px"
+              height: "36px",
             },
             widgetId: "widget_2",
             isPending: false,
             setting: {
               vCenter: true,
-              hCenter: false
-            }
+              hCenter: false,
+            },
           },
           "1": {
             type: "WIDGET",
@@ -553,12 +553,12 @@ export const ExBee = {
               top: "0px",
               width: "279px",
               height: "42px",
-              bottom: "0px"
+              bottom: "0px",
             },
             widgetId: "widget_3",
             setting: {
-              vCenter: true
-            }
+              vCenter: true,
+            },
           },
           "2": {
             type: "WIDGET",
@@ -567,14 +567,14 @@ export const ExBee = {
               top: "0px",
               width: "210px",
               height: "32px",
-              bottom: "0px"
+              bottom: "0px",
             },
             widgetId: "widget_4",
             isPending: true,
             setting: {
               vCenter: true,
-              hCenter: false
-            }
+              hCenter: false,
+            },
           },
           "3": {
             type: "WIDGET",
@@ -584,38 +584,38 @@ export const ExBee = {
               width: "300px",
               height: "50px",
               right: "0px",
-              bottom: "0px"
+              bottom: "0px",
             },
             widgetId: "widget_5",
             setting: {
               autoProps: {
                 left: true,
-                height: true
-              }
-            }
-          }
+                height: true,
+              },
+            },
+          },
         },
         order: ["0", "1", "2", "3"],
-        label: "Default"
+        label: "Default",
       },
-      layout_13: {
+      "layout_13": {
         type: "FIXED",
         content: {
           "0": {
             type: "WIDGET",
             bbox: {},
-            widgetId: "widget_8"
+            widgetId: "widget_8",
           },
           "1": {
             type: "WIDGET",
             bbox: {},
-            widgetId: "widget_9"
-          }
+            widgetId: "widget_9",
+          },
         },
         order: ["0", "1"],
-        label: "Controller layout"
+        label: "Controller layout",
       },
-      layout_14: {
+      "layout_14": {
         content: {
           "0": {
             type: "WIDGET",
@@ -623,17 +623,17 @@ export const ExBee = {
               left: 0,
               top: 0,
               bottom: 0,
-              right: 0
-            }
-          }
+              right: 0,
+            },
+          },
         },
         order: ["0"],
-        label: "Open widget layout"
+        label: "Open widget layout",
       },
-      layout_15: {
+      "layout_15": {
         type: "FIXED",
-        label: "Map FixedLayout"
-      }
+        label: "Map FixedLayout",
+      },
     },
     widgets: {
       widget_1: {
@@ -642,38 +642,38 @@ export const ExBee = {
         config: {},
         layouts: {
           DEFAULT: {
-            LARGE: "layout_1"
-          }
+            LARGE: "layout_1",
+          },
         },
         style: {
           background: {
             image: {
-              url: ""
+              url: "",
             },
-            color: "var(--primary-700)"
+            color: "var(--primary-700)",
           },
           boxShadow: {
             offsetX: {
               distance: 0,
-              unit: "px"
+              unit: "px",
             },
             offsetY: {
               distance: 2,
-              unit: "px"
+              unit: "px",
             },
             blur: {
               distance: 4,
-              unit: "px"
+              unit: "px",
             },
             spread: {
               distance: 0,
-              unit: "px"
+              unit: "px",
             },
-            color: "rgba(0,0,0,0.5)"
-          }
+            color: "rgba(0,0,0,0.5)",
+          },
         },
         version: "1.0.0",
-        label: "Fixed Panel 2"
+        label: "Fixed Panel 2",
       },
       widget_2: {
         id: "widget_2",
@@ -687,50 +687,47 @@ export const ExBee = {
             imageParam: {
               cropParam: {
                 cropShape: "circle",
-                svgPath:
-                  "M28 14c0 7.732-6.268 14-14 14S0 21.732 0 14 6.268 0 14 0s14 6.268 14 14z",
-                svgViewBox: "0 0 28 28"
-              }
-            }
+                svgPath: "M28 14c0 7.732-6.268 14-14 14S0 21.732 0 14 6.268 0 14 0s14 6.268 14 14z",
+                svgViewBox: "0 0 28 28",
+              },
+            },
           },
-          styleConfig: {}
+          styleConfig: {},
         },
         version: "1.0.0",
-        label: "Image 1"
+        label: "Image 1",
       },
       widget_3: {
         id: "widget_3",
         uri: "widgets/common/text/",
         config: {
           text: "<p></p>",
-          placeholder:
-            '<p><span style="font-size: 24px; color: rgb(255, 255, 255);">Here is the title</span></p>',
+          placeholder: '<p><span style="font-size: 24px; color: rgb(255, 255, 255);">Here is the title</span></p>',
           style: {
             verticalAlign: "center",
             wrap: true,
             overflow: "scroll",
-            padding: "p-1"
-          }
+            padding: "p-1",
+          },
         },
         version: "1.0.0",
-        label: "Text 1"
+        label: "Text 1",
       },
       widget_4: {
         id: "widget_4",
         uri: "widgets/common/text/",
         config: {
           text: "<p></p>",
-          placeholder:
-            '<p><span style="font-size: 16px; color: rgb(255, 255, 255);">Here is the subtitle</span></p>',
+          placeholder: '<p><span style="font-size: 16px; color: rgb(255, 255, 255);">Here is the subtitle</span></p>',
           style: {
             verticalAlign: "center",
             wrap: true,
             overflow: "scroll",
-            padding: "p-1"
-          }
+            padding: "p-1",
+          },
         },
         version: "1.0.0",
-        label: "Text 2"
+        label: "Text 2",
       },
       widget_5: {
         id: "widget_5",
@@ -740,7 +737,7 @@ export const ExBee = {
             onlyOpenOne: true,
             displayType: "STACK",
             vertical: false,
-            size: {}
+            size: {},
           },
           appearance: {
             space: 10,
@@ -751,26 +748,26 @@ export const ExBee = {
               avatar: {
                 type: "primary",
                 size: "default",
-                shape: "rectangle"
-              }
-            }
-          }
+                shape: "rectangle",
+              },
+            },
+          },
         },
         layouts: {
           controller: {
             LARGE: "layout_2",
             SMALL: "layout_8",
-            MEDIUM: "layout_13"
+            MEDIUM: "layout_13",
           },
           _openwidget: {
             LARGE: "layout_3",
             SMALL: "layout_9",
-            MEDIUM: "layout_14"
-          }
+            MEDIUM: "layout_14",
+          },
         },
         widgets: ["widget_8", "widget_9"],
         version: "1.0.0",
-        label: "Widget Controller 1"
+        label: "Widget Controller 1",
       },
       widget_6: {
         id: "widget_6",
@@ -779,7 +776,7 @@ export const ExBee = {
           toolConifg: {
             canZoom: true,
             canHome: true,
-            canSearch: true
+            canSearch: true,
           },
           initialMapDataSourceID: "dataSource_1",
           isUseCustomMapState: true,
@@ -790,40 +787,40 @@ export const ExBee = {
               targetGeometry: {
                 spatialReference: {
                   latestWkid: 3857,
-                  wkid: 102100
+                  wkid: 102100,
                 },
                 x: -8574474.640490731,
-                y: 4705977.340806294
-              }
+                y: 4705977.340806294,
+              },
             },
             extent: {
               spatialReference: {
                 latestWkid: 3857,
-                wkid: 102100
+                wkid: 102100,
               },
               xmin: -8615024.483995963,
               ymin: 4675402.529492265,
               xmax: -8533924.7969855,
-              ymax: 4736552.152120324
+              ymax: 4736552.152120324,
             },
             rotation: 0,
-            viewType: "2d"
-          }
+            viewType: "2d",
+          },
         },
         layouts: {
           MapFixedLayout: {
             LARGE: "layout_4",
             SMALL: "layout_6",
-            MEDIUM: "layout_11"
-          }
+            MEDIUM: "layout_11",
+          },
         },
         version: "1.0.0",
         label: "Map 1",
         useDataSources: [
           {
-            dataSourceId: "dataSource_1"
-          }
-        ]
+            dataSourceId: "dataSource_1",
+          },
+        ],
       },
       widget_7: {
         id: "widget_7",
@@ -831,48 +828,48 @@ export const ExBee = {
         config: {},
         layouts: {
           DEFAULT: {
-            SMALL: "layout_7"
-          }
+            SMALL: "layout_7",
+          },
         },
         style: {
           background: {
             image: {
-              url: ""
+              url: "",
             },
-            color: "var(--primary-700)"
+            color: "var(--primary-700)",
           },
           boxShadow: {
             offsetX: {
               distance: 0,
-              unit: "px"
+              unit: "px",
             },
             offsetY: {
               distance: 2,
-              unit: "px"
+              unit: "px",
             },
             blur: {
               distance: 4,
-              unit: "px"
+              unit: "px",
             },
             spread: {
               distance: 0,
-              unit: "px"
+              unit: "px",
             },
-            color: "rgba(0,0,0,0.5)"
-          }
+            color: "rgba(0,0,0,0.5)",
+          },
         },
         version: "1.0.0",
-        label: "Fixed Panel 3"
+        label: "Fixed Panel 3",
       },
       widget_8: {
         id: "widget_8",
         uri: "widgets/arcgis/map-layers/",
         config: {
-          useMapWidget: true
+          useMapWidget: true,
         },
         useMapWidgetIds: ["widget_6"],
         version: "1.0.0",
-        label: "Map Layers 1"
+        label: "Map Layers 1",
       },
       widget_9: {
         id: "widget_9",
@@ -880,7 +877,7 @@ export const ExBee = {
         config: {},
         useMapWidgetIds: ["widget_6"],
         version: "1.0.0",
-        label: "Legend 1"
+        label: "Legend 1",
       },
       widget_10: {
         id: "widget_10",
@@ -888,38 +885,38 @@ export const ExBee = {
         config: {},
         layouts: {
           DEFAULT: {
-            MEDIUM: "layout_12"
-          }
+            MEDIUM: "layout_12",
+          },
         },
         style: {
           background: {
             image: {
-              url: ""
+              url: "",
             },
-            color: "var(--primary-700)"
+            color: "var(--primary-700)",
           },
           boxShadow: {
             offsetX: {
               distance: 0,
-              unit: "px"
+              unit: "px",
             },
             offsetY: {
               distance: 2,
-              unit: "px"
+              unit: "px",
             },
             blur: {
               distance: 4,
-              unit: "px"
+              unit: "px",
             },
             spread: {
               distance: 0,
-              unit: "px"
+              unit: "px",
             },
-            color: "rgba(0,0,0,0.5)"
-          }
+            color: "rgba(0,0,0,0.5)",
+          },
         },
         version: "1.0.0",
-        label: "Fixed Panel 1"
+        label: "Fixed Panel 1",
       },
       widget_11: {
         uri: "widgets/common/image/",
@@ -931,11 +928,11 @@ export const ExBee = {
             toolTip: "",
             linkParam: {},
             scale: "Fit",
-            imageParam: {}
+            imageParam: {},
           },
-          styleConfig: {}
+          styleConfig: {},
         },
-        id: "widget_11"
+        id: "widget_11",
       },
       widget_12: {
         uri: "widgets/common/image/",
@@ -949,20 +946,19 @@ export const ExBee = {
             scale: "Fit",
             imageParam: {
               url: "${appResourceUrl}/images/widget_12/1591117415261.jpg",
-              originalUrl:
-                "${appResourceUrl}/images/widget_12/1591117415261.jpg",
+              originalUrl: "${appResourceUrl}/images/widget_12/1591117415261.jpg",
               fileName: "1591117415261.jpg",
               originalName: "lego-dumpster-fire.jpg",
               imgSourceType: "BY_UPLOAD",
               fileFormat: "image/jpeg",
-              originalId: "1591117415261"
+              originalId: "1591117415261",
             },
             imgSourceType: "",
-            srcExpression: null
+            srcExpression: null,
           },
-          styleConfig: {}
+          styleConfig: {},
         },
-        id: "widget_12"
+        id: "widget_12",
       },
       widget_13: {
         uri: "widgets/arcgis/arcgis-map/",
@@ -972,7 +968,7 @@ export const ExBee = {
           toolConifg: {
             canZoom: true,
             canHome: true,
-            canSearch: true
+            canSearch: true,
           },
           isUseCustomMapState: true,
           initialMapDataSourceID: "dataSource_1",
@@ -983,55 +979,55 @@ export const ExBee = {
               targetGeometry: {
                 spatialReference: {
                   latestWkid: 3857,
-                  wkid: 102100
+                  wkid: 102100,
                 },
                 x: -8568377.085952524,
-                y: 4703332.779070709
-              }
+                y: 4703332.779070709,
+              },
             },
             extent: {
               spatialReference: {
                 latestWkid: 3857,
-                wkid: 102100
+                wkid: 102100,
               },
               xmin: -8613857.117782142,
               ymin: 4672757.967756679,
               xmax: -8522897.054122906,
-              ymax: 4733907.5903847385
+              ymax: 4733907.5903847385,
             },
             rotation: 0,
-            viewType: "2d"
-          }
+            viewType: "2d",
+          },
         },
         id: "widget_13",
         layouts: {
           MapFixedLayout: {
-            LARGE: "layout_15"
-          }
+            LARGE: "layout_15",
+          },
         },
         useDataSources: [
           {
-            dataSourceId: "dataSource_1"
-          }
-        ]
-      }
+            dataSourceId: "dataSource_1",
+          },
+        ],
+      },
     },
     exbVersion: "1.0.0",
     mainSizeMode: "LARGE",
     theme: "themes/default/",
     forBuilderAttributes: {
-      lockLayout: false
+      lockLayout: false,
     },
     template: "foldable",
     attributes: {
-      portalUrl: "https://dc.mapsqa.arcgis.com"
+      portalUrl: "https://dc.mapsqa.arcgis.com",
     },
     themeManifest: {
-      name: "default",
-      label: "Default",
-      type: "theme",
+      "name": "default",
+      "label": "Default",
+      "type": "theme",
       "thumbnails ": [],
-      colors: {
+      "colors": {
         primary: "#315dfc",
         secondary: "#00c3cc",
         success: "#00cca5",
@@ -1039,15 +1035,15 @@ export const ExBee = {
         warning: "#ffab21",
         danger: "#f6146f",
         light: "#fafbfc",
-        dark: "#2d3235"
+        dark: "#2d3235",
       },
-      font: {
+      "font": {
         fontFamily: "Avenir Next",
-        color: "#fff"
+        color: "#fff",
       },
-      version: "1.0.0",
-      exbVersion: "1.0.0",
-      supportedLocales: [
+      "version": "1.0.0",
+      "exbVersion": "1.0.0",
+      "supportedLocales": [
         "en",
         "ar",
         "bs",
@@ -1085,9 +1081,9 @@ export const ExBee = {
         "uk",
         "vi",
         "zh-hk",
-        "zh-tw"
+        "zh-tw",
       ],
-      translatedLocales: [
+      "translatedLocales": [
         "en",
         "ar",
         "bs",
@@ -1125,12 +1121,12 @@ export const ExBee = {
         "uk",
         "vi",
         "zh-hk",
-        "zh-tw"
+        "zh-tw",
       ],
-      styleFiles: {
+      "styleFiles": {
         css: false,
-        js: false
-      }
+        js: false,
+      },
     },
     widgetsManifest: {},
     views: {},
@@ -1142,14 +1138,14 @@ export const ExBee = {
         itemId: "8644de121e434a368a6221c0498e4e47",
         id: "dataSource_1",
         label: "Museums in DC",
-        portalUrl: "https://dc.mapsqa.arcgis.com"
-      }
+        portalUrl: "https://dc.mapsqa.arcgis.com",
+      },
     },
     messageConfigs: {},
     pageStructure: [
       {
-        home: []
-      }
-    ]
-  }
+        home: [],
+      },
+    ],
+  },
 } as IModel;

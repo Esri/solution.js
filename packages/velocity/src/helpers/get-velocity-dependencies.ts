@@ -14,14 +14,7 @@
  * limitations under the License.
  */
 
-import {
-  getProp,
-  getItemBase,
-  IItemTemplate,
-  UserSession,
-  BASE_NAMES,
-  PROP_NAMES
-} from "@esri/solution-common";
+import { getProp, getItemBase, IItemTemplate, UserSession, BASE_NAMES, PROP_NAMES } from "@esri/solution-common";
 
 /**
  * Get the dependencies from the velocity data sources, feeds, and outputs.
@@ -32,23 +25,20 @@ import {
  *
  * @returns a list of dependency ids
  */
-export function getVelocityDependencies(
-  template: IItemTemplate,
-  authentication: UserSession
-): Promise<string[]> {
+export function getVelocityDependencies(template: IItemTemplate, authentication: UserSession): Promise<string[]> {
   const dependencies: string[] = [];
 
   [
     getProp(template, "data.feeds") ? template.data.feeds : [],
-    getProp(template, "data.feed") ? [template.data.feed] : []
-  ].forEach(f => _getFeedDependencies(f, dependencies));
+    getProp(template, "data.feed") ? [template.data.feed] : [],
+  ].forEach((f) => _getFeedDependencies(f, dependencies));
 
   [
     getProp(template, "data.sources") ? template.data.sources : [],
     getProp(template, "data.source") ? [template.data.source] : [],
     getProp(template, "data.outputs") ? template.data.outputs : [],
-    getProp(template, "data.output") ? [template.data.output] : []
-  ].forEach(d => _getDependencies(d, dependencies));
+    getProp(template, "data.output") ? [template.data.output] : [],
+  ].forEach((d) => _getDependencies(d, dependencies));
 
   return _validateDependencies(dependencies, authentication);
 }
@@ -64,21 +54,18 @@ export function getVelocityDependencies(
  * @returns a list of dependency ids
  * @private
  */
-export function _validateDependencies(
-  dependencies: string[],
-  authentication: UserSession
-): Promise<string[]> {
-  const defs: Array<Promise<any>> = dependencies.map(d => {
+export function _validateDependencies(dependencies: string[], authentication: UserSession): Promise<string[]> {
+  const defs: Array<Promise<any>> = dependencies.map((d) => {
     return getItemBase(d, authentication);
   });
-  return Promise.all(defs).then(itemInfos => {
+  return Promise.all(defs).then((itemInfos) => {
     return Promise.resolve(
       itemInfos.reduce((prev, cur) => {
         if (cur.typeKeywords.indexOf("IoTFeatureLayer") < 0) {
           prev.push(cur.id);
         }
         return prev;
-      }, [])
+      }, []),
     );
   });
 }
@@ -91,10 +78,7 @@ export function _validateDependencies(
  * @param dependencies The current list of dependencies
  * @private
  */
-export function _getFeedDependencies(
-  feeds: any[],
-  dependencies: string[]
-): void {
+export function _getFeedDependencies(feeds: any[], dependencies: string[]): void {
   feeds.reduce((prev: any, cur: any) => {
     const id: string = cur.id || undefined;
     /* istanbul ignore else */
@@ -118,14 +102,11 @@ export function _getFeedDependencies(
  * @param prop The individual prop to evaluate
  * @private
  */
-export function _getDependencies(
-  outputs: any[],
-  dependencies: string[]
-): void {
+export function _getDependencies(outputs: any[], dependencies: string[]): void {
   outputs.reduce((prev: any, cur: any) => {
     const names: string[] = getProp(cur, "name") ? [cur.name] : BASE_NAMES;
-    names.forEach(n => {
-      PROP_NAMES.forEach(p => {
+    names.forEach((n) => {
+      PROP_NAMES.forEach((p) => {
         // skip map service and stream service ids
         /* istanbul ignore else */
         if (p.indexOf("mapServicePortalItemID") < 0 && p.indexOf("streamServicePortalItemID") < 0) {

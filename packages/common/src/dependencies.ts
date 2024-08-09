@@ -21,11 +21,7 @@
  */
 
 import { getProp } from "./generalHelpers";
-import {
-  IBuildOrdering,
-  IKeyedListsOfStrings,
-  IItemTemplate
-} from "./interfaces";
+import { IBuildOrdering, IKeyedListsOfStrings, IItemTemplate } from "./interfaces";
 import { findTemplateInList } from "./templatization";
 
 // ------------------------------------------------------------------------------------------------------------------ //
@@ -39,9 +35,7 @@ import { findTemplateInList } from "./templatization";
  * template's dependencies but not present in the supplied list of templates, and a dictionary containing items
  * that need to be post-processed due to dependency cycles.
  */
-export function topologicallySortItems(
-  templates: IItemTemplate[]
-): IBuildOrdering {
+export function topologicallySortItems(templates: IItemTemplate[]): IBuildOrdering {
   // Cormen, Thomas H.; Leiserson, Charles E.; Rivest, Ronald L.; Stein, Clifford (2009)
   // Sections 22.3 (Depth-first search) & 22.4 (Topological sort), pp. 603-615
   // Introduction to Algorithms (3rd ed.), The MIT Press, ISBN 978-0-262-03384-8
@@ -79,18 +73,18 @@ export function topologicallySortItems(
 
   const verticesToVisit: ISortVertex = {};
   const vertexType: IVertexType = {};
-  templates.forEach(function(template) {
+  templates.forEach(function (template) {
     verticesToVisit[template.itemId] = ESortVisitState.NotYetVisited;
     vertexType[template.itemId] =
-      template.item?.typeKeywords &&
-      template.item.typeKeywords.includes("View Service")
+      template.item?.typeKeywords && template.item.typeKeywords.includes("View Service")
         ? "View Service"
         : template.item?.tags && template.item.tags.includes("Location Tracking Group")
-        ? "Location Tracking Group" : template.type;
+          ? "Location Tracking Group"
+          : template.type;
   });
 
   // Algorithm visits each vertex once. Don't need to record times or "from' nodes ("π" in pseudocode)
-  templates.forEach(function(template) {
+  templates.forEach(function (template) {
     if (verticesToVisit[template.itemId] === ESortVisitState.NotYetVisited) {
       // if not yet visited
       visit(template.itemId);
@@ -107,10 +101,10 @@ export function topologicallySortItems(
 
     // There are two sources of dependencies
     const dependencies: string[] = (template.dependencies || []).concat(
-      getProp(template, "properties.syncViews") || []
+      getProp(template, "properties.syncViews") || [],
     );
 
-    dependencies.forEach(function(dependencyId) {
+    dependencies.forEach(function (dependencyId) {
       if (verticesToVisit[dependencyId] === ESortVisitState.NotYetVisited) {
         // if not yet visited
         visit(dependencyId);
@@ -163,7 +157,7 @@ export function topologicallySortItems(
   const orderingResults: IBuildOrdering = {
     buildOrder: buildOrder,
     missingDependencies: missingDependencies,
-    itemsToBePatched: itemsToBePatched
+    itemsToBePatched: itemsToBePatched,
   };
   return orderingResults;
 }
@@ -205,5 +199,5 @@ enum ESortVisitState {
   /** visited, in progress */
   InProgress, // GRAY
   /** finished */
-  Finished // BLACK
+  Finished, // BLACK
 }

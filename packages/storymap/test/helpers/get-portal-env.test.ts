@@ -26,15 +26,12 @@ describe("getPortalEnv", () => {
       { portal: "https://www.arcgis.com", expected: "www" },
       { portal: "https://dc.maps.arcgis.com", expected: "www" },
       { portal: "https://some.com/portal", expected: "portal" },
-      { portal: undefined, expected: "www" }
+      { portal: undefined, expected: "www" },
     ];
 
-    data.forEach(entry => {
+    data.forEach((entry) => {
       const us = { portal: entry.portal } as UserSession;
-      expect(getPortalEnv(us)).toBe(
-        entry.expected,
-        `Should convert ${entry.portal} to ${entry.expected}`
-      );
+      expect(getPortalEnv(us)).withContext(`Should convert ${entry.portal} to ${entry.expected}`).toBe(entry.expected);
     });
   });
 });

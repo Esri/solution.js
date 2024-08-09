@@ -20,13 +20,10 @@ import {
   propifyString,
   createId,
   normalizeSolutionTemplateItem,
-  deepStringReplace
+  deepStringReplace,
 } from "@esri/hub-common";
 import { IItem } from "@esri/arcgis-rest-portal";
-import {
-  IItemTemplate,
-  createPlaceholderTemplate
-} from "@esri/solution-common";
+import { IItemTemplate, createPlaceholderTemplate } from "@esri/solution-common";
 import { remapWebmapKeys } from "./remap-webmap-keys";
 import { getStoryMapDependencies } from "./get-storymap-dependencies";
 
@@ -36,9 +33,7 @@ import { getStoryMapDependencies } from "./get-storymap-dependencies";
  * @param model
  * @param authentication
  */
-export function convertStoryMapToTemplate(
-  model: IModel
-): Promise<IItemTemplate> {
+export function convertStoryMapToTemplate(model: IModel): Promise<IItemTemplate> {
   const tmpl = createPlaceholderTemplate(model.item.id, model.item.type);
   tmpl.key = `${propifyString(model.item.title)}_${createId("i")}`;
 
@@ -58,16 +53,10 @@ export function convertStoryMapToTemplate(
   // Storymap Webmap Resources have complex keys that we need to remap
   const webmapRemaps = remapWebmapKeys(tmpl.data.resources);
   // and then replace in the rest of the structure
-  webmapRemaps.forEach(remap => {
-    tmpl.data.resources[remap.updated] = cloneObject(
-      tmpl.data.resources[remap.original]
-    );
+  webmapRemaps.forEach((remap) => {
+    tmpl.data.resources[remap.updated] = cloneObject(tmpl.data.resources[remap.original]);
     delete tmpl.data.resources[remap.original];
-    tmpl.data.nodes = deepStringReplace(
-      tmpl.data.nodes,
-      remap.original,
-      remap.updated
-    );
+    tmpl.data.nodes = deepStringReplace(tmpl.data.nodes, remap.original, remap.updated);
   });
 
   // use typeKeyword to mark item as published
@@ -75,9 +64,7 @@ export function convertStoryMapToTemplate(
   const typeKeywords = tmpl.item.typeKeywords;
   if (typeKeywords.indexOf(unPublishedChangesKW) !== -1) {
     tmpl.item.typeKeywords = [publishedChangesKW].concat(
-      tmpl.item.typeKeywords.filter(
-        (word: string) => word !== unPublishedChangesKW
-      )
+      tmpl.item.typeKeywords.filter((word: string) => word !== unPublishedChangesKW),
     );
   }
 
@@ -122,10 +109,9 @@ const oEmbedTemplates = {
     thumbnail_url: "{{storyMapThumbnailUrl}}",
     thumbnail_height: "100.5",
     thumbnail_width: "400",
-    html:
-      '<iframe src="{{storyMapTemplateUrl}}" width="800" height="600" scrolling="yes" frameborder="0" allowfullscreen></iframe>',
-    cache_age: 86400
+    html: '<iframe src="{{storyMapTemplateUrl}}" width="800" height="600" scrolling="yes" frameborder="0" allowfullscreen></iframe>',
+    cache_age: 86400,
   },
   oembedXML:
-    '<?xml version="1.0" encoding="utf-8" standalone="yes"?>\n <oembed>\n <version>1.0</version>\n <type>rich</type>\n <title>Example StoryMap</title>\n <url>{{storyMapTemplateUrl}}</url>\n <author_name>undefined</author_name>\n <provider_name>ArcGIS StoryMaps</provider_name>\n <provider_url>{{storyMapBaseUrl}}</provider_url>\n <width>800</width>\n <height>600</height>\n <thumbnail_url>{{storyMapThumbnailUrl}}</thumbnail_url>\n <thumbnail_height>100.5</thumbnail_height>\n <thumbnail_width>400</thumbnail_width>\n <html><iframe src="{{storyMapTemplateUrl}}" width="800" height="600" scrolling="yes" frameborder="0" allowfullscreen="true"></iframe></html>\n <cache_age>86400</cache_age>\n </oembed>'
+    '<?xml version="1.0" encoding="utf-8" standalone="yes"?>\n <oembed>\n <version>1.0</version>\n <type>rich</type>\n <title>Example StoryMap</title>\n <url>{{storyMapTemplateUrl}}</url>\n <author_name>undefined</author_name>\n <provider_name>ArcGIS StoryMaps</provider_name>\n <provider_url>{{storyMapBaseUrl}}</provider_url>\n <width>800</width>\n <height>600</height>\n <thumbnail_url>{{storyMapThumbnailUrl}}</thumbnail_url>\n <thumbnail_height>100.5</thumbnail_height>\n <thumbnail_width>400</thumbnail_width>\n <html><iframe src="{{storyMapTemplateUrl}}" width="800" height="600" scrolling="yes" frameborder="0" allowfullscreen="true"></iframe></html>\n <cache_age>86400</cache_age>\n </oembed>',
 };

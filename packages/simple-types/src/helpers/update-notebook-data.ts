@@ -13,21 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import {
-  UserSession,
-  IItemUpdate,
-  jsonToBlob,
-  updateItem
-} from "@esri/solution-common";
+import { UserSession, IItemUpdate, jsonToBlob, updateItem } from "@esri/solution-common";
 
-export function updateNotebookData(
-  itemId: string,
-  data: any,
-  authentication: UserSession
-): Promise<any> {
+export function updateNotebookData(itemId: string, data: any, authentication: UserSession): Promise<any> {
   const updateOptions: IItemUpdate = {
     id: itemId,
-    data: jsonToBlob(data)
+    data: jsonToBlob(data),
   };
   return updateItem(updateOptions, authentication);
 }

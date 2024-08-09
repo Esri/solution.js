@@ -23,7 +23,7 @@ export enum SolutionResourceType {
   resource,
   data,
   fakezip,
-  info
+  info,
 }
 
 /**

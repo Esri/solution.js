@@ -26,35 +26,28 @@ describe("_postProcessSite :: ", () => {
         id: "3ef",
         properties: {
           collaborationGroupId: "bc1-collab",
-          contentGroupId: "bc1-collab"
-        }
+          contentGroupId: "bc1-collab",
+        },
       },
-      data: {}
+      data: {},
     } as hubCommon.IModel;
     infos = [
       { itemId: "ef1", type: "Web Map" },
       { itemId: "ef2", type: "Web Mapping Application" },
-      { itemId: "ef3", type: "Hub Page" }
+      { itemId: "ef3", type: "Hub Page" },
     ];
   });
 
   it("updateSitePages gets models and updates them", () => {
     infos.push({ itemId: "ef4", type: "Hub Page" });
     const fakeRo = {} as hubCommon.IHubUserRequestOptions;
-    const getModelSpy = spyOn(hubCommon, "getModel").and.resolveTo(
-      {} as hubCommon.IModel
-    );
+    const getModelSpy = spyOn(hubCommon, "getModel").and.resolveTo({} as hubCommon.IModel);
     const updatePage = spyOn(hubSites, "_updatePages").and.resolveTo([]);
 
-    return updateSitePagesModule
-      ._updateSitePages(model, infos, fakeRo)
-      .then(() => {
-        expect(getModelSpy.calls.count()).toBe(2, "should fetch two models");
-        expect(updatePage.calls.count()).toBe(1, "should call updatePage once");
-        expect(updatePage.calls.argsFor(0)[1].length).toBe(
-          2,
-          "should pass two page models"
-        );
-      });
+    return updateSitePagesModule._updateSitePages(model, infos, fakeRo).then(() => {
+      expect(getModelSpy.calls.count()).withContext("should fetch two models").toBe(2);
+      expect(updatePage.calls.count()).withContext("should call updatePage once").toBe(1);
+      expect(updatePage.calls.argsFor(0)[1].length).withContext("should pass two page models").toBe(2);
+    });
   });
 });

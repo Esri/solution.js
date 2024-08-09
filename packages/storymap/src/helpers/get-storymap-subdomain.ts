@@ -16,8 +16,7 @@
 import { UserSession } from "@esri/solution-common";
 
 export function getStoryMapSubdomain(authentication: UserSession): string {
-  const portalUrl =
-    authentication.portal || "https://www.arcgis.com/sharing/rest";
+  const portalUrl = authentication.portal || "https://www.arcgis.com/sharing/rest";
   // TODO: Sort out how we locate storymaps on portal?
   let result;
   if (portalUrl.match(/(qaext|\.mapsqa)\.arcgis.com/)) {

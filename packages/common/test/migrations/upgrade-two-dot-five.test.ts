@@ -22,20 +22,20 @@ import { ISolutionItem } from "../../src/interfaces";
 describe("Upgrade 2.5 ::", () => {
   const theme = {
     id: "hrEKQnEsn",
-    name: "theme-custom"
+    name: "theme-custom",
   };
   const question = {
     appearance: {
-      layout: "horizontal"
-    }
+      layout: "horizontal",
+    },
   };
   const defaultModel = {
     item: {
       type: "Solution",
       typeKeywords: ["Solution", "Template"],
       properties: {
-        schemaVersion: 2.4
-      }
+        schemaVersion: 2.4,
+      },
     },
     data: {
       templates: [
@@ -47,21 +47,19 @@ describe("Upgrade 2.5 ::", () => {
               portalUrl: utils.PORTAL_SUBSET.portalUrl,
               layerName: "someName",
               theme,
-              questions: [question]
-            }
-          }
-        }
-      ] as IItemTemplate[]
-    }
+              questions: [question],
+            },
+          },
+        },
+      ] as IItemTemplate[],
+    },
   } as ISolutionItem;
-
-  const MOCK_USER_SESSION = utils.createRuntimeMockUserSession();
 
   it("returns same model if on or above 2.5", () => {
     const model = cloneObject(defaultModel);
     model.item.properties.schemaVersion = 2.5;
     const results = _upgradeTwoDotFive(model);
-    expect(results).toBe(model, "should return the exact same object");
+    expect(results).withContext("should return the exact same object").toBe(model);
   });
 
   it("only upgrades the schema version for non-Form templates", () => {
@@ -121,8 +119,7 @@ describe("Upgrade 2.5 ::", () => {
     expected.data.templates[0].properties.form.layerName = "survey";
     expected.data.templates[0].properties.form.themes = [theme];
     delete expected.data.templates[0].properties.form.theme;
-    expected.data.templates[0].properties.form.questions[0].appearance.layout =
-      "vertical";
+    expected.data.templates[0].properties.form.questions[0].appearance.layout = "vertical";
     expected.data.templates[0].properties.form.version = 3.8;
     expected.item.properties.schemaVersion = 2.5;
     expect(results).toEqual(expected);
@@ -136,8 +133,7 @@ describe("Upgrade 2.5 ::", () => {
     expected.data.templates[0].properties.form.layerName = "survey";
     expected.data.templates[0].properties.form.themes = [theme];
     delete expected.data.templates[0].properties.form.theme;
-    expected.data.templates[0].properties.form.questions[0].appearance.layout =
-      "vertical";
+    expected.data.templates[0].properties.form.questions[0].appearance.layout = "vertical";
     expected.data.templates[0].properties.form.version = 3.8;
     expected.item.properties.schemaVersion = 2.5;
     expect(results).toEqual(expected);
@@ -145,17 +141,18 @@ describe("Upgrade 2.5 ::", () => {
 
   it("it upgrades the Form template's form config schema when it's < 3.8 with pages", () => {
     const model = cloneObject(defaultModel);
-    model.data.templates[0].properties.form.questions = [{
-      questions: model.data.templates[0].properties.form.questions
-    }];
+    model.data.templates[0].properties.form.questions = [
+      {
+        questions: model.data.templates[0].properties.form.questions,
+      },
+    ];
     const results = _upgradeTwoDotFive(model);
     const expected = cloneObject(model);
     expected.data.templates[0].properties.form.portalUrl = "{{portalBaseUrl}}";
     expected.data.templates[0].properties.form.layerName = "survey";
     expected.data.templates[0].properties.form.themes = [theme];
     delete expected.data.templates[0].properties.form.theme;
-    expected.data.templates[0].properties.form.questions[0].questions[0].appearance.layout =
-      "vertical";
+    expected.data.templates[0].properties.form.questions[0].questions[0].appearance.layout = "vertical";
     expected.data.templates[0].properties.form.version = 3.8;
     expected.item.properties.schemaVersion = 2.5;
     expect(results).toEqual(expected);
@@ -169,8 +166,7 @@ describe("Upgrade 2.5 ::", () => {
     expected.data.templates[0].properties.form.portalUrl = "{{portalBaseUrl}}";
     expected.data.templates[0].properties.form.layerName = "survey";
     delete expected.data.templates[0].properties.form.theme;
-    expected.data.templates[0].properties.form.questions[0].appearance.layout =
-      "vertical";
+    expected.data.templates[0].properties.form.questions[0].appearance.layout = "vertical";
     expected.data.templates[0].properties.form.version = 3.8;
     expected.item.properties.schemaVersion = 2.5;
     expect(results).toEqual(expected);
@@ -193,12 +189,10 @@ describe("Upgrade 2.5 ::", () => {
 
   it("it doesn't migrate appearance.layout when layout is missing", () => {
     const model = cloneObject(defaultModel);
-    delete model.data.templates[0].properties.form.questions[0].appearance
-      .layout;
+    delete model.data.templates[0].properties.form.questions[0].appearance.layout;
     const results = _upgradeTwoDotFive(model);
     const expected = cloneObject(model);
-    delete expected.data.templates[0].properties.form.questions[0].appearance
-      .layout;
+    delete expected.data.templates[0].properties.form.questions[0].appearance.layout;
     expected.data.templates[0].properties.form.portalUrl = "{{portalBaseUrl}}";
     expected.data.templates[0].properties.form.layerName = "survey";
     expected.data.templates[0].properties.form.themes = [theme];

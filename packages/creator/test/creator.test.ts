@@ -20,7 +20,7 @@
 
 import * as common from "@esri/solution-common";
 import * as creator from "../src/creator";
-import * as fetchMock from "fetch-mock";
+const fetchMock = require("fetch-mock");
 import * as hubCommon from "@esri/hub-common";
 import * as mockItems from "../../common/test/mocks/agolItems";
 import * as staticRelatedItemsMocks from "../../common/test/mocks/staticRelatedItemsMocks";
@@ -35,15 +35,15 @@ const noResourcesResponse: any = {
   start: 1,
   num: 0,
   nextStart: -1,
-  resources: []
+  resources: [],
 };
 const noMetadataResponse: any = {
   error: {
     code: 400,
     messageCode: "CONT_0036",
     message: "Item info file does not exist or is inaccessible.",
-    details: ["Error getting Item Info from DataStore"]
-  }
+    details: ["Error getting Item Info from DataStore"],
+  },
 };
 
 afterEach(() => {
@@ -54,227 +54,170 @@ afterEach(() => {
 
 describe("Module `creator`", () => {
   describe("createSolution", () => {
-    it("createSolution fails to get group or item", done => {
+    it("createSolution fails to get group or item", async () => {
       const solutionGroupId: string = "grp1234567890";
       const authentication: common.UserSession = MOCK_USER_SESSION;
 
       const options: common.ICreateSolutionOptions = {
-        progressCallback: utils.SOLUTION_PROGRESS_CALLBACK
+        progressCallback: utils.SOLUTION_PROGRESS_CALLBACK,
       };
 
       fetchMock
         .get(
-          utils.PORTAL_SUBSET.restUrl +
-            "/portals/self/subscriptioninfo?f=json&token=fake-token",
-          mockItems.getAGOLSubscriptionInfo(false)
+          utils.PORTAL_SUBSET.restUrl + "/portals/self/subscriptioninfo?f=json&token=fake-token",
+          mockItems.getAGOLSubscriptionInfo(false),
         )
         .post(
           utils.PORTAL_SUBSET.restUrl + "/content/users/casey/addItem",
-          utils.getSuccessResponse({ id: "sln1234567890", folder: null })
+          utils.getSuccessResponse({ id: "sln1234567890", folder: null }),
         )
         .get(
-          utils.PORTAL_SUBSET.restUrl +
-            "/community/groups/grp1234567890?f=json&token=fake-token",
-          mockItems.get400Failure()
+          utils.PORTAL_SUBSET.restUrl + "/community/groups/grp1234567890?f=json&token=fake-token",
+          mockItems.get400Failure(),
         )
         .get(
-          utils.PORTAL_SUBSET.restUrl +
-            "/content/groups/grp1234567890?f=json&start=1&num=100&token=fake-token",
-          mockItems.get400Failure()
+          utils.PORTAL_SUBSET.restUrl + "/content/groups/grp1234567890?f=json&start=1&num=100&token=fake-token",
+          mockItems.get400Failure(),
         )
         .get(
-          utils.PORTAL_SUBSET.restUrl +
-            "/content/items/grp1234567890?f=json&token=fake-token",
-          mockItems.get400Failure()
+          utils.PORTAL_SUBSET.restUrl + "/content/items/grp1234567890?f=json&token=fake-token",
+          mockItems.get400Failure(),
         )
         .post(
-          utils.PORTAL_SUBSET.restUrl +
-            "/content/users/casey/items/sln1234567890/update",
-          utils.getSuccessResponse({ itemId: "sln1234567890" })
+          utils.PORTAL_SUBSET.restUrl + "/content/users/casey/items/sln1234567890/update",
+          utils.getSuccessResponse({ itemId: "sln1234567890" }),
         )
         .post(
-          utils.PORTAL_SUBSET.restUrl +
-            "/content/users/casey/items/sln1234567890/delete",
-          utils.getSuccessResponse({ itemId: "sln1234567890" })
+          utils.PORTAL_SUBSET.restUrl + "/content/users/casey/items/sln1234567890/delete",
+          utils.getSuccessResponse({ itemId: "sln1234567890" }),
         );
       spyOn(console, "error").and.callFake(() => {});
 
-      creator
-        .createSolution(
-          solutionGroupId,
-          authentication,
-          authentication,
-          options
-        )
-        .then(
-          () => done.fail(),
-          response => {
-            expect(response.success).toBeFalsy();
-            done();
-          }
-        );
+      return creator.createSolution(solutionGroupId, authentication, authentication, options).then(
+        () => fail(),
+        (response) => {
+          expect(response.success).toBeFalsy();
+          return Promise.resolve();
+        },
+      );
     });
 
-    it("createSolution skips missing item from group", done => {
+    it("createSolution skips missing item from group", async () => {
       const solutionGroupId: string = "grp1234567890";
       const authentication: common.UserSession = MOCK_USER_SESSION;
       const expectedSolutionId = "sln1234567890";
       const expectedImage = utils.getSampleImageAsBlob();
 
       fetchMock
+        .get(utils.PORTAL_SUBSET.restUrl + "/community/self?f=json&token=fake-token", utils.getUserResponse())
+        .get(utils.PORTAL_SUBSET.restUrl + "/portals/self?f=json&token=fake-token", utils.getPortalsSelfResponse())
         .get(
-          utils.PORTAL_SUBSET.restUrl +
-            "/community/self?f=json&token=fake-token",
-          utils.getUserResponse()
-        )
-        .get(
-          utils.PORTAL_SUBSET.restUrl + "/portals/self?f=json&token=fake-token",
-          utils.getPortalsSelfResponse()
-        )
-        .get(
-          utils.PORTAL_SUBSET.restUrl +
-            "/portals/self/subscriptioninfo?f=json&token=fake-token",
-          mockItems.getAGOLSubscriptionInfo(false)
+          utils.PORTAL_SUBSET.restUrl + "/portals/self/subscriptioninfo?f=json&token=fake-token",
+          mockItems.getAGOLSubscriptionInfo(false),
         )
         .post(
           utils.PORTAL_SUBSET.restUrl + "/content/users/casey/addItem",
-          utils.getSuccessResponse({ id: expectedSolutionId, folder: null })
+          utils.getSuccessResponse({ id: expectedSolutionId, folder: null }),
         )
         .get(
-          utils.PORTAL_SUBSET.restUrl +
-            "/community/groups/grp1234567890?f=json&token=fake-token",
-          mockItems.getAGOLItem("Group")
+          utils.PORTAL_SUBSET.restUrl + "/community/groups/grp1234567890?f=json&token=fake-token",
+          mockItems.getAGOLItem("Group"),
         )
         .get(
-          utils.PORTAL_SUBSET.restUrl +
-            "/content/groups/grp1234567890?f=json&start=1&num=100&token=fake-token",
-          mockItems.getAGOLGroupContentsList(1, "Web Map")
+          utils.PORTAL_SUBSET.restUrl + "/content/groups/grp1234567890?f=json&start=1&num=100&token=fake-token",
+          mockItems.getAGOLGroupContentsList(1, "Web Map"),
         )
         .post(
-          utils.PORTAL_SUBSET.restUrl +
-            "/community/groups/grp1234567890/info/ROWPermitManager.png",
+          utils.PORTAL_SUBSET.restUrl + "/community/groups/grp1234567890/info/ROWPermitManager.png",
           utils.getSampleImageAsFile(),
-          { sendAsJson: false }
+          { sendAsJson: false },
         )
         .get(
-          utils.PORTAL_SUBSET.restUrl +
-            "/content/items/map12345678900?f=json&token=fake-token",
-          mockItems.get400Failure()
+          utils.PORTAL_SUBSET.restUrl + "/content/items/map12345678900?f=json&token=fake-token",
+          mockItems.get400Failure(),
         )
         .get(
-          utils.PORTAL_SUBSET.restUrl +
-            "/community/groups/map12345678900?f=json&token=fake-token",
-          mockItems.get400Failure()
+          utils.PORTAL_SUBSET.restUrl + "/community/groups/map12345678900?f=json&token=fake-token",
+          mockItems.get400Failure(),
         )
         .post(
-          utils.PORTAL_SUBSET.restUrl +
-            "/community/groups/grp1234567890/info/ROWPermitManager.png?w=400",
-          expectedImage
+          utils.PORTAL_SUBSET.restUrl + "/community/groups/grp1234567890/info/ROWPermitManager.png?w=400",
+          expectedImage,
         )
         .post(
-          utils.PORTAL_SUBSET.restUrl +
-            "/content/users/casey/items/sln1234567890/delete",
-          utils.getSuccessResponse({ itemId: expectedSolutionId })
+          utils.PORTAL_SUBSET.restUrl + "/content/users/casey/items/sln1234567890/delete",
+          utils.getSuccessResponse({ itemId: expectedSolutionId }),
         )
         .post(
           // for missing item's placeholder
-          utils.PORTAL_SUBSET.restUrl +
-            "/content/users/casey/items/sln1234567890/update",
-          utils.getSuccessResponse({ id: expectedSolutionId })
+          utils.PORTAL_SUBSET.restUrl + "/content/users/casey/items/sln1234567890/update",
+          utils.getSuccessResponse({ id: expectedSolutionId }),
         );
 
       spyOn(console, "error").and.callFake(() => {});
       spyOn(common, "createShortId").and.callFake(() => "xfakeidx");
-      creator
-        .createSolution(solutionGroupId, authentication, authentication)
-        .then(
-          () => done(),
-          () => {
-            done.fail();
-          }
-        );
+
+      return creator.createSolution(solutionGroupId, authentication, authentication);
     });
 
-    it("createSolution skips failure to update solution item", done => {
+    it("createSolution skips failure to update solution item", async () => {
       const solutionGroupId: string = "grp1234567890";
       const authentication: common.UserSession = MOCK_USER_SESSION;
       const expectedSolutionId = "sln1234567890";
 
       fetchMock
+        .get(utils.PORTAL_SUBSET.restUrl + "/community/self?f=json&token=fake-token", utils.getUserResponse())
+        .get(utils.PORTAL_SUBSET.restUrl + "/portals/self?f=json&token=fake-token", utils.getPortalsSelfResponse())
         .get(
-          utils.PORTAL_SUBSET.restUrl +
-            "/community/self?f=json&token=fake-token",
-          utils.getUserResponse()
-        )
-        .get(
-          utils.PORTAL_SUBSET.restUrl + "/portals/self?f=json&token=fake-token",
-          utils.getPortalsSelfResponse()
-        )
-        .get(
-          utils.PORTAL_SUBSET.restUrl +
-            "/portals/self/subscriptioninfo?f=json&token=fake-token",
-          mockItems.getAGOLSubscriptionInfo(false)
+          utils.PORTAL_SUBSET.restUrl + "/portals/self/subscriptioninfo?f=json&token=fake-token",
+          mockItems.getAGOLSubscriptionInfo(false),
         )
         .post(
           utils.PORTAL_SUBSET.restUrl + "/content/users/casey/addItem",
-          utils.getSuccessResponse({ id: expectedSolutionId, folder: null })
+          utils.getSuccessResponse({ id: expectedSolutionId, folder: null }),
         )
         .get(
-          utils.PORTAL_SUBSET.restUrl +
-            "/community/groups/grp1234567890?f=json&token=fake-token",
-          mockItems.getAGOLItem("Group")
+          utils.PORTAL_SUBSET.restUrl + "/community/groups/grp1234567890?f=json&token=fake-token",
+          mockItems.getAGOLItem("Group"),
         )
         .get(
-          utils.PORTAL_SUBSET.restUrl +
-            "/content/groups/grp1234567890?f=json&start=1&num=100&token=fake-token",
-          mockItems.getAGOLGroupContentsList(1, "Web Map")
+          utils.PORTAL_SUBSET.restUrl + "/content/groups/grp1234567890?f=json&start=1&num=100&token=fake-token",
+          mockItems.getAGOLGroupContentsList(1, "Web Map"),
         )
         .post(
-          utils.PORTAL_SUBSET.restUrl +
-            "/community/groups/grp1234567890/info/ROWPermitManager.png",
+          utils.PORTAL_SUBSET.restUrl + "/community/groups/grp1234567890/info/ROWPermitManager.png",
           utils.getSampleImageAsFile(),
-          { sendAsJson: false }
+          { sendAsJson: false },
         )
         .get(
-          utils.PORTAL_SUBSET.restUrl +
-            "/content/items/map12345678900?f=json&token=fake-token",
-          mockItems.get400Failure()
+          utils.PORTAL_SUBSET.restUrl + "/content/items/map12345678900?f=json&token=fake-token",
+          mockItems.get400Failure(),
         )
         .get(
-          utils.PORTAL_SUBSET.restUrl +
-            "/community/groups/map12345678900?f=json&token=fake-token",
-          mockItems.get400Failure()
+          utils.PORTAL_SUBSET.restUrl + "/community/groups/map12345678900?f=json&token=fake-token",
+          mockItems.get400Failure(),
         )
         .post(
-          utils.PORTAL_SUBSET.restUrl +
-            "/community/groups/grp1234567890/info/ROWPermitManager.png?w=400",
-          utils.getSampleImageAsBlob()
+          utils.PORTAL_SUBSET.restUrl + "/community/groups/grp1234567890/info/ROWPermitManager.png?w=400",
+          utils.getSampleImageAsBlob(),
         )
-        .post(
-          utils.PORTAL_SUBSET.restUrl +
-            "/content/users/casey/items/sln1234567890/delete",
-          { success: true, itemId: expectedSolutionId }
-        )
+        .post(utils.PORTAL_SUBSET.restUrl + "/content/users/casey/items/sln1234567890/delete", {
+          success: true,
+          itemId: expectedSolutionId,
+        })
         .post(
           // for missing item's placeholder
-          utils.PORTAL_SUBSET.restUrl +
-            "/content/users/casey/items/sln1234567890/update",
-          utils.getSuccessResponse({ id: expectedSolutionId })
+          utils.PORTAL_SUBSET.restUrl + "/content/users/casey/items/sln1234567890/update",
+          utils.getSuccessResponse({ id: expectedSolutionId }),
         );
 
       spyOn(console, "error").and.callFake(() => {});
       spyOn(common, "createShortId").and.callFake(() => "xfakeidx");
-      creator
-        .createSolution(solutionGroupId, authentication, authentication)
-        .then(
-          () => done(),
-          () => {
-            done.fail();
-          }
-        );
+
+      return creator.createSolution(solutionGroupId, authentication, authentication);
     });
 
-    it("createSolution with default name", done => {
+    it("createSolution with default name", async () => {
       const solutionGroupId: string = "grp1234567890";
       const authentication: common.UserSession = MOCK_USER_SESSION;
 
@@ -282,132 +225,89 @@ describe("Module `creator`", () => {
       const expectedImage = utils.getSampleImageAsBlob();
 
       fetchMock
+        .get(utils.PORTAL_SUBSET.restUrl + "/community/self?f=json&token=fake-token", utils.getUserResponse())
         .get(
-          utils.PORTAL_SUBSET.restUrl +
-            "/community/self?f=json&token=fake-token",
-          utils.getUserResponse()
+          utils.PORTAL_SUBSET.restUrl + "/portals/self/subscriptioninfo?f=json&token=fake-token",
+          mockItems.getAGOLSubscriptionInfo(true),
         )
         .get(
-          utils.PORTAL_SUBSET.restUrl +
-            "/portals/self/subscriptioninfo?f=json&token=fake-token",
-          mockItems.getAGOLSubscriptionInfo(true)
+          utils.PORTAL_SUBSET.restUrl + "/community/groups/grp1234567890?f=json&token=fake-token",
+          mockItems.getAGOLItem("Group"),
         )
         .get(
-          utils.PORTAL_SUBSET.restUrl +
-            "/community/groups/grp1234567890?f=json&token=fake-token",
-          mockItems.getAGOLItem("Group")
-        )
-        .get(
-          utils.PORTAL_SUBSET.restUrl +
-            "/content/groups/grp1234567890?f=json&start=1&num=100&token=fake-token",
-          mockItems.getAGOLGroupContentsList(2, "Web Map")
+          utils.PORTAL_SUBSET.restUrl + "/content/groups/grp1234567890?f=json&start=1&num=100&token=fake-token",
+          mockItems.getAGOLGroupContentsList(2, "Web Map"),
         )
         .post(
-          utils.PORTAL_SUBSET.restUrl +
-            "/community/groups/grp1234567890/info/ROWPermitManager.png",
+          utils.PORTAL_SUBSET.restUrl + "/community/groups/grp1234567890/info/ROWPermitManager.png",
           utils.getSampleImageAsFile(),
-          { sendAsJson: false }
+          { sendAsJson: false },
         )
         .post(
           utils.PORTAL_SUBSET.restUrl + "/content/users/casey/addItem",
-          utils.getSuccessResponse({ id: expectedSolutionId, folder: null })
+          utils.getSuccessResponse({ id: expectedSolutionId, folder: null }),
         )
         .get(
-          utils.PORTAL_SUBSET.restUrl +
-            "/content/items/map12345678900?f=json&token=fake-token",
-          mockItems.getAGOLItemWithId("Web Map", 0)
+          utils.PORTAL_SUBSET.restUrl + "/content/items/map12345678900?f=json&token=fake-token",
+          mockItems.getAGOLItemWithId("Web Map", 0),
         )
         .post(
-          utils.PORTAL_SUBSET.restUrl +
-            "/content/items/map12345678900/info/thumbnail/ago_downloaded.png?w=400",
-          utils.getSampleImageAsBlob()
+          utils.PORTAL_SUBSET.restUrl + "/content/items/map12345678900/info/thumbnail/ago_downloaded.png?w=400",
+          utils.getSampleImageAsBlob(),
         )
+        .post(utils.PORTAL_SUBSET.restUrl + "/content/items/map12345678900/data", noDataResponse)
         .post(
-          utils.PORTAL_SUBSET.restUrl + "/content/items/map12345678900/data",
-          noDataResponse
+          utils.PORTAL_SUBSET.restUrl + "/content/items/map12345678900/info/metadata/metadata.xml",
+          noMetadataResponse,
         )
-        .post(
-          utils.PORTAL_SUBSET.restUrl +
-            "/content/items/map12345678900/info/metadata/metadata.xml",
-          noMetadataResponse
-        )
-        .post(
-          utils.PORTAL_SUBSET.restUrl +
-            "/content/items/map12345678900/resources",
-          noResourcesResponse
-        )
+        .post(utils.PORTAL_SUBSET.restUrl + "/content/items/map12345678900/resources", noResourcesResponse)
         .get(
-          utils.PORTAL_SUBSET.restUrl +
-            "/content/items/map12345678901?f=json&token=fake-token",
-          mockItems.getAGOLItemWithId("Web Map", 1)
+          utils.PORTAL_SUBSET.restUrl + "/content/items/map12345678901?f=json&token=fake-token",
+          mockItems.getAGOLItemWithId("Web Map", 1),
         )
         .post(
-          utils.PORTAL_SUBSET.restUrl +
-            "/content/items/map12345678901/info/thumbnail/ago_downloaded.png?w=400",
-          utils.getSampleImageAsBlob()
+          utils.PORTAL_SUBSET.restUrl + "/content/items/map12345678901/info/thumbnail/ago_downloaded.png?w=400",
+          utils.getSampleImageAsBlob(),
+        )
+        .post(utils.PORTAL_SUBSET.restUrl + "/content/items/map12345678901/data", noDataResponse)
+        .post(utils.PORTAL_SUBSET.restUrl + "/content/items/map12345678901/resources", noResourcesResponse)
+        .post(
+          utils.PORTAL_SUBSET.restUrl + "/content/items/map12345678901/info/metadata/metadata.xml",
+          noMetadataResponse,
         )
         .post(
-          utils.PORTAL_SUBSET.restUrl + "/content/items/map12345678901/data",
-          noDataResponse
+          utils.PORTAL_SUBSET.restUrl + "/community/groups/grp1234567890/info/ROWPermitManager.png?w=400",
+          expectedImage,
         )
         .post(
-          utils.PORTAL_SUBSET.restUrl +
-            "/content/items/map12345678901/resources",
-          noResourcesResponse
+          utils.PORTAL_SUBSET.restUrl + "/content/users/casey/items/sln1234567890/update",
+          utils.getSuccessResponse({ id: expectedSolutionId }),
         )
-        .post(
-          utils.PORTAL_SUBSET.restUrl +
-            "/content/items/map12345678901/info/metadata/metadata.xml",
-          noMetadataResponse
-        )
-        .post(
-          utils.PORTAL_SUBSET.restUrl +
-            "/community/groups/grp1234567890/info/ROWPermitManager.png?w=400",
-          expectedImage
-        )
-        .post(
-          utils.PORTAL_SUBSET.restUrl +
-            "/content/users/casey/items/sln1234567890/update",
-          utils.getSuccessResponse({ id: expectedSolutionId })
-        )
-        .post(
-          utils.PORTAL_SUBSET.restUrl +
-            "/content/users/casey/items/sln1234567890/addResources",
-          { success: true, id: expectedSolutionId }
-        )
-        .get(
-          utils.PORTAL_SUBSET.restUrl + "/portals/self?f=json&token=fake-token",
-          { customBaseUrl: "maps.arcgis.com", urlKey: "myorg" }
-        );
+        .post(utils.PORTAL_SUBSET.restUrl + "/content/users/casey/items/sln1234567890/addResources", {
+          success: true,
+          id: expectedSolutionId,
+        })
+        .get(utils.PORTAL_SUBSET.restUrl + "/portals/self?f=json&token=fake-token", {
+          customBaseUrl: "maps.arcgis.com",
+          urlKey: "myorg",
+        });
       staticRelatedItemsMocks.fetchMockRelatedItems("map12345678900", {
         total: 0,
-        relatedItems: []
+        relatedItems: [],
       });
       staticRelatedItemsMocks.fetchMockRelatedItems("map12345678901", {
         total: 0,
-        relatedItems: []
+        relatedItems: [],
       });
 
-      creator
-        .createSolution(solutionGroupId, authentication, authentication)
-        .then(
-          solutionId => {
-            expect(solutionId).toEqual(expectedSolutionId);
+      const solutionId = await creator.createSolution(solutionGroupId, authentication, authentication);
+      expect(solutionId).toEqual(expectedSolutionId);
 
-            const addSolnCall = fetchMock.calls(
-              utils.PORTAL_SUBSET.restUrl + "/content/users/casey/addItem"
-            );
-            expect(
-              (addSolnCall[0][1]["body"] as FormData).get("title")
-            ).toEqual(mockItems.getAGOLItem("Group").title);
-
-            done();
-          },
-          () => done.fail()
-        );
+      const addSolnCall = fetchMock.calls(utils.PORTAL_SUBSET.restUrl + "/content/users/casey/addItem");
+      expect((addSolnCall[0][1]["body"] as FormData).get("title")).toEqual(mockItems.getAGOLItem("Group").title);
     });
 
-    it("createSolution with specified name", done => {
+    it("createSolution with specified name", async () => {
       const solutionName: string = "scratch_" + common.getUTCTimestamp();
       const solutionGroupId: string = "grp1234567890";
       const authentication: common.UserSession = MOCK_USER_SESSION;
@@ -417,110 +317,79 @@ describe("Module `creator`", () => {
       const expectedImage = utils.getSampleImageAsBlob();
 
       fetchMock
+        .get(utils.PORTAL_SUBSET.restUrl + "/community/self?f=json&token=fake-token", utils.getUserResponse())
         .get(
-          utils.PORTAL_SUBSET.restUrl +
-            "/community/self?f=json&token=fake-token",
-          utils.getUserResponse()
+          utils.PORTAL_SUBSET.restUrl + "/portals/self/subscriptioninfo?f=json&token=fake-token",
+          mockItems.getAGOLSubscriptionInfo(true),
         )
         .get(
-          utils.PORTAL_SUBSET.restUrl +
-            "/portals/self/subscriptioninfo?f=json&token=fake-token",
-          mockItems.getAGOLSubscriptionInfo(true)
+          utils.PORTAL_SUBSET.restUrl + "/community/groups/grp1234567890?f=json&token=fake-token",
+          mockItems.getAGOLItem("Group"),
         )
         .get(
-          utils.PORTAL_SUBSET.restUrl +
-            "/community/groups/grp1234567890?f=json&token=fake-token",
-          mockItems.getAGOLItem("Group")
-        )
-        .get(
-          utils.PORTAL_SUBSET.restUrl +
-            "/content/groups/grp1234567890?f=json&start=1&num=100&token=fake-token",
-          mockItems.getAGOLGroupContentsList(2, "Web Map")
+          utils.PORTAL_SUBSET.restUrl + "/content/groups/grp1234567890?f=json&start=1&num=100&token=fake-token",
+          mockItems.getAGOLGroupContentsList(2, "Web Map"),
         )
         .post(
           utils.PORTAL_SUBSET.restUrl + "/content/users/casey/addItem",
-          utils.getSuccessResponse({ id: expectedSolutionId, folder: null })
+          utils.getSuccessResponse({ id: expectedSolutionId, folder: null }),
         )
         .get(
-          utils.PORTAL_SUBSET.restUrl +
-            "/content/items/map12345678900?f=json&token=fake-token",
-          mockItems.getAGOLItemWithId("Web Map", 0)
+          utils.PORTAL_SUBSET.restUrl + "/content/items/map12345678900?f=json&token=fake-token",
+          mockItems.getAGOLItemWithId("Web Map", 0),
         )
         .post(
-          utils.PORTAL_SUBSET.restUrl +
-            "/community/groups/grp1234567890/info/ROWPermitManager.png",
+          utils.PORTAL_SUBSET.restUrl + "/community/groups/grp1234567890/info/ROWPermitManager.png",
           utils.getSampleImageAsFile(),
-          { sendAsJson: false }
+          { sendAsJson: false },
         )
         .post(
-          utils.PORTAL_SUBSET.restUrl +
-            "/content/items/map12345678900/info/thumbnail/ago_downloaded.png?w=400",
-          utils.getSampleImageAsBlob()
+          utils.PORTAL_SUBSET.restUrl + "/content/items/map12345678900/info/thumbnail/ago_downloaded.png?w=400",
+          utils.getSampleImageAsBlob(),
         )
+        .post(utils.PORTAL_SUBSET.restUrl + "/content/items/map12345678900/data", noDataResponse)
         .post(
-          utils.PORTAL_SUBSET.restUrl + "/content/items/map12345678900/data",
-          noDataResponse
+          utils.PORTAL_SUBSET.restUrl + "/content/items/map12345678900/info/metadata/metadata.xml",
+          noMetadataResponse,
         )
-        .post(
-          utils.PORTAL_SUBSET.restUrl +
-            "/content/items/map12345678900/info/metadata/metadata.xml",
-          noMetadataResponse
-        )
-        .post(
-          utils.PORTAL_SUBSET.restUrl +
-            "/content/items/map12345678900/resources",
-          noResourcesResponse
-        )
+        .post(utils.PORTAL_SUBSET.restUrl + "/content/items/map12345678900/resources", noResourcesResponse)
         .get(
-          utils.PORTAL_SUBSET.restUrl +
-            "/content/items/map12345678901?f=json&token=fake-token",
-          mockItems.getAGOLItemWithId("Web Map", 1)
+          utils.PORTAL_SUBSET.restUrl + "/content/items/map12345678901?f=json&token=fake-token",
+          mockItems.getAGOLItemWithId("Web Map", 1),
         )
         .post(
-          utils.PORTAL_SUBSET.restUrl +
-            "/content/items/map12345678901/info/thumbnail/ago_downloaded.png?w=400",
-          utils.getSampleImageAsBlob()
+          utils.PORTAL_SUBSET.restUrl + "/content/items/map12345678901/info/thumbnail/ago_downloaded.png?w=400",
+          utils.getSampleImageAsBlob(),
+        )
+        .post(utils.PORTAL_SUBSET.restUrl + "/content/items/map12345678901/data", noDataResponse)
+        .post(utils.PORTAL_SUBSET.restUrl + "/content/items/map12345678901/resources", noResourcesResponse)
+        .post(
+          utils.PORTAL_SUBSET.restUrl + "/content/items/map12345678901/info/metadata/metadata.xml",
+          noMetadataResponse,
         )
         .post(
-          utils.PORTAL_SUBSET.restUrl + "/content/items/map12345678901/data",
-          noDataResponse
+          utils.PORTAL_SUBSET.restUrl + "/community/groups/grp1234567890/info/ROWPermitManager.png?w=400",
+          expectedImage,
         )
         .post(
-          utils.PORTAL_SUBSET.restUrl +
-            "/content/items/map12345678901/resources",
-          noResourcesResponse
+          utils.PORTAL_SUBSET.restUrl + "/content/users/casey/items/sln1234567890/update",
+          utils.getSuccessResponse({ id: expectedSolutionId }),
         )
-        .post(
-          utils.PORTAL_SUBSET.restUrl +
-            "/content/items/map12345678901/info/metadata/metadata.xml",
-          noMetadataResponse
-        )
-        .post(
-          utils.PORTAL_SUBSET.restUrl +
-            "/community/groups/grp1234567890/info/ROWPermitManager.png?w=400",
-          expectedImage
-        )
-        .post(
-          utils.PORTAL_SUBSET.restUrl +
-            "/content/users/casey/items/sln1234567890/update",
-          utils.getSuccessResponse({ id: expectedSolutionId })
-        )
-        .post(
-          utils.PORTAL_SUBSET.restUrl +
-            "/content/users/casey/items/sln1234567890/addResources",
-          { success: true, id: expectedSolutionId }
-        )
-        .get(
-          utils.PORTAL_SUBSET.restUrl + "/portals/self?f=json&token=fake-token",
-          { customBaseUrl: "maps.arcgis.com", urlKey: "myorg" }
-        );
+        .post(utils.PORTAL_SUBSET.restUrl + "/content/users/casey/items/sln1234567890/addResources", {
+          success: true,
+          id: expectedSolutionId,
+        })
+        .get(utils.PORTAL_SUBSET.restUrl + "/portals/self?f=json&token=fake-token", {
+          customBaseUrl: "maps.arcgis.com",
+          urlKey: "myorg",
+        });
       staticRelatedItemsMocks.fetchMockRelatedItems("map12345678900", {
         total: 0,
-        relatedItems: []
+        relatedItems: [],
       });
       staticRelatedItemsMocks.fetchMockRelatedItems("map12345678901", {
         total: 0,
-        relatedItems: []
+        relatedItems: [],
       });
 
       const options: common.ICreateSolutionOptions = {
@@ -532,39 +401,21 @@ describe("Module `creator`", () => {
         templateDictionary: {
           wma1234567890: {
             itemId: "wma1234567890",
-            url:
-              utils.PORTAL_SUBSET.restUrl +
-              "/content/users/casey/items/wma1234567890",
-            name: "a map"
-          }
-        },
-        progressCallback: () => {}
-      };
-      creator
-        .createSolution(
-          solutionGroupId,
-          authentication,
-          authentication,
-          options
-        )
-        .then(
-          solutionId => {
-            expect(solutionId).toEqual(expectedSolutionId);
-
-            const addSolnCall = fetchMock.calls(
-              utils.PORTAL_SUBSET.restUrl + "/content/users/casey/addItem"
-            );
-            expect(
-              (addSolnCall[0][1]["body"] as FormData).get("title")
-            ).toEqual(solutionName);
-
-            done();
+            url: utils.PORTAL_SUBSET.restUrl + "/content/users/casey/items/wma1234567890",
+            name: "a map",
           },
-          () => done.fail()
-        );
+        },
+        progressCallback: () => {},
+      };
+
+      const solutionId = await creator.createSolution(solutionGroupId, authentication, authentication, options);
+      expect(solutionId).toEqual(expectedSolutionId);
+
+      const addSolnCall = fetchMock.calls(utils.PORTAL_SUBSET.restUrl + "/content/users/casey/addItem");
+      expect((addSolnCall[0][1]["body"] as FormData).get("title")).toEqual(solutionName);
     });
 
-    it("createSolution with empty group with defaults without progress callback", done => {
+    it("createSolution with empty group with defaults without progress callback", async () => {
       const solutionGroupId: string = "grp1234567890";
       const authentication: common.UserSession = MOCK_USER_SESSION;
 
@@ -572,81 +423,54 @@ describe("Module `creator`", () => {
       const expectedImage = utils.getSampleImageAsBlob();
 
       fetchMock
+        .get(utils.PORTAL_SUBSET.restUrl + "/community/self?f=json&token=fake-token", utils.getUserResponse())
+        .get(utils.PORTAL_SUBSET.restUrl + "/portals/self?f=json&token=fake-token", utils.getPortalsSelfResponse())
         .get(
-          utils.PORTAL_SUBSET.restUrl +
-            "/community/self?f=json&token=fake-token",
-          utils.getUserResponse()
+          utils.PORTAL_SUBSET.restUrl + "/portals/self/subscriptioninfo?f=json&token=fake-token",
+          mockItems.getAGOLSubscriptionInfo(false),
         )
         .get(
-          utils.PORTAL_SUBSET.restUrl + "/portals/self?f=json&token=fake-token",
-          utils.getPortalsSelfResponse()
-        )
-        .get(
-          utils.PORTAL_SUBSET.restUrl +
-            "/portals/self/subscriptioninfo?f=json&token=fake-token",
-          mockItems.getAGOLSubscriptionInfo(false)
-        )
-        .get(
-          utils.PORTAL_SUBSET.restUrl +
-            "/community/groups/grp1234567890?f=json&token=fake-token",
-          mockItems.getAGOLItem("Group")
+          utils.PORTAL_SUBSET.restUrl + "/community/groups/grp1234567890?f=json&token=fake-token",
+          mockItems.getAGOLItem("Group"),
         )
         .post(
-          utils.PORTAL_SUBSET.restUrl +
-            "/community/groups/grp1234567890/info/ROWPermitManager.png",
+          utils.PORTAL_SUBSET.restUrl + "/community/groups/grp1234567890/info/ROWPermitManager.png",
           utils.getSampleImageAsFile(),
-          { sendAsJson: false }
+          { sendAsJson: false },
         )
         .get(
-          utils.PORTAL_SUBSET.restUrl +
-            "/content/groups/grp1234567890?f=json&start=1&num=100&token=fake-token",
-          mockItems.getAGOLGroupContentsList(0)
+          utils.PORTAL_SUBSET.restUrl + "/content/groups/grp1234567890?f=json&start=1&num=100&token=fake-token",
+          mockItems.getAGOLGroupContentsList(0),
         )
         .post(
           utils.PORTAL_SUBSET.restUrl + "/content/users/casey/addItem",
-          utils.getSuccessResponse({ id: expectedSolutionId, folder: null })
+          utils.getSuccessResponse({ id: expectedSolutionId, folder: null }),
         )
         .post(
-          utils.PORTAL_SUBSET.restUrl +
-            "/content/items/map12345678901/info/metadata/metadata.xml",
-          noMetadataResponse
+          utils.PORTAL_SUBSET.restUrl + "/content/items/map12345678901/info/metadata/metadata.xml",
+          noMetadataResponse,
         )
         .post(
-          utils.PORTAL_SUBSET.restUrl +
-            "/community/groups/grp1234567890/info/ROWPermitManager.png?w=400",
-          expectedImage
+          utils.PORTAL_SUBSET.restUrl + "/community/groups/grp1234567890/info/ROWPermitManager.png?w=400",
+          expectedImage,
         )
         .post(
-          utils.PORTAL_SUBSET.restUrl +
-            "/content/users/casey/items/sln1234567890/update",
-          utils.getSuccessResponse({ id: expectedSolutionId })
+          utils.PORTAL_SUBSET.restUrl + "/content/users/casey/items/sln1234567890/update",
+          utils.getSuccessResponse({ id: expectedSolutionId }),
         )
-        .post(
-          utils.PORTAL_SUBSET.restUrl +
-            "/content/users/casey/items/sln1234567890/addResources",
-          { success: true, id: expectedSolutionId }
-        );
+        .post(utils.PORTAL_SUBSET.restUrl + "/content/users/casey/items/sln1234567890/addResources", {
+          success: true,
+          id: expectedSolutionId,
+        });
 
-      creator
-        .createSolution(solutionGroupId, authentication, authentication)
-        .then(
-          solutionId => {
-            expect(solutionId).toEqual(expectedSolutionId);
+      const solutionId = await creator.createSolution(solutionGroupId, authentication, authentication);
+      expect(solutionId).toEqual(expectedSolutionId);
 
-            const addSolnCall = fetchMock.calls(
-              utils.PORTAL_SUBSET.restUrl + "/content/users/casey/addItem"
-            );
-            expect(
-              (addSolnCall[0][1]["body"] as FormData).get("title")
-            ).toEqual(mockItems.getAGOLItem("Group").title);
-
-            done();
-          },
-          () => done.fail()
-        );
+      const addSolnCall = fetchMock.calls(utils.PORTAL_SUBSET.restUrl + "/content/users/casey/addItem");
+      expect((addSolnCall[0][1]["body"] as FormData).get("title")).toEqual(mockItems.getAGOLItem("Group").title);
     });
 
-    it("createSolution with empty group without progress callback", done => {
+    it("createSolution with empty group without progress callback", async () => {
       const solutionName: string = "scratch_" + common.getUTCTimestamp();
       const solutionGroupId: string = "grp1234567890";
       const authentication: common.UserSession = MOCK_USER_SESSION;
@@ -656,90 +480,59 @@ describe("Module `creator`", () => {
       const expectedImage = utils.getSampleImageAsBlob();
 
       fetchMock
+        .get(utils.PORTAL_SUBSET.restUrl + "/community/self?f=json&token=fake-token", utils.getUserResponse())
+        .get(utils.PORTAL_SUBSET.restUrl + "/portals/self?f=json&token=fake-token", utils.getPortalsSelfResponse())
         .get(
-          utils.PORTAL_SUBSET.restUrl +
-            "/community/self?f=json&token=fake-token",
-          utils.getUserResponse()
+          utils.PORTAL_SUBSET.restUrl + "/portals/self/subscriptioninfo?f=json&token=fake-token",
+          mockItems.getAGOLSubscriptionInfo(false),
         )
         .get(
-          utils.PORTAL_SUBSET.restUrl + "/portals/self?f=json&token=fake-token",
-          utils.getPortalsSelfResponse()
-        )
-        .get(
-          utils.PORTAL_SUBSET.restUrl +
-            "/portals/self/subscriptioninfo?f=json&token=fake-token",
-          mockItems.getAGOLSubscriptionInfo(false)
-        )
-        .get(
-          utils.PORTAL_SUBSET.restUrl +
-            "/community/groups/grp1234567890?f=json&token=fake-token",
-          mockItems.getAGOLItem("Group")
+          utils.PORTAL_SUBSET.restUrl + "/community/groups/grp1234567890?f=json&token=fake-token",
+          mockItems.getAGOLItem("Group"),
         )
         .post(
-          utils.PORTAL_SUBSET.restUrl +
-            "/community/groups/grp1234567890/info/ROWPermitManager.png",
+          utils.PORTAL_SUBSET.restUrl + "/community/groups/grp1234567890/info/ROWPermitManager.png",
           utils.getSampleImageAsFile(),
-          { sendAsJson: false }
+          { sendAsJson: false },
         )
         .get(
-          utils.PORTAL_SUBSET.restUrl +
-            "/content/groups/grp1234567890?f=json&start=1&num=100&token=fake-token",
-          mockItems.getAGOLGroupContentsList(0)
+          utils.PORTAL_SUBSET.restUrl + "/content/groups/grp1234567890?f=json&start=1&num=100&token=fake-token",
+          mockItems.getAGOLGroupContentsList(0),
         )
         .post(
           utils.PORTAL_SUBSET.restUrl + "/content/users/casey/addItem",
-          utils.getSuccessResponse({ id: expectedSolutionId, folder: null })
+          utils.getSuccessResponse({ id: expectedSolutionId, folder: null }),
         )
         .post(
-          utils.PORTAL_SUBSET.restUrl +
-            "/content/items/map12345678901/info/metadata/metadata.xml",
-          noMetadataResponse
+          utils.PORTAL_SUBSET.restUrl + "/content/items/map12345678901/info/metadata/metadata.xml",
+          noMetadataResponse,
         )
         .post(
-          utils.PORTAL_SUBSET.restUrl +
-            "/community/groups/grp1234567890/info/ROWPermitManager.png?w=400",
-          expectedImage
+          utils.PORTAL_SUBSET.restUrl + "/community/groups/grp1234567890/info/ROWPermitManager.png?w=400",
+          expectedImage,
         )
         .post(
-          utils.PORTAL_SUBSET.restUrl +
-            "/content/users/casey/items/sln1234567890/update",
-          utils.getSuccessResponse({ id: expectedSolutionId })
+          utils.PORTAL_SUBSET.restUrl + "/content/users/casey/items/sln1234567890/update",
+          utils.getSuccessResponse({ id: expectedSolutionId }),
         )
-        .post(
-          utils.PORTAL_SUBSET.restUrl +
-            "/content/users/casey/items/sln1234567890/addResources",
-          { success: true, id: expectedSolutionId }
-        );
+        .post(utils.PORTAL_SUBSET.restUrl + "/content/users/casey/items/sln1234567890/addResources", {
+          success: true,
+          id: expectedSolutionId,
+        });
 
       const options: common.ICreateSolutionOptions = {
         title: solutionName,
-        templatizeFields: true
+        templatizeFields: true,
       };
-      creator
-        .createSolution(
-          solutionGroupId,
-          authentication,
-          authentication,
-          options
-        )
-        .then(
-          solutionId => {
-            expect(solutionId).toEqual(expectedSolutionId);
 
-            const addSolnCall = fetchMock.calls(
-              utils.PORTAL_SUBSET.restUrl + "/content/users/casey/addItem"
-            );
-            expect(
-              (addSolnCall[0][1]["body"] as FormData).get("title")
-            ).toEqual(solutionName);
+      const solutionId = await creator.createSolution(solutionGroupId, authentication, authentication, options);
+      expect(solutionId).toEqual(expectedSolutionId);
 
-            done();
-          },
-          () => done.fail()
-        );
+      const addSolnCall = fetchMock.calls(utils.PORTAL_SUBSET.restUrl + "/content/users/casey/addItem");
+      expect((addSolnCall[0][1]["body"] as FormData).get("title")).toEqual(solutionName);
     });
 
-    it("createSolution with empty group and progress callback", done => {
+    it("createSolution with empty group and progress callback", async () => {
       const solutionName: string = "scratch_" + common.getUTCTimestamp();
       const solutionGroupId: string = "grp1234567890";
       const authentication: common.UserSession = MOCK_USER_SESSION;
@@ -749,165 +542,119 @@ describe("Module `creator`", () => {
       const expectedImage = utils.getSampleImageAsBlob();
 
       fetchMock
+        .get(utils.PORTAL_SUBSET.restUrl + "/community/self?f=json&token=fake-token", utils.getUserResponse())
+        .get(utils.PORTAL_SUBSET.restUrl + "/portals/self?f=json&token=fake-token", utils.getPortalsSelfResponse())
         .get(
-          utils.PORTAL_SUBSET.restUrl +
-            "/community/self?f=json&token=fake-token",
-          utils.getUserResponse()
+          utils.PORTAL_SUBSET.restUrl + "/portals/self/subscriptioninfo?f=json&token=fake-token",
+          mockItems.getAGOLSubscriptionInfo(false),
         )
         .get(
-          utils.PORTAL_SUBSET.restUrl + "/portals/self?f=json&token=fake-token",
-          utils.getPortalsSelfResponse()
-        )
-        .get(
-          utils.PORTAL_SUBSET.restUrl +
-            "/portals/self/subscriptioninfo?f=json&token=fake-token",
-          mockItems.getAGOLSubscriptionInfo(false)
-        )
-        .get(
-          utils.PORTAL_SUBSET.restUrl +
-            "/community/groups/grp1234567890?f=json&token=fake-token",
-          mockItems.getAGOLItem("Group")
+          utils.PORTAL_SUBSET.restUrl + "/community/groups/grp1234567890?f=json&token=fake-token",
+          mockItems.getAGOLItem("Group"),
         )
         .post(
-          utils.PORTAL_SUBSET.restUrl +
-            "/community/groups/grp1234567890/info/ROWPermitManager.png",
+          utils.PORTAL_SUBSET.restUrl + "/community/groups/grp1234567890/info/ROWPermitManager.png",
           utils.getSampleImageAsFile(),
-          { sendAsJson: false }
+          { sendAsJson: false },
         )
         .get(
-          utils.PORTAL_SUBSET.restUrl +
-            "/content/groups/grp1234567890?f=json&start=1&num=100&token=fake-token",
-          mockItems.getAGOLGroupContentsList(0)
+          utils.PORTAL_SUBSET.restUrl + "/content/groups/grp1234567890?f=json&start=1&num=100&token=fake-token",
+          mockItems.getAGOLGroupContentsList(0),
         )
         .post(
           utils.PORTAL_SUBSET.restUrl + "/content/users/casey/addItem",
-          utils.getSuccessResponse({ id: expectedSolutionId, folder: null })
+          utils.getSuccessResponse({ id: expectedSolutionId, folder: null }),
         )
         .post(
-          utils.PORTAL_SUBSET.restUrl +
-            "/content/items/map12345678901/info/metadata/metadata.xml",
-          noMetadataResponse
+          utils.PORTAL_SUBSET.restUrl + "/content/items/map12345678901/info/metadata/metadata.xml",
+          noMetadataResponse,
         )
         .post(
-          utils.PORTAL_SUBSET.restUrl +
-            "/community/groups/grp1234567890/info/ROWPermitManager.png?w=400",
-          expectedImage
+          utils.PORTAL_SUBSET.restUrl + "/community/groups/grp1234567890/info/ROWPermitManager.png?w=400",
+          expectedImage,
         )
         .post(
-          utils.PORTAL_SUBSET.restUrl +
-            "/content/users/casey/items/sln1234567890/update",
-          utils.getSuccessResponse({ id: expectedSolutionId })
+          utils.PORTAL_SUBSET.restUrl + "/content/users/casey/items/sln1234567890/update",
+          utils.getSuccessResponse({ id: expectedSolutionId }),
         )
-        .post(
-          utils.PORTAL_SUBSET.restUrl +
-            "/content/users/casey/items/sln1234567890/addResources",
-          { success: true, id: expectedSolutionId }
-        );
+        .post(utils.PORTAL_SUBSET.restUrl + "/content/users/casey/items/sln1234567890/addResources", {
+          success: true,
+          id: expectedSolutionId,
+        });
 
       spyOn(console, "error").and.callFake(() => {});
 
       const options: common.ICreateSolutionOptions = {
         title: solutionName,
         templatizeFields: true,
-        progressCallback: () => {}
+        progressCallback: () => {},
       };
-      creator
-        .createSolution(
-          solutionGroupId,
-          authentication,
-          authentication,
-          options
-        )
-        .then(
-          solutionId => {
-            expect(solutionId).toEqual(expectedSolutionId);
 
-            const addSolnCall = fetchMock.calls(
-              utils.PORTAL_SUBSET.restUrl + "/content/users/casey/addItem"
-            );
-            expect(
-              (addSolnCall[0][1]["body"] as FormData).get("title")
-            ).toEqual(solutionName);
+      const solutionId = await creator.createSolution(solutionGroupId, authentication, authentication, options);
+      expect(solutionId).toEqual(expectedSolutionId);
 
-            done();
-          },
-          () => done.fail()
-        );
+      const addSolnCall = fetchMock.calls(utils.PORTAL_SUBSET.restUrl + "/content/users/casey/addItem");
+      expect((addSolnCall[0][1]["body"] as FormData).get("title")).toEqual(solutionName);
     });
 
-    it("createSolution fails to get item or group", done => {
+    it("createSolution fails to get item or group", async () => {
       const itemIds: string = "itm1234567890";
       const authentication: common.UserSession = MOCK_USER_SESSION;
       const expectedSolutionId = "sln1234567890";
       const expectedImage = utils.getSampleImageAsBlob();
 
       fetchMock
+        .get(utils.PORTAL_SUBSET.restUrl + "/community/self?f=json&token=fake-token", utils.getUserResponse())
+        .get(utils.PORTAL_SUBSET.restUrl + "/portals/self?f=json&token=fake-token", utils.getPortalsSelfResponse())
         .get(
-          utils.PORTAL_SUBSET.restUrl +
-            "/community/self?f=json&token=fake-token",
-          utils.getUserResponse()
-        )
-        .get(
-          utils.PORTAL_SUBSET.restUrl + "/portals/self?f=json&token=fake-token",
-          utils.getPortalsSelfResponse()
-        )
-        .get(
-          utils.PORTAL_SUBSET.restUrl +
-            "/portals/self/subscriptioninfo?f=json&token=fake-token",
-          mockItems.getAGOLSubscriptionInfo(false)
+          utils.PORTAL_SUBSET.restUrl + "/portals/self/subscriptioninfo?f=json&token=fake-token",
+          mockItems.getAGOLSubscriptionInfo(false),
         )
         .post(
           utils.PORTAL_SUBSET.restUrl + "/content/users/casey/addItem",
-          utils.getSuccessResponse({ id: expectedSolutionId, folder: null })
+          utils.getSuccessResponse({ id: expectedSolutionId, folder: null }),
         )
         .get(
-          utils.PORTAL_SUBSET.restUrl +
-            "/content/items/itm1234567890?f=json&token=fake-token",
-          mockItems.get400Failure()
+          utils.PORTAL_SUBSET.restUrl + "/content/items/itm1234567890?f=json&token=fake-token",
+          mockItems.get400Failure(),
         )
         .get(
-          utils.PORTAL_SUBSET.restUrl +
-            "/community/groups/itm1234567890?f=json&token=fake-token",
-          mockItems.get400Failure()
+          utils.PORTAL_SUBSET.restUrl + "/community/groups/itm1234567890?f=json&token=fake-token",
+          mockItems.get400Failure(),
         )
         .get(
-          utils.PORTAL_SUBSET.restUrl +
-            "/content/groups/itm1234567890?f=json&start=1&num=100&token=fake-token",
-          mockItems.get400Failure()
+          utils.PORTAL_SUBSET.restUrl + "/content/groups/itm1234567890?f=json&start=1&num=100&token=fake-token",
+          mockItems.get400Failure(),
         )
         .post(
-          utils.PORTAL_SUBSET.restUrl +
-            "/community/groups/grp1234567890/info/ROWPermitManager.png?w=400",
-          expectedImage
+          utils.PORTAL_SUBSET.restUrl + "/community/groups/grp1234567890/info/ROWPermitManager.png?w=400",
+          expectedImage,
         )
-        .post(
-          utils.PORTAL_SUBSET.restUrl +
-            "/content/users/casey/items/sln1234567890/delete",
-          { success: true, itemId: expectedSolutionId }
-        )
+        .post(utils.PORTAL_SUBSET.restUrl + "/content/users/casey/items/sln1234567890/delete", {
+          success: true,
+          itemId: expectedSolutionId,
+        })
         .post(
           // for missing item's placeholder
-          utils.PORTAL_SUBSET.restUrl +
-            "/content/users/casey/items/sln1234567890/update",
-          utils.getSuccessResponse({ id: expectedSolutionId })
+          utils.PORTAL_SUBSET.restUrl + "/content/users/casey/items/sln1234567890/update",
+          utils.getSuccessResponse({ id: expectedSolutionId }),
         );
 
       spyOn(console, "error").and.callFake(() => {});
       spyOn(common, "createShortId").and.callFake(() => "xfakeidx");
-      creator.createSolution(itemIds, authentication, authentication).then(
-        () => done.fail(),
-        response => {
-          done();
-        }
+
+      return creator.createSolution(itemIds, authentication, authentication).then(
+        () => fail(),
+        () => Promise.resolve(),
       );
     });
 
-    it("createSolution fails to add items to solution item", done => {
+    it("createSolution fails to add items to solution item", async () => {
       MOCK_USER_SESSION.getPortal = function () {
         return (this as any).isEnterprise
           ? Promise.resolve({ portalHostname: "myOrg.ags.esri.com/portal" })
           : Promise.resolve({ portalHostname: "myPortalHostname" });
-      }
+      };
 
       const itemIds: string = "itm1234567890";
       const authentication: common.UserSession = MOCK_USER_SESSION;
@@ -915,292 +662,227 @@ describe("Module `creator`", () => {
       const expectedItem = mockItems.getAGOLItem("Web Map");
 
       fetchMock
+        .get(utils.PORTAL_SUBSET.restUrl + "/community/self?f=json&token=fake-token", utils.getUserResponse())
         .get(
-          utils.PORTAL_SUBSET.restUrl +
-            "/community/self?f=json&token=fake-token",
-          utils.getUserResponse()
-        )
-        .get(
-          utils.PORTAL_SUBSET.restUrl +
-            "/portals/self/subscriptioninfo?f=json&token=fake-token",
-          mockItems.getAGOLSubscriptionInfo(true)
+          utils.PORTAL_SUBSET.restUrl + "/portals/self/subscriptioninfo?f=json&token=fake-token",
+          mockItems.getAGOLSubscriptionInfo(true),
         )
         .post(
           utils.PORTAL_SUBSET.restUrl + "/content/users/casey/addItem",
-          utils.getSuccessResponse({ id: expectedSolutionId, folder: null })
+          utils.getSuccessResponse({ id: expectedSolutionId, folder: null }),
         )
         .get(
-          utils.PORTAL_SUBSET.restUrl +
-            "/community/groups/itm1234567890?f=json&token=fake-token",
-          mockItems.get400Failure()
+          utils.PORTAL_SUBSET.restUrl + "/community/groups/itm1234567890?f=json&token=fake-token",
+          mockItems.get400Failure(),
         )
         .get(
-          utils.PORTAL_SUBSET.restUrl +
-            "/content/groups/itm1234567890?f=json&start=1&num=100&token=fake-token",
-          mockItems.get400Failure()
+          utils.PORTAL_SUBSET.restUrl + "/content/groups/itm1234567890?f=json&start=1&num=100&token=fake-token",
+          mockItems.get400Failure(),
         )
         .get(
-          utils.PORTAL_SUBSET.restUrl +
-            "/content/items/itm1234567890?f=json&token=fake-token",
-          JSON.stringify(expectedItem)
+          utils.PORTAL_SUBSET.restUrl + "/content/items/itm1234567890?f=json&token=fake-token",
+          JSON.stringify(expectedItem),
         )
         .post(
-          utils.PORTAL_SUBSET.restUrl +
-            "/content/items/map1234567890/info/thumbnail/ago_downloaded.png",
+          utils.PORTAL_SUBSET.restUrl + "/content/items/map1234567890/info/thumbnail/ago_downloaded.png",
           utils.getSampleImageAsFile(),
-          { sendAsJson: false }
+          { sendAsJson: false },
+        )
+        .post(utils.PORTAL_SUBSET.restUrl + "/content/items/map1234567890/data", noDataResponse)
+        .post(utils.PORTAL_SUBSET.restUrl + "/content/items/map1234567890/resources", noResourcesResponse)
+        .post(
+          utils.PORTAL_SUBSET.restUrl + "/content/items/map1234567890/info/metadata/metadata.xml",
+          noMetadataResponse,
         )
         .post(
-          utils.PORTAL_SUBSET.restUrl + "/content/items/map1234567890/data",
-          noDataResponse
-        )
-        .post(
-          utils.PORTAL_SUBSET.restUrl +
-            "/content/items/map1234567890/resources",
-          noResourcesResponse
-        )
-        .post(
-          utils.PORTAL_SUBSET.restUrl +
-            "/content/items/map1234567890/info/metadata/metadata.xml",
-          noMetadataResponse
-        )
-        .post(
-          utils.PORTAL_SUBSET.restUrl +
-            "/content/items/map1234567890/info/thumbnail/ago_downloaded.png?w=400",
+          utils.PORTAL_SUBSET.restUrl + "/content/items/map1234567890/info/thumbnail/ago_downloaded.png?w=400",
           utils.getSampleImageAsBlob(),
-          { sendAsJson: false }
+          { sendAsJson: false },
         )
+        .post(utils.PORTAL_SUBSET.restUrl + "/content/users/casey/items/sln1234567890/addResources", {
+          success: true,
+          id: expectedSolutionId,
+        })
         .post(
-          utils.PORTAL_SUBSET.restUrl +
-            "/content/users/casey/items/sln1234567890/addResources",
-          { success: true, id: expectedSolutionId }
+          utils.PORTAL_SUBSET.restUrl + "/content/users/casey/items/sln1234567890/update",
+          utils.getFailureResponse({ id: "sln1234567890" }),
         )
-        .post(
-          utils.PORTAL_SUBSET.restUrl +
-            "/content/users/casey/items/sln1234567890/update",
-          utils.getFailureResponse({ id: "sln1234567890" })
-        )
-        .post(
-          utils.PORTAL_SUBSET.restUrl +
-            "/content/users/casey/items/sln1234567890/delete",
-          { success: true, itemId: expectedSolutionId }
-        )
-        .get(
-          utils.PORTAL_SUBSET.restUrl + "/portals/self?f=json&token=fake-token",
-          { customBaseUrl: "maps.arcgis.com", urlKey: "myorg" }
-        );
+        .post(utils.PORTAL_SUBSET.restUrl + "/content/users/casey/items/sln1234567890/delete", {
+          success: true,
+          itemId: expectedSolutionId,
+        })
+        .get(utils.PORTAL_SUBSET.restUrl + "/portals/self?f=json&token=fake-token", {
+          customBaseUrl: "maps.arcgis.com",
+          urlKey: "myorg",
+        });
       staticRelatedItemsMocks.fetchMockRelatedItems("map1234567890", {
         total: 0,
-        relatedItems: []
+        relatedItems: [],
       });
 
       spyOn(console, "error").and.callFake(() => {});
 
       spyOn(common, "createShortId").and.callFake(() => "xfakeidx");
-      creator.createSolution(itemIds, authentication, authentication).then(
-        () => done.fail(),
-        error => {
+
+      return creator.createSolution(itemIds, authentication, authentication).then(
+        () => fail(),
+        (error) => {
           expect(error.success).toBeFalsy();
-          done();
-        }
+          return Promise.resolve();
+        },
       );
     });
   });
 
   describe("_addThumbnailFileToCreateOptions", () => {
-    it("doesn't modify creation options if there's no thumbnailurl", done => {
+    it("doesn't modify creation options if there's no thumbnailurl", async () => {
       const createOptions: common.ICreateSolutionOptions = {};
       const expectedUpdatedCreateOptions: common.ICreateSolutionOptions = {};
 
-      creator
-        ._addThumbnailFileToCreateOptions(createOptions, MOCK_USER_SESSION)
-        .then((updatedCreateOptions: common.ICreateSolutionOptions) => {
-          expect(updatedCreateOptions).toEqual(expectedUpdatedCreateOptions);
-          done();
-        }, done.fail);
+      const updatedCreateOptions: common.ICreateSolutionOptions = await creator._addThumbnailFileToCreateOptions(
+        createOptions,
+        MOCK_USER_SESSION,
+      );
+      expect(updatedCreateOptions).toEqual(expectedUpdatedCreateOptions);
     });
 
-    it("fetches a thumbnail", done => {
+    it("fetches a thumbnail", async () => {
       const createOptions: common.ICreateSolutionOptions = {
         thumbnailurl:
-          utils.PORTAL_SUBSET.restUrl +
-          "/content/items/itm1234567890/folder/sampelImage?f=json&token=fake-token"
+          utils.PORTAL_SUBSET.restUrl + "/content/items/itm1234567890/folder/sampelImage?f=json&token=fake-token",
       };
       const expectedUpdatedCreateOptions: common.ICreateSolutionOptions = {
-        thumbnail: utils.getSampleImageAsFile()
+        thumbnail: utils.getSampleImageAsFile(),
       };
 
       fetchMock.post(
-        utils.PORTAL_SUBSET.restUrl +
-          "/content/items/itm1234567890/folder/sampelImage?f=json&token=fake-token&w=400",
+        utils.PORTAL_SUBSET.restUrl + "/content/items/itm1234567890/folder/sampelImage?f=json&token=fake-token&w=400",
         utils.getSampleImageAsFile(),
-        { sendAsJson: false }
+        { sendAsJson: false },
       );
 
-      creator
-        ._addThumbnailFileToCreateOptions(createOptions, MOCK_USER_SESSION)
-        .then((updatedCreateOptions: common.ICreateSolutionOptions) => {
-          expect(updatedCreateOptions).toEqual(expectedUpdatedCreateOptions);
-          done();
-        }, done.fail);
+      const updatedCreateOptions: common.ICreateSolutionOptions = await creator._addThumbnailFileToCreateOptions(
+        createOptions,
+        MOCK_USER_SESSION,
+      );
+      expect(updatedCreateOptions).toEqual(expectedUpdatedCreateOptions);
     });
 
-    it("has a fallback filename", done => {
+    it("has a fallback filename", async () => {
       const createOptions: common.ICreateSolutionOptions = {
-        thumbnailurl:
-          utils.PORTAL_SUBSET.restUrl +
-          "/content/items/itm1234567890/folder/?f=json&token=fake-token"
+        thumbnailurl: utils.PORTAL_SUBSET.restUrl + "/content/items/itm1234567890/folder/?f=json&token=fake-token",
       };
       const expectedUpdatedCreateOptions: common.ICreateSolutionOptions = {
-        thumbnail: utils.getSampleImageAsFile("thumbnail")
+        thumbnail: utils.getSampleImageAsFile("thumbnail"),
       };
 
       fetchMock.post(
-        utils.PORTAL_SUBSET.restUrl +
-          "/content/items/itm1234567890/folder/?f=json&token=fake-token&w=400",
+        utils.PORTAL_SUBSET.restUrl + "/content/items/itm1234567890/folder/?f=json&token=fake-token&w=400",
         utils.getSampleImageAsFile(),
-        { sendAsJson: false }
+        { sendAsJson: false },
       );
 
-      creator
-        ._addThumbnailFileToCreateOptions(createOptions, MOCK_USER_SESSION)
-        .then((updatedCreateOptions: common.ICreateSolutionOptions) => {
-          expect(updatedCreateOptions).toEqual(expectedUpdatedCreateOptions);
-          done();
-        }, done.fail);
+      const updatedCreateOptions: common.ICreateSolutionOptions = await creator._addThumbnailFileToCreateOptions(
+        createOptions,
+        MOCK_USER_SESSION,
+      );
+      expect(updatedCreateOptions).toEqual(expectedUpdatedCreateOptions);
     });
 
-    it("handles a failure to fetch a thumbnail", done => {
+    it("handles a failure to fetch a thumbnail", async () => {
       const createOptions: common.ICreateSolutionOptions = {
         thumbnailurl:
-          utils.PORTAL_SUBSET.restUrl +
-          "/content/items/itm1234567890/folder/sampleImage?f=json&token=fake-token"
+          utils.PORTAL_SUBSET.restUrl + "/content/items/itm1234567890/folder/sampleImage?f=json&token=fake-token",
       };
       const expectedUpdatedCreateOptions: common.ICreateSolutionOptions = {};
 
       fetchMock.post(
-        utils.PORTAL_SUBSET.restUrl +
-          "/content/items/itm1234567890/folder/sampleImage?f=json&token=fake-token&w=400",
-        mockItems.get400Failure()
+        utils.PORTAL_SUBSET.restUrl + "/content/items/itm1234567890/folder/sampleImage?f=json&token=fake-token&w=400",
+        mockItems.get400Failure(),
       );
 
-      creator
-        ._addThumbnailFileToCreateOptions(createOptions, MOCK_USER_SESSION)
-        .then((updatedCreateOptions: common.ICreateSolutionOptions) => {
-          expect(updatedCreateOptions).toEqual(expectedUpdatedCreateOptions);
-          done();
-        }, done.fail);
+      const updatedCreateOptions: common.ICreateSolutionOptions = await creator._addThumbnailFileToCreateOptions(
+        createOptions,
+        MOCK_USER_SESSION,
+      );
+      expect(updatedCreateOptions).toEqual(expectedUpdatedCreateOptions);
     });
   });
 
   describe("_createSolutionFromItemIds", () => {
-    it("handles failure to create the solution", done => {
+    it("handles failure to create the solution", async () => {
       const options: common.ICreateSolutionOptions = {
-        itemIds: ["map1234567890", "wma1234567890"]
+        itemIds: ["map1234567890", "wma1234567890"],
       };
 
-      spyOn(common, "createItemWithData").and.returnValue(
-        Promise.reject(utils.getFailureResponse())
-      );
+      spyOn(common, "createItemWithData").and.returnValue(Promise.reject(utils.getFailureResponse()));
 
-      creator
-        ._createSolutionFromItemIds(
-          options,
-          MOCK_USER_SESSION,
-          MOCK_USER_SESSION
-        )
-        .then(
-          () => done.fail(),
-          response => {
-            done();
-          }
-        );
+      return creator._createSolutionFromItemIds(options, MOCK_USER_SESSION, MOCK_USER_SESSION).then(
+        () => fail(),
+        () => Promise.resolve(),
+      );
     });
 
-    it("handles failure to delete the solution if items can't be added to it", done => {
+    it("handles failure to delete the solution if items can't be added to it", async () => {
       const solutionId = "sln1234567890";
       const options: common.ICreateSolutionOptions = {
-        itemIds: ["wma1234567890"]
+        itemIds: ["wma1234567890"],
       };
 
       fetchMock
-        .get(
-          utils.PORTAL_SUBSET.restUrl + "/portals/self?f=json&token=fake-token",
-          utils.getPortalsSelfResponse()
-        )
+        .get(utils.PORTAL_SUBSET.restUrl + "/portals/self?f=json&token=fake-token", utils.getPortalsSelfResponse())
         .post(
           utils.PORTAL_SUBSET.restUrl + "/content/users/casey/addItem",
-          utils.getSuccessResponse({ id: solutionId, folder: null })
+          utils.getSuccessResponse({ id: solutionId, folder: null }),
         )
         .get(
-          utils.PORTAL_SUBSET.restUrl +
-            "/content/items/wma1234567890?f=json&token=fake-token",
-          mockItems.get400Failure()
+          utils.PORTAL_SUBSET.restUrl + "/content/items/wma1234567890?f=json&token=fake-token",
+          mockItems.get400Failure(),
         )
         .get(
-          utils.PORTAL_SUBSET.restUrl +
-            "/community/groups/wma1234567890?f=json&token=fake-token",
-          mockItems.get400Failure()
+          utils.PORTAL_SUBSET.restUrl + "/community/groups/wma1234567890?f=json&token=fake-token",
+          mockItems.get400Failure(),
         )
         .post(
-          utils.PORTAL_SUBSET.restUrl +
-            "/content/users/casey/items/sln1234567890/update",
-          utils.getSuccessResponse({ id: solutionId })
+          utils.PORTAL_SUBSET.restUrl + "/content/users/casey/items/sln1234567890/update",
+          utils.getSuccessResponse({ id: solutionId }),
         )
         .post(
-          utils.PORTAL_SUBSET.restUrl +
-            "/content/users/casey/items/sln1234567890/delete",
-          utils.getFailureResponse({ itemId: solutionId })
+          utils.PORTAL_SUBSET.restUrl + "/content/users/casey/items/sln1234567890/delete",
+          utils.getFailureResponse({ itemId: solutionId }),
         );
       spyOn(console, "error").and.callFake(() => {});
 
-      creator
-        ._createSolutionFromItemIds(
-          options,
-          MOCK_USER_SESSION,
-          MOCK_USER_SESSION
-        )
-        .then(
-          () => done(),
-          response => {
-            done.fail();
-          }
-        );
+      return creator._createSolutionFromItemIds(options, MOCK_USER_SESSION, MOCK_USER_SESSION).then(
+        () => Promise.resolve(),
+        () => fail(),
+      );
     });
   });
 
   describe("_createSolutionItem", () => {
-    it("creates a solution item with defaults", done => {
+    it("creates a solution item with defaults", async () => {
       const authentication: common.UserSession = MOCK_USER_SESSION;
       const url = utils.PORTAL_SUBSET.restUrl + "/content/users/casey/addItem";
       const expectedSolutionId = "sln1234567890";
       const expectedFetchBody =
         "f=json&title=xfakeidx&type=Solution&snippet=&description=&properties=" +
-        encodeURIComponent(
-          JSON.stringify({ schemaVersion: common.CURRENT_SCHEMA_VERSION })
-        ) +
+        encodeURIComponent(JSON.stringify({ schemaVersion: common.CURRENT_SCHEMA_VERSION })) +
         "&tags=&typeKeywords=Solution%2CTemplate%2Csolutionid-guid%2Csolutionversion-1.0" +
         "&text=%7B%22metadata%22%3A%7B%7D%2C%22templates%22%3A%5B%5D%7D&token=fake-token";
 
-      fetchMock.post(
-        url,
-        utils.getSuccessResponse({ id: expectedSolutionId, folder: null })
-      );
+      fetchMock.post(url, utils.getSuccessResponse({ id: expectedSolutionId, folder: null }));
       spyOn(common, "createShortId").and.callFake(() => "xfakeidx");
       spyOn(common, "createLongId").and.callFake(() => "guid");
-      creator._createSolutionItem(authentication).then(
-        solutionId => {
-          expect(solutionId).toEqual(expectedSolutionId);
-          const options: fetchMock.MockOptions = fetchMock.lastOptions(url);
-          const fetchBody = (options as fetchMock.MockResponseObject).body;
-          expect(fetchBody).toEqual(expectedFetchBody);
-          done();
-        },
-        () => done.fail()
-      );
+
+      const solutionId = await creator._createSolutionItem(authentication);
+      expect(solutionId).toEqual(expectedSolutionId);
+      const options: any = fetchMock.lastOptions(url);
+      const fetchBody = options.body;
+      expect(fetchBody).toEqual(expectedFetchBody);
     });
 
-    it("creates a solution item with options", done => {
+    it("creates a solution item with options", async () => {
       const options: common.ICreateSolutionOptions = {
         title: "Solution Name",
         snippet: "Solution's snippet",
@@ -1208,7 +890,7 @@ describe("Module `creator`", () => {
         tags: ["Test", "a tag"],
         thumbnailurl: utils.PORTAL_SUBSET.portalUrl + "/logo.png",
         templatizeFields: true,
-        additionalTypeKeywords: ["Esri", "Government Solutions"]
+        additionalTypeKeywords: ["Esri", "Government Solutions"],
       };
       const authentication: common.UserSession = MOCK_USER_SESSION;
       const url = utils.PORTAL_SUBSET.restUrl + "/content/users/casey/addItem";
@@ -1217,79 +899,68 @@ describe("Module `creator`", () => {
       const blob = new Blob(["fake-blob"], { type: "text/plain" });
 
       fetchMock
-        .post(
-          url,
-          utils.getSuccessResponse({ id: expectedSolutionId, folder: null })
-        )
+        .post(url, utils.getSuccessResponse({ id: expectedSolutionId, folder: null }))
         .post(utils.PORTAL_SUBSET.portalUrl + "/logo.png?w=400", blob, {
-          sendAsJson: false
+          sendAsJson: false,
         })
         .post(
-          utils.PORTAL_SUBSET.restUrl +
-            "/content/users/casey/items/sln1234567890/update",
-          utils.getSuccessResponse({ id: expectedSolutionId })
+          utils.PORTAL_SUBSET.restUrl + "/content/users/casey/items/sln1234567890/update",
+          utils.getSuccessResponse({ id: expectedSolutionId }),
         );
       spyOn(common, "createShortId").and.callFake(() => "xfakeidx");
       spyOn(common, "createLongId").and.callFake(() => "guid");
-      creator._createSolutionItem(authentication, options).then(
-        solutionId => {
-          expect(solutionId).toEqual(expectedSolutionId);
-          const fetchOptions: fetchMock.MockOptions = fetchMock.lastOptions(
-            url
-          );
-          const fetchBody = (fetchOptions as fetchMock.MockResponseObject).body;
-          expect(fetchBody).toEqual(
-            "f=json&title=" +
-              encodeURIComponent(options.title as any) +
-              "&type=Solution" +
-              "&snippet=" +
-              encodeURIComponent(options.snippet as any) +
-              "&description=" +
-              encodeURIComponent(options.description as any) +
-              "&properties=" +
-              encodeURIComponent(
-                JSON.stringify({
-                  schemaVersion: common.CURRENT_SCHEMA_VERSION
-                })
-              ) +
-              "&tags=" +
-              options.tags?.map(encodeURIComponent).join("%2C") +
-              "&typeKeywords=" +
-              ["Solution", "Template", "solutionid-guid", "solutionversion-1.0"]
-                .concat(options.additionalTypeKeywords as any)
-                .map(encodeURIComponent)
-                .join("%2C") +
-              "&text=%7B%22metadata%22%3A%7B%7D%2C%22templates%22%3A%5B%5D%7D&token=fake-token"
-          );
-          done();
-        },
-        () => done.fail()
+
+      const solutionId = await creator._createSolutionItem(authentication, options);
+      expect(solutionId).toEqual(expectedSolutionId);
+      const fetchOptions: any = fetchMock.lastOptions(url);
+      const fetchBody = fetchOptions.body;
+      expect(fetchBody).toEqual(
+        "f=json&title=" +
+          encodeURIComponent(options.title as any) +
+          "&type=Solution" +
+          "&snippet=" +
+          encodeURIComponent(options.snippet as any) +
+          "&description=" +
+          encodeURIComponent(options.description as any) +
+          "&properties=" +
+          encodeURIComponent(
+            JSON.stringify({
+              schemaVersion: common.CURRENT_SCHEMA_VERSION,
+            }),
+          ) +
+          "&tags=" +
+          options.tags?.map(encodeURIComponent).join("%2C") +
+          "&typeKeywords=" +
+          ["Solution", "Template", "solutionid-guid", "solutionversion-1.0"]
+            .concat(options.additionalTypeKeywords as any)
+            .map(encodeURIComponent)
+            .join("%2C") +
+          "&text=%7B%22metadata%22%3A%7B%7D%2C%22templates%22%3A%5B%5D%7D&token=fake-token",
       );
     });
 
-    it("handles failure to create the solution item", done => {
+    it("handles failure to create the solution item", async () => {
       const authentication: common.UserSession = MOCK_USER_SESSION;
       const url = utils.PORTAL_SUBSET.restUrl + "/content/users/casey/addItem";
       const expectedFetchBody =
         "f=json&title=xfakeidx&type=Solution&snippet=&description=&properties=" +
-        encodeURIComponent(
-          JSON.stringify({ schemaVersion: common.CURRENT_SCHEMA_VERSION })
-        ) +
+        encodeURIComponent(JSON.stringify({ schemaVersion: common.CURRENT_SCHEMA_VERSION })) +
         "&tags=&typeKeywords=Solution%2CTemplate%2Csolutionid-guid%2Csolutionversion-1.0" +
         "&text=%7B%22metadata%22%3A%7B%7D%2C%22templates%22%3A%5B%5D%7D&token=fake-token";
 
       fetchMock.post(url, utils.getFailureResponse());
       spyOn(common, "createShortId").and.callFake(() => "xfakeidx");
       spyOn(common, "createLongId").and.callFake(() => "guid");
-      creator._createSolutionItem(authentication).then(
-        () => done.fail(),
-        error => {
+
+      return creator._createSolutionItem(authentication).then(
+        () => fail(),
+        (error) => {
           expect(error.success).toBeFalsy();
-          const options: fetchMock.MockOptions = fetchMock.lastOptions(url);
-          const fetchBody = (options as fetchMock.MockResponseObject).body;
+          const options: any = fetchMock.lastOptions(url);
+          const fetchBody = options.body;
           expect(fetchBody).toEqual(expectedFetchBody);
-          done();
-        }
+          return Promise.resolve();
+        },
       );
     });
   });
@@ -1302,7 +973,7 @@ describe("Module `creator`", () => {
         description: "The Desc",
         thumbnailurl: "https://some.com/thumbnail.jpg",
         additionalTypeKeywords: ["foo"],
-        tags: ["deploy.id.3ef"]
+        tags: ["deploy.id.3ef"],
       };
       const chk = creator._createSolutionItemModel(opts);
       expect(chk).toEqual({
@@ -1312,24 +983,19 @@ describe("Module `creator`", () => {
           snippet: opts.snippet,
           description: opts.description,
           properties: {
-            schemaVersion: common.CURRENT_SCHEMA_VERSION
+            schemaVersion: common.CURRENT_SCHEMA_VERSION,
           },
           thumbnailurl: opts.thumbnailurl,
           tags: [],
-          typeKeywords: [
-            "Solution",
-            "Template",
-            "solutionid-3ef",
-            "solutionversion-1.0",
-            "foo"
-          ]
+          typeKeywords: ["Solution", "Template", "solutionid-3ef", "solutionversion-1.0", "foo"],
         } as any,
         data: {
           metadata: {},
-          templates: []
-        }
+          templates: [],
+        },
       } as hubCommon.IModel);
     });
+
     it("returns defaults if options is empty", () => {
       const opts = {};
       const chk = creator._createSolutionItemModel(opts);
@@ -1345,15 +1011,15 @@ describe("Module `creator`", () => {
           snippet: "",
           description: "",
           properties: {
-            schemaVersion: common.CURRENT_SCHEMA_VERSION
+            schemaVersion: common.CURRENT_SCHEMA_VERSION,
           },
           thumbnailurl: "",
-          tags: []
+          tags: [],
         } as any,
         data: {
           metadata: {},
-          templates: []
-        }
+          templates: [],
+        },
       } as hubCommon.IModel);
     });
 
@@ -1365,7 +1031,7 @@ describe("Module `creator`", () => {
         description: "Desc <script>alert('Nefarious');</script>",
         thumbnailurl: "https://some.com/thumbnail.jpg",
         additionalTypeKeywords: ["bar"],
-        tags: ["deploy.id.3ef"]
+        tags: ["deploy.id.3ef"],
       };
       const chk = creator._createSolutionItemModel(opts);
       expect(chk).toEqual({
@@ -1375,22 +1041,16 @@ describe("Module `creator`", () => {
           snippet: opts.snippet,
           description: "Desc &lt;script&gt;alert('Nefarious');&lt;/script&gt;",
           properties: {
-            schemaVersion: common.CURRENT_SCHEMA_VERSION
+            schemaVersion: common.CURRENT_SCHEMA_VERSION,
           },
           thumbnailurl: opts.thumbnailurl,
           tags: [],
-          typeKeywords: [
-            "Solution",
-            "Template",
-            "solutionid-3ef",
-            "solutionversion-1.0",
-            "bar"
-          ]
+          typeKeywords: ["Solution", "Template", "solutionid-3ef", "solutionversion-1.0", "bar"],
         } as any,
         data: {
           metadata: {},
-          templates: []
-        }
+          templates: [],
+        },
       } as hubCommon.IModel);
     });
   });
@@ -1405,23 +1065,17 @@ describe("Module `creator`", () => {
         snippet: "the group snippet",
         description: "the group desc",
         tags: ["the group tags"],
-        thumbnail: "smile.png"
+        thumbnail: "smile.png",
       } as common.IGroup;
 
-      const chk = creator._applySourceToCreateOptions(
-        opts,
-        grp,
-        MOCK_USER_SESSION,
-        true
-      );
+      const chk = creator._applySourceToCreateOptions(opts, grp, MOCK_USER_SESSION, true);
       expect(chk).toEqual({
         title: "the group title",
         snippet: "the group snippet",
         description: "the group desc",
         tags: ["the group tags"],
         itemIds: [],
-        thumbnailurl:
-          "https://myorg.maps.arcgis.com/sharing/rest/community/groups/3ef/info/smile.png"
+        thumbnailurl: "https://myorg.maps.arcgis.com/sharing/rest/community/groups/3ef/info/smile.png",
       });
     });
 
@@ -1440,28 +1094,23 @@ describe("Module `creator`", () => {
         created: 1,
         modified: 2,
         numViews: 3,
-        size: 4
+        size: 4,
       } as common.IItem;
 
-      const chk = creator._applySourceToCreateOptions(
-        opts,
-        itm,
-        MOCK_USER_SESSION
-      );
+      const chk = creator._applySourceToCreateOptions(opts, itm, MOCK_USER_SESSION);
       expect(chk).toEqual({
         title: "the item title",
         snippet: "the item snippet",
         description: "the item desc",
         tags: ["the item tags"],
-        thumbnailurl:
-          "https://myorg.maps.arcgis.com/sharing/rest/content/items/3ef/info/smile.png"
+        thumbnailurl: "https://myorg.maps.arcgis.com/sharing/rest/content/items/3ef/info/smile.png",
       });
     });
 
     it("uses passed title and thumbnailurl", () => {
       const opts = {
         title: "Opts Title",
-        thumbnailurl: "https://hub.com/th.png"
+        thumbnailurl: "https://hub.com/th.png",
       };
 
       const grp = {
@@ -1469,22 +1118,17 @@ describe("Module `creator`", () => {
         snippet: "the group snippet",
         description: "the group desc",
         tags: ["the group tags"],
-        thumbnail: "smile.png"
+        thumbnail: "smile.png",
       } as common.IGroup;
 
-      const chk = creator._applySourceToCreateOptions(
-        opts,
-        grp,
-        MOCK_USER_SESSION,
-        true
-      );
+      const chk = creator._applySourceToCreateOptions(opts, grp, MOCK_USER_SESSION, true);
       expect(chk).toEqual({
         title: "Opts Title",
         snippet: "the group snippet",
         description: "the group desc",
         tags: ["the group tags"],
         itemIds: [],
-        thumbnailurl: "https://hub.com/th.png"
+        thumbnailurl: "https://hub.com/th.png",
       });
     });
 
@@ -1497,33 +1141,23 @@ describe("Module `creator`", () => {
         snippet: "the group snippet",
         description: "the group desc",
         tags: ["the group tags"],
-        thumbnail: ""
+        thumbnail: "",
       } as common.IGroup;
 
-      const chk = creator._applySourceToCreateOptions(
-        opts,
-        grp,
-        MOCK_USER_SESSION,
-        true
-      );
+      const chk = creator._applySourceToCreateOptions(opts, grp, MOCK_USER_SESSION, true);
       expect(chk).toEqual({
         title: "the group title",
         snippet: "the group snippet",
         description: "the group desc",
         tags: ["the group tags"],
-        itemIds: []
+        itemIds: [],
       });
     });
   });
 
   describe("_getDeploymentProperties", () => {
     it("finds both deployment properties", () => {
-      const tags = [
-        "a_tag",
-        "deploy.id.abc",
-        "another_tag",
-        "deploy.version.12.3"
-      ];
+      const tags = ["a_tag", "deploy.id.abc", "another_tag", "deploy.version.12.3"];
       const typeKeywords: string[] = creator._getDeploymentProperties(tags);
       expect(typeKeywords).toEqual(["solutionid-abc", "solutionversion-12.3"]);
     });
@@ -1553,20 +1187,14 @@ describe("Module `creator`", () => {
     it("finds a desired prefix", () => {
       const desiredTagPrefix = "aPrefix";
       const tags = ["abcdef", "aprefixNotValue", "aPrefixValue"];
-      const value: string | null = creator._getDeploymentProperty(
-        desiredTagPrefix,
-        tags
-      );
+      const value: string | null = creator._getDeploymentProperty(desiredTagPrefix, tags);
       expect(value).toEqual("Value");
     });
 
     it("doesn't finds a desired prefix", () => {
       const desiredTagPrefix = "aPrefix";
       const tags = ["abcdef", "aprefixNotValue"];
-      const value: string | null = creator._getDeploymentProperty(
-        desiredTagPrefix,
-        tags
-      );
+      const value: string | null = creator._getDeploymentProperty(desiredTagPrefix, tags);
       expect(value).toBeNull();
     });
   });

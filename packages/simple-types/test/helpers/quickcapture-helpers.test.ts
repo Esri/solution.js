@@ -20,6 +20,7 @@ describe("quickcaptureHelpers:: ", () => {
   it("should have createItemFromTemplate", () => {
     expect(quickcaptureHelpers.createItemFromTemplate).toBeDefined();
   });
+
   it("should have convertItemToTemplate", () => {
     expect(quickcaptureHelpers.convertItemToTemplate).toBeDefined();
   });

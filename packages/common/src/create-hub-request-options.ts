@@ -33,7 +33,7 @@ import { getSelf, getUser } from "@esri/arcgis-rest-portal";
  */
 export function createHubRequestOptions(
   authentication: UserSession,
-  templateDictionary: any = {}
+  templateDictionary: any = {},
 ): Promise<IHubUserRequestOptions> {
   // We used to pull the user
   // the template dictionary, but ran into issues
@@ -58,7 +58,7 @@ export function createHubRequestOptions(
     const ro = {
       authentication,
       portalSelf: pSelf,
-      isPortal: pSelf.isPortal
+      isPortal: pSelf.isPortal,
     } as IHubUserRequestOptions;
 
     if (!pSelf.isPortal) {

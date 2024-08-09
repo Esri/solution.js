@@ -32,9 +32,7 @@ export function _upgradeTwoDotSix(model: ISolutionItem): ISolutionItem {
     return model;
   } else {
     const clone: ISolutionItem = cloneObject(model);
-    const formTemplates = clone.data.templates.filter(
-      ({ type }) => type === "Form"
-    );
+    const formTemplates = clone.data.templates.filter(({ type }) => type === "Form");
 
     const toWebMapIds = (mapIds: string[], formTemplate: IItemTemplate) => {
       if (getProp(formTemplate, "properties.form.questions.length")) {
@@ -44,9 +42,7 @@ export function _upgradeTwoDotSix(model: ISolutionItem): ISolutionItem {
               const webMapId = cleanItemId(webMap.itemId);
 
               // remove the web map dependency from the form template
-              formTemplate.dependencies = formTemplate.dependencies.filter(
-                dependency => dependency !== webMapId
-              );
+              formTemplate.dependencies = formTemplate.dependencies.filter((dependency) => dependency !== webMapId);
 
               // record the web map template id so we can remove them
               mapIds.push(webMapId);
@@ -59,9 +55,7 @@ export function _upgradeTwoDotSix(model: ISolutionItem): ISolutionItem {
     const webMapIds: string[] = formTemplates.reduce(toWebMapIds, []);
 
     // remove the web map templates
-    clone.data.templates = clone.data.templates.filter(
-      template => !webMapIds.includes(template.itemId)
-    );
+    clone.data.templates = clone.data.templates.filter((template) => !webMapIds.includes(template.itemId));
 
     clone.item.properties.schemaVersion = 2.6;
 

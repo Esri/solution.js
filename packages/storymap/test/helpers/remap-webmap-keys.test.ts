@@ -19,52 +19,43 @@ import { remapWebmapKeys } from "../../src/helpers/remap-webmap-keys";
 describe("remapWebmapKeys", () => {
   it("handles an undefined resource object", () => {
     const chk = remapWebmapKeys();
-    expect(Array.isArray(chk)).toBe(
-      true,
-      "should return an empty array even if passed null"
-    );
+    expect(Array.isArray(chk)).withContext("should return an empty array even if passed null").toBe(true);
   });
 
   it("handles an empty resource object", () => {
     const chk = remapWebmapKeys({});
-    expect(Array.isArray(chk)).toBe(
-      true,
-      "should return an empty array even if passed null"
-    );
+    expect(Array.isArray(chk)).withContext("should return an empty array even if passed null").toBe(true);
   });
 
   it("handles an null resource object", () => {
     const chk = remapWebmapKeys({});
-    expect(Array.isArray(chk)).toBe(
-      true,
-      "should return an empty array even if passed null"
-    );
+    expect(Array.isArray(chk)).withContext("should return an empty array even if passed null").toBe(true);
   });
 
   it("only handles webmap resources", () => {
     const res = {
-      foo: { type: "something" },
-      bar: { type: "otherthing" },
-      "r-3ef-2837172": { type: "webmap" }
+      "foo": { type: "something" },
+      "bar": { type: "otherthing" },
+      "r-3ef-2837172": { type: "webmap" },
     };
     const chk = remapWebmapKeys(res);
-    expect(Array.isArray(chk)).toBe(true, "should return an array");
-    expect(chk.length).toBe(1, "should only have one entry");
-    expect(chk[0].original).toBe("r-3ef-2837172", "should have the original");
-    expect(chk[0].updated).toBe("webmap0", "should have the updated");
+    expect(Array.isArray(chk)).withContext("should return an array").toBe(true);
+    expect(chk.length).withContext("should only have one entry").toBe(1);
+    expect(chk[0].original).withContext("should have the original").toBe("r-3ef-2837172");
+    expect(chk[0].updated).withContext("should have the updated").toBe("webmap0");
   });
 
   it("only handles webmap resources with janky keys", () => {
     const res = {
-      foo: { type: "something" },
-      bar: { type: "otherthing" },
-      webmap0: { type: "webmap" },
-      "r-3ef-2837172": { type: "webmap" }
+      "foo": { type: "something" },
+      "bar": { type: "otherthing" },
+      "webmap0": { type: "webmap" },
+      "r-3ef-2837172": { type: "webmap" },
     };
     const chk = remapWebmapKeys(res);
-    expect(Array.isArray(chk)).toBe(true, "should return an array");
-    expect(chk.length).toBe(1, "should only have one entry");
-    expect(chk[0].original).toBe("r-3ef-2837172", "should have the original");
-    expect(chk[0].updated).toBe("webmap0", "should have the updated");
+    expect(Array.isArray(chk)).withContext("should return an array").toBe(true);
+    expect(chk.length).withContext("should only have one entry").toBe(1);
+    expect(chk[0].original).withContext("should have the original").toBe("r-3ef-2837172");
+    expect(chk[0].updated).withContext("should have the updated").toBe("webmap0");
   });
 });

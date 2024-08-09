@@ -30,7 +30,7 @@ import { IDeployFilename, EFileType } from "../interfaces";
  */
 export function convertStorageResourceToItemResource(
   storageResourceFilename: string,
-  storageVersion = 0
+  storageVersion = 0,
 ): IDeployFilename {
   const nameParts = storageResourceFilename.split("/");
   let filename = nameParts.pop();

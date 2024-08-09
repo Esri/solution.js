@@ -40,16 +40,14 @@ export const SERVER_NAME: string = "portalBaseUrl";
  *
  * @private
  */
-export const GEOMETRY_SERVER_NAME: string =
-  "organization.helperServices.geometry.url";
+export const GEOMETRY_SERVER_NAME: string = "organization.helperServices.geometry.url";
 
 /**
  * A parameterized geocode server name
  *
  * @private
  */
-export const GEOCODE_SERVER_NAME: string =
-  "organization.helperServices.geocode:getDefaultLocatorURL";
+export const GEOCODE_SERVER_NAME: string = "organization.helperServices.geocode:getDefaultLocatorURL";
 
 /**
  * A parameterized network analyst server name
@@ -63,15 +61,14 @@ export const NA_SERVER_NAME: string = "organization.helperServices.route.url";
  *
  * @private
  */
-export const PRINT_SERVER_NAME: string =
-  "organization.helperServices.printTask.url";
+export const PRINT_SERVER_NAME: string = "organization.helperServices.printTask.url";
 
 export const TRANSFORMS: any = {
   getDefaultLocatorURL(key: string, val: any) {
     // get the url from the template dictionary or return the default template variable when it's not present
     // this fallback is needed when we detemplatize living atlas layers as a part of the create process
     return val ? val[0].url : `{{${GEOCODE_SERVER_NAME}}}`;
-  }
+  },
 };
 
 /**
@@ -93,7 +90,7 @@ export function createInitializedGroupTemplate(itemInfo: any): IItemTemplate {
     tags: itemInfo.tags,
     typeKeywords: itemInfo.typeKeywords,
     title: itemInfo.title,
-    thumbnail: itemInfo.thumbnail
+    thumbnail: itemInfo.thumbnail,
   };
   return itemTemplate;
 }
@@ -120,7 +117,7 @@ export function createInitializedItemTemplate(itemInfo: any): IItemTemplate {
     thumbnail: itemInfo.thumbnail,
     title: itemInfo.title,
     typeKeywords: itemInfo.typeKeywords,
-    url: itemInfo.url
+    url: itemInfo.url,
   };
   return itemTemplate;
 }
@@ -132,24 +129,21 @@ export function createInitializedItemTemplate(itemInfo: any): IItemTemplate {
  * @param type AGO item type; defaults to ""
  * @returns Empty template containing supplied id, optional type, and a key created using the function createShortId()
  */
-export function createPlaceholderTemplate(
-  id: string,
-  type = ""
-): IItemTemplate {
+export function createPlaceholderTemplate(id: string, type = ""): IItemTemplate {
   return {
     itemId: id,
     type,
     key: createShortId(),
     item: {
       id,
-      type
+      type,
     },
     data: {},
     resources: [],
     dependencies: [],
     groups: [],
     properties: {},
-    estimatedDeploymentCostFactor: 2
+    estimatedDeploymentCostFactor: 2,
   };
 }
 
@@ -179,12 +173,9 @@ export function extractSolutionVersion(itemData: ISolutionItemData): number {
  * @returns Offset of of matching template or -1 if not found
  * @private
  */
-export function findTemplateIndexInList(
-  templates: IItemTemplate[],
-  id: string
-): number {
+export function findTemplateIndexInList(templates: IItemTemplate[], id: string): number {
   const baseId = id;
-  return templates.findIndex(template => {
+  return templates.findIndex((template) => {
     return baseId === template.itemId;
   });
 }
@@ -196,10 +187,7 @@ export function findTemplateIndexInList(
  * @param id AGO id of template to find
  * @returns Matching template or null
  */
-export function findTemplateInList(
-  templates: IItemTemplate[],
-  id: string
-): IItemTemplate | null {
+export function findTemplateInList(templates: IItemTemplate[], id: string): IItemTemplate | null {
   const iTemplate = findTemplateIndexInList(templates, id);
   return iTemplate >= 0 ? templates[iTemplate] : null;
 }
@@ -212,14 +200,12 @@ export function hasUnresolvedVariables(data: any): boolean {
 }
 
 export function getIdsInTemplatesList(templates: IItemTemplate[]): string[] {
-  return templates.map(template => template.itemId);
+  return templates.map((template) => template.itemId);
 }
 
 export function getDefaultExtent(itemInfo: any): any {
   const ext: any = itemInfo.extent;
-  return ext === null || (Array.isArray(ext) && ext.length === 0)
-    ? ext
-    : "{{solutionItemExtent}}";
+  return ext === null || (Array.isArray(ext) && ext.length === 0) ? ext : "{{solutionItemExtent}}";
 }
 
 /**
@@ -256,11 +242,7 @@ export function replaceInTemplate(template: any, replacements: any): any {
  * @returns True if replacement was made
  * @private
  */
-export function replaceTemplate(
-  templates: IItemTemplate[],
-  id: string,
-  template: IItemTemplate
-): boolean {
+export function replaceTemplate(templates: IItemTemplate[], id: string, template: IItemTemplate): boolean {
   const i = findTemplateIndexInList(templates, id);
   if (i >= 0) {
     templates[i] = template;
@@ -269,11 +251,7 @@ export function replaceTemplate(
   return false;
 }
 
-export function templatizeTerm(
-  context: string,
-  term: string,
-  suffix = ""
-): string {
+export function templatizeTerm(context: string, term: string, suffix = ""): string {
   if (!context) {
     return context;
   }
@@ -291,9 +269,7 @@ export function templatizeToLowerCase(basePath: string, value: string): string {
   if (value.startsWith("{{")) {
     return value;
   } else {
-    return String(
-      templatizeTerm(basePath, basePath, "." + String(value).toLowerCase())
-    );
+    return String(templatizeTerm(basePath, basePath, "." + String(value).toLowerCase()));
   }
 }
 
@@ -311,10 +287,10 @@ export function templatizeFieldReferences(
   obj: any,
   fields: any[],
   basePath: string,
-  templatizeKeys: boolean = false
+  templatizeKeys: boolean = false,
 ): any {
   let objString: string = JSON.stringify(obj);
-  fields.forEach(field => {
+  fields.forEach((field) => {
     let expression: string = "\\b" + field.name + "\\b(?![.])(?![}]{2})";
     if (!templatizeKeys) {
       expression += '(?!":)';
@@ -323,7 +299,7 @@ export function templatizeFieldReferences(
       // needs to ensure that its not already been templatized
       // cannot be followed by .name and cannot be proceeded by fieldName. in case of {{01922837.name.name}} and cannot be followed by }}
       new RegExp(expression, "g"),
-      templatizeToLowerCase(basePath, field.name + ".name")
+      templatizeToLowerCase(basePath, field.name + ".name"),
     );
   });
   return JSON.parse(objString);
@@ -338,7 +314,7 @@ export function templatizeIds(obj: any): any {
   if (obj && idTest.test(objString)) {
     // Templatize ids
     const ids: string[] = uniqueStringList(objString.match(idTest));
-    ids.forEach(id => {
+    ids.forEach((id) => {
       const regEx = new RegExp(id, "gm");
       objString = objString.replace(regEx, "{{" + id + ".itemId}}");
     });

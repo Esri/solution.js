@@ -33,89 +33,61 @@ describe("createItemFromTemplate", () => {
     templateDictionary = { key: "value" };
   });
 
-  it("should delegate to custom template processing for Hub Survey templates", done => {
+  it("should delegate to custom template processing for Hub Survey templates", async () => {
     const expectedResults = {
-      item: null as common.IItemTemplate,
+      item: null, // common.IItemTemplate,
       id: "2c36d3679e7f4934ac599051df22daf6",
       type: "Form",
-      postProcess: false
+      postProcess: false,
     };
-    const createItemFromHubTemplateSpy = spyOn(
-      hubFormCreateHelpers,
-      "createItemFromHubTemplate"
-    ).and.resolveTo(expectedResults);
-    const isHubFormTemplateSpy = spyOn(
-      hubFormTemplateHelpers,
-      "isHubFormTemplate"
-    ).and.returnValue(true);
+    const createItemFromHubTemplateSpy = spyOn(hubFormCreateHelpers, "createItemFromHubTemplate").and.resolveTo(
+      expectedResults as any,
+    );
+    const isHubFormTemplateSpy = spyOn(hubFormTemplateHelpers, "isHubFormTemplate").and.returnValue(true);
     const progressCallback = jasmine.createSpy();
-    createProcessor
-      .createItemFromTemplate(
-        template,
-        templateDictionary,
-        MOCK_USER_SESSION,
-        progressCallback
-      )
-      .then(
-        results => {
-          expect(isHubFormTemplateSpy.calls.count()).toBe(1);
-          expect(isHubFormTemplateSpy.calls.first().args).toEqual([template]);
-          expect(createItemFromHubTemplateSpy.calls.count()).toBe(1);
-          expect(createItemFromHubTemplateSpy.calls.first().args).toEqual([
-            template,
-            templateDictionary,
-            MOCK_USER_SESSION,
-            progressCallback
-          ]);
-          expect(results).toEqual(expectedResults);
-          done();
-        },
-        e => {
-          done.fail(e);
-        }
-      );
+    const results = await createProcessor.createItemFromTemplate(
+      template,
+      templateDictionary,
+      MOCK_USER_SESSION,
+      progressCallback,
+    );
+    expect(isHubFormTemplateSpy.calls.count()).toBe(1);
+    expect(isHubFormTemplateSpy.calls.first().args).toEqual([template]);
+    expect(createItemFromHubTemplateSpy.calls.count()).toBe(1);
+    expect(createItemFromHubTemplateSpy.calls.first().args).toEqual([
+      template,
+      templateDictionary,
+      MOCK_USER_SESSION,
+      progressCallback,
+    ]);
+    expect(results).toEqual(expectedResults as any);
   });
 
-  it("should delegate to simple types processing for non-Hub Survey templates", done => {
+  it("should delegate to simple types processing for non-Hub Survey templates", async () => {
     const expectedResults = {
-      item: null as common.IItemTemplate,
+      item: null, // common.IItemTemplate,
       id: "2c36d3679e7f4934ac599051df22daf6",
       type: "Form",
-      postProcess: false
+      postProcess: false,
     };
-    const simpleTypesSpy = spyOn(
-      simpleTypes,
-      "createItemFromTemplate"
-    ).and.resolveTo(expectedResults);
-    const isHubFormTemplateSpy = spyOn(
-      hubFormTemplateHelpers,
-      "isHubFormTemplate"
-    ).and.returnValue(false);
+    const simpleTypesSpy = spyOn(simpleTypes, "createItemFromTemplate").and.resolveTo(expectedResults as any);
+    const isHubFormTemplateSpy = spyOn(hubFormTemplateHelpers, "isHubFormTemplate").and.returnValue(false);
     const progressCallback = jasmine.createSpy();
-    createProcessor
-      .createItemFromTemplate(
-        template,
-        templateDictionary,
-        MOCK_USER_SESSION,
-        progressCallback
-      )
-      .then(
-        results => {
-          expect(isHubFormTemplateSpy.calls.count()).toBe(1);
-          expect(isHubFormTemplateSpy.calls.first().args).toEqual([template]);
-          expect(simpleTypesSpy.calls.count()).toBe(1);
-          expect(simpleTypesSpy.calls.first().args).toEqual([
-            template,
-            templateDictionary,
-            MOCK_USER_SESSION,
-            progressCallback
-          ]);
-          expect(results).toEqual(expectedResults);
-          done();
-        },
-        e => {
-          done.fail(e);
-        }
-      );
+    const results = await createProcessor.createItemFromTemplate(
+      template,
+      templateDictionary,
+      MOCK_USER_SESSION,
+      progressCallback,
+    );
+    expect(isHubFormTemplateSpy.calls.count()).toBe(1);
+    expect(isHubFormTemplateSpy.calls.first().args).toEqual([template]);
+    expect(simpleTypesSpy.calls.count()).toBe(1);
+    expect(simpleTypesSpy.calls.first().args).toEqual([
+      template,
+      templateDictionary,
+      MOCK_USER_SESSION,
+      progressCallback,
+    ]);
+    expect(results).toEqual(expectedResults as any);
   });
 });

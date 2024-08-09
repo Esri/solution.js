@@ -38,13 +38,15 @@ export function convertItemToTemplate(
   itemTemplate: common.IItemTemplate,
   destAuthentication: common.UserSession,
   srcAuthentication: common.UserSession,
-  templateDictionary: any
+  templateDictionary: any,
 ): Promise<common.IItemTemplate> {
   return new Promise<common.IItemTemplate>((resolve, reject) => {
     // Templatize the app URL if it's not a vector tile service
     if (itemTemplate.type !== "Vector Tile Service") {
       itemTemplate.item.url = itemTemplate.item.url
-        ? common.checkUrlPathTermination(common.placeholder(common.SERVER_NAME)) + WEBMAP_APP_URL_PART + itemTemplate.item.id
+        ? common.checkUrlPathTermination(common.placeholder(common.SERVER_NAME)) +
+          WEBMAP_APP_URL_PART +
+          itemTemplate.item.id
         : itemTemplate.item.url; // templatized id
     }
 
@@ -60,24 +62,16 @@ export function convertItemToTemplate(
             _templatizeWebmapLayerIdsAndUrls(
               itemTemplate.data.baseMap.baseMapLayers,
               results.urlHash,
-              templateDictionary
+              templateDictionary,
             );
           }
 
           const operationalLayers = itemTemplate.data.operationalLayers;
           if (operationalLayers) {
-            _templatizeWebmapLayerIdsAndUrls(
-              itemTemplate.data.operationalLayers,
-              results.urlHash,
-              templateDictionary
-            );
+            _templatizeWebmapLayerIdsAndUrls(itemTemplate.data.operationalLayers, results.urlHash, templateDictionary);
           }
 
-          _templatizeWebmapLayerIdsAndUrls(
-            itemTemplate.data.tables,
-            results.urlHash,
-            templateDictionary
-          );
+          _templatizeWebmapLayerIdsAndUrls(itemTemplate.data.tables, results.urlHash, templateDictionary);
 
           // Exclude intialState
           _excludeInitialState(itemTemplate.data);
@@ -85,7 +79,7 @@ export function convertItemToTemplate(
 
         resolve(itemTemplate);
       },
-      e => reject(common.fail(e))
+      (e) => reject(common.fail(e)),
     );
   });
 }
@@ -100,7 +94,7 @@ export function convertItemToTemplate(
  */
 export function _extractDependencies(
   itemTemplate: common.IItemTemplate,
-  authentication: common.UserSession
+  authentication: common.UserSession,
 ): Promise<common.IWebmapDependencies> {
   return new Promise<any>((resolve, reject) => {
     const dependencies: string[] = [];
@@ -110,15 +104,15 @@ export function _extractDependencies(
       const tables: any[] = itemTemplate.data.tables || [];
       const layersAndTables: any[] = basemapLayers.concat(opLayers).concat(tables);
       _getLayerIds(layersAndTables, dependencies, authentication).then(
-        results => {
+        (results) => {
           resolve(results);
         },
-        e => reject(common.fail(e))
+        (e) => reject(common.fail(e)),
       );
     } else {
       resolve({
         dependencies: dependencies,
-        urlHash: {}
+        urlHash: {},
       });
     }
   });
@@ -151,19 +145,18 @@ export function _excludeInitialState(data: any): void {
 export function _getLayerIds(
   layerList: any[],
   dependencies: string[],
-  authentication: common.UserSession
+  authentication: common.UserSession,
 ): Promise<common.IWebmapDependencies> {
   return new Promise<any>((resolve, reject) => {
     const urlHash: common.IKeyedStrings = {};
 
     const options: any = {
       f: "json",
-      authentication: authentication
+      authentication: authentication,
     };
     const layerPromises: Array<Promise<any>> = [];
     const layerChecks: any = {};
-    const layers: any[] = layerList.filter(layer => {
-
+    const layers: any[] = layerList.filter((layer) => {
       // Test for Vector Tile Layers
       if (layer.itemId && layer.layerType === "VectorTileLayer") {
         // Fetch the item so that we can check if it has the typeKeyword "Vector Tile Style Editor", which ensures
@@ -172,11 +165,10 @@ export function _getLayerIds(
         layerPromises.push(common.getItemBase(layer.itemId, authentication));
         return true;
 
-      // Handle a feature server layer
+        // Handle a feature server layer
       } else if (layer.url && layer.url.indexOf("{{velocityUrl}}") < 0) {
         const results: any = /.+FeatureServer/g.exec(layer.url);
-        const baseUrl: string =
-          Array.isArray(results) && results.length > 0 ? results[0] : undefined;
+        const baseUrl: string = Array.isArray(results) && results.length > 0 ? results[0] : undefined;
         if (baseUrl) {
           // avoid redundant checks when we have a layer with subLayers
           if (Object.keys(layerChecks).indexOf(baseUrl) < 0) {
@@ -188,7 +180,7 @@ export function _getLayerIds(
           return false;
         }
 
-      // This layer is not a dependency
+        // This layer is not a dependency
       } else {
         return false;
       }
@@ -199,7 +191,6 @@ export function _getLayerIds(
       Promise.all(layerPromises).then(
         (responses) => {
           responses.forEach((response, i) => {
-
             if (layers[i].layerType === "VectorTileLayer") {
               const typeKeywords = common.getProp(response, "typeKeywords");
               if (typeKeywords && typeKeywords.includes("Vector Tile Style Editor")) {
@@ -216,10 +207,9 @@ export function _getLayerIds(
                 layers[i].styleUrl = common.templatizeTerm(
                   layers[i].styleUrl.replace(layers[i].styleUrl.substring(0, iSuffix), response.id),
                   response.id,
-                  ".itemUrl"
+                  ".itemUrl",
                 );
               }
-
             } else if (common.getProp(response, "serviceItemId")) {
               // Feature Service
               const id: string = response.serviceItemId;
@@ -228,20 +218,19 @@ export function _getLayerIds(
               }
               urlHash[layers[i].url] = id;
             }
-
           });
 
           resolve({
             dependencies,
-            urlHash
+            urlHash,
           } as common.IWebmapDependencies);
         },
-        e => reject(common.fail(e))
+        (e) => reject(common.fail(e)),
       );
     } else {
       resolve({
         dependencies,
-        urlHash
+        urlHash,
       } as common.IWebmapDependencies);
     }
   });
@@ -259,10 +248,9 @@ export function _getLayerIds(
 export function _templatizeWebmapLayerIdsAndUrls(
   layerList = [] as any[],
   urlHash: common.IKeyedStrings,
-  templateDictionary: any
+  templateDictionary: any,
 ): void {
   layerList.forEach((layer: any) => {
-
     // Test for Vector Tile Layers
     if (layer.itemId && layer.layerType === "VectorTileLayer") {
       // Do we templatize its id?  We don't for basemaps, e.g.
@@ -271,26 +259,16 @@ export function _templatizeWebmapLayerIdsAndUrls(
         delete layer.templatizeId;
       }
 
-    // Handle a feature server layer
+      // Handle a feature server layer
     } else if (layer.url) {
-      const layerId = layer.url.substr(
-        (layer.url as string).lastIndexOf("/") + 1
-      );
-      const id: string =
-        Object.keys(urlHash).indexOf(layer.url) > -1
-          ? urlHash[layer.url]
-          : undefined;
+      const layerId = layer.url.substr((layer.url as string).lastIndexOf("/") + 1);
+      const id: string = Object.keys(urlHash).indexOf(layer.url) > -1 ? urlHash[layer.url] : undefined;
       if (id) {
         common.cacheLayerInfo(layerId, id, layer.url, templateDictionary);
         layer.url = common.templatizeTerm(id, id, ".layer" + layerId + ".url");
-        layer.itemId = common.templatizeTerm(
-          id,
-          id,
-          ".layer" + layerId + ".itemId"
-        );
+        layer.itemId = common.templatizeTerm(id, id, ".layer" + layerId + ".itemId");
       }
     }
-
   });
 }
 
@@ -303,14 +281,10 @@ export function _templatizeWebmapLayerIdsAndUrls(
  */
 export function postProcessFieldReferences(
   solutionTemplate: common.IItemTemplate,
-  datasourceInfos: common.IDatasourceInfo[]
+  datasourceInfos: common.IDatasourceInfo[],
 ): common.IItemTemplate {
-  const paths: string[] = [
-    "data.operationalLayers",
-    "data.tables",
-    "data.applicationProperties.viewing.search.layers"
-  ];
-  paths.forEach(p => _templatizeProperty(solutionTemplate, datasourceInfos, p));
+  const paths: string[] = ["data.operationalLayers", "data.tables", "data.applicationProperties.viewing.search.layers"];
+  paths.forEach((p) => _templatizeProperty(solutionTemplate, datasourceInfos, p));
   return solutionTemplate;
 }
 
@@ -325,7 +299,7 @@ export function postProcessFieldReferences(
 export function _templatizeProperty(
   solutionTemplate: common.IItemTemplate,
   datasourceInfos: common.IDatasourceInfo[],
-  path: string
+  path: string,
 ): void {
   const objs: any[] = common.getProp(solutionTemplate, path);
   if (objs) {
@@ -341,41 +315,26 @@ export function _templatizeProperty(
  * @returns updated instances of the objects
  * @private
  */
-export function _templatize(
-  objs: any[],
-  datasourceInfos: common.IDatasourceInfo[]
-): any[] {
-  objs.forEach(obj => {
+export function _templatize(objs: any[], datasourceInfos: common.IDatasourceInfo[]): any[] {
+  objs.forEach((obj) => {
     const ds: common.IDatasourceInfo = _getDatasourceInfo(obj, datasourceInfos);
     if (ds) {
-      const fieldNames: string[] = ds.fields.map(f => f.name);
+      const fieldNames: string[] = ds.fields.map((f) => f.name);
 
       common._templatizePopupInfo(obj, ds, ds.basePath, ds.itemId, fieldNames);
 
       common._templatizeDefinitionEditor(obj, ds.basePath, fieldNames);
 
       if (obj.layerDefinition) {
-        common._templatizeDrawingInfo(
-          obj.layerDefinition,
-          ds.basePath,
-          fieldNames
-        );
+        common._templatizeDrawingInfo(obj.layerDefinition, ds.basePath, fieldNames);
 
-        common._templatizeDefinitionExpression(
-          obj.layerDefinition,
-          ds.basePath,
-          fieldNames
-        );
+        common._templatizeDefinitionExpression(obj.layerDefinition, ds.basePath, fieldNames);
       }
 
       // used for applicationProperties search layers
       const fieldName: any = common.getProp(obj, "field.name");
       if (fieldName) {
-        common.setProp(
-          obj,
-          "field.name",
-          common._templatizeFieldName(fieldName, obj, ds.itemId, ds.basePath)
-        );
+        common.setProp(obj, "field.name", common._templatizeFieldName(fieldName, obj, ds.itemId, ds.basePath));
       }
     }
   });
@@ -391,12 +350,9 @@ export function _templatize(
  * @returns datasourceInfo for the given object id
  * @private
  */
-export function _getDatasourceInfo(
-  obj: any,
-  datasourceInfos: common.IDatasourceInfo[]
-): any {
+export function _getDatasourceInfo(obj: any, datasourceInfos: common.IDatasourceInfo[]): any {
   let datasourceInfo: any;
-  datasourceInfos.some(ds => {
+  datasourceInfos.some((ds) => {
     if (ds.ids.indexOf(obj.id) > -1) {
       datasourceInfo = ds;
       return true;

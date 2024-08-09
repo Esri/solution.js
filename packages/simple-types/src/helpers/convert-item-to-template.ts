@@ -39,27 +39,17 @@ export function convertItemToTemplate(
   itemInfo: any,
   destAuthentication: common.UserSession,
   srcAuthentication: common.UserSession,
-  templateDictionary: any
+  templateDictionary: any,
 ): Promise<common.IItemTemplate> {
   return new Promise<common.IItemTemplate>((resolve, reject) => {
     // Init template
-    const itemTemplate: common.IItemTemplate = common.createInitializedItemTemplate(
-      itemInfo
-    );
+    const itemTemplate: common.IItemTemplate = common.createInitializedItemTemplate(itemInfo);
 
     // Templatize item info property values
-    itemTemplate.item.id = common.templatizeTerm(
-      itemTemplate.item.id,
-      itemTemplate.item.id,
-      ".itemId"
-    );
+    itemTemplate.item.id = common.templatizeTerm(itemTemplate.item.id, itemTemplate.item.id, ".itemId");
 
     // Request related items
-    const relatedPromise = common.getItemRelatedItemsInSameDirection(
-      itemTemplate.itemId,
-      "forward",
-      srcAuthentication
-    );
+    const relatedPromise = common.getItemRelatedItemsInSameDirection(itemTemplate.itemId, "forward", srcAuthentication);
 
     // Perform type-specific handling
     let dataPromise = Promise.resolve({});
@@ -80,51 +70,38 @@ export function convertItemToTemplate(
       case "Web Mapping Application":
       case "Web Scene":
       case "Notebook":
-        dataPromise = new Promise(resolveJSON => {
+        dataPromise = new Promise((resolveJSON) => {
           // eslint-disable-next-line @typescript-eslint/no-floating-promises
-          common
-            .getItemDataAsJson(itemTemplate.itemId, srcAuthentication)
-            .then(json => resolveJSON(json));
+          common.getItemDataAsJson(itemTemplate.itemId, srcAuthentication).then((json) => resolveJSON(json));
         });
         break;
       case "Form":
-        dataPromise = common.getItemDataAsFile(
-          itemTemplate.itemId,
-          itemTemplate.item.name,
-          srcAuthentication
-        );
+        dataPromise = common.getItemDataAsFile(itemTemplate.itemId, itemTemplate.item.name, srcAuthentication);
         break;
       case "QuickCapture Project":
         // Fetch all of the resources to get the config
-        resourcesPromise = common.getItemResourcesFiles(
-          itemTemplate.itemId,
-          srcAuthentication
-        );
+        resourcesPromise = common.getItemResourcesFiles(itemTemplate.itemId, srcAuthentication);
         break;
     }
 
     // Errors are handled as resolved empty values; this means that there's no `reject` clause to handle, hence:
     // eslint-disable-next-line @typescript-eslint/no-floating-promises
-    Promise.all([dataPromise, relatedPromise, resourcesPromise]).then(responses => {
+    Promise.all([dataPromise, relatedPromise, resourcesPromise]).then((responses) => {
       const [itemDataResponse, relatedItemsResponse, resourcesResponse] = responses;
 
       // need to pre-process for velocity urls before they could be templatized by other processors
-      itemTemplate.data = common.updateVelocityReferences(
-        itemDataResponse,
-        itemInfo.type,
-        templateDictionary
-      );
+      itemTemplate.data = common.updateVelocityReferences(itemDataResponse, itemInfo.type, templateDictionary);
       const relationships = relatedItemsResponse;
 
       // Save the mappings to related items & add those items to the dependencies, but not WMA Code Attachments
       itemTemplate.dependencies = [] as string[];
       itemTemplate.relatedItems = [] as common.IRelatedItems[];
 
-      relationships.forEach(relationship => {
+      relationships.forEach((relationship) => {
         /* istanbul ignore else */
         if (relationship.relationshipType !== "WMA2Code") {
           itemTemplate.relatedItems.push(relationship);
-          relationship.relatedItemIds.forEach(relatedItemId => {
+          relationship.relatedItemIds.forEach((relatedItemId) => {
             if (itemTemplate.dependencies.indexOf(relatedItemId) < 0) {
               itemTemplate.dependencies.push(relatedItemId);
             }
@@ -144,17 +121,10 @@ export function convertItemToTemplate(
           dashboard.convertItemToTemplate(itemTemplate, templateDictionary);
           break;
         case "Notebook":
-          templateModifyingPromise = notebook.convertNotebookToTemplate(
-            itemTemplate,
-            srcAuthentication
-          );
+          templateModifyingPromise = notebook.convertNotebookToTemplate(itemTemplate, srcAuthentication);
           break;
         case "Oriented Imagery Catalog":
-          templateModifyingPromise = oic.convertItemToTemplate(
-            itemTemplate,
-            destAuthentication,
-            srcAuthentication
-          );
+          templateModifyingPromise = oic.convertItemToTemplate(itemTemplate, destAuthentication, srcAuthentication);
           break;
         case "QuickCapture Project":
           // Save all of the resources that we've fetched so as to not fetch them again
@@ -168,16 +138,14 @@ export function convertItemToTemplate(
               let qcProjectFile: File = null;
               let iQcProjectFile: number = -1;
               if (resourcesResponse) {
-                resourcesResponse.some(
-                  (file: File, i: number) => {
-                    const haveConfigFile = file.name === "qc.project.json";
-                    if (haveConfigFile) {
-                      qcProjectFile = file;
-                      iQcProjectFile = i;
-                    }
-                    return haveConfigFile;
+                resourcesResponse.some((file: File, i: number) => {
+                  const haveConfigFile = file.name === "qc.project.json";
+                  if (haveConfigFile) {
+                    qcProjectFile = file;
+                    iQcProjectFile = i;
                   }
-                );
+                  return haveConfigFile;
+                });
 
                 // Discard the qc.project.json file
                 if (iQcProjectFile >= 0) {
@@ -189,10 +157,10 @@ export function convertItemToTemplate(
               if (qcProjectFile) {
                 itemTemplate.data = {
                   application: {
-                    ...await common.blobToJson(qcProjectFile),
+                    ...(await common.blobToJson(qcProjectFile)),
                   },
-                  name: "qc.project.json"
-                }
+                  name: "qc.project.json",
+                };
               }
 
               // Save the basemap dependency
@@ -203,7 +171,7 @@ export function convertItemToTemplate(
               // Create the template
               const updatedTemplate = quickcapture.convertQuickCaptureToTemplate(itemTemplate);
               qcResolve(updatedTemplate);
-            }
+            },
           );
           break;
         case "Vector Tile Service":
@@ -213,7 +181,7 @@ export function convertItemToTemplate(
             itemTemplate,
             destAuthentication,
             srcAuthentication,
-            templateDictionary
+            templateDictionary,
           );
           break;
         case "Web Mapping Application":
@@ -222,7 +190,7 @@ export function convertItemToTemplate(
               itemTemplate,
               destAuthentication,
               srcAuthentication,
-              templateDictionary
+              templateDictionary,
             );
           }
           break;
@@ -231,15 +199,12 @@ export function convertItemToTemplate(
             itemTemplate,
             destAuthentication,
             srcAuthentication,
-            templateDictionary
+            templateDictionary,
           );
           break;
       }
 
-      templateModifyingPromise.then(
-        resolve,
-        err => reject(common.fail(err))
-      );
+      templateModifyingPromise.then(resolve, (err) => reject(common.fail(err)));
     });
   });
 }
@@ -250,22 +215,18 @@ export function convertItemToTemplate(
  * @param itemData Data Pipeline's data section
  * @return List of feature layer ids or an empty list if there are no sources or sinks in the pipeline
  */
-export function _getDataPipelineSourcesAndSinks(
-  itemData: any
-): string[] {
+export function _getDataPipelineSourcesAndSinks(itemData: any): string[] {
   const dependencies = [] as string[];
   const sourcesAndSinks = (itemData?.inputs ?? []).concat(itemData?.outputs ?? []);
 
-  sourcesAndSinks.forEach(
-    sourceOrSink => {
-      if (sourceOrSink.type === "FeatureServiceSource" || sourceOrSink.type === "FeatureServiceSink") {
-        const featureServiceId = common.getProp(sourceOrSink, "parameters.layer.value.itemId")
-        if (featureServiceId) {
-          dependencies.push(featureServiceId);
-        }
+  sourcesAndSinks.forEach((sourceOrSink) => {
+    if (sourceOrSink.type === "FeatureServiceSource" || sourceOrSink.type === "FeatureServiceSink") {
+      const featureServiceId = common.getProp(sourceOrSink, "parameters.layer.value.itemId");
+      if (featureServiceId) {
+        dependencies.push(featureServiceId);
       }
     }
-  );
+  });
 
   return dependencies;
 }

@@ -75,6 +75,7 @@ rmdir/s/q demos\reuseDeployedItems\dist 2>nul
 
 rem install and build the packages
 call npm install
+call npm run prettify
 call npm run build
 call commit-stamp.bat
 

@@ -15,10 +15,7 @@
  */
 
 import { IZipCopyResults, IZipInfo, UserSession } from "../interfaces";
-import {
-  IItemResourceOptions,
-  addItemResource
-} from "@esri/arcgis-rest-portal";
+import { IItemResourceOptions, addItemResource } from "@esri/arcgis-rest-portal";
 import { blobToFile } from "../generalHelpers";
 import { createCopyResults } from "./createCopyResults";
 
@@ -35,9 +32,9 @@ import { createCopyResults } from "./createCopyResults";
 export function copyZipIntoItem(
   zipInfo: IZipInfo,
   destinationItemId: string,
-  destinationAuthentication: UserSession
+  destinationAuthentication: UserSession,
 ): Promise<IZipCopyResults> {
-  return new Promise<IZipCopyResults>(resolve => {
+  return new Promise<IZipCopyResults>((resolve) => {
     zipInfo.zip
       .generateAsync({ type: "blob" })
       .then((content: Blob) => {
@@ -49,16 +46,14 @@ export function copyZipIntoItem(
           resource: zipfile,
           authentication: destinationAuthentication,
           params: {
-            archive: true
-          }
+            archive: true,
+          },
         };
         return addItemResource(addResourceOptions);
       })
       .then(
-        () =>
-          resolve(createCopyResults(zipInfo, true, true) as IZipCopyResults),
-        () =>
-          resolve(createCopyResults(zipInfo, true, false) as IZipCopyResults) // unable to add resource
+        () => resolve(createCopyResults(zipInfo, true, true) as IZipCopyResults),
+        () => resolve(createCopyResults(zipInfo, true, false) as IZipCopyResults), // unable to add resource
       );
   });
 }

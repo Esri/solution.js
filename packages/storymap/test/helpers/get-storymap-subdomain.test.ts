@@ -25,16 +25,17 @@ describe("getStoryMapSubdomain :: ", () => {
       { portal: "https://dc.mapsdevext.arcgis.com", expected: "storymapsdev" },
       { portal: "https://www.arcgis.com", expected: "storymaps" },
       { portal: "https://dc.maps.arcgis.com", expected: "storymaps" },
-      { portal: "https://some.com/portal", expected: undefined },
-      { portal: undefined, expected: "storymaps" }
+      { portal: undefined, expected: "storymaps" },
     ];
 
-    data.forEach(entry => {
+    data.forEach((entry) => {
       const us = { portal: entry.portal } as UserSession;
-      expect(getStoryMapSubdomain(us)).toBe(
-        entry.expected,
-        `Should convert ${entry.portal} to ${entry.expected}`
-      );
+      expect(getStoryMapSubdomain(us))
+        .withContext(`Should convert ${entry.portal} to ${entry.expected}`)
+        .toBe(entry.expected);
     });
+    expect(getStoryMapSubdomain({ portal: "https://some.com/portal" } as UserSession))
+      .withContext(`Should return 'undefined" for "https://some.com/portal"`)
+      .toBeUndefined();
   });
 });
