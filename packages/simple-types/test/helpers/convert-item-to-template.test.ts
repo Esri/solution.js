@@ -15,7 +15,7 @@
  */
 
 import * as common from "@esri/solution-common";
-const fetchMock = require('fetch-mock');
+const fetchMock = require("fetch-mock");
 import * as formHelpers from "../../../form/src/formUtils";
 import * as mockItems from "../../../common/test/mocks/agolItems";
 import * as simpleTypeHelpers from "../../src/helpers/convert-item-to-template";

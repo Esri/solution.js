@@ -704,6 +704,98 @@ describe("Module `deleteSolution`: functions for deleting a deployed Solution it
       );
       expect(_reconstructBuildOrderIdsSpy.calls.count()).toEqual(0);
     });
+
+    it("gets a solution that has items and groups", async () => {
+      const solutionId = "abc123";
+
+      const solutionBase = mockItems.getAGOLItem("Solution", solutionId, "Solution 1");
+      solutionBase.typeKeywords = ["Solution", "Deployed"];
+      spyOn(restHelpersGet, "getItemBase").and.resolveTo(solutionBase);
+
+      const solutionData = {
+        metadata: {},
+        parameters: {},
+        templates: [
+          {
+            itemId: "wm1",
+            type: "Web Map",
+            groups: [],
+          },
+          {
+            itemId: "wma1",
+            type: "Web Mapping Application",
+            groups: [],
+          },
+          {
+            itemId: "fs1",
+            type: "Feature Service",
+            groups: [],
+          },
+          {
+            itemId: "group1",
+            type: "Group",
+          },
+        ],
+      };
+      spyOn(restHelpersGet, "getItemDataAsJson").and.resolveTo(solutionData);
+
+      const relatedItems: any[] = [
+        {
+          id: "wm1",
+          modified: 1234567890,
+          owner: "owner1",
+          title: "Web Map 1",
+          type: "Web Map",
+        },
+        {
+          id: "wma1",
+          modified: 1234567890,
+          owner: "owner1",
+          title: "Web Mapping Application 1",
+          type: "Web Mapping Application",
+        },
+        {
+          id: "fs1",
+          modified: 1234567890,
+          owner: "owner1",
+          title: "Feature Service 1",
+          type: "Feature Service",
+        },
+      ];
+      spyOn(restHelpersGet, "getItemsRelatedToASolution").and.resolveTo(relatedItems);
+
+      const response = await getSolutionSummary.getSolutionSummary(solutionId, MOCK_USER_SESSION);
+
+      expect(response).toEqual({
+        id: solutionId,
+        title: "An AGOL item",
+        folder: "",
+        items: [
+          {
+            id: "fs1",
+            modified: 1234567890,
+            owner: "owner1",
+            title: "Feature Service 1",
+            type: "Feature Service",
+          },
+          {
+            id: "wm1",
+            modified: 1234567890,
+            owner: "owner1",
+            title: "Web Map 1",
+            type: "Web Map",
+          },
+          {
+            id: "wma1",
+            modified: 1234567890,
+            owner: "owner1",
+            title: "Web Mapping Application 1",
+            type: "Web Mapping Application",
+          },
+        ],
+        groups: ["group1"],
+      });
+    });
   });
 
   describe("deleteSolutionFolder", () => {

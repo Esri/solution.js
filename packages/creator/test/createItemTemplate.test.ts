@@ -18,7 +18,7 @@
  * Provides tests for functions involving the creation of the template of a Solution item via the REST API.
  */
 
-const fetchMock = require('fetch-mock');
+const fetchMock = require("fetch-mock");
 import * as mockItems from "../../common/test/mocks/agolItems";
 import * as staticRelatedItemsMocks from "../../common/test/mocks/staticRelatedItemsMocks";
 import * as templates from "../../common/test/mocks/templates";

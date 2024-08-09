@@ -18,7 +18,7 @@ import * as mockItems from "../test/mocks/agolItems";
 import { getVelocityInfo, updateVelocityReferences } from "../src/velocityHelpers";
 import * as utils from "./mocks/utils";
 import * as interfaces from "../src/interfaces";
-const fetchMock = require('fetch-mock');
+const fetchMock = require("fetch-mock");
 
 let MOCK_USER_SESSION: interfaces.UserSession;
 

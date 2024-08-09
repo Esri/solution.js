@@ -18,7 +18,7 @@
  * Provides tests for functions involving the arcgis-rest-js library.
  */
 
-const fetchMock = require('fetch-mock');
+const fetchMock = require("fetch-mock");
 import * as interfaces from "../src/interfaces";
 import * as utils from "./mocks/utils";
 import {

@@ -26,7 +26,7 @@ import {
 } from "../src/deploySolutionFromTemplate";
 import * as common from "@esri/solution-common";
 import * as deployItems from "../src/deploySolutionItems";
-const fetchMock = require('fetch-mock');
+const fetchMock = require("fetch-mock");
 import * as mockTemplates from "../../common/test/mocks/templates";
 import * as mockItems from "../../common/test/mocks/agolItems";
 import * as postProcess from "../src/helpers/post-process";

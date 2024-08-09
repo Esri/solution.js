@@ -20,7 +20,7 @@
 
 import * as common from "@esri/solution-common";
 import * as creator from "../src/creator";
-const fetchMock = require('fetch-mock');
+const fetchMock = require("fetch-mock");
 import * as hubCommon from "@esri/hub-common";
 import * as mockItems from "../../common/test/mocks/agolItems";
 import * as staticRelatedItemsMocks from "../../common/test/mocks/staticRelatedItemsMocks";

@@ -18,7 +18,7 @@ import * as interfaces from "../../src/interfaces";
 import * as templates from "../mocks/templates";
 import * as utils from "../mocks/utils";
 import * as mockItems from "../mocks/agolItems";
-const fetchMock = require('fetch-mock');
+const fetchMock = require("fetch-mock");
 import * as restHelpersModule from "../../src/restHelpersGet";
 import { getItemResourcesPaths } from "../../src/resources/getItemResourcesPaths";
 import * as staticRelatedItemsMocks from "../mocks/staticRelatedItemsMocks";

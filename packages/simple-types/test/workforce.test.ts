@@ -21,7 +21,7 @@
 import * as common from "@esri/solution-common";
 import * as workforce from "../src/workforce";
 import * as mockItems from "../../common/test/mocks/agolItems";
-const fetchMock = require('fetch-mock');
+const fetchMock = require("fetch-mock");
 import * as utils from "../../common/test/mocks/utils";
 
 jasmine.DEFAULT_TIMEOUT_INTERVAL = 20000; // default is 5000 ms

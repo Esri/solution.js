@@ -19,7 +19,7 @@
  */
 
 import * as common from "@esri/solution-common";
-const fetchMock = require('fetch-mock');
+const fetchMock = require("fetch-mock");
 import * as mockItems from "../../common/test/mocks/agolItems";
 import * as oic from "../src/oic";
 import * as templates from "../../common/test/mocks/templates";
@@ -27,7 +27,7 @@ import * as utils from "../../common/test/mocks/utils";
 
 // ------------------------------------------------------------------------------------------------------------------ //
 
-describe("Module `webmap`: manages the creation and deployment of OIC (Oriented Imagery Catalog) item types", () => {
+describe("Module `oic`: manages the creation and deployment of OIC (Oriented Imagery Catalog) item types", () => {
   let MOCK_USER_SESSION: common.UserSession;
 
   beforeEach(() => {

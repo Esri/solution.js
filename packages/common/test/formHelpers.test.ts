@@ -36,7 +36,7 @@ beforeEach(() => {
   MOCK_USER_SESSION = utils.createRuntimeMockUserSession();
 });
 
-describe("Module `zip-utils`", () => {
+describe("Module `formHelpers`", () => {
   describe("updateItemWithZipObject", () => {
     it("catches the inability to convert a blob into a the zip", async () => {
       const blob = new Blob([""], { type: "application/zip" });

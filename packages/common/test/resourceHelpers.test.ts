@@ -24,7 +24,7 @@ import * as request from "@esri/arcgis-rest-request";
 import * as resourceHelpers from "../src/resourceHelpers";
 
 import * as utils from "./mocks/utils";
-const fetchMock = require('fetch-mock');
+const fetchMock = require("fetch-mock");
 import * as addResourceFromBlobModule from "../src/resources/add-resource-from-blob";
 
 // ------------------------------------------------------------------------------------------------------------------ //

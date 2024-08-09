@@ -36,7 +36,7 @@ beforeEach(() => {
 
 // ------------------------------------------------------------------------------------------------------------------ //
 
-describe("Module `web-experience`: ", () => {
+describe("Module `web-experience-processor`: ", () => {
   describe("convertItemToTemplate :: ", () => {
     it("should fetch the data and delegate to convertToTemplate", async () => {
       const getItemDataSpy = spyOn(portalModule, "getItemData").and.resolveTo({

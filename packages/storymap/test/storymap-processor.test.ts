@@ -31,7 +31,7 @@ const MOCK_USER_SESSION = utils.createRuntimeMockUserSession();
 
 // ------------------------------------------------------------------------------------------------------------------ //
 
-describe("Module `storymap`: ", () => {
+describe("Module `storymap-processor`: ", () => {
   describe("convertItemToTemplate :: ", () => {
     it("happy path", async () => {
       const getDataSpy = spyOn(portalModule, "getItemData").and.resolveTo({});
