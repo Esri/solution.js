@@ -692,6 +692,26 @@ describe("Module `workflowHelpers`", () => {
     });
   });
 
+  describe("getWorkflowDependencies", () => {
+    it("will fetch workflow dependencies", () => {
+      const template = {
+        data: {
+          viewSchema: {
+            itemId: "ABC123"
+          },
+          workflowLocations: {
+            itemId: "DEF456"
+          },
+          workflowSchema: {
+            itemId: "GHI789"
+          }
+        },
+        dependencies: []
+      } as any;
+      workflowHelpers.getWorkflowDependencies(template);
+      expect(template.dependencies.length).toEqual(3);
+    });
+  });
 });
 
 // ------------------------------------------------------------------------------------------------------------------ //

@@ -320,3 +320,24 @@ export function updateWorkflowTemplateIds(
   }
   return templates;
 }
+
+/**
+ * Get the various dependencies from the workflow item
+ *
+ * @param template The IItemTemplate of the workflow item
+ *
+ */
+export function getWorkflowDependencies(
+  template: interfaces.IItemTemplate
+): void {
+  const keys = ["viewSchema", "workflowLocations", "workflowSchema"];
+  keys.forEach(k => {
+    const data = template.data;
+    if (data && Object.keys(data).indexOf(k) > -1) {
+      const id = data[k].itemId;
+      if (id && template.dependencies.indexOf(id) < 0) {
+        template.dependencies.push(id);
+      }
+    }
+  });
+}

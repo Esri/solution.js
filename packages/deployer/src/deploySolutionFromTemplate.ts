@@ -320,8 +320,8 @@ export async function deploySolutionFromTemplate(
   );
 
   solutionTemplateData.templates = common.updateWorkflowTemplateIds(
-    templateDictionary,
-    solutionTemplateData.templates
+    solutionTemplateData.templates,
+    templateDictionary
   );
 
   // Update solution items data using template dictionary, and then update the
