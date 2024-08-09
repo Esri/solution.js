@@ -71,7 +71,7 @@ export async function convertItemToTemplate(
   // get the dependencies listed in the workflow items data
   common.getWorkflowDependencies(itemTemplate);
 
-  relatedItems.forEach(relatedItem => {
+  relatedItems.forEach((relatedItem) => {
     /* istanbul ignore else */
     if (relatedItem.relationshipType !== "WMA2Code") {
       itemTemplate.relatedItems.push(relatedItem);

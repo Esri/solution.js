@@ -733,16 +733,16 @@ describe("Module `workflowHelpers`", () => {
       const template = {
         data: {
           viewSchema: {
-            itemId: "ABC123"
+            itemId: "ABC123",
           },
           workflowLocations: {
-            itemId: "DEF456"
+            itemId: "DEF456",
           },
           workflowSchema: {
-            itemId: "GHI789"
-          }
+            itemId: "GHI789",
+          },
         },
-        dependencies: []
+        dependencies: [],
       } as any;
       workflowHelpers.getWorkflowDependencies(template);
       expect(template.dependencies.length).toEqual(3);
