@@ -1246,7 +1246,11 @@ export function getItemTemplateResources(type: string, itemId: string): string[]
   return resources;
 }
 
-export function getItemTemplateResourcesAsSourceFiles(type: string, itemId: string): interfaces.ISourceFile[] {
+export function getItemTemplateResourcesAsSourceFiles(
+  type: string,
+  itemId: string,
+  hasService = true,
+): interfaces.ISourceFile[] {
   let resources: interfaces.ISourceFile[] = [];
 
   // Supported item types
@@ -1277,7 +1281,10 @@ export function getItemTemplateResourcesAsSourceFiles(type: string, itemId: stri
       resources = [
         {
           itemId,
-          file: generalHelpers.jsonToFile(sampleWebToolJson, "webtoolDefinition.json"),
+          file: generalHelpers.jsonToFile(
+            hasService ? sampleWebToolJson : emptySampleWebToolJson,
+            "webtoolDefinition.json",
+          ),
           folder: itemId + "/info",
           filename: "webtoolDefinition.json",
         },
@@ -1417,6 +1424,36 @@ export const sampleWebToolJson = {
     ],
   },
   serviceName: "aaaeefbeb43245ccbe00a948e87ccdfa",
+  type: "GPServer",
+  description: "Test Web Tool",
+  provider: "notebooks",
+};
+
+export const emptySampleWebToolJson = {
+  datasets: [],
+  portalProperties: {
+    isHosted: false,
+    portalItems: [
+      {
+        itemId: "",
+        type: "GPServer",
+      },
+    ],
+  },
+  properties: {},
+  jsonProperties: {
+    title: "Test Web Tool",
+    notebookId: "",
+    snapshotId: "notebook.json",
+    timeoutInMinutes: 0,
+    tasks: [
+      {
+        type: "notebook",
+        name: "Test_Notebook",
+      },
+    ],
+  },
+  serviceName: "",
   type: "GPServer",
   description: "Test Web Tool",
   provider: "notebooks",

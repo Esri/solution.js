@@ -68,6 +68,9 @@ export async function convertItemToTemplate(
   itemTemplate.dependencies = [] as string[];
   itemTemplate.relatedItems = [] as common.IRelatedItems[];
 
+  // get the dependencies listed in the workflow items data
+  common.getWorkflowDependencies(itemTemplate);
+
   relatedItems.forEach((relatedItem) => {
     /* istanbul ignore else */
     if (relatedItem.relationshipType !== "WMA2Code") {
