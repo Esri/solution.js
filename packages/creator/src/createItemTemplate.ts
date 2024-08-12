@@ -535,7 +535,7 @@ export function _templatizeResources(
     const rootJsonResources = resourceItemFiles.filter((file) => file.filename.indexOf(".json") > -1);
     rootJsonResources.forEach((rootFileResource) => {
       synchronizePromises.push(
-        new Promise((resolve, reject) => {
+        new Promise((resolve) => {
           // Read the file
           // eslint-disable-next-line @typescript-eslint/no-floating-promises
           blobToJson(rootFileResource.file).then((fileJson) => {
@@ -562,27 +562,25 @@ export function _templatizeResources(
                 }
               });
 
-              Promise.all(promises).then(
-                (results) => {
-                  results.forEach((isValid, i) => {
-                    if (isValid) {
-                      const id: string = idLookup[i];
-                      // templatize the itemId--but only once per unique id
-                      const regEx = new RegExp(id, "gm");
-                      dataString = dataString.replace(regEx, "{{" + id + ".itemId}}");
+              // eslint-disable-next-line @typescript-eslint/no-floating-promises
+              Promise.all(promises).then((results) => {
+                results.forEach((isValid, i) => {
+                  if (isValid) {
+                    const id: string = idLookup[i];
+                    // templatize the itemId--but only once per unique id
+                    const regEx = new RegExp(id, "gm");
+                    dataString = dataString.replace(regEx, "{{" + id + ".itemId}}");
 
-                      // update the dependencies
-                      if (itemTemplate.dependencies.indexOf(id) === -1) {
-                        itemTemplate.dependencies.push(id);
-                      }
+                    // update the dependencies
+                    if (itemTemplate.dependencies.indexOf(id) === -1) {
+                      itemTemplate.dependencies.push(id);
                     }
-                  });
-                  const updatedFileJson = JSON.parse(dataString);
-                  rootFileResource.file = jsonToFile(updatedFileJson, rootFileResource.filename);
-                  resolve(null);
-                },
-                (error: any) => reject(JSON.stringify(error)),
-              );
+                  }
+                });
+                const updatedFileJson = JSON.parse(dataString);
+                rootFileResource.file = jsonToFile(updatedFileJson, rootFileResource.filename);
+                resolve(null);
+              });
             } else {
               const updatedFileJson = JSON.parse(dataString);
               rootFileResource.file = jsonToFile(updatedFileJson, rootFileResource.filename);

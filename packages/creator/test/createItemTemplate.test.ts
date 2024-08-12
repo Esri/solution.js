@@ -933,6 +933,18 @@ describe("Module `createItemTemplate`", () => {
       const infoRootJson = await common.blobToJson(resourceItemFiles[0].file);
       expect(infoRootJson).toEqual(templates.sampleWebToolTemplatizedJson);
     });
+
+    it("handles a Geoprocessing Service with no item ids", async () => {
+      const itemTemplate: common.IItemTemplate = templates.getItemTemplate("Geoprocessing Service");
+      const resourceItemFiles: common.ISourceFile[] = templates.getItemTemplateResourcesAsSourceFiles(
+        "Geoprocessing Service",
+        itemTemplate.itemId,
+        false,
+      );
+
+      await createItemTemplate._templatizeResources(itemTemplate, resourceItemFiles, MOCK_USER_SESSION);
+      expect(resourceItemFiles.length).toEqual(1);
+    });
   });
 });
 
