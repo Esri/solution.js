@@ -40,6 +40,8 @@ import {
   getItemResourcesFilesFromPaths,
   getItemResourcesPaths,
   hasDatasource,
+  isItem,
+  isGroup,
   jsonToFile,
   replaceTemplate,
   sanitizeJSON,
@@ -533,7 +535,7 @@ export function _templatizeResources(
     const rootJsonResources = resourceItemFiles.filter((file) => file.filename.indexOf(".json") > -1);
     rootJsonResources.forEach((rootFileResource) => {
       synchronizePromises.push(
-        new Promise((resolve) => {
+        new Promise((resolve, reject) => {
           // Read the file
           // eslint-disable-next-line @typescript-eslint/no-floating-promises
           blobToJson(rootFileResource.file).then((fileJson) => {
@@ -549,24 +551,43 @@ export function _templatizeResources(
             if (fileJson && idTest.test(dataString)) {
               const ids: string[] = dataString.match(idTest) as string[];
               const verifiedIds: string[] = [];
+              const promises = [];
+              const idLookup = [];
               ids.forEach((id) => {
+                idLookup.push(id);
                 if (verifiedIds.indexOf(id) === -1) {
                   verifiedIds.push(id);
-                  // templatize the itemId--but only once per unique id
-                  const regEx = new RegExp(id, "gm");
-                  dataString = dataString.replace(regEx, "{{" + id + ".itemId}}");
-
-                  // update the dependencies
-                  if (itemTemplate.dependencies.indexOf(id) === -1) {
-                    itemTemplate.dependencies.push(id);
-                  }
+                  promises.push(isItem(id, srcAuthentication));
+                  promises.push(isGroup(id, srcAuthentication));
                 }
               });
-            }
 
-            const updatedFileJson = JSON.parse(dataString);
-            rootFileResource.file = jsonToFile(updatedFileJson, rootFileResource.filename);
-            resolve(null);
+              Promise.all(promises).then(
+                (results) => {
+                  results.forEach((isValid, i) => {
+                    if (isValid) {
+                      const id: string = idLookup[i];
+                      // templatize the itemId--but only once per unique id
+                      const regEx = new RegExp(id, "gm");
+                      dataString = dataString.replace(regEx, "{{" + id + ".itemId}}");
+
+                      // update the dependencies
+                      if (itemTemplate.dependencies.indexOf(id) === -1) {
+                        itemTemplate.dependencies.push(id);
+                      }
+                    }
+                  });
+                  const updatedFileJson = JSON.parse(dataString);
+                  rootFileResource.file = jsonToFile(updatedFileJson, rootFileResource.filename);
+                  resolve(null);
+                },
+                (error: any) => reject(JSON.stringify(error)),
+              );
+            } else {
+              const updatedFileJson = JSON.parse(dataString);
+              rootFileResource.file = jsonToFile(updatedFileJson, rootFileResource.filename);
+              resolve(null);
+            }
           });
         }),
       );
