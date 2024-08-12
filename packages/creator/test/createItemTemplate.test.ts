@@ -908,6 +908,24 @@ describe("Module `createItemTemplate`", () => {
         itemTemplate.itemId,
       );
 
+      const idA = "aaaeefbeb43245ccbe00a948e87ccdfa";
+      const idB = "aaa637ded3a74a7f9c2325a043f59fb6";
+
+      const fsResponse = mockItems.getAGOLItem("Feature Service");
+      const grpResponse = mockItems.getAGOLGroup(idA);
+
+      fetchMock
+        .get(
+          utils.PORTAL_SUBSET.restUrl + `/content/items/${idA}?f=json&token=fake-token`,
+          mockItems.get400FailureResponse(),
+        )
+        .get(utils.PORTAL_SUBSET.restUrl + `/community/groups/${idA}?f=json&token=fake-token`, grpResponse)
+        .get(utils.PORTAL_SUBSET.restUrl + `/content/items/${idB}?f=json&token=fake-token`, fsResponse)
+        .get(
+          utils.PORTAL_SUBSET.restUrl + `/community/groups/${idB}?f=json&token=fake-token`,
+          mockItems.get400FailureResponse(),
+        );
+
       await createItemTemplate._templatizeResources(itemTemplate, resourceItemFiles, MOCK_USER_SESSION);
       expect(resourceItemFiles.length).toEqual(1);
 
