@@ -1306,7 +1306,7 @@ export interface ISolutionItemDataWkidParams {
  * Attributes of the default spatial reference for a solution item.
  */
 export interface ISolutionItemDataWkidAttrsParams {
-  required: boolean;
+  required: string;
 }
 
 /**
