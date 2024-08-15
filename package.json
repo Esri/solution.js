@@ -105,12 +105,19 @@
   },
   "contributors": [
     {
-      "name": "Chris Fox",
-      "email": "cfox@esri.com"
+      "name": "Alexander Beyn"
     },
     {
       "name": "Dave Bouwman",
       "email": "dbouwman@esri.com"
+    },
+    {
+      "name": "Ryan Cosby",
+      "email": "rcosby@esri.com"
+    },
+    {
+      "name": "Chris Fox",
+      "email": "cfox@esri.com"
     },
     {
       "name": "John Gravois"
@@ -120,8 +127,26 @@
       "email": "jhauck@esri.com"
     },
     {
+      "name": "Max Payson"
+    },
+    {
+      "name": "Caleb Pomar"
+    },
+    {
+      "name": "John Gravois"
+    },
+    {
+      "name": "Jack Rowlingson"
+    },
+    {
       "name": "Mike Tschudi",
       "email": "mtschudi@esri.com"
+    },
+    {
+      "name": "Randy Weber"
+    },
+    {
+      "name": "Previn Wong"
     }
   ]
 }
