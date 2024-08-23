@@ -27,7 +27,7 @@
     "@esri/arcgis-rest-portal": "^3.7.0",
     "@esri/arcgis-rest-request": "^3.7.0",
     "@esri/arcgis-rest-service-admin": "^3.7.0",
-    "@esri/hub-common": "^14.157.0",
+    "@esri/hub-common": "^14.176.0",
     "@esri/hub-initiatives": "^14.0.0",
     "@esri/hub-sites": "^15.0.0",
     "@esri/hub-teams": "^14.1.1",
