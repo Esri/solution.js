@@ -96,3 +96,15 @@ The library is a collection of packages that are framework agnostic and make a v
 * [`@esri/solution-web-experience`](https://github.com/Esri/solution.js/tree/master/packages/web-experience): Manages the creation and deployment of Web Experience item types for @esri/solution.js.
 * [`@esri/solution-web-tool`](https://github.com/Esri/solution.js/tree/master/packages/web-tool): Manages the creation and deployment of Web Tool Geoprocessing Service item types for @esri/solution.js.
 * [`@esri/solution-workflow`](https://github.com/Esri/solution.js/tree/master/packages/workflow): Manages the creation and deployment of Workflow item types for @esri/solution.js.
+
+
+# Adding a package
+Here are the places to modify to add a package:
+* build.bat
+* build.sh
+* check_npm_package_versions.html
+* guides\Package Overview.md
+* package.json: `workspaces` property
+* README.md
+* support\publish.sh
+* tsconfig.json

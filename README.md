@@ -34,14 +34,10 @@
 
 An ArcGIS Online (AGO) `item` is transformed into a `template` that contains all of its defining information. If the item depends on other items, those items are also transformed into templates.
 
-A `Solution Item` can contain either
+A `Solution ArcGIS Online Item` can take two forms:
 
-* a list of Item Templates
-* a list of references to deployed items
-
-When it contains Item Templates, it can be used for organizing and distributing Solutions, e.g., for displaying in a gallery of Solutions.
-
-When a Solution is deployed into an organization, a new Solution is created that contains references to the items deployed into the organization; it serves as a table of contents for the deployment.
+1. A `Solution Template` resides in a host ArcGIS Online organization. It contains a list of templates of ArcGIS Online items that work together. It is used to deploy a Solution and its items into destination ArcGIS Online organizations.
+2. A `Deployed Solution` resides in a destination ArcGIS Online organization. It is created when a Solution is deployed and contains a list of references to items deployed for a Solution; it serves as a table of contents for the deployment. This grouping of references also simplifies deleting the deployed Solution.
 
 #### Packages
 
@@ -108,19 +104,25 @@ These commands are
   * `npm run prettify` beautifies TypeScript files
   * `npm run getupdates` modifies package.json with npm updates to packages
 
-* testing
+
+* testing; learn more about Karma testing at https://karma-runner.github.io/6.4/config/browsers.html
   * `npm run test` lints, then runs `test:chrome` tests to confirm that the API is functioning as expected
   * `npm run test:chrome` runs karma in the Chrome browser
   * `npm run test:chrome:ci` runs karma in the ChromeHeadlessCI browser
   * `npm run test:chrome:debug` runs karma in the Chrome browser and leaves the browser open for debugging tests
+  * `npm run test:edge` runs karma in the Edge (Chromium) browser
   * `npm run test:firefox` runs karma in the Firefox browser
   * `npm run test:firefox:ci` runs karma in the FirefoxHeadless browser
-  * `npm run test:all` runs `test:chrome` and `test:firefox`
+  * `npm run test:safari` runs karma in the Safari browser
+  * `npm run test:all:mac` runs `test:chrome`, `test:firefox`, and `test:safari`
+  * `npm run test:all:win` runs `test:chrome`, `test:edge`, and `test:firefox`
+
 
 * publishing doc
   * `npm run docs:build` builds the documentation ___(note that this script creates a `docs` folder, deleting any existing one)___
   * `npm run docs:deploy` pushes the documentation to the repository's gh-pages
-  * `npm run docs:srihash` generates the srihashes
+  * `npm run docs:srihash` generates the srihashes. Learn more about SRI Hash at https://www.srihash.org/
+
 
 * publishing code
   * `npm run release:prepare` to set up the publish and to pick a new version number
@@ -128,6 +130,7 @@ These commands are
   * `npm run release:publish-git` publishes a version to GitHub _(requires bash shell)_
   * `npm run release:publish-npm` publishes a version to npm _(requires Windows shell)_
   * `npm run release:publish-retry` is for retrying to publish npm; it does not update the git tag
+
 
 * lifecycle
   * precommit lints staged files
