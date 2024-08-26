@@ -26,6 +26,6 @@ If your demo includes images,
 * [ ] Run `npm install -D copy-webpack-plugin`
 
 To incorporate the demo with the other demos in the repository,
-* [ ] Edit the command file `build.bat` in the main repository folder and add your demo so that it is built along with the repository.
+* [ ] Edit the command files `build.bat` and `build.sh` in the main repository folder and add your demo so that it is built along with the repository.
 * [ ] Edit `demos\index.html` and add your demo.
 

@@ -29,9 +29,12 @@
     "test:chrome:debug": "karma start --auto-watch --no-single-run --browsers=Chrome",
     "test:chrome": "karma start --single-run --browsers=Chrome",
     "test:chrome:ci": "karma start --single-run --browsers ChromeHeadlessCI karma.conf.js",
+    "test:edge": "karma start --single-run --browsers=Edge",
     "test:firefox": "karma start --single-run --browsers=Firefox",
     "test:firefox:ci": "karma start --single-run --browsers=FirefoxHeadless",
-    "test:all": "npm run test:chrome && npm run test:firefox",
+    "test:safari": "karma start --single-run --browsers=Safari",
+    "test:all:mac": "npm run test:chrome && npm run test:firefox && npm run test:safari",
+    "test:all:win": "npm run test:chrome && npm run test:edge && npm run test:firefox",
     "docs:build": "typedoc",
     "docs:deploy": "node support/deploy-doc-site.js",
     "docs:srihash": "node scripts/generate-srihashes.js",
@@ -106,12 +109,19 @@
   },
   "contributors": [
     {
-      "name": "Chris Fox",
-      "email": "cfox@esri.com"
+      "name": "Alexander Beyn"
     },
     {
       "name": "Dave Bouwman",
       "email": "dbouwman@esri.com"
+    },
+    {
+      "name": "Ryan Cosby",
+      "email": "rcosby@esri.com"
+    },
+    {
+      "name": "Chris Fox",
+      "email": "cfox@esri.com"
     },
     {
       "name": "John Gravois"
@@ -121,8 +131,26 @@
       "email": "jhauck@esri.com"
     },
     {
+      "name": "Max Payson"
+    },
+    {
+      "name": "Caleb Pomar"
+    },
+    {
+      "name": "John Gravois"
+    },
+    {
+      "name": "Jack Rowlingson"
+    },
+    {
       "name": "Mike Tschudi",
       "email": "mtschudi@esri.com"
+    },
+    {
+      "name": "Randy Weber"
+    },
+    {
+      "name": "Previn Wong"
     }
   ]
 }
