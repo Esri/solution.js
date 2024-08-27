@@ -19,7 +19,7 @@
   ],
   "devDependencies": {
     "fetch-mock": "^10.1.1",
-    "npm-check-updates": "^16.14.20"
+    "npm-check-updates": "^17.1.0"
   },
   "dependencies": {
     "@esri/arcgis-rest-auth": "^3.7.0",
