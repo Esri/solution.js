@@ -13,6 +13,7 @@ cd demos/deleteSolution && npm install ; cd ../..
 cd demos/deploySolution && npm install ; cd ../..
 cd demos/getItemInfo && npm install ; cd ../..
 cd demos/implementedTypes && npm install ; cd ../..
+cd demos/reuseDeployedItems && npm install ; cd ../..
 cd demos/verifySolution && npm install ; cd ../..
 
 # install and build the packages
@@ -62,6 +63,7 @@ cd demos/deleteSolution && npm run build ; cd ../..
 cd demos/deploySolution && npm run build ; cd ../..
 cd demos/getItemInfo && npm run build ; cd ../..
 cd demos/implementedTypes && npm run build ; cd ../..
+cd demos/reuseDeployedItems && npm run build ; cd ../..
 cd demos/verifySolution && npm run build ; cd ../..
 
 npm run test

@@ -19,10 +19,8 @@
   ],
   "devDependencies": {
     "@esri/arcgis-rest-types": "^3.7.0",
-    "@types/jasmine": "^5.1.4",
-    "jasmine": "^5.2.0",
-    "jasmine-core": "^5.2.0",
-    "npm-check-updates": "^16.14.20",
+    "fetch-mock": "^10.1.1",
+    "npm-check-updates": "^17.1.0",
     "sinon": "^15.2.0"
   },
   "dependencies": {
@@ -31,10 +29,7 @@
     "@esri/arcgis-rest-portal": "^3.7.0",
     "@esri/arcgis-rest-request": "^3.7.0",
     "@esri/arcgis-rest-service-admin": "^3.7.0",
-    "@esri/hub-common": "^14.176.0",
-    "@esri/hub-initiatives": "^14.0.0",
-    "@esri/hub-sites": "^15.0.0",
-    "@esri/hub-teams": "^14.1.1",
+    "@esri/hub-common": "^14.177.1",
     "@esri/solution-common": "^5.6.2",
     "@esri/solution-feature-layer": "^5.6.2",
     "@esri/solution-file": "^5.6.2",
