@@ -18,22 +18,10 @@
     "dist/**"
   ],
   "devDependencies": {
-    "@types/jasmine": "^5.1.4",
     "fetch-mock": "^10.1.1",
-    "jasmine": "^5.2.0",
-    "jasmine-core": "^5.2.0",
     "npm-check-updates": "^16.14.20"
   },
   "dependencies": {
-    "@esri/arcgis-rest-auth": "^3.7.0",
-    "@esri/arcgis-rest-feature-layer": "^3.7.0",
-    "@esri/arcgis-rest-portal": "^3.7.0",
-    "@esri/arcgis-rest-request": "^3.7.0",
-    "@esri/arcgis-rest-service-admin": "^3.7.0",
-    "@esri/hub-common": "^14.176.0",
-    "@esri/hub-initiatives": "^14.0.0",
-    "@esri/hub-sites": "^14.2.4",
-    "@esri/hub-teams": "^14.1.0",
     "@esri/solution-common": "^5.6.2",
     "tslib": "1.14.1"
   },
