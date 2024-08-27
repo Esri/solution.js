@@ -148,11 +148,11 @@ pushd demos\implementedTypes
 call npm run build
 popd
 
-pushd demos\verifySolution
+pushd demos\reuseDeployedItems
 call npm run build
 popd
 
-pushd demos\reuseDeployedItems
+pushd demos\verifySolution
 call npm run build
 popd
 
