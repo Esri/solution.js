@@ -29,7 +29,7 @@
     "sinon": "^15.2.0"
   },
   "dependencies": {
-    "@esri/arcgis-html-sanitizer": "3.0.1",
+    "@esri/arcgis-html-sanitizer": "4.0.3",
     "@esri/arcgis-rest-auth": "^3.7.0",
     "@esri/arcgis-rest-feature-layer": "^3.7.0",
     "@esri/arcgis-rest-portal": "^3.7.0",
