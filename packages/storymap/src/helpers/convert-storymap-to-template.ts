@@ -22,8 +22,7 @@ import {
   normalizeSolutionTemplateItem,
   deepStringReplace,
 } from "@esri/hub-common";
-import { IItem } from "@esri/arcgis-rest-portal";
-import { IItemTemplate, createPlaceholderTemplate } from "@esri/solution-common";
+import { IItem, IItemTemplate, createPlaceholderTemplate } from "@esri/solution-common";
 import { remapWebmapKeys } from "./remap-webmap-keys";
 import { getStoryMapDependencies } from "./get-storymap-dependencies";
 

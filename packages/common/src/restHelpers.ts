@@ -60,7 +60,7 @@ import {
   ItemRelationshipType,
   IUpdate,
   IUpdateItemResponse,
-  UserSession,
+  UserSession
 } from "./interfaces";
 import { createZip } from "./libConnectors";
 import { getItemBase, getItemDataAsJson } from "./restHelpersGet";

@@ -24,6 +24,7 @@ import {
   IItemTemplate,
   IItemProgressCallback,
   ICreateItemFromTemplateResponse,
+  IUpdateItemOptions,
   EItemProgressStatus,
   UserSession,
   convertIModel,
@@ -31,8 +32,8 @@ import {
   dedupe,
   generateEmptyCreationResponse,
   getProp,
+  restUpdateItem
 } from "@esri/solution-common";
-import { IUpdateItemOptions, updateItem } from "@esri/arcgis-rest-portal";
 import {
   createSiteModelFromTemplate,
   createSite,
@@ -182,7 +183,7 @@ export function createItemFromTemplate(
         },
         authentication: destinationAuthentication,
       };
-      return updateItem(updateOptions);
+      return restUpdateItem(updateOptions);
     })
     .then(() => {
       // Update the template dictionary

@@ -23,31 +23,41 @@ import { IExtent, ISpatialReference } from "@esri/arcgis-rest-service-admin";
 import { UserSession } from "@esri/arcgis-rest-auth";
 
 //#region Re-exports -------------------------------------------------------------------------------------------------//
-
-export { IUserRequestOptions, IUserSessionOptions, UserSession } from "@esri/arcgis-rest-auth";
+export { IUserRequestOptions, IUserSessionOptions, ICredential, UserSession } from "@esri/arcgis-rest-auth";
 export {
   IFeature,
   IQueryRelatedOptions,
   IQueryRelatedResponse,
-  IRelatedRecordGroup,
-  queryRelated,
+  IRelatedRecordGroup
 } from "@esri/arcgis-rest-feature-layer";
 export {
   IAddFolderResponse,
+  ICreateItemOptions,
   ICreateItemResponse,
+  IFolder,
+  IGetGroupContentOptions,
   IGetRelatedItemsResponse,
   IGroup,
   IGroupAdd,
   IItem,
+  IItemResourceOptions,
+  IItemResourceResponse,
   IMoveItemResponse,
   IPagingParams,
   IPortal,
+  IRemoveItemResourceOptions,
   ISearchResult,
   ItemRelationshipType,
+  IUpdateItemOptions,
   IUpdateItemResponse,
   IUser,
+  IUserContentResponse,
+  IUserGroupOptions,
+  IGroupSharingOptions,
+  IUserItemOptions
 } from "@esri/arcgis-rest-portal";
-export { ICreateServiceResult, IExtent, ISpatialReference } from "@esri/arcgis-rest-service-admin";
+export { IRequestOptions } from "@esri/arcgis-rest-request";
+export { ICreateServiceParams, ICreateServiceResult, IExtent, ISpatialReference } from "@esri/arcgis-rest-service-admin";
 import JSZip from "jszip";
 
 //#endregion ---------------------------------------------------------------------------------------------------------//
@@ -224,7 +234,7 @@ export interface IAdditionalGroupSearchOptions {
 /**
  * Results of fetching and copying a file associated with an item.
  */
-export interface IAssociatedFileCopyResults extends IAssociatedFileInfo, ICopyResults {}
+export interface IAssociatedFileCopyResults extends IAssociatedFileInfo, ICopyResults { }
 
 /**
  *  Information for working with a file associated with an item.
@@ -1650,7 +1660,7 @@ export interface IWebmapDependencies {
 /**
  * Results of sending a zip to an item.
  */
-export interface IZipCopyResults extends IZipInfo, ICopyResults {}
+export interface IZipCopyResults extends IZipInfo, ICopyResults { }
 
 /**
  * Information about a zipped file.

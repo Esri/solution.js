@@ -22,8 +22,6 @@
 
 // ------------------------------------------------------------------------------------------------------------------ //
 
-export { queryFeatures as rest_queryFeatures, addFeatures as rest_addFeatures } from "@esri/arcgis-rest-feature-layer";
-
 //#region Imports -------------------------------------------------------------------------------------------------------//
 
 import {
@@ -54,7 +52,7 @@ import {
 import { replaceInTemplate, templatizeTerm, templatizeIds } from "./templatization";
 import { addToServiceDefinition, getLayerUpdates, getRequest, rest_request } from "./restHelpers";
 import { isTrackingViewTemplate, templatizeTracker } from "./trackingHelpers";
-import { queryRelated } from "@esri/arcgis-rest-feature-layer";
+import { queryRelated } from "./restDependencies";
 
 //#endregion ------------------------------------------------------------------------------------------------------------//
 

@@ -23,8 +23,8 @@ import {
   createInitializedItemTemplate,
   removeFolder,
   IItemUpdate,
+  moveItem
 } from "@esri/solution-common";
-import { moveItem } from "@esri/arcgis-rest-portal";
 
 /**
  * Provides utility method to post process Hub surveys

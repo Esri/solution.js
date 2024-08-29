@@ -13,8 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { UserSession, IItemTemplate, ICreateItemFromTemplateResponse, getTemplateById } from "@esri/solution-common";
-import { addItemRelationship } from "@esri/arcgis-rest-portal";
+import { UserSession, IItemTemplate, ICreateItemFromTemplateResponse, getTemplateById, addItemRelationship } from "@esri/solution-common";
 import { moduleMap } from "../module-map";
 import { shareTemplatesToGroups } from "./share-templates-to-groups";
 

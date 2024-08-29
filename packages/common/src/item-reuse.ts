@@ -16,8 +16,8 @@
  * @module item-reuse
  */
 
-import { UserSession } from "./interfaces";
-import { getItemData, IItem, ISearchResult, searchItems, SearchQueryBuilder } from "@esri/arcgis-rest-portal";
+import { UserSession, IItem, ISearchResult } from "./interfaces";
+import { getItemData, restSearchItems, SearchQueryBuilder } from "./restDependencies";
 
 export interface ISourceItem {
   /**
@@ -138,7 +138,7 @@ export function getDeployedSolutions(authentication: UserSession): Promise<ISear
     .and()
     .match("Deployed")
     .in("typekeywords");
-  return searchItems({
+  return restSearchItems({
     q: query,
     num: 100,
     authentication,
@@ -248,7 +248,7 @@ export function getItemHash(id: string, authentication: UserSession): Promise<IS
         q,
         authentication,
       };
-      return searchItems(searchOptions);
+      return restSearchItems(searchOptions);
     });
 
     return Promise.all(promises).then((results) => {

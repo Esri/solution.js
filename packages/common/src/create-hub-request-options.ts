@@ -18,7 +18,7 @@ import { UserSession } from "./interfaces";
 
 import { IHubUserRequestOptions, getHubUrlFromPortal } from "@esri/hub-common";
 
-import { getSelf, getUser } from "@esri/arcgis-rest-portal";
+import { getSelf, restGetUser } from "./restDependencies";
 
 /**
  * Create a IHubUserRequestOptions object from
@@ -51,7 +51,7 @@ export function createHubRequestOptions(
     promises.push(getSelf({ authentication }));
   }
   // always get the user
-  promises.push(getUser({ authentication }));
+  promises.push(restGetUser({ authentication }));
 
   return Promise.all(promises).then(([pSelf, user]) => {
     pSelf.user = user;

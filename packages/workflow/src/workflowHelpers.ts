@@ -21,7 +21,6 @@
  */
 
 import * as common from "@esri/solution-common";
-import * as restRequest from "@esri/arcgis-rest-request";
 
 // ------------------------------------------------------------------------------------------------------------------ //
 
@@ -42,7 +41,7 @@ export async function addWorkflowItem(
   // Add the workflow item
   const url = `${workflowBaseUrl}/admin/createWorkflowItem?name=${item.item.title}`;
 
-  const options: restRequest.IRequestOptions = {
+  const options: common.IRequestOptions = {
     authentication: authentication,
     headers: {
       "Accept": "application/json",
@@ -54,7 +53,7 @@ export async function addWorkflowItem(
       name: `${item.item.title}`,
     },
   };
-  const createdWorkflowResponse = await restRequest.request(url, options);
+  const createdWorkflowResponse = await common.request(url, options);
 
   return Promise.resolve(createdWorkflowResponse.itemId);
 }

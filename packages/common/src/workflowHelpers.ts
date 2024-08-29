@@ -21,9 +21,9 @@
  */
 
 import * as interfaces from "./interfaces";
-import * as request from "@esri/arcgis-rest-request";
 import * as restHelpersGet from "./restHelpersGet";
 import * as zipUtils from "./zip-utils";
+import { request } from "./restDependencies";
 import { removeGroup } from "./restHelpers";
 import { getEnterpriseServers, getItemDataAsJson } from "./restHelpersGet";
 import { createMimeTypedFile } from "./resources/copyDataIntoItem";
@@ -73,7 +73,7 @@ export async function deleteWorkflowItem(
   // Delete the item
   const url = `${workflowBaseUrl}/admin/${itemId}`;
 
-  const options: request.IRequestOptions = {
+  const options: interfaces.IRequestOptions = {
     authentication,
     headers: {
       "Accept": "application/json",
@@ -86,7 +86,7 @@ export async function deleteWorkflowItem(
     },
   };
 
-  const response = await request.request(url, options);
+  const response = await request(url, options);
 
   // Delete the admin group
   if (adminGroupId) {
@@ -128,7 +128,7 @@ export async function getWorkflowManagerAuthorized(
   try {
     const url = `${workflowBaseUrl}/checkStatus`;
 
-    const options: request.IRequestOptions = {
+    const options: interfaces.IRequestOptions = {
       authentication,
       httpMethod: "GET",
       params: {
@@ -136,7 +136,7 @@ export async function getWorkflowManagerAuthorized(
       },
     };
 
-    const response = await request.request(url, options);
+    const response = await request(url, options);
     const isAuthorized = response?.hasAdvancedLicense || false;
     return Promise.resolve(isAuthorized);
   } catch (err) {

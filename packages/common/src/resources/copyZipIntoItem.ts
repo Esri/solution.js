@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import { IZipCopyResults, IZipInfo, UserSession } from "../interfaces";
-import { IItemResourceOptions, addItemResource } from "@esri/arcgis-rest-portal";
+import { IItemResourceOptions, IZipCopyResults, IZipInfo, UserSession } from "../interfaces";
+import { addItemResource } from "../restDependencies";
 import { blobToFile } from "../generalHelpers";
 import { createCopyResults } from "./createCopyResults";
 

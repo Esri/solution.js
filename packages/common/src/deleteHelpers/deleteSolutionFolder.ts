@@ -18,8 +18,8 @@
  * @module deleteSolutionFolder
  */
 
-import { UserSession } from "../interfaces";
-import * as portal from "@esri/arcgis-rest-portal";
+import { IItem, ISearchResult, UserSession } from "../interfaces";
+import { restRemoveFolder, restSearchItems, SearchQueryBuilder } from "../restDependencies";
 
 // ------------------------------------------------------------------------------------------------------------------ //
 
@@ -43,7 +43,7 @@ export function deleteSolutionFolder(
     .getUser({ authentication })
     .then((user) => {
       // And then we need to be sure that the folder is empty
-      const query = new portal.SearchQueryBuilder()
+      const query = new SearchQueryBuilder()
         .match(authentication.username)
         .in("owner")
         .and()
@@ -53,12 +53,12 @@ export function deleteSolutionFolder(
         .match(folderId)
         .in("ownerfolder");
 
-      return portal.searchItems({
+      return restSearchItems({
         q: query,
         authentication,
       });
     })
-    .then((searchResult: portal.ISearchResult<portal.IItem>) => {
+    .then((searchResult: ISearchResult<IItem>) => {
       // If the search results are all in the deletedItemIds list, then we're dealing with AGO lagging:
       // successfully reporting a deletion and yet still returning the item in search results.
       // Filter the Solution items out of the search results.
@@ -69,7 +69,7 @@ export function deleteSolutionFolder(
       // If the list is empty, then there are no non-solution items
       if (nonSolutionItems.length === 0) {
         // OK to delete the folder
-        return portal.removeFolder({
+        return restRemoveFolder({
           folderId: folderId,
           owner: authentication.username,
           authentication,

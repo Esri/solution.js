@@ -14,8 +14,7 @@
  * limitations under the License.
  */
 
-import { ISurvey123CreateParams, ISurvey123CreateResult } from "@esri/solution-common";
-import { encodeFormData } from "@esri/arcgis-rest-request";
+import { ISurvey123CreateParams, ISurvey123CreateResult, encodeFormData } from "@esri/solution-common";
 
 /**
  * Provides utility method to call Survey123 create endpoint

@@ -20,7 +20,7 @@
  * @module workforceHelpers
  */
 
-import { applyEdits, queryFeatures } from "@esri/arcgis-rest-feature-layer";
+import { applyEdits, queryFeatures } from "./restDependencies";
 import { getIDs, getProp, fail, idTest, regExTest, setProp } from "./generalHelpers";
 import { IItemTemplate, IFeatureServiceProperties, UserSession } from "./interfaces";
 import { rest_request } from "./restHelpers";

@@ -15,7 +15,7 @@
  */
 
 import { UserSession } from "../interfaces";
-import { updateItem } from "@esri/arcgis-rest-portal";
+import { restUpdateItem } from "../restDependencies";
 
 // ------------------------------------------------------------------------------------------------------------------ //
 
@@ -38,5 +38,5 @@ export function addMetadataFromBlob(blob: Blob, itemId: string, authentication: 
     },
     authentication: authentication,
   };
-  return updateItem(updateOptions);
+  return restUpdateItem(updateOptions);
 }

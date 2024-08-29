@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import { UserSession } from "../";
-import { IGroupSharingOptions, shareItemWithGroup } from "@esri/arcgis-rest-portal";
+import { IGroupSharingOptions, UserSession } from "../interfaces";
+import { shareItemWithGroup } from "../restDependencies";
 
 /**
  * Share an item to one or more groups

@@ -40,6 +40,7 @@ export * from "./resourceHelpers";
 export * from "./resources";
 export * from "./restHelpers";
 export * from "./restHelpersGet";
+export * from "./restDependencies";
 export * from "./sharing";
 export * from "./templatization";
 export * from "./trackingHelpers";

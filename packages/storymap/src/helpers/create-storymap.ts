@@ -17,16 +17,15 @@
 // TODO ENSURE THIS CREATES IN THE TARGET FOLDER
 import { IModel, failSafe, serializeModel, interpolateItemId, stringToBlob } from "@esri/hub-common";
 
-import { UserSession } from "@esri/solution-common";
-
 import {
-  createItem,
-  moveItem,
-  addItemResource,
-  updateItem,
   ICreateItemOptions,
   ICreateItemResponse,
-} from "@esri/arcgis-rest-portal";
+  addItemResource,
+  createItem,
+  moveItem,
+  restUpdateItem,
+  UserSession
+} from "@esri/solution-common";
 
 /**
  * Create a StoryMap from an interpolated template
@@ -97,7 +96,7 @@ export function createStoryMap(
       delete model.properties;
       // update the item with the newly re-interpolated model
       return Promise.all([
-        updateItem({
+        restUpdateItem({
           item: serializeModel(model),
           authentication,
         }),

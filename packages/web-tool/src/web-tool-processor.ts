@@ -22,7 +22,6 @@
 
 import * as common from "@esri/solution-common";
 import { simpleTypes } from "@esri/solution-simple-types";
-import { IRequestOptions, request } from "@esri/arcgis-rest-request";
 
 /**
  * Creates a template from a Web Tool Geoprocessing item
@@ -221,9 +220,9 @@ export function createWebTool(
           "Content-Type": "application/json",
           "X-Esri-Authorization": `Bearer ${destinationAuthentication.token}`,
         },
-      } as IRequestOptions;
+      } as common.IRequestOptions;
 
-      request(url, requestOptions).then(
+      common.request(url, requestOptions).then(
         (response) => {
           resolve(response);
         },
