@@ -15,10 +15,10 @@
  */
 
 import JSZip from "jszip";
-import * as interfaces from "./interfaces";
+import { TZipObjectContent, IZipObjectContentItem } from "./interfaces";
 import { createMimeTypedFile } from "./resources/copyDataIntoItem";
 import { getBlob } from "./resources/get-blob";
-import { UserSession } from "./interfaces";
+import { UserSession } from "./arcgisRestJS";
 
 // ------------------------------------------------------------------------------------------------------------------ //
 
@@ -57,9 +57,9 @@ export async function getZipObjectContents(
   zipObject: JSZip,
   filesOfInterest: string[] = [],
   blobExtensions: string[] = ["png", "jpeg", "jpg", "gif", "svg", "xls", "xlsx"],
-): Promise<interfaces.IZipObjectContentItem[]> {
-  const extractedZipFiles: interfaces.IZipObjectContentItem[] = [];
-  const fileContentsRetrievalPromises: Array<Promise<interfaces.TZipObjectContent>> = [];
+): Promise<IZipObjectContentItem[]> {
+  const extractedZipFiles: IZipObjectContentItem[] = [];
+  const fileContentsRetrievalPromises: Array<Promise<TZipObjectContent>> = [];
   zipObject.forEach((relativePath, file) => {
     const getContents = async () => {
       if (filesOfInterest.length === 0 || filesOfInterest.includes(relativePath)) {
@@ -130,7 +130,7 @@ export async function jsonToZipFile(zippedFileName: string, zippedFileJson: any,
  * @returns Promise that resolves to the modified zip file if the swizzle was successful
  */
 export async function modifyFilesinZipObject(
-  modificationCallback: (zipContentStr: interfaces.IZipObjectContentItem) => interfaces.TZipObjectContent,
+  modificationCallback: (zipContentStr: IZipObjectContentItem) => TZipObjectContent,
   zipObject: JSZip,
   filesOfInterest: string[] = [],
 ): Promise<JSZip> {

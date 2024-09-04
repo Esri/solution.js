@@ -13,8 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { IRequestOptions, UserSession } from "../interfaces";
-import { request } from "../restDependencies";
+import { IRequestOptions, request, UserSession } from "../arcgisRestJS";
 /**
  * Gets a Blob from a web site.
  *

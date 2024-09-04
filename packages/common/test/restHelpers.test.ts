@@ -18,10 +18,21 @@
  * Provides tests for functions involving the arcgis-rest-js library.
  */
 
+import { IExtent, IItem, ItemRelationshipType, ISpatialReference, UserSession } from "../src/arcgisRestJS";
 import * as admin from "@esri/arcgis-rest-service-admin";
 const fetchMock = require("fetch-mock");
 import * as generalHelpers from "../src/generalHelpers";
-import * as interfaces from "../src/interfaces";
+import {
+  IItemTemplate,
+  IStatusResponse,
+   IRelatedItems,
+   IAddGroupResponse,
+   IPostProcessArgs,
+   IFeatureServiceProperties,
+   IUpdate,
+   IItemUpdate,
+   IAdditionalGroupSearchOptions
+} from "../src/interfaces";
 import * as mockItems from "../test/mocks/agolItems";
 import * as portal from "@esri/arcgis-rest-portal";
 import * as request from "@esri/arcgis-rest-request";
@@ -36,8 +47,8 @@ import { IPagingParams } from "@esri/arcgis-rest-portal";
 
 // ------------------------------------------------------------------------------------------------------------------ //
 
-let MOCK_USER_SESSION: interfaces.UserSession;
-let itemTemplate: interfaces.IItemTemplate;
+let MOCK_USER_SESSION: UserSession;
+let itemTemplate: IItemTemplate;
 
 beforeEach(() => {
   MOCK_USER_SESSION = utils.createRuntimeMockUserSession();
@@ -129,7 +140,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
   describe("UserSession constructor-by-function", () => {
     it("handles defaulting all options", () => {
       const userSession = restHelpers.getUserSession();
-      const expectedUserSession = new interfaces.UserSession({});
+      const expectedUserSession = new UserSession({});
       expect(userSession.username).toEqual(expectedUserSession.username);
       expect(userSession.password).toEqual(expectedUserSession.password);
       expect(userSession.portal).toEqual(expectedUserSession.portal);
@@ -141,7 +152,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
         password: "Astaire",
       };
       const userSession = restHelpers.getUserSession(options);
-      const expectedUserSession = new interfaces.UserSession(options);
+      const expectedUserSession = new UserSession(options);
       expect(userSession.username).toEqual(expectedUserSession.username);
       expect(userSession.password).toEqual(expectedUserSession.password);
       expect(userSession.portal).toEqual(expectedUserSession.portal);
@@ -169,11 +180,11 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
     it("can add a relationship", async () => {
       const originItemId: string = "itm1234567890";
       const destinationItemId: string = "itm1234567891";
-      const relationshipType: interfaces.ItemRelationshipType = "Survey2Service";
+      const relationshipType: ItemRelationshipType = "Survey2Service";
 
       fetchMock.post(utils.PORTAL_SUBSET.restUrl + "/content/users/casey/addRelationship", { success: true });
 
-      const result: interfaces.IStatusResponse = await restHelpers.addForwardItemRelationship(
+      const result: IStatusResponse = await restHelpers.addForwardItemRelationship(
         originItemId,
         destinationItemId,
         relationshipType,
@@ -186,11 +197,11 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
     it("can handle a failure to add a relationship via success property", async () => {
       const originItemId: string = "itm1234567890";
       const destinationItemId: string = "itm1234567891";
-      const relationshipType: interfaces.ItemRelationshipType = "Survey2Service";
+      const relationshipType: ItemRelationshipType = "Survey2Service";
 
       fetchMock.post(utils.PORTAL_SUBSET.restUrl + "/content/users/casey/addRelationship", { success: false });
 
-      const result: interfaces.IStatusResponse = await restHelpers.addForwardItemRelationship(
+      const result: IStatusResponse = await restHelpers.addForwardItemRelationship(
         originItemId,
         destinationItemId,
         relationshipType,
@@ -203,11 +214,11 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
     it("can handle a failure to add a relationship via 500", async () => {
       const originItemId: string = "itm1234567890";
       const destinationItemId: string = "itm1234567891";
-      const relationshipType: interfaces.ItemRelationshipType = "Survey2Service";
+      const relationshipType: ItemRelationshipType = "Survey2Service";
 
       fetchMock.post(utils.PORTAL_SUBSET.restUrl + "/content/users/casey/addRelationship", 500);
 
-      const result: interfaces.IStatusResponse = await restHelpers.addForwardItemRelationship(
+      const result: IStatusResponse = await restHelpers.addForwardItemRelationship(
         originItemId,
         destinationItemId,
         relationshipType,
@@ -221,19 +232,19 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
   describe("addForwardItemRelationships", () => {
     it("can handle an empty set of relationships", async () => {
       const originItemId: string = "itm1234567890";
-      const destinationRelationships: interfaces.IRelatedItems[] = [];
+      const destinationRelationships: IRelatedItems[] = [];
 
-      const result: interfaces.IStatusResponse[] = await restHelpers.addForwardItemRelationships(
+      const result: IStatusResponse[] = await restHelpers.addForwardItemRelationships(
         originItemId,
         destinationRelationships,
         MOCK_USER_SESSION,
       );
-      expect(result).toEqual([] as interfaces.IStatusResponse[]);
+      expect(result).toEqual([] as IStatusResponse[]);
     });
 
     it("can add a single relationship", async () => {
       const originItemId: string = "itm1234567890";
-      const destinationRelationships: interfaces.IRelatedItems[] = [
+      const destinationRelationships: IRelatedItems[] = [
         {
           relationshipType: "Survey2Service",
           relatedItemIds: ["itm1234567891"],
@@ -243,7 +254,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
       const addRelationshipUrl = utils.PORTAL_SUBSET.restUrl + "/content/users/casey/addRelationship";
       fetchMock.post(addRelationshipUrl, { success: true });
 
-      const results: interfaces.IStatusResponse[] = await restHelpers.addForwardItemRelationships(
+      const results: IStatusResponse[] = await restHelpers.addForwardItemRelationships(
         originItemId,
         destinationRelationships,
         MOCK_USER_SESSION,
@@ -264,7 +275,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
 
     it("can add a set of relationships", async () => {
       const originItemId: string = "itm1234567890";
-      const destinationRelationships: interfaces.IRelatedItems[] = [
+      const destinationRelationships: IRelatedItems[] = [
         {
           relationshipType: "Survey2Service",
           relatedItemIds: ["itm1234567891"],
@@ -278,7 +289,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
       const addRelationshipUrl = utils.PORTAL_SUBSET.restUrl + "/content/users/casey/addRelationship";
       fetchMock.post(addRelationshipUrl, { success: true });
 
-      const results: interfaces.IStatusResponse[] = await restHelpers.addForwardItemRelationships(
+      const results: IStatusResponse[] = await restHelpers.addForwardItemRelationships(
         originItemId,
         destinationRelationships,
         MOCK_USER_SESSION,
@@ -296,7 +307,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
 
     it("can add a set of relationships with mixed success", async () => {
       const originItemId: string = "itm1234567890";
-      const destinationRelationships: interfaces.IRelatedItems[] = [
+      const destinationRelationships: IRelatedItems[] = [
         {
           relationshipType: "Survey2Service",
           relatedItemIds: ["itm1234567891"],
@@ -314,7 +325,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
         () => ({ success: ++callNum % 2 === 0 }), // alternate successes and fails
       );
 
-      const results: interfaces.IStatusResponse[] = await restHelpers.addForwardItemRelationships(
+      const results: IStatusResponse[] = await restHelpers.addForwardItemRelationships(
         originItemId,
         destinationRelationships,
         MOCK_USER_SESSION,
@@ -644,7 +655,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
         // with known results
         const date = new Date(Date.UTC(2019, 2, 4, 5, 6, 7)); // 0-based month
         const now = date.getTime();
-        const sessionWithMockedTime: interfaces.UserSession = utils.createRuntimeMockUserSession(
+        const sessionWithMockedTime: UserSession = utils.createRuntimeMockUserSession(
           utils.setMockDateTime(now),
         );
 
@@ -1239,7 +1250,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
       };
 
       fetchMock.post(utils.PORTAL_SUBSET.restUrl + "/community/createGroup", JSON.stringify(expectedSuccess));
-      const response: interfaces.IAddGroupResponse = await restHelpers.createUniqueGroup(
+      const response: IAddGroupResponse = await restHelpers.createUniqueGroup(
         groupTitleRoot,
         groupItem,
         { user },
@@ -1260,7 +1271,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
       fetchMock.post(utils.PORTAL_SUBSET.restUrl + "/community/createGroup", () => {
         return successfulGroupCreation(groupTitleRoot, expectedSuffix);
       });
-      const response: interfaces.IAddGroupResponse = await restHelpers.createUniqueGroup(
+      const response: IAddGroupResponse = await restHelpers.createUniqueGroup(
         groupTitleRoot,
         groupItem,
         { user },
@@ -1282,7 +1293,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
       fetchMock.post(utils.PORTAL_SUBSET.restUrl + "/community/createGroup", () => {
         return JSON.stringify(successfulGroupCreation(groupTitleRoot, expectedSuffix));
       });
-      const response: interfaces.IAddGroupResponse = await restHelpers.createUniqueGroup(
+      const response: IAddGroupResponse = await restHelpers.createUniqueGroup(
         groupTitleRoot,
         groupItem,
         { user },
@@ -1303,7 +1314,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
       fetchMock.post(utils.PORTAL_SUBSET.restUrl + "/community/createGroup", () => {
         return JSON.stringify(successfulGroupCreation(groupTitleRoot, expectedSuffix));
       });
-      const response: interfaces.IAddGroupResponse = await restHelpers.createUniqueGroup(
+      const response: IAddGroupResponse = await restHelpers.createUniqueGroup(
         groupTitleRoot,
         groupItem,
         { user },
@@ -1479,7 +1490,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
     it("can handle undefined out SR", async () => {
       const _extent = await restHelpers.convertExtent(
         extent,
-        undefined as unknown as interfaces.ISpatialReference,
+        undefined as unknown as ISpatialReference,
         geometryServiceUrl,
         MOCK_USER_SESSION,
       );
@@ -1641,7 +1652,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
   describe("convertExtentWithFallback", () => {
     it("can handle NaN", async () => {
       // "NaN" extent values are returned when you try to project this to 102100
-      const ext: interfaces.IExtent = {
+      const ext: IExtent = {
         xmax: 180,
         xmin: -180,
         ymax: 90,
@@ -1696,7 +1707,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
 
     it("can handle NaN with defaultExtent", async () => {
       // "NaN" extent values are returned when you try to project this to 102100
-      const ext: interfaces.IExtent = {
+      const ext: IExtent = {
         xmax: 180,
         xmin: -180,
         ymax: 90,
@@ -1743,7 +1754,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
     });
 
     it("can handle error on failover", async () => {
-      const ext: interfaces.IExtent = {
+      const ext: IExtent = {
         xmax: 180,
         xmin: -180,
         ymax: 90,
@@ -1913,7 +1924,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
         },
       };
 
-      const args: interfaces.IPostProcessArgs = {
+      const args: IPostProcessArgs = {
         message: "refresh",
         objects: objects,
         itemTemplate: itemTemplate,
@@ -1991,7 +2002,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
     it("should get request successfully", async () => {
       itemTemplate.key = "123456";
 
-      const args: interfaces.IPostProcessArgs = {
+      const args: IPostProcessArgs = {
         message: "refresh",
         objects: [],
         itemTemplate: itemTemplate,
@@ -2001,7 +2012,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
       const baseAdminSvcURL =
         "https://services123.arcgis.com/org1234567890/arcgis/rest/admin/services/ROWPermits_publiccomment";
 
-      const update: interfaces.IUpdate = {
+      const update: IUpdate = {
         url: baseAdminSvcURL + "/FeatureServer/refresh",
         params: {},
         args: args,
@@ -2015,7 +2026,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
     it("should handle error", async () => {
       itemTemplate.key = "123456";
 
-      const args: interfaces.IPostProcessArgs = {
+      const args: IPostProcessArgs = {
         message: "refresh",
         objects: [],
         itemTemplate: itemTemplate,
@@ -2025,7 +2036,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
       const baseAdminSvcURL =
         "https://services123.arcgis.com/org1234567890/arcgis/rest/admin/services/ROWPermits_publiccomment";
 
-      const update: interfaces.IUpdate = {
+      const update: IUpdate = {
         url: baseAdminSvcURL + "/FeatureServer/refresh",
         params: {},
         args: args,
@@ -2044,7 +2055,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
     it("will retry on first failure", async () => {
       itemTemplate.key = "123456";
 
-      const args: interfaces.IPostProcessArgs = {
+      const args: IPostProcessArgs = {
         message: "deleteFromDefinition",
         objects: [],
         itemTemplate: itemTemplate,
@@ -2054,7 +2065,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
       const baseAdminSvcURL =
         "https://services123.arcgis.com/org1234567890/arcgis/rest/admin/services/ROWPermits_publiccomment";
 
-      const update: interfaces.IUpdate = {
+      const update: IUpdate = {
         url: baseAdminSvcURL + "/FeatureServer/deleteFromDefinition",
         params: {},
         args: args,
@@ -2071,7 +2082,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
     it("should get async request successfully", async () => {
       itemTemplate.key = "123456";
 
-      const args: interfaces.IPostProcessArgs = {
+      const args: IPostProcessArgs = {
         message: "addToDefinition",
         objects: [],
         itemTemplate: itemTemplate,
@@ -2081,7 +2092,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
       const baseAdminSvcURL =
         "https://services123.arcgis.com/org1234567890/arcgis/rest/admin/services/ROWPermits_publiccomment";
 
-      const update: interfaces.IUpdate = {
+      const update: IUpdate = {
         url: baseAdminSvcURL + "/FeatureServer/addToDefinition",
         params: {},
         args: args,
@@ -2099,7 +2110,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
     it("should get async request reject", async () => {
       itemTemplate.key = "123456";
 
-      const args: interfaces.IPostProcessArgs = {
+      const args: IPostProcessArgs = {
         message: "addToDefinition",
         objects: [],
         itemTemplate: itemTemplate,
@@ -2109,7 +2120,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
       const baseAdminSvcURL =
         "https://services123.arcgis.com/org1234567890/arcgis/rest/admin/services/ROWPermits_publiccomment";
 
-      const update: interfaces.IUpdate = {
+      const update: IUpdate = {
         url: baseAdminSvcURL + "/FeatureServer/addToDefinition",
         params: {},
         args: args,
@@ -2448,7 +2459,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
         .get(urlNonAdmin + "/4/query?f=json&where=1%3D1&outFields=*&token=fake-token", assignmentIntegrations)
         .post(fetchUrl, { serviceItemId: "8e1397c8f8ec45f69ff13b2fbf6b58a7" });
 
-      const expected: interfaces.IFeatureServiceProperties = {
+      const expected: IFeatureServiceProperties = {
         service: {},
         layers: [],
         tables: [],
@@ -2869,7 +2880,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
     it("can fetch a single tranche", async () => {
       const groupId: string = "grp1234567890";
       const query: string = "Fred";
-      const additionalSearchOptions: interfaces.IAdditionalGroupSearchOptions = {
+      const additionalSearchOptions: IAdditionalGroupSearchOptions = {
         sortField: "relevance",
         sortOrder: "asc",
         num: 5,
@@ -2899,7 +2910,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
     it("can fetch more than one tranche", async () => {
       const groupId: string = "grp1234567890";
       const query: string = "Fred";
-      const additionalSearchOptions: interfaces.IAdditionalGroupSearchOptions = { num: 5 };
+      const additionalSearchOptions: IAdditionalGroupSearchOptions = { num: 5 };
 
       fetchMock
         .get(
@@ -2931,7 +2942,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
     it("can handle a failure", async () => {
       const groupId: string = "grp1234567890";
       const query: string = "Fred";
-      const additionalSearchOptions: interfaces.IAdditionalGroupSearchOptions = { num: 5 };
+      const additionalSearchOptions: IAdditionalGroupSearchOptions = { num: 5 };
 
       fetchMock.get(
         utils.PORTAL_SUBSET.restUrl + `/content/groups/${groupId}/search?f=json&num=5&q=${query}&token=fake-token`,
@@ -2976,7 +2987,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
 
     it("can handle a categories search", async () => {
       const groupId: string = "grp1234567890";
-      const additionalSearchOptions: interfaces.IAdditionalGroupSearchOptions = {
+      const additionalSearchOptions: IAdditionalGroupSearchOptions = {
         categories: [
           "a,b", // a or b
           // and
@@ -3003,7 +3014,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
 
     it("will not override the num passed in additionalSearchOptions", async () => {
       const groupId: string = "grp1234567890";
-      const additionalSearchOptions: interfaces.IAdditionalGroupSearchOptions = {
+      const additionalSearchOptions: IAdditionalGroupSearchOptions = {
         categories: [
           "a,b", // a or b
           // and
@@ -3121,7 +3132,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
     });
 
     it("handles additional parameters", async () => {
-      const itemInfo: interfaces.IItemUpdate = {
+      const itemInfo: IItemUpdate = {
         id: "itm1234567890",
       };
       const additionalParams: any = {
@@ -3295,7 +3306,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
         },
       };
 
-      const fetchedItemBase: interfaces.IItem = {
+      const fetchedItemBase: IItem = {
         ...templates.getEmptyItem(),
         id: "itm1234567890",
         type: "Web Map",
@@ -3338,7 +3349,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
         },
       };
 
-      const fetchedItemBase: interfaces.IItem = {
+      const fetchedItemBase: IItem = {
         ...templates.getEmptyItem(),
         id: "itm1234567890",
         type: "Web Map",
@@ -3605,7 +3616,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
 
   describe("_getCreateServiceOptions", () => {
     it("can get options for HOSTED empty service", async () => {
-      const userSession: interfaces.UserSession = new interfaces.UserSession({
+      const userSession: UserSession = new UserSession({
         username: "jsmith",
         password: "123456",
       });
@@ -3647,7 +3658,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
     });
 
     it("can get options for PORTAL empty service", async () => {
-      const userSession: interfaces.UserSession = new interfaces.UserSession({
+      const userSession: UserSession = new UserSession({
         username: "jsmith",
         password: "123456",
       });
@@ -3687,7 +3698,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
     });
 
     it("can get options for HOSTED service with values", async () => {
-      const userSession: interfaces.UserSession = new interfaces.UserSession({
+      const userSession: UserSession = new UserSession({
         username: "jsmith",
         password: "123456",
       });
@@ -3758,7 +3769,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
     });
 
     it("can get tracker options for HOSTED service with values", async () => {
-      const userSession: interfaces.UserSession = new interfaces.UserSession({
+      const userSession: UserSession = new UserSession({
         username: "jsmith",
         password: "123456",
       });
@@ -3835,7 +3846,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
     });
 
     it("can get options for PORTAL service with values and unsupported capabilities", async () => {
-      const userSession: interfaces.UserSession = new interfaces.UserSession({
+      const userSession: UserSession = new UserSession({
         username: "jsmith",
         password: "123456",
       });
@@ -3907,7 +3918,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
     });
 
     it("can get options for HOSTED service with values when name contains guid", async () => {
-      const userSession: interfaces.UserSession = new interfaces.UserSession({
+      const userSession: UserSession = new UserSession({
         username: "jsmith",
         password: "123456",
       });
@@ -3979,7 +3990,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
     });
 
     it("can get options for HOSTED service with values and handle error on convertExtent", async () => {
-      const userSession: interfaces.UserSession = new interfaces.UserSession({
+      const userSession: UserSession = new UserSession({
         username: "jsmith",
         password: "123456",
       });

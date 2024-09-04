@@ -20,10 +20,10 @@
  * @module workflowHelpers
  */
 
-import * as interfaces from "./interfaces";
+import { IItemTemplate, IPreProcessWorkflowTemplatesResponse, IZipObjectContentItem } from "./interfaces";
 import * as restHelpersGet from "./restHelpersGet";
 import * as zipUtils from "./zip-utils";
-import { request } from "./restDependencies";
+import { IPortal, IRequestOptions, request, UserSession } from "./arcgisRestJS";
 import { removeGroup } from "./restHelpers";
 import { getEnterpriseServers, getItemDataAsJson } from "./restHelpersGet";
 import { createMimeTypedFile } from "./resources/copyDataIntoItem";
@@ -64,7 +64,7 @@ export async function compressWorkflowIntoZipFile(workflowConfig: any): Promise<
 export async function deleteWorkflowItem(
   itemId: string,
   workflowBaseUrl: string,
-  authentication: interfaces.UserSession,
+  authentication: UserSession,
 ): Promise<boolean> {
   // Get the id of the Workflow Manager Admin group because the group has to be deleted separately
   const data = await getItemDataAsJson(itemId, authentication);
@@ -73,7 +73,7 @@ export async function deleteWorkflowItem(
   // Delete the item
   const url = `${workflowBaseUrl}/admin/${itemId}`;
 
-  const options: interfaces.IRequestOptions = {
+  const options: IRequestOptions = {
     authentication,
     headers: {
       "Accept": "application/json",
@@ -106,7 +106,7 @@ export async function extractWorkflowFromZipFile(zipFile: File): Promise<any> {
   const zippedFiles = await zipUtils.getZipObjectContents(await zipUtils.blobToZipObject(zipFile));
 
   const workflowConfig: any = {};
-  zippedFiles.forEach((zippedFile: interfaces.IZipObjectContentItem) => {
+  zippedFiles.forEach((zippedFile: IZipObjectContentItem) => {
     workflowConfig[zippedFile.file] = zippedFile.content;
   });
 
@@ -123,12 +123,12 @@ export async function extractWorkflowFromZipFile(zipFile: File): Promise<any> {
  */
 export async function getWorkflowManagerAuthorized(
   workflowBaseUrl: string,
-  authentication: interfaces.UserSession,
+  authentication: UserSession,
 ): Promise<boolean> {
   try {
     const url = `${workflowBaseUrl}/checkStatus`;
 
-    const options: interfaces.IRequestOptions = {
+    const options: IRequestOptions = {
       authentication,
       httpMethod: "GET",
       params: {
@@ -155,8 +155,8 @@ export async function getWorkflowManagerAuthorized(
  * @returns A URL based on ArcGIS Online or Enterprise, e.g., "https://abc123.esri.com:6443/arcgis"
  */
 export async function getWorkflowBaseURL(
-  authentication: interfaces.UserSession,
-  portalResponse?: interfaces.IPortal,
+  authentication: UserSession,
+  portalResponse?: IPortal,
   orgId?: string,
 ): Promise<string> {
   let workflowServerUrl: string;
@@ -192,7 +192,7 @@ export async function getWorkflowBaseURL(
  */
 export async function getWorkflowEnterpriseServerRootURL(
   portalRestUrl: string,
-  authentication: interfaces.UserSession,
+  authentication: UserSession,
 ): Promise<string> {
   // Get the servers
   const servers = await getEnterpriseServers(portalRestUrl, authentication);
@@ -218,9 +218,9 @@ export async function getWorkflowEnterpriseServerRootURL(
  * templates that will be deployed by Wokflow deployment.
  */
 export function preprocessWorkflowTemplates(
-  templates: interfaces.IItemTemplate[],
+  templates: IItemTemplate[],
   templateDictionary: any,
-): interfaces.IPreProcessWorkflowTemplatesResponse {
+): IPreProcessWorkflowTemplatesResponse {
   const workflowItems = templates.filter((t) => t.type === "Workflow");
 
   const serviceIds = workflowItems.reduce((prev, cur) => {
@@ -260,7 +260,7 @@ export function preprocessWorkflowTemplates(
 export function storeKeyWorkflowServiceId(
   key: string,
   templateDictionary: any,
-  template: interfaces.IItemTemplate,
+  template: IItemTemplate,
   ids: string[],
 ): void {
   const id = getProp(template, `data.${key}.itemId`).replace("{{", "").replace(".itemId}}", "");
@@ -280,9 +280,9 @@ export function storeKeyWorkflowServiceId(
  * @returns The updated collection of templates
  */
 export function updateWorkflowTemplateIds(
-  templates: interfaces.IItemTemplate[],
+  templates: IItemTemplate[],
   templateDictionary: any,
-): interfaces.IItemTemplate[] {
+): IItemTemplate[] {
   if (templateDictionary.workflows) {
     Object.keys(templateDictionary.workflows).forEach((k) => {
       // the ids retained here are that of the source items
@@ -317,7 +317,7 @@ export function updateWorkflowTemplateIds(
  * @param template The IItemTemplate of the workflow item
  *
  */
-export function getWorkflowDependencies(template: interfaces.IItemTemplate): void {
+export function getWorkflowDependencies(template: IItemTemplate): void {
   const data = template.data;
   if (data) {
     const keys = ["viewSchema", "workflowLocations", "workflowSchema"];

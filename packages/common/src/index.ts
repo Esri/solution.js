@@ -20,6 +20,7 @@
  * @module common
  */
 
+export * from "./arcgisRestJS";
 export * from "./completeItem";
 export * from "./create-hub-request-options";
 export * from "./deleteHelpers";
@@ -40,7 +41,6 @@ export * from "./resourceHelpers";
 export * from "./resources";
 export * from "./restHelpers";
 export * from "./restHelpersGet";
-export * from "./restDependencies";
 export * from "./sharing";
 export * from "./templatization";
 export * from "./trackingHelpers";

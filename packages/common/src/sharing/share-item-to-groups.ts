@@ -14,8 +14,7 @@
  * limitations under the License.
  */
 
-import { IGroupSharingOptions, UserSession } from "../interfaces";
-import { shareItemWithGroup } from "../restDependencies";
+import { IGroupSharingOptions, shareItemWithGroup, UserSession } from "../arcgisRestJS";
 
 /**
  * Share an item to one or more groups

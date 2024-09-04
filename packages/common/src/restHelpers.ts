@@ -39,40 +39,33 @@ import {
   setCreateProp,
 } from "./generalHelpers";
 import {
-  IAddFolderResponse,
   IAddGroupResponse,
   IAdditionalGroupSearchOptions,
-  ICreateItemResponse,
-  ICreateServiceResult,
   IDependency,
-  IExtent,
   IFeatureServiceProperties,
   IFolderStatusResponse,
-  IGroup,
-  IGroupAdd,
-  IItem,
   IItemTemplate,
   IItemUpdate,
   IPostProcessArgs,
   IRelatedItems,
-  ISpatialReference,
   IStatusResponse,
-  ItemRelationshipType,
   IUpdate,
-  IUpdateItemResponse,
-  UserSession
 } from "./interfaces";
-import { createZip } from "./libConnectors";
-import { getItemBase, getItemDataAsJson } from "./restHelpersGet";
-import { IUserSessionOptions } from "@esri/arcgis-rest-auth";
 import {
-  addItemData as portalAddItemData,
-  addItemRelationship,
-  addItemResource,
-  createFolder,
-  createGroup,
-  createItemInFolder,
-  getItem,
+  IAddFolderResponse,
+  ICreateItemResponse,
+  ICreateServiceParams,
+  ICreateServiceResult,
+  IExtent,
+  IGroup,
+  IGroupAdd,
+  IItem,
+  IParams,
+  ISpatialReference,
+  ItemRelationshipType,
+  IRequestOptions,
+  IUpdateItemResponse,
+  IUserSessionOptions,
   IAddItemDataOptions,
   ICreateItemOptions,
   IFolderIdOptions,
@@ -88,30 +81,37 @@ import {
   ISearchResult,
   ISetAccessOptions,
   ISharingResponse,
+  IUpdateGroupOptions,
   IUpdateItemOptions,
   IUserGroupOptions,
   IUserItemOptions,
+  restAddItemData as portalAddItemData,
+  addItemRelationship,
+  addItemResource,
+  createFolder,
+  createGroup,
+  createItemInFolder,
+  getItem,
   moveItem as portalMoveItem,
-  removeFolder as portalRemoveFolder,
-  removeGroup as portalRemoveGroup,
+  restRemoveFolder as portalRemoveFolder,
+  restRemoveGroup as portalRemoveGroup,
   removeGroupUsers as portalRemoveGroupUsers,
-  removeItem as portalRemoveItem,
+  restRemoveItem as portalRemoveItem,
+  restSearchGroups as portalSearchGroups,
+  restSearchItems as portalSearchItems,
+  request,
   searchGroupContent,
-  searchGroups as portalSearchGroups,
-  searchItems as portalSearchItems,
   SearchQueryBuilder,
   setItemAccess,
   shareItemWithGroup,
-  updateItem as portalUpdateItem,
-  updateGroup as portalUpdateGroup,
-  IUpdateGroupOptions,
-} from "@esri/arcgis-rest-portal";
-import { IParams, IRequestOptions, request } from "@esri/arcgis-rest-request";
-import {
-  ICreateServiceParams,
-  addToServiceDefinition as svcAdminAddToServiceDefinition,
-  createFeatureService as svcAdminCreateFeatureService,
-} from "@esri/arcgis-rest-service-admin";
+  svcAdminAddToServiceDefinition,
+  svcAdminCreateFeatureService,
+  restUpdateItem as portalUpdateItem,
+  restUpdateGroup as portalUpdateGroup,
+  UserSession
+} from "./arcgisRestJS";
+import { createZip } from "./libConnectors";
+import { getItemBase, getItemDataAsJson } from "./restHelpersGet";
 import { getWorkforceDependencies, isWorkforceProject, getWorkforceServiceInfo } from "./workforceHelpers";
 import { hasUnresolvedVariables, replaceInTemplate } from "./templatization";
 import { isTrackingViewTemplate, setTrackingOptions } from "./trackingHelpers";

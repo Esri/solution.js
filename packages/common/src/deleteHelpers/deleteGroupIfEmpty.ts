@@ -18,8 +18,16 @@
  * @module deleteGroupIfEmpty
  */
 
-import { IGroup, IGetGroupContentOptions, IUserGroupOptions, UserSession } from "../interfaces";
-import { getGroup, getGroupContent, restRemoveGroup, unprotectGroup } from "../restDependencies";
+import {
+  IGroup,
+  IGetGroupContentOptions,
+  IUserGroupOptions,
+  getGroup,
+  getGroupContent,
+  restRemoveGroup,
+  unprotectGroup,
+  UserSession
+} from "../arcgisRestJS";
 
 // ------------------------------------------------------------------------------------------------------------------ //
 

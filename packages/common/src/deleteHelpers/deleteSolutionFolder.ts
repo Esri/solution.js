@@ -18,8 +18,14 @@
  * @module deleteSolutionFolder
  */
 
-import { IItem, ISearchResult, UserSession } from "../interfaces";
-import { restRemoveFolder, restSearchItems, SearchQueryBuilder } from "../restDependencies";
+import {
+  IItem,
+  ISearchResult,
+  restRemoveFolder,
+  restSearchItems,
+  SearchQueryBuilder,
+  UserSession
+} from "../arcgisRestJS";
 
 // ------------------------------------------------------------------------------------------------------------------ //
 

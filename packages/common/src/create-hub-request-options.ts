@@ -14,11 +14,10 @@
  * limitations under the License.
  */
 
-import { UserSession } from "./interfaces";
 
 import { IHubUserRequestOptions, getHubUrlFromPortal } from "@esri/hub-common";
 
-import { getSelf, restGetUser } from "./restDependencies";
+import { getSelf, restGetUser, UserSession } from "./arcgisRestJS";
 
 /**
  * Create a IHubUserRequestOptions object from

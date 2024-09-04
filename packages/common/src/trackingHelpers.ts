@@ -16,7 +16,8 @@
 
 // Helper functions shared across deploy and create
 
-import { ICreateServiceParams, IItemTemplate, IItemUpdate, UserSession } from "./interfaces";
+import { ICreateServiceParams, UserSession } from "./arcgisRestJS";
+import { IItemTemplate, IItemUpdate } from "./interfaces";
 import { getProp, setCreateProp, setProp } from "./generalHelpers";
 import { getItemBase } from "./restHelpersGet";
 import { templatizeTerm } from "./templatization";

@@ -15,7 +15,8 @@
  */
 
 import * as generalHelpers from "../../src/generalHelpers";
-import * as interfaces from "../../src/interfaces";
+import { IItemProgressCallback, EItemProgressStatus, ISolutionProgressCallback, ISolutionProgressEvent, ISolutionItem, INoArgFunction } from "../../src/interfaces";
+import { IItem, IGroup, IUser, IGroupAdd, ISearchResult, UserSession } from "../../src/arcgisRestJS";
 
 // -------------------------------------------------------------------------------------------------------------------//
 
@@ -74,11 +75,11 @@ export const PORTAL_SUBSET = {
   urlKey: "deploymentTest",
 };
 
-export const ITEM_PROGRESS_CALLBACK: interfaces.IItemProgressCallback = function (
+export const ITEM_PROGRESS_CALLBACK: IItemProgressCallback = function (
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   itemId: string,
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  status: interfaces.EItemProgressStatus,
+  status: EItemProgressStatus,
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   costUsed: number,
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -87,13 +88,13 @@ export const ITEM_PROGRESS_CALLBACK: interfaces.IItemProgressCallback = function
   return true;
 };
 
-export const SOLUTION_PROGRESS_CALLBACK: interfaces.ISolutionProgressCallback = function (
+export const SOLUTION_PROGRESS_CALLBACK: ISolutionProgressCallback = function (
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   percentDone: number,
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   jobId: string | undefined,
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  progressEvent: interfaces.ISolutionProgressEvent | undefined,
+  progressEvent: ISolutionProgressEvent | undefined,
 ): void {};
 
 /**
@@ -102,14 +103,14 @@ export const SOLUTION_PROGRESS_CALLBACK: interfaces.ISolutionProgressCallback = 
  * @param callToFailOn 1-based call to fail on; before this call, function returns true
  * @return Callback function that tracks calls and fails when specified
  */
-export function createFailingItemProgressCallbackOnNthCall(callToFailOn: number): interfaces.IItemProgressCallback {
+export function createFailingItemProgressCallbackOnNthCall(callToFailOn: number): IItemProgressCallback {
   let numCalls = 0;
   return function () {
     return callToFailOn !== ++numCalls;
   };
 }
 
-export function getSampleGroupToAdd(title: string): interfaces.IGroupAdd {
+export function getSampleGroupToAdd(title: string): IGroupAdd {
   return {
     title: title,
     access: "private",
@@ -396,12 +397,12 @@ export function createRuntimeMockUserSession(
   now?: number,
   portalUrl?: string,
   isEnterprise = false,
-): interfaces.UserSession {
+): UserSession {
   if (now === undefined) {
     now = Date.now();
   }
   const tomorrow = new Date(now + 86400000);
-  const userSession = new interfaces.UserSession({
+  const userSession = new UserSession({
     clientId: "clientId",
     redirectUri: "https://example-app.com/redirect-uri",
     token: "fake-token",
@@ -434,7 +435,7 @@ export function jsonClone(obj: any) {
  *
  * @param solutionTemplateItem Solution template
  */
-export function removeItemFcns(solutionTemplateItem: interfaces.ISolutionItem): void {
+export function removeItemFcns(solutionTemplateItem: ISolutionItem): void {
   const templates = generalHelpers.getProp(solutionTemplateItem, "data.templates");
   if (templates) {
     if (Array.isArray(templates)) {
@@ -1176,14 +1177,14 @@ export function getGroupResponse(query: string, hasResult: boolean) {
   };
 }
 
-export function getSearchResponse<T extends interfaces.IItem | interfaces.IGroup | interfaces.IUser>(
+export function getSearchResponse<T extends IItem | IGroup | IUser>(
   query: string,
   start: number,
   num: number,
   nextStart: number,
   total: number,
   numOfResults: number,
-): interfaces.ISearchResult<T> {
+): ISearchResult<T> {
   return {
     query,
     start,
@@ -1225,7 +1226,7 @@ export function returnOnNthCall(
   trigger: number,
   itemForNthCall: any,
   itemBeforeNthCall: any,
-): interfaces.INoArgFunction {
+): INoArgFunction {
   let numCalls = 0;
   return function () {
     return ++numCalls < trigger ? itemBeforeNthCall : itemForNthCall;

@@ -18,46 +18,18 @@
  * Provides common interfaces.
  */
 
-import { IGetRelatedItemsResponse, IGroup, IItem, IItemRelationshipOptions } from "@esri/arcgis-rest-portal";
-import { IExtent, ISpatialReference } from "@esri/arcgis-rest-service-admin";
-import { UserSession } from "@esri/arcgis-rest-auth";
-
-//#region Re-exports -------------------------------------------------------------------------------------------------//
-export { IUserRequestOptions, IUserSessionOptions, ICredential, UserSession } from "@esri/arcgis-rest-auth";
-export {
-  IFeature,
-  IQueryRelatedOptions,
-  IQueryRelatedResponse,
-  IRelatedRecordGroup
-} from "@esri/arcgis-rest-feature-layer";
-export {
-  IAddFolderResponse,
-  ICreateItemOptions,
-  ICreateItemResponse,
-  IFolder,
-  IGetGroupContentOptions,
+import { IExtent,
   IGetRelatedItemsResponse,
   IGroup,
-  IGroupAdd,
   IItem,
-  IItemResourceOptions,
-  IItemResourceResponse,
-  IMoveItemResponse,
-  IPagingParams,
-  IPortal,
-  IRemoveItemResourceOptions,
-  ISearchResult,
-  ItemRelationshipType,
-  IUpdateItemOptions,
-  IUpdateItemResponse,
-  IUser,
-  IUserContentResponse,
-  IUserGroupOptions,
-  IGroupSharingOptions,
-  IUserItemOptions
-} from "@esri/arcgis-rest-portal";
-export { IRequestOptions } from "@esri/arcgis-rest-request";
-export { ICreateServiceParams, ICreateServiceResult, IExtent, ISpatialReference } from "@esri/arcgis-rest-service-admin";
+  IItemRelationshipOptions,
+  ISpatialReference,
+  UserSession
+} from "./arcgisRestJS";
+
+
+//#region Re-exports -------------------------------------------------------------------------------------------------//
+
 import JSZip from "jszip";
 
 //#endregion ---------------------------------------------------------------------------------------------------------//

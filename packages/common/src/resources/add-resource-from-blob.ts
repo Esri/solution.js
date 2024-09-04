@@ -14,8 +14,7 @@
  * limitations under the License.
  */
 
-import { ArcGISAuthError, addItemResource } from "../restDependencies";
-import { UserSession } from "../interfaces";
+import { ArcGISAuthError, addItemResource, UserSession } from "../arcgisRestJS";
 /**
  * Add a resource from a blob
  *

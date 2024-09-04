@@ -17,7 +17,7 @@
 import { shareItemToGroups } from "../../src/sharing/index";
 import * as portal from "@esri/arcgis-rest-portal";
 import * as testUtils from "../mocks/utils";
-import { UserSession } from "../../src";
+import { UserSession } from "../../src/arcgisRestJS";
 
 let MOCK_USER_SESSION: UserSession;
 

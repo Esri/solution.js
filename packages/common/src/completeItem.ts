@@ -20,7 +20,8 @@
  * @module completeItem
  */
 
-import { ICompleteItem, UserSession } from "./interfaces";
+import { UserSession } from "./arcgisRestJS";
+import { ICompleteItem } from "./interfaces";
 import * as restHelpers from "./restHelpers";
 import * as restHelpersGet from "./restHelpersGet";
 import * as workflowHelpers from "./workflowHelpers";

@@ -20,9 +20,9 @@
  * @module workforceHelpers
  */
 
-import { applyEdits, queryFeatures } from "./restDependencies";
+import { applyEdits, queryFeatures, UserSession } from "./arcgisRestJS";
 import { getIDs, getProp, fail, idTest, regExTest, setProp } from "./generalHelpers";
-import { IItemTemplate, IFeatureServiceProperties, UserSession } from "./interfaces";
+import { IItemTemplate, IFeatureServiceProperties } from "./interfaces";
 import { rest_request } from "./restHelpers";
 import { templatizeTerm, replaceInTemplate } from "./templatization";
 import { cacheLayerInfo } from "./featureServiceHelpers";

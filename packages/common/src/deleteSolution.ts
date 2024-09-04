@@ -21,7 +21,8 @@
  * @module deleteSolution
  */
 
-import { IDeleteSolutionOptions, IItemTemplate, ISolutionItemPrecis, ISolutionPrecis, UserSession } from "./interfaces";
+import { IDeleteSolutionOptions, IItemTemplate, ISolutionItemPrecis, ISolutionPrecis } from "./interfaces";
+import { UserSession } from "./arcgisRestJS";
 import * as deleteSolutionContents from "./deleteHelpers/deleteSolutionContents";
 import * as getDeletableSolutionInfo from "./getDeletableSolutionInfo";
 

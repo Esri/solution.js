@@ -18,11 +18,11 @@
  * @module removeItems
  */
 
-import { EItemProgressStatus, IDeleteSolutionOptions, ISolutionPrecis, UserSession } from "../interfaces";
+import { EItemProgressStatus, IDeleteSolutionOptions, ISolutionPrecis } from "../interfaces";
 import * as reportProgress from "./reportProgress";
 import * as hubSites from "@esri/hub-sites";
-import { unprotectItem } from "../restDependencies";
-import * as restHelpers from "../restHelpers";
+import { unprotectItem, UserSession } from "../arcgisRestJS";
+import { removeItem } from "../restHelpers";
 import * as workflowHelpers from "../workflowHelpers";
 import { createHubRequestOptions } from "../create-hub-request-options";
 
@@ -77,7 +77,7 @@ export function removeItems(
           const workflowBaseUrl = await workflowHelpers.getWorkflowBaseURL(authentication);
           return workflowHelpers.deleteWorkflowItem(itemToDelete.id, workflowBaseUrl, authentication);
         } else {
-          return restHelpers.removeItem(itemToDelete.id, authentication);
+          return removeItem(itemToDelete.id, authentication);
         }
       })
       .then(() => {

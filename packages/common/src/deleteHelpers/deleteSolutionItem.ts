@@ -20,9 +20,9 @@
  * @module deleteSolutionItem
  */
 
-import { IStatusResponse, IUserItemOptions, UserSession } from "../interfaces";
-import { unprotectItem } from "../restDependencies";
-import * as restHelpers from "../restHelpers";
+import { IStatusResponse } from "../interfaces";
+import { unprotectItem, IUserItemOptions, UserSession } from "../arcgisRestJS";
+import { removeItem } from "../restHelpers";
 
 // ------------------------------------------------------------------------------------------------------------------ //
 
@@ -42,7 +42,7 @@ export function deleteSolutionItem(solutionItemId: string, authentication: UserS
   return unprotectItem(protectOptions)
     .then((result) => {
       if (result.success) {
-        return restHelpers.removeItem(solutionItemId, authentication);
+        return removeItem(solutionItemId, authentication);
       } else {
         return Promise.resolve(result);
       }

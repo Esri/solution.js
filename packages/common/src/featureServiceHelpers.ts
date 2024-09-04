@@ -27,18 +27,13 @@
 import {
   IDefaultSpatialReferenceAndExtent,
   IDependency,
-  IExtent,
   IFeatureServiceProperties,
   IItemTemplate,
   INumberValuePair,
-  IQueryRelatedOptions,
-  IQueryRelatedResponse,
   IPostProcessArgs,
-  ISpatialReference,
   IStringValuePair,
   IUpdate,
   UNREACHABLE,
-  UserSession,
 } from "./interfaces";
 import {
   checkUrlPathTermination,
@@ -52,7 +47,14 @@ import {
 import { replaceInTemplate, templatizeTerm, templatizeIds } from "./templatization";
 import { addToServiceDefinition, getLayerUpdates, getRequest, rest_request } from "./restHelpers";
 import { isTrackingViewTemplate, templatizeTracker } from "./trackingHelpers";
-import { queryRelated } from "./restDependencies";
+import {
+  IExtent,
+  IQueryRelatedOptions,
+  IQueryRelatedResponse,
+  ISpatialReference,
+  queryRelated,
+  UserSession
+} from "./arcgisRestJS";
 
 //#endregion ------------------------------------------------------------------------------------------------------------//
 

@@ -13,13 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
+import { UserSession } from "../arcgisRestJS";
 import {
   IAssociatedFileCopyResults,
   IAssociatedFileInfo,
   IFileMimeTyped,
-  IItemUpdate,
-  UserSession,
+  IItemUpdate
 } from "../interfaces";
 import { createCopyResults } from "./createCopyResults";
 import { getBlob } from "./get-blob";

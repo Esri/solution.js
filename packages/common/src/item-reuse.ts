@@ -16,8 +16,7 @@
  * @module item-reuse
  */
 
-import { UserSession, IItem, ISearchResult } from "./interfaces";
-import { getItemData, restSearchItems, SearchQueryBuilder } from "./restDependencies";
+import { IItem, ISearchResult, getItemData, restSearchItems, SearchQueryBuilder, UserSession } from "./arcgisRestJS";
 
 export interface ISourceItem {
   /**

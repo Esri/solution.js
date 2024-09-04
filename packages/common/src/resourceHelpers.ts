@@ -53,19 +53,19 @@ import {
   IAssociatedFileInfo,
   IDeployFileCopyPath,
   IFileMimeTyped,
+  ISourceFile,
+  ISourceFileCopyPath,
+} from "./interfaces";
+import {
   IItemResourceOptions,
   IItemResourceResponse,
   IRemoveItemResourceOptions,
-  ISourceFile,
-  ISourceFileCopyPath,
-  UserSession,
-} from "./interfaces";
-import {
   removeItemResource,
   restUpdateGroup,
   restUpdateItem,
   updateItemResource,
-} from "./restDependencies";
+  UserSession,
+} from "./arcgisRestJS";
 import { appendQueryParam, checkUrlPathTermination } from "./generalHelpers";
 import { convertItemResourceToStorageResource } from "./resources/convert-item-resource-to-storage-resource";
 import { convertStorageResourceToItemResource } from "./resources/convert-storage-resource-to-item-resource";

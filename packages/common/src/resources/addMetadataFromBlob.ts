@@ -14,8 +14,7 @@
  * limitations under the License.
  */
 
-import { UserSession } from "../interfaces";
-import { restUpdateItem } from "../restDependencies";
+import { restUpdateItem, UserSession } from "../arcgisRestJS";
 
 // ------------------------------------------------------------------------------------------------------------------ //
 

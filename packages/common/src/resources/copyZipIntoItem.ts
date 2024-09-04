@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import { IItemResourceOptions, IZipCopyResults, IZipInfo, UserSession } from "../interfaces";
-import { addItemResource } from "../restDependencies";
+import { IZipCopyResults, IZipInfo } from "../interfaces";
+import { IItemResourceOptions, addItemResource, UserSession } from "../arcgisRestJS";
 import { blobToFile } from "../generalHelpers";
 import { createCopyResults } from "./createCopyResults";
 

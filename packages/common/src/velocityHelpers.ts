@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 
-import { IVelocityInfo, UserSession } from "./interfaces";
+import { UserSession } from "./arcgisRestJS";
+import { IVelocityInfo } from "./interfaces";
 import { getSubscriptionInfo, ISubscriptionInfo } from "./get-subscription-info";
 import { getProp } from "./generalHelpers";
 
