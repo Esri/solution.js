@@ -110,6 +110,8 @@ export function convertNotebookToTemplate(
         },
         (error: any) => reject(JSON.stringify(error)),
       );
+    } else {
+      resolve(itemTemplate);
     }
   });
 }
