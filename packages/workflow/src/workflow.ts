@@ -152,7 +152,7 @@ export async function createItemFromTemplate(
       itemId: createdWorkflowItemId,
     };
 
-    await workflowHelpers.updateTemplateDictionaryForWorkforce(
+    await workflowHelpers.updateTemplateDictionaryForWorkflow(
       template.itemId,
       createdWorkflowItemId,
       templateDictionary,
