@@ -16,6 +16,7 @@
 
 import {
   addContentToSolution,
+  _getDataFilesFromTemplates,
   _getDependencies,
   _getIdsOutOfTemplateVariables,
   _getSolutionItemUrls,
@@ -26,6 +27,7 @@ import {
   _replaceDictionaryItemsInObject,
   _replaceRemainingIdsInObject,
   _replaceRemainingIdsInString,
+  _restoreDataFilesToTemplates,
   _simplifyUrlsInItemDescriptions,
   _templatizeWorkflowConfig,
 } from "../../src/helpers/add-content-to-solution";
@@ -33,8 +35,9 @@ const fetchMock = require("fetch-mock");
 import * as createItemTemplateModule from "../../src/createItemTemplate";
 import * as common from "@esri/solution-common";
 import * as mockItems from "../../../common/test/mocks/agolItems";
+import * as mockZips from "../../../common/test/mocks/zipHelpers";
 import * as utils from "../../../common/test/mocks/utils";
-import * as templates from "../../../common/test/mocks/templates";
+import * as templateMocks from "../../../common/test/mocks/templates";
 import * as sinon from "sinon";
 import * as staticRelatedItemsMocks from "../../../common/test/mocks/staticRelatedItemsMocks";
 import { findBy } from "@esri/hub-common";
@@ -143,9 +146,40 @@ describe("addContentToSolution", () => {
   });
 });
 
+describe("_getDataFilesFromTemplates", () => {
+  it("handles no templates", () => {
+    const templates: common.IItemTemplate[] = [];
+    expect(_getDataFilesFromTemplates(templates)).toEqual([]);
+  });
+
+  it("handles templates with no data", () => {
+    const templates: common.IItemTemplate[] = [
+      templateMocks.getItemTemplate("Web Map"),
+      templateMocks.getItemTemplate("Web Mapping Application"),
+    ];
+    expect(_getDataFilesFromTemplates(templates)).toEqual([undefined, undefined]);
+  });
+
+  it("handles templates with data", async () => {
+    const formDataFile = {
+      itemId: "123",
+      file: await mockZips.getSampleFormZipFile("123", "Form_data.zip"),
+      filename: "Form_data.zip",
+      folder: "formData",
+    };
+    const templates: common.IItemTemplate[] = [
+      templateMocks.getItemTemplate("Web Map"),
+      templateMocks.getItemTemplate("Web Mapping Application"),
+      templateMocks.getItemTemplate("Form"),
+    ];
+    templates[2].dataFile = formDataFile;
+    expect(_getDataFilesFromTemplates(templates)).toEqual([undefined, undefined, formDataFile]);
+  });
+});
+
 describe("_getDependencies", () => {
   it("get ids out of string", () => {
-    const template: common.IItemTemplate = templates.getItemTemplate("Web Map");
+    const template: common.IItemTemplate = templateMocks.getItemTemplate("Web Map");
     template.itemId = template.item.id = "854f1128cb784cf692e848390452d100";
     template.item.description =
       "https://experience.arcgis.com/experience/{{fcb2bf2837a6404ebb418a1f805f976a.itemId}}<div>{{portalBaseUrl}}/apps/webappviewer/index.html?id={{cefb7d787b8b4edb971efba758ee0c1e.itemId}}</div>{{" +
@@ -181,12 +215,12 @@ describe("_getIdsOutOfTemplateVariables", () => {
 describe("_getSolutionItemUrls", () => {
   it("gets item id/URL pairs for items with URLs", () => {
     const templateList = [
-      templates.getItemTemplate("Notebook", undefined, "url1"),
-      templates.getItemTemplate("Oriented Imagery Catalog", undefined, "url2"),
-      templates.getItemTemplate("QuickCapture Project", undefined, "url3"),
-      templates.getItemTemplate("Web Map", undefined, "url4"),
-      templates.getItemTemplate("Web Mapping Application", undefined, "url5"),
-      templates.getItemTemplate("Workforce Project", undefined, "url6"),
+      templateMocks.getItemTemplate("Notebook", undefined, "url1"),
+      templateMocks.getItemTemplate("Oriented Imagery Catalog", undefined, "url2"),
+      templateMocks.getItemTemplate("QuickCapture Project", undefined, "url3"),
+      templateMocks.getItemTemplate("Web Map", undefined, "url4"),
+      templateMocks.getItemTemplate("Web Mapping Application", undefined, "url5"),
+      templateMocks.getItemTemplate("Workforce Project", undefined, "url6"),
     ];
     expect(_getSolutionItemUrls(templateList)).toEqual([
       ["nbk1234567890", "url1"],
@@ -200,12 +234,12 @@ describe("_getSolutionItemUrls", () => {
 
   it("skips items without a URL", () => {
     const templateList = [
-      templates.getItemTemplate("Notebook", undefined, ""),
-      templates.getItemTemplate("Oriented Imagery Catalog", undefined, "url2"),
-      templates.getItemTemplate("QuickCapture Project", undefined, ""),
-      templates.getItemTemplate("Web Map", undefined, "url4"),
-      templates.getItemTemplate("Web Mapping Application", undefined, "url5"),
-      templates.getItemTemplate("Workforce Project", undefined, "url6"),
+      templateMocks.getItemTemplate("Notebook", undefined, ""),
+      templateMocks.getItemTemplate("Oriented Imagery Catalog", undefined, "url2"),
+      templateMocks.getItemTemplate("QuickCapture Project", undefined, ""),
+      templateMocks.getItemTemplate("Web Map", undefined, "url4"),
+      templateMocks.getItemTemplate("Web Mapping Application", undefined, "url5"),
+      templateMocks.getItemTemplate("Workforce Project", undefined, "url6"),
     ];
     expect(_getSolutionItemUrls(templateList)).toEqual([
       ["oic1234567890", "url2"],
@@ -217,10 +251,10 @@ describe("_getSolutionItemUrls", () => {
 
   it("handles a list of items without URLs", () => {
     const templateList = [
-      templates.getItemTemplate("Notebook", undefined, ""),
-      templates.getItemTemplate("Oriented Imagery Catalog", undefined, ""),
-      templates.getItemTemplate("QuickCapture Project", undefined, ""),
-      templates.getItemTemplate("Workforce Project", undefined, ""),
+      templateMocks.getItemTemplate("Notebook", undefined, ""),
+      templateMocks.getItemTemplate("Oriented Imagery Catalog", undefined, ""),
+      templateMocks.getItemTemplate("QuickCapture Project", undefined, ""),
+      templateMocks.getItemTemplate("Workforce Project", undefined, ""),
     ];
     expect(_getSolutionItemUrls(templateList)).toEqual([]);
   });
@@ -256,12 +290,12 @@ describe("_getTemplateVariables", () => {
 
 describe("_postProcessGroupDependencies", () => {
   it("remove group dependencies if we find a circular dependency with one of its items", () => {
-    const groupTemplate: common.IItemTemplate = templates.getItemTemplateSkeleton();
+    const groupTemplate: common.IItemTemplate = templateMocks.getItemTemplateSkeleton();
     groupTemplate.item = mockItems.getAGOLItem("Group", undefined);
     groupTemplate.itemId = "grpb15c2df2b466da05577776e82d044";
     groupTemplate.type = "Group";
 
-    const itemTemplate: common.IItemTemplate = templates.getItemTemplateSkeleton();
+    const itemTemplate: common.IItemTemplate = templateMocks.getItemTemplateSkeleton();
     itemTemplate.item = mockItems.getAGOLItem("Workforce Project", undefined);
     itemTemplate.itemId = "wrkccab401af4828a25cc6eaeb59fb69";
     itemTemplate.type = "Workforce Project";
@@ -272,13 +306,13 @@ describe("_postProcessGroupDependencies", () => {
 
     const _templates: common.IItemTemplate[] = [groupTemplate, itemTemplate];
 
-    const expectedGroupTemplate: common.IItemTemplate = templates.getItemTemplateSkeleton();
+    const expectedGroupTemplate: common.IItemTemplate = templateMocks.getItemTemplateSkeleton();
     expectedGroupTemplate.item = mockItems.getAGOLItem("Group", undefined);
     expectedGroupTemplate.itemId = "grpb15c2df2b466da05577776e82d044";
     expectedGroupTemplate.type = "Group";
     expectedGroupTemplate.dependencies = [];
 
-    const expectedItemTemplate: common.IItemTemplate = templates.getItemTemplateSkeleton();
+    const expectedItemTemplate: common.IItemTemplate = templateMocks.getItemTemplateSkeleton();
     expectedItemTemplate.item = mockItems.getAGOLItem("Workforce Project", undefined);
     expectedItemTemplate.itemId = "wrkccab401af4828a25cc6eaeb59fb69";
     expectedItemTemplate.type = "Workforce Project";
@@ -334,13 +368,13 @@ describe("_postProcessGroupDependencies", () => {
   });
 
   it("add group dependencies to groups array", () => {
-    const groupTemplate: common.IItemTemplate = templates.getItemTemplateSkeleton();
+    const groupTemplate: common.IItemTemplate = templateMocks.getItemTemplateSkeleton();
     groupTemplate.item = mockItems.getAGOLItem("Group", undefined);
     groupTemplate.itemId = "grpb15c2df2b466da05577776e82d044";
     groupTemplate.type = "Group";
     groupTemplate.dependencies = [];
 
-    const itemTemplate: common.IItemTemplate = templates.getItemTemplateSkeleton();
+    const itemTemplate: common.IItemTemplate = templateMocks.getItemTemplateSkeleton();
     itemTemplate.item = mockItems.getAGOLItem("Web Mapping Application", undefined);
     itemTemplate.itemId = "wmaccab401af4828a25cc6eaeb59fb69";
     itemTemplate.type = "Web Mapping Application";
@@ -348,13 +382,13 @@ describe("_postProcessGroupDependencies", () => {
 
     const _templates: common.IItemTemplate[] = [groupTemplate, itemTemplate];
 
-    const expectedGroupTemplate: common.IItemTemplate = templates.getItemTemplateSkeleton();
+    const expectedGroupTemplate: common.IItemTemplate = templateMocks.getItemTemplateSkeleton();
     expectedGroupTemplate.item = mockItems.getAGOLItem("Group", undefined);
     expectedGroupTemplate.itemId = "grpb15c2df2b466da05577776e82d044";
     expectedGroupTemplate.type = "Group";
     expectedGroupTemplate.dependencies = [];
 
-    const expectedItemTemplate: common.IItemTemplate = templates.getItemTemplateSkeleton();
+    const expectedItemTemplate: common.IItemTemplate = templateMocks.getItemTemplateSkeleton();
     expectedItemTemplate.item = mockItems.getAGOLItem("Web Mapping Application", undefined);
     expectedItemTemplate.itemId = "wmaccab401af4828a25cc6eaeb59fb69";
     expectedItemTemplate.type = "Web Mapping Application";
@@ -371,7 +405,7 @@ describe("_postProcessIgnoredItems", () => {
   it("handle templates with invalid designations", () => {
     // My Layer
     const fsItemId: string = "bbb34ae01aad44c499d12feec782b386";
-    const fsTemplate: common.IItemTemplate = templates.getItemTemplateSkeleton();
+    const fsTemplate: common.IItemTemplate = templateMocks.getItemTemplateSkeleton();
     fsTemplate.item = mockItems.getAGOLItem("Feature Service", `{{${fsItemId}.url}}`);
     fsTemplate.itemId = fsItemId;
     fsTemplate.item.id = `{{${fsItemId}.itemId}}`;
@@ -381,7 +415,7 @@ describe("_postProcessIgnoredItems", () => {
     const livingAtlasItemId: string = "ccc34ae01aad44c499d12feec782b386";
     const livingAtlasUrl: string =
       "https://services9.arcgis.com/RHVPKKiFTONKtxq3/arcgis/rest/services/NWS_Watches_Warnings_v1/FeatureServer";
-    const livingAtlasTemplate: common.IItemTemplate = templates.getItemTemplateSkeleton();
+    const livingAtlasTemplate: common.IItemTemplate = templateMocks.getItemTemplateSkeleton();
     livingAtlasTemplate.item = mockItems.getAGOLItem("Feature Service", livingAtlasUrl);
     livingAtlasTemplate.itemId = livingAtlasItemId;
     livingAtlasTemplate.item.id = livingAtlasItemId;
@@ -403,7 +437,7 @@ describe("_postProcessIgnoredItems", () => {
 
     // Web map
     const mapItemId: string = "aaa26f145e1a4cab9ae2f519f5e7f5d7";
-    const mapTemplate: common.IItemTemplate = templates.getItemTemplateSkeleton();
+    const mapTemplate: common.IItemTemplate = templateMocks.getItemTemplateSkeleton();
     mapTemplate.item = mockItems.getAGOLItem("Web Map");
     mapTemplate.itemId = mapItemId;
     mapTemplate.item.id = `{{${mapItemId}.itemId}}`;
@@ -459,9 +493,9 @@ describe("_postProcessIgnoredItems", () => {
 describe("_postProcessIgnoredItems", () => {
   it("uses cached info for mocked invalid designations", () => {
     const _templates: common.IItemTemplate[] = [
-      templates.getItemTemplateSkeleton(),
-      templates.getItemTemplateSkeleton(),
-      templates.getItemTemplateSkeleton(),
+      templateMocks.getItemTemplateSkeleton(),
+      templateMocks.getItemTemplateSkeleton(),
+      templateMocks.getItemTemplateSkeleton(),
     ];
     _templates[0].itemId = "dd59d3b4a8c44100914458dd722f054f";
     _templates[0].properties.hasInvalidDesignations = true;
@@ -1109,22 +1143,74 @@ describe("_replaceRemainingIdsInString", () => {
   });
 });
 
+describe("_restoreDataFilesToTemplates", () => {
+  it("handles no templates", () => {
+    const templates: common.IItemTemplate[] = [];
+    const dataFiles: common.TPossibleSourceFile[] = [];
+
+    _restoreDataFilesToTemplates(templates, dataFiles);
+
+    expect(templates).toEqual([]);
+  });
+
+  it("handles templates with no data", () => {
+    const templates: common.IItemTemplate[] = [
+      templateMocks.getItemTemplate("Web Map"),
+      templateMocks.getItemTemplate("Web Mapping Application"),
+    ];
+    const dataFiles: common.TPossibleSourceFile[] = [undefined, undefined];
+
+    _restoreDataFilesToTemplates(templates, dataFiles);
+
+    const expectedTemplates: common.IItemTemplate[] = [
+      templateMocks.getItemTemplate("Web Map"),
+      templateMocks.getItemTemplate("Web Mapping Application"),
+    ];
+    expect(templates).toEqual(expectedTemplates);
+  });
+
+  it("handles templates with data", async () => {
+    const formDataFile = {
+      itemId: "123",
+      file: await mockZips.getSampleFormZipFile("123", "Form_data.zip"),
+      filename: "Form_data.zip",
+      folder: "formData",
+    };
+    const templates: common.IItemTemplate[] = [
+      templateMocks.getItemTemplate("Web Map"),
+      templateMocks.getItemTemplate("Web Mapping Application"),
+      templateMocks.getItemTemplate("Form"),
+    ];
+    const dataFiles: common.TPossibleSourceFile[] = [undefined, undefined, formDataFile];
+
+    _restoreDataFilesToTemplates(templates, dataFiles);
+
+    const expectedTemplates: common.IItemTemplate[] = [
+      templateMocks.getItemTemplate("Web Map"),
+      templateMocks.getItemTemplate("Web Mapping Application"),
+      templateMocks.getItemTemplate("Form"),
+    ];
+    expectedTemplates[2].dataFile = formDataFile;
+    expect(templates).toEqual(expectedTemplates);
+  });
+});
+
 describe("_simplifyUrlsInItemDescriptions", () => {
   it("replaces URL in description with simplified form 1", () => {
     const descrip1 = "Etiam rhoncus vestibulum enim, a scelerisque sem.";
     const descrip2 = "Donec rhoncus nunc in odio lobortis venenatis non.";
 
-    const notebookTemplate = templates.getItemTemplate("Notebook", undefined, "url1");
+    const notebookTemplate = templateMocks.getItemTemplate("Notebook", undefined, "url1");
     notebookTemplate.item.origUrl = notebookTemplate.item.url;
 
-    const webmapTemplate = templates.getItemTemplate("Web Map", undefined, "url4");
+    const webmapTemplate = templateMocks.getItemTemplate("Web Map", undefined, "url4");
     webmapTemplate.item.description = descrip1 + " url5,url5,url1 " + descrip2;
 
-    const wmaTemplate = templates.getItemTemplate("Web Mapping Application", undefined, "url5");
+    const wmaTemplate = templateMocks.getItemTemplate("Web Mapping Application", undefined, "url5");
     wmaTemplate.item.description = descrip1 + " url0 " + descrip2;
     wmaTemplate.item.origUrl = wmaTemplate.item.url;
 
-    const workforceTemplate = templates.getItemTemplate("Workforce Project", undefined, "url6");
+    const workforceTemplate = templateMocks.getItemTemplate("Workforce Project", undefined, "url6");
     workforceTemplate.item.origUrl = workforceTemplate.item.url;
 
     const templateList = [notebookTemplate, webmapTemplate, wmaTemplate, workforceTemplate];
@@ -1170,7 +1256,7 @@ describe("_simplifyUrlsInItemDescriptions", () => {
   });
 
   it("doesn't choke if the description is missing", () => {
-    const notebookTemplate = templates.getItemTemplate("Notebook", undefined, "url1");
+    const notebookTemplate = templateMocks.getItemTemplate("Notebook", undefined, "url1");
     notebookTemplate.item.origUrl = notebookTemplate.item.url;
     notebookTemplate.item.description = undefined;
 
@@ -1182,7 +1268,7 @@ describe("_simplifyUrlsInItemDescriptions", () => {
 describe("_templatizeSolutionIds", () => {
   it("skips _getDependencies for workforce", () => {
     // added for issue #630
-    const template: common.IItemTemplate = templates.getItemTemplate("Workforce Project");
+    const template: common.IItemTemplate = templateMocks.getItemTemplate("Workforce Project");
     template.dependencies = [];
     if (template.item.typeKeywords) {
       template.item.typeKeywords.push("Workforce Project");
@@ -1196,7 +1282,7 @@ describe("_templatizeSolutionIds", () => {
   it("skips _getDependencies for group", () => {
     // added for issue #630
     const getDependenciesSpy = sinon.spy(_getDependencies);
-    const template: common.IItemTemplate = templates.getItemTemplate("Group");
+    const template: common.IItemTemplate = templateMocks.getItemTemplate("Group");
     _templatizeSolutionIds([template]);
     expect(getDependenciesSpy.notCalled).toBe(true);
   });
@@ -1204,7 +1290,7 @@ describe("_templatizeSolutionIds", () => {
 
 describe("_templatizeWorkflowConfig", () => {
   it("templatizes the workflow config", () => {
-    const workflowTemplate = templates.getItemTemplate("Workflow");
+    const workflowTemplate = templateMocks.getItemTemplate("Workflow");
     workflowTemplate.itemId = workflowTemplate.item.id = "69c996f13345470da56639b5c4f85d11";
     common.setCreateProp(workflowTemplate, "properties.configuration", {
       "diagrams.json":
@@ -1221,7 +1307,7 @@ describe("_templatizeWorkflowConfig", () => {
 
     // Item's id is templatized, but the workflow item id is not add to its own dependencies
     // The item id that is not in the templateDictionary is not templatized
-    const expectedWorkflowTemplate = templates.getItemTemplate("Workflow");
+    const expectedWorkflowTemplate = templateMocks.getItemTemplate("Workflow");
     expectedWorkflowTemplate.itemId = expectedWorkflowTemplate.item.id = "69c996f13345470da56639b5c4f85d11"; // we're not testing this part
     common.setCreateProp(expectedWorkflowTemplate, "properties.configuration", {
       "diagrams.json":
@@ -1234,7 +1320,7 @@ describe("_templatizeWorkflowConfig", () => {
   });
 
   it("handles case where workflow config doesn't have anything to templateize", () => {
-    const workflowTemplate = templates.getItemTemplate("Workflow");
+    const workflowTemplate = templateMocks.getItemTemplate("Workflow");
     workflowTemplate.itemId = workflowTemplate.item.id = "69c996f13345470da56639b5c4f85d11";
     common.setCreateProp(workflowTemplate, "properties.configuration", {
       "diagrams.json":
@@ -1249,7 +1335,7 @@ describe("_templatizeWorkflowConfig", () => {
 
     _templatizeWorkflowConfig(templateList, templateDictionary);
 
-    const expectedWorkflowTemplate = templates.getItemTemplate("Workflow");
+    const expectedWorkflowTemplate = templateMocks.getItemTemplate("Workflow");
     expectedWorkflowTemplate.itemId = expectedWorkflowTemplate.item.id = "69c996f13345470da56639b5c4f85d11"; // we're not testing this part
     common.setCreateProp(expectedWorkflowTemplate, "properties.configuration", {
       "diagrams.json":
@@ -1261,14 +1347,17 @@ describe("_templatizeWorkflowConfig", () => {
   });
 
   it("leaves non-workflow items alone", () => {
-    const templateList = [templates.getItemTemplate("Web Map"), templates.getItemTemplate("Web Mapping Application")];
+    const templateList = [
+      templateMocks.getItemTemplate("Web Map"),
+      templateMocks.getItemTemplate("Web Mapping Application"),
+    ];
     const templateDictionary = {};
 
     _templatizeWorkflowConfig(templateList, templateDictionary);
 
     const expectedTemplateList = [
-      templates.getItemTemplate("Web Map"),
-      templates.getItemTemplate("Web Mapping Application"),
+      templateMocks.getItemTemplate("Web Map"),
+      templateMocks.getItemTemplate("Web Mapping Application"),
     ];
     expect(templateList).toEqual(expectedTemplateList);
   });

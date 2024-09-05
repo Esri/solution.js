@@ -552,24 +552,28 @@ describe("Module `copyAssociatedFiles`: functions for sending resources to AGO",
 
   describe("_sendZipsSeriallyToItem", () => {
     it("handles single zip", async () => {
-      const zipInfos: interfaces.IZipInfo[] = [{
-        filename: "zip1",
-        zip: new JSZip(),
-        filelist: [{
-          folder: "fld",
-          filename: "file1",
-          type: interfaces.EFileType.Data,
-          mimeType: "text",
-          url: "http://esri.com"
-        }]
-      }];
+      const zipInfos: interfaces.IZipInfo[] = [
+        {
+          filename: "zip1",
+          zip: new JSZip(),
+          filelist: [
+            {
+              folder: "fld",
+              filename: "file1",
+              type: interfaces.EFileType.Data,
+              mimeType: "text",
+              url: "http://esri.com",
+            },
+          ],
+        },
+      ];
 
       const copyZipIntoItemSpy = spyOn(copyZipIntoItem, "copyZipIntoItem").and.callFake(
         (zipInfo: interfaces.IZipInfo) => {
           return new Promise<interfaces.IZipCopyResults>((resolve) => {
             resolve(_createIZipCopyResults(true, true, zipInfo.filelist));
           });
-        }
+        },
       );
 
       const results: interfaces.IAssociatedFileCopyResults[] = await _sendZipsSeriallyToItem(
@@ -579,46 +583,55 @@ describe("Module `copyAssociatedFiles`: functions for sending resources to AGO",
       );
 
       expect(copyZipIntoItemSpy).toHaveBeenCalledTimes(1);
-      expect(results).toEqual([{
-        folder: "fld",
-        filename: "file1",
-        type: interfaces.EFileType.Data,
-        mimeType: "text",
-        url: "http://esri.com",
-        fetchedFromSource: true,
-        copiedToDestination: true,
-      }]);
-    });
-
-    it("handles two zips", async () => {
-      const zipInfos: interfaces.IZipInfo[] = [{
-        filename: "zip1",
-        zip: new JSZip(),
-        filelist: [{
+      expect(results).toEqual([
+        {
           folder: "fld",
           filename: "file1",
           type: interfaces.EFileType.Data,
           mimeType: "text",
-          url: "http://esri.com"
-        }]
-      }, {
-        filename: "zip2",
-        zip: new JSZip(),
-        filelist: [{
-          folder: "fld",
-          filename: "file2",
-          type: interfaces.EFileType.Data,
-          mimeType: "text",
-          url: "http://esri.com"
-        }]
-      }];
+          url: "http://esri.com",
+          fetchedFromSource: true,
+          copiedToDestination: true,
+        },
+      ]);
+    });
+
+    it("handles two zips", async () => {
+      const zipInfos: interfaces.IZipInfo[] = [
+        {
+          filename: "zip1",
+          zip: new JSZip(),
+          filelist: [
+            {
+              folder: "fld",
+              filename: "file1",
+              type: interfaces.EFileType.Data,
+              mimeType: "text",
+              url: "http://esri.com",
+            },
+          ],
+        },
+        {
+          filename: "zip2",
+          zip: new JSZip(),
+          filelist: [
+            {
+              folder: "fld",
+              filename: "file2",
+              type: interfaces.EFileType.Data,
+              mimeType: "text",
+              url: "http://esri.com",
+            },
+          ],
+        },
+      ];
 
       const copyZipIntoItemSpy = spyOn(copyZipIntoItem, "copyZipIntoItem").and.callFake(
         (zipInfo: interfaces.IZipInfo) => {
           return new Promise<interfaces.IZipCopyResults>((resolve) => {
             resolve(_createIZipCopyResults(true, true, zipInfo.filelist));
           });
-        }
+        },
       );
 
       const results: interfaces.IAssociatedFileCopyResults[] = await _sendZipsSeriallyToItem(
@@ -628,64 +641,77 @@ describe("Module `copyAssociatedFiles`: functions for sending resources to AGO",
       );
 
       expect(copyZipIntoItemSpy).toHaveBeenCalledTimes(2);
-      expect(results).toEqual([{
-        folder: "fld",
-        filename: "file1",
-        type: interfaces.EFileType.Data,
-        mimeType: "text",
-        url: "http://esri.com",
-        fetchedFromSource: true,
-        copiedToDestination: true,
-      }, {
-        folder: "fld",
-        filename: "file2",
-        type: interfaces.EFileType.Data,
-        mimeType: "text",
-        url: "http://esri.com",
-        fetchedFromSource: true,
-        copiedToDestination: true,
-      }]);
-    });
-
-    it("handles three zips", async () => {
-      const zipInfos: interfaces.IZipInfo[] = [{
-        filename: "zip1",
-        zip: new JSZip(),
-        filelist: [{
+      expect(results).toEqual([
+        {
           folder: "fld",
           filename: "file1",
           type: interfaces.EFileType.Data,
           mimeType: "text",
-          url: "http://esri.com"
-        }]
-      }, {
-        filename: "zip2",
-        zip: new JSZip(),
-        filelist: [{
+          url: "http://esri.com",
+          fetchedFromSource: true,
+          copiedToDestination: true,
+        },
+        {
           folder: "fld",
           filename: "file2",
           type: interfaces.EFileType.Data,
           mimeType: "text",
-          url: "http://esri.com"
-        }]
-      }, {
-        filename: "zip3",
-        zip: new JSZip(),
-        filelist: [{
-          folder: "fld",
-          filename: "file3",
-          type: interfaces.EFileType.Data,
-          mimeType: "text",
-          url: "http://esri.com"
-        }]
-      }];
+          url: "http://esri.com",
+          fetchedFromSource: true,
+          copiedToDestination: true,
+        },
+      ]);
+    });
+
+    it("handles three zips", async () => {
+      const zipInfos: interfaces.IZipInfo[] = [
+        {
+          filename: "zip1",
+          zip: new JSZip(),
+          filelist: [
+            {
+              folder: "fld",
+              filename: "file1",
+              type: interfaces.EFileType.Data,
+              mimeType: "text",
+              url: "http://esri.com",
+            },
+          ],
+        },
+        {
+          filename: "zip2",
+          zip: new JSZip(),
+          filelist: [
+            {
+              folder: "fld",
+              filename: "file2",
+              type: interfaces.EFileType.Data,
+              mimeType: "text",
+              url: "http://esri.com",
+            },
+          ],
+        },
+        {
+          filename: "zip3",
+          zip: new JSZip(),
+          filelist: [
+            {
+              folder: "fld",
+              filename: "file3",
+              type: interfaces.EFileType.Data,
+              mimeType: "text",
+              url: "http://esri.com",
+            },
+          ],
+        },
+      ];
 
       const copyZipIntoItemSpy = spyOn(copyZipIntoItem, "copyZipIntoItem").and.callFake(
         (zipInfo: interfaces.IZipInfo) => {
           return new Promise<interfaces.IZipCopyResults>((resolve) => {
             resolve(_createIZipCopyResults(true, true, zipInfo.filelist));
           });
-        }
+        },
       );
 
       const results: interfaces.IAssociatedFileCopyResults[] = await _sendZipsSeriallyToItem(
@@ -695,31 +721,35 @@ describe("Module `copyAssociatedFiles`: functions for sending resources to AGO",
       );
 
       expect(copyZipIntoItemSpy).toHaveBeenCalledTimes(3);
-      expect(results).toEqual([{
-        folder: "fld",
-        filename: "file1",
-        type: interfaces.EFileType.Data,
-        mimeType: "text",
-        url: "http://esri.com",
-        fetchedFromSource: true,
-        copiedToDestination: true,
-      }, {
-        folder: "fld",
-        filename: "file2",
-        type: interfaces.EFileType.Data,
-        mimeType: "text",
-        url: "http://esri.com",
-        fetchedFromSource: true,
-        copiedToDestination: true,
-      }, {
-        folder: "fld",
-        filename: "file3",
-        type: interfaces.EFileType.Data,
-        mimeType: "text",
-        url: "http://esri.com",
-        fetchedFromSource: true,
-        copiedToDestination: true,
-      }]);
+      expect(results).toEqual([
+        {
+          folder: "fld",
+          filename: "file1",
+          type: interfaces.EFileType.Data,
+          mimeType: "text",
+          url: "http://esri.com",
+          fetchedFromSource: true,
+          copiedToDestination: true,
+        },
+        {
+          folder: "fld",
+          filename: "file2",
+          type: interfaces.EFileType.Data,
+          mimeType: "text",
+          url: "http://esri.com",
+          fetchedFromSource: true,
+          copiedToDestination: true,
+        },
+        {
+          folder: "fld",
+          filename: "file3",
+          type: interfaces.EFileType.Data,
+          mimeType: "text",
+          url: "http://esri.com",
+          fetchedFromSource: true,
+          copiedToDestination: true,
+        },
+      ]);
     });
   });
 });
