@@ -130,7 +130,7 @@ describe("Module `workflowHelpers`", () => {
     });
   });
 
-  describe("updateTemplateDictionaryForWorkforce", () => {
+  describe("updateTemplateDictionaryForWorkflow", () => {
     it("store ids and key values", async () => {
       const sourceId = "src123";
       const newId = "new123";
@@ -299,7 +299,7 @@ describe("Module `workflowHelpers`", () => {
         },
       };
 
-      await workflowHelpers.updateTemplateDictionaryForWorkforce(sourceId, newId, templateDictionary, authentication);
+      await workflowHelpers.updateTemplateDictionaryForWorkflow(sourceId, newId, templateDictionary, authentication);
       expect(templateDictionary).toEqual(expected);
     });
   });
