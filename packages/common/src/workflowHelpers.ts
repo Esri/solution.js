@@ -279,10 +279,7 @@ export function storeKeyWorkflowServiceId(
  *
  * @returns The updated collection of templates
  */
-export function updateWorkflowTemplateIds(
-  templates: IItemTemplate[],
-  templateDictionary: any,
-): IItemTemplate[] {
+export function updateWorkflowTemplateIds(templates: IItemTemplate[], templateDictionary: any): IItemTemplate[] {
   if (templateDictionary.workflows) {
     Object.keys(templateDictionary.workflows).forEach((k) => {
       // the ids retained here are that of the source items

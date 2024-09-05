@@ -24,7 +24,7 @@ import {
   restRemoveFolder,
   restSearchItems,
   SearchQueryBuilder,
-  UserSession
+  UserSession,
 } from "../arcgisRestJS";
 
 // ------------------------------------------------------------------------------------------------------------------ //

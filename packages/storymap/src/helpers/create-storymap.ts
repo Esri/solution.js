@@ -24,7 +24,7 @@ import {
   createItem,
   moveItem,
   restUpdateItem,
-  UserSession
+  UserSession,
 } from "@esri/solution-common";
 
 /**

@@ -25,7 +25,7 @@ import {
   IItemTemplate,
   ISourceFile,
   IZipCopyResults,
-  IZipInfo
+  IZipInfo,
 } from "../interfaces";
 import { chunkArray } from "@esri/hub-common";
 import { copyDataIntoItem } from "./copyDataIntoItem";

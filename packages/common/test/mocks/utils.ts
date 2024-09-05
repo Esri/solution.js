@@ -15,7 +15,14 @@
  */
 
 import * as generalHelpers from "../../src/generalHelpers";
-import { IItemProgressCallback, EItemProgressStatus, ISolutionProgressCallback, ISolutionProgressEvent, ISolutionItem, INoArgFunction } from "../../src/interfaces";
+import {
+  IItemProgressCallback,
+  EItemProgressStatus,
+  ISolutionProgressCallback,
+  ISolutionProgressEvent,
+  ISolutionItem,
+  INoArgFunction,
+} from "../../src/interfaces";
 import { IItem, IGroup, IUser, IGroupAdd, ISearchResult, UserSession } from "../../src/arcgisRestJS";
 
 // -------------------------------------------------------------------------------------------------------------------//
@@ -393,11 +400,7 @@ export function createMockSettings(solutionName = "", folderId = "", access = "p
   return settings;
 }
 
-export function createRuntimeMockUserSession(
-  now?: number,
-  portalUrl?: string,
-  isEnterprise = false,
-): UserSession {
+export function createRuntimeMockUserSession(now?: number, portalUrl?: string, isEnterprise = false): UserSession {
   if (now === undefined) {
     now = Date.now();
   }
@@ -1222,11 +1225,7 @@ export function getCreateServiceResponse(
  * @param itemBeforeNthCall Item to return before trigger reached
  * @return Function that tracks calls and provides items
  */
-export function returnOnNthCall(
-  trigger: number,
-  itemForNthCall: any,
-  itemBeforeNthCall: any,
-): INoArgFunction {
+export function returnOnNthCall(trigger: number, itemForNthCall: any, itemBeforeNthCall: any): INoArgFunction {
   let numCalls = 0;
   return function () {
     return ++numCalls < trigger ? itemBeforeNthCall : itemForNthCall;

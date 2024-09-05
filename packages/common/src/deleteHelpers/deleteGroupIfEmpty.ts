@@ -26,7 +26,7 @@ import {
   getGroupContent,
   restRemoveGroup,
   unprotectGroup,
-  UserSession
+  UserSession,
 } from "../arcgisRestJS";
 
 // ------------------------------------------------------------------------------------------------------------------ //

@@ -25,13 +25,13 @@ import * as generalHelpers from "../src/generalHelpers";
 import {
   IItemTemplate,
   IStatusResponse,
-   IRelatedItems,
-   IAddGroupResponse,
-   IPostProcessArgs,
-   IFeatureServiceProperties,
-   IUpdate,
-   IItemUpdate,
-   IAdditionalGroupSearchOptions
+  IRelatedItems,
+  IAddGroupResponse,
+  IPostProcessArgs,
+  IFeatureServiceProperties,
+  IUpdate,
+  IItemUpdate,
+  IAdditionalGroupSearchOptions,
 } from "../src/interfaces";
 import * as mockItems from "../test/mocks/agolItems";
 import * as portal from "@esri/arcgis-rest-portal";
@@ -655,9 +655,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
         // with known results
         const date = new Date(Date.UTC(2019, 2, 4, 5, 6, 7)); // 0-based month
         const now = date.getTime();
-        const sessionWithMockedTime: UserSession = utils.createRuntimeMockUserSession(
-          utils.setMockDateTime(now),
-        );
+        const sessionWithMockedTime: UserSession = utils.createRuntimeMockUserSession(utils.setMockDateTime(now));
 
         fetchMock
           .post(

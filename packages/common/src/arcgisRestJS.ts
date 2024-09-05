@@ -18,13 +18,7 @@
  * Provides common functions and classes from ArcGIS REST JS.
  */
 
-
-export {
-  ICredential,
-  IUserRequestOptions,
-  IUserSessionOptions,
-  UserSession
-} from "@esri/arcgis-rest-auth";
+export { ICredential, IUserRequestOptions, IUserSessionOptions, UserSession } from "@esri/arcgis-rest-auth";
 export {
   IFeature,
   IQueryRelatedOptions,
@@ -34,7 +28,7 @@ export {
   addFeatures as rest_addFeatures,
   queryRelated,
   applyEdits,
-  queryFeatures
+  queryFeatures,
 } from "@esri/arcgis-rest-feature-layer";
 export {
   IAddFolderResponse,
@@ -108,22 +102,14 @@ export {
   unprotectItem,
   updateGroup as restUpdateGroup,
   updateItem as restUpdateItem,
-  updateItemResource
+  updateItemResource,
 } from "@esri/arcgis-rest-portal";
-export {
-  IRequestOptions,
-  IParams,
-  ArcGISAuthError,
-  encodeFormData,
-  request
-} from "@esri/arcgis-rest-request";
+export { IRequestOptions, IParams, ArcGISAuthError, encodeFormData, request } from "@esri/arcgis-rest-request";
 export {
   ICreateServiceParams,
   ICreateServiceResult,
   IExtent,
   ISpatialReference,
   addToServiceDefinition as svcAdminAddToServiceDefinition,
-  createFeatureService as svcAdminCreateFeatureService
+  createFeatureService as svcAdminCreateFeatureService,
 } from "@esri/arcgis-rest-service-admin";
-
-

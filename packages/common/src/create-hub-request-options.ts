@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-
 import { IHubUserRequestOptions, getHubUrlFromPortal } from "@esri/hub-common";
 
 import { getSelf, restGetUser, UserSession } from "./arcgisRestJS";

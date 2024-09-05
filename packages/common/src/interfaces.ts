@@ -18,15 +18,15 @@
  * Provides common interfaces.
  */
 
-import { IExtent,
+import {
+  IExtent,
   IGetRelatedItemsResponse,
   IGroup,
   IItem,
   IItemRelationshipOptions,
   ISpatialReference,
-  UserSession
+  UserSession,
 } from "./arcgisRestJS";
-
 
 //#region Re-exports -------------------------------------------------------------------------------------------------//
 
@@ -206,7 +206,7 @@ export interface IAdditionalGroupSearchOptions {
 /**
  * Results of fetching and copying a file associated with an item.
  */
-export interface IAssociatedFileCopyResults extends IAssociatedFileInfo, ICopyResults { }
+export interface IAssociatedFileCopyResults extends IAssociatedFileInfo, ICopyResults {}
 
 /**
  *  Information for working with a file associated with an item.
@@ -1632,7 +1632,7 @@ export interface IWebmapDependencies {
 /**
  * Results of sending a zip to an item.
  */
-export interface IZipCopyResults extends IZipInfo, ICopyResults { }
+export interface IZipCopyResults extends IZipInfo, ICopyResults {}
 
 /**
  * Information about a zipped file.

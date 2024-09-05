@@ -30,7 +30,7 @@ import {
   convertIModel,
   createHubRequestOptions,
   generateEmptyCreationResponse,
-  restUpdateItem
+  restUpdateItem,
 } from "@esri/solution-common";
 import { IModel, IModelTemplate, failSafe, getModel, IHubUserRequestOptions, getProp, without } from "@esri/hub-common";
 import { createPageModelFromTemplate, createPage, removePage, convertPageToTemplate } from "@esri/hub-sites";

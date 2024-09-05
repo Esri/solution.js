@@ -33,7 +33,7 @@ import {
   IAssociatedFileCopyResults,
   ISourceFile,
   IZipCopyResults,
-  IZipInfo
+  IZipInfo,
 } from "../../src/interfaces";
 import * as portal from "@esri/arcgis-rest-portal";
 import * as restHelpers from "../../src/restHelpers";
@@ -172,12 +172,8 @@ describe("Module `copyAssociatedFiles`: functions for sending resources to AGO",
       );
       spyOn(restHelpersGet, "getBlobAsFile").and.resolveTo(utils.getSampleImageAsFile());
       const copyZipIntoItemSpy = spyOn(copyZipIntoItem, "copyZipIntoItem").and.returnValues(
-        Promise.resolve(
-          _createIZipCopyResults(true, true, [_createIAssociatedFileInfo(EFileType.Metadata)]),
-        ),
-        Promise.resolve(
-          _createIZipCopyResults(true, true, [_createIAssociatedFileInfo(EFileType.Resource)]),
-        ),
+        Promise.resolve(_createIZipCopyResults(true, true, [_createIAssociatedFileInfo(EFileType.Metadata)])),
+        Promise.resolve(_createIZipCopyResults(true, true, [_createIAssociatedFileInfo(EFileType.Resource)])),
       );
 
       const results: IAssociatedFileCopyResults[] = await copyFilesAsResources(
@@ -525,11 +521,7 @@ describe("Module `copyAssociatedFiles`: functions for sending resources to AGO",
 
   describe("createCopyResults", () => {
     it("should create IAssociatedFileCopyResults object", () => {
-      const results = createCopyResults(
-        _createIAssociatedFileInfo(),
-        true,
-        true,
-      ) as IAssociatedFileCopyResults;
+      const results = createCopyResults(_createIAssociatedFileInfo(), true, true) as IAssociatedFileCopyResults;
       expect(results).toEqual(_createIAssociatedFileCopyResults(true, true));
     });
 

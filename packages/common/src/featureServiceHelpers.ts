@@ -53,7 +53,7 @@ import {
   IQueryRelatedResponse,
   ISpatialReference,
   queryRelated,
-  UserSession
+  UserSession,
 } from "./arcgisRestJS";
 
 //#endregion ------------------------------------------------------------------------------------------------------------//

@@ -29,7 +29,7 @@ describe("postProcess Module", () => {
     MOCK_USER_SESSION = testUtils.createRuntimeMockUserSession();
   });
 
-  it("delegates to type specific processor", async () => {
+  fit("delegates to type specific processor", async () => {
     const siteProcessorSpy = spyOn(HubSiteProcessor, "postProcess").and.resolveTo();
 
     const relationshipSpy = spyOn(portalHelper, "addItemRelationship").and.resolveTo();

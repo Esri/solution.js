@@ -23,9 +23,9 @@ import {
   IItemGeneralized,
   IItemTemplate,
   ISolutionItemData,
-  ISolutionPrecis
+  ISolutionPrecis,
 } from "./interfaces";
-import { IItem, UserSession} from "./arcgisRestJS";
+import { IItem, UserSession } from "./arcgisRestJS";
 import * as reconstructBuildOrderIds from "./deleteHelpers/reconstructBuildOrderIds";
 import * as restHelpersGet from "./restHelpersGet";
 import * as templatization from "./templatization";

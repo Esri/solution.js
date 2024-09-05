@@ -32,7 +32,7 @@ import {
   dedupe,
   generateEmptyCreationResponse,
   getProp,
-  restUpdateItem
+  restUpdateItem,
 } from "@esri/solution-common";
 import {
   createSiteModelFromTemplate,

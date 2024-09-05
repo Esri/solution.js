@@ -29,7 +29,7 @@ import {
   convertIModel,
   generateEmptyCreationResponse,
   getItemData,
-  restRemoveItem
+  restRemoveItem,
 } from "@esri/solution-common";
 import { IModel, failSafe } from "@esri/hub-common";
 import { convertStoryMapToTemplate } from "./helpers/convert-storymap-to-template";

@@ -108,7 +108,7 @@ import {
   svcAdminCreateFeatureService,
   restUpdateItem as portalUpdateItem,
   restUpdateGroup as portalUpdateGroup,
-  UserSession
+  UserSession,
 } from "./arcgisRestJS";
 import { createZip } from "./libConnectors";
 import { getItemBase, getItemDataAsJson } from "./restHelpersGet";

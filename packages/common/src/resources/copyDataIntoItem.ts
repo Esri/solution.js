@@ -14,12 +14,7 @@
  * limitations under the License.
  */
 import { UserSession } from "../arcgisRestJS";
-import {
-  IAssociatedFileCopyResults,
-  IAssociatedFileInfo,
-  IFileMimeTyped,
-  IItemUpdate
-} from "../interfaces";
+import { IAssociatedFileCopyResults, IAssociatedFileInfo, IFileMimeTyped, IItemUpdate } from "../interfaces";
 import { createCopyResults } from "./createCopyResults";
 import { getBlob } from "./get-blob";
 import { updateItem as helpersUpdateItem } from "../restHelpers";

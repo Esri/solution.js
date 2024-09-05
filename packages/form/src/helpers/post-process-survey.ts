@@ -23,7 +23,7 @@ import {
   createInitializedItemTemplate,
   removeFolder,
   IItemUpdate,
-  moveItem
+  moveItem,
 } from "@esri/solution-common";
 
 /**

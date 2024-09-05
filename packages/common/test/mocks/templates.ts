@@ -19,7 +19,14 @@
 import * as generalHelpers from "../../src/generalHelpers";
 import * as getItemTypeAbbrev from "../../src/getItemTypeAbbrev";
 import { IItem } from "../../src/arcgisRestJS";
-import { IItemGeneralized, ICreateItemFromTemplateResponse, IItemTemplate, ISolutionItem, ISourceFile, IAssociatedFileInfo } from "../../src/interfaces";
+import {
+  IItemGeneralized,
+  ICreateItemFromTemplateResponse,
+  IItemTemplate,
+  ISolutionItem,
+  ISourceFile,
+  IAssociatedFileInfo,
+} from "../../src/interfaces";
 import * as utils from "./utils";
 
 // -- Exports -------------------------------------------------------------------------------------------------------//
@@ -1247,11 +1254,7 @@ export function getItemTemplateResources(type: string, itemId: string): string[]
   return resources;
 }
 
-export function getItemTemplateResourcesAsSourceFiles(
-  type: string,
-  itemId: string,
-  hasService = true,
-): ISourceFile[] {
+export function getItemTemplateResourcesAsSourceFiles(type: string, itemId: string, hasService = true): ISourceFile[] {
   let resources: ISourceFile[] = [];
 
   // Supported item types

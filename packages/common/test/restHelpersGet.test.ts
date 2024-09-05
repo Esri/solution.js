@@ -983,10 +983,7 @@ describe("Module `restHelpersGet`: common REST fetch functions shared across pac
         total: 1,
       } as interfaces.IGetRelatedItemsResponseFull);
 
-      const response: IItem[] = await restHelpersGet.getItemsRelatedToASolution(
-        solutionId,
-        MOCK_USER_SESSION,
-      );
+      const response: IItem[] = await restHelpersGet.getItemsRelatedToASolution(solutionId, MOCK_USER_SESSION);
       expect(response).toEqual([mockItems.getAGOLItem("Web Map")]);
       expect(getItemRelatedItemsSpy.calls.count()).toEqual(1);
       expect(getItemRelatedItemsSpy.calls.first().args).toEqual([

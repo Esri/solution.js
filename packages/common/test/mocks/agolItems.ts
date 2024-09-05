@@ -26,7 +26,7 @@ import {
   ICompleteItem,
   IFeatureServiceProperties,
   IGroupCategorySchema,
-  DeployedSolutionFormatVersion
+  DeployedSolutionFormatVersion,
 } from "../../src/interfaces";
 import * as utils from "./utils";
 
@@ -389,10 +389,7 @@ export function getSolutionItem(): any {
   return getAGOLItemFundamentals("Solution");
 }
 
-export function getSolutionPrecis(
-  items: ISolutionItemPrecis[] = [],
-  groups: string[] = [],
-): ISolutionPrecis {
+export function getSolutionPrecis(items: ISolutionItemPrecis[] = [], groups: string[] = []): ISolutionPrecis {
   return {
     id: "sol1234567890",
     title: "An AGOL item",
