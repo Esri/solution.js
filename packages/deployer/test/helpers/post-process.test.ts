@@ -15,7 +15,7 @@
  */
 import { postProcess } from "../../src/helpers/post-process";
 import { HubSiteProcessor } from "@esri/solution-hub-types";
-import * as portalHelper from "@esri/arcgis-rest-portal";
+import * as common from "@esri/solution-common";
 import * as shareHelper from "../../src/helpers/share-templates-to-groups";
 import * as testUtils from "../../../common/test/mocks/utils";
 import { UserSession, IItemTemplate, ICreateItemFromTemplateResponse } from "@esri/solution-common";
@@ -32,7 +32,7 @@ describe("postProcess Module", () => {
   fit("delegates to type specific processor", async () => {
     const siteProcessorSpy = spyOn(HubSiteProcessor, "postProcess").and.resolveTo();
 
-    const relationshipSpy = spyOn(portalHelper, "addItemRelationship").and.resolveTo();
+    const relationshipSpy = spyOn(common, "addItemRelationship").and.resolveTo();
 
     const shareSpy = spyOn(shareHelper, "shareTemplatesToGroups").and.resolveTo();
 
@@ -64,7 +64,7 @@ describe("postProcess Module", () => {
   it("only processes multiple solutions with postProcess true", async () => {
     const siteProcessorSpy = spyOn(HubSiteProcessor, "postProcess").and.resolveTo();
 
-    const relationshipSpy = spyOn(portalHelper, "addItemRelationship").and.resolveTo();
+    const relationshipSpy = spyOn(common, "addItemRelationship").and.resolveTo();
 
     const shareSpy = spyOn(shareHelper, "shareTemplatesToGroups").and.resolveTo();
     const sols = [
@@ -92,7 +92,7 @@ describe("postProcess Module", () => {
   it("only processes solutions with postProcess true", async () => {
     const siteProcessorSpy = spyOn(HubSiteProcessor, "postProcess").and.resolveTo();
 
-    const relationshipSpy = spyOn(portalHelper, "addItemRelationship").and.resolveTo();
+    const relationshipSpy = spyOn(common, "addItemRelationship").and.resolveTo();
 
     const shareSpy = spyOn(shareHelper, "shareTemplatesToGroups").and.resolveTo();
     const sols = [
@@ -128,7 +128,7 @@ describe("postProcess Module", () => {
       },
     ] as ICreateItemFromTemplateResponse[];
 
-    const relationshipSpy = spyOn(portalHelper, "addItemRelationship").and.resolveTo();
+    const relationshipSpy = spyOn(common, "addItemRelationship").and.resolveTo();
 
     const shareSpy = spyOn(shareHelper, "shareTemplatesToGroups").and.resolveTo();
 
