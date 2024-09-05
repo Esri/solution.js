@@ -28,6 +28,7 @@ import {
   IItemProgressCallback,
   IItemTemplate,
   IItemUpdate,
+  TPossibleSourceFile,
   ISolutionItemData,
   ISourceFile,
   isWorkforceProject,
@@ -394,6 +395,10 @@ export function _postProcessIgnoredItems(templates: IItemTemplate[], templateDic
     }
     return invalidDes ? Object.assign(result, template.data) : result;
   }, {});
+
+  // adlib breaks Form data files, so we'll save any in the templates list so that we can restore them
+  const dataFiles = _getDataFilesFromTemplates(templates);
+
   Object.keys(updateDictionary).forEach((k) => {
     removeTemplate(templates, k);
     templates = templates.map((t) => {
@@ -402,7 +407,25 @@ export function _postProcessIgnoredItems(templates: IItemTemplate[], templateDic
     });
   });
 
+  // Restore the data files to the templates
+  _restoreDataFilesToTemplates(templates, dataFiles);
+
   return templates;
+}
+
+/**
+ * Retrieves the Form dataFiles from a list of templates and removes them from the templates.
+ *
+ * @param templates Templates to be scanned and have their `dataFile` property deleted
+ * @returns List of Form dataFiles from the templates, which have their `dataFile` property removed;
+ * the list is in the same order as the templates and has `undefined` for templates that don't have a dataFile
+ */
+export function _getDataFilesFromTemplates(templates: IItemTemplate[]): TPossibleSourceFile[] {
+  return templates.reduce((acc: ISourceFile[], template: IItemTemplate) => {
+    const dataFile = template.dataFile;
+    delete template.dataFile;
+    return acc.concat(dataFile);
+  }, []);
 }
 
 /**
@@ -475,6 +498,22 @@ export function _replaceRemainingIdsInString(ids: string[], str: string): string
     });
   }
   return updatedStr;
+}
+
+/**
+ * Restores the Form dataFiles to the templates.
+ *
+ * @param templates Templates to be updated with the dataFiles; the `dataFile` property is added back to the templates
+ * that originally had it
+ * @param dataFiles List of Form dataFiles to be restored to the templates; the list is in the same order
+ * as the templates and has `undefined` for templates that don't have a dataFile
+ */
+export function _restoreDataFilesToTemplates(templates: IItemTemplate[], dataFiles: TPossibleSourceFile[]): void {
+  templates.forEach((template: IItemTemplate, i: number) => {
+    if (dataFiles[i]) {
+      template.dataFile = dataFiles[i];
+    }
+  });
 }
 
 /**
