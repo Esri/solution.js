@@ -375,7 +375,7 @@ export function _detemplatizeResources(
  * @param destinationAuthentication Credentials for the request to the storage
  * @returns A promise which resolves to a list of the result of the copies
  */
-function _sendZipsSeriallyToItem(
+export function _sendZipsSeriallyToItem(
   zipInfos: IZipInfo[],
   destinationItemId: string,
   destinationAuthentication: UserSession,
