@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 
-import * as interfaces from "../../src/interfaces";
+import { UserSession } from "../../src/arcgisRestJS";
+import { IItemTemplate } from "../../src/interfaces";
 import * as templates from "../mocks/templates";
 import * as utils from "../mocks/utils";
 import * as mockItems from "../mocks/agolItems";
@@ -23,7 +24,7 @@ import * as restHelpersModule from "../../src/restHelpersGet";
 import { getItemResourcesPaths } from "../../src/resources/getItemResourcesPaths";
 import * as staticRelatedItemsMocks from "../mocks/staticRelatedItemsMocks";
 
-let MOCK_USER_SESSION: interfaces.UserSession;
+let MOCK_USER_SESSION: UserSession;
 
 beforeEach(() => {
   MOCK_USER_SESSION = utils.createRuntimeMockUserSession();
@@ -53,7 +54,7 @@ describe("getItemResourcesPaths :: ", () => {
         ],
       });
 
-      const itemTemplate: interfaces.IItemTemplate = templates.getItemTemplateSkeleton();
+      const itemTemplate: IItemTemplate = templates.getItemTemplateSkeleton();
       itemTemplate.itemId = "bc3";
       itemTemplate.type = "Web Mapping Application";
 
@@ -120,7 +121,7 @@ describe("getItemResourcesPaths :: ", () => {
         ],
       });
 
-      const itemTemplate: interfaces.IItemTemplate = templates.getItemTemplateSkeleton();
+      const itemTemplate: IItemTemplate = templates.getItemTemplateSkeleton();
       itemTemplate.itemId = "bc3";
       itemTemplate.type = "Hub Site Application";
 
@@ -200,7 +201,7 @@ describe("getItemResourcesPaths :: ", () => {
         ],
       });
 
-      const itemTemplate: interfaces.IItemTemplate = templates.getItemTemplateSkeleton();
+      const itemTemplate: IItemTemplate = templates.getItemTemplateSkeleton();
       itemTemplate.itemId = "bc3";
       itemTemplate.type = "StoryMap";
 
@@ -261,7 +262,7 @@ describe("getItemResourcesPaths :: ", () => {
         ],
       });
 
-      const itemTemplate: interfaces.IItemTemplate = templates.getItemTemplateSkeleton();
+      const itemTemplate: IItemTemplate = templates.getItemTemplateSkeleton();
       itemTemplate.itemId = "bc3";
       itemTemplate.type = "Web Experience";
 
@@ -300,7 +301,7 @@ describe("getItemResourcesPaths :: ", () => {
 
   describe("getItemResourcesPaths, template version 0", () => {
     it("can get item resources paths for quick capture project", async () => {
-      const itemTemplate: interfaces.IItemTemplate = templates.getItemTemplateSkeleton();
+      const itemTemplate: IItemTemplate = templates.getItemTemplateSkeleton();
       itemTemplate.item = mockItems.getAGOLItem("QuickCapture Project");
       itemTemplate.itemId = itemTemplate.item.id;
       const solutionItemId = "ee67658b2a98450cba051fd001463df0";
@@ -362,7 +363,7 @@ describe("getItemResourcesPaths :: ", () => {
     });
 
     it("can get item resources paths for web map", async () => {
-      const itemTemplate: interfaces.IItemTemplate = templates.getItemTemplateSkeleton();
+      const itemTemplate: IItemTemplate = templates.getItemTemplateSkeleton();
       itemTemplate.item = mockItems.getAGOLItem("Web Map");
       itemTemplate.itemId = itemTemplate.item.id;
       itemTemplate.item.thumbnail = "thumbnail/banner.png";
@@ -447,7 +448,7 @@ describe("getItemResourcesPaths :: ", () => {
     });
 
     it("can get item resources paths for a form", async () => {
-      const itemTemplate: interfaces.IItemTemplate = templates.getItemTemplate("Form");
+      const itemTemplate: IItemTemplate = templates.getItemTemplate("Form");
       itemTemplate.item.thumbnail = "thumbnail/banner.png";
       const solutionItemId = "ee67658b2a98450cba051fd001463df0";
 
@@ -514,7 +515,7 @@ describe("getItemResourcesPaths :: ", () => {
 
   describe("getItemResourcesPaths, template version 1", () => {
     it("can get item resources paths for quick capture project", async () => {
-      const itemTemplate: interfaces.IItemTemplate = templates.getItemTemplateSkeleton();
+      const itemTemplate: IItemTemplate = templates.getItemTemplateSkeleton();
       itemTemplate.item = mockItems.getAGOLItem("QuickCapture Project");
       itemTemplate.itemId = itemTemplate.item.id;
       const solutionItemId = "ee67658b2a98450cba051fd001463df0";
@@ -576,7 +577,7 @@ describe("getItemResourcesPaths :: ", () => {
     });
 
     it("can get item resources paths for web map", async () => {
-      const itemTemplate: interfaces.IItemTemplate = templates.getItemTemplateSkeleton();
+      const itemTemplate: IItemTemplate = templates.getItemTemplateSkeleton();
       itemTemplate.item = mockItems.getAGOLItem("Web Map");
       itemTemplate.itemId = itemTemplate.item.id;
       itemTemplate.item.thumbnail = "thumbnail/banner.png";
@@ -661,7 +662,7 @@ describe("getItemResourcesPaths :: ", () => {
     });
 
     it("can get item resources paths for a form", async () => {
-      const itemTemplate: interfaces.IItemTemplate = templates.getItemTemplate("Form");
+      const itemTemplate: IItemTemplate = templates.getItemTemplate("Form");
       itemTemplate.item.thumbnail = "thumbnail/banner.png";
       const solutionItemId = "ee67658b2a98450cba051fd001463df0";
 

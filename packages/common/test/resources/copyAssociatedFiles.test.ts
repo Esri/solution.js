@@ -25,7 +25,16 @@ import * as copyResourceIntoZip from "../../src/resources/copyResourceIntoZip";
 import * as copyZipIntoItem from "../../src/resources/copyZipIntoItem";
 import * as generalHelpers from "../../src/generalHelpers";
 import * as getBlob from "../../src/resources/get-blob";
-import * as interfaces from "../../src/interfaces";
+import { UserSession } from "../../src/arcgisRestJS";
+import {
+  EFileType,
+  SFileType,
+  IAssociatedFileInfo,
+  IAssociatedFileCopyResults,
+  ISourceFile,
+  IZipCopyResults,
+  IZipInfo
+} from "../../src/interfaces";
 import * as portal from "@esri/arcgis-rest-portal";
 import * as restHelpers from "../../src/restHelpers";
 import * as restHelpersGet from "../../src/restHelpersGet";
@@ -43,7 +52,7 @@ import * as utils from "../mocks/utils";
 
 // ------------------------------------------------------------------------------------------------------------------ //
 
-let MOCK_USER_SESSION: interfaces.UserSession;
+let MOCK_USER_SESSION: UserSession;
 
 beforeEach(() => {
   MOCK_USER_SESSION = utils.createRuntimeMockUserSession();
@@ -74,7 +83,7 @@ describe("Module `copyAssociatedFiles`: functions for sending resources to AGO",
 
   describe("copyAssociatedFiles", () => {
     it("handles empty list of files", async () => {
-      const fileInfos: interfaces.IAssociatedFileInfo[] = [];
+      const fileInfos: IAssociatedFileInfo[] = [];
 
       const copyDataIntoItemSpy = spyOn(copyDataIntoItem, "copyDataIntoItem").and.rejectWith(mockItems.get400Failure());
       const copyMetadataIntoItemSpy = spyOn(copyMetadataIntoItem, "copyMetadataIntoItem").and.rejectWith(
@@ -83,14 +92,14 @@ describe("Module `copyAssociatedFiles`: functions for sending resources to AGO",
       const copyResourceIntoZipSpy = spyOn(copyResourceIntoZip, "copyResourceIntoZip").and.returnValue({} as any);
       const copyZipIntoItemSpy = spyOn(copyZipIntoItem, "copyZipIntoItem").and.rejectWith(mockItems.get400Failure());
 
-      const results: interfaces.IAssociatedFileCopyResults[] = await copyAssociatedFilesByType(
+      const results: IAssociatedFileCopyResults[] = await copyAssociatedFilesByType(
         fileInfos,
         MOCK_USER_SESSION,
         "sln1234567890",
         "itm1234567890",
         MOCK_USER_SESSION,
       );
-      expect(results).toEqual([] as interfaces.IAssociatedFileCopyResults[]);
+      expect(results).toEqual([] as IAssociatedFileCopyResults[]);
 
       expect(copyDataIntoItemSpy).not.toHaveBeenCalled();
       expect(copyMetadataIntoItemSpy).not.toHaveBeenCalled();
@@ -99,7 +108,7 @@ describe("Module `copyAssociatedFiles`: functions for sending resources to AGO",
     });
 
     it("copies ignoring file type", async () => {
-      const files: interfaces.ISourceFile[] = [
+      const files: ISourceFile[] = [
         {
           itemId: "itm1234567890",
           folder: "storageFolder",
@@ -121,20 +130,20 @@ describe("Module `copyAssociatedFiles`: functions for sending resources to AGO",
       spyOn(restHelpersGet, "getBlobAsFile").and.resolveTo(utils.getSampleImageAsFile());
       const copyZipIntoItemSpy = spyOn(copyZipIntoItem, "copyZipIntoItem").and.resolveTo(
         _createIZipCopyResults(true, true, [
-          _createIAssociatedFileInfo(interfaces.EFileType.Metadata),
-          _createIAssociatedFileInfo(interfaces.EFileType.Resource),
+          _createIAssociatedFileInfo(EFileType.Metadata),
+          _createIAssociatedFileInfo(EFileType.Resource),
         ]),
       );
 
-      const results: interfaces.IAssociatedFileCopyResults[] = await copyFilesAsResources(
+      const results: IAssociatedFileCopyResults[] = await copyFilesAsResources(
         files,
         "itm1234567890",
         MOCK_USER_SESSION,
       );
       expect(results).toEqual([
-        _createIAssociatedFileCopyResults(true, true, interfaces.EFileType.Metadata),
-        _createIAssociatedFileCopyResults(true, true, interfaces.EFileType.Resource),
-      ] as interfaces.IAssociatedFileCopyResults[]);
+        _createIAssociatedFileCopyResults(true, true, EFileType.Metadata),
+        _createIAssociatedFileCopyResults(true, true, EFileType.Resource),
+      ] as IAssociatedFileCopyResults[]);
 
       expect(copyDataIntoItemSpy).not.toHaveBeenCalled();
       expect(copyMetadataIntoItemSpy).not.toHaveBeenCalled();
@@ -142,7 +151,7 @@ describe("Module `copyAssociatedFiles`: functions for sending resources to AGO",
     });
 
     it("copies ignoring file type specifying number of files per zip", async () => {
-      const files: interfaces.ISourceFile[] = [
+      const files: ISourceFile[] = [
         {
           itemId: "itm1234567890",
           folder: "storageFolder",
@@ -164,23 +173,23 @@ describe("Module `copyAssociatedFiles`: functions for sending resources to AGO",
       spyOn(restHelpersGet, "getBlobAsFile").and.resolveTo(utils.getSampleImageAsFile());
       const copyZipIntoItemSpy = spyOn(copyZipIntoItem, "copyZipIntoItem").and.returnValues(
         Promise.resolve(
-          _createIZipCopyResults(true, true, [_createIAssociatedFileInfo(interfaces.EFileType.Metadata)]),
+          _createIZipCopyResults(true, true, [_createIAssociatedFileInfo(EFileType.Metadata)]),
         ),
         Promise.resolve(
-          _createIZipCopyResults(true, true, [_createIAssociatedFileInfo(interfaces.EFileType.Resource)]),
+          _createIZipCopyResults(true, true, [_createIAssociatedFileInfo(EFileType.Resource)]),
         ),
       );
 
-      const results: interfaces.IAssociatedFileCopyResults[] = await copyFilesAsResources(
+      const results: IAssociatedFileCopyResults[] = await copyFilesAsResources(
         files,
         "itm1234567890",
         MOCK_USER_SESSION,
         1,
       );
       expect(results).toEqual([
-        _createIAssociatedFileCopyResults(true, true, interfaces.EFileType.Metadata),
-        _createIAssociatedFileCopyResults(true, true, interfaces.EFileType.Resource),
-      ] as interfaces.IAssociatedFileCopyResults[]);
+        _createIAssociatedFileCopyResults(true, true, EFileType.Metadata),
+        _createIAssociatedFileCopyResults(true, true, EFileType.Resource),
+      ] as IAssociatedFileCopyResults[]);
 
       expect(copyDataIntoItemSpy).not.toHaveBeenCalled();
       expect(copyMetadataIntoItemSpy).not.toHaveBeenCalled();
@@ -188,29 +197,29 @@ describe("Module `copyAssociatedFiles`: functions for sending resources to AGO",
     });
 
     it("copies based on file type", async () => {
-      const fileInfos: interfaces.IAssociatedFileInfo[] = [
-        _createIAssociatedFileInfo(interfaces.EFileType.Data),
-        _createIAssociatedFileInfo(interfaces.EFileType.Info),
-        _createIAssociatedFileInfo(interfaces.EFileType.Metadata),
-        _createIAssociatedFileInfo(interfaces.EFileType.Resource),
-        _createIAssociatedFileInfo(interfaces.EFileType.Thumbnail),
+      const fileInfos: IAssociatedFileInfo[] = [
+        _createIAssociatedFileInfo(EFileType.Data),
+        _createIAssociatedFileInfo(EFileType.Info),
+        _createIAssociatedFileInfo(EFileType.Metadata),
+        _createIAssociatedFileInfo(EFileType.Resource),
+        _createIAssociatedFileInfo(EFileType.Thumbnail),
       ];
 
       const copyDataIntoItemSpy = spyOn(copyDataIntoItem, "copyDataIntoItem").and.resolveTo(
-        _createIAssociatedFileCopyResults(true, true, interfaces.EFileType.Data),
+        _createIAssociatedFileCopyResults(true, true, EFileType.Data),
       );
       const copyMetadataIntoItemSpy = spyOn(copyMetadataIntoItem, "copyMetadataIntoItem").and.resolveTo(
-        _createIAssociatedFileCopyResults(true, true, interfaces.EFileType.Metadata),
+        _createIAssociatedFileCopyResults(true, true, EFileType.Metadata),
       );
       spyOn(restHelpersGet, "getBlobAsFile").and.resolveTo(utils.getSampleImageAsFile());
       const copyZipIntoItemSpy = spyOn(copyZipIntoItem, "copyZipIntoItem").and.resolveTo(
         _createIZipCopyResults(true, true, [
-          _createIAssociatedFileInfo(interfaces.EFileType.Info),
-          _createIAssociatedFileInfo(interfaces.EFileType.Resource),
+          _createIAssociatedFileInfo(EFileType.Info),
+          _createIAssociatedFileInfo(EFileType.Resource),
         ]),
       );
 
-      const results: interfaces.IAssociatedFileCopyResults[] = await copyAssociatedFilesByType(
+      const results: IAssociatedFileCopyResults[] = await copyAssociatedFilesByType(
         fileInfos,
         MOCK_USER_SESSION,
         "sln1234567890",
@@ -218,11 +227,11 @@ describe("Module `copyAssociatedFiles`: functions for sending resources to AGO",
         MOCK_USER_SESSION,
       );
       expect(results).toEqual([
-        _createIAssociatedFileCopyResults(true, true, interfaces.EFileType.Data),
-        _createIAssociatedFileCopyResults(true, true, interfaces.EFileType.Metadata),
-        _createIAssociatedFileCopyResults(true, true, interfaces.EFileType.Info),
-        _createIAssociatedFileCopyResults(true, true, interfaces.EFileType.Resource),
-      ] as interfaces.IAssociatedFileCopyResults[]);
+        _createIAssociatedFileCopyResults(true, true, EFileType.Data),
+        _createIAssociatedFileCopyResults(true, true, EFileType.Metadata),
+        _createIAssociatedFileCopyResults(true, true, EFileType.Info),
+        _createIAssociatedFileCopyResults(true, true, EFileType.Resource),
+      ] as IAssociatedFileCopyResults[]);
 
       expect(copyDataIntoItemSpy).toHaveBeenCalled();
       expect(copyMetadataIntoItemSpy).toHaveBeenCalled();
@@ -230,7 +239,7 @@ describe("Module `copyAssociatedFiles`: functions for sending resources to AGO",
     });
 
     it("fails to get a resource", async () => {
-      const fileInfos: interfaces.IAssociatedFileInfo[] = [_createIAssociatedFileInfo(interfaces.EFileType.Resource)];
+      const fileInfos: IAssociatedFileInfo[] = [_createIAssociatedFileInfo(EFileType.Resource)];
 
       const copyDataIntoItemSpy = spyOn(copyDataIntoItem, "copyDataIntoItem").and.rejectWith(mockItems.get400Failure());
       const copyMetadataIntoItemSpy = spyOn(copyMetadataIntoItem, "copyMetadataIntoItem").and.rejectWith(
@@ -239,7 +248,7 @@ describe("Module `copyAssociatedFiles`: functions for sending resources to AGO",
       spyOn(restHelpersGet, "getBlobAsFile").and.rejectWith(mockItems.get400Failure());
       const copyZipIntoItemSpy = spyOn(copyZipIntoItem, "copyZipIntoItem").and.rejectWith(mockItems.get400Failure());
 
-      const results: interfaces.IAssociatedFileCopyResults[] = await copyAssociatedFilesByType(
+      const results: IAssociatedFileCopyResults[] = await copyAssociatedFilesByType(
         fileInfos,
         MOCK_USER_SESSION,
         "sln1234567890",
@@ -256,7 +265,7 @@ describe("Module `copyAssociatedFiles`: functions for sending resources to AGO",
           fetchedFromSource: false,
           copiedToDestination: undefined,
         },
-      ] as interfaces.IAssociatedFileCopyResults[]);
+      ] as IAssociatedFileCopyResults[]);
 
       expect(copyDataIntoItemSpy).not.toHaveBeenCalled();
       expect(copyMetadataIntoItemSpy).not.toHaveBeenCalled();
@@ -270,7 +279,7 @@ describe("Module `copyAssociatedFiles`: functions for sending resources to AGO",
       const getBlobSpy = spyOn(getBlob, "getBlob").and.resolveTo(utils.getSampleImageAsBlob());
       const updateItemSpy = spyOn(restHelpers, "updateItem").and.resolveTo(mockItems.get200Success());
 
-      const results: interfaces.IAssociatedFileCopyResults = await copyDataIntoItem.copyDataIntoItem(
+      const results: IAssociatedFileCopyResults = await copyDataIntoItem.copyDataIntoItem(
         fileInfo,
         MOCK_USER_SESSION,
         "itm1234567890",
@@ -286,7 +295,7 @@ describe("Module `copyAssociatedFiles`: functions for sending resources to AGO",
       const getBlobSpy = spyOn(getBlob, "getBlob").and.resolveTo(utils.getSampleImageAsBlob());
       const updateItemSpy = spyOn(restHelpers, "updateItem").and.rejectWith(mockItems.get400Failure());
 
-      const results: interfaces.IAssociatedFileCopyResults = await copyDataIntoItem.copyDataIntoItem(
+      const results: IAssociatedFileCopyResults = await copyDataIntoItem.copyDataIntoItem(
         fileInfo,
         MOCK_USER_SESSION,
         "itm1234567890",
@@ -302,7 +311,7 @@ describe("Module `copyAssociatedFiles`: functions for sending resources to AGO",
       const getBlobSpy = spyOn(getBlob, "getBlob").and.rejectWith(mockItems.get400Failure());
       const updateItemSpy = spyOn(restHelpers, "updateItem").and.rejectWith(mockItems.get400Failure());
 
-      const results: interfaces.IAssociatedFileCopyResults = await copyDataIntoItem.copyDataIntoItem(
+      const results: IAssociatedFileCopyResults = await copyDataIntoItem.copyDataIntoItem(
         fileInfo,
         MOCK_USER_SESSION,
         "itm1234567890",
@@ -322,7 +331,7 @@ describe("Module `copyAssociatedFiles`: functions for sending resources to AGO",
         mockItems.get200Success(),
       );
 
-      const results: interfaces.IAssociatedFileCopyResults = await copyMetadataIntoItem.copyMetadataIntoItem(
+      const results: IAssociatedFileCopyResults = await copyMetadataIntoItem.copyMetadataIntoItem(
         fileInfo,
         MOCK_USER_SESSION,
         "itm1234567890",
@@ -340,7 +349,7 @@ describe("Module `copyAssociatedFiles`: functions for sending resources to AGO",
         mockItems.get400Failure(),
       );
 
-      const results: interfaces.IAssociatedFileCopyResults = await copyMetadataIntoItem.copyMetadataIntoItem(
+      const results: IAssociatedFileCopyResults = await copyMetadataIntoItem.copyMetadataIntoItem(
         fileInfo,
         MOCK_USER_SESSION,
         "itm1234567890",
@@ -358,7 +367,7 @@ describe("Module `copyAssociatedFiles`: functions for sending resources to AGO",
         mockItems.get400Failure(),
       );
 
-      const results: interfaces.IAssociatedFileCopyResults = await copyMetadataIntoItem.copyMetadataIntoItem(
+      const results: IAssociatedFileCopyResults = await copyMetadataIntoItem.copyMetadataIntoItem(
         fileInfo,
         MOCK_USER_SESSION,
         "itm1234567890",
@@ -376,7 +385,7 @@ describe("Module `copyAssociatedFiles`: functions for sending resources to AGO",
         mockItems.get400Failure(),
       );
 
-      const results: interfaces.IAssociatedFileCopyResults = await copyMetadataIntoItem.copyMetadataIntoItem(
+      const results: IAssociatedFileCopyResults = await copyMetadataIntoItem.copyMetadataIntoItem(
         fileInfo,
         MOCK_USER_SESSION,
         "itm1234567890",
@@ -398,7 +407,7 @@ describe("Module `copyAssociatedFiles`: functions for sending resources to AGO",
       };
       const zipInfo = _createIZipInfo();
 
-      const results: interfaces.IAssociatedFileCopyResults = copyResourceIntoZip.copyResourceIntoZip(file, zipInfo);
+      const results: IAssociatedFileCopyResults = copyResourceIntoZip.copyResourceIntoZip(file, zipInfo);
       expect(results)
         .withContext("results")
         .toEqual({
@@ -408,7 +417,7 @@ describe("Module `copyAssociatedFiles`: functions for sending resources to AGO",
           file: utils.getSampleImageAsFile("storageFilename.png"),
           fetchedFromSource: true,
           copiedToDestination: undefined,
-        } as interfaces.IAssociatedFileCopyResults);
+        } as IAssociatedFileCopyResults);
       expect(Object.keys(zipInfo.zip.files).length).withContext("zip object count").toEqual(1); // file
       expect(zipInfo.zip.files["storageFilename.png"]).withContext("zip object").toBeDefined();
       expect(zipInfo.filelist.length).withContext("zip file count").toEqual(1); // file
@@ -420,7 +429,7 @@ describe("Module `copyAssociatedFiles`: functions for sending resources to AGO",
       const zipInfo = _createIZipInfo();
       const getBlobAsFileSpy = spyOn(restHelpersGet, "getBlobAsFile").and.resolveTo(utils.getSampleImageAsFile());
 
-      const results: interfaces.IAssociatedFileCopyResults = await copyResourceIntoZip.copyResourceIntoZipFromInfo(
+      const results: IAssociatedFileCopyResults = await copyResourceIntoZip.copyResourceIntoZipFromInfo(
         fileInfo,
         MOCK_USER_SESSION,
         zipInfo,
@@ -434,7 +443,7 @@ describe("Module `copyAssociatedFiles`: functions for sending resources to AGO",
       expect(zipInfo.filelist[0]).toEqual({
         folder: "fld",
         filename: "Data",
-        type: interfaces.EFileType.Data,
+        type: EFileType.Data,
         mimeType: "text",
         url: "http://esri.com",
       });
@@ -445,7 +454,7 @@ describe("Module `copyAssociatedFiles`: functions for sending resources to AGO",
       const zipInfo = _createIZipInfo();
       const getBlobAsFileSpy = spyOn(restHelpersGet, "getBlobAsFile").and.resolveTo(utils.getSampleImageAsFile());
 
-      const results: interfaces.IAssociatedFileCopyResults = await copyResourceIntoZip.copyResourceIntoZipFromInfo(
+      const results: IAssociatedFileCopyResults = await copyResourceIntoZip.copyResourceIntoZipFromInfo(
         fileInfo,
         MOCK_USER_SESSION,
         zipInfo,
@@ -459,7 +468,7 @@ describe("Module `copyAssociatedFiles`: functions for sending resources to AGO",
       expect(zipInfo.filelist[0]).toEqual({
         folder: "fld",
         filename: "Data",
-        type: interfaces.EFileType.Data,
+        type: EFileType.Data,
         mimeType: "text",
         file: utils.getSampleImageAsFile(),
       });
@@ -470,7 +479,7 @@ describe("Module `copyAssociatedFiles`: functions for sending resources to AGO",
       const zipInfo = _createIZipInfo();
       const getBlobAsFileSpy = spyOn(restHelpersGet, "getBlobAsFile").and.rejectWith(mockItems.get400Failure());
 
-      const results: interfaces.IAssociatedFileCopyResults = await copyResourceIntoZip.copyResourceIntoZipFromInfo(
+      const results: IAssociatedFileCopyResults = await copyResourceIntoZip.copyResourceIntoZipFromInfo(
         fileInfo,
         MOCK_USER_SESSION,
         zipInfo,
@@ -486,7 +495,7 @@ describe("Module `copyAssociatedFiles`: functions for sending resources to AGO",
     it("should handle success sending to item", async () => {
       const addItemResourceSpy = spyOn(portal, "addItemResource").and.resolveTo(mockItems.get200Success());
 
-      const results: interfaces.IZipCopyResults = await copyZipIntoItem.copyZipIntoItem(
+      const results: IZipCopyResults = await copyZipIntoItem.copyZipIntoItem(
         _createIZipInfo(),
         "itm1234567890",
         MOCK_USER_SESSION,
@@ -501,7 +510,7 @@ describe("Module `copyAssociatedFiles`: functions for sending resources to AGO",
     it("should handle error sending to item", async () => {
       const addItemResourceSpy = spyOn(portal, "addItemResource").and.rejectWith(mockItems.get400Failure());
 
-      const results: interfaces.IZipCopyResults = await copyZipIntoItem.copyZipIntoItem(
+      const results: IZipCopyResults = await copyZipIntoItem.copyZipIntoItem(
         _createIZipInfo(),
         "itm1234567890",
         MOCK_USER_SESSION,
@@ -520,12 +529,12 @@ describe("Module `copyAssociatedFiles`: functions for sending resources to AGO",
         _createIAssociatedFileInfo(),
         true,
         true,
-      ) as interfaces.IAssociatedFileCopyResults;
+      ) as IAssociatedFileCopyResults;
       expect(results).toEqual(_createIAssociatedFileCopyResults(true, true));
     });
 
     it("should create IZipCopyResults object", () => {
-      const results = createCopyResults(_createIZipInfo(), true, false) as interfaces.IZipCopyResults;
+      const results = createCopyResults(_createIZipInfo(), true, false) as IZipCopyResults;
       delete (results.zip as any).clone; // don't compare clone property in zip object
       const zipInfoResults = _createIZipCopyResults(true, false);
       delete (zipInfoResults.zip as any).clone; // don't compare clone property in zip object
@@ -536,23 +545,23 @@ describe("Module `copyAssociatedFiles`: functions for sending resources to AGO",
       const fileInfo = {
         folder: "fld",
         filename: "name",
-        type: interfaces.EFileType.Data,
-      } as interfaces.IAssociatedFileInfo;
-      const results = createCopyResults(fileInfo, true) as interfaces.IAssociatedFileCopyResults;
+        type: EFileType.Data,
+      } as IAssociatedFileInfo;
+      const results = createCopyResults(fileInfo, true) as IAssociatedFileCopyResults;
       expect(results).toEqual({
         folder: "fld",
         filename: "name",
-        type: interfaces.EFileType.Data,
+        type: EFileType.Data,
         fetchedFromSource: true,
         copiedToDestination: undefined,
-      } as interfaces.IAssociatedFileCopyResults);
+      } as IAssociatedFileCopyResults);
     });
   });
 });
 
 describe("_detemplatizeResources", () => {
   it("handles item types that don't need resource templatization", async () => {
-    const fileInfos: interfaces.IAssociatedFileInfo[] = [
+    const fileInfos: IAssociatedFileInfo[] = [
       {
         folder: "",
         filename: "",
@@ -573,7 +582,7 @@ describe("_detemplatizeResources", () => {
   });
 
   it("should create IAssociatedFileCopyResults object", async () => {
-    const fileInfos: interfaces.IAssociatedFileInfo[] =
+    const fileInfos: IAssociatedFileInfo[] =
       templates.getItemTemplateResourcesAsTemplatizedFiles("Vector Tile Service");
 
     const getBlobAsFileSpy = spyOn(restHelpersGet, "getBlobAsFile").and.callFake(
@@ -582,7 +591,7 @@ describe("_detemplatizeResources", () => {
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
         _filename: string,
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        _auth: interfaces.UserSession,
+        _auth: UserSession,
       ): Promise<File> => {
         switch (url) {
           case "https://www.arcgis.com/sharing/rest/content/items/sln1234567890/resources/vts1234567890/info/root.json":
@@ -605,7 +614,7 @@ describe("_detemplatizeResources", () => {
   });
 
   it("should create IAssociatedFileCopyResults object for Geoprocessing Service", async () => {
-    const fileInfos: interfaces.IAssociatedFileInfo[] =
+    const fileInfos: IAssociatedFileInfo[] =
       templates.getItemTemplateResourcesAsTemplatizedFiles("Geoprocessing Service");
 
     const getBlobAsFileSpy = spyOn(restHelpersGet, "getBlobAsFile").and.callFake(
@@ -614,7 +623,7 @@ describe("_detemplatizeResources", () => {
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
         _filename: string,
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        _auth: interfaces.UserSession,
+        _auth: UserSession,
       ): Promise<File> => {
         switch (url) {
           case "https://www.arcgis.com/sharing/rest/content/items/sln1234567890/resources/gs1234567890/info/webtoolDefinition.json":
@@ -648,73 +657,73 @@ describe("_detemplatizeResources", () => {
 function _createIAssociatedFileCopyResults(
   fetchedFromSource?: boolean,
   copiedToDestination?: boolean,
-  type = interfaces.EFileType.Data,
-): interfaces.IAssociatedFileCopyResults {
+  type = EFileType.Data,
+): IAssociatedFileCopyResults {
   return {
     folder: "fld",
-    filename: interfaces.SFileType[type],
+    filename: SFileType[type],
     type,
     mimeType: "text",
     url: "http://esri.com",
     fetchedFromSource,
     copiedToDestination,
-  } as interfaces.IAssociatedFileCopyResults;
+  } as IAssociatedFileCopyResults;
 }
 
 function _createIAssociatedFileCopyResultsAsFile(
   fetchedFromSource?: boolean,
   copiedToDestination?: boolean,
-  type = interfaces.EFileType.Data,
-): interfaces.IAssociatedFileCopyResults {
+  type = EFileType.Data,
+): IAssociatedFileCopyResults {
   return {
     folder: "fld",
-    filename: interfaces.SFileType[type],
+    filename: SFileType[type],
     type,
     mimeType: "text",
     file: utils.getSampleImageAsFile(),
     fetchedFromSource,
     copiedToDestination,
-  } as interfaces.IAssociatedFileCopyResults;
+  } as IAssociatedFileCopyResults;
 }
 
-function _createIAssociatedFileInfo(type = interfaces.EFileType.Data): interfaces.IAssociatedFileInfo {
+function _createIAssociatedFileInfo(type = EFileType.Data): IAssociatedFileInfo {
   return {
     folder: "fld",
-    filename: interfaces.SFileType[type],
+    filename: SFileType[type],
     type,
     mimeType: "text",
     url: "http://esri.com",
-  } as interfaces.IAssociatedFileInfo;
+  } as IAssociatedFileInfo;
 }
 
-function _createIAssociatedFileInfoAsFile(type = interfaces.EFileType.Data): interfaces.IAssociatedFileInfo {
+function _createIAssociatedFileInfoAsFile(type = EFileType.Data): IAssociatedFileInfo {
   return {
     folder: "fld",
-    filename: interfaces.SFileType[type],
+    filename: SFileType[type],
     type,
     mimeType: "text",
     file: utils.getSampleImageAsFile(),
-  } as interfaces.IAssociatedFileInfo;
+  } as IAssociatedFileInfo;
 }
 
 function _createIZipCopyResults(
   fetchedFromSource?: boolean,
   copiedToDestination?: boolean,
-  filelist: interfaces.IAssociatedFileInfo[] = [],
-): interfaces.IZipCopyResults {
+  filelist: IAssociatedFileInfo[] = [],
+): IZipCopyResults {
   return {
     filename: "name",
     zip: new JSZip(),
     filelist,
     fetchedFromSource,
     copiedToDestination,
-  } as interfaces.IZipCopyResults;
+  } as IZipCopyResults;
 }
 
-function _createIZipInfo(): interfaces.IZipInfo {
+function _createIZipInfo(): IZipInfo {
   return {
     filename: "name",
     zip: new JSZip(),
-    filelist: [] as interfaces.IAssociatedFileInfo[],
-  } as interfaces.IZipInfo;
+    filelist: [] as IAssociatedFileInfo[],
+  } as IZipInfo;
 }

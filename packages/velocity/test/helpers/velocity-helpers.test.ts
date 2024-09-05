@@ -23,12 +23,13 @@ import {
   _validateOutputs,
   getUniqueTitle,
 } from "../../src/helpers/velocity-helpers";
-import * as interfaces from "../../../common/src/interfaces";
+import { UserSession } from "../../../common/src/arcgisRestJS";
+import { IItemTemplate } from "../../../common/src/interfaces";
 const fetchMock = require("fetch-mock");
 import * as templates from "../../../common/test/mocks/templates";
 import * as utils from "../../../common/test/mocks/utils";
 
-let MOCK_USER_SESSION: interfaces.UserSession;
+let MOCK_USER_SESSION: UserSession;
 
 beforeEach(() => {
   MOCK_USER_SESSION = utils.createRuntimeMockUserSession();
@@ -60,7 +61,7 @@ describe("postVelocityData", () => {
 
     const type: string = "Real Time Analytic";
     const id: string = "aaabbbccc123";
-    const template: interfaces.IItemTemplate = templates.getItemTemplate(type, []);
+    const template: IItemTemplate = templates.getItemTemplate(type, []);
     const data: any = template.data;
     delete data.outputs;
     const feeds: any = data.feeds;
@@ -101,7 +102,7 @@ describe("postVelocityData", () => {
     const realtimeUrl: string = "https://us-iot.arcgis.com/usadvanced00/aaaatfmrv9d1divn/iot/analytics/realtime";
     const type: string = "Real Time Analytic";
     const id: string = "aaabbbccc123";
-    const template: interfaces.IItemTemplate = templates.getItemTemplate(type, []);
+    const template: IItemTemplate = templates.getItemTemplate(type, []);
     const data: any = template.data;
     delete data.outputs;
     delete data.feeds[0].id;
@@ -139,7 +140,7 @@ describe("postVelocityData", () => {
     const realtimeUrl: string = "https://us-iot.arcgis.com/usadvanced00/aaaatfmrv9d1divn/iot/analytics/realtime";
     const type: string = "Real Time Analytic";
     const id: string = "aaabbbccc123";
-    const template: interfaces.IItemTemplate = templates.getItemTemplate(type, []);
+    const template: IItemTemplate = templates.getItemTemplate(type, []);
     const data: any = template.data;
     const outputs = data.outputs;
     delete data.outputs;
@@ -224,7 +225,7 @@ describe("postVelocityData", () => {
     const realtimeUrl: string = "https://us-iot.arcgis.com/usadvanced00/aaaatfmrv9d1divn/iot/analytics/realtime";
     const type: string = "Real Time Analytic";
     const id: string = "aaabbbccc123";
-    const template: interfaces.IItemTemplate = templates.getItemTemplate(type, []);
+    const template: IItemTemplate = templates.getItemTemplate(type, []);
     const data: any = template.data;
     //const outputs = data.outputs;
     delete data.outputs;
