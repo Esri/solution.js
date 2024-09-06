@@ -18,7 +18,12 @@
  * Provides common functions and classes from ArcGIS REST JS.
  */
 
-export { ICredential, IUserRequestOptions, IUserSessionOptions, UserSession } from "@esri/arcgis-rest-auth";
+export {
+  ICredential,
+  IUserRequestOptions,
+  IUserSessionOptions,
+  UserSession
+} from "@esri/arcgis-rest-auth";
 export {
   IFeature,
   IQueryRelatedOptions,
@@ -104,7 +109,13 @@ export {
   updateItem as restUpdateItem,
   updateItemResource,
 } from "@esri/arcgis-rest-portal";
-export { IRequestOptions, IParams, ArcGISAuthError, encodeFormData, request } from "@esri/arcgis-rest-request";
+export {
+  IRequestOptions,
+  IParams,
+  ArcGISAuthError,
+  encodeFormData,
+  request
+} from "@esri/arcgis-rest-request";
 export {
   ICreateServiceParams,
   ICreateServiceResult,

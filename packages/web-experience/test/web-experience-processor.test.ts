@@ -22,7 +22,6 @@ import * as WebExperienceProcessor from "../src/web-experience-processor";
 import * as utils from "../../common/test/mocks/utils";
 import * as common from "@esri/solution-common";
 import * as hubCommon from "@esri/hub-common";
-import * as portalModule from "@esri/arcgis-rest-portal";
 import * as convertToTmplModule from "../src/helpers/convert-web-experience-to-template";
 
 import * as createFromTemplateModule from "../src/helpers/create-web-experience-model-from-template";
@@ -39,7 +38,7 @@ beforeEach(() => {
 describe("Module `web-experience-processor`: ", () => {
   describe("convertItemToTemplate :: ", () => {
     it("should fetch the data and delegate to convertToTemplate", async () => {
-      const getItemDataSpy = spyOn(portalModule, "getItemData").and.resolveTo({
+      const getItemDataSpy = spyOn(common, "getItemData").and.resolveTo({
         some: "prop",
       });
       const tmpl = {
@@ -135,7 +134,7 @@ describe("Module `web-experience-processor`: ", () => {
       });
 
       const createSpy = spyOn(createExperienceModule, "createWebExperience").and.resolveTo(fakeExB);
-      const removeSpy = spyOn(portalModule, "removeItem").and.resolveTo({
+      const removeSpy = spyOn(common, "restRemoveItem").and.resolveTo({
         success: true,
         itemId: "3ef",
       });

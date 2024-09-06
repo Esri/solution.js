@@ -25,7 +25,6 @@ import * as utils from "../../common/test/mocks/utils";
 import * as convertToTemplateModule from "../src/helpers/convert-storymap-to-template";
 import * as createFromTemplateModule from "../src/helpers/create-storymap-model-from-template";
 import * as createStoryMapModule from "../src/helpers/create-storymap";
-import * as portalModule from "@esri/arcgis-rest-portal";
 
 const MOCK_USER_SESSION = utils.createRuntimeMockUserSession();
 
@@ -34,7 +33,7 @@ const MOCK_USER_SESSION = utils.createRuntimeMockUserSession();
 describe("Module `storymap-processor`: ", () => {
   describe("convertItemToTemplate :: ", () => {
     it("happy path", async () => {
-      const getDataSpy = spyOn(portalModule, "getItemData").and.resolveTo({});
+      const getDataSpy = spyOn(common, "getItemData").and.resolveTo({});
       const tmpl = {
         item: {},
         data: {},
@@ -152,7 +151,7 @@ describe("Module `storymap-processor`: ", () => {
       });
 
       const createSpy = spyOn(createStoryMapModule, "createStoryMap").and.resolveTo(fakeStoryMap);
-      const removeSpy = spyOn(portalModule, "removeItem").and.resolveTo({
+      const removeSpy = spyOn(common, "restRemoveItem").and.resolveTo({
         success: true,
         itemId: "3ef",
       });

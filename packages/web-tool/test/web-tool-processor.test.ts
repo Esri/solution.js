@@ -22,8 +22,6 @@ import * as WebToolProcessor from "../src/web-tool-processor";
 import * as utils from "../../common/test/mocks/utils";
 import * as common from "@esri/solution-common";
 import { simpleTypes } from "@esri/solution-simple-types";
-import * as request from "@esri/arcgis-rest-request";
-import * as portalModule from "@esri/arcgis-rest-portal";
 
 let MOCK_USER_SESSION: common.UserSession;
 
@@ -101,7 +99,7 @@ describe("Module `web-tool-processor`: ", () => {
     });
 
     it("can create Web Tool Geoprocessing Service", async () => {
-      const createRequestSpy1 = spyOn(request, "request").and.resolveTo({
+      const createRequestSpy1 = spyOn(common, "request").and.resolveTo({
         itemId: "newgs0123456789",
       });
 
@@ -140,7 +138,7 @@ describe("Module `web-tool-processor`: ", () => {
           return calls < 2;
         };
       };
-      const createRequestSpy2 = spyOn(request, "request").and.resolveTo({
+      const createRequestSpy2 = spyOn(common, "request").and.resolveTo({
         itemId: "newgs0123456789",
       });
 
@@ -178,10 +176,10 @@ describe("Module `web-tool-processor`: ", () => {
           return calls < 2;
         };
       };
-      const createRequestSpy2 = spyOn(request, "request").and.resolveTo({
+      const createRequestSpy2 = spyOn(common, "request").and.resolveTo({
         itemId: "newgs0123456789",
       });
-      const removeSpy = spyOn(portalModule, "removeItem").and.resolveTo({
+      const removeSpy = spyOn(common, "restRemoveItem").and.resolveTo({
         success: true,
         itemId: "3ef",
       });
@@ -221,7 +219,7 @@ describe("Module `web-tool-processor`: ", () => {
           return calls < 3;
         };
       };
-      const createRequestSpy2 = spyOn(request, "request").and.resolveTo({
+      const createRequestSpy2 = spyOn(common, "request").and.resolveTo({
         itemId: "newgs0123456789",
       });
 
@@ -259,10 +257,10 @@ describe("Module `web-tool-processor`: ", () => {
           return calls < 3;
         };
       };
-      const createRequestSpy2 = spyOn(request, "request").and.resolveTo({
+      const createRequestSpy2 = spyOn(common, "request").and.resolveTo({
         itemId: "newgs0123456789",
       });
-      const removeSpy = spyOn(portalModule, "removeItem").and.resolveTo({
+      const removeSpy = spyOn(common, "restRemoveItem").and.resolveTo({
         success: true,
         itemId: "3ef",
       });
@@ -302,11 +300,11 @@ describe("Module `web-tool-processor`: ", () => {
           return calls < 3;
         };
       };
-      const createRequestSpy2 = spyOn(request, "request").and.resolveTo({
+      const createRequestSpy2 = spyOn(common, "request").and.resolveTo({
         itemId: "newgs0123456789",
       });
       const updateItemRejectSpy = spyOn(common, "updateItemExtended").and.rejectWith("error");
-      const removeSpy = spyOn(portalModule, "removeItem").and.resolveTo({
+      const removeSpy = spyOn(common, "restRemoveItem").and.resolveTo({
         success: true,
         itemId: "3ef",
       });
@@ -347,11 +345,11 @@ describe("Module `web-tool-processor`: ", () => {
           return calls < 3;
         };
       };
-      const createRequestSpy2 = spyOn(request, "request").and.resolveTo({
+      const createRequestSpy2 = spyOn(common, "request").and.resolveTo({
         itemId: "newgs0123456789",
       });
       const updateItemRejectSpy = spyOn(common, "updateItemExtended").and.rejectWith("error");
-      const removeSpy = spyOn(portalModule, "removeItem").and.rejectWith("error");
+      const removeSpy = spyOn(common, "restRemoveItem").and.rejectWith("error");
 
       await WebToolProcessor.createItemFromTemplate(
         {
@@ -389,11 +387,11 @@ describe("Module `web-tool-processor`: ", () => {
           return calls < 4;
         };
       };
-      const createRequestSpy2 = spyOn(request, "request").and.resolveTo({
+      const createRequestSpy2 = spyOn(common, "request").and.resolveTo({
         itemId: "newgs0123456789",
       });
       const getItemBaseSpy = spyOn(common, "getItemBase").and.rejectWith("error");
-      const removeSpy = spyOn(portalModule, "removeItem").and.resolveTo({
+      const removeSpy = spyOn(common, "restRemoveItem").and.resolveTo({
         success: true,
         itemId: "3ef",
       });
@@ -434,7 +432,7 @@ describe("Module `web-tool-processor`: ", () => {
           return calls < 4;
         };
       };
-      const createRequestSpy2 = spyOn(request, "request").and.resolveTo({
+      const createRequestSpy2 = spyOn(common, "request").and.resolveTo({
         itemId: "newgs0123456789",
       });
       const getItemBaseSpy = spyOn(common, "getItemBase").and.rejectWith("error");
@@ -469,7 +467,7 @@ describe("Module `web-tool-processor`: ", () => {
     });
 
     it("can handle failure to create Web Tool Geoprocessing Service", async () => {
-      const createRequestSpy2 = spyOn(request, "request").and.rejectWith("error");
+      const createRequestSpy2 = spyOn(common, "request").and.rejectWith("error");
 
       await WebToolProcessor.createItemFromTemplate(
         {
