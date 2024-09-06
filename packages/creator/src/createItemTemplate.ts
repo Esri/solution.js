@@ -550,30 +550,33 @@ export function _templatizeResources(
             let dataString = JSON.stringify(fileJson);
             if (fileJson && idTest.test(dataString)) {
               const ids: string[] = dataString.match(idTest) as string[];
-              const verifiedIds: string[] = [];
               const promises = [];
               const idLookup = [];
               ids.forEach((id) => {
-                idLookup.push(id);
-                if (verifiedIds.indexOf(id) === -1) {
-                  verifiedIds.push(id);
+                if (idLookup.indexOf(id) === -1) {
+                  idLookup.push(id);
                   promises.push(isItem(id, srcAuthentication));
+                  idLookup.push(id);
                   promises.push(isGroup(id, srcAuthentication));
                 }
               });
 
               // eslint-disable-next-line @typescript-eslint/no-floating-promises
               Promise.all(promises).then((results) => {
+                const verifiedIds = [];
                 results.forEach((isValid, i) => {
                   if (isValid) {
                     const id: string = idLookup[i];
-                    // templatize the itemId--but only once per unique id
-                    const regEx = new RegExp(id, "gm");
-                    dataString = dataString.replace(regEx, "{{" + id + ".itemId}}");
+                    if (verifiedIds.indexOf(id) < 0 && id) {
+                      // templatize the itemId--but only once per unique id
+                      const regEx = new RegExp(id, "gm");
+                      dataString = dataString.replace(regEx, "{{" + id + ".itemId}}");
 
-                    // update the dependencies
-                    if (itemTemplate.dependencies.indexOf(id) === -1) {
-                      itemTemplate.dependencies.push(id);
+                      // update the dependencies
+                      if (itemTemplate.dependencies.indexOf(id) === -1) {
+                        itemTemplate.dependencies.push(id);
+                      }
+                      verifiedIds.push(id);
                     }
                   }
                 });
