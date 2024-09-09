@@ -567,7 +567,7 @@ export function _templatizeResources(
                 results.forEach((isValid, i) => {
                   if (isValid) {
                     const id: string = idLookup[i];
-                    if (verifiedIds.indexOf(id) < 0 && id) {
+                    if (id && verifiedIds.indexOf(id) < 0) {
                       // templatize the itemId--but only once per unique id
                       const regEx = new RegExp(id, "gm");
                       dataString = dataString.replace(regEx, "{{" + id + ".itemId}}");
