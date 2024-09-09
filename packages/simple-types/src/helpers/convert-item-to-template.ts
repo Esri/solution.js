@@ -121,7 +121,7 @@ export function convertItemToTemplate(
           dashboard.convertItemToTemplate(itemTemplate, templateDictionary);
           break;
         case "Notebook":
-          templateModifyingPromise = notebook.convertNotebookToTemplate(itemTemplate, srcAuthentication);
+          templateModifyingPromise = notebook.convertNotebookToTemplate(itemTemplate);
           break;
         case "Oriented Imagery Catalog":
           templateModifyingPromise = oic.convertItemToTemplate(itemTemplate, destAuthentication, srcAuthentication);
