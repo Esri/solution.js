@@ -187,7 +187,7 @@ export function addContentToSolution(
           const templateIds = solutionTemplates.map((template) => template.itemId);
 
           // check notebooks data for any item or group references
-          await notebookProcessor.postProcessNotebookTemplates(solutionTemplates);
+          await notebookProcessor.postProcessNotebookTemplates(solutionTemplates, templateDictionary);
 
           // Extract resource data files from templates
           resourceItemFiles = resourceItemFiles.concat(getDataFilesFromTemplates(solutionTemplates));

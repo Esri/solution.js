@@ -72,30 +72,52 @@ export function convertNotebookToTemplate(itemTemplate: common.IItemTemplate): P
  * Swap any ids found in the items data section with itemId variables
  *
  * @param templates IItemTemplate[] all templates for the current solution
+ * @param templateDictionary Hash of facts: folder id, org URL, adlib replacements
  * @returns templatized IItemTemplate[]
  */
-export async function postProcessNotebookTemplates(templates: common.IItemTemplate[]): Promise<common.IItemTemplate[]> {
+export async function postProcessNotebookTemplates(
+  templates: common.IItemTemplate[],
+  templateDictionary: any,
+): Promise<common.IItemTemplate[]> {
   return new Promise<common.IItemTemplate[]>((resolve) => {
     const hasNotebook = templates.some((t) => {
       return t.type === "Notebook";
     });
     if (hasNotebook) {
+      const fsUrlKeys = Object.keys(templateDictionary)
+        .filter((k) => k.indexOf("FeatureServer") > -1)
+        .sort()
+        .reverse();
+
       const ids = templates.reduce((prev, cur: common.IItemTemplate) => {
         prev = [...new Set([...prev, ...cur.dependencies, cur.itemId])];
         return prev;
       }, []);
       templates = templates.map((t) => {
         if (t.type === "Notebook") {
-          let dataString: string = JSON.stringify(t.data);
+          let dataString: string = t.data && JSON.stringify(t.data);
           ids.forEach((id) => {
             const idTest = new RegExp(id, "gim");
-            if (t.data && idTest.test(dataString)) {
+            if (idTest.test(dataString)) {
               dataString = dataString.replace(id, "{{" + id + ".itemId}}");
               if (t.dependencies.indexOf(id) < 0) {
                 t.dependencies.push(id);
               }
             }
           });
+          fsUrlKeys.forEach((url) => {
+            const urlTest = new RegExp(url, "gim");
+            if (urlTest.test(dataString)) {
+              const urlVar = templateDictionary[url];
+              dataString = dataString.replace(urlTest, urlVar);
+              const idTest: RegExp = /[0-9A-F]{32}/gim;
+              const id = urlVar.match(idTest)[0];
+              if (t.dependencies.indexOf(id) < 0) {
+                t.dependencies.push(id);
+              }
+            }
+          });
+          t.data = JSON.parse(dataString);
           return t;
         }
       });
