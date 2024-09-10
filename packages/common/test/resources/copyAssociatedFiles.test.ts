@@ -569,13 +569,11 @@ describe("Module `copyAssociatedFiles`: functions for sending resources to AGO",
         },
       ];
 
-      const copyZipIntoItemSpy = spyOn(copyZipIntoItem, "copyZipIntoItem").and.callFake(
-        (zipInfo: IZipInfo) => {
-          return new Promise<IZipCopyResults>((resolve) => {
-            resolve(_createIZipCopyResults(true, true, zipInfo.filelist));
-          });
-        },
-      );
+      const copyZipIntoItemSpy = spyOn(copyZipIntoItem, "copyZipIntoItem").and.callFake((zipInfo: IZipInfo) => {
+        return new Promise<IZipCopyResults>((resolve) => {
+          resolve(_createIZipCopyResults(true, true, zipInfo.filelist));
+        });
+      });
 
       const results: IAssociatedFileCopyResults[] = await _sendZipsSeriallyToItem(
         zipInfos,
@@ -627,13 +625,11 @@ describe("Module `copyAssociatedFiles`: functions for sending resources to AGO",
         },
       ];
 
-      const copyZipIntoItemSpy = spyOn(copyZipIntoItem, "copyZipIntoItem").and.callFake(
-        (zipInfo: IZipInfo) => {
-          return new Promise<IZipCopyResults>((resolve) => {
-            resolve(_createIZipCopyResults(true, true, zipInfo.filelist));
-          });
-        },
-      );
+      const copyZipIntoItemSpy = spyOn(copyZipIntoItem, "copyZipIntoItem").and.callFake((zipInfo: IZipInfo) => {
+        return new Promise<IZipCopyResults>((resolve) => {
+          resolve(_createIZipCopyResults(true, true, zipInfo.filelist));
+        });
+      });
 
       const results: IAssociatedFileCopyResults[] = await _sendZipsSeriallyToItem(
         zipInfos,
@@ -707,13 +703,11 @@ describe("Module `copyAssociatedFiles`: functions for sending resources to AGO",
         },
       ];
 
-      const copyZipIntoItemSpy = spyOn(copyZipIntoItem, "copyZipIntoItem").and.callFake(
-        (zipInfo: IZipInfo) => {
-          return new Promise<IZipCopyResults>((resolve) => {
-            resolve(_createIZipCopyResults(true, true, zipInfo.filelist));
-          });
-        },
-      );
+      const copyZipIntoItemSpy = spyOn(copyZipIntoItem, "copyZipIntoItem").and.callFake((zipInfo: IZipInfo) => {
+        return new Promise<IZipCopyResults>((resolve) => {
+          resolve(_createIZipCopyResults(true, true, zipInfo.filelist));
+        });
+      });
 
       const results: IAssociatedFileCopyResults[] = await _sendZipsSeriallyToItem(
         zipInfos,
