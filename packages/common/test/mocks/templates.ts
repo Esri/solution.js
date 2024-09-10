@@ -967,7 +967,7 @@ export function getItemTemplateData(type: string): any {
               trusted: true,
             },
             cell_type: "code",
-            source: "{{3b927de78a784a5aa3981469d85cf45d.itemId}}",
+            source: "3b927de78a784a5aa3981469d85cf45d",
             execution_count: null,
             outputs: [],
           },
