@@ -553,7 +553,7 @@ describe("Module `copyAssociatedFiles`: functions for sending resources to AGO",
 
   describe("_sendZipsSeriallyToItem", () => {
     it("handles single zip", async () => {
-      const zipInfos: interfaces.IZipInfo[] = [
+      const zipInfos: IZipInfo[] = [
         {
           filename: "zip1",
           zip: new JSZip(),
@@ -561,7 +561,7 @@ describe("Module `copyAssociatedFiles`: functions for sending resources to AGO",
             {
               folder: "fld",
               filename: "file1",
-              type: interfaces.EFileType.Data,
+              type: EFileType.Data,
               mimeType: "text",
               url: "http://esri.com",
             },
@@ -570,14 +570,14 @@ describe("Module `copyAssociatedFiles`: functions for sending resources to AGO",
       ];
 
       const copyZipIntoItemSpy = spyOn(copyZipIntoItem, "copyZipIntoItem").and.callFake(
-        (zipInfo: interfaces.IZipInfo) => {
-          return new Promise<interfaces.IZipCopyResults>((resolve) => {
+        (zipInfo: IZipInfo) => {
+          return new Promise<IZipCopyResults>((resolve) => {
             resolve(_createIZipCopyResults(true, true, zipInfo.filelist));
           });
         },
       );
 
-      const results: interfaces.IAssociatedFileCopyResults[] = await _sendZipsSeriallyToItem(
+      const results: IAssociatedFileCopyResults[] = await _sendZipsSeriallyToItem(
         zipInfos,
         "itm1234567890",
         MOCK_USER_SESSION,
@@ -588,7 +588,7 @@ describe("Module `copyAssociatedFiles`: functions for sending resources to AGO",
         {
           folder: "fld",
           filename: "file1",
-          type: interfaces.EFileType.Data,
+          type: EFileType.Data,
           mimeType: "text",
           url: "http://esri.com",
           fetchedFromSource: true,
@@ -598,7 +598,7 @@ describe("Module `copyAssociatedFiles`: functions for sending resources to AGO",
     });
 
     it("handles two zips", async () => {
-      const zipInfos: interfaces.IZipInfo[] = [
+      const zipInfos: IZipInfo[] = [
         {
           filename: "zip1",
           zip: new JSZip(),
@@ -606,7 +606,7 @@ describe("Module `copyAssociatedFiles`: functions for sending resources to AGO",
             {
               folder: "fld",
               filename: "file1",
-              type: interfaces.EFileType.Data,
+              type: EFileType.Data,
               mimeType: "text",
               url: "http://esri.com",
             },
@@ -619,7 +619,7 @@ describe("Module `copyAssociatedFiles`: functions for sending resources to AGO",
             {
               folder: "fld",
               filename: "file2",
-              type: interfaces.EFileType.Data,
+              type: EFileType.Data,
               mimeType: "text",
               url: "http://esri.com",
             },
@@ -628,14 +628,14 @@ describe("Module `copyAssociatedFiles`: functions for sending resources to AGO",
       ];
 
       const copyZipIntoItemSpy = spyOn(copyZipIntoItem, "copyZipIntoItem").and.callFake(
-        (zipInfo: interfaces.IZipInfo) => {
-          return new Promise<interfaces.IZipCopyResults>((resolve) => {
+        (zipInfo: IZipInfo) => {
+          return new Promise<IZipCopyResults>((resolve) => {
             resolve(_createIZipCopyResults(true, true, zipInfo.filelist));
           });
         },
       );
 
-      const results: interfaces.IAssociatedFileCopyResults[] = await _sendZipsSeriallyToItem(
+      const results: IAssociatedFileCopyResults[] = await _sendZipsSeriallyToItem(
         zipInfos,
         "itm1234567890",
         MOCK_USER_SESSION,
@@ -646,7 +646,7 @@ describe("Module `copyAssociatedFiles`: functions for sending resources to AGO",
         {
           folder: "fld",
           filename: "file1",
-          type: interfaces.EFileType.Data,
+          type: EFileType.Data,
           mimeType: "text",
           url: "http://esri.com",
           fetchedFromSource: true,
@@ -655,7 +655,7 @@ describe("Module `copyAssociatedFiles`: functions for sending resources to AGO",
         {
           folder: "fld",
           filename: "file2",
-          type: interfaces.EFileType.Data,
+          type: EFileType.Data,
           mimeType: "text",
           url: "http://esri.com",
           fetchedFromSource: true,
@@ -665,7 +665,7 @@ describe("Module `copyAssociatedFiles`: functions for sending resources to AGO",
     });
 
     it("handles three zips", async () => {
-      const zipInfos: interfaces.IZipInfo[] = [
+      const zipInfos: IZipInfo[] = [
         {
           filename: "zip1",
           zip: new JSZip(),
@@ -673,7 +673,7 @@ describe("Module `copyAssociatedFiles`: functions for sending resources to AGO",
             {
               folder: "fld",
               filename: "file1",
-              type: interfaces.EFileType.Data,
+              type: EFileType.Data,
               mimeType: "text",
               url: "http://esri.com",
             },
@@ -686,7 +686,7 @@ describe("Module `copyAssociatedFiles`: functions for sending resources to AGO",
             {
               folder: "fld",
               filename: "file2",
-              type: interfaces.EFileType.Data,
+              type: EFileType.Data,
               mimeType: "text",
               url: "http://esri.com",
             },
@@ -699,7 +699,7 @@ describe("Module `copyAssociatedFiles`: functions for sending resources to AGO",
             {
               folder: "fld",
               filename: "file3",
-              type: interfaces.EFileType.Data,
+              type: EFileType.Data,
               mimeType: "text",
               url: "http://esri.com",
             },
@@ -708,14 +708,14 @@ describe("Module `copyAssociatedFiles`: functions for sending resources to AGO",
       ];
 
       const copyZipIntoItemSpy = spyOn(copyZipIntoItem, "copyZipIntoItem").and.callFake(
-        (zipInfo: interfaces.IZipInfo) => {
-          return new Promise<interfaces.IZipCopyResults>((resolve) => {
+        (zipInfo: IZipInfo) => {
+          return new Promise<IZipCopyResults>((resolve) => {
             resolve(_createIZipCopyResults(true, true, zipInfo.filelist));
           });
         },
       );
 
-      const results: interfaces.IAssociatedFileCopyResults[] = await _sendZipsSeriallyToItem(
+      const results: IAssociatedFileCopyResults[] = await _sendZipsSeriallyToItem(
         zipInfos,
         "itm1234567890",
         MOCK_USER_SESSION,
@@ -726,7 +726,7 @@ describe("Module `copyAssociatedFiles`: functions for sending resources to AGO",
         {
           folder: "fld",
           filename: "file1",
-          type: interfaces.EFileType.Data,
+          type: EFileType.Data,
           mimeType: "text",
           url: "http://esri.com",
           fetchedFromSource: true,
@@ -735,7 +735,7 @@ describe("Module `copyAssociatedFiles`: functions for sending resources to AGO",
         {
           folder: "fld",
           filename: "file2",
-          type: interfaces.EFileType.Data,
+          type: EFileType.Data,
           mimeType: "text",
           url: "http://esri.com",
           fetchedFromSource: true,
@@ -744,7 +744,7 @@ describe("Module `copyAssociatedFiles`: functions for sending resources to AGO",
         {
           folder: "fld",
           filename: "file3",
-          type: interfaces.EFileType.Data,
+          type: EFileType.Data,
           mimeType: "text",
           url: "http://esri.com",
           fetchedFromSource: true,
