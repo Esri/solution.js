@@ -45,7 +45,7 @@ import {
   setProp,
 } from "./generalHelpers";
 import { replaceInTemplate, templatizeTerm, templatizeIds } from "./templatization";
-import { addToServiceDefinition, getLayerUpdates, getRequest, rest_request } from "./restHelpers";
+import { addToServiceDefinition, getLayerUpdates, getRequest } from "./restHelpers";
 import { isTrackingViewTemplate, templatizeTracker } from "./trackingHelpers";
 import {
   IExtent,
@@ -53,6 +53,7 @@ import {
   IQueryRelatedResponse,
   ISpatialReference,
   queryRelated,
+  request,
   UserSession,
 } from "./arcgisRestJS";
 
@@ -541,7 +542,7 @@ export function updateTemplateForInvalidDesignations(
     if (template.item.url) {
       // get the admin URL
       const url: string = template.item.url;
-      rest_request(url + "?f=json", {
+      request(url + "?f=json", {
         authentication: authentication,
       }).then(
         (serviceData) => {
@@ -597,7 +598,7 @@ export function processContingentValues(
         /* istanbul ignore else */
         if (cur.hasContingentValuesDefinition) {
           prev.push(
-            rest_request(`${adminUrl}/${cur["id"]}/contingentValues?f=json`, {
+            request(`${adminUrl}/${cur["id"]}/contingentValues?f=json`, {
               authentication,
             }),
           );
@@ -709,7 +710,7 @@ export function getExistingLayersAndTables(url: string, ids: number[], authentic
   // eslint-disable-next-line @typescript-eslint/no-floating-promises
   return new Promise((resolve) => {
     const defs: Array<Promise<any>> = ids.map((id) => {
-      return rest_request(checkUrlPathTermination(url) + id, {
+      return request(checkUrlPathTermination(url) + id, {
         authentication,
       });
     });

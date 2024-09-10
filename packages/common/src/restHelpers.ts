@@ -118,10 +118,6 @@ import { isTrackingViewTemplate, setTrackingOptions } from "./trackingHelpers";
 
 // ------------------------------------------------------------------------------------------------------------------ //
 
-export { request as rest_request } from "@esri/arcgis-rest-request";
-
-// ------------------------------------------------------------------------------------------------------------------ //
-
 export function addItemData(id: string, data: any, authentication: UserSession): Promise<IUpdateItemResponse> {
   const addDataOptions: IAddItemDataOptions = {
     id,

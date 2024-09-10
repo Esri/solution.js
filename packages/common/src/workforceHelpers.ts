@@ -20,10 +20,9 @@
  * @module workforceHelpers
  */
 
-import { applyEdits, queryFeatures, UserSession } from "./arcgisRestJS";
+import { applyEdits, queryFeatures, request, UserSession } from "./arcgisRestJS";
 import { getIDs, getProp, fail, idTest, regExTest, setProp } from "./generalHelpers";
 import { IItemTemplate, IFeatureServiceProperties } from "./interfaces";
-import { rest_request } from "./restHelpers";
 import { templatizeTerm, replaceInTemplate } from "./templatization";
 import { cacheLayerInfo } from "./featureServiceHelpers";
 
@@ -589,7 +588,7 @@ export function urlTest(v: any, authentication: UserSession): any {
       f: "json",
       authentication: authentication,
     };
-    requests.push(rest_request(url, options));
+    requests.push(request(url, options));
   });
   return {
     requests: requests,
@@ -695,7 +694,7 @@ export function _getFields(url: string, ids: number[], authentication: UserSessi
     url = _updateUrl(url);
     const promises: any[] = [];
     ids.forEach((id) => {
-      promises.push(rest_request(`${url}${id}`, options));
+      promises.push(request(`${url}${id}`, options));
     });
     Promise.all(promises).then(
       (results) => {

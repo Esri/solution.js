@@ -604,7 +604,7 @@ export function _updateTemplateDictionary(
         if (urls.indexOf(templateInfo.url) < 0) {
           defs.push(
             t.item.type === "Feature Service"
-              ? common.rest_request(templateInfo.url, { authentication })
+              ? common.request(templateInfo.url, { authentication })
               : common.getItemBase(templateInfo.itemId, authentication),
           );
           urls.push(templateInfo.url);
