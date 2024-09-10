@@ -14,9 +14,10 @@
  * limitations under the License.
  */
 
+import { UserSession } from "./arcgisRestJS";
 import * as zipUtils from "./zip-utils";
 import { updateItem } from "./restHelpers";
-import { IItemUpdate, UserSession } from "./interfaces";
+import { IItemUpdate } from "./interfaces";
 import JSZip from "jszip";
 
 // ------------------------------------------------------------------------------------------------------------------ //

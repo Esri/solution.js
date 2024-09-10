@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 
-import { ISourceFile, ISourceFileCopyPath, UserSession } from "../interfaces";
+import { UserSession } from "../arcgisRestJS";
+import { ISourceFile, ISourceFileCopyPath } from "../interfaces";
 import { getBlobAsFile } from "../restHelpersGet";
 
 // ------------------------------------------------------------------------------------------------------------------ //

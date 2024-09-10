@@ -14,8 +14,7 @@
  * limitations under the License.
  */
 
-import { UserSession } from "../interfaces";
-import { updateItem } from "@esri/arcgis-rest-portal";
+import { restUpdateItem, UserSession } from "../arcgisRestJS";
 
 // ------------------------------------------------------------------------------------------------------------------ //
 
@@ -38,5 +37,5 @@ export function addMetadataFromBlob(blob: Blob, itemId: string, authentication: 
     },
     authentication: authentication,
   };
-  return updateItem(updateOptions);
+  return restUpdateItem(updateOptions);
 }

@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 
-import { IAssociatedFileCopyResults, IAssociatedFileInfo, UserSession } from "../interfaces";
+import { UserSession } from "../arcgisRestJS";
+import { IAssociatedFileCopyResults, IAssociatedFileInfo } from "../interfaces";
 import { addMetadataFromBlob } from "./addMetadataFromBlob";
 import { createCopyResults } from "./createCopyResults";
 import { getBlob } from "./get-blob";

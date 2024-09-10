@@ -18,7 +18,8 @@
  * @module deleteSolution
  */
 
-import { ISolutionItemPrecis, ISolutionPrecis, UserSession } from "./interfaces";
+import { ISolutionItemPrecis, ISolutionPrecis } from "./interfaces";
+import { UserSession } from "./arcgisRestJS";
 import * as getSolutionSummary from "./getSolutionSummary";
 import * as restHelpersGet from "./restHelpersGet";
 

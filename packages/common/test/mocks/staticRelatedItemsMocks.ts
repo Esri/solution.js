@@ -26,12 +26,13 @@
  */
 
 const fetchMock = require("fetch-mock");
-import * as interfaces from "../../src/interfaces";
+import { IGetRelatedItemsResponse } from "../../src/arcgisRestJS";
+import { IGetRelatedItemsResponseFull } from "../../src/interfaces";
 import * as utils from "./utils";
 
 export function fetchMockRelatedItems(
   itemId: string,
-  desiredResponse: interfaces.IGetRelatedItemsResponse,
+  desiredResponse: IGetRelatedItemsResponse,
   excludedTypes?: string[],
 ): void {
   const relationshipTypes = [
@@ -75,7 +76,7 @@ export function fetchMockRelatedItems(
   }
 
   // Add the new properties returned by portal function `getRelatedItems`
-  const desiredResponseSupplemented: interfaces.IGetRelatedItemsResponseFull = {
+  const desiredResponseSupplemented: IGetRelatedItemsResponseFull = {
     aggregations: { total: { count: 0, name: "total" } },
     nextkey: null,
     num: 100,

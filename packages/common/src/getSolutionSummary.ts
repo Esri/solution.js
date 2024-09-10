@@ -24,10 +24,9 @@ import {
   IItemTemplate,
   ISolutionItemData,
   ISolutionPrecis,
-  UserSession,
 } from "./interfaces";
+import { IItem, UserSession } from "./arcgisRestJS";
 import * as reconstructBuildOrderIds from "./deleteHelpers/reconstructBuildOrderIds";
-import * as portal from "@esri/arcgis-rest-portal";
 import * as restHelpersGet from "./restHelpersGet";
 import * as templatization from "./templatization";
 
@@ -76,7 +75,7 @@ export async function getSolutionSummary(
   templates = itemData.templates;
 
   // Get the forward Solution2Item relationships
-  const relatedItems: portal.IItem[] = await restHelpersGet.getItemsRelatedToASolution(solutionItemId, authentication);
+  const relatedItems: IItem[] = await restHelpersGet.getItemsRelatedToASolution(solutionItemId, authentication);
 
   solutionSummary.items = relatedItems.map((relatedItem) => {
     return {

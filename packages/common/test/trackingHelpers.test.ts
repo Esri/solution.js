@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
+import { UserSession } from "../src/arcgisRestJS";
 import * as mockTemplates from "./mocks/templates";
 const fetchMock = require("fetch-mock");
-import * as interfaces from "../src/interfaces";
 import {
   getTackingServiceOwner,
   isTrackingViewTemplate,
@@ -32,7 +32,7 @@ import { cloneObject } from "../src/generalHelpers";
 
 // ------------------------------------------------------------------------------------------------------------------ //
 
-let MOCK_USER_SESSION: interfaces.UserSession;
+let MOCK_USER_SESSION: UserSession;
 
 beforeEach(() => {
   MOCK_USER_SESSION = utils.createRuntimeMockUserSession();

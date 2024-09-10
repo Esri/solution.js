@@ -20,14 +20,8 @@
  *
  * @module deleteSolution
  */
-
-import {
-  EItemProgressStatus,
-  IDeleteSolutionOptions,
-  ISolutionPrecis,
-  IStatusResponse,
-  UserSession,
-} from "../interfaces";
+import { UserSession } from "../arcgisRestJS";
+import { EItemProgressStatus, IDeleteSolutionOptions, ISolutionPrecis, IStatusResponse } from "../interfaces";
 import * as deleteEmptyGroups from "./deleteEmptyGroups";
 import * as deleteSolutionFolder from "./deleteSolutionFolder";
 import * as deleteSolutionItem from "./deleteSolutionItem";

@@ -86,7 +86,8 @@ import * as rest_feature_layer from "@esri/arcgis-rest-feature-layer";
 
 import * as restHelpers from "../../common/src/restHelpers";
 
-import * as interfaces from "../src/interfaces";
+import { UserSession } from "../src/arcgisRestJS";
+import { IItemTemplate, IDependency, IFeatureServiceProperties, IUpdate } from "../src/interfaces";
 import * as utils from "../../common/test/mocks/utils";
 
 const fetchMock = require("fetch-mock");
@@ -94,7 +95,7 @@ import * as mockItems from "../../common/test/mocks/agolItems";
 import * as templates from "../../common/test/mocks/templates";
 import { setCreateProp } from "../src/generalHelpers";
 
-let itemTemplate: interfaces.IItemTemplate;
+let itemTemplate: IItemTemplate;
 const itemId: string = "cd766cba0dd44ec080420acc10990282";
 const basePath: string = itemId + ".layer0.fields";
 
@@ -113,7 +114,7 @@ const _organization: any = {
   },
 };
 
-let MOCK_USER_SESSION: interfaces.UserSession;
+let MOCK_USER_SESSION: UserSession;
 
 beforeEach(() => {
   MOCK_USER_SESSION = utils.createRuntimeMockUserSession();
@@ -199,12 +200,12 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
 
   describe("templatize", () => {
     it("should handle empty dependency array", () => {
-      const dependencies: interfaces.IDependency[] = [];
+      const dependencies: IDependency[] = [];
 
       itemTemplate.item.id = "ABC123";
       itemTemplate.properties.service.serviceItemId = "DEF456";
 
-      const expected: interfaces.IItemTemplate = {
+      const expected: IItemTemplate = {
         itemId: "",
         key: "",
         properties: {
@@ -248,7 +249,7 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
     });
 
     it("should handle common itemTemplate properties", () => {
-      const dependencies: interfaces.IDependency[] = [];
+      const dependencies: IDependency[] = [];
       itemTemplate = {
         itemId: "ab766cba0dd44ec080420acc10990282",
         key: "ABC123",
@@ -429,7 +430,7 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
     });
 
     it("should handle absence of layers and tables itemTemplate properties", () => {
-      const dependencies: interfaces.IDependency[] = [];
+      const dependencies: IDependency[] = [];
       itemTemplate = {
         itemId: "ab766cba0dd44ec080420acc10990282",
         key: "ABC123",
@@ -485,7 +486,7 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
     });
 
     it("should use fullExtent for defaultExtent if initialExtent is undefined", () => {
-      const dependencies: interfaces.IDependency[] = [];
+      const dependencies: IDependency[] = [];
       itemTemplate = {
         itemId: "ab766cba0dd44ec080420acc10990282",
         key: "ABC123",
@@ -1677,78 +1678,78 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
 
   describe("setNamesAndTitles", () => {
     it("should use title as name if name is undefined", () => {
-      const t: interfaces.IItemTemplate = templates.getItemTemplateSkeleton();
+      const t: IItemTemplate = templates.getItemTemplateSkeleton();
       t.item.type = "Feature Service";
       t.item.name = undefined;
       t.item.title = "TheName";
-      const _templates: interfaces.IItemTemplate[] = [t];
+      const _templates: IItemTemplate[] = [t];
 
-      const expectedTemplate: interfaces.IItemTemplate = templates.getItemTemplateSkeleton();
+      const expectedTemplate: IItemTemplate = templates.getItemTemplateSkeleton();
       expectedTemplate.item.type = "Feature Service";
       expectedTemplate.item.name = `TheName_${itemId}`;
       expectedTemplate.item.title = "TheName";
-      const expected: interfaces.IItemTemplate[] = [expectedTemplate];
+      const expected: IItemTemplate[] = [expectedTemplate];
 
-      const actual: interfaces.IItemTemplate[] = setNamesAndTitles(_templates, itemId);
+      const actual: IItemTemplate[] = setNamesAndTitles(_templates, itemId);
       expect(actual).toEqual(expected);
     });
 
     it("should not allow duplicate names", () => {
-      const t: interfaces.IItemTemplate = templates.getItemTemplateSkeleton();
+      const t: IItemTemplate = templates.getItemTemplateSkeleton();
       t.item.type = "Feature Service";
       t.item.name = "TheName_99ac87b220fd45038fc92ba10843886d";
       t.item.title = undefined;
-      const t2: interfaces.IItemTemplate = templates.getItemTemplateSkeleton();
+      const t2: IItemTemplate = templates.getItemTemplateSkeleton();
       t2.item.type = "Feature Service";
       t2.item.name = "TheName_88ac87b220fd45038fc92ba10843886d";
       t2.item.title = undefined;
-      const _templates: interfaces.IItemTemplate[] = [t, t2];
+      const _templates: IItemTemplate[] = [t, t2];
 
-      const expectedTemplate: interfaces.IItemTemplate = templates.getItemTemplateSkeleton();
+      const expectedTemplate: IItemTemplate = templates.getItemTemplateSkeleton();
       expectedTemplate.item.type = "Feature Service";
       expectedTemplate.item.name = `TheName_${itemId}`;
       expectedTemplate.item.title = "TheName_99ac87b220fd45038fc92ba10843886d";
-      const expectedTemplate2: interfaces.IItemTemplate = templates.getItemTemplateSkeleton();
+      const expectedTemplate2: IItemTemplate = templates.getItemTemplateSkeleton();
       expectedTemplate2.item.type = "Feature Service";
       expectedTemplate2.item.name = `TheName_${itemId}_1`;
       expectedTemplate2.item.title = "TheName_88ac87b220fd45038fc92ba10843886d";
-      const expected: interfaces.IItemTemplate[] = [expectedTemplate, expectedTemplate2];
+      const expected: IItemTemplate[] = [expectedTemplate, expectedTemplate2];
 
-      const actual: interfaces.IItemTemplate[] = setNamesAndTitles(_templates, itemId);
+      const actual: IItemTemplate[] = setNamesAndTitles(_templates, itemId);
       expect(actual).toEqual(expected);
     });
 
     it("should limit the base name to 50 chars", () => {
-      const t: interfaces.IItemTemplate = templates.getItemTemplateSkeleton();
+      const t: IItemTemplate = templates.getItemTemplateSkeleton();
       t.item.type = "Feature Service";
       t.item.name = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaab";
       t.item.title = "TheName";
-      const _templates: interfaces.IItemTemplate[] = [t];
+      const _templates: IItemTemplate[] = [t];
 
-      const expectedTemplate: interfaces.IItemTemplate = templates.getItemTemplateSkeleton();
+      const expectedTemplate: IItemTemplate = templates.getItemTemplateSkeleton();
       expectedTemplate.item.type = "Feature Service";
       expectedTemplate.item.name = `aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa_${itemId}`;
       expectedTemplate.item.title = "TheName";
-      const expected: interfaces.IItemTemplate[] = [expectedTemplate];
+      const expected: IItemTemplate[] = [expectedTemplate];
 
-      const actual: interfaces.IItemTemplate[] = setNamesAndTitles(_templates, itemId);
+      const actual: IItemTemplate[] = setNamesAndTitles(_templates, itemId);
       expect(actual).toEqual(expected);
     });
 
     it("should limit the base name to 50 chars and handle existing guid in the name", () => {
-      const t: interfaces.IItemTemplate = templates.getItemTemplateSkeleton();
+      const t: IItemTemplate = templates.getItemTemplateSkeleton();
       t.item.type = "Feature Service";
       t.item.name = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaab_aa766cba0dd44ec080420acc10990282";
       t.item.title = "TheName";
-      const _templates: interfaces.IItemTemplate[] = [t];
+      const _templates: IItemTemplate[] = [t];
 
-      const expectedTemplate: interfaces.IItemTemplate = templates.getItemTemplateSkeleton();
+      const expectedTemplate: IItemTemplate = templates.getItemTemplateSkeleton();
       expectedTemplate.item.type = "Feature Service";
       expectedTemplate.item.name = `aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa_${itemId}`;
       expectedTemplate.item.title = "TheName";
-      const expected: interfaces.IItemTemplate[] = [expectedTemplate];
+      const expected: IItemTemplate[] = [expectedTemplate];
 
-      const actual: interfaces.IItemTemplate[] = setNamesAndTitles(_templates, itemId);
+      const actual: IItemTemplate[] = setNamesAndTitles(_templates, itemId);
       expect(actual).toEqual(expected);
     });
   });
@@ -3421,7 +3422,7 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
 
       spyOn(restHelpers, "getLayerUpdates").and.returnValue([
         { url: adminUrl + "/deleteFromDefinition", params: {}, args: {} },
-      ] as interfaces.IUpdate[]);
+      ] as IUpdate[]);
 
       await expectAsync(
         addFeatureServiceLayersAndTables(
@@ -3715,7 +3716,7 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
           ],
         },
       };
-      const properties: interfaces.IFeatureServiceProperties = {
+      const properties: IFeatureServiceProperties = {
         service: {},
         layers: [
           {
@@ -3809,7 +3810,7 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
     });
 
     it("handles error fetching contingent values", async () => {
-      const properties: interfaces.IFeatureServiceProperties = {
+      const properties: IFeatureServiceProperties = {
         service: {},
         layers: [
           {
@@ -3986,7 +3987,7 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
   describe("_templatizeAdminLayerInfo", () => {
     it("should not fail without adminLayerInfo", () => {
       const layer: any = {};
-      const dependencies: interfaces.IDependency[] = [];
+      const dependencies: IDependency[] = [];
       const templateDictionary: any = {};
 
       const adminLayerInfo = _templatizeAdminLayerInfo(layer, dependencies, templateDictionary);
@@ -4017,7 +4018,7 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
           },
         },
       };
-      const dependencies: interfaces.IDependency[] = [
+      const dependencies: IDependency[] = [
         {
           id: "ab766cba0dd44ec080420acc10990282",
           name: "SomeName",
@@ -4074,7 +4075,7 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
           },
         },
       };
-      const dependencies: interfaces.IDependency[] = [
+      const dependencies: IDependency[] = [
         {
           id: "ab766cba0dd44ec080420acc10990282",
           name: "SomeName",
@@ -4110,7 +4111,7 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
   describe("_processAdminObject", () => {
     it("should not fail when empty", () => {
       const object: any = {};
-      const dependencies: interfaces.IDependency[] = [];
+      const dependencies: IDependency[] = [];
       _processAdminObject(object, dependencies);
       expect(object).toEqual({});
       expect(dependencies).toEqual([]);
@@ -4159,7 +4160,7 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
   describe("_templatizeSourceServiceName", () => {
     it("returns undefined when no dependencies remain after filtering by lookup name", () => {
       const lookupName = "abc";
-      const dependencies: interfaces.IDependency[] = [];
+      const dependencies: IDependency[] = [];
       const actual = _templatizeSourceServiceName(lookupName, dependencies);
       expect(actual).toBeUndefined();
     });
@@ -4375,7 +4376,7 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
   describe("_getDependantItemId", () => {
     it("returns an empty string when no dependencies remain after filtering by lookup name", () => {
       const lookupName = "abc";
-      const dependencies: interfaces.IDependency[] = [];
+      const dependencies: IDependency[] = [];
       const actual = _getDependantItemId(lookupName, dependencies);
       expect(actual).toEqual("");
     });
@@ -6106,7 +6107,7 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
           },
         },
       ];
-      const _itemTemplate: interfaces.IItemTemplate = templates.getItemTemplateSkeleton();
+      const _itemTemplate: IItemTemplate = templates.getItemTemplateSkeleton();
       const actual = _updateOrder(layersAndTables, true, _itemTemplate);
       expect(actual).toEqual(expected);
     });
@@ -6168,7 +6169,7 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
         },
       ];
 
-      const _itemTemplate: interfaces.IItemTemplate = templates.getItemTemplateSkeleton();
+      const _itemTemplate: IItemTemplate = templates.getItemTemplateSkeleton();
       setCreateProp(_itemTemplate, "properties.service.isMultiServicesView", true);
       const actual = _updateOrder(layersAndTables, false, _itemTemplate);
       expect(actual).toEqual(expected);
@@ -6378,7 +6379,7 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
         type: "",
         sourceSchemaChangesAllowed: true,
       };
-      const _itemTemplate: interfaces.IItemTemplate = templates.getItemTemplateSkeleton();
+      const _itemTemplate: IItemTemplate = templates.getItemTemplateSkeleton();
       const actual = _updateForPortal(item, _itemTemplate, {});
 
       expect(actual).toEqual(expected);
@@ -6456,7 +6457,7 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
           },
         },
       };
-      const _itemTemplate: interfaces.IItemTemplate = templates.getItemTemplateSkeleton();
+      const _itemTemplate: IItemTemplate = templates.getItemTemplateSkeleton();
       _itemTemplate.dependencies = ["44507dff46f54656a74032ac12acd977", "54507dff46f54656a74032ac12acd977"];
 
       const templateDictionary: any = {
@@ -6511,7 +6512,7 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
           },
         ],
       };
-      const _itemTemplate: interfaces.IItemTemplate = templates.getItemTemplateSkeleton();
+      const _itemTemplate: IItemTemplate = templates.getItemTemplateSkeleton();
       _itemTemplate.dependencies = ["44507dff46f54656a74032ac12acd977", "54507dff46f54656a74032ac12acd977"];
 
       const templateDictionary: any = {
@@ -6561,7 +6562,7 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
           },
         ],
       };
-      const _itemTemplate: interfaces.IItemTemplate = templates.getItemTemplateSkeleton();
+      const _itemTemplate: IItemTemplate = templates.getItemTemplateSkeleton();
 
       const templateDictionary: any = {
         "44507dff46f54656a74032ac12acd977": {
@@ -6588,7 +6589,7 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
         sourceLayerId: 0,
         sourceServiceName: "ABC123",
       };
-      const template: interfaces.IItemTemplate = templates.getItemTemplateSkeleton();
+      const template: IItemTemplate = templates.getItemTemplateSkeleton();
       template.dependencies = ["ab766cba0dd44ec080420acc10990282"];
       const templateDictionary: any = {
         ab766cba0dd44ec080420acc10990282: {
@@ -6613,7 +6614,7 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
         sourceLayerId: 0,
         sourceServiceName: "ABC123",
       };
-      const template: interfaces.IItemTemplate = templates.getItemTemplateSkeleton();
+      const template: IItemTemplate = templates.getItemTemplateSkeleton();
       template.dependencies = ["ab766cba0dd44ec080420acc10990282"];
       const templateDictionary: any = {
         ab766cba0dd44ec080420acc10990282: {
@@ -6818,7 +6819,7 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
 
   describe("_updateTemplateDictionaryFields", () => {
     it("should update the template dictionary with field info", () => {
-      const template: interfaces.IItemTemplate = templates.getItemTemplateSkeleton();
+      const template: IItemTemplate = templates.getItemTemplateSkeleton();
       template.itemId = "svc987654321";
       template.properties.layers = [mockItems.getAGOLLayerOrTable(0, "A", "Feature Layer", [{}])];
       template.properties.tables = [];
@@ -6842,7 +6843,7 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
     });
 
     it("should update the template dictionary with field info for existing", () => {
-      const template: interfaces.IItemTemplate = templates.getItemTemplateSkeleton();
+      const template: IItemTemplate = templates.getItemTemplateSkeleton();
       template.itemId = "svc0123456789";
       template.properties.layers = [mockItems.getAGOLLayerOrTable(0, "A", "Feature Layer", [{}])];
       template.properties.tables = [];

@@ -296,7 +296,7 @@ export function findUrls(
       } else if (url.indexOf("FeatureServer") > -1) {
         if (requestUrls.indexOf(url) === -1) {
           requestUrls.push(url);
-          serviceRequests.push(common.rest_request(url, options));
+          serviceRequests.push(common.request(url, options));
         }
       }
     });

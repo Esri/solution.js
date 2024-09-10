@@ -29,6 +29,7 @@ import {
   generateEmptyCreationResponse,
   createInitializedItemTemplate,
   fail,
+  moveItem,
   removeItem,
   updateVelocityReferences,
   updateItem,
@@ -36,7 +37,6 @@ import {
 import { templatizeVelocity } from "./helpers/velocity-templatize";
 import { getVelocityDependencies } from "./helpers/get-velocity-dependencies";
 import { cleanDataSourcesAndFeeds, getVelocityUrl, postVelocityData } from "./helpers/velocity-helpers";
-import { moveItem } from "@esri/arcgis-rest-portal";
 
 /**
  * Convert a Velocity item into a Template

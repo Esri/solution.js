@@ -24,13 +24,14 @@ import {
   IItemTemplate,
   IItemProgressCallback,
   ICreateItemFromTemplateResponse,
+  IUpdateItemOptions,
   EItemProgressStatus,
   UserSession,
   convertIModel,
   createHubRequestOptions,
   generateEmptyCreationResponse,
+  restUpdateItem,
 } from "@esri/solution-common";
-import { IUpdateItemOptions, updateItem } from "@esri/arcgis-rest-portal";
 import { IModel, IModelTemplate, failSafe, getModel, IHubUserRequestOptions, getProp, without } from "@esri/hub-common";
 import { createPageModelFromTemplate, createPage, removePage, convertPageToTemplate } from "@esri/hub-sites";
 
@@ -166,7 +167,7 @@ export function createItemFromTemplate(
         },
         authentication: destinationAuthentication,
       };
-      return updateItem(updateOptions);
+      return restUpdateItem(updateOptions);
     })
     .then(() => {
       // Update the template dictionary

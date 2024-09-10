@@ -18,7 +18,16 @@
 
 import * as generalHelpers from "../../src/generalHelpers";
 import * as getItemTypeAbbrev from "../../src/getItemTypeAbbrev";
-import * as interfaces from "../../src/interfaces";
+import { IUser } from "../../src/arcgisRestJS";
+import {
+  ISolutionPrecis,
+  ISolutionItemPrecis,
+  IRelatedItems,
+  ICompleteItem,
+  IFeatureServiceProperties,
+  IGroupCategorySchema,
+  DeployedSolutionFormatVersion,
+} from "../../src/interfaces";
 import * as utils from "./utils";
 
 // -------------------------------------------------------------------------------------------------------------------//
@@ -237,9 +246,9 @@ export function getAGOLItem(type?: string, url = "", itemId?: string): any {
   return item;
 }
 
-export function getAGOLItemPrecis(type?: string, url = ""): interfaces.ISolutionItemPrecis {
+export function getAGOLItemPrecis(type?: string, url = ""): ISolutionItemPrecis {
   const item = getAGOLItem(type, url);
-  const precis: interfaces.ISolutionItemPrecis = {
+  const precis: ISolutionItemPrecis = {
     id: item.id,
     type: item.type,
     title: item.title || "",
@@ -249,23 +258,23 @@ export function getAGOLItemPrecis(type?: string, url = ""): interfaces.ISolution
   return precis;
 }
 
-export function getCompleteMockItem(type = "Web Mapping Application"): interfaces.ICompleteItem {
+export function getCompleteMockItem(type = "Web Mapping Application"): ICompleteItem {
   const item = {
     base: getAGOLItem(type),
     data: generalHelpers.jsonToFile(getAGOLItemData(type), ""),
     thumbnail: utils.getSampleImageAsFile(),
     metadata: utils.getSampleMetadataAsFile(),
     resources: [] as File[],
-    fwdRelatedItems: [] as interfaces.IRelatedItems[],
-    revRelatedItems: [] as interfaces.IRelatedItems[],
-  } as interfaces.ICompleteItem;
+    fwdRelatedItems: [] as IRelatedItems[],
+    revRelatedItems: [] as IRelatedItems[],
+  } as ICompleteItem;
   if (type === "Feature Service") {
-    item.featureServiceProperties = {} as interfaces.IFeatureServiceProperties;
+    item.featureServiceProperties = {} as IFeatureServiceProperties;
   }
   return item;
 }
 
-export function getCompleteDeployedSolutionItem(): interfaces.ICompleteItem {
+export function getCompleteDeployedSolutionItem(): ICompleteItem {
   const item = getCompleteMockItem("Solution");
   if (item.base.typeKeywords) {
     item.base.typeKeywords.push("Solution");
@@ -300,7 +309,7 @@ export function getCompleteDeployedSolutionItem(): interfaces.ICompleteItem {
   return item;
 }
 
-export function getCompleteDeployedSolutionItemVersioned(version = interfaces.DeployedSolutionFormatVersion): any {
+export function getCompleteDeployedSolutionItemVersioned(version = DeployedSolutionFormatVersion): any {
   const item: any = getCompleteMockItem("Solution");
   item.base.typeKeywords.push("Solution");
   item.base.typeKeywords.push("Deployed");
@@ -367,7 +376,7 @@ export function getCompleteDeployedSolutionItemVersioned(version = interfaces.De
   return item;
 }
 
-export function getCompleteTemplateSolutionItem(): interfaces.ICompleteItem {
+export function getCompleteTemplateSolutionItem(): ICompleteItem {
   const item = getCompleteMockItem("Solution");
   if (item.base.typeKeywords) {
     item.base.typeKeywords.push("Solution");
@@ -380,10 +389,7 @@ export function getSolutionItem(): any {
   return getAGOLItemFundamentals("Solution");
 }
 
-export function getSolutionPrecis(
-  items: interfaces.ISolutionItemPrecis[] = [],
-  groups: string[] = [],
-): interfaces.ISolutionPrecis {
+export function getSolutionPrecis(items: ISolutionItemPrecis[] = [], groups: string[] = []): ISolutionPrecis {
   return {
     id: "sol1234567890",
     title: "An AGOL item",
@@ -1172,7 +1178,7 @@ export function getAGOLGroup(id?: string, owner?: string): any {
   };
 }
 
-export function getAGOLUser(username: string): interfaces.IUser {
+export function getAGOLUser(username: string): IUser {
   return {
     access: "org",
     created: 1346425801000,
@@ -1200,7 +1206,7 @@ export function getAGOLItemWithId(type: string, idOffset: number): any {
   return item;
 }
 
-export function getAGOLGroupCategorySchema(): interfaces.IGroupCategorySchema {
+export function getAGOLGroupCategorySchema(): IGroupCategorySchema {
   // JSON Response Example from https://developers.arcgis.com/rest/users-groups-and-items/group-category-schema.htm
   return {
     categorySchema: [

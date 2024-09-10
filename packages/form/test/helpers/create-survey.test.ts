@@ -15,8 +15,7 @@
  */
 
 const fetchMock = require("fetch-mock");
-import { ISurvey123CreateSuccess, ISurvey123CreateParams, ISurvey123CreateError } from "@esri/solution-common";
-import * as restRequest from "@esri/arcgis-rest-request";
+import * as common from "@esri/solution-common";
 import { createSurvey } from "../../src/helpers/create-survey";
 import * as utils from "../../../common/test/mocks/utils";
 
@@ -33,7 +32,7 @@ describe("createSurvey", () => {
     token: "mytoken",
     portalUrl: "https://myportal.arcgis.com",
     thumbnailFile: utils.getSampleImageAsBlob(),
-  } as ISurvey123CreateParams;
+  } as common.ISurvey123CreateParams;
 
   afterEach(() => {
     fetchMock.restore();
@@ -51,7 +50,7 @@ describe("createSurvey", () => {
       formItemInfo: {
         ownerFolder: "4c36d3679e7f4934ac599051df22daf6",
       },
-    } as ISurvey123CreateSuccess;
+    } as common.ISurvey123CreateSuccess;
     const encodedForm = new FormData();
     const expected = {
       formId: "2c36d3679e7f4934ac599051df22daf6",
@@ -59,7 +58,7 @@ describe("createSurvey", () => {
       folderId: "4c36d3679e7f4934ac599051df22daf6",
     };
     const createUrl = "https://survey123.arcgis.com/api/survey/create";
-    const encodeFormDataSpy = spyOn(restRequest, "encodeFormData").and.returnValue(encodedForm);
+    const encodeFormDataSpy = spyOn(common, "encodeFormData").and.returnValue(encodedForm);
     fetchMock.post(createUrl, response);
     const result = await createSurvey(params);
     expect(encodeFormDataSpy.calls.count()).toEqual(1);
@@ -87,7 +86,7 @@ describe("createSurvey", () => {
       formItemInfo: {
         ownerFolder: "4c36d3679e7f4934ac599051df22daf6",
       },
-    } as ISurvey123CreateSuccess;
+    } as common.ISurvey123CreateSuccess;
     const encodedForm = new FormData();
     const expected = {
       formId: "2c36d3679e7f4934ac599051df22daf6",
@@ -95,7 +94,7 @@ describe("createSurvey", () => {
       folderId: "4c36d3679e7f4934ac599051df22daf6",
     };
     const createUrl = "https://survey123qa.arcgis.com/api/survey/create";
-    const encodeFormDataSpy = spyOn(restRequest, "encodeFormData").and.returnValue(encodedForm);
+    const encodeFormDataSpy = spyOn(common, "encodeFormData").and.returnValue(encodedForm);
     fetchMock.post(createUrl, response);
     const result = await createSurvey(params, "https://survey123qa.arcgis.com");
     expect(encodeFormDataSpy.calls.count()).toEqual(1);
@@ -114,7 +113,7 @@ describe("createSurvey", () => {
     const response = {
       success: false,
       error: { message: "Something went awry" },
-    } as ISurvey123CreateError;
+    } as common.ISurvey123CreateError;
     const createUrl = "https://survey123.arcgis.com/api/survey/create";
     fetchMock.post(createUrl, response);
     return createSurvey(params).then(

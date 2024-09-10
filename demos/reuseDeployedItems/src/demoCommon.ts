@@ -17,7 +17,6 @@
 /* Functions shareable across demos */
 
 import * as common from "@esri/solution-common";
-import * as portal from "@esri/arcgis-rest-portal";
 
 /**
  * Adds a loading GIF to a container.
@@ -25,7 +24,7 @@ import * as portal from "@esri/arcgis-rest-portal";
  * @param containerElementId Id of HTML container to receive image element
  * @returns Created HTML item
  */
-export function addBusySymbol (containerElementId: string): HTMLElement {
+export function addBusySymbol(containerElementId: string): HTMLElement {
   const busySymbol = addItem(containerElementId, "IMG", containerElementId + "_busySymbol");
   (busySymbol as HTMLImageElement).src = "loading.gif";
   return busySymbol;
@@ -40,7 +39,7 @@ export function addBusySymbol (containerElementId: string): HTMLElement {
  * @param itemClasses Space-separated HTML class names to include in new item
  * @returns Created HTML item
  */
-export function addItem (containerElementId: string, itemType: string, itemId?: string, itemClasses?: string): HTMLElement {
+export function addItem(containerElementId: string, itemType: string, itemId?: string, itemClasses?: string): HTMLElement {
   const item = document.createElement(itemType);
   if (itemId) {
     item.id = itemId;
@@ -68,11 +67,11 @@ export function addItem (containerElementId: string, itemType: string, itemId?: 
  * @param onChange Text to provide to each checklist element's `onChange` attribute, e.g., "myCallback(this)"
  * @returns Generated HTML
  */
-export function createChecklist (
-  searchResults: portal.IItem[],
+export function createChecklist(
+  searchResults: common.IItem[],
   portal?: string,
   itemId?: string,
-  includeCustom=false,
+  includeCustom = false,
   onChange?: string
 ): string {
   let html = '<ul';
@@ -117,7 +116,7 @@ export function createChecklist (
  * @param itemId ID to assign to created unordered list element
  * @returns Generated HTML
  */
-export function createSimpleList (searchResults: portal.IItem[], portal: string, itemId?: string) {
+export function createSimpleList(searchResults: common.IItem[], portal: string, itemId?: string) {
   let html = '<ul';
   if (itemId) {
     html += ' id="' + itemId + '"';
@@ -143,7 +142,7 @@ export function createSimpleList (searchResults: portal.IItem[], portal: string,
  *
  * @param elementId HTML id of element to modify
  */
-export function fadeItemIn (elementId: string) {
+export function fadeItemIn(elementId: string) {
   const item = document.getElementById(elementId);
   if (item) {
     item.style.opacity = "1";
@@ -155,7 +154,7 @@ export function fadeItemIn (elementId: string) {
  *
  * @param elementId HTML id of element to modify
  */
-export function fadeItemOut (elementId: string) {
+export function fadeItemOut(elementId: string) {
   const item = document.getElementById(elementId);
   if (item) {
     item.style.opacity = "0";
@@ -192,7 +191,7 @@ export function getRequestAuthentication(
  *
  * @param elementId HTML id of element to remove
  */
-export function removeItem (elementId: string) {
+export function removeItem(elementId: string) {
   const item = document.getElementById(elementId);
   item && item.remove();
 }

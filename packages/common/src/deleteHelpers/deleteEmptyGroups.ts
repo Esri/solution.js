@@ -19,7 +19,7 @@
  */
 
 import { deleteGroupIfEmpty } from "./deleteGroupIfEmpty";
-import { UserSession } from "../interfaces";
+import { UserSession } from "../arcgisRestJS";
 
 // ------------------------------------------------------------------------------------------------------------------ //
 

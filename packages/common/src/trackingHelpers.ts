@@ -16,12 +16,11 @@
 
 // Helper functions shared across deploy and create
 
-import { IItemTemplate, UserSession } from "./interfaces";
+import { ICreateServiceParams, UserSession } from "./arcgisRestJS";
+import { IItemTemplate, IItemUpdate } from "./interfaces";
 import { getProp, setCreateProp, setProp } from "./generalHelpers";
 import { getItemBase } from "./restHelpersGet";
 import { templatizeTerm } from "./templatization";
-import { IItemUpdate } from "@esri/arcgis-rest-types";
-import { ICreateServiceParams } from "@esri/arcgis-rest-service-admin";
 
 /**
  * Used by deploy to evaluate if we have everything we need to deploy tracking views.

@@ -15,8 +15,7 @@
  */
 
 import { IModel, getProp, failSafe } from "@esri/hub-common";
-import { UserSession } from "@esri/solution-common";
-import { moveItem } from "@esri/arcgis-rest-portal";
+import { moveItem, UserSession } from "@esri/solution-common";
 
 /**
  * Move the created site item, and optionally the Initiative, into

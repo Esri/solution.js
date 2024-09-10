@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import * as auth from "@esri/arcgis-rest-auth";
+import * as common from "@esri/solution-common";
 
 //--------------------------------------------------------------------------------------------------------------------//
 
@@ -23,7 +23,7 @@ const match = window.location.href.match(
 ) || [""];
 const clientId = match[1];
 
-const session = auth.UserSession.completeOAuth2({
+const session = common.UserSession.completeOAuth2({
   clientId,
   redirectUri: window.location.href
 });

@@ -18,6 +18,7 @@
  * Provides tests for fetch functions involving the arcgis-rest-js library.
  */
 
+import { UserSession } from "../src/arcgisRestJS";
 import * as completeItem from "../src/completeItem";
 import * as interfaces from "../src/interfaces";
 import * as restHelpersGet from "../src/restHelpersGet";
@@ -32,7 +33,7 @@ import * as mockItems from "../test/mocks/agolItems";
 
 jasmine.DEFAULT_TIMEOUT_INTERVAL = 20000; // default is 5000 ms
 
-let MOCK_USER_SESSION: interfaces.UserSession;
+let MOCK_USER_SESSION: UserSession;
 
 beforeEach(() => {
   MOCK_USER_SESSION = utils.createRuntimeMockUserSession();

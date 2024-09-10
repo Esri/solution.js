@@ -16,8 +16,7 @@
 
 import { IModel, normalizeSolutionTemplateItem, cloneObject, propifyString, createId } from "@esri/hub-common";
 
-import { IItemTemplate, createPlaceholderTemplate } from "@esri/solution-common";
-import { IItem } from "@esri/arcgis-rest-portal";
+import { IItem, IItemTemplate, createPlaceholderTemplate } from "@esri/solution-common";
 import { getWebExperienceDependencies } from "./get-web-experience-dependencies";
 
 /**

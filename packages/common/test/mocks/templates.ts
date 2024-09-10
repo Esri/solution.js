@@ -18,19 +18,27 @@
 
 import * as generalHelpers from "../../src/generalHelpers";
 import * as getItemTypeAbbrev from "../../src/getItemTypeAbbrev";
-import * as interfaces from "../../src/interfaces";
+import { IItem } from "../../src/arcgisRestJS";
+import {
+  IItemGeneralized,
+  ICreateItemFromTemplateResponse,
+  IItemTemplate,
+  ISolutionItem,
+  ISourceFile,
+  IAssociatedFileInfo,
+} from "../../src/interfaces";
 import * as utils from "./utils";
 
 // -- Exports -------------------------------------------------------------------------------------------------------//
 
-export function getEmptyGeneralizedItem(): interfaces.IItemGeneralized {
+export function getEmptyGeneralizedItem(): IItemGeneralized {
   return {
     id: "",
     type: "",
   };
 }
 
-export function getEmptyItem(): interfaces.IItem {
+export function getEmptyItem(): IItem {
   return {
     created: 0,
     id: "",
@@ -52,7 +60,7 @@ export function getFailedDeployment(failedItemIds: string[] = []): any {
   };
 }
 
-export function getFailedItem(itemType: string): interfaces.ICreateItemFromTemplateResponse {
+export function getFailedItem(itemType: string): ICreateItemFromTemplateResponse {
   return {
     item: null as any,
     id: "",
@@ -61,7 +69,7 @@ export function getFailedItem(itemType: string): interfaces.ICreateItemFromTempl
   };
 }
 
-export function getSolutionTemplateItem(templates = [] as interfaces.IItemTemplate[]): interfaces.ISolutionItem {
+export function getSolutionTemplateItem(templates = [] as IItemTemplate[]): ISolutionItem {
   return {
     item: {
       commentsEnabled: false,
@@ -83,7 +91,7 @@ export function getSolutionTemplateItem(templates = [] as interfaces.IItemTempla
   };
 }
 
-export function getItemTemplateSkeleton(): interfaces.IItemTemplate {
+export function getItemTemplateSkeleton(): IItemTemplate {
   return {
     itemId: "",
     type: "",
@@ -112,8 +120,8 @@ export function getDeployedItemTemplate(itemId: string, type: string, dependenci
   };
 }
 
-export function getItemTemplate(type: string, dependencies = [] as string[], url = ""): interfaces.IItemTemplate {
-  let templatePart: interfaces.IItemTemplate = {} as any;
+export function getItemTemplate(type: string, dependencies = [] as string[], url = ""): IItemTemplate {
+  let templatePart: IItemTemplate = {} as any;
 
   // Supported item types
   switch (type) {
@@ -435,8 +443,8 @@ export function getGroupTemplatePart(dependencies = [] as string[]): any {
   };
 }
 
-export function getWebMappingApplicationTemplate(): interfaces.IItemTemplate[] {
-  const template: interfaces.IItemTemplate[] = [
+export function getWebMappingApplicationTemplate(): IItemTemplate[] {
+  const template: IItemTemplate[] = [
     getItemTemplate(
       "Web Mapping Application",
       ["map1234567890"],
@@ -453,8 +461,8 @@ export function getWebMappingApplicationTemplate(): interfaces.IItemTemplate[] {
   return template;
 }
 
-export function getWebMappingApplicationTemplateGroup(): interfaces.IItemTemplate[] {
-  const template: interfaces.IItemTemplate[] = [
+export function getWebMappingApplicationTemplateGroup(): IItemTemplate[] {
+  const template: IItemTemplate[] = [
     getItemTemplate(
       "Web Mapping Application",
       ["map1234567890"],
@@ -478,8 +486,8 @@ export function getWebMappingApplicationTemplateGroup(): interfaces.IItemTemplat
   return template;
 }
 
-export function getWebMappingApplicationTemplateNoWebmapOrGroup(): interfaces.IItemTemplate[] {
-  const template: interfaces.IItemTemplate[] = [
+export function getWebMappingApplicationTemplateNoWebmapOrGroup(): IItemTemplate[] {
+  const template: IItemTemplate[] = [
     getItemTemplate(
       "Web Mapping Application",
       undefined,
@@ -756,7 +764,7 @@ function getItemTemplateFundamentals(
   dependencies = [] as string[],
   url = "",
   groups = [] as string[],
-): interfaces.IItemTemplate {
+): IItemTemplate {
   return {
     itemId: typePrefix + "1234567890",
     type: type,
@@ -1246,12 +1254,8 @@ export function getItemTemplateResources(type: string, itemId: string): string[]
   return resources;
 }
 
-export function getItemTemplateResourcesAsSourceFiles(
-  type: string,
-  itemId: string,
-  hasService = true,
-): interfaces.ISourceFile[] {
-  let resources: interfaces.ISourceFile[] = [];
+export function getItemTemplateResourcesAsSourceFiles(type: string, itemId: string, hasService = true): ISourceFile[] {
+  let resources: ISourceFile[] = [];
 
   // Supported item types
   switch (type) {
@@ -1295,8 +1299,8 @@ export function getItemTemplateResourcesAsSourceFiles(
   return resources;
 }
 
-export function getItemTemplateResourcesAsTemplatizedFiles(type: string): interfaces.IAssociatedFileInfo[] {
-  let resources: interfaces.IAssociatedFileInfo[] = [];
+export function getItemTemplateResourcesAsTemplatizedFiles(type: string): IAssociatedFileInfo[] {
+  let resources: IAssociatedFileInfo[] = [];
 
   // Supported item types
   switch (type) {
