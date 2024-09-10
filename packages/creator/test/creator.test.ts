@@ -54,7 +54,7 @@ afterEach(() => {
 
 describe("Module `creator`", () => {
   describe("createSolution", () => {
-    it("createSolution fails to get group or item", async () => {
+    it("createSolution fails to get group or item", async() => {
       const solutionGroupId: string = "grp1234567890";
       const authentication: common.UserSession = MOCK_USER_SESSION;
 
@@ -102,7 +102,7 @@ describe("Module `creator`", () => {
       );
     });
 
-    it("createSolution skips missing item from group", async () => {
+    it("createSolution skips missing item from group", async() => {
       const solutionGroupId: string = "grp1234567890";
       const authentication: common.UserSession = MOCK_USER_SESSION;
       const expectedSolutionId = "sln1234567890";
@@ -160,7 +160,7 @@ describe("Module `creator`", () => {
       return creator.createSolution(solutionGroupId, authentication, authentication);
     });
 
-    it("createSolution skips failure to update solution item", async () => {
+    it("createSolution skips failure to update solution item", async() => {
       const solutionGroupId: string = "grp1234567890";
       const authentication: common.UserSession = MOCK_USER_SESSION;
       const expectedSolutionId = "sln1234567890";
@@ -217,7 +217,7 @@ describe("Module `creator`", () => {
       return creator.createSolution(solutionGroupId, authentication, authentication);
     });
 
-    it("createSolution with default name", async () => {
+    it("createSolution with default name", async() => {
       const solutionGroupId: string = "grp1234567890";
       const authentication: common.UserSession = MOCK_USER_SESSION;
 
@@ -307,7 +307,7 @@ describe("Module `creator`", () => {
       expect((addSolnCall[0][1]["body"] as FormData).get("title")).toEqual(mockItems.getAGOLItem("Group").title);
     });
 
-    it("createSolution with specified name", async () => {
+    it("createSolution with specified name", async() => {
       const solutionName: string = "scratch_" + common.getUTCTimestamp();
       const solutionGroupId: string = "grp1234567890";
       const authentication: common.UserSession = MOCK_USER_SESSION;
@@ -415,7 +415,7 @@ describe("Module `creator`", () => {
       expect((addSolnCall[0][1]["body"] as FormData).get("title")).toEqual(solutionName);
     });
 
-    it("createSolution with empty group with defaults without progress callback", async () => {
+    it("createSolution with empty group with defaults without progress callback", async() => {
       const solutionGroupId: string = "grp1234567890";
       const authentication: common.UserSession = MOCK_USER_SESSION;
 
@@ -470,7 +470,7 @@ describe("Module `creator`", () => {
       expect((addSolnCall[0][1]["body"] as FormData).get("title")).toEqual(mockItems.getAGOLItem("Group").title);
     });
 
-    it("createSolution with empty group without progress callback", async () => {
+    it("createSolution with empty group without progress callback", async() => {
       const solutionName: string = "scratch_" + common.getUTCTimestamp();
       const solutionGroupId: string = "grp1234567890";
       const authentication: common.UserSession = MOCK_USER_SESSION;
@@ -532,7 +532,7 @@ describe("Module `creator`", () => {
       expect((addSolnCall[0][1]["body"] as FormData).get("title")).toEqual(solutionName);
     });
 
-    it("createSolution with empty group and progress callback", async () => {
+    it("createSolution with empty group and progress callback", async() => {
       const solutionName: string = "scratch_" + common.getUTCTimestamp();
       const solutionGroupId: string = "grp1234567890";
       const authentication: common.UserSession = MOCK_USER_SESSION;
@@ -597,7 +597,7 @@ describe("Module `creator`", () => {
       expect((addSolnCall[0][1]["body"] as FormData).get("title")).toEqual(solutionName);
     });
 
-    it("createSolution fails to get item or group", async () => {
+    it("createSolution fails to get item or group", async() => {
       const itemIds: string = "itm1234567890";
       const authentication: common.UserSession = MOCK_USER_SESSION;
       const expectedSolutionId = "sln1234567890";
@@ -649,8 +649,8 @@ describe("Module `creator`", () => {
       );
     });
 
-    it("createSolution fails to add items to solution item", async () => {
-      MOCK_USER_SESSION.getPortal = function () {
+    it("createSolution fails to add items to solution item", async() => {
+      MOCK_USER_SESSION.getPortal = function() {
         return (this as any).isEnterprise
           ? Promise.resolve({ portalHostname: "myOrg.ags.esri.com/portal" })
           : Promise.resolve({ portalHostname: "myPortalHostname" });
@@ -735,7 +735,7 @@ describe("Module `creator`", () => {
   });
 
   describe("_addThumbnailFileToCreateOptions", () => {
-    it("doesn't modify creation options if there's no thumbnailurl", async () => {
+    it("doesn't modify creation options if there's no thumbnailurl", async() => {
       const createOptions: common.ICreateSolutionOptions = {};
       const expectedUpdatedCreateOptions: common.ICreateSolutionOptions = {};
 
@@ -746,7 +746,7 @@ describe("Module `creator`", () => {
       expect(updatedCreateOptions).toEqual(expectedUpdatedCreateOptions);
     });
 
-    it("fetches a thumbnail", async () => {
+    it("fetches a thumbnail", async() => {
       const createOptions: common.ICreateSolutionOptions = {
         thumbnailurl:
           utils.PORTAL_SUBSET.restUrl + "/content/items/itm1234567890/folder/sampelImage?f=json&token=fake-token",
@@ -768,7 +768,7 @@ describe("Module `creator`", () => {
       expect(updatedCreateOptions).toEqual(expectedUpdatedCreateOptions);
     });
 
-    it("has a fallback filename", async () => {
+    it("has a fallback filename", async() => {
       const createOptions: common.ICreateSolutionOptions = {
         thumbnailurl: utils.PORTAL_SUBSET.restUrl + "/content/items/itm1234567890/folder/?f=json&token=fake-token",
       };
@@ -789,7 +789,7 @@ describe("Module `creator`", () => {
       expect(updatedCreateOptions).toEqual(expectedUpdatedCreateOptions);
     });
 
-    it("handles a failure to fetch a thumbnail", async () => {
+    it("handles a failure to fetch a thumbnail", async() => {
       const createOptions: common.ICreateSolutionOptions = {
         thumbnailurl:
           utils.PORTAL_SUBSET.restUrl + "/content/items/itm1234567890/folder/sampleImage?f=json&token=fake-token",
@@ -810,7 +810,7 @@ describe("Module `creator`", () => {
   });
 
   describe("_createSolutionFromItemIds", () => {
-    it("handles failure to create the solution", async () => {
+    it("handles failure to create the solution", async() => {
       const options: common.ICreateSolutionOptions = {
         itemIds: ["map1234567890", "wma1234567890"],
       };
@@ -823,7 +823,7 @@ describe("Module `creator`", () => {
       );
     });
 
-    it("handles failure to delete the solution if items can't be added to it", async () => {
+    it("handles failure to delete the solution if items can't be added to it", async() => {
       const solutionId = "sln1234567890";
       const options: common.ICreateSolutionOptions = {
         itemIds: ["wma1234567890"],
@@ -861,7 +861,7 @@ describe("Module `creator`", () => {
   });
 
   describe("_createSolutionItem", () => {
-    it("creates a solution item with defaults", async () => {
+    it("creates a solution item with defaults", async() => {
       const authentication: common.UserSession = MOCK_USER_SESSION;
       const url = utils.PORTAL_SUBSET.restUrl + "/content/users/casey/addItem";
       const expectedSolutionId = "sln1234567890";
@@ -882,7 +882,7 @@ describe("Module `creator`", () => {
       expect(fetchBody).toEqual(expectedFetchBody);
     });
 
-    it("creates a solution item with options", async () => {
+    it("creates a solution item with options", async() => {
       const options: common.ICreateSolutionOptions = {
         title: "Solution Name",
         snippet: "Solution's snippet",
@@ -939,7 +939,7 @@ describe("Module `creator`", () => {
       );
     });
 
-    it("handles failure to create the solution item", async () => {
+    it("handles failure to create the solution item", async() => {
       const authentication: common.UserSession = MOCK_USER_SESSION;
       const url = utils.PORTAL_SUBSET.restUrl + "/content/users/casey/addItem";
       const expectedFetchBody =

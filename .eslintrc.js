@@ -217,7 +217,7 @@ module.exports = {
     "prefer-const": "error",
     "quote-props": "off",
     "radix": "error",
-    "space-before-function-paren": "off",
+    "space-before-function-paren": ["error", "never"],
     "space-in-parens": [
       "off",
       "never"

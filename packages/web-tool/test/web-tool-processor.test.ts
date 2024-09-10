@@ -35,7 +35,7 @@ beforeEach(() => {
 
 describe("Module `web-tool-processor`: ", () => {
   describe("convertItemToTemplate :: ", () => {
-    it("should delegate to simple types convertToTemplate", async () => {
+    it("should delegate to simple types convertToTemplate", async() => {
       const tpl = {
         id: "bc3",
         type: "Geoprocessing Service",
@@ -92,7 +92,7 @@ describe("Module `web-tool-processor`: ", () => {
     };
     const cb = () => true;
 
-    it("early-exits correctly", async () => {
+    it("early-exits correctly", async() => {
       const cbFalse = () => false;
 
       const result = await WebToolProcessor.createItemFromTemplate(tmpl, td, MOCK_USER_SESSION, cbFalse);
@@ -100,7 +100,7 @@ describe("Module `web-tool-processor`: ", () => {
       expect(result.postProcess).withContext("should return postProcess false").toBe(false);
     });
 
-    it("can create Web Tool Geoprocessing Service", async () => {
+    it("can create Web Tool Geoprocessing Service", async() => {
       const createRequestSpy1 = spyOn(request, "request").and.resolveTo({
         itemId: "newgs0123456789",
       });
@@ -132,7 +132,7 @@ describe("Module `web-tool-processor`: ", () => {
       expect(result.item?.data).toEqual({});
     });
 
-    it("Web Tool Geoprocessing Service handles cancel", async () => {
+    it("Web Tool Geoprocessing Service handles cancel", async() => {
       const createCb2 = () => {
         let calls = 0;
         return () => {
@@ -170,7 +170,7 @@ describe("Module `web-tool-processor`: ", () => {
       expect(createRequestSpy2.calls.count()).toBe(2);
     });
 
-    it("Web Tool Geoprocessing Service handles cancel and item removal", async () => {
+    it("Web Tool Geoprocessing Service handles cancel and item removal", async() => {
       const createCb2 = () => {
         let calls = 0;
         return () => {
@@ -213,7 +213,7 @@ describe("Module `web-tool-processor`: ", () => {
       expect(removeSpy.calls.count()).toBe(1);
     });
 
-    it("handles cancel during updateItemExtended", async () => {
+    it("handles cancel during updateItemExtended", async() => {
       const createCb2 = () => {
         let calls = 0;
         return () => {
@@ -251,7 +251,7 @@ describe("Module `web-tool-processor`: ", () => {
       expect(createRequestSpy2.calls.count()).toBe(3);
     });
 
-    it("handles cancel during updateItemExtended and removes item", async () => {
+    it("handles cancel during updateItemExtended and removes item", async() => {
       const createCb2 = () => {
         let calls = 0;
         return () => {
@@ -294,7 +294,7 @@ describe("Module `web-tool-processor`: ", () => {
       expect(removeSpy.calls.count()).toBe(1);
     });
 
-    it("handles reject during updateItemExtended and removes item", async () => {
+    it("handles reject during updateItemExtended and removes item", async() => {
       const createCb2 = () => {
         let calls = 0;
         return () => {
@@ -339,7 +339,7 @@ describe("Module `web-tool-processor`: ", () => {
       expect(removeSpy.calls.count()).toBe(1);
     });
 
-    it("handles reject during updateItemExtended and reject during remove item", async () => {
+    it("handles reject during updateItemExtended and reject during remove item", async() => {
       const createCb2 = () => {
         let calls = 0;
         return () => {
@@ -381,7 +381,7 @@ describe("Module `web-tool-processor`: ", () => {
       expect(removeSpy.calls.count()).toBe(1);
     });
 
-    it("getItemBase", async () => {
+    it("getItemBase", async() => {
       const createCb2 = () => {
         let calls = 0;
         return () => {
@@ -426,7 +426,7 @@ describe("Module `web-tool-processor`: ", () => {
       expect(removeSpy.calls.count()).toBe(1);
     });
 
-    it("getItemBase removeItem can handle reject", async () => {
+    it("getItemBase removeItem can handle reject", async() => {
       const createCb2 = () => {
         let calls = 0;
         return () => {
@@ -468,7 +468,7 @@ describe("Module `web-tool-processor`: ", () => {
       expect(removeSpy.calls.count()).toBe(1);
     });
 
-    it("can handle failure to create Web Tool Geoprocessing Service", async () => {
+    it("can handle failure to create Web Tool Geoprocessing Service", async() => {
       const createRequestSpy2 = spyOn(request, "request").and.rejectWith("error");
 
       await WebToolProcessor.createItemFromTemplate(
@@ -499,7 +499,7 @@ describe("Module `web-tool-processor`: ", () => {
   });
 
   describe("createWebTool", () => {
-    it("should reject if missing notebooks url", async () => {
+    it("should reject if missing notebooks url", async() => {
       return WebToolProcessor.createWebTool(
         {
           id: "bc3",
@@ -514,7 +514,7 @@ describe("Module `web-tool-processor`: ", () => {
       );
     });
 
-    it("should reject if missing portalUrls", async () => {
+    it("should reject if missing portalUrls", async() => {
       return WebToolProcessor.createWebTool(
         {
           id: "bc3",

@@ -149,7 +149,7 @@ describe("Module `deploySolutionFromTemplate`", () => {
       postProcessFnStub.restore();
     });
 
-    it("defaults storageAuthentication to authentication", async () => {
+    it("defaults storageAuthentication to authentication", async() => {
       const templates: common.IItemTemplate[] = [mockTemplates.getItemTemplate("Web Map")];
       const solution: common.ISolutionItem = mockTemplates.getSolutionTemplateItem(templates);
       const folderId = "fld1234567890";
@@ -250,7 +250,7 @@ describe("Module `deploySolutionFromTemplate`", () => {
       expect(deployFnCall.args[6].portal).toEqual(MOCK_USER_SESSION.portal); // destinationAuthentication
     });
 
-    it("defaults storageAuthentication to authentication with no templateDictionary", async () => {
+    it("defaults storageAuthentication to authentication with no templateDictionary", async() => {
       const templates: common.IItemTemplate[] = [mockTemplates.getItemTemplate("Web Map")];
       const solution: common.ISolutionItem = mockTemplates.getSolutionTemplateItem(templates);
       const folderId = "fld1234567890";
@@ -331,7 +331,7 @@ describe("Module `deploySolutionFromTemplate`", () => {
       expect(deployFnCall.args[6].portal).toEqual(MOCK_USER_SESSION.portal); // destinationAuthentication
     });
 
-    it("allows distinct authentication to the solution template", async () => {
+    it("allows distinct authentication to the solution template", async() => {
       const SERVER_INFO = {
         currentVersion: 10.1,
         fullVersion: "10.1",

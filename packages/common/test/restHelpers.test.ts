@@ -149,7 +149,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
   });
 
   describe("searchItems passthru", () => {
-    it("can handle simple search", async () => {
+    it("can handle simple search", async() => {
       fetchMock.get("https://www.arcgis.com/sharing/rest/search?f=json&q=q%3Dredlands%2Bmap", {
         query: "redlands map",
         total: 10738,
@@ -166,7 +166,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
   });
 
   describe("addForwardItemRelationship", () => {
-    it("can add a relationship", async () => {
+    it("can add a relationship", async() => {
       const originItemId: string = "itm1234567890";
       const destinationItemId: string = "itm1234567891";
       const relationshipType: interfaces.ItemRelationshipType = "Survey2Service";
@@ -183,7 +183,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
       expect(result.itemId).toEqual(originItemId);
     });
 
-    it("can handle a failure to add a relationship via success property", async () => {
+    it("can handle a failure to add a relationship via success property", async() => {
       const originItemId: string = "itm1234567890";
       const destinationItemId: string = "itm1234567891";
       const relationshipType: interfaces.ItemRelationshipType = "Survey2Service";
@@ -200,7 +200,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
       expect(result.itemId).toEqual(originItemId);
     });
 
-    it("can handle a failure to add a relationship via 500", async () => {
+    it("can handle a failure to add a relationship via 500", async() => {
       const originItemId: string = "itm1234567890";
       const destinationItemId: string = "itm1234567891";
       const relationshipType: interfaces.ItemRelationshipType = "Survey2Service";
@@ -219,7 +219,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
   });
 
   describe("addForwardItemRelationships", () => {
-    it("can handle an empty set of relationships", async () => {
+    it("can handle an empty set of relationships", async() => {
       const originItemId: string = "itm1234567890";
       const destinationRelationships: interfaces.IRelatedItems[] = [];
 
@@ -231,7 +231,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
       expect(result).toEqual([] as interfaces.IStatusResponse[]);
     });
 
-    it("can add a single relationship", async () => {
+    it("can add a single relationship", async() => {
       const originItemId: string = "itm1234567890";
       const destinationRelationships: interfaces.IRelatedItems[] = [
         {
@@ -262,7 +262,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
       );
     });
 
-    it("can add a set of relationships", async () => {
+    it("can add a set of relationships", async() => {
       const originItemId: string = "itm1234567890";
       const destinationRelationships: interfaces.IRelatedItems[] = [
         {
@@ -294,7 +294,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
       ]);
     });
 
-    it("can add a set of relationships with mixed success", async () => {
+    it("can add a set of relationships with mixed success", async() => {
       const originItemId: string = "itm1234567890";
       const destinationRelationships: interfaces.IRelatedItems[] = [
         {
@@ -332,7 +332,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
   });
 
   describe("addTokenToUrl", () => {
-    it("can handle failure", async () => {
+    it("can handle failure", async() => {
       const url =
         "https://services123.arcgis.com/org1234567890/arcgis/rest/services/ROWPermits_publiccomment/FeatureServer/0";
       const token = "tok1234567890";
@@ -345,7 +345,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
   });
 
   describe("addToServiceDefinition", () => {
-    it("can handle failure", async () => {
+    it("can handle failure", async() => {
       const url =
         "https://services123.arcgis.com/org1234567890/arcgis/rest/services/ROWPermits_publiccomment/FeatureServer/0";
       const adminUrl =
@@ -361,7 +361,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
       );
     });
 
-    it("can add", async () => {
+    it("can add", async() => {
       const url =
         "https://services123.arcgis.com/org1234567890/arcgis/rest/services/ROWPermits_publiccomment/FeatureServer/0";
       const adminUrl =
@@ -372,7 +372,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
       await restHelpers.addToServiceDefinition(url, {});
     });
 
-    it("will retry on first failure", async () => {
+    it("will retry on first failure", async() => {
       const url =
         "https://services123.arcgis.com/org1234567890/arcgis/rest/services/ROWPermits_publiccomment/FeatureServer/0";
 
@@ -383,7 +383,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
       await restHelpers.addToServiceDefinition(url, {});
     });
 
-    xit("can async add, default", async () => {
+    xit("can async add, default", async() => {
       const url =
         "https://services123.arcgis.com/org1234567890/arcgis/rest/services/ROWPermits_publiccomment/FeatureServer/0";
       const adminUrl =
@@ -399,7 +399,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
       });
     });
 
-    xit("can async add reject, default", async () => {
+    xit("can async add reject, default", async() => {
       const url =
         "https://services123.arcgis.com/org1234567890/arcgis/rest/services/ROWPermits_publiccomment/FeatureServer/0";
       const adminUrl =
@@ -416,7 +416,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
       ).toBeRejected();
     });
 
-    it("can async add, specifying async", async () => {
+    it("can async add, specifying async", async() => {
       const url =
         "https://services123.arcgis.com/org1234567890/arcgis/rest/services/ROWPermits_publiccomment/FeatureServer/0";
       const adminUrl =
@@ -433,7 +433,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
       });
     });
 
-    it("can async add reject, specifying async", async () => {
+    it("can async add reject, specifying async", async() => {
       const url =
         "https://services123.arcgis.com/org1234567890/arcgis/rest/services/ROWPermits_publiccomment/FeatureServer/0";
       const adminUrl =
@@ -522,7 +522,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
   });
 
   describe("createFeatureService", () => {
-    it("can handle failure to get service options due to failure to convert extent", async () => {
+    it("can handle failure to get service options due to failure to convert extent", async() => {
       fetchMock
         .get(
           "https://myorg.maps.arcgis.com/sharing/rest/portals/self?f=json&token=fake-token",
@@ -580,7 +580,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
       );
     });
 
-    it("can handle failure to create service", async () => {
+    it("can handle failure to create service", async() => {
       fetchMock.post(
         utils.PORTAL_SUBSET.restUrl + "/content/users/casey/aabb123456/createService",
         mockItems.get400Failure(),
@@ -639,7 +639,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
         }
       });
 
-      it("can create a service", async () => {
+      it("can create a service", async() => {
         // Because we make the service name unique by appending a timestamp, set up a clock & user session
         // with known results
         const date = new Date(Date.UTC(2019, 2, 4, 5, 6, 7)); // 0-based month
@@ -709,7 +709,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
   });
 
   describe("createFullItem", () => {
-    it("can create a minimal item", async () => {
+    it("can create a minimal item", async() => {
       const itemInfo: any = {};
       const folderId: string = null as unknown as string; // default is top level
       const itemThumbnailUrl: string = null as unknown as string;
@@ -743,7 +743,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
       }
     });
 
-    it("can create a minimal public item", async () => {
+    it("can create a minimal public item", async() => {
       const itemInfo: any = {};
       const folderId: string = null as unknown as string; // default is top level
       const itemThumbnailUrl: string = null as unknown as string;
@@ -779,7 +779,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
       }
     });
 
-    it("can create an org item with goodies", async () => {
+    it("can create an org item with goodies", async() => {
       const itemInfo: any = {};
       const folderId: string = null as unknown as string; // default is top level
       const itemThumbnailUrl: string = "https://myserver/thumbnail/thumbnail.png";
@@ -832,7 +832,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
       }
     });
 
-    it("can create an item with a resource in a subfolder", async () => {
+    it("can create an item with a resource in a subfolder", async() => {
       const itemInfo: any = {};
       const folderId: string = null as unknown as string; // default is top level
       const itemThumbnailUrl: string = null as unknown as string;
@@ -872,7 +872,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
       }
     });
 
-    it("can handle failure to add metadata to item, hard error", async () => {
+    it("can handle failure to add metadata to item, hard error", async() => {
       const itemInfo: any = {};
       const folderId: string = null as unknown as string; // default is top level
       const itemThumbnailUrl: string = null as unknown as string;
@@ -904,7 +904,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
       ).toBeRejected();
     });
 
-    it("can handle failure to create an item", async () => {
+    it("can handle failure to create an item", async() => {
       const itemInfo: any = {};
       const folderId: string = null as unknown as string; // default is top level
       const itemThumbnailUrl: string = null as unknown as string;
@@ -937,7 +937,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
       ).toBeRejected();
     });
 
-    it("can handle failure to create an item, hard error", async () => {
+    it("can handle failure to create an item, hard error", async() => {
       const itemInfo: any = {};
       const folderId: string = null as unknown as string; // default is top level
       const itemThumbnailUrl: string = null as unknown as string;
@@ -966,7 +966,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
       ).toBeRejected();
     });
 
-    it("can handle failure to create a public item, hard error", async () => {
+    it("can handle failure to create a public item, hard error", async() => {
       const itemInfo: any = {};
       const folderId: string = null as unknown as string; // default is top level
       const itemThumbnailUrl: string = null as unknown as string;
@@ -1000,7 +1000,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
   });
 
   describe("createItemWithData", () => {
-    it("can handle private specification", async () => {
+    it("can handle private specification", async() => {
       const itemInfo: any = {};
       const dataInfo: any = {};
       const folderId = "fld1234567890";
@@ -1024,7 +1024,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
       expect(response).toEqual(expectedCreate);
     });
 
-    it("can handle org specification", async () => {
+    it("can handle org specification", async() => {
       const itemInfo: any = {};
       const dataInfo: any = {};
       const folderId = "fld1234567890";
@@ -1053,7 +1053,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
       expect(response).toEqual(expectedCreate);
     });
 
-    it("can handle public specification", async () => {
+    it("can handle public specification", async() => {
       const itemInfo: any = {};
       const dataInfo: any = {};
       const folderId = "fld1234567890";
@@ -1082,7 +1082,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
       expect(response).toEqual(expectedCreate);
     });
 
-    it("can handle failure to change created item's access", async () => {
+    it("can handle failure to change created item's access", async() => {
       const itemInfo: any = {};
       const dataInfo: any = {};
       const folderId = "fld1234567890";
@@ -1106,7 +1106,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
   });
 
   describe("createUniqueFolder", () => {
-    it("folder doesn't already exist", async () => {
+    it("folder doesn't already exist", async() => {
       const folderTitleRoot = "folder name";
       const suffix = 0;
       const expectedSuccess = successfulFolderCreation(folderTitleRoot, suffix);
@@ -1126,7 +1126,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
       expect(response).toEqual(expectedSuccess);
     });
 
-    it("initial version of folder exists", async () => {
+    it("initial version of folder exists", async() => {
       const folderTitleRoot = "folder name";
       const expectedSuffix = 1;
       const expectedSuccess = successfulFolderCreation(folderTitleRoot, expectedSuffix);
@@ -1145,7 +1145,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
       expect(response).toEqual(expectedSuccess);
     });
 
-    it("two versions of folder exist", async () => {
+    it("two versions of folder exist", async() => {
       const folderTitleRoot = "folder name";
       const expectedSuffix = 2;
       const expectedSuccess = successfulFolderCreation(folderTitleRoot, expectedSuffix);
@@ -1165,7 +1165,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
       expect(response).toEqual(expectedSuccess);
     });
 
-    it("three versions of folder exist", async () => {
+    it("three versions of folder exist", async() => {
       const folderTitleRoot = "folder name";
       const expectedSuffix = 3;
       const expectedSuccess = successfulFolderCreation(folderTitleRoot, expectedSuffix);
@@ -1184,7 +1184,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
       expect(response).toEqual(expectedSuccess);
     });
 
-    it("can handle abbreviated error", async () => {
+    it("can handle abbreviated error", async() => {
       const folderTitleRoot = "My Folder";
       const userSession = MOCK_USER_SESSION;
       const user: any = {
@@ -1210,7 +1210,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
       );
     });
 
-    it("can handle extended error", async () => {
+    it("can handle extended error", async() => {
       const folderTitleRoot = "My Folder";
       const userSession = MOCK_USER_SESSION;
 
@@ -1229,7 +1229,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
   });
 
   describe("createUniqueGroup", () => {
-    it("group doesn't already exist", async () => {
+    it("group doesn't already exist", async() => {
       const groupTitleRoot = "group name";
       const groupItem = utils.getSampleGroupToAdd(groupTitleRoot);
       const suffix = 0;
@@ -1248,7 +1248,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
       expect(response).toEqual(expectedSuccess);
     });
 
-    it("initial version of group exists", async () => {
+    it("initial version of group exists", async() => {
       const groupTitleRoot = "group name";
       const groupItem = utils.getSampleGroupToAdd(groupTitleRoot);
       const expectedSuffix = 1;
@@ -1269,7 +1269,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
       expect(response).toEqual(expectedSuccess);
     });
 
-    it("two versions of group exist", async () => {
+    it("two versions of group exist", async() => {
       const groupTitleRoot = "group name";
       const groupItem = utils.getSampleGroupToAdd(groupTitleRoot);
       const expectedSuffix = 2;
@@ -1291,7 +1291,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
       expect(response).toEqual(expectedSuccess);
     });
 
-    it("three versions of group exist", async () => {
+    it("three versions of group exist", async() => {
       const groupTitleRoot = "group name";
       const groupItem = utils.getSampleGroupToAdd(groupTitleRoot);
       const expectedSuffix = 3;
@@ -1312,7 +1312,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
       expect(response).toEqual(expectedSuccess);
     });
 
-    it("can handle abbreviated error", async () => {
+    it("can handle abbreviated error", async() => {
       const groupTitleRoot = "My Group";
       const groupItem = utils.getSampleGroupToAdd(groupTitleRoot);
       const userSession = MOCK_USER_SESSION;
@@ -1339,7 +1339,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
       );
     });
 
-    it("can handle extended error", async () => {
+    it("can handle extended error", async() => {
       const groupTitleRoot = "My Group";
       const groupItem = utils.getSampleGroupToAdd(groupTitleRoot);
       const userSession = MOCK_USER_SESSION;
@@ -1362,7 +1362,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
   });
 
   describe("extractDependencies", () => {
-    it("should handle error", async () => {
+    it("should handle error", async() => {
       const baseSvcURL =
         "https://services123.arcgis.com/org1234567890/arcgis/rest/services/ROWPermits_publiccomment/FeatureServer";
 
@@ -1378,7 +1378,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
       );
     });
 
-    it("should get empty array when the service is not a view", async () => {
+    it("should get empty array when the service is not a view", async() => {
       const expected: any[] = [];
       const baseSvcURL =
         "https://services123.arcgis.com/org1234567890/arcgis/rest/services/ROWPermits_publiccomment/FeatureServer";
@@ -1391,7 +1391,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
       expect(dependencies).toEqual(expected);
     });
 
-    it("should get array of dependencies for a view", async () => {
+    it("should get array of dependencies for a view", async() => {
       const expected: any[] = [
         {
           id: "svc1234567890",
@@ -1409,7 +1409,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
       expect(dependencies).toEqual(expected);
     });
 
-    it("should handle workforce service", async () => {
+    it("should handle workforce service", async() => {
       const template = templates.getItemTemplateSkeleton();
       template.properties.service = {};
       template.item.properties = {
@@ -1476,7 +1476,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
   });
 
   describe("convertExtent", () => {
-    it("can handle undefined out SR", async () => {
+    it("can handle undefined out SR", async() => {
       const _extent = await restHelpers.convertExtent(
         extent,
         undefined as unknown as interfaces.ISpatialReference,
@@ -1486,7 +1486,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
       expect(_extent).toEqual(extent);
     });
 
-    it("can handle unmatched wkid", async () => {
+    it("can handle unmatched wkid", async() => {
       fetchMock
         .get(
           "https://myorg.maps.arcgis.com/sharing/rest/portals/self?f=json&token=fake-token",
@@ -1510,7 +1510,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
       expect(_extent).toEqual(expectedExtent);
     });
 
-    it("can handle unmatched wkid and geoTransforms", async () => {
+    it("can handle unmatched wkid and geoTransforms", async() => {
       fetchMock
         .get(
           "https://myorg.maps.arcgis.com/sharing/rest/portals/self?f=json&token=fake-token",
@@ -1534,7 +1534,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
       expect(_extent).toEqual(expectedExtent);
     });
 
-    it("can handle unmatched wkid and no transformations", async () => {
+    it("can handle unmatched wkid and no transformations", async() => {
       fetchMock
         .get(
           "https://myorg.maps.arcgis.com/sharing/rest/portals/self?f=json&token=fake-token",
@@ -1552,7 +1552,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
       expect(_extent).toEqual(expectedExtent);
     });
 
-    it("can handle unmatched wkid and unexpected transformations", async () => {
+    it("can handle unmatched wkid and unexpected transformations", async() => {
       fetchMock
         .get(
           "https://myorg.maps.arcgis.com/sharing/rest/portals/self?f=json&token=fake-token",
@@ -1572,7 +1572,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
       expect(_extent).toEqual(expectedExtent);
     });
 
-    it("can handle unmatched wkid and no geom in response", async () => {
+    it("can handle unmatched wkid and no geom in response", async() => {
       fetchMock
         .get(
           "https://myorg.maps.arcgis.com/sharing/rest/portals/self?f=json&token=fake-token",
@@ -1598,7 +1598,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
       expect(_extent).toEqual(expected);
     });
 
-    it("can handle unmatched wkid and failure on project", async () => {
+    it("can handle unmatched wkid and failure on project", async() => {
       fetchMock
         .get(
           "https://myorg.maps.arcgis.com/sharing/rest/portals/self?f=json&token=fake-token",
@@ -1621,7 +1621,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
       ).toBeRejected();
     });
 
-    it("can handle unmatched wkid and failure on findTransformations", async () => {
+    it("can handle unmatched wkid and failure on findTransformations", async() => {
       fetchMock
         .get(
           "https://myorg.maps.arcgis.com/sharing/rest/portals/self?f=json&token=fake-token",
@@ -1639,7 +1639,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
   });
 
   describe("convertExtentWithFallback", () => {
-    it("can handle NaN", async () => {
+    it("can handle NaN", async() => {
       // "NaN" extent values are returned when you try to project this to 102100
       const ext: interfaces.IExtent = {
         xmax: 180,
@@ -1694,7 +1694,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
       expect(actual).toEqual(expectedExtent);
     });
 
-    it("can handle NaN with defaultExtent", async () => {
+    it("can handle NaN with defaultExtent", async() => {
       // "NaN" extent values are returned when you try to project this to 102100
       const ext: interfaces.IExtent = {
         xmax: 180,
@@ -1742,7 +1742,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
       expect(actual).toEqual(expectedExtent);
     });
 
-    it("can handle error on failover", async () => {
+    it("can handle error on failover", async() => {
       const ext: interfaces.IExtent = {
         xmax: 180,
         xmin: -180,
@@ -1789,7 +1789,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
   });
 
   describe("getLayers", () => {
-    it("can handle success", async () => {
+    it("can handle success", async() => {
       const url =
         "https://services123.arcgis.com/org1234567890/arcgis/rest/services/ROWPermits_publiccomment/FeatureServer";
       const adminUrl =
@@ -1802,7 +1802,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
       expect(result).toEqual([mockItems.getAGOLLayerOrTable(0, "A", "Feature Layer")]);
     });
 
-    it("can handle error", async () => {
+    it("can handle error", async() => {
       const url =
         "https://services123.arcgis.com/org1234567890/arcgis/rest/services/ROWPermits_publiccomment/FeatureServer";
       const adminUrl =
@@ -1819,7 +1819,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
       );
     });
 
-    it("can handle empty layer list", async () => {
+    it("can handle empty layer list", async() => {
       const url =
         "https://services123.arcgis.com/org1234567890/arcgis/rest/services/ROWPermits_publiccomment/FeatureServer";
 
@@ -1988,7 +1988,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
   });
 
   describe("getRequest", () => {
-    it("should get request successfully", async () => {
+    it("should get request successfully", async() => {
       itemTemplate.key = "123456";
 
       const args: interfaces.IPostProcessArgs = {
@@ -2012,7 +2012,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
       return restHelpers.getRequest(update);
     });
 
-    it("should handle error", async () => {
+    it("should handle error", async() => {
       itemTemplate.key = "123456";
 
       const args: interfaces.IPostProcessArgs = {
@@ -2041,7 +2041,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
       );
     });
 
-    it("will retry on first failure", async () => {
+    it("will retry on first failure", async() => {
       itemTemplate.key = "123456";
 
       const args: interfaces.IPostProcessArgs = {
@@ -2068,7 +2068,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
       return restHelpers.getRequest(update);
     });
 
-    it("should get async request successfully", async () => {
+    it("should get async request successfully", async() => {
       itemTemplate.key = "123456";
 
       const args: interfaces.IPostProcessArgs = {
@@ -2096,7 +2096,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
       return restHelpers.getRequest(update);
     });
 
-    it("should get async request reject", async () => {
+    it("should get async request reject", async() => {
       itemTemplate.key = "123456";
 
       const args: interfaces.IPostProcessArgs = {
@@ -2127,7 +2127,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
   });
 
   describe("getServiceLayersAndTables", () => {
-    it("can handle failure to fetch service", async () => {
+    it("can handle failure to fetch service", async() => {
       const url =
         "https://services123.arcgis.com/org1234567890/arcgis/rest/admin/services/ROWPermits_publiccomment/FeatureServer";
 
@@ -2141,7 +2141,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
       );
     });
 
-    it("can handle failure to fetch layer", async () => {
+    it("can handle failure to fetch layer", async() => {
       const url =
         "https://services123.arcgis.com/org1234567890/arcgis/rest/services/ROWPermits_publiccomment/FeatureServer";
       const adminUrl =
@@ -2163,7 +2163,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
       );
     });
 
-    it("can fetch layers", async () => {
+    it("can fetch layers", async() => {
       const url =
         "https://services123.arcgis.com/org1234567890/arcgis/rest/services/ROWPermits_publiccomment/FeatureServer";
       const adminUrl =
@@ -2183,7 +2183,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
       expect(template).toEqual(expected);
     });
 
-    it("can fetch layers and tables", async () => {
+    it("can fetch layers and tables", async() => {
       const url =
         "https://services123.arcgis.com/org1234567890/arcgis/rest/services/ROWPermits_publiccomment/FeatureServer";
       const adminUrl =
@@ -2208,7 +2208,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
       expect(template).toEqual(expected);
     });
 
-    it("can fetch layers and tables with a relationship", async () => {
+    it("can fetch layers and tables with a relationship", async() => {
       const url =
         "https://services123.arcgis.com/org1234567890/arcgis/rest/services/ROWPermits_publiccomment/FeatureServer";
       const adminUrl =
@@ -2233,7 +2233,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
       expect(template).toEqual(expected);
     });
 
-    it("handles the absence of a url in the item", async () => {
+    it("handles the absence of a url in the item", async() => {
       const template = templates.getItemTemplateSkeleton();
       const updatedTemplate = await restHelpers.getServiceLayersAndTables(
         generalHelpers.cloneObject(template),
@@ -2244,7 +2244,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
   });
 
   describe("getFeatureServiceProperties", () => {
-    it("checkes that the cacheMaxAge property is copied out of a service's adminServiceInfo", async () => {
+    it("checkes that the cacheMaxAge property is copied out of a service's adminServiceInfo", async() => {
       const url =
         "https://services123.arcgis.com/org1234567890/arcgis/rest/services/ROWPermits_publiccomment/FeatureServer";
       const adminUrl =
@@ -2257,7 +2257,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
       expect(response.service.cacheMaxAge).toEqual(60);
     });
 
-    it("handles the absence of a service's adminServiceInfo", async () => {
+    it("handles the absence of a service's adminServiceInfo", async() => {
       const url =
         "https://services123.arcgis.com/org1234567890/arcgis/rest/services/ROWPermits_publiccomment/FeatureServer";
       const adminUrl =
@@ -2272,7 +2272,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
       expect(response.service.cacheMaxAge).toEqual(90);
     });
 
-    it("handles error on getting contingent values", async () => {
+    it("handles error on getting contingent values", async() => {
       const url =
         "https://services123.arcgis.com/org1234567890/arcgis/rest/services/ROWPermits_publiccomment/FeatureServer";
       const adminUrl =
@@ -2288,7 +2288,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
       await expectAsync(restHelpers.getFeatureServiceProperties(url, MOCK_USER_SESSION)).toBeRejected();
     });
 
-    it("handles workforce project service", async () => {
+    it("handles workforce project service", async() => {
       const assignmentIntegrations = {
         objectIdFieldName: "OBJECTID",
         uniqueIdField: { name: "OBJECTID", isSystemMaintained: true },
@@ -2501,7 +2501,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
   });
 
   describe("moveItemToFolder", () => {
-    it("tests the isolation function to the RESTJS moveItem function", async () => {
+    it("tests the isolation function to the RESTJS moveItem function", async() => {
       const itemId = "abc123";
       const folderId = "def456";
       const expected = {
@@ -2517,7 +2517,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
   });
 
   describe("moveItemsToFolder", () => {
-    it("tests multiple moveItem function calls", async () => {
+    it("tests multiple moveItem function calls", async() => {
       const itemIds = ["abc123", "def456", "ghi789"];
       const folderId = "xyz987";
 
@@ -2553,7 +2553,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
   });
 
   describe("getWorkflowConfigurationZip", () => {
-    it("can get workflow configuration", async () => {
+    it("can get workflow configuration", async() => {
       const orgId = "abcdefghij";
       const itemId = "1234567890";
       const requestSpy = spyOn(request, "request").and.returnValue(
@@ -2571,7 +2571,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
       expect(response).toEqual(await zipUtils.jsonToZipFile("jobConfig.json", { jobTemplates: "abc" }, "config"));
     });
 
-    it("can get workflow configuration using supplied server", async () => {
+    it("can get workflow configuration using supplied server", async() => {
       const itemId = "1234567890";
       const requestSpy = spyOn(request, "request").and.returnValue(
         zipUtils.jsonToZipFile("jobConfig.json", { jobTemplates: "abc" }, "config"),
@@ -2590,7 +2590,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
   });
 
   describe("setWorkflowConfigurationZip", () => {
-    it("can set workflow configuration", async () => {
+    it("can set workflow configuration", async() => {
       const orgId = "abcdefghij";
       const itemId = "1234567890";
       const configurationZipFile = await zipHelpers.getSampleFormZipFile(itemId, "workflow");
@@ -2613,7 +2613,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
   });
 
   describe("removeFolder", () => {
-    it("removes a folder", async () => {
+    it("removes a folder", async() => {
       const folderId: string = "ABC123";
       fetchMock.post(
         utils.PORTAL_SUBSET.restUrl + "/content/users/casey/" + folderId + "/delete",
@@ -2625,7 +2625,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
       expect(actual.success).toEqual(true);
     });
 
-    it("fails to remove a folder", async () => {
+    it("fails to remove a folder", async() => {
       const folderId: string = "ABC123";
       fetchMock.post(
         utils.PORTAL_SUBSET.restUrl + "/content/users/casey/" + folderId + "/delete",
@@ -2643,7 +2643,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
   });
 
   describe("removeGroup", () => {
-    it("removes a group", async () => {
+    it("removes a group", async() => {
       const groupId: string = "ABC123";
       fetchMock.post(
         utils.PORTAL_SUBSET.restUrl + "/community/groups/" + groupId + "/delete",
@@ -2653,7 +2653,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
       expect(actual.success).toEqual(true);
     });
 
-    it("fails to remove a group", async () => {
+    it("fails to remove a group", async() => {
       const groupId: string = "ABC123";
       fetchMock.post(
         utils.PORTAL_SUBSET.restUrl + "/community/groups/" + groupId + "/delete",
@@ -2669,7 +2669,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
   });
 
   describe("removeItem", () => {
-    it("removes an item", async () => {
+    it("removes an item", async() => {
       const itemId: string = "ABC123";
       fetchMock.post(
         utils.PORTAL_SUBSET.restUrl + "/content/users/casey/items/" + itemId + "/delete",
@@ -2679,7 +2679,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
       expect(actual.success).toEqual(true);
     });
 
-    it("fails to remove an item", async () => {
+    it("fails to remove an item", async() => {
       const itemId: string = "ABC123";
       fetchMock.post(
         utils.PORTAL_SUBSET.restUrl + "/content/users/casey/items/" + itemId + "/delete",
@@ -2696,7 +2696,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
   });
 
   describe("removeItemOrGroup", () => {
-    it("removes an item", async () => {
+    it("removes an item", async() => {
       const itemId: string = "ABC123";
       fetchMock.post(
         utils.PORTAL_SUBSET.restUrl + "/content/users/casey/items/" + itemId + "/delete",
@@ -2706,7 +2706,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
       expect(actual.success).toEqual(true);
     });
 
-    it("removes a group", async () => {
+    it("removes a group", async() => {
       const itemId: string = "ABC123";
       fetchMock
         .post(
@@ -2721,7 +2721,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
       expect(actual.success).toEqual(true);
     });
 
-    it("fails to remove an id", async () => {
+    it("fails to remove an id", async() => {
       const itemId: string = "ABC123";
       fetchMock
         .post(
@@ -2739,7 +2739,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
   });
 
   describe("searchAllItems", () => {
-    it("can handle no results from searching for items", async () => {
+    it("can handle no results from searching for items", async() => {
       const query: string = "My Item";
 
       fetchMock.get(
@@ -2752,7 +2752,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
       expect(itemResponse.results.length).toEqual(0);
     });
 
-    it("can fetch a single tranche", async () => {
+    it("can fetch a single tranche", async() => {
       const query: string = "My Item";
 
       fetchMock.get(
@@ -2765,7 +2765,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
       expect(itemResponse.results.length).toEqual(4);
     });
 
-    it("can fetch more than one tranche", async () => {
+    it("can fetch more than one tranche", async() => {
       const query: string = "My Item";
 
       fetchMock
@@ -2784,7 +2784,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
       expect(itemResponse.results.length).toEqual(120);
     });
 
-    it("can handle a failure", async () => {
+    it("can handle a failure", async() => {
       const query: string = "My Item";
 
       fetchMock.get("https://www.arcgis.com/sharing/rest/search?f=json&q=My%20Item", mockItems.get400Failure());
@@ -2799,7 +2799,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
   });
 
   describe("searchGroups", () => {
-    it("can handle no results from searching groups", async () => {
+    it("can handle no results from searching groups", async() => {
       const query: string = "My Group";
 
       fetchMock.get(
@@ -2811,7 +2811,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
       expect(groupResponse.results.length).toEqual(0);
     });
 
-    it("can handle a result", async () => {
+    it("can handle a result", async() => {
       const query: string = "My Group";
 
       fetchMock.get(
@@ -2825,7 +2825,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
   });
 
   describe("searchAllGroups", () => {
-    it("can fetch more than one tranche", async () => {
+    it("can fetch more than one tranche", async() => {
       const query: string = "Fred";
       const pagingParams: IPagingParams = { start: 1, num: 5 };
 
@@ -2847,7 +2847,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
   });
 
   describe("searchGroupAllContents", () => {
-    it("can handle no results from searching group contents", async () => {
+    it("can handle no results from searching group contents", async() => {
       const groupId: string = "grp1234567890";
       const query: string = "Fred";
 
@@ -2866,7 +2866,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
       expect(response.results.length).withContext("results.length").toEqual(0);
     });
 
-    it("can fetch a single tranche", async () => {
+    it("can fetch a single tranche", async() => {
       const groupId: string = "grp1234567890";
       const query: string = "Fred";
       const additionalSearchOptions: interfaces.IAdditionalGroupSearchOptions = {
@@ -2896,7 +2896,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
       expect(response.results.length).withContext("results.length").toEqual(4);
     });
 
-    it("can fetch more than one tranche", async () => {
+    it("can fetch more than one tranche", async() => {
       const groupId: string = "grp1234567890";
       const query: string = "Fred";
       const additionalSearchOptions: interfaces.IAdditionalGroupSearchOptions = { num: 5 };
@@ -2928,7 +2928,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
       expect(response.results.length).withContext("results.length").toEqual(9);
     });
 
-    it("can handle a failure", async () => {
+    it("can handle a failure", async() => {
       const groupId: string = "grp1234567890";
       const query: string = "Fred";
       const additionalSearchOptions: interfaces.IAdditionalGroupSearchOptions = { num: 5 };
@@ -2948,7 +2948,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
   });
 
   describe("searchGroupContents", () => {
-    it("can handle no results from searching group contents", async () => {
+    it("can handle no results from searching group contents", async() => {
       const groupId: string = "grp1234567890";
       const query: string = "My Group";
 
@@ -2961,7 +2961,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
       expect(groupResponse.results.length).toEqual(0);
     });
 
-    it("can handle a result", async () => {
+    it("can handle a result", async() => {
       const groupId: string = "grp1234567890";
       const query: string = "My Group";
 
@@ -2974,7 +2974,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
       expect(groupResponse.results.length).toEqual(1);
     });
 
-    it("can handle a categories search", async () => {
+    it("can handle a categories search", async() => {
       const groupId: string = "grp1234567890";
       const additionalSearchOptions: interfaces.IAdditionalGroupSearchOptions = {
         categories: [
@@ -3001,7 +3001,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
       expect(url).toEqual(expectedUrl);
     });
 
-    it("will not override the num passed in additionalSearchOptions", async () => {
+    it("will not override the num passed in additionalSearchOptions", async() => {
       const groupId: string = "grp1234567890";
       const additionalSearchOptions: interfaces.IAdditionalGroupSearchOptions = {
         categories: [
@@ -3050,7 +3050,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
   });
 
   describe("shareItem ::", () => {
-    it("shared the item", async () => {
+    it("shared the item", async() => {
       const groupId: string = "grp1234567890";
       const id: string = "itm1234567890";
       fetchMock
@@ -3080,7 +3080,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
         });
       return restHelpers.shareItem(groupId, id, MOCK_USER_SESSION, MOCK_USER_SESSION.username);
     });
-    it("can handle error on shareItem", async () => {
+    it("can handle error on shareItem", async() => {
       const groupId: string = "grp1234567890";
       const id: string = "itm1234567890";
       fetchMock
@@ -3120,7 +3120,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
       sinon.restore();
     });
 
-    it("handles additional parameters", async () => {
+    it("handles additional parameters", async() => {
       const itemInfo: interfaces.IItemUpdate = {
         id: "itm1234567890",
       };
@@ -3149,7 +3149,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
       sinon.restore();
     });
 
-    it("handles failure", async () => {
+    it("handles failure", async() => {
       const grp = templates.getGroupTemplatePart().item;
 
       sinon.stub(portal, "updateGroup").rejects(utils.getFailureResponse());
@@ -3160,7 +3160,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
       );
     });
 
-    it("uses supplied additional parameters", async () => {
+    it("uses supplied additional parameters", async() => {
       const grp = templates.getGroupTemplatePart().item;
       const additionalParams = { extra: "value" };
 
@@ -3173,7 +3173,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
   });
 
   describe("updateItemExtended", () => {
-    it("can handle failure", async () => {
+    it("can handle failure", async() => {
       itemTemplate.item.id = "itm1234567890";
       fetchMock.post(
         utils.PORTAL_SUBSET.restUrl + "/content/users/casey/items/itm1234567890/update",
@@ -3187,7 +3187,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
       );
     });
 
-    it("without data", async () => {
+    it("without data", async() => {
       itemTemplate.item.id = "itm1234567890";
       itemTemplate.data = null;
       fetchMock.post(
@@ -3197,7 +3197,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
       return restHelpers.updateItemExtended(itemTemplate.item, itemTemplate.data, MOCK_USER_SESSION, undefined);
     });
 
-    it("without share", async () => {
+    it("without share", async() => {
       itemTemplate.item.id = "itm1234567890";
       fetchMock.post(
         utils.PORTAL_SUBSET.restUrl + "/content/users/casey/items/itm1234567890/update",
@@ -3206,7 +3206,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
       return restHelpers.updateItemExtended(itemTemplate.item, itemTemplate.data, MOCK_USER_SESSION, undefined);
     });
 
-    it("with public share", async () => {
+    it("with public share", async() => {
       itemTemplate.item.id = "itm1234567890";
       fetchMock.post(
         utils.PORTAL_SUBSET.restUrl + "/content/users/casey/items/itm1234567890/update",
@@ -3225,7 +3225,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
       );
     });
 
-    it("with tracker share", async () => {
+    it("with tracker share", async() => {
       itemTemplate.item.id = "itm1234567890";
       itemTemplate.item.typeKeywords = ["Location Tracking View"];
       itemTemplate.item.properties = {
@@ -3249,7 +3249,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
       );
     });
 
-    it("with org share", async () => {
+    it("with org share", async() => {
       itemTemplate.item.id = "itm1234567890";
       fetchMock.post(
         utils.PORTAL_SUBSET.restUrl + "/content/users/casey/items/itm1234567890/update",
@@ -3262,7 +3262,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
       return restHelpers.updateItemExtended(itemTemplate.item, itemTemplate.data, MOCK_USER_SESSION, undefined, "org");
     });
 
-    it("can handle share failure", async () => {
+    it("can handle share failure", async() => {
       itemTemplate.item.id = "itm1234567890";
       fetchMock.post(
         utils.PORTAL_SUBSET.restUrl + "/content/users/casey/items/itm1234567890/update",
@@ -3284,7 +3284,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
   });
 
   describe("updateItemTemplateFromDictionary", () => {
-    it("should update template", async () => {
+    it("should update template", async() => {
       const templateDictionary = {
         folderId: "fld0",
         itmA: {
@@ -3327,7 +3327,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
       );
     });
 
-    it("should handle failure", async () => {
+    it("should handle failure", async() => {
       const templateDictionary = {
         folderId: "fld0",
         itmA: {
@@ -3372,7 +3372,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
   });
 
   describe("updateItemURL", () => {
-    it("should handle failure", async () => {
+    it("should handle failure", async() => {
       const url = utils.PORTAL_SUBSET.restUrl + "/apps/CrowdsourcePolling/index.html?appid=wma1234567890";
 
       fetchMock
@@ -3390,7 +3390,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
       );
     });
 
-    it("should return update item id", async () => {
+    it("should return update item id", async() => {
       const url = utils.PORTAL_SUBSET.restUrl + "/apps/CrowdsourcePolling/index.html?appid=wma1234567890";
 
       const updatedItem = mockItems.getAGOLItem("Web Mapping Application", url);
@@ -3403,7 +3403,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
       expect(id).toEqual("0");
     });
 
-    it("should handle error on first attempt to update a URL", async () => {
+    it("should handle error on first attempt to update a URL", async() => {
       const url = utils.PORTAL_SUBSET.restUrl + "/apps/CrowdsourcePolling/index.html?appid=wma1234567890";
 
       fetchMock.post(utils.PORTAL_SUBSET.restUrl + "/content/users/casey/items/0/update", utils.getFailureResponse());
@@ -3414,7 +3414,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
       );
     });
 
-    it("should handle no-op on first attempt to update a URL", async () => {
+    it("should handle no-op on first attempt to update a URL", async() => {
       const url = utils.PORTAL_SUBSET.restUrl + "/apps/CrowdsourcePolling/index.html?appid=wma1234567890";
 
       const originalItem = mockItems.getAGOLItem("Web Mapping Application", url + "{0}");
@@ -3432,7 +3432,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
       expect(id).toEqual("0");
     });
 
-    it("should handle error attempting to check if item got updated", async () => {
+    it("should handle error attempting to check if item got updated", async() => {
       const url = utils.PORTAL_SUBSET.restUrl + "/apps/CrowdsourcePolling/index.html?appid=wma1234567890";
 
       fetchMock
@@ -3445,7 +3445,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
       );
     });
 
-    it("should handle no-op on all attempts to update a URL", async () => {
+    it("should handle no-op on all attempts to update a URL", async() => {
       const url = utils.PORTAL_SUBSET.restUrl + "/apps/CrowdsourcePolling/index.html?appid=wma1234567890";
 
       const originalItem = mockItems.getAGOLItem("Web Mapping Application", url + "0");
@@ -3463,7 +3463,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
   });
 
   describe("_addItemDataFile", () => {
-    it("should add text/plain data", async () => {
+    it("should add text/plain data", async() => {
       const itemId = "itm1234567890";
       const url = utils.PORTAL_SUBSET.restUrl + "/content/users/casey/items/" + itemId + "/update";
       fetchMock.post(url, '{"success":true}');
@@ -3479,7 +3479,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
       expect(fetchBody).toEqual("f=json&id=itm1234567890&text=this%20is%20some%20text&token=fake-token");
     });
 
-    it("should add application/json data", async () => {
+    it("should add application/json data", async() => {
       const itemId = "itm1234567890";
       const url = utils.PORTAL_SUBSET.restUrl + "/content/users/casey/items/" + itemId + "/update";
       fetchMock.post(url, '{"success":true}');
@@ -3497,7 +3497,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
       );
     });
 
-    it("should add text data that's not text/plain or application/json", async () => {
+    it("should add text data that's not text/plain or application/json", async() => {
       // With Microsoft Legacy Edge, we have potential date mismatches because of Edge's lack of support for
       // the File constructor, so we'll have Date return the same value each time it is called for this test
       const date = new Date(Date.UTC(2019, 2, 4, 5, 6, 7)); // 0-based month
@@ -3535,7 +3535,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
   });
 
   describe("_addItemMetadataFile", () => {
-    it("should update metadata", async () => {
+    it("should update metadata", async() => {
       const itemId = "itm1234567890";
       fetchMock.post(
         utils.PORTAL_SUBSET.restUrl + "/content/users/casey/items/" + itemId + "/update",
@@ -3550,7 +3550,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
       expect(response.success).toBeTruthy();
     });
 
-    it("should handle failure to update metadata", async () => {
+    it("should handle failure to update metadata", async() => {
       const itemId = "itm1234567890";
       fetchMock.post(
         utils.PORTAL_SUBSET.restUrl + "/content/users/casey/items/" + itemId + "/update",
@@ -3604,7 +3604,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
   });
 
   describe("_getCreateServiceOptions", () => {
-    it("can get options for HOSTED empty service", async () => {
+    it("can get options for HOSTED empty service", async() => {
       const userSession: interfaces.UserSession = new interfaces.UserSession({
         username: "jsmith",
         password: "123456",
@@ -3646,7 +3646,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
       });
     });
 
-    it("can get options for PORTAL empty service", async () => {
+    it("can get options for PORTAL empty service", async() => {
       const userSession: interfaces.UserSession = new interfaces.UserSession({
         username: "jsmith",
         password: "123456",
@@ -3686,7 +3686,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
       });
     });
 
-    it("can get options for HOSTED service with values", async () => {
+    it("can get options for HOSTED service with values", async() => {
       const userSession: interfaces.UserSession = new interfaces.UserSession({
         username: "jsmith",
         password: "123456",
@@ -3757,7 +3757,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
       });
     });
 
-    it("can get tracker options for HOSTED service with values", async () => {
+    it("can get tracker options for HOSTED service with values", async() => {
       const userSession: interfaces.UserSession = new interfaces.UserSession({
         username: "jsmith",
         password: "123456",
@@ -3834,7 +3834,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
       });
     });
 
-    it("can get options for PORTAL service with values and unsupported capabilities", async () => {
+    it("can get options for PORTAL service with values and unsupported capabilities", async() => {
       const userSession: interfaces.UserSession = new interfaces.UserSession({
         username: "jsmith",
         password: "123456",
@@ -3906,7 +3906,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
       });
     });
 
-    it("can get options for HOSTED service with values when name contains guid", async () => {
+    it("can get options for HOSTED service with values when name contains guid", async() => {
       const userSession: interfaces.UserSession = new interfaces.UserSession({
         username: "jsmith",
         password: "123456",
@@ -3978,7 +3978,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
       });
     });
 
-    it("can get options for HOSTED service with values and handle error on convertExtent", async () => {
+    it("can get options for HOSTED service with values and handle error on convertExtent", async() => {
       const userSession: interfaces.UserSession = new interfaces.UserSession({
         username: "jsmith",
         password: "123456",

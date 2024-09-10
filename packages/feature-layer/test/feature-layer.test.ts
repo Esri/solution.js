@@ -54,7 +54,7 @@ afterEach(() => {
 
 describe("Module `feature-layer`: manages the creation and deployment of feature service types", () => {
   describe("convertItemToTemplate", () => {
-    it("templatize common properties", async () => {
+    it("templatize common properties", async() => {
       const id: string = "svc1234567890";
       const url: string =
         "https://services123.arcgis.com/org1234567890/arcgis/rest/services/ROWPermits_publiccomment/FeatureServer";
@@ -137,7 +137,7 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
       expect(r.properties.tables[0].definitionQuery).toEqual(expectedTableDefQuery);
     });
 
-    it("handle invalid group designations", async () => {
+    it("handle invalid group designations", async() => {
       const id: string = "svc1234567890";
       const url: string =
         "https://services123.arcgis.com/org1234567890/arcgis/rest/services/ROWPermits_publiccomment/FeatureServer";
@@ -181,7 +181,7 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
       expect(r.data).toEqual(expected);
     });
 
-    it("handle error on updateTemplateForInvalidDesignations", async () => {
+    it("handle error on updateTemplateForInvalidDesignations", async() => {
       const id: string = "svc1234567890";
       const url: string =
         "https://services123.arcgis.com/org1234567890/arcgis/rest/services/ROWPermits_publiccomment/FeatureServer";
@@ -198,7 +198,7 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
       );
     });
 
-    it("handle template item with missing url for invalid group designations", async () => {
+    it("handle template item with missing url for invalid group designations", async() => {
       const id: string = "svc1234567890";
 
       itemTemplate.itemId = id;
@@ -215,7 +215,7 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
       });
     });
 
-    it("handle invalid service data for invalid group designations", async () => {
+    it("handle invalid service data for invalid group designations", async() => {
       const id: string = "svc1234567890";
       const url: string =
         "https://services123.arcgis.com/org1234567890/arcgis/rest/services/ROWPermits_publiccomment/FeatureServer";
@@ -238,7 +238,7 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
       });
     });
 
-    it("should handle error on extractDependencies", async () => {
+    it("should handle error on extractDependencies", async() => {
       const id: string = "svc1234567890";
       const url: string =
         "https://services123.arcgis.com/org1234567890/arcgis/rest/services/ROWPermits_publiccomment/FeatureServer";
@@ -283,7 +283,7 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
         );
     });
 
-    it("should handle error on getItemData", async () => {
+    it("should handle error on getItemData", async() => {
       const id: string = "svc1234567890";
       const url: string =
         "https://services123.arcgis.com/org1234567890/arcgis/rest/services/ROWPermits_publiccomment/FeatureServer";
@@ -324,7 +324,7 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
       );
     });
 
-    it("should handle error on getServiceLayersAndTables", async () => {
+    it("should handle error on getServiceLayersAndTables", async() => {
       const id: string = "svc1234567890";
       const url: string =
         "https://services123.arcgis.com/org1234567890/arcgis/rest/services/ROWPermits_publiccomment/FeatureServer";
@@ -398,7 +398,7 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
   });
 
   describe("createItemFromTemplate", () => {
-    it("should create a solution from a template for portal", async () => {
+    it("should create a solution from a template for portal", async() => {
       const expectedId: string = "svc1234567890";
       const id: string = "{{" + expectedId + ".itemId}}";
 
@@ -533,7 +533,7 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
       });
     });
 
-    it("should create a solution from a template", async () => {
+    it("should create a solution from a template", async() => {
       const expectedId: string = "svc1234567890";
       const id: string = "{{" + expectedId + ".itemId}}";
 
@@ -643,7 +643,7 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
       });
     });
 
-    it("should create a solution with FS from a template", async () => {
+    it("should create a solution with FS from a template", async() => {
       const expectedId: string = "svc1234567890";
       const id: string = "{{" + expectedId + ".itemId}}";
 
@@ -754,7 +754,7 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
       });
     });
 
-    it("should set postProcess to true when the item has unprocessed interpolation tokens", async () => {
+    it("should set postProcess to true when the item has unprocessed interpolation tokens", async() => {
       const expectedId: string = "svc1234567890";
       const id: string = "{{" + expectedId + ".itemId}}";
 
@@ -863,7 +863,7 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
       });
     });
 
-    it("should set postProcess to true when the item data has unprocessed interpolation tokens", async () => {
+    it("should set postProcess to true when the item data has unprocessed interpolation tokens", async() => {
       const expectedId: string = "svc1234567890";
       const id: string = "{{" + expectedId + ".itemId}}";
 
@@ -973,7 +973,7 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
       });
     });
 
-    it("should create a solution from a template in portal", async () => {
+    it("should create a solution from a template in portal", async() => {
       const expectedId: string = "svc1234567890";
       const id: string = "{{" + expectedId + ".itemId}}";
 
@@ -1117,7 +1117,7 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
       });
     });
 
-    it("should handle error on updateItem", async () => {
+    it("should handle error on updateItem", async() => {
       const expectedId: string = "svc1234567890";
 
       const expectedUrl: string =
@@ -1202,7 +1202,7 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
       expect(response).toEqual(mockSolutions.getFailedItem(itemTemplate.type));
     });
 
-    it("should handle error deleting item after error on updateItem", async () => {
+    it("should handle error deleting item after error on updateItem", async() => {
       const expectedId: string = "svc1234567890";
 
       const expectedUrl: string =
@@ -1287,7 +1287,7 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
       expect(response).toEqual(mockSolutions.getFailedItem(itemTemplate.type));
     });
 
-    it("should handle error fetching updated item", async () => {
+    it("should handle error fetching updated item", async() => {
       const expectedId: string = "svc1234567890";
 
       const expectedUrl: string =
@@ -1368,7 +1368,7 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
       expect(response).toEqual(mockSolutions.getFailedItem(itemTemplate.type));
     });
 
-    it("should handle error deleting item after error fetching updated item", async () => {
+    it("should handle error deleting item after error fetching updated item", async() => {
       const expectedId: string = "svc1234567890";
 
       const expectedUrl: string =
@@ -1452,7 +1452,7 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
       expect(response).toEqual(mockSolutions.getFailedItem(itemTemplate.type));
     });
 
-    it("should handle error on addFeatureServiceLayersAndTables with successful cancellation", async () => {
+    it("should handle error on addFeatureServiceLayersAndTables with successful cancellation", async() => {
       const expectedId: string = "svc1234567890";
 
       const expectedUrl: string =
@@ -1513,7 +1513,7 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
       expect(response).toEqual(mockSolutions.getFailedItem(itemTemplate.type));
     });
 
-    it("should handle error on addFeatureServiceLayersAndTables with failed cancellation", async () => {
+    it("should handle error on addFeatureServiceLayersAndTables with failed cancellation", async() => {
       const expectedId: string = "svc1234567890";
 
       const expectedUrl: string =
@@ -1574,7 +1574,7 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
       expect(response).toEqual(mockSolutions.getFailedItem(itemTemplate.type));
     });
 
-    it("should handle error on createService", async () => {
+    it("should handle error on createService", async() => {
       const expectedId: string = "svc1234567890";
 
       const expectedUrl: string =
@@ -1627,7 +1627,7 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
       expect(response).toEqual(mockSolutions.getFailedItem(itemTemplate.type));
     });
 
-    it("should handle createService success === false", async () => {
+    it("should handle createService success === false", async() => {
       const expectedId: string = "svc1234567890";
 
       const expectedUrl: string =
@@ -1667,7 +1667,7 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
       expect(response).toEqual(mockSolutions.getFailedItem(itemTemplate.type));
     });
 
-    it("should handle error on updateItem", async () => {
+    it("should handle error on updateItem", async() => {
       const expectedId: string = "svc1234567890";
 
       const expectedUrl: string =
@@ -1751,7 +1751,7 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
       expect(response).toEqual(mockSolutions.getFailedItem(itemTemplate.type));
     });
 
-    it("should handle error on updateDefinition", async () => {
+    it("should handle error on updateDefinition", async() => {
       const expectedId: string = "svc1234567890";
 
       const expectedUrl: string =
@@ -1825,7 +1825,7 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
       expect(response).toEqual(mockSolutions.getFailedItem(itemTemplate.type));
     });
 
-    it("should handle empty layers and tables", async () => {
+    it("should handle empty layers and tables", async() => {
       const expectedId: string = "svc1234567890";
 
       const expectedUrl: string =
@@ -1886,7 +1886,7 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
       expect(response).toEqual(mockSolutions.getFailedItem(itemTemplate.type));
     });
 
-    it("should handle cancellation before deployment of item starts", async () => {
+    it("should handle cancellation before deployment of item starts", async() => {
       const templateDictionary: any = {};
 
       const response = await featureLayer.createItemFromTemplate(
@@ -1898,7 +1898,7 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
       expect(response).toEqual(mockSolutions.getFailedItem(itemTemplate.type));
     });
 
-    it("should handle cancellation after deployed item is created", async () => {
+    it("should handle cancellation after deployed item is created", async() => {
       const expectedId: string = "svc1234567890";
       const url: string = "{{" + expectedId + ".url}}";
 
@@ -1966,7 +1966,7 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
       expect(response).toEqual(mockSolutions.getFailedItem(itemTemplate.type));
     });
 
-    it("should handle cancellation failure after deployed item is created", async () => {
+    it("should handle cancellation failure after deployed item is created", async() => {
       const expectedId: string = "svc1234567890";
       const url: string = "{{" + expectedId + ".url}}";
 
@@ -2034,7 +2034,7 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
       expect(response).toEqual(mockSolutions.getFailedItem(itemTemplate.type));
     });
 
-    it("should handle cancellation after deployed item is finished", async () => {
+    it("should handle cancellation after deployed item is finished", async() => {
       const expectedId: string = "svc1234567890";
       const url: string = "{{" + expectedId + ".url}}";
 
@@ -2102,7 +2102,7 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
       expect(response).toEqual(mockSolutions.getFailedItem(itemTemplate.type));
     });
 
-    it("should handle cancellation failure after deployed item is finished", async () => {
+    it("should handle cancellation failure after deployed item is finished", async() => {
       const expectedId: string = "svc1234567890";
       const url: string = "{{" + expectedId + ".url}}";
 
@@ -2172,7 +2172,7 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
   });
 
   describe("postProcess", () => {
-    it("fetch and update the item and data", async () => {
+    it("fetch and update the item and data", async() => {
       const item: common.IItem = {
         id: "a369baed619441cfb5e862694d33d44c",
         owner: "brubble",
@@ -2243,7 +2243,7 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
       );
     });
 
-    it("will fine tune workforce service project", async () => {
+    it("will fine tune workforce service project", async() => {
       // the fineTuneCreatedWorkforceItem function is tested in workforce helpers
       const template: common.IItemTemplate = mockSolutions.getItemTemplateSkeleton();
       template.item.typeKeywords = ["Workforce Project"];

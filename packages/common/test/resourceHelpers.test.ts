@@ -52,7 +52,7 @@ describe("Module `resourceHelpers`: common functions involving the management of
   });
 
   describe("addResourceFromBlob", () => {
-    it("has filename without folder", async () => {
+    it("has filename without folder", async() => {
       const blob = utils.getSampleMetadataAsBlob();
       const itemId = "itm1234567890";
       const folder = "";
@@ -77,7 +77,7 @@ describe("Module `resourceHelpers`: common functions involving the management of
       expect(form.get("fileName")).toEqual(filename);
     });
 
-    it("has a filename without an extension", async () => {
+    it("has a filename without an extension", async() => {
       const blob = utils.getSampleMetadataAsBlob();
       const itemId = "itm1234567890";
       const folder = "aFolder";
@@ -93,7 +93,7 @@ describe("Module `resourceHelpers`: common functions involving the management of
       );
     });
 
-    it("has filename with folder", async () => {
+    it("has filename with folder", async() => {
       const blob = utils.getSampleMetadataAsBlob();
       const itemId = "itm1234567890";
       const folder = "aFolder";
@@ -121,7 +121,7 @@ describe("Module `resourceHelpers`: common functions involving the management of
   });
 
   describe("addThumbnailFromBlob", () => {
-    it("gets an item's thumbnail from a blob", async () => {
+    it("gets an item's thumbnail from a blob", async() => {
       const blob = utils.getSampleImageAsBlob();
       const itemId = "itm1234567890";
       const updateUrl = utils.PORTAL_SUBSET.restUrl + "/content/users/casey/items/itm1234567890/update";
@@ -138,7 +138,7 @@ describe("Module `resourceHelpers`: common functions involving the management of
       expect(typeof fetchBody).toEqual("object");
     });
 
-    it("gets a group's thumbnail from a blob", async () => {
+    it("gets a group's thumbnail from a blob", async() => {
       const blob = utils.getSampleImageAsBlob();
       const itemId = "grp1234567890";
       const updateUrl = utils.PORTAL_SUBSET.restUrl + "/community/groups/grp1234567890/update";
@@ -226,7 +226,7 @@ describe("Module `resourceHelpers`: common functions involving the management of
   });
 
   describe("copyFilesFromStorageItem", () => {
-    it("handles an empty files list", async () => {
+    it("handles an empty files list", async() => {
       const storageAuthentication = MOCK_USER_SESSION;
       const filePaths: interfaces.IDeployFileCopyPath[] = [] as interfaces.IDeployFileCopyPath[];
       const sourceItemId = "sln1234567890;";
@@ -245,7 +245,7 @@ describe("Module `resourceHelpers`: common functions involving the management of
       expect(response).toEqual(expected);
     });
 
-    it("remaps hub files", async () => {
+    it("remaps hub files", async() => {
       const storageAuthentication = MOCK_USER_SESSION;
       const sourceItemId = "sln1234567890;";
       const filePaths: interfaces.IDeployFileCopyPath[] = [
@@ -274,7 +274,7 @@ describe("Module `resourceHelpers`: common functions involving the management of
       expect(secondArg[0].url).withContext("url 0 should be the same").toBe(filePaths[0].url);
     });
 
-    it("copies a single data file", async () => {
+    it("copies a single data file", async() => {
       const storageAuthentication = MOCK_USER_SESSION;
       const filePaths: interfaces.IDeployFileCopyPath[] = [
         {
@@ -315,7 +315,7 @@ describe("Module `resourceHelpers`: common functions involving the management of
       expect(response).toEqual(expectedUpdate);
     });
 
-    it("copies a single data file using list of MIME types", async () => {
+    it("copies a single data file using list of MIME types", async() => {
       const storageAuthentication = MOCK_USER_SESSION;
       const filePaths: interfaces.IDeployFileCopyPath[] = [
         {
@@ -360,7 +360,7 @@ describe("Module `resourceHelpers`: common functions involving the management of
       expect(response).toEqual(expectedUpdate);
     });
 
-    it("copies a single metadata file", async () => {
+    it("copies a single metadata file", async() => {
       const storageAuthentication = MOCK_USER_SESSION;
       const filePaths: interfaces.IDeployFileCopyPath[] = [
         {
@@ -401,7 +401,7 @@ describe("Module `resourceHelpers`: common functions involving the management of
       expect(response).toEqual(expectedUpdate);
     });
 
-    it("copies a single resource file", async () => {
+    it("copies a single resource file", async() => {
       const storageAuthentication = MOCK_USER_SESSION;
       const filePaths: interfaces.IDeployFileCopyPath[] = [
         {
@@ -442,7 +442,7 @@ describe("Module `resourceHelpers`: common functions involving the management of
       expect(response).toEqual(expectedUpdate);
     });
 
-    it("copies multiple resource files", async () => {
+    it("copies multiple resource files", async() => {
       const storageAuthentication = MOCK_USER_SESSION;
       const template = {
         itemId: "abc",
@@ -499,7 +499,7 @@ describe("Module `resourceHelpers`: common functions involving the management of
       expect(response).toEqual(expectedUpdate);
     });
 
-    it("does not copy thumbnail files", async () => {
+    it("does not copy thumbnail files", async() => {
       const storageAuthentication = MOCK_USER_SESSION;
       const sourceItemId = "sln1234567890;";
       const filePaths: interfaces.IDeployFileCopyPath[] = [
@@ -526,7 +526,7 @@ describe("Module `resourceHelpers`: common functions involving the management of
   });
 
   describe("copyFilesToStorageItem", () => {
-    it("empty files list", async () => {
+    it("empty files list", async() => {
       const filePaths: interfaces.ISourceFile[] = [] as interfaces.ISourceFile[];
       const storageItemId: string = "itm1234567890";
       const storageAuthentication = MOCK_USER_SESSION;
@@ -540,7 +540,7 @@ describe("Module `resourceHelpers`: common functions involving the management of
       expect(response).toEqual(expected);
     });
 
-    it("single file to copy", async () => {
+    it("single file to copy", async() => {
       const files: interfaces.ISourceFile[] = [
         {
           itemId: "itm1234567890",
@@ -1233,7 +1233,7 @@ describe("Module `resourceHelpers`: common functions involving the management of
   });
 
   describe("getThumbnailFromStorageItem", () => {
-    it("handles an empty files list", async () => {
+    it("handles an empty files list", async() => {
       const storageAuthentication = MOCK_USER_SESSION;
       const filePaths: interfaces.IDeployFileCopyPath[] = [] as interfaces.IDeployFileCopyPath[];
 
@@ -1241,7 +1241,7 @@ describe("Module `resourceHelpers`: common functions involving the management of
       expect(response).toBeNull();
     });
 
-    it("copies a thumbnail file", async () => {
+    it("copies a thumbnail file", async() => {
       const storageAuthentication = MOCK_USER_SESSION;
       const filePaths: interfaces.IDeployFileCopyPath[] = [
         {
@@ -1284,7 +1284,7 @@ describe("Module `resourceHelpers`: common functions involving the management of
   });
 
   describe("removeItemResourceFile", () => {
-    it("correctly maps call", async () => {
+    it("correctly maps call", async() => {
       const itemId = "abcde";
       const filename = "fghij";
 
@@ -1301,7 +1301,7 @@ describe("Module `resourceHelpers`: common functions involving the management of
   });
 
   describe("updateItemResourceFile", () => {
-    it("correctly maps call", async () => {
+    it("correctly maps call", async() => {
       const itemId = "abcde";
       const filename = "fghij";
 
@@ -1323,7 +1323,7 @@ describe("Module `resourceHelpers`: common functions involving the management of
       });
     });
 
-    it("correctly maps call with prefixed filename", async () => {
+    it("correctly maps call with prefixed filename", async() => {
       const itemId = "abcde";
       const filename = "fghij/folder/myfile";
 

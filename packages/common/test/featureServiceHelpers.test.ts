@@ -3227,7 +3227,7 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
   });
 
   describe("getExistingLayersAndTables", () => {
-    it("will fetch each existing layer and table", async () => {
+    it("will fetch each existing layer and table", async() => {
       const url: string =
         "https://services123.arcgis.com/org1234567890/arcgis/rest/services/ROWPermits_publiccomment/FeatureServer";
       const ids: number[] = [0, 1];
@@ -3240,7 +3240,7 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
       expect(results.length === 2);
     });
 
-    it("suppresses and resolves errors", async () => {
+    it("suppresses and resolves errors", async() => {
       const url: string =
         "https://services123.arcgis.com/org1234567890/arcgis/rest/services/ROWPermits_publiccomment/FeatureServer";
       const ids: number[] = [0, 1];
@@ -3256,7 +3256,7 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
   });
 
   describe("addFeatureServiceLayersAndTables", () => {
-    it("should handle error when adding layers and/or tables", async () => {
+    it("should handle error when adding layers and/or tables", async() => {
       const expectedId: string = "svc1234567890";
       const id: string = "{{" + expectedId + ".itemId}}";
 
@@ -3325,7 +3325,7 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
       ).toBeRejected();
     });
 
-    it("should handle error on getLayersAndTables", async () => {
+    it("should handle error on getLayersAndTables", async() => {
       const expectedId: string = "svc1234567890";
       const id: string = "{{" + expectedId + ".itemId}}";
 
@@ -3364,7 +3364,7 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
       );
     });
 
-    it("should handle error on layer updates", async () => {
+    it("should handle error on layer updates", async() => {
       const expectedId: string = "svc1234567890";
       const id: string = "{{" + expectedId + ".itemId}}";
 
@@ -3436,7 +3436,7 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
       ).toBeRejected();
     });
 
-    it("should handle absence of item url", async () => {
+    it("should handle absence of item url", async() => {
       const expectedId: string = "svc1234567890";
       const id: string = "{{" + expectedId + ".itemId}}";
 
@@ -3502,7 +3502,7 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
       ).toBeRejected();
     });
 
-    it("should skip tracking view", async () => {
+    it("should skip tracking view", async() => {
       const expectedUrl: string =
         "https://services123.arcgis.com/org1234567890/arcgis/rest/services/ROWPermits_publiccomment/FeatureServer";
 
@@ -3525,7 +3525,7 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
   });
 
   describe("addFeatureServiceDefinition", () => {
-    it("should skip tracking view", async () => {
+    it("should skip tracking view", async() => {
       const expectedUrl: string =
         "https://services123.arcgis.com/org1234567890/arcgis/rest/services/ROWPermits_publiccomment/FeatureServer";
 
@@ -3540,7 +3540,7 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
   });
 
   describe("updateLayerFieldReferences", () => {
-    it("should handle error from postProcessFields", async () => {
+    it("should handle error from postProcessFields", async() => {
       itemTemplate = templates.getItemTemplate("Feature Service");
       itemTemplate.item.url = undefined;
 
@@ -3549,7 +3549,7 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
   });
 
   describe("postProcessFields", () => {
-    it("should update fieldInfos, settings, and layerInfos", async () => {
+    it("should update fieldInfos, settings, and layerInfos", async() => {
       const url: string =
         "https://services123.arcgis.com/org1234567890/arcgis/rest/services/ROWPermits_publiccomment/FeatureServer";
       const adminUrl: string =
@@ -3616,7 +3616,7 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
       expect(layerInfos.adminLayerInfos).toBeDefined();
     });
 
-    it("should handle missing url", async () => {
+    it("should handle missing url", async() => {
       itemTemplate = templates.getItemTemplate("Feature Service");
       itemTemplate.item.url = undefined;
 
@@ -3627,7 +3627,7 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
       );
     });
 
-    it("should handle missing layers and tables", async () => {
+    it("should handle missing layers and tables", async() => {
       const url: string =
         "https://services123.arcgis.com/org1234567890/arcgis/rest/services/ROWPermits_publiccomment/FeatureServer";
 
@@ -3652,7 +3652,7 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
   });
 
   describe("processContingentValues", () => {
-    it("restructure and store fetched contingent values", async () => {
+    it("restructure and store fetched contingent values", async() => {
       const contingentValues = {
         typeCodes: ["Unknown", "Any", "Null", "Code", "Range"],
         stringDicts: [
@@ -3808,7 +3808,7 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
       expect(properties.contingentValues).toEqual(expected);
     });
 
-    it("handles error fetching contingent values", async () => {
+    it("handles error fetching contingent values", async() => {
       const properties: interfaces.IFeatureServiceProperties = {
         service: {},
         layers: [
@@ -3827,7 +3827,7 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
       await expectAsync(processContingentValues(properties, adminUrl, authentication)).toBeRejected();
     });
 
-    it("handles undefined layers and tables", async () => {
+    it("handles undefined layers and tables", async() => {
       const properties = {
         service: {},
         layers: undefined,

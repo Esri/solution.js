@@ -984,7 +984,7 @@ export function _createItemFromTemplateWhenReady(
             itemProgressCallback,
           );
         })
-        .then(async (response: common.ICreateItemFromTemplateResponse) => {
+        .then(async(response: common.ICreateItemFromTemplateResponse) => {
           if (response.id === "") {
             statusCode = common.EItemProgressStatus.Failed;
             throw new Error("handled"); // fails to create item

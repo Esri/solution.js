@@ -42,7 +42,7 @@ afterEach(() => {
 
 describe("Module `workflowHelpers`", () => {
   describe("addWorkflowItem", () => {
-    it("basically works", async () => {
+    it("basically works", async() => {
       const itemId = "wfw1234567890";
 
       const agolItem = templates.getItemTemplate("Workflow");
@@ -68,7 +68,7 @@ describe("Module `workflowHelpers`", () => {
   });
 
   describe("fetchAuxiliaryItems", () => {
-    it("handles failure to add workflow item", async () => {
+    it("handles failure to add workflow item", async() => {
       const itemId = "wfw1234567890";
 
       const searchItemsSpy = spyOn(common, "searchItems").and.resolveTo({
@@ -131,7 +131,7 @@ describe("Module `workflowHelpers`", () => {
   });
 
   describe("updateTemplateDictionaryForWorkflow", () => {
-    it("store ids and key values", async () => {
+    it("store ids and key values", async() => {
       const sourceId = "src123";
       const newId = "new123";
 

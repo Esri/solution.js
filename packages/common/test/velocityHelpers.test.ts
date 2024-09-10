@@ -62,7 +62,7 @@ describe("Module `velocityHelpers`: common functions", () => {
   });
 
   describe("getVelocityInfo", () => {
-    it("handles missing velocity id", async () => {
+    it("handles missing velocity id", async() => {
       const subscriptionInfo: any = mockItems.getAGOLSubscriptionInfo(false);
       fetchMock.get(
         "https://myorg.maps.arcgis.com/sharing/rest/portals/self/subscriptioninfo?f=json&token=fake-token",

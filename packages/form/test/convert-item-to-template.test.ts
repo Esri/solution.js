@@ -29,7 +29,7 @@ describe("convertItemToTemplate", () => {
     MOCK_USER_SESSION = utils.createRuntimeMockUserSession();
     template = templates.getItemTemplate("Form");
   });
-  it("should delegate to simple types template creation", async () => {
+  it("should delegate to simple types template creation", async() => {
     const simpleTypesSpy = spyOn(simpleTypes, "convertItemToTemplate").and.resolveTo(template);
     const formBase = mockItems.getAGOLItem("Form");
     const results = await convertProcessor.convertItemToTemplate(formBase, MOCK_USER_SESSION, MOCK_USER_SESSION, {});

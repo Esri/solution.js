@@ -33,7 +33,7 @@ const MOCK_USER_SESSION = utils.createRuntimeMockUserSession();
 
 describe("Module `storymap-processor`: ", () => {
   describe("convertItemToTemplate :: ", () => {
-    it("happy path", async () => {
+    it("happy path", async() => {
       const getDataSpy = spyOn(portalModule, "getItemData").and.resolveTo({});
       const tmpl = {
         item: {},
@@ -88,7 +88,7 @@ describe("Module `storymap-processor`: ", () => {
         .toBeDefined();
     });
 
-    it("happy-path", async () => {
+    it("happy-path", async() => {
       const createFromTmplSpy = spyOn(createFromTemplateModule, "createStoryMapModelFromTemplate").and.resolveTo({
         assets: [],
       });
@@ -103,7 +103,7 @@ describe("Module `storymap-processor`: ", () => {
       expect(createSpy.calls.count()).withContext("should call createStoryMap").toBe(1);
     });
 
-    it("accepts and empty solution hash", async () => {
+    it("accepts and empty solution hash", async() => {
       const createFromTmplSpy = spyOn(createFromTemplateModule, "createStoryMapModelFromTemplate").and.resolveTo({});
 
       const createSpy = spyOn(createStoryMapModule, "createStoryMap").and.resolveTo(fakeStoryMap);
@@ -118,7 +118,7 @@ describe("Module `storymap-processor`: ", () => {
       expect(createSpy.calls.count()).withContext("should call createStoryMap").toBe(1);
     });
 
-    it("early-exits correctly", async () => {
+    it("early-exits correctly", async() => {
       const cbFalse = () => false;
 
       const result = await StorymapProcessor.createItemFromTemplate(tmpl, td, MOCK_USER_SESSION, cbFalse);
@@ -126,7 +126,7 @@ describe("Module `storymap-processor`: ", () => {
       expect(result.postProcess).withContext("should return postProcess false").toBe(false);
     });
 
-    it("callsback on exception", async () => {
+    it("callsback on exception", async() => {
       spyOn(createFromTemplateModule, "createStoryMapModelFromTemplate").and.rejectWith("booom");
 
       return StorymapProcessor.createItemFromTemplate(tmpl, td, MOCK_USER_SESSION, cb)
@@ -137,7 +137,7 @@ describe("Module `storymap-processor`: ", () => {
         });
     });
 
-    it("cleans up if job is cancelled late", async () => {
+    it("cleans up if job is cancelled late", async() => {
       // fn that returns a fn that closes over a counter so that
       // it can return false after the first call
       const createCb = () => {

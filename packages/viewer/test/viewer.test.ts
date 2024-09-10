@@ -82,7 +82,7 @@ afterEach(() => {
 
 describe("Module `viewer`", () => {
   describe("checkSolution", () => {
-    it("should handle inability to get complete item", async () => {
+    it("should handle inability to get complete item", async() => {
       const compItem = mockItems.getCompleteMockItem("Web Mapping Application");
       spyOn(common, "getCompleteItem").and.resolveTo(undefined);
 
@@ -92,7 +92,7 @@ describe("Module `viewer`", () => {
       expect(results[1]).toEqual("&#x2716; error: item is not found");
     });
 
-    it("should reject items that are not Solutions", async () => {
+    it("should reject items that are not Solutions", async() => {
       const compItem = mockItems.getCompleteMockItem("Web Mapping Application");
       spyOn(common, "getCompleteItem").and.resolveTo(compItem);
 
@@ -102,7 +102,7 @@ describe("Module `viewer`", () => {
       expect(results[1]).toEqual("&#x2716; error: item is not a Solution");
     });
 
-    it("should reject Solution items that are neither Templates nor Deployed", async () => {
+    it("should reject Solution items that are neither Templates nor Deployed", async() => {
       const compItem = mockItems.getCompleteMockItem("Solution");
       spyOn(common, "getCompleteItem").and.resolveTo(compItem);
 
@@ -112,7 +112,7 @@ describe("Module `viewer`", () => {
       expect(results[1]).toEqual("&#x2716; error: item is neither a Template Solution nor a Deployed Solution");
     });
 
-    it("should reject reject Solution items that are missing their data sections", async () => {
+    it("should reject reject Solution items that are missing their data sections", async() => {
       const compItem = mockItems.getCompleteMockItem("Solution");
       (compItem.base.typeKeywords as any).push("Template");
       compItem.data = null as any;
@@ -127,7 +127,7 @@ describe("Module `viewer`", () => {
       );
     });
 
-    it("should reject reject Solution items that have defective JSON", async () => {
+    it("should reject reject Solution items that have defective JSON", async() => {
       const compItem = mockItems.getCompleteMockItem("Solution");
       (compItem.base.typeKeywords as any).push("Template");
       compItem.data = common.jsonToFile(
@@ -147,7 +147,7 @@ describe("Module `viewer`", () => {
       );
     });
 
-    it("should reject reject Solution items that have no templates", async () => {
+    it("should reject reject Solution items that have no templates", async() => {
       const compItem = mockItems.getCompleteMockItem("Solution");
       (compItem.base.typeKeywords as any).push("Template");
       compItem.data = common.jsonToFile(
@@ -168,7 +168,7 @@ describe("Module `viewer`", () => {
       );
     });
 
-    it("should recognize a Template Solution item", async () => {
+    it("should recognize a Template Solution item", async() => {
       const compItem = mockItems.getCompleteTemplateSolutionItem();
       spyOn(common, "getCompleteItem").and.resolveTo(compItem);
 
@@ -179,7 +179,7 @@ describe("Module `viewer`", () => {
       expect(results[2]).toEqual("&#x2714; all dependencies are in Solution");
     });
 
-    it("should recognize a Deployed Solution item", async () => {
+    it("should recognize a Deployed Solution item", async() => {
       const compItem = mockItems.getCompleteDeployedSolutionItem();
       spyOn(common, "getCompleteItem").and.resolveTo(compItem);
 
@@ -190,7 +190,7 @@ describe("Module `viewer`", () => {
       expect(results[2]).toEqual("&#x2714; matching forward Solution2Item relationship(s)");
     });
 
-    it("should catch forward relationships to unknown items in Deployed Solution", async () => {
+    it("should catch forward relationships to unknown items in Deployed Solution", async() => {
       const compItem = mockItems.getCompleteDeployedSolutionItem();
       compItem.fwdRelatedItems[0].relatedItemIds.push("xxx1234567890");
       spyOn(common, "getCompleteItem").and.resolveTo(compItem);
@@ -202,7 +202,7 @@ describe("Module `viewer`", () => {
       expect(results[2]).toEqual("&#x2716; there are forward Solution2Item relationship(s) to unknown item(s)");
     });
 
-    it("should catch missing forward relationships to items in Deployed Solution", async () => {
+    it("should catch missing forward relationships to items in Deployed Solution", async() => {
       const compItem = mockItems.getCompleteDeployedSolutionItem();
       compItem.fwdRelatedItems[0].relatedItemIds.pop();
       spyOn(common, "getCompleteItem").and.resolveTo(compItem);
@@ -214,7 +214,7 @@ describe("Module `viewer`", () => {
       expect(results[2]).toEqual("&#x2716; missing forward Solution2Item relationship(s)");
     });
 
-    it("should catch mismatching forward relationships in Deployed Solution", async () => {
+    it("should catch mismatching forward relationships in Deployed Solution", async() => {
       const compItem = mockItems.getCompleteDeployedSolutionItem();
       compItem.fwdRelatedItems[0].relatedItemIds.pop();
       compItem.fwdRelatedItems[0].relatedItemIds.push("xxx1234567890");
@@ -227,7 +227,7 @@ describe("Module `viewer`", () => {
       expect(results[2]).toEqual("&#x2716; mismatching forward Solution2Item relationship(s)");
     });
 
-    it("should catch missing dependencies in a Template Solution item", async () => {
+    it("should catch missing dependencies in a Template Solution item", async() => {
       const compItem = mockItems.getCompleteTemplateSolutionItem();
       const data: common.ISolutionItemData = await common.blobToJson(compItem.data);
       data.templates[0].dependencies.push("xxx1234567890");
@@ -243,7 +243,7 @@ describe("Module `viewer`", () => {
   });
 
   describe("compareItems", () => {
-    it("handles identity with supplied Solution items", async () => {
+    it("handles identity with supplied Solution items", async() => {
       return viewer.compareItems(sampleItemTemplate.item, sampleItemTemplate.item).then(
         (match) => {
           return match ? Promise.resolve() : fail();
@@ -252,7 +252,7 @@ describe("Module `viewer`", () => {
       );
     });
 
-    it("handles non-Solution items", async () => {
+    it("handles non-Solution items", async() => {
       const item1 = {
         ...sampleItemTemplate.item,
         type: "Web Map",
@@ -269,7 +269,7 @@ describe("Module `viewer`", () => {
       );
     });
 
-    it("handles different items", async () => {
+    it("handles different items", async() => {
       const item1 = {
         ...sampleItemTemplate.item,
         type: "Web Map",
@@ -286,7 +286,7 @@ describe("Module `viewer`", () => {
       );
     });
 
-    it("handles identity with supplied item ids", async () => {
+    it("handles identity with supplied item ids", async() => {
       fetchMock.get(
         utils.PORTAL_SUBSET.restUrl + "/content/items/itm1234567890?f=json&token=fake-token",
         sampleItemTemplate.item,
@@ -299,7 +299,7 @@ describe("Module `viewer`", () => {
       );
     });
 
-    it("handles identity with supplied item ids, but failed GET", async () => {
+    it("handles identity with supplied item ids, but failed GET", async() => {
       fetchMock.get(
         utils.PORTAL_SUBSET.restUrl + "/content/items/itm1234567890?f=json&token=fake-token",
         mockItems.get500Failure(),

@@ -34,7 +34,7 @@ afterEach(() => {
 jasmine.DEFAULT_TIMEOUT_INTERVAL = 20000; // default is 5000 ms
 
 describe("getVelocityDependencies", () => {
-  it("handles standalone source, feed, and output", async () => {
+  it("handles standalone source, feed, and output", async() => {
     const type = "Real Time Analytic";
     const template = templates.getItemTemplate(type, []);
 
@@ -71,7 +71,7 @@ describe("getVelocityDependencies", () => {
     expect(actual.length).toEqual(3);
   });
 
-  it("handles misssing sources and feeds", async () => {
+  it("handles misssing sources and feeds", async() => {
     const type = "Real Time Analytic";
     const template = templates.getItemTemplate(type, []);
     delete template.data.sources;
@@ -82,7 +82,7 @@ describe("getVelocityDependencies", () => {
     expect(actual.length).toEqual(0);
   });
 
-  it("handles misssing portalItemId", async () => {
+  it("handles misssing portalItemId", async() => {
     const type = "Real Time Analytic";
     const template = templates.getItemTemplate(type, []);
     delete template.data.source;

@@ -133,7 +133,7 @@ export function convertItemToTemplate(
           // Get the QC config
           templateModifyingPromise = new Promise(
             // eslint-disable-next-line @typescript-eslint/no-misused-promises, no-async-promise-executor
-            async (qcResolve) => {
+            async(qcResolve) => {
               // Remove the qc.project.json file from the list of resources
               let qcProjectFile: File = null;
               let iQcProjectFile: number = -1;

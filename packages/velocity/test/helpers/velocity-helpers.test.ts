@@ -41,7 +41,7 @@ afterEach(() => {
 jasmine.DEFAULT_TIMEOUT_INTERVAL = 20000; // default is 5000 ms
 
 describe("getVelocityUrl", () => {
-  it("gets standard url with suffix", async () => {
+  it("gets standard url with suffix", async() => {
     const velocityUrl: string = "https://us-iot.arcgis.com/usadvanced00/aaaatfmrv9d1divn";
     const expected: string = `${velocityUrl}/iot/feed/ABC123/suffix/?f=json&token=fake-token`;
     const templateDictionary: any = {
@@ -54,7 +54,7 @@ describe("getVelocityUrl", () => {
 });
 
 describe("postVelocityData", () => {
-  it("supports autoStart", async () => {
+  it("supports autoStart", async() => {
     const velocityUrl: string = "https://us-iot.arcgis.com/usadvanced00/aaaatfmrv9d1divn";
     const realtimeUrl: string = `${velocityUrl}/iot/analytics/realtime`;
 
@@ -96,7 +96,7 @@ describe("postVelocityData", () => {
     return postVelocityData(MOCK_USER_SESSION, template, data, templateDictionary, true);
   });
 
-  it("handles non executable in autoStart", async () => {
+  it("handles non executable in autoStart", async() => {
     const velocityUrl: string = "https://us-iot.arcgis.com/usadvanced00/aaaatfmrv9d1divn";
     const realtimeUrl: string = "https://us-iot.arcgis.com/usadvanced00/aaaatfmrv9d1divn/iot/analytics/realtime";
     const type: string = "Real Time Analytic";
@@ -134,7 +134,7 @@ describe("postVelocityData", () => {
     return postVelocityData(MOCK_USER_SESSION, template, data, templateDictionary, true);
   });
 
-  it("name errors", async () => {
+  it("name errors", async() => {
     const velocityUrl: string = "https://us-iot.arcgis.com/usadvanced00/aaaatfmrv9d1divn";
     const realtimeUrl: string = "https://us-iot.arcgis.com/usadvanced00/aaaatfmrv9d1divn/iot/analytics/realtime";
     const type: string = "Real Time Analytic";
@@ -219,7 +219,7 @@ describe("postVelocityData", () => {
     return postVelocityData(MOCK_USER_SESSION, template, data, templateDictionary, true);
   });
 
-  it("name errors on feeds", async () => {
+  it("name errors on feeds", async() => {
     const velocityUrl: string = "https://us-iot.arcgis.com/usadvanced00/aaaatfmrv9d1divn";
     const realtimeUrl: string = "https://us-iot.arcgis.com/usadvanced00/aaaatfmrv9d1divn/iot/analytics/realtime";
     const type: string = "Real Time Analytic";
@@ -319,7 +319,7 @@ describe("postVelocityData", () => {
 });
 
 describe("_validateOutputs", () => {
-  it("can handle no data outputs or feeds", async () => {
+  it("can handle no data outputs or feeds", async() => {
     const expected: any = { asIs: "asIs" };
     const type: string = "Real Time Analytic";
 

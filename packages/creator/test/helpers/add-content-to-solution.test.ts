@@ -45,7 +45,7 @@ import { findBy } from "@esri/hub-common";
 const MOCK_USER_SESSION = utils.createRuntimeMockUserSession();
 
 describe("addContentToSolution", () => {
-  it("addContentToSolution item progress callback with new item", async () => {
+  it("addContentToSolution item progress callback with new item", async() => {
     const solutionId = "sln1234567890";
     const options: common.ICreateSolutionOptions = {
       itemIds: ["map1234567890"],
@@ -73,7 +73,7 @@ describe("addContentToSolution", () => {
     expect(options.itemIds).toEqual(["map1234567890", "wma1234567890"]);
   });
 
-  it("addContentToSolution item progress callback with ignored item", async () => {
+  it("addContentToSolution item progress callback with ignored item", async() => {
     const solutionId = "sln1234567890";
     const options: common.ICreateSolutionOptions = {
       itemIds: ["map1234567890", "wma1234567890"],
@@ -102,7 +102,7 @@ describe("addContentToSolution", () => {
     return addContentToSolution(solutionId, options, MOCK_USER_SESSION, MOCK_USER_SESSION);
   });
 
-  it("addContentToSolution item progress callback with failed item", async () => {
+  it("addContentToSolution item progress callback with failed item", async() => {
     const solutionId = "sln1234567890";
     const options: common.ICreateSolutionOptions = {
       itemIds: ["map1234567890"],
@@ -160,7 +160,7 @@ describe("_getDataFilesFromTemplates", () => {
     expect(_getDataFilesFromTemplates(templates)).toEqual([undefined, undefined]);
   });
 
-  it("handles templates with data", async () => {
+  it("handles templates with data", async() => {
     const formDataFile = {
       itemId: "123",
       file: await mockZips.getSampleFormZipFile("123", "Form_data.zip"),
@@ -1169,7 +1169,7 @@ describe("_restoreDataFilesToTemplates", () => {
     expect(templates).toEqual(expectedTemplates);
   });
 
-  it("handles templates with data", async () => {
+  it("handles templates with data", async() => {
     const formDataFile = {
       itemId: "123",
       file: await mockZips.getSampleFormZipFile("123", "Form_data.zip"),

@@ -61,7 +61,7 @@ export async function getZipObjectContents(
   const extractedZipFiles: interfaces.IZipObjectContentItem[] = [];
   const fileContentsRetrievalPromises: Array<Promise<interfaces.TZipObjectContent>> = [];
   zipObject.forEach((relativePath, file) => {
-    const getContents = async () => {
+    const getContents = async() => {
       if (filesOfInterest.length === 0 || filesOfInterest.includes(relativePath)) {
         const fileType = blobExtensions.includes(relativePath.split(".").pop()) ? "blob" : "string";
         const fileContentsFetch = file.async(fileType);

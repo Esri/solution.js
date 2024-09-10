@@ -39,7 +39,7 @@ describe("createSurvey", () => {
     fetchMock.restore();
   });
 
-  it("should resolve a ISurvey123CreateResult when successful", async () => {
+  it("should resolve a ISurvey123CreateResult when successful", async() => {
     const response = {
       success: true,
       id: "2c36d3679e7f4934ac599051df22daf6",
@@ -75,7 +75,7 @@ describe("createSurvey", () => {
     expect(result).toEqual(expected);
   });
 
-  it("should support overriding survey123 url", async () => {
+  it("should support overriding survey123 url", async() => {
     const response = {
       success: true,
       id: "2c36d3679e7f4934ac599051df22daf6",
@@ -110,7 +110,7 @@ describe("createSurvey", () => {
     expect(result).toEqual(expected);
   });
 
-  it("should reject with an error when unsuccessful", async () => {
+  it("should reject with an error when unsuccessful", async() => {
     const response = {
       success: false,
       error: { message: "Something went awry" },

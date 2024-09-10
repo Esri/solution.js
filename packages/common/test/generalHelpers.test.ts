@@ -26,7 +26,7 @@ import * as serviceAdmin from "@esri/arcgis-rest-service-admin";
 
 describe("Module `generalHelpers`: common utility functions shared across packages", () => {
   describe("blobToJson", () => {
-    it("extracts JSON from a blob", async () => {
+    it("extracts JSON from a blob", async() => {
       const srcJson: any = {
         a: "b",
         c: 4,
@@ -39,14 +39,14 @@ describe("Module `generalHelpers`: common utility functions shared across packag
       expect(extractedJson).toEqual(srcJson);
     });
 
-    it("fails to extract JSON from a blob 1", async () => {
+    it("fails to extract JSON from a blob 1", async() => {
       const blob: Blob = new Blob([], { type: "application/json" });
 
       const extractedJson = await generalHelpers.blobToJson(blob);
       expect(extractedJson).toBeNull();
     });
 
-    it("fails to extract JSON from a blob 2", async () => {
+    it("fails to extract JSON from a blob 2", async() => {
       const blob: Blob = new Blob(["a"], { type: "application/json" });
 
       const extractedJson = await generalHelpers.blobToJson(blob);
@@ -555,7 +555,7 @@ describe("Module `generalHelpers`: common utility functions shared across packag
   });
 
   describe("delay", () => {
-    it("should delay", async () => {
+    it("should delay", async() => {
       const start = Date.now();
       await generalHelpers.delay(1000);
       const end = Date.now();
@@ -1583,7 +1583,7 @@ describe("Module `generalHelpers`: common utility functions shared across packag
   });
 
   describe("jsonToBlob", () => {
-    it("creates a blob with expected mime type", async () => {
+    it("creates a blob with expected mime type", async() => {
       const json: any = { a: "abc", b: 123 };
       const blob = generalHelpers.jsonToBlob(json);
       expect(blob.type).toBe("application/octet-stream");
@@ -1593,7 +1593,7 @@ describe("Module `generalHelpers`: common utility functions shared across packag
   });
 
   describe("jsonToFile", () => {
-    it("creates a file with expected mime type", async () => {
+    it("creates a file with expected mime type", async() => {
       const json: any = { a: "abc", b: 123 };
       const file = generalHelpers.jsonToFile(json, "myFile.abc", "application/octet-stream");
       expect(file.type).toBe("application/octet-stream");

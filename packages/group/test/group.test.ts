@@ -50,7 +50,7 @@ afterEach(() => {
 
 describe("Module `group`: manages the creation and deployment of groups", () => {
   describe("convertItemToTemplate", () => {
-    it("should handle error on getGroupBase", async () => {
+    it("should handle error on getGroupBase", async() => {
       const itemTemplate: common.IItemTemplate = templates.getItemTemplateSkeleton();
       itemTemplate.itemId = "abc0cab401af4828a25cc6eaeb59fb69";
       itemTemplate.item = mockItems.getAGOLItem("Group", undefined);
@@ -96,7 +96,7 @@ describe("Module `group`: manages the creation and deployment of groups", () => 
       expect(newItemTemplate).toEqual(expectedTemplate);
     });
 
-    it("should handle error on portal getGroupBase", async () => {
+    it("should handle error on portal getGroupBase", async() => {
       const itemTemplate: common.IItemTemplate = templates.getItemTemplateSkeleton();
       itemTemplate.itemId = "abc0cab401af4828a25cc6eaeb59fb69";
       itemTemplate.item = mockItems.getAGOLItem("Group", undefined);
@@ -214,7 +214,7 @@ describe("Module `group`: manages the creation and deployment of groups", () => 
       expect(newItemTemplate).toEqual(expectedTemplate);
     });
 
-    it("should handle a group", async () => {
+    it("should handle a group", async() => {
       const itemTemplate: common.IItemTemplate = templates.getItemTemplateSkeleton();
       itemTemplate.itemId = "abc0cab401af4828a25cc6eaeb59fb69";
       itemTemplate.item = mockItems.getAGOLItem("Group", undefined);
@@ -396,7 +396,7 @@ describe("Module `group`: manages the creation and deployment of groups", () => 
       expect(actual).toEqual(expectedTemplate);
     });
 
-    it("should handle error on getItemResources", async () => {
+    it("should handle error on getItemResources", async() => {
       const itemTemplate: common.IItemTemplate = templates.getItemTemplateSkeleton();
       itemTemplate.itemId = "abc0cab401af4828a25cc6eaeb59fb69";
       itemTemplate.item = mockItems.getAGOLItem("Group", undefined);
@@ -574,7 +574,7 @@ describe("Module `group`: manages the creation and deployment of groups", () => 
   });
 
   describe("createItemFromTemplate", () => {
-    it("should create group", async () => {
+    it("should create group", async() => {
       const itemId: string = "abc9cab401af4828a25cc6eaeb59fb69";
       const newItemID: string = "abc8cab401af4828a25cc6eaeb59fb69";
       const user: any = {
@@ -616,7 +616,7 @@ describe("Module `group`: manages the creation and deployment of groups", () => 
       expect(templateDictionary).toEqual(expected);
     });
 
-    it("should create tracker group", async () => {
+    it("should create tracker group", async() => {
       const itemId: string = "abc9cab401af4828a25cc6eaeb59fb69";
       const newItemID: string = "abc8cab401af4828a25cc6eaeb59fb69";
       const user: any = {
@@ -676,7 +676,7 @@ describe("Module `group`: manages the creation and deployment of groups", () => 
       expect(templateDictionary).toEqual(expected);
     });
 
-    it("should handle error checking user groups", async () => {
+    it("should handle error checking user groups", async() => {
       const itemId: string = "abc9cab401af4828a25cc6eaeb59fb69";
       const newItemID: string = "abc8cab401af4828a25cc6eaeb59fb69";
       const user: any = {
@@ -729,7 +729,7 @@ describe("Module `group`: manages the creation and deployment of groups", () => 
       );
     });
 
-    it("should handle reassign failure on create tracker group", async () => {
+    it("should handle reassign failure on create tracker group", async() => {
       const itemId: string = "abc9cab401af4828a25cc6eaeb59fb69";
       const newItemID: string = "abc8cab401af4828a25cc6eaeb59fb69";
       const user: any = {
@@ -779,7 +779,7 @@ describe("Module `group`: manages the creation and deployment of groups", () => 
       expect(response).toEqual(templates.getFailedItem("Group"));
     });
 
-    it("should handle cancellation after reassign on create tracker group", async () => {
+    it("should handle cancellation after reassign on create tracker group", async() => {
       const itemId: string = "abc9cab401af4828a25cc6eaeb59fb69";
       const newItemID: string = "abc8cab401af4828a25cc6eaeb59fb69";
       const user: any = {
@@ -832,7 +832,7 @@ describe("Module `group`: manages the creation and deployment of groups", () => 
       expect(response).toEqual(templates.getFailedItem("Group"));
     });
 
-    it("should handle cancellation failure after reassign on create tracker group", async () => {
+    it("should handle cancellation failure after reassign on create tracker group", async() => {
       const itemId: string = "abc9cab401af4828a25cc6eaeb59fb69";
       const newItemID: string = "abc8cab401af4828a25cc6eaeb59fb69";
       const user: any = {
@@ -886,7 +886,7 @@ describe("Module `group`: manages the creation and deployment of groups", () => 
       expect(response).toEqual(templates.getFailedItem("Group"));
     });
 
-    it("should handle failure to remove users on create tracker group", async () => {
+    it("should handle failure to remove users on create tracker group", async() => {
       const itemId: string = "abc9cab401af4828a25cc6eaeb59fb69";
       const newItemID: string = "abc8cab401af4828a25cc6eaeb59fb69";
       const user: any = {
@@ -940,7 +940,7 @@ describe("Module `group`: manages the creation and deployment of groups", () => 
       expect(response).toEqual(templates.getFailedItem("Group"));
     });
 
-    it("should handle cancellation after remove users on create tracker group", async () => {
+    it("should handle cancellation after remove users on create tracker group", async() => {
       const itemId: string = "abc9cab401af4828a25cc6eaeb59fb69";
       const newItemID: string = "abc8cab401af4828a25cc6eaeb59fb69";
       const user: any = {
@@ -997,7 +997,7 @@ describe("Module `group`: manages the creation and deployment of groups", () => 
       expect(response).toEqual(templates.getFailedItem("Group"));
     });
 
-    it("should handle cancellation failure after remove users on create tracker group", async () => {
+    it("should handle cancellation failure after remove users on create tracker group", async() => {
       const itemId: string = "abc9cab401af4828a25cc6eaeb59fb69";
       const newItemID: string = "abc8cab401af4828a25cc6eaeb59fb69";
       const user: any = {
@@ -1055,7 +1055,7 @@ describe("Module `group`: manages the creation and deployment of groups", () => 
       expect(response).toEqual(templates.getFailedItem("Group"));
     });
 
-    it("should create group with thumbnail", async () => {
+    it("should create group with thumbnail", async() => {
       const itemId: string = "abc9cab401af4828a25cc6eaeb59fb69";
       const newItemID: string = "abc8cab401af4828a25cc6eaeb59fb69";
       const user: any = {
@@ -1105,7 +1105,7 @@ describe("Module `group`: manages the creation and deployment of groups", () => 
       expect(templateDictionary).toEqual(expected);
     });
 
-    it("should handle success === false on create group", async () => {
+    it("should handle success === false on create group", async() => {
       const itemId: string = "abc9cab401af4828a25cc6eaeb59fb69";
       const user: any = {
         groups: [],
@@ -1130,7 +1130,7 @@ describe("Module `group`: manages the creation and deployment of groups", () => 
       expect(response).toEqual(templates.getFailedItem("Group"));
     });
 
-    it("should handle error on create group", async () => {
+    it("should handle error on create group", async() => {
       const itemId: string = "abc9cab401af4828a25cc6eaeb59fb69";
       const user: any = {
         groups: [],
@@ -1153,7 +1153,7 @@ describe("Module `group`: manages the creation and deployment of groups", () => 
       expect(response).toEqual(templates.getFailedItem("Group"));
     });
 
-    it("should handle cancellation before deployment of group starts", async () => {
+    it("should handle cancellation before deployment of group starts", async() => {
       const itemTemplate: common.IItemTemplate = templates.getGroupTemplatePart();
       const templateDictionary: any = {};
 
@@ -1166,7 +1166,7 @@ describe("Module `group`: manages the creation and deployment of groups", () => 
       expect(response).toEqual(templates.getFailedItem(itemTemplate.type));
     });
 
-    it("should handle cancellation after deployed group is created", async () => {
+    it("should handle cancellation after deployed group is created", async() => {
       const itemTemplate: common.IItemTemplate = templates.getGroupTemplatePart();
       const templateDictionary: any = {
         user: {
@@ -1193,7 +1193,7 @@ describe("Module `group`: manages the creation and deployment of groups", () => 
       expect(response).toEqual(templates.getFailedItem(itemTemplate.type));
     });
 
-    it("should handle cancellation failure after deployed group is created", async () => {
+    it("should handle cancellation failure after deployed group is created", async() => {
       const itemTemplate: common.IItemTemplate = templates.getGroupTemplatePart();
       const templateDictionary: any = {
         user: {
@@ -1220,7 +1220,7 @@ describe("Module `group`: manages the creation and deployment of groups", () => 
       expect(response).toEqual(templates.getFailedItem(itemTemplate.type));
     });
 
-    it("should handle cancellation after deployed group is finished", async () => {
+    it("should handle cancellation after deployed group is finished", async() => {
       const itemTemplate: common.IItemTemplate = templates.getGroupTemplatePart();
       const templateDictionary: any = {
         user: {
@@ -1247,7 +1247,7 @@ describe("Module `group`: manages the creation and deployment of groups", () => 
       expect(response).toEqual(templates.getFailedItem(itemTemplate.type));
     });
 
-    it("should handle cancellation after deployed group is finished", async () => {
+    it("should handle cancellation after deployed group is finished", async() => {
       const itemTemplate: common.IItemTemplate = templates.getGroupTemplatePart();
       const templateDictionary: any = {
         user: {
@@ -1274,7 +1274,7 @@ describe("Module `group`: manages the creation and deployment of groups", () => 
       expect(response).toEqual(templates.getFailedItem(itemTemplate.type));
     });
 
-    it("should handle post process of group", async () => {
+    it("should handle post process of group", async() => {
       const itemId: string = "abc9cab401af4828a25cc6eaeb59fb69";
       const templateDictionary: any = { bbb9cab401af4828a25cc6eaeb59fb69: { url: "http://correct" } };
 
@@ -1302,7 +1302,7 @@ describe("Module `group`: manages the creation and deployment of groups", () => 
       );
     });
 
-    it("should handle failure to post process group", async () => {
+    it("should handle failure to post process group", async() => {
       const itemId: string = "abc9cab401af4828a25cc6eaeb59fb69";
       const templateDictionary: any = { bbb9cab401af4828a25cc6eaeb59fb69: { url: "http://correct" } };
 

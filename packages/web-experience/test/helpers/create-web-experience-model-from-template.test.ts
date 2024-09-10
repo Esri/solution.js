@@ -21,7 +21,7 @@ import * as utils from "../../../common/test/mocks/utils";
 const MOCK_USER_SESSION = utils.createRuntimeMockUserSession();
 
 describe("createWebExperienceModelFromTemplate :: ", () => {
-  it("interpolates values", async () => {
+  it("interpolates values", async() => {
     const adlibSpy = spyOn(hubModule, "interpolate").and.callThrough();
     const tmpl = {
       itemId: "bc3",

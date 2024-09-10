@@ -27,12 +27,12 @@ import JSZip from "jszip";
 
 describe("Module `JSZip`: JavaScript-based zip utility", () => {
   describe("createZip", () => {
-    it("handles empty file list", async () => {
+    it("handles empty file list", async() => {
       const zipfile = await libConnectors.createZip("zipfile", []);
       expect(zipfile.name).withContext("zip created").toEqual("zipfile");
     });
 
-    it("handles one file", async () => {
+    it("handles one file", async() => {
       const zipfile = await libConnectors.createZip("zipfile", [getSampleMetadataAsFile()]);
       expect(zipfile.name).withContext("zip created").toEqual("zipfile");
 
@@ -44,7 +44,7 @@ describe("Module `JSZip`: JavaScript-based zip utility", () => {
         .toEqual(1);
     });
 
-    it("handles one file in a folder", async () => {
+    it("handles one file in a folder", async() => {
       const zipfile = await libConnectors.createZip("zipfile", [getSampleMetadataAsFile("metadata")], "info");
       expect(zipfile.name).withContext("zip created").toEqual("zipfile");
 

@@ -87,7 +87,7 @@ describe("postProcessHubSurvey", () => {
     templates = [formTemplate];
   });
 
-  it("should post process the survey", async () => {
+  it("should post process the survey", async() => {
     const replaceInTemplateSpy = spyOn(common, "replaceInTemplate").and.returnValue(interpolatedTemplate);
     const getItemBaseSpy = spyOn(common, "getItemBase").and.returnValue(Promise.resolve(featureServiceResultBase));
     const updateItemSpy = spyOn(common, "updateItem").and.resolveTo();

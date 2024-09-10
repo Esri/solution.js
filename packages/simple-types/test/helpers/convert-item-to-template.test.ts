@@ -49,7 +49,7 @@ afterEach(() => {
 
 describe("simpleTypeConvertItemToTemplate", () => {
   describe("dashboard", () => {
-    it("should handle dashboard et al. item types", async () => {
+    it("should handle dashboard et al. item types", async() => {
       const itemTemplate: common.IItemTemplate = templates.getItemTemplateSkeleton();
       itemTemplate.itemId = "dsh1234567890";
       itemTemplate.item = mockItems.getAGOLItem("Dashboard", undefined);
@@ -118,7 +118,7 @@ describe("simpleTypeConvertItemToTemplate", () => {
   });
 
   describe("data pipeline", () => {
-    it("should handle data pipeline item type", async () => {
+    it("should handle data pipeline item type", async() => {
       const itemTemplate: common.IItemTemplate = templates.getItemTemplateSkeleton();
       itemTemplate.itemId = "dpl1234567890";
       itemTemplate.item = mockItems.getAGOLItem("Data Pipeline", undefined, itemTemplate.itemId);
@@ -190,7 +190,7 @@ describe("simpleTypeConvertItemToTemplate", () => {
       let itemTemplate: common.IItemTemplate;
       let expectedTemplate: any;
 
-      beforeEach(async () => {
+      beforeEach(async() => {
         solutionItemId = "sln1234567890";
         itemTemplate = templates.getItemTemplateSkeleton();
         itemTemplate.itemId = "frm1234567890";
@@ -302,7 +302,7 @@ describe("simpleTypeConvertItemToTemplate", () => {
         );
       });
 
-      it("should handle form item type with default filename for falsy item name", async () => {
+      it("should handle form item type with default filename for falsy item name", async() => {
         const formId = "frm1234567890";
         itemTemplate.item.name = null;
 
@@ -326,7 +326,7 @@ describe("simpleTypeConvertItemToTemplate", () => {
         expect(template).toEqual(expectedTemplate);
       });
 
-      it('should handle form item type with default filename for "undefined" string literal item name', async () => {
+      it('should handle form item type with default filename for "undefined" string literal item name', async() => {
         const formId = "frm1234567890";
         itemTemplate.item.name = "undefined";
 
@@ -351,7 +351,7 @@ describe("simpleTypeConvertItemToTemplate", () => {
         expect(template).toEqual(expectedTemplate);
       });
 
-      it("should handle an Enterprise portal", async () => {
+      it("should handle an Enterprise portal", async() => {
         const MOCK_USER_ENTERPRISE_SESSION: common.UserSession = utils.createRuntimeMockUserSession(
           undefined,
           undefined,
@@ -504,7 +504,7 @@ describe("simpleTypeConvertItemToTemplate", () => {
   });
 
   describe("notebook", () => {
-    it("should handle python notebook", async () => {
+    it("should handle python notebook", async() => {
       const item = {
         id: "abc0cab401af4828a25cc6eaeb59fb69",
         type: "Notebook",
@@ -545,7 +545,7 @@ describe("simpleTypeConvertItemToTemplate", () => {
   });
 
   describe("oic", () => {
-    it("should handle OIC (Oriented Imagery Catalog)", async () => {
+    it("should handle OIC (Oriented Imagery Catalog)", async() => {
       const item: any = mockItems.getAGOLItem("Oriented Imagery Catalog", undefined);
       const data: any = mockItems.getAGOLItemData("Oriented Imagery Catalog");
       const service: any = mockItems.getAGOLService();
@@ -569,7 +569,7 @@ describe("simpleTypeConvertItemToTemplate", () => {
   });
 
   describe("quick capture", () => {
-    it("should handle quick capture project", async () => {
+    it("should handle quick capture project", async() => {
       const solutionItemId = "ee67658b2a98450cba051fd001463df0";
       const resources: any = {
         total: 1,
@@ -656,7 +656,7 @@ describe("simpleTypeConvertItemToTemplate", () => {
       expect(actual).toEqual(expected);
     });
 
-    it("should handle quick capture project without a data section", async () => {
+    it("should handle quick capture project without a data section", async() => {
       const solutionItemId = "ee67658b2a98450cba051fd001463df0";
       const resources: any = {
         total: 1,
@@ -743,7 +743,7 @@ describe("simpleTypeConvertItemToTemplate", () => {
       expect(actual).toEqual(expected);
     });
 
-    it("should handle quick capture project without a basemap", async () => {
+    it("should handle quick capture project without a basemap", async() => {
       const solutionItemId = "ee67658b2a98450cba051fd001463df0";
       const resources: any = {
         total: 1,
@@ -840,7 +840,7 @@ describe("simpleTypeConvertItemToTemplate", () => {
   });
 
   describe("vector tile service", () => {
-    it("should handle vector tile service", async () => {
+    it("should handle vector tile service", async() => {
       const itemTemplate: common.IItemTemplate = mockItems.getAGOLItem(
         "Vector Tile Service",
         "https://myOrg.arcgis.com/home/item.html?id=vts1234567890",
@@ -919,7 +919,7 @@ describe("simpleTypeConvertItemToTemplate", () => {
   });
 
   describe("web mapping application", () => {
-    it("should handle web mapping application", async () => {
+    it("should handle web mapping application", async() => {
       const itemTemplate: common.IItemTemplate = mockItems.getAGOLItem("Web Mapping Application", undefined);
 
       itemTemplate.item = {
@@ -1018,7 +1018,7 @@ describe("simpleTypeConvertItemToTemplate", () => {
       expect(actual).toEqual(expected);
     });
 
-    it("should handle error on web mapping application: data section", async () => {
+    it("should handle error on web mapping application: data section", async() => {
       const itemTemplate: common.IItemTemplate = mockItems.getAGOLItem("Web Mapping Application", undefined);
 
       itemTemplate.item = {
@@ -1047,7 +1047,7 @@ describe("simpleTypeConvertItemToTemplate", () => {
       return simpleTypes.convertItemToTemplate(itemTemplate.item, MOCK_USER_SESSION, MOCK_USER_SESSION, {});
     });
 
-    it("should handle error on web mapping application: feature layer", async () => {
+    it("should handle error on web mapping application: feature layer", async() => {
       const itemTemplate: common.IItemTemplate = mockItems.getAGOLItem("Web Mapping Application", undefined);
 
       itemTemplate.item = {
@@ -1107,7 +1107,7 @@ describe("simpleTypeConvertItemToTemplate", () => {
       );
     });
 
-    it("should handle web mapping application with missing data section and source URL", async () => {
+    it("should handle web mapping application with missing data section and source URL", async() => {
       const solutionItemId = "sln1234567890";
       // Related to issue: #56
       // To add support for simple apps such as those that we create for "Getting to Know"
@@ -1180,7 +1180,7 @@ describe("simpleTypeConvertItemToTemplate", () => {
   });
 
   describe("workforce", () => {
-    it("should handle workforce project", async () => {
+    it("should handle workforce project", async() => {
       const solutionItemId = "sln1234567890";
       const item = {
         id: "abc0cab401af4828a25cc6eaeb59fb69",

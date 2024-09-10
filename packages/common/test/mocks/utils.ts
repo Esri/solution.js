@@ -22,13 +22,13 @@ import * as interfaces from "../../src/interfaces";
 export const ORG_URL = "https://myorg.maps.arcgis.com";
 export const PORTAL_URL = "https://myorg.maps.arcgis.com";
 
-export const TOMORROW = (function () {
+export const TOMORROW = (function() {
   const now = new Date();
   now.setDate(now.getDate() + 1);
   return now;
 })();
 
-export const YESTERDAY = (function () {
+export const YESTERDAY = (function() {
   const now = new Date();
   now.setDate(now.getDate() - 1);
   return now;
@@ -74,7 +74,7 @@ export const PORTAL_SUBSET = {
   urlKey: "deploymentTest",
 };
 
-export const ITEM_PROGRESS_CALLBACK: interfaces.IItemProgressCallback = function (
+export const ITEM_PROGRESS_CALLBACK: interfaces.IItemProgressCallback = function(
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   itemId: string,
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -87,7 +87,7 @@ export const ITEM_PROGRESS_CALLBACK: interfaces.IItemProgressCallback = function
   return true;
 };
 
-export const SOLUTION_PROGRESS_CALLBACK: interfaces.ISolutionProgressCallback = function (
+export const SOLUTION_PROGRESS_CALLBACK: interfaces.ISolutionProgressCallback = function(
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   percentDone: number,
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -104,7 +104,7 @@ export const SOLUTION_PROGRESS_CALLBACK: interfaces.ISolutionProgressCallback = 
  */
 export function createFailingItemProgressCallbackOnNthCall(callToFailOn: number): interfaces.IItemProgressCallback {
   let numCalls = 0;
-  return function () {
+  return function() {
     return callToFailOn !== ++numCalls;
   };
 }
@@ -416,7 +416,7 @@ export function createRuntimeMockUserSession(
 
   (userSession as any).isEnterprise = isEnterprise;
 
-  userSession.getPortal = function () {
+  userSession.getPortal = function() {
     return (this as any).isEnterprise
       ? Promise.resolve({ portalHostname: "myOrg.ags.esri.com/portal" })
       : Promise.resolve({ urlKey: "myUrlKey" });
@@ -1227,7 +1227,7 @@ export function returnOnNthCall(
   itemBeforeNthCall: any,
 ): interfaces.INoArgFunction {
   let numCalls = 0;
-  return function () {
+  return function() {
     return ++numCalls < trigger ? itemBeforeNthCall : itemForNthCall;
   };
 }

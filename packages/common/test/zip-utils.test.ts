@@ -36,7 +36,7 @@ beforeEach(() => {
 
 describe("Module `zip-utils`", () => {
   describe("blobToZipObject", () => {
-    it("handles a non-zip blob", async () => {
+    it("handles a non-zip blob", async() => {
       const blob = new Blob(["Hello, world!"], { type: "text/plain" });
 
       await expectAsync(zipUtils.blobToZipObject(blob)).toBeRejected();
@@ -44,7 +44,7 @@ describe("Module `zip-utils`", () => {
   });
 
   describe("fetchZipObject", () => {
-    it("fetches a zip object", async () => {
+    it("fetches a zip object", async() => {
       const itemId = "2f56b3b59cdc4ac8b8f5de0399887e1e";
       spyOn(getBlobUtil, "getBlob").and.returnValue(zipHelpers.getSampleFormZipBlob(itemId));
 
@@ -59,7 +59,7 @@ describe("Module `zip-utils`", () => {
   });
 
   describe("getZipObjectContents", () => {
-    it("returns the contents of a non-binary zip object", async () => {
+    it("returns the contents of a non-binary zip object", async() => {
       const itemId = "2f56b3b59cdc4ac8b8f5de0399887e1e";
       const zip = zipHelpers.generateFormZipObject(itemId);
 
@@ -68,7 +68,7 @@ describe("Module `zip-utils`", () => {
       expect(zipFiles.length).toBe(7);
     });
 
-    it("returns just two files out of a zip object", async () => {
+    it("returns just two files out of a zip object", async() => {
       const itemId = "2f56b3b59cdc4ac8b8f5de0399887e1e";
       const zip = zipHelpers.generateFormZipObject(itemId);
 
@@ -79,7 +79,7 @@ describe("Module `zip-utils`", () => {
       expect(zipFiles[1].file).toBe("esriinfo/form.json");
     });
 
-    it("returns the contents of a binary zip object", async () => {
+    it("returns the contents of a binary zip object", async() => {
       const zip = zipHelpers.generateBinaryZipObject();
 
       const zipFiles = await zipUtils.getZipObjectContents(zip);
@@ -90,7 +90,7 @@ describe("Module `zip-utils`", () => {
   });
 
   describe("jsonFilesToZipObject", () => {
-    it("converts a collection of JSON files to a zip object", async () => {
+    it("converts a collection of JSON files to a zip object", async() => {
       const itemId = "2f56b3b59cdc4ac8b8f5de0399887e1e";
       const formJson = zipHelpers.generateFormJsonFiles(itemId);
 
@@ -104,7 +104,7 @@ describe("Module `zip-utils`", () => {
   });
 
   describe("jsonToZipObject", () => {
-    it("converts a JSON object to a zip object", async () => {
+    it("converts a JSON object to a zip object", async() => {
       const zippedFileName = "config.json";
       const json = {
         appId: "ABCDEFGHIJKLMNOP",
@@ -126,7 +126,7 @@ describe("Module `zip-utils`", () => {
   });
 
   describe("jsonToZipFile", () => {
-    it("converts a JSON object to a zip file", async () => {
+    it("converts a JSON object to a zip file", async() => {
       const zippedFileName = "config.json";
       const json = {
         appId: "ABCDEFGHIJKLMNOP",
@@ -151,7 +151,7 @@ describe("Module `zip-utils`", () => {
   describe("modifyFilesinZipObject", () => {
     const itemId = "2f56b3b59cdc4ac8b8f5de0399887e1e";
 
-    it("applies a function to all files in the zip", async () => {
+    it("applies a function to all files in the zip", async() => {
       let zip = zipHelpers.generateFormZipObject(itemId);
       const zipFileContents = await zipUtils.getZipObjectContents(zip);
       const zipFiles: string[] = zipFileContents.map((zipFile) => zipFile.file);
@@ -167,7 +167,7 @@ describe("Module `zip-utils`", () => {
   });
 
   describe("zipObjectToZipFile", () => {
-    it("converts a zip object to a zip file with full filename", async () => {
+    it("converts a zip object to a zip file with full filename", async() => {
       const itemId = "2f56b3b59cdc4ac8b8f5de0399887e1e";
       const zip = zipHelpers.generateFormZipObject(itemId);
       const zipFile = await zipUtils.zipObjectToZipFile(zip, "Fred.zip");
@@ -175,7 +175,7 @@ describe("Module `zip-utils`", () => {
       expect(zipFile.type).toEqual("application/zip");
     });
 
-    it("converts a zip object to a zip file with partial filename", async () => {
+    it("converts a zip object to a zip file with partial filename", async() => {
       const itemId = "2f56b3b59cdc4ac8b8f5de0399887e1e";
       const zip = zipHelpers.generateFormZipObject(itemId);
       const zipFile = await zipUtils.zipObjectToZipFile(zip, "Fred");

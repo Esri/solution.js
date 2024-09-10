@@ -47,7 +47,7 @@ describe("Module `webmap`: manages the creation and deployment of web map item t
   });
 
   describe("convertItemToTemplate", () => {
-    it("converts without data", async () => {
+    it("converts without data", async() => {
       const model = {
         itemId: "itm1234567890",
         type: "Web Map",
@@ -84,7 +84,7 @@ describe("Module `webmap`: manages the creation and deployment of web map item t
       expect(actual).toEqual(expected);
     });
 
-    it("converts with empty data", async () => {
+    it("converts with empty data", async() => {
       const model = {
         itemId: "itm1234567890",
         type: "Web Map",
@@ -121,7 +121,7 @@ describe("Module `webmap`: manages the creation and deployment of web map item t
       expect(actual).toEqual(expected);
     });
 
-    it("converts with layer data", async () => {
+    it("converts with layer data", async() => {
       const model = {
         itemId: "A14a9ef8efa7448fa8ddf7b13cef0240",
         type: "Web Map",
@@ -253,7 +253,7 @@ describe("Module `webmap`: manages the creation and deployment of web map item t
       expect(actual).toEqual(expected);
     });
 
-    it("converts with table data", async () => {
+    it("converts with table data", async() => {
       const model = {
         itemId: "A14a9ef8efa7448fa8ddf7b13cef0240",
         type: "Web Map",
@@ -335,7 +335,7 @@ describe("Module `webmap`: manages the creation and deployment of web map item t
       expect(actual).toEqual(expected);
     });
 
-    it("converts with layer and table data", async () => {
+    it("converts with layer and table data", async() => {
       const model = {
         itemId: "A14a9ef8efa7448fa8ddf7b13cef0240",
         type: "Web Map",
@@ -458,7 +458,7 @@ describe("Module `webmap`: manages the creation and deployment of web map item t
       expect(actual).toEqual(expected);
     });
 
-    it("handles error with fetching layer", async () => {
+    it("handles error with fetching layer", async() => {
       const model = {
         itemId: "A14a9ef8efa7448fa8ddf7b13cef0240",
         type: "Web Map",
@@ -514,7 +514,7 @@ describe("Module `webmap`: manages the creation and deployment of web map item t
       );
     });
 
-    it("will update layers itemId if missing", async () => {
+    it("will update layers itemId if missing", async() => {
       const model = {
         itemId: "A14a9ef8efa7448fa8ddf7b13cef0240",
         type: "Web Map",
@@ -607,7 +607,7 @@ describe("Module `webmap`: manages the creation and deployment of web map item t
       expect(actual).toEqual(expected);
     });
 
-    it("will avoid fetching layer without itemId if it exists elsewhere in the map", async () => {
+    it("will avoid fetching layer without itemId if it exists elsewhere in the map", async() => {
       const model = {
         itemId: "A14a9ef8efa7448fa8ddf7b13cef0240",
         type: "Web Map",
@@ -699,7 +699,7 @@ describe("Module `webmap`: manages the creation and deployment of web map item t
       expect(actual).toEqual(expected);
     });
 
-    it("will not add layer as dependency if missing serviceItemId", async () => {
+    it("will not add layer as dependency if missing serviceItemId", async() => {
       const model = {
         itemId: "A14a9ef8efa7448fa8ddf7b13cef0240",
         type: "Web Map",
@@ -801,7 +801,7 @@ describe("Module `webmap`: manages the creation and deployment of web map item t
   });
 
   describe("_getLayerIds", () => {
-    it("will get layer ids with url and construct url/id hash", async () => {
+    it("will get layer ids with url and construct url/id hash", async() => {
       const layerList = [
         {
           id: "layer0",
@@ -868,7 +868,7 @@ describe("Module `webmap`: manages the creation and deployment of web map item t
     });
   });
 
-  it("will get layer ids with url and construct url/id hash; VectorTileLayer doesn't contain 'Vector Tile Style Editor' typeKeyword", async () => {
+  it("will get layer ids with url and construct url/id hash; VectorTileLayer doesn't contain 'Vector Tile Style Editor' typeKeyword", async() => {
     const layerList = [
       {
         id: "layer0",

@@ -42,7 +42,7 @@ beforeEach(() => {
 
 describe("Module `completeItem`: functions for accessing a complete item", () => {
   describe("getCompleteItem", () => {
-    it("should get an item", async () => {
+    it("should get an item", async() => {
       const itemId = "abc";
 
       spyOn(restHelpers, "getFeatureServiceProperties").and.resolveTo({} as interfaces.IFeatureServiceProperties);
@@ -71,7 +71,7 @@ describe("Module `completeItem`: functions for accessing a complete item", () =>
       expect(item.metadata.name).toEqual("metadata.xml");
     });
 
-    it("should get a feature service item", async () => {
+    it("should get a feature service item", async() => {
       const itemId = "abc";
 
       spyOn(restHelpers, "getFeatureServiceProperties").and.resolveTo({} as interfaces.IFeatureServiceProperties);
@@ -102,7 +102,7 @@ describe("Module `completeItem`: functions for accessing a complete item", () =>
       expect(item.metadata.name).toEqual("metadata.xml");
     });
 
-    it("should get a workflow item on arcgis.com", async () => {
+    it("should get a workflow item on arcgis.com", async() => {
       const itemId = "abc";
       const config = await zipUtils.jsonToZipFile("jobConfig.json", { jobTemplates: "abc" }, "config");
 
@@ -136,7 +136,7 @@ describe("Module `completeItem`: functions for accessing a complete item", () =>
       expect(item.metadata.name).toEqual("metadata.xml");
     });
 
-    it("should get a workflow item on esri.com", async () => {
+    it("should get a workflow item on esri.com", async() => {
       const itemId = "abc";
       const config = await zipUtils.jsonToZipFile("jobConfig.json", { jobTemplates: "abc" }, "config");
 
@@ -172,7 +172,7 @@ describe("Module `completeItem`: functions for accessing a complete item", () =>
       expect(item.metadata.name).toEqual("metadata.xml");
     });
 
-    it("should get a workflow item on Enterprise", async () => {
+    it("should get a workflow item on Enterprise", async() => {
       const itemId = "abc";
       const config = await zipUtils.jsonToZipFile("jobConfig.json", { jobTemplates: "abc" }, "config");
 
@@ -208,7 +208,7 @@ describe("Module `completeItem`: functions for accessing a complete item", () =>
       expect(item.metadata.name).toEqual("metadata.xml");
     });
 
-    it("should handle failure to get an item", async () => {
+    it("should handle failure to get an item", async() => {
       const itemId = "abc";
 
       spyOn(restHelpers, "getFeatureServiceProperties").and.resolveTo({} as interfaces.IFeatureServiceProperties);

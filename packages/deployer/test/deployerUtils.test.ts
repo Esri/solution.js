@@ -85,7 +85,7 @@ describe("Module: `_deployerUtils`", () => {
     afterEach(() => {
       sinon.restore();
     });
-    it("fetches item and data if passed an id", async () => {
+    it("fetches item and data if passed an id", async() => {
       const getItemSpy = sinon.stub(common, "getItemBase").callsFake((): Promise<common.IItem> => {
         return Promise.resolve({
           id: "bc3",
@@ -103,11 +103,11 @@ describe("Module: `_deployerUtils`", () => {
       expect(getItemSpy.calledOnceWith("bc3", MOCK_USER_SESSION)).toBe(true);
       expect(getItemDataSpy.calledOnceWith("bc3", MOCK_USER_SESSION)).toBe(true);
     });
-    it("resolves with a model if passed on", async () => {
+    it("resolves with a model if passed on", async() => {
       const result = await getSolutionTemplateItem({ item: { id: "bc3" }, data: {} }, MOCK_USER_SESSION);
       expect(result.item.id).toBe("bc3");
     });
-    it("rejects if object is not modelish", async () => {
+    it("rejects if object is not modelish", async() => {
       return getSolutionTemplateItem({ item: { id: "bc3" }, foo: "bar" }, MOCK_USER_SESSION)
         .then(() => {
           fail("getSolutionTemplateItem should reject with model passed in");

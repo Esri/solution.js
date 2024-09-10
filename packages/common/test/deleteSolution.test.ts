@@ -48,7 +48,7 @@ beforeEach(() => {
 
 describe("Module `deleteSolution`: functions for deleting a deployed Solution item and all of its items", () => {
   describe("deleteEmptyGroups", () => {
-    it("handles an empty list", async () => {
+    it("handles an empty list", async() => {
       const deleteGroupIfEmptySpy = spyOn(deleteGroupIfEmpty, "deleteGroupIfEmpty").and.resolveTo(true);
 
       const result = await deleteEmptyGroups.deleteEmptyGroups([], MOCK_USER_SESSION);
@@ -56,7 +56,7 @@ describe("Module `deleteSolution`: functions for deleting a deployed Solution it
       expect(deleteGroupIfEmptySpy.calls.count()).toEqual(0);
     });
 
-    it("handles a single item", async () => {
+    it("handles a single item", async() => {
       const deleteGroupIfEmptySpy = spyOn(deleteGroupIfEmpty, "deleteGroupIfEmpty").and.resolveTo(true);
 
       const result = await deleteEmptyGroups.deleteEmptyGroups(["grp1234567890"], MOCK_USER_SESSION);
@@ -64,7 +64,7 @@ describe("Module `deleteSolution`: functions for deleting a deployed Solution it
       expect(deleteGroupIfEmptySpy.calls.count()).toEqual(1);
     });
 
-    it("handles multiple items", async () => {
+    it("handles multiple items", async() => {
       const deleteGroupIfEmptySpy = spyOn(deleteGroupIfEmpty, "deleteGroupIfEmpty").and.resolveTo(true);
 
       const result = await deleteEmptyGroups.deleteEmptyGroups(["grp1234567890", "grp1234567891"], MOCK_USER_SESSION);
@@ -72,7 +72,7 @@ describe("Module `deleteSolution`: functions for deleting a deployed Solution it
       expect(deleteGroupIfEmptySpy.calls.count()).toEqual(2);
     });
 
-    it("handles failure", async () => {
+    it("handles failure", async() => {
       const deleteGroupIfEmptySpy = spyOn(deleteGroupIfEmpty, "deleteGroupIfEmpty").and.returnValues(
         Promise.resolve(true),
         Promise.resolve(false),
@@ -89,7 +89,7 @@ describe("Module `deleteSolution`: functions for deleting a deployed Solution it
   });
 
   describe("deleteGroupIfEmpty", () => {
-    it("deletes an empty protected group that we own", async () => {
+    it("deletes an empty protected group that we own", async() => {
       const group = mockItems.getAGOLGroup("grp1234567890", "casey");
       group.protected = true;
 
@@ -110,7 +110,7 @@ describe("Module `deleteSolution`: functions for deleting a deployed Solution it
       expect(removeGroupSpy.calls.count()).withContext("removeGroupSpy").toEqual(1);
     });
 
-    it("deletes an empty unprotected group that we own", async () => {
+    it("deletes an empty unprotected group that we own", async() => {
       const getGroupSpy = spyOn(portal, "getGroup").and.resolveTo(mockItems.getAGOLGroup("grp1234567890", "casey"));
       const getGroupContentSpy = spyOn(portal, "getGroupContent").and.resolveTo(mockItems.getAGOLGroupContentsList(0));
       const unprotectGroupSpy = spyOn(portal, "unprotectGroup").and.resolveTo({
@@ -128,7 +128,7 @@ describe("Module `deleteSolution`: functions for deleting a deployed Solution it
       expect(removeGroupSpy.calls.count()).withContext("removeGroupSpy").toEqual(1);
     });
 
-    it("does not delete an empty group that we don't own", async () => {
+    it("does not delete an empty group that we don't own", async() => {
       const getGroupSpy = spyOn(portal, "getGroup").and.resolveTo(mockItems.getAGOLGroup());
       const getGroupContentSpy = spyOn(portal, "getGroupContent").and.resolveTo(mockItems.getAGOLGroupContentsList(0));
       const unprotectGroupSpy = spyOn(portal, "unprotectGroup").and.resolveTo({
@@ -146,7 +146,7 @@ describe("Module `deleteSolution`: functions for deleting a deployed Solution it
       expect(removeGroupSpy.calls.count()).withContext("removeGroupSpy").toEqual(0);
     });
 
-    it("does not delete a non-empty group that we own", async () => {
+    it("does not delete a non-empty group that we own", async() => {
       const getGroupSpy = spyOn(portal, "getGroup").and.resolveTo(mockItems.getAGOLGroup("grp1234567890", "casey"));
       const getGroupContentSpy = spyOn(portal, "getGroupContent").and.resolveTo(mockItems.getAGOLGroupContentsList(1));
       const unprotectGroupSpy = spyOn(portal, "unprotectGroup").and.resolveTo({
@@ -164,7 +164,7 @@ describe("Module `deleteSolution`: functions for deleting a deployed Solution it
       expect(removeGroupSpy.calls.count()).withContext("removeGroupSpy").toEqual(0);
     });
 
-    it("does not delete group if we fail to get the group info", async () => {
+    it("does not delete group if we fail to get the group info", async() => {
       const getGroupSpy = spyOn(portal, "getGroup").and.rejectWith(mockItems.get400Failure());
       const getGroupContentSpy = spyOn(portal, "getGroupContent").and.resolveTo(mockItems.getAGOLGroupContentsList(0));
       const unprotectGroupSpy = spyOn(portal, "unprotectGroup").and.resolveTo({
@@ -182,7 +182,7 @@ describe("Module `deleteSolution`: functions for deleting a deployed Solution it
       expect(removeGroupSpy.calls.count()).withContext("removeGroupSpy").toEqual(0);
     });
 
-    it("does not delete group if we fail to get the group contents", async () => {
+    it("does not delete group if we fail to get the group contents", async() => {
       const getGroupSpy = spyOn(portal, "getGroup").and.resolveTo(mockItems.getAGOLGroup("grp1234567890", "casey"));
       const getGroupContentSpy = spyOn(portal, "getGroupContent").and.rejectWith(mockItems.get400Failure());
       const unprotectGroupSpy = spyOn(portal, "unprotectGroup").and.resolveTo({
@@ -200,7 +200,7 @@ describe("Module `deleteSolution`: functions for deleting a deployed Solution it
       expect(removeGroupSpy.calls.count()).withContext("removeGroupSpy").toEqual(0);
     });
 
-    it("does not delete group if we cannot unprotect it", async () => {
+    it("does not delete group if we cannot unprotect it", async() => {
       const group = mockItems.getAGOLGroup("grp1234567890", "casey");
       group.protected = true;
 
@@ -221,7 +221,7 @@ describe("Module `deleteSolution`: functions for deleting a deployed Solution it
       expect(removeGroupSpy.calls.count()).withContext("removeGroupSpy").toEqual(0);
     });
 
-    it("handles failure to delete group", async () => {
+    it("handles failure to delete group", async() => {
       const getGroupSpy = spyOn(portal, "getGroup").and.resolveTo(mockItems.getAGOLGroup("grp1234567890", "casey"));
       const getGroupContentSpy = spyOn(portal, "getGroupContent").and.resolveTo(mockItems.getAGOLGroupContentsList(0));
       const unprotectGroupSpy = spyOn(portal, "unprotectGroup").and.resolveTo({
@@ -241,7 +241,7 @@ describe("Module `deleteSolution`: functions for deleting a deployed Solution it
   });
 
   describe("deleteSolution", () => {
-    it("rejects a Solution template", async () => {
+    it("rejects a Solution template", async() => {
       const testItem = "sol1234567890";
       spyOn(getDeletableSolutionInfo, "getDeletableSolutionInfo").and.rejectWith(
         new Error("Item " + testItem + " is not a deployed Solution"),
@@ -251,7 +251,7 @@ describe("Module `deleteSolution`: functions for deleting a deployed Solution it
       expect(response).toEqual([undefined as any, undefined as any]);
     });
 
-    it("deletes a Solution", async () => {
+    it("deletes a Solution", async() => {
       spyOn(getDeletableSolutionInfo, "getDeletableSolutionInfo").and.resolveTo(
         mockItems.getSolutionPrecis([
           mockItems.getAGOLItemPrecis("Web Map"),
@@ -289,7 +289,7 @@ describe("Module `deleteSolution`: functions for deleting a deployed Solution it
       expect(_deleteSolutionFolderSpy.calls.count()).withContext("should remove Solution folder").toBe(1);
     });
 
-    it("deletes a Solution that doesn't contain items", async () => {
+    it("deletes a Solution that doesn't contain items", async() => {
       spyOn(getDeletableSolutionInfo, "getDeletableSolutionInfo").and.resolveTo(mockItems.getSolutionPrecis());
       const unprotectItemSpy = spyOn(portal, "unprotectItem").and.resolveTo(utils.getSuccessResponse());
       const _removeItemSpy = spyOn(restHelpers, "removeItem").and.resolveTo({
@@ -309,7 +309,7 @@ describe("Module `deleteSolution`: functions for deleting a deployed Solution it
       expect(_deleteSolutionFolderSpy.calls.count()).withContext("should remove Solution folder").toBe(1);
     });
 
-    it("deletes a Solution containing a Hub Site Application", async () => {
+    it("deletes a Solution containing a Hub Site Application", async() => {
       spyOn(getDeletableSolutionInfo, "getDeletableSolutionInfo").and.resolveTo(
         mockItems.getSolutionPrecis([
           mockItems.getAGOLItemPrecis("Web Map"),
@@ -354,7 +354,7 @@ describe("Module `deleteSolution`: functions for deleting a deployed Solution it
       expect(_deleteSolutionFolderSpy.calls.count()).withContext("should remove Solution folder").toBe(1);
     });
 
-    it("doesn't delete all of the items of a Solution", async () => {
+    it("doesn't delete all of the items of a Solution", async() => {
       spyOn(getDeletableSolutionInfo, "getDeletableSolutionInfo").and.resolveTo(
         mockItems.getSolutionPrecis([
           mockItems.getAGOLItemPrecis("Web Map"),
@@ -386,7 +386,7 @@ describe("Module `deleteSolution`: functions for deleting a deployed Solution it
       expect(_deleteSolutionFolderSpy.calls.count()).withContext("should not remove Solution folder").toBe(0);
     });
 
-    it("deletes the items of a Solution, but unprotecting the Solution fails", async () => {
+    it("deletes the items of a Solution, but unprotecting the Solution fails", async() => {
       spyOn(getDeletableSolutionInfo, "getDeletableSolutionInfo").and.resolveTo(
         mockItems.getSolutionPrecis([
           mockItems.getAGOLItemPrecis("Web Map"),
@@ -424,7 +424,7 @@ describe("Module `deleteSolution`: functions for deleting a deployed Solution it
       expect(_deleteSolutionFolderSpy.calls.count()).withContext("should not remove Solution folder").toBe(0);
     });
 
-    it("deletes the items of a Solution, but deleting the Solution itself fails", async () => {
+    it("deletes the items of a Solution, but deleting the Solution itself fails", async() => {
       spyOn(getDeletableSolutionInfo, "getDeletableSolutionInfo").and.resolveTo(
         mockItems.getSolutionPrecis([
           mockItems.getAGOLItemPrecis("Web Map"),
@@ -462,7 +462,7 @@ describe("Module `deleteSolution`: functions for deleting a deployed Solution it
       expect(_deleteSolutionFolderSpy.calls.count()).withContext("should not remove Solution folder").toBe(0);
     });
 
-    it("deletes a Solution, but deleting its folder fails", async () => {
+    it("deletes a Solution, but deleting its folder fails", async() => {
       spyOn(getDeletableSolutionInfo, "getDeletableSolutionInfo").and.resolveTo(
         mockItems.getSolutionPrecis([
           mockItems.getAGOLItemPrecis("Web Map"),
@@ -522,7 +522,7 @@ describe("Module `deleteSolution`: functions for deleting a deployed Solution it
       } as interfaces.ISolutionItemPrecis;
     }
 
-    it("sorts by itemIds and by item vs. group", async () => {
+    it("sorts by itemIds and by item vs. group", async() => {
       const solutionItemId: string = "sln123";
       const itemIds: string[] = ["grp456", "itm789", "itm123", "itm456", "grp123"];
       const templates: interfaces.IItemTemplate[] = [
@@ -590,7 +590,7 @@ describe("Module `deleteSolution`: functions for deleting a deployed Solution it
   });
 
   describe("getDeletableSolutionInfo", () => {
-    it("passes through each item related to one solution", async () => {
+    it("passes through each item related to one solution", async() => {
       const solutionSummary = mockItems.getSolutionPrecis([
         mockItems.getAGOLItemPrecis("Web Map"),
         mockItems.getAGOLItemPrecis("Web Mapping Application"),
@@ -606,7 +606,7 @@ describe("Module `deleteSolution`: functions for deleting a deployed Solution it
       expect(result).toEqual(solutionSummary);
     });
 
-    it("it filters out an item that is related to more than one solution", async () => {
+    it("it filters out an item that is related to more than one solution", async() => {
       const solutionSummary = mockItems.getSolutionPrecis([
         mockItems.getAGOLItemPrecis("Web Map"),
         mockItems.getAGOLItemPrecis("Web Mapping Application"),
@@ -628,14 +628,14 @@ describe("Module `deleteSolution`: functions for deleting a deployed Solution it
   });
 
   describe("getSolutionSummary", () => {
-    it("rejects a non-Solution item", async () => {
+    it("rejects a non-Solution item", async() => {
       spyOn(restHelpersGet, "getItemBase").and.resolveTo(mockItems.getAGOLItem("Web Map"));
       spyOn(restHelpersGet, "getItemDataAsJson").and.resolveTo({});
 
       await expectAsync(getSolutionSummary.getSolutionSummary("sol1234567890", MOCK_USER_SESSION)).toBeRejected();
     });
 
-    it("rejects a Solution template", async () => {
+    it("rejects a Solution template", async() => {
       const solutionItem = mockItems.getCompleteDeployedSolutionItemVersioned();
       solutionItem.base.typeKeywords = solutionItem.base.typeKeywords.filter(
         (keyword: string) => keyword !== "Deployed",
@@ -648,7 +648,7 @@ describe("Module `deleteSolution`: functions for deleting a deployed Solution it
       await expectAsync(getSolutionSummary.getSolutionSummary("sol1234567890", MOCK_USER_SESSION)).toBeRejected();
     });
 
-    it("handles case with no forward relationships from solution", async () => {
+    it("handles case with no forward relationships from solution", async() => {
       const solutionItem = mockItems.getCompleteDeployedSolutionItemVersioned();
       spyOn(restHelpersGet, "getItemBase").and.resolveTo(solutionItem.base);
       spyOn(restHelpersGet, "getItemDataAsJson").and.resolveTo(solutionItem.data);
@@ -658,7 +658,7 @@ describe("Module `deleteSolution`: functions for deleting a deployed Solution it
       expect(result).toEqual(mockItems.getSolutionPrecis());
     });
 
-    it("gets a version 0 Solution summary", async () => {
+    it("gets a version 0 Solution summary", async() => {
       const solutionItem = mockItems.getCompleteDeployedSolutionItemVersioned(0);
       spyOn(restHelpersGet, "getItemBase").and.resolveTo(solutionItem.base);
       spyOn(restHelpersGet, "getItemDataAsJson").and.resolveTo(solutionItem.data);
@@ -681,7 +681,7 @@ describe("Module `deleteSolution`: functions for deleting a deployed Solution it
       expect(_reconstructBuildOrderIdsSpy.calls.count()).toEqual(1);
     });
 
-    it("gets a version 1 Solution summary", async () => {
+    it("gets a version 1 Solution summary", async() => {
       const solutionItem = mockItems.getCompleteDeployedSolutionItemVersioned(1);
       solutionItem.data.templates[0].groups = ["grp1234567890", "grp1234567891"];
       spyOn(restHelpersGet, "getItemBase").and.resolveTo(solutionItem.base);
@@ -705,7 +705,7 @@ describe("Module `deleteSolution`: functions for deleting a deployed Solution it
       expect(_reconstructBuildOrderIdsSpy.calls.count()).toEqual(0);
     });
 
-    it("gets a solution that has items and groups", async () => {
+    it("gets a solution that has items and groups", async() => {
       const solutionId = "abc123";
 
       const solutionBase = mockItems.getAGOLItem("Solution", solutionId, "Solution 1");
@@ -799,7 +799,7 @@ describe("Module `deleteSolution`: functions for deleting a deployed Solution it
   });
 
   describe("deleteSolutionFolder", () => {
-    it("empty folder", async () => {
+    it("empty folder", async() => {
       spyOn(MOCK_USER_SESSION, "getUser").and.resolveTo({
         orgId: "orgABC",
       });
@@ -816,7 +816,7 @@ describe("Module `deleteSolution`: functions for deleting a deployed Solution it
       expect(removeFolderSpy.calls.count()).toEqual(1);
     });
 
-    it("deletes a folder with only solution items remaining", async () => {
+    it("deletes a folder with only solution items remaining", async() => {
       spyOn(MOCK_USER_SESSION, "getUser").and.resolveTo({
         orgId: "orgABC",
       });
@@ -841,7 +841,7 @@ describe("Module `deleteSolution`: functions for deleting a deployed Solution it
       expect(removeFolderSpy.calls.count()).toEqual(1);
     });
 
-    it("does not delete a folder with non-solution items remaining", async () => {
+    it("does not delete a folder with non-solution items remaining", async() => {
       spyOn(MOCK_USER_SESSION, "getUser").and.resolveTo({
         orgId: "orgABC",
       });
@@ -869,7 +869,7 @@ describe("Module `deleteSolution`: functions for deleting a deployed Solution it
       expect(removeFolderSpy.calls.count()).toEqual(0);
     });
 
-    it("fails to delete folder", async () => {
+    it("fails to delete folder", async() => {
       spyOn(MOCK_USER_SESSION, "getUser").and.resolveTo({
         orgId: "orgABC",
       });
@@ -911,7 +911,7 @@ describe("Module `deleteSolution`: functions for deleting a deployed Solution it
       }
     });
 
-    it("handles an empty list of item ids with all items so far successful", async () => {
+    it("handles an empty list of item ids with all items so far successful", async() => {
       const solutionSummary: interfaces.ISolutionPrecis = mockItems.getSolutionPrecis();
       const hubSiteItemIds: string[] = [];
       const percentDone: number = 50.4;
@@ -929,7 +929,7 @@ describe("Module `deleteSolution`: functions for deleting a deployed Solution it
       expect(solutionFailureSummary.items.length).toEqual(0);
     });
 
-    it("deletes a list of item ids", async () => {
+    it("deletes a list of item ids", async() => {
       const firstItemId = "map1234567890";
       const secondItemId = "svc1234567890";
       const solutionSummary: interfaces.ISolutionPrecis = mockItems.getSolutionPrecis([
@@ -983,7 +983,7 @@ describe("Module `deleteSolution`: functions for deleting a deployed Solution it
       expect(consoleSpy.calls.argsFor(1)[4]).toBe(Math.round(percentDone + 2 * progressPercentStep) + "%");
     });
 
-    it("deletes a list of item ids, with the first one failing", async () => {
+    it("deletes a list of item ids, with the first one failing", async() => {
       const firstItemId = "map1234567890";
       const secondItemId = "svc1234567890";
       const solutionSummary: interfaces.ISolutionPrecis = mockItems.getSolutionPrecis([
@@ -1051,7 +1051,7 @@ describe("Module `deleteSolution`: functions for deleting a deployed Solution it
       expect(solutionFailureSummary.items[0].id).toEqual(firstItemId);
     });
 
-    it("deletes a list of item ids, skipping a missing one", async () => {
+    it("deletes a list of item ids, skipping a missing one", async() => {
       const firstItemId = "map1234567890";
       const secondItemId = "svc1234567890";
       const solutionSummary: interfaces.ISolutionPrecis = mockItems.getSolutionPrecis([
@@ -1115,7 +1115,7 @@ describe("Module `deleteSolution`: functions for deleting a deployed Solution it
       expect(consoleSpy.calls.argsFor(1)[4]).toBe(Math.round(percentDone + 2 * progressPercentStep) + "%");
     });
 
-    it("deletes hub site applications via hub.js", async () => {
+    it("deletes hub site applications via hub.js", async() => {
       const itemId = "hsa1234567890";
       const solutionSummary: interfaces.ISolutionPrecis = mockItems.getSolutionPrecis([
         mockItems.getAGOLItemPrecis("Hub Site Application"),

@@ -44,7 +44,7 @@ jasmine.DEFAULT_TIMEOUT_INTERVAL = 20000; // default is 5000 ms
 
 describe("Module `item-reuse`: functions to find reusable items and solutions", () => {
   describe("getDeployedSolutionsAndItems", () => {
-    it("gets all deployed solutions and their items", async () => {
+    it("gets all deployed solutions and their items", async() => {
       const portal = MOCK_USER_SESSION.portal;
       const user = MOCK_USER_SESSION.username;
 
@@ -156,7 +156,7 @@ describe("Module `item-reuse`: functions to find reusable items and solutions", 
   });
 
   describe("getIdsFromSolutionTemplates", () => {
-    it("gets all deployed solutions and their items", async () => {
+    it("gets all deployed solutions and their items", async() => {
       const portal = MOCK_USER_SESSION.portal;
 
       const id = "aaa12006b49746a99127cef12ab61e85";
@@ -197,7 +197,7 @@ describe("Module `item-reuse`: functions to find reusable items and solutions", 
   });
 
   describe("getItemHash", () => {
-    it("finds deployed solution items that were based on a source item", async () => {
+    it("finds deployed solution items that were based on a source item", async() => {
       const portal = MOCK_USER_SESSION.portal;
       const user = MOCK_USER_SESSION.username;
 
@@ -272,7 +272,7 @@ describe("Module `item-reuse`: functions to find reusable items and solutions", 
       expect(actual).toEqual(expected);
     });
 
-    it("handles missing deployed solution item", async () => {
+    it("handles missing deployed solution item", async() => {
       const portal = MOCK_USER_SESSION.portal;
       const user = MOCK_USER_SESSION.username;
 
@@ -334,7 +334,7 @@ describe("Module `item-reuse`: functions to find reusable items and solutions", 
   });
 
   describe("findReusableSolutionsAndItems", () => {
-    it("finds deployed solution items and solutions", async () => {
+    it("finds deployed solution items and solutions", async() => {
       const portal = MOCK_USER_SESSION.portal;
       const user = MOCK_USER_SESSION.username;
 
@@ -506,7 +506,7 @@ describe("Module `item-reuse`: functions to find reusable items and solutions", 
   });
 
   describe("getDeployedSolutions", () => {
-    it("gets all deployed solutions and their items", async () => {
+    it("gets all deployed solutions and their items", async() => {
       const portal = MOCK_USER_SESSION.portal;
 
       const user = MOCK_USER_SESSION.username;

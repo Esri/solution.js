@@ -164,7 +164,7 @@ export function addContentToSolution(
     });
 
     // eslint-disable-next-line @typescript-eslint/no-floating-promises
-    Promise.all(getItemsPromise).then(async (multipleResourceItemFiles: ISourceFile[][]) => {
+    Promise.all(getItemsPromise).then(async(multipleResourceItemFiles: ISourceFile[][]) => {
       if (failedItemIds.length > 0) {
         reject(failWithIds(failedItemIds, "One or more items cannot be converted into templates"));
       } else {

@@ -53,7 +53,7 @@ const SERVER_INFO = {
 
 describe("Module `deploySolutionItems`", () => {
   describe("deploySolutionItems", () => {
-    it("can handle unimplemented item type gracefully", async () => {
+    it("can handle unimplemented item type gracefully", async() => {
       spyOn(console, "log").and.callFake(() => {});
       spyOn(console, "error").and.callFake(() => {});
       const template = templates.getItemTemplateSkeleton();
@@ -73,7 +73,7 @@ describe("Module `deploySolutionItems`", () => {
         );
     });
 
-    it("adds Forms to the itemsToBePatched queue", async () => {
+    it("adds Forms to the itemsToBePatched queue", async() => {
       const id: string = "aa4a6047326243b290f625e80ebe6531";
       const newItemID: string = "ba4a6047326243b290f625e80ebe6531";
       const type: string = "Form";
@@ -128,7 +128,7 @@ describe("Module `deploySolutionItems`", () => {
       );
     });
 
-    it("reuse items but no items exist", async () => {
+    it("reuse items but no items exist", async() => {
       const id: string = "aa4a6047326243b290f625e80ebe6531";
       const newItemID: string = "ba4a6047326243b290f625e80ebe6531";
       const type: string = "Web Mapping Application";
@@ -216,7 +216,7 @@ describe("Module `deploySolutionItems`", () => {
       expect(actual).withContext("test expected result").toEqual(expected);
     });
 
-    it("reuse items by typeKeyword", async () => {
+    it("reuse items by typeKeyword", async() => {
       const id: string = "aa4a6047326243b290f625e80ebe6531";
       const foundItemID: string = "ba4a6047326243b290f625e80ebe6531";
       const type: string = "Web Mapping Application";
@@ -300,7 +300,7 @@ describe("Module `deploySolutionItems`", () => {
       expect(actual).toEqual(expected);
     });
 
-    it("reuse items by tag if no typekeyword is found", async () => {
+    it("reuse items by tag if no typekeyword is found", async() => {
       const id: string = "aa4a6047326243b290f625e80ebe6531";
       const foundItemID: string = "ba4a6047326243b290f625e80ebe6531";
       const type: string = "Web Mapping Application";
@@ -391,7 +391,7 @@ describe("Module `deploySolutionItems`", () => {
       expect(actual).toEqual(expected);
     });
 
-    it("reuse items will use newest when mutiple items are found", async () => {
+    it("reuse items will use newest when mutiple items are found", async() => {
       const id: string = "aa4a6047326243b290f625e80ebe6531";
       const foundItemID: string = "ba4a6047326243b290f625e80ebe6531";
       const foundItemID2: string = "ca4a6047326243b290f625e80ebe6531";
@@ -490,7 +490,7 @@ describe("Module `deploySolutionItems`", () => {
       expect(actual).toEqual(expected);
     });
 
-    it("reuse items will add feature service details to templateDictionary", async () => {
+    it("reuse items will add feature service details to templateDictionary", async() => {
       const id: string = "aa4a6047326243b290f625e80ebe6531";
       const foundItemID: string = "ba4a6047326243b290f625e80ebe6531";
       const foundItemID2: string = "ca4a6047326243b290f625e80ebe6531";
@@ -602,7 +602,7 @@ describe("Module `deploySolutionItems`", () => {
       expect(actual).toEqual(expected);
     });
 
-    it("reuse items can handle groups", async () => {
+    it("reuse items can handle groups", async() => {
       const id: string = "aa4a6047326243b290f625e80ebe6531";
       const foundItemID: string = "ba4a6047326243b290f625e80ebe6531";
       const type: string = "Group";
@@ -658,7 +658,7 @@ describe("Module `deploySolutionItems`", () => {
       expect(actual).toEqual(expected);
     });
 
-    it("reuse items can find groups by typeKeyword", async () => {
+    it("reuse items can find groups by typeKeyword", async() => {
       const id: string = "aa4a6047326243b290f625e80ebe6531";
       const foundItemID: string = "ba4a6047326243b290f625e80ebe6531";
       const type: string = "Group";
@@ -714,7 +714,7 @@ describe("Module `deploySolutionItems`", () => {
       expect(actual).toEqual(expected);
     });
 
-    it("can handle error on find items by typeKeyword", async () => {
+    it("can handle error on find items by typeKeyword", async() => {
       const id: string = "aa4a6047326243b290f625e80ebe6531";
       const foundItemID: string = "ba4a6047326243b290f625e80ebe6531";
       const type: string = "Web Mapping Application";
@@ -773,7 +773,7 @@ describe("Module `deploySolutionItems`", () => {
         );
     });
 
-    it("can handle error on find items by tag", async () => {
+    it("can handle error on find items by tag", async() => {
       const id: string = "aa4a6047326243b290f625e80ebe6531";
       const foundItemID: string = "ba4a6047326243b290f625e80ebe6531";
       const type: string = "Web Mapping Application";
@@ -842,7 +842,7 @@ describe("Module `deploySolutionItems`", () => {
         );
     });
 
-    it("handles failure to delete all items when unwinding after failure to deploy", async () => {
+    it("handles failure to delete all items when unwinding after failure to deploy", async() => {
       const id: string = "aa4a6047326243b290f625e80ebe6531";
       const newItemID: string = "ba4a6047326243b290f625e80ebe6531";
       const type: string = "Web Mapping Application";
@@ -1000,7 +1000,7 @@ describe("Module `deploySolutionItems`", () => {
       ]);
     });
 
-    it("reuse items will handle error on add to templateDictionary", async () => {
+    it("reuse items will handle error on add to templateDictionary", async() => {
       const id: string = "aa4a6047326243b290f625e80ebe6531";
       const foundItemID: string = "ba4a6047326243b290f625e80ebe6531";
       const foundItemID2: string = "ca4a6047326243b290f625e80ebe6531";
@@ -1082,7 +1082,7 @@ describe("Module `deploySolutionItems`", () => {
         );
     });
 
-    it("handle failure to use existing items", async () => {
+    it("handle failure to use existing items", async() => {
       const _templates: common.IItemTemplate[] = [];
 
       const sourceId: string = "aa4a6047326243b290f625e80ebe6531";
@@ -1153,7 +1153,7 @@ describe("Module `deploySolutionItems`", () => {
   });
 
   describe("Remove qc.project.json files from the resources", () => {
-    it("can handle a QuickCapture Project template that has an unwanted qc.project.json", async () => {
+    it("can handle a QuickCapture Project template that has an unwanted qc.project.json", async() => {
       spyOn(console, "log").and.callFake(() => {});
       const template = templates.getItemTemplateSkeleton();
       template.itemId = template.item.id = "qck1234567890";
@@ -1187,7 +1187,7 @@ describe("Module `deploySolutionItems`", () => {
   });
 
   describe("_createItemFromTemplateWhenReady", () => {
-    it("flags unimplemented item types", async () => {
+    it("flags unimplemented item types", async() => {
       const itemTemplate: common.IItemTemplate = templates.getItemTemplate("Undefined");
       itemTemplate.item.thumbnail = null;
       const resourceFilePaths: common.IDeployFileCopyPath[] = [];
@@ -1204,7 +1204,7 @@ describe("Module `deploySolutionItems`", () => {
       expect(response).toEqual(templates.getFailedItem(itemTemplate.type));
     });
 
-    it("flags unsupported item types", async () => {
+    it("flags unsupported item types", async() => {
       const itemTemplate: common.IItemTemplate = templates.getItemTemplate("Unsupported");
       itemTemplate.item.thumbnail = null;
       const resourceFilePaths: common.IDeployFileCopyPath[] = [];
@@ -1222,7 +1222,7 @@ describe("Module `deploySolutionItems`", () => {
       expect(response).toEqual(templates.getFailedItem(itemTemplate.type));
     });
 
-    it("skips Geoprocessing Service that is not a Web Tool", async () => {
+    it("skips Geoprocessing Service that is not a Web Tool", async() => {
       const createItemFromTemplateSpy = spyOn(wt, "createItemFromTemplate").and.callThrough();
       const itemTemplate: common.IItemTemplate = templates.getItemTemplate("Geoprocessing Service");
       itemTemplate.item.thumbnail = null;
@@ -1240,7 +1240,7 @@ describe("Module `deploySolutionItems`", () => {
       expect(createItemFromTemplateSpy.calls.count()).toBe(0);
     });
 
-    it("handles Geoprocessing Service that is a Web Tool", async () => {
+    it("handles Geoprocessing Service that is a Web Tool", async() => {
       const createItemFromTemplateSpy = spyOn(wt, "createItemFromTemplate").and.callThrough();
       const itemTemplate: common.IItemTemplate = templates.getItemTemplate("Geoprocessing Service");
       itemTemplate.item.thumbnail = null;
@@ -1260,7 +1260,7 @@ describe("Module `deploySolutionItems`", () => {
       expect(createItemFromTemplateSpy.calls.count()).toBe(1);
     });
 
-    it("handles Web Mapping Applications that are not Storymaps", async () => {
+    it("handles Web Mapping Applications that are not Storymaps", async() => {
       const itemTemplate: common.IItemTemplate = templates.getItemTemplate(
         "Web Mapping Application",
         undefined,
@@ -1313,7 +1313,7 @@ describe("Module `deploySolutionItems`", () => {
       } as common.ICreateItemFromTemplateResponse);
     });
 
-    it("handles inability to get dependencies", async () => {
+    it("handles inability to get dependencies", async() => {
       const itemTemplate: common.IItemTemplate = templates.getItemTemplate(
         "Web Mapping Application",
         ["svc1234567890"],
@@ -1359,7 +1359,7 @@ describe("Module `deploySolutionItems`", () => {
       expect(response).toEqual(templates.getFailedItem(itemTemplate.type));
     });
 
-    it("handles FS", async () => {
+    it("handles FS", async() => {
       const itemTemplate: common.IItemTemplate = templates.getItemTemplate(
         "Feature Service",
         [],
@@ -1371,7 +1371,7 @@ describe("Module `deploySolutionItems`", () => {
       const resourceFilePaths: common.IDeployFileCopyPath[] = [];
       const templateDictionary: any = {
         aa4a6047326243b290f625e80ebe6531: {
-          def: function () {
+          def: function() {
             return Promise.resolve(null);
           },
         },
@@ -1442,7 +1442,7 @@ describe("Module `deploySolutionItems`", () => {
       } as common.ICreateItemFromTemplateResponse);
     });
 
-    it("handles View FS", async () => {
+    it("handles View FS", async() => {
       const sourceItemTemplate: common.IItemTemplate = templates.getItemTemplate(
         "Feature Service",
         [],
@@ -1468,12 +1468,12 @@ describe("Module `deploySolutionItems`", () => {
       const resourceFilePaths: common.IDeployFileCopyPath[] = [];
       const templateDictionary: any = {
         aa4a6047326243b290f625e80ebe6531: {
-          def: function () {
+          def: function() {
             return Promise.resolve(null);
           },
         },
         cc4a6047326243b290f625e80ebe6531: {
-          def: function () {
+          def: function() {
             return Promise.resolve(null);
           },
           fieldInfos: {
@@ -1548,7 +1548,7 @@ describe("Module `deploySolutionItems`", () => {
       } as common.ICreateItemFromTemplateResponse);
     });
 
-    it("fails to deploy file data to the item", async () => {
+    it("fails to deploy file data to the item", async() => {
       const itemTemplate: common.IItemTemplate = templates.getItemTemplate("Web Map");
       itemTemplate.item.thumbnail = null;
       const resourceFilePaths: common.IDeployFileCopyPath[] = [
@@ -1593,7 +1593,7 @@ describe("Module `deploySolutionItems`", () => {
       expect(response).toEqual(templates.getFailedItem(itemTemplate.type));
     });
 
-    it("should handle error on copy group resources", async () => {
+    it("should handle error on copy group resources", async() => {
       const itemId: string = "abc9cab401af4828a25cc6eaeb59fb69";
       const templateDictionary: any = {
         user: {
@@ -1652,7 +1652,7 @@ describe("Module `deploySolutionItems`", () => {
       expect(response).toEqual(templates.getFailedItem(itemTemplate.type));
     });
 
-    it("can handle error on copyFilesFromStorage", async () => {
+    it("can handle error on copyFilesFromStorage", async() => {
       const itemTemplate: common.IItemTemplate = templates.getItemTemplate(
         "Web Mapping Application",
         undefined,
@@ -1700,7 +1700,7 @@ describe("Module `deploySolutionItems`", () => {
       expect(response).toEqual(templates.getFailedItem(itemTemplate.type));
     });
 
-    it("handles Form zip file resources separately", async () => {
+    it("handles Form zip file resources separately", async() => {
       const itemTemplate: common.IItemTemplate = templates.getItemTemplate("Form");
       const resourceFilePaths: common.IDeployFileCopyPath[] = [
         {
@@ -1873,7 +1873,7 @@ describe("Module `deploySolutionItems`", () => {
   });
 
   describe("_updateTemplateDictionary", () => {
-    it("will use initialExtent if fullExtent is not defined", async () => {
+    it("will use initialExtent if fullExtent is not defined", async() => {
       const _templates: common.IItemTemplate[] = [];
       const id: string = "ca4a6047326243b290f625e80ebe6531";
       const fsUrl: string =
@@ -1916,7 +1916,7 @@ describe("Module `deploySolutionItems`", () => {
       });
     });
 
-    it("will update fields and fieldInfos", async () => {
+    it("will update fields and fieldInfos", async() => {
       const _templates: common.IItemTemplate[] = [];
       const id: string = "ca4a6047326243b290f625e80ebe6531";
       const fsUrl: string =
@@ -1996,7 +1996,7 @@ describe("Module `deploySolutionItems`", () => {
       expect(t.layer1.fields).toEqual(tFields);
     });
 
-    it("can handle error to fetch feature service", async () => {
+    it("can handle error to fetch feature service", async() => {
       const _templates: common.IItemTemplate[] = [];
       const id: string = "ca4a6047326243b290f625e80ebe6531";
       const fsUrl: string =
@@ -2024,7 +2024,7 @@ describe("Module `deploySolutionItems`", () => {
       expect(templateDictionary).toEqual(expected);
     });
 
-    it("will utilize enterpriseIDMapping", async () => {
+    it("will utilize enterpriseIDMapping", async() => {
       const _templates: common.IItemTemplate[] = [];
       const id: string = "ca4a6047326243b290f625e80ebe6531";
       const fsUrl: string =
@@ -2134,7 +2134,7 @@ describe("Module `deploySolutionItems`", () => {
   });
 
   describe("_useExistingItems", () => {
-    it("use existing item", async () => {
+    it("use existing item", async() => {
       const _templates: common.IItemTemplate[] = [];
 
       const sourceId: string = "aa4a6047326243b290f625e80ebe6531";
@@ -2212,7 +2212,7 @@ describe("Module `deploySolutionItems`", () => {
       expect(templateDictionary).toEqual(expectedTemplateDictionary);
     });
 
-    it("use existing item will not duplicate source-<itemid>", async () => {
+    it("use existing item will not duplicate source-<itemid>", async() => {
       const _templates: common.IItemTemplate[] = [];
 
       const sourceId: string = "aa4a6047326243b290f625e80ebe6531";
@@ -2290,7 +2290,7 @@ describe("Module `deploySolutionItems`", () => {
       expect(templateDictionary).toEqual(expectedTemplateDictionary);
     });
 
-    it("use existing item will handle error on update type keyword", async () => {
+    it("use existing item will handle error on update type keyword", async() => {
       const _templates: common.IItemTemplate[] = [];
 
       const sourceId: string = "aa4a6047326243b290f625e80ebe6531";
@@ -2368,7 +2368,7 @@ describe("Module `deploySolutionItems`", () => {
       expect(templateDictionary).toEqual(expectedTemplateDictionary);
     });
 
-    it("use existing item will handle error on get item info", async () => {
+    it("use existing item will handle error on get item info", async() => {
       const _templates: common.IItemTemplate[] = [];
 
       const sourceId: string = "aa4a6047326243b290f625e80ebe6531";
@@ -2444,7 +2444,7 @@ describe("Module `deploySolutionItems`", () => {
   });
 
   describe("_setTypekeywordForExisting", () => {
-    it("will handle no custom item id requests", async () => {
+    it("will handle no custom item id requests", async() => {
       return deploySolution._setTypekeywordForExisting([], {}, MOCK_USER_SESSION);
     });
   });

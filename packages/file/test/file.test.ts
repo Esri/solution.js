@@ -58,7 +58,7 @@ afterEach(() => {
 
 describe("Module `file`: manages the creation and deployment of item types that contain files", () => {
   describe("convertItemToTemplate :: ", () => {
-    it("handles GeoJson with no data", async () => {
+    it("handles GeoJson with no data", async() => {
       const agolItem = mockItems.getAGOLItem("GeoJson");
       agolItem.thumbnail = null;
 
@@ -75,7 +75,7 @@ describe("Module `file`: manages the creation and deployment of item types that 
       expect(response.type).toEqual("GeoJson");
     });
 
-    it("handles GeoJson with data & resources", async () => {
+    it("handles GeoJson with data & resources", async() => {
       const solutionItemId: string = "sln1234567890";
       const agolItem = mockItems.getAGOLItem("GeoJson");
       agolItem.thumbnail = null;
@@ -104,7 +104,7 @@ describe("Module `file`: manages the creation and deployment of item types that 
       expect(response.type).toEqual("GeoJson");
     });
 
-    it("handles Code Attachment with zip data using item name", async () => {
+    it("handles Code Attachment with zip data using item name", async() => {
       const solutionItemId: string = "sln1234567890";
       const agolItem = mockItems.getAGOLItem("Code Attachment");
       agolItem.thumbnail = null;
@@ -130,7 +130,7 @@ describe("Module `file`: manages the creation and deployment of item types that 
       expect(response.resources).toEqual(["cod1234567890_info_data/Name of an AGOL item.zip"]);
     });
 
-    it("handles file type not supported as an AGO resource", async () => {
+    it("handles file type not supported as an AGO resource", async() => {
       const solutionItemId: string = "sln1234567890";
       const agolItem = mockItems.getAGOLItem("Project Package");
       agolItem.thumbnail = null;
@@ -157,7 +157,7 @@ describe("Module `file`: manages the creation and deployment of item types that 
       expect(response.resources).toEqual(["ppk1234567890_info_dataz/myProjectPackage.ppkx.zip"]);
     });
 
-    it("handles GeoJson with inaccessible bad JSON data", async () => {
+    it("handles GeoJson with inaccessible bad JSON data", async() => {
       const solutionItemId: string = "sln1234567890";
       const agolItem = mockItems.getAGOLItem("GeoJson");
       agolItem.thumbnail = null;
@@ -179,7 +179,7 @@ describe("Module `file`: manages the creation and deployment of item types that 
       expect(response.type).toEqual("GeoJson");
     });
 
-    it("handles GeoJson with bad JSON data", async () => {
+    it("handles GeoJson with bad JSON data", async() => {
       const solutionItemId: string = "sln1234567890";
       const agolItem = mockItems.getAGOLItem("GeoJson");
       agolItem.thumbnail = null;
@@ -207,7 +207,7 @@ describe("Module `file`: manages the creation and deployment of item types that 
   });
 
   describe("createItemFromTemplate", () => {
-    it("deploys an item", async () => {
+    it("deploys an item", async() => {
       const itemTemplate: common.IItemTemplate = templates.getItemTemplate("Web Map");
       itemTemplate.item.thumbnail = null;
       const templateDictionary: any = {};
@@ -230,7 +230,7 @@ describe("Module `file`: manages the creation and deployment of item types that 
       });
     });
 
-    it("deploys an item with resources", async () => {
+    it("deploys an item with resources", async() => {
       const itemTemplate: common.IItemTemplate = templates.getItemTemplate("Web Map");
       const templateDictionary: any = {};
       const newItemID: string = "map1234567891";
@@ -266,7 +266,7 @@ describe("Module `file`: manages the creation and deployment of item types that 
       });
     });
 
-    it("fails to create item", async () => {
+    it("fails to create item", async() => {
       const itemTemplate: common.IItemTemplate = templates.getItemTemplate("Web Map");
       itemTemplate.item.thumbnail = null;
       const templateDictionary: any = {};
@@ -281,7 +281,7 @@ describe("Module `file`: manages the creation and deployment of item types that 
       );
     });
 
-    it("should handle cancellation before deployment of item starts", async () => {
+    it("should handle cancellation before deployment of item starts", async() => {
       const itemTemplate: common.IItemTemplate = templates.getItemTemplate("Web Map");
       itemTemplate.item.thumbnail = null;
       const templateDictionary: any = {};
@@ -312,7 +312,7 @@ describe("Module `file`: manages the creation and deployment of item types that 
       expect(response).toEqual(templates.getFailedItem(itemTemplate.type));
     });
 
-    it("should handle cancellation after deployed item is created", async () => {
+    it("should handle cancellation after deployed item is created", async() => {
       const itemTemplate: common.IItemTemplate = templates.getItemTemplate("Web Map");
       itemTemplate.item.thumbnail = null;
       const templateDictionary: any = {};
@@ -347,7 +347,7 @@ describe("Module `file`: manages the creation and deployment of item types that 
       expect(response).toEqual(templates.getFailedItem(itemTemplate.type));
     });
 
-    it("should handle cancellation failure after deployed item is created", async () => {
+    it("should handle cancellation failure after deployed item is created", async() => {
       const itemTemplate: common.IItemTemplate = templates.getItemTemplate("Web Map");
       itemTemplate.item.thumbnail = null;
       const templateDictionary: any = {};

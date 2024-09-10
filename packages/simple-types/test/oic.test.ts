@@ -39,7 +39,7 @@ describe("Module `oic`: manages the creation and deployment of OIC (Oriented Ima
   });
 
   describe("convertItemToTemplate", () => {
-    it("handles failure to get layer information", async () => {
+    it("handles failure to get layer information", async() => {
       const itemTemplate = templates.getItemTemplate("Oriented Imagery Catalog");
       itemTemplate.data.properties.ServiceURL =
         "http://services.arcgis.com/myOrg/ArcGIS/rest/services/myService1/FeatureServer/1";
@@ -62,7 +62,7 @@ describe("Module `oic`: manages the creation and deployment of OIC (Oriented Ima
       );
     });
 
-    it("handles missing data section", async () => {
+    it("handles missing data section", async() => {
       const itemTemplate = templates.getItemTemplate("Oriented Imagery Catalog");
       itemTemplate.data = null;
 
@@ -75,7 +75,7 @@ describe("Module `oic`: manages the creation and deployment of OIC (Oriented Ima
   });
 
   describe("_extractDependencies", () => {
-    it("handles missing data or properties", async () => {
+    it("handles missing data or properties", async() => {
       const expectedDependencies = {
         dependencies: [] as string[],
         urlHash: {} as any,
@@ -93,7 +93,7 @@ describe("Module `oic`: manages the creation and deployment of OIC (Oriented Ima
       expect(actual).toEqual(expectedDependencies);
     });
 
-    it("handles both of the URL properties", async () => {
+    it("handles both of the URL properties", async() => {
       const itemTemplate = templates.getItemTemplate("Oriented Imagery Catalog");
       itemTemplate.data.properties.ServiceURL =
         "http://services.arcgis.com/myOrg/ArcGIS/rest/services/myService1/FeatureServer/1";
@@ -122,7 +122,7 @@ describe("Module `oic`: manages the creation and deployment of OIC (Oriented Ima
       expect(actual).toEqual(expected);
     });
 
-    it("handles failure to get layer information", async () => {
+    it("handles failure to get layer information", async() => {
       const itemTemplate = templates.getItemTemplate("Oriented Imagery Catalog");
       itemTemplate.data.properties.ServiceURL =
         "http://services.arcgis.com/myOrg/ArcGIS/rest/services/myService1/FeatureServer/1";
@@ -147,7 +147,7 @@ describe("Module `oic`: manages the creation and deployment of OIC (Oriented Ima
   });
 
   describe("_getLayerIds", () => {
-    it("handles empty layer URL list", async () => {
+    it("handles empty layer URL list", async() => {
       const layerURLs: string[] = [];
       const dependencies: string[] = [];
 
@@ -170,7 +170,7 @@ describe("Module `oic`: manages the creation and deployment of OIC (Oriented Ima
       expect(actual).toEqual(expected);
     });
 
-    it("handles single layer URL", async () => {
+    it("handles single layer URL", async() => {
       const layerURLs: string[] = ["http://services.arcgis.com/myOrg/ArcGIS/rest/services/myService1/FeatureServer/1"];
       const dependencies: string[] = [];
 
@@ -190,7 +190,7 @@ describe("Module `oic`: manages the creation and deployment of OIC (Oriented Ima
       expect(actual).toEqual(expected);
     });
 
-    it("handles duplicate, empty, MapServer layer URLs", async () => {
+    it("handles duplicate, empty, MapServer layer URLs", async() => {
       const layerURLs: string[] = [
         "",
         "http://services.arcgis.com/myOrg/ArcGIS/rest/services/myService2/FeatureServer/2",
@@ -223,7 +223,7 @@ describe("Module `oic`: manages the creation and deployment of OIC (Oriented Ima
       expect(actual).toEqual(expected);
     });
 
-    it("handles failure to get layer information", async () => {
+    it("handles failure to get layer information", async() => {
       const layerURLs: string[] = ["http://services.arcgis.com/myOrg/ArcGIS/rest/services/myService1/FeatureServer/1"];
       const dependencies: string[] = [];
 

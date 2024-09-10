@@ -679,13 +679,13 @@ export function deTemplatizeFieldInfos(fieldInfos: any, popupInfos: any, adminLa
 export function getLayersAndTables(itemTemplate: IItemTemplate): any[] {
   const properties: any = itemTemplate.properties;
   const layersAndTables: any[] = [];
-  (properties.layers || []).forEach(function (layer: any) {
+  (properties.layers || []).forEach(function(layer: any) {
     layersAndTables.push({
       item: layer,
       type: "layer",
     });
   });
-  (properties.tables || []).forEach(function (table: any) {
+  (properties.tables || []).forEach(function(table: any) {
     layersAndTables.push({
       item: table,
       type: "table",

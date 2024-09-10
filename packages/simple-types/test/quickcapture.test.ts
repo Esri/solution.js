@@ -42,7 +42,7 @@ afterEach(() => {
 
 describe("Module `quick capture`: manages the creation and deployment of quick capture project item types", () => {
   describe("createItemFromTemplate :: ", () => {
-    it("delegated to helper", async () => {
+    it("delegated to helper", async() => {
       const createSpy = spyOn(createHelper, "createItemFromTemplate").and.resolveTo();
       const cb = (): boolean => {
         return true;
@@ -54,7 +54,7 @@ describe("Module `quick capture`: manages the creation and deployment of quick c
   });
 
   describe("convertItemToTemplate :: ", () => {
-    it("delegated to helper", async () => {
+    it("delegated to helper", async() => {
       const convertSpy = spyOn(convertHelper, "convertItemToTemplate").and.resolveTo();
       await quickcapture.convertItemToTemplate({}, MOCK_USER_SESSION, MOCK_USER_SESSION, {});
       expect(convertSpy.calls.count()).withContext("should delegate").toBe(1);

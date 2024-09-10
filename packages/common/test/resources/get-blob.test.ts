@@ -35,7 +35,7 @@ const SERVER_INFO = {
 };
 
 describe("getBlob", () => {
-  it("can get a blob from a URL", async () => {
+  it("can get a blob from a URL", async() => {
     const url: string = "https://myserver/images/thumbnail.png";
 
     const getUrl = "https://myserver/images/thumbnail.png";
@@ -54,7 +54,7 @@ describe("getBlob", () => {
     expect(response).toEqual(expected);
   });
 
-  it("can handle an error from the REST endpoint request.request", async () => {
+  it("can handle an error from the REST endpoint request.request", async() => {
     const url: string = "https://myserver/images/thumbnail.png";
 
     const getUrl = "https://myserver/images/thumbnail.png";
@@ -73,7 +73,7 @@ describe("getBlob", () => {
       () => Promise.resolve(),
     );
   });
-  it("handles undefined url", async () => {
+  it("handles undefined url", async() => {
     return getBlob(undefined as any, MOCK_USER_SESSION).then(
       () => fail(),
       () => Promise.resolve(),

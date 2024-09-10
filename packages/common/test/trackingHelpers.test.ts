@@ -46,7 +46,7 @@ jasmine.DEFAULT_TIMEOUT_INTERVAL = 20000; // default is 5000 ms
 
 describe("Module `trackingHelpers`: common functions", () => {
   describe("getTackingServiceOwner", () => {
-    it("will get tracking info", async () => {
+    it("will get tracking info", async() => {
       const id = "7ab2bd317dd645308b9d7de3045423c6";
       const owner = "LocationTrackingOwner";
       const templateDictionary: any = {
@@ -71,7 +71,7 @@ describe("Module `trackingHelpers`: common functions", () => {
       expect(templateDictionary).toEqual(expectedTemplateDict);
     });
 
-    it("will handle failure during get tracking info", async () => {
+    it("will handle failure during get tracking info", async() => {
       const id = "7ab2bd317dd645308b9d7de3045423c6";
       const owner = "LocationTrackingOwner";
       const templateDictionary: any = {

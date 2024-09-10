@@ -218,7 +218,7 @@ export function templatizeWorkforce(data: any, keyProperties: string[], urlHash:
 export function getWorkforceDependencies(itemTemplate: IItemTemplate, dependencies: any[]): any {
   const properties: any = itemTemplate.item.properties || {};
   const keyProperties: string[] = getKeyWorkforceProperties(2);
-  dependencies = keyProperties.reduce(function (acc, v) {
+  dependencies = keyProperties.reduce(function(acc, v) {
     /* istanbul ignore else */
     if (properties[v] && dependencies.indexOf(properties[v]) < 0) {
       acc.push(properties[v]);

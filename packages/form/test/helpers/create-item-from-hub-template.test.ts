@@ -114,7 +114,7 @@ describe("createItemFromHubTemplate", () => {
     };
   });
 
-  it("should resolve a ISurvey123CreateParams", async () => {
+  it("should resolve a ISurvey123CreateParams", async() => {
     const replaceInTemplateSpy = spyOn(common, "replaceInTemplate").and.returnValue(interpolatedTemplate);
     const buildCreateParamsSpy = spyOn(buildParamsHelper, "buildCreateParams").and.resolveTo(paramResults);
     const createSurveySpy = spyOn(createSurveyHelper, "createSurvey").and.resolveTo(createResult);
@@ -166,7 +166,7 @@ describe("createItemFromHubTemplate", () => {
     });
   });
 
-  it("should allow survey123Url override from templateDictionary", async () => {
+  it("should allow survey123Url override from templateDictionary", async() => {
     const replaceInTemplateSpy = spyOn(common, "replaceInTemplate").and.returnValue(interpolatedTemplate);
     const buildCreateParamsSpy = spyOn(buildParamsHelper, "buildCreateParams").and.resolveTo(paramResults);
     const createSurveySpy = spyOn(createSurveyHelper, "createSurvey").and.resolveTo(createResult);
@@ -219,7 +219,7 @@ describe("createItemFromHubTemplate", () => {
     });
   });
 
-  it("should call itemProgressCallback with Failed then reject", async () => {
+  it("should call itemProgressCallback with Failed then reject", async() => {
     const error = new Error("Failed to build params");
     spyOn(common, "replaceInTemplate").and.returnValue(interpolatedTemplate);
     spyOn(buildParamsHelper, "buildCreateParams").and.rejectWith(error);

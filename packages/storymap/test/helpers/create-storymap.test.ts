@@ -22,7 +22,7 @@ import { createStoryMap } from "../../src/helpers/create-storymap";
 const MOCK_USER_SESSION = utils.createRuntimeMockUserSession();
 
 describe("createStoryMap ::", () => {
-  it("happy-path", async () => {
+  it("happy-path", async() => {
     // model
     const model = {
       item: {
@@ -80,7 +80,7 @@ describe("createStoryMap ::", () => {
     expect(moveOpts.folderId).withContext("should pass the folderid into create item").toBe("fakefolderid");
   });
 
-  it("happy-path with thumbnail", async () => {
+  it("happy-path with thumbnail", async() => {
     // model
     const model = {
       item: {

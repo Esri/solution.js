@@ -33,7 +33,7 @@ beforeEach(() => {
 });
 
 describe("Module `removeItems`: removing items from AGO", () => {
-  it("handles defaulting all options", async () => {
+  it("handles defaulting all options", async() => {
     const solutionSummary: interfaces.ISolutionPrecis = {
       id: "sln1234567890",
       title: "Solution Title",

@@ -33,7 +33,7 @@ describe("createItemFromTemplate", () => {
     templateDictionary = { key: "value" };
   });
 
-  it("should delegate to custom template processing for Hub Survey templates", async () => {
+  it("should delegate to custom template processing for Hub Survey templates", async() => {
     const expectedResults = {
       item: null, // common.IItemTemplate,
       id: "2c36d3679e7f4934ac599051df22daf6",
@@ -63,7 +63,7 @@ describe("createItemFromTemplate", () => {
     expect(results).toEqual(expectedResults as any);
   });
 
-  it("should delegate to simple types processing for non-Hub Survey templates", async () => {
+  it("should delegate to simple types processing for non-Hub Survey templates", async() => {
     const expectedResults = {
       item: null, // common.IItemTemplate,
       id: "2c36d3679e7f4934ac599051df22daf6",

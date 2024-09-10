@@ -81,7 +81,7 @@ export function blobToFile(blob: Blob, filename: string, mimeType?: string): Fil
 export function blobToText(blob: Blob): Promise<string> {
   return new Promise<string>((resolve) => {
     const reader = new FileReader();
-    reader.onload = function (evt) {
+    reader.onload = function(evt) {
       // Disable needed because Node requires cast
       const blobContents = evt.target.result;
       resolve(blobContents ? (blobContents as string) : ""); // not handling ArrayContents variant
@@ -544,7 +544,7 @@ export function getIDs(v: string): string[] {
   // cannot use /(?<!_)(?<!{{)\b[0-9A-F]{32}/gi
 
   // use groups and filter out the ids that start with {{
-  return regExTest(v, /({*)(\b[0-9A-F]{32}\b)/gi).reduce(function (acc, _v) {
+  return regExTest(v, /({*)(\b[0-9A-F]{32}\b)/gi).reduce(function(acc, _v) {
     /* istanbul ignore else */
     if (_v.indexOf("{{") < 0) {
       acc.push(_v.replace("{", ""));
@@ -563,7 +563,7 @@ export function getIDs(v: string): string[] {
  * @returns Value at end of path
  */
 export function getProp(obj: { [index: string]: any }, path: string): any {
-  return path.split(".").reduce(function (prev, curr) {
+  return path.split(".").reduce(function(prev, curr) {
     /* istanbul ignore next no need to test undefined scenario */
     return prev ? prev[curr] : undefined;
   }, obj);
@@ -597,7 +597,7 @@ export function getProps(obj: any, props: string[]): any {
  * @returns Value at end of path
  */
 export function getPropWithDefault(obj: IStringValuePair, path: string, defaultV?: any): any {
-  const value = path.split(".").reduce(function (prev, curr) {
+  const value = path.split(".").reduce(function(prev, curr) {
     /* istanbul ignore next no need to test undefined scenario */
     return prev ? prev[curr] : undefined;
   }, obj);

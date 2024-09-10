@@ -48,7 +48,7 @@ describe("Module `deployer`", () => {
     sinon.restore();
   });
   describe("deploy solution orchestration", () => {
-    it("should reject if no maybeModel passed", async () => {
+    it("should reject if no maybeModel passed", async() => {
       return deployer
         .deploySolution("", MOCK_USER_SESSION)
         .then(() => {
@@ -85,7 +85,7 @@ describe("Module `deployer`", () => {
         deployFnStub = sinon.stub(deploySolutionFromTemplate, "deploySolutionFromTemplate").resolves("3ef");
       });
 
-      it("ensure main fns are called using stubs", async () => {
+      it("ensure main fns are called using stubs", async() => {
         // this test assumes all is good and simply checks that
         // the expected delegation occurs
         await deployer.deploySolution(itemInfo.item.id, MOCK_USER_SESSION);
@@ -96,11 +96,11 @@ describe("Module `deployer`", () => {
         expect(deployFnStub.calledOnce).withContext("deploySolutionFromTemplate should be called once").toBe(true);
         // TODO: verify inputs to deployFn
       });
-      it("should default to using supplied authentication for solution source", async () => {
+      it("should default to using supplied authentication for solution source", async() => {
         await deployer.deploySolution(itemInfo.item.id, MOCK_USER_SESSION);
         expect(solTmplStub.args[0][1]).withContext("destination authentication should be used").toBe(MOCK_USER_SESSION);
       });
-      it("should use solution-source authentication if supplied", async () => {
+      it("should use solution-source authentication if supplied", async() => {
         const opts = {
           storageAuthentication: testUtils.createRuntimeMockUserSession(
             undefined,
@@ -112,7 +112,7 @@ describe("Module `deployer`", () => {
           .withContext("source authentication should be used")
           .toBe(opts.storageAuthentication);
       });
-      it("calls progress callback if passed", async () => {
+      it("calls progress callback if passed", async() => {
         // create options hash w/ progress callback
         const opts = {
           progressCallback: (pct: number) => pct,
@@ -136,7 +136,7 @@ describe("Module `deployer`", () => {
     });
   });
   describe("deploySolution", () => {
-    it("reports an error if the solution id is not supplied", async () => {
+    it("reports an error if the solution id is not supplied", async() => {
       return deployer
         .deploySolution("", MOCK_USER_SESSION)
         .then(() => fail())
@@ -149,7 +149,7 @@ describe("Module `deployer`", () => {
         });
     });
 
-    it("can deploy webmap with dependencies", async () => {
+    it("can deploy webmap with dependencies", async() => {
       const groupId: string = "aa4a6047326243b290f625e80ebe6531";
       const newGroupId: string = "ba4a6047326243b290f625e80ebe6531";
       const groupTemplate: common.IItemTemplate = templates.getGroupTemplatePart();
@@ -543,7 +543,7 @@ describe("Module `deployer`", () => {
       return deployer;
     });
 
-    it("can handle error on postProcess", async () => {
+    it("can handle error on postProcess", async() => {
       const itemInfoCard: any = {
         id: "c38e59126368495694ca23b7ccacefba",
         title: "Election Management",
@@ -819,7 +819,7 @@ describe("Module `deployer`", () => {
       );
     });
 
-    it("can handle error on createItemWithData", async () => {
+    it("can handle error on createItemWithData", async() => {
       // get templates
       const itemInfo: any = templates.getSolutionTemplateItem([templates.getItemTemplate("Feature Service")]);
 
@@ -879,7 +879,7 @@ describe("Module `deployer`", () => {
       );
     });
 
-    it("can handle error on get solution item", async () => {
+    it("can handle error on get solution item", async() => {
       // get templates
       const itemInfo: any = templates.getSolutionTemplateItem([templates.getItemTemplate("Feature Service")]);
 
@@ -927,7 +927,7 @@ describe("Module `deployer`", () => {
       );
     });
 
-    it("can handle error on project", async () => {
+    it("can handle error on project", async() => {
       // TODO: This test is making unmocked calls, however because
       // this is so complex, it's extremely difficult to understand
       // what the expected responses should be.
@@ -1047,7 +1047,7 @@ describe("Module `deployer`", () => {
       );
     });
 
-    it("can handle error on updateItem", async () => {
+    it("can handle error on updateItem", async() => {
       // get templates
       const itemInfo: any = templates.getSolutionTemplateItem([templates.getItemTemplate("Feature Service")]);
 
@@ -1213,7 +1213,7 @@ describe("Module `deployer`", () => {
       );
     });
 
-    it("can handle error on deploySolutionItems update", async () => {
+    it("can handle error on deploySolutionItems update", async() => {
       // get templates
       const itemInfo: any = templates.getSolutionTemplateItem([templates.getItemTemplate("Feature Service")]);
 
@@ -1365,7 +1365,7 @@ describe("Module `deployer`", () => {
       );
     });
 
-    it("can handle error on create Folder", async () => {
+    it("can handle error on create Folder", async() => {
       // get templates
       const itemInfo: any = templates.getSolutionTemplateItem([templates.getItemTemplate("Feature Service")]);
 

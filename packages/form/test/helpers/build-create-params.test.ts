@@ -122,7 +122,7 @@ describe("buildCreateParams", () => {
     } as common.IItem;
   });
 
-  it("should resolve a ISurvey123CreateParams", async () => {
+  it("should resolve a ISurvey123CreateParams", async() => {
     const toCredentialSpy = spyOn(MOCK_USER_SESSION, "toCredential").and.returnValue(credential);
     const getUniqueTitleSpy = spyOn(common, "getUniqueTitle").and.returnValue("Survey-" + template.item.title);
     const encodeSurveyFormSpy = spyOn(surveyEncodingUtils, "encodeSurveyForm").and.returnValue(encodedForm);
@@ -153,7 +153,7 @@ describe("buildCreateParams", () => {
     });
   });
 
-  it("should support pages", async () => {
+  it("should support pages", async() => {
     unencodedForm.questions = [{ questions: unencodedForm.questions }];
     encodedForm.questions = [{ questions: encodedForm.questions }];
     const toCredentialSpy = spyOn(MOCK_USER_SESSION, "toCredential").and.returnValue(credential);
@@ -186,7 +186,7 @@ describe("buildCreateParams", () => {
     });
   });
 
-  it("should support questions being absent", async () => {
+  it("should support questions being absent", async() => {
     delete unencodedForm.questions;
     const toCredentialSpy = spyOn(MOCK_USER_SESSION, "toCredential").and.returnValue(credential);
     const getUniqueTitleSpy = spyOn(common, "getUniqueTitle").and.returnValue("Survey-" + template.item.title);
@@ -218,7 +218,7 @@ describe("buildCreateParams", () => {
     });
   });
 
-  it("should support questions without maps", async () => {
+  it("should support questions without maps", async() => {
     delete unencodedForm.questions[0].maps;
     const toCredentialSpy = spyOn(MOCK_USER_SESSION, "toCredential").and.returnValue(credential);
     const getUniqueTitleSpy = spyOn(common, "getUniqueTitle").and.returnValue("Survey-" + template.item.title);

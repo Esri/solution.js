@@ -21,7 +21,7 @@ import { convertWebExperienceToTemplate } from "../../src/helpers/convert-web-ex
 import { ExBee } from "../fixtures/exb-map-and-images";
 
 describe("convertWebExperienceToTemplate :: ", () => {
-  it("converts to a template and extracts dependencies", async () => {
+  it("converts to a template and extracts dependencies", async() => {
     const model = cloneObject(ExBee);
 
     return convertWebExperienceToTemplate(model).then((tmpl) => {
@@ -39,7 +39,7 @@ describe("convertWebExperienceToTemplate :: ", () => {
     });
   });
 
-  it("other keyword paths", async () => {
+  it("other keyword paths", async() => {
     const model = cloneObject(ExBee);
     // ExB's will always have either status: Changed OR status: Published
     model.item.typeKeywords = without(model.item.typeKeywords ?? [], "status: Changed");

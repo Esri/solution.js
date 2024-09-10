@@ -37,7 +37,7 @@ describe("HubSiteProcessor: ", () => {
         .toBeDefined();
     });
 
-    it("should fetch the model, convert it, and swap ids", async () => {
+    it("should fetch the model, convert it, and swap ids", async() => {
       // we are testing some post-templating logic, so the rawTmpl needs to have some props
       const rawTmpl = {
         item: {
@@ -88,7 +88,7 @@ describe("HubSiteProcessor: ", () => {
       expect(replaceSpy.calls.count()).withContext("should replace ids").toBe(1);
     });
 
-    it("appends properties to template if missing", async () => {
+    it("appends properties to template if missing", async() => {
       // we are testing some post-templating logic, so the rawTmpl needs to have some props
       const rawTmpl = {
         item: {
@@ -165,7 +165,7 @@ describe("HubSiteProcessor: ", () => {
         .toBeDefined();
     });
 
-    it("happy-path:: delegates to hub.js", async () => {
+    it("happy-path:: delegates to hub.js", async() => {
       const createFromTmplSpy = spyOn(sitesPackage, "createSiteModelFromTemplate").and.resolveTo({ assets: [] });
       const createSiteSpy = spyOn(sitesPackage, "createSite").and.resolveTo(fakeSite);
       const moveSiteSpy = spyOn(moveHelper, "moveModelToFolder").and.resolveTo();
@@ -199,7 +199,7 @@ describe("HubSiteProcessor: ", () => {
       expect(moveSiteSpy.calls.count()).withContext("should call moveSite").toBe(1);
     });
 
-    it("happy-path with thumbnail", async () => {
+    it("happy-path with thumbnail", async() => {
       spyOn(common, "createHubRequestOptions").and.resolveTo({} as hubCommon.IHubUserRequestOptions);
       const createFromTmplSpy = spyOn(sitesPackage, "createSiteModelFromTemplate").and.resolveTo({ assets: [] });
       const createSiteSpy = spyOn(sitesPackage, "createSite").and.resolveTo(fakeSite);
@@ -263,7 +263,7 @@ describe("HubSiteProcessor: ", () => {
       });
     });
 
-    it("asset and resource juggling", async () => {
+    it("asset and resource juggling", async() => {
       spyOn(common, "createHubRequestOptions").and.resolveTo({} as hubCommon.IHubUserRequestOptions);
       const createFromTmplSpy = spyOn(sitesPackage, "createSiteModelFromTemplate").and.resolveTo({});
       const createSiteSpy = spyOn(sitesPackage, "createSite").and.resolveTo(fakeSite);
@@ -301,7 +301,7 @@ describe("HubSiteProcessor: ", () => {
       expect(moveSiteSpy.calls.count()).withContext("should call moveSite").toBe(1);
     });
 
-    it("callsback on exception", async () => {
+    it("callsback on exception", async() => {
       spyOn(common, "createHubRequestOptions").and.resolveTo({} as hubCommon.IHubUserRequestOptions);
       spyOn(sitesPackage, "createSiteModelFromTemplate").and.rejectWith("Whoa thats bad");
 
@@ -326,7 +326,7 @@ describe("HubSiteProcessor: ", () => {
         });
     });
 
-    it("it early-exits correctly", async () => {
+    it("it early-exits correctly", async() => {
       spyOn(common, "createHubRequestOptions").and.resolveTo({} as hubCommon.IHubUserRequestOptions);
       const td = {};
       const cb = () => false;
@@ -336,7 +336,7 @@ describe("HubSiteProcessor: ", () => {
       expect(result.postProcess).withContext("should return postProcess false").toBe(false);
     });
 
-    it("it cleans up if job is cancelled late", async () => {
+    it("it cleans up if job is cancelled late", async() => {
       spyOn(common, "createHubRequestOptions").and.resolveTo({} as hubCommon.IHubUserRequestOptions);
       const createFromTmplSpy = spyOn(sitesPackage, "createSiteModelFromTemplate").and.resolveTo({ assets: [] });
       const createSiteSpy = spyOn(sitesPackage, "createSite").and.resolveTo(fakeSite);
@@ -385,7 +385,7 @@ describe("HubSiteProcessor: ", () => {
   });
 
   describe("postProcess ::", () => {
-    it("delegates to _postProcessSite", async () => {
+    it("delegates to _postProcessSite", async() => {
       spyOn(common, "createHubRequestOptions").and.resolveTo({} as hubCommon.IHubUserRequestOptions);
       fetchMock
         .get(

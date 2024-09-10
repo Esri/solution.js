@@ -86,7 +86,7 @@ describe("Module `restHelpersGet`: common REST fetch functions shared across pac
   });
 
   describe("getUsername", () => {
-    it("can get the username from the authentication", async () => {
+    it("can get the username from the authentication", async() => {
       const communitySelfResponse: any = utils.getUserResponse();
       communitySelfResponse.username = "casey";
       fetchMock.get(utils.PORTAL_SUBSET.restUrl + "/community/self?f=json&token=fake-token", communitySelfResponse);
@@ -97,7 +97,7 @@ describe("Module `restHelpersGet`: common REST fetch functions shared across pac
   });
 
   describe("getFoldersAndGroups", () => {
-    it("can handle an exception on get user content", async () => {
+    it("can handle an exception on get user content", async() => {
       fetchMock
         .get(utils.PORTAL_SUBSET.restUrl + "/content/users/casey?f=json&token=fake-token", mockItems.get500Failure())
         .get(utils.PORTAL_SUBSET.restUrl + "/community/users/casey?f=json&token=fake-token", mockItems.get500Failure());
@@ -108,7 +108,7 @@ describe("Module `restHelpersGet`: common REST fetch functions shared across pac
       );
     });
 
-    it("can handle undefined folders or groups", async () => {
+    it("can handle undefined folders or groups", async() => {
       const response: any = utils.getSuccessResponse();
       fetchMock
         .get(utils.PORTAL_SUBSET.restUrl + "/content/users/casey?f=json&token=fake-token", response)
@@ -123,7 +123,7 @@ describe("Module `restHelpersGet`: common REST fetch functions shared across pac
   });
 
   describe("getBlobAsFile", () => {
-    it("should ignore ignorable error", async () => {
+    it("should ignore ignorable error", async() => {
       const url = utils.PORTAL_SUBSET.restUrl + "/content/items/itm1234567890?f=json&token=fake-token";
       fetchMock.post(url, mockItems.get400Failure());
 
@@ -131,7 +131,7 @@ describe("Module `restHelpersGet`: common REST fetch functions shared across pac
       expect(file).toBeNull();
     });
 
-    it("should use supplied filename", async () => {
+    it("should use supplied filename", async() => {
       const url = utils.PORTAL_SUBSET.restUrl + "/content/items/itm1234567890?f=json&token=fake-token";
       fetchMock.post(url, utils.getSampleImageAsBlob(), {
         sendAsJson: false,
@@ -145,7 +145,7 @@ describe("Module `restHelpersGet`: common REST fetch functions shared across pac
   });
 
   describe("getBlobCheckForError", () => {
-    it("should pass through an image file", async () => {
+    it("should pass through an image file", async() => {
       const url = utils.PORTAL_SUBSET.restUrl + "/content/items/itm1234567890?f=json&token=fake-token";
       fetchMock.post(url, utils.getSampleImageAsBlob(), {
         sendAsJson: false,
@@ -156,7 +156,7 @@ describe("Module `restHelpersGet`: common REST fetch functions shared across pac
       expect(blob.type).toEqual("image/png");
     });
 
-    it("should pass through non-error JSON", async () => {
+    it("should pass through non-error JSON", async() => {
       const url = utils.PORTAL_SUBSET.restUrl + "/content/items/itm1234567890?f=json&token=fake-token";
       const testBlobContents = JSON.stringify({
         a: "a",
@@ -175,7 +175,7 @@ describe("Module `restHelpersGet`: common REST fetch functions shared across pac
       expect(blob.type).toEqual("application/json");
     });
 
-    it("should handle bad JSON by passing it through", async () => {
+    it("should handle bad JSON by passing it through", async() => {
       const url = utils.PORTAL_SUBSET.restUrl + "/content/items/itm1234567890?f=json&token=fake-token";
       const testBlob = new Blob(["badJson:{"], { type: "application/json" });
       fetchMock.post(url, testBlob, { sendAsJson: false });
@@ -185,7 +185,7 @@ describe("Module `restHelpersGet`: common REST fetch functions shared across pac
       expect(blob.type).toEqual("application/json");
     });
 
-    it("should ignore ignorable error", async () => {
+    it("should ignore ignorable error", async() => {
       const url = utils.PORTAL_SUBSET.restUrl + "/content/items/itm1234567890?f=json&token=fake-token";
       fetchMock.post(url, mockItems.get400Failure());
 
@@ -193,7 +193,7 @@ describe("Module `restHelpersGet`: common REST fetch functions shared across pac
       expect(blob).toBeNull();
     });
 
-    it("should return significant error", async () => {
+    it("should return significant error", async() => {
       const url = utils.PORTAL_SUBSET.restUrl + "/content/items/itm1234567890?f=json&token=fake-token";
       fetchMock.post(url, mockItems.get400Failure());
 
@@ -208,7 +208,7 @@ describe("Module `restHelpersGet`: common REST fetch functions shared across pac
   });
 
   describe("getEnterpriseServers", () => {
-    it("fetches the servers", async () => {
+    it("fetches the servers", async() => {
       const portalRestUrl = utils.PORTAL_SUBSET.restUrl;
 
       const serversJSON = {
@@ -318,7 +318,7 @@ describe("Module `restHelpersGet`: common REST fetch functions shared across pac
   });
 
   describe("getGroupCategorySchema", () => {
-    it("should return group's category schema", async () => {
+    it("should return group's category schema", async() => {
       const groupId = "grp1234567890";
 
       fetchMock.get(
@@ -332,7 +332,7 @@ describe("Module `restHelpersGet`: common REST fetch functions shared across pac
   });
 
   describe("getItemBase", () => {
-    it("item doesn't allow access to item", async () => {
+    it("item doesn't allow access to item", async() => {
       const itemId = "itm1234567890";
       const expected: any = {
         name: "ArcGISAuthError",
@@ -379,7 +379,7 @@ describe("Module `restHelpersGet`: common REST fetch functions shared across pac
       expect(response).toEqual(expected);
     });
 
-    it("item is accessible", async () => {
+    it("item is accessible", async() => {
       const itemId = "itm1234567890";
       const expected: any = { values: { a: 1, b: "c" } };
 
@@ -394,7 +394,7 @@ describe("Module `restHelpersGet`: common REST fetch functions shared across pac
   });
 
   describe("getItemDataAsFile", () => {
-    it("handles item without a data section", async () => {
+    it("handles item without a data section", async() => {
       const itemId = "itm1234567890";
       const url = restHelpersGet.getItemDataBlobUrl(itemId, MOCK_USER_SESSION);
       fetchMock.post(url, {
@@ -412,7 +412,7 @@ describe("Module `restHelpersGet`: common REST fetch functions shared across pac
       );
     });
 
-    it("gets data section that's an image", async () => {
+    it("gets data section that's an image", async() => {
       const itemId = "itm1234567890";
       const url = restHelpersGet.getItemDataBlobUrl(itemId, MOCK_USER_SESSION);
       fetchMock.post(url, utils.getSampleImageAsBlob(), {
@@ -427,7 +427,7 @@ describe("Module `restHelpersGet`: common REST fetch functions shared across pac
   });
 
   describe("getItemDataAsJson", () => {
-    it("handles item without a data section", async () => {
+    it("handles item without a data section", async() => {
       const itemId = "itm1234567890";
       const url = restHelpersGet.getItemDataBlobUrl(itemId, MOCK_USER_SESSION);
       fetchMock.post(url, {
@@ -442,7 +442,7 @@ describe("Module `restHelpersGet`: common REST fetch functions shared across pac
       return restHelpersGet.getItemDataAsJson(itemId, MOCK_USER_SESSION);
     });
 
-    it("get data section that's JSON", async () => {
+    it("get data section that's JSON", async() => {
       const itemId = "itm1234567890";
       const url = restHelpersGet.getItemDataBlobUrl(itemId, MOCK_USER_SESSION);
       const testBlobContents = {
@@ -462,7 +462,7 @@ describe("Module `restHelpersGet`: common REST fetch functions shared across pac
       expect(json).toEqual(testBlobContents);
     });
 
-    it("handles item that doesn't allow access to data", async () => {
+    it("handles item that doesn't allow access to data", async() => {
       const itemId = "itm1234567890";
       const expected: any = {
         name: "ArcGISAuthError",
@@ -508,7 +508,7 @@ describe("Module `restHelpersGet`: common REST fetch functions shared across pac
   });
 
   describe("getItemDataBlob", () => {
-    it("handles odd error code", async () => {
+    it("handles odd error code", async() => {
       const itemId = "itm1234567890";
       fetchMock.post(utils.PORTAL_SUBSET.restUrl + "/content/items/itm1234567890/data", { error: { code: 505 } });
 
@@ -528,7 +528,7 @@ describe("Module `restHelpersGet`: common REST fetch functions shared across pac
   });
 
   describe("getItemMetadataAsFile", () => {
-    it("handles item without metadata", async () => {
+    it("handles item without metadata", async() => {
       const itemId = "itm1234567890";
       const url = restHelpersGet.getItemMetadataBlobUrl(itemId, MOCK_USER_SESSION);
       fetchMock.post(url, mockItems.get400Failure());
@@ -537,7 +537,7 @@ describe("Module `restHelpersGet`: common REST fetch functions shared across pac
       expect(json).toBeNull();
     });
 
-    it("handles server error", async () => {
+    it("handles server error", async() => {
       const itemId = "itm1234567890";
       const url = restHelpersGet.getItemMetadataBlobUrl(itemId, MOCK_USER_SESSION);
       fetchMock.post(url, mockItems.get500Failure());
@@ -546,7 +546,7 @@ describe("Module `restHelpersGet`: common REST fetch functions shared across pac
       expect(json).toBeNull();
     });
 
-    it("handles general error", async () => {
+    it("handles general error", async() => {
       const itemId = "itm1234567890";
       const url = restHelpersGet.getItemMetadataBlobUrl(itemId, MOCK_USER_SESSION);
       fetchMock.post(url, { value: "fred" });
@@ -555,7 +555,7 @@ describe("Module `restHelpersGet`: common REST fetch functions shared across pac
       expect(json).toBeNull();
     });
 
-    it("gets metadata", async () => {
+    it("gets metadata", async() => {
       const itemId = "itm1234567890";
       const url = restHelpersGet.getItemMetadataBlobUrl(itemId, MOCK_USER_SESSION);
       fetchMock.post(url, utils.getSampleMetadataAsFile(), {
@@ -577,7 +577,7 @@ describe("Module `restHelpersGet`: common REST fetch functions shared across pac
   });
 
   describe("getItemRelatedItems", () => {
-    it("item doesn't have related items of a single type", async () => {
+    it("item doesn't have related items of a single type", async() => {
       const itemId = "itm1234567890";
       const relationshipType = "Survey2Service";
       const direction = "forward";
@@ -605,7 +605,7 @@ describe("Module `restHelpersGet`: common REST fetch functions shared across pac
       expect(response).toEqual(expected);
     });
 
-    it("item doesn't have related items of multiple types", async () => {
+    it("item doesn't have related items of multiple types", async() => {
       const itemId = "itm1234567890";
       const relationshipType: portal.ItemRelationshipType[] = ["Survey2Service", "Service2Service"];
       const direction = "reverse";
@@ -633,7 +633,7 @@ describe("Module `restHelpersGet`: common REST fetch functions shared across pac
       expect(response).toEqual(expected);
     });
 
-    it("item has one related item", async () => {
+    it("item has one related item", async() => {
       const itemId = "itm1234567890";
       const relationshipType = "Survey2Service";
       const direction = "forward";
@@ -725,7 +725,7 @@ describe("Module `restHelpersGet`: common REST fetch functions shared across pac
       expect(response).toEqual(expected);
     });
 
-    it("can handle an exception from the REST endpoint portal.getRelatedItems", async () => {
+    it("can handle an exception from the REST endpoint portal.getRelatedItems", async() => {
       const itemId = "itm1234567890";
       const relationshipType = "Survey2Service";
       const direction = "forward";
@@ -747,7 +747,7 @@ describe("Module `restHelpersGet`: common REST fetch functions shared across pac
       expect(response).toEqual(noRelatedItemsResponse);
     });
 
-    it("handles multiple batches of requests for related items", async () => {
+    it("handles multiple batches of requests for related items", async() => {
       const itemId = "itm1234567890";
       const expected: any = {
         total: 7,
@@ -824,7 +824,7 @@ describe("Module `restHelpersGet`: common REST fetch functions shared across pac
   });
 
   describe("getItemRelatedItemsInSameDirection", () => {
-    it("gets the data blob url from the authentication", async () => {
+    it("gets the data blob url from the authentication", async() => {
       const itemId = "itm1234567890";
       const relationshipTypes = [
         // from ItemRelationshipType
@@ -896,7 +896,7 @@ describe("Module `restHelpersGet`: common REST fetch functions shared across pac
   });
 
   describe("getItemResources", () => {
-    it("can handle a 500 error from the REST endpoint portal.getItemResources", async () => {
+    it("can handle a 500 error from the REST endpoint portal.getItemResources", async() => {
       const itemId = "itm1234567890";
 
       fetchMock.post(
@@ -910,7 +910,7 @@ describe("Module `restHelpersGet`: common REST fetch functions shared across pac
   });
 
   describe("getItemResourcesFiles", () => {
-    it("handles an inaccessible item", async () => {
+    it("handles an inaccessible item", async() => {
       const itemId = "itm1234567890";
 
       fetchMock.post(utils.PORTAL_SUBSET.restUrl + "/content/items/itm1234567890/resources", mockItems.get400Failure());
@@ -924,7 +924,7 @@ describe("Module `restHelpersGet`: common REST fetch functions shared across pac
       );
     });
 
-    it("handles an item with no resources", async () => {
+    it("handles an item with no resources", async() => {
       const itemId = "itm1234567890";
 
       fetchMock.post(utils.PORTAL_SUBSET.restUrl + "/content/items/itm1234567890/resources", {
@@ -939,7 +939,7 @@ describe("Module `restHelpersGet`: common REST fetch functions shared across pac
       expect(ok.length).toEqual(0);
     });
 
-    it("handles an item with one resource", async () => {
+    it("handles an item with one resource", async() => {
       const itemId = "itm1234567890";
       fetchMock
         .post(utils.PORTAL_SUBSET.restUrl + "/content/items/itm1234567890/resources", {
@@ -967,7 +967,7 @@ describe("Module `restHelpersGet`: common REST fetch functions shared across pac
   });
 
   describe("getItemsRelatedToASolution", () => {
-    it("gets items", async () => {
+    it("gets items", async() => {
       const solutionId = "sol1234567890";
       const getItemRelatedItemsSpy = spyOn(portal, "getRelatedItems").and.resolveTo({
         aggregations: {
@@ -1000,12 +1000,12 @@ describe("Module `restHelpersGet`: common REST fetch functions shared across pac
   });
 
   describe("getItemThumbnail", () => {
-    it("handle missing thumbnail for an item", async () => {
+    it("handle missing thumbnail for an item", async() => {
       const ok: Blob = await restHelpersGet.getItemThumbnail("itm1234567890", null, false, MOCK_USER_SESSION);
       expect(ok).toBeNull();
     });
 
-    it("get thumbnail for an item", async () => {
+    it("get thumbnail for an item", async() => {
       fetchMock.post(
         utils.PORTAL_SUBSET.restUrl + "/content/items/itm1234567890/info/thumbnail/ago_downloaded.png",
         utils.getSampleImageAsBlob(),
@@ -1023,7 +1023,7 @@ describe("Module `restHelpersGet`: common REST fetch functions shared across pac
   });
 
   describe("getItemThumbnailAsFile", () => {
-    it("get thumbnail for an item", async () => {
+    it("get thumbnail for an item", async() => {
       fetchMock.post(
         utils.PORTAL_SUBSET.restUrl + "/content/items/itm1234567890/info/thumbnail/ago_downloaded.png",
         utils.getSampleImageAsBlob(),
@@ -1039,7 +1039,7 @@ describe("Module `restHelpersGet`: common REST fetch functions shared across pac
       expect(ok.type).toEqual("image/png");
     });
 
-    it("handles missing thumbnail info", async () => {
+    it("handles missing thumbnail info", async() => {
       const ok: File = await restHelpersGet.getItemThumbnailAsFile("itm1234567890", null, false, MOCK_USER_SESSION);
       expect(ok).toBeNull();
     });
@@ -1060,7 +1060,7 @@ describe("Module `restHelpersGet`: common REST fetch functions shared across pac
   });
 
   describe("getJson", () => {
-    it("get JSON without authentication", async () => {
+    it("get JSON without authentication", async() => {
       fetchMock
         .post("http://site.com/some.json/rest/info", {})
         .get("https://myorg.maps.arcgis.com/sharing/rest/portals/self?f=json&token=fake-token", {})
@@ -1071,7 +1071,7 @@ describe("Module `restHelpersGet`: common REST fetch functions shared across pac
       expect(json).toEqual(utils.getSampleJson());
     });
 
-    it("get JSON without authentication", async () => {
+    it("get JSON without authentication", async() => {
       fetchMock
         .get("https://myorg.maps.arcgis.com/sharing/rest/portals/self?f=json&token=fake-token", {})
         .get("http://site.com/some.json?f=json", utils.getSampleJsonAsBlob(), {
@@ -1082,7 +1082,7 @@ describe("Module `restHelpersGet`: common REST fetch functions shared across pac
       expect(json).toEqual(utils.getSampleJson());
     });
 
-    it("handles non-JSON", async () => {
+    it("handles non-JSON", async() => {
       fetchMock
         .get("https://myorg.maps.arcgis.com/sharing/rest/portals/self?f=json&token=fake-token", {})
         .get("http://site.com/some.json?f=json", utils.getSampleImageAsBlob(), {
@@ -1093,7 +1093,7 @@ describe("Module `restHelpersGet`: common REST fetch functions shared across pac
       expect(json).toEqual(null);
     });
 
-    it("handles error", async () => {
+    it("handles error", async() => {
       fetchMock
         .get("https://myorg.maps.arcgis.com/sharing/rest/portals/self?f=json&token=fake-token", {})
         .get("http://site.com/some.json?f=json", mockItems.get400Failure());
@@ -1153,7 +1153,7 @@ describe("Module `restHelpersGet`: common REST fetch functions shared across pac
   });
 
   describe("getPortalUrls", () => {
-    it("handles failure to fetch", async () => {
+    it("handles failure to fetch", async() => {
       fetchMock.get(
         "https://myorg.maps.arcgis.com/sharing/rest/portals/self/urls?f=json&token=fake-token",
         mockItems.get400Failure(),
@@ -1164,7 +1164,7 @@ describe("Module `restHelpersGet`: common REST fetch functions shared across pac
   });
 
   describe("getSolutionsRelatedToAnItem", () => {
-    it("gets solutions", async () => {
+    it("gets solutions", async() => {
       const solutionId = "sol1234567890";
       const getItemRelatedItemsSpy = spyOn(portal, "getRelatedItems").and.resolveTo({
         aggregations: {
@@ -1194,7 +1194,7 @@ describe("Module `restHelpersGet`: common REST fetch functions shared across pac
   });
 
   describe("getThumbnailFile", () => {
-    it("should handle error", async () => {
+    it("should handle error", async() => {
       const url = utils.PORTAL_SUBSET.restUrl + "/content/items/itm1234567890?f=json&token=fake-token";
       fetchMock.post(url, mockItems.get400Failure());
 
@@ -1202,7 +1202,7 @@ describe("Module `restHelpersGet`: common REST fetch functions shared across pac
       expect(file).toBeNull();
     });
 
-    it("should get file", async () => {
+    it("should get file", async() => {
       const url = utils.PORTAL_SUBSET.restUrl + "/content/items/itm1234567890?f=json&token=fake-token";
       fetchMock.post(url, utils.getSampleImageAsFile(), {
         sendAsJson: false,
@@ -1216,7 +1216,7 @@ describe("Module `restHelpersGet`: common REST fetch functions shared across pac
   });
 
   describe("_fixTextBlobType", () => {
-    it("should pass application/json blobs through unchanged", async () => {
+    it("should pass application/json blobs through unchanged", async() => {
       const testBlobType = "application/json";
       const testBlobContents = JSON.stringify({
         a: "a",
@@ -1234,7 +1234,7 @@ describe("Module `restHelpersGet`: common REST fetch functions shared across pac
       expect(text).toEqual(testBlobContents);
     });
 
-    it("should pass image blobs through unchanged", async () => {
+    it("should pass image blobs through unchanged", async() => {
       const testBlobType = "image/png";
       const testBlob = utils.getSampleImageAsBlob();
 
@@ -1242,7 +1242,7 @@ describe("Module `restHelpersGet`: common REST fetch functions shared across pac
       expect(ok.type).toEqual(testBlobType);
     });
 
-    it("should pass text/xml blobs through unchanged", async () => {
+    it("should pass text/xml blobs through unchanged", async() => {
       const testBlobType = "text/xml";
       const testBlob = utils.getSampleMetadataAsBlob();
 
@@ -1254,7 +1254,7 @@ describe("Module `restHelpersGet`: common REST fetch functions shared across pac
       expect(resultBlobContents).toEqual(testBlobContents);
     });
 
-    it("should pass truly text blobs through unchanged", async () => {
+    it("should pass truly text blobs through unchanged", async() => {
       const testBlobType = "text/plain";
       const testBlobContents = "This is a block of text";
       const testBlob = new Blob([testBlobContents], { type: testBlobType });
@@ -1266,7 +1266,7 @@ describe("Module `restHelpersGet`: common REST fetch functions shared across pac
       expect(text).toEqual(testBlobContents);
     });
 
-    it("should handle blob MIME text types with character-set suffix", async () => {
+    it("should handle blob MIME text types with character-set suffix", async() => {
       const testBlobType = "text/plain; charset=utf-8";
       const testBlobContents = "This is a block of UTF8 text";
       const testBlob = new Blob([testBlobContents], { type: testBlobType });
@@ -1278,7 +1278,7 @@ describe("Module `restHelpersGet`: common REST fetch functions shared across pac
       expect(text).toEqual(testBlobContents);
     });
 
-    it("should re-type application/json blobs claiming to be text/plain", async () => {
+    it("should re-type application/json blobs claiming to be text/plain", async() => {
       const testBlobType = "text/plain";
       const realBlobType = "application/json";
       const testBlobContents = JSON.stringify({
@@ -1297,7 +1297,7 @@ describe("Module `restHelpersGet`: common REST fetch functions shared across pac
       expect(text).toEqual(testBlobContents);
     });
 
-    it("should re-type text/xml blobs claiming to be text/plain", async () => {
+    it("should re-type text/xml blobs claiming to be text/plain", async() => {
       const testBlobType = "text/plain";
       const realBlobType = "text/xml";
       const testBlob = utils.getSampleMetadataAsBlob(testBlobType);
@@ -1310,7 +1310,7 @@ describe("Module `restHelpersGet`: common REST fetch functions shared across pac
       expect(resultBlobContents).toEqual(testBlobContents);
     });
 
-    it("should re-type application/zip blobs claiming to be text/plain", async () => {
+    it("should re-type application/zip blobs claiming to be text/plain", async() => {
       const testBlobType = "text/plain";
       const realBlobType = "application/zip";
       const testBlob = utils.getSampleZip(testBlobType);
@@ -1325,7 +1325,7 @@ describe("Module `restHelpersGet`: common REST fetch functions shared across pac
   });
 
   describe("_getGroupContentsTranche", () => {
-    it("handles an inaccessible group", async () => {
+    it("handles an inaccessible group", async() => {
       const groupId = "grp1234567890";
       const pagingParams: portal.IPagingParams = {
         start: 1, // one-based
@@ -1353,7 +1353,7 @@ describe("Module `restHelpersGet`: common REST fetch functions shared across pac
       );
     });
 
-    it("handles an empty group", async () => {
+    it("handles an empty group", async() => {
       const groupId = "grp1234567890";
       const pagingParams: portal.IPagingParams = {
         start: 1, // one-based
@@ -1375,7 +1375,7 @@ describe("Module `restHelpersGet`: common REST fetch functions shared across pac
       expect(ok.length).toEqual(0);
     });
 
-    it("handles a group where contents can be retrieved via a single fetch", async () => {
+    it("handles a group where contents can be retrieved via a single fetch", async() => {
       const groupId = "grp1234567890";
       const pagingParams: portal.IPagingParams = {
         start: 1, // one-based
@@ -1405,7 +1405,7 @@ describe("Module `restHelpersGet`: common REST fetch functions shared across pac
       expect(ok).toEqual(["itm1234567890", "itm1234567891"]);
     });
 
-    it("handles a group where contents require two fetches", async () => {
+    it("handles a group where contents require two fetches", async() => {
       const groupId = "grp1234567890";
       const pagingParams: portal.IPagingParams = {
         start: 1, // one-based
@@ -1447,7 +1447,7 @@ describe("Module `restHelpersGet`: common REST fetch functions shared across pac
       expect(ok).toEqual(["itm1234567890", "itm1234567891", "itm1234567892", "itm1234567893"]);
     });
 
-    it("handles a group where contents require multiple fetches", async () => {
+    it("handles a group where contents require multiple fetches", async() => {
       const groupId = "grp1234567890";
       const pagingParams: portal.IPagingParams = {
         start: 1, // one-based
@@ -1502,7 +1502,7 @@ describe("Module `restHelpersGet`: common REST fetch functions shared across pac
   });
 
   describe("_getItemResourcesTranche", () => {
-    it("handles an inaccessible item", async () => {
+    it("handles an inaccessible item", async() => {
       const itemId = "itm1234567890";
       const pagingParams: portal.IPagingParams = {
         start: 1, // one-based
@@ -1520,7 +1520,7 @@ describe("Module `restHelpersGet`: common REST fetch functions shared across pac
       );
     });
 
-    it("handles an item with no resources", async () => {
+    it("handles an item with no resources", async() => {
       const itemId = "itm1234567890";
       const pagingParams: portal.IPagingParams = {
         start: 1, // one-based
@@ -1543,7 +1543,7 @@ describe("Module `restHelpersGet`: common REST fetch functions shared across pac
       expect(ok.length).toEqual(0);
     });
 
-    it("handles an item with one resource", async () => {
+    it("handles an item with one resource", async() => {
       const itemId = "itm1234567890";
       const pagingParams: portal.IPagingParams = {
         start: 1, // one-based
@@ -1580,7 +1580,7 @@ describe("Module `restHelpersGet`: common REST fetch functions shared across pac
       return Promise.all(ok);
     });
 
-    it("handles an item with multiple resources where they can be retrieved via a single fetch", async () => {
+    it("handles an item with multiple resources where they can be retrieved via a single fetch", async() => {
       const itemId = "itm1234567890";
       const pagingParams: portal.IPagingParams = {
         start: 1, // one-based
@@ -1647,7 +1647,7 @@ describe("Module `restHelpersGet`: common REST fetch functions shared across pac
       return Promise.all(ok);
     });
 
-    it("handles an item with multiple resources where they require multiple fetches", async () => {
+    it("handles an item with multiple resources where they require multiple fetches", async() => {
       const itemId = "itm1234567890";
       const pagingParams: portal.IPagingParams = {
         start: 1, // one-based
@@ -1705,7 +1705,7 @@ describe("Module `restHelpersGet`: common REST fetch functions shared across pac
     });
   });
 
-  describe("getPortalDefaultBasemap", function () {
+  describe("getPortalDefaultBasemap", function() {
     const basemapGalleryGroupQuery = `title:"United States Basemaps" AND owner:Esri_cy_US`;
     const basemapTitle = "Topographic";
     let searchGroupsResponse: interfaces.ISearchResult<interfaces.IGroup>;
@@ -1725,7 +1725,7 @@ describe("Module `restHelpersGet`: common REST fetch functions shared across pac
       } as interfaces.ISearchResult<interfaces.IItem>;
     });
 
-    it("should query for the default basemap group and default basemap", async () => {
+    it("should query for the default basemap group and default basemap", async() => {
       const searchGroupsSpy = spyOn(restHelpers, "searchGroups").and.resolveTo(searchGroupsResponse);
       const searchGroupContentsSpy = spyOn(restHelpers, "searchGroupContents").and.resolveTo(
         searchGroupContentsResponse,
@@ -1749,7 +1749,7 @@ describe("Module `restHelpersGet`: common REST fetch functions shared across pac
       expect(results).toEqual(expected);
     });
 
-    it("should reject when no group is found", async () => {
+    it("should reject when no group is found", async() => {
       searchGroupsResponse.results = [];
       const searchGroupsSpy = spyOn(restHelpers, "searchGroups").and.resolveTo(searchGroupsResponse);
 
@@ -1766,7 +1766,7 @@ describe("Module `restHelpersGet`: common REST fetch functions shared across pac
         });
     });
 
-    it("should reject when no basemap is found", async () => {
+    it("should reject when no basemap is found", async() => {
       searchGroupContentsResponse.results = [];
       const searchGroupsSpy = spyOn(restHelpers, "searchGroups").and.resolveTo(searchGroupsResponse);
       const searchGroupContentsSpy = spyOn(restHelpers, "searchGroupContents").and.resolveTo(

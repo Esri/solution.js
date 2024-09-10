@@ -38,7 +38,7 @@ beforeEach(() => {
 
 describe("Module `workflowHelpers`", () => {
   describe("compressWorkflowIntoZipFile", () => {
-    it("basic test", async () => {
+    it("basic test", async() => {
       const workflowConfig: any = { jsTemplates: "Fred" };
       const zipFile = await workflowHelpers.compressWorkflowIntoZipFile(workflowConfig);
       expect(zipFile.name).toEqual("workflow_configuration.zip");
@@ -46,7 +46,7 @@ describe("Module `workflowHelpers`", () => {
   });
 
   describe("deleteWorkflowItem", () => {
-    it("basic test", async () => {
+    it("basic test", async() => {
       MOCK_USER_SESSION.getUser = () => Promise.resolve({ orgId: "org123" });
       MOCK_USER_SESSION.getPortal = () =>
         Promise.resolve({
@@ -73,7 +73,7 @@ describe("Module `workflowHelpers`", () => {
       expect(removeGroupSpy).toHaveBeenCalled();
     });
 
-    it("handles missing group id", async () => {
+    it("handles missing group id", async() => {
       MOCK_USER_SESSION.getUser = () => Promise.resolve({ orgId: "org123" });
       MOCK_USER_SESSION.getPortal = () =>
         Promise.resolve({
@@ -99,7 +99,7 @@ describe("Module `workflowHelpers`", () => {
   });
 
   describe("extractWorkflowFromZipFile", () => {
-    it("basic test", async () => {
+    it("basic test", async() => {
       const sampleWorkflowConfig = await generateWorkflowZipFileWithId();
       const zipFiles = await workflowHelpers.extractWorkflowFromZipFile(sampleWorkflowConfig);
       expect(zipFiles).toEqual({
@@ -112,7 +112,7 @@ describe("Module `workflowHelpers`", () => {
   });
 
   describe("getWorkflowManagerAuthorized", () => {
-    it("handles AGO authorized", async () => {
+    it("handles AGO authorized", async() => {
       spyOn(request, "request").and.resolveTo({ hasAdvancedLicense: true });
 
       const isAuthorized = await workflowHelpers.getWorkflowManagerAuthorized(
@@ -122,7 +122,7 @@ describe("Module `workflowHelpers`", () => {
       expect(isAuthorized).toBeTrue();
     });
 
-    it("handles AGO unauthorized", async () => {
+    it("handles AGO unauthorized", async() => {
       spyOn(request, "request").and.resolveTo({ hasAdvancedLicense: false });
 
       const isAuthorized = await workflowHelpers.getWorkflowManagerAuthorized(
@@ -132,7 +132,7 @@ describe("Module `workflowHelpers`", () => {
       expect(isAuthorized).toBeFalse();
     });
 
-    it("handles Enterprise authorized", async () => {
+    it("handles Enterprise authorized", async() => {
       const enterpriseWebAdaptorUrl = "https://myserver.mycompany.com/webadaptor/workflow";
       spyOn(request, "request").and.resolveTo({ hasAdvancedLicense: true });
 
@@ -143,7 +143,7 @@ describe("Module `workflowHelpers`", () => {
       expect(isAuthorized).toBeTrue();
     });
 
-    it("handles Enterprise unauthorized", async () => {
+    it("handles Enterprise unauthorized", async() => {
       const enterpriseWebAdaptorUrl = "https://myserver.mycompany.com/webadaptor/workflow";
       spyOn(request, "request").and.resolveTo({ hasAdvancedLicense: false });
 
@@ -154,7 +154,7 @@ describe("Module `workflowHelpers`", () => {
       expect(isAuthorized).toBeFalse();
     });
 
-    it("handles AGO unauthorized via throw", async () => {
+    it("handles AGO unauthorized via throw", async() => {
       spyOn(request, "request").and.throwError("Unauthorized");
 
       const isAuthorized = await workflowHelpers.getWorkflowManagerAuthorized(
@@ -164,7 +164,7 @@ describe("Module `workflowHelpers`", () => {
       expect(isAuthorized).toBeFalse();
     });
 
-    it("handles failure from `request`", async () => {
+    it("handles failure from `request`", async() => {
       spyOn(request, "request").and.resolveTo(null);
 
       const isAuthorized = await workflowHelpers.getWorkflowManagerAuthorized(
@@ -174,7 +174,7 @@ describe("Module `workflowHelpers`", () => {
       expect(isAuthorized).toBeFalse();
     });
 
-    it("handles undefined args", async () => {
+    it("handles undefined args", async() => {
       spyOn(request, "request").and.resolveTo(null);
 
       const isAuthorized = await workflowHelpers.getWorkflowManagerAuthorized("", new interfaces.UserSession({}));
@@ -183,7 +183,7 @@ describe("Module `workflowHelpers`", () => {
   });
 
   describe("getWorkflowBaseURL", () => {
-    it("handles AGO with supplied portal info", async () => {
+    it("handles AGO with supplied portal info", async() => {
       const orgId = "abcdef";
       const portalResponse = {
         portalHostname: "myOrg.maps.arcgis.com",
@@ -200,7 +200,7 @@ describe("Module `workflowHelpers`", () => {
       expect(actual).toEqual(`https://workflow.arcgis.com/${orgId}`);
     });
 
-    it("handles AGO with supplied portal info but workflow not supported 1", async () => {
+    it("handles AGO with supplied portal info but workflow not supported 1", async() => {
       const orgId = "abcdef";
       const portalResponse = {
         portalHostname: "myOrg.maps.arcgis.com",
@@ -213,7 +213,7 @@ describe("Module `workflowHelpers`", () => {
       expect(actual).toEqual(`https://${portalResponse.portalHostname}/${orgId}`);
     });
 
-    it("handles AGO with supplied portal info but workflow not supported 2", async () => {
+    it("handles AGO with supplied portal info but workflow not supported 2", async() => {
       const orgId = "abcdef";
       const portalResponse = {
         portalHostname: "myOrg.maps.arcgis.com",
@@ -225,7 +225,7 @@ describe("Module `workflowHelpers`", () => {
       expect(actual).toEqual(`https://${portalResponse.portalHostname}/${orgId}`);
     });
 
-    it("handles AGO with missing portal info", async () => {
+    it("handles AGO with missing portal info", async() => {
       const orgId = "abcdef";
       const portalResponse = undefined;
 
@@ -245,7 +245,7 @@ describe("Module `workflowHelpers`", () => {
       expect(actual).toEqual(`https://workflow.arcgis.com/${orgId}`);
     });
 
-    it("handles AGO with missing orgId and portal info", async () => {
+    it("handles AGO with missing orgId and portal info", async() => {
       const orgId = "ghijkl";
       const portalResponse = undefined;
 
@@ -265,7 +265,7 @@ describe("Module `workflowHelpers`", () => {
       expect(actual).toEqual(`https://workflow.arcgis.com/${orgId}`);
     });
 
-    it("handles Enterprise with supplied portal info", async () => {
+    it("handles Enterprise with supplied portal info", async() => {
       const portalResponse = {
         portalHostname: "myOrg.maps.arcgis.com",
         isPortal: true,
@@ -296,7 +296,7 @@ describe("Module `workflowHelpers`", () => {
   });
 
   describe("getWorkflowEnterpriseServerRootURL", () => {
-    it("fetches the Workflow Manager URL on Enterprise", async () => {
+    it("fetches the Workflow Manager URL on Enterprise", async() => {
       const portalRestUrl = utils.PORTAL_SUBSET.restUrl;
       const servers = [
         {
@@ -338,7 +338,7 @@ describe("Module `workflowHelpers`", () => {
       expect(actual).toEqual("https://serverGHI.ags.esri.com/server");
     });
 
-    it("handles case where the Workflow Manager is not enabled on Enterprise", async () => {
+    it("handles case where the Workflow Manager is not enabled on Enterprise", async() => {
       const portalRestUrl = utils.PORTAL_SUBSET.restUrl;
       const servers = [
         {

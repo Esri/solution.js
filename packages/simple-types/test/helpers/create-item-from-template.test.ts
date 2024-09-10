@@ -39,7 +39,7 @@ afterEach(() => {
 
 describe("simpleTypeCreateItemFromTemplate", () => {
   describe("notebook", () => {
-    it("should create and fine tune python notebook", async () => {
+    it("should create and fine tune python notebook", async() => {
       const itemTemplate: common.IItemTemplate = templates.getItemTemplate("Notebook");
       itemTemplate.data = mockItems.getAGOLItemData("Notebook");
 
@@ -87,7 +87,7 @@ describe("simpleTypeCreateItemFromTemplate", () => {
       });
     });
 
-    it("should handle error on python notebook update item", async () => {
+    it("should handle error on python notebook update item", async() => {
       const itemTemplate: common.IItemTemplate = templates.getItemTemplate("Notebook");
       itemTemplate.data = mockItems.getAGOLItemData("Notebook");
 
@@ -127,7 +127,7 @@ describe("simpleTypeCreateItemFromTemplate", () => {
       );
     });
 
-    it("should handle missing python notebook content with invalid ids", async () => {
+    it("should handle missing python notebook content with invalid ids", async() => {
       const itemTemplate: common.IItemTemplate = templates.getItemTemplate("Notebook");
       const fakeId = "aaa27de78a784a5aa3981469d85cf45d";
       itemTemplate.data.cells[0].source = fakeId;
@@ -158,7 +158,7 @@ describe("simpleTypeCreateItemFromTemplate", () => {
       );
     });
 
-    it("should handle python notebook with no ids", async () => {
+    it("should handle python notebook with no ids", async() => {
       const itemTemplate: common.IItemTemplate = templates.getItemTemplate("Notebook");
       itemTemplate.data.cells[0].source = "";
 
@@ -172,7 +172,7 @@ describe("simpleTypeCreateItemFromTemplate", () => {
       );
     });
 
-    it("should handle missing python notebook content with invalid ids", async () => {
+    it("should handle missing python notebook content with invalid ids", async() => {
       const itemTemplate: common.IItemTemplate = templates.getItemTemplate("Notebook");
       const fakeId = "aaa27de78a784a5aa3981469d85cf45d";
       itemTemplate.data.cells[0].source = fakeId;
@@ -194,7 +194,7 @@ describe("simpleTypeCreateItemFromTemplate", () => {
       expect(result).toEqual(expected);
     });
 
-    it("should handle missing python notebook content: duplicate ids, but not in dependencies", async () => {
+    it("should handle missing python notebook content: duplicate ids, but not in dependencies", async() => {
       const itemTemplate: common.IItemTemplate = templates.getItemTemplate("Notebook");
       const id = "3b927de78a784a5aa3981469d85cf45d";
 
@@ -221,7 +221,7 @@ describe("simpleTypeCreateItemFromTemplate", () => {
       expect(result).toEqual(expected);
     });
 
-    it("should handle missing python notebook content: duplicate ids in dependencies", async () => {
+    it("should handle missing python notebook content: duplicate ids in dependencies", async() => {
       const id = "3b927de78a784a5aa3981469d85cf45d";
       const itemTemplate: common.IItemTemplate = templates.getItemTemplate("Notebook", [id]);
       itemTemplate.data.cells.push(itemTemplate.data.cells[0]);
@@ -245,7 +245,7 @@ describe("simpleTypeCreateItemFromTemplate", () => {
   });
 
   describe("quick capture", () => {
-    it("should create quick capture project", async () => {
+    it("should create quick capture project", async() => {
       const newItemId: string = "xxx79c91fc7642ebb4c0bbacfbacd510";
 
       const templateDictionary: any = {
@@ -324,7 +324,7 @@ describe("simpleTypeCreateItemFromTemplate", () => {
       expect(templateDictionary).toEqual(expectedTemplateDictionary);
     });
 
-    it("should handle error on add resources", async () => {
+    it("should handle error on add resources", async() => {
       const newItemId: string = "xxx79c91fc7642ebb4c0bbacfbacd510";
 
       const templateDictionary: any = {};
@@ -367,7 +367,7 @@ describe("simpleTypeCreateItemFromTemplate", () => {
   });
 
   describe("web mapping application", () => {
-    it("should handle web mapping application that is a WAB", async () => {
+    it("should handle web mapping application that is a WAB", async() => {
       const itemTemplate: common.IItemTemplate = mockItems.getAGOLItem("Web Mapping Application");
       itemTemplate.itemId = "abc0cab401af4828a25cc6eaeb59fb69";
       itemTemplate.item = {
@@ -452,7 +452,7 @@ describe("simpleTypeCreateItemFromTemplate", () => {
       });
     });
 
-    it("should handle web mapping application that's not a WAB", async () => {
+    it("should handle web mapping application that's not a WAB", async() => {
       const itemTemplate: common.IItemTemplate = mockItems.getAGOLItem("Web Mapping Application");
       itemTemplate.itemId = "abc0cab401af4828a25cc6eaeb59fb69";
       itemTemplate.item = {
@@ -540,7 +540,7 @@ describe("simpleTypeCreateItemFromTemplate", () => {
       });
     });
 
-    it("should handle web mapping application with related items", async () => {
+    it("should handle web mapping application with related items", async() => {
       const itemTemplate: common.IItemTemplate = mockItems.getAGOLItem("Web Mapping Application");
       itemTemplate.itemId = "abc0cab401af4828a25cc6eaeb59fb69";
       itemTemplate.item = {
@@ -683,7 +683,7 @@ describe("simpleTypeCreateItemFromTemplate", () => {
       });
     });
 
-    it("should handle web mapping application with missing data section and templatized URL", async () => {
+    it("should handle web mapping application with missing data section and templatized URL", async() => {
       const itemTemplate: common.IItemTemplate = mockItems.getAGOLItem("Web Mapping Application");
       itemTemplate.itemId = "abc0cab401af4828a25cc6eaeb59fb69";
       itemTemplate.item = {
@@ -741,7 +741,7 @@ describe("simpleTypeCreateItemFromTemplate", () => {
       });
     });
 
-    it("should handle error web mapping application", async () => {
+    it("should handle error web mapping application", async() => {
       const itemTemplate: common.IItemTemplate = mockItems.getAGOLItem("Web Mapping Application");
       itemTemplate.itemId = "abc0cab401af4828a25cc6eaeb59fb69";
       itemTemplate.item = {
@@ -815,7 +815,7 @@ describe("simpleTypeCreateItemFromTemplate", () => {
   });
 
   describe("workforce", () => {
-    it("should create and fine tune workforce project", async () => {
+    it("should create and fine tune workforce project", async() => {
       const communitySelfResponse: any = utils.getUserResponse();
       const itemTemplate: common.IItemTemplate = templates.getItemTemplate("Workforce Project");
       itemTemplate.data = mockItems.getAGOLItemData("Workforce Project");

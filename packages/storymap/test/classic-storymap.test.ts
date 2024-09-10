@@ -29,7 +29,7 @@ const MOCK_USER_SESSION = utils.createRuntimeMockUserSession();
 
 describe("Module `classic-storymap`: ", () => {
   describe("convertItemToTemplate :: ", () => {
-    it("recognizes Classic StoryMap", async () => {
+    it("recognizes Classic StoryMap", async() => {
       return ClassicStorymapProcessor.convertItemToTemplate({
         type: "Web Mapping Application",
         url: "{{portalBaseUrl}}/apps/MapJournal/index.html?appid={{wma1234567890.itemId}}",
@@ -42,7 +42,7 @@ describe("Module `classic-storymap`: ", () => {
       );
     });
 
-    it("rejects a non-StoryMap", async () => {
+    it("rejects a non-StoryMap", async() => {
       return ClassicStorymapProcessor.convertItemToTemplate({
         id: "wma1234567890",
         type: "Web Mapping Application",
@@ -58,7 +58,7 @@ describe("Module `classic-storymap`: ", () => {
   });
 
   describe("createItemFromTemplate", () => {
-    it("recognizes Classic StoryMap", async () => {
+    it("recognizes Classic StoryMap", async() => {
       const templateSTO: common.IItemTemplate = mockTemplates.getItemTemplate("Web Mapping Application");
       templateSTO.item.url = "{{portalBaseUrl}}/apps/Cascade/index.html?appid={{wma1234567890.itemId}}";
 
@@ -76,7 +76,7 @@ describe("Module `classic-storymap`: ", () => {
       });
     });
 
-    it("rejects a non-StoryMap", async () => {
+    it("rejects a non-StoryMap", async() => {
       const templateSTO: common.IItemTemplate = mockTemplates.getItemTemplate("Web Mapping Application");
 
       const response = await ClassicStorymapProcessor.createItemFromTemplate(

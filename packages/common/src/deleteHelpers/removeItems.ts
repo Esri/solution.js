@@ -68,7 +68,7 @@ export function removeItems(
           authentication: authentication,
         });
       })
-      .then(async () => {
+      .then(async() => {
         // Delete the item
         if (hubSiteItemIds.includes(itemToDelete.id)) {
           const options = await createHubRequestOptions(authentication);

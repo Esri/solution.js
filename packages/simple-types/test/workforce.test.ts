@@ -40,7 +40,7 @@ afterEach(() => {
 
 describe("Module `workforce`: manages the creation and deployment of workforce project item types", () => {
   describe("convertItemToTemplate", () => {
-    it("should extract dependencies 1", async () => {
+    it("should extract dependencies 1", async() => {
       const itemTemplate: common.IItemTemplate = mockItems.getAGOLItem("Workforce Project", undefined);
       itemTemplate.data = mockItems.getAGOLItemData("Workforce Project");
 
@@ -70,7 +70,7 @@ describe("Module `workforce`: manages the creation and deployment of workforce p
       });
     });
 
-    it("should extract dependencies 2", async () => {
+    it("should extract dependencies 2", async() => {
       const itemTemplate: common.IItemTemplate = mockItems.getAGOLItem("Workforce Project", undefined);
       itemTemplate.data = mockItems.getAGOLItemData("Workforce Project");
 
@@ -100,7 +100,7 @@ describe("Module `workforce`: manages the creation and deployment of workforce p
       });
     });
 
-    it("should templatize key properties in the template", async () => {
+    it("should templatize key properties in the template", async() => {
       const itemTemplate: common.IItemTemplate = mockItems.getAGOLItem("Workforce Project", undefined);
       itemTemplate.data = mockItems.getAGOLItemData("Workforce Project");
       itemTemplate.data.assignmentIntegrations = [
@@ -195,7 +195,7 @@ describe("Module `workforce`: manages the creation and deployment of workforce p
       expect(newItemTemplate.data).toEqual(expectedTemplateData);
     });
 
-    it("should handle workforce projects without data", async () => {
+    it("should handle workforce projects without data", async() => {
       const itemTemplate: common.IItemTemplate = mockItems.getAGOLItem("Workforce Project");
 
       const newItemTemplate = await workforce.convertItemToTemplate(
@@ -207,7 +207,7 @@ describe("Module `workforce`: manages the creation and deployment of workforce p
       expect(newItemTemplate.data).not.toBeDefined();
     });
 
-    it("should handle error on extract dependencies", async () => {
+    it("should handle error on extract dependencies", async() => {
       const itemTemplate: common.IItemTemplate = mockItems.getAGOLItem("Workforce Project", undefined);
       itemTemplate.data = mockItems.getAGOLItemData("Workforce Project");
       itemTemplate.data.assignmentIntegrations = [
@@ -239,7 +239,7 @@ describe("Module `workforce`: manages the creation and deployment of workforce p
       );
     });
 
-    it("should handle url without layer id", async () => {
+    it("should handle url without layer id", async() => {
       const itemTemplate: common.IItemTemplate = mockItems.getAGOLItem("Workforce Project", undefined);
       itemTemplate.data = mockItems.getAGOLItemData("Workforce Project");
       itemTemplate.data.assignmentIntegrations = [
@@ -316,7 +316,7 @@ describe("Module `workforce`: manages the creation and deployment of workforce p
   });
 
   describe("fineTuneCreatedItem", () => {
-    it("should update dispatchers service", async () => {
+    it("should update dispatchers service", async() => {
       const communitySelfResponse: any = utils.getUserResponse();
       const itemTemplate: common.IItemTemplate = mockItems.getAGOLItem("Workforce Project", undefined);
       itemTemplate.data = mockItems.getAGOLItemData("Workforce Project");
@@ -339,7 +339,7 @@ describe("Module `workforce`: manages the creation and deployment of workforce p
       expect(r).toEqual({ success: true });
     });
 
-    it("should update dispatchers service even with default names", async () => {
+    it("should update dispatchers service even with default names", async() => {
       const itemTemplate: common.IItemTemplate = mockItems.getAGOLItem("Workforce Project", undefined);
       itemTemplate.data = mockItems.getAGOLItemData("Workforce Project");
 
@@ -361,7 +361,7 @@ describe("Module `workforce`: manages the creation and deployment of workforce p
       expect(r).toEqual({ success: true });
     });
 
-    it("should handle error on update dispatchers", async () => {
+    it("should handle error on update dispatchers", async() => {
       const communitySelfResponse: any = utils.getUserResponse();
       const itemTemplate: common.IItemTemplate = mockItems.getAGOLItem("Workforce Project", undefined);
       itemTemplate.data = mockItems.getAGOLItemData("Workforce Project");
@@ -379,7 +379,7 @@ describe("Module `workforce`: manages the creation and deployment of workforce p
       );
     });
 
-    it("should handle error on getUser", async () => {
+    it("should handle error on getUser", async() => {
       const itemTemplate: common.IItemTemplate = mockItems.getAGOLItem("Workforce Project", undefined);
       itemTemplate.data = mockItems.getAGOLItemData("Workforce Project");
 
@@ -391,7 +391,7 @@ describe("Module `workforce`: manages the creation and deployment of workforce p
       );
     });
 
-    it("should not update dispatchers service if it contains records", async () => {
+    it("should not update dispatchers service if it contains records", async() => {
       const communitySelfResponse: any = utils.getUserResponse();
       const itemTemplate: common.IItemTemplate = mockItems.getAGOLItem("Workforce Project", undefined);
       itemTemplate.data = mockItems.getAGOLItemData("Workforce Project");
@@ -413,7 +413,7 @@ describe("Module `workforce`: manages the creation and deployment of workforce p
       });
     });
 
-    it("should handle failure to add features", async () => {
+    it("should handle failure to add features", async() => {
       const communitySelfResponse: any = utils.getUserResponse();
       const itemTemplate: common.IItemTemplate = mockItems.getAGOLItem("Workforce Project", undefined);
       itemTemplate.data = mockItems.getAGOLItemData("Workforce Project");
@@ -443,7 +443,7 @@ describe("Module `workforce`: manages the creation and deployment of workforce p
         });
     });
 
-    it("should handle error on add dispatcher features", async () => {
+    it("should handle error on add dispatcher features", async() => {
       const communitySelfResponse: any = utils.getUserResponse();
       const itemTemplate: common.IItemTemplate = mockItems.getAGOLItem("Workforce Project", undefined);
       itemTemplate.data = mockItems.getAGOLItemData("Workforce Project");
@@ -466,7 +466,7 @@ describe("Module `workforce`: manages the creation and deployment of workforce p
       );
     });
 
-    it("should have success === false when query does not return a features property", async () => {
+    it("should have success === false when query does not return a features property", async() => {
       const communitySelfResponse: any = utils.getUserResponse();
       const itemTemplate: common.IItemTemplate = mockItems.getAGOLItem("Workforce Project", undefined);
       itemTemplate.data = mockItems.getAGOLItemData("Workforce Project");

@@ -37,7 +37,7 @@ describe("post-process", () => {
       templateDictionary = { key: "value" };
     });
 
-    it("should delegate to custom template post processing for Hub Survey templates", async () => {
+    it("should delegate to custom template post processing for Hub Survey templates", async() => {
       const formId = "frm1234567890";
       const expectedResults = { success: true };
 
@@ -77,7 +77,7 @@ describe("post-process", () => {
       expect(results).toEqual(expectedResults);
     });
 
-    it("should delegate to common post processing for non-Hub Survey templates", async () => {
+    it("should delegate to common post processing for non-Hub Survey templates", async() => {
       const formId = "frm1234567890";
       const expectedResults = utils.getSuccessResponse({ id: "itm1234567890" });
 
@@ -108,12 +108,12 @@ describe("post-process", () => {
       expect(results).toEqual(expectedResults);
     });
 
-    it("should try again if the first attempt to update the item fails", async () => {
+    it("should try again if the first attempt to update the item fails", async() => {
       const formId = "frm1234567890";
       const expectedResults = utils.getSuccessResponse({ id: "itm1234567890" });
       let igetItemDataAsFile = 0;
 
-      const getItemDataSpy = spyOn(common, "getItemDataAsFile").and.callFake(async (): Promise<any> => {
+      const getItemDataSpy = spyOn(common, "getItemDataAsFile").and.callFake(async(): Promise<any> => {
         if (igetItemDataAsFile === 0) {
           igetItemDataAsFile++;
           return Promise.resolve(null);
@@ -147,7 +147,7 @@ describe("post-process", () => {
   });
 
   describe("postProcessFormItems", () => {
-    it("should call postProcess for each item", async () => {
+    it("should call postProcess for each item", async() => {
       const templates: any[] = [
         {
           itemId: "frm1234567890",

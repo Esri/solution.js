@@ -52,7 +52,7 @@ beforeEach(() => {
 
 describe("Module `copyAssociatedFiles`: functions for sending resources to AGO", () => {
   describe("addMetadataFromBlob", () => {
-    it("can add metadata", async () => {
+    it("can add metadata", async() => {
       const blob = utils.getSampleMetadataAsBlob();
       spyOn(portal, "updateItem").and.resolveTo(mockItems.get200Success());
 
@@ -60,7 +60,7 @@ describe("Module `copyAssociatedFiles`: functions for sending resources to AGO",
       expect(results.success).toBeTruthy();
     });
 
-    it("can fail to add metadata", async () => {
+    it("can fail to add metadata", async() => {
       const blob = utils.getSampleMetadataAsBlob();
       spyOn(portal, "updateItem").and.rejectWith(mockItems.get400Failure());
 
@@ -74,7 +74,7 @@ describe("Module `copyAssociatedFiles`: functions for sending resources to AGO",
   });
 
   describe("copyAssociatedFiles", () => {
-    it("handles empty list of files", async () => {
+    it("handles empty list of files", async() => {
       const fileInfos: interfaces.IAssociatedFileInfo[] = [];
 
       const copyDataIntoItemSpy = spyOn(copyDataIntoItem, "copyDataIntoItem").and.rejectWith(mockItems.get400Failure());
@@ -99,7 +99,7 @@ describe("Module `copyAssociatedFiles`: functions for sending resources to AGO",
       expect(copyZipIntoItemSpy).not.toHaveBeenCalled();
     });
 
-    it("copies ignoring file type", async () => {
+    it("copies ignoring file type", async() => {
       const files: interfaces.ISourceFile[] = [
         {
           itemId: "itm1234567890",
@@ -142,7 +142,7 @@ describe("Module `copyAssociatedFiles`: functions for sending resources to AGO",
       expect(copyZipIntoItemSpy).toHaveBeenCalled();
     });
 
-    it("copies ignoring file type specifying number of files per zip", async () => {
+    it("copies ignoring file type specifying number of files per zip", async() => {
       const files: interfaces.ISourceFile[] = [
         {
           itemId: "itm1234567890",
@@ -188,7 +188,7 @@ describe("Module `copyAssociatedFiles`: functions for sending resources to AGO",
       expect(copyZipIntoItemSpy).toHaveBeenCalled();
     });
 
-    it("copies based on file type", async () => {
+    it("copies based on file type", async() => {
       const fileInfos: interfaces.IAssociatedFileInfo[] = [
         _createIAssociatedFileInfo(interfaces.EFileType.Data),
         _createIAssociatedFileInfo(interfaces.EFileType.Info),
@@ -230,7 +230,7 @@ describe("Module `copyAssociatedFiles`: functions for sending resources to AGO",
       expect(copyZipIntoItemSpy).toHaveBeenCalled();
     });
 
-    it("fails to get a resource", async () => {
+    it("fails to get a resource", async() => {
       const fileInfos: interfaces.IAssociatedFileInfo[] = [_createIAssociatedFileInfo(interfaces.EFileType.Resource)];
 
       const copyDataIntoItemSpy = spyOn(copyDataIntoItem, "copyDataIntoItem").and.rejectWith(mockItems.get400Failure());
@@ -266,7 +266,7 @@ describe("Module `copyAssociatedFiles`: functions for sending resources to AGO",
   });
 
   describe("copyDataIntoItem", () => {
-    it("copies data file", async () => {
+    it("copies data file", async() => {
       const fileInfo = _createIAssociatedFileInfo();
       const getBlobSpy = spyOn(getBlob, "getBlob").and.resolveTo(utils.getSampleImageAsBlob());
       const updateItemSpy = spyOn(restHelpers, "updateItem").and.resolveTo(mockItems.get200Success());
@@ -282,7 +282,7 @@ describe("Module `copyAssociatedFiles`: functions for sending resources to AGO",
       expect(updateItemSpy).toHaveBeenCalled();
     });
 
-    it("fails to add data file", async () => {
+    it("fails to add data file", async() => {
       const fileInfo = _createIAssociatedFileInfo();
       const getBlobSpy = spyOn(getBlob, "getBlob").and.resolveTo(utils.getSampleImageAsBlob());
       const updateItemSpy = spyOn(restHelpers, "updateItem").and.rejectWith(mockItems.get400Failure());
@@ -298,7 +298,7 @@ describe("Module `copyAssociatedFiles`: functions for sending resources to AGO",
       expect(updateItemSpy).toHaveBeenCalled();
     });
 
-    it("fails to fetch data file", async () => {
+    it("fails to fetch data file", async() => {
       const fileInfo = _createIAssociatedFileInfo();
       const getBlobSpy = spyOn(getBlob, "getBlob").and.rejectWith(mockItems.get400Failure());
       const updateItemSpy = spyOn(restHelpers, "updateItem").and.rejectWith(mockItems.get400Failure());
@@ -316,7 +316,7 @@ describe("Module `copyAssociatedFiles`: functions for sending resources to AGO",
   });
 
   describe("copyMetadataIntoItem", () => {
-    it("copies metadata file", async () => {
+    it("copies metadata file", async() => {
       const fileInfo = _createIAssociatedFileInfo();
       const getBlobSpy = spyOn(getBlob, "getBlob").and.resolveTo(utils.getSampleMetadataAsBlob());
       const addMetadataFromBlobSpy = spyOn(addMetadataFromBlob, "addMetadataFromBlob").and.resolveTo(
@@ -334,7 +334,7 @@ describe("Module `copyAssociatedFiles`: functions for sending resources to AGO",
       expect(addMetadataFromBlobSpy).toHaveBeenCalled();
     });
 
-    it("fails to add metadata file", async () => {
+    it("fails to add metadata file", async() => {
       const fileInfo = _createIAssociatedFileInfo();
       const getBlobSpy = spyOn(getBlob, "getBlob").and.resolveTo(utils.getSampleMetadataAsBlob());
       const addMetadataFromBlobSpy = spyOn(addMetadataFromBlob, "addMetadataFromBlob").and.rejectWith(
@@ -352,7 +352,7 @@ describe("Module `copyAssociatedFiles`: functions for sending resources to AGO",
       expect(addMetadataFromBlobSpy).toHaveBeenCalled();
     });
 
-    it("fails to fetch metadata file", async () => {
+    it("fails to fetch metadata file", async() => {
       const fileInfo = _createIAssociatedFileInfo();
       const getBlobSpy = spyOn(getBlob, "getBlob").and.rejectWith(mockItems.get400Failure());
       const addMetadataFromBlobSpy = spyOn(addMetadataFromBlob, "addMetadataFromBlob").and.rejectWith(
@@ -370,7 +370,7 @@ describe("Module `copyAssociatedFiles`: functions for sending resources to AGO",
       expect(addMetadataFromBlobSpy).not.toHaveBeenCalled();
     });
 
-    it("fetches a non-metadata file", async () => {
+    it("fetches a non-metadata file", async() => {
       const fileInfo = _createIAssociatedFileInfo();
       const getBlobSpy = spyOn(getBlob, "getBlob").and.resolveTo(utils.getSampleImageAsBlob());
       const addMetadataFromBlobSpy = spyOn(addMetadataFromBlob, "addMetadataFromBlob").and.rejectWith(
@@ -416,7 +416,7 @@ describe("Module `copyAssociatedFiles`: functions for sending resources to AGO",
       expect(zipInfo.filelist[0]).withContext("zip file").toEqual(file);
     });
 
-    it("should handle success copying item in a folder", async () => {
+    it("should handle success copying item in a folder", async() => {
       const fileInfo = _createIAssociatedFileInfo();
       const zipInfo = _createIZipInfo();
       const getBlobAsFileSpy = spyOn(restHelpersGet, "getBlobAsFile").and.resolveTo(utils.getSampleImageAsFile());
@@ -441,7 +441,7 @@ describe("Module `copyAssociatedFiles`: functions for sending resources to AGO",
       });
     });
 
-    it("should handle copying a file supplied as a blob rather than a url", async () => {
+    it("should handle copying a file supplied as a blob rather than a url", async() => {
       const fileInfo = _createIAssociatedFileInfoAsFile();
       const zipInfo = _createIZipInfo();
       const getBlobAsFileSpy = spyOn(restHelpersGet, "getBlobAsFile").and.resolveTo(utils.getSampleImageAsFile());
@@ -466,7 +466,7 @@ describe("Module `copyAssociatedFiles`: functions for sending resources to AGO",
       });
     });
 
-    it("should handle error copying data", async () => {
+    it("should handle error copying data", async() => {
       const fileInfo = _createIAssociatedFileInfo();
       const zipInfo = _createIZipInfo();
       const getBlobAsFileSpy = spyOn(restHelpersGet, "getBlobAsFile").and.rejectWith(mockItems.get400Failure());
@@ -484,7 +484,7 @@ describe("Module `copyAssociatedFiles`: functions for sending resources to AGO",
   });
 
   describe("copyZipIntoItem", () => {
-    it("should handle success sending to item", async () => {
+    it("should handle success sending to item", async() => {
       const addItemResourceSpy = spyOn(portal, "addItemResource").and.resolveTo(mockItems.get200Success());
 
       const results: interfaces.IZipCopyResults = await copyZipIntoItem.copyZipIntoItem(
@@ -499,7 +499,7 @@ describe("Module `copyAssociatedFiles`: functions for sending resources to AGO",
       expect(addItemResourceSpy).toHaveBeenCalled();
     });
 
-    it("should handle error sending to item", async () => {
+    it("should handle error sending to item", async() => {
       const addItemResourceSpy = spyOn(portal, "addItemResource").and.rejectWith(mockItems.get400Failure());
 
       const results: interfaces.IZipCopyResults = await copyZipIntoItem.copyZipIntoItem(
@@ -551,7 +551,7 @@ describe("Module `copyAssociatedFiles`: functions for sending resources to AGO",
   });
 
   describe("_sendZipsSeriallyToItem", () => {
-    it("handles single zip", async () => {
+    it("handles single zip", async() => {
       const zipInfos: interfaces.IZipInfo[] = [
         {
           filename: "zip1",
@@ -596,7 +596,7 @@ describe("Module `copyAssociatedFiles`: functions for sending resources to AGO",
       ]);
     });
 
-    it("handles two zips", async () => {
+    it("handles two zips", async() => {
       const zipInfos: interfaces.IZipInfo[] = [
         {
           filename: "zip1",
@@ -663,7 +663,7 @@ describe("Module `copyAssociatedFiles`: functions for sending resources to AGO",
       ]);
     });
 
-    it("handles three zips", async () => {
+    it("handles three zips", async() => {
       const zipInfos: interfaces.IZipInfo[] = [
         {
           filename: "zip1",
@@ -755,7 +755,7 @@ describe("Module `copyAssociatedFiles`: functions for sending resources to AGO",
 });
 
 describe("_detemplatizeResources", () => {
-  it("handles item types that don't need resource templatization", async () => {
+  it("handles item types that don't need resource templatization", async() => {
     const fileInfos: interfaces.IAssociatedFileInfo[] = [
       {
         folder: "",
@@ -776,7 +776,7 @@ describe("_detemplatizeResources", () => {
     expect(getBlobAsFileSpy).toHaveBeenCalledTimes(0);
   });
 
-  it("should create IAssociatedFileCopyResults object", async () => {
+  it("should create IAssociatedFileCopyResults object", async() => {
     const fileInfos: interfaces.IAssociatedFileInfo[] =
       templates.getItemTemplateResourcesAsTemplatizedFiles("Vector Tile Service");
 
@@ -808,7 +808,7 @@ describe("_detemplatizeResources", () => {
     expect(getBlobAsFileSpy).toHaveBeenCalledTimes(2);
   });
 
-  it("should create IAssociatedFileCopyResults object for Geoprocessing Service", async () => {
+  it("should create IAssociatedFileCopyResults object for Geoprocessing Service", async() => {
     const fileInfos: interfaces.IAssociatedFileInfo[] =
       templates.getItemTemplateResourcesAsTemplatizedFiles("Geoprocessing Service");
 

@@ -39,7 +39,7 @@ beforeEach(() => {
 
 describe("Module `notebook`: manages the creation and deployment of notebook project item types", () => {
   describe("createItemFromTemplate :: ", () => {
-    it("delegated to helper", async () => {
+    it("delegated to helper", async() => {
       const createSpy = spyOn(createHelper, "createItemFromTemplate").and.resolveTo();
       const cb = (): boolean => {
         return true;
@@ -50,7 +50,7 @@ describe("Module `notebook`: manages the creation and deployment of notebook pro
   });
 
   describe("convertItemToTemplate :: ", () => {
-    it("delegated to helper", async () => {
+    it("delegated to helper", async() => {
       const convertSpy = spyOn(convertHelper, "convertItemToTemplate").and.resolveTo();
       await notebookProcessor.convertItemToTemplate({}, MOCK_USER_SESSION, MOCK_USER_SESSION, {});
       expect(convertSpy.calls.count()).withContext("should delegate").toBe(1);
@@ -110,7 +110,7 @@ describe("Module `notebook`: manages the creation and deployment of notebook pro
   });
 
   describe("_updateNotebookData :: ", () => {
-    it("handles update error", async () => {
+    it("handles update error", async() => {
       const data = {};
       // TODO: Use fetchMock to simulate failure - makes tests faster
       return updateHelper
@@ -121,7 +121,7 @@ describe("Module `notebook`: manages the creation and deployment of notebook pro
   });
 
   describe("postProcess hook ::", () => {
-    it("fetch, interpolate and share", async () => {
+    it("fetch, interpolate and share", async() => {
       template = templates.getItemTemplate("Notebook");
       template.item.id = template.itemId = "3ef";
       const td = { owner: "Luke Skywalker" };
@@ -158,7 +158,7 @@ describe("Module `notebook`: manages the creation and deployment of notebook pro
       );
     });
 
-    it("should update only if interpolation needed", async () => {
+    it("should update only if interpolation needed", async() => {
       template = templates.getItemTemplate("Notebook");
       template.item.id = template.itemId = "3ef";
       template.item.extent = undefined;

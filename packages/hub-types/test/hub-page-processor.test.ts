@@ -33,7 +33,7 @@ describe("HubPageProcessor: ", () => {
         .toBeDefined();
     });
 
-    it("should fetch the model, convert it, and swap ids", async () => {
+    it("should fetch the model, convert it, and swap ids", async() => {
       // we are not testing the conversion, so the model can be empty
       const model = {
         item: {
@@ -71,7 +71,7 @@ describe("HubPageProcessor: ", () => {
       expect(replaceSpy.calls.count()).withContext("should replace ids").toBe(1);
     });
 
-    it("appends properties to template if missing", async () => {
+    it("appends properties to template if missing", async() => {
       // we are not testing the conversion, so the model can be empty
       const model = {
         item: {
@@ -128,7 +128,7 @@ describe("HubPageProcessor: ", () => {
         .toBeDefined();
     });
 
-    it("happy-path:: delegates to hub.js", async () => {
+    it("happy-path:: delegates to hub.js", async() => {
       const createFromTmplSpy = spyOn(sitesPackage, "createPageModelFromTemplate").and.resolveTo(fakePage);
       const createPageSpy = spyOn(sitesPackage, "createPage").and.resolveTo(fakePage);
       const movePageSpy = spyOn(moveHelper, "moveModelToFolder").and.resolveTo();
@@ -161,7 +161,7 @@ describe("HubPageProcessor: ", () => {
       expect(movePageSpy.calls.count()).withContext("should call move").toBe(1);
     });
 
-    it("asset and resource juggling", async () => {
+    it("asset and resource juggling", async() => {
       spyOn(common, "createHubRequestOptions").and.resolveTo({} as hubCommon.IHubUserRequestOptions);
       const createFromTmplSpy = spyOn(sitesPackage, "createPageModelFromTemplate").and.resolveTo(fakePage);
       const createPageSpy = spyOn(sitesPackage, "createPage").and.resolveTo(fakePage);
@@ -204,7 +204,7 @@ describe("HubPageProcessor: ", () => {
       expect(movePageSpy.calls.count()).withContext("should call move").toBe(1);
     });
 
-    it("callsback on exception", async () => {
+    it("callsback on exception", async() => {
       spyOn(sitesPackage, "createPageModelFromTemplate").and.rejectWith("Whoa thats bad");
       spyOn(common, "createHubRequestOptions").and.resolveTo({} as hubCommon.IHubUserRequestOptions);
       const td = {
@@ -228,7 +228,7 @@ describe("HubPageProcessor: ", () => {
         });
     });
 
-    it("it early-exits correctly", async () => {
+    it("it early-exits correctly", async() => {
       spyOn(common, "createHubRequestOptions").and.resolveTo({} as hubCommon.IHubUserRequestOptions);
       const td = {};
       const cb = () => false;
@@ -238,7 +238,7 @@ describe("HubPageProcessor: ", () => {
       expect(result.postProcess).withContext("should return postProcess false").toBe(false);
     });
 
-    it("cleans up if job is cancelled late", async () => {
+    it("cleans up if job is cancelled late", async() => {
       spyOn(common, "createHubRequestOptions").and.resolveTo({} as hubCommon.IHubUserRequestOptions);
       const createFromTmplSpy = spyOn(sitesPackage, "createPageModelFromTemplate").and.resolveTo(fakePage);
       const createPageSpy = spyOn(sitesPackage, "createPage").and.resolveTo(fakePage);
@@ -286,7 +286,7 @@ describe("HubPageProcessor: ", () => {
   });
 
   describe("postProcess :: ", () => {
-    it("fetches page model and delegates to _postProcessPage", async () => {
+    it("fetches page model and delegates to _postProcessPage", async() => {
       const model = {} as hubCommon.IModel;
       const getModelSpy = spyOn(hubCommon, "getModel").and.resolveTo(model);
       const hubRoSpy = spyOn(common, "createHubRequestOptions").and.resolveTo({} as hubCommon.IHubUserRequestOptions);

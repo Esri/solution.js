@@ -19,7 +19,7 @@ import * as portalModule from "@esri/arcgis-rest-portal";
 const MOCK_USER_SESSION = utils.createRuntimeMockUserSession();
 
 describe("createHubRequestOptions", () => {
-  it("returns portal from templateDict", async () => {
+  it("returns portal from templateDict", async() => {
     const td = {
       organization: {
         id: "somePortalId",
@@ -42,7 +42,7 @@ describe("createHubRequestOptions", () => {
     expect(hubRo.authentication).withContext("should pass thru the auth").toBe(MOCK_USER_SESSION);
   });
 
-  it("fetches org and user info", async () => {
+  it("fetches org and user info", async() => {
     const portal = {
       id: "bc23",
       portalHostname: "www.arcgis.com",
@@ -60,7 +60,7 @@ describe("createHubRequestOptions", () => {
     expect(getUserSpy.calls.count()).withContext("should get user").toBe(1);
   });
 
-  it("does not set hubApiUrl if portal", async () => {
+  it("does not set hubApiUrl if portal", async() => {
     const portal = {
       id: "bc23",
       portalHostname: "www.arcgis.com",

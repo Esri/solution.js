@@ -73,7 +73,7 @@ export function topologicallySortItems(templates: IItemTemplate[]): IBuildOrderi
 
   const verticesToVisit: ISortVertex = {};
   const vertexType: IVertexType = {};
-  templates.forEach(function (template) {
+  templates.forEach(function(template) {
     verticesToVisit[template.itemId] = ESortVisitState.NotYetVisited;
     vertexType[template.itemId] =
       template.item?.typeKeywords && template.item.typeKeywords.includes("View Service")
@@ -84,7 +84,7 @@ export function topologicallySortItems(templates: IItemTemplate[]): IBuildOrderi
   });
 
   // Algorithm visits each vertex once. Don't need to record times or "from' nodes ("π" in pseudocode)
-  templates.forEach(function (template) {
+  templates.forEach(function(template) {
     if (verticesToVisit[template.itemId] === ESortVisitState.NotYetVisited) {
       // if not yet visited
       visit(template.itemId);
@@ -104,7 +104,7 @@ export function topologicallySortItems(templates: IItemTemplate[]): IBuildOrderi
       getProp(template, "properties.syncViews") || [],
     );
 
-    dependencies.forEach(function (dependencyId) {
+    dependencies.forEach(function(dependencyId) {
       if (verticesToVisit[dependencyId] === ESortVisitState.NotYetVisited) {
         // if not yet visited
         visit(dependencyId);

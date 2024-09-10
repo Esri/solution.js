@@ -263,12 +263,12 @@ export function getItemHierarchy(templates: common.IItemTemplate[]): common.IHie
  */
 export function _getTopLevelItemIds(templates: common.IItemTemplate[]): string[] {
   // Find the top-level nodes. Start with all nodes, then remove those that other nodes depend on
-  const topLevelItemCandidateIds = templates.map(function (template) {
+  const topLevelItemCandidateIds = templates.map(function(template) {
     return template.itemId;
   });
 
-  templates.forEach(function (template) {
-    (template.dependencies || []).forEach(function (dependencyId) {
+  templates.forEach(function(template) {
+    (template.dependencies || []).forEach(function(dependencyId) {
       const iNode = topLevelItemCandidateIds.indexOf(dependencyId);
 
       /* istanbul ignore else */

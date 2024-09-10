@@ -25,7 +25,7 @@ describe("convert-storymap-to-template :: ", () => {
     model = cloneObject(CherryBlossoms);
   });
 
-  it("converts new storymap", async () => {
+  it("converts new storymap", async() => {
     const tmpl = await convertStoryMapToTemplate(model);
     // ensure top props are right
     expect(tmpl.itemId).withContext("should hold itemId").toBe(model.item.id);
@@ -50,7 +50,7 @@ describe("convert-storymap-to-template :: ", () => {
     expect(tmpl.properties.oembedXML).withContext("should have props.oembedXML").toBeDefined();
   });
 
-  it("removes unpublished kwd", async () => {
+  it("removes unpublished kwd", async() => {
     const modelWithUnpublished = cloneObject(model);
     if (modelWithUnpublished.item.typeKeywords) {
       modelWithUnpublished.item.typeKeywords.push("smstatusunpublishedchanges");

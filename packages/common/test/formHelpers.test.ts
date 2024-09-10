@@ -38,16 +38,16 @@ beforeEach(() => {
 
 describe("Module `formHelpers`", () => {
   describe("updateItemWithZipObject", () => {
-    it("catches the inability to convert a blob into a the zip", async () => {
+    it("catches the inability to convert a blob into a the zip", async() => {
       const blob = new Blob([""], { type: "application/zip" });
       await expectAsync(zipUtils.blobToZipObject(blob)).toBeRejected();
     });
 
-    it("updates the item with a zip file", async () => {
+    it("updates the item with a zip file", async() => {
       const itemId = "2f56b3b59cdc4ac8b8f5de0399887e1e";
       const zip = zipHelpers.generateFormZipObject(itemId);
 
-      spyOn(restHelpers, "updateItem").and.callFake(async (update: interfaces.IItemUpdate) => {
+      spyOn(restHelpers, "updateItem").and.callFake(async(update: interfaces.IItemUpdate) => {
         expect(update.id).toEqual(itemId);
         const file = update.data;
         expect(file.name).toEqual(`${itemId}.zip`);

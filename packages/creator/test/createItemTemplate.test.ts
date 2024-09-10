@@ -58,7 +58,7 @@ afterEach(() => {
 
 describe("Module `createItemTemplate`", () => {
   describe("createItemTemplate", () => {
-    it("creates a template for an item", async () => {
+    it("creates a template for an item", async() => {
       const solutionItemId: string = "sln1234567890";
       const itemId: string = "map12345678900";
       const templateDictionary: any = {};
@@ -102,7 +102,7 @@ describe("Module `createItemTemplate`", () => {
       expect(existingTemplates[0].itemId).toEqual(itemId);
     });
 
-    it("creates a template for a Geoprocessing Service Web Tool item", async () => {
+    it("creates a template for a Geoprocessing Service Web Tool item", async() => {
       const solutionItemId: string = "sln1234567890";
       const itemId: string = "gs12345678900";
       const templateDictionary: any = {};
@@ -145,7 +145,7 @@ describe("Module `createItemTemplate`", () => {
       expect(existingTemplates[0].itemId).toEqual(itemId);
     });
 
-    it("dosn't create a template for a Geoprocessing Service that is NOT a Web Tool item", async () => {
+    it("dosn't create a template for a Geoprocessing Service that is NOT a Web Tool item", async() => {
       const solutionItemId: string = "sln1234567890";
       const itemId: string = "gs12345678900";
       const templateDictionary: any = {};
@@ -167,7 +167,7 @@ describe("Module `createItemTemplate`", () => {
       expect(response.length).toEqual(0);
     });
 
-    it("creates a template for a QuickCapture Project item", async () => {
+    it("creates a template for a QuickCapture Project item", async() => {
       const solutionItemId: string = "sln1234567890";
       const itemId: string = "qck1234567890";
       const templateDictionary: any = {};
@@ -252,7 +252,7 @@ describe("Module `createItemTemplate`", () => {
       expect(existingTemplates[1].itemId).toEqual("map1234567890");
     });
 
-    it("creates a template for a QuickCapture Project item with resource in folder", async () => {
+    it("creates a template for a QuickCapture Project item with resource in folder", async() => {
       const solutionItemId: string = "sln1234567890";
       const itemId: string = "qck1234567890";
       const templateDictionary: any = {};
@@ -316,7 +316,7 @@ describe("Module `createItemTemplate`", () => {
       expect(existingTemplates[0].itemId).toEqual(itemId);
     });
 
-    it("should handle cancellation after item's template is created", async () => {
+    it("should handle cancellation after item's template is created", async() => {
       const solutionItemId: string = "sln1234567890";
       const itemId: string = "map12345678900";
       const templateDictionary: any = {};
@@ -360,7 +360,7 @@ describe("Module `createItemTemplate`", () => {
       expect(existingTemplates[0].itemId).toEqual(itemId);
     });
 
-    it("shortcuts if template is already Promise.resolve or in progress", async () => {
+    it("shortcuts if template is already Promise.resolve or in progress", async() => {
       const solutionItemId: string = "sln1234567890";
       const itemId: string = "map1234567890";
       const templateDictionary: any = {};
@@ -380,7 +380,7 @@ describe("Module `createItemTemplate`", () => {
       expect(existingTemplates[0].itemId).toEqual(itemId);
     });
 
-    it("handles problem creating a template for an item", async () => {
+    it("handles problem creating a template for an item", async() => {
       const solutionItemId: string = "sln1234567890";
       const itemId: string = "wma1234567890";
       const templateDictionary: any = {};
@@ -448,7 +448,7 @@ describe("Module `createItemTemplate`", () => {
       expect(parsedError.error.message).toEqual("Item does not have a file.");
     });
 
-    it("creates a template for an empty group", async () => {
+    it("creates a template for an empty group", async() => {
       const solutionItemId: string = "sln1234567890";
       const itemId: string = "grp1234567890";
       const templateDictionary: any = {};
@@ -495,7 +495,7 @@ describe("Module `createItemTemplate`", () => {
       expect(existingTemplates[0].itemId).toEqual(itemId);
     });
 
-    it("creates a template for a group", async () => {
+    it("creates a template for a group", async() => {
       const solutionItemId: string = "sln1234567890";
       const itemId: string = "grp1234567890";
       const templateDictionary: any = {};
@@ -585,7 +585,7 @@ describe("Module `createItemTemplate`", () => {
       expect(existingTemplates[2].itemId).toEqual("map12345678901");
     });
 
-    it("creates a template for a group, testing duplication removal", async () => {
+    it("creates a template for a group, testing duplication removal", async() => {
       const solutionItemId: string = "sln1234567890";
       const itemId: string = "grp1234567890";
       const templateDictionary: any = {};
@@ -657,7 +657,7 @@ describe("Module `createItemTemplate`", () => {
       expect(existingTemplates[1].itemId).toEqual(groupContents.items[0].id);
     });
 
-    it("handles inability to get a dependency", async () => {
+    it("handles inability to get a dependency", async() => {
       const solutionItemId: string = "sln1234567890";
       const itemId: string = "grp1234567890";
       const templateDictionary: any = {};
@@ -710,7 +710,7 @@ describe("Module `createItemTemplate`", () => {
       );
     });
 
-    it("creates inserts a placeholder template for an item type that's not handled", async () => {
+    it("creates inserts a placeholder template for an item type that's not handled", async() => {
       const solutionItemId: string = "sln1234567890";
       const itemId: string = "xxx1234567890";
       const templateDictionary: any = {};
@@ -740,7 +740,7 @@ describe("Module `createItemTemplate`", () => {
       expect(existingTemplates[0].itemId).toEqual(itemId);
     });
 
-    it("shortcuts if item type is not supported", async () => {
+    it("shortcuts if item type is not supported", async() => {
       const solutionItemId: string = "sln1234567890";
       const itemId: string = "xxx1234567890";
       const templateDictionary: any = {};
@@ -765,7 +765,7 @@ describe("Module `createItemTemplate`", () => {
       expect(existingTemplates[0].itemId).toEqual(itemId);
     });
 
-    it("removes source-itemIds from typeKeywords and tags", async () => {
+    it("removes source-itemIds from typeKeywords and tags", async() => {
       const solutionItemId: string = "sln1234567890";
       const itemId: string = "map12345678900";
       const templateDictionary: any = {};
@@ -875,7 +875,7 @@ describe("Module `createItemTemplate`", () => {
   });
 
   describe("_templatizeResources", () => {
-    it("handles an empty resources list", async () => {
+    it("handles an empty resources list", async() => {
       const itemTemplate: common.IItemTemplate = templates.getItemTemplate("Web Map");
       const resourceItemFiles: common.ISourceFile[] = [];
 
@@ -883,7 +883,7 @@ describe("Module `createItemTemplate`", () => {
       expect(resourceItemFiles.length).toEqual(0);
     });
 
-    it("handles a vector tile service resources list", async () => {
+    it("handles a vector tile service resources list", async() => {
       const itemTemplate: common.IItemTemplate = templates.getItemTemplate("Vector Tile Service");
       const resourceItemFiles: common.ISourceFile[] = templates.getItemTemplateResourcesAsSourceFiles(
         "Vector Tile Service",
@@ -901,7 +901,7 @@ describe("Module `createItemTemplate`", () => {
       expect(stylesRootJson).toEqual(templates.sampleStylesRootTemplatizedJson);
     });
 
-    it("handles a Geoprocessing Service resources list", async () => {
+    it("handles a Geoprocessing Service resources list", async() => {
       const itemTemplate: common.IItemTemplate = templates.getItemTemplate("Geoprocessing Service");
       const resourceItemFiles: common.ISourceFile[] = templates.getItemTemplateResourcesAsSourceFiles(
         "Geoprocessing Service",
@@ -934,7 +934,7 @@ describe("Module `createItemTemplate`", () => {
       expect(infoRootJson).toEqual(templates.sampleWebToolTemplatizedJson);
     });
 
-    it("handles a Geoprocessing Service with no item ids", async () => {
+    it("handles a Geoprocessing Service with no item ids", async() => {
       const itemTemplate: common.IItemTemplate = templates.getItemTemplate("Geoprocessing Service");
       const resourceItemFiles: common.ISourceFile[] = templates.getItemTemplateResourcesAsSourceFiles(
         "Geoprocessing Service",

@@ -299,7 +299,7 @@ describe("getItemResourcesPaths :: ", () => {
   });
 
   describe("getItemResourcesPaths, template version 0", () => {
-    it("can get item resources paths for quick capture project", async () => {
+    it("can get item resources paths for quick capture project", async() => {
       const itemTemplate: interfaces.IItemTemplate = templates.getItemTemplateSkeleton();
       itemTemplate.item = mockItems.getAGOLItem("QuickCapture Project");
       itemTemplate.itemId = itemTemplate.item.id;
@@ -361,7 +361,7 @@ describe("getItemResourcesPaths :: ", () => {
       ]);
     });
 
-    it("can get item resources paths for web map", async () => {
+    it("can get item resources paths for web map", async() => {
       const itemTemplate: interfaces.IItemTemplate = templates.getItemTemplateSkeleton();
       itemTemplate.item = mockItems.getAGOLItem("Web Map");
       itemTemplate.itemId = itemTemplate.item.id;
@@ -446,7 +446,7 @@ describe("getItemResourcesPaths :: ", () => {
       ]);
     });
 
-    it("can get item resources paths for a form", async () => {
+    it("can get item resources paths for a form", async() => {
       const itemTemplate: interfaces.IItemTemplate = templates.getItemTemplate("Form");
       itemTemplate.item.thumbnail = "thumbnail/banner.png";
       const solutionItemId = "ee67658b2a98450cba051fd001463df0";
@@ -513,7 +513,7 @@ describe("getItemResourcesPaths :: ", () => {
   });
 
   describe("getItemResourcesPaths, template version 1", () => {
-    it("can get item resources paths for quick capture project", async () => {
+    it("can get item resources paths for quick capture project", async() => {
       const itemTemplate: interfaces.IItemTemplate = templates.getItemTemplateSkeleton();
       itemTemplate.item = mockItems.getAGOLItem("QuickCapture Project");
       itemTemplate.itemId = itemTemplate.item.id;
@@ -575,7 +575,7 @@ describe("getItemResourcesPaths :: ", () => {
       ]);
     });
 
-    it("can get item resources paths for web map", async () => {
+    it("can get item resources paths for web map", async() => {
       const itemTemplate: interfaces.IItemTemplate = templates.getItemTemplateSkeleton();
       itemTemplate.item = mockItems.getAGOLItem("Web Map");
       itemTemplate.itemId = itemTemplate.item.id;
@@ -660,7 +660,7 @@ describe("getItemResourcesPaths :: ", () => {
       ]);
     });
 
-    it("can get item resources paths for a form", async () => {
+    it("can get item resources paths for a form", async() => {
       const itemTemplate: interfaces.IItemTemplate = templates.getItemTemplate("Form");
       itemTemplate.item.thumbnail = "thumbnail/banner.png";
       const solutionItemId = "ee67658b2a98450cba051fd001463df0";

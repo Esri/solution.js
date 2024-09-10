@@ -21,7 +21,7 @@ import * as utils from "../../../common/test/mocks/utils";
 const MOCK_USER_SESSION = utils.createRuntimeMockUserSession();
 
 describe("createStoryMapModelFromTemplate :: ", () => {
-  it("ammends settings, interpolates", async () => {
+  it("ammends settings, interpolates", async() => {
     const adlibSpy = spyOn(hubModule, "interpolate").and.callThrough();
 
     const tmpl = {

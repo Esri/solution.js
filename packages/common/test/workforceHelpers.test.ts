@@ -46,7 +46,7 @@ describe("Module `workforceHelpers`: manages the creation and deployment of work
     });
   });
   describe("_extractDependencies", () => {
-    it("handles serviceItemId variants", async () => {
+    it("handles serviceItemId variants", async() => {
       const data: any = {
         dispatchers: {
           serviceItemId: "1234567890abcdef1234567890abcdef",
@@ -71,7 +71,7 @@ describe("Module `workforceHelpers`: manages the creation and deployment of work
       expect(actual).toEqual(expected);
     });
 
-    it("handles direct ids", async () => {
+    it("handles direct ids", async() => {
       const data: any = {
         workerWebMapId: "1234567890abcdef1234567890abcdef",
       };
@@ -94,7 +94,7 @@ describe("Module `workforceHelpers`: manages the creation and deployment of work
       expect(actual).toEqual(expected);
     });
 
-    it("skips uninteresting id", async () => {
+    it("skips uninteresting id", async() => {
       const data: any = {
         folderId: "1234567890abcdef1234567890abcdef",
       };
@@ -117,7 +117,7 @@ describe("Module `workforceHelpers`: manages the creation and deployment of work
       expect(actual).toEqual(expected);
     });
 
-    it("handles multiple types of id", async () => {
+    it("handles multiple types of id", async() => {
       const data: any = {
         workerWebMapId: "abc116555b16437f8435e079033128d0",
         dispatcherWebMapId: "abc26a244163430590151395821fb845",
@@ -170,7 +170,7 @@ describe("Module `workforceHelpers`: manages the creation and deployment of work
       expect(actual).toEqual(expected);
     });
 
-    it("handles id repeats", async () => {
+    it("handles id repeats", async() => {
       const data: any = {
         workerWebMapId: "abc116555b16437f8435e079033128d0",
         dispatcherWebMapId: "abc116555b16437f8435e079033128d0",
@@ -303,7 +303,7 @@ describe("Module `workforceHelpers`: manages the creation and deployment of work
   });
 
   describe("getWorkforceServiceInfo", () => {
-    it("can handle query failure", async () => {
+    it("can handle query failure", async() => {
       const props: interfaces.IFeatureServiceProperties = {
         service: {},
         layers: [],
@@ -325,7 +325,7 @@ describe("Module `workforceHelpers`: manages the creation and deployment of work
       );
     });
 
-    it("can handle _getAssignmentIntegrationInfos failure", async () => {
+    it("can handle _getAssignmentIntegrationInfos failure", async() => {
       const props: interfaces.IFeatureServiceProperties = {
         service: {},
         layers: [],
@@ -1001,7 +1001,7 @@ describe("Module `workforceHelpers`: manages the creation and deployment of work
   });
 
   describe("fineTuneCreatedWorkforceItem", () => {
-    it("post process a workforce service", async () => {
+    it("post process a workforce service", async() => {
       const template: interfaces.IItemTemplate = {
         itemId: "58d8b90f6a0f4900a9ea0b627f07b8ea",
         type: "Feature Service",
@@ -1565,7 +1565,7 @@ describe("Module `workforceHelpers`: manages the creation and deployment of work
       expect(actual).toEqual(expected);
     });
 
-    it("handle error fetching fields", async () => {
+    it("handle error fetching fields", async() => {
       const template: interfaces.IItemTemplate = {
         itemId: "58d8b90f6a0f4900a9ea0b627f07b8ea",
         type: "Feature Service",
@@ -1808,7 +1808,7 @@ describe("Module `workforceHelpers`: manages the creation and deployment of work
   });
 
   describe("getUrlDependencies", () => {
-    it("can handle no requests", async () => {
+    it("can handle no requests", async() => {
       const expected: any = {
         dependencies: [],
         urlHash: {},
@@ -1864,7 +1864,7 @@ describe("Module `workforceHelpers`: manages the creation and deployment of work
   });
 
   describe("_updateDispatchers", () => {
-    it("will not fail with missing url", async () => {
+    it("will not fail with missing url", async() => {
       const actual = await workforceHelpers._updateDispatchers(undefined, "A", "AA", MOCK_USER_SESSION, true);
       expect(actual).toEqual(false);
     });

@@ -37,7 +37,7 @@ beforeEach(() => {
 
 describe("Module `workflow`", () => {
   describe("convertItemToTemplate", () => {
-    it("basically works", async () => {
+    it("basically works", async() => {
       const agolItem = mockItems.getAGOLItem("Workflow");
       agolItem.thumbnail = null;
       const templateDictionary: any = {};
@@ -65,7 +65,7 @@ describe("Module `workflow`", () => {
       expect(itemTemplate?.properties?.configuration?.jobTemplates).toEqual("abc");
     });
 
-    it("handles case where item has related items", async () => {
+    it("handles case where item has related items", async() => {
       const agolItem = mockItems.getAGOLItem("Workflow");
       agolItem.thumbnail = null;
       const templateDictionary: any = {};
@@ -90,7 +90,7 @@ describe("Module `workflow`", () => {
   });
 
   describe("createItemFromTemplate", () => {
-    it("basically works", async () => {
+    it("basically works", async() => {
       const itemTemplate: common.IItemTemplate = templates.getItemTemplate("Workflow");
       itemTemplate.properties.configuration = getSampleConfigJson();
       const templateDictionary: any = {
@@ -143,7 +143,7 @@ describe("Module `workflow`", () => {
         .toContain("31630a0db4844a95bc28aaf5bfb40b4d");
     });
 
-    it("handles case where configuration doesn't contain templates", async () => {
+    it("handles case where configuration doesn't contain templates", async() => {
       const itemTemplate: common.IItemTemplate = templates.getItemTemplate("Workflow");
       itemTemplate.properties.configuration = {
         "info.json": '{"schemaVersion":"11.2.0.1"}',
@@ -194,7 +194,7 @@ describe("Module `workflow`", () => {
       expect(response.postProcess).withContext("created postProcess").toBeFalse();
     });
 
-    it("handles failure to add workflow item", async () => {
+    it("handles failure to add workflow item", async() => {
       const itemTemplate: common.IItemTemplate = templates.getItemTemplate("Workflow");
       itemTemplate.properties.configuration = getSampleConfigJson();
       const templateDictionary: any = {
@@ -228,7 +228,7 @@ describe("Module `workflow`", () => {
       expect(response).toEqual(common.generateEmptyCreationResponse("Workflow"));
     });
 
-    it("handles case where overall deployment has been cancelled before we start", async () => {
+    it("handles case where overall deployment has been cancelled before we start", async() => {
       const itemTemplate: common.IItemTemplate = templates.getItemTemplate("Workflow");
       itemTemplate.properties.configuration = getSampleConfigJson();
       const templateDictionary: any = {
@@ -246,7 +246,7 @@ describe("Module `workflow`", () => {
       expect(response).toEqual(common.generateEmptyCreationResponse("Workflow"));
     });
 
-    it("handles case where overall deployment has been cancelled after new item created", async () => {
+    it("handles case where overall deployment has been cancelled after new item created", async() => {
       const itemTemplate: common.IItemTemplate = templates.getItemTemplate("Workflow");
       itemTemplate.properties.configuration = getSampleConfigJson();
       const templateDictionary: any = {
@@ -282,7 +282,7 @@ describe("Module `workflow`", () => {
       expect(response).toEqual(common.generateEmptyCreationResponse("Workflow"));
     });
 
-    it("handles case where new item creation throws an error", async () => {
+    it("handles case where new item creation throws an error", async() => {
       const itemTemplate: common.IItemTemplate = templates.getItemTemplate("Workflow");
       itemTemplate.properties.configuration = getSampleConfigJson();
       const templateDictionary: any = {
@@ -312,7 +312,7 @@ describe("Module `workflow`", () => {
       expect(response).toEqual(common.generateEmptyCreationResponse("Workflow"));
     });
 
-    it("handles failure to update workflow", async () => {
+    it("handles failure to update workflow", async() => {
       const itemTemplate: common.IItemTemplate = templates.getItemTemplate("Workflow");
       itemTemplate.properties.configuration = getSampleConfigJson();
       const templateDictionary: any = {
@@ -339,7 +339,7 @@ describe("Module `workflow`", () => {
       expect(response).toEqual(common.generateEmptyCreationResponse("Workflow"));
     });
 
-    it("handles failure to move all items", async () => {
+    it("handles failure to move all items", async() => {
       const itemTemplate: common.IItemTemplate = templates.getItemTemplate("Workflow");
       itemTemplate.properties.configuration = getSampleConfigJson();
       const templateDictionary: any = {

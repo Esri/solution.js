@@ -33,7 +33,7 @@ afterEach(() => {
 jasmine.DEFAULT_TIMEOUT_INTERVAL = 20000; // default is 5000 ms
 
 describe("convertItemToTemplate", () => {
-  it("handles Real Time Analytic", async () => {
+  it("handles Real Time Analytic", async() => {
     const type: string = "Real Time Analytic";
     const id: string = "aaaaf0cf8bdc4fb19749cc1cbad1651b";
     const itemInfo: any = { id, type };
@@ -114,7 +114,7 @@ describe("convertItemToTemplate", () => {
     expect(actual.dependencies).toContain("aaaaf0cf8bdc4fb19749cc1cbad1651b");
   });
 
-  it("handles Big Data Analytic", async () => {
+  it("handles Big Data Analytic", async() => {
     const type: string = "Big Data Analytic";
     const id: string = "aaaaf0cf8bdc4fb19749cc1cbad1651b";
     const itemInfo: any = { id, type };
@@ -162,7 +162,7 @@ describe("convertItemToTemplate", () => {
     expect(actual.dependencies).toContain("a8d8e6ee3e7d4c889d3e95ad6a99198c");
   });
 
-  it("handles dependency that should be removed", async () => {
+  it("handles dependency that should be removed", async() => {
     const type: string = "Big Data Analytic";
     const id: string = "aaaaf0cf8bdc4fb19749cc1cbad1651b";
     const itemInfo: any = { id, type };
@@ -210,7 +210,7 @@ describe("convertItemToTemplate", () => {
     expect(actual.dependencies).toContain("a8d8e6ee3e7d4c889d3e95ad6a99198c");
   });
 
-  it("handles failure on getVelocityUrl", async () => {
+  it("handles failure on getVelocityUrl", async() => {
     const type: string = "Real Time Analytic";
     const id: string = "aaaaf0cf8bdc4fb19749cc1cbad1651b";
     const itemInfo: any = { id, type };
@@ -226,7 +226,7 @@ describe("convertItemToTemplate", () => {
     );
   });
 
-  it("handles org without velocity support", async () => {
+  it("handles org without velocity support", async() => {
     const type: string = "Big Data Analytic";
     const id: string = "aaaaf0cf8bdc4fb19749cc1cbad1651b";
     const itemInfo: any = { id, type };
@@ -244,7 +244,7 @@ describe("convertItemToTemplate", () => {
 });
 
 describe("createItemFromTemplate", () => {
-  it("handles Real Time Analytic", async () => {
+  it("handles Real Time Analytic", async() => {
     const type: string = "Real Time Analytic";
     const template: interfaces.IItemTemplate = templates.getItemTemplate(type, []);
     const templateDictionary = {};
@@ -296,7 +296,7 @@ describe("createItemFromTemplate", () => {
     expect(actual.item?.item.title).toEqual(type);
   });
 
-  it("handles issue with item progress callback at start", async () => {
+  it("handles issue with item progress callback at start", async() => {
     const type: string = "Real Time Analytic";
     const template: interfaces.IItemTemplate = templates.getItemTemplate(type, []);
     const templateDictionary = {};
@@ -311,7 +311,7 @@ describe("createItemFromTemplate", () => {
     );
   });
 
-  it("handles issue with item progress callback at end", async () => {
+  it("handles issue with item progress callback at end", async() => {
     const type: string = "Real Time Analytic";
     const template: interfaces.IItemTemplate = templates.getItemTemplate(type, []);
     template.estimatedDeploymentCostFactor = undefined as any;
@@ -365,7 +365,7 @@ describe("createItemFromTemplate", () => {
     );
   });
 
-  it("handles issue with removeItem", async () => {
+  it("handles issue with removeItem", async() => {
     const type: string = "Real Time Analytic";
     const template: interfaces.IItemTemplate = templates.getItemTemplate(type, []);
     template.estimatedDeploymentCostFactor = undefined as any;
@@ -419,7 +419,7 @@ describe("createItemFromTemplate", () => {
     );
   });
 
-  it("handles org without velocity support", async () => {
+  it("handles org without velocity support", async() => {
     const type: string = "Real Time Analytic";
     const template: interfaces.IItemTemplate = templates.getItemTemplate(type, []);
     const templateDictionary = {};
@@ -444,7 +444,7 @@ describe("createItemFromTemplate", () => {
 });
 
 describe("postProcess", () => {
-  it("will move velocity items to the deployment folder", async () => {
+  it("will move velocity items to the deployment folder", async() => {
     const id: string = "thisismyitemid";
     const templateDictionary: any = {
       folderId: "thisisafolderid",

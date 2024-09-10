@@ -44,7 +44,7 @@ describe("_postProcessSite :: ", () => {
     ];
   });
 
-  it("shared items to site teams", async () => {
+  it("shared items to site teams", async() => {
     const fakeRo = {} as hubCommon.IHubUserRequestOptions;
     const shareSpy = spyOn(hubSites, "shareItemsToSiteGroups").and.callFake((m, nfos) => {
       return Promise.all(
@@ -72,7 +72,7 @@ describe("_postProcessSite :: ", () => {
     });
   });
 
-  it("excludes site id from children array", async () => {
+  it("excludes site id from children array", async() => {
     const fakeRo = {} as hubCommon.IHubUserRequestOptions;
     spyOn(hubSites, "shareItemsToSiteGroups").and.callFake((m, nfos) => {
       return Promise.all(

@@ -29,7 +29,7 @@ describe("postProcess Module", () => {
     MOCK_USER_SESSION = testUtils.createRuntimeMockUserSession();
   });
 
-  it("delegates to type specific processor", async () => {
+  it("delegates to type specific processor", async() => {
     const siteProcessorSpy = spyOn(HubSiteProcessor, "postProcess").and.resolveTo();
 
     const relationshipSpy = spyOn(portalHelper, "addItemRelationship").and.resolveTo();
@@ -61,7 +61,7 @@ describe("postProcess Module", () => {
     expect(args[6]).withContext("should pass auth through").toBe(MOCK_USER_SESSION);
   });
 
-  it("only processes multiple solutions with postProcess true", async () => {
+  it("only processes multiple solutions with postProcess true", async() => {
     const siteProcessorSpy = spyOn(HubSiteProcessor, "postProcess").and.resolveTo();
 
     const relationshipSpy = spyOn(portalHelper, "addItemRelationship").and.resolveTo();
@@ -89,7 +89,7 @@ describe("postProcess Module", () => {
     expect(resp.length).withContext("should return three promises").toBe(5);
     expect(siteProcessorSpy.calls.count()).withContext("should call postProcess twice").toBe(2);
   });
-  it("only processes solutions with postProcess true", async () => {
+  it("only processes solutions with postProcess true", async() => {
     const siteProcessorSpy = spyOn(HubSiteProcessor, "postProcess").and.resolveTo();
 
     const relationshipSpy = spyOn(portalHelper, "addItemRelationship").and.resolveTo();
@@ -118,7 +118,7 @@ describe("postProcess Module", () => {
     expect(siteProcessorSpy.calls.count()).withContext("should call postProcess once").toBe(1);
   });
 
-  it("it skips undefined itemHandlers", async () => {
+  it("it skips undefined itemHandlers", async() => {
     const sols = [
       {
         item: null as any,

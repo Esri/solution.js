@@ -43,7 +43,7 @@ afterEach(() => {
 
 describe("Module `simple-types`: manages the creation and deployment of simple item types", () => {
   describe("convertItemToTemplate", () => {
-    it("should handle error on getResources", async () => {
+    it("should handle error on getResources", async() => {
       const item: any = mockItems.getAGOLItem("Workforce Project");
       item.title = "Dam Inspection Assignments";
       item.thumbnail = null;
@@ -88,7 +88,7 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
       expect(newItemTemplate.resources).toEqual([]);
     });
 
-    it("should handle error on dataPromise", async () => {
+    it("should handle error on dataPromise", async() => {
       const itemId: string = "abc0cab401af4828a25cc6eaeb59fb69";
       const item = {
         id: itemId,
@@ -116,7 +116,7 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
       return simpleTypes.convertItemToTemplate(item, MOCK_USER_SESSION, MOCK_USER_SESSION, {});
     });
 
-    it("should handle item resource", async () => {
+    it("should handle item resource", async() => {
       const solutionItemId = "sln1234567890";
       const itemTemplate: common.IItemTemplate = templates.getItemTemplateSkeleton();
       itemTemplate.item = mockItems.getAGOLItem(
@@ -224,7 +224,7 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
       expect(newItemTemplate).toEqual(expectedTemplate);
     });
 
-    it("should catch fetch errors", async () => {
+    it("should catch fetch errors", async() => {
       // TODO resolve Karma internal error triggered by this test
       const solutionItemId = "sln1234567890";
       const itemTemplate: common.IItemTemplate = templates.getItemTemplateSkeleton();
@@ -250,7 +250,7 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
   });
 
   describe("createItemFromTemplate", () => {
-    it("should handle error on addItem", async () => {
+    it("should handle error on addItem", async() => {
       const itemId: string = "abc0cab401af4828a25cc6eaeb59fb69";
       const templateDictionary: any = {};
 
@@ -277,7 +277,7 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
       );
     });
 
-    it("should handle success === false", async () => {
+    it("should handle success === false", async() => {
       const itemId: string = "abc0cab401af4828a25cc6eaeb59fb69";
       const newItemID: string = "abc1cab401af4828a25cc6eaeb59fb69";
       const templateDictionary: any = {};
@@ -308,7 +308,7 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
       );
     });
 
-    it("should handle cancellation before deployment of item starts", async () => {
+    it("should handle cancellation before deployment of item starts", async() => {
       const itemTemplate: common.IItemTemplate = templates.getItemTemplate("Web Map");
       const templateDictionary: any = {};
 
@@ -321,7 +321,7 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
       expect(response).toEqual(templates.getFailedItem(itemTemplate.type));
     });
 
-    it("should handle cancellation after deployed item is created", async () => {
+    it("should handle cancellation after deployed item is created", async() => {
       const itemTemplate: common.IItemTemplate = templates.getItemTemplate("Web Map");
       const templateDictionary: any = {};
 
@@ -344,7 +344,7 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
       expect(response).toEqual(templates.getFailedItem(itemTemplate.type));
     });
 
-    it("should handle cancellation failure after deployed item is created", async () => {
+    it("should handle cancellation failure after deployed item is created", async() => {
       const itemTemplate: common.IItemTemplate = templates.getItemTemplate("Web Map");
       const templateDictionary: any = {};
 
@@ -367,7 +367,7 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
       expect(response).toEqual(templates.getFailedItem(itemTemplate.type));
     });
 
-    it("should handle cancellation after deployed item is finished", async () => {
+    it("should handle cancellation after deployed item is finished", async() => {
       const itemTemplate: common.IItemTemplate = templates.getItemTemplate("Web Map");
       const templateDictionary: any = {
         portalBaseUrl: utils.PORTAL_SUBSET.portalUrl,
@@ -402,7 +402,7 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
       expect(response).toEqual(templates.getFailedItem(itemTemplate.type));
     });
 
-    it("should handle cancellation failure after deployed item is finished", async () => {
+    it("should handle cancellation failure after deployed item is finished", async() => {
       const itemTemplate: common.IItemTemplate = templates.getItemTemplate("Web Map");
       const templateDictionary: any = {
         portalBaseUrl: utils.PORTAL_SUBSET.portalUrl,
@@ -547,7 +547,7 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
   });
 
   describe("postProcess hook", () => {
-    it("fetch, interpolate and share", async () => {
+    it("fetch, interpolate and share", async() => {
       const template = templates.getItemTemplate("Web Map");
       template.item.id = template.itemId = "3ef";
       const td = { owner: "Luke Skywalker" };
@@ -579,7 +579,7 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
       );
     });
 
-    it("should update only if interpolation needed", async () => {
+    it("should update only if interpolation needed", async() => {
       const template = templates.getItemTemplate("Web Map", [], "http://www.esri.com");
       template.item.id = template.itemId = "3ef";
       template.item.extent = undefined;

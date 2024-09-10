@@ -30,7 +30,7 @@ beforeEach(() => {
 
 describe("formUtils", () => {
   describe("swizzleFormObject", () => {
-    it("swizzles a form object", async () => {
+    it("swizzles a form object", async() => {
       const zipObject = zipHelpers.generateFormZipObject("0c01725576b640e4bd25a16721850000");
       const templateDictionary = {
         "0c01725576b640e4bd25a16721850000": {
@@ -47,7 +47,7 @@ describe("formUtils", () => {
       expect(resultingZipContents).toEqual(expectedZipContents);
     });
 
-    it("skips no-ops", async () => {
+    it("skips no-ops", async() => {
       const zipObject = zipHelpers.generateFormZipObject("0c01725576b640e4bd25a16721850000");
       const templateDictionary = {
         "0c01725576b640e4bd25a16721850000": {
@@ -64,7 +64,7 @@ describe("formUtils", () => {
       expect(resultingZipContents).toEqual(expectedZipContents);
     });
 
-    it("doesn't swizzle the wrong items", async () => {
+    it("doesn't swizzle the wrong items", async() => {
       const zipObject = zipHelpers.generateFormZipObject("0c01725576b640e4bd25a16721850002");
       const templateDictionary = {
         "0c01725576b640e4bd25a16721850000": {
@@ -81,7 +81,7 @@ describe("formUtils", () => {
       expect(resultingZipContents).toEqual(expectedZipContents);
     });
 
-    it("doesn't swizzle a binary object", async () => {
+    it("doesn't swizzle a binary object", async() => {
       const zipObject = zipHelpers.generateFormZipObject("0c01725576b640e4bd25a16721850000");
       const originalXLSX = utils.loadSampleXLSX("09b843d27d8a441db4c88c1f03b8e9aa");
       zipObject.file("09b843d27d8a441db4c88c1f03b8e9aa.xlsx", originalXLSX, {
@@ -113,7 +113,7 @@ describe("formUtils", () => {
   describe("templatizeFormData", () => {
     const itemId = "2f56b3b59cdc4ac8b8f5de0399887e1e";
 
-    it("templatizes form data", async () => {
+    it("templatizes form data", async() => {
       const zipObject = zipHelpers.generateFormZipObject(itemId);
       const templateDictionary = {
         portalBaseUrl: "https://fred.maps.arcgis.com",

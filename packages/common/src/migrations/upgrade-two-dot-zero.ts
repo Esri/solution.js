@@ -61,7 +61,7 @@ export function _convertIndicatorsToDefinitions(indicatorsHash: any = {}) {
  *
  * @private
  */
-export const _convertIndicatorToDefinition = function (ind: any) {
+export const _convertIndicatorToDefinition = function(ind: any) {
   const def = {
     id: ind.fieldName,
     type: "Data",
@@ -82,7 +82,7 @@ export const _convertIndicatorToDefinition = function (ind: any) {
  *
  * @private
  */
-export const _convertIndicatorField = function (field: any) {
+export const _convertIndicatorField = function(field: any) {
   return {
     id: field.fieldName,
     name: field.label,

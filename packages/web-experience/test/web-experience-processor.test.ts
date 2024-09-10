@@ -38,7 +38,7 @@ beforeEach(() => {
 
 describe("Module `web-experience-processor`: ", () => {
   describe("convertItemToTemplate :: ", () => {
-    it("should fetch the data and delegate to convertToTemplate", async () => {
+    it("should fetch the data and delegate to convertToTemplate", async() => {
       const getItemDataSpy = spyOn(portalModule, "getItemData").and.resolveTo({
         some: "prop",
       });
@@ -87,7 +87,7 @@ describe("Module `web-experience-processor`: ", () => {
     };
     const cb = () => true;
 
-    it("happy-path", async () => {
+    it("happy-path", async() => {
       const createFromTmplSpy = spyOn(createFromTemplateModule, "createWebExperienceModelFromTemplate").and.resolveTo({
         item: {},
       });
@@ -102,7 +102,7 @@ describe("Module `web-experience-processor`: ", () => {
       expect(createSpy.calls.count()).withContext("should call createWebExperience").toBe(1);
     });
 
-    it("early-exits correctly", async () => {
+    it("early-exits correctly", async() => {
       const cbFalse = () => false;
 
       const result = await WebExperienceProcessor.createItemFromTemplate(tmpl, td, MOCK_USER_SESSION, cbFalse);
@@ -110,7 +110,7 @@ describe("Module `web-experience-processor`: ", () => {
       expect(result.postProcess).withContext("should return postProcess false").toBe(false);
     });
 
-    it("callsback on exception", async () => {
+    it("callsback on exception", async() => {
       spyOn(createExperienceModule, "createWebExperience").and.rejectWith("booom");
 
       return WebExperienceProcessor.createItemFromTemplate(tmpl, td, MOCK_USER_SESSION, cb)
@@ -120,7 +120,7 @@ describe("Module `web-experience-processor`: ", () => {
           return Promise.resolve();
         });
     });
-    it("cleans up if job is cancelled late", async () => {
+    it("cleans up if job is cancelled late", async() => {
       // fn that returns a fn that closes over a counter so that
       // it can return false after the first call
       const createCb = () => {
@@ -151,7 +151,7 @@ describe("Module `web-experience-processor`: ", () => {
   });
 
   describe("postProcess :: ", () => {
-    it("should call updateItemTemplateFromDictionary", async () => {
+    it("should call updateItemTemplateFromDictionary", async() => {
       const td = {
         organization: {
           id: "somePortalId",

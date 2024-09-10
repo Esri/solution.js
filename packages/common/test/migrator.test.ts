@@ -44,13 +44,13 @@ describe("Schema Migrator", () => {
     },
   } as ISolutionItem;
 
-  it("returns model if current schema", async () => {
+  it("returns model if current schema", async() => {
     const m = cloneObject(defaultModel);
     const chk = await migrateSchema(m);
     expect(chk).toBe(m, "should return the exact same object");
   });
 
-  it("upgrades schemaless to current", async () => {
+  it("upgrades schemaless to current", async() => {
     const m = cloneObject(defaultModel);
     // kill the item properties
     delete m.item.properties;
@@ -61,7 +61,7 @@ describe("Schema Migrator", () => {
       .toBe(CURRENT_SCHEMA_VERSION);
   });
 
-  it("upgrades legacy Solutions", async () => {
+  it("upgrades legacy Solutions", async() => {
     const m = cloneObject(defaultModel);
     // kill the schema version
     delete m.item.properties.schemaVersion;
@@ -136,7 +136,7 @@ describe("Schema Migrator", () => {
     });
   });
 
-  it("does nothing if v3.1", async () => {
+  it("does nothing if v3.1", async() => {
     // this test will go away once we have a 3.0 -> 3.1 migration but it covers an `else` case
     const m = cloneObject(defaultModel);
     m.item.properties.schemaVersion = 3.1;

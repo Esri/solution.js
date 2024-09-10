@@ -221,7 +221,7 @@ export function createItemTemplate(
                     }
 
                     // eslint-disable-next-line @typescript-eslint/no-floating-promises
-                    resourcePrepPromise.then(async (resourceItemFiles: ISourceFile[]) => {
+                    resourcePrepPromise.then(async(resourceItemFiles: ISourceFile[]) => {
                       // Perform any custom processing needed on resource files
                       await _templatizeResources(itemTemplate, resourceItemFiles, srcAuthentication);
 

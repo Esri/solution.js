@@ -41,7 +41,7 @@ describe("Module `formHelpers`", () => {
     const orgId2 = "org1234567891";
     const itemId2 = "c73d0ae07a2445b29087f392ed4eb9f9";
 
-    it("detemplatizes the form data", async () => {
+    it("detemplatizes the form data", async() => {
       const zipObject = zipHelpers.generateFormZipObject(`{{${itemId1}.itemId}}`);
       const zipObjectContents = await common.getZipObjectContents(zipObject);
       zipObjectContents[1].content = (zipObjectContents[1].content as string)

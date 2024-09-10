@@ -51,7 +51,7 @@ describe("createWebExperience :: ", () => {
     });
   });
 
-  it("happy-path", async () => {
+  it("happy-path", async() => {
     const model = {
       item: {} as portalModule.IItem,
       data: {
@@ -74,7 +74,7 @@ describe("createWebExperience :: ", () => {
     expect(moveOpts.folderId).withContext("should pass the folderid into create item").toBe("fakefolderid");
   });
 
-  it("happy-path with thumbnail", async () => {
+  it("happy-path with thumbnail", async() => {
     const model = {
       item: {
         thumbnail: "yoda",
@@ -102,7 +102,7 @@ describe("createWebExperience :: ", () => {
     expect(moveOpts.folderId).withContext("should pass the folderid into create item").toBe("fakefolderid");
   });
 
-  it("no image resources", async () => {
+  it("no image resources", async() => {
     const model = {
       item: {} as portalModule.IItem,
       data: {

@@ -47,7 +47,7 @@ describe("Module `webmappingapplication`: manages the creation and deployment of
   });
 
   describe("convertItemToTemplate", () => {
-    it("just webmap data", async () => {
+    it("just webmap data", async() => {
       const model = {
         itemId: "itm1234567890",
         type: "Web Mapping Application",
@@ -99,7 +99,7 @@ describe("Module `webmappingapplication`: manages the creation and deployment of
       expect(actual).toEqual(expected);
     });
 
-    it("just group data", async () => {
+    it("just group data", async() => {
       const model = {
         itemId: "itm1234567890",
         type: "Web Mapping Application",
@@ -129,7 +129,7 @@ describe("Module `webmappingapplication`: manages the creation and deployment of
       expect(actual).toEqual(expected);
     });
 
-    it("neither webmap nor group", async () => {
+    it("neither webmap nor group", async() => {
       const model = {
         itemId: "itm1234567890",
         type: "Web Mapping Application",
@@ -171,7 +171,7 @@ describe("Module `webmappingapplication`: manages the creation and deployment of
       expect(actual).toEqual(expected);
     });
 
-    it("webmap data with external dataSources", async () => {
+    it("webmap data with external dataSources", async() => {
       const model = {
         itemId: "itm1234567890",
         type: "Web Mapping Application",
@@ -262,7 +262,7 @@ describe("Module `webmappingapplication`: manages the creation and deployment of
       expect(actual).toEqual(expected);
     });
 
-    it("error with webmap data with external dataSources", async () => {
+    it("error with webmap data with external dataSources", async() => {
       const model = {
         itemId: "itm1234567890",
         type: "Web Mapping Application",
@@ -313,7 +313,7 @@ describe("Module `webmappingapplication`: manages the creation and deployment of
       );
     });
 
-    it("webmap data with external dataSources without url", async () => {
+    it("webmap data with external dataSources without url", async() => {
       const model = {
         itemId: "itm1234567890",
         type: "Web Mapping Application",
@@ -389,7 +389,7 @@ describe("Module `webmappingapplication`: manages the creation and deployment of
       expect(actual).toEqual(expected);
     });
 
-    it("webmap data with widgetPool widgets", async () => {
+    it("webmap data with widgetPool widgets", async() => {
       const model = {
         itemId: "f3223bda3c304dd0bf46dee75ac31aae",
         type: "Web Mapping Application",
@@ -522,7 +522,7 @@ describe("Module `webmappingapplication`: manages the creation and deployment of
       expect(actual).toEqual(expected);
     });
 
-    it("webmap data with widgetPool and widgetOnScreen widgets", async () => {
+    it("webmap data with widgetPool and widgetOnScreen widgets", async() => {
       const model = {
         itemId: "f3223bda3c304dd0bf46dee75ac31aae",
         type: "Web Mapping Application",
@@ -691,7 +691,7 @@ describe("Module `webmappingapplication`: manages the creation and deployment of
       expect(actual).toEqual(expected);
     });
 
-    it("error with widgetPool widgets", async () => {
+    it("error with widgetPool widgets", async() => {
       const model = {
         itemId: "f3223bda3c304dd0bf46dee75ac31aae",
         type: "Web Mapping Application",
@@ -766,7 +766,7 @@ describe("Module `webmappingapplication`: manages the creation and deployment of
       );
     });
 
-    it("error with widgetOnScreen widgets", async () => {
+    it("error with widgetOnScreen widgets", async() => {
       const model = {
         itemId: "f3223bda3c304dd0bf46dee75ac31aae",
         type: "Web Mapping Application",
@@ -841,7 +841,7 @@ describe("Module `webmappingapplication`: manages the creation and deployment of
       );
     });
 
-    it("web application template values", async () => {
+    it("web application template values", async() => {
       fetchMock
         .post("https://fake.com/arcgis/rest/info", {})
         .post("https://services7.arcgis.com/org1234567890/arcgis/rest/services/TestLayer2FromWebApp/FeatureServer/3", {
@@ -987,7 +987,7 @@ describe("Module `webmappingapplication`: manages the creation and deployment of
       expect(actual).toEqual(expectedInfoLookupTemplate);
     });
 
-    it("error with web application template templatizeValues", async () => {
+    it("error with web application template templatizeValues", async() => {
       fetchMock
         .post("https://fake.com/arcgis/rest/info", {})
         .post(
@@ -1049,7 +1049,7 @@ describe("Module `webmappingapplication`: manages the creation and deployment of
   });
 
   describe("templatizeDatasources ", () => {
-    it("handles different flavors of data source", async () => {
+    it("handles different flavors of data source", async() => {
       const itemTemplate: common.IItemTemplate = {
         itemId: "abc0cab401af4828a25cc6eaeb59fb69",
         type: "Web Mapping Application",
@@ -1154,7 +1154,7 @@ describe("Module `webmappingapplication`: manages the creation and deployment of
   });
 
   describe("templatizeWidgets ", () => {
-    it("handles widgets", async () => {
+    it("handles widgets", async() => {
       const itemTemplate: common.IItemTemplate = {
         itemId: "f3223bda3c304dd0bf46dee75ac31aae",
         type: "Web Mapping Application",
@@ -1299,7 +1299,7 @@ describe("Module `webmappingapplication`: manages the creation and deployment of
       expect(updatedItemTemplate).toEqual(expectedItemTemplate);
     });
 
-    it("handles widgets that are missing properties", async () => {
+    it("handles widgets that are missing properties", async() => {
       const itemTemplate: common.IItemTemplate = {
         itemId: "f3223bda3c304dd0bf46dee75ac31aae",
         type: "Web Mapping Application",
@@ -1366,13 +1366,13 @@ describe("Module `webmappingapplication`: manages the creation and deployment of
   });
 
   describe("handleServiceRequests ", () => {
-    it("should handle no service requests ", async () => {
+    it("should handle no service requests ", async() => {
       const expected: string = "{test: 123}";
       const actual = await webmappingapplication.handleServiceRequests([], [], "{test: 123}");
       expect(actual).toEqual(expected);
     });
 
-    it("handles missing data in service requests", async () => {
+    it("handles missing data in service requests", async() => {
       const itemTemplate: common.IItemTemplate = {
         itemId: "f3223bda3c304dd0bf46dee75ac31aae",
         type: "Web Mapping Application",
@@ -1726,7 +1726,7 @@ describe("Module `webmappingapplication`: manages the creation and deployment of
   });
 
   describe("create Code Attachment", () => {
-    it("doesn't create a corresponding Code Attachment when it deploys a non-WAB app", async () => {
+    it("doesn't create a corresponding Code Attachment when it deploys a non-WAB app", async() => {
       const originalTemplate = {
         itemId: "itm1234567890",
         type: "Web Mapping Application",
@@ -1780,7 +1780,7 @@ describe("Module `webmappingapplication`: manages the creation and deployment of
       expect(calls.length).toEqual(0);
     });
 
-    it("creates a corresponding Code Attachment when it deploys a WAB app", async () => {
+    it("creates a corresponding Code Attachment when it deploys a WAB app", async() => {
       const originalTemplate = {
         itemId: "itm1234567890",
         type: "Web Mapping Application",
@@ -1837,7 +1837,7 @@ describe("Module `webmappingapplication`: manages the creation and deployment of
       expect(calls.length).toEqual(1);
     });
 
-    it("handles fineTuneCreatedItem failure", async () => {
+    it("handles fineTuneCreatedItem failure", async() => {
       const originalTemplate = {
         itemId: "itm1234567890",
         type: "Web Mapping Application",
