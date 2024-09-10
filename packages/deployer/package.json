@@ -1,6 +1,6 @@
 {
   "name": "@esri/solution-deployer",
-  "version": "5.6.2",
+  "version": "5.6.3",
   "description": "Manages the deployment of a Solution for @esri/solution.js.",
   "main": "dist/cjs/index.js",
   "module": "dist/esm/index.js",
@@ -29,18 +29,18 @@
     "@esri/arcgis-rest-request": "^3.7.0",
     "@esri/arcgis-rest-service-admin": "^3.7.0",
     "@esri/hub-common": "^14.177.1",
-    "@esri/solution-common": "^5.6.2",
-    "@esri/solution-feature-layer": "^5.6.2",
-    "@esri/solution-file": "^5.6.2",
-    "@esri/solution-form": "^5.6.2",
-    "@esri/solution-group": "^5.6.2",
-    "@esri/solution-hub-types": "^5.6.2",
-    "@esri/solution-simple-types": "^5.6.2",
-    "@esri/solution-storymap": "^5.6.2",
-    "@esri/solution-velocity": "^5.6.2",
-    "@esri/solution-web-experience": "^5.6.2",
-    "@esri/solution-web-tool": "^5.6.2",
-    "@esri/solution-workflow": "^5.6.2",
+    "@esri/solution-common": "^5.6.3",
+    "@esri/solution-feature-layer": "^5.6.3",
+    "@esri/solution-file": "^5.6.3",
+    "@esri/solution-form": "^5.6.3",
+    "@esri/solution-group": "^5.6.3",
+    "@esri/solution-hub-types": "^5.6.3",
+    "@esri/solution-simple-types": "^5.6.3",
+    "@esri/solution-storymap": "^5.6.3",
+    "@esri/solution-velocity": "^5.6.3",
+    "@esri/solution-web-experience": "^5.6.3",
+    "@esri/solution-web-tool": "^5.6.3",
+    "@esri/solution-workflow": "^5.6.3",
     "tslib": "1.14.1"
   },
   "scripts": {
@@ -94,5 +94,5 @@
     "esri",
     "ES6"
   ],
-  "gitHead": "74f38edd0398f518a1c6e1958a4a0c4561ce0032"
+  "gitHead": "d1d6426318e5663257a5b5c8d8308d3c3ed2a15f"
 }

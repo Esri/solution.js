@@ -1,6 +1,6 @@
 {
   "name": "@esri/solution-storymap",
-  "version": "5.6.2",
+  "version": "5.6.3",
   "description": "Manages the creation and deployment of Story Map item types for @esri/solution.js.",
   "main": "dist/cjs/index.js",
   "module": "dist/esm/index.js",
@@ -26,7 +26,7 @@
     "@esri/arcgis-rest-portal": "^3.7.0",
     "@esri/arcgis-rest-request": "^3.7.0",
     "@esri/hub-common": "^14.177.1",
-    "@esri/solution-common": "^5.6.2",
+    "@esri/solution-common": "^5.6.3",
     "tslib": "1.14.1"
   },
   "scripts": {
@@ -80,5 +80,5 @@
     "esri",
     "ES6"
   ],
-  "gitHead": "74f38edd0398f518a1c6e1958a4a0c4561ce0032"
+  "gitHead": "d1d6426318e5663257a5b5c8d8308d3c3ed2a15f"
 }

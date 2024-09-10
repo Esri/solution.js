@@ -89,7 +89,7 @@ export async function fetchAuxiliaryItems(
  * @param authentication Credentials for requests to the destination organization
  *
  */
-export async function updateTemplateDictionaryForWorkforce(
+export async function updateTemplateDictionaryForWorkflow(
   sourceId: string,
   newId: string,
   templateDictionary: any,
@@ -133,7 +133,7 @@ export async function updateTempDictWorkflowId(
   const itemId = common.getProp(workflowData, `${key}.itemId`);
   templateDictionary[id].itemId = itemId;
 
-  const item = await common.getCompleteItem(id, authentication);
+  const item = await common.getCompleteItem(itemId, authentication);
 
   const baseUrl = common.getProp(item, "base.url");
   templateDictionary[id].url = baseUrl;

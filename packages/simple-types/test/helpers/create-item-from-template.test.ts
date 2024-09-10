@@ -158,6 +158,20 @@ describe("simpleTypeCreateItemFromTemplate", () => {
       );
     });
 
+    it("should handle python notebook with no ids", async () => {
+      const itemTemplate: common.IItemTemplate = templates.getItemTemplate("Notebook");
+      itemTemplate.data.cells[0].source = "";
+
+      const expected = common.cloneObject(itemTemplate);
+      return notebook.convertNotebookToTemplate(itemTemplate, MOCK_USER_SESSION).then(
+        (response) => {
+          expect(response).toEqual(expected);
+          return Promise.resolve();
+        },
+        () => fail(),
+      );
+    });
+
     it("should handle missing python notebook content with invalid ids", async () => {
       const itemTemplate: common.IItemTemplate = templates.getItemTemplate("Notebook");
       const fakeId = "aaa27de78a784a5aa3981469d85cf45d";

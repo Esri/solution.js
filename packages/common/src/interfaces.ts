@@ -1392,6 +1392,8 @@ export interface ISourceFile {
   filename: string;
 }
 
+export type TPossibleSourceFile = ISourceFile | undefined;
+
 /**
  *  Information for storing a resource in a storage item.
  */
