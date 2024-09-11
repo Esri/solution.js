@@ -18,7 +18,7 @@
  * Provides tests for functions involving deployment of workflow items via the REST API.
  */
 
-import * as interfaces from "../src/interfaces";
+import { UserSession } from "../src/arcgisRestJS";
 import * as request from "@esri/arcgis-rest-request";
 import * as restHelpers from "../src/restHelpers";
 import * as restHelpersGet from "../src/restHelpersGet";
@@ -30,7 +30,7 @@ import JSZip from "jszip";
 
 jasmine.DEFAULT_TIMEOUT_INTERVAL = 20000; // default is 5000 ms
 
-let MOCK_USER_SESSION: interfaces.UserSession;
+let MOCK_USER_SESSION: UserSession;
 
 beforeEach(() => {
   MOCK_USER_SESSION = utils.createRuntimeMockUserSession();
@@ -177,7 +177,7 @@ describe("Module `workflowHelpers`", () => {
     it("handles undefined args", async () => {
       spyOn(request, "request").and.resolveTo(null);
 
-      const isAuthorized = await workflowHelpers.getWorkflowManagerAuthorized("", new interfaces.UserSession({}));
+      const isAuthorized = await workflowHelpers.getWorkflowManagerAuthorized("", new UserSession({}));
       expect(isAuthorized).toBeFalse();
     });
   });

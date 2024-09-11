@@ -15,7 +15,6 @@
  */
 
 import * as common from "@esri/solution-common";
-import * as restPortal from "@esri/arcgis-rest-portal";
 import { postProcessHubSurvey } from "../../src/helpers/post-process-survey";
 import * as utils from "../../../common/test/mocks/utils";
 import * as agolItems from "../../../common/test/mocks/agolItems";
@@ -94,7 +93,7 @@ describe("postProcessHubSurvey", () => {
     const createInitializedItemTemplateSpy = spyOn(common, "createInitializedItemTemplate").and.returnValue(
       featureServiceTemplate,
     );
-    const moveItemSpy = spyOn(restPortal, "moveItem").and.resolveTo();
+    const moveItemSpy = spyOn(common, "moveItem").and.resolveTo();
     const removeFolderSpy = spyOn(common, "removeFolder").and.resolveTo();
     const results = await postProcessHubSurvey(
       formId,

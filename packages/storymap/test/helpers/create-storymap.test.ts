@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import * as portalModule from "@esri/arcgis-rest-portal";
+import * as common from "@esri/solution-common";
 import * as hubCommonModule from "@esri/hub-common";
 import * as utils from "../../../common/test/mocks/utils";
 
@@ -28,7 +28,7 @@ describe("createStoryMap ::", () => {
       item: {
         id: "3ef",
         owner: "vader",
-      } as portalModule.IItem,
+      } as common.IItem,
       data: {
         // we don't care about whats in here
       },
@@ -40,23 +40,23 @@ describe("createStoryMap ::", () => {
     } as hubCommonModule.IModel;
 
     // setup spies
-    const createItemSpy = spyOn(portalModule, "createItem").and.resolveTo({
+    const createItemSpy = spyOn(common, "createItem").and.resolveTo({
       id: "bc3",
       folder: "fakefolderid",
       success: true,
     });
     const interpolateIdSpy = spyOn(hubCommonModule, "interpolateItemId").and.callThrough();
-    const updateItemSpy = spyOn(portalModule, "updateItem").and.resolveTo({
+    const updateItemSpy = spyOn(common, "restUpdateItem").and.resolveTo({
       id: "bc3",
       success: true,
     });
-    const addResSpy = spyOn(portalModule, "addItemResource").and.resolveTo({
+    const addResSpy = spyOn(common, "addItemResource").and.resolveTo({
       itemId: "bc3",
       owner: "casey",
       folder: "",
       success: true,
     });
-    const moveItemSpy = spyOn(portalModule, "moveItem").and.resolveTo({
+    const moveItemSpy = spyOn(common, "moveItem").and.resolveTo({
       success: true,
       folder: "3ef",
       owner: "casey",
@@ -99,23 +99,23 @@ describe("createStoryMap ::", () => {
     } as hubCommonModule.IModel;
 
     // setup spies
-    const createItemSpy = spyOn(portalModule, "createItem").and.resolveTo({
+    const createItemSpy = spyOn(common, "createItem").and.resolveTo({
       id: "bc3",
       folder: "fakefolderid",
       success: true,
     });
     const interpolateIdSpy = spyOn(hubCommonModule, "interpolateItemId").and.callThrough();
-    const updateItemSpy = spyOn(portalModule, "updateItem").and.resolveTo({
+    const updateItemSpy = spyOn(common, "restUpdateItem").and.resolveTo({
       id: "bc3",
       success: true,
     });
-    const addResSpy = spyOn(portalModule, "addItemResource").and.resolveTo({
+    const addResSpy = spyOn(common, "addItemResource").and.resolveTo({
       itemId: "bc3",
       owner: "casey",
       folder: "",
       success: true,
     });
-    const moveItemSpy = spyOn(portalModule, "moveItem").and.resolveTo({
+    const moveItemSpy = spyOn(common, "moveItem").and.resolveTo({
       success: true,
       folder: "3ef",
       owner: "casey",

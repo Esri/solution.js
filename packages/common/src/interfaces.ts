@@ -18,36 +18,18 @@
  * Provides common interfaces.
  */
 
-import { IGetRelatedItemsResponse, IGroup, IItem, IItemRelationshipOptions } from "@esri/arcgis-rest-portal";
-import { IExtent, ISpatialReference } from "@esri/arcgis-rest-service-admin";
-import { UserSession } from "@esri/arcgis-rest-auth";
+import {
+  IExtent,
+  IGetRelatedItemsResponse,
+  IGroup,
+  IItem,
+  IItemRelationshipOptions,
+  ISpatialReference,
+  UserSession,
+} from "./arcgisRestJS";
 
 //#region Re-exports -------------------------------------------------------------------------------------------------//
 
-export { IUserRequestOptions, IUserSessionOptions, UserSession } from "@esri/arcgis-rest-auth";
-export {
-  IFeature,
-  IQueryRelatedOptions,
-  IQueryRelatedResponse,
-  IRelatedRecordGroup,
-  queryRelated,
-} from "@esri/arcgis-rest-feature-layer";
-export {
-  IAddFolderResponse,
-  ICreateItemResponse,
-  IGetRelatedItemsResponse,
-  IGroup,
-  IGroupAdd,
-  IItem,
-  IMoveItemResponse,
-  IPagingParams,
-  IPortal,
-  ISearchResult,
-  ItemRelationshipType,
-  IUpdateItemResponse,
-  IUser,
-} from "@esri/arcgis-rest-portal";
-export { ICreateServiceResult, IExtent, ISpatialReference } from "@esri/arcgis-rest-service-admin";
 import JSZip from "jszip";
 
 //#endregion ---------------------------------------------------------------------------------------------------------//

@@ -15,12 +15,13 @@
  */
 import { convertItemToTemplate, createItemFromTemplate, postProcess } from "../src/velocity-processor";
 const fetchMock = require("fetch-mock");
-import * as interfaces from "../../common/src/interfaces";
+import { UserSession } from "../../common/src/arcgisRestJS";
+import { IItemTemplate } from "../../common/src/interfaces";
 import * as utils from "../../common/test/mocks/utils";
 import * as templates from "../../common/test/mocks/templates";
 import * as agolItems from "../../common/test/mocks/agolItems";
 
-let MOCK_USER_SESSION: interfaces.UserSession;
+let MOCK_USER_SESSION: UserSession;
 
 beforeEach(() => {
   MOCK_USER_SESSION = utils.createRuntimeMockUserSession();
@@ -246,10 +247,10 @@ describe("convertItemToTemplate", () => {
 describe("createItemFromTemplate", () => {
   it("handles Real Time Analytic", async () => {
     const type: string = "Real Time Analytic";
-    const template: interfaces.IItemTemplate = templates.getItemTemplate(type, []);
+    const template: IItemTemplate = templates.getItemTemplate(type, []);
     const templateDictionary = {};
     templateDictionary[template.itemId] = {};
-    const destinationAuthentication: interfaces.UserSession = MOCK_USER_SESSION;
+    const destinationAuthentication: UserSession = MOCK_USER_SESSION;
     const realtimeUrl: string = "https://us-iot.arcgis.com/usadvanced00/fliptfmrv9d1divn/iot/analytics/realtime";
     const id: string = "aaabbbccc123";
 
@@ -298,10 +299,10 @@ describe("createItemFromTemplate", () => {
 
   it("handles issue with item progress callback at start", async () => {
     const type: string = "Real Time Analytic";
-    const template: interfaces.IItemTemplate = templates.getItemTemplate(type, []);
+    const template: IItemTemplate = templates.getItemTemplate(type, []);
     const templateDictionary = {};
     templateDictionary[template.itemId] = {};
-    const destinationAuthentication: interfaces.UserSession = MOCK_USER_SESSION;
+    const destinationAuthentication: UserSession = MOCK_USER_SESSION;
 
     return createItemFromTemplate(
       template,
@@ -313,11 +314,11 @@ describe("createItemFromTemplate", () => {
 
   it("handles issue with item progress callback at end", async () => {
     const type: string = "Real Time Analytic";
-    const template: interfaces.IItemTemplate = templates.getItemTemplate(type, []);
+    const template: IItemTemplate = templates.getItemTemplate(type, []);
     template.estimatedDeploymentCostFactor = undefined as any;
     const templateDictionary = {};
     templateDictionary[template.itemId] = {};
-    const destinationAuthentication: interfaces.UserSession = MOCK_USER_SESSION;
+    const destinationAuthentication: UserSession = MOCK_USER_SESSION;
     const realtimeUrl: string = "https://us-iot.arcgis.com/usadvanced00/fliptfmrv9d1divn/iot/analytics/realtime";
     const id: string = "aaabbbccc123";
 
@@ -367,11 +368,11 @@ describe("createItemFromTemplate", () => {
 
   it("handles issue with removeItem", async () => {
     const type: string = "Real Time Analytic";
-    const template: interfaces.IItemTemplate = templates.getItemTemplate(type, []);
+    const template: IItemTemplate = templates.getItemTemplate(type, []);
     template.estimatedDeploymentCostFactor = undefined as any;
     const templateDictionary = {};
     templateDictionary[template.itemId] = {};
-    const destinationAuthentication: interfaces.UserSession = MOCK_USER_SESSION;
+    const destinationAuthentication: UserSession = MOCK_USER_SESSION;
     const realtimeUrl: string = "https://us-iot.arcgis.com/usadvanced00/fliptfmrv9d1divn/iot/analytics/realtime";
     const id: string = "aaabbbccc123";
 
@@ -421,10 +422,10 @@ describe("createItemFromTemplate", () => {
 
   it("handles org without velocity support", async () => {
     const type: string = "Real Time Analytic";
-    const template: interfaces.IItemTemplate = templates.getItemTemplate(type, []);
+    const template: IItemTemplate = templates.getItemTemplate(type, []);
     const templateDictionary = {};
     templateDictionary[template.itemId] = {};
-    const destinationAuthentication: interfaces.UserSession = MOCK_USER_SESSION;
+    const destinationAuthentication: UserSession = MOCK_USER_SESSION;
 
     fetchMock.get(`${utils.PORTAL_SUBSET.restUrl}/portals/self/subscriptioninfo?f=json&token=fake-token`, {
       id: "aaabbbccc",
@@ -450,7 +451,7 @@ describe("postProcess", () => {
       folderId: "thisisafolderid",
     };
     const type: string = "Real Time Analytic";
-    const template: interfaces.IItemTemplate = templates.getItemTemplate(type, []);
+    const template: IItemTemplate = templates.getItemTemplate(type, []);
 
     const itemInfos: any[] = [
       {

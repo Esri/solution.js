@@ -18,6 +18,7 @@
  * Provides tests for zip file helper functions.
  */
 
+import { UserSession } from "../src/arcgisRestJS";
 import * as formHelpers from "../src/formHelpers";
 import * as interfaces from "../src/interfaces";
 import * as mockItems from "./mocks/agolItems";
@@ -30,7 +31,7 @@ import * as zipUtils from "../src/zip-utils";
 
 jasmine.DEFAULT_TIMEOUT_INTERVAL = 20000; // default is 5000 ms
 
-let MOCK_USER_SESSION: interfaces.UserSession;
+let MOCK_USER_SESSION: UserSession;
 
 beforeEach(() => {
   MOCK_USER_SESSION = utils.createRuntimeMockUserSession();

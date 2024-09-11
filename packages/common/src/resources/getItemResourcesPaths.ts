@@ -14,9 +14,10 @@
  * limitations under the License.
  */
 
+import { UserSession } from "../arcgisRestJS";
 import { getItemResources } from "../restHelpersGet";
 import { generateSourceFilePaths } from "../resourceHelpers";
-import { IItemTemplate, ISourceFileCopyPath, UserSession } from "../interfaces";
+import { IItemTemplate, ISourceFileCopyPath } from "../interfaces";
 
 // ------------------------------------------------------------------------------------------------------------------ //
 

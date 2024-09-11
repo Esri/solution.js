@@ -23,7 +23,6 @@ import * as mockItems from "../../common/test/mocks/agolItems";
 import * as templates from "../../common/test/mocks/templates";
 import * as utils from "../../common/test/mocks/utils";
 import * as workflowHelpers from "../src/workflowHelpers";
-import * as restRequest from "@esri/arcgis-rest-request";
 const fetchMock = require("fetch-mock");
 
 // ------------------------------------------------------------------------------------------------------------------ //
@@ -48,7 +47,7 @@ describe("Module `workflowHelpers`", () => {
       const agolItem = templates.getItemTemplate("Workflow");
       agolItem.thumbnail = null;
 
-      spyOn(restRequest, "request").and.resolveTo({
+      spyOn(common, "request").and.resolveTo({
         success: true,
         itemId,
       });

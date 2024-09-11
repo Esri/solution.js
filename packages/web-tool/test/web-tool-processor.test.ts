@@ -19,11 +19,10 @@
  */
 
 import * as WebToolProcessor from "../src/web-tool-processor";
+import * as mockAGO from "../../common/test/mocks/agolItems";
 import * as utils from "../../common/test/mocks/utils";
 import * as common from "@esri/solution-common";
 import { simpleTypes } from "@esri/solution-simple-types";
-import * as request from "@esri/arcgis-rest-request";
-import * as portalModule from "@esri/arcgis-rest-portal";
 
 let MOCK_USER_SESSION: common.UserSession;
 
@@ -96,14 +95,19 @@ describe("Module `web-tool-processor`: ", () => {
       const cbFalse = () => false;
 
       const result = await WebToolProcessor.createItemFromTemplate(tmpl, td, MOCK_USER_SESSION, cbFalse);
+
       expect(result.id).withContext("should return empty result").toBe("");
       expect(result.postProcess).withContext("should return postProcess false").toBe(false);
     });
 
     it("can create Web Tool Geoprocessing Service", async () => {
-      const createRequestSpy1 = spyOn(request, "request").and.resolveTo({
+      const requestSpy = spyOn(common, "request").and.resolveTo({
         itemId: "newgs0123456789",
       });
+      const updateItemExtendedSpy = spyOn(common, "updateItemExtended").and.resolveTo(
+        mockAGO.get200Success("newgs0123456789"),
+      );
+      const getItemBaseSpy = spyOn(common, "getItemBase").and.resolveTo(mockAGO.getAGOLItem("Geoprocessing Service"));
 
       const result = await WebToolProcessor.createItemFromTemplate(
         {
@@ -128,11 +132,14 @@ describe("Module `web-tool-processor`: ", () => {
         MOCK_USER_SESSION,
         cb,
       );
-      expect(createRequestSpy1.calls.count()).toBe(3);
+
+      expect(requestSpy.calls.count()).toBe(1);
+      expect(updateItemExtendedSpy.calls.count()).toBe(1);
+      expect(getItemBaseSpy.calls.count()).toBe(1);
       expect(result.item?.data).toEqual({});
     });
 
-    it("Web Tool Geoprocessing Service handles cancel", async () => {
+    it("Web Tool Geoprocessing Service handles cancel with item removal", async () => {
       const createCb2 = () => {
         let calls = 0;
         return () => {
@@ -140,9 +147,10 @@ describe("Module `web-tool-processor`: ", () => {
           return calls < 2;
         };
       };
-      const createRequestSpy2 = spyOn(request, "request").and.resolveTo({
+      const requestSpy = spyOn(common, "request").and.resolveTo({
         itemId: "newgs0123456789",
       });
+      const removeItemSpy = spyOn(common, "removeItem").and.resolveTo(mockAGO.get200Success("newgs0123456789"));
 
       await WebToolProcessor.createItemFromTemplate(
         {
@@ -167,10 +175,12 @@ describe("Module `web-tool-processor`: ", () => {
         MOCK_USER_SESSION,
         createCb2(),
       );
-      expect(createRequestSpy2.calls.count()).toBe(2);
+
+      expect(requestSpy.calls.count()).toBe(1);
+      expect(removeItemSpy.calls.count()).toBe(1);
     });
 
-    it("Web Tool Geoprocessing Service handles cancel and item removal", async () => {
+    it("Web Tool Geoprocessing Service handles cancel with failure to remove item", async () => {
       const createCb2 = () => {
         let calls = 0;
         return () => {
@@ -178,13 +188,10 @@ describe("Module `web-tool-processor`: ", () => {
           return calls < 2;
         };
       };
-      const createRequestSpy2 = spyOn(request, "request").and.resolveTo({
+      const requestSpy = spyOn(common, "request").and.resolveTo({
         itemId: "newgs0123456789",
       });
-      const removeSpy = spyOn(portalModule, "removeItem").and.resolveTo({
-        success: true,
-        itemId: "3ef",
-      });
+      const removeItemSpy = spyOn(common, "removeItem").and.rejectWith("error");
 
       await WebToolProcessor.createItemFromTemplate(
         {
@@ -209,11 +216,12 @@ describe("Module `web-tool-processor`: ", () => {
         MOCK_USER_SESSION,
         createCb2(),
       );
-      expect(createRequestSpy2.calls.count()).toBe(1);
-      expect(removeSpy.calls.count()).toBe(1);
+
+      expect(requestSpy.calls.count()).toBe(1);
+      expect(removeItemSpy.calls.count()).toBe(1);
     });
 
-    it("handles cancel during updateItemExtended", async () => {
+    it("handles cancel during updateItemExtended with item removal", async () => {
       const createCb2 = () => {
         let calls = 0;
         return () => {
@@ -221,9 +229,13 @@ describe("Module `web-tool-processor`: ", () => {
           return calls < 3;
         };
       };
-      const createRequestSpy2 = spyOn(request, "request").and.resolveTo({
+      const requestSpy = spyOn(common, "request").and.resolveTo({
         itemId: "newgs0123456789",
       });
+      const updateItemExtendedSpy = spyOn(common, "updateItemExtended").and.resolveTo(
+        mockAGO.get200Success("newgs0123456789"),
+      );
+      const removeItemSpy = spyOn(common, "removeItem").and.resolveTo(mockAGO.get200Success("3ef"));
 
       await WebToolProcessor.createItemFromTemplate(
         {
@@ -248,10 +260,13 @@ describe("Module `web-tool-processor`: ", () => {
         MOCK_USER_SESSION,
         createCb2(),
       );
-      expect(createRequestSpy2.calls.count()).toBe(3);
+
+      expect(requestSpy.calls.count()).toBe(1);
+      expect(updateItemExtendedSpy.calls.count()).toBe(1);
+      expect(removeItemSpy.calls.count()).toBe(1);
     });
 
-    it("handles cancel during updateItemExtended and removes item", async () => {
+    it("handles cancel during updateItemExtended with failure to remove item", async () => {
       const createCb2 = () => {
         let calls = 0;
         return () => {
@@ -259,13 +274,13 @@ describe("Module `web-tool-processor`: ", () => {
           return calls < 3;
         };
       };
-      const createRequestSpy2 = spyOn(request, "request").and.resolveTo({
+      const requestSpy = spyOn(common, "request").and.resolveTo({
         itemId: "newgs0123456789",
       });
-      const removeSpy = spyOn(portalModule, "removeItem").and.resolveTo({
-        success: true,
-        itemId: "3ef",
-      });
+      const updateItemExtendedSpy = spyOn(common, "updateItemExtended").and.resolveTo(
+        mockAGO.get200Success("newgs0123456789"),
+      );
+      const removeItemSpy = spyOn(common, "removeItem").and.rejectWith("error");
 
       await WebToolProcessor.createItemFromTemplate(
         {
@@ -290,8 +305,10 @@ describe("Module `web-tool-processor`: ", () => {
         MOCK_USER_SESSION,
         createCb2(),
       );
-      expect(createRequestSpy2.calls.count()).toBe(2);
-      expect(removeSpy.calls.count()).toBe(1);
+
+      expect(requestSpy.calls.count()).toBe(1);
+      expect(updateItemExtendedSpy.calls.count()).toBe(1);
+      expect(removeItemSpy.calls.count()).toBe(1);
     });
 
     it("handles reject during updateItemExtended and removes item", async () => {
@@ -302,14 +319,11 @@ describe("Module `web-tool-processor`: ", () => {
           return calls < 3;
         };
       };
-      const createRequestSpy2 = spyOn(request, "request").and.resolveTo({
+      const requestSpy = spyOn(common, "request").and.resolveTo({
         itemId: "newgs0123456789",
       });
-      const updateItemRejectSpy = spyOn(common, "updateItemExtended").and.rejectWith("error");
-      const removeSpy = spyOn(portalModule, "removeItem").and.resolveTo({
-        success: true,
-        itemId: "3ef",
-      });
+      const updateItemExtendedSpy = spyOn(common, "updateItemExtended").and.rejectWith("error");
+      const removeItemSpy = spyOn(common, "removeItem").and.resolveTo(mockAGO.get200Success("3ef"));
 
       await WebToolProcessor.createItemFromTemplate(
         {
@@ -334,9 +348,10 @@ describe("Module `web-tool-processor`: ", () => {
         MOCK_USER_SESSION,
         createCb2(),
       );
-      expect(createRequestSpy2.calls.count()).toBe(1);
-      expect(updateItemRejectSpy.calls.count()).toBe(1);
-      expect(removeSpy.calls.count()).toBe(1);
+
+      expect(requestSpy.calls.count()).toBe(1);
+      expect(updateItemExtendedSpy.calls.count()).toBe(1);
+      expect(removeItemSpy.calls.count()).toBe(1);
     });
 
     it("handles reject during updateItemExtended and reject during remove item", async () => {
@@ -347,11 +362,11 @@ describe("Module `web-tool-processor`: ", () => {
           return calls < 3;
         };
       };
-      const createRequestSpy2 = spyOn(request, "request").and.resolveTo({
+      const requestSpy = spyOn(common, "request").and.resolveTo({
         itemId: "newgs0123456789",
       });
-      const updateItemRejectSpy = spyOn(common, "updateItemExtended").and.rejectWith("error");
-      const removeSpy = spyOn(portalModule, "removeItem").and.rejectWith("error");
+      const updateItemExtendedSpy = spyOn(common, "updateItemExtended").and.rejectWith("error");
+      const removeItemSpy = spyOn(common, "removeItem").and.rejectWith("error");
 
       await WebToolProcessor.createItemFromTemplate(
         {
@@ -376,9 +391,10 @@ describe("Module `web-tool-processor`: ", () => {
         MOCK_USER_SESSION,
         createCb2(),
       );
-      expect(createRequestSpy2.calls.count()).toBe(1);
-      expect(updateItemRejectSpy.calls.count()).toBe(1);
-      expect(removeSpy.calls.count()).toBe(1);
+
+      expect(requestSpy.calls.count()).toBe(1);
+      expect(updateItemExtendedSpy.calls.count()).toBe(1);
+      expect(removeItemSpy.calls.count()).toBe(1);
     });
 
     it("getItemBase", async () => {
@@ -389,14 +405,14 @@ describe("Module `web-tool-processor`: ", () => {
           return calls < 4;
         };
       };
-      const createRequestSpy2 = spyOn(request, "request").and.resolveTo({
+      const requestSpy = spyOn(common, "request").and.resolveTo({
         itemId: "newgs0123456789",
       });
+      const updateItemExtendedSpy = spyOn(common, "updateItemExtended").and.resolveTo(
+        mockAGO.get200Success("newgs0123456789"),
+      );
       const getItemBaseSpy = spyOn(common, "getItemBase").and.rejectWith("error");
-      const removeSpy = spyOn(portalModule, "removeItem").and.resolveTo({
-        success: true,
-        itemId: "3ef",
-      });
+      const removeItemSpy = spyOn(common, "removeItem").and.resolveTo(mockAGO.get200Success("3ef"));
 
       await WebToolProcessor.createItemFromTemplate(
         {
@@ -421,9 +437,11 @@ describe("Module `web-tool-processor`: ", () => {
         MOCK_USER_SESSION,
         createCb2(),
       );
+
+      expect(requestSpy.calls.count()).toBe(1);
+      expect(updateItemExtendedSpy.calls.count()).toBe(1);
       expect(getItemBaseSpy.calls.count()).toBe(1);
-      expect(createRequestSpy2.calls.count()).toBe(2);
-      expect(removeSpy.calls.count()).toBe(1);
+      expect(removeItemSpy.calls.count()).toBe(1);
     });
 
     it("getItemBase removeItem can handle reject", async () => {
@@ -434,11 +452,14 @@ describe("Module `web-tool-processor`: ", () => {
           return calls < 4;
         };
       };
-      const createRequestSpy2 = spyOn(request, "request").and.resolveTo({
+      const requestSpy = spyOn(common, "request").and.resolveTo({
         itemId: "newgs0123456789",
       });
+      const updateItemExtendedSpy = spyOn(common, "updateItemExtended").and.resolveTo(
+        mockAGO.get200Success("newgs0123456789"),
+      );
       const getItemBaseSpy = spyOn(common, "getItemBase").and.rejectWith("error");
-      const removeSpy = spyOn(common, "removeItem").and.rejectWith("error");
+      const removeItemSpy = spyOn(common, "removeItem").and.rejectWith("error");
 
       await WebToolProcessor.createItemFromTemplate(
         {
@@ -463,13 +484,15 @@ describe("Module `web-tool-processor`: ", () => {
         MOCK_USER_SESSION,
         createCb2(),
       );
+
+      expect(requestSpy.calls.count()).toBe(1);
+      expect(updateItemExtendedSpy.calls.count()).toBe(1);
       expect(getItemBaseSpy.calls.count()).toBe(1);
-      expect(createRequestSpy2.calls.count()).toBe(2);
-      expect(removeSpy.calls.count()).toBe(1);
+      expect(removeItemSpy.calls.count()).toBe(1);
     });
 
     it("can handle failure to create Web Tool Geoprocessing Service", async () => {
-      const createRequestSpy2 = spyOn(request, "request").and.rejectWith("error");
+      const requestSpy = spyOn(common, "request").and.rejectWith("error");
 
       await WebToolProcessor.createItemFromTemplate(
         {
@@ -494,7 +517,8 @@ describe("Module `web-tool-processor`: ", () => {
         MOCK_USER_SESSION,
         cb,
       );
-      expect(createRequestSpy2.calls.count()).toBe(1);
+
+      expect(requestSpy.calls.count()).toBe(1);
     });
   });
 

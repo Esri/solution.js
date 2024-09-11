@@ -130,7 +130,7 @@ export function _getLayerIds(
           // avoid redundant checks when we have a layer with subLayers
           /* istanbul ignore else */
           if (Object.keys(layerChecks).indexOf(baseUrl) < 0) {
-            layerChecks[baseUrl] = common.rest_request(layerURL, options);
+            layerChecks[baseUrl] = common.request(layerURL, options);
           }
           layerPromises.push(layerChecks[baseUrl]);
           return true;

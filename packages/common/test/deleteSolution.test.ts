@@ -19,6 +19,7 @@
  * as part of that deployment.
  */
 
+import { UserSession } from "../src/arcgisRestJS";
 import * as createHRO from "../src/create-hub-request-options";
 import * as deleteEmptyGroups from "../src/deleteHelpers/deleteEmptyGroups";
 import * as deleteGroupIfEmpty from "../src/deleteHelpers/deleteGroupIfEmpty";
@@ -38,7 +39,7 @@ import * as removeItems from "../src/deleteHelpers/removeItems";
 import * as reportProgress from "../src/deleteHelpers/reportProgress";
 import * as reconstructBuildOrderIds from "../src/deleteHelpers/reconstructBuildOrderIds";
 
-let MOCK_USER_SESSION: interfaces.UserSession;
+let MOCK_USER_SESSION: UserSession;
 
 beforeEach(() => {
   MOCK_USER_SESSION = utils.createRuntimeMockUserSession();

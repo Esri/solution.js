@@ -14,7 +14,6 @@
  */
 import * as utils from "../../common/test/mocks/utils";
 import * as sitesPackage from "@esri/hub-sites";
-import * as portalPackage from "@esri/arcgis-rest-portal";
 import * as moveHelper from "../src/helpers/move-model-to-folder";
 const MOCK_USER_SESSION = utils.createRuntimeMockUserSession();
 
@@ -169,7 +168,7 @@ describe("HubSiteProcessor: ", () => {
       const createFromTmplSpy = spyOn(sitesPackage, "createSiteModelFromTemplate").and.resolveTo({ assets: [] });
       const createSiteSpy = spyOn(sitesPackage, "createSite").and.resolveTo(fakeSite);
       const moveSiteSpy = spyOn(moveHelper, "moveModelToFolder").and.resolveTo();
-      spyOn(portalPackage, "updateItem").and.resolveTo({
+      spyOn(common, "restUpdateItem").and.resolveTo({
         success: true,
         id: "fred",
       });
@@ -204,7 +203,7 @@ describe("HubSiteProcessor: ", () => {
       const createFromTmplSpy = spyOn(sitesPackage, "createSiteModelFromTemplate").and.resolveTo({ assets: [] });
       const createSiteSpy = spyOn(sitesPackage, "createSite").and.resolveTo(fakeSite);
       const moveSiteSpy = spyOn(moveHelper, "moveModelToFolder").and.resolveTo([tmplThmb.itemId]);
-      spyOn(portalPackage, "updateItem").and.resolveTo({
+      spyOn(common, "restUpdateItem").and.resolveTo({
         success: true,
         id: "fred",
       });
@@ -237,7 +236,7 @@ describe("HubSiteProcessor: ", () => {
       const createFromTmplSpy = spyOn(sitesPackage, "createSiteModelFromTemplate").and.resolveTo({});
       const createSiteSpy = spyOn(sitesPackage, "createSite").and.resolveTo(fakeSite);
       const moveSiteSpy = spyOn(moveHelper, "moveModelToFolder").and.resolveTo();
-      spyOn(portalPackage, "updateItem").and.resolveTo({
+      spyOn(common, "restUpdateItem").and.resolveTo({
         success: true,
         id: "fred",
       });
@@ -268,7 +267,7 @@ describe("HubSiteProcessor: ", () => {
       const createFromTmplSpy = spyOn(sitesPackage, "createSiteModelFromTemplate").and.resolveTo({});
       const createSiteSpy = spyOn(sitesPackage, "createSite").and.resolveTo(fakeSite);
       const moveSiteSpy = spyOn(moveHelper, "moveModelToFolder").and.resolveTo();
-      spyOn(portalPackage, "updateItem").and.resolveTo({
+      spyOn(common, "restUpdateItem").and.resolveTo({
         success: true,
         id: "fred",
       });
@@ -341,7 +340,7 @@ describe("HubSiteProcessor: ", () => {
       const createFromTmplSpy = spyOn(sitesPackage, "createSiteModelFromTemplate").and.resolveTo({ assets: [] });
       const createSiteSpy = spyOn(sitesPackage, "createSite").and.resolveTo(fakeSite);
       const moveSiteSpy = spyOn(moveHelper, "moveModelToFolder").and.resolveTo();
-      spyOn(portalPackage, "updateItem").and.resolveTo({
+      spyOn(common, "restUpdateItem").and.resolveTo({
         success: true,
         id: "fred",
       });

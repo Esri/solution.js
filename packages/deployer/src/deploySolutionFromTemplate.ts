@@ -17,7 +17,6 @@
 import * as common from "@esri/solution-common";
 import * as deployItems from "./deploySolutionItems";
 import { getWithDefault } from "@esri/hub-common";
-import * as portal from "@esri/arcgis-rest-portal";
 import { postProcess } from "./helpers/post-process";
 import { sortTemplates } from "./helpers/sortTemplates";
 
@@ -170,11 +169,11 @@ export async function deploySolutionFromTemplate(
   const deployedSolutionId = createSolutionResponse.id;
 
   // Protect the solution item
-  const protectOptions: portal.IUserItemOptions = {
+  const protectOptions: common.IUserItemOptions = {
     id: deployedSolutionId,
     authentication,
   };
-  await portal.protectItem(protectOptions);
+  await common.protectItem(protectOptions);
 
   // TODO: Attach the whole solution model so we can
   // have stuff like `{{solution.item.title}}

@@ -18,7 +18,8 @@
  * Provides tests for removing items from AGO.
  */
 
-import * as interfaces from "../../src/interfaces";
+import { UserSession } from "../../src/arcgisRestJS";
+import { ISolutionPrecis } from "../../src/interfaces";
 import * as portal from "@esri/arcgis-rest-portal";
 import * as removeItems from "../../src/deleteHelpers/removeItems";
 import * as utils from "../mocks/utils";
@@ -26,7 +27,7 @@ import * as workflowHelpers from "../../src/workflowHelpers";
 
 // ------------------------------------------------------------------------------------------------------------------ //
 
-let MOCK_USER_SESSION: interfaces.UserSession;
+let MOCK_USER_SESSION: UserSession;
 
 beforeEach(() => {
   MOCK_USER_SESSION = utils.createRuntimeMockUserSession();
@@ -34,7 +35,7 @@ beforeEach(() => {
 
 describe("Module `removeItems`: removing items from AGO", () => {
   it("handles defaulting all options", async () => {
-    const solutionSummary: interfaces.ISolutionPrecis = {
+    const solutionSummary: ISolutionPrecis = {
       id: "sln1234567890",
       title: "Solution Title",
       folder: "fld1234567890",
@@ -54,7 +55,7 @@ describe("Module `removeItems`: removing items from AGO", () => {
     spyOn(workflowHelpers, "deleteWorkflowItem").and.resolveTo(true);
     spyOn(workflowHelpers, "getWorkflowBaseURL").and.resolveTo("https://workflow.arcgis.com/workflow");
 
-    const expectedResult: interfaces.ISolutionPrecis[] = [
+    const expectedResult: ISolutionPrecis[] = [
       {
         // Successful deletions
         id: "sln1234567890",
@@ -81,7 +82,7 @@ describe("Module `removeItems`: removing items from AGO", () => {
       },
     ];
 
-    const result: interfaces.ISolutionPrecis[] = await removeItems.removeItems(
+    const result: ISolutionPrecis[] = await removeItems.removeItems(
       solutionSummary,
       [], // hubSiteItemIds
       MOCK_USER_SESSION,

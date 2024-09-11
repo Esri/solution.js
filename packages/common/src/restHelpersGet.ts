@@ -23,29 +23,30 @@
 import { blobToFile, blobToJson, blobToText, checkUrlPathTermination, getProp } from "./generalHelpers";
 import {
   IGetResourcesResponse,
-  IGroup,
-  IItem,
+  IGroupCategorySchema,
   IItemRelationshipOptionsPaging,
-  IPagingParams,
-  IPortal,
   IRelatedItems,
-  ItemRelationshipType,
-  IUser,
-  UserSession,
 } from "./interfaces";
 import {
   IGetGroupContentOptions,
   IGetRelatedItemsResponse,
-  IGroupCategorySchema,
+  IGroup,
+  IItem,
+  IPagingParams,
+  IPortal,
+  ItemRelationshipType,
+  IRequestOptions,
+  IUser,
   getGroup,
-  getGroupCategorySchema as portalGetGroupCategorySchema,
   getGroupContent,
   getItem,
-  getItemResources as portalGetItemResources,
-  getPortal as portalGetPortal,
   getRelatedItems,
-} from "@esri/arcgis-rest-portal";
-import { IRequestOptions, request } from "@esri/arcgis-rest-request";
+  request,
+  restGetGroupCategorySchema as portalGetGroupCategorySchema,
+  restGetItemResources as portalGetItemResources,
+  restGetPortal as portalGetPortal,
+  UserSession,
+} from "./arcgisRestJS";
 import { getBlob } from "./resources/get-blob";
 import { searchGroups, searchGroupContents } from "./restHelpers";
 

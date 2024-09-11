@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import * as portalModule from "@esri/arcgis-rest-portal";
+import * as common from "@esri/solution-common";
 import * as hubCommonModule from "@esri/hub-common";
 import * as utils from "../../../common/test/mocks/utils";
 import { createWebExperience } from "../../src/helpers/create-web-experience";
@@ -27,23 +27,23 @@ describe("createWebExperience :: ", () => {
   let addResSpy: jasmine.Spy;
   let moveItemSpy: jasmine.Spy;
   beforeEach(() => {
-    createItemSpy = spyOn(portalModule, "createItem").and.resolveTo({
+    createItemSpy = spyOn(common, "createItem").and.resolveTo({
       id: "bc3",
       folder: "fakefolderid",
       success: true,
     });
     interpolateIdSpy = spyOn(hubCommonModule, "interpolateItemId").and.callThrough();
-    updateItemSpy = spyOn(portalModule, "updateItem").and.resolveTo({
+    updateItemSpy = spyOn(common, "restUpdateItem").and.resolveTo({
       id: "bc3",
       success: true,
     });
-    addResSpy = spyOn(portalModule, "addItemResource").and.resolveTo({
+    addResSpy = spyOn(common, "addItemResource").and.resolveTo({
       itemId: "bc3",
       owner: "casey",
       folder: "",
       success: true,
     });
-    moveItemSpy = spyOn(portalModule, "moveItem").and.resolveTo({
+    moveItemSpy = spyOn(common, "moveItem").and.resolveTo({
       success: true,
       folder: "3ef",
       owner: "casey",
@@ -53,7 +53,7 @@ describe("createWebExperience :: ", () => {
 
   it("happy-path", async () => {
     const model = {
-      item: {} as portalModule.IItem,
+      item: {} as common.IItem,
       data: {
         some: "properties", // we don't care much what's in here
       },
@@ -104,7 +104,7 @@ describe("createWebExperience :: ", () => {
 
   it("no image resources", async () => {
     const model = {
-      item: {} as portalModule.IItem,
+      item: {} as common.IItem,
       data: {
         some: "properties", // we don't care much what's in here
       },

@@ -18,8 +18,9 @@
  * Provides tests for zip file helper functions.
  */
 
+import { UserSession } from "../src/arcgisRestJS";
 import * as getBlobUtil from "../src/resources/get-blob";
-import * as interfaces from "../src/interfaces";
+import { IZipObjectContentItem } from "../src/interfaces";
 import * as utils from "./mocks/utils";
 import * as zipHelpers from "../test/mocks/zipHelpers";
 import * as zipUtils from "../src/zip-utils";
@@ -28,7 +29,7 @@ import * as zipUtils from "../src/zip-utils";
 
 jasmine.DEFAULT_TIMEOUT_INTERVAL = 20000; // default is 5000 ms
 
-let MOCK_USER_SESSION: interfaces.UserSession;
+let MOCK_USER_SESSION: UserSession;
 
 beforeEach(() => {
   MOCK_USER_SESSION = utils.createRuntimeMockUserSession();
@@ -157,7 +158,7 @@ describe("Module `zip-utils`", () => {
       const zipFiles: string[] = zipFileContents.map((zipFile) => zipFile.file);
 
       const zipFilesModified: string[] = [];
-      zip = await zipUtils.modifyFilesinZipObject((zipFile: interfaces.IZipObjectContentItem) => {
+      zip = await zipUtils.modifyFilesinZipObject((zipFile: IZipObjectContentItem) => {
         zipFilesModified.push(zipFile.file);
         return zipFile.content;
       }, zip);

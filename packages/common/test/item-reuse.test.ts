@@ -19,7 +19,7 @@
  */
 
 const fetchMock = require("fetch-mock");
-import * as interfaces from "../src/interfaces";
+import { UserSession } from "../src/arcgisRestJS";
 import * as utils from "./mocks/utils";
 import {
   findReusableSolutionsAndItems,
@@ -31,7 +31,7 @@ import {
 
 // ------------------------------------------------------------------------------------------------------------------ //
 
-let MOCK_USER_SESSION: interfaces.UserSession;
+let MOCK_USER_SESSION: UserSession;
 beforeEach(() => {
   MOCK_USER_SESSION = utils.createRuntimeMockUserSession();
 });

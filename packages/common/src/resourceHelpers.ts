@@ -55,17 +55,17 @@ import {
   IFileMimeTyped,
   ISourceFile,
   ISourceFileCopyPath,
-  UserSession,
 } from "./interfaces";
 import {
-  IRemoveItemResourceOptions,
   IItemResourceOptions,
   IItemResourceResponse,
+  IRemoveItemResourceOptions,
   removeItemResource,
-  updateGroup,
-  updateItem,
+  restUpdateGroup,
+  restUpdateItem,
   updateItemResource,
-} from "@esri/arcgis-rest-portal";
+  UserSession,
+} from "./arcgisRestJS";
 import { appendQueryParam, checkUrlPathTermination } from "./generalHelpers";
 import { convertItemResourceToStorageResource } from "./resources/convert-item-resource-to-storage-resource";
 import { convertStorageResourceToItemResource } from "./resources/convert-storage-resource-to-item-resource";
@@ -91,7 +91,7 @@ export function addThumbnailFromBlob(
     id: itemId,
   };
 
-  return isGroup ? updateGroup(updateOptions) : updateItem(updateOptions);
+  return isGroup ? restUpdateGroup(updateOptions) : restUpdateItem(updateOptions);
 }
 
 export function convertBlobToSupportableResource(blob: Blob, filename: string = ""): IFileMimeTyped {

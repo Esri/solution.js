@@ -18,6 +18,8 @@ cd demos/verifySolution && npm install ; cd ../..
 
 # install and build the packages
 npm install
+npm run prettify
+npm run lint:fix
 npm run build
 ./commit-stamp.sh
 

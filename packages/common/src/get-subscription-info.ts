@@ -14,8 +14,7 @@
  * limitations under the License.
  */
 
-import { request, IRequestOptions } from "@esri/arcgis-rest-request";
-import { getPortalUrl } from "@esri/arcgis-rest-portal";
+import { IRequestOptions, getPortalUrl, request } from "./arcgisRestJS";
 
 export interface ISubscriptionInfo {
   id: string;

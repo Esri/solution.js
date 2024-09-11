@@ -18,9 +18,9 @@
  * Provides tests for common functions involving the management of item and group resources.
  */
 
+import { UserSession, ArcGISAuthError } from "../src/arcgisRestJS";
 import * as interfaces from "../src/interfaces";
 import * as portal from "@esri/arcgis-rest-portal";
-import * as request from "@esri/arcgis-rest-request";
 import * as resourceHelpers from "../src/resourceHelpers";
 
 import * as utils from "./mocks/utils";
@@ -29,7 +29,7 @@ import * as addResourceFromBlobModule from "../src/resources/add-resource-from-b
 
 // ------------------------------------------------------------------------------------------------------------------ //
 
-let MOCK_USER_SESSION: interfaces.UserSession;
+let MOCK_USER_SESSION: UserSession;
 
 beforeEach(() => {
   MOCK_USER_SESSION = utils.createRuntimeMockUserSession();
@@ -82,7 +82,7 @@ describe("Module `resourceHelpers`: common functions involving the management of
       const itemId = "itm1234567890";
       const folder = "aFolder";
       const filename = "aFilename";
-      const expected = new request.ArcGISAuthError("Filename must have an extension indicating its type");
+      const expected = new ArcGISAuthError("Filename must have an extension indicating its type");
 
       return addResourceFromBlobModule.addResourceFromBlob(blob, itemId, folder, filename, MOCK_USER_SESSION).then(
         () => fail(),

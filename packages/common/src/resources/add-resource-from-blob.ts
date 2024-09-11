@@ -14,9 +14,7 @@
  * limitations under the License.
  */
 
-import { addItemResource } from "@esri/arcgis-rest-portal";
-import { ArcGISAuthError } from "@esri/arcgis-rest-request";
-import { UserSession } from "../interfaces";
+import { ArcGISAuthError, addItemResource, UserSession } from "../arcgisRestJS";
 /**
  * Add a resource from a blob
  *

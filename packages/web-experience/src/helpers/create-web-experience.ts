@@ -23,17 +23,16 @@ import {
   objectToJsonBlob,
 } from "@esri/hub-common";
 
-import { UserSession } from "@esri/solution-common";
-
 import {
-  createItem,
-  updateItem,
-  addItemResource,
   ICreateItemOptions,
   ICreateItemResponse,
   IUpdateItemOptions,
+  addItemResource,
+  createItem,
   moveItem,
-} from "@esri/arcgis-rest-portal";
+  restUpdateItem,
+  UserSession,
+} from "@esri/solution-common";
 
 /**
  * Given a Model for a Web Experience, create the item in the Portal API
@@ -110,7 +109,7 @@ export function createWebExperience(
           delete updateOptions.item.thumbnail;
         }
 
-        return Promise.all([updateItem(updateOptions), authentication.getUsername()]);
+        return Promise.all([restUpdateItem(updateOptions), authentication.getUsername()]);
       })
       .then((responses: any[]) => {
         const username = responses[1];

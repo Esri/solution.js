@@ -17,7 +17,7 @@
 /**
  * Provides functions for sending resources to AGO.
  */
-
+import { UserSession } from "../arcgisRestJS";
 import {
   EFileType,
   IAssociatedFileCopyResults,
@@ -26,7 +26,6 @@ import {
   ISourceFile,
   IZipCopyResults,
   IZipInfo,
-  UserSession,
 } from "../interfaces";
 import { chunkArray } from "@esri/hub-common";
 import { copyDataIntoItem } from "./copyDataIntoItem";

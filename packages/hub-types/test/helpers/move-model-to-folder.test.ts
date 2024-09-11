@@ -16,7 +16,7 @@
 
 import { moveModelToFolder } from "../../src/helpers/move-model-to-folder";
 import { IModel } from "@esri/hub-common";
-import * as portal from "@esri/arcgis-rest-portal";
+import * as common from "@esri/solution-common";
 
 import * as utils from "../../../common/test/mocks/utils";
 const MOCK_USER_SESSION = utils.createRuntimeMockUserSession();
@@ -30,9 +30,9 @@ describe("moveModelToFolder", () => {
         },
       } as IModel;
 
-      const moveItemSpy = spyOn(portal, "moveItem").and.resolveTo({
+      const moveItemSpy = spyOn(common, "moveItem").and.resolveTo({
         success: true,
-      } as portal.IMoveItemResponse);
+      } as common.IMoveItemResponse);
 
       return moveModelToFolder(m, "bc4", MOCK_USER_SESSION).then((result) => {
         expect(result[0].success).withContext("should return true").toBe(true);
@@ -48,9 +48,9 @@ describe("moveModelToFolder", () => {
         },
       } as IModel;
 
-      const moveItemSpy = spyOn(portal, "moveItem").and.rejectWith({
+      const moveItemSpy = spyOn(common, "moveItem").and.rejectWith({
         success: false,
-      } as portal.IMoveItemResponse);
+      } as common.IMoveItemResponse);
 
       return moveModelToFolder(m, "bc4", MOCK_USER_SESSION).then((result) => {
         expect(result[0].success).withContext("should return true").toBe(true);
@@ -71,9 +71,9 @@ describe("moveModelToFolder", () => {
         },
       } as IModel;
 
-      const moveItemSpy = spyOn(portal, "moveItem").and.resolveTo({
+      const moveItemSpy = spyOn(common, "moveItem").and.resolveTo({
         success: true,
-      } as portal.IMoveItemResponse);
+      } as common.IMoveItemResponse);
 
       return moveModelToFolder(m, "bc4", MOCK_USER_SESSION).then((result) => {
         expect(result.length).withContext("should fire two promises").toBe(2);

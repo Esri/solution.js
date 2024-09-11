@@ -18,6 +18,7 @@
  * Provides tests for fetch functions involving the arcgis-rest-js library.
  */
 
+import { ISearchResult, IGroup, IItem, UserSession } from "../src/arcgisRestJS";
 import * as generalHelpers from "../src/generalHelpers";
 import * as interfaces from "../src/interfaces";
 import * as portal from "@esri/arcgis-rest-portal";
@@ -33,7 +34,7 @@ import * as mockItems from "../test/mocks/agolItems";
 
 jasmine.DEFAULT_TIMEOUT_INTERVAL = 20000; // default is 5000 ms
 
-let MOCK_USER_SESSION: interfaces.UserSession;
+let MOCK_USER_SESSION: UserSession;
 
 beforeEach(() => {
   MOCK_USER_SESSION = utils.createRuntimeMockUserSession();
@@ -982,10 +983,7 @@ describe("Module `restHelpersGet`: common REST fetch functions shared across pac
         total: 1,
       } as interfaces.IGetRelatedItemsResponseFull);
 
-      const response: interfaces.IItem[] = await restHelpersGet.getItemsRelatedToASolution(
-        solutionId,
-        MOCK_USER_SESSION,
-      );
+      const response: IItem[] = await restHelpersGet.getItemsRelatedToASolution(solutionId, MOCK_USER_SESSION);
       expect(response).toEqual([mockItems.getAGOLItem("Web Map")]);
       expect(getItemRelatedItemsSpy.calls.count()).toEqual(1);
       expect(getItemRelatedItemsSpy.calls.first().args).toEqual([
@@ -1109,7 +1107,7 @@ describe("Module `restHelpersGet`: common REST fetch functions shared across pac
     });
 
     it("gets a default portal sharing url with authentication but no portal", () => {
-      const mockUserSession = new interfaces.UserSession({
+      const mockUserSession = new UserSession({
         clientId: "clientId",
         redirectUri: "https://example-app.com/redirect-uri",
         token: "fake-token",
@@ -1133,7 +1131,7 @@ describe("Module `restHelpersGet`: common REST fetch functions shared across pac
 
   describe("getPortalUrlFromAuth", () => {
     it("gets a default portal url with authentication but no portal", () => {
-      const mockUserSession = new interfaces.UserSession({
+      const mockUserSession = new UserSession({
         clientId: "clientId",
         redirectUri: "https://example-app.com/redirect-uri",
         token: "fake-token",
@@ -1708,21 +1706,21 @@ describe("Module `restHelpersGet`: common REST fetch functions shared across pac
   describe("getPortalDefaultBasemap", function () {
     const basemapGalleryGroupQuery = `title:"United States Basemaps" AND owner:Esri_cy_US`;
     const basemapTitle = "Topographic";
-    let searchGroupsResponse: interfaces.ISearchResult<interfaces.IGroup>;
-    let searchGroupContentsResponse: interfaces.ISearchResult<interfaces.IItem>;
+    let searchGroupsResponse: ISearchResult<IGroup>;
+    let searchGroupContentsResponse: ISearchResult<IItem>;
 
     beforeEach(() => {
       searchGroupsResponse = utils.getGroupResponse(
         `title:"United States Basemaps" AND owner:Esri_cy_US`,
         true,
-      ) as interfaces.ISearchResult<interfaces.IGroup>;
+      ) as ISearchResult<IGroup>;
       searchGroupContentsResponse = {
         results: [
           {
             id: "14dba3d96cd94b358dff421661300286",
           },
         ],
-      } as interfaces.ISearchResult<interfaces.IItem>;
+      } as ISearchResult<IItem>;
     });
 
     it("should query for the default basemap group and default basemap", async () => {

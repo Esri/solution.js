@@ -18,8 +18,9 @@
  * Provides tests for functions involving the creation and deployment of Workforce item types.
  */
 
+import { UserSession } from "../src/arcgisRestJS";
 import * as workforceHelpers from "../src/workforceHelpers";
-import * as interfaces from "../src/interfaces";
+import { IItemTemplate, IFeatureServiceProperties } from "../src/interfaces";
 import * as mockItems from "../../common/test/mocks/agolItems";
 const fetchMock = require("fetch-mock");
 import * as utils from "../../common/test/mocks/utils";
@@ -27,7 +28,7 @@ import * as templates from "../../common/test/mocks/templates";
 
 jasmine.DEFAULT_TIMEOUT_INTERVAL = 20000; // default is 5000 ms
 
-let MOCK_USER_SESSION: interfaces.UserSession;
+let MOCK_USER_SESSION: UserSession;
 
 beforeEach(() => {
   MOCK_USER_SESSION = utils.createRuntimeMockUserSession();
@@ -304,7 +305,7 @@ describe("Module `workforceHelpers`: manages the creation and deployment of work
 
   describe("getWorkforceServiceInfo", () => {
     it("can handle query failure", async () => {
-      const props: interfaces.IFeatureServiceProperties = {
+      const props: IFeatureServiceProperties = {
         service: {},
         layers: [],
         tables: [],
@@ -326,7 +327,7 @@ describe("Module `workforceHelpers`: manages the creation and deployment of work
     });
 
     it("can handle _getAssignmentIntegrationInfos failure", async () => {
-      const props: interfaces.IFeatureServiceProperties = {
+      const props: IFeatureServiceProperties = {
         service: {},
         layers: [],
         tables: [],
@@ -499,7 +500,7 @@ describe("Module `workforceHelpers`: manages the creation and deployment of work
 
   describe("postProcessWorkforceTemplates", () => {
     it("post process workforce service V2", () => {
-      const _templates: interfaces.IItemTemplate[] = [
+      const _templates: IItemTemplate[] = [
         {
           itemId: "47e0189b806b4151b891a6aa4643e5d8",
           type: "Feature Service",
@@ -749,7 +750,7 @@ describe("Module `workforceHelpers`: manages the creation and deployment of work
         },
       ];
 
-      const expected: interfaces.IItemTemplate[] = [
+      const expected: IItemTemplate[] = [
         {
           itemId: "47e0189b806b4151b891a6aa4643e5d8",
           type: "Feature Service",
@@ -1002,7 +1003,7 @@ describe("Module `workforceHelpers`: manages the creation and deployment of work
 
   describe("fineTuneCreatedWorkforceItem", () => {
     it("post process a workforce service", async () => {
-      const template: interfaces.IItemTemplate = {
+      const template: IItemTemplate = {
         itemId: "58d8b90f6a0f4900a9ea0b627f07b8ea",
         type: "Feature Service",
         key: "w4jsjf18",
@@ -1566,7 +1567,7 @@ describe("Module `workforceHelpers`: manages the creation and deployment of work
     });
 
     it("handle error fetching fields", async () => {
-      const template: interfaces.IItemTemplate = {
+      const template: IItemTemplate = {
         itemId: "58d8b90f6a0f4900a9ea0b627f07b8ea",
         type: "Feature Service",
         key: "w4jsjf18",
@@ -1821,11 +1822,11 @@ describe("Module `workforceHelpers`: manages the creation and deployment of work
 
   describe("_templatizeWorkforceProject", () => {
     it("can handle missing properties", () => {
-      const template: interfaces.IItemTemplate = templates.getItemTemplateSkeleton();
+      const template: IItemTemplate = templates.getItemTemplateSkeleton();
       template.item.typeKeywords = ["Workforce Project"];
       delete template.item.properties;
 
-      const expected: interfaces.IItemTemplate = templates.getItemTemplateSkeleton();
+      const expected: IItemTemplate = templates.getItemTemplateSkeleton();
       expected.item.typeKeywords = ["Workforce Project"];
       delete expected.item.properties;
 
@@ -1837,10 +1838,10 @@ describe("Module `workforceHelpers`: manages the creation and deployment of work
 
   describe("_templatizeWorkforceDispatcherOrWorker", () => {
     it("can handle missing typeKeywords", () => {
-      const template: interfaces.IItemTemplate = templates.getItemTemplateSkeleton();
+      const template: IItemTemplate = templates.getItemTemplateSkeleton();
       delete template.item.typeKeywords;
 
-      const expected: interfaces.IItemTemplate = templates.getItemTemplateSkeleton();
+      const expected: IItemTemplate = templates.getItemTemplateSkeleton();
       delete expected.item.typeKeywords;
 
       const actual = workforceHelpers._templatizeWorkforceDispatcherOrWorker(template, "");
@@ -1849,11 +1850,11 @@ describe("Module `workforceHelpers`: manages the creation and deployment of work
     });
 
     it("can handle missing properties ", () => {
-      const template: interfaces.IItemTemplate = templates.getItemTemplateSkeleton();
+      const template: IItemTemplate = templates.getItemTemplateSkeleton();
       template.item.typeKeywords = ["Workforce Project"];
       delete template.item.properties;
 
-      const expected: interfaces.IItemTemplate = templates.getItemTemplateSkeleton();
+      const expected: IItemTemplate = templates.getItemTemplateSkeleton();
       expected.item.typeKeywords = ["Workforce Project"];
       delete expected.item.properties;
 

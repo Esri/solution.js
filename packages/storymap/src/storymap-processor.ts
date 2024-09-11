@@ -28,9 +28,10 @@ import {
   UserSession,
   convertIModel,
   generateEmptyCreationResponse,
+  getItemData,
+  restRemoveItem,
 } from "@esri/solution-common";
 import { IModel, failSafe } from "@esri/hub-common";
-import { getItemData, removeItem } from "@esri/arcgis-rest-portal";
 import { convertStoryMapToTemplate } from "./helpers/convert-storymap-to-template";
 import { createStoryMapModelFromTemplate } from "./helpers/create-storymap-model-from-template";
 import { createStoryMap } from "./helpers/create-storymap";
@@ -127,7 +128,7 @@ export function createItemFromTemplate(
       );
       if (!finalStatus) {
         // clean up the site we just created
-        const failSafeRemove = failSafe(removeItem, { success: true });
+        const failSafeRemove = failSafe(restRemoveItem, { success: true });
         return failSafeRemove({
           id: model.item.id,
           authentication: destinationAuthentication,

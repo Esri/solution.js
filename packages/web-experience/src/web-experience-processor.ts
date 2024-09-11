@@ -29,10 +29,11 @@ import {
   IUpdateItemResponse,
   convertIModel,
   generateEmptyCreationResponse,
+  getItemData,
+  restRemoveItem,
   updateItemTemplateFromDictionary,
 } from "@esri/solution-common";
 import { IModel, failSafe } from "@esri/hub-common";
-import { getItemData, removeItem } from "@esri/arcgis-rest-portal";
 import { createWebExperienceModelFromTemplate } from "./helpers/create-web-experience-model-from-template";
 import { createWebExperience } from "./helpers/create-web-experience";
 import { convertWebExperienceToTemplate } from "./helpers/convert-web-experience-to-template";
@@ -110,7 +111,7 @@ export function createItemFromTemplate(
 
       if (!finalStatus) {
         // clean up the site we just created
-        const failSafeRemove = failSafe(removeItem, { success: true });
+        const failSafeRemove = failSafe(restRemoveItem, { success: true });
         return failSafeRemove({
           id: exbModel.item.id,
           authentication: destinationAuthentication,
