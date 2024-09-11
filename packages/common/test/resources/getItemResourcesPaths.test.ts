@@ -321,7 +321,7 @@ describe("getItemResourcesPaths :: ", () => {
       ],
     });
 
-    const itemTemplate: interfaces.IItemTemplate = templates.getItemTemplateSkeleton();
+    const itemTemplate: IItemTemplate = templates.getItemTemplateSkeleton();
     itemTemplate.itemId = "bc3";
     itemTemplate.type = "Geoprocessing Service";
 
