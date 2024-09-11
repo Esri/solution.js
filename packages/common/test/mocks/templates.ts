@@ -1288,6 +1288,21 @@ export function getItemTemplateResourcesAsSourceFiles(
           folder: itemId + "/info",
           filename: "webtoolDefinition.json",
         },
+        {
+          itemId,
+          file: utils.getSampleImageAsFile("ago_downloaded.png"),
+          folder: "_info_thumbnail",
+          filename: "ago_downloaded.png",
+        },
+        {
+          itemId,
+          file: generalHelpers.jsonToFile(
+            hasService ? sampleWebToolJson : emptySampleWebToolJson,
+            "webtoolService.json",
+          ),
+          folder: itemId + "/info",
+          filename: "webtoolService.json",
+        },
       ];
       break;
   }

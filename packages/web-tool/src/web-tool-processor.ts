@@ -199,6 +199,7 @@ export function createWebTool(
           provider: "notebooks",
           type: "GPServer",
           jsonProperties: {
+            timeoutInMinutes: template.data.timeoutInMinutes,
             title: template.item.title,
             notebookId: template.data.notebookId,
             tasks: [
