@@ -975,7 +975,7 @@ export function getItemTemplateData(type: string): any {
               trusted: true,
             },
             cell_type: "code",
-            source: "{{3b927de78a784a5aa3981469d85cf45d.itemId}}",
+            source: "3b927de78a784a5aa3981469d85cf45d",
             execution_count: null,
             outputs: [],
           },
@@ -1291,6 +1291,21 @@ export function getItemTemplateResourcesAsSourceFiles(type: string, itemId: stri
           ),
           folder: itemId + "/info",
           filename: "webtoolDefinition.json",
+        },
+        {
+          itemId,
+          file: utils.getSampleImageAsFile("ago_downloaded.png"),
+          folder: "_info_thumbnail",
+          filename: "ago_downloaded.png",
+        },
+        {
+          itemId,
+          file: generalHelpers.jsonToFile(
+            hasService ? sampleWebToolJson : emptySampleWebToolJson,
+            "webtoolService.json",
+          ),
+          folder: itemId + "/info",
+          filename: "webtoolService.json",
         },
       ];
       break;

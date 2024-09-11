@@ -59,61 +59,69 @@ export function createItemFromTemplate(
  * Converts a Python Notebook item to a template.
  *
  * @param itemTemplate template for the Python Notebook
- * @param srcAuthentication Credentials for requests to source items
  * @returns templatized itemTemplate
  */
-export function convertNotebookToTemplate(
-  itemTemplate: common.IItemTemplate,
-  srcAuthentication: common.UserSession,
-): Promise<common.IItemTemplate> {
-  return new Promise<common.IItemTemplate>((resolve, reject) => {
-    // The templates data to process
-    const data: any = itemTemplate.data;
-    deleteProps(data);
-    let dataString: string = JSON.stringify(data);
-
-    const idTest: RegExp = /[0-9A-F]{32}/gim;
-
-    if (data && idTest.test(dataString)) {
-      const ids: string[] = dataString.match(idTest) as string[];
-      const promises = [];
-      const verifiedIds: string[] = [];
-      const idLookup = [];
-      ids.forEach((id) => {
-        if (verifiedIds.indexOf(id) === -1) {
-          promises.push(common.isItem(id, srcAuthentication));
-          idLookup.push(id);
-
-          promises.push(common.isGroup(id, srcAuthentication));
-          idLookup.push(id);
-        }
-      });
-
-      Promise.all(promises).then(
-        (results) => {
-          results.forEach((isValid, i) => {
-            const id = idLookup[i];
-            if (isValid && verifiedIds.indexOf(id) < 0) {
-              verifiedIds.push(id);
-              // templatize the itemId--but only once per unique id
-              const regEx = new RegExp(id, "gm");
-              dataString = dataString.replace(regEx, "{{" + id + ".itemId}}");
-
-              // update the dependencies
-              if (itemTemplate.dependencies.indexOf(id) === -1) {
-                itemTemplate.dependencies.push(id);
-              }
-            }
-          });
-          itemTemplate.data = JSON.parse(dataString);
-          resolve(itemTemplate);
-        },
-        (error: any) => reject(JSON.stringify(error)),
-      );
-    } else {
-      resolve(itemTemplate);
-    }
+export function convertNotebookToTemplate(itemTemplate: common.IItemTemplate): Promise<common.IItemTemplate> {
+  return new Promise<common.IItemTemplate>((resolve) => {
+    deleteProps(itemTemplate.data);
+    resolve(itemTemplate);
   });
+}
+
+/**
+ * Swap any ids found in the items data section with itemId variables
+ *
+ * @param templates IItemTemplate[] all templates for the current solution
+ * @param templateDictionary Hash of facts: folder id, org URL, adlib replacements
+ * @returns templatized IItemTemplate[]
+ */
+export function postProcessNotebookTemplates(
+  templates: common.IItemTemplate[],
+  templateDictionary: any,
+): common.IItemTemplate[] {
+  const hasNotebook = templates.some((t) => {
+    return t.type === "Notebook";
+  });
+  if (hasNotebook) {
+    const fsUrlKeys = Object.keys(templateDictionary)
+      .filter((k) => k.indexOf("FeatureServer") > -1)
+      .sort()
+      .reverse();
+
+    const ids = templates.reduce((prev, cur: common.IItemTemplate) => {
+      prev = [...new Set([...prev, ...cur.dependencies, cur.itemId])];
+      return prev;
+    }, []);
+    templates = templates.map((t) => {
+      if (t.type === "Notebook") {
+        let dataString: string = t.data && JSON.stringify(t.data);
+        ids.forEach((id) => {
+          const idTest = new RegExp(id, "gim");
+          if (idTest.test(dataString)) {
+            dataString = dataString.replace(id, "{{" + id + ".itemId}}");
+            if (t.dependencies.indexOf(id) < 0) {
+              t.dependencies.push(id);
+            }
+          }
+        });
+        fsUrlKeys.forEach((url) => {
+          const urlTest = new RegExp(url, "gim");
+          if (urlTest.test(dataString)) {
+            const urlVar = templateDictionary[url];
+            dataString = dataString.replace(urlTest, urlVar);
+            const idTest: RegExp = /[0-9A-F]{32}/gim;
+            const id = urlVar.match(idTest)[0];
+            if (t.dependencies.indexOf(id) < 0) {
+              t.dependencies.push(id);
+            }
+          }
+        });
+        t.data = JSON.parse(dataString);
+        return t;
+      }
+    });
+  }
+  return templates;
 }
 
 /**

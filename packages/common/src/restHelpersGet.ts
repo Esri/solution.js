@@ -234,38 +234,6 @@ export function getFilenameFromUrl(url: string): string {
 }
 
 /**
- * Verify if id is a valid item
- *
- * @param id potential item id
- * @param srcAuthentication Credentials for requests to source items
- * @returns boolean
- */
-export function isItem(id: string, srcAuthentication: UserSession): Promise<boolean> {
-  return new Promise<boolean>((resolve) => {
-    getItemBase(id, srcAuthentication).then(
-      () => resolve(true),
-      () => resolve(false),
-    );
-  });
-}
-
-/**
- * Verify if id is a valid group
- *
- * @param id potential group id
- * @param srcAuthentication Credentials for requests to source items
- * @returns boolean
- */
-export function isGroup(id: string, srcAuthentication: UserSession): Promise<boolean> {
-  return new Promise<boolean>((resolve) => {
-    getGroupBase(id, srcAuthentication).then(
-      () => resolve(true),
-      () => resolve(false),
-    );
-  });
-}
-
-/**
  * Gets the primary information of an AGO group.
  *
  * @param groupId Id of an group whose primary information is sought

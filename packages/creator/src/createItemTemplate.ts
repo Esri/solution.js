@@ -40,8 +40,6 @@ import {
   getItemResourcesFilesFromPaths,
   getItemResourcesPaths,
   hasDatasource,
-  isItem,
-  isGroup,
   jsonToFile,
   replaceTemplate,
   sanitizeJSON,
@@ -230,6 +228,8 @@ export function createItemTemplate(
                         resourceItemFiles.map((file: ISourceFile) => file.folder + "/" + file.filename),
                       );
 
+                      itemTemplate = postProcessGPResources(itemTemplate);
+
                       // Set the value keyed by the id to the created template, replacing the placeholder template
                       replaceTemplate(existingTemplates, itemTemplate.itemId, itemTemplate);
 
@@ -293,6 +293,22 @@ export function createItemTemplate(
         );
     }
   });
+}
+
+/**
+ * Remove all *.json resources from Geoprocessing Service
+ * This needs to be done after fetched so we can read from one of the files
+ *
+ * @param template The current template
+ * @returns The updated template
+ */
+export function postProcessGPResources(template: IItemTemplate): IItemTemplate {
+  if (template.type === "Geoprocessing Service") {
+    template.resources = template.resources.filter((r) => {
+      return r.indexOf(".json") < 0;
+    });
+  }
+  return template;
 }
 
 /**
@@ -537,59 +553,19 @@ export function _templatizeResources(
       synchronizePromises.push(
         new Promise((resolve) => {
           // Read the file
-          // eslint-disable-next-line @typescript-eslint/no-floating-promises
-          blobToJson(rootFileResource.file).then((fileJson) => {
-            if (rootFileResource.filename.indexOf("webtoolDefinition") > -1) {
+          if (rootFileResource.filename.indexOf("webtoolDefinition") > -1) {
+            // eslint-disable-next-line @typescript-eslint/no-floating-promises
+            blobToJson(rootFileResource.file).then((fileJson) => {
               itemTemplate.data = {
                 name: fileJson.jsonProperties.tasks[0].name,
                 notebookId: fileJson.jsonProperties.notebookId,
+                timeoutInMinutes: fileJson.jsonProperties.timeoutInMinutes,
               };
-            }
-
-            const idTest: RegExp = /[0-9A-F]{32}/gim;
-            let dataString = JSON.stringify(fileJson);
-            if (fileJson && idTest.test(dataString)) {
-              const ids: string[] = dataString.match(idTest) as string[];
-              const promises = [];
-              const idLookup = [];
-              ids.forEach((id) => {
-                if (idLookup.indexOf(id) === -1) {
-                  idLookup.push(id);
-                  promises.push(isItem(id, srcAuthentication));
-                  idLookup.push(id);
-                  promises.push(isGroup(id, srcAuthentication));
-                }
-              });
-
-              // eslint-disable-next-line @typescript-eslint/no-floating-promises
-              Promise.all(promises).then((results) => {
-                const verifiedIds = [];
-                results.forEach((isValid, i) => {
-                  if (isValid) {
-                    const id: string = idLookup[i];
-                    if (id && verifiedIds.indexOf(id) < 0) {
-                      // templatize the itemId--but only once per unique id
-                      const regEx = new RegExp(id, "gm");
-                      dataString = dataString.replace(regEx, "{{" + id + ".itemId}}");
-
-                      // update the dependencies
-                      if (itemTemplate.dependencies.indexOf(id) === -1) {
-                        itemTemplate.dependencies.push(id);
-                      }
-                      verifiedIds.push(id);
-                    }
-                  }
-                });
-                const updatedFileJson = JSON.parse(dataString);
-                rootFileResource.file = jsonToFile(updatedFileJson, rootFileResource.filename);
-                resolve(null);
-              });
-            } else {
-              const updatedFileJson = JSON.parse(dataString);
-              rootFileResource.file = jsonToFile(updatedFileJson, rootFileResource.filename);
               resolve(null);
-            }
-          });
+            });
+          } else {
+            resolve(null);
+          }
         }),
       );
     });
