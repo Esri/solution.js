@@ -25,7 +25,7 @@ import * as copyResourceIntoZip from "../../src/resources/copyResourceIntoZip";
 import * as copyZipIntoItem from "../../src/resources/copyZipIntoItem";
 import * as generalHelpers from "../../src/generalHelpers";
 import * as getBlob from "../../src/resources/get-blob";
-import { UserSession } from "../../src/arcgisRestJS";
+import * as arcGISRestJS from "../../src/arcgisRestJS";
 import {
   EFileType,
   SFileType,
@@ -35,7 +35,6 @@ import {
   IZipCopyResults,
   IZipInfo,
 } from "../../src/interfaces";
-import * as portal from "@esri/arcgis-rest-portal";
 import * as restHelpers from "../../src/restHelpers";
 import * as restHelpersGet from "../../src/restHelpersGet";
 import {
@@ -53,7 +52,7 @@ import * as utils from "../mocks/utils";
 
 // ------------------------------------------------------------------------------------------------------------------ //
 
-let MOCK_USER_SESSION: UserSession;
+let MOCK_USER_SESSION: arcGISRestJS.UserSession;
 
 beforeEach(() => {
   MOCK_USER_SESSION = utils.createRuntimeMockUserSession();
@@ -63,7 +62,7 @@ describe("Module `copyAssociatedFiles`: functions for sending resources to AGO",
   describe("addMetadataFromBlob", () => {
     it("can add metadata", async () => {
       const blob = utils.getSampleMetadataAsBlob();
-      spyOn(portal, "updateItem").and.resolveTo(mockItems.get200Success());
+      spyOn(arcGISRestJS, "restUpdateItem").and.resolveTo(mockItems.get200Success());
 
       const results: any = await addMetadataFromBlob.addMetadataFromBlob(blob, "itm1234567890", MOCK_USER_SESSION);
       expect(results.success).toBeTruthy();
@@ -71,7 +70,7 @@ describe("Module `copyAssociatedFiles`: functions for sending resources to AGO",
 
     it("can fail to add metadata", async () => {
       const blob = utils.getSampleMetadataAsBlob();
-      spyOn(portal, "updateItem").and.rejectWith(mockItems.get400Failure());
+      spyOn(arcGISRestJS, "restUpdateItem").and.rejectWith(mockItems.get400Failure());
 
       return addMetadataFromBlob
         .addMetadataFromBlob(blob, "itm1234567890", MOCK_USER_SESSION)
@@ -490,7 +489,7 @@ describe("Module `copyAssociatedFiles`: functions for sending resources to AGO",
 
   describe("copyZipIntoItem", () => {
     it("should handle success sending to item", async () => {
-      const addItemResourceSpy = spyOn(portal, "addItemResource").and.resolveTo(mockItems.get200Success());
+      const addItemResourceSpy = spyOn(arcGISRestJS, "addItemResource").and.resolveTo(mockItems.get200Success());
 
       const results: IZipCopyResults = await copyZipIntoItem.copyZipIntoItem(
         _createIZipInfo(),
@@ -505,7 +504,7 @@ describe("Module `copyAssociatedFiles`: functions for sending resources to AGO",
     });
 
     it("should handle error sending to item", async () => {
-      const addItemResourceSpy = spyOn(portal, "addItemResource").and.rejectWith(mockItems.get400Failure());
+      const addItemResourceSpy = spyOn(arcGISRestJS, "addItemResource").and.rejectWith(mockItems.get400Failure());
 
       const results: IZipCopyResults = await copyZipIntoItem.copyZipIntoItem(
         _createIZipInfo(),
@@ -781,7 +780,7 @@ describe("_detemplatizeResources", () => {
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
         _filename: string,
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        _auth: UserSession,
+        _auth: arcGISRestJS.UserSession,
       ): Promise<File> => {
         switch (url) {
           case "https://www.arcgis.com/sharing/rest/content/items/sln1234567890/resources/vts1234567890/info/root.json":
@@ -813,7 +812,7 @@ describe("_detemplatizeResources", () => {
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
         _filename: string,
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        _auth: UserSession,
+        _auth: arcGISRestJS.UserSession,
       ): Promise<File> => {
         switch (url) {
           case "https://www.arcgis.com/sharing/rest/content/items/sln1234567890/resources/gs1234567890/info/webtoolDefinition.json":

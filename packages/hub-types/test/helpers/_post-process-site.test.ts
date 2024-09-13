@@ -17,7 +17,7 @@ import * as hubCommon from "@esri/hub-common";
 import * as hubSites from "@esri/hub-sites";
 import * as postProcessSiteModule from "../../src/helpers/_post-process-site";
 import * as updateSitePagesModule from "../../src/helpers/_update-site-pages";
-import { IUpdateItemResponse } from "@esri/arcgis-rest-portal";
+import { IUpdateItemResponse } from "../../../common/src/arcgisRestJS";
 
 describe("_postProcessSite :: ", () => {
   let model: hubCommon.IModel;

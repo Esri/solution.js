@@ -16,7 +16,7 @@
 
 import { replaceItemIds } from "../../src/helpers/replace-item-ids";
 import { IModelTemplate } from "@esri/hub-common";
-import { IItem } from "@esri/arcgis-rest-portal";
+import { IItem } from "../../../common/src/arcgisRestJS";
 import { cloneObject } from "../../../common/src/generalHelpers";
 
 describe("replaceItemIds :: ", () => {

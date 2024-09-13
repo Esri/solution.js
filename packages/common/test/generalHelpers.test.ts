@@ -22,7 +22,7 @@ import * as generalHelpers from "../src/generalHelpers";
 import * as hubCommon from "@esri/hub-common";
 import * as interfaces from "../src/interfaces";
 import * as mockItems from "../test/mocks/agolItems";
-import * as serviceAdmin from "@esri/arcgis-rest-service-admin";
+import { ISpatialReference } from "../src/arcgisRestJS";
 
 describe("Module `generalHelpers`: common utility functions shared across packages", () => {
   describe("blobToJson", () => {
@@ -87,7 +87,7 @@ describe("Module `generalHelpers`: common utility functions shared across packag
     tags: string[];
     phone: string;
     extent: number[][];
-    spatialReference: serviceAdmin.ISpatialReference;
+    spatialReference: ISpatialReference;
   }
 
   describe("checkUrlPathTermination", () => {

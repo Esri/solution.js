@@ -18,16 +18,15 @@
  * Provides tests for removing items from AGO.
  */
 
-import { UserSession } from "../../src/arcgisRestJS";
+import * as arcGISRestJS from "../../src/arcgisRestJS";
 import { ISolutionPrecis } from "../../src/interfaces";
-import * as portal from "@esri/arcgis-rest-portal";
 import * as removeItems from "../../src/deleteHelpers/removeItems";
 import * as utils from "../mocks/utils";
 import * as workflowHelpers from "../../src/workflowHelpers";
 
 // ------------------------------------------------------------------------------------------------------------------ //
 
-let MOCK_USER_SESSION: UserSession;
+let MOCK_USER_SESSION: arcGISRestJS.UserSession;
 
 beforeEach(() => {
   MOCK_USER_SESSION = utils.createRuntimeMockUserSession();
@@ -51,7 +50,7 @@ describe("Module `removeItems`: removing items from AGO", () => {
       groups: [],
     };
 
-    spyOn(portal, "unprotectItem").and.resolveTo(utils.getSuccessResponse());
+    spyOn(arcGISRestJS, "unprotectItem").and.resolveTo(utils.getSuccessResponse());
     spyOn(workflowHelpers, "deleteWorkflowItem").and.resolveTo(true);
     spyOn(workflowHelpers, "getWorkflowBaseURL").and.resolveTo("https://workflow.arcgis.com/workflow");
 

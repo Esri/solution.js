@@ -18,8 +18,7 @@
  * Provides tests for functions involving deployment of workflow items via the REST API.
  */
 
-import { UserSession } from "../src/arcgisRestJS";
-import * as request from "@esri/arcgis-rest-request";
+import * as arcGISRestJS from "../src/arcgisRestJS";
 import * as restHelpers from "../src/restHelpers";
 import * as restHelpersGet from "../src/restHelpersGet";
 import * as utils from "../../common/test/mocks/utils";
@@ -30,7 +29,7 @@ import JSZip from "jszip";
 
 jasmine.DEFAULT_TIMEOUT_INTERVAL = 20000; // default is 5000 ms
 
-let MOCK_USER_SESSION: UserSession;
+let MOCK_USER_SESSION: arcGISRestJS.UserSession;
 
 beforeEach(() => {
   MOCK_USER_SESSION = utils.createRuntimeMockUserSession();
@@ -57,7 +56,7 @@ describe("Module `workflowHelpers`", () => {
       spyOn(restHelpersGet, "getItemDataAsJson").and.resolveTo({
         groupId: "grp1234567890",
       });
-      const requestSpy = spyOn(request, "request").and.resolveTo(utils.getSuccessResponse());
+      const requestSpy = spyOn(arcGISRestJS, "request").and.resolveTo(utils.getSuccessResponse());
       const removeGroupSpy = spyOn(restHelpers, "removeGroup").and.resolveTo(
         utils.getSuccessResponse({ id: "grp1234567890" }),
       );
@@ -82,7 +81,7 @@ describe("Module `workflowHelpers`", () => {
           },
         });
       spyOn(restHelpersGet, "getItemDataAsJson").and.resolveTo(null);
-      spyOn(request, "request").and.resolveTo(utils.getSuccessResponse());
+      spyOn(arcGISRestJS, "request").and.resolveTo(utils.getSuccessResponse());
       const removeGroupSpy = spyOn(restHelpers, "removeGroup").and.resolveTo(
         utils.getSuccessResponse({ id: "grp1234567890" }),
       );
@@ -113,7 +112,7 @@ describe("Module `workflowHelpers`", () => {
 
   describe("getWorkflowManagerAuthorized", () => {
     it("handles AGO authorized", async () => {
-      spyOn(request, "request").and.resolveTo({ hasAdvancedLicense: true });
+      spyOn(arcGISRestJS, "request").and.resolveTo({ hasAdvancedLicense: true });
 
       const isAuthorized = await workflowHelpers.getWorkflowManagerAuthorized(
         "https://workflow.arcgis.com/myOrgId",
@@ -123,7 +122,7 @@ describe("Module `workflowHelpers`", () => {
     });
 
     it("handles AGO unauthorized", async () => {
-      spyOn(request, "request").and.resolveTo({ hasAdvancedLicense: false });
+      spyOn(arcGISRestJS, "request").and.resolveTo({ hasAdvancedLicense: false });
 
       const isAuthorized = await workflowHelpers.getWorkflowManagerAuthorized(
         "https://workflow.arcgis.com/myOrgId",
@@ -134,7 +133,7 @@ describe("Module `workflowHelpers`", () => {
 
     it("handles Enterprise authorized", async () => {
       const enterpriseWebAdaptorUrl = "https://myserver.mycompany.com/webadaptor/workflow";
-      spyOn(request, "request").and.resolveTo({ hasAdvancedLicense: true });
+      spyOn(arcGISRestJS, "request").and.resolveTo({ hasAdvancedLicense: true });
 
       const isAuthorized = await workflowHelpers.getWorkflowManagerAuthorized(
         enterpriseWebAdaptorUrl,
@@ -145,7 +144,7 @@ describe("Module `workflowHelpers`", () => {
 
     it("handles Enterprise unauthorized", async () => {
       const enterpriseWebAdaptorUrl = "https://myserver.mycompany.com/webadaptor/workflow";
-      spyOn(request, "request").and.resolveTo({ hasAdvancedLicense: false });
+      spyOn(arcGISRestJS, "request").and.resolveTo({ hasAdvancedLicense: false });
 
       const isAuthorized = await workflowHelpers.getWorkflowManagerAuthorized(
         enterpriseWebAdaptorUrl,
@@ -155,7 +154,7 @@ describe("Module `workflowHelpers`", () => {
     });
 
     it("handles AGO unauthorized via throw", async () => {
-      spyOn(request, "request").and.throwError("Unauthorized");
+      spyOn(arcGISRestJS, "request").and.throwError("Unauthorized");
 
       const isAuthorized = await workflowHelpers.getWorkflowManagerAuthorized(
         "https://workflow.arcgis.com/myOrgId",
@@ -165,7 +164,7 @@ describe("Module `workflowHelpers`", () => {
     });
 
     it("handles failure from `request`", async () => {
-      spyOn(request, "request").and.resolveTo(null);
+      spyOn(arcGISRestJS, "request").and.resolveTo(null);
 
       const isAuthorized = await workflowHelpers.getWorkflowManagerAuthorized(
         "https://workflow.arcgis.com/myOrgId",
@@ -175,9 +174,9 @@ describe("Module `workflowHelpers`", () => {
     });
 
     it("handles undefined args", async () => {
-      spyOn(request, "request").and.resolveTo(null);
+      spyOn(arcGISRestJS, "request").and.resolveTo(null);
 
-      const isAuthorized = await workflowHelpers.getWorkflowManagerAuthorized("", new UserSession({}));
+      const isAuthorized = await workflowHelpers.getWorkflowManagerAuthorized("", new arcGISRestJS.UserSession({}));
       expect(isAuthorized).toBeFalse();
     });
   });

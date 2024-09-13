@@ -82,11 +82,10 @@ import {
   _validateEditFieldsInfo,
   IPopupInfos,
 } from "../src/featureServiceHelpers";
-import * as rest_feature_layer from "@esri/arcgis-rest-feature-layer";
 
 import * as restHelpers from "../../common/src/restHelpers";
 
-import { UserSession } from "../src/arcgisRestJS";
+import * as arcGISRestJS from "../src/arcgisRestJS";
 import { IItemTemplate, IDependency, IFeatureServiceProperties, IUpdate } from "../src/interfaces";
 import * as utils from "../../common/test/mocks/utils";
 
@@ -114,7 +113,7 @@ const _organization: any = {
   },
 };
 
-let MOCK_USER_SESSION: UserSession;
+let MOCK_USER_SESSION: arcGISRestJS.UserSession;
 
 beforeEach(() => {
   MOCK_USER_SESSION = utils.createRuntimeMockUserSession();
@@ -166,7 +165,7 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
       const url = "http://test/FeatureServer";
       const relationshipId = 0;
 
-      const queryRelatedSpy = spyOn(rest_feature_layer, "queryRelated").and.resolveTo(undefined);
+      const queryRelatedSpy = spyOn(arcGISRestJS, "queryRelated").and.resolveTo(undefined);
       const requestOptions = {
         url: url + "/0",
         relationshipId,
@@ -184,7 +183,7 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
       const relationshipId = 0;
       const objectIds = [1, 2, 3];
 
-      const queryRelatedSpy = spyOn(rest_feature_layer, "queryRelated").and.resolveTo(undefined);
+      const queryRelatedSpy = spyOn(arcGISRestJS, "queryRelated").and.resolveTo(undefined);
       const requestOptions = {
         url: url + "/0",
         relationshipId,

@@ -16,7 +16,7 @@
 
 import { getWebExperienceDependencies } from "../../src/helpers/get-web-experience-dependencies";
 import { IModel } from "@esri/hub-common";
-import { IItem } from "@esri/arcgis-rest-portal";
+import { IItem } from "../../../common/src/arcgisRestJS";
 
 describe("getWebExperienceDependencies :: ", () => {
   it("extracts itemIds from datasources", () => {
