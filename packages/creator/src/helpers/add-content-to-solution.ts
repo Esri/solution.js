@@ -36,6 +36,7 @@ import {
   replaceInTemplate,
   SItemProgressStatus,
   copyFilesToStorageItem,
+  postProcessWebToolReferences,
   postProcessWorkforceTemplates,
   UNREACHABLE,
   updateItem,
@@ -188,6 +189,8 @@ export function addContentToSolution(
 
           // check notebooks data for any item or group references
           notebookProcessor.postProcessNotebookTemplates(solutionTemplates, templateDictionary);
+
+          solutionTemplates = postProcessWebToolReferences(solutionTemplates, templateDictionary);
 
           // Extract resource data files from templates
           resourceItemFiles = resourceItemFiles.concat(getDataFilesFromTemplates(solutionTemplates));

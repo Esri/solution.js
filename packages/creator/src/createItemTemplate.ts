@@ -304,9 +304,7 @@ export function createItemTemplate(
  * @returns The updated template
  */
 export function postProcessResourceFiles(template: IItemTemplate, files: ISourceFile[]): ISourceFile[] {
-  return template.type === "Geoprocessing Service"
-    ? files.filter((f) => f.filename.indexOf("webtoolDefinition") < 0)
-    : files;
+  return template.type === "Geoprocessing Service" ? files.filter((f) => f.filename.indexOf("webtool") < 0) : files;
 }
 
 /**
