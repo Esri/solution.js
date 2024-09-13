@@ -552,9 +552,14 @@ export function _templatizeResources(
           if (rootFileResource.filename.indexOf("webtoolDefinition") > -1) {
             // eslint-disable-next-line @typescript-eslint/no-floating-promises
             blobToJson(rootFileResource.file).then((fileJson) => {
+              const notebookId = fileJson.jsonProperties.notebookId;
+              if (itemTemplate.dependencies.indexOf(notebookId) < 0) {
+                itemTemplate.dependencies.push(notebookId);
+              }
+
               itemTemplate.data = {
                 name: fileJson.jsonProperties.tasks[0].name,
-                notebookId: fileJson.jsonProperties.notebookId,
+                notebookId,
                 timeoutInMinutes: fileJson.jsonProperties.timeoutInMinutes,
               };
               resolve(null);
