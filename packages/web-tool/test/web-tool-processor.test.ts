@@ -109,6 +109,18 @@ describe("Module `web-tool-processor`: ", () => {
       );
       const getItemBaseSpy = spyOn(common, "getItemBase").and.resolveTo(mockAGO.getAGOLItem("Geoprocessing Service"));
 
+      const getItemResourcesFilesSpy = spyOn(common, "getItemResourcesFiles").and.resolveTo(
+        [{
+          name: "webtoolService.json"
+        } as any]
+      );
+
+      const serviceUrl = "http://localname/GPServer";
+
+      const blobToJsonSpy = spyOn(common, "blobToJson").and.resolveTo({
+        serviceUrl
+      });
+
       const result = await WebToolProcessor.createItemFromTemplate(
         {
           id: "bc3",
@@ -137,6 +149,8 @@ describe("Module `web-tool-processor`: ", () => {
       expect(updateItemExtendedSpy.calls.count()).toBe(1);
       expect(getItemBaseSpy.calls.count()).toBe(1);
       expect(result.item?.data).toEqual({});
+      expect(getItemResourcesFilesSpy.calls.count()).toBe(1);
+      expect(blobToJsonSpy.calls.count()).toBe(1);
     });
 
     it("Web Tool Geoprocessing Service handles cancel with item removal", async () => {
@@ -237,9 +251,31 @@ describe("Module `web-tool-processor`: ", () => {
       );
       const removeItemSpy = spyOn(common, "removeItem").and.resolveTo(mockAGO.get200Success("3ef"));
 
+      const getItemResourcesFilesSpy = spyOn(common, "getItemResourcesFiles").and.resolveTo(
+        [{
+          name: "webtoolService.json"
+        } as any]
+      );
+
+      const serviceUrl = "http://localname/GPServer";
+
+      const blobToJsonSpy = spyOn(common, "blobToJson").and.resolveTo({
+        serviceUrl
+      });
+
+      const templateDictionary = {
+        portalUrls: {
+          notebooks: {
+            https: ["notebookservice"],
+          },
+        },
+      };
+
+      const id = "bc3";
+
       await WebToolProcessor.createItemFromTemplate(
         {
-          id: "bc3",
+          id,
           type: "Geoprocessing Service",
           item: {
             typeKeywords: ["Web Tool"],
@@ -249,14 +285,9 @@ describe("Module `web-tool-processor`: ", () => {
             notebookId: "123",
             name: "NotebookName",
           },
+          itemId: id
         } as any,
-        {
-          portalUrls: {
-            notebooks: {
-              https: ["notebookservice"],
-            },
-          },
-        },
+        templateDictionary,
         MOCK_USER_SESSION,
         createCb2(),
       );
@@ -264,6 +295,9 @@ describe("Module `web-tool-processor`: ", () => {
       expect(requestSpy.calls.count()).toBe(1);
       expect(updateItemExtendedSpy.calls.count()).toBe(1);
       expect(removeItemSpy.calls.count()).toBe(1);
+      expect(getItemResourcesFilesSpy.calls.count()).toBe(1);
+      expect(blobToJsonSpy.calls.count()).toBe(1);
+      expect(templateDictionary[id].url).toBe(serviceUrl);
     });
 
     it("handles cancel during updateItemExtended with failure to remove item", async () => {
@@ -282,6 +316,18 @@ describe("Module `web-tool-processor`: ", () => {
       );
       const removeItemSpy = spyOn(common, "removeItem").and.rejectWith("error");
 
+      const getItemResourcesFilesSpy = spyOn(common, "getItemResourcesFiles").and.resolveTo(
+        [{
+          name: "webtoolService.json"
+        } as any]
+      );
+
+      const serviceUrl = "http://localname/GPServer";
+
+      const blobToJsonSpy = spyOn(common, "blobToJson").and.resolveTo({
+        serviceUrl
+      });
+
       await WebToolProcessor.createItemFromTemplate(
         {
           id: "bc3",
@@ -309,6 +355,8 @@ describe("Module `web-tool-processor`: ", () => {
       expect(requestSpy.calls.count()).toBe(1);
       expect(updateItemExtendedSpy.calls.count()).toBe(1);
       expect(removeItemSpy.calls.count()).toBe(1);
+      expect(getItemResourcesFilesSpy.calls.count()).toBe(1);
+      expect(blobToJsonSpy.calls.count()).toBe(1);
     });
 
     it("handles reject during updateItemExtended and removes item", async () => {
@@ -325,6 +373,18 @@ describe("Module `web-tool-processor`: ", () => {
       const updateItemExtendedSpy = spyOn(common, "updateItemExtended").and.rejectWith("error");
       const removeItemSpy = spyOn(common, "removeItem").and.resolveTo(mockAGO.get200Success("3ef"));
 
+      const getItemResourcesFilesSpy = spyOn(common, "getItemResourcesFiles").and.resolveTo(
+        [{
+          name: "webtoolService.json"
+        } as any]
+      );
+
+      const serviceUrl = "http://localname/GPServer";
+
+      const blobToJsonSpy = spyOn(common, "blobToJson").and.resolveTo({
+        serviceUrl
+      });
+
       await WebToolProcessor.createItemFromTemplate(
         {
           id: "bc3",
@@ -352,6 +412,8 @@ describe("Module `web-tool-processor`: ", () => {
       expect(requestSpy.calls.count()).toBe(1);
       expect(updateItemExtendedSpy.calls.count()).toBe(1);
       expect(removeItemSpy.calls.count()).toBe(1);
+      expect(getItemResourcesFilesSpy.calls.count()).toBe(1);
+      expect(blobToJsonSpy.calls.count()).toBe(1);
     });
 
     it("handles reject during updateItemExtended and reject during remove item", async () => {
@@ -368,6 +430,18 @@ describe("Module `web-tool-processor`: ", () => {
       const updateItemExtendedSpy = spyOn(common, "updateItemExtended").and.rejectWith("error");
       const removeItemSpy = spyOn(common, "removeItem").and.rejectWith("error");
 
+      const getItemResourcesFilesSpy = spyOn(common, "getItemResourcesFiles").and.resolveTo(
+        [{
+          name: "webtoolService.json"
+        } as any]
+      );
+
+      const serviceUrl = "http://localname/GPServer";
+
+      const blobToJsonSpy = spyOn(common, "blobToJson").and.resolveTo({
+        serviceUrl
+      });
+
       await WebToolProcessor.createItemFromTemplate(
         {
           id: "bc3",
@@ -395,6 +469,8 @@ describe("Module `web-tool-processor`: ", () => {
       expect(requestSpy.calls.count()).toBe(1);
       expect(updateItemExtendedSpy.calls.count()).toBe(1);
       expect(removeItemSpy.calls.count()).toBe(1);
+      expect(getItemResourcesFilesSpy.calls.count()).toBe(1);
+      expect(blobToJsonSpy.calls.count()).toBe(1);
     });
 
     it("getItemBase", async () => {
@@ -414,6 +490,18 @@ describe("Module `web-tool-processor`: ", () => {
       const getItemBaseSpy = spyOn(common, "getItemBase").and.rejectWith("error");
       const removeItemSpy = spyOn(common, "removeItem").and.resolveTo(mockAGO.get200Success("3ef"));
 
+      const getItemResourcesFilesSpy = spyOn(common, "getItemResourcesFiles").and.resolveTo(
+        [{
+          name: "webtoolService.json"
+        } as any]
+      );
+
+      const serviceUrl = "http://localname/GPServer";
+
+      const blobToJsonSpy = spyOn(common, "blobToJson").and.resolveTo({
+        serviceUrl
+      });
+
       await WebToolProcessor.createItemFromTemplate(
         {
           id: "bc3",
@@ -442,6 +530,8 @@ describe("Module `web-tool-processor`: ", () => {
       expect(updateItemExtendedSpy.calls.count()).toBe(1);
       expect(getItemBaseSpy.calls.count()).toBe(1);
       expect(removeItemSpy.calls.count()).toBe(1);
+      expect(getItemResourcesFilesSpy.calls.count()).toBe(1);
+      expect(blobToJsonSpy.calls.count()).toBe(1);
     });
 
     it("getItemBase removeItem can handle reject", async () => {
@@ -461,6 +551,10 @@ describe("Module `web-tool-processor`: ", () => {
       const getItemBaseSpy = spyOn(common, "getItemBase").and.rejectWith("error");
       const removeItemSpy = spyOn(common, "removeItem").and.rejectWith("error");
 
+      const getItemResourcesFilesSpy = spyOn(common, "getItemResourcesFiles").and.resolveTo(
+        [{} as any]
+      );
+
       await WebToolProcessor.createItemFromTemplate(
         {
           id: "bc3",
@@ -489,6 +583,7 @@ describe("Module `web-tool-processor`: ", () => {
       expect(updateItemExtendedSpy.calls.count()).toBe(1);
       expect(getItemBaseSpy.calls.count()).toBe(1);
       expect(removeItemSpy.calls.count()).toBe(1);
+      expect(getItemResourcesFilesSpy.calls.count()).toBe(1);
     });
 
     it("can handle failure to create Web Tool Geoprocessing Service", async () => {

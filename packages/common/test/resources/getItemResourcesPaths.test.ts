@@ -299,58 +299,6 @@ describe("getItemResourcesPaths :: ", () => {
     });
   });
 
-  it("filters out geoprocessing service resources", () => {
-    const getResSpy = spyOn(restHelpersModule, "getItemResources").and.resolveTo({
-      total: 4,
-      start: 1,
-      num: 0,
-      nextStart: -1,
-      resources: [
-        {
-          resource: "some-image.jpeg",
-          created: 1591306005000,
-          size: 207476,
-          access: "inherit",
-        },
-        {
-          resource: "webtool.json",
-          created: 1591306005000,
-          size: 13850,
-          access: "inherit",
-        },
-      ],
-    });
-
-    const itemTemplate: IItemTemplate = templates.getItemTemplateSkeleton();
-    itemTemplate.itemId = "bc3";
-    itemTemplate.type = "Geoprocessing Service";
-
-    return getItemResourcesPaths(itemTemplate, "4de", MOCK_USER_SESSION, 1).then((response) => {
-      expect(Array.isArray(response)).withContext("should return an array").toBe(true);
-      expect(response.length).withContext("filter out webtool.json").toBe(2);
-
-      expect(response).toEqual(
-        [
-          {
-            itemId: "bc3",
-            url: "https://myorg.maps.arcgis.com/sharing/rest/content/items/bc3/resources/some-image.jpeg",
-            folder: "bc3",
-            filename: "some-image.jpeg",
-          },
-          {
-            itemId: "bc3",
-            url: "https://myorg.maps.arcgis.com/sharing/rest/content/items/bc3/info/metadata/metadata.xml",
-            folder: "bc3_info_metadata",
-            filename: "metadata.xml",
-          },
-        ],
-        "should return full path of the file in the storage item",
-      );
-      expect(getResSpy.calls.count()).withContext("should get resources").toBe(1);
-      expect(getResSpy.calls.argsFor(0)[0]).withContext("should get resources for template item").toBe("bc3");
-    });
-  });
-
   describe("getItemResourcesPaths, template version 0", () => {
     it("can get item resources paths for quick capture project", async () => {
       const itemTemplate: IItemTemplate = templates.getItemTemplateSkeleton();

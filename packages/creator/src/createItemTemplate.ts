@@ -223,12 +223,12 @@ export function createItemTemplate(
                       // Perform any custom processing needed on resource files
                       await _templatizeResources(itemTemplate, resourceItemFiles, srcAuthentication);
 
+                      resourceItemFiles = postProcessResourceFiles(itemTemplate, resourceItemFiles);
+
                       // update the template's resources
                       itemTemplate.resources = itemTemplate.resources.concat(
                         resourceItemFiles.map((file: ISourceFile) => file.folder + "/" + file.filename),
                       );
-
-                      itemTemplate = postProcessGPResources(itemTemplate);
 
                       // Set the value keyed by the id to the created template, replacing the placeholder template
                       replaceTemplate(existingTemplates, itemTemplate.itemId, itemTemplate);
@@ -296,19 +296,15 @@ export function createItemTemplate(
 }
 
 /**
- * Remove all *.json resources from Geoprocessing Service
- * This needs to be done after fetched so we can read from one of the files
+ * Remove webtoolDefinition resource from Geoprocessing Service
+ * This needs to be done after fetched so we can read from the file before we remove it
  *
  * @param template The current template
+ * @param files The list of resource files for the given template
  * @returns The updated template
  */
-export function postProcessGPResources(template: IItemTemplate): IItemTemplate {
-  if (template.type === "Geoprocessing Service") {
-    template.resources = template.resources.filter((r) => {
-      return r.indexOf(".json") < 0;
-    });
-  }
-  return template;
+export function postProcessResourceFiles(template: IItemTemplate, files: ISourceFile[]): ISourceFile[] {
+  return template.type === "Geoprocessing Service" ? files.filter((f) => f.filename.indexOf("webtool") < 0) : files;
 }
 
 /**
@@ -556,9 +552,14 @@ export function _templatizeResources(
           if (rootFileResource.filename.indexOf("webtoolDefinition") > -1) {
             // eslint-disable-next-line @typescript-eslint/no-floating-promises
             blobToJson(rootFileResource.file).then((fileJson) => {
+              const notebookId = fileJson.jsonProperties.notebookId;
+              if (itemTemplate.dependencies.indexOf(notebookId) < 0) {
+                itemTemplate.dependencies.push(notebookId);
+              }
+
               itemTemplate.data = {
                 name: fileJson.jsonProperties.tasks[0].name,
-                notebookId: fileJson.jsonProperties.notebookId,
+                notebookId,
                 timeoutInMinutes: fileJson.jsonProperties.timeoutInMinutes,
               };
               resolve(null);
