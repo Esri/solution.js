@@ -45,7 +45,9 @@ function go () {
   }
 
   // Source credentials
-  const srcPortal = (htmlUtil.getHTMLValue("srcPortal") || "https://www.arcgis.com") + "/sharing/rest";
+  const srcHtmlValue = htmlUtil.getHTMLValue("srcPortal");
+  const srcPortalStr = srcHtmlValue.endsWith('/') ? srcHtmlValue.slice(0, -1) : srcHtmlValue;
+  const srcPortal = (srcPortalStr || "https://www.arcgis.com") + "/sharing/rest";
   const srcCreds = new common.UserSession({
     username: htmlUtil.getHTMLValue("srcUsername"),
     password: htmlUtil.getHTMLValue("srcPassword"),
@@ -53,7 +55,9 @@ function go () {
   });
 
   // Dest credentials
-  const destPortal = (htmlUtil.getHTMLValue("destPortal") || "https://www.arcgis.com") + "/sharing/rest";
+  const destHtmlValue = htmlUtil.getHTMLValue("destPortal");
+  const destPortalStr = destHtmlValue.endsWith('/') ? destHtmlValue.slice(0, -1) : destHtmlValue;
+  const destPortal = (destPortalStr || "https://www.arcgis.com") + "/sharing/rest";
   const destCreds = new common.UserSession({
     username: htmlUtil.getHTMLValue("destUsername"),
     password: htmlUtil.getHTMLValue("destPassword"),

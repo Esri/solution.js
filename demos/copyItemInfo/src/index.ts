@@ -30,12 +30,16 @@ function go () {
   document.getElementById("input").style.display = "none";
   document.getElementById("output").style.display = "block";
 
+  const srcHtmlValue = htmlUtil.getHTMLValue("srcPortal");
+  const srcPortalStr = srcHtmlValue.endsWith('/') ? srcHtmlValue.slice(0, -1) : srcHtmlValue;
+  const srcPortal = srcPortalStr + "/sharing/rest";
+
   main.copyItemInfo(
     htmlUtil.getHTMLValue("id"),
     new common.UserSession({
       username: htmlUtil.getHTMLValue("username"),
       password: htmlUtil.getHTMLValue("password"),
-      portal: htmlUtil.getHTMLValue("srcPortal") + "/sharing/rest"
+      portal: srcPortal
     })
   ).then(
     html => {
