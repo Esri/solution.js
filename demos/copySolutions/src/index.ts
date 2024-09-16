@@ -38,7 +38,9 @@ function getSourceTemplates() {
   haveSourceTemplates = false;
   updateCopyBtn();
 
-  const srcPortal = ((document.getElementById("srcPortal") as HTMLInputElement).value || "https://www.arcgis.com") + "/sharing/rest";
+  const srcHtmlValue = htmlUtil.getHTMLValue("srcPortal");
+  const srcPortalStr = srcHtmlValue.endsWith('/') ? srcHtmlValue.slice(0, -1) : srcHtmlValue;
+  const srcPortal = (srcPortalStr || "https://www.arcgis.com") + "/sharing/rest";
   sourceAuthentication = demoCommon.getRequestAuthentication(
     htmlUtil.getHTMLValue("srcUsername"), htmlUtil.getHTMLValue("srcPassword"), srcPortal
   );
@@ -81,7 +83,9 @@ function getDestinationTemplates() {
   haveDestinationAccess = false;
   updateCopyBtn();
 
-  const destPortal = (htmlUtil.getHTMLValue("destPortal") || "https://www.arcgis.com") + "/sharing/rest";
+  const destHtmlValue = htmlUtil.getHTMLValue("destPortal");
+  const destPortalStr = destHtmlValue.endsWith('/') ? destHtmlValue.slice(0, -1) : destHtmlValue;
+  const destPortal = (destPortalStr || "https://www.arcgis.com") + "/sharing/rest";
   destinationAuthentication = demoCommon.getRequestAuthentication(
     htmlUtil.getHTMLValue("destUsername"), htmlUtil.getHTMLValue("destPassword"), destPortal
   );
