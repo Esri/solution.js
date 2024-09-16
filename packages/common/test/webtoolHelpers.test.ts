@@ -30,12 +30,12 @@ describe("Module `webtoolHelpers`", () => {
       const url2 = "http://local2/GPServer";
       const templateDictionary = {
         "http://local/GPServer": "{{xxx1f09e3867449d94bc21033032da7f}}.url",
-        "http://local2/GPServer": "{{xxx2f09e3867449d94bc21033032da7f}}.url"
+        "http://local2/GPServer": "{{xxx2f09e3867449d94bc21033032da7f}}.url",
       };
 
       const notebookTemplate = templates.getItemTemplate("Notebook");
       notebookTemplate.data.cells.push({
-        url
+        url,
       });
       notebookTemplate.item.snippet = url2;
 

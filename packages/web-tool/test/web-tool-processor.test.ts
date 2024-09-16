@@ -109,16 +109,16 @@ describe("Module `web-tool-processor`: ", () => {
       );
       const getItemBaseSpy = spyOn(common, "getItemBase").and.resolveTo(mockAGO.getAGOLItem("Geoprocessing Service"));
 
-      const getItemResourcesFilesSpy = spyOn(common, "getItemResourcesFiles").and.resolveTo(
-        [{
-          name: "webtoolService.json"
-        } as any]
-      );
+      const getItemResourcesFilesSpy = spyOn(common, "getItemResourcesFiles").and.resolveTo([
+        {
+          name: "webtoolService.json",
+        } as any,
+      ]);
 
       const serviceUrl = "http://localname/GPServer";
 
       const blobToJsonSpy = spyOn(common, "blobToJson").and.resolveTo({
-        serviceUrl
+        serviceUrl,
       });
 
       const result = await WebToolProcessor.createItemFromTemplate(
@@ -251,16 +251,16 @@ describe("Module `web-tool-processor`: ", () => {
       );
       const removeItemSpy = spyOn(common, "removeItem").and.resolveTo(mockAGO.get200Success("3ef"));
 
-      const getItemResourcesFilesSpy = spyOn(common, "getItemResourcesFiles").and.resolveTo(
-        [{
-          name: "webtoolService.json"
-        } as any]
-      );
+      const getItemResourcesFilesSpy = spyOn(common, "getItemResourcesFiles").and.resolveTo([
+        {
+          name: "webtoolService.json",
+        } as any,
+      ]);
 
       const serviceUrl = "http://localname/GPServer";
 
       const blobToJsonSpy = spyOn(common, "blobToJson").and.resolveTo({
-        serviceUrl
+        serviceUrl,
       });
 
       const templateDictionary = {
@@ -285,7 +285,7 @@ describe("Module `web-tool-processor`: ", () => {
             notebookId: "123",
             name: "NotebookName",
           },
-          itemId: id
+          itemId: id,
         } as any,
         templateDictionary,
         MOCK_USER_SESSION,
@@ -316,16 +316,16 @@ describe("Module `web-tool-processor`: ", () => {
       );
       const removeItemSpy = spyOn(common, "removeItem").and.rejectWith("error");
 
-      const getItemResourcesFilesSpy = spyOn(common, "getItemResourcesFiles").and.resolveTo(
-        [{
-          name: "webtoolService.json"
-        } as any]
-      );
+      const getItemResourcesFilesSpy = spyOn(common, "getItemResourcesFiles").and.resolveTo([
+        {
+          name: "webtoolService.json",
+        } as any,
+      ]);
 
       const serviceUrl = "http://localname/GPServer";
 
       const blobToJsonSpy = spyOn(common, "blobToJson").and.resolveTo({
-        serviceUrl
+        serviceUrl,
       });
 
       await WebToolProcessor.createItemFromTemplate(
@@ -373,16 +373,16 @@ describe("Module `web-tool-processor`: ", () => {
       const updateItemExtendedSpy = spyOn(common, "updateItemExtended").and.rejectWith("error");
       const removeItemSpy = spyOn(common, "removeItem").and.resolveTo(mockAGO.get200Success("3ef"));
 
-      const getItemResourcesFilesSpy = spyOn(common, "getItemResourcesFiles").and.resolveTo(
-        [{
-          name: "webtoolService.json"
-        } as any]
-      );
+      const getItemResourcesFilesSpy = spyOn(common, "getItemResourcesFiles").and.resolveTo([
+        {
+          name: "webtoolService.json",
+        } as any,
+      ]);
 
       const serviceUrl = "http://localname/GPServer";
 
       const blobToJsonSpy = spyOn(common, "blobToJson").and.resolveTo({
-        serviceUrl
+        serviceUrl,
       });
 
       await WebToolProcessor.createItemFromTemplate(
@@ -430,16 +430,16 @@ describe("Module `web-tool-processor`: ", () => {
       const updateItemExtendedSpy = spyOn(common, "updateItemExtended").and.rejectWith("error");
       const removeItemSpy = spyOn(common, "removeItem").and.rejectWith("error");
 
-      const getItemResourcesFilesSpy = spyOn(common, "getItemResourcesFiles").and.resolveTo(
-        [{
-          name: "webtoolService.json"
-        } as any]
-      );
+      const getItemResourcesFilesSpy = spyOn(common, "getItemResourcesFiles").and.resolveTo([
+        {
+          name: "webtoolService.json",
+        } as any,
+      ]);
 
       const serviceUrl = "http://localname/GPServer";
 
       const blobToJsonSpy = spyOn(common, "blobToJson").and.resolveTo({
-        serviceUrl
+        serviceUrl,
       });
 
       await WebToolProcessor.createItemFromTemplate(
@@ -490,16 +490,16 @@ describe("Module `web-tool-processor`: ", () => {
       const getItemBaseSpy = spyOn(common, "getItemBase").and.rejectWith("error");
       const removeItemSpy = spyOn(common, "removeItem").and.resolveTo(mockAGO.get200Success("3ef"));
 
-      const getItemResourcesFilesSpy = spyOn(common, "getItemResourcesFiles").and.resolveTo(
-        [{
-          name: "webtoolService.json"
-        } as any]
-      );
+      const getItemResourcesFilesSpy = spyOn(common, "getItemResourcesFiles").and.resolveTo([
+        {
+          name: "webtoolService.json",
+        } as any,
+      ]);
 
       const serviceUrl = "http://localname/GPServer";
 
       const blobToJsonSpy = spyOn(common, "blobToJson").and.resolveTo({
-        serviceUrl
+        serviceUrl,
       });
 
       await WebToolProcessor.createItemFromTemplate(
@@ -551,9 +551,7 @@ describe("Module `web-tool-processor`: ", () => {
       const getItemBaseSpy = spyOn(common, "getItemBase").and.rejectWith("error");
       const removeItemSpy = spyOn(common, "removeItem").and.rejectWith("error");
 
-      const getItemResourcesFilesSpy = spyOn(common, "getItemResourcesFiles").and.resolveTo(
-        [{} as any]
-      );
+      const getItemResourcesFilesSpy = spyOn(common, "getItemResourcesFiles").and.resolveTo([{} as any]);
 
       await WebToolProcessor.createItemFromTemplate(
         {
