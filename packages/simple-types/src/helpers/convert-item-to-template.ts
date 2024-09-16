@@ -82,6 +82,9 @@ export function convertItemToTemplate(
         // Fetch all of the resources to get the config
         resourcesPromise = common.getItemResourcesFiles(itemTemplate.itemId, srcAuthentication);
         break;
+      case "Geoprocessing Service":
+        itemTemplate.item.url = undefined;
+        break;
     }
 
     // Errors are handled as resolved empty values; this means that there's no `reject` clause to handle, hence:
@@ -121,7 +124,7 @@ export function convertItemToTemplate(
           dashboard.convertItemToTemplate(itemTemplate, templateDictionary);
           break;
         case "Notebook":
-          templateModifyingPromise = notebook.convertNotebookToTemplate(itemTemplate, srcAuthentication);
+          templateModifyingPromise = notebook.convertNotebookToTemplate(itemTemplate);
           break;
         case "Oriented Imagery Catalog":
           templateModifyingPromise = oic.convertItemToTemplate(itemTemplate, destAuthentication, srcAuthentication);

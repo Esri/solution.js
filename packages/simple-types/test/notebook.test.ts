@@ -120,6 +120,63 @@ describe("Module `notebook`: manages the creation and deployment of notebook pro
     });
   });
 
+  describe("postProcessNotebookTemplates", () => {
+    it("will replace item ids", () => {
+      const itemTemplate: common.IItemTemplate = templates.getItemTemplate("Notebook");
+      itemTemplate.itemId = "3b927de78a784a5aa3981469d85cf45d";
+
+      const templateDictionary = {
+        "https://services.arcgis.com/abc/arcgis/rest/services/Layer/FeatureServer":
+          "{{999583fb838d447ea628cb9afec4b945.url}}",
+        "https://services.arcgis.com/abc/arcgis/rest/services/Layer/FeatureServer/0":
+          "{{999583fb838d447ea628cb9afec4b945.layer0.url}}",
+      };
+
+      const data = templates.getItemTemplateData("Notebook");
+      data.cells = [
+        {
+          source: "https://services.arcgis.com/abc/arcgis/rest/services/Layer/FeatureServer/0",
+        },
+      ];
+      data.cells.push({
+        source: "https://services.arcgis.com/abc/arcgis/rest/services/Layer/FeatureServer",
+      });
+      data.cells.push({
+        source: "888583fb838d447ea628cb9afec4b945",
+      });
+      itemTemplate.data = data;
+
+      const expectedCell = {
+        source: "{{999583fb838d447ea628cb9afec4b945.layer0.url}}",
+      };
+
+      const expectedCell1 = {
+        source: "{{999583fb838d447ea628cb9afec4b945.url}}",
+      };
+
+      const expectedCell2 = {
+        source: "{{888583fb838d447ea628cb9afec4b945.itemId}}",
+      };
+
+      const itemTemplate2: common.IItemTemplate = templates.getItemTemplate("Notebook", [
+        "888583fb838d447ea628cb9afec4b945",
+      ]);
+
+      const itemTemplates = notebookProcessor.postProcessNotebookTemplates(
+        [itemTemplate, itemTemplate2],
+        templateDictionary,
+      );
+
+      expect(itemTemplates[0].data.cells[0]).toEqual(expectedCell);
+      expect(itemTemplates[0].data.cells[1]).toEqual(expectedCell1);
+      expect(itemTemplates[0].data.cells[2]).toEqual(expectedCell2);
+      expect(itemTemplates[0].dependencies).toEqual([
+        "888583fb838d447ea628cb9afec4b945",
+        "999583fb838d447ea628cb9afec4b945",
+      ]);
+    });
+  });
+
   describe("postProcess hook ::", () => {
     it("fetch, interpolate and share", async () => {
       template = templates.getItemTemplate("Notebook");

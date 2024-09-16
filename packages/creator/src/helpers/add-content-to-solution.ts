@@ -45,6 +45,7 @@ import { getProp, getWithDefault } from "@esri/hub-common";
 import { createItemTemplate, postProcessFieldReferences } from "../createItemTemplate";
 import * as form from "@esri/solution-form";
 import { getDataFilesFromTemplates, removeDataFilesFromTemplates } from "./template";
+import { notebookProcessor } from "@esri/solution-simple-types";
 
 // ------------------------------------------------------------------------------------------------------------------ //
 
@@ -184,6 +185,9 @@ export function addContentToSolution(
           // Living Atlas layers
           solutionTemplates = _postProcessIgnoredItems(solutionTemplates, templateDictionary);
           const templateIds = solutionTemplates.map((template) => template.itemId);
+
+          // check notebooks data for any item or group references
+          notebookProcessor.postProcessNotebookTemplates(solutionTemplates, templateDictionary);
 
           // Extract resource data files from templates
           resourceItemFiles = resourceItemFiles.concat(getDataFilesFromTemplates(solutionTemplates));

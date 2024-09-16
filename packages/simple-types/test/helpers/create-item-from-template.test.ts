@@ -127,43 +127,12 @@ describe("simpleTypeCreateItemFromTemplate", () => {
       );
     });
 
-    it("should handle missing python notebook content with invalid ids", async () => {
-      const itemTemplate: common.IItemTemplate = templates.getItemTemplate("Notebook");
-      const fakeId = "aaa27de78a784a5aa3981469d85cf45d";
-      itemTemplate.data.cells[0].source = fakeId;
-
-      const expected = common.cloneObject(itemTemplate);
-      expected.dependencies = [];
-
-      const isItemSpy = spyOn(common, "isItem").and.rejectWith(utils.getFailureResponse());
-      const isGroupSpy = spyOn(common, "isGroup").and.rejectWith(utils.getFailureResponse());
-
-      fetchMock
-        .get(
-          utils.PORTAL_SUBSET.restUrl + `/content/items/${fakeId}?f=json&token=fake-token`,
-          mockItems.get400Failure(),
-        )
-        .get(
-          utils.PORTAL_SUBSET.restUrl + `/community/groups/${fakeId}?f=json&token=fake-token`,
-          mockItems.get400Failure(),
-        );
-
-      return notebook.convertNotebookToTemplate(itemTemplate, MOCK_USER_SESSION).then(
-        () => fail(),
-        () => {
-          expect(isItemSpy).toHaveBeenCalled();
-          expect(isGroupSpy).toHaveBeenCalled();
-          return Promise.resolve();
-        },
-      );
-    });
-
     it("should handle python notebook with no ids", async () => {
       const itemTemplate: common.IItemTemplate = templates.getItemTemplate("Notebook");
       itemTemplate.data.cells[0].source = "";
 
       const expected = common.cloneObject(itemTemplate);
-      return notebook.convertNotebookToTemplate(itemTemplate, MOCK_USER_SESSION).then(
+      return notebook.convertNotebookToTemplate(itemTemplate).then(
         (response) => {
           expect(response).toEqual(expected);
           return Promise.resolve();
@@ -190,56 +159,7 @@ describe("simpleTypeCreateItemFromTemplate", () => {
           mockItems.get400Failure(),
         );
 
-      const result = await notebook.convertNotebookToTemplate(itemTemplate, MOCK_USER_SESSION);
-      expect(result).toEqual(expected);
-    });
-
-    it("should handle missing python notebook content: duplicate ids, but not in dependencies", async () => {
-      const itemTemplate: common.IItemTemplate = templates.getItemTemplate("Notebook");
-      const id = "3b927de78a784a5aa3981469d85cf45d";
-
-      itemTemplate.data.cells.push(itemTemplate.data.cells[0]);
-      itemTemplate.data.cells[0].source = id;
-      itemTemplate.data.cells[1].source = id;
-
-      const expected = common.cloneObject(itemTemplate);
-      expected.dependencies = [id];
-      expected.data.cells[0].source = `{{${id}.itemId}}`;
-      expected.data.cells[1].source = `{{${id}.itemId}}`;
-
-      fetchMock
-        .get(
-          utils.PORTAL_SUBSET.restUrl + `/content/items/${id}?f=json&token=fake-token`,
-          utils.getSuccessResponse({ id }),
-        )
-        .get(
-          utils.PORTAL_SUBSET.restUrl + `/community/groups/${id}?f=json&token=fake-token`,
-          utils.getSuccessResponse({ id }),
-        );
-
-      const result = await notebook.convertNotebookToTemplate(itemTemplate, MOCK_USER_SESSION);
-      expect(result).toEqual(expected);
-    });
-
-    it("should handle missing python notebook content: duplicate ids in dependencies", async () => {
-      const id = "3b927de78a784a5aa3981469d85cf45d";
-      const itemTemplate: common.IItemTemplate = templates.getItemTemplate("Notebook", [id]);
-      itemTemplate.data.cells.push(itemTemplate.data.cells[0]);
-      const expected = common.cloneObject(itemTemplate);
-      itemTemplate.data.cells[0].source = id;
-      itemTemplate.data.cells[1].source = id;
-
-      fetchMock
-        .get(
-          utils.PORTAL_SUBSET.restUrl + `/content/items/${id}?f=json&token=fake-token`,
-          utils.getSuccessResponse({ id }),
-        )
-        .get(
-          utils.PORTAL_SUBSET.restUrl + `/community/groups/${id}?f=json&token=fake-token`,
-          utils.getSuccessResponse({ id }),
-        );
-
-      const result = await notebook.convertNotebookToTemplate(itemTemplate, MOCK_USER_SESSION);
+      const result = await notebook.convertNotebookToTemplate(itemTemplate);
       expect(result).toEqual(expected);
     });
   });

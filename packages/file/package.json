@@ -1,6 +1,6 @@
 {
   "name": "@esri/solution-file",
-  "version": "5.6.3",
+  "version": "5.6.4",
   "description": "Manages the creation and deployment of item types that contain files for @esri/solution.js.",
   "main": "dist/cjs/index.js",
   "module": "dist/esm/index.js",
@@ -22,7 +22,7 @@
     "npm-check-updates": "^17.1.0"
   },
   "dependencies": {
-    "@esri/solution-common": "^5.6.3",
+    "@esri/solution-common": "^5.6.4",
     "tslib": "1.14.1"
   },
   "scripts": {
@@ -76,5 +76,5 @@
     "esri",
     "ES6"
   ],
-  "gitHead": "d1d6426318e5663257a5b5c8d8308d3c3ed2a15f"
+  "gitHead": "fa632ab421f189ca4c4d68ae8a1054440066cdab"
 }
