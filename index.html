@@ -17,30 +17,28 @@
 </ul>
 <hr>
 <a id="md:api-overview" class="tsd-anchor"></a><h3><a href="#md:api-overview">API Overview</a></h3><a id="md:common-terms" class="tsd-anchor"></a><h4><a href="#md:common-terms">Common terms</a></h4><p>An ArcGIS Online (AGO) <code>item</code> is transformed into a <code>template</code> that contains all of its defining information. If the item depends on other items, those items are also transformed into templates.</p>
-<p>A <code>Solution Item</code> can contain either</p>
-<ul>
-<li>a list of Item Templates</li>
-<li>a list of references to deployed items</li>
-</ul>
-<p>When it contains Item Templates, it can be used for organizing and distributing Solutions, e.g., for displaying in a gallery of Solutions.</p>
-<p>When a Solution is deployed into an organization, a new Solution is created that contains references to the items deployed into the organization; it serves as a table of contents for the deployment.</p>
+<p>A <code>Solution ArcGIS Online Item</code> can take two forms:</p>
+<ol>
+<li>A <code>Solution Template</code> resides in a host ArcGIS Online organization. It contains a list of templates of ArcGIS Online items that work together. It is used to deploy a Solution and its items into destination ArcGIS Online organizations.</li>
+<li>A <code>Deployed Solution</code> resides in a destination ArcGIS Online organization. It is created when a Solution is deployed and contains a list of references to items deployed for a Solution; it serves as a table of contents for the deployment. This grouping of references also simplifies deleting the deployed Solution.</li>
+</ol>
 <a id="md:packages" class="tsd-anchor"></a><h4><a href="#md:packages">Packages</a></h4><p>The API is divided into packages to make it easier to use just the parts that you want:</p>
 <ul>
-<li><code>common</code>, which contains common helper functions for the other packages</li>
-<li><code>creator</code>, which contains functions for transforming items into templates</li>
-<li><code>deployer</code>, which contains functions for deploying item templates into items in a destination organization</li>
-<li><code>feature-layer</code>, which contains functions for Feature Service items</li>
-<li><code>file</code>, which contains functions for items that contain files</li>
-<li><code>form</code>, which contains functions for form items</li>
-<li><code>group</code>, which contains functions for Groups</li>
-<li><code>hub-types</code>, which contains functions supporting ArcGIS Hub Sites and Initiatives</li>
-<li><code>simple-types</code>, which contains functions for the simpler item types Dashboard, Form, Web Map, Web Mapping Application, and Workforce Project</li>
-<li><code>storymap</code>, which contains functions for Storymap items</li>
-<li><code>velocity</code>, which contains functions to support ArcGIS Velocity items</li>
-<li><code>viewer</code>, which contains functions to support displaying Solution items</li>
-<li><code>web-experience</code>, which contains functions for Experience Builder items</li>
-<li><code>web-tool</code>, which contains functions for Web Tool Geoprocessing Service items</li>
-<li><code>workflow</code>, which contains functions for Workflow items</li>
+<li><code>common</code> contains common helper functions for the other packages</li>
+<li><code>creator</code> contains functions for transforming items into templates</li>
+<li><code>deployer</code> contains functions for deploying item templates into items in a destination organization</li>
+<li><code>feature-layer</code> contains functions for Feature Service items</li>
+<li><code>file</code> contains functions for items that contain files</li>
+<li><code>form</code> contains functions for form items</li>
+<li><code>group</code> contains functions for Groups</li>
+<li><code>hub-types</code> contains functions supporting ArcGIS Hub Sites and Initiatives</li>
+<li><code>simple-types</code> contains functions for the simpler item types Dashboard, Form, Web Map, Web Mapping Application, and Workforce Project</li>
+<li><code>storymap</code> contains functions for Storymap items</li>
+<li><code>velocity</code> contains functions to support ArcGIS Velocity items</li>
+<li><code>viewer</code> contains functions to support displaying Solution items</li>
+<li><code>web-experience</code> contains functions for Experience Builder items</li>
+<li><code>web-tool</code> contains functions for Web Tool Geoprocessing Service items</li>
+<li><code>workflow</code> contains functions for Workflow items</li>
 </ul>
 <a id="md:additional-information" class="tsd-anchor"></a><h4><a href="#md:additional-information">Additional information</a></h4><p>The API documentation is published at <a href="https://esri.github.io/solution.js/">https://esri.github.io/solution.js/</a></p>
 <a id="md:supported-arcgis-online-item-types" class="tsd-anchor"></a><h4><a href="#md:supported-arcgis-online-item-types">Supported ArcGIS Online Item Types</a></h4><p>Currently, the ArcGIS Online item types that can be converted into a template are:</p>
@@ -54,60 +52,61 @@
 <li><p><strong>File types:</strong> 360 VR Experience, AppBuilder Extension, AppBuilder Widget Package, Application Configuration, ArcGIS Pro Add In, ArcGIS Pro Configuration, ArcPad Package, Basemap Package, CAD Drawing, CityEngine Web Scene, Code Sample, Color Set, Compact Tile Package, CSV Collection, CSV, Deep Learning Package, Desktop Add In, Desktop Application Template, Desktop Style, Document Link, Explorer Add In, Explorer Layer, Explorer Map, Feature Collection Template, File Geodatabase, GeoJson, GeoPackage, Geoprocessing Package, Geoprocessing Sample, Globe Document, Image Collection, Image, iWork Keynote, iWork Numbers, iWork Pages, KML Collection, Layer Package, Layer Template, Layer, Layout, Locator Package, Map Document, Map Package, Map Template, Microsoft Excel, Microsoft Powerpoint, Microsoft Word, Mobile Basemap Package, Mobile Map Package, Mobile Scene Package, Native Application, Native Application Installer, Native Application Template, netCDF, Operation View, Operations Dashboard Add In, Operations Dashboard Extension, PDF, Pro Layer Package, Pro Layer, Pro Map Package, Pro Map, Pro Report, Project Package, Project Template, Published Map, Raster function template, Report Template, Rule Package, Scene Document, Scene Package, Service Definition, Shapefile, Statistical Data Collection, Style, Survey123 Add In, Symbol Set, Task File, Tile Package, Toolbox Package, Vector Tile Package, Viewer Configuration, Visio Document, Window Mobile Package, Windows Mobile Package, Windows Viewer Add In, Windows Viewer Configuration, Workflow, Workflow Manager Package</p>
 </li>
 </ul>
-<p><em>The <code>implemented-types</code> demo generates its list from the source code.</em></p>
-<a id="md:instructions" class="tsd-anchor"></a><h3><a href="#md:instructions">Instructions</a></h3><a id="md:setup" class="tsd-anchor"></a><h4><a href="#md:setup">Setup</a></h4><p>After running <code>npm install</code>, the repository can be built using the Windows batch file <code>build.bat</code>.</p>
+<p><em>You can use the <code>implementedTypes</code> demo to get the latest version of these lists; the demo generates its lists from the source code.</em></p>
+<a id="md:instructions" class="tsd-anchor"></a><h3><a href="#md:instructions">Instructions</a></h3><a id="md:setup" class="tsd-anchor"></a><h4><a href="#md:setup">Setup</a></h4><p>The repository can be built using the Windows batch file <code>build.bat</code> or the bash command shell <code>build.sh</code>. These files run <code>npm install</code>, build the library and its demos, and run the unit tests.</p>
 <a id="md:npm-commands" class="tsd-anchor"></a><h4><a href="#md:npm-commands">npm commands</a></h4><p>For a list of all available commands run <code>npm run</code>.</p>
 <p>These commands are</p>
 <ul>
 <li><p>building</p>
 <ul>
-<li><code>npm run build</code> creates symlinks among packages and creates node, umd, and esm outputs for each package</li>
+<li><code>npm run build</code> Creates esm and cjs outputs for each package</li>
+<li><code>npm run build:esm</code> Creates esm outputs for each package</li>
+<li><code>npm run build:cjs</code> Creates cjs outputs for each package</li>
 <li><code>npm run clean</code> runs <code>clean:src</code> and <code>clean:dist</code> <em>(requires bash console)</em><ul>
 <li><code>npm run clean:src</code> deletes <code>.d.ts</code>, <code>.js</code>, and <code>.js.map</code> files</li>
 <li><code>npm run clean:dist</code> deletes <code>.rpt2_cache</code> and <code>dist</code> folders</li>
 </ul>
 </li>
+<li><code>npm run deepclean</code> deletes node_modules and runs <code>clean</code></li>
 <li><code>npm run lint</code> lints the TypeScript files</li>
-<li><code>npm run lint:fix</code> lints the TypeScript files and fixes</li>
+<li><code>npm run lint:fix</code> lints the TypeScript files and fixes what it can</li>
 <li><code>npm run prettify</code> beautifies TypeScript files</li>
+<li><code>npm run getupdates</code> modifies package.json with npm updates to packages</li>
 </ul>
 </li>
-<li><p>testing</p>
+<li><p>testing; learn more about Karma testing at <a href="https://karma-runner.github.io/6.4/config/browsers.html">https://karma-runner.github.io/6.4/config/browsers.html</a></p>
 <ul>
 <li><code>npm run test</code> lints, then runs <code>test:chrome</code> tests to confirm that the API is functioning as expected</li>
-<li><code>npm run test:browsers</code> runs karma in the Chrome, Firefox, and Chromium Edge browsers</li>
 <li><code>npm run test:chrome</code> runs karma in the Chrome browser</li>
 <li><code>npm run test:chrome:ci</code> runs karma in the ChromeHeadlessCI browser</li>
 <li><code>npm run test:chrome:debug</code> runs karma in the Chrome browser and leaves the browser open for debugging tests</li>
 <li><code>npm run test:edge</code> runs karma in the Edge (Chromium) browser</li>
 <li><code>npm run test:firefox</code> runs karma in the Firefox browser</li>
-<li><code>npm run test:ci</code> lints, then runs <code>test:chrome:ci</code>, <code>test:firefox</code>, and <code>coveralls</code> from a bash window</li>
-<li><code>npm run test:ci:win</code> lints, then runs <code>test:chrome:ci</code>, <code>test:firefox</code>, and <code>coveralls:win</code> from a Windows window</li>
-<li><code>npm run test:all</code> runs <code>test:chrome</code> and <code>test:edge</code> and <code>test:firefox</code></li>
-<li><code>npm run coveralls</code> updates code coverage info from a bash window</li>
-<li><code>npm run coveralls:win</code> updates code coverage info from a Windows window</li>
+<li><code>npm run test:firefox:ci</code> runs karma in the FirefoxHeadless browser</li>
+<li><code>npm run test:safari</code> runs karma in the Safari browser</li>
+<li><code>npm run test:all:mac</code> runs <code>test:chrome</code>, <code>test:firefox</code>, and <code>test:safari</code></li>
+<li><code>npm run test:all:win</code> runs <code>test:chrome</code>, <code>test:edge</code>, and <code>test:firefox</code></li>
 </ul>
 </li>
 <li><p>publishing doc</p>
 <ul>
 <li><code>npm run docs:build</code> builds the documentation <em><strong>(note that this script creates a <code>docs</code> folder, deleting any existing one)</strong></em></li>
 <li><code>npm run docs:deploy</code> pushes the documentation to the repository&#39;s gh-pages</li>
+<li><code>npm run docs:srihash</code> generates the srihashes. Learn more about SRI Hash at <a href="https://www.srihash.org/">https://www.srihash.org/</a></li>
 </ul>
 </li>
 <li><p>publishing code</p>
 <ul>
-<li><code>npm run release:prepare1</code> fetch, compile, and test <em>(requires bash shell)</em></li>
-<li><code>npm run release:prepare2</code> bundles packages and asks you for the new version number <em>(use arrow keys to put cursor on line</em> above <em>desired version)</em> <em>(requires Windows shell)</em></li>
+<li><code>npm run release:prepare</code> to set up the publish and to pick a new version number</li>
 <li><code>npm run release:review</code> shows summary of git changes</li>
 <li><code>npm run release:publish-git</code> publishes a version to GitHub <em>(requires bash shell)</em></li>
 <li><code>npm run release:publish-npm</code> publishes a version to npm <em>(requires Windows shell)</em></li>
+<li><code>npm run release:publish-retry</code> is for retrying to publish npm; it does not update the git tag</li>
 </ul>
 </li>
 <li><p>lifecycle</p>
 <ul>
-<li>postinstall runs <code>bootstrap</code></li>
-<li>bootstrap</li>
-<li>precommit</li>
+<li>precommit lints staged files</li>
 </ul>
 </li>
 </ul>
@@ -118,7 +117,6 @@
 <a id="md:guides" class="tsd-anchor"></a><h3><a href="#md:guides">Guides</a></h3><ul>
 <li><a href="https://github.com/Esri/solution.js/blob/master/guides/Package%20Overview.md">Package Overview</a></li>
 <li><a href="https://github.com/Esri/solution.js/blob/master/guides/Getting%20Started.md">Getting Started</a></li>
-<li>[Authentication in Browser-based Apps](<a href="https://github.com/Esri/solution.js/blob/master/guides/Authentication%20in%20Browser-based">https://github.com/Esri/solution.js/blob/master/guides/Authentication%20in%20Browser-based</a> Apps.md)</li>
 <li><a href="https://github.com/Esri/solution.js/blob/master/guides/Publishing%20to%20npmjs.md">Publishing to npmjs</a></li>
 <li><a href="https://github.com/Esri/solution.js/blob/master/guides/Adding%20a%20Demo.md">Adding a Demo</a></li>
 </ul>
