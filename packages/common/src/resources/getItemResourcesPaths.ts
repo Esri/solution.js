@@ -76,10 +76,6 @@ export function getItemResourcesPaths(
           }
         }
 
-        // GP Services
-        if (itemTemplate.type === "Geoprocessing Service") {
-          return res.indexOf("webtoolDefinition") > -1 || res.indexOf(".json") < 0;
-        }
         return result;
       });
     // create the filePaths
