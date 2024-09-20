@@ -3144,7 +3144,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
       const additionalParams: any = {
         data: "fred",
       };
-      const updateItemFnStub = sinon.stub(arcGISRestJS, "updateItem").resolves(utils.getSuccessResponse());
+      const updateItemFnStub = sinon.stub(arcGISRestJS, "restUpdateItem").resolves(utils.getSuccessResponse());
 
       await restHelpers.updateItem(itemInfo, MOCK_USER_SESSION, undefined, additionalParams);
       const updateItemFnCall = updateItemFnStub.getCall(0);
@@ -3169,7 +3169,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
     it("handles failure", async () => {
       const grp = templates.getGroupTemplatePart().item;
 
-      sinon.stub(arcGISRestJS, "updateGroup").rejects(utils.getFailureResponse());
+      sinon.stub(arcGISRestJS, "restUpdateGroup").rejects(utils.getFailureResponse());
 
       return restHelpers.updateGroup(grp, MOCK_USER_SESSION).then(
         () => fail(),
@@ -3181,7 +3181,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
       const grp = templates.getGroupTemplatePart().item;
       const additionalParams = { extra: "value" };
 
-      const updateStub = sinon.stub(arcGISRestJS, "updateGroup").resolves(utils.getSuccessResponse());
+      const updateStub = sinon.stub(arcGISRestJS, "restUpdateGroup").resolves(utils.getSuccessResponse());
 
       await restHelpers.updateGroup(grp, MOCK_USER_SESSION, additionalParams);
       const updateFnCall = updateStub.getCall(0);
