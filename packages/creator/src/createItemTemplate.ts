@@ -296,7 +296,7 @@ export function createItemTemplate(
 }
 
 /**
- * Remove webtoolDefinition resource from Geoprocessing Service
+ * Remove webtool resource files from Geoprocessing Service
  * This needs to be done after fetched so we can read from the file before we remove it
  *
  * @param template The current template
