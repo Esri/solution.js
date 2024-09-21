@@ -23,8 +23,10 @@ import {
   IGetUserOptions,
   IGroup,
   IGroupContentResult,
+  IGetRelatedItemsResponse,
   IGroupSharingOptions,
   IItem,
+  IItemRelationshipOptions,
   IItemResourceOptions,
   IItemResourceResponse,
   IPortal,
@@ -40,6 +42,7 @@ import {
   addItemResource as restAddItemResource,
   getGroup as restGetGroup,
   getGroupContent as restGetGroupContent,
+  getRelatedItems as restGetRelatedItems,
   getSelf as restGetSelf,
   getUser,
   removeFolder,
@@ -133,7 +136,6 @@ export {
   getUserContent,
   getPortal as restGetPortal,
   getPortalUrl,
-  getRelatedItems,
   searchGroupContent,
   setItemAccess,
   searchGroups as restSearchGroups,
@@ -160,6 +162,9 @@ export function getGroup(id: string, requestOptions?: IRequestOptions): Promise<
 }
 export function getGroupContent(id: string, requestOptions?: IGetGroupContentOptions): Promise<IGroupContentResult> {
   return restGetGroupContent(id, requestOptions);
+}
+export function getRelatedItems(requestOptions: IItemRelationshipOptions): Promise<IGetRelatedItemsResponse> {
+  return restGetRelatedItems(requestOptions);
 }
 export function getSelf(requestOptions?: IRequestOptions): Promise<IPortal> {
   return restGetSelf(requestOptions);
