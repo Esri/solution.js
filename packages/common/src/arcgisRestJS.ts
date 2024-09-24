@@ -34,6 +34,7 @@ import {
   ISearchOptions,
   ISearchResult,
   ISharingResponse,
+  IUpdateGroupOptions,
   IUpdateItemOptions,
   IUpdateItemResponse,
   IUser,
@@ -53,19 +54,17 @@ import {
   shareItemWithGroup as restShareItemWithGroup,
   unprotectGroup as restUnprotectGroup,
   unprotectItem as restUnprotectItem,
+  updateGroup,
   updateItem,
-  updateItemResource as restUpdateItemResource
+  updateItemResource as restUpdateItemResource,
 } from "@esri/arcgis-rest-portal";
-import {
-  IRequestOptions,
-  request as restRequest
-} from "@esri/arcgis-rest-request";
+import { IRequestOptions, request as restRequest } from "@esri/arcgis-rest-request";
 import {
   //IFeature,
   IQueryRelatedOptions,
   IQueryRelatedResponse,
   //IRelatedRecordGroup,
-  queryRelated as restQueryRelated
+  queryRelated as restQueryRelated,
 } from "@esri/arcgis-rest-feature-layer";
 import {
   IAddToServiceDefinitionOptions,
@@ -141,7 +140,6 @@ export {
   searchGroups as restSearchGroups,
   removeGroupUsers,
   removeItem as restRemoveItem,
-  updateGroup as restUpdateGroup
 } from "@esri/arcgis-rest-portal";
 export { IRequestOptions, IParams, ArcGISAuthError, encodeFormData } from "@esri/arcgis-rest-request";
 export {
@@ -151,6 +149,21 @@ export {
   ISpatialReference,
   createFeatureService as svcAdminCreateFeatureService,
 } from "@esri/arcgis-rest-service-admin";
+export interface IFolderSuccessResult {
+  success: boolean;
+  folder: {
+    username: string;
+    id: string;
+    title: string;
+  };
+}
+export interface IGroupSuccessResult {
+  success: boolean;
+  groupId: string;
+}
+export interface ISuccessResult {
+  success: boolean;
+}
 //custom export functions that mimic the same export function from arcgis-rest-js
 //to bypass unit test error:
 //Error: <spyOn> : <functon or property> is not declared writable or has no setter
@@ -172,7 +185,7 @@ export function getSelf(requestOptions?: IRequestOptions): Promise<IPortal> {
 export function queryRelated(requestOptions: IQueryRelatedOptions): Promise<IQueryRelatedResponse> {
   return restQueryRelated(requestOptions);
 }
-export function removeItemResource(requestOptions: IRemoveItemResourceOptions): Promise<{success: boolean}> {
+export function removeItemResource(requestOptions: IRemoveItemResourceOptions): Promise<ISuccessResult> {
   return restRemoveItemResource(requestOptions);
 }
 export function request(url: string, requestOptions?: IRequestOptions): Promise<any> {
@@ -183,14 +196,7 @@ export function restGetUser(requestOptions?: string | IGetUserOptions): Promise<
   return getUser(requestOptions);
 }
 //removeFolder already exists as an custom export in restHelperGet so this export has 'rest' prefix to denote it's from rest.
-export function restRemoveFolder(requestOptions: IFolderIdOptions): Promise<{
-  success: boolean;
-  folder: {
-      username: string;
-      id: string;
-      title: string;
-  };
-}> {
+export function restRemoveFolder(requestOptions: IFolderIdOptions): Promise<IFolderSuccessResult> {
   return removeFolder(requestOptions);
 }
 //removeGroup already exists as an custom export in restHelperGet so this export has 'rest' prefix to denote it's from rest.
@@ -205,18 +211,24 @@ export function restSearchItems(search: string | ISearchOptions | SearchQueryBui
 export function restUpdateItem(requestOptions: IUpdateItemOptions): Promise<IUpdateItemResponse> {
   return updateItem(requestOptions);
 }
+export function restUpdateGroup(requestOptions: IUpdateGroupOptions): Promise<IGroupSuccessResult> {
+  return updateGroup(requestOptions);
+}
 export function shareItemWithGroup(requestOptions: IGroupSharingOptions): Promise<ISharingResponse> {
   return restShareItemWithGroup(requestOptions);
 }
-export function svcAdminAddToServiceDefinition(url: string, requestOptions: IAddToServiceDefinitionOptions): Promise<IAddToServiceDefinitionResult> {
+export function svcAdminAddToServiceDefinition(
+  url: string,
+  requestOptions: IAddToServiceDefinitionOptions,
+): Promise<IAddToServiceDefinitionResult> {
   return addToServiceDefinition(url, requestOptions);
 }
 export function updateItemResource(requestOptions: IItemResourceOptions): Promise<IItemResourceResponse> {
   return restUpdateItemResource(requestOptions);
 }
-export function unprotectGroup(requestOptions: IUserGroupOptions): Promise<{success: boolean}> {
+export function unprotectGroup(requestOptions: IUserGroupOptions): Promise<ISuccessResult> {
   return restUnprotectGroup(requestOptions);
 }
-export function unprotectItem(requestOptions: IUserItemOptions): Promise<{success: boolean}> {
+export function unprotectItem(requestOptions: IUserItemOptions): Promise<ISuccessResult> {
   return restUnprotectItem(requestOptions);
 }
