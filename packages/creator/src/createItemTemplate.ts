@@ -99,6 +99,9 @@ export function createItemTemplate(
               type: itemInfo.type,
               url: itemInfo.url,
             };
+            if (!templateDictionary[itemId]) {
+              templateDictionary[itemId] = itemId;
+            }
 
             // Save the URL as a symbol
             if (itemInfo.url) {
