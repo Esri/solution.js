@@ -28,7 +28,6 @@ import * as utils from "./mocks/utils";
 let MOCK_USER_SESSION: arcgisRestJS.UserSession;
 
 describe("Module arcgisRestJS", () => {
-
   beforeEach(() => {
     MOCK_USER_SESSION = utils.createRuntimeMockUserSession();
   });
@@ -88,5 +87,4 @@ describe("Module arcgisRestJS", () => {
     await arcgisRestJS.unprotectGroup(requestOptions);
     expect(unprotectGroupSpy.called);
   });
-
 });

@@ -3182,12 +3182,10 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
       const additionalParams = { extra: "value" };
 
       //const updateStub = sinon.stub(arcGISRestJS, "restUpdateGroup").resolves(utils.getSuccessResponse());
-      const updateStub = sinon.stub(arcGISRestJS, "restUpdateGroup").callsFake(
-        () => {
-          console.log("fake updateStub");
-          return Promise.resolve(utils.getSuccessResponse());
-        }
-      );
+      const updateStub = sinon.stub(arcGISRestJS, "restUpdateGroup").callsFake(() => {
+        console.log("fake updateStub");
+        return Promise.resolve(utils.getSuccessResponse());
+      });
 
       await restHelpers.updateGroup(grp, MOCK_USER_SESSION, additionalParams);
       const updateFnCall = updateStub.getCall(0);

@@ -139,7 +139,7 @@ export {
   setItemAccess,
   searchGroups as restSearchGroups,
   removeGroupUsers,
-  removeItem as restRemoveItem
+  removeItem as restRemoveItem,
 } from "@esri/arcgis-rest-portal";
 export { IRequestOptions, IParams, ArcGISAuthError, encodeFormData } from "@esri/arcgis-rest-request";
 export {
