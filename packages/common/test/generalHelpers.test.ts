@@ -1297,6 +1297,48 @@ describe("Module `generalHelpers`: common utility functions shared across packag
     });
   });
 
+  describe("getTemplatedIds", () => {
+    it("should return an array of ids", () => {
+      const o = {
+        one: {
+          two: {
+            three: {
+              color: "{{7619da54364e42998db8f33617bd2d61.itemId}}",
+            },
+            threeB: {
+              color: "{{389cff847eaa47d29be69ec126cd2c2a.itemId}}",
+            },
+          },
+          other: "value",
+        },
+      };
+
+      const vals = generalHelpers.getTemplatedIds(JSON.stringify(o));
+      expect(vals.length).withContext("should return two values").toEqual(2);
+      expect(vals[0]).withContext("first id").toEqual("7619da54364e42998db8f33617bd2d61");
+      expect(vals[1]).withContext("second id").toEqual("389cff847eaa47d29be69ec126cd2c2a");
+    });
+
+    it("should handle lack of ids", () => {
+      const o = {
+        one: {
+          two: {
+            three: {
+              color: "7619da54364e42998db8f33617bd2d61",
+            },
+            threeB: {
+              color: "389cff847eaa47d29be69ec126cd2c2a",
+            },
+          },
+          other: "value",
+        },
+      };
+
+      const vals = generalHelpers.getTemplatedIds(JSON.stringify(o));
+      expect(vals.length).withContext("should return empty list").toEqual(0);
+    });
+  });
+
   describe("getUniqueTitle", () => {
     it("can return base title if it doesn't exist at path", () => {
       const title: string = "The Title";

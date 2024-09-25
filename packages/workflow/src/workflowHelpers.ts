@@ -81,6 +81,22 @@ export async function fetchAuxiliaryItems(
 }
 
 /**
+ * Updates the dependencies of the workflow item from its configuration.
+ *
+ * @param templates A collection of AGO item templates
+ * @returns Updated templates list
+ */
+export function postProcessFormItems(templates: common.IItemTemplate[]): common.IItemTemplate[] {
+  for (const template of templates) {
+    if (template.type === "Workflow") {
+      const ids = common.getTemplatedIds(JSON.stringify(template.properties.configuration));
+      template.dependencies = common.dedupe([...template.dependencies, ...ids]);
+    }
+  }
+  return templates;
+}
+
+/**
  * Fetch the data from the new Workflow item and update the templateDictionary for variable replacement
  *
  * @param sourceId The id of the source Workflow item that was used to create the solution template

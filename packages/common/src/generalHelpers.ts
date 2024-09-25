@@ -211,6 +211,23 @@ export function getSpecifiedWordRegEx(word: string): RegExp {
 }
 
 /**
+ * Extracts templated ids from a block of text.
+ *
+ * @param text Text to scan for the pattern "{{[0-9A-F]{32}.itemId}}"
+ * @returns List of ids found in the text; braces and ".itemId" are removed; returns empty list if no matches
+ */
+export function getTemplatedIds(text: string): string[] {
+  const idTest: RegExp = /{{[0-9A-F]{32}.itemId}}/gi;
+
+  let ids: string[] = [];
+  const matches = text.match(idTest);
+  if (matches) {
+    ids = matches.map((id) => id.replace("{{", "").replace(".itemId}}", ""));
+  }
+  return ids;
+}
+
+/**
  * Converts JSON to a Blob.
  *
  * @param json JSON to use as source
