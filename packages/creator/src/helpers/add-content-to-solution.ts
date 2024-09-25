@@ -47,6 +47,7 @@ import { createItemTemplate, postProcessFieldReferences } from "../createItemTem
 import * as form from "@esri/solution-form";
 import { getDataFilesFromTemplates, removeDataFilesFromTemplates } from "./template";
 import { notebookProcessor } from "@esri/solution-simple-types";
+import * as workflow from "@esri/solution-workflow";
 
 // ------------------------------------------------------------------------------------------------------------------ //
 
@@ -179,6 +180,7 @@ export function addContentToSolution(
 
           // test for and update group dependencies and other post-processing
           solutionTemplates = await form.postProcessFormItems(solutionTemplates, templateDictionary);
+          solutionTemplates = workflow.postProcessFormItems(solutionTemplates);
           solutionTemplates = _postProcessGroupDependencies(solutionTemplates);
           solutionTemplates = postProcessWorkforceTemplates(solutionTemplates);
 
