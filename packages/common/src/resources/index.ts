@@ -15,7 +15,7 @@
  */
 
 export * from "./addMetadataFromBlob";
-export * from "./add-resource-from-blob";
+export * from "./add-resource";
 export * from "./convert-item-resource-to-storage-resource";
 export * from "./convert-storage-resource-to-item-resource";
 export * from "./copyAssociatedFiles";
