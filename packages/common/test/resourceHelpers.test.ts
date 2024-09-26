@@ -26,6 +26,7 @@ import * as resourceHelpers from "../src/resourceHelpers";
 import * as utils from "./mocks/utils";
 const fetchMock = require("fetch-mock");
 import * as addResourceModule from "../src/resources/add-resource";
+import * as updateResourceModule from "../src/resources/update-resource";
 
 // ------------------------------------------------------------------------------------------------------------------ //
 
@@ -175,6 +176,76 @@ describe("Module `resourceHelpers`: common functions involving the management of
       expect(fetchBody).toEqual(
         "f=json&fileName=aFilename.json&resourcesPrefix=aFolder&text=%7B%22a%22%3A1%2C%22b%22%3A2%2C%22c%22%3A3%7D&access=inherit&token=fake-token",
       );
+    });
+  });
+
+  describe("updateResourceModule", () => {
+    it("has filename without folder", async () => {
+      const content = "abcdefghijklmnopqrstuvwxyz";
+      const itemId = "itm1234567890";
+      const folder = "";
+      const filename = "aFilename.text";
+      const updateUrl = utils.PORTAL_SUBSET.restUrl + "/content/users/casey/items/itm1234567890/updateResources";
+      const expected = { success: true, id: itemId };
+
+      fetchMock.post(updateUrl, expected);
+
+      const response: any = await updateResourceModule.updateTextResource(
+        content,
+        itemId,
+        folder,
+        filename,
+        MOCK_USER_SESSION,
+      );
+      expect(response).toEqual(expected);
+      const options: any = fetchMock.lastOptions(updateUrl);
+      const fetchBody = options.body;
+      expect(typeof fetchBody).toEqual("object");
+      const form = fetchBody as FormData;
+      expect(form.get("resourcesPrefix")).toBeNull();;
+      expect(form.get("fileName")).toEqual(filename);
+    });
+
+    it("has a filename without an extension", async () => {
+      const content = "";
+      const itemId = "itm1234567890";
+      const folder = "aFolder";
+      const filename = "aFilename";
+      const expected = new ArcGISAuthError("Filename must have an extension indicating its type");
+
+      return updateResourceModule.updateTextResource(content, itemId, folder, filename, MOCK_USER_SESSION).then(
+        () => fail(),
+        (response: any) => {
+          expect(response).toEqual(expected);
+          return Promise.resolve();
+        },
+      );
+    });
+
+    it("has filename with folder", async () => {
+      const content = JSON.stringify({ a: 1, b: 2, c: 3 });
+      const itemId = "itm1234567890";
+      const folder = "aFolder";
+      const filename = "aFilename.json";
+      const updateUrl = utils.PORTAL_SUBSET.restUrl + "/content/users/casey/items/itm1234567890/updateResources";
+      const expected = { success: true, id: itemId };
+
+      fetchMock.post(updateUrl, expected);
+
+      const response: any = await updateResourceModule.updateTextResource(
+        content,
+        itemId,
+        folder,
+        filename,
+        MOCK_USER_SESSION,
+      );
+      expect(response).toEqual(expected);
+      const options: any = fetchMock.lastOptions(updateUrl);
+      const fetchBody = options.body;
+      expect(typeof fetchBody).toEqual("object");
+      const form = fetchBody as FormData;
+      expect(form.get("resourcesPrefix")).toEqual(folder);
+      expect(form.get("fileName")).toEqual(filename);
     });
   });
 

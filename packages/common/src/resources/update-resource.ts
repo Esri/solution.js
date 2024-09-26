@@ -14,46 +14,7 @@
  * limitations under the License.
  */
 
-import { IItemResourceOptions, ArcGISAuthError, addItemResource, UserSession } from "../arcgisRestJS";
-
-/**
- * Adds a blob resource.
- *
- * @param blob Blob containing the resource to add
- * @param itemId Id of the item to add the resource to
- * @param folder A prefix string added to the filename in the storage; use null or undefined for no folder
- * @param filename File name used to rename an existing file resource uploaded.
- * File name must have the file resource extension.
- * @param authentication Credentials for the request
- */
-export function addBlobResource(
-  blob: any,
-  itemId: string,
-  folder: string,
-  filename: string,
-  authentication: UserSession,
-): Promise<any> {
-  // Check that the filename has an extension because it is required by the addResources call
-  if (filename && filename.indexOf(".") < 0) {
-    return new Promise((resolve, reject) => {
-      reject(new ArcGISAuthError("Filename must have an extension indicating its type"));
-    });
-  }
-
-  const requestOptions: IItemResourceOptions = {
-    id: itemId,
-    resource: blob,
-    name: filename,
-    authentication: authentication,
-    params: {},
-  };
-  if (folder) {
-    requestOptions.params = {
-      resourcesPrefix: folder,
-    };
-  }
-  return addItemResource(requestOptions);
-}
+import { IItemResourceOptions, ArcGISAuthError, updateItemResource, UserSession } from "../arcgisRestJS";
 
 /**
  * Adds a text resource.
@@ -65,7 +26,7 @@ export function addBlobResource(
  * text as file name for it. File name must have the file resource extension.
  * @param authentication Credentials for the request
  */
-export function addTextResource(
+export function updateTextResource(
   content: string,
   itemId: string,
   folder: string,
@@ -91,5 +52,5 @@ export function addTextResource(
       resourcesPrefix: folder,
     };
   }
-  return addItemResource(requestOptions);
+  return updateItemResource(requestOptions);
 }
