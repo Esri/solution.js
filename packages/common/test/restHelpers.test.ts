@@ -18,8 +18,19 @@
  * Provides tests for functions involving the arcgis-rest-js library.
  */
 
-import { IExtent, IItem, ItemRelationshipType, ISpatialReference, UserSession } from "../src/arcgisRestJS";
-import * as admin from "@esri/arcgis-rest-service-admin";
+import {
+  ICreateItemResponse,
+  IExtent,
+  IAddFolderResponse,
+  IItem,
+  ItemRelationshipType,
+  IPagingParams,
+  ISearchOptions,
+  ISpatialReference,
+  SearchQueryBuilder,
+  UserSession,
+} from "../src/arcgisRestJS";
+import * as arcGISRestJS from "../../common/src/arcgisRestJS";
 const fetchMock = require("fetch-mock");
 import * as generalHelpers from "../src/generalHelpers";
 import {
@@ -34,8 +45,6 @@ import {
   IAdditionalGroupSearchOptions,
 } from "../src/interfaces";
 import * as mockItems from "../test/mocks/agolItems";
-import * as portal from "@esri/arcgis-rest-portal";
-import * as request from "@esri/arcgis-rest-request";
 import * as restHelpers from "../src/restHelpers";
 import * as restHelpersGet from "../src/restHelpersGet";
 import * as sinon from "sinon";
@@ -43,7 +52,6 @@ import * as templates from "../test/mocks/templates";
 import * as utils from "./mocks/utils";
 import * as zipUtils from "../src/zip-utils";
 import * as zipHelpers from "../test/mocks/zipHelpers";
-import { IPagingParams } from "@esri/arcgis-rest-portal";
 
 // ------------------------------------------------------------------------------------------------------------------ //
 
@@ -387,7 +395,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
       const url =
         "https://services123.arcgis.com/org1234567890/arcgis/rest/services/ROWPermits_publiccomment/FeatureServer/0";
 
-      spyOn(admin, "addToServiceDefinition").and.returnValues(
+      spyOn(arcGISRestJS, "svcAdminAddToServiceDefinition").and.returnValues(
         Promise.reject({ success: false } as any),
         Promise.resolve({ success: true }),
       );
@@ -403,7 +411,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
 
       fetchMock.post(adminUrl + "/addToDefinition", { statusURL: statusURL });
 
-      spyOn(request, "request").and.returnValues(Promise.resolve({ status: "Completed" }));
+      spyOn(arcGISRestJS, "request").and.returnValues(Promise.resolve({ status: "Completed" }));
 
       await restHelpers.addToServiceDefinition(url, {
         authentication: MOCK_USER_SESSION,
@@ -436,7 +444,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
 
       fetchMock.post(adminUrl + "/addToDefinition", { statusURL: statusURL });
 
-      spyOn(request, "request").and.returnValues(Promise.resolve({ status: "Completed" }));
+      spyOn(arcGISRestJS, "request").and.returnValues(Promise.resolve({ status: "Completed" }));
 
       await restHelpers.addToServiceDefinition(url, {
         params: { async: true },
@@ -470,7 +478,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
         q: search,
         start: 1,
         num: 100,
-      } as portal.ISearchOptions;
+      } as ISearchOptions;
       const constructedOptions = restHelpers.convertToISearchOptions(search);
       expect(constructedOptions).toEqual(expectedOptions);
     });
@@ -480,12 +488,12 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
         q: "my search",
         start: 1,
         num: 50,
-      } as portal.ISearchOptions;
+      } as ISearchOptions;
       const expectedOptions = {
         q: "my search",
         start: 1,
         num: 50,
-      } as portal.ISearchOptions;
+      } as ISearchOptions;
       const constructedOptions = restHelpers.convertToISearchOptions(search);
       expect(constructedOptions).toEqual(expectedOptions);
     });
@@ -493,12 +501,12 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
     it("can handle an ISearchOptions with defaults", () => {
       const search = {
         q: "my search",
-      } as portal.ISearchOptions;
+      } as ISearchOptions;
       const expectedOptions = {
         q: "my search",
         start: 1,
         num: 100,
-      } as portal.ISearchOptions;
+      } as ISearchOptions;
       const constructedOptions = restHelpers.convertToISearchOptions(search);
       expect(constructedOptions).toEqual(expectedOptions);
     });
@@ -508,25 +516,25 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
         q: "my search",
         sortField: "relevance",
         sortOrder: "desc",
-      } as portal.ISearchOptions;
+      } as ISearchOptions;
       const expectedOptions = {
         q: "my search",
         sortOrder: "desc",
         start: 1,
         num: 100,
-      } as portal.ISearchOptions;
+      } as ISearchOptions;
       const constructedOptions = restHelpers.convertToISearchOptions(search);
       expect(constructedOptions).toEqual(expectedOptions);
     });
 
     it("can handle a SearchQueryBuilder", () => {
       const q = "my search";
-      const search = new portal.SearchQueryBuilder().match(q);
+      const search = new SearchQueryBuilder().match(q);
       const expectedOptions = {
         q: `"${q}"`, // SearchQueryBuilder returns this query in double quotes
         start: 1,
         num: 100,
-      } as portal.ISearchOptions;
+      } as ISearchOptions;
       const constructedOptions = restHelpers.convertToISearchOptions(search);
       expect(constructedOptions).toEqual(expectedOptions);
     });
@@ -736,7 +744,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
         },
       );
 
-      const response: portal.ICreateItemResponse = await restHelpers.createFullItem(
+      const response: ICreateItemResponse = await restHelpers.createFullItem(
         itemInfo,
         folderId,
         MOCK_USER_SESSION,
@@ -772,7 +780,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
           itemId: "itm1234567980",
         });
 
-      const response: portal.ICreateItemResponse = await restHelpers.createFullItem(
+      const response: ICreateItemResponse = await restHelpers.createFullItem(
         itemInfo,
         folderId,
         MOCK_USER_SESSION,
@@ -825,7 +833,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
           }),
         );
 
-      const response: portal.ICreateItemResponse = await restHelpers.createFullItem(
+      const response: ICreateItemResponse = await restHelpers.createFullItem(
         itemInfo,
         folderId,
         MOCK_USER_SESSION,
@@ -865,7 +873,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
           }),
         );
 
-      const response: portal.ICreateItemResponse = await restHelpers.createFullItem(
+      const response: ICreateItemResponse = await restHelpers.createFullItem(
         itemInfo,
         folderId,
         MOCK_USER_SESSION,
@@ -1023,7 +1031,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
       };
       fetchMock.post(createUrl, expectedCreate);
 
-      const response: portal.ICreateItemResponse = await restHelpers.createItemWithData(
+      const response: ICreateItemResponse = await restHelpers.createItemWithData(
         itemInfo,
         dataInfo,
         MOCK_USER_SESSION,
@@ -1052,7 +1060,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
       };
       fetchMock.post(createUrl, expectedCreate).post(shareUrl, expectedShare);
 
-      const response: portal.ICreateItemResponse = await restHelpers.createItemWithData(
+      const response: ICreateItemResponse = await restHelpers.createItemWithData(
         itemInfo,
         dataInfo,
         MOCK_USER_SESSION,
@@ -1081,7 +1089,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
       };
       fetchMock.post(createUrl, expectedCreate).post(shareUrl, expectedShare);
 
-      const response: portal.ICreateItemResponse = await restHelpers.createItemWithData(
+      const response: ICreateItemResponse = await restHelpers.createItemWithData(
         itemInfo,
         dataInfo,
         MOCK_USER_SESSION,
@@ -1127,7 +1135,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
         utils.PORTAL_SUBSET.restUrl + "/content/users/casey/createFolder",
         JSON.stringify(expectedSuccess),
       );
-      const response: portal.IAddFolderResponse = await restHelpers.createUniqueFolder(
+      const response: IAddFolderResponse = await restHelpers.createUniqueFolder(
         folderTitleRoot,
         { user },
         MOCK_USER_SESSION,
@@ -1146,7 +1154,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
       fetchMock.post(utils.PORTAL_SUBSET.restUrl + "/content/users/casey/createFolder", () => {
         return successfulFolderCreation(folderTitleRoot, expectedSuffix);
       });
-      const response: portal.IAddFolderResponse = await restHelpers.createUniqueFolder(
+      const response: IAddFolderResponse = await restHelpers.createUniqueFolder(
         folderTitleRoot,
         { user },
         MOCK_USER_SESSION,
@@ -1166,7 +1174,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
       fetchMock.post(utils.PORTAL_SUBSET.restUrl + "/content/users/casey/createFolder", () => {
         return JSON.stringify(successfulFolderCreation(folderTitleRoot, expectedSuffix));
       });
-      const response: portal.IAddFolderResponse = await restHelpers.createUniqueFolder(
+      const response: IAddFolderResponse = await restHelpers.createUniqueFolder(
         folderTitleRoot,
         { user },
         MOCK_USER_SESSION,
@@ -1185,7 +1193,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
       fetchMock.post(utils.PORTAL_SUBSET.restUrl + "/content/users/casey/createFolder", () => {
         return JSON.stringify(successfulFolderCreation(folderTitleRoot, expectedSuffix));
       });
-      const response: portal.IAddFolderResponse = await restHelpers.createUniqueFolder(
+      const response: IAddFolderResponse = await restHelpers.createUniqueFolder(
         folderTitleRoot,
         { user },
         MOCK_USER_SESSION,
@@ -2069,7 +2077,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
         args: args,
       };
 
-      spyOn(request, "request").and.returnValues(
+      spyOn(arcGISRestJS, "request").and.returnValues(
         Promise.reject({ success: false }),
         Promise.resolve({ success: true }),
       );
@@ -2097,7 +2105,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
       };
       const statusURL = update.url + "/123abc";
 
-      spyOn(request, "request").and.returnValues(
+      spyOn(arcGISRestJS, "request").and.returnValues(
         Promise.resolve({ statusURL: statusURL }),
         Promise.resolve({ status: "Completed" }),
       );
@@ -2565,7 +2573,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
     it("can get workflow configuration", async () => {
       const orgId = "abcdefghij";
       const itemId = "1234567890";
-      const requestSpy = spyOn(request, "request").and.returnValue(
+      const requestSpy = spyOn(arcGISRestJS, "request").and.returnValue(
         zipUtils.jsonToZipFile("jobConfig.json", { jobTemplates: "abc" }, "config"),
       );
 
@@ -2582,7 +2590,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
 
     it("can get workflow configuration using supplied server", async () => {
       const itemId = "1234567890";
-      const requestSpy = spyOn(request, "request").and.returnValue(
+      const requestSpy = spyOn(arcGISRestJS, "request").and.returnValue(
         zipUtils.jsonToZipFile("jobConfig.json", { jobTemplates: "abc" }, "config"),
       );
 
@@ -2604,7 +2612,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
       const itemId = "1234567890";
       const configurationZipFile = await zipHelpers.getSampleFormZipFile(itemId, "workflow");
 
-      const requestSpy = spyOn(request, "request").and.resolveTo({
+      const requestSpy = spyOn(arcGISRestJS, "request").and.resolveTo({
         success: true,
       });
 
@@ -3136,7 +3144,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
       const additionalParams: any = {
         data: "fred",
       };
-      const updateItemFnStub = sinon.stub(portal, "updateItem").resolves(utils.getSuccessResponse());
+      const updateItemFnStub = sinon.stub(arcGISRestJS, "restUpdateItem").resolves(utils.getSuccessResponse());
 
       await restHelpers.updateItem(itemInfo, MOCK_USER_SESSION, undefined, additionalParams);
       const updateItemFnCall = updateItemFnStub.getCall(0);
@@ -3161,7 +3169,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
     it("handles failure", async () => {
       const grp = templates.getGroupTemplatePart().item;
 
-      sinon.stub(portal, "updateGroup").rejects(utils.getFailureResponse());
+      sinon.stub(arcGISRestJS, "restUpdateGroup").rejects(utils.getFailureResponse());
 
       return restHelpers.updateGroup(grp, MOCK_USER_SESSION).then(
         () => fail(),
@@ -3173,7 +3181,11 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
       const grp = templates.getGroupTemplatePart().item;
       const additionalParams = { extra: "value" };
 
-      const updateStub = sinon.stub(portal, "updateGroup").resolves(utils.getSuccessResponse());
+      //const updateStub = sinon.stub(arcGISRestJS, "restUpdateGroup").resolves(utils.getSuccessResponse());
+      const updateStub = sinon.stub(arcGISRestJS, "restUpdateGroup").callsFake(() => {
+        console.log("fake updateStub");
+        return Promise.resolve(utils.getSuccessResponse());
+      });
 
       await restHelpers.updateGroup(grp, MOCK_USER_SESSION, additionalParams);
       const updateFnCall = updateStub.getCall(0);

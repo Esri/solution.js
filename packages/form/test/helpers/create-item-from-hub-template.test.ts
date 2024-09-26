@@ -15,7 +15,6 @@
  */
 
 import * as common from "@esri/solution-common";
-import * as restPortal from "@esri/arcgis-rest-portal";
 import { createItemFromHubTemplate } from "../../src/helpers/create-item-from-hub-template";
 import * as createSurveyHelper from "../../src/helpers/create-survey";
 import * as buildParamsHelper from "../../src/helpers/build-create-params";
@@ -224,7 +223,7 @@ describe("createItemFromHubTemplate", () => {
     spyOn(common, "replaceInTemplate").and.returnValue(interpolatedTemplate);
     spyOn(buildParamsHelper, "buildCreateParams").and.rejectWith(error);
     spyOn(createSurveyHelper, "createSurvey").and.resolveTo(createResult);
-    spyOn(restPortal, "moveItem").and.resolveTo();
+    spyOn(common, "moveItem").and.resolveTo();
     spyOn(common, "removeFolder").and.resolveTo();
     const itemProgressCallbackSpy = jasmine.createSpy();
     return createItemFromHubTemplate(template, templateDictionary, MOCK_USER_SESSION, itemProgressCallbackSpy)

@@ -18,11 +18,19 @@
  * Provides tests for fetch functions involving the arcgis-rest-js library.
  */
 
-import { ISearchResult, IGroup, IItem, UserSession } from "../src/arcgisRestJS";
+import {
+  IGetRelatedItemsResponse,
+  IItemRelationshipOptions,
+  ItemRelationshipType,
+  IPagingParams,
+  ISearchResult,
+  IGroup,
+  IItem,
+  UserSession,
+} from "../src/arcgisRestJS";
+import * as arcGISRestJS from "../../common/src/arcgisRestJS";
 import * as generalHelpers from "../src/generalHelpers";
 import * as interfaces from "../src/interfaces";
-import * as portal from "@esri/arcgis-rest-portal";
-import * as request from "@esri/arcgis-rest-request";
 import * as restHelpers from "../src/restHelpers";
 import * as restHelpersGet from "../src/restHelpersGet";
 
@@ -40,7 +48,7 @@ beforeEach(() => {
   MOCK_USER_SESSION = utils.createRuntimeMockUserSession();
 });
 
-const noRelatedItemsResponse: portal.IGetRelatedItemsResponse = {
+const noRelatedItemsResponse: IGetRelatedItemsResponse = {
   total: 0,
   relatedItems: [],
 };
@@ -246,7 +254,7 @@ describe("Module `restHelpersGet`: common REST fetch functions shared across pac
           },
         ],
       };
-      const getServersSpy = spyOn(request, "request").and.resolveTo(serversJSON);
+      const getServersSpy = spyOn(arcGISRestJS, "request").and.resolveTo(serversJSON);
 
       const actual = await restHelpersGet.getEnterpriseServers(portalRestUrl, MOCK_USER_SESSION);
 
@@ -608,7 +616,7 @@ describe("Module `restHelpersGet`: common REST fetch functions shared across pac
 
     it("item doesn't have related items of multiple types", async () => {
       const itemId = "itm1234567890";
-      const relationshipType: portal.ItemRelationshipType[] = ["Survey2Service", "Service2Service"];
+      const relationshipType: ItemRelationshipType[] = ["Survey2Service", "Service2Service"];
       const direction = "reverse";
       const expected = { total: 0, relatedItems: [] as any[] };
 
@@ -726,7 +734,7 @@ describe("Module `restHelpersGet`: common REST fetch functions shared across pac
       expect(response).toEqual(expected);
     });
 
-    it("can handle an exception from the REST endpoint portal.getRelatedItems", async () => {
+    it("can handle an exception from the REST endpoint getRelatedItems", async () => {
       const itemId = "itm1234567890";
       const relationshipType = "Survey2Service";
       const direction = "forward";
@@ -897,7 +905,7 @@ describe("Module `restHelpersGet`: common REST fetch functions shared across pac
   });
 
   describe("getItemResources", () => {
-    it("can handle a 500 error from the REST endpoint portal.getItemResources", async () => {
+    it("can handle a 500 error from the REST endpoint getItemResources", async () => {
       const itemId = "itm1234567890";
 
       fetchMock.post(
@@ -970,7 +978,7 @@ describe("Module `restHelpersGet`: common REST fetch functions shared across pac
   describe("getItemsRelatedToASolution", () => {
     it("gets items", async () => {
       const solutionId = "sol1234567890";
-      const getItemRelatedItemsSpy = spyOn(portal, "getRelatedItems").and.resolveTo({
+      const getItemRelatedItemsSpy = spyOn(arcGISRestJS, "getRelatedItems").and.resolveTo({
         aggregations: {
           total: {
             count: 1,
@@ -992,7 +1000,7 @@ describe("Module `restHelpersGet`: common REST fetch functions shared across pac
           relationshipType: "Solution2Item",
           authentication: MOCK_USER_SESSION,
           params: { direction: "forward", start: 1, num: 100 },
-        } as portal.IItemRelationshipOptions,
+        } as IItemRelationshipOptions,
       ]);
     });
   });
@@ -1164,7 +1172,7 @@ describe("Module `restHelpersGet`: common REST fetch functions shared across pac
   describe("getSolutionsRelatedToAnItem", () => {
     it("gets solutions", async () => {
       const solutionId = "sol1234567890";
-      const getItemRelatedItemsSpy = spyOn(portal, "getRelatedItems").and.resolveTo({
+      const getItemRelatedItemsSpy = spyOn(arcGISRestJS, "getRelatedItems").and.resolveTo({
         aggregations: {
           total: {
             count: 1,
@@ -1186,7 +1194,7 @@ describe("Module `restHelpersGet`: common REST fetch functions shared across pac
           relationshipType: "Solution2Item",
           authentication: MOCK_USER_SESSION,
           params: { direction: "reverse", start: 1, num: 100 },
-        } as portal.IItemRelationshipOptions,
+        } as IItemRelationshipOptions,
       ]);
     });
   });
@@ -1325,7 +1333,7 @@ describe("Module `restHelpersGet`: common REST fetch functions shared across pac
   describe("_getGroupContentsTranche", () => {
     it("handles an inaccessible group", async () => {
       const groupId = "grp1234567890";
-      const pagingParams: portal.IPagingParams = {
+      const pagingParams: IPagingParams = {
         start: 1, // one-based
         num: 10,
       };
@@ -1353,7 +1361,7 @@ describe("Module `restHelpersGet`: common REST fetch functions shared across pac
 
     it("handles an empty group", async () => {
       const groupId = "grp1234567890";
-      const pagingParams: portal.IPagingParams = {
+      const pagingParams: IPagingParams = {
         start: 1, // one-based
         num: 10,
       };
@@ -1375,7 +1383,7 @@ describe("Module `restHelpersGet`: common REST fetch functions shared across pac
 
     it("handles a group where contents can be retrieved via a single fetch", async () => {
       const groupId = "grp1234567890";
-      const pagingParams: portal.IPagingParams = {
+      const pagingParams: IPagingParams = {
         start: 1, // one-based
         num: 10,
       };
@@ -1405,7 +1413,7 @@ describe("Module `restHelpersGet`: common REST fetch functions shared across pac
 
     it("handles a group where contents require two fetches", async () => {
       const groupId = "grp1234567890";
-      const pagingParams: portal.IPagingParams = {
+      const pagingParams: IPagingParams = {
         start: 1, // one-based
         num: 2,
       };
@@ -1447,7 +1455,7 @@ describe("Module `restHelpersGet`: common REST fetch functions shared across pac
 
     it("handles a group where contents require multiple fetches", async () => {
       const groupId = "grp1234567890";
-      const pagingParams: portal.IPagingParams = {
+      const pagingParams: IPagingParams = {
         start: 1, // one-based
         num: 2,
       };
@@ -1502,7 +1510,7 @@ describe("Module `restHelpersGet`: common REST fetch functions shared across pac
   describe("_getItemResourcesTranche", () => {
     it("handles an inaccessible item", async () => {
       const itemId = "itm1234567890";
-      const pagingParams: portal.IPagingParams = {
+      const pagingParams: IPagingParams = {
         start: 1, // one-based
         num: 10,
       };
@@ -1520,7 +1528,7 @@ describe("Module `restHelpersGet`: common REST fetch functions shared across pac
 
     it("handles an item with no resources", async () => {
       const itemId = "itm1234567890";
-      const pagingParams: portal.IPagingParams = {
+      const pagingParams: IPagingParams = {
         start: 1, // one-based
         num: 10,
       };
@@ -1543,7 +1551,7 @@ describe("Module `restHelpersGet`: common REST fetch functions shared across pac
 
     it("handles an item with one resource", async () => {
       const itemId = "itm1234567890";
-      const pagingParams: portal.IPagingParams = {
+      const pagingParams: IPagingParams = {
         start: 1, // one-based
         num: 10,
       };
@@ -1580,7 +1588,7 @@ describe("Module `restHelpersGet`: common REST fetch functions shared across pac
 
     it("handles an item with multiple resources where they can be retrieved via a single fetch", async () => {
       const itemId = "itm1234567890";
-      const pagingParams: portal.IPagingParams = {
+      const pagingParams: IPagingParams = {
         start: 1, // one-based
         num: 10,
       };
@@ -1647,7 +1655,7 @@ describe("Module `restHelpersGet`: common REST fetch functions shared across pac
 
     it("handles an item with multiple resources where they require multiple fetches", async () => {
       const itemId = "itm1234567890";
-      const pagingParams: portal.IPagingParams = {
+      const pagingParams: IPagingParams = {
         start: 1, // one-based
         num: 1,
       };
