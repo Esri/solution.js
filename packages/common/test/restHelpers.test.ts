@@ -669,15 +669,15 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
           .post(
             utils.PORTAL_SUBSET.restUrl + "/content/users/casey/aabb123456/createService",
             '{"encodedServiceURL":"https://services123.arcgis.com/org1234567890/arcgis/rest/services/' +
-              "ROWPermits_publiccomment_" +
-              now +
-              '/FeatureServer","itemId":"svc1234567890",' +
-              '"name":"ROWPermits_publiccomment_' +
-              now +
-              '","serviceItemId":"svc1234567890",' +
-              '"serviceurl":"https://services123.arcgis.com/org1234567890/arcgis/rest/services/ROWPermits_publiccomment_' +
-              now +
-              '/FeatureServer","size":-1,"success":true,"type":"Feature Service","isView":false}',
+            "ROWPermits_publiccomment_" +
+            now +
+            '/FeatureServer","itemId":"svc1234567890",' +
+            '"name":"ROWPermits_publiccomment_' +
+            now +
+            '","serviceItemId":"svc1234567890",' +
+            '"serviceurl":"https://services123.arcgis.com/org1234567890/arcgis/rest/services/ROWPermits_publiccomment_' +
+            now +
+            '/FeatureServer","size":-1,"success":true,"type":"Feature Service","isView":false}',
           )
           .post(
             utils.PORTAL_SUBSET.restUrl + "/content/users/casey/items/svc1234567890/move",
@@ -2849,12 +2849,12 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
       fetchMock
         .get(
           utils.PORTAL_SUBSET.restUrl +
-            "/community/groups?f=json&sortField=title&sortOrder=asc&start=1&num=5&q=Fred&token=fake-token",
+          "/community/groups?f=json&sortField=title&sortOrder=asc&start=1&num=5&q=Fred&token=fake-token",
           utils.getSearchResponse(query, 1, 5, 6, 9, 5),
         )
         .get(
           utils.PORTAL_SUBSET.restUrl +
-            "/community/groups?f=json&sortField=title&sortOrder=asc&start=6&num=5&q=Fred&token=fake-token",
+          "/community/groups?f=json&sortField=title&sortOrder=asc&start=6&num=5&q=Fred&token=fake-token",
           utils.getSearchResponse(query, 6, 5, -1, 9, 4),
         );
 
@@ -2894,7 +2894,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
 
       fetchMock.get(
         utils.PORTAL_SUBSET.restUrl +
-          `/content/groups/${groupId}/search?f=json&num=5&sortOrder=asc&q=${query}&token=fake-token`,
+        `/content/groups/${groupId}/search?f=json&num=5&sortOrder=asc&q=${query}&token=fake-token`,
         //                        q    s  #   x  t  r
         utils.getSearchResponse(query, 1, 5, -1, 4, 4),
       );
@@ -2926,7 +2926,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
         )
         .get(
           utils.PORTAL_SUBSET.restUrl +
-            `/content/groups/${groupId}/search?f=json&num=5&start=6&q=${query}&token=fake-token`,
+          `/content/groups/${groupId}/search?f=json&num=5&start=6&q=${query}&token=fake-token`,
           //                        q    s  #   x  t  r
           utils.getSearchResponse(query, 1, 5, -1, 9, 4),
         );
@@ -3445,7 +3445,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
           utils.PORTAL_SUBSET.restUrl + "/content/items/0?f=json&token=fake-token",
           utils.returnOnNthCall(2, updatedItem, originalItem),
         );
-      spyOn(console, "warn").and.callFake(() => {});
+      spyOn(console, "warn").and.callFake(() => { });
 
       const id = await restHelpers._updateItemURL("0", url, MOCK_USER_SESSION, 2);
       expect(id).toEqual("0");
@@ -3472,7 +3472,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
       fetchMock
         .post(utils.PORTAL_SUBSET.restUrl + "/content/users/casey/items/0/update", utils.getSuccessResponse())
         .get(utils.PORTAL_SUBSET.restUrl + "/content/items/0?f=json&token=fake-token", originalItem);
-      spyOn(console, "error").and.callFake(() => {});
+      spyOn(console, "error").and.callFake(() => { });
 
       return restHelpers._updateItemURL("0", url, MOCK_USER_SESSION, 2).then(
         () => fail(),
@@ -3495,7 +3495,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
       expect(response.success).toBeTruthy();
       const options: any = fetchMock.lastOptions(url);
       const fetchBody = options.body;
-      expect(fetchBody).toEqual("f=json&id=itm1234567890&text=this%20is%20some%20text&token=fake-token");
+      expect(fetchBody).toEqual("f=json&id=itm1234567890&file=this%20is%20some%20text&token=fake-token");
     });
 
     it("should add application/json data", async () => {
@@ -3512,7 +3512,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
       const options: any = fetchMock.lastOptions(url);
       const fetchBody = options.body;
       expect(fetchBody).toEqual(
-        "f=json&id=itm1234567890&text=%7B%22a%22%3A%22a%22%2C%22b%22%3A1%2C%22c%22%3A%7B%22d%22%3A%22d%22%7D%7D&token=fake-token",
+        "f=json&id=itm1234567890&file=%7B%22a%22%3A%22a%22%2C%22b%22%3A1%2C%22c%22%3A%7B%22d%22%3A%22d%22%7D%7D&token=fake-token",
       );
     });
 
@@ -4388,7 +4388,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
 
 // ------------------------------------------------------------------------------------------------------------------ //
 
-function successfulFolderCreation(folderTitleRoot: string, suffix: number): any {
+function successfulFolderCreation (folderTitleRoot: string, suffix: number): any {
   const folderName = folderTitleRoot + (suffix > 0 ? " " + suffix.toString() : "");
   return {
     success: true,
@@ -4400,7 +4400,7 @@ function successfulFolderCreation(folderTitleRoot: string, suffix: number): any 
   };
 }
 
-function failedFolderCreation(folderTitleRoot: string, suffix: number): any {
+function failedFolderCreation (folderTitleRoot: string, suffix: number): any {
   const folderName = folderTitleRoot + (suffix > 0 ? " " + suffix.toString() : "");
   return {
     error: {
@@ -4411,7 +4411,7 @@ function failedFolderCreation(folderTitleRoot: string, suffix: number): any {
   };
 }
 
-function successfulGroupCreation(groupTitleRoot: string, suffix: number): any {
+function successfulGroupCreation (groupTitleRoot: string, suffix: number): any {
   const groupName = groupTitleRoot + (suffix > 0 ? " " + suffix.toString() : "");
   return {
     success: true,
@@ -4448,7 +4448,7 @@ function successfulGroupCreation(groupTitleRoot: string, suffix: number): any {
   };
 }
 
-function failedGroupCreation(groupTitleRoot: string, suffix: number): any {
+function failedGroupCreation (groupTitleRoot: string, suffix: number): any {
   const groupName = groupTitleRoot + (suffix > 0 ? " " + suffix.toString() : "");
   return {
     error: {

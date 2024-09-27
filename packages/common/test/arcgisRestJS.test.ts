@@ -18,7 +18,6 @@
  * Provides tests for functions involving the arcgis-rest-js library.
  */
 
-import * as arcgisRestFeatureLayer from "@esri/arcgis-rest-feature-layer";
 import * as arcgisRestJS from "../src/arcgisRestJS";
 import * as arcgisRestPortal from "@esri/arcgis-rest-portal";
 //import * as arcgisRestRequest from "@esri/arcgis-rest-request";
@@ -47,7 +46,7 @@ describe("Module arcgisRestJS", () => {
       relationshipId: 0,
       url: "https://www.arcgis.com",
     };
-    const queryRelatedSpy = sinon.stub(arcgisRestFeatureLayer, "queryRelated").resolves();
+    const queryRelatedSpy = sinon.stub(arcgisRestJS, "queryRelated").resolves();
     await arcgisRestJS.queryRelated(requestOptions);
     expect(queryRelatedSpy.called);
   });
@@ -87,4 +86,5 @@ describe("Module arcgisRestJS", () => {
     await arcgisRestJS.unprotectGroup(requestOptions);
     expect(unprotectGroupSpy.called);
   });
+
 });

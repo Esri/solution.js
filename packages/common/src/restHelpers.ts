@@ -65,7 +65,7 @@ import {
   ItemRelationshipType,
   IRequestOptions,
   IUpdateItemResponse,
-  IUserSessionOptions,
+  IArcGISIdentityManagerOptions,
   IAddItemDataOptions,
   ICreateItemOptions,
   IFolderIdOptions,
@@ -118,22 +118,22 @@ import { isTrackingViewTemplate, setTrackingOptions } from "./trackingHelpers";
 
 // ------------------------------------------------------------------------------------------------------------------ //
 
-export function addItemData(id: string, data: any, authentication: UserSession): Promise<IUpdateItemResponse> {
+export function addItemData(id: string, file: any, authentication: UserSession): Promise<IUpdateItemResponse> {
   const addDataOptions: IAddItemDataOptions = {
     id,
-    data,
+    file,
     authentication,
   };
   return portalAddItemData(addDataOptions);
 }
 
 /**
- * Creates a UserSession via a function so that the global arcgisSolution variable can access authentication.
+ * Creates a ArcGISIdentityManager via a function so that the global arcgisSolution variable can access authentication.
  *
- * @param options See https://esri.github.io/arcgis-rest-js/api/auth/IUserSessionOptions/
- * @returns UserSession
+ * @param options See https://developers.arcgis.com/arcgis-rest-js/api-reference/arcgis-rest-request/IArcGISIdentityManagerOptions/
+ * @returns UserSession (ArcGISIdentityManager)
  */
-export function getUserSession(options: IUserSessionOptions = {}): UserSession {
+export function getUserSession(options: IArcGISIdentityManagerOptions = {}): UserSession {
   return new UserSession(options);
 }
 
