@@ -202,7 +202,7 @@ describe("Module `resourceHelpers`: common functions involving the management of
       const fetchBody = options.body;
       expect(typeof fetchBody).toEqual("object");
       const form = fetchBody as FormData;
-      expect(form.get("resourcesPrefix")).toBeNull();;
+      expect(form.get("resourcesPrefix")).toBeNull();
       expect(form.get("fileName")).toEqual(filename);
     });
 
