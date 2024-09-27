@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
+export * from "./add-resource";
 export * from "./addMetadataFromBlob";
-export * from "./add-resource-from-blob";
 export * from "./convert-item-resource-to-storage-resource";
 export * from "./convert-storage-resource-to-item-resource";
 export * from "./copyAssociatedFiles";
@@ -28,3 +28,4 @@ export * from "./get-blob";
 export * from "./getItemResourcesFilesFromPaths";
 export * from "./getItemResourcesPaths";
 export * from "./solution-resource";
+export * from "./update-resource";

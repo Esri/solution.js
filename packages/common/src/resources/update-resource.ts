@@ -14,18 +14,20 @@
  * limitations under the License.
  */
 
-import { ArcGISAuthError, addItemResource, UserSession } from "../arcgisRestJS";
+import { IItemResourceOptions, ArcGISAuthError, updateItemResource, UserSession } from "../arcgisRestJS";
+
 /**
- * Add a resource from a blob
+ * Adds a text resource.
  *
- * @param blob
- * @param itemId
- * @param folder
- * @param filename
- * @param authentication
+ * @param content Text to add as a resource
+ * @param itemId Id of the item to add the resource to
+ * @param folder A prefix string added to the filename in the storage; use null or undefined for no folder
+ * @param filename File name used to rename an existing file resource uploaded, or to be used together with
+ * text as file name for it. File name must have the file resource extension.
+ * @param authentication Credentials for the request
  */
-export function addResourceFromBlob(
-  blob: any,
+export function updateTextResource(
+  content: string,
   itemId: string,
   folder: string,
   filename: string,
@@ -38,17 +40,17 @@ export function addResourceFromBlob(
     });
   }
 
-  const addRsrcOptions = {
+  const requestOptions: IItemResourceOptions = {
     id: itemId,
-    resource: blob,
+    content,
     name: filename,
     authentication: authentication,
     params: {},
   };
   if (folder) {
-    addRsrcOptions.params = {
+    requestOptions.params = {
       resourcesPrefix: folder,
     };
   }
-  return addItemResource(addRsrcOptions);
+  return updateItemResource(requestOptions);
 }

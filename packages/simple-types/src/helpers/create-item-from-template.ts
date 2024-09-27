@@ -146,7 +146,7 @@ export function createItemFromTemplate(
                   );
 
                   // Send the created qc.project.json file to the item
-                  customProcDef = common.addResourceFromBlob(
+                  customProcDef = common.addBlobResource(
                     qcProjectFile,
                     newItemTemplate.itemId,
                     "",
