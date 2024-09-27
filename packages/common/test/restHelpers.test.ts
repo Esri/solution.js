@@ -3181,9 +3181,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
       const grp = templates.getGroupTemplatePart().item;
       const additionalParams = { extra: "value" };
 
-      //const updateStub = sinon.stub(arcGISRestJS, "restUpdateGroup").resolves(utils.getSuccessResponse());
       const updateStub = sinon.stub(arcGISRestJS, "restUpdateGroup").callsFake(() => {
-        console.log("fake updateStub");
         return Promise.resolve(utils.getSuccessResponse());
       });
 
