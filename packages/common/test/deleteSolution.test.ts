@@ -19,7 +19,7 @@
  * as part of that deployment.
  */
 
-import { UserSession } from "../src/arcgisRestJS";
+import * as arcGISRestJS from "../src/arcgisRestJS";
 import * as createHRO from "../src/create-hub-request-options";
 import * as deleteEmptyGroups from "../src/deleteHelpers/deleteEmptyGroups";
 import * as deleteGroupIfEmpty from "../src/deleteHelpers/deleteGroupIfEmpty";
@@ -28,7 +28,6 @@ import * as deleteSolutionContents from "../src/deleteHelpers/deleteSolutionCont
 import * as hubSites from "@esri/hub-sites";
 import * as interfaces from "../src/interfaces";
 import * as mockItems from "../../common/test/mocks/agolItems";
-import * as portal from "@esri/arcgis-rest-portal";
 import * as restHelpers from "../src/restHelpers";
 import * as restHelpersGet from "../src/restHelpersGet";
 import * as utils from "./mocks/utils";
@@ -39,7 +38,7 @@ import * as removeItems from "../src/deleteHelpers/removeItems";
 import * as reportProgress from "../src/deleteHelpers/reportProgress";
 import * as reconstructBuildOrderIds from "../src/deleteHelpers/reconstructBuildOrderIds";
 
-let MOCK_USER_SESSION: UserSession;
+let MOCK_USER_SESSION: arcGISRestJS.UserSession;
 
 beforeEach(() => {
   MOCK_USER_SESSION = utils.createRuntimeMockUserSession();
@@ -94,12 +93,14 @@ describe("Module `deleteSolution`: functions for deleting a deployed Solution it
       const group = mockItems.getAGOLGroup("grp1234567890", "casey");
       group.protected = true;
 
-      const getGroupSpy = spyOn(portal, "getGroup").and.resolveTo(group);
-      const getGroupContentSpy = spyOn(portal, "getGroupContent").and.resolveTo(mockItems.getAGOLGroupContentsList(0));
-      const unprotectGroupSpy = spyOn(portal, "unprotectGroup").and.resolveTo({
+      const getGroupSpy = spyOn(arcGISRestJS, "getGroup").and.resolveTo(group);
+      const getGroupContentSpy = spyOn(arcGISRestJS, "getGroupContent").and.resolveTo(
+        mockItems.getAGOLGroupContentsList(0),
+      );
+      const unprotectGroupSpy = spyOn(arcGISRestJS, "unprotectGroup").and.resolveTo({
         success: true,
       });
-      const removeGroupSpy = spyOn(portal, "removeGroup").and.resolveTo({
+      const removeGroupSpy = spyOn(arcGISRestJS, "restRemoveGroup").and.resolveTo({
         success: true,
       });
 
@@ -112,12 +113,16 @@ describe("Module `deleteSolution`: functions for deleting a deployed Solution it
     });
 
     it("deletes an empty unprotected group that we own", async () => {
-      const getGroupSpy = spyOn(portal, "getGroup").and.resolveTo(mockItems.getAGOLGroup("grp1234567890", "casey"));
-      const getGroupContentSpy = spyOn(portal, "getGroupContent").and.resolveTo(mockItems.getAGOLGroupContentsList(0));
-      const unprotectGroupSpy = spyOn(portal, "unprotectGroup").and.resolveTo({
+      const getGroupSpy = spyOn(arcGISRestJS, "getGroup").and.resolveTo(
+        mockItems.getAGOLGroup("grp1234567890", "casey"),
+      );
+      const getGroupContentSpy = spyOn(arcGISRestJS, "getGroupContent").and.resolveTo(
+        mockItems.getAGOLGroupContentsList(0),
+      );
+      const unprotectGroupSpy = spyOn(arcGISRestJS, "unprotectGroup").and.resolveTo({
         success: true,
       });
-      const removeGroupSpy = spyOn(portal, "removeGroup").and.resolveTo({
+      const removeGroupSpy = spyOn(arcGISRestJS, "restRemoveGroup").and.resolveTo({
         success: true,
       });
 
@@ -130,12 +135,14 @@ describe("Module `deleteSolution`: functions for deleting a deployed Solution it
     });
 
     it("does not delete an empty group that we don't own", async () => {
-      const getGroupSpy = spyOn(portal, "getGroup").and.resolveTo(mockItems.getAGOLGroup());
-      const getGroupContentSpy = spyOn(portal, "getGroupContent").and.resolveTo(mockItems.getAGOLGroupContentsList(0));
-      const unprotectGroupSpy = spyOn(portal, "unprotectGroup").and.resolveTo({
+      const getGroupSpy = spyOn(arcGISRestJS, "getGroup").and.resolveTo(mockItems.getAGOLGroup());
+      const getGroupContentSpy = spyOn(arcGISRestJS, "getGroupContent").and.resolveTo(
+        mockItems.getAGOLGroupContentsList(0),
+      );
+      const unprotectGroupSpy = spyOn(arcGISRestJS, "unprotectGroup").and.resolveTo({
         success: true,
       });
-      const removeGroupSpy = spyOn(portal, "removeGroup").and.resolveTo({
+      const removeGroupSpy = spyOn(arcGISRestJS, "restRemoveGroup").and.resolveTo({
         success: true,
       });
 
@@ -148,12 +155,16 @@ describe("Module `deleteSolution`: functions for deleting a deployed Solution it
     });
 
     it("does not delete a non-empty group that we own", async () => {
-      const getGroupSpy = spyOn(portal, "getGroup").and.resolveTo(mockItems.getAGOLGroup("grp1234567890", "casey"));
-      const getGroupContentSpy = spyOn(portal, "getGroupContent").and.resolveTo(mockItems.getAGOLGroupContentsList(1));
-      const unprotectGroupSpy = spyOn(portal, "unprotectGroup").and.resolveTo({
+      const getGroupSpy = spyOn(arcGISRestJS, "getGroup").and.resolveTo(
+        mockItems.getAGOLGroup("grp1234567890", "casey"),
+      );
+      const getGroupContentSpy = spyOn(arcGISRestJS, "getGroupContent").and.resolveTo(
+        mockItems.getAGOLGroupContentsList(1),
+      );
+      const unprotectGroupSpy = spyOn(arcGISRestJS, "unprotectGroup").and.resolveTo({
         success: true,
       });
-      const removeGroupSpy = spyOn(portal, "removeGroup").and.resolveTo({
+      const removeGroupSpy = spyOn(arcGISRestJS, "restRemoveGroup").and.resolveTo({
         success: true,
       });
 
@@ -166,12 +177,14 @@ describe("Module `deleteSolution`: functions for deleting a deployed Solution it
     });
 
     it("does not delete group if we fail to get the group info", async () => {
-      const getGroupSpy = spyOn(portal, "getGroup").and.rejectWith(mockItems.get400Failure());
-      const getGroupContentSpy = spyOn(portal, "getGroupContent").and.resolveTo(mockItems.getAGOLGroupContentsList(0));
-      const unprotectGroupSpy = spyOn(portal, "unprotectGroup").and.resolveTo({
+      const getGroupSpy = spyOn(arcGISRestJS, "getGroup").and.rejectWith(mockItems.get400Failure());
+      const getGroupContentSpy = spyOn(arcGISRestJS, "getGroupContent").and.resolveTo(
+        mockItems.getAGOLGroupContentsList(0),
+      );
+      const unprotectGroupSpy = spyOn(arcGISRestJS, "unprotectGroup").and.resolveTo({
         success: true,
       });
-      const removeGroupSpy = spyOn(portal, "removeGroup").and.resolveTo({
+      const removeGroupSpy = spyOn(arcGISRestJS, "restRemoveGroup").and.resolveTo({
         success: true,
       });
 
@@ -184,12 +197,14 @@ describe("Module `deleteSolution`: functions for deleting a deployed Solution it
     });
 
     it("does not delete group if we fail to get the group contents", async () => {
-      const getGroupSpy = spyOn(portal, "getGroup").and.resolveTo(mockItems.getAGOLGroup("grp1234567890", "casey"));
-      const getGroupContentSpy = spyOn(portal, "getGroupContent").and.rejectWith(mockItems.get400Failure());
-      const unprotectGroupSpy = spyOn(portal, "unprotectGroup").and.resolveTo({
+      const getGroupSpy = spyOn(arcGISRestJS, "getGroup").and.resolveTo(
+        mockItems.getAGOLGroup("grp1234567890", "casey"),
+      );
+      const getGroupContentSpy = spyOn(arcGISRestJS, "getGroupContent").and.rejectWith(mockItems.get400Failure());
+      const unprotectGroupSpy = spyOn(arcGISRestJS, "unprotectGroup").and.resolveTo({
         success: true,
       });
-      const removeGroupSpy = spyOn(portal, "removeGroup").and.resolveTo({
+      const removeGroupSpy = spyOn(arcGISRestJS, "restRemoveGroup").and.resolveTo({
         success: true,
       });
 
@@ -205,12 +220,14 @@ describe("Module `deleteSolution`: functions for deleting a deployed Solution it
       const group = mockItems.getAGOLGroup("grp1234567890", "casey");
       group.protected = true;
 
-      const getGroupSpy = spyOn(portal, "getGroup").and.resolveTo(group);
-      const getGroupContentSpy = spyOn(portal, "getGroupContent").and.resolveTo(mockItems.getAGOLGroupContentsList(0));
-      const unprotectGroupSpy = spyOn(portal, "unprotectGroup").and.resolveTo({
+      const getGroupSpy = spyOn(arcGISRestJS, "getGroup").and.resolveTo(group);
+      const getGroupContentSpy = spyOn(arcGISRestJS, "getGroupContent").and.resolveTo(
+        mockItems.getAGOLGroupContentsList(0),
+      );
+      const unprotectGroupSpy = spyOn(arcGISRestJS, "unprotectGroup").and.resolveTo({
         success: false,
       });
-      const removeGroupSpy = spyOn(portal, "removeGroup").and.resolveTo({
+      const removeGroupSpy = spyOn(arcGISRestJS, "restRemoveGroup").and.resolveTo({
         success: true,
       });
 
@@ -223,12 +240,16 @@ describe("Module `deleteSolution`: functions for deleting a deployed Solution it
     });
 
     it("handles failure to delete group", async () => {
-      const getGroupSpy = spyOn(portal, "getGroup").and.resolveTo(mockItems.getAGOLGroup("grp1234567890", "casey"));
-      const getGroupContentSpy = spyOn(portal, "getGroupContent").and.resolveTo(mockItems.getAGOLGroupContentsList(0));
-      const unprotectGroupSpy = spyOn(portal, "unprotectGroup").and.resolveTo({
+      const getGroupSpy = spyOn(arcGISRestJS, "getGroup").and.resolveTo(
+        mockItems.getAGOLGroup("grp1234567890", "casey"),
+      );
+      const getGroupContentSpy = spyOn(arcGISRestJS, "getGroupContent").and.resolveTo(
+        mockItems.getAGOLGroupContentsList(0),
+      );
+      const unprotectGroupSpy = spyOn(arcGISRestJS, "unprotectGroup").and.resolveTo({
         success: true,
       });
-      const removeGroupSpy = spyOn(portal, "removeGroup").and.resolveTo({
+      const removeGroupSpy = spyOn(arcGISRestJS, "restRemoveGroup").and.resolveTo({
         success: false,
       });
 
@@ -266,7 +287,7 @@ describe("Module `deleteSolution`: functions for deleting a deployed Solution it
         ]),
         mockItems.getSolutionPrecis(),
       ]);
-      const unprotectItemSpy = spyOn(portal, "unprotectItem").and.resolveTo(utils.getSuccessResponse());
+      const unprotectItemSpy = spyOn(arcGISRestJS, "unprotectItem").and.resolveTo(utils.getSuccessResponse());
       const _removeItemSpy = spyOn(restHelpers, "removeItem").and.resolveTo({
         success: true,
         itemId: "sol1234567890",
@@ -292,7 +313,7 @@ describe("Module `deleteSolution`: functions for deleting a deployed Solution it
 
     it("deletes a Solution that doesn't contain items", async () => {
       spyOn(getDeletableSolutionInfo, "getDeletableSolutionInfo").and.resolveTo(mockItems.getSolutionPrecis());
-      const unprotectItemSpy = spyOn(portal, "unprotectItem").and.resolveTo(utils.getSuccessResponse());
+      const unprotectItemSpy = spyOn(arcGISRestJS, "unprotectItem").and.resolveTo(utils.getSuccessResponse());
       const _removeItemSpy = spyOn(restHelpers, "removeItem").and.resolveTo({
         success: true,
         itemId: "sol1234567890",
@@ -324,7 +345,7 @@ describe("Module `deleteSolution`: functions for deleting a deployed Solution it
         ]),
         mockItems.getSolutionPrecis(),
       ]);
-      const unprotectItemSpy = spyOn(portal, "unprotectItem").and.resolveTo(utils.getSuccessResponse());
+      const unprotectItemSpy = spyOn(arcGISRestJS, "unprotectItem").and.resolveTo(utils.getSuccessResponse());
       const _removeItemSpy = spyOn(restHelpers, "removeItem").and.resolveTo({
         success: true,
         itemId: "sol1234567890",
@@ -366,7 +387,7 @@ describe("Module `deleteSolution`: functions for deleting a deployed Solution it
         mockItems.getSolutionPrecis([mockItems.getAGOLItemPrecis("Web Mapping Application")]),
         mockItems.getSolutionPrecis([mockItems.getAGOLItemPrecis("Web Map")]),
       ]);
-      const unprotectItemSpy = spyOn(portal, "unprotectItem").and.resolveTo(utils.getSuccessResponse());
+      const unprotectItemSpy = spyOn(arcGISRestJS, "unprotectItem").and.resolveTo(utils.getSuccessResponse());
       const _removeItemSpy = spyOn(restHelpers, "removeItem").and.resolveTo({
         success: true,
         itemId: "sol1234567890",
@@ -401,7 +422,7 @@ describe("Module `deleteSolution`: functions for deleting a deployed Solution it
         ]),
         mockItems.getSolutionPrecis(),
       ]);
-      const unprotectItemSpy = spyOn(portal, "unprotectItem").and.resolveTo(utils.getFailureResponse());
+      const unprotectItemSpy = spyOn(arcGISRestJS, "unprotectItem").and.resolveTo(utils.getFailureResponse());
       const _removeItemSpy = spyOn(restHelpers, "removeItem").and.resolveTo({
         success: false,
         itemId: "sol1234567890",
@@ -439,7 +460,7 @@ describe("Module `deleteSolution`: functions for deleting a deployed Solution it
         ]),
         mockItems.getSolutionPrecis(),
       ]);
-      const unprotectItemSpy = spyOn(portal, "unprotectItem").and.resolveTo(utils.getSuccessResponse());
+      const unprotectItemSpy = spyOn(arcGISRestJS, "unprotectItem").and.resolveTo(utils.getSuccessResponse());
       const _removeItemSpy = spyOn(restHelpers, "removeItem").and.resolveTo({
         success: false,
         itemId: "sol1234567890",
@@ -477,7 +498,7 @@ describe("Module `deleteSolution`: functions for deleting a deployed Solution it
         ]),
         mockItems.getSolutionPrecis(),
       ]);
-      const unprotectItemSpy = spyOn(portal, "unprotectItem").and.resolveTo(utils.getSuccessResponse());
+      const unprotectItemSpy = spyOn(arcGISRestJS, "unprotectItem").and.resolveTo(utils.getSuccessResponse());
       const _removeItemSpy = spyOn(restHelpers, "removeItem").and.resolveTo({
         success: true,
         itemId: "sol1234567890",
@@ -804,11 +825,11 @@ describe("Module `deleteSolution`: functions for deleting a deployed Solution it
       spyOn(MOCK_USER_SESSION, "getUser").and.resolveTo({
         orgId: "orgABC",
       });
-      spyOn(portal, "searchItems").and.resolveTo({
+      spyOn(arcGISRestJS, "restSearchItems").and.resolveTo({
         total: 0,
         results: [],
       } as any);
-      const removeFolderSpy = spyOn(portal, "removeFolder").and.resolveTo({
+      const removeFolderSpy = spyOn(arcGISRestJS, "restRemoveFolder").and.resolveTo({
         success: true,
       } as any);
 
@@ -821,7 +842,7 @@ describe("Module `deleteSolution`: functions for deleting a deployed Solution it
       spyOn(MOCK_USER_SESSION, "getUser").and.resolveTo({
         orgId: "orgABC",
       });
-      spyOn(portal, "searchItems").and.resolveTo({
+      spyOn(arcGISRestJS, "restSearchItems").and.resolveTo({
         total: 1,
         results: [
           {
@@ -829,7 +850,7 @@ describe("Module `deleteSolution`: functions for deleting a deployed Solution it
           },
         ],
       } as any);
-      const removeFolderSpy = spyOn(portal, "removeFolder").and.resolveTo({
+      const removeFolderSpy = spyOn(arcGISRestJS, "restRemoveFolder").and.resolveTo({
         success: true,
       } as any);
 
@@ -846,7 +867,7 @@ describe("Module `deleteSolution`: functions for deleting a deployed Solution it
       spyOn(MOCK_USER_SESSION, "getUser").and.resolveTo({
         orgId: "orgABC",
       });
-      spyOn(portal, "searchItems").and.resolveTo({
+      spyOn(arcGISRestJS, "restSearchItems").and.resolveTo({
         total: 2,
         results: [
           {
@@ -857,7 +878,7 @@ describe("Module `deleteSolution`: functions for deleting a deployed Solution it
           },
         ],
       } as any);
-      const removeFolderSpy = spyOn(portal, "removeFolder").and.resolveTo({
+      const removeFolderSpy = spyOn(arcGISRestJS, "restRemoveFolder").and.resolveTo({
         success: true,
       } as any);
 
@@ -874,7 +895,7 @@ describe("Module `deleteSolution`: functions for deleting a deployed Solution it
       spyOn(MOCK_USER_SESSION, "getUser").and.resolveTo({
         orgId: "orgABC",
       });
-      spyOn(portal, "searchItems").and.resolveTo({
+      spyOn(arcGISRestJS, "restSearchItems").and.resolveTo({
         total: 1,
         results: [
           {
@@ -882,7 +903,7 @@ describe("Module `deleteSolution`: functions for deleting a deployed Solution it
           },
         ],
       } as any);
-      const removeFolderSpy = spyOn(portal, "removeFolder").and.resolveTo({
+      const removeFolderSpy = spyOn(arcGISRestJS, "restRemoveFolder").and.resolveTo({
         success: false,
       } as any);
 
@@ -941,7 +962,7 @@ describe("Module `deleteSolution`: functions for deleting a deployed Solution it
       const percentDone: number = 50.4;
       const progressPercentStep: number = 10.4;
 
-      spyOn(portal, "unprotectItem").and.resolveTo(utils.getSuccessResponse());
+      spyOn(arcGISRestJS, "unprotectItem").and.resolveTo(utils.getSuccessResponse());
 
       const removeItemSpy = spyOn(restHelpers, "removeItem").and.returnValues(
         Promise.resolve(utils.getSuccessResponse({ id: firstItemId })),
@@ -995,7 +1016,7 @@ describe("Module `deleteSolution`: functions for deleting a deployed Solution it
       const percentDone: number = 50.4;
       const progressPercentStep: number = 10.4;
 
-      const unprotectItemSpy = spyOn(portal, "unprotectItem").and.resolveTo(utils.getSuccessResponse());
+      const unprotectItemSpy = spyOn(arcGISRestJS, "unprotectItem").and.resolveTo(utils.getSuccessResponse());
 
       const removeItemSpy = spyOn(restHelpers, "removeItem").and.returnValues(
         Promise.resolve(utils.getSuccessResponse({ id: secondItemId })),
@@ -1063,7 +1084,7 @@ describe("Module `deleteSolution`: functions for deleting a deployed Solution it
       const percentDone: number = 50.4;
       const progressPercentStep: number = 10.4;
 
-      const unprotectItemSpy = spyOn(portal, "unprotectItem").and.returnValues(
+      const unprotectItemSpy = spyOn(arcGISRestJS, "unprotectItem").and.returnValues(
         Promise.resolve(utils.getSuccessResponse({ id: secondItemId })),
         Promise.reject(mockItems.get400Failure()),
       );
@@ -1125,7 +1146,7 @@ describe("Module `deleteSolution`: functions for deleting a deployed Solution it
       const percentDone: number = 50.4;
       const progressPercentStep: number = 10.4;
 
-      spyOn(portal, "unprotectItem").and.resolveTo(utils.getSuccessResponse());
+      spyOn(arcGISRestJS, "unprotectItem").and.resolveTo(utils.getSuccessResponse());
 
       spyOn(createHRO, "createHubRequestOptions").and.resolveTo(
         utils.getSuccessResponse({

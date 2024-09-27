@@ -15,7 +15,7 @@
  */
 import { createHubRequestOptions } from "../src/create-hub-request-options";
 import * as utils from "./mocks/utils";
-import * as portalModule from "@esri/arcgis-rest-portal";
+import * as arcGISRestJS from "../../common/src/arcgisRestJS";
 const MOCK_USER_SESSION = utils.createRuntimeMockUserSession();
 
 describe("createHubRequestOptions", () => {
@@ -30,7 +30,7 @@ describe("createHubRequestOptions", () => {
       },
     };
 
-    spyOn(portalModule, "getUser").and.resolveTo({
+    spyOn(arcGISRestJS, "restGetUser").and.resolveTo({
       username: MOCK_USER_SESSION.username,
     });
 
@@ -48,9 +48,9 @@ describe("createHubRequestOptions", () => {
       portalHostname: "www.arcgis.com",
       name: "somePortal",
       isPortal: false,
-    } as portalModule.IPortal;
-    const getSelfSpy = spyOn(portalModule, "getSelf").and.resolveTo(portal);
-    const getUserSpy = spyOn(portalModule, "getUser").and.resolveTo({
+    } as arcGISRestJS.IPortal;
+    const getSelfSpy = spyOn(arcGISRestJS, "getSelf").and.resolveTo(portal);
+    const getUserSpy = spyOn(arcGISRestJS, "restGetUser").and.resolveTo({
       username: MOCK_USER_SESSION.username,
     });
 
@@ -66,9 +66,9 @@ describe("createHubRequestOptions", () => {
       portalHostname: "www.arcgis.com",
       name: "somePortal",
       isPortal: true,
-    } as portalModule.IPortal;
-    const getSelfSpy = spyOn(portalModule, "getSelf").and.resolveTo(portal);
-    const getUserSpy = spyOn(portalModule, "getUser").and.resolveTo({
+    } as arcGISRestJS.IPortal;
+    const getSelfSpy = spyOn(arcGISRestJS, "getSelf").and.resolveTo(portal);
+    const getUserSpy = spyOn(arcGISRestJS, "restGetUser").and.resolveTo({
       username: MOCK_USER_SESSION.username,
     });
 

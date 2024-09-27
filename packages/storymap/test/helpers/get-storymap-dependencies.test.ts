@@ -16,7 +16,7 @@
 
 import { getStoryMapDependencies } from "../../src/helpers/get-storymap-dependencies";
 import { IModel } from "@esri/hub-common";
-import { IItem } from "@esri/arcgis-rest-portal";
+import { IItem } from "../../../common/src/arcgisRestJS";
 
 describe("get-storymap-dependencies", () => {
   it("should extract webmaps from resources", () => {

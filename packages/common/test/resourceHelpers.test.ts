@@ -18,9 +18,9 @@
  * Provides tests for common functions involving the management of item and group resources.
  */
 
-import { UserSession, ArcGISAuthError } from "../src/arcgisRestJS";
+import { IItemResourceResponse, UserSession, ArcGISAuthError } from "../src/arcgisRestJS";
+import * as arcgisRestJS from "../src/arcgisRestJS";
 import * as interfaces from "../src/interfaces";
-import * as portal from "@esri/arcgis-rest-portal";
 import * as resourceHelpers from "../src/resourceHelpers";
 
 import * as utils from "./mocks/utils";
@@ -1417,7 +1417,7 @@ describe("Module `resourceHelpers`: common functions involving the management of
       const itemId = "abcde";
       const filename = "fghij";
 
-      const resourceHelpersSpy = spyOn(portal, "removeItemResource").and.resolveTo({ success: true });
+      const resourceHelpersSpy = spyOn(arcgisRestJS, "removeItemResource").and.resolveTo({ success: true });
 
       await resourceHelpers.removeItemResourceFile(itemId, filename, MOCK_USER_SESSION);
       const restjsArg = resourceHelpersSpy.calls.argsFor(0)[0];
@@ -1434,12 +1434,12 @@ describe("Module `resourceHelpers`: common functions involving the management of
       const itemId = "abcde";
       const filename = "fghij";
 
-      const resourceHelpersSpy = spyOn(portal, "updateItemResource").and.resolveTo({
+      const resourceHelpersSpy = spyOn(arcgisRestJS, "updateItemResource").and.resolveTo({
         success: true,
         itemId,
         owner: "Fred",
         folder: "MGM",
-      } as portal.IItemResourceResponse);
+      } as IItemResourceResponse);
 
       await resourceHelpers.updateItemResourceFile(itemId, filename, utils.getSampleImageAsFile(), MOCK_USER_SESSION);
       const restjsArg = resourceHelpersSpy.calls.argsFor(0)[0];
@@ -1456,12 +1456,12 @@ describe("Module `resourceHelpers`: common functions involving the management of
       const itemId = "abcde";
       const filename = "fghij/folder/myfile";
 
-      const resourceHelpersSpy = spyOn(portal, "updateItemResource").and.resolveTo({
+      const resourceHelpersSpy = spyOn(arcgisRestJS, "updateItemResource").and.resolveTo({
         success: true,
         itemId,
         owner: "Fred",
         folder: "MGM",
-      } as portal.IItemResourceResponse);
+      } as IItemResourceResponse);
 
       await resourceHelpers.updateItemResourceFile(itemId, filename, utils.getSampleImageAsFile(), MOCK_USER_SESSION);
       const restjsArg = resourceHelpersSpy.calls.argsFor(0)[0];
