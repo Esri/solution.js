@@ -86,5 +86,4 @@ describe("Module arcgisRestJS", () => {
     await arcgisRestJS.unprotectGroup(requestOptions);
     expect(unprotectGroupSpy.called);
   });
-
 });

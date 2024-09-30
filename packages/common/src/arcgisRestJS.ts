@@ -152,7 +152,7 @@ export {
   IParams,
   ArcGISAuthError,
   encodeFormData,
-  ArcGISIdentityManager as UserSession
+  ArcGISIdentityManager as UserSession,
 } from "@esri/arcgis-rest-request";
 export interface IFolderSuccessResult {
   success: boolean;
@@ -172,69 +172,69 @@ export interface ISuccessResult {
 //custom export functions that mimic the same export function from arcgis-rest-js
 //to bypass unit test error:
 //Error: <spyOn> : <functon or property> is not declared writable or has no setter
-export function addItemResource (requestOptions: IItemResourceOptions): Promise<IItemResourceResponse> {
+export function addItemResource(requestOptions: IItemResourceOptions): Promise<IItemResourceResponse> {
   return restAddItemResource(requestOptions);
 }
-export function getGroup (id: string, requestOptions?: IRequestOptions): Promise<IGroup> {
+export function getGroup(id: string, requestOptions?: IRequestOptions): Promise<IGroup> {
   return restGetGroup(id, requestOptions);
 }
-export function getGroupContent (id: string, requestOptions?: IGetGroupContentOptions): Promise<IGroupContentResult> {
+export function getGroupContent(id: string, requestOptions?: IGetGroupContentOptions): Promise<IGroupContentResult> {
   return restGetGroupContent(id, requestOptions);
 }
-export function getRelatedItems (requestOptions: IItemRelationshipOptions): Promise<IGetRelatedItemsResponse> {
+export function getRelatedItems(requestOptions: IItemRelationshipOptions): Promise<IGetRelatedItemsResponse> {
   return restGetRelatedItems(requestOptions);
 }
-export function getSelf (requestOptions?: IRequestOptions): Promise<IPortal> {
+export function getSelf(requestOptions?: IRequestOptions): Promise<IPortal> {
   return restGetSelf(requestOptions);
 }
-export function queryRelated (requestOptions: IQueryRelatedOptions): Promise<IQueryRelatedResponse> {
+export function queryRelated(requestOptions: IQueryRelatedOptions): Promise<IQueryRelatedResponse> {
   return restQueryRelated(requestOptions);
 }
-export function removeItemResource (requestOptions: IRemoveItemResourceOptions): Promise<ISuccessResult> {
+export function removeItemResource(requestOptions: IRemoveItemResourceOptions): Promise<ISuccessResult> {
   return restRemoveItemResource(requestOptions);
 }
-export function request (url: string, requestOptions?: IRequestOptions): Promise<any> {
+export function request(url: string, requestOptions?: IRequestOptions): Promise<any> {
   return restRequest(url, requestOptions);
 }
 //getUser already exists as an custom export in restHelperGet so this export has 'rest' prefix to denote it's from rest.
-export function restGetUser (requestOptions?: string | IGetUserOptions): Promise<IUser> {
+export function restGetUser(requestOptions?: string | IGetUserOptions): Promise<IUser> {
   return getUser(requestOptions);
 }
 //removeFolder already exists as an custom export in restHelperGet so this export has 'rest' prefix to denote it's from rest.
-export function restRemoveFolder (requestOptions: IFolderIdOptions): Promise<IFolderSuccessResult> {
+export function restRemoveFolder(requestOptions: IFolderIdOptions): Promise<IFolderSuccessResult> {
   return removeFolder(requestOptions);
 }
 //removeGroup already exists as an custom export in restHelperGet so this export has 'rest' prefix to denote it's from rest.
-export function restRemoveGroup (requestOptions: IUserGroupOptions): Promise<any> {
+export function restRemoveGroup(requestOptions: IUserGroupOptions): Promise<any> {
   return removeGroup(requestOptions);
 }
 //searchItems already exists as an custom export in restHelperGet so this export has 'rest' prefix to denote it's from rest.
-export function restSearchItems (search: string | ISearchOptions | SearchQueryBuilder): Promise<ISearchResult<IItem>> {
+export function restSearchItems(search: string | ISearchOptions | SearchQueryBuilder): Promise<ISearchResult<IItem>> {
   return searchItems(search);
 }
 //updateGroup already exists as an custom export in restHelperGet so this export has 'rest' prefix to denote it's from rest.
-export function restUpdateGroup (requestOptions: IUpdateGroupOptions): Promise<IGroupSuccessResult> {
+export function restUpdateGroup(requestOptions: IUpdateGroupOptions): Promise<IGroupSuccessResult> {
   return updateGroup(requestOptions);
 }
 //supdateItem already exists as an custom export in restHelperGet so this export has 'rest' prefix to denote it's from rest.
-export function restUpdateItem (requestOptions: IUpdateItemOptions): Promise<IUpdateItemResponse> {
+export function restUpdateItem(requestOptions: IUpdateItemOptions): Promise<IUpdateItemResponse> {
   return updateItem(requestOptions);
 }
-export function shareItemWithGroup (requestOptions: IGroupSharingOptions): Promise<ISharingResponse> {
+export function shareItemWithGroup(requestOptions: IGroupSharingOptions): Promise<ISharingResponse> {
   return restShareItemWithGroup(requestOptions);
 }
-export function svcAdminAddToServiceDefinition (
+export function svcAdminAddToServiceDefinition(
   url: string,
   requestOptions: IAddToServiceDefinitionOptions,
 ): Promise<IAddToServiceDefinitionResult> {
   return addToServiceDefinition(url, requestOptions);
 }
-export function updateItemResource (requestOptions: IItemResourceOptions): Promise<IItemResourceResponse> {
+export function updateItemResource(requestOptions: IItemResourceOptions): Promise<IItemResourceResponse> {
   return restUpdateItemResource(requestOptions);
 }
-export function unprotectGroup (requestOptions: IUserGroupOptions): Promise<ISuccessResult> {
+export function unprotectGroup(requestOptions: IUserGroupOptions): Promise<ISuccessResult> {
   return restUnprotectGroup(requestOptions);
 }
-export function unprotectItem (requestOptions: IUserItemOptions): Promise<ISuccessResult> {
+export function unprotectItem(requestOptions: IUserItemOptions): Promise<ISuccessResult> {
   return restUnprotectItem(requestOptions);
 }
