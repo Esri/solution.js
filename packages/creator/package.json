@@ -24,11 +24,12 @@
     "sinon": "^15.2.0"
   },
   "dependencies": {
-    "@esri/arcgis-rest-auth": "^3.7.0",
-    "@esri/arcgis-rest-feature-layer": "^3.7.0",
-    "@esri/arcgis-rest-portal": "^3.7.0",
-    "@esri/arcgis-rest-request": "^3.7.0",
-    "@esri/arcgis-rest-service-admin": "^3.7.0",
+    "@esri/arcgis-rest-demographics": "^4.0.3",
+    "@esri/arcgis-rest-feature-service": "^4.0.6",
+    "@esri/arcgis-rest-geocoding": "^4.0.3",
+    "@esri/arcgis-rest-portal": "^4.4.1",
+    "@esri/arcgis-rest-request": "^4.2.3",
+    "@esri/arcgis-rest-routing": "^4.0.3",
     "@esri/hub-common": "^14.177.1",
     "@esri/solution-common": "^5.6.8",
     "@esri/solution-feature-layer": "^5.6.8",
