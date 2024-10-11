@@ -22,9 +22,8 @@
   },
   "dependencies": {
     "@esri/arcgis-html-sanitizer": "4.0.3",
-    "@esri/arcgis-rest-auth": "^3.7.0",
-    "@esri/arcgis-rest-portal": "^3.7.0",
-    "@esri/arcgis-rest-request": "^3.7.0",
+    "@esri/arcgis-rest-portal": "^4.4.1",
+    "@esri/arcgis-rest-request": "^4.2.3",
     "@esri/solution-common": "file:../../packages/common/dist"
   },
   "gitHead": "2ec5fb241f432832e9d191bfcf118a50b621491d"
